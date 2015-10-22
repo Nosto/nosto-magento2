@@ -1,0 +1,28 @@
+{
+    "name": "nosto/nosto-magento2-extension",
+    "description": "Increase your conversion rate and average order value by delivering your customers personalized product recommendations throughout their shopping journey.",
+    "type": "magento2-module",
+    "version": "0.1.0",
+    "license": [
+        "OSL-3.0",
+        "AFL-3.0"
+    ],
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/Nosto/php-sdk.git"
+        }
+    ],
+    "require": {
+        "php": "~5.5.0|~5.6.0",
+        "nosto/php-sdk": "2.2.0"
+    },
+    "extra": {
+        "map": [
+            [
+                "*",
+                "Nosto/Tagging"
+            ]
+        ]
+    }
+}

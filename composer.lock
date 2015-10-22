@@ -1,0 +1,50 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "This file is @generated automatically"
+    ],
+    "hash": "3133c2bf0f5a770fc3679fd8b8f6cbc1",
+    "packages": [
+        {
+            "name": "nosto/php-sdk",
+            "version": "2.2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Nosto/php-sdk.git",
+                "reference": "751a1185afaf2536280a4d485f66d34d2dd146b0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Nosto/php-sdk/zipball/751a1185afaf2536280a4d485f66d34d2dd146b0",
+                "reference": "751a1185afaf2536280a4d485f66d34d2dd146b0",
+                "shasum": ""
+            },
+            "require-dev": {
+                "codeception/aspect-mock": "0.5.3",
+                "codeception/codeception": "2.0.0",
+                "codeception/specify": "0.4.1"
+            },
+            "type": "library",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "description": "PHP SDK for developing Nosto modules for e-commerce platforms",
+            "support": {
+                "source": "https://github.com/Nosto/php-sdk/tree/2.2.0",
+                "issues": "https://github.com/Nosto/php-sdk/issues"
+            },
+            "time": "2015-10-07 11:43:32"
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": [],
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": {
+        "php": "~5.5.0|~5.6.0"
+    },
+    "platform-dev": []
+}
