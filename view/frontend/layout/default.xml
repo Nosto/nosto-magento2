@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="../../../../../../../lib/internal/Magento/Framework/View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceContainer name="head.additional">
+            <block class="Nosto\Tagging\Block\Meta" name="nosto.meta"/>
+            <block class="Nosto\Tagging\Block\Embed" name="nosto.embed"/>
+        </referenceContainer>
+    </body>
+</page>
