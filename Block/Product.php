@@ -1,0 +1,179 @@
+<?php
+
+namespace Nosto\Tagging\Block;
+
+use Magento\Catalog\Api\ProductRepositoryInterface;
+use Magento\Catalog\Block\Product\Context;
+use Magento\Catalog\Block\Product\View;
+use Magento\Catalog\Model\ProductTypes\ConfigInterface;
+use Magento\Customer\Model\Session;
+use Magento\Framework\Locale\FormatInterface;
+use Magento\Framework\Pricing\PriceCurrencyInterface;
+use Magento\Framework\Url\EncoderInterface as UrlEncoder;
+use Magento\Framework\Json\EncoderInterface as JsonEncoder;
+use Nosto\Tagging\Helper\Data;
+use Nosto\Tagging\Helper\Format;
+use Nosto\Tagging\Model\Product\Builder as ProductBuilder;
+use Nosto\Tagging\Model\Category\Builder as CategoryBuilder;
+
+require_once 'app/code/Nosto/Tagging/vendor/nosto/php-sdk/autoload.php';
+
+/**
+ * Product block used for outputting meta-data on the stores product pages.
+ * This meta-data is sent to Nosto via JavaScript when users are browsing the
+ * pages in the store.
+ */
+class Product extends View
+{
+    /**
+     * @inheritdoc
+     */
+    protected $_template = 'product.phtml';
+
+    /**
+     * @var ProductBuilder the product meta model builder.
+     */
+    protected $_productBuilder;
+
+    /**
+     * @var CategoryBuilder the category meta model builder.
+     */
+    protected $_categoryBuilder;
+
+    /**
+     * @var Data the data helper.
+     */
+    protected $_dataHelper;
+
+    /**
+     * @var Format the format helper.
+     */
+    protected $_formatHelper;
+
+    /**
+     * Constructor.
+     *
+     * @param Context                          $context the context.
+     * @param UrlEncoder                       $urlEncoder the  url encoder.
+     * @param JsonEncoder                      $jsonEncoder the json encoder.
+     * @param \Magento\Framework\Stdlib\String $string the string lib.
+     * @param \Magento\Catalog\Helper\Product  $productHelper the product helper.
+     * @param ConfigInterface                  $productTypeConfig the product type config.
+     * @param FormatInterface                  $localeFormat the locale format.
+     * @param Session                          $customerSession the user session.
+     * @param ProductRepositoryInterface       $productRepository th product repository.
+     * @param PriceCurrencyInterface           $priceCurrency the price currency.
+     * @param ProductBuilder                   $productBuilder the product meta model builder.
+     * @param CategoryBuilder                  $categoryBuilder the category meta model builder.
+     * @param Data                             $dataHelper the data helper.
+     * @param Format                           $formatHelper the format helper.
+     * @param array                            $data optional data.
+     */
+    public function __construct(
+        Context $context,
+        UrlEncoder $urlEncoder,
+        JsonEncoder $jsonEncoder,
+        \Magento\Framework\Stdlib\String $string,
+        \Magento\Catalog\Helper\Product $productHelper,
+        ConfigInterface $productTypeConfig,
+        FormatInterface $localeFormat,
+        Session $customerSession,
+        ProductRepositoryInterface $productRepository,
+        PriceCurrencyInterface $priceCurrency,
+        ProductBuilder $productBuilder,
+        CategoryBuilder $categoryBuilder,
+        Data $dataHelper,
+        Format $formatHelper,
+        array $data = []
+    ) {
+        parent::__construct(
+            $context,
+            $urlEncoder,
+            $jsonEncoder,
+            $string,
+            $productHelper,
+            $productTypeConfig,
+            $localeFormat,
+            $customerSession,
+            $productRepository,
+            $priceCurrency,
+            $data
+        );
+
+        $this->_productBuilder = $productBuilder;
+        $this->_categoryBuilder = $categoryBuilder;
+        $this->_dataHelper = $dataHelper;
+        $this->_formatHelper = $formatHelper;
+    }
+
+    /**
+     * Returns the Nosto product meta-data model.
+     *
+     * @return \Nosto\Tagging\Model\Product the product meta data model.
+     */
+    public function getNostoProduct()
+    {
+        return $this->_productBuilder->build(
+            $this->getProduct(),
+            $this->_storeManager->getStore()
+        );
+    }
+
+    /**
+     * Returns the Nosto category meta-data model.
+     *
+     * @return \Nosto\Tagging\Model\Category the category meta data model.
+     */
+    public function getNostoCategory()
+    {
+        $category = $this->_coreRegistry->registry('current_category');
+        return !is_null($category)
+            ? $this->_categoryBuilder->build($category)
+            : null;
+    }
+
+    /**
+     * Returns if price variations are to included in the product meta-data.
+     *
+     * @return bool true if they are to be included, false otherwise.
+     */
+    public function inclPriceVariations()
+    {
+        return $this->_dataHelper->isMultiCurrencyMethodPriceVariation(
+            $this->_storeManager->getStore()
+        );
+    }
+
+    /**
+     * Formats a \NostoPrice object, e.g. "1234.56".
+     *
+     * @param \NostoPrice $price the price to format.
+     * @return string the formatted price.
+     */
+    public function formatNostoPrice(\NostoPrice $price)
+    {
+        return $this->_formatHelper->formatPrice($price);
+    }
+
+    /**
+     * Formats a \NostoDate object, e.g. "2015-12-24";
+     *
+     * @param \NostoDate $date the date to format.
+     * @return string the formatted date.
+     */
+    public function formatNostoDate(\NostoDate $date)
+    {
+        return $this->_formatHelper->formatDate($date);
+    }
+
+    /**
+     * Checks if the current store uses multiple currencies.
+     *
+     * @return bool if the store uses multiple currencies.
+     */
+    public function getStoreHasMultiCurrency()
+    {
+        // todo
+        return true;
+    }
+}
