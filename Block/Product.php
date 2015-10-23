@@ -107,9 +107,9 @@ class Product extends View
     }
 
     /**
-     * Returns the Nosto product meta-data model.
+     * Returns the Nosto product DTO.
      *
-     * @return \Nosto\Tagging\Model\Product the product meta data model.
+     * @return \NostoProduct the product meta data model.
      */
     public function getNostoProduct()
     {
@@ -120,9 +120,9 @@ class Product extends View
     }
 
     /**
-     * Returns the Nosto category meta-data model.
+     * Returns the Nosto category DTO.
      *
-     * @return \Nosto\Tagging\Model\Category the category meta data model.
+     * @return \NostoCategory the category meta data model.
      */
     public function getNostoCategory()
     {

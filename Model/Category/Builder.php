@@ -36,7 +36,7 @@ class Builder
 
 	/**
      * @param Category $category
-	 * @return \Nosto\Tagging\Model\Category
+	 * @return \NostoCategory
 	 */
 	public function build(Category $category)
 	{

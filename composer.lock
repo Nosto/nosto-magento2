@@ -4,20 +4,21 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "3133c2bf0f5a770fc3679fd8b8f6cbc1",
+    "hash": "ca14ab7c83f98d1fefb4261faf0a96a9",
+    "content-hash": "5d3350575c92b3dd229272116b99084f",
     "packages": [
         {
             "name": "nosto/php-sdk",
-            "version": "2.2.0",
+            "version": "dev-feature/add-data-transfer-objects",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Nosto/php-sdk.git",
-                "reference": "751a1185afaf2536280a4d485f66d34d2dd146b0"
+                "reference": "dbf6c4af7ae6a579bcead0e9991d54e1d391955a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Nosto/php-sdk/zipball/751a1185afaf2536280a4d485f66d34d2dd146b0",
-                "reference": "751a1185afaf2536280a4d485f66d34d2dd146b0",
+                "url": "https://api.github.com/repos/Nosto/php-sdk/zipball/dbf6c4af7ae6a579bcead0e9991d54e1d391955a",
+                "reference": "dbf6c4af7ae6a579bcead0e9991d54e1d391955a",
                 "shasum": ""
             },
             "require-dev": {
@@ -31,16 +32,18 @@
             ],
             "description": "PHP SDK for developing Nosto modules for e-commerce platforms",
             "support": {
-                "source": "https://github.com/Nosto/php-sdk/tree/2.2.0",
+                "source": "https://github.com/Nosto/php-sdk/tree/feature/add-data-transfer-objects",
                 "issues": "https://github.com/Nosto/php-sdk/issues"
             },
-            "time": "2015-10-07 11:43:32"
+            "time": "2015-10-23 12:36:31"
         }
     ],
     "packages-dev": [],
     "aliases": [],
-    "minimum-stability": "stable",
-    "stability-flags": [],
+    "minimum-stability": "dev",
+    "stability-flags": {
+        "nosto/php-sdk": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {

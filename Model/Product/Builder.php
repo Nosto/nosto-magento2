@@ -77,7 +77,7 @@ class Builder
     /**
      * @param Product $product
      * @param Store   $store
-     * @return \Nosto\Tagging\Model\Product
+     * @return \NostoProduct
      */
     public function build(Product $product, Store $store)
     {
@@ -224,7 +224,7 @@ class Builder
         }
 
         if (!$product->canConfigure()) {
-            $tags[] = \Nosto\Tagging\Model\Product::PRODUCT_ADD_TO_CART;
+            $tags[] = \NostoProduct::PRODUCT_ADD_TO_CART;
         }
 
         return $tags;

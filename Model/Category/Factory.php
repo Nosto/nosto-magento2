@@ -22,13 +22,10 @@ class Factory
      * Create new product object.
      *
      * @param array $data
-     * @return \Nosto\Tagging\Model\Category
+     * @return \NostoCategory
      */
     public function create(array $data = [])
     {
-        return $this->_objectManager->create(
-            'Nosto\Tagging\Model\Category',
-            $data
-        );
+        return $this->_objectManager->create('NostoCategory', $data);
     }
 }
