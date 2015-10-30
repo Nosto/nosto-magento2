@@ -8,6 +8,7 @@
         </referenceContainer>
         <referenceContainer name="content">
             <block class="Nosto\Tagging\Block\Variation" name="nosto.variation"/>
+            <block class="Nosto\Tagging\Block\Cart" name="nosto.cart"/>
         </referenceContainer>
     </body>
 </page>

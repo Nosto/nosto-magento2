@@ -1,0 +1,18 @@
+<?php
+/** @var \Nosto\Tagging\Block\Cart $this */
+
+$cart = $this->getNostoCart();
+?>
+
+<!-- Nosto Cart Tagging -->
+<div class="nosto_cart" style="display:none">
+    <?php foreach ($cart->getItems() as $item): ?>
+        <div class="line_item">
+            <span class="product_id"><?php echo $this->escapeHtml($item->getItemId()); ?></span>
+            <span class="quantity"><?php echo (int)$item->getQuantity(); ?></span>
+            <span class="name"><?php echo $this->escapeHtml($item->getName()); ?></span>
+            <span class="unit_price"><?php echo $this->formatNostoPrice($item->getUnitPrice()); ?></span>
+            <span class="price_currency_code"><?php echo $this->escapeHtml($item->getCurrency()->getCode()); ?></span>
+        </div>
+    <?php endforeach; ?>
+</div>
