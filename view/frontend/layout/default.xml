@@ -6,5 +6,8 @@
             <block class="Nosto\Tagging\Block\Meta" name="nosto.meta"/>
             <block class="Nosto\Tagging\Block\Embed" name="nosto.embed"/>
         </referenceContainer>
+        <referenceContainer name="content">
+            <block class="Nosto\Tagging\Block\Variation" name="nosto.variation"/>
+        </referenceContainer>
     </body>
 </page>
