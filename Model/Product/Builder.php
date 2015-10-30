@@ -18,7 +18,7 @@ class Builder
     protected $_productFactory;
 
     /**
-     * @var Price\Variation\Factory
+     * @var Variation\Factory
      */
     protected $_variationFactory;
 
@@ -49,7 +49,7 @@ class Builder
 
     /**
      * @param Factory                     $productFactory
-     * @param Price\Variation\Factory     $variationFactory
+     * @param Variation\Factory           $variationFactory
      * @param DataHelper                  $dataHelper
      * @param PriceHelper                 $priceHelper
      * @param CategoryBuilder             $categoryBuilder
@@ -58,7 +58,7 @@ class Builder
      */
     public function __construct(
         Factory $productFactory,
-        Price\Variation\Factory $variationFactory,
+        Variation\Factory $variationFactory,
         DataHelper $dataHelper,
         PriceHelper $priceHelper,
         CategoryBuilder $categoryBuilder,
@@ -106,14 +106,17 @@ class Builder
 
             // Optional properties.
 
-            if ($product->hasData('short_description')) {
-                $nostoProduct->setShortDescription(
-                    $product->getData('short_description')
-                );
-            }
-            if ($product->hasData('description')) {
-                $nostoProduct->setDescription($product->getData('description'));
-            }
+			$descriptions = array();
+			if ($product->hasData('short_description')) {
+				$descriptions[] = $product->getData('short_description');
+			}
+			if ($product->hasData('description')) {
+				$descriptions[] = $product->getData('description');
+			}
+			if (count($descriptions) > 0) {
+				$nostoProduct->setDescription(implode(' ', $descriptions));
+			}
+
             if ($product->hasData('manufacturer')) {
                 $nostoProduct->setBrand(
                     $product->getAttributeText('manufacturer')
@@ -130,14 +133,12 @@ class Builder
 
             $currencies = $store->getAvailableCurrencyCodes(true);
             if (count($currencies) > 1) {
-                $nostoProduct->setPriceVariationId(
-                    new \NostoPriceVariation($store->getBaseCurrencyCode())
-                );
+                $nostoProduct->setVariationId($store->getBaseCurrencyCode());
                 if ($this->_dataHelper
                     ->isMultiCurrencyMethodPriceVariation($store)
                 ) {
-                    $nostoProduct->setPriceVariations(
-                        $this->buildPriceVariations($product, $store)
+                    $nostoProduct->setVariations(
+                        $this->buildVariations($product, $store)
                     );
                 }
             }
@@ -235,8 +236,10 @@ class Builder
      * @param Store   $store
      * @return array
      */
-    protected function buildPriceVariations(Product $product, Store $store)
+    protected function buildVariations(Product $product, Store $store)
     {
+        // todo: create a variation builder for this.
+
         $variations = array();
         $currencyCodes = $store->getAvailableCurrencyCodes(true);
         foreach ($currencyCodes as $currencyCode) {
@@ -245,34 +248,31 @@ class Builder
                 continue;
             }
             try {
-                $id = new \NostoPriceVariation($currencyCode);
-                $currency = new \NostoCurrencyCode($currencyCode);
+                $variation = $this->_variationFactory->create();
+                $variation->setVariationId($currencyCode);
+                $variation->setCurrency(new \NostoCurrencyCode($currencyCode));
+
                 $price = $product->getFinalPrice();
                 $price = $store->getBaseCurrency()->convert(
                     $price,
                     $currencyCode
                 );
-                $price = new \NostoPrice($price);
-                $unitPrice = $product->getPrice();
-                $unitPrice = $store->getBaseCurrency()->convert(
-                    $unitPrice,
+                $variation->setPrice(new \NostoPrice($price));
+
+                $listPrice = $product->getPrice();
+                $listPrice = $store->getBaseCurrency()->convert(
+                    $listPrice,
                     $currencyCode
                 );
-                $unitPrice = new \NostoPrice($unitPrice);
-                $availability = new \NostoProductAvailability(
+                $variation->setListPrice(new \NostoPrice($listPrice));
+
+                $variation->setAvailability(new \NostoProductAvailability(
                     $product->isAvailable()
                         ? \NostoProductAvailability::IN_STOCK
                         : \NostoProductAvailability::OUT_OF_STOCK
-                );
-                $variations[] = $this->_variationFactory->create(
-                    [
-                        'id' => $id,
-                        'currency' => $currency,
-                        'price' => $price,
-                        'unitPrice' => $unitPrice,
-                        'availability' => $availability
-                    ]
-                );
+                ));
+
+                $variations[] = $variation;
             } catch (\Exception $e) {
                 // The price variation cannot be obtained if there are no
                 // exchange rates defined for the currency and Magento will

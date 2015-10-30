@@ -1,6 +1,6 @@
 <?php
 
-namespace Nosto\Tagging\Model\Product\Price\Variation;
+namespace Nosto\Tagging\Model\Product\Variation;
 
 use Magento\Framework\ObjectManagerInterface;
 
@@ -20,16 +20,13 @@ class Factory
     }
 
     /**
-     * Create new product object.
+     * Create new product variation object.
      *
      * @param array $data
-     * @return \Nosto\Tagging\Model\Product\Price\Variation
+     * @return \NostoProductVariation
      */
     public function create(array $data = [])
     {
-        return $this->_objectManager->create(
-            'Nosto\Tagging\Model\Product\Price\Variation',
-            $data
-        );
+        return $this->_objectManager->create('NostoProductVariation', $data);
     }
 }
