@@ -4,21 +4,21 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "ca14ab7c83f98d1fefb4261faf0a96a9",
-    "content-hash": "5d3350575c92b3dd229272116b99084f",
+    "hash": "ab676e7f44caa8ae6a263a778df90e14",
+    "content-hash": "8e11022d17ec7f1f72edfc0c58b10f8f",
     "packages": [
         {
             "name": "nosto/php-sdk",
-            "version": "dev-feature/add-data-transfer-objects",
+            "version": "dev-develop",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Nosto/php-sdk.git",
-                "reference": "dbf6c4af7ae6a579bcead0e9991d54e1d391955a"
+                "reference": "3e33dfb585bc26bcca23d04bb217ebe02222b543"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Nosto/php-sdk/zipball/dbf6c4af7ae6a579bcead0e9991d54e1d391955a",
-                "reference": "dbf6c4af7ae6a579bcead0e9991d54e1d391955a",
+                "url": "https://api.github.com/repos/Nosto/php-sdk/zipball/3e33dfb585bc26bcca23d04bb217ebe02222b543",
+                "reference": "3e33dfb585bc26bcca23d04bb217ebe02222b543",
                 "shasum": ""
             },
             "require-dev": {
@@ -32,10 +32,10 @@
             ],
             "description": "PHP SDK for developing Nosto modules for e-commerce platforms",
             "support": {
-                "source": "https://github.com/Nosto/php-sdk/tree/feature/add-data-transfer-objects",
+                "source": "https://github.com/Nosto/php-sdk/tree/develop",
                 "issues": "https://github.com/Nosto/php-sdk/issues"
             },
-            "time": "2015-10-23 12:36:31"
+            "time": "2015-10-30 14:25:43"
         }
     ],
     "packages-dev": [],

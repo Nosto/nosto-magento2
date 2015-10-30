@@ -74,8 +74,6 @@ class Builder
             $this->_logger->error($e, ['exception' => $e]);
         }
 
-        var_dump($items);
-
         return $nostoCart;
     }
 

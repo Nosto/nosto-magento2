@@ -16,7 +16,7 @@
     "minimum-stability": "dev",
     "require": {
         "php": "~5.5.0|~5.6.0",
-        "nosto/php-sdk": "dev-feature/add-data-transfer-objects"
+        "nosto/php-sdk": "dev-develop"
     },
     "extra": {
         "map": [
