@@ -4,6 +4,24 @@
     <body>
         <referenceContainer name="content">
             <block class="Nosto\Tagging\Block\Product" name="nosto.product"/>
+            <block class="Nosto\Tagging\Block\Element" name="nosto.page.product1" after="product.attributes">
+                <action method="setData">
+                    <argument name="name" xsi:type="string">nostoId</argument>
+                    <argument name="value" xsi:type="string">nosto-page-product1</argument>
+                </action>
+            </block>
+            <block class="Nosto\Tagging\Block\Element" name="nosto.page.product2" after="nosto.page.product1">
+                <action method="setData">
+                    <argument name="name" xsi:type="string">nostoId</argument>
+                    <argument name="value" xsi:type="string">nosto-page-product2</argument>
+                </action>
+            </block>
+            <block class="Nosto\Tagging\Block\Element" name="nosto.page.product3" after="nosto.page.product2">
+                <action method="setData">
+                    <argument name="name" xsi:type="string">nostoId</argument>
+                    <argument name="value" xsi:type="string">nosto-page-product3</argument>
+                </action>
+            </block>
         </referenceContainer>
     </body>
 </page>
