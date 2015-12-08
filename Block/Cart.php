@@ -2,7 +2,7 @@
 
 namespace Nosto\Tagging\Block;
 
-use Magento\Catalog\Model\Resource\Url;
+use Magento\Catalog\Model\ResourceModel\Url;
 use Magento\Customer\Model\Session;
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Element\Template\Context;

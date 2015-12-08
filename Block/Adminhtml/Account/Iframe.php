@@ -2,21 +2,19 @@
 
 namespace Nosto\Tagging\Block\Adminhtml\Account;
 
-use Magento\Backend\Block\Template;
-use Magento\Backend\Block\Template\Context;
+use Magento\Backend\Block\Template as BlockTemplate;
+use Magento\Backend\Block\Template\Context as BlockContext;
 use Magento\Backend\Model\Auth\Session;
 use Magento\Framework\Exception\NotFoundException;
 use Magento\Store\Model\Store;
 use Nosto\Tagging\Helper\Account;
-
-require_once 'app/code/Nosto/Tagging/vendor/nosto/php-sdk/autoload.php';
 
 /**
  * Iframe block for displaying the Nosto account management iframe.
  * This iframe is used to setup and manage your Nosto accounts on a store basis
  * in Magento.
  */
-class Iframe extends Template
+class Iframe extends BlockTemplate
 {
     /**
      * Default iframe origin regexp for validating window.postMessage() calls.
@@ -42,7 +40,7 @@ class Iframe extends Template
      * @param array   $data optional data.
      */
     public function __construct(
-        Context $context,
+        BlockContext $context,
         Account $accountHelper,
 		Session $backendAuthSession,
         array $data = []

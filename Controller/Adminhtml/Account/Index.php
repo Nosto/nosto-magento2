@@ -81,7 +81,7 @@ class Index extends Action
     {
         if ($this->_storeManager->isSingleStoreMode()) {
             return $this->_storeManager->getStore(true);
-        } elseif (($storeId = $this->_request->getParam('store'))) {
+        } elseif (($storeId = $this->_storeManager->getStore()->getId())) {
             return $this->_storeManager->getStore($storeId);
         } else {
             return null;

@@ -3,7 +3,7 @@
 namespace Nosto\Tagging\Controller\Export;
 
 use Magento\Catalog\Model\Product\Visibility as ProductVisibility;
-use Magento\Catalog\Model\Resource\Product\CollectionFactory as ProductCollectionFactory;
+use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductCollectionFactory;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\Controller\Result\Raw;
 use Magento\Store\Model\StoreManagerInterface;

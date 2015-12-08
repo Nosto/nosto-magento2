@@ -25,5 +25,9 @@
                 "Nosto/Tagging"
             ]
         ]
+    },
+    "autoload": {
+        "psr-4": { "Nosto\\Tagging\\": "" },
+        "files": [ "registration.php" ]
     }
 }
