@@ -6,8 +6,10 @@ use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\Controller\Result\Raw;
 use Magento\Framework\Controller\ResultFactory;
+use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
 use Nosto\Tagging\Helper\Account as AccountHelper;
+use NostoExportCollectionInterface;
 
 require_once 'app/code/Nosto/Tagging/vendor/nosto/php-sdk/autoload.php';
 
@@ -16,6 +18,15 @@ require_once 'app/code/Nosto/Tagging/vendor/nosto/php-sdk/autoload.php';
  */
 abstract class Base extends Action
 {
+    const ID = 'id';
+    const LIMIT = 'limit';
+    const OFFSET = 'offset';
+    const CREATED_AT = 'created_at';
+    const ENTITY_ID = 'entity_id';
+
+    protected $_storeManager;
+    protected $_accountHelper;
+
     /**
      * Constructor.
      *
@@ -24,33 +35,84 @@ abstract class Base extends Action
      * @param AccountHelper         $accountHelper
      */
     public function __construct(
-		Context $context,
-		StoreManagerInterface $storeManager,
-		AccountHelper $accountHelper
-	) {
-		parent::__construct($context);
+        Context $context,
+        StoreManagerInterface $storeManager,
+        AccountHelper $accountHelper
+    ) {
+        parent::__construct($context);
 
-		$this->_storeManager = $storeManager;
-		$this->_accountHelper = $accountHelper;
-	}
+        $this->_storeManager = $storeManager;
+        $this->_accountHelper = $accountHelper;
+    }
 
-	/**
-	 * Encrypts the export collection and outputs it to the browser.
-	 *
-	 * @param \NostoExportCollectionInterface $collection the data collection to export.
-	 *
-	 * @return Raw
-	 */
-	protected function export(\NostoExportCollectionInterface $collection)
-	{
-		/** @var Raw $result */
-		$result = $this->resultFactory->create(ResultFactory::TYPE_RAW);
-		$store = $this->_storeManager->getStore(true);
-		$account = $this->_accountHelper->findAccount($store);
-		if ($account !== null) {
-			$cipherText = \NostoExporter::export($account, $collection);
-			$result->setContents($cipherText);
-		}
-		return $result;
-	}
+    /**
+     * Encrypts the export collection and outputs it to the browser.
+     *
+     * @param \NostoExportCollectionInterface $collection the data collection to export.
+     *
+     * @return Raw
+     */
+    protected function export(\NostoExportCollectionInterface $collection)
+    {
+        /** @var Raw $result */
+        $result = $this->resultFactory->create(ResultFactory::TYPE_RAW);
+        $store = $this->_storeManager->getStore(true);
+        $account = $this->_accountHelper->findAccount($store);
+        if ($account !== null) {
+            $cipherText = \NostoExporter::export($account, $collection);
+            $result->setContents($cipherText);
+        }
+        return $result;
+    }
+
+    /**
+     * Handles the controller request, builds the query to fetch the result,
+     * encrypts the JSON and returns the result
+     *
+     * @return Raw
+     */
+    public function execute()
+    {
+        $store = $this->_storeManager->getStore(true);
+        /** @var \Magento\Sales\Model\ResourceModel\Order\Collection $collection */
+        $collection = $this->getCollection($store);
+        $collection->addAttributeToSelect('*');
+
+        $id = $this->getRequest()->getParam(self::ID, false);
+        if (!empty($id)) {
+            $collection->addFieldToFilter(self::ENTITY_ID, $id);
+        } else {
+            $pageSize = (int)$this->getRequest()->getParam(self::LIMIT, 100);
+            $currentOffset = (int)$this->getRequest()->getParam(self::OFFSET, 0);
+            $currentPage = ($currentOffset / $pageSize) + 1;
+
+            $collection->setCurPage($currentPage);
+            $collection->setPageSize($pageSize);
+            $collection->setOrder(self::CREATED_AT, $collection::SORT_ORDER_DESC);
+        }
+        $collection->load();
+
+        /** @var NostoExportCollectionInterface $exportCollection */
+        $exportCollection = $this->buildExportCollection($collection, $store);
+        return $this->export($exportCollection);
+    }
+
+    /**
+     * Abstract function that should be implemented to return the correct
+     * collection object with the controller specific filters applied
+     *
+     * @param Store $store The store object for the current store
+     * @return \Magento\Sales\Model\ResourceModel\Order\Collection The collection
+     */
+    abstract protected function getCollection(Store $store);
+
+    /**
+     * Abstract function that should be implemented to return the built export
+     * collection object with all the items added
+     *
+     * @param \Magento\Sales\Model\ResourceModel\Order\Collection $collection
+     * @param Store $store The store object for the current store
+     * @return \Magento\Sales\Model\ResourceModel\Order\Collection The collection
+     */
+    abstract protected function buildExportCollection($collection, Store $store);
 }
