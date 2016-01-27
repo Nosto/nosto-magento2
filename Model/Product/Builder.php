@@ -85,7 +85,7 @@ class Builder
 
         try {
             $nostoProduct->setUrl($this->buildUrl($product, $store));
-            $nostoProduct->setProductId($product->getSku());
+            $nostoProduct->setProductId($product->getId());
             $nostoProduct->setName($product->getName());
             $nostoProduct->setImageUrl($this->buildImageUrl($product, $store));
             $price = $this->_priceHelper->getProductFinalPriceInclTax($product);
