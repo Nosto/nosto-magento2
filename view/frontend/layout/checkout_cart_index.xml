@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<!--suppress XmlPathReference -->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="../../../../../../../lib/internal/Magento/Framework/View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceContainer name="content">
+            <block class="Nosto\Tagging\Block\Element" name="nosto.page.cart1" after="checkout.cart">
+                <action method="setData">
+                    <argument name="name" xsi:type="string">nostoId</argument>
+                    <argument name="value" xsi:type="string">nosto-page-cart1</argument>
+                </action>
+            </block>
+            <block class="Nosto\Tagging\Block\Element" name="nosto.page.cart2" after="nosto.page.cart1">
+                <action method="setData">
+                    <argument name="name" xsi:type="string">nostoId</argument>
+                    <argument name="value" xsi:type="string">nosto-page-cart2</argument>
+                </action>
+            </block>
+            <block class="Nosto\Tagging\Block\Element" name="nosto.page.cart3" after="nosto.page.cart2">
+                <action method="setData">
+                    <argument name="name" xsi:type="string">nostoId</argument>
+                    <argument name="value" xsi:type="string">nosto-page-cart3</argument>
+                </action>
+            </block>
+        </referenceContainer>
+    </body>
+</page>
