@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<!--suppress XmlPathReference -->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="../../../../../../../lib/internal/Magento/Framework/View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceContainer name="content">
+            <block class="Nosto\Tagging\Block\Element" name="nosto.page.notfound1" after="-">
+                <action method="setData">
+                    <argument name="name" xsi:type="string">nostoId</argument>
+                    <argument name="value" xsi:type="string">notfound-nosto-1</argument>
+                </action>
+            </block>
+            <block class="Nosto\Tagging\Block\Element" name="nosto.page.notfound2" after="nosto.page.notfound1">
+                <action method="setData">
+                    <argument name="name" xsi:type="string">nostoId</argument>
+                    <argument name="value" xsi:type="string">notfound-nosto-2</argument>
+                </action>
+            </block>
+            <block class="Nosto\Tagging\Block\Element" name="nosto.page.notfound3" after="nosto.page.notfound2">
+                <action method="setData">
+                    <argument name="name" xsi:type="string">nostoId</argument>
+                    <argument name="value" xsi:type="string">notfound-nosto-3</argument>
+                </action>
+            </block>
+        </referenceContainer>
+    </body>
+</page>
