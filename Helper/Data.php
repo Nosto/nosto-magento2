@@ -21,11 +21,6 @@ class Data extends AbstractHelper
     const XML_PATH_INSTALLATION_ID = 'nosto_tagging/installation/id';
 
     /**
-     * Path to store config script direct include setting.
-     */
-    const XML_PATH_DIRECT_INCLUDE = 'nosto_tagging/general/direct_include';
-
-    /**
      * Path to store config product image version setting.
      */
     const XML_PATH_IMAGE_VERSION = 'nosto_tagging/image_options/image_version';
@@ -190,21 +185,6 @@ class Data extends AbstractHelper
     ) {
         return (bool)$this->getStoreConfig(
             self::XML_PATH_SCHEDULED_CURRENCY_EXCHANGE_RATE_UPDATE_ENABLED,
-            $store
-        );
-    }
-
-    /**
-     * Return if we should use the nosto script direct include.
-     *
-     * @param Store|null $store the store model or null.
-     *
-     * @return bool
-     */
-    public function getUseScriptDirectInclude(Store $store = null)
-    {
-        return (bool)$this->getStoreConfig(
-            self::XML_PATH_DIRECT_INCLUDE,
             $store
         );
     }

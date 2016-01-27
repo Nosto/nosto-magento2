@@ -71,14 +71,4 @@ class Embed extends Template
             ? $_ENV['NOSTO_SERVER_URL']
             : self::DEFAULT_SERVER_ADDRESS;
     }
-
-    /**
-     * Return if the Nosto script should be included directly.
-     *
-     * @return bool
-     */
-    public function useScriptDirectInclude()
-    {
-        return $this->_dataHelper->getUseScriptDirectInclude();
-    }
 }
