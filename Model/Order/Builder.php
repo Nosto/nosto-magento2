@@ -35,8 +35,8 @@ use Magento\Catalog\Model\ResourceModel\Eav\Attribute;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable;
 use Magento\Framework\App\ObjectManager;
 use Magento\GroupedProduct\Model\Product\Type\Grouped;
-use Magento\Sales\Model\Order\Item;
 use Magento\Sales\Model\Order;
+use Magento\Sales\Model\Order\Item;
 use NostoCurrencyCode;
 use NostoDate;
 use NostoOrderBuyer;
@@ -221,7 +221,7 @@ class Builder
             $opts = $item->getProductOptionByCode('attributes_info');
             if (is_array($opts)) {
                 foreach ($opts as $opt) {
-                    if (isset($opt['value']) && is_string($opt['value']))   {
+                    if (isset($opt['value']) && is_string($opt['value'])) {
                         $optNames[] = $opt['value'];
                     }
                 }

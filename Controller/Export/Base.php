@@ -55,15 +55,16 @@ abstract class Base extends Action
     /**
      * Constructor.
      *
-     * @param Context               $context
+     * @param Context $context
      * @param StoreManagerInterface $storeManager
-     * @param AccountHelper         $accountHelper
+     * @param AccountHelper $accountHelper
      */
     public function __construct(
         Context $context,
         StoreManagerInterface $storeManager,
         AccountHelper $accountHelper
-    ) {
+    )
+    {
         parent::__construct($context);
 
         $this->_storeManager = $storeManager;

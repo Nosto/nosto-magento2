@@ -27,9 +27,9 @@
 
 namespace Nosto\Tagging\Helper;
 
+use Magento\Framework\App\Config\Storage\WriterInterface;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
-use Magento\Framework\App\Config\Storage\WriterInterface;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
 
@@ -83,15 +83,16 @@ class Data extends AbstractHelper
     /**
      * Constructor.
      *
-     * @param Context               $context the context.
+     * @param Context $context the context.
      * @param StoreManagerInterface $storeManager the store manager.
-     * @param WriterInterface       $configWriter the config writer.
+     * @param WriterInterface $configWriter the config writer.
      */
     public function __construct(
         Context $context,
         StoreManagerInterface $storeManager,
         WriterInterface $configWriter
-    ) {
+    )
+    {
         parent::__construct($context);
 
         $this->_storeManager = $storeManager;
@@ -99,7 +100,7 @@ class Data extends AbstractHelper
     }
 
     /**
-     * @param string     $path
+     * @param string $path
      * @param Store|null $store
      * @return mixed|null
      */
@@ -207,7 +208,8 @@ class Data extends AbstractHelper
      */
     public function isScheduledCurrencyExchangeRateUpdateEnabled(
         Store $store = null
-    ) {
+    )
+    {
         return (bool)$this->getStoreConfig(
             self::XML_PATH_SCHEDULED_CURRENCY_EXCHANGE_RATE_UPDATE_ENABLED,
             $store

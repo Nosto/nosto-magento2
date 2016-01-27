@@ -48,7 +48,8 @@ class Proxy extends Action
     public function __construct(
         Context $context,
         Session $backendAuthSession
-    ) {
+    )
+    {
         parent::__construct($context);
 
         $this->_backendAuthSession = $backendAuthSession;

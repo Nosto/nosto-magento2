@@ -96,6 +96,11 @@ class Iframe implements \NostoAccountMetaIframeInterface
         return $this->_uniqueId;
     }
 
+    public function setUniqueId($uniqueId)
+    {
+        $this->_uniqueId = $uniqueId;
+    }
+
     /**
      * The 2-letter ISO code (ISO 639-1) for the language of the user who is
      * loading the config iframe.
@@ -105,6 +110,11 @@ class Iframe implements \NostoAccountMetaIframeInterface
     public function getLanguage()
     {
         return $this->_language;
+    }
+
+    public function setLanguage(\NostoLanguageCode $language)
+    {
+        $this->_language = $language;
     }
 
     /**
@@ -118,6 +128,11 @@ class Iframe implements \NostoAccountMetaIframeInterface
         return $this->_shopLanguage;
     }
 
+    public function setShopLanguage(\NostoLanguageCode $shopLanguage)
+    {
+        $this->_shopLanguage = $shopLanguage;
+    }
+
     /**
      * Returns the name of the shop context where Nosto is installed or about to be installed in.
      *
@@ -126,6 +141,11 @@ class Iframe implements \NostoAccountMetaIframeInterface
     public function getShopName()
     {
         return $this->_shopName;
+    }
+
+    public function setShopName($shopName)
+    {
+        $this->_shopName = $shopName;
     }
 
     /**
@@ -139,6 +159,11 @@ class Iframe implements \NostoAccountMetaIframeInterface
         // todo
         //return Mage::getVersion();
         return '0.0.0';
+    }
+
+    public function setVersionPlatform($platformVersion)
+    {
+        $this->_versionPlatform = $platformVersion;
     }
 
     /**
@@ -156,6 +181,13 @@ class Iframe implements \NostoAccountMetaIframeInterface
         return '0.0.0';
     }
 
+    // todo
+
+    public function setVersionModule($moduleVersion)
+    {
+        $this->_versionModule = $moduleVersion;
+    }
+
     /**
      * An absolute URL for any product page in the shop the account is linked
      * to, with the nostodebug GET parameter enabled.
@@ -168,6 +200,11 @@ class Iframe implements \NostoAccountMetaIframeInterface
     public function getPreviewUrlProduct()
     {
         return $this->_previewUrlProduct;
+    }
+
+    public function setPreviewUrlProduct($productPreviewUrl)
+    {
+        $this->_previewUrlProduct = $productPreviewUrl;
     }
 
     /**
@@ -184,6 +221,11 @@ class Iframe implements \NostoAccountMetaIframeInterface
         return $this->_previewUrlCategory;
     }
 
+    public function setPreviewUrlCategory($categoryPreviewUrl)
+    {
+        $this->_previewUrlCategory = $categoryPreviewUrl;
+    }
+
     /**
      * An absolute URL for the search page in the shop the account is linked
      * to, with the nostodebug GET parameter enabled.
@@ -196,6 +238,11 @@ class Iframe implements \NostoAccountMetaIframeInterface
     public function getPreviewUrlSearch()
     {
         return $this->_previewUrlSearch;
+    }
+
+    public function setPreviewUrlSearch($searchPreviewUrl)
+    {
+        $this->_previewUrlSearch = $searchPreviewUrl;
     }
 
     /**
@@ -212,6 +259,11 @@ class Iframe implements \NostoAccountMetaIframeInterface
         return $this->_previewUrlCart;
     }
 
+    public function setPreviewUrlCart($cartPreviewUrl)
+    {
+        $this->_previewUrlCart = $cartPreviewUrl;
+    }
+
     /**
      * An absolute URL for the front page in the shop the account is linked to,
      * with the nostodebug GET parameter enabled.
@@ -224,58 +276,6 @@ class Iframe implements \NostoAccountMetaIframeInterface
     public function getPreviewUrlFront()
     {
         return $this->_previewUrlFront;
-    }
-
-    // todo
-
-    public function setUniqueId($uniqueId)
-    {
-        $this->_uniqueId = $uniqueId;
-    }
-
-    public function setLanguage(\NostoLanguageCode $language)
-    {
-        $this->_language = $language;
-    }
-
-    public function setShopLanguage(\NostoLanguageCode $shopLanguage)
-    {
-        $this->_shopLanguage = $shopLanguage;
-    }
-
-    public function setShopName($shopName)
-    {
-        $this->_shopName = $shopName;
-    }
-
-    public function setVersionPlatform($platformVersion)
-    {
-        $this->_versionPlatform = $platformVersion;
-    }
-
-    public function setVersionModule($moduleVersion)
-    {
-        $this->_versionModule = $moduleVersion;
-    }
-
-    public function setPreviewUrlProduct($productPreviewUrl)
-    {
-        $this->_previewUrlProduct = $productPreviewUrl;
-    }
-
-    public function setPreviewUrlCategory($categoryPreviewUrl)
-    {
-        $this->_previewUrlCategory = $categoryPreviewUrl;
-    }
-
-    public function setPreviewUrlSearch($searchPreviewUrl)
-    {
-        $this->_previewUrlSearch = $searchPreviewUrl;
-    }
-
-    public function setPreviewUrlCart($cartPreviewUrl)
-    {
-        $this->_previewUrlCart = $cartPreviewUrl;
     }
 
     public function setPreviewUrlFront($frontPreviewUrl)

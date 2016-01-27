@@ -85,6 +85,11 @@ class Oauth implements \NostoOauthClientMetaInterface
         return $this->_scopes;
     }
 
+    public function setScopes(array $scopes)
+    {
+        $this->_scopes = $scopes;
+    }
+
     /**
      * The OAuth2 redirect url to where the OAuth2 server should redirect the
      * user after authorizing the application to act on the users behalf.
@@ -98,6 +103,13 @@ class Oauth implements \NostoOauthClientMetaInterface
         return $this->_redirectUrl;
     }
 
+    public function setRedirectUrl($redirectUrl)
+    {
+        $this->_redirectUrl = $redirectUrl;
+    }
+
+    // todo
+
     /**
      * The 2-letter ISO code (ISO 639-1) for the language the OAuth2 server
      * uses for UI localization.
@@ -109,6 +121,11 @@ class Oauth implements \NostoOauthClientMetaInterface
         return $this->_language;
     }
 
+    public function setLanguage(\NostoLanguageCode $language)
+    {
+        $this->_language = $language;
+    }
+
     /**
      * The Nosto account if we are to sync account details from Nosto.
      *
@@ -117,23 +134,6 @@ class Oauth implements \NostoOauthClientMetaInterface
     public function getAccount()
     {
         return $this->_account;
-    }
-
-    // todo
-
-    public function setScopes(array $scopes)
-    {
-        $this->_scopes = $scopes;
-    }
-
-    public function setRedirectUrl($redirectUrl)
-    {
-        $this->_redirectUrl = $redirectUrl;
-    }
-
-    public function setLanguage(\NostoLanguageCode $language)
-    {
-        $this->_language = $language;
     }
 
     public function setAccount(\NostoAccount $account)

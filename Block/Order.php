@@ -87,7 +87,8 @@ class Order extends \Magento\Checkout\Block\Success
         Format $formatHelper,
         \Magento\Checkout\Model\Session $checkoutSession,
         array $data = []
-    ) {
+    )
+    {
         parent::__construct(
             $context,
             $orderFactory,

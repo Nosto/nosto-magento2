@@ -45,17 +45,18 @@ class Connect extends Action
     protected $_result;
 
     /**
-     * @param Context               $context
-     * @param Builder               $oauthMetaBuilder
+     * @param Context $context
+     * @param Builder $oauthMetaBuilder
      * @param StoreManagerInterface $storeManager
-     * @param Json                  $result
+     * @param Json $result
      */
     public function __construct(
         Context $context,
         Builder $oauthMetaBuilder,
         StoreManagerInterface $storeManager,
         Json $result
-    ) {
+    )
+    {
         parent::__construct($context);
 
         $this->_oauthMetaBuilder = $oauthMetaBuilder;

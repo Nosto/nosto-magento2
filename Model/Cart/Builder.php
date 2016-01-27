@@ -64,10 +64,10 @@ class Builder
     /**
      * Constructor.
      *
-     * @param Factory         $cartFactory
+     * @param Factory $cartFactory
      * @param CartItemFactory $cartItemFactory
-     * @param DataHelper      $dataHelper
-     * @param PriceHelper     $priceHelper
+     * @param DataHelper $dataHelper
+     * @param PriceHelper $priceHelper
      * @param LoggerInterface $logger
      */
     public function __construct(
@@ -76,7 +76,8 @@ class Builder
         DataHelper $dataHelper,
         PriceHelper $priceHelper,
         LoggerInterface $logger
-    ) {
+    )
+    {
         $this->_cartFactory = $cartFactory;
         $this->_cartItemFactory = $cartItemFactory;
         $this->_dataHelper = $dataHelper;
@@ -104,7 +105,7 @@ class Builder
 
     /**
      * @param Item[] $items
-     * @param Store  $store
+     * @param Store $store
      * @return \NostoCartItemInterface[]
      */
     protected function buildItems(array $items, Store $store)

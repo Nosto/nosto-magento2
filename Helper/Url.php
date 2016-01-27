@@ -64,11 +64,11 @@ class Url extends AbstractHelper
     /**
      * Constructor.
      *
-     * @param Context                   $context the context.
-     * @param ProductCollectionFactory  $productCollectionFactory auto generated product collection factory.
+     * @param Context $context the context.
+     * @param ProductCollectionFactory $productCollectionFactory auto generated product collection factory.
      * @param CategoryCollectionFactory $categoryCollectionFactory auto generated category collection factory.
-     * @param Visibility                $productVisibility product visibility.
-     * @param \Magento\Framework\Url    $urlBuilder frontend URL builder.
+     * @param Visibility $productVisibility product visibility.
+     * @param \Magento\Framework\Url $urlBuilder frontend URL builder.
      */
     public function __construct(
         Context $context,
@@ -76,7 +76,8 @@ class Url extends AbstractHelper
         CategoryCollectionFactory $categoryCollectionFactory,
         Visibility $productVisibility,
         \Magento\Framework\Url $urlBuilder
-    ) {
+    )
+    {
         parent::__construct($context);
 
         $this->_productCollectionFactory = $productCollectionFactory;

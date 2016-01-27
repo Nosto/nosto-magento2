@@ -27,8 +27,8 @@
 
 namespace Nosto\Tagging\Controller\Export;
 
-use Magento\Sales\Model\ResourceModel\Order\CollectionFactory as OrderCollectionFactory;
 use Magento\Framework\App\Action\Context;
+use Magento\Sales\Model\ResourceModel\Order\CollectionFactory as OrderCollectionFactory;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
 use Nosto\Tagging\Helper\Account as AccountHelper;
@@ -63,7 +63,8 @@ class Order extends Base
         StoreManagerInterface $storeManager,
         AccountHelper $accountHelper,
         OrderBuilder $orderBuilder
-    ) {
+    )
+    {
         parent::__construct($context, $storeManager, $accountHelper);
 
         $this->_orderCollectionFactory = $orderCollectionFactory;

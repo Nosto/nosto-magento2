@@ -45,17 +45,18 @@ class Delete extends Action
     protected $_result;
 
     /**
-     * @param Context               $context
-     * @param Account               $accountHelper
+     * @param Context $context
+     * @param Account $accountHelper
      * @param StoreManagerInterface $storeManager
-     * @param Json                  $result
+     * @param Json $result
      */
     public function __construct(
         Context $context,
         Account $accountHelper,
         StoreManagerInterface $storeManager,
         Json $result
-    ) {
+    )
+    {
         parent::__construct($context);
 
         $this->_accountHelper = $accountHelper;

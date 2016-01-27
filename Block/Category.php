@@ -60,16 +60,17 @@ class Category extends Template
      * Constructor.
      *
      * @param Template\Context $context
-     * @param Registry         $registry
-     * @param CategoryBuilder  $categoryBuilder
-     * @param array            $data
+     * @param Registry $registry
+     * @param CategoryBuilder $categoryBuilder
+     * @param array $data
      */
     public function __construct(
         Template\Context $context,
         Registry $registry,
         CategoryBuilder $categoryBuilder,
         array $data = []
-    ) {
+    )
+    {
         parent::__construct($context, $data);
 
         $this->_registry = $registry;

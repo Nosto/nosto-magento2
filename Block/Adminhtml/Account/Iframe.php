@@ -69,7 +69,8 @@ class Iframe extends BlockTemplate
         Account $accountHelper,
         Session $backendAuthSession,
         array $data = []
-    ) {
+    )
+    {
         parent::__construct($context, $data);
 
         $this->_accountHelper = $accountHelper;

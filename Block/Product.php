@@ -32,14 +32,14 @@ use Magento\Catalog\Block\Product\Context;
 use Magento\Catalog\Block\Product\View;
 use Magento\Catalog\Model\ProductTypes\ConfigInterface;
 use Magento\Customer\Model\Session;
+use Magento\Framework\Json\EncoderInterface as JsonEncoder;
 use Magento\Framework\Locale\FormatInterface;
 use Magento\Framework\Pricing\PriceCurrencyInterface;
 use Magento\Framework\Url\EncoderInterface as UrlEncoder;
-use Magento\Framework\Json\EncoderInterface as JsonEncoder;
 use Nosto\Tagging\Helper\Data;
 use Nosto\Tagging\Helper\Format;
-use Nosto\Tagging\Model\Product\Builder as ProductBuilder;
 use Nosto\Tagging\Model\Category\Builder as CategoryBuilder;
+use Nosto\Tagging\Model\Product\Builder as ProductBuilder;
 
 /** @noinspection PhpIncludeInspection */
 require_once 'app/code/Nosto/Tagging/vendor/nosto/php-sdk/autoload.php';
@@ -79,21 +79,21 @@ class Product extends View
     /**
      * Constructor.
      *
-     * @param Context                          $context the context.
-     * @param UrlEncoder                       $urlEncoder the  url encoder.
-     * @param JsonEncoder                      $jsonEncoder the json encoder.
-     * @param \Magento\Framework\Stdlib\StringUtils  $string the string lib.
-     * @param \Magento\Catalog\Helper\Product  $productHelper the product helper.
-     * @param ConfigInterface                  $productTypeConfig the product type config.
-     * @param FormatInterface                  $localeFormat the locale format.
-     * @param Session                          $customerSession the user session.
-     * @param ProductRepositoryInterface       $productRepository th product repository.
-     * @param PriceCurrencyInterface           $priceCurrency the price currency.
-     * @param ProductBuilder                   $productBuilder the product meta model builder.
-     * @param CategoryBuilder                  $categoryBuilder the category meta model builder.
-     * @param Data                             $dataHelper the data helper.
-     * @param Format                           $formatHelper the format helper.
-     * @param array                            $data optional data.
+     * @param Context $context the context.
+     * @param UrlEncoder $urlEncoder the  url encoder.
+     * @param JsonEncoder $jsonEncoder the json encoder.
+     * @param \Magento\Framework\Stdlib\StringUtils $string the string lib.
+     * @param \Magento\Catalog\Helper\Product $productHelper the product helper.
+     * @param ConfigInterface $productTypeConfig the product type config.
+     * @param FormatInterface $localeFormat the locale format.
+     * @param Session $customerSession the user session.
+     * @param ProductRepositoryInterface $productRepository th product repository.
+     * @param PriceCurrencyInterface $priceCurrency the price currency.
+     * @param ProductBuilder $productBuilder the product meta model builder.
+     * @param CategoryBuilder $categoryBuilder the category meta model builder.
+     * @param Data $dataHelper the data helper.
+     * @param Format $formatHelper the format helper.
+     * @param array $data optional data.
      */
     public function __construct(
         Context $context,
@@ -111,7 +111,8 @@ class Product extends View
         Data $dataHelper,
         Format $formatHelper,
         array $data = []
-    ) {
+    )
+    {
         parent::__construct(
             $context,
             $urlEncoder,

@@ -35,17 +35,18 @@ use Psr\Log\LoggerInterface;
 class Builder
 {
     /**
-     * @param Factory           $factory
+     * @param Factory $factory
      * @param ResolverInterface $localeResolver
-     * @param Url      $urlBuilder
-     * @param LoggerInterface   $logger
+     * @param Url $urlBuilder
+     * @param LoggerInterface $logger
      */
     public function __construct(
         Factory $factory,
         ResolverInterface $localeResolver,
         Url $urlBuilder,
         LoggerInterface $logger
-    ) {
+    )
+    {
         $this->_factory = $factory;
         $this->_localeResolver = $localeResolver;
         $this->_urlBuilder = $urlBuilder;
@@ -53,7 +54,7 @@ class Builder
     }
 
     /**
-     * @param Store         $store
+     * @param Store $store
      * @param \NostoAccount $account
      * @return \Nosto\Tagging\Model\Meta\Oauth
      */

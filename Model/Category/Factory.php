@@ -39,7 +39,8 @@ class Factory
     /**
      * @param ObjectManagerInterface $objectManager
      */
-    public function __construct(ObjectManagerInterface $objectManager) {
+    public function __construct(ObjectManagerInterface $objectManager)
+    {
         $this->_objectManager = $objectManager;
     }
 

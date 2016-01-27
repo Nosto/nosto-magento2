@@ -62,15 +62,15 @@ class Cart extends \Magento\Checkout\Block\Cart
     /**
      * Constructor.
      *
-     * @param Context                             $context
-     * @param Session                             $customerSession
-     * @param \Magento\Checkout\Model\Session     $checkoutSession
-     * @param Url                                 $catalogUrlBuilder
-     * @param \Magento\Checkout\Helper\Cart       $cartHelper
+     * @param Context $context
+     * @param Session $customerSession
+     * @param \Magento\Checkout\Model\Session $checkoutSession
+     * @param Url $catalogUrlBuilder
+     * @param \Magento\Checkout\Helper\Cart $cartHelper
      * @param \Magento\Framework\App\Http\Context $httpContext
-     * @param CartBuilder                         $cartBuilder
-     * @param FormatHelper                        $formatHelper
-     * @param array                               $data
+     * @param CartBuilder $cartBuilder
+     * @param FormatHelper $formatHelper
+     * @param array $data
      */
     public function __construct(
         Context $context,
@@ -82,7 +82,8 @@ class Cart extends \Magento\Checkout\Block\Cart
         CartBuilder $cartBuilder,
         FormatHelper $formatHelper,
         array $data = []
-    ) {
+    )
+    {
         parent::__construct(
             $context,
             $customerSession,

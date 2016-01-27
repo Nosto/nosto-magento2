@@ -29,52 +29,53 @@ namespace Nosto\Tagging\Model\Category;
 
 use Magento\Catalog\Api\CategoryRepositoryInterface;
 use Magento\Catalog\Model\Category;
-use Psr\Log\LoggerInterface;
 use Nosto\Tagging\Model\Category\Factory as CategoryFactory;
+use Psr\Log\LoggerInterface;
 
 class Builder
 {
-	/**
-	 * @var CategoryFactory
-	 */
-	protected $_categoryFactory;
+    /**
+     * @var CategoryFactory
+     */
+    protected $_categoryFactory;
 
-	/**
-	 * @var LoggerInterface
-	 */
-	protected $_logger;
+    /**
+     * @var LoggerInterface
+     */
+    protected $_logger;
 
-	/**
-	 * @param CategoryFactory $productFactory
+    /**
+     * @param CategoryFactory $productFactory
      * @param CategoryRepositoryInterface $categoryRepository
-	 * @param LoggerInterface $logger
-	 */
-	public function __construct(
+     * @param LoggerInterface $logger
+     */
+    public function __construct(
         CategoryFactory $productFactory,
         CategoryRepositoryInterface $categoryRepository,
         LoggerInterface $logger
-	) {
-		$this->_categoryFactory = $productFactory;
+    )
+    {
+        $this->_categoryFactory = $productFactory;
         $this->_categoryRepository = $categoryRepository;
-		$this->_logger = $logger;
-	}
+        $this->_logger = $logger;
+    }
 
-	/**
+    /**
      * @param Category $category
-	 * @return \NostoCategory
-	 */
-	public function build(Category $category)
-	{
-		$nostoCategory = $this->_categoryFactory->create();
+     * @return \NostoCategory
+     */
+    public function build(Category $category)
+    {
+        $nostoCategory = $this->_categoryFactory->create();
 
-		try {
+        try {
             $nostoCategory->setPath($this->buildPath($category));
-		} catch (\NostoException $e) {
-			$this->_logger->error($e, ['exception' => $e]);
-		}
+        } catch (\NostoException $e) {
+            $this->_logger->error($e, ['exception' => $e]);
+        }
 
-		return $nostoCategory;
-	}
+        return $nostoCategory;
+    }
 
     /**
      * @param Category $category
@@ -90,6 +91,6 @@ class Builder
                 $data[] = $category->getName();
             }
         }
-        return count($data) ? '/'.implode('/', $data) : '';
+        return count($data) ? '/' . implode('/', $data) : '';
     }
 }

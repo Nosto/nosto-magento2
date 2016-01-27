@@ -52,7 +52,7 @@ class Index extends Action
     protected $_storeManager;
 
     /**
-     * @param Context        $context
+     * @param Context $context
      * @param PageFactory $resultPageFactory
      * @param StoreManagerInterface $storeManager
      */
@@ -60,7 +60,8 @@ class Index extends Action
         Context $context,
         PageFactory $resultPageFactory,
         StoreManagerInterface $storeManager
-    ) {
+    )
+    {
         parent::__construct($context);
 
         $this->_resultPageFactory = $resultPageFactory;

@@ -53,12 +53,12 @@ class Product extends Base
     /**
      * Constructor.
      *
-     * @param Context                  $context
+     * @param Context $context
      * @param ProductCollectionFactory $productCollectionFactory
-     * @param ProductVisibility        $productVisibility
-     * @param StoreManagerInterface    $storeManager
-     * @param AccountHelper            $accountHelper
-     * @param ProductBuilder           $productBuilder
+     * @param ProductVisibility $productVisibility
+     * @param StoreManagerInterface $storeManager
+     * @param AccountHelper $accountHelper
+     * @param ProductBuilder $productBuilder
      */
     public function __construct(
         Context $context,
@@ -67,7 +67,8 @@ class Product extends Base
         StoreManagerInterface $storeManager,
         AccountHelper $accountHelper,
         ProductBuilder $productBuilder
-    ) {
+    )
+    {
         parent::__construct($context, $storeManager, $accountHelper);
 
         $this->_productCollectionFactory = $productCollectionFactory;

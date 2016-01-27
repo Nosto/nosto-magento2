@@ -53,15 +53,16 @@ class Meta extends Template
     /**
      * Constructor.
      *
-     * @param Context    $context the context.
+     * @param Context $context the context.
      * @param DataHelper $dataHelper the data helper.
-     * @param array      $data optional data.
+     * @param array $data optional data.
      */
     public function __construct(
         Context $context,
         DataHelper $dataHelper,
         array $data = []
-    ) {
+    )
+    {
         parent::__construct($context, $data);
 
         $this->_dataHelper = $dataHelper;

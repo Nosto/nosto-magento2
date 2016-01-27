@@ -73,13 +73,13 @@ class Builder
     protected $_logger;
 
     /**
-     * @param Factory                     $productFactory
-     * @param Variation\Factory           $variationFactory
-     * @param DataHelper                  $dataHelper
-     * @param PriceHelper                 $priceHelper
-     * @param CategoryBuilder             $categoryBuilder
+     * @param Factory $productFactory
+     * @param Variation\Factory $variationFactory
+     * @param DataHelper $dataHelper
+     * @param PriceHelper $priceHelper
+     * @param CategoryBuilder $categoryBuilder
      * @param CategoryRepositoryInterface $categoryRepository
-     * @param LoggerInterface             $logger
+     * @param LoggerInterface $logger
      */
     public function __construct(
         Factory $productFactory,
@@ -89,7 +89,8 @@ class Builder
         CategoryBuilder $categoryBuilder,
         CategoryRepositoryInterface $categoryRepository,
         LoggerInterface $logger
-    ) {
+    )
+    {
         $this->_productFactory = $productFactory;
         $this->_variationFactory = $variationFactory;
         $this->_dataHelper = $dataHelper;
@@ -101,7 +102,7 @@ class Builder
 
     /**
      * @param Product $product
-     * @param Store   $store
+     * @param Store $store
      * @return \NostoProduct
      */
     public function build(Product $product, Store $store)
@@ -176,7 +177,7 @@ class Builder
 
     /**
      * @param Product $product
-     * @param Store   $store
+     * @param Store $store
      * @return string
      */
     protected function buildUrl(Product $product, Store $store)
@@ -193,7 +194,7 @@ class Builder
 
     /**
      * @param Product $product
-     * @param Store   $store
+     * @param Store $store
      * @return string|null
      */
     protected function buildImageUrl(Product $product, Store $store)
@@ -228,7 +229,7 @@ class Builder
 
     /**
      * @param Product $product
-     * @param Store   $store
+     * @param Store $store
      * @return array
      */
     protected function buildTags(Product $product, Store $store)
@@ -258,7 +259,7 @@ class Builder
 
     /**
      * @param Product $product
-     * @param Store   $store
+     * @param Store $store
      * @return array
      */
     protected function buildVariations(Product $product, Store $store)

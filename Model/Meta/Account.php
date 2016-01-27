@@ -100,6 +100,14 @@ class Account implements \NostoAccountMetaInterface
     }
 
     /**
+     * @param string $title
+     */
+    public function setTitle($title)
+    {
+        $this->_title = $title;
+    }
+
+    /**
      * The name of the account to create.
      * This has to follow the pattern of
      * "[platform name]-[8 character lowercase alpha numeric string]".
@@ -109,6 +117,14 @@ class Account implements \NostoAccountMetaInterface
     public function getName()
     {
         return $this->_name;
+    }
+
+    /**
+     * @param string $name
+     */
+    public function setName($name)
+    {
+        $this->_name = $name;
     }
 
     /**
@@ -134,6 +150,14 @@ class Account implements \NostoAccountMetaInterface
     }
 
     /**
+     * @param string $frontPageUrl
+     */
+    public function setFrontPageUrl($frontPageUrl)
+    {
+        $this->_frontPageUrl = $frontPageUrl;
+    }
+
+    /**
      * The 3-letter ISO code (ISO 4217) for the currency used by the shop for
      * which the account is created for.
      *
@@ -142,6 +166,14 @@ class Account implements \NostoAccountMetaInterface
     public function getCurrency()
     {
         return $this->_currency;
+    }
+
+    /**
+     * @param \NostoCurrencyCode $currency
+     */
+    public function setCurrency(\NostoCurrencyCode $currency)
+    {
+        $this->_currency = $currency;
     }
 
     /**
@@ -156,6 +188,14 @@ class Account implements \NostoAccountMetaInterface
     }
 
     /**
+     * @param \NostoLanguageCode $language
+     */
+    public function setLanguage(\NostoLanguageCode $language)
+    {
+        $this->_language = $language;
+    }
+
+    /**
      * The 2-letter ISO code (ISO 639-1) for the language of the account owner
      * who is creating the account.
      *
@@ -167,6 +207,14 @@ class Account implements \NostoAccountMetaInterface
     }
 
     /**
+     * @param \NostoLanguageCode $ownerLanguage
+     */
+    public function setOwnerLanguage(\NostoLanguageCode $ownerLanguage)
+    {
+        $this->_ownerLanguage = $ownerLanguage;
+    }
+
+    /**
      * Meta data model for the account owner who is creating the account.
      *
      * @return \NostoAccountMetaOwnerInterface the meta data model.
@@ -174,6 +222,16 @@ class Account implements \NostoAccountMetaInterface
     public function getOwner()
     {
         return $this->_owner;
+    }
+
+    // todo
+
+    /**
+     * @param \NostoAccountMetaOwnerInterface $owner
+     */
+    public function setOwner(\NostoAccountMetaOwnerInterface $owner)
+    {
+        $this->_owner = $owner;
     }
 
     /**
@@ -198,6 +256,14 @@ class Account implements \NostoAccountMetaInterface
     }
 
     /**
+     * @param \NostoCurrency[] $currencies
+     */
+    public function setCurrencies(array $currencies)
+    {
+        $this->_currencies = $currencies;
+    }
+
+    /**
      * Returns the default price variation ID if store is using multiple
      * currencies.
      * This ID identifies the price that products are specified in and can
@@ -211,6 +277,14 @@ class Account implements \NostoAccountMetaInterface
     }
 
     /**
+     * @param string $defaultPriceVariationId
+     */
+    public function setDefaultPriceVariationId($defaultPriceVariationId)
+    {
+        $this->_defaultPriceVariationId = $defaultPriceVariationId;
+    }
+
+    /**
      * Returns if exchange rates are used to handle multi-currency setups.
      * It is also possible to handle multi-currency setups using variation
      * tagging on the product pages, i.e. in addition to the product base price,
@@ -221,6 +295,14 @@ class Account implements \NostoAccountMetaInterface
     public function getUseCurrencyExchangeRates()
     {
         return $this->_useCurrencyExchangeRates;
+    }
+
+    /**
+     * @param boolean $useCurrencyExchangeRates
+     */
+    public function setUseCurrencyExchangeRates($useCurrencyExchangeRates)
+    {
+        $this->_useCurrencyExchangeRates = $useCurrencyExchangeRates;
     }
 
     /**
@@ -245,93 +327,11 @@ class Account implements \NostoAccountMetaInterface
         return null;
     }
 
-    // todo
-
-    /**
-     * @param string $title
-     */
-    public function setTitle($title)
-    {
-        $this->_title = $title;
-    }
-
-    /**
-     * @param string $name
-     */
-    public function setName($name)
-    {
-        $this->_name = $name;
-    }
-
-    /**
-     * @param string $frontPageUrl
-     */
-    public function setFrontPageUrl($frontPageUrl)
-    {
-        $this->_frontPageUrl = $frontPageUrl;
-    }
-
-    /**
-     * @param \NostoCurrencyCode $currency
-     */
-    public function setCurrency(\NostoCurrencyCode $currency)
-    {
-        $this->_currency = $currency;
-    }
-
-    /**
-     * @param \NostoLanguageCode $language
-     */
-    public function setLanguage(\NostoLanguageCode $language)
-    {
-        $this->_language = $language;
-    }
-
-    /**
-     * @param \NostoLanguageCode $ownerLanguage
-     */
-    public function setOwnerLanguage(\NostoLanguageCode $ownerLanguage)
-    {
-        $this->_ownerLanguage = $ownerLanguage;
-    }
-
-    /**
-     * @param \NostoAccountMetaOwnerInterface $owner
-     */
-    public function setOwner(\NostoAccountMetaOwnerInterface $owner)
-    {
-        $this->_owner = $owner;
-    }
-
     /**
      * @param \NostoAccountMetaBillingInterface $billing
      */
     public function setBilling(\NostoAccountMetaBillingInterface $billing)
     {
         $this->_billing = $billing;
-    }
-
-    /**
-     * @param \NostoCurrency[] $currencies
-     */
-    public function setCurrencies(array $currencies)
-    {
-        $this->_currencies = $currencies;
-    }
-
-    /**
-     * @param string $defaultPriceVariationId
-     */
-    public function setDefaultPriceVariationId($defaultPriceVariationId)
-    {
-        $this->_defaultPriceVariationId = $defaultPriceVariationId;
-    }
-
-    /**
-     * @param boolean $useCurrencyExchangeRates
-     */
-    public function setUseCurrencyExchangeRates($useCurrencyExchangeRates)
-    {
-        $this->_useCurrencyExchangeRates = $useCurrencyExchangeRates;
     }
 }

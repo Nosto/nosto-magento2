@@ -28,13 +28,13 @@
 namespace Nosto\Tagging\Model\Product\Observers;
 
 use Magento\Catalog\Model\Product;
+use Magento\Framework\Event\ObserverInterface;
+use Magento\Framework\Module\Manager as ModuleManager;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
-use Magento\Framework\Module\Manager as ModuleManager;
-use Nosto\Tagging\Helper\Data as DataHelper;
 use Nosto\Tagging\Helper\Account as AccountHelper;
+use Nosto\Tagging\Helper\Data as DataHelper;
 use Nosto\Tagging\Model\Product\Builder as ProductBuilder;
-use Magento\Framework\Event\ObserverInterface;
 use Psr\Log\LoggerInterface;
 
 abstract class Base implements ObserverInterface
@@ -86,7 +86,8 @@ abstract class Base implements ObserverInterface
         StoreManagerInterface $storeManager,
         LoggerInterface $logger,
         ModuleManager $moduleManager
-    ) {
+    )
+    {
         $this->_dataHelper = $dataHelper;
         $this->_accountHelper = $accountHelper;
         $this->_productBuilder = $productBuilder;

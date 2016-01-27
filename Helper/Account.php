@@ -32,8 +32,8 @@ use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\Store;
-use Nosto\Tagging\Model\Meta\Account\Sso\Builder as SsoMetaBuilder;
 use Nosto\Tagging\Model\Meta\Account\Iframe\Builder as IframeMetaBuilder;
+use Nosto\Tagging\Model\Meta\Account\Sso\Builder as SsoMetaBuilder;
 
 require_once 'app/code/Nosto/Tagging/vendor/nosto/php-sdk/autoload.php';
 
@@ -76,11 +76,11 @@ class Account extends AbstractHelper
     /**
      * Constructor.
      *
-     * @param Context            $context the context.
-     * @param SsoMetaBuilder     $ssoMetaBuilder the builder for sso meta models.
-     * @param IframeMetaBuilder  $iframeMetaBuilder the builder for iframe meta models.
+     * @param Context $context the context.
+     * @param SsoMetaBuilder $ssoMetaBuilder the builder for sso meta models.
+     * @param IframeMetaBuilder $iframeMetaBuilder the builder for iframe meta models.
      * @param \NostoHelperIframe $iframeHelper
-     * @param WriterInterface    $appConfig the app config writer.
+     * @param WriterInterface $appConfig the app config writer.
      */
     public function __construct(
         Context $context,
@@ -88,7 +88,8 @@ class Account extends AbstractHelper
         IframeMetaBuilder $iframeMetaBuilder,
         \NostoHelperIframe $iframeHelper,
         WriterInterface $appConfig
-    ) {
+    )
+    {
         parent::__construct($context);
 
         $this->_ssoMetaBuilder = $ssoMetaBuilder;
@@ -129,7 +130,7 @@ class Account extends AbstractHelper
      * Saves the account and the associated api tokens for the store.
      *
      * @param \NostoAccount $account the account to save.
-     * @param Store         $store the store.
+     * @param Store $store the store.
      *
      * @return bool true on success, false otherwise.
      */
@@ -166,7 +167,7 @@ class Account extends AbstractHelper
      * Removes an account with associated api tokens for the store.
      *
      * @param \NostoAccount $account the account to remove.
-     * @param Store         $store the store.
+     * @param Store $store the store.
      *
      * @return bool true on success, false otherwise.
      */
@@ -206,9 +207,9 @@ class Account extends AbstractHelper
      * If there is no account, the "front page" url will be returned where an
      * account can be created from.
      *
-     * @param Store         $store the store to get the url for.
+     * @param Store $store the store to get the url for.
      * @param \NostoAccount $account the account to get the iframe url for.
-     * @param array         $params optional extra params for the url.
+     * @param array $params optional extra params for the url.
      *
      * @return string the iframe url.
      */
@@ -216,7 +217,8 @@ class Account extends AbstractHelper
         Store $store,
         \NostoAccount $account = null,
         array $params = []
-    ) {
+    )
+    {
         return $this->_iframeHelper->getUrl(
             $this->_ssoMetaBuilder->build(),
             $this->_iframeMetaBuilder->build($store),

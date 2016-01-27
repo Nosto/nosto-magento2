@@ -37,13 +37,13 @@ use Psr\Log\LoggerInterface;
 class Builder
 {
     /**
-     * @param Factory           $factory
-     * @param Data              $dataHelper
-     * @param Currency          $currencyHelper
-     * @param Owner\Builder     $accountOwnerMetaBuilder
-     * @param Billing\Builder   $accountBillingMetaBuilder
+     * @param Factory $factory
+     * @param Data $dataHelper
+     * @param Currency $currencyHelper
+     * @param Owner\Builder $accountOwnerMetaBuilder
+     * @param Billing\Builder $accountBillingMetaBuilder
      * @param ResolverInterface $localeResolver
-     * @param LoggerInterface   $logger
+     * @param LoggerInterface $logger
      */
     public function __construct(
         Factory $factory,
@@ -53,7 +53,8 @@ class Builder
         \Nosto\Tagging\Model\Meta\Account\Billing\Builder $accountBillingMetaBuilder,
         ResolverInterface $localeResolver,
         LoggerInterface $logger
-    ) {
+    )
+    {
         $this->_factory = $factory;
         $this->_dataHelper = $dataHelper;
         $this->_currencyHelper = $currencyHelper;

@@ -48,14 +48,15 @@ class Format extends \Magento\Framework\App\Helper\AbstractHelper
      * Constructor.
      *
      * @param \Magento\Framework\App\Helper\Context $context the context.
-     * @param \NostoFormatterPrice                  $priceFormatter the nosto price formatter.
-     * @param \NostoFormatterDate                   $dateFormatter the nosto date formatter.
+     * @param \NostoFormatterPrice $priceFormatter the nosto price formatter.
+     * @param \NostoFormatterDate $dateFormatter the nosto date formatter.
      */
     public function __construct(
         \Magento\Framework\App\Helper\Context $context,
         \NostoFormatterPrice $priceFormatter,
         \NostoFormatterDate $dateFormatter
-    ) {
+    )
+    {
         parent::__construct($context);
 
         $this->_priceFormatter = $priceFormatter;

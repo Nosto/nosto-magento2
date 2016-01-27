@@ -70,6 +70,11 @@ class Sso implements \NostoAccountMetaSingleSignOnInterface
         return $this->_firstName;
     }
 
+    public function setFirstName($firstName)
+    {
+        $this->_firstName = $firstName;
+    }
+
     /**
      * The last name of the user who is doing the SSO.
      *
@@ -80,6 +85,13 @@ class Sso implements \NostoAccountMetaSingleSignOnInterface
         return $this->_lastName;
     }
 
+    // todo
+
+    public function setLastName($lastName)
+    {
+        $this->_lastName = $lastName;
+    }
+
     /**
      * The email address of the user who doing the SSO.
      *
@@ -88,18 +100,6 @@ class Sso implements \NostoAccountMetaSingleSignOnInterface
     public function getEmail()
     {
         return $this->_email;
-    }
-
-    // todo
-
-    public function setFirstName($firstName)
-    {
-        $this->_firstName = $firstName;
-    }
-
-    public function setLastName($lastName)
-    {
-        $this->_lastName = $lastName;
     }
 
     public function setEmail($email)

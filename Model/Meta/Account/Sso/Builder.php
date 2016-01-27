@@ -36,15 +36,16 @@ class Builder
     protected $_logger;
 
     /**
-     * @param Factory         $factory
-     * @param Session         $backendAuthSession
+     * @param Factory $factory
+     * @param Session $backendAuthSession
      * @param LoggerInterface $logger
      */
     public function __construct(
         Factory $factory,
         Session $backendAuthSession,
         LoggerInterface $logger
-    ) {
+    )
+    {
         $this->_factory = $factory;
         $this->_backendAuthSession = $backendAuthSession;
         $this->_logger = $logger;

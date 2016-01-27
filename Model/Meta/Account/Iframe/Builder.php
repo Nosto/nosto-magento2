@@ -36,11 +36,11 @@ use Psr\Log\LoggerInterface;
 class Builder
 {
     /**
-     * @param Factory           $factory
-     * @param Url               $urlHelper
-     * @param Data              $dataHelper
+     * @param Factory $factory
+     * @param Url $urlHelper
+     * @param Data $dataHelper
      * @param ResolverInterface $localeResolver
-     * @param LoggerInterface   $logger
+     * @param LoggerInterface $logger
      */
     public function __construct(
         Factory $factory,
@@ -48,7 +48,8 @@ class Builder
         Data $dataHelper,
         ResolverInterface $localeResolver,
         LoggerInterface $logger
-    ) {
+    )
+    {
         $this->_factory = $factory;
         $this->_urlHelper = $urlHelper;
         $this->_dataHelper = $dataHelper;

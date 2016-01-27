@@ -56,15 +56,16 @@ class Embed extends Template
      *
      * @param Context $context the context.
      * @param Account $accountHelper the account helper.
-     * @param Data    $dataHelper the data helper.
-     * @param array   $data optional data.
+     * @param Data $dataHelper the data helper.
+     * @param array $data optional data.
      */
     public function __construct(
         Context $context,
         Account $accountHelper,
         Data $dataHelper,
         array $data = []
-    ) {
+    )
+    {
         parent::__construct($context, $data);
 
         $this->_accountHelper = $accountHelper;

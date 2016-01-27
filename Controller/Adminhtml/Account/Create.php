@@ -47,13 +47,13 @@ class Create extends Action
     protected $_result;
 
     /**
-     * @param Context               $context
-     * @param Account               $accountHelper
-     * @param Builder               $accountMetaBuilder
+     * @param Context $context
+     * @param Account $accountHelper
+     * @param Builder $accountMetaBuilder
      * @param StoreManagerInterface $storeManager
-     * @param Json                  $result
-     * @param LoggerInterface       $logger
-	 * @param \NostoServiceAccount $accountService
+     * @param Json $result
+     * @param LoggerInterface $logger
+     * @param \NostoServiceAccount $accountService
      */
     public function __construct(
         Context $context,
@@ -62,8 +62,9 @@ class Create extends Action
         StoreManagerInterface $storeManager,
         Json $result,
         LoggerInterface $logger,
-		\NostoServiceAccount $accountService
-    ) {
+        \NostoServiceAccount $accountService
+    )
+    {
         parent::__construct($context);
 
         $this->_accountHelper = $accountHelper;
@@ -71,7 +72,7 @@ class Create extends Action
         $this->_storeManager = $storeManager;
         $this->_result = $result;
         $this->_logger = $logger;
-		$this->_accountService = $accountService;
+        $this->_accountService = $accountService;
     }
 
     /**

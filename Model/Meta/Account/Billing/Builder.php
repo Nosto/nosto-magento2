@@ -36,10 +36,11 @@ class Builder
     protected $_logger;
 
     /**
-     * @param Factory         $factory
+     * @param Factory $factory
      * @param LoggerInterface $logger
      */
-    public function __construct(Factory $factory, LoggerInterface $logger) {
+    public function __construct(Factory $factory, LoggerInterface $logger)
+    {
         $this->_factory = $factory;
         $this->_logger = $logger;
     }
