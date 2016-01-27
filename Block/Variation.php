@@ -23,7 +23,7 @@ class Variation extends Template
      */
     public function getVariationId()
     {
-		$store = $this->_storeManager->getStore();
+        $store = $this->_storeManager->getStore();
         return $store->getCurrentCurrencyCode();
     }
 }

@@ -16,15 +16,15 @@ class Element extends Template
      */
     protected $_template = 'element.phtml';
 
-	/**
-	 * Returns the Nosto recommendation placeholder ID.
-	 *
-	 * This ID needs to match an existing recommendation element in Nosto.
-	 *
-	 * @return string the ID.
-	 */
-	public function getElementId()
-	{
-		return $this->getData('nostoId');
-	}
+    /**
+     * Returns the Nosto recommendation placeholder ID.
+     *
+     * This ID needs to match an existing recommendation element in Nosto.
+     *
+     * @return string the ID.
+     */
+    public function getElementId()
+    {
+        return $this->getData('nostoId');
+    }
 }

@@ -15,62 +15,62 @@ require_once 'app/code/Nosto/Tagging/vendor/nosto/php-sdk/autoload.php';
  */
 class Meta extends Template
 {
-	/**
-	 * @inheritdoc
-	 */
-	protected $_template = 'meta.phtml';
+    /**
+     * @inheritdoc
+     */
+    protected $_template = 'meta.phtml';
 
-	/**
-	 * @var DataHelper the module data helper.
-	 */
-	protected $_dataHelper;
+    /**
+     * @var DataHelper the module data helper.
+     */
+    protected $_dataHelper;
 
-	/**
-	 * Constructor.
-	 *
-	 * @param Context    $context the context.
-	 * @param DataHelper $dataHelper the data helper.
-	 * @param array      $data optional data.
-	 */
-	public function __construct(
-		Context $context,
-		DataHelper $dataHelper,
-		array $data = []
-	) {
-		parent::__construct($context, $data);
+    /**
+     * Constructor.
+     *
+     * @param Context    $context the context.
+     * @param DataHelper $dataHelper the data helper.
+     * @param array      $data optional data.
+     */
+    public function __construct(
+        Context $context,
+        DataHelper $dataHelper,
+        array $data = []
+    ) {
+        parent::__construct($context, $data);
 
-		$this->_dataHelper = $dataHelper;
-	}
+        $this->_dataHelper = $dataHelper;
+    }
 
-	/**
-	 * Returns the module version number.
-	 *
-	 * @return string the module version number.
-	 */
-	public function getModuleVersion()
-	{
-		// todo
-		return 'todo';
-	}
+    /**
+     * Returns the module version number.
+     *
+     * @return string the module version number.
+     */
+    public function getModuleVersion()
+    {
+        // todo
+        return 'todo';
+    }
 
-	/**
-	 * Returns the unique installation ID.
-	 *
-	 * @return string the unique ID.
-	 */
-	public function getInstallationId()
-	{
-		return $this->_dataHelper->getInstallationId();
-	}
+    /**
+     * Returns the unique installation ID.
+     *
+     * @return string the unique ID.
+     */
+    public function getInstallationId()
+    {
+        return $this->_dataHelper->getInstallationId();
+    }
 
-	/**
-	 * Returns the current stores language code in ISO 639-1 format.
-	 *
-	 * @return string the language code.
-	 */
-	public function getLanguageCode()
-	{
-		$store = $this->_storeManager->getStore(true);
-		return substr($store->getConfig('general/locale/code'), 0, 2);
-	}
+    /**
+     * Returns the current stores language code in ISO 639-1 format.
+     *
+     * @return string the language code.
+     */
+    public function getLanguageCode()
+    {
+        $store = $this->_storeManager->getStore(true);
+        return substr($store->getConfig('general/locale/code'), 0, 2);
+    }
 }

@@ -34,21 +34,21 @@ class Iframe extends BlockTemplate
     /**
      * Constructor.
      *
-     * @param Context $context the context.
+     * @param BlockContext|Context $context the context.
      * @param Account $accountHelper the account helper.
-	 * @param Session $backendAuthSession
-     * @param array   $data optional data.
+     * @param Session $backendAuthSession
+     * @param array $data optional data.
      */
     public function __construct(
         BlockContext $context,
         Account $accountHelper,
-		Session $backendAuthSession,
+        Session $backendAuthSession,
         array $data = []
     ) {
         parent::__construct($context, $data);
 
         $this->_accountHelper = $accountHelper;
-		$this->_backendAuthSession = $backendAuthSession;
+        $this->_backendAuthSession = $backendAuthSession;
     }
 
     /**
@@ -64,18 +64,18 @@ class Iframe extends BlockTemplate
     {
         $params = array();
 
-		// Pass any error/success messages we might have to the iframe.
-		// These can be available when getting redirect back from the OAuth
-		// front controller after connecting a Nosto account to a store.
-		$nostoMessage = $this->_backendAuthSession->getData('nosto_message');
-		if (is_array($nostoMessage) && !empty($nostoMessage)) {
-			foreach ($nostoMessage as $key => $value) {
-				if (is_string($key) && !empty($value)) {
-					$params[$key] = $value;
-				}
-			}
-			$this->_backendAuthSession->setData('nosto_message', null);
-		}
+        // Pass any error/success messages we might have to the iframe.
+        // These can be available when getting redirect back from the OAuth
+        // front controller after connecting a Nosto account to a store.
+        $nostoMessage = $this->_backendAuthSession->getData('nosto_message');
+        if (is_array($nostoMessage) && !empty($nostoMessage)) {
+            foreach ($nostoMessage as $key => $value) {
+                if (is_string($key) && !empty($value)) {
+                    $params[$key] = $value;
+                }
+            }
+            $this->_backendAuthSession->setData('nosto_message', null);
+        }
 
         $store = $this->getSelectedStore();
         $account = $this->_accountHelper->findAccount($store);

@@ -55,7 +55,7 @@ class Embed extends Template
     {
         $store = $this->_storeManager->getStore(true);
         $account = $this->_accountHelper->findAccount($store);
-		return !is_null($account) ? $account->getName() : '';
+        return !is_null($account) ? $account->getName() : '';
     }
 
     /**
