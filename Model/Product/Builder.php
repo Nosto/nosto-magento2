@@ -106,16 +106,16 @@ class Builder
 
             // Optional properties.
 
-			$descriptions = array();
-			if ($product->hasData('short_description')) {
-				$descriptions[] = $product->getData('short_description');
-			}
-			if ($product->hasData('description')) {
-				$descriptions[] = $product->getData('description');
-			}
-			if (count($descriptions) > 0) {
-				$nostoProduct->setDescription(implode(' ', $descriptions));
-			}
+            $descriptions = array();
+            if ($product->hasData('short_description')) {
+                $descriptions[] = $product->getData('short_description');
+            }
+            if ($product->hasData('description')) {
+                $descriptions[] = $product->getData('description');
+            }
+            if (count($descriptions) > 0) {
+                $nostoProduct->setDescription(implode(' ', $descriptions));
+            }
 
             if ($product->hasData('manufacturer')) {
                 $nostoProduct->setBrand(
