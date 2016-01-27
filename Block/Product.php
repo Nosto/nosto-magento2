@@ -36,6 +36,7 @@ use Magento\Framework\Json\EncoderInterface as JsonEncoder;
 use Magento\Framework\Locale\FormatInterface;
 use Magento\Framework\Pricing\PriceCurrencyInterface;
 use Magento\Framework\Url\EncoderInterface as UrlEncoder;
+use Magento\Store\Model\Store;
 use Nosto\Tagging\Helper\Data;
 use Nosto\Tagging\Helper\Format;
 use Nosto\Tagging\Model\Category\Builder as CategoryBuilder;
@@ -140,9 +141,11 @@ class Product extends View
      */
     public function getNostoProduct()
     {
+        /** @var Store $store */
+        $store =  $this->_storeManager->getStore();
         return $this->_productBuilder->build(
             $this->getProduct(),
-            $this->_storeManager->getStore()
+            $store
         );
     }
 

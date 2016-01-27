@@ -34,6 +34,7 @@ use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 use Magento\Store\Model\Store;
 
+/** @noinspection PhpIncludeInspection */
 require_once 'app/code/Nosto/Tagging/vendor/nosto/php-sdk/autoload.php';
 
 /**
@@ -97,6 +98,7 @@ class Url extends AbstractHelper
      */
     public function getPreviewUrlProduct(Store $store)
     {
+        /** @noinspection PhpUndefinedNamespaceInspection */
         /** @var \Magento\Catalog\Model\Resource\Product\Collection $collection */
         $collection = $this->_productCollectionFactory->create();
         $collection->addStoreFilter($store->getId());
@@ -134,6 +136,7 @@ class Url extends AbstractHelper
     public function getPreviewUrlCategory(Store $store)
     {
         $rootCatId = (int)$store->getRootCategoryId();
+        /** @noinspection PhpUndefinedNamespaceInspection */
         /** @var \Magento\Catalog\Model\Resource\Category\Collection $collection */
         $collection = $this->_categoryCollectionFactory->create();
         $collection->addAttributeToFilter('is_active', ['eq' => 1]);

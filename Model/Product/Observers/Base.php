@@ -111,6 +111,7 @@ abstract class Base implements ObserverInterface
             // is edited for only one store, the updated data can reflect in
             // other stores as well.
             /* @var \Magento\Catalog\Model\Product $product */
+            /** @noinspection PhpUndefinedMethodInspection */
             $product = $observer->getProduct();
             foreach ($product->getStoreIds() as $storeId) {
                 /** @var Store $store */

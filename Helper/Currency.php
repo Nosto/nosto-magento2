@@ -27,6 +27,7 @@
 
 namespace Nosto\Tagging\Helper;
 
+/** @noinspection PhpIncludeInspection */
 require_once 'app/code/Nosto/Tagging/vendor/nosto/php-sdk/autoload.php';
 
 /**

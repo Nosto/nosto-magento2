@@ -29,6 +29,7 @@ namespace Nosto\Tagging\Block;
 
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Element\Template\Context;
+use Magento\Store\Model\Store;
 use Nosto\Tagging\Helper\Data as DataHelper;
 
 /** @noinspection PhpIncludeInspection */
@@ -96,6 +97,7 @@ class Meta extends Template
      */
     public function getLanguageCode()
     {
+        /** @var Store $store */
         $store = $this->_storeManager->getStore(true);
         return substr($store->getConfig('general/locale/code'), 0, 2);
     }

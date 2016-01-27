@@ -38,6 +38,7 @@ use Nosto\Tagging\Helper\Account;
 use Nosto\Tagging\Model\Meta\Oauth\Builder;
 use Psr\Log\LoggerInterface;
 
+/** @noinspection PhpIncludeInspection */
 require_once 'app/code/Nosto/Tagging/vendor/nosto/php-sdk/autoload.php';
 
 class Index extends Action
@@ -84,6 +85,7 @@ class Index extends Action
     public function execute()
     {
         $request = $this->getRequest();
+        /** @var Store $store */
         $store = $this->_storeManager->getStore();
         if (($authCode = $request->getParam('code')) !== null) {
             try {

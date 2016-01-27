@@ -31,6 +31,7 @@ use Magento\Catalog\Model\ResourceModel\Url;
 use Magento\Customer\Model\Session;
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Element\Template\Context;
+use Magento\Store\Model\Store;
 use Nosto\Tagging\Helper\Format as FormatHelper;
 use Nosto\Tagging\Model\Cart\Builder as CartBuilder;
 
@@ -105,9 +106,11 @@ class Cart extends \Magento\Checkout\Block\Cart
      */
     public function getNostoCart()
     {
+        /** @var Store $store */
+        $store =  $this->_storeManager->getStore();
         return $this->_cartBuilder->build(
             $this->getItems(),
-            $this->_storeManager->getStore()
+            $store
         );
     }
 

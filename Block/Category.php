@@ -80,7 +80,7 @@ class Category extends Template
     /**
      * Returns the Nosto category meta-data model.
      *
-     * @return \Nosto\Tagging\Model\Category the category meta data model.
+     * @return \NostoCategory the category meta data model.
      */
     public function getNostoCategory()
     {

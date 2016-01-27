@@ -28,6 +28,7 @@
 namespace Nosto\Tagging\Block;
 
 use Magento\Framework\View\Element\Template;
+use Magento\Store\Model\Store;
 
 /**
  * Variation block used for outputting the variation ID on the stores pages.
@@ -48,6 +49,7 @@ class Variation extends Template
      */
     public function getVariationId()
     {
+        /** @var Store $store */
         $store = $this->_storeManager->getStore();
         return $store->getCurrentCurrencyCode();
     }

@@ -30,10 +30,12 @@ namespace Nosto\Tagging\Controller\Adminhtml\Account;
 use Magento\Backend\App\Action;
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\Controller\Result\Json;
+use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
 use Nosto\Tagging\Helper\Account;
 use Nosto\Tagging\Model\Meta\Oauth\Builder;
 
+/** @noinspection PhpIncludeInspection */
 require_once 'app/code/Nosto/Tagging/vendor/nosto/php-sdk/autoload.php';
 
 class Sync extends Action
@@ -76,6 +78,7 @@ class Sync extends Action
         $response = ['success' => false];
 
         $storeId = $this->_request->getParam('store');
+        /** @var Store $store */
         $store = $this->_storeManager->getStore($storeId);
         $account = !is_null($store)
             ? $this->_accountHelper->findAccount($store)

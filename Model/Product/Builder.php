@@ -148,7 +148,7 @@ class Builder
                     $product->getAttributeText('manufacturer')
                 );
             }
-            if (($tags = $this->buildTags($product, $store)) !== []) {
+            if (($tags = $this->buildTags($product)) !== []) {
                 $nostoProduct->setTag1($tags);
             }
             if ($product->hasData('created_at')) {
@@ -229,10 +229,9 @@ class Builder
 
     /**
      * @param Product $product
-     * @param Store $store
      * @return array
      */
-    protected function buildTags(Product $product, Store $store)
+    protected function buildTags(Product $product)
     {
         $tags = [];
 

@@ -33,6 +33,7 @@ use Magento\Framework\App\Helper\Context;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
 
+/** @noinspection PhpIncludeInspection */
 require_once 'app/code/Nosto/Tagging/vendor/nosto/php-sdk/autoload.php';
 
 /**

@@ -30,11 +30,13 @@ namespace Nosto\Tagging\Controller\Adminhtml\Account;
 use Magento\Backend\App\Action;
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\Controller\Result\Json;
+use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
 use Nosto\Tagging\Helper\Account;
 use Nosto\Tagging\Model\Meta\Account\Builder;
 use Psr\Log\LoggerInterface;
 
+/** @noinspection PhpIncludeInspection */
 require_once 'app/code/Nosto/Tagging/vendor/nosto/php-sdk/autoload.php';
 
 class Create extends Action
@@ -83,6 +85,7 @@ class Create extends Action
         $response = ['success' => false];
 
         $storeId = $this->_request->getParam('store');
+        /** @var Store $store */
         $store = $this->_storeManager->getStore($storeId);
 
         if (!is_null($store)) {

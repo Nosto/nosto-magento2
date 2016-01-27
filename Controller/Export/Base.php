@@ -36,6 +36,7 @@ use Magento\Store\Model\StoreManagerInterface;
 use Nosto\Tagging\Helper\Account as AccountHelper;
 use NostoExportCollectionInterface;
 
+/** @noinspection PhpIncludeInspection */
 require_once 'app/code/Nosto/Tagging/vendor/nosto/php-sdk/autoload.php';
 
 /**
@@ -82,6 +83,7 @@ abstract class Base extends Action
     {
         /** @var Raw $result */
         $result = $this->resultFactory->create(ResultFactory::TYPE_RAW);
+        /** @var Store $store */
         $store = $this->_storeManager->getStore(true);
         $account = $this->_accountHelper->findAccount($store);
         if ($account !== null) {
@@ -99,6 +101,7 @@ abstract class Base extends Action
      */
     public function execute()
     {
+        /** @var Store $store */
         $store = $this->_storeManager->getStore(true);
         /** @var \Magento\Sales\Model\ResourceModel\Order\Collection $collection */
         $collection = $this->getCollection($store);

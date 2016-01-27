@@ -29,6 +29,7 @@ namespace Nosto\Tagging\Block;
 
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Element\Template\Context;
+use Magento\Store\Model\Store;
 use Nosto\Tagging\Helper\Account;
 use Nosto\Tagging\Helper\Data;
 
@@ -79,6 +80,7 @@ class Embed extends Template
      */
     public function getAccountName()
     {
+        /** @var Store $store */
         $store = $this->_storeManager->getStore(true);
         $account = $this->_accountHelper->findAccount($store);
         return !is_null($account) ? $account->getName() : '';
