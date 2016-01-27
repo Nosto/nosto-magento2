@@ -24,6 +24,8 @@ class Currency extends \Magento\Framework\App\Helper\AbstractHelper
         \Magento\Framework\App\Helper\Context $context,
         \NostoHelperCurrency $currencyHelper
     ) {
+        parent::__construct($context);
+
         $this->_currencyHelper = $currencyHelper;
     }
 

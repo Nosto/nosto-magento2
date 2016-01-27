@@ -9,6 +9,7 @@ use Magento\Framework\View\Element\Template\Context;
 use Nosto\Tagging\Helper\Format as FormatHelper;
 use Nosto\Tagging\Model\Cart\Builder as CartBuilder;
 
+/** @noinspection PhpIncludeInspection */
 require_once 'app/code/Nosto/Tagging/vendor/nosto/php-sdk/autoload.php';
 
 /**

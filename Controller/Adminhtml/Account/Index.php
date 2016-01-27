@@ -55,6 +55,7 @@ class Index extends Action
                 if (!empty($storeId)) {
                     // todo: use redirect result model
                     $this->_redirect('*/*/index', ['store' => $storeId]);
+                    /** @noinspection PhpInconsistentReturnPointsInspection */
                     return;
                 }
             }

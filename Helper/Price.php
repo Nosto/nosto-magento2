@@ -66,8 +66,6 @@ class Price extends \Magento\Framework\App\Helper\AbstractHelper
 	 */
 	protected function _getProductPrice($product, $finalPrice = false, $inclTax = true)
 	{
-		$price = 0;
-
 		switch ($product->getTypeId()) {
 			// Get the bundle product "from" price.
 			case ProductType::TYPE_BUNDLE:

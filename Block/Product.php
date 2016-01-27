@@ -16,6 +16,7 @@ use Nosto\Tagging\Helper\Format;
 use Nosto\Tagging\Model\Product\Builder as ProductBuilder;
 use Nosto\Tagging\Model\Category\Builder as CategoryBuilder;
 
+/** @noinspection PhpIncludeInspection */
 require_once 'app/code/Nosto/Tagging/vendor/nosto/php-sdk/autoload.php';
 
 /**
