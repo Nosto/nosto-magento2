@@ -43,11 +43,6 @@ class Builder
     protected $_productFactory;
 
     /**
-     * @var Variation\Factory
-     */
-    protected $_variationFactory;
-
-    /**
      * @var DataHelper
      */
     protected $_dataHelper;
@@ -74,7 +69,6 @@ class Builder
 
     /**
      * @param Factory $productFactory
-     * @param Variation\Factory $variationFactory
      * @param DataHelper $dataHelper
      * @param PriceHelper $priceHelper
      * @param CategoryBuilder $categoryBuilder
@@ -83,7 +77,6 @@ class Builder
      */
     public function __construct(
         Factory $productFactory,
-        Variation\Factory $variationFactory,
         DataHelper $dataHelper,
         PriceHelper $priceHelper,
         CategoryBuilder $categoryBuilder,
@@ -92,7 +85,6 @@ class Builder
     )
     {
         $this->_productFactory = $productFactory;
-        $this->_variationFactory = $variationFactory;
         $this->_dataHelper = $dataHelper;
         $this->_priceHelper = $priceHelper;
         $this->_categoryBuilder = $categoryBuilder;
@@ -154,18 +146,6 @@ class Builder
             if ($product->hasData('created_at')) {
                 if (($timestamp = strtotime($product->getData('created_at')))) {
                     $nostoProduct->setDatePublished(new \NostoDate($timestamp));
-                }
-            }
-
-            $currencies = $store->getAvailableCurrencyCodes(true);
-            if (count($currencies) > 1) {
-                $nostoProduct->setVariationId($store->getBaseCurrencyCode());
-                if ($this->_dataHelper
-                    ->isMultiCurrencyMethodPriceVariation($store)
-                ) {
-                    $nostoProduct->setVariations(
-                        $this->buildVariations($product, $store)
-                    );
                 }
             }
         } catch (\NostoException $e) {
@@ -254,57 +234,5 @@ class Builder
         }
 
         return $tags;
-    }
-
-    /**
-     * @param Product $product
-     * @param Store $store
-     * @return array
-     */
-    protected function buildVariations(Product $product, Store $store)
-    {
-        // todo: create a variation builder for this.
-
-        $variations = array();
-        $currencyCodes = $store->getAvailableCurrencyCodes(true);
-        foreach ($currencyCodes as $currencyCode) {
-            // Skip base currency.
-            if ($currencyCode === $store->getBaseCurrencyCode()) {
-                continue;
-            }
-            try {
-                $variation = $this->_variationFactory->create();
-                $variation->setVariationId($currencyCode);
-                $variation->setCurrency(new \NostoCurrencyCode($currencyCode));
-
-                $price = $product->getFinalPrice();
-                $price = $store->getBaseCurrency()->convert(
-                    $price,
-                    $currencyCode
-                );
-                $variation->setPrice(new \NostoPrice($price));
-
-                $listPrice = $product->getPrice();
-                $listPrice = $store->getBaseCurrency()->convert(
-                    $listPrice,
-                    $currencyCode
-                );
-                $variation->setListPrice(new \NostoPrice($listPrice));
-
-                $variation->setAvailability(new \NostoProductAvailability(
-                    $product->isAvailable()
-                        ? \NostoProductAvailability::IN_STOCK
-                        : \NostoProductAvailability::OUT_OF_STOCK
-                ));
-
-                $variations[] = $variation;
-            } catch (\Exception $e) {
-                // The price variation cannot be obtained if there are no
-                // exchange rates defined for the currency and Magento will
-                // throw and exception. Just ignore this and continue.
-                continue;
-            }
-        }
-        return $variations;
     }
 }
