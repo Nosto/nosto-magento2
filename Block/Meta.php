@@ -76,8 +76,7 @@ class Meta extends Template
      */
     public function getModuleVersion()
     {
-        // todo
-        return 'todo';
+        return $this->_dataHelper->getModuleVersion();
     }
 
     /**

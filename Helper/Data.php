@@ -30,6 +30,7 @@ namespace Nosto\Tagging\Helper;
 use Magento\Framework\App\Config\Storage\WriterInterface;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
+use Magento\Framework\Module\ModuleListInterface;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
 
@@ -52,12 +53,14 @@ class Data extends AbstractHelper
     const XML_PATH_IMAGE_VERSION = 'nosto_tagging/image_options/image_version';
 
     /**
-     */
-
-    /**
      * @var StoreManagerInterface the store manager.
      */
     protected $_storeManager;
+
+    /**
+     * @var ModuleListInterface the module listing
+     */
+    protected $_moduleListing;
 
     /**
      * @var WriterInterface the config writer.
@@ -69,16 +72,19 @@ class Data extends AbstractHelper
      *
      * @param Context $context the context.
      * @param StoreManagerInterface $storeManager the store manager.
-     * @param WriterInterface $configWriter the config writer.
+     * @param ModuleListInterface $moduleListing
+     * @param WriterInterface $configWriter
      */
     public function __construct(
         Context $context,
         StoreManagerInterface $storeManager,
+        ModuleListInterface $moduleListing,
         WriterInterface $configWriter
     ) {
         parent::__construct($context);
 
         $this->_storeManager = $storeManager;
+        $this->_moduleListing = $moduleListing;
         $this->_configWriter = $configWriter;
     }
 
@@ -129,5 +135,15 @@ class Data extends AbstractHelper
     public function getProductImageVersion(Store $store = null)
     {
         return $this->getStoreConfig(self::XML_PATH_IMAGE_VERSION, $store);
+    }
+
+    /**
+     * Returns the module version number of the currently installed module.
+     *
+     * @return string the module's version
+     */
+    public function getModuleVersion()
+    {
+        return $this->_moduleListing->getOne('modules/Nosto_Tagging')['setup_version'];
     }
 }
