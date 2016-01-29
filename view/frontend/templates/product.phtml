@@ -37,36 +37,36 @@ $category = $this->getNostoCategory();
     <span class="product_id"><?php echo $this->escapeHtml($product->getProductId()); ?></span>
     <span class="name"><?php echo $this->escapeHtml($product->getName()); ?></span>
     <span class="image_url"><?php echo $this->escapeUrl($product->getImageUrl()); ?></span>
-    <?php if ($product->getPrice()): ?>
+    <?php if ($product->getPrice()) : ?>
         <span class="price"><?php echo $this->formatNostoPrice($product->getPrice()); ?></span>
     <?php endif; ?>
-    <?php if ($product->getCurrency()): ?>
+    <?php if ($product->getCurrency()) : ?>
         <span class="price_currency_code"><?php echo $this->escapeHtml($product->getCurrency()->getCode()); ?></span>
     <?php endif; ?>
-    <?php if ($product->getAvailability()): ?>
+    <?php if ($product->getAvailability()) : ?>
         <span class="availability"><?php echo $this->escapeHtml($product->getAvailability()->getAvailability()); ?></span>
     <?php endif; ?>
-    <?php foreach ($product->getCategories() as $cat): ?>
+    <?php foreach ($product->getCategories() as $cat) : ?>
         <span class="category"><?php echo $this->escapeHtml($cat->getPath()); ?></span>
     <?php endforeach; ?>
-    <?php if ($product->getDescription()): ?>
+    <?php if ($product->getDescription()) : ?>
         <span class="description"><?php echo $this->escapeHtml($product->getDescription()); ?></span>
     <?php endif; ?>
-    <?php if ($product->getListPrice()): ?>
+    <?php if ($product->getListPrice()) : ?>
         <span class="list_price"><?php echo $this->formatNostoPrice($product->getListPrice()); ?></span>
     <?php endif; ?>
-    <?php if ($product->getBrand()): ?>
+    <?php if ($product->getBrand()) : ?>
         <span class="brand"><?php echo $this->escapeHtml($product->getBrand()); ?></span>
     <?php endif; ?>
-    <?php foreach ($product->getTags() as $type => $tags): ?>
-        <?php foreach ($tags as $tag): ?>
+    <?php foreach ($product->getTags() as $type => $tags) : ?>
+        <?php foreach ($tags as $tag) : ?>
             <span class="<?php echo $this->escapeQuote($type); ?>"><?php echo $this->escapeHtml($tag); ?></span>
         <?php endforeach; ?>
     <?php endforeach; ?>
-    <?php if ($product->getDatePublished()): ?>
+    <?php if ($product->getDatePublished()) : ?>
         <span class="date_published"><?php echo $this->formatNostoDate($product->getDatePublished()); ?></span>
     <?php endif; ?>
 </div>
-<?php if ($category): ?>
+<?php if ($category) : ?>
     <div class="nosto_category" style="display:none"><?php echo $this->escapeHtml($category->getPath()); ?></div>
 <?php endif; ?>
