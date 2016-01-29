@@ -52,14 +52,7 @@ class Data extends AbstractHelper
     const XML_PATH_IMAGE_VERSION = 'nosto_tagging/image_options/image_version';
 
     /**
-     * Multi currency method option for currency exchange rates.
      */
-    const MULTI_CURRENCY_METHOD_EXCHANGE_RATE = 'exchangeRate';
-
-    /**
-     * Multi currency method option for price variations in tagging.
-     */
-    const MULTI_CURRENCY_METHOD_PRICE_VARIATION = 'priceVariation';
 
     /**
      * @var StoreManagerInterface the store manager.
