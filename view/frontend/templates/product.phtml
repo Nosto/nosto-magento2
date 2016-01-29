@@ -66,28 +66,6 @@ $category = $this->getNostoCategory();
     <?php if ($product->getDatePublished()): ?>
         <span class="date_published"><?php echo $this->formatNostoDate($product->getDatePublished()); ?></span>
     <?php endif; ?>
-    <?php if ($this->getStoreHasMultiCurrency()): ?>
-        <span class="variation_id"><?php echo $this->escapeHtml($product->getVariationId()); ?></span>
-        <?php if ($this->inclPriceVariations() && count($product->getVariations()) > 0): ?>
-            <?php foreach ($product->getVariations() as $variation): ?>
-                <div class="variation">
-                    <span class="variation_id"><?php echo $this->escapeHtml($variation->getVariationId()); ?></span>
-                    <?php if ($variation->getCurrency()): ?>
-                        <span class="price_currency_code"><?php echo $this->escapeHtml($variation->getCurrency()->getCode()); ?></span>
-                    <?php endif; ?>
-                    <?php if ($variation->getPrice()): ?>
-                        <span class="price"><?php echo $this->formatNostoPrice($variation->getPrice()); ?></span>
-                    <?php endif; ?>
-                    <?php if ($variation->getListPrice()): ?>
-                        <span class="list_price"><?php echo $this->formatNostoPrice($variation->getListPrice()); ?></span>
-                    <?php endif; ?>
-                    <?php if ($variation->getAvailability()): ?>
-                        <span class="availability"><?php echo $this->escapeHtml($variation->getAvailability()->getAvailability()); ?></span>
-                    <?php endif; ?>
-                </div>
-            <?php endforeach; ?>
-        <?php endif; ?>
-    <?php endif; ?>
 </div>
 <?php if ($category): ?>
     <div class="nosto_category" style="display:none"><?php echo $this->escapeHtml($category->getPath()); ?></div>
