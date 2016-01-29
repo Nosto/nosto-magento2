@@ -163,18 +163,6 @@ class Product extends View
     }
 
     /**
-     * Returns if price variations are to included in the product meta-data.
-     *
-     * @return bool true if they are to be included, false otherwise.
-     */
-    public function inclPriceVariations()
-    {
-        return $this->_dataHelper->isMultiCurrencyMethodPriceVariation(
-            $this->_storeManager->getStore()
-        );
-    }
-
-    /**
      * Formats a \NostoPrice object, e.g. "1234.56".
      *
      * @param \NostoPrice $price the price to format.

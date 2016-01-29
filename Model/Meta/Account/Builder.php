@@ -53,8 +53,7 @@ class Builder
         \Nosto\Tagging\Model\Meta\Account\Billing\Builder $accountBillingMetaBuilder,
         ResolverInterface $localeResolver,
         LoggerInterface $logger
-    )
-    {
+    ) {
         $this->_factory = $factory;
         $this->_dataHelper = $dataHelper;
         $this->_currencyHelper = $currencyHelper;
@@ -105,29 +104,6 @@ class Builder
 
             $billing = $this->_accountBillingMetaBuilder->build($store);
             $metaData->setBilling($billing);
-
-            $currencyCodes = $store->getAvailableCurrencyCodes(true);
-            if (is_array($currencyCodes) && count($currencyCodes) > 0) {
-                $currencies = [];
-                foreach ($currencyCodes as $currencyCode) {
-                    $currencies[$currencyCode] = $this->_currencyHelper->getCurrencyObject(
-                        $store->getConfig('general/locale/code'),
-                        $currencyCode
-                    );
-                }
-                $metaData->setCurrencies($currencies);
-                if (count($currencyCodes) > 1) {
-                    $metaData->setDefaultPriceVariationId(
-                        $store->getBaseCurrencyCode()
-                    );
-                    $metaData->setUseCurrencyExchangeRates(
-                        $this->_dataHelper->isMultiCurrencyMethodExchangeRate(
-                            $store
-                        )
-                    );
-                }
-            }
-
         } catch (\NostoException $e) {
             $this->_logger->error($e, ['exception' => $e]);
         }

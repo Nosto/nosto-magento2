@@ -52,16 +52,6 @@ class Data extends AbstractHelper
     const XML_PATH_IMAGE_VERSION = 'nosto_tagging/image_options/image_version';
 
     /**
-     * Path to store config multi currency method setting.
-     */
-    const XML_PATH_MULTI_CURRENCY_METHOD = 'nosto_tagging/multi_currency/method';
-
-    /**
-     * Path to store config scheduled currency exchange rate update enabled setting.
-     */
-    const XML_PATH_SCHEDULED_CURRENCY_EXCHANGE_RATE_UPDATE_ENABLED = 'nosto_tagging/scheduled_currency_exchange_rate_update/enabled';
-
-    /**
      * Multi currency method option for currency exchange rates.
      */
     const MULTI_CURRENCY_METHOD_EXCHANGE_RATE = 'exchangeRate';
@@ -92,8 +82,7 @@ class Data extends AbstractHelper
         Context $context,
         StoreManagerInterface $storeManager,
         WriterInterface $configWriter
-    )
-    {
+    ) {
         parent::__construct($context);
 
         $this->_storeManager = $storeManager;
@@ -147,73 +136,5 @@ class Data extends AbstractHelper
     public function getProductImageVersion(Store $store = null)
     {
         return $this->getStoreConfig(self::XML_PATH_IMAGE_VERSION, $store);
-    }
-
-    /**
-     * Return the multi currency method in use, i.e. "exchangeRate" or
-     * "priceVariation".
-     *
-     * If "exchangeRate", it means that the product prices in the recommendation
-     * is updated through the Exchange Rate API to Nosto.
-     *
-     * If "priceVariation", it means that the product price variations should be
-     * tagged along side the product.
-     *
-     * @param Store|null $store the store model or null.
-     *
-     * @return string
-     */
-    public function getMultiCurrencyMethod(Store $store = null)
-    {
-        return $this->getStoreConfig(
-            self::XML_PATH_MULTI_CURRENCY_METHOD,
-            $store
-        );
-    }
-
-    /**
-     * Checks if the multi currency method in use is the "exchangeRate", i.e.
-     * the product prices in the recommendation is updated through the Exchange
-     * Rate API to Nosto.
-     *
-     * @param Store|null $store the store model or null.
-     *
-     * @return bool
-     */
-    public function isMultiCurrencyMethodExchangeRate(Store $store = null)
-    {
-        $method = $this->getMultiCurrencyMethod($store);
-        return ($method === self::MULTI_CURRENCY_METHOD_EXCHANGE_RATE);
-    }
-
-    /**
-     * Checks if the multi currency method in use is the "priceVariation", i.e.
-     * the product price variations should be tagged along side the product.
-     *
-     * @param Store|null $store the store model or null.
-     *
-     * @return bool
-     */
-    public function isMultiCurrencyMethodPriceVariation(Store $store = null)
-    {
-        $method = $this->getMultiCurrencyMethod($store);
-        return ($method === self::MULTI_CURRENCY_METHOD_PRICE_VARIATION);
-    }
-
-    /**
-     * Returns if the scheduled currency exchange rate update is enabled.
-     *
-     * @param Store|null $store the store model or null.
-     *
-     * @return bool
-     */
-    public function isScheduledCurrencyExchangeRateUpdateEnabled(
-        Store $store = null
-    )
-    {
-        return (bool)$this->getStoreConfig(
-            self::XML_PATH_SCHEDULED_CURRENCY_EXCHANGE_RATE_UPDATE_ENABLED,
-            $store
-        );
     }
 }
