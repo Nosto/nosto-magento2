@@ -30,11 +30,6 @@ namespace Nosto\Tagging\Model\Meta\Account;
 class Sso implements \NostoAccountMetaSingleSignOnInterface
 {
     /**
-     * @var string the name of the platform.
-     */
-    protected $_platform = 'magento'; // todo: change to "magento2"
-
-    /**
      * @var string the admin user first name.
      */
     protected $_firstName;
@@ -50,58 +45,56 @@ class Sso implements \NostoAccountMetaSingleSignOnInterface
     protected $_email;
 
     /**
-     * The name of the platform.
-     * A list of valid platform names is issued by Nosto.
-     *
-     * @return string the platform name.
+     * @inheritdoc
      */
     public function getPlatform()
     {
-        return $this->_platform;
+        return 'magento';
     }
 
     /**
-     * The first name of the user who is doing the SSO.
-     *
-     * @return string the first name.
+     * @inheritdoc
      */
     public function getFirstName()
     {
         return $this->_firstName;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function setFirstName($firstName)
     {
         $this->_firstName = $firstName;
     }
 
     /**
-     * The last name of the user who is doing the SSO.
-     *
-     * @return string the last name.
+     * @inheritdoc
      */
     public function getLastName()
     {
         return $this->_lastName;
     }
 
-    // todo
-
+    /**
+     * @inheritdoc
+     */
     public function setLastName($lastName)
     {
         $this->_lastName = $lastName;
     }
 
     /**
-     * The email address of the user who doing the SSO.
-     *
-     * @return string the email address.
+     * @inheritdoc
      */
     public function getEmail()
     {
         return $this->_email;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function setEmail($email)
     {
         $this->_email = $email;

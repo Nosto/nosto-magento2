@@ -35,17 +35,16 @@ class Billing implements \NostoAccountMetaBillingInterface
     protected $_country;
 
     /**
-     * The 2-letter ISO code (ISO 3166-1 alpha-2) for billing details country.
-     *
-     * @return \NostoCountryCode the country code.
+     * @inheritdoc
      */
     public function getCountry()
     {
         return $this->_country;
     }
 
-    // todo
-
+    /**
+     * @inheritdoc
+     */
     public function setCountry(\NostoCountryCode $country)
     {
         $this->_country = $country;

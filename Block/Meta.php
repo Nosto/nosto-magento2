@@ -62,8 +62,7 @@ class Meta extends Template
         Context $context,
         DataHelper $dataHelper,
         array $data = []
-    )
-    {
+    ) {
         parent::__construct($context, $data);
 
         $this->_dataHelper = $dataHelper;

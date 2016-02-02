@@ -85,74 +85,71 @@ class Iframe implements \NostoAccountMetaIframeInterface
     protected $_previewUrlFront;
 
     /**
-     * Unique identifier for the e-commerce installation.
-     * This identifier is used to link accounts together that are created on
-     * the same installation.
-     *
-     * @return string the identifier.
+     * @inheritdoc
      */
     public function getUniqueId()
     {
         return $this->_uniqueId;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function setUniqueId($uniqueId)
     {
         $this->_uniqueId = $uniqueId;
     }
 
     /**
-     * The 2-letter ISO code (ISO 639-1) for the language of the user who is
-     * loading the config iframe.
-     *
-     * @return \NostoLanguageCode the language code.
+     * @inheritdoc
      */
     public function getLanguage()
     {
         return $this->_language;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function setLanguage(\NostoLanguageCode $language)
     {
         $this->_language = $language;
     }
 
     /**
-     * The 2-letter ISO code (ISO 639-1) for the language of the shop the
-     * account belongs to.
-     *
-     * @return \NostoLanguageCode the language code.
+     * @inheritdoc
      */
     public function getShopLanguage()
     {
         return $this->_shopLanguage;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function setShopLanguage(\NostoLanguageCode $shopLanguage)
     {
         $this->_shopLanguage = $shopLanguage;
     }
 
     /**
-     * Returns the name of the shop context where Nosto is installed or about to be installed in.
-     *
-     * @return string the name.
+     * @inheritdoc
      */
     public function getShopName()
     {
         return $this->_shopName;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function setShopName($shopName)
     {
         $this->_shopName = $shopName;
     }
 
     /**
-     * The version number of the platform the e-commerce installation is
-     * running on.
-     *
-     * @return string the platform version.
+     * @inheritdoc
      */
     public function getVersionPlatform()
     {
@@ -161,16 +158,16 @@ class Iframe implements \NostoAccountMetaIframeInterface
         return '0.0.0';
     }
 
+    /**
+     * @inheritdoc
+     */
     public function setVersionPlatform($platformVersion)
     {
         $this->_versionPlatform = $platformVersion;
     }
 
     /**
-     * The version number of the Nosto module/extension running on the
-     * e-commerce installation.
-     *
-     * @return string the module version.
+     * @inheritdoc
      */
     public function getVersionModule()
     {
@@ -181,103 +178,89 @@ class Iframe implements \NostoAccountMetaIframeInterface
         return '0.0.0';
     }
 
-    // todo
-
+    /**
+     * @inheritdoc
+     */
     public function setVersionModule($moduleVersion)
     {
         $this->_versionModule = $moduleVersion;
     }
 
     /**
-     * An absolute URL for any product page in the shop the account is linked
-     * to, with the nostodebug GET parameter enabled.
-     * e.g. http://myshop.com/products/product123?nostodebug=true
-     * This is used in the config iframe to allow the user to quickly preview
-     * the recommendations on the given page.
-     *
-     * @return string the url.
+     * @inheritdoc
      */
     public function getPreviewUrlProduct()
     {
         return $this->_previewUrlProduct;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function setPreviewUrlProduct($productPreviewUrl)
     {
         $this->_previewUrlProduct = $productPreviewUrl;
     }
 
     /**
-     * An absolute URL for any category page in the shop the account is linked
-     * to, with the nostodebug GET parameter enabled.
-     * e.g. http://myshop.com/products/category123?nostodebug=true
-     * This is used in the config iframe to allow the user to quickly preview
-     * the recommendations on the given page.
-     *
-     * @return string the url.
+     * @inheritdoc
      */
     public function getPreviewUrlCategory()
     {
         return $this->_previewUrlCategory;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function setPreviewUrlCategory($categoryPreviewUrl)
     {
         $this->_previewUrlCategory = $categoryPreviewUrl;
     }
 
     /**
-     * An absolute URL for the search page in the shop the account is linked
-     * to, with the nostodebug GET parameter enabled.
-     * e.g. http://myshop.com/search?query=red?nostodebug=true
-     * This is used in the config iframe to allow the user to quickly preview
-     * the recommendations on the given page.
-     *
-     * @return string the url.
+     * @inheritdoc
      */
     public function getPreviewUrlSearch()
     {
         return $this->_previewUrlSearch;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function setPreviewUrlSearch($searchPreviewUrl)
     {
         $this->_previewUrlSearch = $searchPreviewUrl;
     }
 
     /**
-     * An absolute URL for the shopping cart page in the shop the account is
-     * linked to, with the nostodebug GET parameter enabled.
-     * e.g. http://myshop.com/cart?nostodebug=true
-     * This is used in the config iframe to allow the user to quickly preview
-     * the recommendations on the given page.
-     *
-     * @return string the url.
+     * @inheritdoc
      */
     public function getPreviewUrlCart()
     {
         return $this->_previewUrlCart;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function setPreviewUrlCart($cartPreviewUrl)
     {
         $this->_previewUrlCart = $cartPreviewUrl;
     }
 
     /**
-     * An absolute URL for the front page in the shop the account is linked to,
-     * with the nostodebug GET parameter enabled.
-     * e.g. http://myshop.com?nostodebug=true
-     * This is used in the config iframe to allow the user to quickly preview
-     * the recommendations on the given page.
-     *
-     * @return string the url.
+     * @inheritdoc
      */
     public function getPreviewUrlFront()
     {
         return $this->_previewUrlFront;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function setPreviewUrlFront($frontPreviewUrl)
     {
         $this->_previewUrlFront = $frontPreviewUrl;

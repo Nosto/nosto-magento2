@@ -191,7 +191,6 @@ class Product extends View
      */
     public function getStoreHasMultiCurrency()
     {
-        // todo
-        return true;
+        return false;
     }
 }

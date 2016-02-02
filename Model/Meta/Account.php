@@ -60,7 +60,7 @@ class Account implements \NostoAccountMetaInterface
     protected $_ownerLanguage;
 
     /**
-     * @var \Nosto_Tagging_Model_Meta_Account_Owner the account owner meta model.
+     * @var \Nosto\Tagging\Model\Meta\Account\Owner the account owner meta model.
      */
     protected $_owner;
 
@@ -90,9 +90,7 @@ class Account implements \NostoAccountMetaInterface
     protected $_signUpApiToken = 'YBDKYwSqTCzSsU8Bwbg4im2pkHMcgTy9cCX7vevjJwON1UISJIwXOLMM0a8nZY7h';
 
     /**
-     * The shops name for which the account is to be created for.
-     *
-     * @return string the name.
+     * @inheritdoc
      */
     public function getTitle()
     {
@@ -100,7 +98,7 @@ class Account implements \NostoAccountMetaInterface
     }
 
     /**
-     * @param string $title
+     * @inheritdoc
      */
     public function setTitle($title)
     {
@@ -108,11 +106,7 @@ class Account implements \NostoAccountMetaInterface
     }
 
     /**
-     * The name of the account to create.
-     * This has to follow the pattern of
-     * "[platform name]-[8 character lowercase alpha numeric string]".
-     *
-     * @return string the account name.
+     * @inheritdoc
      */
     public function getName()
     {
@@ -120,7 +114,7 @@ class Account implements \NostoAccountMetaInterface
     }
 
     /**
-     * @param string $name
+     * @inheritdoc
      */
     public function setName($name)
     {
@@ -128,21 +122,15 @@ class Account implements \NostoAccountMetaInterface
     }
 
     /**
-     * The name of the platform the account is used on.
-     * A list of valid platform names is issued by Nosto.
-     *
-     * @return string the platform names.
+     * @inheritdoc
      */
     public function getPlatform()
     {
-        return 'magento'; // todo: change to "magento2"
+        return 'magento';
     }
 
     /**
-     * Absolute url to the front page of the shop for which the account is
-     * created for.
-     *
-     * @return string the url.
+     * @inheritdoc
      */
     public function getFrontPageUrl()
     {
@@ -150,7 +138,7 @@ class Account implements \NostoAccountMetaInterface
     }
 
     /**
-     * @param string $frontPageUrl
+     * @inheritdoc
      */
     public function setFrontPageUrl($frontPageUrl)
     {
@@ -158,10 +146,7 @@ class Account implements \NostoAccountMetaInterface
     }
 
     /**
-     * The 3-letter ISO code (ISO 4217) for the currency used by the shop for
-     * which the account is created for.
-     *
-     * @return \NostoCurrencyCode the currency code.
+     * @inheritdoc
      */
     public function getCurrency()
     {
@@ -169,7 +154,7 @@ class Account implements \NostoAccountMetaInterface
     }
 
     /**
-     * @param \NostoCurrencyCode $currency
+     * @inheritdoc
      */
     public function setCurrency(\NostoCurrencyCode $currency)
     {
@@ -177,10 +162,7 @@ class Account implements \NostoAccountMetaInterface
     }
 
     /**
-     * The 2-letter ISO code (ISO 639-1) for the language used by the shop for
-     * which the account is created for.
-     *
-     * @return \NostoLanguageCode the language code.
+     * @inheritdoc
      */
     public function getLanguage()
     {
@@ -188,7 +170,7 @@ class Account implements \NostoAccountMetaInterface
     }
 
     /**
-     * @param \NostoLanguageCode $language
+     * @inheritdoc
      */
     public function setLanguage(\NostoLanguageCode $language)
     {
@@ -196,10 +178,7 @@ class Account implements \NostoAccountMetaInterface
     }
 
     /**
-     * The 2-letter ISO code (ISO 639-1) for the language of the account owner
-     * who is creating the account.
-     *
-     * @return \NostoLanguageCode the language code.
+     * @inheritdoc
      */
     public function getOwnerLanguage()
     {
@@ -207,7 +186,7 @@ class Account implements \NostoAccountMetaInterface
     }
 
     /**
-     * @param \NostoLanguageCode $ownerLanguage
+     * @inheritdoc
      */
     public function setOwnerLanguage(\NostoLanguageCode $ownerLanguage)
     {
@@ -215,19 +194,15 @@ class Account implements \NostoAccountMetaInterface
     }
 
     /**
-     * Meta data model for the account owner who is creating the account.
-     *
-     * @return \NostoAccountMetaOwnerInterface the meta data model.
+     * @inheritdoc
      */
     public function getOwner()
     {
         return $this->_owner;
     }
 
-    // todo
-
     /**
-     * @param \NostoAccountMetaOwnerInterface $owner
+     * @inheritdoc
      */
     public function setOwner(\NostoAccountMetaOwnerInterface $owner)
     {
@@ -235,9 +210,7 @@ class Account implements \NostoAccountMetaInterface
     }
 
     /**
-     * Meta data model for the account billing details.
-     *
-     * @return \NostoAccountMetaBillingInterface the meta data model.
+     * @inheritdoc
      */
     public function getBillingDetails()
     {
@@ -245,10 +218,7 @@ class Account implements \NostoAccountMetaInterface
     }
 
     /**
-     * Returns a list of currency objects supported by the store the account is
-     * to be created for.
-     *
-     * @return \NostoCurrency[] the currencies.
+     * @inheritdoc
      */
     public function getCurrencies()
     {
@@ -256,7 +226,7 @@ class Account implements \NostoAccountMetaInterface
     }
 
     /**
-     * @param \NostoCurrency[] $currencies
+     * @inheritdoc
      */
     public function setCurrencies(array $currencies)
     {
@@ -264,33 +234,15 @@ class Account implements \NostoAccountMetaInterface
     }
 
     /**
-     * Returns the default price variation ID if store is using multiple
-     * currencies.
-     * This ID identifies the price that products are specified in and can
-     * be set to the currency ISO 639-1 code
-     *
-     * @return string|null the currency ID or null if not set.
+     * @inheritdoc
      */
     public function getDefaultPriceVariationId()
     {
-        return $this->_defaultPriceVariationId;
+        return null;
     }
 
     /**
-     * @param string $defaultPriceVariationId
-     */
-    public function setDefaultPriceVariationId($defaultPriceVariationId)
-    {
-        $this->_defaultPriceVariationId = $defaultPriceVariationId;
-    }
-
-    /**
-     * Returns if exchange rates are used to handle multi-currency setups.
-     * It is also possible to handle multi-currency setups using variation
-     * tagging on the product pages, i.e. in addition to the product base price,
-     * you also tag all price variations.
-     *
-     * @return bool if the rates are used.
+     * @inheritdoc
      */
     public function getUseCurrencyExchangeRates()
     {
@@ -298,7 +250,7 @@ class Account implements \NostoAccountMetaInterface
     }
 
     /**
-     * @param boolean $useCurrencyExchangeRates
+     * @inheritdoc
      */
     public function setUseCurrencyExchangeRates($useCurrencyExchangeRates)
     {
@@ -306,10 +258,7 @@ class Account implements \NostoAccountMetaInterface
     }
 
     /**
-     * The API token used to identify an account creation.
-     * This token is platform specific and issued by Nosto.
-     *
-     * @return string the API token.
+     * @inheritdoc
      */
     public function getSignUpApiToken()
     {
@@ -317,10 +266,7 @@ class Account implements \NostoAccountMetaInterface
     }
 
     /**
-     * Optional partner code for Nosto partners.
-     * The code is issued by Nosto to partners only.
-     *
-     * @return string|null the partner code or null if none exist.
+     * @inheritdoc
      */
     public function getPartnerCode()
     {
@@ -328,7 +274,7 @@ class Account implements \NostoAccountMetaInterface
     }
 
     /**
-     * @param \NostoAccountMetaBillingInterface $billing
+     * @inheritdoc
      */
     public function setBilling(\NostoAccountMetaBillingInterface $billing)
     {
@@ -336,12 +282,7 @@ class Account implements \NostoAccountMetaInterface
     }
 
     /**
-     * Returns if the multi variant approach should be used for handling
-     * multiple currencies or in pricing. Please note that only tells if the
-     * setting is active. This will not take account whether there are variants
-     * configured or not.
-     *
-     * @return boolean if multi variants are used
+     * @inheritdoc
      */
     public function getUseMultiVariants()
     {

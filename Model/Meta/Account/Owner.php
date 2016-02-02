@@ -45,47 +45,48 @@ class Owner implements \NostoAccountMetaOwnerInterface
     protected $_email;
 
     /**
-     * The first name of the account owner.
-     *
-     * @return string the first name.
+     * @inheritdoc
      */
     public function getFirstName()
     {
         return $this->_firstName;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function setFirstName($firstName)
     {
         $this->_firstName = $firstName;
     }
 
     /**
-     * The last name of the account owner.
-     *
-     * @return string the last name.
+     * @inheritdoc
      */
     public function getLastName()
     {
         return $this->_lastName;
     }
 
-    // todo
-
+    /**
+     * @inheritdoc
+     */
     public function setLastName($lastName)
     {
         $this->_lastName = $lastName;
     }
 
     /**
-     * The email address of the account owner.
-     *
-     * @return string the email address.
+     * @inheritdoc
      */
     public function getEmail()
     {
         return $this->_email;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function setEmail($email)
     {
         $this->_email = $email;
