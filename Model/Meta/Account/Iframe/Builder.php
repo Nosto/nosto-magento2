@@ -48,8 +48,7 @@ class Builder
         Data $dataHelper,
         ResolverInterface $localeResolver,
         LoggerInterface $logger
-    )
-    {
+    ) {
         $this->_factory = $factory;
         $this->_urlHelper = $urlHelper;
         $this->_dataHelper = $dataHelper;
@@ -74,7 +73,9 @@ class Builder
             $metaData->setShopLanguage(new \NostoLanguageCode($lang));
 
             $metaData->setShopName($store->getName());
-
+            $metaData->setUniqueId($this->_dataHelper->getInstallationId());
+            $metaData->setVersionPlatform($this->_dataHelper->getPlatformVersion());
+            $metaData->setVersionModule($this->_dataHelper->getModuleVersion());
             $metaData->setPreviewUrlProduct($this->_urlHelper->getPreviewUrlProduct($store));
             $metaData->setPreviewUrlCategory($this->_urlHelper->getPreviewUrlCategory($store));
             $metaData->setPreviewUrlSearch($this->_urlHelper->getPreviewUrlSearch($store));

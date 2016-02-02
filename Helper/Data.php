@@ -146,4 +146,14 @@ class Data extends AbstractHelper
     {
         return $this->_moduleListing->getOne('modules/Nosto_Tagging')['setup_version'];
     }
+
+    /**
+     * Returns the version number of the platform the e-commerce installation
+     *
+     * @return string the platforms's version
+     */
+    public function getPlatformVersion()
+    {
+        return \Magento\Framework\AppInterface::VERSION;
+    }
 }
