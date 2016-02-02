@@ -31,7 +31,8 @@ use Magento\Checkout\Block\Success;
 use Magento\Checkout\Model\Session;
 use Magento\Framework\Registry;
 use Magento\Framework\View\Element\Template;
-use Magento\Sales\Model\OrderFactory;
+use /** @noinspection PhpUndefinedClassInspection */
+    Magento\Sales\Model\OrderFactory;
 use Nosto\Tagging\Helper\Format;
 use Nosto\Tagging\Model\Order\Builder as OrderBuilder;
 use NostoPrice;
@@ -70,6 +71,7 @@ class Order extends Success
      */
     protected $_checkoutSession;
 
+    /** @noinspection PhpUndefinedClassInspection */
     /**
      * Constructor.
      *
@@ -84,6 +86,7 @@ class Order extends Success
      */
     public function __construct(
         Template\Context $context,
+        /** @noinspection PhpUndefinedClassInspection */
         OrderFactory $orderFactory,
         OrderBuilder $orderBuilder,
         Format $formatHelper,

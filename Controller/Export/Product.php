@@ -28,7 +28,8 @@
 namespace Nosto\Tagging\Controller\Export;
 
 use Magento\Catalog\Model\Product\Visibility as ProductVisibility;
-use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductCollectionFactory;
+use /** @noinspection PhpUndefinedClassInspection */
+    Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductCollectionFactory;
 use Magento\Framework\App\Action\Context;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
@@ -50,6 +51,7 @@ class Product extends Base
     private $_productVisibility;
     private $_productBuilder;
 
+    /** @noinspection PhpUndefinedClassInspection */
     /**
      * Constructor.
      *
@@ -62,6 +64,7 @@ class Product extends Base
      */
     public function __construct(
         Context $context,
+        /** @noinspection PhpUndefinedClassInspection */
         ProductCollectionFactory $productCollectionFactory,
         ProductVisibility $productVisibility,
         StoreManagerInterface $storeManager,

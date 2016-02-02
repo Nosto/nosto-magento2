@@ -28,8 +28,10 @@
 namespace Nosto\Tagging\Helper;
 
 use Magento\Catalog\Model\Product\Visibility;
-use Magento\Catalog\Model\ResourceModel\Category\CollectionFactory as CategoryCollectionFactory;
-use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductCollectionFactory;
+use /** @noinspection PhpUndefinedClassInspection */
+    Magento\Catalog\Model\ResourceModel\Category\CollectionFactory as CategoryCollectionFactory;
+use /** @noinspection PhpUndefinedClassInspection */
+    Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductCollectionFactory;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 use Magento\Store\Model\Store;
@@ -42,11 +44,13 @@ require_once 'app/code/Nosto/Tagging/vendor/nosto/php-sdk/autoload.php';
  */
 class Url extends AbstractHelper
 {
+    /** @noinspection PhpUndefinedClassInspection */
     /**
      * @var ProductCollectionFactory auto generated product collection factory.
      */
     protected $_productCollectionFactory;
 
+    /** @noinspection PhpUndefinedClassInspection */
     /**
      * @var CategoryCollectionFactory auto generated category collection factory.
      */
@@ -62,6 +66,7 @@ class Url extends AbstractHelper
      */
     protected $_urlBuilder;
 
+    /** @noinspection PhpUndefinedClassInspection */
     /**
      * Constructor.
      *
@@ -73,7 +78,9 @@ class Url extends AbstractHelper
      */
     public function __construct(
         Context $context,
+        /** @noinspection PhpUndefinedClassInspection */
         ProductCollectionFactory $productCollectionFactory,
+        /** @noinspection PhpUndefinedClassInspection */
         CategoryCollectionFactory $categoryCollectionFactory,
         Visibility $productVisibility,
         \Magento\Framework\Url $urlBuilder
@@ -137,6 +144,7 @@ class Url extends AbstractHelper
     {
         $rootCatId = (int)$store->getRootCategoryId();
         /** @noinspection PhpUndefinedNamespaceInspection */
+        /** @noinspection PhpUndefinedClassInspection */
         /** @var \Magento\Catalog\Model\Resource\Category\Collection $collection */
         $collection = $this->_categoryCollectionFactory->create();
         $collection->addAttributeToFilter('is_active', ['eq' => 1]);

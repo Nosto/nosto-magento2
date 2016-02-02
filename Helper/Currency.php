@@ -30,6 +30,8 @@ namespace Nosto\Tagging\Helper;
 /** @noinspection PhpIncludeInspection */
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
+use /** @noinspection PhpUndefinedClassInspection */
+    Zend_Currency;
 
 require_once 'app/code/Nosto/Tagging/vendor/nosto/php-sdk/autoload.php';
 
@@ -68,9 +70,10 @@ class Currency extends AbstractHelper
      */
     public function getCurrencyObject($locale, $currencyCode)
     {
+        /** @noinspection PhpUndefinedClassInspection */
         return $this->_currencyHelper->parseZendCurrencyFormat(
             $currencyCode,
-            new \Zend_Currency($locale, $currencyCode)
+            new Zend_Currency($locale, $currencyCode)
         );
     }
 }
