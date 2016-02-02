@@ -43,6 +43,13 @@ require_once 'app/code/Nosto/Tagging/vendor/nosto/php-sdk/autoload.php';
 
 class Index extends Action
 {
+    private $_logger;
+    private $_backendUrlBuilder;
+    private $_accountHelper;
+    private $_oauthMetaBuilder;
+    private $_accountService;
+    private $_storeManager;
+
     /**
      * @param Context $context
      * @param LoggerInterface $logger
@@ -60,8 +67,7 @@ class Index extends Action
         Account $accountHelper,
         Builder $oauthMetaBuilder,
         \NostoServiceAccount $accountService
-    )
-    {
+    ) {
         parent::__construct($context);
 
         $this->_logger = $logger;
@@ -103,7 +109,7 @@ class Index extends Action
                     'store' => (int)$store->getId(),
                 ];
             }
-            $this->_redirectBackend('nosto/account/proxy', $params);
+            $this->redirectBackend('nosto/account/proxy', $params);
         } elseif (($error = $request->getParam('error')) !== null) {
             $logMsg = $error;
             if (($reason = $request->getParam('error_reason')) !== null) {
@@ -113,7 +119,7 @@ class Index extends Action
                 $logMsg .= ' - ' . $desc;
             }
             $this->_logger->error($logMsg);
-            $this->_redirectBackend(
+            $this->redirectBackend(
                 'nosto/account/proxy',
                 [
                     'message_type' => \NostoMessage::TYPE_ERROR,
@@ -138,7 +144,7 @@ class Index extends Action
      *
      * @return \Magento\Framework\App\ResponseInterface the response.
      */
-    protected function _redirectBackend($path, $args = [])
+    private function redirectBackend($path, $args = [])
     {
         /** @var \Magento\Framework\App\Response\Http $response */
         $response = $this->getResponse();

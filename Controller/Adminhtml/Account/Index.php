@@ -60,8 +60,7 @@ class Index extends Action
         Context $context,
         PageFactory $resultPageFactory,
         StoreManagerInterface $storeManager
-    )
-    {
+    ) {
         parent::__construct($context);
 
         $this->_resultPageFactory = $resultPageFactory;

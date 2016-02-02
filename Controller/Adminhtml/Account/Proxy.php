@@ -41,6 +41,7 @@ class Proxy extends Action
      * @inheritdoc
      */
     protected $_publicActions = ['proxy'];
+    private $_backendAuthSession;
 
     /**
      * @param Context $context
@@ -49,8 +50,7 @@ class Proxy extends Action
     public function __construct(
         Context $context,
         Session $backendAuthSession
-    )
-    {
+    ) {
         parent::__construct($context);
 
         $this->_backendAuthSession = $backendAuthSession;
