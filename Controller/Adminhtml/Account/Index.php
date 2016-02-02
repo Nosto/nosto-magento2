@@ -79,10 +79,8 @@ class Index extends Action
             foreach ($this->_storeManager->getWebsites() as $website) {
                 $storeId = $website->getDefaultGroup()->getDefaultStoreId();
                 if (!empty($storeId)) {
-                    // todo: use redirect result model
-                    $this->_redirect('*/*/index', ['store' => $storeId]);
-                    /** @noinspection PhpInconsistentReturnPointsInspection */
-                    return;
+                    return $this->resultRedirectFactory->create()
+                        ->setPath('*/*/index', ['store' => $storeId]);
                 }
             }
         }

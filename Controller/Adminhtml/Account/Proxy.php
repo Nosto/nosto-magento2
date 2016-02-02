@@ -30,6 +30,7 @@ namespace Nosto\Tagging\Controller\Adminhtml\Account;
 use Magento\Backend\App\Action;
 use Magento\Backend\App\Action\Context;
 use Magento\Backend\Model\Auth\Session;
+use Magento\Framework\Controller\Result\Redirect;
 
 /**
  *
@@ -62,8 +63,8 @@ class Proxy extends Action
      * This is a workaround as you cannot redirect directly to a protected
      * action in the backend end from the front end. The action also handles
      * passing along any error/success messages.
-     *
-     * @return void
+
+     * @return Redirect
      */
     public function execute()
     {
@@ -81,12 +82,12 @@ class Proxy extends Action
             );
         }
 
-        $params = [];
         if (($storeId = (int)$this->_request->getParam('store')) !== 0) {
-            $params['store'] = $storeId;
+            return $this->resultRedirectFactory->create()
+                ->setPath('*/*/index', ['store' => $storeId]);
+        } else {
+            return $this->resultRedirectFactory->create()
+                ->setPath('*/*/index', []);
         }
-
-        // todo: proper way to redirect?
-        $this->_redirect('*/*/index', $params);
     }
 }
