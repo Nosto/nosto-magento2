@@ -35,19 +35,16 @@ use Psr\Log\LoggerInterface;
 class Builder
 {
     /**
-     * @param Factory $factory
      * @param ResolverInterface $localeResolver
      * @param Url $urlBuilder
      * @param LoggerInterface $logger
      */
     public function __construct(
-        Factory $factory,
         ResolverInterface $localeResolver,
         Url $urlBuilder,
         LoggerInterface $logger
     )
     {
-        $this->_factory = $factory;
         $this->_localeResolver = $localeResolver;
         $this->_urlBuilder = $urlBuilder;
         $this->_logger = $logger;
@@ -56,11 +53,11 @@ class Builder
     /**
      * @param Store $store
      * @param \NostoAccount $account
-     * @return \Nosto\Tagging\Model\Meta\Oauth
+     * @return \NostoOauth
      */
     public function build(Store $store, \NostoAccount $account = null)
     {
-        $metaData = $this->_factory->create();
+        $metaData = new \NostoOauth();
 
         try {
             $metaData->setScopes(\NostoApiToken::getApiTokenNames());

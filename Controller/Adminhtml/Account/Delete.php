@@ -45,6 +45,8 @@ class Delete extends Action
      * @var Json
      */
     protected $_result;
+    private $_storeManager;
+    private $_accountHelper;
 
     /**
      * @param Context $context

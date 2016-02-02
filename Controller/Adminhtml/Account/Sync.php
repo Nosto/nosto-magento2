@@ -46,6 +46,9 @@ class Sync extends Action
      * @var Json
      */
     protected $_result;
+    private $_accountHelper;
+    private $_oauthMetaBuilder;
+    private $_storeManager;
 
     /**
      * @param Context $context

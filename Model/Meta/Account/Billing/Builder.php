@@ -32,26 +32,23 @@ use Psr\Log\LoggerInterface;
 
 class Builder
 {
-    protected $_factory;
     protected $_logger;
 
     /**
-     * @param Factory $factory
      * @param LoggerInterface $logger
      */
-    public function __construct(Factory $factory, LoggerInterface $logger)
+    public function __construct(LoggerInterface $logger)
     {
-        $this->_factory = $factory;
         $this->_logger = $logger;
     }
 
     /**
      * @param Store $store
-     * @return \Nosto\Tagging\Model\Meta\Account\Billing
+     * @return \NostoBilling
      */
     public function build(Store $store)
     {
-        $metaData = $this->_factory->create();
+        $metaData = new \NostoBilling();
 
         try {
             $country = $store->getConfig('general/country/default');

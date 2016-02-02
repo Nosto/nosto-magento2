@@ -25,6 +25,7 @@
   ~ @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
   -->
 
+<!--suppress XmlUnboundNsPrefix -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Acl/etc/acl.xsd">
     <acl>
         <resources>

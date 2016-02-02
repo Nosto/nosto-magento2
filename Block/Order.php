@@ -27,6 +27,8 @@
 
 namespace Nosto\Tagging\Block;
 
+use Magento\Checkout\Block\Success;
+use Magento\Checkout\Model\Session;
 use Magento\Framework\Registry;
 use Magento\Framework\View\Element\Template;
 use Magento\Sales\Model\OrderFactory;
@@ -42,7 +44,7 @@ require_once 'app/code/Nosto/Tagging/vendor/nosto/php-sdk/autoload.php';
  * This meta-data is sent to Nosto via JavaScript when users are browsing the
  * pages in the store.
  */
-class Order extends \Magento\Checkout\Block\Success
+class Order extends Success
 {
     /**
      * @inheritdoc
@@ -64,7 +66,7 @@ class Order extends \Magento\Checkout\Block\Success
      */
     protected $_formatHelper;
     /**
-     * @var \Magento\Checkout\Model\Session
+     * @var Session
      */
     protected $_checkoutSession;
 
@@ -75,7 +77,7 @@ class Order extends \Magento\Checkout\Block\Success
      * @param OrderFactory $orderFactory
      * @param OrderBuilder $orderBuilder
      * @param Format $formatHelper
-     * @param \Magento\Checkout\Model\Session $checkoutSession
+     * @param Session $checkoutSession
      * @param array $data
      * @internal param Registry $registry
      * @internal param CategoryBuilder $categoryBuilder
@@ -85,7 +87,7 @@ class Order extends \Magento\Checkout\Block\Success
         OrderFactory $orderFactory,
         OrderBuilder $orderBuilder,
         Format $formatHelper,
-        \Magento\Checkout\Model\Session $checkoutSession,
+        Session $checkoutSession,
         array $data = []
     )
     {

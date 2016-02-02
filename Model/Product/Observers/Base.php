@@ -28,6 +28,7 @@
 namespace Nosto\Tagging\Model\Product\Observers;
 
 use Magento\Catalog\Model\Product;
+use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Module\Manager as ModuleManager;
 use Magento\Store\Model\Store;
@@ -100,10 +101,10 @@ abstract class Base implements ObserverInterface
      * Event handler for the "catalog_product_save_after" and  event.
      * Sends a product update API call to Nosto.
      *
-     * @param \Magento\Framework\Event\Observer $observer
+     * @param Observer $observer
      * @return void
      */
-    public function execute(\Magento\Framework\Event\Observer $observer)
+    public function execute(Observer $observer)
     {
         if ($this->_moduleManager->isEnabled('Nosto_Tagging')) {
             // Always "delete" the product for all stores it is available in.

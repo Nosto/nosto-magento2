@@ -48,27 +48,17 @@ use Psr\Log\LoggerInterface;
 
 class Builder
 {
-    /**
-     * @var OrderFactory
-     */
-    protected $_orderFactory;
-
-    /**
-     * @var LoggerInterface
-     */
     protected $_logger;
+    private $_objectManager;
 
     /**
-     * @param Factory $orderFactory
      * @param LoggerInterface $logger
      * @internal param ObjectManager $objectManager
      */
     public function __construct(
-        Factory $orderFactory,
         LoggerInterface $logger
     )
     {
-        $this->_orderFactory = $orderFactory;
         $this->_logger = $logger;
     }
 
@@ -80,7 +70,7 @@ class Builder
      */
     public function build(Order $order)
     {
-        $nostoOrder = $this->_orderFactory->create();
+        $nostoOrder = new \NostoOrder();
 
         try {
             $nostoCurrency = new NostoCurrencyCode($order->getOrderCurrencyCode());

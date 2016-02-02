@@ -31,6 +31,7 @@ use Magento\Bundle\Model\Product\Price as BundlePrice;
 use Magento\Catalog\Helper\Data as CatalogHelper;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\Product\Type as ProductType;
+use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 use Magento\GroupedProduct\Model\Product\Type\Grouped as GroupedType;
 
@@ -40,8 +41,10 @@ require_once 'app/code/Nosto/Tagging/vendor/nosto/php-sdk/autoload.php';
 /**
  * Price helper used for product price related tasks.
  */
-class Price extends \Magento\Framework\App\Helper\AbstractHelper
+class Price extends AbstractHelper
 {
+    private $_catalogHelper;
+
     /**
      * Constructor.
      *

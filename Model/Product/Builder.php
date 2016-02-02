@@ -38,11 +38,6 @@ use Psr\Log\LoggerInterface;
 class Builder
 {
     /**
-     * @var Factory
-     */
-    protected $_productFactory;
-
-    /**
      * @var DataHelper
      */
     protected $_dataHelper;
@@ -68,7 +63,6 @@ class Builder
     protected $_logger;
 
     /**
-     * @param Factory $productFactory
      * @param DataHelper $dataHelper
      * @param PriceHelper $priceHelper
      * @param CategoryBuilder $categoryBuilder
@@ -76,7 +70,6 @@ class Builder
      * @param LoggerInterface $logger
      */
     public function __construct(
-        Factory $productFactory,
         DataHelper $dataHelper,
         PriceHelper $priceHelper,
         CategoryBuilder $categoryBuilder,
@@ -84,7 +77,6 @@ class Builder
         LoggerInterface $logger
     )
     {
-        $this->_productFactory = $productFactory;
         $this->_dataHelper = $dataHelper;
         $this->_priceHelper = $priceHelper;
         $this->_categoryBuilder = $categoryBuilder;
@@ -99,7 +91,7 @@ class Builder
      */
     public function build(Product $product, Store $store)
     {
-        $nostoProduct = $this->_productFactory->create();
+        $nostoProduct = new \NostoProduct();
 
         try {
             $nostoProduct->setUrl($this->buildUrl($product, $store));

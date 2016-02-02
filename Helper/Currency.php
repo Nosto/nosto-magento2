@@ -28,12 +28,15 @@
 namespace Nosto\Tagging\Helper;
 
 /** @noinspection PhpIncludeInspection */
+use Magento\Framework\App\Helper\AbstractHelper;
+use Magento\Framework\App\Helper\Context;
+
 require_once 'app/code/Nosto/Tagging/vendor/nosto/php-sdk/autoload.php';
 
 /**
  * Currency helper used for currency related tasks.
  */
-class Currency extends \Magento\Framework\App\Helper\AbstractHelper
+class Currency extends AbstractHelper
 {
     /**
      * @var \NostoHelperCurrency the Nosto currency helper.
@@ -43,11 +46,11 @@ class Currency extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Constructor.
      *
-     * @param \Magento\Framework\App\Helper\Context $context the context.
+     * @param Context $context the context.
      * @param \NostoHelperCurrency $currencyHelper the Nosto currency helper.
      */
     public function __construct(
-        \Magento\Framework\App\Helper\Context $context,
+        Context $context,
         \NostoHelperCurrency $currencyHelper
     )
     {

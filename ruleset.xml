@@ -1,4 +1,5 @@
 <?xml version="1.0"?>
+<!--suppress XmlUnboundNsPrefix -->
 <ruleset name="Magento">
  <description>The Magento coding standard.</description>
  <rule ref="PSR2">

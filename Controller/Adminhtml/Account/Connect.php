@@ -45,6 +45,8 @@ class Connect extends Action
      * @var Json
      */
     protected $_result;
+    private $_oauthMetaBuilder;
+    private $_storeManager;
 
     /**
      * @param Context $context

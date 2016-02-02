@@ -30,6 +30,7 @@ namespace Nosto\Tagging\Helper;
 use Magento\Framework\App\Config\Storage\WriterInterface;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
+use Magento\Framework\AppInterface;
 use Magento\Framework\Module\ModuleListInterface;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
@@ -154,6 +155,6 @@ class Data extends AbstractHelper
      */
     public function getPlatformVersion()
     {
-        return \Magento\Framework\AppInterface::VERSION;
+        return AppInterface::VERSION;
     }
 }

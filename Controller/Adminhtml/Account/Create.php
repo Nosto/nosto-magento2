@@ -47,6 +47,11 @@ class Create extends Action
      * @var Json
      */
     protected $_result;
+    private $_accountHelper;
+    private $_accountMetaBuilder;
+    private $_storeManager;
+    private $_accountService;
+    private $_logger;
 
     /**
      * @param Context $context
@@ -94,7 +99,7 @@ class Create extends Action
                 $metaData = $this->_accountMetaBuilder->build($store);
                 // todo: how to handle this class, DI?
                 if (\Zend_Validate::is($emailAddress, 'EmailAddress')) {
-                    /** @var \Nosto\Tagging\Model\Meta\Account\Owner $owner */
+                    /** @var \NostoOwner $owner */
                     $owner = $metaData->getOwner();
                     $owner->setEmail($emailAddress);
                 }

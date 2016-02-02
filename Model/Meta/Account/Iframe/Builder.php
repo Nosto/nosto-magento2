@@ -35,21 +35,23 @@ use Psr\Log\LoggerInterface;
 
 class Builder
 {
+    private $_urlHelper;
+    private $_dataHelper;
+    private $_localeResolver;
+    private $_logger;
+
     /**
-     * @param Factory $factory
      * @param Url $urlHelper
      * @param Data $dataHelper
      * @param ResolverInterface $localeResolver
      * @param LoggerInterface $logger
      */
     public function __construct(
-        Factory $factory,
         Url $urlHelper,
         Data $dataHelper,
         ResolverInterface $localeResolver,
         LoggerInterface $logger
     ) {
-        $this->_factory = $factory;
         $this->_urlHelper = $urlHelper;
         $this->_dataHelper = $dataHelper;
         $this->_localeResolver = $localeResolver;
@@ -58,11 +60,11 @@ class Builder
 
     /**
      * @param Store $store
-     * @return \Nosto\Tagging\Model\Meta\Account\Iframe
+     * @return \NostoIframe
      */
     public function build(Store $store)
     {
-        $metaData = $this->_factory->create();
+        $metaData = new \NostoIframe();
 
         try {
             $metaData->setUniqueId($this->_dataHelper->getInstallationId());

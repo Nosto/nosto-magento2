@@ -41,6 +41,7 @@ class Proxy extends Action
      * @inheritdoc
      */
     protected $_publicActions = ['proxy'];
+    /** @var Session */
     private $_backendAuthSession;
 
     /**

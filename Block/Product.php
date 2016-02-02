@@ -35,6 +35,7 @@ use Magento\Customer\Model\Session;
 use Magento\Framework\Json\EncoderInterface as JsonEncoder;
 use Magento\Framework\Locale\FormatInterface;
 use Magento\Framework\Pricing\PriceCurrencyInterface;
+use Magento\Framework\Stdlib\StringUtils;
 use Magento\Framework\Url\EncoderInterface as UrlEncoder;
 use Magento\Store\Model\Store;
 use Nosto\Tagging\Helper\Data;
@@ -83,7 +84,7 @@ class Product extends View
      * @param Context $context the context.
      * @param UrlEncoder $urlEncoder the  url encoder.
      * @param JsonEncoder $jsonEncoder the json encoder.
-     * @param \Magento\Framework\Stdlib\StringUtils $string the string lib.
+     * @param StringUtils $string the string lib.
      * @param \Magento\Catalog\Helper\Product $productHelper the product helper.
      * @param ConfigInterface $productTypeConfig the product type config.
      * @param FormatInterface $localeFormat the locale format.
@@ -100,7 +101,7 @@ class Product extends View
         Context $context,
         UrlEncoder $urlEncoder,
         JsonEncoder $jsonEncoder,
-        \Magento\Framework\Stdlib\StringUtils $string,
+        StringUtils $string,
         \Magento\Catalog\Helper\Product $productHelper,
         ConfigInterface $productTypeConfig,
         FormatInterface $localeFormat,

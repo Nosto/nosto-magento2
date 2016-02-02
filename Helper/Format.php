@@ -28,12 +28,15 @@
 namespace Nosto\Tagging\Helper;
 
 /** @noinspection PhpIncludeInspection */
+use Magento\Framework\App\Helper\AbstractHelper;
+use Magento\Framework\App\Helper\Context;
+
 require_once 'app/code/Nosto/Tagging/vendor/nosto/php-sdk/autoload.php';
 
 /**
  * Format helper used for common formatting tasks.
  */
-class Format extends \Magento\Framework\App\Helper\AbstractHelper
+class Format extends AbstractHelper
 {
     /**
      * @var \NostoFormatterPrice the nosto price formatter.
@@ -48,12 +51,12 @@ class Format extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Constructor.
      *
-     * @param \Magento\Framework\App\Helper\Context $context the context.
+     * @param Context $context the context.
      * @param \NostoFormatterPrice $priceFormatter the nosto price formatter.
      * @param \NostoFormatterDate $dateFormatter the nosto date formatter.
      */
     public function __construct(
-        \Magento\Framework\App\Helper\Context $context,
+        Context $context,
         \NostoFormatterPrice $priceFormatter,
         \NostoFormatterDate $dateFormatter
     )

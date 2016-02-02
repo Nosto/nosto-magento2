@@ -32,29 +32,28 @@ use Magento\Framework\UrlInterface;
 use Magento\Store\Model\Store;
 use Nosto\Tagging\Helper\Currency;
 use Nosto\Tagging\Helper\Data;
+use Nosto\Tagging\Model\Meta\Account\Billing\Builder as BillingBuilder;
+use Nosto\Tagging\Model\Meta\Account\Owner\Builder as OwnerBuilder;
 use Psr\Log\LoggerInterface;
 
 class Builder
 {
     /**
-     * @param Factory $factory
      * @param Data $dataHelper
      * @param Currency $currencyHelper
-     * @param Owner\Builder $accountOwnerMetaBuilder
-     * @param Billing\Builder $accountBillingMetaBuilder
+     * @param OwnerBuilder $accountOwnerMetaBuilder
+     * @param BillingBuilder $accountBillingMetaBuilder
      * @param ResolverInterface $localeResolver
      * @param LoggerInterface $logger
      */
     public function __construct(
-        Factory $factory,
         Data $dataHelper,
         Currency $currencyHelper,
-        \Nosto\Tagging\Model\Meta\Account\Owner\Builder $accountOwnerMetaBuilder,
-        \Nosto\Tagging\Model\Meta\Account\Billing\Builder $accountBillingMetaBuilder,
+        OwnerBuilder $accountOwnerMetaBuilder,
+        BillingBuilder $accountBillingMetaBuilder,
         ResolverInterface $localeResolver,
         LoggerInterface $logger
     ) {
-        $this->_factory = $factory;
         $this->_dataHelper = $dataHelper;
         $this->_currencyHelper = $currencyHelper;
         $this->_accountOwnerMetaBuilder = $accountOwnerMetaBuilder;
@@ -65,11 +64,11 @@ class Builder
 
     /**
      * @param Store $store
-     * @return \Nosto\Tagging\Model\Meta\Account
+     * @return \NostoAccount
      */
     public function build(Store $store)
     {
-        $metaData = $this->_factory->create();
+        $metaData = new \NostoAccount();
 
         try {
             $metaData->setTitle(

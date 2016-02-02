@@ -51,6 +51,8 @@ class Embed extends Template
      * @inheritdoc
      */
     protected $_template = 'embed.phtml';
+    private $_accountHelper;
+    private $_dataHelper;
 
     /**
      * Constructor.

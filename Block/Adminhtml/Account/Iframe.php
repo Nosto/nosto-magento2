@@ -55,11 +55,12 @@ class Iframe extends BlockTemplate
      * @var Account account helper.
      */
     protected $_accountHelper;
+    private $_backendAuthSession;
 
     /**
      * Constructor.
      *
-     * @param BlockContext|Context $context the context.
+     * @param BlockContext $context the context.
      * @param Account $accountHelper the account helper.
      * @param Session $backendAuthSession
      * @param array $data optional data.
