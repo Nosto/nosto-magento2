@@ -153,9 +153,7 @@ class Iframe implements \NostoAccountMetaIframeInterface
      */
     public function getVersionPlatform()
     {
-        // todo
-        //return Mage::getVersion();
-        return '0.0.0';
+        return $this->_versionPlatform;
     }
 
     /**
@@ -171,11 +169,7 @@ class Iframe implements \NostoAccountMetaIframeInterface
      */
     public function getVersionModule()
     {
-        // todo
-        // Path is hard-coded to be like in "etc/config.xml".
-        //return (string)Mage::getConfig()
-        //    ->getNode('modules/Nosto_Tagging/version');
-        return '0.0.0';
+        return $this->_versionModule;
     }
 
     /**
