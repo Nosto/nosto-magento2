@@ -75,8 +75,7 @@ class Builder
         CategoryBuilder $categoryBuilder,
         CategoryRepositoryInterface $categoryRepository,
         LoggerInterface $logger
-    )
-    {
+    ) {
         $this->_dataHelper = $dataHelper;
         $this->_priceHelper = $priceHelper;
         $this->_categoryBuilder = $categoryBuilder;

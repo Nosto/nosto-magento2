@@ -43,8 +43,7 @@ class Builder
         ResolverInterface $localeResolver,
         Url $urlBuilder,
         LoggerInterface $logger
-    )
-    {
+    ) {
         $this->_localeResolver = $localeResolver;
         $this->_urlBuilder = $urlBuilder;
         $this->_logger = $logger;

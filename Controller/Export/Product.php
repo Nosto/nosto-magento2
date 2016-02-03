@@ -70,8 +70,7 @@ class Product extends Base
         StoreManagerInterface $storeManager,
         AccountHelper $accountHelper,
         ProductBuilder $productBuilder
-    )
-    {
+    ) {
         parent::__construct($context, $storeManager, $accountHelper);
 
         $this->_productCollectionFactory = $productCollectionFactory;

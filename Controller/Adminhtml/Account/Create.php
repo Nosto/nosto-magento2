@@ -70,8 +70,7 @@ class Create extends Action
         Json $result,
         LoggerInterface $logger,
         \NostoServiceAccount $accountService
-    )
-    {
+    ) {
         parent::__construct($context);
 
         $this->_accountHelper = $accountHelper;

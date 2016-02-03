@@ -66,8 +66,7 @@ class Order extends Base
         StoreManagerInterface $storeManager,
         AccountHelper $accountHelper,
         OrderBuilder $orderBuilder
-    )
-    {
+    ) {
         parent::__construct($context, $storeManager, $accountHelper);
 
         $this->_orderCollectionFactory = $orderCollectionFactory;

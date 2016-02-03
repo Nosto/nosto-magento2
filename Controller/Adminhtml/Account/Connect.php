@@ -59,8 +59,7 @@ class Connect extends Action
         Builder $oauthMetaBuilder,
         StoreManagerInterface $storeManager,
         Json $result
-    )
-    {
+    ) {
         parent::__construct($context);
 
         $this->_oauthMetaBuilder = $oauthMetaBuilder;

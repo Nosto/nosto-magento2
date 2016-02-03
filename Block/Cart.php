@@ -83,8 +83,7 @@ class Cart extends \Magento\Checkout\Block\Cart
         CartBuilder $cartBuilder,
         FormatHelper $formatHelper,
         array $data = []
-    )
-    {
+    ) {
         parent::__construct(
             $context,
             $customerSession,

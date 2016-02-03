@@ -69,8 +69,7 @@ class Category extends Template
         Registry $registry,
         CategoryBuilder $categoryBuilder,
         array $data = []
-    )
-    {
+    ) {
         parent::__construct($context, $data);
 
         $this->_registry = $registry;

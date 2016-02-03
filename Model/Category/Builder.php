@@ -53,8 +53,7 @@ class Builder
         CategoryFactory $productFactory,
         CategoryRepositoryInterface $categoryRepository,
         LoggerInterface $logger
-    )
-    {
+    ) {
         $this->_categoryFactory = $productFactory;
         $this->_categoryRepository = $categoryRepository;
         $this->_logger = $logger;

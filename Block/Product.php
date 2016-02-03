@@ -113,8 +113,7 @@ class Product extends View
         Data $dataHelper,
         Format $formatHelper,
         array $data = []
-    )
-    {
+    ) {
         parent::__construct(
             $context,
             $urlEncoder,

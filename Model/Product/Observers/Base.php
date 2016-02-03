@@ -87,8 +87,7 @@ abstract class Base implements ObserverInterface
         StoreManagerInterface $storeManager,
         LoggerInterface $logger,
         ModuleManager $moduleManager
-    )
-    {
+    ) {
         $this->_dataHelper = $dataHelper;
         $this->_accountHelper = $accountHelper;
         $this->_productBuilder = $productBuilder;

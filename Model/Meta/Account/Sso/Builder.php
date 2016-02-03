@@ -44,8 +44,7 @@ class Builder
     public function __construct(
         Session $backendAuthSession,
         LoggerInterface $logger
-    )
-    {
+    ) {
         $this->_backendAuthSession = $backendAuthSession;
         $this->_logger = $logger;
     }

@@ -76,8 +76,7 @@ class Builder
         DataHelper $dataHelper,
         PriceHelper $priceHelper,
         LoggerInterface $logger
-    )
-    {
+    ) {
         $this->_cartFactory = $cartFactory;
         $this->_cartItemFactory = $cartItemFactory;
         $this->_dataHelper = $dataHelper;

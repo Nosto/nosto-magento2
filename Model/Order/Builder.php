@@ -57,8 +57,7 @@ class Builder
      */
     public function __construct(
         LoggerInterface $logger
-    )
-    {
+    ) {
         $this->_logger = $logger;
     }
 

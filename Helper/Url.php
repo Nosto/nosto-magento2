@@ -84,8 +84,7 @@ class Url extends AbstractHelper
         CategoryCollectionFactory $categoryCollectionFactory,
         Visibility $productVisibility,
         \Magento\Framework\Url $urlBuilder
-    )
-    {
+    ) {
         parent::__construct($context);
 
         $this->_productCollectionFactory = $productCollectionFactory;

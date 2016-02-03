@@ -64,8 +64,7 @@ abstract class Base extends Action
         Context $context,
         StoreManagerInterface $storeManager,
         AccountHelper $accountHelper
-    )
-    {
+    ) {
         parent::__construct($context);
 
         $this->_storeManager = $storeManager;

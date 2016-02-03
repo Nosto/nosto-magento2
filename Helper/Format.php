@@ -59,8 +59,7 @@ class Format extends AbstractHelper
         Context $context,
         \NostoFormatterPrice $priceFormatter,
         \NostoFormatterDate $dateFormatter
-    )
-    {
+    ) {
         parent::__construct($context);
 
         $this->_priceFormatter = $priceFormatter;

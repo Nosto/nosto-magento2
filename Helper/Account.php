@@ -89,8 +89,7 @@ class Account extends AbstractHelper
         IframeMetaBuilder $iframeMetaBuilder,
         \NostoHelperIframe $iframeHelper,
         WriterInterface $appConfig
-    )
-    {
+    ) {
         parent::__construct($context);
 
         $this->_ssoMetaBuilder = $ssoMetaBuilder;
@@ -218,8 +217,7 @@ class Account extends AbstractHelper
         Store $store,
         \NostoAccount $account = null,
         array $params = []
-    )
-    {
+    ) {
         return $this->_iframeHelper->getUrl(
             $this->_ssoMetaBuilder->build(),
             $this->_iframeMetaBuilder->build($store),

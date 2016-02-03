@@ -92,8 +92,7 @@ class Order extends Success
         Format $formatHelper,
         Session $checkoutSession,
         array $data = []
-    )
-    {
+    ) {
         parent::__construct(
             $context,
             $orderFactory,

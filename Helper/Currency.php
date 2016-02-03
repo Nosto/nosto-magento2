@@ -54,8 +54,7 @@ class Currency extends AbstractHelper
     public function __construct(
         Context $context,
         \NostoHelperCurrency $currencyHelper
-    )
-    {
+    ) {
         parent::__construct($context);
 
         $this->_currencyHelper = $currencyHelper;

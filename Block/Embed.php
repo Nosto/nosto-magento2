@@ -67,8 +67,7 @@ class Embed extends Template
         Account $accountHelper,
         Data $dataHelper,
         array $data = []
-    )
-    {
+    ) {
         parent::__construct($context, $data);
 
         $this->_accountHelper = $accountHelper;

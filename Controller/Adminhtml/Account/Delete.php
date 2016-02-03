@@ -59,8 +59,7 @@ class Delete extends Action
         Account $accountHelper,
         StoreManagerInterface $storeManager,
         Json $result
-    )
-    {
+    ) {
         parent::__construct($context);
 
         $this->_accountHelper = $accountHelper;

@@ -54,8 +54,7 @@ class Price extends AbstractHelper
     public function __construct(
         Context $context,
         CatalogHelper $catalogHelper
-    )
-    {
+    ) {
         parent::__construct($context);
 
         $this->_catalogHelper = $catalogHelper;
