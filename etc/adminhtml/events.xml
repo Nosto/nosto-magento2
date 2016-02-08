@@ -7,4 +7,7 @@
     <event name="catalog_product_delete_before">
         <observer name="nosto_product_delete_observer" instance="Nosto\Tagging\Model\Product\Observers\Delete" />
     </event>
+    <event name="sales_order_save_commit_after">
+        <observer name="nosto_order_save_observer" instance="Nosto\Tagging\Model\Order\Observers\Save" />
+    </event>
 </config>
