@@ -25,7 +25,7 @@
  * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
-namespace Nosto\Tagging\Observers;
+namespace Nosto\Tagging\Observer\Order;
 
 use Magento\Catalog\Model\Product;
 use Magento\Store\Model\StoreManagerInterface;
@@ -39,7 +39,7 @@ use Nosto\Tagging\Model\Order\Builder as OrderBuilder;
 
 /**
  * Class Save
- * @package Nosto\Tagging\Observers
+ * @package Nosto\Tagging\Observer
  */
 class Save implements ObserverInterface
 {
@@ -112,7 +112,9 @@ class Save implements ObserverInterface
         $order = $observer->getOrder();
         $nostoOrder = $this - $this->_orderBuilder->build($order);
 
-        $this->_logger->info("\n\nSAVING THE NOSTO ORDER CATCHED\n\n");
-        $o = $observer->getOrder();
+
+//
+        $this->_logger->info("\n\nSAVEORDER  SAVING THE NOSTO ORDER CATCHED\n\n");
+//        $o = $observer->getOrder();
     }
 }

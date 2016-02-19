@@ -25,7 +25,7 @@
  * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
-namespace Nosto\Tagging\Model\Product\Observers;
+namespace Nosto\Tagging\Observer\Product;
 
 use Magento\Catalog\Model\Product;
 use Magento\Framework\Event\Observer;

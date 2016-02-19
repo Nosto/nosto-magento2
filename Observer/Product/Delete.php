@@ -25,27 +25,27 @@
  * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
-namespace Nosto\Tagging\Model\Product\Observers;
+namespace Nosto\Tagging\Observer\Product;
 
 use Magento\Catalog\Model\Product;
 use Nosto\Tagging\Model\Product\Observers\Base as ProductObserver;
 
 /**
- * Upsert event observer model.
+ * Delete event observer model.
  * Used to interact with Magento events.
  *
  * @category Nosto
  * @package  Nosto_Tagging
  * @author   Nosto Solutions Ltd <magento@nosto.com>
  */
-class Update extends ProductObserver
+class Delete extends ProductObserver
 {
     /**
      * @inheritdoc
      */
     protected function doRequest(\NostoServiceProduct $operation)
     {
-        $operation->upsert();
+        $operation->delete();
     }
 
     /**
@@ -53,6 +53,6 @@ class Update extends ProductObserver
      */
     protected function validateProduct(Product $product)
     {
-        return $product->isVisibleInSiteVisibility();
+        return true;
     }
 }
