@@ -25,7 +25,7 @@
  * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
-namespace Nosto\Tagging\Model\Order\Observers;
+namespace Nosto\Tagging\Observers;
 
 use Magento\Catalog\Model\Product;
 use Magento\Store\Model\StoreManagerInterface;
@@ -33,8 +33,14 @@ use Magento\Framework\Module\Manager as ModuleManager;
 use Nosto\Tagging\Helper\Data as DataHelper;
 use Nosto\Tagging\Helper\Account as AccountHelper;
 use Magento\Framework\Event\ObserverInterface;
+use Nosto\Tagging\Model\Order\Builder;
 use Psr\Log\LoggerInterface;
+use Nosto\Tagging\Model\Order\Builder as OrderBuilder;
 
+/**
+ * Class Save
+ * @package Nosto\Tagging\Observers
+ */
 class Save implements ObserverInterface
 {
     /**
@@ -58,6 +64,11 @@ class Save implements ObserverInterface
     protected $_logger;
 
     /**
+     * @var Builder
+     */
+    protected $_orderBuilder;
+
+    /**
      * @var ModuleManager
      */
     protected $_moduleManager;
@@ -70,19 +81,23 @@ class Save implements ObserverInterface
      * @param StoreManagerInterface $storeManager
      * @param LoggerInterface $logger
      * @param ModuleManager $moduleManager
+     * @param OrderBuilder $orderBuilder
      */
     public function __construct(
         DataHelper $dataHelper,
         AccountHelper $accountHelper,
         StoreManagerInterface $storeManager,
         LoggerInterface $logger,
-        ModuleManager $moduleManager
-    ) {
+        ModuleManager $moduleManager,
+        OrderBuilder $orderBuilder
+    )
+    {
         $this->_dataHelper = $dataHelper;
         $this->_accountHelper = $accountHelper;
         $this->_storeManager = $storeManager;
         $this->_logger = $logger;
         $this->_moduleManager = $moduleManager;
+        $this->_orderBuilder = $orderBuilder;
     }
 
     /**
@@ -94,8 +109,10 @@ class Save implements ObserverInterface
      */
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
-        var_dump($observer);
-        var_dump('helo');
-        die();
+        $order = $observer->getOrder();
+        $nostoOrder = $this - $this->_orderBuilder->build($order);
+
+        $this->_logger->info("\n\nSAVING THE NOSTO ORDER CATCHED\n\n");
+        $o = $observer->getOrder();
     }
 }

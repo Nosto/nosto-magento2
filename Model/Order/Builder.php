@@ -107,13 +107,21 @@ class Builder
                 $nostoItem->setItemId((int)$this->buildItemProductId($item));
                 $nostoItem->setQuantity((int)$item->getQtyOrdered());
                 $nostoItem->setName($this->buildItemName($item));
-                $nostoItem->setUnitPrice(new NostoPrice($item->getPriceInclTax()));
+                try {
+                    $nostoItem->setUnitPrice(
+                        new NostoPrice($item->getPriceInclTax())
+                    );
+                }catch(\NostoInvalidArgumentException $E) {
+                    $nostoItem->setUnitPrice(
+                        new NostoPrice(0)
+                    );
+                }
                 $nostoItem->setCurrency($nostoCurrency);
                 $nostoOrder->addItem($nostoItem);
             }
 
             // Add discounts as a pseudo line item
-            if (($discount = $order->getDiscountAmount()) > 0) {
+            if (($discount = $order->getDiscountAmount()) < 0) {
                 $nostoItem = new NostoOrderItem();
                 $nostoItem->setItemId(-1);
                 $nostoItem->setQuantity(1);

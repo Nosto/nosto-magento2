@@ -36,9 +36,6 @@ use Magento\Store\Model\StoreManagerInterface;
 use Nosto\Tagging\Helper\Account as AccountHelper;
 use NostoExportCollectionInterface;
 
-/** @noinspection PhpIncludeInspection */
-require_once 'app/code/Nosto/Tagging/vendor/nosto/php-sdk/autoload.php';
-
 /**
  * Export base controller that all export controllers must extend.
  */
@@ -113,9 +110,7 @@ abstract class Base extends Action
             $pageSize = (int)$this->getRequest()->getParam(self::LIMIT, 100);
             $currentOffset = (int)$this->getRequest()->getParam(self::OFFSET, 0);
             $currentPage = ($currentOffset / $pageSize) + 1;
-
-            $collection->setCurPage($currentPage);
-            $collection->setPageSize($pageSize);
+            $collection->getSelect()->limitPage($currentPage, $pageSize);
             $collection->setOrder(self::CREATED_AT, $collection::SORT_ORDER_DESC);
         }
         $collection->load();

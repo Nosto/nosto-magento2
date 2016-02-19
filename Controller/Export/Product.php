@@ -30,6 +30,10 @@ namespace Nosto\Tagging\Controller\Export;
 use Magento\Catalog\Model\Product\Visibility as ProductVisibility;
 use /** @noinspection PhpUndefinedClassInspection */
     Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductCollectionFactory;
+use Magento\Catalog\Model\ResourceModel\ProductFactory;
+use Magento\Framework\Api\Search\SearchCriteriaBuilder;
+use Magento\Framework\Api\FilterBuilder;
+use Magento\Catalog\Model\ProductRepository;
 use Magento\Framework\App\Action\Context;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
@@ -98,7 +102,8 @@ class Product extends Base
     {
         /** @var \Magento\Catalog\Model\ResourceModel\Product\Collection $collection */
         $exportCollection = new NostoExportCollectionProduct();
-        foreach ($collection->getItems() as $product) {
+        $items = $collection->loadData();
+        foreach ($items as $product) {
             /** @var \Magento\Catalog\Model\Product $product */
             $nostoProduct = $this->_productBuilder->build($product, $store);
             $exportCollection[] = $nostoProduct;
