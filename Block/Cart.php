@@ -32,8 +32,15 @@ use Magento\Customer\Model\Session;
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Element\Template\Context;
 use Magento\Store\Model\Store;
+use Nosto\Tagging\Api\Data\CustomerInterface;
 use Nosto\Tagging\Helper\Format as FormatHelper;
 use Nosto\Tagging\Model\Cart\Builder as CartBuilder;
+use Nosto\Tagging\Model\CustomerFactory;
+use Magento\Framework\Stdlib\CookieManagerInterface;
+use Magento\Checkout\Model\Session as CheckoutSession;
+use Magento\Checkout\Helper\Cart as CartHelper;
+use Magento\Framework\App\Http\Context as HttpContext;
+use Nosto\Tagging\Model\Customer as NostoCustomer;
 
 /** @noinspection PhpIncludeInspection */
 require_once 'app/code/Nosto/Tagging/vendor/nosto/php-sdk/autoload.php';
@@ -61,6 +68,16 @@ class Cart extends \Magento\Checkout\Block\Cart
     protected $_cartBuilder;
 
     /**
+     * @var CustomerFactory customer factory.
+     */
+    protected $_customerFactory;
+
+    /**
+     * @var CookieManager cookie manager.
+     */
+    protected $_cookieManager;
+
+    /**
      * Constructor.
      *
      * @param Context $context
@@ -71,17 +88,20 @@ class Cart extends \Magento\Checkout\Block\Cart
      * @param \Magento\Framework\App\Http\Context $httpContext
      * @param CartBuilder $cartBuilder
      * @param FormatHelper $formatHelper
+     * @param CustomerFactory $customerFactory
      * @param array $data
      */
     public function __construct(
         Context $context,
         Session $customerSession,
-        \Magento\Checkout\Model\Session $checkoutSession,
+        CookieManagerInterface $cookieManager,
+        CheckoutSession $checkoutSession,
         Url $catalogUrlBuilder,
-        \Magento\Checkout\Helper\Cart $cartHelper,
-        \Magento\Framework\App\Http\Context $httpContext,
+        CartHelper $cartHelper,
+        HttpContext $httpContext,
         CartBuilder $cartBuilder,
         FormatHelper $formatHelper,
+        CustomerFactory $customerFactory,
         array $data = []
     ) {
         parent::__construct(
@@ -96,6 +116,38 @@ class Cart extends \Magento\Checkout\Block\Cart
 
         $this->_cartBuilder = $cartBuilder;
         $this->_formatHelper = $formatHelper;
+        $this->_customerFactory = $customerFactory;
+        $this->_cookieManager = $cookieManager;
+
+        // Handle the Nosto customer & quote mapping
+        $nostoCustomerId = $this->_cookieManager->getCookie(NostoCustomer::COOKIE_NAME);
+        $quoteId = $this->getQuote()->getId();
+        if (!empty($quoteId) && !empty($nostoCustomerId)) {
+            $nostoCustomer = $this->_customerFactory
+                ->create()
+                ->getCollection()
+                ->addFieldToFilter(NostoCustomer::QUOTE_ID, $quoteId)
+                ->addFieldToFilter(NostoCustomer::NOSTO_ID, $nostoCustomerId)
+                ->setPageSize(1)
+                ->setCurPage(1)
+                ->getFirstItem();
+
+            if ($nostoCustomer->hasData(NostoCustomer::CUSTOMER_ID)) {
+                $nostoCustomer->setUpdatedAt(new \DateTime('now'));
+            } else {
+                $nostoCustomer = $this->_customerFactory->create();
+                $nostoCustomer->setQuoteId($quoteId);
+                $nostoCustomer->setNostoId($nostoCustomerId);
+                $nostoCustomer->setCreatedAt(new \DateTime('now'));
+                $nostoCustomer->setUpdatedAt(new \DateTime('now'));
+            }
+
+            try {
+                $nostoCustomer->save();
+            } catch (\Exception $e) {
+                //Todo - handle errors, maybe log?
+            }
+        }
     }
 
     /**

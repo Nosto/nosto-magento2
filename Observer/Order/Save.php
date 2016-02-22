@@ -28,6 +28,7 @@
 namespace Nosto\Tagging\Observer\Order;
 
 use Magento\Catalog\Model\Product;
+use Magento\Payment\Model\Cart\SalesModel\Order;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Framework\Module\Manager as ModuleManager;
 use Nosto\Tagging\Helper\Data as DataHelper;
@@ -36,6 +37,8 @@ use Magento\Framework\Event\ObserverInterface;
 use Nosto\Tagging\Model\Order\Builder;
 use Psr\Log\LoggerInterface;
 use Nosto\Tagging\Model\Order\Builder as OrderBuilder;
+use Nosto\Tagging\Model\CustomerFactory;
+use Nosto\Tagging\Api\Data\CustomerInterface as NostoCustomer;
 
 /**
  * Class Save
@@ -74,6 +77,11 @@ class Save implements ObserverInterface
     protected $_moduleManager;
 
     /**
+     * @var CustomerFactory
+     */
+    protected $_customerFactory;
+
+    /**
      * Constructor.
      *
      * @param DataHelper $dataHelper
@@ -81,6 +89,7 @@ class Save implements ObserverInterface
      * @param StoreManagerInterface $storeManager
      * @param LoggerInterface $logger
      * @param ModuleManager $moduleManager
+     * @param CustomerFactory $customerFactory
      * @param OrderBuilder $orderBuilder
      */
     public function __construct(
@@ -89,6 +98,7 @@ class Save implements ObserverInterface
         StoreManagerInterface $storeManager,
         LoggerInterface $logger,
         ModuleManager $moduleManager,
+        CustomerFactory $customerFactory,
         OrderBuilder $orderBuilder
     )
     {
@@ -98,6 +108,7 @@ class Save implements ObserverInterface
         $this->_logger = $logger;
         $this->_moduleManager = $moduleManager;
         $this->_orderBuilder = $orderBuilder;
+        $this->_customerFactory = $customerFactory;
     }
 
     /**
@@ -109,12 +120,27 @@ class Save implements ObserverInterface
      */
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
-        $order = $observer->getOrder();
-        $nostoOrder = $this - $this->_orderBuilder->build($order);
+        if ($this->_moduleManager->isEnabled('Nosto_Tagging')) {
+            /* @var Order $order */
+            $order = $observer->getOrder();
+            $nostoOrder = $this->_orderBuilder->build($order);
+            $nostoAccount = $this->_accountHelper->findAccount(
+                $this->_storeManager->getStore()
+            );
 
+            $quoteId = $order->getQuoteId();
+            $nostoCustomer = $this->_customerFactory
+                ->create()
+                ->load($quoteId, NostoCustomer::QUOTE_ID);
 
-//
-        $this->_logger->info("\n\nSAVEORDER  SAVING THE NOSTO ORDER CATCHED\n\n");
-//        $o = $observer->getOrder();
+            $orderService = new \NostoServiceOrder($nostoAccount);
+            try {
+                $orderService->confirm($nostoOrder, $nostoCustomer->getNostoId());
+                $this->_logger->info("\n\nSAVEORDER ORDER SAVED\n\n");
+
+            } catch (\NostoHttpException $e) {
+                $this->_logger->info("\n\nSAVEORDER FAILED\n\n");
+            }
+        }
     }
 }

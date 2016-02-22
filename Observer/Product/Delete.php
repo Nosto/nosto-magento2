@@ -28,7 +28,7 @@
 namespace Nosto\Tagging\Observer\Product;
 
 use Magento\Catalog\Model\Product;
-use Nosto\Tagging\Model\Product\Observers\Base as ProductObserver;
+use Nosto\Tagging\Observer\Product\Base as ProductObserver;
 
 /**
  * Delete event observer model.
