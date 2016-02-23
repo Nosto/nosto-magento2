@@ -27,7 +27,7 @@ class Customer extends AbstractModel implements CustomerInterface
      */
     public function getCustomerId()
     {
-        $this->getData(self::CUSTOMER_ID);
+        return $this->getData(self::CUSTOMER_ID);
     }
 
     /**
@@ -35,7 +35,7 @@ class Customer extends AbstractModel implements CustomerInterface
      */
     public function getQuoteId()
     {
-        $this->getData(self::QUOTE_ID);
+        return $this->getData(self::QUOTE_ID);
     }
 
     /**
@@ -43,7 +43,7 @@ class Customer extends AbstractModel implements CustomerInterface
      */
     public function getNostoId()
     {
-        $this->getData(self::NOSTO_ID);
+        return $this->getData(self::NOSTO_ID);
     }
 
     /**
@@ -51,7 +51,7 @@ class Customer extends AbstractModel implements CustomerInterface
      */
     public function getCreatedAt()
     {
-        $this->getData(self::CREATED_AT);
+        return  $this->getData(self::CREATED_AT);
     }
 
     /**
@@ -59,7 +59,7 @@ class Customer extends AbstractModel implements CustomerInterface
      */
     public function getUpdatedAt()
     {
-        $this->getData(self::UPDATED_AT);
+        return $this->getData(self::UPDATED_AT);
     }
 
     /**
@@ -67,7 +67,7 @@ class Customer extends AbstractModel implements CustomerInterface
      */
     public function setCustomerId($customerId)
     {
-        $this->setData(self::CUSTOMER_ID, $customerId);
+        return $this->setData(self::CUSTOMER_ID, $customerId);
     }
 
     /**
@@ -75,7 +75,7 @@ class Customer extends AbstractModel implements CustomerInterface
      */
     public function setQuoteId($quoteId)
     {
-        $this->setData(self::QUOTE_ID, $quoteId);
+        return $this->setData(self::QUOTE_ID, $quoteId);
     }
 
     /**
@@ -83,7 +83,7 @@ class Customer extends AbstractModel implements CustomerInterface
      */
     public function setNostoId($nostoId)
     {
-        $this->setData(self::NOSTO_ID, $nostoId);
+        return $this->setData(self::NOSTO_ID, $nostoId);
     }
 
     /**
@@ -91,7 +91,7 @@ class Customer extends AbstractModel implements CustomerInterface
      */
     public function setCreatedAt(\DateTime $createdAt)
     {
-        $this->setData(self::CREATED_AT, $createdAt);
+        return $this->setData(self::CREATED_AT, $createdAt);
     }
 
     /**
@@ -99,6 +99,6 @@ class Customer extends AbstractModel implements CustomerInterface
      */
     public function setUpdatedAt(\DateTime $updatedAt)
     {
-        $this->setData(self::UPDATED_AT, $updatedAt);
+        return $this->setData(self::UPDATED_AT, $updatedAt);
     }
 }

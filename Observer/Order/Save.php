@@ -100,8 +100,7 @@ class Save implements ObserverInterface
         ModuleManager $moduleManager,
         CustomerFactory $customerFactory,
         OrderBuilder $orderBuilder
-    )
-    {
+    ) {
         $this->_dataHelper = $dataHelper;
         $this->_accountHelper = $accountHelper;
         $this->_storeManager = $storeManager;
@@ -136,10 +135,17 @@ class Save implements ObserverInterface
             $orderService = new \NostoServiceOrder($nostoAccount);
             try {
                 $orderService->confirm($nostoOrder, $nostoCustomer->getNostoId());
-                $this->_logger->info("\n\nSAVEORDER ORDER SAVED\n\n");
 
-            } catch (\NostoHttpException $e) {
-                $this->_logger->info("\n\nSAVEORDER FAILED\n\n");
+            } catch (\Exception $e) {
+                $this->_logger->error(
+                    sprintf(
+                        "Failed to save order with qoute #%s for customer #%s.
+                        Message was: %s",
+                        $quoteId,
+                        $nostoCustomer->getNostoId(),
+                        $e->getMessage()
+                    )
+                );
             }
         }
     }
