@@ -32,7 +32,6 @@ use Magento\Customer\Model\Session;
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Element\Template\Context;
 use Magento\Store\Model\Store;
-use Nosto\Tagging\Api\Data\CustomerInterface;
 use Nosto\Tagging\Helper\Format as FormatHelper;
 use Nosto\Tagging\Model\Cart\Builder as CartBuilder;
 use Nosto\Tagging\Model\CustomerFactory;
@@ -41,6 +40,7 @@ use Magento\Checkout\Model\Session as CheckoutSession;
 use Magento\Checkout\Helper\Cart as CartHelper;
 use Magento\Framework\App\Http\Context as HttpContext;
 use Nosto\Tagging\Model\Customer as NostoCustomer;
+use Magento\Checkout\Block\Cart as CartBlock;
 
 /** @noinspection PhpIncludeInspection */
 require_once 'app/code/Nosto/Tagging/vendor/nosto/php-sdk/autoload.php';
@@ -50,7 +50,7 @@ require_once 'app/code/Nosto/Tagging/vendor/nosto/php-sdk/autoload.php';
  * This meta-data is sent to Nosto via JavaScript when users are browsing the
  * pages in the store.
  */
-class Cart extends \Magento\Checkout\Block\Cart
+class Cart extends CartBlock
 {
     /**
      * @inheritdoc

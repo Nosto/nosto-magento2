@@ -2,13 +2,10 @@
 
 Missing features:
 
-* cart tagging (incomplete)
-* order tagging
-* recommendation elements (all except the product page)
+* cache management
+
+Planned later 
 * admin config section for "Advanced Settings"
-* order confirmation API
-* order history export
-* product update API
+* account update API
 * currency exchange rate API
 * currency exchange rate CRON
-* account update API

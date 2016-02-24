@@ -36,6 +36,7 @@
         <referenceContainer name="content">
             <block class="Nosto\Tagging\Block\Variation" name="nosto.variation"/>
             <block class="Nosto\Tagging\Block\Cart" name="nosto.cart"/>
+            <block class="Nosto\Tagging\Block\Customer" name="nosto.customer"/>
         </referenceContainer>
     </body>
 </page>
