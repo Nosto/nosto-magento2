@@ -32,6 +32,7 @@ use Magento\Catalog\Model\Category;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\Product\Type;
 use Magento\Catalog\Model\ResourceModel\Eav\Attribute;
+use Magento\SalesRule\Model\RuleFactory as SalesRuleFactory;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable;
 use Magento\Framework\App\ObjectManager;
 use Magento\GroupedProduct\Model\Product\Type\Grouped;
@@ -43,22 +44,39 @@ use NostoOrderBuyer;
 use NostoOrderItem;
 use NostoOrderPaymentProvider;
 use NostoOrderStatus;
+use Nosto\Tagging\Helper\Price as PriceHelper;
 use NostoPrice;
 use Psr\Log\LoggerInterface;
 
 class Builder
 {
+    /**
+     * @var LoggerInterface
+     */
     protected $_logger;
-    private $_objectManager;
+
+    /**
+     * @var SalesRuleFactory
+     */
+    protected $_salesRuleFactory;
+
+    /**
+     * @var PriceHelper
+     */
+    protected $_priceHelper;
 
     /**
      * @param LoggerInterface $logger
      * @internal param ObjectManager $objectManager
      */
     public function __construct(
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        SalesRuleFactory $salesRuleFactory,
+        PriceHelper $priceHelper
     ) {
         $this->_logger = $logger;
+        $this->_salesRuleFactory= $salesRuleFactory;
+        $this->_priceHelper = $priceHelper;
     }
 
     /**
@@ -109,9 +127,11 @@ class Builder
                 $nostoItem->setName($this->buildItemName($item));
                 try {
                     $nostoItem->setUnitPrice(
-                        new NostoPrice($item->getPriceInclTax())
+                        new NostoPrice(
+                            $this->_priceHelper->getItemFinalPriceInclTax($item)
+                        )
                     );
-                }catch(\NostoInvalidArgumentException $E) {
+                } catch (\NostoInvalidArgumentException $E) {
                     $nostoItem->setUnitPrice(
                         new NostoPrice(0)
                     );
@@ -125,7 +145,7 @@ class Builder
                 $nostoItem = new NostoOrderItem();
                 $nostoItem->setItemId(-1);
                 $nostoItem->setQuantity(1);
-                $nostoItem->setName('Discount');
+                $nostoItem->setName($this->buildDiscountRuleDescription($order));
                 $nostoItem->setUnitPrice(new NostoPrice($discount));
                 $nostoItem->setCurrency($nostoCurrency);
                 $nostoOrder->addItem($nostoItem);
@@ -146,6 +166,42 @@ class Builder
         }
 
         return $nostoOrder;
+    }
+
+    /**
+     * Generates a textual description of the applied discount rules
+     *
+     * @param Order $order
+     * @return string discount description
+     */
+    protected function buildDiscountRuleDescription(Order $order)
+    {
+        try {
+            $appliedRules = array();
+            foreach ($order->getAllVisibleItems() as $item) {
+                /* @var Item $item */
+                $itemAppliedRules = $item->getAppliedRuleIds();
+                if (empty($itemAppliedRules)) {
+                    continue;
+                }
+                $ruleIds = explode(',', $item->getAppliedRuleIds());
+                foreach ($ruleIds as $ruleId) {
+                    $rule = $this->_salesRuleFactory->create()->load($ruleId);
+                    $appliedRules[$ruleId] = $rule->getName();
+                }
+            }
+            if (count($appliedRules) == 0) {
+                $appliedRules[] = 'unknown rule';
+            }
+            $discountTxt = sprintf(
+                'Discount (%s)',
+                implode(', ', $appliedRules)
+            );
+        } catch (\Exception $e) {
+            $discountTxt = 'Discount (error)';
+        }
+
+        return $discountTxt;
     }
 
     /**

@@ -34,6 +34,7 @@ use Magento\Catalog\Model\Product\Type as ProductType;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 use Magento\GroupedProduct\Model\Product\Type\Grouped as GroupedType;
+use Magento\Sales\Model\Order\Item;
 
 /** @noinspection PhpIncludeInspection */
 require_once 'app/code/Nosto/Tagging/vendor/nosto/php-sdk/autoload.php';
@@ -166,5 +167,18 @@ class Price extends AbstractHelper
         }
 
         return $price;
+    }
+
+    /**
+     * Get the final price in base currency for an ordered item including
+     * taxes as discounts.
+     *
+     * @param Item $item the item model.
+     *
+     * @return float
+     */
+    public function getItemFinalPriceInclTax(Item $item)
+    {
+        return $item->getPriceInclTax() - $item->getBaseDiscountAmount();
     }
 }

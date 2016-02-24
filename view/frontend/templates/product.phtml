@@ -50,7 +50,7 @@ $category = $this->getNostoCategory();
         <span class="category"><?php echo $this->escapeHtml($cat->getPath()); ?></span>
     <?php endforeach; ?>
     <?php if ($product->getDescription()) : ?>
-        <span class="description"><?php echo $this->escapeHtml($product->getDescription()); ?></span>
+        <span class="description"><?php echo $this->escapeHtml($this->stripTags($product->getDescription())); ?></span>
     <?php endif; ?>
     <?php if ($product->getListPrice()) : ?>
         <span class="list_price"><?php echo $this->formatNostoPrice($product->getListPrice()); ?></span>
