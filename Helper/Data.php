@@ -1,0 +1,167 @@
+<?php
+/**
+ * Magento
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@magentocommerce.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade Magento to newer
+ * versions in the future. If you wish to customize Magento for your
+ * needs please refer to http://www.magentocommerce.com for more information.
+ *
+ * @category  Nosto
+ * @package   Nosto_Tagging
+ * @author    Nosto Solutions Ltd <magento@nosto.com>
+ * @copyright Copyright (c) 2013-2016 Nosto Solutions Ltd (http://www.nosto.com)
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ */
+
+namespace Nosto\Tagging\Helper;
+
+use Magento\Framework\App\Config\Storage\WriterInterface;
+use Magento\Framework\App\Helper\AbstractHelper;
+use Magento\Framework\App\Helper\Context;
+use Magento\Framework\AppInterface;
+use Magento\Framework\Module\ModuleListInterface;
+use Magento\Store\Model\Store;
+use Magento\Store\Model\StoreManagerInterface;
+
+/** @noinspection PhpIncludeInspection */
+require_once 'app/code/Nosto/Tagging/vendor/nosto/php-sdk/autoload.php';
+
+/**
+ * Data helper used for common tasks, mainly configurations.
+ */
+class Data extends AbstractHelper
+{
+    /**
+     * Path to store config installation ID.
+     */
+    const XML_PATH_INSTALLATION_ID = 'nosto_tagging/installation/id';
+
+    /**
+     * Path to store config product image version setting.
+     */
+    const XML_PATH_IMAGE_VERSION = 'nosto_tagging/image_options/image_version';
+
+    /**
+     * @var StoreManagerInterface the store manager.
+     */
+    protected $_storeManager;
+
+    /**
+     * @var ModuleListInterface the module listing
+     */
+    protected $_moduleListing;
+
+    /**
+     * @var WriterInterface the config writer.
+     */
+    protected $_configWriter;
+
+    /**
+     * Constructor.
+     *
+     * @param Context $context the context.
+     * @param StoreManagerInterface $storeManager the store manager.
+     * @param ModuleListInterface $moduleListing
+     * @param WriterInterface $configWriter
+     */
+    public function __construct(
+        Context $context,
+        StoreManagerInterface $storeManager,
+        ModuleListInterface $moduleListing,
+        WriterInterface $configWriter
+    ) {
+        parent::__construct($context);
+
+        $this->_storeManager = $storeManager;
+        $this->_moduleListing = $moduleListing;
+        $this->_configWriter = $configWriter;
+    }
+
+    /**
+     * @param string $path
+     * @param Store|null $store
+     * @return mixed|null
+     */
+    public function getStoreConfig($path, Store $store = null)
+    {
+        if (is_null($store)) {
+            $store = $this->_storeManager->getStore(true);
+        }
+        return $store->getConfig($path);
+    }
+
+    /**
+     * Returns a unique ID that identifies this Magento installation.
+     * This ID is sent to the Nosto account config iframe and used to link all
+     * Nosto accounts used on this installation.
+     *
+     * @return string the ID.
+     */
+    public function getInstallationId()
+    {
+        $installationId = $this->scopeConfig->getValue(
+            self::XML_PATH_INSTALLATION_ID
+        );
+        if (empty($installationId)) {
+            // Running bin2hex() will make the ID string length 64 characters.
+            $installationId = bin2hex(\phpseclib_Crypt_Random::string(32));
+            $this->_configWriter->save(
+                self::XML_PATH_INSTALLATION_ID,
+                $installationId
+            );
+            // todo: clear cache.
+        }
+        return $installationId;
+    }
+
+    /**
+     * Return the product image version to include in product tagging.
+     *
+     * @param \Magento\Store\Model\Store|null $store the store model or null.
+     *
+     * @return string
+     */
+    public function getProductImageVersion(Store $store = null)
+    {
+        return $this->getStoreConfig(self::XML_PATH_IMAGE_VERSION, $store);
+    }
+
+    /**
+     * Returns the module version number of the currently installed module.
+     *
+     * @return string the module's version
+     */
+    public function getModuleVersion()
+    {
+        $nostoModule = $this->_moduleListing->getOne('Nosto_Tagging');
+        if (!empty($nostoModule['setup_version'])) {
+
+            return $nostoModule['setup_version'];
+        } else {
+s
+            return 'unknown';
+        }
+    }
+
+    /**
+     * Returns the version number of the platform the e-commerce installation
+     *
+     * @return string the platforms's version
+     */
+    public function getPlatformVersion()
+    {
+        return AppInterface::VERSION;
+    }
+}
