@@ -30,7 +30,7 @@
       xsi:noNamespaceSchemaLocation="../../../../../../../lib/internal/Magento/Framework/View/Layout/etc/page_configuration.xsd">
     <body>
         <referenceContainer name="content">
-            <block class="Nosto\Tagging\Block\Order" name="nosto.order"/>
+            <block class="Nosto\Tagging\Block\Order" name="nosto.order" cacheable="false"/>
             <block class="Nosto\Tagging\Block\Element" name="nosto.page.orderconfirmation1" after="-">
                 <action method="setData">
                     <argument name="name" xsi:type="string">nostoId</argument>
