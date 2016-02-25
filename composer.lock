@@ -4,21 +4,21 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "ab676e7f44caa8ae6a263a778df90e14",
-    "content-hash": "8e11022d17ec7f1f72edfc0c58b10f8f",
+    "hash": "5d46b0c720fc66526017b63d6b9a37af",
+    "content-hash": "27992a63bebd3f49e2ad6ad3dda46d01",
     "packages": [
         {
             "name": "nosto/php-sdk",
-            "version": "dev-develop",
+            "version": "2.4.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Nosto/php-sdk.git",
-                "reference": "3e33dfb585bc26bcca23d04bb217ebe02222b543"
+                "reference": "813ae14c2a70d7ed6ed5ba8260feda558b6d1963"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Nosto/php-sdk/zipball/3e33dfb585bc26bcca23d04bb217ebe02222b543",
-                "reference": "3e33dfb585bc26bcca23d04bb217ebe02222b543",
+                "url": "https://api.github.com/repos/Nosto/php-sdk/zipball/813ae14c2a70d7ed6ed5ba8260feda558b6d1963",
+                "reference": "813ae14c2a70d7ed6ed5ba8260feda558b6d1963",
                 "shasum": ""
             },
             "require-dev": {
@@ -32,18 +32,16 @@
             ],
             "description": "PHP SDK for developing Nosto modules for e-commerce platforms",
             "support": {
-                "source": "https://github.com/Nosto/php-sdk/tree/develop",
+                "source": "https://github.com/Nosto/php-sdk/tree/2.4.1",
                 "issues": "https://github.com/Nosto/php-sdk/issues"
             },
-            "time": "2015-10-30 14:25:43"
+            "time": "2016-02-10 13:44:03"
         }
     ],
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": {
-        "nosto/php-sdk": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
