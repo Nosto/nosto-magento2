@@ -145,7 +145,14 @@ class Data extends AbstractHelper
      */
     public function getModuleVersion()
     {
-        return $this->_moduleListing->getOne('modules/Nosto_Tagging')['setup_version'];
+        $nostoModule = $this->_moduleListing->getOne('Nosto_Tagging');
+        if (!empty($nostoModule['setup_version'])) {
+
+            return $nostoModule['setup_version'];
+        } else {
+s
+            return 'unknown';
+        }
     }
 
     /**
