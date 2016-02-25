@@ -150,7 +150,7 @@ class Data extends AbstractHelper
 
             return $nostoModule['setup_version'];
         } else {
-s
+
             return 'unknown';
         }
     }
