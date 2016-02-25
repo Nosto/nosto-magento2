@@ -4,8 +4,7 @@
     "type": "magento2-module",
     "version": "0.1.0",
     "license": [
-        "OSL-3.0",
-        "AFL-3.0"
+        "OSL-3.0"
     ],
     "repositories": [
         {
@@ -16,7 +15,7 @@
     "minimum-stability": "dev",
     "require": {
         "php": "~5.5.0|~5.6.0",
-        "nosto/php-sdk": "dev-develop"
+        "nosto/php-sdk": "2.4.1"
     },
     "extra": {
         "map": [
@@ -27,7 +26,9 @@
         ]
     },
     "autoload": {
-        "psr-4": { "Nosto\\Tagging\\": "" },
+        "psr-4": {
+          "Nosto\\Tagging\\": ""
+        },
         "files": [ "registration.php" ]
     }
 }
