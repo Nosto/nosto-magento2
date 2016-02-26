@@ -31,9 +31,6 @@ use Magento\Framework\Registry;
 use Magento\Framework\View\Element\Template;
 use Nosto\Tagging\Model\Category\Builder as CategoryBuilder;
 
-/** @noinspection PhpIncludeInspection */
-require_once 'app/code/Nosto/Tagging/vendor/nosto/php-sdk/autoload.php';
-
 /**
  * Category block used for outputting meta-data on the stores category pages.
  * This meta-data is sent to Nosto via JavaScript when users are browsing the

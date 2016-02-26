@@ -32,9 +32,6 @@ use Magento\Framework\View\Element\Template\Context;
 use Magento\Store\Model\Store;
 use Nosto\Tagging\Helper\Data as DataHelper;
 
-/** @noinspection PhpIncludeInspection */
-require_once 'app/code/Nosto/Tagging/vendor/nosto/php-sdk/autoload.php';
-
 /**
  * Meta data block for outputting <meta> elements in the page <head>.
  * This block should be included on all pages.

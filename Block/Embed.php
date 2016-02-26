@@ -33,9 +33,6 @@ use Magento\Store\Model\Store;
 use Nosto\Tagging\Helper\Account;
 use Nosto\Tagging\Helper\Data;
 
-/** @noinspection PhpIncludeInspection */
-require_once 'app/code/Nosto/Tagging/vendor/nosto/php-sdk/autoload.php';
-
 /**
  * Embed script block that includes the Nosto script in the page <head>.
  * This block should be included on all pages.

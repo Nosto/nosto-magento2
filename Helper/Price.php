@@ -36,9 +36,6 @@ use Magento\Framework\App\Helper\Context;
 use Magento\GroupedProduct\Model\Product\Type\Grouped as GroupedType;
 use Magento\Sales\Model\Order\Item;
 
-/** @noinspection PhpIncludeInspection */
-require_once 'app/code/Nosto/Tagging/vendor/nosto/php-sdk/autoload.php';
-
 /**
  * Price helper used for product price related tasks.
  */

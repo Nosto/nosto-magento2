@@ -35,9 +35,6 @@ use Magento\Store\Model\Store;
 use Nosto\Tagging\Model\Meta\Account\Iframe\Builder as IframeMetaBuilder;
 use Nosto\Tagging\Model\Meta\Account\Sso\Builder as SsoMetaBuilder;
 
-/** @noinspection PhpIncludeInspection */
-require_once 'app/code/Nosto/Tagging/vendor/nosto/php-sdk/autoload.php';
-
 /**
  * Account helper class for common tasks related to Nosto accounts.
  * Everything related to saving/updating/deleting accounts happens in here.

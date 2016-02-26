@@ -34,9 +34,6 @@ use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
 use Nosto\Tagging\Model\Meta\Oauth\Builder;
 
-/** @noinspection PhpIncludeInspection */
-require_once 'app/code/Nosto/Tagging/vendor/nosto/php-sdk/autoload.php';
-
 class Connect extends Action
 {
     const ADMIN_RESOURCE = 'Nosto_Tagging::system_nosto_account';

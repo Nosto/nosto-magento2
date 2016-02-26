@@ -29,9 +29,6 @@ namespace Nosto\Tagging\Block;
 
 use Magento\CatalogSearch\Block\Result;
 
-/** @noinspection PhpIncludeInspection */
-require_once 'app/code/Nosto/Tagging/vendor/nosto/php-sdk/autoload.php';
-
 /**
  * Search block used for outputting meta-data on the stores search pages.
  * This meta-data is sent to Nosto via JavaScript when users are browsing the

@@ -27,13 +27,10 @@
 
 namespace Nosto\Tagging\Helper;
 
-/** @noinspection PhpIncludeInspection */
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 use /** @noinspection PhpUndefinedClassInspection */
     Zend_Currency;
-
-require_once 'app/code/Nosto/Tagging/vendor/nosto/php-sdk/autoload.php';
 
 /**
  * Currency helper used for currency related tasks.

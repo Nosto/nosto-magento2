@@ -42,9 +42,6 @@ use Magento\Framework\App\Http\Context as HttpContext;
 use Nosto\Tagging\Model\Customer as NostoCustomer;
 use Magento\Checkout\Block\Cart as CartBlock;
 
-/** @noinspection PhpIncludeInspection */
-require_once 'app/code/Nosto/Tagging/vendor/nosto/php-sdk/autoload.php';
-
 /**
  * Cart block used for outputting meta-data on the stores product pages.
  * This meta-data is sent to Nosto via JavaScript when users are browsing the
