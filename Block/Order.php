@@ -37,9 +37,6 @@ use Nosto\Tagging\Helper\Format;
 use Nosto\Tagging\Model\Order\Builder as OrderBuilder;
 use NostoPrice;
 
-/** @noinspection PhpIncludeInspection */
-require_once 'app/code/Nosto/Tagging/vendor/nosto/php-sdk/autoload.php';
-
 /**
  * Category block used for outputting meta-data on the stores category pages.
  * This meta-data is sent to Nosto via JavaScript when users are browsing the

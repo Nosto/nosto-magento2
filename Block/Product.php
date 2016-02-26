@@ -43,9 +43,6 @@ use Nosto\Tagging\Helper\Format;
 use Nosto\Tagging\Model\Category\Builder as CategoryBuilder;
 use Nosto\Tagging\Model\Product\Builder as ProductBuilder;
 
-/** @noinspection PhpIncludeInspection */
-require_once 'app/code/Nosto/Tagging/vendor/nosto/php-sdk/autoload.php';
-
 /**
  * Product block used for outputting meta-data on the stores product pages.
  * This meta-data is sent to Nosto via JavaScript when users are browsing the

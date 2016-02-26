@@ -31,8 +31,6 @@ namespace Nosto\Tagging\Helper;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 
-require_once 'app/code/Nosto/Tagging/vendor/nosto/php-sdk/autoload.php';
-
 /**
  * Format helper used for common formatting tasks.
  */

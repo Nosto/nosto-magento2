@@ -36,9 +36,6 @@ use Nosto\Tagging\Helper\Account;
 use Nosto\Tagging\Model\Meta\Account\Builder;
 use Psr\Log\LoggerInterface;
 
-/** @noinspection PhpIncludeInspection */
-require_once 'app/code/Nosto/Tagging/vendor/nosto/php-sdk/autoload.php';
-
 class Create extends Action
 {
     const ADMIN_RESOURCE = 'Nosto_Tagging::system_nosto_account';

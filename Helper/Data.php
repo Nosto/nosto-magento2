@@ -35,9 +35,6 @@ use Magento\Framework\Module\ModuleListInterface;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
 
-/** @noinspection PhpIncludeInspection */
-require_once 'app/code/Nosto/Tagging/vendor/nosto/php-sdk/autoload.php';
-
 /**
  * Data helper used for common tasks, mainly configurations.
  */
@@ -150,7 +147,7 @@ class Data extends AbstractHelper
 
             return $nostoModule['setup_version'];
         } else {
-s
+
             return 'unknown';
         }
     }
