@@ -112,19 +112,21 @@ class Builder
         $cartItems = array();
 
         foreach ($items as $item) {
-            $cartItem = $this->_cartItemFactory->create();
+            try {
+                $cartItem = $this->_cartItemFactory->create();
+                $cartItem->setItemId($this->buildItemId($item));
+                $cartItem->setQuantity((int)$item->getQty());
+                $cartItem->setName($this->buildItemName($item));
+                $cartItem->setUnitPrice(
+                    new \NostoPrice($item->getBasePriceInclTax())
+                );
+                $cartItem->setCurrency(
+                    new \NostoCurrencyCode($store->getBaseCurrencyCode())
+                );
+                $cartItems[] = $cartItem;
+            } catch (\NostoException $e) {
 
-            $cartItem->setItemId($this->buildItemId($item));
-            $cartItem->setQuantity((int)$item->getQty());
-            $cartItem->setName($this->buildItemName($item));
-            $cartItem->setUnitPrice(
-                new \NostoPrice($item->getBasePriceInclTax())
-            );
-            $cartItem->setCurrency(
-                new \NostoCurrencyCode($store->getBaseCurrencyCode())
-            );
-
-            $cartItems[] = $cartItem;
+            }
         }
 
         return $cartItems;

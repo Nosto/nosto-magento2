@@ -105,8 +105,7 @@ class Product extends Base
         $items = $collection->loadData();
         foreach ($items as $product) {
             /** @var \Magento\Catalog\Model\Product $product */
-            $nostoProduct = $this->_productBuilder->build($product, $store);
-            $exportCollection[] = $nostoProduct;
+            $exportCollection[] = $this->_productBuilder->build($product, $store);
         }
         return $exportCollection;
     }
