@@ -30,10 +30,8 @@
     <acl>
         <resources>
             <resource id="Magento_Backend::admin">
-                <resource id="Magento_Backend::system">
                     <resource id="Nosto_Tagging::system_nosto" title="Nosto" sortOrder="500" >
                         <resource id="Nosto_Tagging::system_nosto_account" title="Account Settings" sortOrder="10" />
-                    </resource>
                 </resource>
             </resource>
         </resources>

@@ -28,6 +28,6 @@
 <!--suppress XmlUnboundNsPrefix -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
 <menu>
-    <add id="Nosto_Tagging::system_nosto" title="Nosto" module="Nosto_Tagging" sortOrder="500" resource="Nosto_Tagging::system_nosto" action="nosto/account" />
+    <add id="Nosto_Tagging::system_nosto" title="Nosto" module="Nosto_Tagging" sortOrder="500" resource="Nosto_Tagging::system_nosto_account" action="nosto/account" />
 </menu>
 </config>
