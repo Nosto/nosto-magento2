@@ -34,6 +34,7 @@ use Nosto\Tagging\Helper\Data as DataHelper;
 use Nosto\Tagging\Helper\Price as PriceHelper;
 use Nosto\Tagging\Model\Category\Builder as CategoryBuilder;
 use Psr\Log\LoggerInterface;
+use Magento\Framework\Event\ManagerInterface;
 
 class Builder
 {
@@ -58,6 +59,13 @@ class Builder
     protected $_categoryRepository;
 
     /**
+     * Event manager
+     *
+     * @var ManagerInterface
+     */
+    protected $_eventManager;
+
+    /**
      * @var LoggerInterface
      */
     protected $_logger;
@@ -74,13 +82,15 @@ class Builder
         PriceHelper $priceHelper,
         CategoryBuilder $categoryBuilder,
         CategoryRepositoryInterface $categoryRepository,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        ManagerInterface $eventManager
     ) {
         $this->_dataHelper = $dataHelper;
         $this->_priceHelper = $priceHelper;
         $this->_categoryBuilder = $categoryBuilder;
         $this->_categoryRepository = $categoryRepository;
         $this->_logger = $logger;
+        $this->_eventManager = $eventManager;
     }
 
     /**
@@ -142,6 +152,11 @@ class Builder
         } catch (\NostoException $e) {
             $this->_logger->error($e, ['exception' => $e]);
         }
+
+        $this->_eventManager->dispatch(
+            'nosto_product_load_after',
+            ['product' => $nostoProduct]
+        );
 
         return $nostoProduct;
     }

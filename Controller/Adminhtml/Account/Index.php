@@ -86,7 +86,7 @@ class Index extends Action
 
         /** @var Page $result */
         $result = $this->_resultPageFactory->create();
-        $result->setActiveMenu('Nosto_Tagging::system_nosto_account');
+        $result->setActiveMenu(self::ADMIN_RESOURCE);
         $result->getConfig()->getTitle()->prepend(
             __('Nosto - Account Settings')
         );
@@ -110,5 +110,15 @@ class Index extends Action
         } else {
             return null;
         }
+    }
+
+    /**
+     * Is the user allowed to view Nosto account settings
+     *
+     * @return bool
+     */
+    protected function _isAllowed()
+    {
+        return $this->_authorization->isAllowed(self::ADMIN_RESOURCE);
     }
 }

@@ -105,4 +105,14 @@ class Delete extends Action
 
         return $this->_result->setData($response);
     }
+
+    /**
+     * Is the user allowed to view Nosto account settings
+     *
+     * @return bool
+     */
+    protected function _isAllowed()
+    {
+        return $this->_authorization->isAllowed(self::ADMIN_RESOURCE);
+    }
 }

@@ -114,7 +114,13 @@ class Account extends AbstractHelper
             );
             if (is_array($tokens) && !empty($tokens)) {
                 foreach ($tokens as $name => $value) {
-                    $account->addApiToken(new \NostoApiToken($name, $value));
+                    try {
+                        $account->addApiToken(
+                            new \NostoApiToken($name, $value)
+                        );
+                    } catch (\NostoInvalidArgumentException $e) {
+
+                    }
                 }
             }
             return $account;

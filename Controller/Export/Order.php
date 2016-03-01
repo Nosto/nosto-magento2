@@ -93,8 +93,7 @@ class Order extends Base
         $exportCollection = new NostoExportCollectionOrder();
         foreach ($collection->getItems() as $order) {
             /** @var \Magento\Sales\Model\Order $order */
-            $nostoOrder = $this->_orderBuilder->build($order);
-            $exportCollection[] = $nostoOrder;
+            $exportCollection[] = $this->_orderBuilder->build($order);
         }
         return $exportCollection;
     }

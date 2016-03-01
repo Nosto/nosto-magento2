@@ -37,6 +37,8 @@ use Magento\Framework\Controller\Result\Redirect;
  */
 class Proxy extends Action
 {
+    const ADMIN_RESOURCE = 'Nosto_Tagging::system_nosto_account';
+
     /**
      * @inheritdoc
      */
@@ -90,5 +92,15 @@ class Proxy extends Action
             return $this->resultRedirectFactory->create()
                 ->setPath('*/*/index', []);
         }
+    }
+
+    /**
+     * Is the user allowed to view Nosto account settings
+     *
+     * @return bool
+     */
+    protected function _isAllowed()
+    {
+        return $this->_authorization->isAllowed(self::ADMIN_RESOURCE);
     }
 }
