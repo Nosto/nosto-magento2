@@ -2,6 +2,9 @@
 
 ## Changelog
 
+* 1.0.0-RC
+    * Rename the package to nosto/module-nostotagging
+    
 * 0.2.0
     * Dispatch event after Nosto product is loaded
     * Improve exception handling
