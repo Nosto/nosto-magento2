@@ -1,8 +1,8 @@
 {
-    "name": "nosto/magento2-extension",
+    "name": "nosto/module-nostotagging",
     "description": "Increase your conversion rate and average order value by delivering your customers personalized product recommendations throughout their shopping journey.",
     "type": "magento2-module",
-    "version": "0.2.0",
+    "version": "1.0.0-RC",
     "license": [
         "OSL-3.0"
     ],
