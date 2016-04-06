@@ -1,6 +1,10 @@
-# nosto-magento2-extension
+# Nosto extension for Magento 2
 
 ## Changelog
+
+* 1.0.0-RC2
+    * Fix javascript include issue (#16)
+    * Fix multi store issue (#15)
 
 * 1.0.0-RC
     * Rename the package to nosto/module-nostotagging
