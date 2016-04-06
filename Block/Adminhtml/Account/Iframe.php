@@ -163,7 +163,7 @@ class Iframe extends BlockTemplate
     {
         if ($this->_storeManager->isSingleStoreMode()) {
             return $this->_storeManager->getStore(true);
-        } elseif (($storeId = $this->_storeManager->getStore()->getId())) {
+        } elseif (($storeId = $this->_request->getParam('store'))) {
             return $this->_storeManager->getStore($storeId);
         } else {
             throw new NotFoundException(__('Store not found.'));
