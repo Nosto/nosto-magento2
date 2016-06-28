@@ -2,6 +2,9 @@
 
 ## Changelog
 
+* 1.0.0-RC3
+    * Fix store resolving issue(#18)
+    
 * 1.0.0-RC2
     * Fix javascript include issue (#16)
     * Fix multi store issue (#15)
