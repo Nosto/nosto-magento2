@@ -34,7 +34,6 @@
             <block class="Nosto\Tagging\Block\Embed" name="nosto.embed"/>
         </referenceContainer>
         <referenceContainer name="content">
-            <block class="Nosto\Tagging\Block\Variation" name="nosto.variation" cacheable="false"/>
             <block class="Nosto\Tagging\Block\Cart" name="nosto.cart" cacheable="false"/>
             <block class="Nosto\Tagging\Block\Customer" name="nosto.customer" cacheable="false"/>
         </referenceContainer>
