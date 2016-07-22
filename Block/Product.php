@@ -180,14 +180,4 @@ class Product extends View
     {
         return $this->_formatHelper->formatDate($date);
     }
-
-    /**
-     * Checks if the current store uses multiple currencies.
-     *
-     * @return bool if the store uses multiple currencies.
-     */
-    public function getStoreHasMultiCurrency()
-    {
-        return false;
-    }
 }

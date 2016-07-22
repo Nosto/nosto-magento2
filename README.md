@@ -2,6 +2,9 @@
 
 ## Changelog
 
+* 1.0.0-RC4
+    * Remove variation tagging
+    
 * 1.0.0-RC3
     * Fix store resolving issue(#18)
     
