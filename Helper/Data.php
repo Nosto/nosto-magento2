@@ -34,6 +34,7 @@ use Magento\Framework\AppInterface;
 use Magento\Framework\Module\ModuleListInterface;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
+use Magento\Framework\App\ProductMetadataInterface;
 
 /**
  * Data helper used for common tasks, mainly configurations.
@@ -66,24 +67,31 @@ class Data extends AbstractHelper
     protected $_configWriter;
 
     /**
+     * @var ProductMetadataInterface $_productMetaData.
+     */
+    protected $_productMetaData;
+    /**
      * Constructor.
      *
      * @param Context $context the context.
      * @param StoreManagerInterface $storeManager the store manager.
      * @param ModuleListInterface $moduleListing
      * @param WriterInterface $configWriter
+     * @param ProductMetadataInterface $productMetadataInterface
      */
     public function __construct(
         Context $context,
         StoreManagerInterface $storeManager,
         ModuleListInterface $moduleListing,
-        WriterInterface $configWriter
+        WriterInterface $configWriter,
+        ProductMetadataInterface $productMetadataInterface
     ) {
         parent::__construct($context);
 
         $this->_storeManager = $storeManager;
         $this->_moduleListing = $moduleListing;
         $this->_configWriter = $configWriter;
+        $this->_productMetaData = $productMetadataInterface;
     }
 
     /**
@@ -159,6 +167,12 @@ class Data extends AbstractHelper
      */
     public function getPlatformVersion()
     {
-        return AppInterface::VERSION;
+        $version = 'unknown';
+        if ($this->_productMetaData->getVersion()) {
+            $version = $this->_productMetaData->getVersion();
+        } elseif (defined(AppInterface::VERSION)) {
+            $version = AppInterface::VERSION;
+        }
+        return $version;
     }
 }
