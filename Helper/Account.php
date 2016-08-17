@@ -52,6 +52,11 @@ class Account extends AbstractHelper
     const XML_PATH_TOKENS = 'nosto_tagging/settings/tokens';
 
     /**
+     * Platform UI version
+     */
+    const IFRAME_VERSION = 0;
+
+    /**
      * @var SsoMetaBuilder the builder for sso meta models.
      */
     protected $_ssoMetaBuilder;
@@ -221,6 +226,9 @@ class Account extends AbstractHelper
         \NostoAccount $account = null,
         array $params = []
     ) {
+        if (self::IFRAME_VERSION > 0) {
+            $params['v'] = self::IFRAME_VERSION;
+        }
         return $this->_iframeHelper->getUrl(
             $this->_ssoMetaBuilder->build(),
             $this->_iframeMetaBuilder->build($store),
