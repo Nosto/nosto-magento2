@@ -2,6 +2,9 @@
 
 ## Changelog
 
+* 1.0.0
+    * Make the plug-in compatible with Magento 2.1.0
+
 * 1.0.0-RC4
     * Remove variation tagging
     
