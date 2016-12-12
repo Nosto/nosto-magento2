@@ -132,7 +132,9 @@ class Save implements ObserverInterface
                 ->create()
                 ->load($quoteId, NostoCustomer::QUOTE_ID);
 
-            $orderService = new \NostoServiceOrder($nostoAccount);
+            if ($nostoAccount) {
+                $orderService = new \NostoServiceOrder($nostoAccount);
+            }
             try {
                 $orderService->confirm($nostoOrder, $nostoCustomer->getNostoId());
 
