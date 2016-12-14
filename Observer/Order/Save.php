@@ -126,26 +126,28 @@ class Save implements ObserverInterface
             $nostoAccount = $this->_accountHelper->findAccount(
                 $this->_storeManager->getStore()
             );
+            if ($nostoAccount !== null) {
+                $quoteId = $order->getQuoteId();
+                $nostoCustomer = $this->_customerFactory
+                    ->create()
+                    ->load($quoteId, NostoCustomer::QUOTE_ID);
 
-            $quoteId = $order->getQuoteId();
-            $nostoCustomer = $this->_customerFactory
-                ->create()
-                ->load($quoteId, NostoCustomer::QUOTE_ID);
+                $orderService = new \NostoServiceOrder($nostoAccount);
+                try {
+                    $orderService->confirm($nostoOrder,
+                        $nostoCustomer->getNostoId());
 
-            $orderService = new \NostoServiceOrder($nostoAccount);
-            try {
-                $orderService->confirm($nostoOrder, $nostoCustomer->getNostoId());
-
-            } catch (\Exception $e) {
-                $this->_logger->error(
-                    sprintf(
-                        "Failed to save order with qoute #%s for customer #%s.
+                } catch (\Exception $e) {
+                    $this->_logger->error(
+                        sprintf(
+                            "Failed to save order with qoute #%s for customer #%s.
                         Message was: %s",
-                        $quoteId,
-                        $nostoCustomer->getNostoId(),
-                        $e->getMessage()
-                    )
-                );
+                            $quoteId,
+                            $nostoCustomer->getNostoId(),
+                            $e->getMessage()
+                        )
+                    );
+                }
             }
         }
     }
