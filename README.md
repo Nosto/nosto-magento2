@@ -2,6 +2,10 @@
 
 ## Changelog
 
+* 1.0.1
+    * Add "js stub" for Nosto script
+    * Fix issue with orders when Nosto module is installed but Nosto account is not connected
+
 * 1.0.0
     * Make the plug-in compatible with Magento 2.1.0
 
@@ -28,13 +32,3 @@
 
 * 0.1.0
     * First implementation of Magento 2 extension
-
-## Known issues
-* Customer and cart tagging are not working in product pages due to Magento 2 bug [#3202](https://github.com/magento/magento2/issues/3202)
-
-## Missing features
-* admin config section for "Advanced Settings"
-* account update API
-* currency exchange rate API
-* currency exchange rate CRON
-
