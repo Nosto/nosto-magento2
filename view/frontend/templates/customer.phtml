@@ -25,15 +25,11 @@
  * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
-/** @var \Nosto\Tagging\Block\Customer $this */
-$customer = $this->getCustomer();
 ?>
 
-<?php if ($this->customerLoggedIn()) : ?>
 <!-- Nosto Customer Tagging -->
-<div class="nosto_customer" style="display:none">
-    <span class="first_name"><?php echo $this->escapeHtml($customer->getFirstname()); ?></span>
-    <span class="last_name"><?php echo $this->escapeHtml($customer->getLastname()); ?></span>
-    <span class="email"><?php echo $this->escapeHtml($customer->getEmail()); ?></span>
+<div class="nosto_customer" style="display:none" >
+    <span class="first_name" ></span>
+    <span class="last_name" ></span>
+    <span class="email" ></span>
 </div>
-<?php endif; ?>
