@@ -36,18 +36,18 @@
         </referenceContainer>
         <referenceContainer name="content">
             <!--<block class="Nosto\Tagging\Block\Cart" name="nosto.cart" cacheable="false"/>-->
-            <!--<block class="Magento\Framework\View\Element\Template" name="nosto.customer" before="-"-->
-                   <!--template="Nosto_Tagging::customer.phtml">-->
-                <!--<arguments>-->
-                    <!--<argument name="jsLayout" xsi:type="array">-->
-                        <!--<item name="components" xsi:type="array">-->
-                            <!--<item name="customerTagging" xsi:type="array">-->
-                                <!--<item name="component" xsi:type="string">Nosto_Tagging/js/customer-tagging</item>-->
-                            <!--</item>-->
-                        <!--</item>-->
-                    <!--</argument>-->
-                <!--</arguments>-->
-            <!--</block>-->
+            <block class="Magento\Framework\View\Element\Template" name="nosto.customer" before="-"
+                   template="Nosto_Tagging::customer.phtml">
+                <arguments>
+                    <argument name="jsLayout" xsi:type="array">
+                        <item name="components" xsi:type="array">
+                            <item name="customerTagging" xsi:type="array">
+                                <item name="component" xsi:type="string">Nosto_Tagging/js/customer-tagging</item>
+                            </item>
+                        </item>
+                    </argument>
+                </arguments>
+            </block>
 
         </referenceContainer>
     </body>

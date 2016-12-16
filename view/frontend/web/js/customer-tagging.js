@@ -4,7 +4,7 @@
  */
 define([
     'uiComponent',
-    'Nosto_Tagging/js/customer-data'
+    'Nosto_Tagging/js/customer-tagging'
 ], function (Component, customerData) {
     'use strict';
 
