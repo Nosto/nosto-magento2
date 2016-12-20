@@ -4,16 +4,17 @@
  */
 define([
     'uiComponent',
-    'Nosto_Tagging/js/customer-tagging'
+    'Magento_Customer/js/customer-data'
 ], function (Component, customerData) {
     'use strict';
 
-    console.log('Nosto init extend', customerData);
-
     return Component.extend({
         initialize: function () {
-            this._super();
+            this._super().initTagging();
+        },
+        initTagging: function() {
             this.customerTagging = customerData.get('customer-tagging');
+            // ToDo - add here either the reco loading or sending the customer tagging
         }
     });
 });
