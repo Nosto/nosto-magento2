@@ -4,17 +4,28 @@
  */
 define([
     'uiComponent',
-    'Magento_Customer/js/customer-data'
-], function (Component, customerData) {
+    'Magento_Customer/js/customer-data',
+    'nostojs',
+    'underscore',
+    'ko'
+], function (Component, customerData, nostojs, _, ko) {
     'use strict';
 
     return Component.extend({
         initialize: function () {
-            this._super().initTagging();
-        },
-        initTagging: function() {
+            this._super();
             this.customerTagging = customerData.get('customer-tagging');
-            // ToDo - add here either the reco loading or sending the customer tagging
+            this.customerTagging.subscribe(function(data) {
+                this.sendTagging();
+            });
+        },
+        sendTagging: function() {
+            console.log('Sending tagging to Nosto');
+            if (typeof nostojs === 'function') {
+                nostojs(function(api){
+                    api.sendTagging('customer');
+                });
+            }
         }
     });
 });
