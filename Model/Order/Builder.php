@@ -28,13 +28,11 @@
 namespace Nosto\Tagging\Model\Order;
 
 use Exception;
-use Magento\Catalog\Model\Category;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\Product\Type;
 use Magento\Catalog\Model\ResourceModel\Eav\Attribute;
 use Magento\SalesRule\Model\RuleFactory as SalesRuleFactory;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable;
-use Magento\Framework\App\ObjectManager;
 use Magento\GroupedProduct\Model\Product\Type\Grouped;
 use Magento\Sales\Model\Order;
 use Magento\Sales\Model\Order\Item;
@@ -47,6 +45,7 @@ use NostoOrderStatus;
 use Nosto\Tagging\Helper\Price as PriceHelper;
 use NostoPrice;
 use Psr\Log\LoggerInterface;
+use Nosto\Tagging\Helper\Item as NostoItemHelper;
 
 class Builder
 {
@@ -66,17 +65,27 @@ class Builder
     protected $_priceHelper;
 
     /**
+     * @var NostoItemHelper
+     */
+    protected $_nostoItemHelper;
+
+    /**
      * @param LoggerInterface $logger
+     * @param SalesRuleFactory $salesRuleFactory
+     * @param PriceHelper $priceHelper
+     * @param NostoItemHelper $nostoItemHelper
      * @internal param ObjectManager $objectManager
      */
     public function __construct(
         LoggerInterface $logger,
         SalesRuleFactory $salesRuleFactory,
-        PriceHelper $priceHelper
+        PriceHelper $priceHelper,
+        NostoItemHelper $nostoItemHelper
     ) {
         $this->_logger = $logger;
         $this->_salesRuleFactory= $salesRuleFactory;
         $this->_priceHelper = $priceHelper;
+        $this->_nostoItemHelper = $nostoItemHelper;
     }
 
     /**
@@ -218,21 +227,7 @@ class Builder
      */
     protected function buildItemProductId(Item $item)
     {
-        $parent = $item->getProductOptionByCode('super_product_config');
-        if (isset($parent['product_id'])) {
-            return $parent['product_id'];
-        } elseif ($item->getProductType() === Type::TYPE_SIMPLE) {
-            $type = $item->getProduct()->getTypeInstance();
-            $parentIds = $type->getParentIdsByChild($item->getProductId());
-            $attributes = $item->getBuyRequest()->getData('super_attribute');
-            // If the product has a configurable parent, we assume we should tag
-            // the parent. If there are many parent IDs, we are safer to tag the
-            // products own ID.
-            if (count($parentIds) === 1 && !empty($attributes)) {
-                return $parentIds[0];
-            }
-        }
-        return $item->getProductId();
+        return $this->_nostoItemHelper->buildProductId($item);
     }
 
     /**

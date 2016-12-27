@@ -27,13 +27,14 @@
 
 ?>
 <!-- Nosto Customer Tagging -->
-<div class="nosto_customer" style="display:block" data-bind="scope: 'customerTagging'" data-role="nosto-customer-tagging">
-    <pre data-bind="text: ko.toJSON($data, null, 2)"></pre>
+<div id="nosto_customer_tagging" class="nosto_customer" style="display:none" data-bind="scope: 'customerTagging'" data-role="nosto-customer-tagging" id="nosto_customer_tagging">
     <!-- ko if: customerTagging().first_name -->
-    <span class="first_name" data-bind="text: customerTagging().first_name"></span>
-    <span class="last_name" data-bind="text: customerTagging().last_name"></span>
-    <span class="email" data-bind="text: customerTagging().email"></span>
-    <span class="hcid" data-bind="text: customerTagging().hcid" ></span>
+    <div style="display:none" data-bind="afterRender: sendTagging()">
+        <span class="first_name" data-bind="text: customerTagging().first_name"></span>
+        <span class="last_name" data-bind="text: customerTagging().last_name"></span>
+        <span class="email" data-bind="text: customerTagging().email"></span>
+        <span class="hcid" data-bind="text: customerTagging().hcid" ></span>
+    </div>
     <!-- /ko -->
 </div>
 <script type="text/x-magento-init">

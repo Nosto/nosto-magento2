@@ -5,19 +5,23 @@
 define([
     'uiComponent',
     'Magento_Customer/js/customer-data',
-    'nostojs',
+    'nostojs'
 ], function (Component, customerData, nostojs) {
     'use strict';
 
     return Component.extend({
         initialize: function () {
             this._super();
-            this.customerTagging = customerData.get('customer-tagging');
+            this.cartTagging = customerData.get('cart-tagging');
         },
-        sendTagging: function() {
-            if (typeof nostojs === 'function') {
+        sendTagging: function(elements, data) {
+            if (
+                typeof data !== "undefined"
+                && data.total_count > 0
+                && data.index >= data.total_count
+                && typeof nostojs === 'function') {
                 nostojs(function(api){
-                    api.sendTagging("nosto_customer_tagging");
+                    api.sendTagging("nosto_cart_tagging");
                 });
             }
         }
