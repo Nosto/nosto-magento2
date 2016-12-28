@@ -76,6 +76,7 @@ class Builder
      * @param CategoryBuilder $categoryBuilder
      * @param CategoryRepositoryInterface $categoryRepository
      * @param LoggerInterface $logger
+     * @param ManagerInterface $eventManager
      */
     public function __construct(
         DataHelper $dataHelper,

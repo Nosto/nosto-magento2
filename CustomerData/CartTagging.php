@@ -12,7 +12,9 @@ use Magento\Checkout\Helper\Cart as CartHelper;
 use Magento\Store\Api\StoreManagementInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Nosto\Tagging\Model\Cart\Builder as NostoCartBuilder;
-
+use Magento\Framework\Stdlib\CookieManagerInterface;
+use Nosto\Tagging\Model\Customer as NostoCustomer;
+use Nosto\Tagging\Model\CustomerFactory as NostoCustomerFactory;
 
 class CartTagging implements SectionSourceInterface
 {
@@ -33,6 +35,16 @@ class CartTagging implements SectionSourceInterface
     protected $storeManager;
 
     /**
+     * @var CookieManagerInterface
+     */
+    protected $cookieManager;
+
+    /**
+     * @var NostoCustomerFactory
+     */
+    protected $nostoCustomerFactory;
+
+    /**
      * @var \Magento\Quote\Model\Quote|null
      */
     protected $quote = null;
@@ -41,16 +53,21 @@ class CartTagging implements SectionSourceInterface
      * @param CartHelper $cartHelper
      * @param NostoCartBuilder $nostoCartBuilder
      * @param StoreManagerInterface $storeManager
+     * @param CookieManagerInterface $cookieManager
+     * @param NostoCustomerFactory $nostoCustomerFactory
      */
     public function __construct(
         CartHelper $cartHelper,
         NostoCartBuilder $nostoCartBuilder,
-        StoreManagerInterface $storeManager
-    )
-    {
+        StoreManagerInterface $storeManager,
+        CookieManagerInterface $cookieManager,
+        NostoCustomerFactory $nostoCustomerFactory
+    ) {
         $this->cartHelper= $cartHelper;
         $this->nostoCartBuilder = $nostoCartBuilder;
         $this->storeManager = $storeManager;
+        $this->cookieManager = $cookieManager;
+        $this->nostoCustomerFactory = $nostoCustomerFactory;
     }
 
     /**
@@ -63,7 +80,7 @@ class CartTagging implements SectionSourceInterface
             "itemCount" => 0,
         ];
         $cart = $this->cartHelper->getCart();
-        $items = $cart->getQuote()->getAllVisibleItems();
+        $items = $this->getQuote()->getAllVisibleItems();
         $nostoCart = $this->nostoCartBuilder->build(
             $items,
             $this->storeManager->getStore()
@@ -85,6 +102,10 @@ class CartTagging implements SectionSourceInterface
             ];
         }
 
+        if ($data["itemCount"] > 0) {
+            $this->updateNostoId();
+        }
+
         return $data;
     }
 
@@ -96,8 +117,8 @@ class CartTagging implements SectionSourceInterface
     protected function getQuote()
     {
         if (!$this->quote) {
-            $session = $this->checkoutSession;
-            $this->quote = $session->getQuote();
+            $cart = $this->cartHelper->getCart();
+            $this->quote = $cart->getQuote();
         }
 
         return $this->quote;
@@ -113,5 +134,35 @@ class CartTagging implements SectionSourceInterface
 
         $quote = $this->getQuote();
         return $quote->getAllVisibleItems();
+    }
+
+    private function updateNostoId() {
+        // Handle the Nosto customer & quote mapping
+        $nostoCustomerId = $this->cookieManager->getCookie(NostoCustomer::COOKIE_NAME);
+        $quoteId = $this->getQuote()->getId();
+        if (!empty($quoteId) && !empty($nostoCustomerId)) {
+            $nostoCustomer = $this->nostoCustomerFactory
+                ->create()
+                ->getCollection()
+                ->addFieldToFilter(NostoCustomer::QUOTE_ID, $quoteId)
+                ->addFieldToFilter(NostoCustomer::NOSTO_ID, $nostoCustomerId)
+                ->setPageSize(1)
+                ->setCurPage(1)
+                ->getFirstItem();
+            if ($nostoCustomer->hasData(NostoCustomer::CUSTOMER_ID)) {
+                $nostoCustomer->setUpdatedAt(new \DateTime('now'));
+            } else {
+                $nostoCustomer = $this->nostoCustomerFactory->create();
+                $nostoCustomer->setQuoteId($quoteId);
+                $nostoCustomer->setNostoId($nostoCustomerId);
+                $nostoCustomer->setCreatedAt(new \DateTime('now'));
+                $nostoCustomer->setUpdatedAt(new \DateTime('now'));
+            }
+            try {
+                $nostoCustomer->save();
+            } catch (\Exception $e) {
+                //Todo - handle errors, maybe log?
+            }
+        }
     }
 }

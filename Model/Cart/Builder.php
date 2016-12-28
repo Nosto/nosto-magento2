@@ -74,6 +74,7 @@ class Builder
      * @param CartItemFactory $cartItemFactory
      * @param DataHelper $dataHelper
      * @param PriceHelper $priceHelper
+     * @param NostoItemHelper $nostoItemHelper
      * @param LoggerInterface $logger
      */
     public function __construct(

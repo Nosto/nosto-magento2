@@ -35,7 +35,7 @@
             <block class="Nosto\Tagging\Block\Embed" name="nosto.embed" after="nosto.jstub"/>
         </referenceContainer>
         <referenceContainer name="content">
-            <block class="Magento\Framework\View\Element\Template" name="nosto.cart" before="-"
+            <block class="Nosto\Tagging\Block\Knockout" name="nosto.cart" before="-"
                    template="Nosto_Tagging::cart.phtml">
                 <arguments>
                     <argument name="jsLayout" xsi:type="array">
@@ -47,7 +47,7 @@
                     </argument>
                 </arguments>
             </block>
-            <block class="Magento\Framework\View\Element\Template" name="nosto.customer" before="-"
+            <block class="Nosto\Tagging\Block\Knockout" name="nosto.customer" after="nosto.cart"
                    template="Nosto_Tagging::customer.phtml">
                 <arguments>
                     <argument name="jsLayout" xsi:type="array">

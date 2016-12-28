@@ -30,6 +30,7 @@ namespace Nosto\Tagging\Controller\Adminhtml\Account;
 use Magento\Backend\App\Action;
 use Magento\Backend\App\Action\Context;
 use Magento\Backend\Model\View\Result\Page;
+use Magento\Framework\Controller\Result\Redirect;
 use Magento\Framework\View\Result\PageFactory;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
@@ -68,7 +69,7 @@ class Index extends Action
     }
 
     /**
-     * @return Page
+     * @return Page | Redirect
      */
     public function execute()
     {
@@ -90,6 +91,7 @@ class Index extends Action
         $result->getConfig()->getTitle()->prepend(
             __('Nosto - Account Settings')
         );
+
         return $result;
     }
 
@@ -103,13 +105,14 @@ class Index extends Action
      */
     protected function getSelectedStore()
     {
+        $store = null;
         if ($this->_storeManager->isSingleStoreMode()) {
-            return $this->_storeManager->getStore(true);
+            $store = $this->_storeManager->getStore(true);
         } elseif (($storeId = $this->_storeManager->getStore()->getId())) {
-            return $this->_storeManager->getStore($storeId);
-        } else {
-            return null;
+            $store = $this->_storeManager->getStore($storeId);
         }
+
+        return $store;
     }
 
     /**

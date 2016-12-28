@@ -25,12 +25,15 @@
  * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
-/** @var \Nosto\Tagging\Block\Cart $this */
-
-$cart = $this->getNostoCart();
+/**
+ * Template for cart tagging. The actual data is populated via
+ * Magento's KnockoutJS logic.
+ *
+ * @see \Nosto\Tagging\CustomerData\CartTagging
+ */
 ?>
 <!-- Nosto Cart Tagging -->
-<div id="nosto_customer_tagging" class="nosto_cart" style="display:none" data-bind="scope: 'cartTagging'" data-role="nosto-cart-tagging" id="nosto_cart_tagging">
+<div id="nosto_cart_tagging" class="nosto_cart_hidden" style="display:none" data-bind="scope: 'cartTagging'" data-role="nosto-cart-tagging" id="nosto_cart_tagging">
     <!-- ko if: cartTagging().itemCount > 0 -->
         <!-- ko foreach: {data: cartTagging().items, afterRender: sendTagging } -->
             <div class="line_item">

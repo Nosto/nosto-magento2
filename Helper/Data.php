@@ -75,6 +75,9 @@ class Data extends AbstractHelper
      * @var ProductMetadataInterface $_productMetaData.
      */
     protected $_productMetaData;
+
+    const MODULE_NAME = 'Nosto_Tagging';
+
     /**
      * Constructor.
      *
@@ -183,6 +186,8 @@ class Data extends AbstractHelper
 
     /**
      * Return the checksum for string
+     *
+     * @param string $string
      *
      * @return string
      */

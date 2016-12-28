@@ -31,7 +31,7 @@ use Magento\Backend\Block\Template as BlockTemplate;
 use Magento\Backend\Block\Template\Context as BlockContext;
 use Magento\Backend\Model\Auth\Session;
 use Magento\Framework\Exception\NotFoundException;
-use Magento\Store\Model\Store;
+use Magento\Store\Api\Data\StoreInterface;
 use Nosto\Tagging\Helper\Account;
 
 /**
@@ -155,20 +155,23 @@ class Iframe extends BlockTemplate
      * Nosto can only be configured on a store basis, and if we cannot find a
      * store, an exception is thrown.
      *
-     * @return Store the store.
+     * @return StoreInterface the store.
      *
      * @throws NotFoundException store not found.
      */
     public function getSelectedStore()
     {
+        $store = null;
         if ($this->_storeManager->isSingleStoreMode()) {
-            return $this->_storeManager->getStore(true);
+            $store = $this->_storeManager->getStore(true);
         } elseif (($storeId = $this->_request->getParam('store'))) {
-            return $this->_storeManager->getStore($storeId);
+            $store = $this->_storeManager->getStore($storeId);
         } elseif (($this->_storeManager->getStore())) {
-            return $this->_storeManager->getStore();
+            $store = $this->_storeManager->getStore();
         } else {
             throw new NotFoundException(__('Store not found.'));
         }
+
+        return $store;
     }
 }

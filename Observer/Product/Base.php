@@ -105,7 +105,7 @@ abstract class Base implements ObserverInterface
      */
     public function execute(Observer $observer)
     {
-        if ($this->_moduleManager->isEnabled('Nosto_Tagging')) {
+        if ($this->_moduleManager->isEnabled(DataHelper::MODULE_NAME)) {
             // Always "delete" the product for all stores it is available in.
             // This is done to avoid data inconsistencies as even if a product
             // is edited for only one store, the updated data can reflect in

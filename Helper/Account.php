@@ -30,10 +30,14 @@ namespace Nosto\Tagging\Helper;
 use Magento\Framework\App\Config\Storage\WriterInterface;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
+use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\Store;
 use Nosto\Tagging\Model\Meta\Account\Iframe\Builder as IframeMetaBuilder;
 use Nosto\Tagging\Model\Meta\Account\Sso\Builder as SsoMetaBuilder;
+use Magento\Framework\Module\Manager as ModuleManager;
+use Nosto\Tagging\Helper\Data as NostoHelper;
+
 
 /**
  * Account helper class for common tasks related to Nosto accounts.
@@ -77,6 +81,11 @@ class Account extends AbstractHelper
     protected $_config;
 
     /**
+     * @var ModuleManager
+     */
+    protected $_moduleManager;
+
+    /**
      * Constructor.
      *
      * @param Context $context the context.
@@ -84,13 +93,15 @@ class Account extends AbstractHelper
      * @param IframeMetaBuilder $iframeMetaBuilder the builder for iframe meta models.
      * @param \NostoHelperIframe $iframeHelper
      * @param WriterInterface $appConfig the app config writer.
+     * @param ModuleManager $moduleManager
      */
     public function __construct(
         Context $context,
         SsoMetaBuilder $ssoMetaBuilder,
         IframeMetaBuilder $iframeMetaBuilder,
         \NostoHelperIframe $iframeHelper,
-        WriterInterface $appConfig
+        WriterInterface $appConfig,
+        ModuleManager $moduleManager
     ) {
         parent::__construct($context);
 
@@ -98,16 +109,17 @@ class Account extends AbstractHelper
         $this->_iframeMetaBuilder = $iframeMetaBuilder;
         $this->_iframeHelper = $iframeHelper;
         $this->_config = $appConfig;
+        $this->_moduleManager = $moduleManager;
     }
 
     /**
      * Returns the account with associated api tokens for the store.
      *
-     * @param Store $store the store.
+     * @param StoreInterface $store the store.
      *
      * @return \NostoAccount|null the account or null if not found.
      */
-    public function findAccount(Store $store)
+    public function findAccount(StoreInterface $store)
     {
         $accountName = $store->getConfig(self::XML_PATH_ACCOUNT);
 
@@ -137,12 +149,12 @@ class Account extends AbstractHelper
     /**
      * Saves the account and the associated api tokens for the store.
      *
-     * @param \NostoAccount $account the account to save.
+     * @param \NostoAccountMetaInterface $account the account to save.
      * @param Store $store the store.
      *
      * @return bool true on success, false otherwise.
      */
-    public function saveAccount(\NostoAccount $account, Store $store)
+    public function saveAccount(\NostoAccountMetaInterface $account, Store $store)
     {
         if ((int)$store->getId() < 1) {
             return false;
@@ -215,14 +227,14 @@ class Account extends AbstractHelper
      * If there is no account, the "front page" url will be returned where an
      * account can be created from.
      *
-     * @param Store $store the store to get the url for.
+     * @param StoreInterface $store the store to get the url for.
      * @param \NostoAccount $account the account to get the iframe url for.
      * @param array $params optional extra params for the url.
      *
      * @return string the iframe url.
      */
     public function getIframeUrl(
-        Store $store,
+        StoreInterface $store,
         \NostoAccount $account = null,
         array $params = []
     ) {
@@ -235,5 +247,23 @@ class Account extends AbstractHelper
             $account,
             $params
         );
+    }
+
+    /**
+     * Checks if Nosto module is enabled and Nosto account is set
+     *
+     * @param StoreInterface $store
+     * @return bool
+     */
+    public function nostoInstalledAndEnabled(StoreInterface $store) {
+
+        $enabled = false;
+        if ($this->_moduleManager->isEnabled(NostoHelper::MODULE_NAME)) {
+            if ($this->findAccount($store)) {
+                $enabled = true;
+            }
+        }
+
+        return $enabled;
     }
 }
