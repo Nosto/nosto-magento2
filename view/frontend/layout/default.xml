@@ -35,8 +35,30 @@
             <block class="Nosto\Tagging\Block\Embed" name="nosto.embed" after="nosto.jstub"/>
         </referenceContainer>
         <referenceContainer name="content">
-            <block class="Nosto\Tagging\Block\Cart" name="nosto.cart" cacheable="false"/>
-            <block class="Nosto\Tagging\Block\Customer" name="nosto.customer" cacheable="false"/>
+            <block class="Nosto\Tagging\Block\Knockout" name="nosto.cart" before="-"
+                   template="Nosto_Tagging::cart.phtml">
+                <arguments>
+                    <argument name="jsLayout" xsi:type="array">
+                        <item name="components" xsi:type="array">
+                            <item name="cartTagging" xsi:type="array">
+                                <item name="component" xsi:type="string">Nosto_Tagging/js/view/cart-tagging</item>
+                            </item>
+                        </item>
+                    </argument>
+                </arguments>
+            </block>
+            <block class="Nosto\Tagging\Block\Knockout" name="nosto.customer" after="nosto.cart"
+                   template="Nosto_Tagging::customer.phtml">
+                <arguments>
+                    <argument name="jsLayout" xsi:type="array">
+                        <item name="components" xsi:type="array">
+                            <item name="customerTagging" xsi:type="array">
+                                <item name="component" xsi:type="string">Nosto_Tagging/js/view/customer-tagging</item>
+                            </item>
+                        </item>
+                    </argument>
+                </arguments>
+            </block>
         </referenceContainer>
     </body>
 </page>

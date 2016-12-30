@@ -1,5 +1,4 @@
-<?php
-/**
+/*
  * Magento
  *
  * NOTICE OF LICENSE
@@ -24,8 +23,11 @@
  * @copyright Copyright (c) 2013-2016 Nosto Solutions Ltd (http://www.nosto.com)
  * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
-?>
-<!-- Nosto Javascript Stub -->
-<script type="text/javascript">
-    (function(){var name="nostojs";window[name]=window[name]||function(cb){(window[name].q=window[name].q||[]).push(cb);};})();
-</script>
+
+var config = {
+    map: {
+        '*': {
+            nostojs: 'Nosto_Tagging/js/nostojs'
+        }
+    }
+};

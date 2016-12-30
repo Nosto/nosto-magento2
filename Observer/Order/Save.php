@@ -27,7 +27,7 @@
 
 namespace Nosto\Tagging\Observer\Order;
 
-use Magento\Catalog\Model\Product;
+use Magento\Framework\Event\Observer;
 use Magento\Payment\Model\Cart\SalesModel\Order;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Framework\Module\Manager as ModuleManager;
@@ -114,12 +114,12 @@ class Save implements ObserverInterface
      * Event handler for the "catalog_product_save_after" and  event.
      * Sends a product update API call to Nosto.
      *
-     * @param \Magento\Framework\Event\Observer $observer
+     * @param Observer $observer
      * @return void
      */
-    public function execute(\Magento\Framework\Event\Observer $observer)
+    public function execute(Observer $observer)
     {
-        if ($this->_moduleManager->isEnabled('Nosto_Tagging')) {
+        if ($this->_moduleManager->isEnabled(DataHelper::MODULE_NAME)) {
             /* @var Order $order */
             $order = $observer->getOrder();
             $nostoOrder = $this->_orderBuilder->build($order);
@@ -140,7 +140,7 @@ class Save implements ObserverInterface
                 } catch (\Exception $e) {
                     $this->_logger->error(
                         sprintf(
-                            "Failed to save order with qoute #%s for customer #%s.
+                            "Failed to save order with quote #%s for customer #%s.
                         Message was: %s",
                             $quoteId,
                             $nostoCustomer->getNostoId(),

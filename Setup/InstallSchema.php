@@ -27,7 +27,6 @@
 
 namespace Nosto\Tagging\Setup;
 
-use Magento\Config\Model\Config\Backend\Admin\Custom;
 use Magento\Framework\DB\Adapter\AdapterInterface;
 use Magento\Framework\Setup\InstallSchemaInterface;
 use Magento\Framework\Setup\ModuleContextInterface;

@@ -28,7 +28,7 @@
     * Fix acl issues
         
 * 0.1.1
-    * Fix the composer files to autoload Nosto PHP SDK correctyl
+    * Fix the composer files to autoload Nosto PHP SDK correctly
 
 * 0.1.0
     * First implementation of Magento 2 extension

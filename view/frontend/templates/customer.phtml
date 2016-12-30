@@ -25,15 +25,24 @@
  * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
-/** @var \Nosto\Tagging\Block\Customer $this */
-$customer = $this->getCustomer();
+/**
+ * Template for customer tagging. The actual data is populated via
+ * Magento's KnockoutJS logic.
+ *
+ * @see \Nosto\Tagging\CustomerData\CustomerTagging
+ */
 ?>
-
-<?php if ($this->customerLoggedIn()) : ?>
 <!-- Nosto Customer Tagging -->
-<div class="nosto_customer" style="display:none">
-    <span class="first_name"><?php echo $this->escapeHtml($customer->getFirstname()); ?></span>
-    <span class="last_name"><?php echo $this->escapeHtml($customer->getLastname()); ?></span>
-    <span class="email"><?php echo $this->escapeHtml($customer->getEmail()); ?></span>
+<div id="nosto_customer_tagging" class="nosto_customer_hidden" style="display:none" data-bind="scope: 'customerTagging'" data-role="nosto-customer-tagging">
+    <!-- ko if: customerTagging().first_name -->
+        <!-- ko foreach: {data: customerTagging(), afterRender: sendTagging } -->
+            <span class="first_name" data-bind="text: $data.first_name"></span>
+            <span class="last_name" data-bind="text: $data.last_name"></span>
+            <span class="email" data-bind="text: $data.email"></span>
+            <span class="hcid" data-bind="text: $data.hcid" ></span>
+        <!-- /ko -->
+    <!-- /ko -->
 </div>
-<?php endif; ?>
+<script type="text/x-magento-init">
+{"[data-role=nosto-customer-tagging]": {"Magento_Ui/js/core/app": <?php /* @escapeNotVerified */ echo $block->getJsLayout();?>}}
+</script>

@@ -1,5 +1,4 @@
-<?php
-/**
+/*
  * Magento
  *
  * NOTICE OF LICENSE
@@ -24,8 +23,34 @@
  * @copyright Copyright (c) 2013-2016 Nosto Solutions Ltd (http://www.nosto.com)
  * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
-?>
-<!-- Nosto Javascript Stub -->
-<script type="text/javascript">
-    (function(){var name="nostojs";window[name]=window[name]||function(cb){(window[name].q=window[name].q||[]).push(cb);};})();
-</script>
+
+define([
+    'uiComponent',
+    'Magento_Customer/js/customer-data',
+    'nostojs',
+    'jquery'
+], function (Component, customerData, nostojs, $) {
+    'use strict';
+
+    return Component.extend({
+        initialize: function () {
+            this._super();
+            //noinspection JSUnusedGlobalSymbols
+            this.cartTagging = customerData.get('cart-tagging');
+        },
+        sendTagging: function(elements, data) {
+            if (
+                typeof data !== "undefined"
+                && data.total_count > 0
+                && data.index >= data.total_count
+                && typeof nostojs === 'function') {
+                nostojs(function(api){
+                    $('#nosto_cart_tagging')
+                        .removeClass('nosto_cart_hidden')
+                        .addClass('nosto_cart');
+                    api.sendTagging("nosto_cart_tagging");
+                });
+            }
+        }
+    });
+});

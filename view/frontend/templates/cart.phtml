@@ -25,20 +25,27 @@
  * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
-/** @var \Nosto\Tagging\Block\Cart $this */
-
-$cart = $this->getNostoCart();
+/**
+ * Template for cart tagging. The actual data is populated via
+ * Magento's KnockoutJS logic.
+ *
+ * @see \Nosto\Tagging\CustomerData\CartTagging
+ */
 ?>
-
 <!-- Nosto Cart Tagging -->
-<div class="nosto_cart" style="display:none">
-    <?php foreach ($cart->getItems() as $item): ?>
-        <div class="line_item">
-            <span class="product_id"><?php echo $this->escapeHtml($item->getItemId()); ?></span>
-            <span class="quantity"><?php echo (int)$item->getQuantity(); ?></span>
-            <span class="name"><?php echo $this->escapeHtml($item->getName()); ?></span>
-            <span class="unit_price"><?php echo $this->formatNostoPrice($item->getUnitPrice()); ?></span>
-            <span class="price_currency_code"><?php echo $this->escapeHtml($item->getCurrency()->getCode()); ?></span>
-        </div>
-    <?php endforeach; ?>
+<div id="nosto_cart_tagging" class="nosto_cart_hidden" style="display:none" data-bind="scope: 'cartTagging'" data-role="nosto-cart-tagging" id="nosto_cart_tagging">
+    <!-- ko if: cartTagging().itemCount > 0 -->
+        <!-- ko foreach: {data: cartTagging().items, afterRender: sendTagging } -->
+            <div class="line_item">
+                <span class="product_id" data-bind="text: $data.product_id"></span>
+                <span class="quantity" data-bind="text: $data.quantity"></span>
+                <span class="name" data-bind="text: $data.name"></span>
+                <span class="unit_price" data-bind="text: $data.unit_price"></span>
+                <span class="price_currency_code" data-bind="text: $data.price_currency_code"></span>
+            </div>
+        <!-- /ko -->
+    <!-- /ko -->
 </div>
+<script type="text/x-magento-init">
+{"[data-role=nosto-cart-tagging]": {"Magento_Ui/js/core/app": <?php /* @escapeNotVerified */ echo $block->getJsLayout();?>}}
+</script>

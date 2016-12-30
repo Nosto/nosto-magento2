@@ -33,6 +33,7 @@ use Nosto\Tagging\Helper\Data as DataHelper;
 use Nosto\Tagging\Helper\Price as PriceHelper;
 use Nosto\Tagging\Model\Cart\Item\Factory as CartItemFactory;
 use Psr\Log\LoggerInterface;
+use Nosto\Tagging\Helper\Item as NostoItemHelper;
 
 class Builder
 {
@@ -57,6 +58,11 @@ class Builder
     protected $_priceHelper;
 
     /**
+     * @var NostoItemHelper
+     */
+    protected $_nostoItemHelper;
+
+    /**
      * @var LoggerInterface
      */
     protected $_logger;
@@ -68,6 +74,7 @@ class Builder
      * @param CartItemFactory $cartItemFactory
      * @param DataHelper $dataHelper
      * @param PriceHelper $priceHelper
+     * @param NostoItemHelper $nostoItemHelper
      * @param LoggerInterface $logger
      */
     public function __construct(
@@ -75,6 +82,7 @@ class Builder
         CartItemFactory $cartItemFactory,
         DataHelper $dataHelper,
         PriceHelper $priceHelper,
+        NostoItemHelper $nostoItemHelper,
         LoggerInterface $logger
     ) {
         $this->_cartFactory = $cartFactory;
@@ -82,6 +90,7 @@ class Builder
         $this->_dataHelper = $dataHelper;
         $this->_priceHelper = $priceHelper;
         $this->_logger = $logger;
+        $this->_nostoItemHelper = $nostoItemHelper;
     }
 
     /**
@@ -138,15 +147,8 @@ class Builder
      */
     protected function buildItemId(Item $item)
     {
-        /** @var Item $parentItem */
-        $parentItem = $item->getOptionByCode('product_type');
-        if (!is_null($parentItem)) {
-            return $parentItem->getProduct()->getSku();
-        } elseif ($item->getProductType() === 'simple') {
-            // todo: if the product has a configurable parent and there is "super_attribute" data in the buy request, assume we need to use the parent product SKU, just like in Magento 1.
-        }
 
-        return $item->getProduct()->getSku();
+        return $this->_nostoItemHelper->buildProductId($item);
     }
 
     /**
