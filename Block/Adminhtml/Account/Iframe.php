@@ -142,14 +142,14 @@ class Iframe extends BlockTemplate
     /**
      * Returns the valid origin url regexp from where the iframe should accept
      * postMessage calls.
-     * This is configurable to support different origins based on $ENV.
+     * This is configurable to support different origins based on $_ENV.
      *
      * @return string the origin url regexp.
      */
     public function getIframeOrigin()
     {
-        return (isset($ENV['NOSTO_IFRAME_ORIGIN_REGEXP']))
-            ? $ENV['NOSTO_IFRAME_ORIGIN_REGEXP']
+        return (isset($_ENV['NOSTO_IFRAME_ORIGIN_REGEXP']))
+            ? $_ENV['NOSTO_IFRAME_ORIGIN_REGEXP']
             : self::DEFAULT_IFRAME_ORIGIN_REGEXP;
     }
 
