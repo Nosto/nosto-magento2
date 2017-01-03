@@ -35,6 +35,7 @@ use /** @noinspection PhpUndefinedClassInspection */
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 use Magento\Store\Api\Data\StoreInterface;
+use NostoHttpRequest;
 
 /**
  * Url helper class for common URL related tasks.
@@ -232,7 +233,7 @@ class Url extends AbstractHelper
      */
     public function replaceQueryParamsInUrl(array $params, $url)
     {
-        return \NostoHttpRequest::replaceQueryParamsInUrl($params, $url);
+        return NostoHttpRequest::replaceQueryParamsInUrl($params, $url);
     }
 
     /**
@@ -243,7 +244,7 @@ class Url extends AbstractHelper
      */
     public function addNostoDebugParamToUrl($url)
     {
-        return \NostoHttpRequest::replaceQueryParamInUrl(
+        return NostoHttpRequest::replaceQueryParamInUrl(
             'nostodebug',
             'true',
             $url

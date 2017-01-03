@@ -33,6 +33,10 @@ use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Model\Meta\Account\Builder as NostoSignupBuilder;
+use NostoException;
+use NostoMessage;
+use NostoOperationAccount;
+use NostoSignupOwner;
 use Psr\Log\LoggerInterface;
 
 class Create extends Base
@@ -90,14 +94,14 @@ class Create extends Base
                 $signupParams = $this->signupBuilder->build($store);
                 // todo: how to handle this class, DI?
                 if (\Zend_Validate::is($emailAddress, 'EmailAddress')) {
-                    /** @var \NostoSignupOwner $owner */
+                    /** @var NostoSignupOwner $owner */
                     $owner = $signupParams->getOwner();
                     $owner->setEmail($emailAddress);
                 } else {
-                    throw new \NostoException("Invalid email address " . $emailAddress);
+                    throw new NostoException("Invalid email address " . $emailAddress);
                 }
 
-                $operation = new \NostoOperationAccount($signupParams);
+                $operation = new NostoOperationAccount($signupParams);
                 $account = $operation->create();
 
                 if ($this->nostoHelperAccount->saveAccount($account, $store)) {
@@ -109,12 +113,12 @@ class Create extends Base
                         $account,
                         $owner,
                         [
-                            'message_type' => \NostoMessage::TYPE_SUCCESS,
-                            'message_code' => \NostoMessage::CODE_ACCOUNT_CREATE,
+                            'message_type' => NostoMessage::TYPE_SUCCESS,
+                            'message_code' => NostoMessage::CODE_ACCOUNT_CREATE,
                         ]
                     );
                 }
-            } catch (\NostoException $e) {
+            } catch (NostoException $e) {
                 $this->logger->error($e, ['exception' => $e]);
             }
         }
@@ -124,8 +128,8 @@ class Create extends Base
                 $store,
                 null, // account creation failed, so we have none.
                 [
-                    'message_type' => \NostoMessage::TYPE_ERROR,
-                    'message_code' => \NostoMessage::CODE_ACCOUNT_CREATE,
+                    'message_type' => NostoMessage::TYPE_ERROR,
+                    'message_code' => NostoMessage::CODE_ACCOUNT_CREATE,
                 ]
             );
         }

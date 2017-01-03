@@ -30,6 +30,8 @@ namespace Nosto\Tagging\Helper;
 /** @noinspection PhpIncludeInspection */
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
+use NostoHelperDate;
+use NostoHelperPrice;
 
 /**
  * NostoHelperFormat helper used for common formatting tasks.
@@ -37,12 +39,12 @@ use Magento\Framework\App\Helper\Context;
 class Format extends AbstractHelper
 {
     /**
-     * @var \NostoHelperPrice the nosto price formatter.
+     * @var NostoHelperPrice the nosto price formatter.
      */
     protected $priceFormatter;
 
     /**
-     * @var \NostoHelperDate the nosto date formatter.
+     * @var NostoHelperDate the nosto date formatter.
      */
     protected $dateFormatter;
 
@@ -50,13 +52,13 @@ class Format extends AbstractHelper
      * Constructor.
      *
      * @param Context $context the context.
-     * @param \NostoHelperPrice $priceFormatter the nosto price formatter.
-     * @param \NostoHelperDate $dateFormatter the nosto date formatter.
+     * @param NostoHelperPrice $priceFormatter the nosto price formatter.
+     * @param NostoHelperDate $dateFormatter the nosto date formatter.
      */
     public function __construct(
         Context $context,
-        \NostoHelperPrice $priceFormatter,
-        \NostoHelperDate $dateFormatter
+        NostoHelperPrice $priceFormatter,
+        NostoHelperDate $dateFormatter
     ) {
         parent::__construct($context);
 
@@ -65,9 +67,9 @@ class Format extends AbstractHelper
     }
 
     /**
-     * NostoHelperFormats price into Nosto format, e.g. 1000.99.
+     * Formats price into Nosto format, e.g. 1000.99.
      *
-     * @see \NostoHelperPrice::format()
+     * @see NostoHelperPrice::format()
      * @param int|float|string $price the price string to format.
      * @return string the formatted price.
      */
@@ -77,9 +79,9 @@ class Format extends AbstractHelper
     }
 
     /**
-     * NostoHelperFormats date into Nosto format, i.e. Y-m-d.
+     * Formats date into Nosto format, i.e. Y-m-d.
      *
-     * @see \NostoHelperDate::format()
+     * @see NostoHelperDate::format()
      * @param string $date the date string to format.
      * @return string the formatted date.
      */

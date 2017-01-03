@@ -36,7 +36,10 @@ use Magento\Store\Model\StoreManagerInterface;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
+use NostoAccount;
 use NostoHttpRequest;
+use NostoOperationProduct;
+use NostoProduct;
 use Psr\Log\LoggerInterface;
 
 abstract class Base implements ObserverInterface
@@ -123,7 +126,7 @@ abstract class Base implements ObserverInterface
             foreach ($product->getStoreIds() as $storeId) {
                 /** @var Store $store */
                 $store = $this->storeManager->getStore($storeId);
-                /** @var \NostoAccount $account */
+                /** @var NostoAccount $account */
                 $account = $this->nostoHelperAccount->findAccount($store);
                 if ($account === null) {
                     continue;
@@ -134,14 +137,14 @@ abstract class Base implements ObserverInterface
                 }
 
                 // Load the product model for this particular store view.
-                /** @var \NostoProduct $model */
+                /** @var NostoProduct $model */
                 $metaProduct = $this->nostoProductBuilder->build($product, $store);
                 if (is_null($metaProduct)) {
                     continue;
                 }
 
                 try {
-                    $op = new \NostoOperationProduct($account);
+                    $op = new NostoOperationProduct($account);
                     $op->addProduct($metaProduct);
                     $this->doRequest($op);
                 } catch (\NostoException $e) {
@@ -159,8 +162,8 @@ abstract class Base implements ObserverInterface
     abstract protected function validateProduct(Product $product);
 
     /**
-     * @param \NostoOperationProduct $operation
+     * @param NostoOperationProduct $operation
      * @return mixed
      */
-    abstract protected function doRequest(\NostoOperationProduct $operation);
+    abstract protected function doRequest(NostoOperationProduct $operation);
 }

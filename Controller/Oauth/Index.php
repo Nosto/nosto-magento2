@@ -36,6 +36,8 @@ use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Model\Meta\Oauth\Builder as NostoOauthBuilder;
+use NostoMessage;
+use NostoOperationOauthSync;
 use Psr\Log\LoggerInterface;
 
 class Index extends Action
@@ -90,15 +92,15 @@ class Index extends Action
             try {
                 $this->connectAccount($authCode, $store);
                 $params = [
-                    'message_type' => \NostoMessage::TYPE_SUCCESS,
-                    'message_code' => \NostoMessage::CODE_ACCOUNT_CONNECT,
+                    'message_type' => NostoMessage::TYPE_SUCCESS,
+                    'message_code' => NostoMessage::CODE_ACCOUNT_CONNECT,
                     'store' => (int)$store->getId(),
                 ];
             } catch (\Exception $e) {
                 $this->logger->error($e, ['exception' => $e]);
                 $params = [
-                    'message_type' => \NostoMessage::TYPE_ERROR,
-                    'message_code' => \NostoMessage::CODE_ACCOUNT_CONNECT,
+                    'message_type' => NostoMessage::TYPE_ERROR,
+                    'message_code' => NostoMessage::CODE_ACCOUNT_CONNECT,
                     'store' => (int)$store->getId(),
                 ];
             }
@@ -115,8 +117,8 @@ class Index extends Action
             $this->redirectBackend(
                 'nosto/account/proxy',
                 [
-                    'message_type' => \NostoMessage::TYPE_ERROR,
-                    'message_code' => \NostoMessage::CODE_ACCOUNT_CONNECT,
+                    'message_type' => NostoMessage::TYPE_ERROR,
+                    'message_code' => NostoMessage::CODE_ACCOUNT_CONNECT,
                     'message_text' => $desc,
                     'store' => (int)$store->getId(),
                 ]
@@ -157,7 +159,7 @@ class Index extends Action
     {
         $oldAccount = $this->nostoHelperAccount->findAccount($store);
         $meta = $this->oauthMetaBuilder->build($store, $oldAccount);
-        $operation = new \NostoOperationOauthSync($meta);
+        $operation = new NostoOperationOauthSync($meta);
         $newAccount = $operation->exchange($authCode);
 
         // If we are updating an existing account,

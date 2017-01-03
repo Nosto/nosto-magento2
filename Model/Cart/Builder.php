@@ -32,6 +32,7 @@ use Magento\Framework\ObjectManagerInterface;
 use Magento\Quote\Model\Quote;
 use Magento\Store\Model\Store;
 use Nosto\Tagging\Model\Cart\Item\Builder as NostoCartItemBuilder;
+use NostoCart;
 use Psr\Log\LoggerInterface;
 
 class Builder
@@ -80,12 +81,12 @@ class Builder
     /**
      * @param Quote $quote
      * @param Store $store
-     * @return \NostoCart
+     * @return NostoCart
      * @internal param array $items
      */
     public function build(Quote $quote, Store $store)
     {
-        /** @var \NostoCart $nostoCart */
+        /** @var NostoCart $nostoCart */
         $nostoCart = $this->objectManager->create('NostoCart', null);
 
         foreach ($quote->getAllVisibleItems() as $item) {

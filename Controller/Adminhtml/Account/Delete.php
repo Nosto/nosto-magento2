@@ -32,6 +32,7 @@ use Magento\Framework\Controller\Result\Json;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
+use NostoMessage;
 
 class Delete extends Base
 {
@@ -84,8 +85,8 @@ class Delete extends Base
                     $store,
                     null, // we don't have an account anymore
                     [
-                        'message_type' => \NostoMessage::TYPE_SUCCESS,
-                        'message_code' => \NostoMessage::CODE_ACCOUNT_DELETE,
+                        'message_type' => NostoMessage::TYPE_SUCCESS,
+                        'message_code' => NostoMessage::CODE_ACCOUNT_DELETE,
                     ]
                 );
             }
@@ -96,8 +97,8 @@ class Delete extends Base
                 $store,
                 $account,
                 [
-                    'message_type' => \NostoMessage::TYPE_ERROR,
-                    'message_code' => \NostoMessage::CODE_ACCOUNT_DELETE,
+                    'message_type' => NostoMessage::TYPE_ERROR,
+                    'message_code' => NostoMessage::CODE_ACCOUNT_DELETE,
                 ]
             );
         }

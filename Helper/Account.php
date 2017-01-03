@@ -37,7 +37,12 @@ use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\Store;
 use Nosto\Tagging\Helper\Data as NostoHelper;
 use Nosto\Tagging\Model\Meta\Account\Iframe\Builder as NostoIframeMetaBuilder;
+use NostoAccount;
+use NostoAccountInterface;
+use NostoApiToken;
 use NostoHelperIframe;
+use NostoOperationUninstall;
+use NostoSignupOwnerInterface;
 
 
 /**
@@ -109,7 +114,7 @@ class Account extends AbstractHelper
      * Returns the account with associated api tokens for the store.
      *
      * @param StoreInterface $store the store.
-     * @return \NostoAccount|null the account or null if not found.
+     * @return NostoAccount|null the account or null if not found.
      */
     public function findAccount(StoreInterface $store)
     {
@@ -117,7 +122,7 @@ class Account extends AbstractHelper
         $accountName = $store->getConfig(self::XML_PATH_ACCOUNT);
 
         if (!empty($accountName)) {
-            $account = new \NostoAccount($accountName);
+            $account = new NostoAccount($accountName);
             /** @noinspection PhpUndefinedMethodInspection */
             $tokens = json_decode(
                 $store->getConfig(self::XML_PATH_TOKENS),
@@ -127,7 +132,7 @@ class Account extends AbstractHelper
                 foreach ($tokens as $name => $value) {
                     try {
                         $account->addApiToken(
-                            new \NostoApiToken($name, $value)
+                            new NostoApiToken($name, $value)
                         );
                     } catch (Exception $e) {
 
@@ -143,12 +148,12 @@ class Account extends AbstractHelper
     /**
      * Saves the account and the associated api tokens for the store.
      *
-     * @param \NostoAccountInterface $account the account to save.
+     * @param NostoAccountInterface $account the account to save.
      * @param Store $store the store.
      *
      * @return bool true on success, false otherwise.
      */
-    public function saveAccount(\NostoAccountInterface $account, Store $store)
+    public function saveAccount(NostoAccountInterface $account, Store $store)
     {
         if ((int)$store->getId() < 1) {
             return false;
@@ -180,12 +185,12 @@ class Account extends AbstractHelper
     /**
      * Removes an account with associated api tokens for the store.
      *
-     * @param \NostoAccount $account the account to remove.
+     * @param NostoAccount $account the account to remove.
      * @param Store $store the store.
      *
      * @return bool true on success, false otherwise.
      */
-    public function deleteAccount(\NostoAccount $account, Store $store)
+    public function deleteAccount(NostoAccount $account, Store $store)
     {
         if ((int)$store->getId() < 1) {
             return false;
@@ -204,7 +209,7 @@ class Account extends AbstractHelper
 
         try {
             // Notify Nosto that the account was deleted.
-            $service = new \NostoOperationUninstall($account);
+            $service = new NostoOperationUninstall($account);
             $service->delete();
         } catch (\NostoException $e) {
             // Failures are logged but not shown to the user.
@@ -222,15 +227,15 @@ class Account extends AbstractHelper
      * account can be created from.
      *
      * @param StoreInterface $store the store to get the url for.
-     * @param \NostoAccountInterface $account the account to get the iframe url for.
-     * @param \NostoSignupOwnerInterface $currentUser
+     * @param NostoAccountInterface $account the account to get the iframe url for.
+     * @param NostoSignupOwnerInterface $currentUser
      * @param array $params optional extra params for the url.
      * @return string the iframe url.
      */
     public function getIframeUrl(
         StoreInterface $store,
-        \NostoAccountInterface $account = null,
-        \NostoSignupOwnerInterface $currentUser,
+        NostoAccountInterface $account = null,
+        NostoSignupOwnerInterface $currentUser,
         array $params = []
     ) {
         if (self::IFRAME_VERSION > 0) {

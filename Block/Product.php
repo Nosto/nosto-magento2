@@ -42,6 +42,7 @@ use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Format as NostoHelperFormat;
 use Nosto\Tagging\Model\Category\Builder as NostoCategoryBuilder;
 use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
+use NostoProduct;
 
 /**
  * Product block used for outputting meta-data on the stores product pages.
@@ -134,7 +135,7 @@ class Product extends View
     /**
      * Returns the Nosto product DTO.
      *
-     * @return \NostoProduct the product meta data model.
+     * @return NostoProduct the product meta data model.
      */
     public function getNostoProduct()
     {
@@ -160,7 +161,7 @@ class Product extends View
     }
 
     /**
-     * NostoHelperFormats a \NostoPrice object, e.g. "1234.56".
+     * Formats a price, e.g. "1234.56".
      *
      * @param int $price the price to format.
      * @return string the formatted price.
@@ -171,7 +172,7 @@ class Product extends View
     }
 
     /**
-     * NostoHelperFormats a \NostoDate object, e.g. "2015-12-24";
+     * Formats a date, e.g. "2015-12-24";
      *
      * @param string $date the date to format.
      * @return string the formatted date.

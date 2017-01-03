@@ -30,6 +30,8 @@ namespace Nosto\Tagging\Model\Meta\Oauth;
 use Magento\Framework\Locale\ResolverInterface;
 use Magento\Framework\Url;
 use Magento\Store\Model\Store;
+use NostoAccount;
+use NostoOAuth;
 use Psr\Log\LoggerInterface;
 
 class Builder
@@ -51,12 +53,12 @@ class Builder
 
     /**
      * @param Store $store
-     * @param \NostoAccount $account
-     * @return \NostoOauth
+     * @param NostoAccount $account
+     * @return NostoOauth
      */
-    public function build(Store $store, \NostoAccount $account = null)
+    public function build(Store $store, NostoAccount $account = null)
     {
-        $metaData = new \NostoOAuth();
+        $metaData = new NostoOAuth();
 
         try {
             $metaData->setScopes(\NostoApiToken::getApiTokenNames());

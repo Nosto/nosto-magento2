@@ -33,6 +33,7 @@ use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Model\Meta\Oauth\Builder as NostoOauthBuilder;
+use NostoOAuthClient;
 
 class Sync extends Base
 {
@@ -84,7 +85,7 @@ class Sync extends Base
 
         if (!is_null($store) && !is_null($account)) {
             $metaData = $this->oauthMetaBuilder->build($store, $account);
-            $client = new \NostoOAuthClient($metaData);
+            $client = new NostoOAuthClient($metaData);
 
             $response['success'] = true;
             $response['redirect_url'] = $client->getAuthorizationUrl();

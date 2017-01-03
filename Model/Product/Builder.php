@@ -35,6 +35,8 @@ use Magento\Store\Model\Store;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Price as NostoPriceHelper;
 use Nosto\Tagging\Model\Category\Builder as NostoCategoryBuilder;
+use NostoProduct;
+use NostoProductInterface;
 use Psr\Log\LoggerInterface;
 
 class Builder
@@ -98,11 +100,11 @@ class Builder
     /**
      * @param Product $product
      * @param Store $store
-     * @return \NostoProduct
+     * @return NostoProduct
      */
     public function build(Product $product, Store $store)
     {
-        $nostoProduct = new \NostoProduct();
+        $nostoProduct = new NostoProduct();
 
         try {
             $nostoProduct->setUrl($this->buildUrl($product, $store));
@@ -225,7 +227,7 @@ class Builder
         }
 
         if (!$product->canConfigure()) {
-            $tags[] = \NostoProductInterface::ADD_TO_CART;
+            $tags[] = NostoProductInterface::ADD_TO_CART;
         }
 
         return $tags;

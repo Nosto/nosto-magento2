@@ -28,6 +28,7 @@
 namespace Nosto\Tagging\Model\Meta\Account\Billing;
 
 use Magento\Store\Model\Store;
+use NostoSignupBilling;
 use Psr\Log\LoggerInterface;
 
 class Builder
@@ -44,11 +45,11 @@ class Builder
 
     /**
      * @param Store $store
-     * @return \NostoSignupBilling
+     * @return NostoSignupBilling
      */
     public function build(Store $store)
     {
-        $metaData = new \NostoSignupBilling();
+        $metaData = new NostoSignupBilling();
 
         try {
             $country = $store->getConfig('general/country/default');

@@ -32,6 +32,7 @@ use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Model\Order\Builder as NostoOrderBuilder;
+use NostoExportOrderCollection;
 
 /**
  * Order export controller used to export order history to Nosto in order to
@@ -88,7 +89,7 @@ class Order extends Base
     protected function buildExportCollection($collection, Store $store)
     {
         /** @var \Magento\Sales\Model\ResourceModel\Order\Collection $collection */
-        $exportCollection = new \NostoExportOrderCollection();
+        $exportCollection = new NostoExportOrderCollection();
         foreach ($collection->getItems() as $order) {
             /** @var \Magento\Sales\Model\Order $order */
             $exportCollection[] = $this->nostoOrderBuilder->build($order);

@@ -39,6 +39,10 @@ use Magento\Sales\Model\Order\Item;
 use /** @noinspection PhpUndefinedClassInspection */
     Magento\SalesRule\Model\RuleFactory as SalesRuleFactory;
 use Nosto\Tagging\Helper\Price as NostoPriceHelper;
+use NostoOrder;
+use NostoOrderBuyer;
+use NostoOrderPurchasedItem;
+use NostoOrderStatus;
 use Psr\Log\LoggerInterface;
 
 class Builder
@@ -88,11 +92,11 @@ class Builder
      * Loads the order info from a Magento order model.
      *
      * @param Order $order the order model.
-     * @return \NostoOrder
+     * @return NostoOrder
      */
     public function build(Order $order)
     {
-        $nostoOrder = new \NostoOrder();
+        $nostoOrder = new NostoOrder();
 
         try {
             $nostoOrder->setOrderNumber($order->getId());
@@ -100,7 +104,7 @@ class Builder
             $nostoOrder->setCreatedDate($order->getCreatedAt());
             $nostoOrder->setPaymentProvider($order->getPayment()->getMethod());
             if ($order->getStatus()) {
-                $nostoStatus = new \NostoOrderStatus();
+                $nostoStatus = new NostoOrderStatus();
                 $nostoStatus->setCode($order->getStatus());
                 $nostoStatus->setLabel($order->getStatusLabel());
                 $nostoOrder->addOrderStatus($nostoStatus);
@@ -108,7 +112,7 @@ class Builder
             /** @var Order\Status\History $item */
             foreach ($order->getAllStatusHistory() as $item) {
                 if ($item->getStatus()) {
-                    $nostoStatus = new \NostoOrderStatus();
+                    $nostoStatus = new NostoOrderStatus();
                     $nostoStatus->setCode($item->getStatus());
                     $nostoStatus->setLabel($item->getStatusLabel());
                     $nostoOrder->addOrderStatus($nostoStatus);
@@ -116,7 +120,7 @@ class Builder
             }
 
             // Set the buyer information
-            $nostoBuyer = new \NostoOrderBuyer();
+            $nostoBuyer = new NostoOrderBuyer();
             $nostoBuyer->setFirstName($order->getCustomerFirstname());
             $nostoBuyer->setLastName($order->getCustomerLastname());
             $nostoBuyer->setEmail($order->getCustomerEmail());
@@ -125,7 +129,7 @@ class Builder
             // Add each ordered item as a line item
             /** @var Item $item */
             foreach ($order->getAllVisibleItems() as $item) {
-                $nostoItem = new \NostoOrderPurchasedItem();
+                $nostoItem = new NostoOrderPurchasedItem();
                 $nostoItem->setProductId((int)$this->buildItemProductId($item));
                 $nostoItem->setQuantity((int)$item->getQtyOrdered());
                 $nostoItem->setName($this->buildItemName($item));
@@ -142,7 +146,7 @@ class Builder
 
             // Add discounts as a pseudo line item
             if (($discount = $order->getDiscountAmount()) < 0) {
-                $nostoItem = new \NostoOrderPurchasedItem();
+                $nostoItem = new NostoOrderPurchasedItem();
                 $nostoItem->loadSpecialItemData(
                     $this->buildDiscountRuleDescription($order),
                     $discount,
@@ -153,7 +157,7 @@ class Builder
 
             // Add shipping and handling as a pseudo line item
             if (($shippingInclTax = $order->getShippingInclTax()) > 0) {
-                $nostoItem = new \NostoOrderPurchasedItem();
+                $nostoItem = new NostoOrderPurchasedItem();
                 $nostoItem->loadSpecialItemData(
                     'Shipping and handling',
                     $shippingInclTax,

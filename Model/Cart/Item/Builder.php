@@ -31,6 +31,7 @@ use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\ObjectManagerInterface;
 use Magento\Quote\Model\Quote\Item;
 use Magento\Store\Model\Store;
+use NostoOrderPurchasedItem;
 use Psr\Log\LoggerInterface;
 
 class Builder
@@ -70,7 +71,7 @@ class Builder
     /**
      * @param Item $item
      * @param Store $store
-     * @return \NostoOrderPurchasedItem
+     * @return NostoOrderPurchasedItem
      */
     public function build(Item $item, Store $store)
     {
