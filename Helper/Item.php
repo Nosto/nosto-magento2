@@ -27,8 +27,8 @@
 
 namespace Nosto\Tagging\Helper;
 
-use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Catalog\Model\Product\Type;
+use Magento\Framework\App\Helper\AbstractHelper;
 
 /**
  * Item helper class for common tasks related to cart and order items.

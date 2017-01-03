@@ -5,6 +5,8 @@
  * See COPYING.txt for license details.
  */
 -->
+
+<!--suppress XmlUnboundNsPrefix -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:module:Nosto_Tagging:etc/sections.xsd">
     <action name="customer/account/logout"/>

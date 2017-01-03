@@ -33,7 +33,7 @@
  */
 ?>
 <!-- Nosto Cart Tagging -->
-<div id="nosto_cart_tagging" class="nosto_cart_hidden" style="display:none" data-bind="scope: 'cartTagging'" data-role="nosto-cart-tagging" id="nosto_cart_tagging">
+<div class="nosto_cart_hidden" style="display:none" data-bind="scope: 'cartTagging'" data-role="nosto-cart-tagging" id="nosto_cart_tagging">
     <!-- ko if: cartTagging().itemCount > 0 -->
         <!-- ko foreach: {data: cartTagging().items, afterRender: sendTagging } -->
             <div class="line_item">
@@ -47,5 +47,7 @@
     <!-- /ko -->
 </div>
 <script type="text/x-magento-init">
-{"[data-role=nosto-cart-tagging]": {"Magento_Ui/js/core/app": <?php /* @escapeNotVerified */ echo $block->getJsLayout();?>}}
+{"[data-role=nosto-cart-tagging]": {"Magento_Ui/js/core/app": <?php /* @escapeNotVerified */
+    /** @noinspection PhpUndefinedVariableInspection */
+    echo $block->getJsLayout();?>}}
 </script>

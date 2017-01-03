@@ -28,6 +28,7 @@
 namespace Nosto\Tagging\Model\Meta\Account\Iframe;
 
 use Magento\Framework\Locale\ResolverInterface;
+use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\Store;
 use Nosto\Tagging\Helper\Data;
 use Nosto\Tagging\Helper\Url;
@@ -59,10 +60,10 @@ class Builder
     }
 
     /**
-     * @param Store $store
+     * @param StoreInterface|Store $store
      * @return \NostoIframe
      */
-    public function build(Store $store)
+    public function build(StoreInterface $store)
     {
         $metaData = new \NostoIframe();
 
@@ -70,9 +71,9 @@ class Builder
             $metaData->setUniqueId($this->_dataHelper->getInstallationId());
 
             $lang = substr($this->_localeResolver->getLocale(), 0, 2);
-            $metaData->setLanguage(new \NostoLanguageCode($lang));
+            $metaData->setLanguageIsoCode($lang);
             $lang = substr($store->getConfig('general/locale/code'), 0, 2);
-            $metaData->setShopLanguage(new \NostoLanguageCode($lang));
+            $metaData->setLanguageIsoCodeShop($lang);
 
             $metaData->setShopName($store->getName());
             $metaData->setUniqueId($this->_dataHelper->getInstallationId());

@@ -33,6 +33,7 @@ use Magento\Backend\Model\Auth\Session;
 use Magento\Framework\Exception\NotFoundException;
 use Magento\Store\Api\Data\StoreInterface;
 use Nosto\Tagging\Helper\Account;
+use Nosto\Tagging\Model\Meta\Account\Sso\Builder as SsoBuilder;
 
 /**
  * Iframe block for displaying the Nosto account management iframe.
@@ -50,12 +51,9 @@ class Iframe extends BlockTemplate
      * @inheritdoc
      */
     protected $_template = 'iframe.phtml';
-
-    /**
-     * @var Account account helper.
-     */
     protected $_accountHelper;
     private $_backendAuthSession;
+    private $_ssoBuilder;
 
     /**
      * Constructor.
@@ -63,18 +61,21 @@ class Iframe extends BlockTemplate
      * @param BlockContext $context the context.
      * @param Account $accountHelper the account helper.
      * @param Session $backendAuthSession
-     * @param array $data optional data.
+     * @param SsoBuilder $ssoBuilder
+     * @param array $data
      */
     public function __construct(
         BlockContext $context,
         Account $accountHelper,
         Session $backendAuthSession,
+        SsoBuilder $ssoBuilder,
         array $data = []
     ) {
         parent::__construct($context, $data);
 
         $this->_accountHelper = $accountHelper;
         $this->_backendAuthSession = $backendAuthSession;
+        $this->_ssoBuilder = $ssoBuilder;
     }
 
     /**
@@ -100,12 +101,14 @@ class Iframe extends BlockTemplate
                     $params[$key] = $value;
                 }
             }
+            /** @noinspection PhpUndefinedMethodInspection */
             $this->_backendAuthSession->setData('nosto_message', null);
         }
 
         $store = $this->getSelectedStore();
         $account = $this->_accountHelper->findAccount($store);
-        return $this->_accountHelper->getIframeUrl($store, $account, $params);
+        $user = $this->_ssoBuilder->build();
+        return $this->_accountHelper->getIframeUrl($store, $account, $user, $params);
     }
 
     /**

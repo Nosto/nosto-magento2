@@ -37,12 +37,12 @@ use Magento\Framework\App\Helper\Context;
 class Format extends AbstractHelper
 {
     /**
-     * @var \NostoFormatterPrice the nosto price formatter.
+     * @var \NostoHelperPrice the nosto price formatter.
      */
     protected $_priceFormatter;
 
     /**
-     * @var \NostoFormatterDate the nosto date formatter.
+     * @var \NostoHelperDate the nosto date formatter.
      */
     protected $_dateFormatter;
 
@@ -50,13 +50,13 @@ class Format extends AbstractHelper
      * Constructor.
      *
      * @param Context $context the context.
-     * @param \NostoFormatterPrice $priceFormatter the nosto price formatter.
-     * @param \NostoFormatterDate $dateFormatter the nosto date formatter.
+     * @param \NostoHelperPrice $priceFormatter the nosto price formatter.
+     * @param \NostoHelperDate $dateFormatter the nosto date formatter.
      */
     public function __construct(
         Context $context,
-        \NostoFormatterPrice $priceFormatter,
-        \NostoFormatterDate $dateFormatter
+        \NostoHelperPrice $priceFormatter,
+        \NostoHelperDate $dateFormatter
     ) {
         parent::__construct($context);
 
@@ -65,30 +65,26 @@ class Format extends AbstractHelper
     }
 
     /**
-     * Formats a \NostoPrice object, e.g. "1234.56".
+     * Formats price into Nosto format, e.g. 1000.99.
      *
-     * @param \NostoPrice $price the price to format.
+     * @see \NostoHelperPrice::format()
+     * @param int|float|string $price the price string to format.
      * @return string the formatted price.
      */
-    public function formatPrice(\NostoPrice $price)
+    public function formatPrice($price)
     {
-        return $this->_priceFormatter->format(
-            $price,
-            new \NostoPriceFormat(2, '.', '')
-        );
+        return $this->_priceFormatter->format($price);
     }
 
     /**
-     * Formats a \NostoDate object, e.g. "2015-12-24";
+     * Formats date into Nosto format, i.e. Y-m-d.
      *
-     * @param \NostoDate $date the date to format.
+     * @see \NostoHelperDate::format()
+     * @param string $date the date string to format.
      * @return string the formatted date.
      */
-    public function formatDate(\NostoDate $date)
+    public function formatDate($date)
     {
-        return $this->_dateFormatter->format(
-            $date,
-            new \NostoDateFormat(\NostoDateFormat::YMD)
-        );
+        return $this->_dateFormatter->format($date);
     }
 }

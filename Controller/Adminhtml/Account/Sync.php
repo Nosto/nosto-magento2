@@ -27,7 +27,6 @@
 
 namespace Nosto\Tagging\Controller\Adminhtml\Account;
 
-use Magento\Backend\App\Action;
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\Controller\Result\Json;
 use Magento\Store\Model\Store;
@@ -35,7 +34,7 @@ use Magento\Store\Model\StoreManagerInterface;
 use Nosto\Tagging\Helper\Account;
 use Nosto\Tagging\Model\Meta\Oauth\Builder;
 
-class Sync extends Action
+class Sync extends Base
 {
     const ADMIN_RESOURCE = 'Nosto_Tagging::system_nosto_account';
 
@@ -92,15 +91,5 @@ class Sync extends Action
         }
 
         return $this->_result->setData($response);
-    }
-
-    /**
-     * Is the user allowed to view Nosto account settings
-     *
-     * @return bool
-     */
-    protected function _isAllowed()
-    {
-        return $this->_authorization->isAllowed(self::ADMIN_RESOURCE);
     }
 }

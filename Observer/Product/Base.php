@@ -36,6 +36,7 @@ use Magento\Store\Model\StoreManagerInterface;
 use Nosto\Tagging\Helper\Account as AccountHelper;
 use Nosto\Tagging\Helper\Data as DataHelper;
 use Nosto\Tagging\Model\Product\Builder as ProductBuilder;
+use NostoHttpRequest;
 use Psr\Log\LoggerInterface;
 
 abstract class Base implements ObserverInterface
@@ -94,6 +95,12 @@ abstract class Base implements ObserverInterface
         $this->_storeManager = $storeManager;
         $this->_logger = $logger;
         $this->_moduleManager = $moduleManager;
+
+        NostoHttpRequest::buildUserAgent(
+            'Magento',
+            $dataHelper->getPlatformVersion(),
+            $dataHelper->getModuleVersion()
+        );
     }
 
     /**
@@ -134,7 +141,7 @@ abstract class Base implements ObserverInterface
                 }
 
                 try {
-                    $op = new \NostoServiceProduct($account);
+                    $op = new \NostoOperationProduct($account);
                     $op->addProduct($metaProduct);
                     $this->doRequest($op);
                 } catch (\NostoException $e) {
@@ -152,8 +159,8 @@ abstract class Base implements ObserverInterface
     abstract protected function validateProduct(Product $product);
 
     /**
-     * @param \NostoServiceProduct $operation
+     * @param \NostoOperationProduct $operation
      * @return mixed
      */
-    abstract protected function doRequest(\NostoServiceProduct $operation);
+    abstract protected function doRequest(\NostoOperationProduct $operation);
 }

@@ -43,7 +43,7 @@ class Delete extends ProductObserver
     /**
      * @inheritdoc
      */
-    protected function doRequest(\NostoServiceProduct $operation)
+    protected function doRequest(\NostoOperationProduct $operation)
     {
         $operation->delete();
     }

@@ -25,33 +25,20 @@
  * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
-namespace Nosto\Tagging\Model\Category;
+namespace Nosto\Tagging\Controller\Adminhtml\Account;
 
-use Magento\Framework\ObjectManagerInterface;
 
-class Factory
+use Magento\Backend\App\Action;
+
+abstract class Base extends Action
 {
     /**
-     * @var ObjectManagerInterface
-     */
-    protected $_objectManager;
-
-    /**
-     * @param ObjectManagerInterface $objectManager
-     */
-    public function __construct(ObjectManagerInterface $objectManager)
-    {
-        $this->_objectManager = $objectManager;
-    }
-
-    /**
-     * Create new product object.
+     * Is the user allowed to view Nosto account settings
      *
-     * @param array $data
-     * @return \NostoCategory
+     * @return bool
      */
-    public function create(array $data = [])
+    protected function _isAllowed()
     {
-        return $this->_objectManager->create('NostoCategory', $data);
+        return $this->_authorization->isAllowed(self::ADMIN_RESOURCE);
     }
 }

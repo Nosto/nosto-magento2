@@ -149,7 +149,7 @@ class Product extends View
     /**
      * Returns the Nosto category DTO.
      *
-     * @return \NostoCategory the category meta data model.
+     * @return string the current category as a slash-delimited string
      */
     public function getNostoCategory()
     {
@@ -162,10 +162,10 @@ class Product extends View
     /**
      * Formats a \NostoPrice object, e.g. "1234.56".
      *
-     * @param \NostoPrice $price the price to format.
+     * @param int $price the price to format.
      * @return string the formatted price.
      */
-    public function formatNostoPrice(\NostoPrice $price)
+    public function formatNostoPrice($price)
     {
         return $this->_formatHelper->formatPrice($price);
     }
@@ -173,10 +173,10 @@ class Product extends View
     /**
      * Formats a \NostoDate object, e.g. "2015-12-24";
      *
-     * @param \NostoDate $date the date to format.
+     * @param string $date the date to format.
      * @return string the formatted date.
      */
-    public function formatNostoDate(\NostoDate $date)
+    public function formatNostoDate($date)
     {
         return $this->_formatHelper->formatDate($date);
     }

@@ -31,21 +31,15 @@ use Exception;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\Product\Type;
 use Magento\Catalog\Model\ResourceModel\Eav\Attribute;
-use Magento\SalesRule\Model\RuleFactory as SalesRuleFactory;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable;
+use Magento\Framework\ObjectManagerInterface;
 use Magento\GroupedProduct\Model\Product\Type\Grouped;
 use Magento\Sales\Model\Order;
 use Magento\Sales\Model\Order\Item;
-use NostoCurrencyCode;
-use NostoDate;
-use NostoOrderBuyer;
-use NostoOrderItem;
-use NostoOrderPaymentProvider;
-use NostoOrderStatus;
+use /** @noinspection PhpUndefinedClassInspection */
+    Magento\SalesRule\Model\RuleFactory as SalesRuleFactory;
 use Nosto\Tagging\Helper\Price as PriceHelper;
-use NostoPrice;
 use Psr\Log\LoggerInterface;
-use Nosto\Tagging\Helper\Item as NostoItemHelper;
 
 class Builder
 {
@@ -54,6 +48,7 @@ class Builder
      */
     protected $_logger;
 
+    /** @noinspection PhpUndefinedClassInspection */
     /**
      * @var SalesRuleFactory
      */
@@ -65,27 +60,28 @@ class Builder
     protected $_priceHelper;
 
     /**
-     * @var NostoItemHelper
+     * @var ObjectManagerInterface
      */
-    protected $_nostoItemHelper;
+    protected $_objectManager;
 
+    /** @noinspection PhpUndefinedClassInspection */
     /**
      * @param LoggerInterface $logger
      * @param SalesRuleFactory $salesRuleFactory
      * @param PriceHelper $priceHelper
-     * @param NostoItemHelper $nostoItemHelper
-     * @internal param ObjectManager $objectManager
+     * @param ObjectManagerInterface $objectManager
      */
     public function __construct(
         LoggerInterface $logger,
+        /** @noinspection PhpUndefinedClassInspection */
         SalesRuleFactory $salesRuleFactory,
         PriceHelper $priceHelper,
-        NostoItemHelper $nostoItemHelper
+        ObjectManagerInterface $objectManager
     ) {
         $this->_logger = $logger;
         $this->_salesRuleFactory= $salesRuleFactory;
         $this->_priceHelper = $priceHelper;
-        $this->_nostoItemHelper = $nostoItemHelper;
+        $this->_objectManager = $objectManager;
     }
 
     /**
@@ -99,76 +95,71 @@ class Builder
         $nostoOrder = new \NostoOrder();
 
         try {
-            $nostoCurrency = new NostoCurrencyCode($order->getOrderCurrencyCode());
             $nostoOrder->setOrderNumber($order->getId());
-            $nostoOrder->setExternalRef($order->getRealOrderId());
-            $nostoOrder->setCreatedDate(new NostoDate(strtotime($order->getCreatedAt())));
-            $nostoOrder->setPaymentProvider(new NostoOrderPaymentProvider($order->getPayment()->getMethod()));
+            $nostoOrder->setExternalOrderRef($order->getRealOrderId());
+            $nostoOrder->setCreatedDate($order->getCreatedAt());
+            $nostoOrder->setPaymentProvider($order->getPayment()->getMethod());
             if ($order->getStatus()) {
-                $nostoStatus = new NostoOrderStatus();
+                $nostoStatus = new \NostoOrderStatus();
                 $nostoStatus->setCode($order->getStatus());
                 $nostoStatus->setLabel($order->getStatusLabel());
-                $nostoOrder->setStatus($nostoStatus);
+                $nostoOrder->addOrderStatus($nostoStatus);
             }
+            /** @var Order\Status\History $item */
             foreach ($order->getAllStatusHistory() as $item) {
                 if ($item->getStatus()) {
-                    $nostoStatus = new NostoOrderStatus();
+                    $nostoStatus = new \NostoOrderStatus();
                     $nostoStatus->setCode($item->getStatus());
                     $nostoStatus->setLabel($item->getStatusLabel());
-                    $nostoStatus->setCreatedAt(new NostoDate(strtotime($item->getCreatedAt())));
-                    $nostoOrder->addHistoryStatus($nostoStatus);
+                    $nostoOrder->addOrderStatus($nostoStatus);
                 }
             }
 
             // Set the buyer information
-            $nostoBuyer = new NostoOrderBuyer();
+            $nostoBuyer = new \NostoOrderBuyer();
             $nostoBuyer->setFirstName($order->getCustomerFirstname());
             $nostoBuyer->setLastName($order->getCustomerLastname());
             $nostoBuyer->setEmail($order->getCustomerEmail());
-            $nostoOrder->setBuyer($nostoBuyer);
+            $nostoOrder->setBuyerInfo($nostoBuyer);
 
             // Add each ordered item as a line item
             /** @var Item $item */
             foreach ($order->getAllVisibleItems() as $item) {
-                $nostoItem = new NostoOrderItem();
-                $nostoItem->setItemId((int)$this->buildItemProductId($item));
+                $nostoItem = new \NostoOrderPurchasedItem();
+                $nostoItem->setProductId((int)$this->buildItemProductId($item));
                 $nostoItem->setQuantity((int)$item->getQtyOrdered());
                 $nostoItem->setName($this->buildItemName($item));
                 try {
-                    $nostoItem->setUnitPrice(
-                        new NostoPrice(
-                            $this->_priceHelper->getItemFinalPriceInclTax($item)
-                        )
+                    $nostoItem->setPrice(
+                        $this->_priceHelper->getItemFinalPriceInclTax($item)
                     );
-                } catch (\NostoInvalidArgumentException $E) {
-                    $nostoItem->setUnitPrice(
-                        new NostoPrice(0)
-                    );
+                } catch (Exception $E) {
+                    $nostoItem->setPrice(0);
                 }
-                $nostoItem->setCurrency($nostoCurrency);
-                $nostoOrder->addItem($nostoItem);
+                $nostoItem->setCurrencyCode($order->getOrderCurrencyCode());
+                $nostoOrder->addPurchasedItems($nostoItem);
             }
 
             // Add discounts as a pseudo line item
             if (($discount = $order->getDiscountAmount()) < 0) {
-                $nostoItem = new NostoOrderItem();
-                $nostoItem->setItemId(-1);
-                $nostoItem->setQuantity(1);
-                $nostoItem->setName($this->buildDiscountRuleDescription($order));
-                $nostoItem->setUnitPrice(new NostoPrice($discount));
-                $nostoItem->setCurrency($nostoCurrency);
-                $nostoOrder->addItem($nostoItem);
+                $nostoItem = new \NostoOrderPurchasedItem();
+                $nostoItem->loadSpecialItemData(
+                    $this->buildDiscountRuleDescription($order),
+                    $discount,
+                    $order->getOrderCurrencyCode()
+                );
+                $nostoOrder->addPurchasedItems($nostoItem);
             }
 
             // Add shipping and handling as a pseudo line item
             if (($shippingInclTax = $order->getShippingInclTax()) > 0) {
-                $nostoItem = new NostoOrderItem();
-                $nostoItem->setItemId(-1);
-                $nostoItem->setQuantity(1);
-                $nostoItem->setName('Shipping and handling');
-                $nostoItem->setUnitPrice(new NostoPrice($shippingInclTax));
-                $nostoItem->setCurrency($nostoCurrency);
-                $nostoOrder->addItem($nostoItem);
+                $nostoItem = new \NostoOrderPurchasedItem();
+                $nostoItem->loadSpecialItemData(
+                    'Shipping and handling',
+                    $shippingInclTax,
+                    $order->getOrderCurrencyCode()
+                );
+                $nostoOrder->addPurchasedItems($nostoItem);
             }
         } catch (Exception $e) {
             $this->_logger->error($e, ['exception' => $e]);
@@ -195,7 +186,9 @@ class Builder
                 }
                 $ruleIds = explode(',', $item->getAppliedRuleIds());
                 foreach ($ruleIds as $ruleId) {
+                    /** @noinspection PhpUndefinedMethodInspection */
                     $rule = $this->_salesRuleFactory->create()->load($ruleId);
+                    /** @noinspection PhpUndefinedMethodInspection */
                     $appliedRules[$ruleId] = $rule->getName();
                 }
             }
@@ -227,7 +220,21 @@ class Builder
      */
     protected function buildItemProductId(Item $item)
     {
-        return $this->_nostoItemHelper->buildProductId($item);
+        $parent = $item->getProductOptionByCode('super_product_config');
+        if (isset($parent['product_id'])) {
+            return $parent['product_id'];
+        } elseif ($item->getProductType() === Type::TYPE_SIMPLE) {
+            $type = $item->getProduct()->getTypeInstance();
+            $parentIds = $type->getParentIdsByChild($item->getProductId());
+            $attributes = $item->getBuyRequest()->getData('super_attribute');
+            // If the product has a configurable parent, we assume we should tag
+            // the parent. If there are many parent IDs, we are safer to tag the
+            // products own ID.
+            if (count($parentIds) === 1 && !empty($attributes)) {
+                return $parentIds[0];
+            }
+        }
+        return $item->getProductId();
     }
 
     /**

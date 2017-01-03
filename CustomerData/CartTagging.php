@@ -7,14 +7,15 @@
  */
 namespace Nosto\Tagging\CustomerData;
 
-use Magento\Customer\CustomerData\SectionSourceInterface;
 use Magento\Checkout\Helper\Cart as CartHelper;
+use Magento\Customer\CustomerData\SectionSourceInterface;
+use Magento\Framework\Stdlib\CookieManagerInterface;
 use Magento\Store\Api\StoreManagementInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Nosto\Tagging\Model\Cart\Builder as NostoCartBuilder;
-use Magento\Framework\Stdlib\CookieManagerInterface;
 use Nosto\Tagging\Model\Customer as NostoCustomer;
-use Nosto\Tagging\Model\CustomerFactory as NostoCustomerFactory;
+use /** @noinspection PhpUndefinedClassInspection */
+    Nosto\Tagging\Model\CustomerFactory as NostoCustomerFactory;
 
 class CartTagging implements SectionSourceInterface
 {
@@ -39,6 +40,7 @@ class CartTagging implements SectionSourceInterface
      */
     protected $cookieManager;
 
+    /** @noinspection PhpUndefinedClassInspection */
     /**
      * @var NostoCustomerFactory
      */
@@ -49,6 +51,7 @@ class CartTagging implements SectionSourceInterface
      */
     protected $quote = null;
 
+    /** @noinspection PhpUndefinedClassInspection */
     /**
      * @param CartHelper $cartHelper
      * @param NostoCartBuilder $nostoCartBuilder
@@ -61,6 +64,7 @@ class CartTagging implements SectionSourceInterface
         NostoCartBuilder $nostoCartBuilder,
         StoreManagerInterface $storeManager,
         CookieManagerInterface $cookieManager,
+        /** @noinspection PhpUndefinedClassInspection */
         NostoCustomerFactory $nostoCustomerFactory
     ) {
         $this->cartHelper= $cartHelper;
@@ -80,23 +84,22 @@ class CartTagging implements SectionSourceInterface
             "itemCount" => 0,
         ];
         $cart = $this->cartHelper->getCart();
-        $items = $this->getQuote()->getAllVisibleItems();
         $nostoCart = $this->nostoCartBuilder->build(
-            $items,
+            $this->getQuote(),
             $this->storeManager->getStore()
         );
         $itemCount = $cart->getItemsCount();
         $data["itemCount"] = $itemCount;
         $addedCount = 0;
-        /* @var \NostoCartItemInterface $item */
+        /* @var \NostoOrderPurchasedItem $item */
         foreach ($nostoCart->getItems() as $item) {
             $addedCount++;
             $data["items"][] = [
-                'product_id' => $item->getItemId(),
+                'product_id' => $item->getProductId(),
                 'quantity' => $item->getQuantity(),
                 'name' => $item->getName(),
-                'unit_price' => $item->getUnitPrice()->getPrice(),
-                'price_currency_code' => $item->getCurrency()->getCode(),
+                'unit_price' => $item->getUnitPrice(),
+                'price_currency_code' => $item->getCurrencyCode(),
                 'total_count' => $itemCount,
                 'index' => $addedCount
             ];
@@ -141,6 +144,7 @@ class CartTagging implements SectionSourceInterface
         $nostoCustomerId = $this->cookieManager->getCookie(NostoCustomer::COOKIE_NAME);
         $quoteId = $this->getQuote()->getId();
         if (!empty($quoteId) && !empty($nostoCustomerId)) {
+            /** @noinspection PhpUndefinedMethodInspection */
             $nostoCustomer = $this->nostoCustomerFactory
                 ->create()
                 ->getCollection()
@@ -149,16 +153,24 @@ class CartTagging implements SectionSourceInterface
                 ->setPageSize(1)
                 ->setCurPage(1)
                 ->getFirstItem();
+            /** @noinspection PhpUndefinedMethodInspection */
             if ($nostoCustomer->hasData(NostoCustomer::CUSTOMER_ID)) {
+                /** @noinspection PhpUndefinedMethodInspection */
                 $nostoCustomer->setUpdatedAt(new \DateTime('now'));
             } else {
+                /** @noinspection PhpUndefinedMethodInspection */
                 $nostoCustomer = $this->nostoCustomerFactory->create();
+                /** @noinspection PhpUndefinedMethodInspection */
                 $nostoCustomer->setQuoteId($quoteId);
+                /** @noinspection PhpUndefinedMethodInspection */
                 $nostoCustomer->setNostoId($nostoCustomerId);
+                /** @noinspection PhpUndefinedMethodInspection */
                 $nostoCustomer->setCreatedAt(new \DateTime('now'));
+                /** @noinspection PhpUndefinedMethodInspection */
                 $nostoCustomer->setUpdatedAt(new \DateTime('now'));
             }
             try {
+                /** @noinspection PhpUndefinedMethodInspection */
                 $nostoCustomer->save();
             } catch (\Exception $e) {
                 //Todo - handle errors, maybe log?

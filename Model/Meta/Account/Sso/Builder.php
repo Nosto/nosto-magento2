@@ -28,7 +28,6 @@
 namespace Nosto\Tagging\Model\Meta\Account\Sso;
 
 use Magento\Backend\Model\Auth\Session;
-use NostoSso;
 use Psr\Log\LoggerInterface;
 
 class Builder
@@ -50,17 +49,17 @@ class Builder
     }
 
     /**
-     * @return NostoSso
+     * @return \NostoSignupOwnerInterface
      */
     public function build()
     {
-        $metaData = new NostoSso();
+        $metaData = new \NostoSignupOwner();
 
         try {
             $user = $this->_backendAuthSession->getUser();
             if (!is_null($user)) {
-                $metaData->setFirstName($user->getFirstname());
-                $metaData->setLastName($user->getLastname());
+                $metaData->setFirstName($user->getFirstName());
+                $metaData->setLastName($user->getLastName());
                 $metaData->setEmail($user->getEmail());
             }
         } catch (\NostoException $e) {

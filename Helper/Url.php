@@ -101,8 +101,8 @@ class Url extends AbstractHelper
      */
     public function getPreviewUrlProduct(Store $store)
     {
-        /** @noinspection PhpUndefinedNamespaceInspection */
-        /** @var \Magento\Catalog\Model\Resource\Product\Collection $collection */
+        /** @var \Magento\Catalog\Model\ResourceModel\Product\Collection $collection */
+        /** @noinspection PhpUndefinedMethodInspection */
         $collection = $this->_productCollectionFactory->create();
         $collection->addStoreFilter($store->getId());
         $collection->setVisibility($this->_productVisibility->getVisibleInSiteIds());
@@ -139,9 +139,9 @@ class Url extends AbstractHelper
     public function getPreviewUrlCategory(Store $store)
     {
         $rootCatId = (int)$store->getRootCategoryId();
-        /** @noinspection PhpUndefinedNamespaceInspection */
         /** @noinspection PhpUndefinedClassInspection */
-        /** @var \Magento\Catalog\Model\Resource\Category\Collection $collection */
+        /** @var \Magento\Catalog\Model\ResourceModel\Category\Collection $collection */
+        /** @noinspection PhpUndefinedMethodInspection */
         $collection = $this->_categoryCollectionFactory->create();
         $collection->addAttributeToFilter('is_active', ['eq' => 1]);
         $collection->addAttributeToFilter('path', ['like' => "1/$rootCatId/%"]);

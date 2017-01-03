@@ -44,7 +44,6 @@ class Index extends Action
     private $_backendUrlBuilder;
     private $_accountHelper;
     private $_oauthMetaBuilder;
-    private $_accountService;
     private $_storeManager;
 
     /**
@@ -54,7 +53,6 @@ class Index extends Action
      * @param UrlInterface $backendUrlBuilder
      * @param Account $accountHelper
      * @param Builder $oauthMetaBuilder
-     * @param \NostoServiceAccount $accountService
      */
     public function __construct(
         Context $context,
@@ -62,8 +60,7 @@ class Index extends Action
         StoreManagerInterface $storeManager,
         UrlInterface $backendUrlBuilder,
         Account $accountHelper,
-        Builder $oauthMetaBuilder,
-        \NostoServiceAccount $accountService
+        Builder $oauthMetaBuilder
     ) {
         parent::__construct($context);
 
@@ -72,7 +69,6 @@ class Index extends Action
         $this->_backendUrlBuilder = $backendUrlBuilder;
         $this->_accountHelper = $accountHelper;
         $this->_oauthMetaBuilder = $oauthMetaBuilder;
-        $this->_accountService = $accountService;
     }
 
     /**
@@ -161,11 +157,12 @@ class Index extends Action
     {
         $oldAccount = $this->_accountHelper->findAccount($store);
         $meta = $this->_oauthMetaBuilder->build($store, $oldAccount);
-        $newAccount = $this->_accountService->sync($meta, $authCode);
+        $operation = new \NostoOperationOauthSync($meta);
+        $newAccount = $operation->exchange($authCode);
 
         // If we are updating an existing account,
         // double check that we got the same account back from Nosto.
-        if (!is_null($oldAccount) && !$newAccount->equals($oldAccount)) {
+        if (!is_null($oldAccount) && $newAccount->getName() !== $oldAccount->getName()) {
             throw new InputMismatchException(__('Failed to synchronise Nosto account details, account mismatch.'));
         }
 

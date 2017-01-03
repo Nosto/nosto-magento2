@@ -24,10 +24,8 @@
  * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
-/**
- * Created by hannupolonen on 21/12/16.
- */
 define([], function(){
+    //noinspection AmdModulesDependencies
     if (typeof nostojs == 'function') {
         return nostojs;
     } else if (typeof window['nostojs'] == 'function') {

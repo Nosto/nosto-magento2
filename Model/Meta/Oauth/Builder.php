@@ -56,7 +56,7 @@ class Builder
      */
     public function build(Store $store, \NostoAccount $account = null)
     {
-        $metaData = new \NostoOauth();
+        $metaData = new \NostoOAuth();
 
         try {
             $metaData->setScopes(\NostoApiToken::getApiTokenNames());
@@ -70,7 +70,7 @@ class Builder
             );
             $metaData->setRedirectUrl($redirectUrl);
             $lang = substr($this->_localeResolver->getLocale(), 0, 2);
-            $metaData->setLanguage(new \NostoLanguageCode($lang));
+            $metaData->setLanguage($lang);
             if (!is_null($account)) {
                 $metaData->setAccount($account);
             }

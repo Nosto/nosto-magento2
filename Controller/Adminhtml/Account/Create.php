@@ -27,16 +27,15 @@
 
 namespace Nosto\Tagging\Controller\Adminhtml\Account;
 
-use Magento\Backend\App\Action;
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\Controller\Result\Json;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
 use Nosto\Tagging\Helper\Account;
-use Nosto\Tagging\Model\Meta\Account\Builder;
+use Nosto\Tagging\Model\Meta\Account\Builder as SignupBuilder;
 use Psr\Log\LoggerInterface;
 
-class Create extends Action
+class Create extends Base
 {
     const ADMIN_RESOURCE = 'Nosto_Tagging::system_nosto_account';
 
@@ -45,37 +44,33 @@ class Create extends Action
      */
     protected $_result;
     private $_accountHelper;
-    private $_accountMetaBuilder;
+    private $_signupBuilder;
     private $_storeManager;
-    private $_accountService;
     private $_logger;
 
     /**
      * @param Context $context
      * @param Account $accountHelper
-     * @param Builder $accountMetaBuilder
+     * @param SignupBuilder $signupBuilder
      * @param StoreManagerInterface $storeManager
      * @param Json $result
      * @param LoggerInterface $logger
-     * @param \NostoServiceAccount $accountService
      */
     public function __construct(
         Context $context,
         Account $accountHelper,
-        Builder $accountMetaBuilder,
+        SignupBuilder $signupBuilder,
         StoreManagerInterface $storeManager,
         Json $result,
-        LoggerInterface $logger,
-        \NostoServiceAccount $accountService
+        LoggerInterface $logger
     ) {
         parent::__construct($context);
 
         $this->_accountHelper = $accountHelper;
-        $this->_accountMetaBuilder = $accountMetaBuilder;
+        $this->_signupBuilder = $signupBuilder;
         $this->_storeManager = $storeManager;
         $this->_result = $result;
         $this->_logger = $logger;
-        $this->_accountService = $accountService;
     }
 
     /**
@@ -92,15 +87,18 @@ class Create extends Action
         if (!is_null($store)) {
             try {
                 $emailAddress = $this->_request->getParam('email');
-                $metaData = $this->_accountMetaBuilder->build($store);
+                $signupParams = $this->_signupBuilder->build($store);
                 // todo: how to handle this class, DI?
                 if (\Zend_Validate::is($emailAddress, 'EmailAddress')) {
-                    /** @var \NostoOwner $owner */
-                    $owner = $metaData->getOwner();
+                    /** @var \NostoSignupOwner $owner */
+                    $owner = $signupParams->getOwner();
                     $owner->setEmail($emailAddress);
+                } else {
+                    throw new \NostoException("Invalid email address " . $emailAddress);
                 }
 
-                $account = $this->_accountService->create($metaData);
+                $operation = new \NostoOperationAccount($signupParams);
+                $account = $operation->create();
 
                 if ($this->_accountHelper->saveAccount($account, $store)) {
                     // todo
@@ -109,6 +107,7 @@ class Create extends Action
                     $response['redirect_url'] = $this->_accountHelper->getIframeUrl(
                         $store,
                         $account,
+                        $owner,
                         [
                             'message_type' => \NostoMessage::TYPE_SUCCESS,
                             'message_code' => \NostoMessage::CODE_ACCOUNT_CREATE,
@@ -132,15 +131,5 @@ class Create extends Action
         }
 
         return $this->_result->setData($response);
-    }
-
-    /**
-     * Is the user allowed to view Nosto account settings
-     *
-     * @return bool
-     */
-    protected function _isAllowed()
-    {
-        return $this->_authorization->isAllowed(self::ADMIN_RESOURCE);
     }
 }

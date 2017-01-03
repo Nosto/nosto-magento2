@@ -27,7 +27,6 @@
 
 namespace Nosto\Tagging\Controller\Adminhtml\Account;
 
-use Magento\Backend\App\Action;
 use Magento\Backend\App\Action\Context;
 use Magento\Backend\Model\Auth\Session;
 use Magento\Framework\Controller\Result\Redirect;
@@ -35,7 +34,7 @@ use Magento\Framework\Controller\Result\Redirect;
 /**
  *
  */
-class Proxy extends Action
+class Proxy extends Base
 {
     const ADMIN_RESOURCE = 'Nosto_Tagging::system_nosto_account';
 
@@ -75,6 +74,7 @@ class Proxy extends Action
         $code = $this->_request->getParam('message_code');
         $text = $this->_request->getParam('message_text');
         if (!is_null($type) && !is_null($code)) {
+            /** @noinspection PhpUndefinedMethodInspection */
             $this->_backendAuthSession->setData(
                 'nosto_message',
                 [
@@ -92,15 +92,5 @@ class Proxy extends Action
             return $this->resultRedirectFactory->create()
                 ->setPath('*/*/index', []);
         }
-    }
-
-    /**
-     * Is the user allowed to view Nosto account settings
-     *
-     * @return bool
-     */
-    protected function _isAllowed()
-    {
-        return $this->_authorization->isAllowed(self::ADMIN_RESOURCE);
     }
 }

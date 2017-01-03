@@ -30,7 +30,6 @@ namespace Nosto\Tagging\Model\Meta\Account;
 use Magento\Framework\Locale\ResolverInterface;
 use Magento\Framework\UrlInterface;
 use Magento\Store\Model\Store;
-use Nosto\Tagging\Helper\Currency;
 use Nosto\Tagging\Helper\Data;
 use Nosto\Tagging\Model\Meta\Account\Billing\Builder as BillingBuilder;
 use Nosto\Tagging\Model\Meta\Account\Owner\Builder as OwnerBuilder;
@@ -38,9 +37,11 @@ use Psr\Log\LoggerInterface;
 
 class Builder
 {
+    const API_TOKEN = 'YBDKYwSqTCzSsU8Bwbg4im2pkHMcgTy9cCX7vevjJwON1UISJIwXOLMM0a8nZY7h';
+    const PLATFORM_NAME = 'Magento';
+
     /**
      * @param Data $dataHelper
-     * @param Currency $currencyHelper
      * @param OwnerBuilder $accountOwnerMetaBuilder
      * @param BillingBuilder $accountBillingMetaBuilder
      * @param ResolverInterface $localeResolver
@@ -48,14 +49,12 @@ class Builder
      */
     public function __construct(
         Data $dataHelper,
-        Currency $currencyHelper,
         OwnerBuilder $accountOwnerMetaBuilder,
         BillingBuilder $accountBillingMetaBuilder,
         ResolverInterface $localeResolver,
         LoggerInterface $logger
     ) {
         $this->_dataHelper = $dataHelper;
-        $this->_currencyHelper = $currencyHelper;
         $this->_accountOwnerMetaBuilder = $accountOwnerMetaBuilder;
         $this->_accountBillingMetaBuilder = $accountBillingMetaBuilder;
         $this->_localeResolver = $localeResolver;
@@ -64,11 +63,11 @@ class Builder
 
     /**
      * @param Store $store
-     * @return \NostoAccount
+     * @return \NostoSignup
      */
     public function build(Store $store)
     {
-        $metaData = new \NostoAccount();
+        $metaData = new \NostoSignup(Builder::PLATFORM_NAME, Builder::API_TOKEN, null);
 
         try {
             $metaData->setTitle(
@@ -90,19 +89,17 @@ class Builder
                 )
             );
 
-            $metaData->setCurrency(
-                new \NostoCurrencyCode($store->getBaseCurrencyCode())
-            );
+            $metaData->setCurrencyCode($store->getBaseCurrencyCode());
             $lang = substr($store->getConfig('general/locale/code'), 0, 2);
-            $metaData->setLanguage(new \NostoLanguageCode($lang));
+            $metaData->setLanguageCode($lang);
             $lang = substr($this->_localeResolver->getLocale(), 0, 2);
-            $metaData->setOwnerLanguage(new \NostoLanguageCode($lang));
+            $metaData->setOwnerLanguageCode($lang);
 
             $owner = $this->_accountOwnerMetaBuilder->build();
             $metaData->setOwner($owner);
 
             $billing = $this->_accountBillingMetaBuilder->build($store);
-            $metaData->setBilling($billing);
+            $metaData->setBillingDetails($billing);
         } catch (\NostoException $e) {
             $this->_logger->error($e, ['exception' => $e]);
         }

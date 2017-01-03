@@ -28,13 +28,10 @@
 namespace Nosto\Tagging\Controller\Export;
 
 use Magento\Framework\App\Action\Context;
-use /** @noinspection PhpUndefinedClassInspection */
-    Magento\Sales\Model\ResourceModel\Order\CollectionFactory as OrderCollectionFactory;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
 use Nosto\Tagging\Helper\Account as AccountHelper;
 use Nosto\Tagging\Model\Order\Builder as OrderBuilder;
-use NostoExportCollectionOrder;
 
 /**
  * Order export controller used to export order history to Nosto in order to
@@ -79,6 +76,7 @@ class Order extends Base
     protected function getCollection(Store $store)
     {
         /** @var \Magento\Sales\Model\ResourceModel\Order\Collection $collection */
+        /** @noinspection PhpUndefinedMethodInspection */
         $collection = $this->_orderCollectionFactory->create();
         $collection->addAttributeToFilter('store_id', ['eq' => $store->getId()]);
         return $collection;
@@ -90,7 +88,7 @@ class Order extends Base
     protected function buildExportCollection($collection, Store $store)
     {
         /** @var \Magento\Sales\Model\ResourceModel\Order\Collection $collection */
-        $exportCollection = new NostoExportCollectionOrder();
+        $exportCollection = new \NostoExportOrderCollection();
         foreach ($collection->getItems() as $order) {
             /** @var \Magento\Sales\Model\Order $order */
             $exportCollection[] = $this->_orderBuilder->build($order);

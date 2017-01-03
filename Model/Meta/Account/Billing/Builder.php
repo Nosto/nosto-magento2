@@ -44,16 +44,16 @@ class Builder
 
     /**
      * @param Store $store
-     * @return \NostoBilling
+     * @return \NostoSignupBilling
      */
     public function build(Store $store)
     {
-        $metaData = new \NostoBilling();
+        $metaData = new \NostoSignupBilling();
 
         try {
             $country = $store->getConfig('general/country/default');
             if (!empty($country)) {
-                $metaData->setCountry(new \NostoCountryCode($country));
+                $metaData->setCountry($country);
             }
         } catch (\NostoException $e) {
             $this->_logger->error($e, ['exception' => $e]);

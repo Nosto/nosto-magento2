@@ -28,17 +28,18 @@
 namespace Nosto\Tagging\Observer\Order;
 
 use Magento\Framework\Event\Observer;
-use Magento\Payment\Model\Cart\SalesModel\Order;
-use Magento\Store\Model\StoreManagerInterface;
-use Magento\Framework\Module\Manager as ModuleManager;
-use Nosto\Tagging\Helper\Data as DataHelper;
-use Nosto\Tagging\Helper\Account as AccountHelper;
 use Magento\Framework\Event\ObserverInterface;
-use Nosto\Tagging\Model\Order\Builder;
-use Psr\Log\LoggerInterface;
-use Nosto\Tagging\Model\Order\Builder as OrderBuilder;
-use Nosto\Tagging\Model\CustomerFactory;
+use Magento\Framework\Module\Manager as ModuleManager;
+use Magento\Sales\Model\Order;
+use Magento\Store\Model\StoreManagerInterface;
 use Nosto\Tagging\Api\Data\CustomerInterface as NostoCustomer;
+use Nosto\Tagging\Helper\Account as AccountHelper;
+use Nosto\Tagging\Helper\Data as DataHelper;
+use Nosto\Tagging\Model\Customer;
+use Nosto\Tagging\Model\Order\Builder;
+use Nosto\Tagging\Model\Order\Builder as OrderBuilder;
+use NostoHttpRequest;
+use Psr\Log\LoggerInterface;
 
 /**
  * Class Save
@@ -75,12 +76,9 @@ class Save implements ObserverInterface
      * @var ModuleManager
      */
     protected $_moduleManager;
-
-    /**
-     * @var CustomerFactory
-     */
     protected $_customerFactory;
 
+    /** @noinspection PhpUndefinedClassInspection */
     /**
      * Constructor.
      *
@@ -98,6 +96,7 @@ class Save implements ObserverInterface
         StoreManagerInterface $storeManager,
         LoggerInterface $logger,
         ModuleManager $moduleManager,
+        /** @noinspection PhpUndefinedClassInspection */
         CustomerFactory $customerFactory,
         OrderBuilder $orderBuilder
     ) {
@@ -108,6 +107,12 @@ class Save implements ObserverInterface
         $this->_moduleManager = $moduleManager;
         $this->_orderBuilder = $orderBuilder;
         $this->_customerFactory = $customerFactory;
+
+        NostoHttpRequest::buildUserAgent(
+            'Magento',
+            $dataHelper->getPlatformVersion(),
+            $dataHelper->getModuleVersion()
+        );
     }
 
     /**
@@ -121,6 +126,7 @@ class Save implements ObserverInterface
     {
         if ($this->_moduleManager->isEnabled(DataHelper::MODULE_NAME)) {
             /* @var Order $order */
+            /** @noinspection PhpUndefinedMethodInspection */
             $order = $observer->getOrder();
             $nostoOrder = $this->_orderBuilder->build($order);
             $nostoAccount = $this->_accountHelper->findAccount(
@@ -128,11 +134,13 @@ class Save implements ObserverInterface
             );
             if ($nostoAccount !== null) {
                 $quoteId = $order->getQuoteId();
+                /** @var Customer $nostoCustomer */
+                /** @noinspection PhpUndefinedMethodInspection */
                 $nostoCustomer = $this->_customerFactory
                     ->create()
                     ->load($quoteId, NostoCustomer::QUOTE_ID);
 
-                $orderService = new \NostoServiceOrder($nostoAccount);
+                $orderService = new \NostoOperationOrder($nostoAccount);
                 try {
                     $orderService->confirm($nostoOrder,
                         $nostoCustomer->getNostoId());

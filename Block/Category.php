@@ -74,9 +74,9 @@ class Category extends Template
     }
 
     /**
-     * Returns the Nosto category meta-data model.
+     * Returns the current category as a slash delimited string
      *
-     * @return \NostoCategory the category meta data model.
+     * @return string the current category as a slash delimited string
      */
     public function getNostoCategory()
     {

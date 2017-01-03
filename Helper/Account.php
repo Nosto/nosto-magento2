@@ -27,16 +27,16 @@
 
 namespace Nosto\Tagging\Helper;
 
+use Exception;
 use Magento\Framework\App\Config\Storage\WriterInterface;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
+use Magento\Framework\Module\Manager as ModuleManager;
 use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\Store;
-use Nosto\Tagging\Model\Meta\Account\Iframe\Builder as IframeMetaBuilder;
-use Nosto\Tagging\Model\Meta\Account\Sso\Builder as SsoMetaBuilder;
-use Magento\Framework\Module\Manager as ModuleManager;
 use Nosto\Tagging\Helper\Data as NostoHelper;
+use Nosto\Tagging\Model\Meta\Account\Iframe\Builder as IframeMetaBuilder;
 
 
 /**
@@ -59,11 +59,6 @@ class Account extends AbstractHelper
      * Platform UI version
      */
     const IFRAME_VERSION = 0;
-
-    /**
-     * @var SsoMetaBuilder the builder for sso meta models.
-     */
-    protected $_ssoMetaBuilder;
 
     /**
      * @var IframeMetaBuilder the builder for iframe meta models.
@@ -89,7 +84,6 @@ class Account extends AbstractHelper
      * Constructor.
      *
      * @param Context $context the context.
-     * @param SsoMetaBuilder $ssoMetaBuilder the builder for sso meta models.
      * @param IframeMetaBuilder $iframeMetaBuilder the builder for iframe meta models.
      * @param \NostoHelperIframe $iframeHelper
      * @param WriterInterface $appConfig the app config writer.
@@ -97,7 +91,6 @@ class Account extends AbstractHelper
      */
     public function __construct(
         Context $context,
-        SsoMetaBuilder $ssoMetaBuilder,
         IframeMetaBuilder $iframeMetaBuilder,
         \NostoHelperIframe $iframeHelper,
         WriterInterface $appConfig,
@@ -105,7 +98,6 @@ class Account extends AbstractHelper
     ) {
         parent::__construct($context);
 
-        $this->_ssoMetaBuilder = $ssoMetaBuilder;
         $this->_iframeMetaBuilder = $iframeMetaBuilder;
         $this->_iframeHelper = $iframeHelper;
         $this->_config = $appConfig;
@@ -116,15 +108,16 @@ class Account extends AbstractHelper
      * Returns the account with associated api tokens for the store.
      *
      * @param StoreInterface $store the store.
-     *
      * @return \NostoAccount|null the account or null if not found.
      */
     public function findAccount(StoreInterface $store)
     {
+        /** @noinspection PhpUndefinedMethodInspection */
         $accountName = $store->getConfig(self::XML_PATH_ACCOUNT);
 
         if (!empty($accountName)) {
             $account = new \NostoAccount($accountName);
+            /** @noinspection PhpUndefinedMethodInspection */
             $tokens = json_decode(
                 $store->getConfig(self::XML_PATH_TOKENS),
                 true
@@ -135,7 +128,7 @@ class Account extends AbstractHelper
                         $account->addApiToken(
                             new \NostoApiToken($name, $value)
                         );
-                    } catch (\NostoInvalidArgumentException $e) {
+                    } catch (Exception $e) {
 
                     }
                 }
@@ -149,12 +142,12 @@ class Account extends AbstractHelper
     /**
      * Saves the account and the associated api tokens for the store.
      *
-     * @param \NostoAccountMetaInterface $account the account to save.
+     * @param \NostoAccountInterface $account the account to save.
      * @param Store $store the store.
      *
      * @return bool true on success, false otherwise.
      */
-    public function saveAccount(\NostoAccountMetaInterface $account, Store $store)
+    public function saveAccount(\NostoAccountInterface $account, Store $store)
     {
         if ((int)$store->getId() < 1) {
             return false;
@@ -210,8 +203,8 @@ class Account extends AbstractHelper
 
         try {
             // Notify Nosto that the account was deleted.
-            $service = new \NostoServiceAccount();
-            $service->delete($account);
+            $service = new \NostoOperationUninstall($account);
+            $service->delete();
         } catch (\NostoException $e) {
             // Failures are logged but not shown to the user.
             $this->_logger->error($e, ['exception' => $e]);
@@ -228,23 +221,24 @@ class Account extends AbstractHelper
      * account can be created from.
      *
      * @param StoreInterface $store the store to get the url for.
-     * @param \NostoAccount $account the account to get the iframe url for.
+     * @param \NostoAccountInterface $account the account to get the iframe url for.
+     * @param \NostoSignupOwnerInterface $currentUser
      * @param array $params optional extra params for the url.
-     *
      * @return string the iframe url.
      */
     public function getIframeUrl(
         StoreInterface $store,
-        \NostoAccount $account = null,
+        \NostoAccountInterface $account = null,
+        \NostoSignupOwnerInterface $currentUser,
         array $params = []
     ) {
         if (self::IFRAME_VERSION > 0) {
             $params['v'] = self::IFRAME_VERSION;
         }
         return $this->_iframeHelper->getUrl(
-            $this->_ssoMetaBuilder->build(),
             $this->_iframeMetaBuilder->build($store),
             $account,
+            $currentUser,
             $params
         );
     }

@@ -35,7 +35,6 @@ use /** @noinspection PhpUndefinedClassInspection */
     Magento\Sales\Model\OrderFactory;
 use Nosto\Tagging\Helper\Format;
 use Nosto\Tagging\Model\Order\Builder as OrderBuilder;
-use NostoPrice;
 
 /**
  * Category block used for outputting meta-data on the stores category pages.
@@ -115,10 +114,10 @@ class Order extends Success
     /**
      * Formats a \NostoPrice object, e.g. "1234.56".
      *
-     * @param NostoPrice $price the price to format.
+     * @param int $price the price to format.
      * @return string the formatted price.
      */
-    public function formatNostoPrice(NostoPrice $price)
+    public function formatNostoPrice($price)
     {
         return $this->_formatHelper->formatPrice($price);
     }
@@ -126,10 +125,10 @@ class Order extends Success
     /**
      * Formats a \NostoDate object, e.g. "2015-12-24";
      *
-     * @param \NostoDate $date the date to format.
+     * @param string $date the date to format.
      * @return string the formatted date.
      */
-    public function formatNostoDate(\NostoDate $date)
+    public function formatNostoDate($date)
     {
         return $this->_formatHelper->formatDate($date);
     }

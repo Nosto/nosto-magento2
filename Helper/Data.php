@@ -30,11 +30,12 @@ namespace Nosto\Tagging\Helper;
 use Magento\Framework\App\Config\Storage\WriterInterface;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
+use Magento\Framework\App\ProductMetadataInterface;
 use Magento\Framework\AppInterface;
 use Magento\Framework\Module\ModuleListInterface;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
-use Magento\Framework\App\ProductMetadataInterface;
+use NostoCryptRandom;
 
 /**
  * Data helper used for common tasks, mainly configurations.
@@ -129,7 +130,7 @@ class Data extends AbstractHelper
         );
         if (empty($installationId)) {
             // Running bin2hex() will make the ID string length 64 characters.
-            $installationId = bin2hex(\phpseclib_Crypt_Random::string(32));
+            $installationId = bin2hex(NostoCryptRandom::getRandomString(32));
             $this->_configWriter->save(
                 self::XML_PATH_INSTALLATION_ID,
                 $installationId
@@ -178,7 +179,8 @@ class Data extends AbstractHelper
         $version = 'unknown';
         if ($this->_productMetaData->getVersion()) {
             $version = $this->_productMetaData->getVersion();
-        } elseif (defined(AppInterface::VERSION)) {
+        } /** @noinspection PhpUndefinedClassConstantInspection */ elseif (defined(AppInterface::VERSION)) {
+            /** @noinspection PhpUndefinedClassConstantInspection */
             $version = AppInterface::VERSION;
         }
         return $version;
@@ -193,7 +195,6 @@ class Data extends AbstractHelper
      */
     public static function generateVisitorChecksum($string)
     {
-
         return hash(self::VISITOR_HASH_ALGO, $string);
     }
 

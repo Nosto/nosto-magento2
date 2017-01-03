@@ -25,22 +25,16 @@
  * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
-namespace Nosto\Tagging\Model\Cart;
+namespace Nosto\Tagging\Model\Cart\Item;
 
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\ObjectManagerInterface;
-use Magento\Quote\Model\Quote;
+use Magento\Quote\Model\Quote\Item;
 use Magento\Store\Model\Store;
-use Nosto\Tagging\Model\Cart\Item\Builder as NostoCartItemBuilder;
 use Psr\Log\LoggerInterface;
 
 class Builder
 {
-    /**
-     * @var NostoCartItemBuilder
-     */
-    protected $_nostoCartItemBuilder;
-
     /**
      * @var LoggerInterface
      */
@@ -59,49 +53,72 @@ class Builder
     /**
      * Constructor.
      *
-     * @param NostoCartItemBuilder $nostoCartItemBuilder
      * @param LoggerInterface $logger
      * @param ObjectManagerInterface $objectManager
      * @param ManagerInterface $eventManager
-     * @internal param CartItemFactory $cartItemFactory
      */
     public function __construct(
-        NostoCartItemBuilder $nostoCartItemBuilder,
         LoggerInterface $logger,
         ObjectManagerInterface $objectManager,
         ManagerInterface $eventManager
     ) {
         $this->_objectManager = $objectManager;
-        $this->_nostoCartItemBuilder = $nostoCartItemBuilder;
         $this->_logger = $logger;
         $this->_eventManager = $eventManager;
     }
 
     /**
-     * @param Quote $quote
+     * @param Item $item
      * @param Store $store
-     * @return \NostoCart
-     * @internal param array $items
+     * @return \NostoOrderPurchasedItem
      */
-    public function build(Quote $quote, Store $store)
+    public function build(Item $item, Store $store)
     {
-        /** @var \NostoCart $nostoCart */
-        $nostoCart = $this->_objectManager->create('NostoCart', null);
+        $cartItem = $this->_objectManager->create('NostoOrderPurchasedItem', null);
 
-        foreach ($quote->getAllVisibleItems() as $item) {
-            try {
-                $cartItem = $this->_nostoCartItemBuilder->build($item, $store);
-                $nostoCart->addItem($cartItem);
-            } catch (\NostoException $e) {
-                $this->_logger->error($e, ['exception' => $e]);
-            }
+        try {
+            $cartItem->setProductId($this->buildItemId($item));
+            $cartItem->setQuantity((int)$item->getQty());
+            $cartItem->setName($this->buildItemName($item));
+            $cartItem->setPrice($item->getBasePriceInclTax());
+            $cartItem->setCurrencyCode($store->getBaseCurrencyCode());
+            $cartItems[] = $cartItem;
+        } catch (\NostoException $e) {
+            $this->_logger->error($e, ['exception' => $e]);
         }
 
         $this->_eventManager->dispatch(
-            'nosto_cart_load_after',
-            ['cart' => $nostoCart]
+            'nosto_cart_item_load_after',
+            ['item' => $cartItem]
         );
 
-        return $nostoCart;
+        return $cartItem;
+    }
+
+    /**
+     * @param Item $item
+     * @return string
+     */
+    protected function buildItemId(Item $item)
+    {
+        /** @var Item $parentItem */
+        $parentItem = $item->getOptionByCode('product_type');
+        if (!is_null($parentItem)) {
+            return $parentItem->getProduct()->getSku();
+        } elseif ($item->getProductType() === 'simple') {
+            // todo: if the product has a configurable parent and there is "super_attribute" data in the buy request, assume we need to use the parent product SKU, just like in Magento 1.
+        }
+
+        return $item->getProduct()->getSku();
+    }
+
+    /**
+     * @param Item $item
+     * @return string
+     */
+    protected function buildItemName(Item $item)
+    {
+        // todo: the name must include the variant properties just like in Magento 1
+        return $item->getName();
     }
 }

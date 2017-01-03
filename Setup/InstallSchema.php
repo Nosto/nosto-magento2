@@ -28,10 +28,10 @@
 namespace Nosto\Tagging\Setup;
 
 use Magento\Framework\DB\Adapter\AdapterInterface;
+use Magento\Framework\DB\Ddl\Table;
 use Magento\Framework\Setup\InstallSchemaInterface;
 use Magento\Framework\Setup\ModuleContextInterface;
 use Magento\Framework\Setup\SchemaSetupInterface;
-use Magento\Framework\DB\Ddl\Table;
 use Nosto\Tagging\Api\Data\CustomerInterface;
 
 class InstallSchema implements InstallSchemaInterface

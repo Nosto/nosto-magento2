@@ -47,17 +47,17 @@ class Builder
     }
 
     /**
-     * @return \NostoOwner
+     * @return \NostoSignupOwner
      */
     public function build()
     {
-        $metaData = new \NostoOwner();
+        $metaData = new \NostoSignupOwner();
 
         try {
             $user = $this->_backendAuthSession->getUser();
             if (!is_null($user)) {
-                $metaData->setFirstName($user->getFirstname());
-                $metaData->setLastName($user->getLastname());
+                $metaData->setFirstName($user->getFirstName());
+                $metaData->setLastName($user->getLastName());
                 $metaData->setEmail($user->getEmail());
             }
         } catch (\NostoException $e) {

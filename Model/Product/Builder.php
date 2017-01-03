@@ -29,12 +29,13 @@ namespace Nosto\Tagging\Model\Product;
 
 use Magento\Catalog\Api\CategoryRepositoryInterface;
 use Magento\Catalog\Model\Product;
+use Magento\Eav\Model\Entity\Attribute;
+use Magento\Framework\Event\ManagerInterface;
 use Magento\Store\Model\Store;
 use Nosto\Tagging\Helper\Data as DataHelper;
 use Nosto\Tagging\Helper\Price as PriceHelper;
 use Nosto\Tagging\Model\Category\Builder as CategoryBuilder;
 use Psr\Log\LoggerInterface;
-use Magento\Framework\Event\ManagerInterface;
 
 class Builder
 {
@@ -109,19 +110,11 @@ class Builder
             $nostoProduct->setName($product->getName());
             $nostoProduct->setImageUrl($this->buildImageUrl($product, $store));
             $price = $this->_priceHelper->getProductFinalPriceInclTax($product);
-            $nostoProduct->setPrice(new \NostoPrice($price));
+            $nostoProduct->setPrice($price);
             $listPrice = $this->_priceHelper->getProductPriceInclTax($product);
-            $nostoProduct->setListPrice(new \NostoPrice($listPrice));
-            $nostoProduct->setCurrency(
-                new \NostoCurrencyCode($store->getBaseCurrencyCode())
-            );
-            $nostoProduct->setAvailability(
-                new \NostoProductAvailability(
-                    $product->isAvailable()
-                        ? \NostoProductAvailability::IN_STOCK
-                        : \NostoProductAvailability::OUT_OF_STOCK
-                )
-            );
+            $nostoProduct->setListPrice($listPrice);
+            $nostoProduct->setCurrencyCode($store->getBaseCurrencyCode());
+            $nostoProduct->setAvailable($product->isAvailable());
             $nostoProduct->setCategories($this->buildCategories($product));
 
             // Optional properties.
@@ -144,11 +137,6 @@ class Builder
             }
             if (($tags = $this->buildTags($product)) !== []) {
                 $nostoProduct->setTag1($tags);
-            }
-            if ($product->hasData('created_at')) {
-                if (($timestamp = strtotime($product->getData('created_at')))) {
-                    $nostoProduct->setDatePublished(new \NostoDate($timestamp));
-                }
             }
         } catch (\NostoException $e) {
             $this->_logger->error($e, ['exception' => $e]);
@@ -221,7 +209,7 @@ class Builder
     protected function buildTags(Product $product)
     {
         $tags = [];
-
+        /** @var Attribute $attr */
         foreach ($product->getAttributes() as $attr) {
             if ($attr->getIsVisibleOnFront()
                 && $product->hasData($attr->getAttributeCode())
@@ -237,7 +225,7 @@ class Builder
         }
 
         if (!$product->canConfigure()) {
-            $tags[] = \NostoProduct::PRODUCT_ADD_TO_CART;
+            $tags[] = \NostoProductInterface::ADD_TO_CART;
         }
 
         return $tags;
