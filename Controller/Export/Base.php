@@ -70,27 +70,6 @@ abstract class Base extends Action
     }
 
     /**
-     * Encrypts the export collection and outputs it to the browser.
-     *
-     * @param NostoExportCollectionInterface $collection the data collection to export.
-     *
-     * @return Raw
-     */
-    protected function export(NostoExportCollectionInterface $collection)
-    {
-        /** @var Raw $result */
-        $result = $this->resultFactory->create(ResultFactory::TYPE_RAW);
-        /** @var Store $store */
-        $store = $this->storeManager->getStore(true);
-        $account = $this->nostoHelperAccount->findAccount($store);
-        if ($account !== null) {
-            $cipherText = NostoExporter::export($account, $collection);
-            $result->setContents($cipherText);
-        }
-        return $result;
-    }
-
-    /**
      * Handles the controller request, builds the query to fetch the result,
      * encrypts the JSON and returns the result
      *
@@ -139,4 +118,25 @@ abstract class Base extends Action
      * @return \Magento\Sales\Model\ResourceModel\Order\Collection The collection
      */
     abstract protected function buildExportCollection($collection, Store $store);
+
+    /**
+     * Encrypts the export collection and outputs it to the browser.
+     *
+     * @param NostoExportCollectionInterface $collection the data collection to export.
+     *
+     * @return Raw
+     */
+    protected function export(NostoExportCollectionInterface $collection)
+    {
+        /** @var Raw $result */
+        $result = $this->resultFactory->create(ResultFactory::TYPE_RAW);
+        /** @var Store $store */
+        $store = $this->storeManager->getStore(true);
+        $account = $this->nostoHelperAccount->findAccount($store);
+        if ($account !== null) {
+            $cipherText = NostoExporter::export($account, $collection);
+            $result->setContents($cipherText);
+        }
+        return $result;
+    }
 }

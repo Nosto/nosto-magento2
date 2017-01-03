@@ -83,7 +83,7 @@ class Builder
         ObjectManagerInterface $objectManager
     ) {
         $this->logger = $logger;
-        $this->salesRuleFactory= $salesRuleFactory;
+        $this->salesRuleFactory = $salesRuleFactory;
         $this->nostoPriceHelper = $priceHelper;
         $this->objectManager = $objectManager;
     }
@@ -170,44 +170,6 @@ class Builder
         }
 
         return $nostoOrder;
-    }
-
-    /**
-     * Generates a textual description of the applied discount rules
-     *
-     * @param Order $order
-     * @return string discount description
-     */
-    protected function buildDiscountRuleDescription(Order $order)
-    {
-        try {
-            $appliedRules = array();
-            foreach ($order->getAllVisibleItems() as $item) {
-                /* @var Item $item */
-                $itemAppliedRules = $item->getAppliedRuleIds();
-                if (empty($itemAppliedRules)) {
-                    continue;
-                }
-                $ruleIds = explode(',', $item->getAppliedRuleIds());
-                foreach ($ruleIds as $ruleId) {
-                    /** @noinspection PhpUndefinedMethodInspection */
-                    $rule = $this->salesRuleFactory->create()->load($ruleId);
-                    /** @noinspection PhpUndefinedMethodInspection */
-                    $appliedRules[$ruleId] = $rule->getName();
-                }
-            }
-            if (count($appliedRules) == 0) {
-                $appliedRules[] = 'unknown rule';
-            }
-            $discountTxt = sprintf(
-                'Discount (%s)',
-                implode(', ', $appliedRules)
-            );
-        } catch (\Exception $e) {
-            $discountTxt = 'Discount (error)';
-        }
-
-        return $discountTxt;
     }
 
     /**
@@ -318,5 +280,43 @@ class Builder
             $name .= ' (' . implode(', ', $optNames) . ')';
         }
         return $name;
+    }
+
+    /**
+     * Generates a textual description of the applied discount rules
+     *
+     * @param Order $order
+     * @return string discount description
+     */
+    protected function buildDiscountRuleDescription(Order $order)
+    {
+        try {
+            $appliedRules = array();
+            foreach ($order->getAllVisibleItems() as $item) {
+                /* @var Item $item */
+                $itemAppliedRules = $item->getAppliedRuleIds();
+                if (empty($itemAppliedRules)) {
+                    continue;
+                }
+                $ruleIds = explode(',', $item->getAppliedRuleIds());
+                foreach ($ruleIds as $ruleId) {
+                    /** @noinspection PhpUndefinedMethodInspection */
+                    $rule = $this->salesRuleFactory->create()->load($ruleId);
+                    /** @noinspection PhpUndefinedMethodInspection */
+                    $appliedRules[$ruleId] = $rule->getName();
+                }
+            }
+            if (count($appliedRules) == 0) {
+                $appliedRules[] = 'unknown rule';
+            }
+            $discountTxt = sprintf(
+                'Discount (%s)',
+                implode(', ', $appliedRules)
+            );
+        } catch (\Exception $e) {
+            $discountTxt = 'Discount (error)';
+        }
+
+        return $discountTxt;
     }
 }

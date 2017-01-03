@@ -56,28 +56,23 @@ class Data extends AbstractHelper
      * @var string the algorithm to use for hashing visitor id.
      */
     const VISITOR_HASH_ALGO = 'sha256';
-
+    const MODULE_NAME = 'Nosto_Tagging';
     /**
      * @var StoreManagerInterface the store manager.
      */
     protected $storeManager;
-
     /**
      * @var ModuleListInterface the module listing
      */
     protected $moduleListing;
-
     /**
      * @var WriterInterface the config writer.
      */
     protected $configWriter;
-
     /**
-     * @var ProductMetadataInterface $productMetaData.
+     * @var ProductMetadataInterface $productMetaData .
      */
     protected $productMetaData;
-
-    const MODULE_NAME = 'Nosto_Tagging';
 
     /**
      * Constructor.
@@ -104,16 +99,15 @@ class Data extends AbstractHelper
     }
 
     /**
-     * @param string $path
-     * @param Store|null $store
-     * @return mixed|null
+     * Return the checksum for string
+     *
+     * @param string $string
+     *
+     * @return string
      */
-    public function getStoreConfig($path, Store $store = null)
+    public static function generateVisitorChecksum($string)
     {
-        if (is_null($store)) {
-            $store = $this->storeManager->getStore(true);
-        }
-        return $store->getConfig($path);
+        return hash(self::VISITOR_HASH_ALGO, $string);
     }
 
     /**
@@ -153,6 +147,19 @@ class Data extends AbstractHelper
     }
 
     /**
+     * @param string $path
+     * @param Store|null $store
+     * @return mixed|null
+     */
+    public function getStoreConfig($path, Store $store = null)
+    {
+        if (is_null($store)) {
+            $store = $this->storeManager->getStore(true);
+        }
+        return $store->getConfig($path);
+    }
+
+    /**
      * Returns the module version number of the currently installed module.
      *
      * @return string the module's version
@@ -184,18 +191,6 @@ class Data extends AbstractHelper
             $version = AppInterface::VERSION;
         }
         return $version;
-    }
-
-    /**
-     * Return the checksum for string
-     *
-     * @param string $string
-     *
-     * @return string
-     */
-    public static function generateVisitorChecksum($string)
-    {
-        return hash(self::VISITOR_HASH_ALGO, $string);
     }
 
 }

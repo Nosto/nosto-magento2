@@ -93,7 +93,7 @@ class InstallSchema implements InstallSchemaInterface
                     'nosto_tagging_customer',
                     ['quote_id', 'nosto_id']
                 ),
-                ['quote_id','nosto_id'],
+                ['quote_id', 'nosto_id'],
                 ['type' => AdapterInterface::INDEX_TYPE_UNIQUE]
             )
             ->setComment('Nosto customer and order mapping');

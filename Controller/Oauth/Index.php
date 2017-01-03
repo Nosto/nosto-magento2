@@ -132,22 +132,6 @@ class Index extends Action
     }
 
     /**
-     * Redirects the user to the Magento backend.
-     *
-     * @param string $path the backend path to redirect to.
-     * @param array $args the url arguments.
-     *
-     * @return \Magento\Framework\App\ResponseInterface the response.
-     */
-    private function redirectBackend($path, $args = [])
-    {
-        /** @var \Magento\Framework\App\Response\Http $response */
-        $response = $this->getResponse();
-        $response->setRedirect($this->backendUrlBuilder->getUrl($path, $args));
-        return $response;
-    }
-
-    /**
      * Tries to connect the Nosto account and saves the account details to the
      * store config.
      *
@@ -175,5 +159,21 @@ class Index extends Action
         // todo
 //        $this->nostoHelperAccount->updateCurrencyExchangeRates($newAccount, $store);
 //        $this->nostoHelperAccount->updateAccount($newAccount, $store);
+    }
+
+    /**
+     * Redirects the user to the Magento backend.
+     *
+     * @param string $path the backend path to redirect to.
+     * @param array $args the url arguments.
+     *
+     * @return \Magento\Framework\App\ResponseInterface the response.
+     */
+    private function redirectBackend($path, $args = [])
+    {
+        /** @var \Magento\Framework\App\Response\Http $response */
+        $response = $this->getResponse();
+        $response->setRedirect($this->backendUrlBuilder->getUrl($path, $args));
+        return $response;
     }
 }

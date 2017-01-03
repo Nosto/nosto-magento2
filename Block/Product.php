@@ -140,7 +140,7 @@ class Product extends View
     public function getNostoProduct()
     {
         /** @var Store $store */
-        $store =  $this->_storeManager->getStore();
+        $store = $this->_storeManager->getStore();
         return $this->nostoProductBuilder->build(
             $this->getProduct(),
             $store

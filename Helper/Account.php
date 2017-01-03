@@ -111,41 +111,6 @@ class Account extends AbstractHelper
     }
 
     /**
-     * Returns the account with associated api tokens for the store.
-     *
-     * @param StoreInterface $store the store.
-     * @return NostoAccount|null the account or null if not found.
-     */
-    public function findAccount(StoreInterface $store)
-    {
-        /** @noinspection PhpUndefinedMethodInspection */
-        $accountName = $store->getConfig(self::XML_PATH_ACCOUNT);
-
-        if (!empty($accountName)) {
-            $account = new NostoAccount($accountName);
-            /** @noinspection PhpUndefinedMethodInspection */
-            $tokens = json_decode(
-                $store->getConfig(self::XML_PATH_TOKENS),
-                true
-            );
-            if (is_array($tokens) && !empty($tokens)) {
-                foreach ($tokens as $name => $value) {
-                    try {
-                        $account->addApiToken(
-                            new NostoApiToken($name, $value)
-                        );
-                    } catch (Exception $e) {
-
-                    }
-                }
-            }
-            return $account;
-        }
-
-        return null;
-    }
-
-    /**
      * Saves the account and the associated api tokens for the store.
      *
      * @param NostoAccountInterface $account the account to save.
@@ -255,7 +220,8 @@ class Account extends AbstractHelper
      * @param StoreInterface $store
      * @return bool
      */
-    public function nostoInstalledAndEnabled(StoreInterface $store) {
+    public function nostoInstalledAndEnabled(StoreInterface $store)
+    {
 
         $enabled = false;
         if ($this->moduleManager->isEnabled(NostoHelper::MODULE_NAME)) {
@@ -265,5 +231,40 @@ class Account extends AbstractHelper
         }
 
         return $enabled;
+    }
+
+    /**
+     * Returns the account with associated api tokens for the store.
+     *
+     * @param StoreInterface $store the store.
+     * @return NostoAccount|null the account or null if not found.
+     */
+    public function findAccount(StoreInterface $store)
+    {
+        /** @noinspection PhpUndefinedMethodInspection */
+        $accountName = $store->getConfig(self::XML_PATH_ACCOUNT);
+
+        if (!empty($accountName)) {
+            $account = new NostoAccount($accountName);
+            /** @noinspection PhpUndefinedMethodInspection */
+            $tokens = json_decode(
+                $store->getConfig(self::XML_PATH_TOKENS),
+                true
+            );
+            if (is_array($tokens) && !empty($tokens)) {
+                foreach ($tokens as $name => $value) {
+                    try {
+                        $account->addApiToken(
+                            new NostoApiToken($name, $value)
+                        );
+                    } catch (Exception $e) {
+
+                    }
+                }
+            }
+            return $account;
+        }
+
+        return null;
     }
 }

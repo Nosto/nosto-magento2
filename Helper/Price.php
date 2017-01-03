@@ -71,18 +71,6 @@ class Price extends AbstractHelper
     }
 
     /**
-     * Get the final price for a product model including taxes.
-     *
-     * @param Product $product the product model.
-     *
-     * @return float
-     */
-    public function getProductFinalPriceInclTax($product)
-    {
-        return $this->_getProductPrice($product, true, true);
-    }
-
-    /**
      * Get unit/final price for a product model.
      *
      * @param Product $product the product model.
@@ -164,6 +152,18 @@ class Price extends AbstractHelper
         }
 
         return $price;
+    }
+
+    /**
+     * Get the final price for a product model including taxes.
+     *
+     * @param Product $product the product model.
+     *
+     * @return float
+     */
+    public function getProductFinalPriceInclTax($product)
+    {
+        return $this->_getProductPrice($product, true, true);
     }
 
     /**

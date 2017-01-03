@@ -52,8 +52,7 @@ class Knockout extends Template
         Template\Context $context,
         NostoHelperAccount $nostoHelperAccount,
         array $data = []
-    )
-    {
+    ) {
 
         parent::__construct($context, $data);
         $this->nostoHelperAccount = $nostoHelperAccount;
@@ -70,6 +69,19 @@ class Knockout extends Template
         return $template;
     }
 
+    private function nostoEnabled()
+    {
+        $enabled = false;
+        if ($this->nostoHelperAccount->nostoInstalledAndEnabled(
+            $this->_storeManager->getStore()
+        )
+        ) {
+            $enabled = true;
+        }
+
+        return $enabled;
+    }
+
     public function getJsLayout()
     {
         $jsLayout = null;
@@ -78,16 +90,5 @@ class Knockout extends Template
         }
 
         return $jsLayout;
-    }
-
-    private function nostoEnabled() {
-        $enabled = false;
-        if ($this->nostoHelperAccount->nostoInstalledAndEnabled(
-            $this->_storeManager->getStore()
-        )) {
-            $enabled= true;
-        }
-
-        return $enabled;
     }
 }

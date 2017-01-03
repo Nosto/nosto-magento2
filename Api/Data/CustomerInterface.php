@@ -29,11 +29,11 @@ namespace Nosto\Tagging\Api\Data;
 
 interface CustomerInterface
 {
-    const CUSTOMER_ID   = 'customer_id';
-    const QUOTE_ID      = 'quote_id';
-    const NOSTO_ID      = 'nosto_id';
-    const CREATED_AT    = 'created_at';
-    const UPDATED_AT    = 'updated_at';
+    const CUSTOMER_ID = 'customer_id';
+    const QUOTE_ID = 'quote_id';
+    const NOSTO_ID = 'nosto_id';
+    const CREATED_AT = 'created_at';
+    const UPDATED_AT = 'updated_at';
 
     /**
      * Get customer id
@@ -64,7 +64,7 @@ interface CustomerInterface
      * @return \DateTime
      */
     public function getUpdatedAt();
-    
+
     /**
      * Set customer id
      * @param int $customerId

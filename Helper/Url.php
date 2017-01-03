@@ -128,6 +128,21 @@ class Url extends AbstractHelper
     }
 
     /**
+     * Adds the `nostodebug` parameter to a url.
+     *
+     * @param string $url the url.
+     * @return string the updated url.
+     */
+    public function addNostoDebugParamToUrl($url)
+    {
+        return NostoHttpRequest::replaceQueryParamInUrl(
+            'nostodebug',
+            'true',
+            $url
+        );
+    }
+
+    /**
      * Gets the absolute preview URL to a given store's category page.
      * The category is the first one found in the database for the store.
      * The preview url includes "nostodebug=true" parameter.
@@ -160,6 +175,18 @@ class Url extends AbstractHelper
         }
 
         return '';
+    }
+
+    /**
+     * Replaces or adds a query parameters to a url.
+     *
+     * @param array $params the query params to replace.
+     * @param string $url the url.
+     * @return string the updated url.
+     */
+    public function replaceQueryParamsInUrl(array $params, $url)
+    {
+        return NostoHttpRequest::replaceQueryParamsInUrl($params, $url);
     }
 
     /**
@@ -222,32 +249,5 @@ class Url extends AbstractHelper
             )
         );
         return $this->addNostoDebugParamToUrl($url);
-    }
-
-    /**
-     * Replaces or adds a query parameters to a url.
-     *
-     * @param array $params the query params to replace.
-     * @param string $url the url.
-     * @return string the updated url.
-     */
-    public function replaceQueryParamsInUrl(array $params, $url)
-    {
-        return NostoHttpRequest::replaceQueryParamsInUrl($params, $url);
-    }
-
-    /**
-     * Adds the `nostodebug` parameter to a url.
-     *
-     * @param string $url the url.
-     * @return string the updated url.
-     */
-    public function addNostoDebugParamToUrl($url)
-    {
-        return NostoHttpRequest::replaceQueryParamInUrl(
-            'nostodebug',
-            'true',
-            $url
-        );
     }
 }

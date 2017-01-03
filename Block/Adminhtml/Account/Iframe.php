@@ -112,6 +112,31 @@ class Iframe extends BlockTemplate
     }
 
     /**
+     * Returns the currently selected store.
+     * Nosto can only be configured on a store basis, and if we cannot find a
+     * store, an exception is thrown.
+     *
+     * @return StoreInterface the store.
+     *
+     * @throws NotFoundException store not found.
+     */
+    public function getSelectedStore()
+    {
+        $store = null;
+        if ($this->_storeManager->isSingleStoreMode()) {
+            $store = $this->_storeManager->getStore(true);
+        } elseif (($storeId = $this->_request->getParam('store'))) {
+            $store = $this->_storeManager->getStore($storeId);
+        } elseif (($this->_storeManager->getStore())) {
+            $store = $this->_storeManager->getStore();
+        } else {
+            throw new NotFoundException(__('Store not found.'));
+        }
+
+        return $store;
+    }
+
+    /**
      * Returns the config for the Nosto iframe JS component.
      * This config can be converted into JSON in the view file.
      *
@@ -151,30 +176,5 @@ class Iframe extends BlockTemplate
         return (isset($_ENV['NOSTO_IFRAME_ORIGIN_REGEXP']))
             ? $_ENV['NOSTO_IFRAME_ORIGIN_REGEXP']
             : self::DEFAULT_IFRAME_ORIGIN_REGEXP;
-    }
-
-    /**
-     * Returns the currently selected store.
-     * Nosto can only be configured on a store basis, and if we cannot find a
-     * store, an exception is thrown.
-     *
-     * @return StoreInterface the store.
-     *
-     * @throws NotFoundException store not found.
-     */
-    public function getSelectedStore()
-    {
-        $store = null;
-        if ($this->_storeManager->isSingleStoreMode()) {
-            $store = $this->_storeManager->getStore(true);
-        } elseif (($storeId = $this->_request->getParam('store'))) {
-            $store = $this->_storeManager->getStore($storeId);
-        } elseif (($this->_storeManager->getStore())) {
-            $store = $this->_storeManager->getStore();
-        } else {
-            throw new NotFoundException(__('Store not found.'));
-        }
-
-        return $store;
     }
 }

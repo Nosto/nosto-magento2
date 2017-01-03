@@ -68,7 +68,7 @@ class CartTagging implements SectionSourceInterface
         /** @noinspection PhpUndefinedClassInspection */
         NostoCustomerFactory $nostoCustomerFactory
     ) {
-        $this->cartHelper= $cartHelper;
+        $this->cartHelper = $cartHelper;
         $this->nostoCartBuilder = $nostoCartBuilder;
         $this->storeManager = $storeManager;
         $this->cookieManager = $cookieManager;
@@ -128,19 +128,8 @@ class CartTagging implements SectionSourceInterface
         return $this->quote;
     }
 
-    /**
-     * Return customer quote items
-     *
-     * @return \Magento\Quote\Model\Quote\Item[]
-     */
-    protected function getAllQuoteItems()
+    private function updateNostoId()
     {
-
-        $quote = $this->getQuote();
-        return $quote->getAllVisibleItems();
-    }
-
-    private function updateNostoId() {
         // Handle the Nosto customer & quote mapping
         $nostoCustomerId = $this->cookieManager->getCookie(NostoCustomer::COOKIE_NAME);
         $quoteId = $this->getQuote()->getId();
@@ -177,5 +166,17 @@ class CartTagging implements SectionSourceInterface
                 //Todo - handle errors, maybe log?
             }
         }
+    }
+
+    /**
+     * Return customer quote items
+     *
+     * @return \Magento\Quote\Model\Quote\Item[]
+     */
+    protected function getAllQuoteItems()
+    {
+
+        $quote = $this->getQuote();
+        return $quote->getAllVisibleItems();
     }
 }

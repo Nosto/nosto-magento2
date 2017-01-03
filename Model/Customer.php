@@ -38,16 +38,6 @@ class Customer extends AbstractModel implements CustomerInterface
     const COOKIE_NAME = '2c_cId';
 
     /**
-     * Initialize resource model
-     *
-     * @return void
-     */
-    protected function _construct()
-    {
-        $this->_init('Nosto\Tagging\Model\ResourceModel\Customer');
-    }
-
-    /**
      * @inheritdoc
      */
     public function getCustomerId()
@@ -76,7 +66,7 @@ class Customer extends AbstractModel implements CustomerInterface
      */
     public function getCreatedAt()
     {
-        return  $this->getData(self::CREATED_AT);
+        return $this->getData(self::CREATED_AT);
     }
 
     /**
@@ -125,5 +115,15 @@ class Customer extends AbstractModel implements CustomerInterface
     public function setUpdatedAt(\DateTime $updatedAt)
     {
         return $this->setData(self::UPDATED_AT, $updatedAt);
+    }
+
+    /**
+     * Initialize resource model
+     *
+     * @return void
+     */
+    protected function _construct()
+    {
+        $this->_init('Nosto\Tagging\Model\ResourceModel\Customer');
     }
 }

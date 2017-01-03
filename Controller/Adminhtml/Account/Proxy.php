@@ -65,7 +65,6 @@ class Proxy extends Base
      * This is a workaround as you cannot redirect directly to a protected
      * action in the backend end from the front end. The action also handles
      * passing along any error/success messages.
-
      * @return Redirect
      */
     public function execute()
