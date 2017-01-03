@@ -31,7 +31,7 @@ use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\ObjectManagerInterface;
 use Magento\Quote\Model\Quote\Item;
 use Magento\Store\Model\Store;
-use NostoOrderPurchasedItem;
+use NostoLineItem;
 use Psr\Log\LoggerInterface;
 
 class Builder
@@ -71,11 +71,11 @@ class Builder
     /**
      * @param Item $item
      * @param Store $store
-     * @return NostoOrderPurchasedItem
+     * @return NostoLineItem
      */
     public function build(Item $item, Store $store)
     {
-        $cartItem = $this->objectManager->create('NostoOrderPurchasedItem', null);
+        $cartItem = $this->objectManager->create('NostoLineItem', null);
 
         try {
             $cartItem->setProductId($this->buildItemId($item));

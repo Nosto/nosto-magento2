@@ -41,7 +41,7 @@ use /** @noinspection PhpUndefinedClassInspection */
 use Nosto\Tagging\Helper\Price as NostoPriceHelper;
 use NostoOrder;
 use NostoOrderBuyer;
-use NostoOrderPurchasedItem;
+use NostoLineItem;
 use NostoOrderStatus;
 use Psr\Log\LoggerInterface;
 
@@ -129,7 +129,7 @@ class Builder
             // Add each ordered item as a line item
             /** @var Item $item */
             foreach ($order->getAllVisibleItems() as $item) {
-                $nostoItem = new NostoOrderPurchasedItem();
+                $nostoItem = new NostoLineItem();
                 $nostoItem->setProductId((int)$this->buildItemProductId($item));
                 $nostoItem->setQuantity((int)$item->getQtyOrdered());
                 $nostoItem->setName($this->buildItemName($item));
@@ -146,7 +146,7 @@ class Builder
 
             // Add discounts as a pseudo line item
             if (($discount = $order->getDiscountAmount()) < 0) {
-                $nostoItem = new NostoOrderPurchasedItem();
+                $nostoItem = new NostoLineItem();
                 $nostoItem->loadSpecialItemData(
                     $this->buildDiscountRuleDescription($order),
                     $discount,
@@ -157,7 +157,7 @@ class Builder
 
             // Add shipping and handling as a pseudo line item
             if (($shippingInclTax = $order->getShippingInclTax()) > 0) {
-                $nostoItem = new NostoOrderPurchasedItem();
+                $nostoItem = new NostoLineItem();
                 $nostoItem->loadSpecialItemData(
                     'Shipping and handling',
                     $shippingInclTax,

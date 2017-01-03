@@ -16,7 +16,7 @@ use Nosto\Tagging\Model\Cart\Builder as NostoCartBuilder;
 use Nosto\Tagging\Model\Customer as NostoCustomer;
 use /** @noinspection PhpUndefinedClassInspection */
     Nosto\Tagging\Model\CustomerFactory as NostoCustomerFactory;
-use NostoOrderPurchasedItem;
+use NostoLineItem;
 
 class CartTagging implements SectionSourceInterface
 {
@@ -92,7 +92,7 @@ class CartTagging implements SectionSourceInterface
         $itemCount = $cart->getItemsCount();
         $data["itemCount"] = $itemCount;
         $addedCount = 0;
-        /* @var NostoOrderPurchasedItem $item */
+        /* @var NostoLineItem $item */
         foreach ($nostoCart->getItems() as $item) {
             $addedCount++;
             $data["items"][] = [
