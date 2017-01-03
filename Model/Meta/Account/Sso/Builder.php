@@ -32,9 +32,9 @@ use Psr\Log\LoggerInterface;
 
 class Builder
 {
-    protected $_factory;
-    protected $_logger;
-    private $_backendAuthSession;
+    protected $factory;
+    protected $logger;
+    private $backendAuthSession;
 
     /**
      * @param Session $backendAuthSession
@@ -44,8 +44,8 @@ class Builder
         Session $backendAuthSession,
         LoggerInterface $logger
     ) {
-        $this->_backendAuthSession = $backendAuthSession;
-        $this->_logger = $logger;
+        $this->backendAuthSession = $backendAuthSession;
+        $this->logger = $logger;
     }
 
     /**
@@ -56,14 +56,14 @@ class Builder
         $metaData = new \NostoSignupOwner();
 
         try {
-            $user = $this->_backendAuthSession->getUser();
+            $user = $this->backendAuthSession->getUser();
             if (!is_null($user)) {
                 $metaData->setFirstName($user->getFirstName());
                 $metaData->setLastName($user->getLastName());
                 $metaData->setEmail($user->getEmail());
             }
         } catch (\NostoException $e) {
-            $this->_logger->error($e, ['exception' => $e]);
+            $this->logger->error($e, ['exception' => $e]);
         }
 
         return $metaData;

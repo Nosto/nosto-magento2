@@ -39,22 +39,22 @@ class Builder
     /**
      * @var NostoCartItemBuilder
      */
-    protected $_nostoCartItemBuilder;
+    protected $nostoCartItemBuilder;
 
     /**
      * @var LoggerInterface
      */
-    protected $_logger;
+    protected $logger;
     /**
      * @var ObjectManagerInterface
      */
-    protected $_objectManager;
+    protected $objectManager;
     /**
      * Event manager
      *
      * @var ManagerInterface
      */
-    protected $_eventManager;
+    protected $eventManager;
 
     /**
      * Constructor.
@@ -71,10 +71,10 @@ class Builder
         ObjectManagerInterface $objectManager,
         ManagerInterface $eventManager
     ) {
-        $this->_objectManager = $objectManager;
-        $this->_nostoCartItemBuilder = $nostoCartItemBuilder;
-        $this->_logger = $logger;
-        $this->_eventManager = $eventManager;
+        $this->objectManager = $objectManager;
+        $this->nostoCartItemBuilder = $nostoCartItemBuilder;
+        $this->logger = $logger;
+        $this->eventManager = $eventManager;
     }
 
     /**
@@ -86,18 +86,18 @@ class Builder
     public function build(Quote $quote, Store $store)
     {
         /** @var \NostoCart $nostoCart */
-        $nostoCart = $this->_objectManager->create('NostoCart', null);
+        $nostoCart = $this->objectManager->create('NostoCart', null);
 
         foreach ($quote->getAllVisibleItems() as $item) {
             try {
-                $cartItem = $this->_nostoCartItemBuilder->build($item, $store);
+                $cartItem = $this->nostoCartItemBuilder->build($item, $store);
                 $nostoCart->addItem($cartItem);
             } catch (\NostoException $e) {
-                $this->_logger->error($e, ['exception' => $e]);
+                $this->logger->error($e, ['exception' => $e]);
             }
         }
 
-        $this->_eventManager->dispatch(
+        $this->eventManager->dispatch(
             'nosto_cart_load_after',
             ['cart' => $nostoCart]
         );

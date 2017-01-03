@@ -32,14 +32,14 @@ use Psr\Log\LoggerInterface;
 
 class Builder
 {
-    protected $_logger;
+    protected $logger;
 
     /**
      * @param LoggerInterface $logger
      */
     public function __construct(LoggerInterface $logger)
     {
-        $this->_logger = $logger;
+        $this->logger = $logger;
     }
 
     /**
@@ -56,7 +56,7 @@ class Builder
                 $metaData->setCountry($country);
             }
         } catch (\NostoException $e) {
-            $this->_logger->error($e, ['exception' => $e]);
+            $this->logger->error($e, ['exception' => $e]);
         }
 
         return $metaData;

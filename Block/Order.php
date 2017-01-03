@@ -33,8 +33,8 @@ use Magento\Framework\Registry;
 use Magento\Framework\View\Element\Template;
 use /** @noinspection PhpUndefinedClassInspection */
     Magento\Sales\Model\OrderFactory;
-use Nosto\Tagging\Helper\Format;
-use Nosto\Tagging\Model\Order\Builder as OrderBuilder;
+use Nosto\Tagging\Helper\Format as NostoHelperFormat;
+use Nosto\Tagging\Model\Order\Builder as NostoOrderBuilder;
 
 /**
  * Category block used for outputting meta-data on the stores category pages.
@@ -46,26 +46,26 @@ class Order extends Success
     /**
      * @inheritdoc
      */
-    protected $_template = 'order.phtml';
+    protected $template = 'order.phtml';
 
     /**
-     * @var OrderBuilder the order meta model builder.
+     * @var NostoOrderBuilder the order meta model builder.
      */
-    protected $_orderBuilder;
+    protected $nostoOrderBuilder;
 
     /**
      * @var Registry the framework registry.
      */
-    protected $_registry;
+    protected $registry;
 
     /**
-     * @var Format the format helper.
+     * @var NostoHelperFormat the format helper.
      */
-    protected $_formatHelper;
+    protected $nostoFormatHelper;
     /**
      * @var Session
      */
-    protected $_checkoutSession;
+    protected $checkoutSession;
 
     /** @noinspection PhpUndefinedClassInspection */
     /**
@@ -73,8 +73,8 @@ class Order extends Success
      *
      * @param Template\Context $context
      * @param OrderFactory $orderFactory
-     * @param OrderBuilder $orderBuilder
-     * @param Format $formatHelper
+     * @param NostoOrderBuilder $orderBuilder
+     * @param NostoHelperFormat $formatHelper
      * @param Session $checkoutSession
      * @param array $data
      * @internal param Registry $registry
@@ -84,8 +84,8 @@ class Order extends Success
         Template\Context $context,
         /** @noinspection PhpUndefinedClassInspection */
         OrderFactory $orderFactory,
-        OrderBuilder $orderBuilder,
-        Format $formatHelper,
+        NostoOrderBuilder $orderBuilder,
+        NostoHelperFormat $formatHelper,
         Session $checkoutSession,
         array $data = []
     ) {
@@ -95,9 +95,9 @@ class Order extends Success
             $data
         );
 
-        $this->_formatHelper = $formatHelper;
-        $this->_checkoutSession = $checkoutSession;
-        $this->_orderBuilder = $orderBuilder;
+        $this->nostoFormatHelper = $formatHelper;
+        $this->checkoutSession = $checkoutSession;
+        $this->nostoOrderBuilder = $orderBuilder;
     }
 
     /**
@@ -108,28 +108,28 @@ class Order extends Success
     public function getNostoOrder()
     {
         /** @var \Magento\Sales\Model\Order $order */
-        return $this->_orderBuilder->build($this->_checkoutSession->getLastRealOrder());
+        return $this->nostoOrderBuilder->build($this->checkoutSession->getLastRealOrder());
     }
 
     /**
-     * Formats a \NostoPrice object, e.g. "1234.56".
+     * NostoHelperFormats a \NostoPrice object, e.g. "1234.56".
      *
      * @param int $price the price to format.
      * @return string the formatted price.
      */
     public function formatNostoPrice($price)
     {
-        return $this->_formatHelper->formatPrice($price);
+        return $this->nostoFormatHelper->formatPrice($price);
     }
 
     /**
-     * Formats a \NostoDate object, e.g. "2015-12-24";
+     * NostoHelperFormats a \NostoDate object, e.g. "2015-12-24";
      *
      * @param string $date the date to format.
      * @return string the formatted date.
      */
     public function formatNostoDate($date)
     {
-        return $this->_formatHelper->formatDate($date);
+        return $this->nostoFormatHelper->formatDate($date);
     }
 }

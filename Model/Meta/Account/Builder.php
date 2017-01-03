@@ -30,9 +30,11 @@ namespace Nosto\Tagging\Model\Meta\Account;
 use Magento\Framework\Locale\ResolverInterface;
 use Magento\Framework\UrlInterface;
 use Magento\Store\Model\Store;
-use Nosto\Tagging\Helper\Data;
-use Nosto\Tagging\Model\Meta\Account\Billing\Builder as BillingBuilder;
-use Nosto\Tagging\Model\Meta\Account\Owner\Builder as OwnerBuilder;
+use Nosto\Tagging\Helper\Data as NostoHelperData;
+use Nosto\Tagging\Model\Meta\Account\Billing\Builder as NostoBillingBuilder;
+use Nosto\Tagging\Model\Meta\Account\Owner\Builder as NostoOwnerBuilder;
+use NostoHttpRequest;
+use NostoSignup;
 use Psr\Log\LoggerInterface;
 
 class Builder
@@ -41,33 +43,33 @@ class Builder
     const PLATFORM_NAME = 'Magento';
 
     /**
-     * @param Data $dataHelper
-     * @param OwnerBuilder $accountOwnerMetaBuilder
-     * @param BillingBuilder $accountBillingMetaBuilder
+     * @param NostoHelperData $nostoHelperData
+     * @param NostoOwnerBuilder $nostoAccountOwnerMetaBuilder
+     * @param NostoBillingBuilder $nostoAccountBillingMetaBuilder
      * @param ResolverInterface $localeResolver
      * @param LoggerInterface $logger
      */
     public function __construct(
-        Data $dataHelper,
-        OwnerBuilder $accountOwnerMetaBuilder,
-        BillingBuilder $accountBillingMetaBuilder,
+        NostoHelperData $nostoHelperData,
+        NostoOwnerBuilder $nostoAccountOwnerMetaBuilder,
+        NostoBillingBuilder $nostoAccountBillingMetaBuilder,
         ResolverInterface $localeResolver,
         LoggerInterface $logger
     ) {
-        $this->_dataHelper = $dataHelper;
-        $this->_accountOwnerMetaBuilder = $accountOwnerMetaBuilder;
-        $this->_accountBillingMetaBuilder = $accountBillingMetaBuilder;
-        $this->_localeResolver = $localeResolver;
-        $this->_logger = $logger;
+        $this->nostoHelperData = $nostoHelperData;
+        $this->accountOwnerMetaBuilder = $nostoAccountOwnerMetaBuilder;
+        $this->accountBillingMetaBuilder = $nostoAccountBillingMetaBuilder;
+        $this->localeResolver = $localeResolver;
+        $this->logger = $logger;
     }
 
     /**
      * @param Store $store
-     * @return \NostoSignup
+     * @return NostoSignup
      */
     public function build(Store $store)
     {
-        $metaData = new \NostoSignup(Builder::PLATFORM_NAME, Builder::API_TOKEN, null);
+        $metaData = new NostoSignup(Builder::PLATFORM_NAME, Builder::API_TOKEN, null);
 
         try {
             $metaData->setTitle(
@@ -82,7 +84,7 @@ class Builder
             );
             $metaData->setName(substr(sha1(rand()), 0, 8));
             $metaData->setFrontPageUrl(
-                \NostoHttpRequest::replaceQueryParamInUrl(
+                NostoHttpRequest::replaceQueryParamInUrl(
                     '___store',
                     $store->getCode(),
                     $store->getBaseUrl(UrlInterface::URL_TYPE_WEB)
@@ -92,16 +94,16 @@ class Builder
             $metaData->setCurrencyCode($store->getBaseCurrencyCode());
             $lang = substr($store->getConfig('general/locale/code'), 0, 2);
             $metaData->setLanguageCode($lang);
-            $lang = substr($this->_localeResolver->getLocale(), 0, 2);
+            $lang = substr($this->localeResolver->getLocale(), 0, 2);
             $metaData->setOwnerLanguageCode($lang);
 
-            $owner = $this->_accountOwnerMetaBuilder->build();
+            $owner = $this->accountOwnerMetaBuilder->build();
             $metaData->setOwner($owner);
 
-            $billing = $this->_accountBillingMetaBuilder->build($store);
+            $billing = $this->accountBillingMetaBuilder->build($store);
             $metaData->setBillingDetails($billing);
         } catch (\NostoException $e) {
-            $this->_logger->error($e, ['exception' => $e]);
+            $this->logger->error($e, ['exception' => $e]);
         }
 
         return $metaData;

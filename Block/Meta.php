@@ -30,7 +30,7 @@ namespace Nosto\Tagging\Block;
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Element\Template\Context;
 use Magento\Store\Model\Store;
-use Nosto\Tagging\Helper\Data as DataHelper;
+use Nosto\Tagging\Helper\Data as NostoHelperData;
 
 /**
  * Meta data block for outputting <meta> elements in the page <head>.
@@ -41,28 +41,28 @@ class Meta extends Template
     /**
      * @inheritdoc
      */
-    protected $_template = 'meta.phtml';
+    protected $template = 'meta.phtml';
 
     /**
-     * @var DataHelper the module data helper.
+     * @var NostoHelperData the module data helper.
      */
-    protected $_dataHelper;
+    protected $nostoHelperData;
 
     /**
      * Constructor.
      *
      * @param Context $context the context.
-     * @param DataHelper $dataHelper the data helper.
+     * @param NostoHelperData $nostoHelperData the data helper.
      * @param array $data optional data.
      */
     public function __construct(
         Context $context,
-        DataHelper $dataHelper,
+        NostoHelperData $nostoHelperData,
         array $data = []
     ) {
         parent::__construct($context, $data);
 
-        $this->_dataHelper = $dataHelper;
+        $this->nostoHelperData = $nostoHelperData;
     }
 
     /**
@@ -72,7 +72,7 @@ class Meta extends Template
      */
     public function getModuleVersion()
     {
-        return $this->_dataHelper->getModuleVersion();
+        return $this->nostoHelperData->getModuleVersion();
     }
 
     /**
@@ -82,7 +82,7 @@ class Meta extends Template
      */
     public function getInstallationId()
     {
-        return $this->_dataHelper->getInstallationId();
+        return $this->nostoHelperData->getInstallationId();
     }
 
     /**

@@ -36,14 +36,15 @@ use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\Store;
 use Nosto\Tagging\Helper\Data as NostoHelper;
-use Nosto\Tagging\Model\Meta\Account\Iframe\Builder as IframeMetaBuilder;
+use Nosto\Tagging\Model\Meta\Account\Iframe\Builder as NostoIframeMetaBuilder;
+use NostoHelperIframe;
 
 
 /**
- * Account helper class for common tasks related to Nosto accounts.
+ * NostoAccountHelper helper class for common tasks related to Nosto accounts.
  * Everything related to saving/updating/deleting accounts happens in here.
  */
-class Account extends AbstractHelper
+class NostoAccountHelper extends AbstractHelper
 {
     /**
      * Path to store config nosto account name.
@@ -61,47 +62,47 @@ class Account extends AbstractHelper
     const IFRAME_VERSION = 0;
 
     /**
-     * @var IframeMetaBuilder the builder for iframe meta models.
+     * @var NostoIframeMetaBuilder the builder for iframe meta models.
      */
-    protected $_iframeMetaBuilder;
+    protected $nostoIframeMetaBuilder;
 
     /**
-     * @var \NostoHelperIframe the Nosto SDK iframe helper.
+     * @var NostoHelperIframe the Nosto SDK iframe helper.
      */
-    protected $_iframeHelper;
+    protected $iframeHelper;
 
     /**
      * @var WriterInterface the app config writer.
      */
-    protected $_config;
+    protected $config;
 
     /**
      * @var ModuleManager
      */
-    protected $_moduleManager;
+    protected $moduleManager;
 
     /**
      * Constructor.
      *
      * @param Context $context the context.
-     * @param IframeMetaBuilder $iframeMetaBuilder the builder for iframe meta models.
-     * @param \NostoHelperIframe $iframeHelper
+     * @param NostoIframeMetaBuilder $iframeMetaBuilder the builder for iframe meta models.
+     * @param NostoHelperIframe $iframeHelper
      * @param WriterInterface $appConfig the app config writer.
      * @param ModuleManager $moduleManager
      */
     public function __construct(
         Context $context,
-        IframeMetaBuilder $iframeMetaBuilder,
-        \NostoHelperIframe $iframeHelper,
+        NostoIframeMetaBuilder $iframeMetaBuilder,
+        NostoHelperIframe $iframeHelper,
         WriterInterface $appConfig,
         ModuleManager $moduleManager
     ) {
         parent::__construct($context);
 
-        $this->_iframeMetaBuilder = $iframeMetaBuilder;
-        $this->_iframeHelper = $iframeHelper;
-        $this->_config = $appConfig;
-        $this->_moduleManager = $moduleManager;
+        $this->nostoIframeMetaBuilder = $iframeMetaBuilder;
+        $this->iframeHelper = $iframeHelper;
+        $this->config = $appConfig;
+        $this->moduleManager = $moduleManager;
     }
 
     /**
@@ -158,13 +159,13 @@ class Account extends AbstractHelper
             $tokens[$token->getName()] = $token->getValue();
         }
 
-        $this->_config->save(
+        $this->config->save(
             self::XML_PATH_ACCOUNT,
             $account->getName(),
             ScopeInterface::SCOPE_STORES,
             $store->getId()
         );
-        $this->_config->save(
+        $this->config->save(
             self::XML_PATH_TOKENS,
             json_encode($tokens),
             ScopeInterface::SCOPE_STORES,
@@ -190,12 +191,12 @@ class Account extends AbstractHelper
             return false;
         }
 
-        $this->_config->delete(
+        $this->config->delete(
             self::XML_PATH_ACCOUNT,
             ScopeInterface::SCOPE_STORES,
             $store->getId()
         );
-        $this->_config->delete(
+        $this->config->delete(
             self::XML_PATH_TOKENS,
             ScopeInterface::SCOPE_STORES,
             $store->getId()
@@ -235,8 +236,8 @@ class Account extends AbstractHelper
         if (self::IFRAME_VERSION > 0) {
             $params['v'] = self::IFRAME_VERSION;
         }
-        return $this->_iframeHelper->getUrl(
-            $this->_iframeMetaBuilder->build($store),
+        return $this->iframeHelper->getUrl(
+            $this->nostoIframeMetaBuilder->build($store),
             $account,
             $currentUser,
             $params
@@ -252,7 +253,7 @@ class Account extends AbstractHelper
     public function nostoInstalledAndEnabled(StoreInterface $store) {
 
         $enabled = false;
-        if ($this->_moduleManager->isEnabled(NostoHelper::MODULE_NAME)) {
+        if ($this->moduleManager->isEnabled(NostoHelper::MODULE_NAME)) {
             if ($this->findAccount($store)) {
                 $enabled = true;
             }

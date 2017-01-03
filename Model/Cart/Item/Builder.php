@@ -38,17 +38,17 @@ class Builder
     /**
      * @var LoggerInterface
      */
-    protected $_logger;
+    protected $logger;
     /**
      * @var ObjectManagerInterface
      */
-    protected $_objectManager;
+    protected $objectManager;
     /**
      * Event manager
      *
      * @var ManagerInterface
      */
-    protected $_eventManager;
+    protected $eventManager;
 
     /**
      * Constructor.
@@ -62,9 +62,9 @@ class Builder
         ObjectManagerInterface $objectManager,
         ManagerInterface $eventManager
     ) {
-        $this->_objectManager = $objectManager;
-        $this->_logger = $logger;
-        $this->_eventManager = $eventManager;
+        $this->objectManager = $objectManager;
+        $this->logger = $logger;
+        $this->eventManager = $eventManager;
     }
 
     /**
@@ -74,7 +74,7 @@ class Builder
      */
     public function build(Item $item, Store $store)
     {
-        $cartItem = $this->_objectManager->create('NostoOrderPurchasedItem', null);
+        $cartItem = $this->objectManager->create('NostoOrderPurchasedItem', null);
 
         try {
             $cartItem->setProductId($this->buildItemId($item));
@@ -84,10 +84,10 @@ class Builder
             $cartItem->setCurrencyCode($store->getBaseCurrencyCode());
             $cartItems[] = $cartItem;
         } catch (\NostoException $e) {
-            $this->_logger->error($e, ['exception' => $e]);
+            $this->logger->error($e, ['exception' => $e]);
         }
 
-        $this->_eventManager->dispatch(
+        $this->eventManager->dispatch(
             'nosto_cart_item_load_after',
             ['item' => $cartItem]
         );

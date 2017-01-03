@@ -38,7 +38,7 @@ use Magento\Sales\Model\Order;
 use Magento\Sales\Model\Order\Item;
 use /** @noinspection PhpUndefinedClassInspection */
     Magento\SalesRule\Model\RuleFactory as SalesRuleFactory;
-use Nosto\Tagging\Helper\Price as PriceHelper;
+use Nosto\Tagging\Helper\Price as NostoPriceHelper;
 use Psr\Log\LoggerInterface;
 
 class Builder
@@ -46,42 +46,42 @@ class Builder
     /**
      * @var LoggerInterface
      */
-    protected $_logger;
+    protected $logger;
 
     /** @noinspection PhpUndefinedClassInspection */
     /**
      * @var SalesRuleFactory
      */
-    protected $_salesRuleFactory;
+    protected $salesRuleFactory;
 
     /**
-     * @var PriceHelper
+     * @var NostoPriceHelper
      */
-    protected $_priceHelper;
+    protected $nostoPriceHelper;
 
     /**
      * @var ObjectManagerInterface
      */
-    protected $_objectManager;
+    protected $objectManager;
 
     /** @noinspection PhpUndefinedClassInspection */
     /**
      * @param LoggerInterface $logger
      * @param SalesRuleFactory $salesRuleFactory
-     * @param PriceHelper $priceHelper
+     * @param NostoPriceHelper $priceHelper
      * @param ObjectManagerInterface $objectManager
      */
     public function __construct(
         LoggerInterface $logger,
         /** @noinspection PhpUndefinedClassInspection */
         SalesRuleFactory $salesRuleFactory,
-        PriceHelper $priceHelper,
+        NostoPriceHelper $priceHelper,
         ObjectManagerInterface $objectManager
     ) {
-        $this->_logger = $logger;
-        $this->_salesRuleFactory= $salesRuleFactory;
-        $this->_priceHelper = $priceHelper;
-        $this->_objectManager = $objectManager;
+        $this->logger = $logger;
+        $this->salesRuleFactory= $salesRuleFactory;
+        $this->nostoPriceHelper = $priceHelper;
+        $this->objectManager = $objectManager;
     }
 
     /**
@@ -131,7 +131,7 @@ class Builder
                 $nostoItem->setName($this->buildItemName($item));
                 try {
                     $nostoItem->setPrice(
-                        $this->_priceHelper->getItemFinalPriceInclTax($item)
+                        $this->nostoPriceHelper->getItemFinalPriceInclTax($item)
                     );
                 } catch (Exception $E) {
                     $nostoItem->setPrice(0);
@@ -162,7 +162,7 @@ class Builder
                 $nostoOrder->addPurchasedItems($nostoItem);
             }
         } catch (Exception $e) {
-            $this->_logger->error($e, ['exception' => $e]);
+            $this->logger->error($e, ['exception' => $e]);
         }
 
         return $nostoOrder;
@@ -187,7 +187,7 @@ class Builder
                 $ruleIds = explode(',', $item->getAppliedRuleIds());
                 foreach ($ruleIds as $ruleId) {
                     /** @noinspection PhpUndefinedMethodInspection */
-                    $rule = $this->_salesRuleFactory->create()->load($ruleId);
+                    $rule = $this->salesRuleFactory->create()->load($ruleId);
                     /** @noinspection PhpUndefinedMethodInspection */
                     $appliedRules[$ruleId] = $rule->getName();
                 }
@@ -263,7 +263,7 @@ class Builder
                 if (is_array($attributes)) {
                     foreach ($attributes as $id => $value) {
                         /** @var Attribute $attribute */
-                        $attribute = $this->_objectManager->get('Magento\Catalog\Model\ResourceModel\Eav\Attribute')
+                        $attribute = $this->objectManager->get('Magento\Catalog\Model\ResourceModel\Eav\Attribute')
                             ->load($id);
                         $label = $attribute->getSource()->getOptionText($value);
                         if (!empty($label)) {
@@ -302,7 +302,7 @@ class Builder
             $config = $item->getProductOptionByCode('super_product_config');
             if (isset($config['product_id'])) {
                 /** @var Product $parent */
-                $parent = $this->_objectManager->get('Magento\Catalog\Model\Product')
+                $parent = $this->objectManager->get('Magento\Catalog\Model\Product')
                     ->load($config['product_id']);
                 $parentName = $parent->getName();
                 if (!empty($parentName)) {

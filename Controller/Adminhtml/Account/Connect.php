@@ -31,7 +31,7 @@ use Magento\Backend\App\Action\Context;
 use Magento\Framework\Controller\Result\Json;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
-use Nosto\Tagging\Model\Meta\Oauth\Builder;
+use Nosto\Tagging\Model\Meta\Oauth\Builder as NostoOauthBuilder;
 
 class Connect extends Base
 {
@@ -40,27 +40,27 @@ class Connect extends Base
     /**
      * @var Json
      */
-    protected $_result;
-    private $_oauthMetaBuilder;
-    private $_storeManager;
+    protected $result;
+    private $oauthMetaBuilder;
+    private $storeManager;
 
     /**
      * @param Context $context
-     * @param Builder $oauthMetaBuilder
+     * @param NostoOauthBuilder $oauthMetaBuilder
      * @param StoreManagerInterface $storeManager
      * @param Json $result
      */
     public function __construct(
         Context $context,
-        Builder $oauthMetaBuilder,
+        NostoOauthBuilder $oauthMetaBuilder,
         StoreManagerInterface $storeManager,
         Json $result
     ) {
         parent::__construct($context);
 
-        $this->_oauthMetaBuilder = $oauthMetaBuilder;
-        $this->_storeManager = $storeManager;
-        $this->_result = $result;
+        $this->oauthMetaBuilder = $oauthMetaBuilder;
+        $this->storeManager = $storeManager;
+        $this->result = $result;
     }
 
     /**
@@ -72,16 +72,16 @@ class Connect extends Base
 
         $storeId = $this->_request->getParam('store');
         /** @var Store $store */
-        $store = $this->_storeManager->getStore($storeId);
+        $store = $this->storeManager->getStore($storeId);
 
         if (!is_null($store)) {
-            $metaData = $this->_oauthMetaBuilder->build($store);
+            $metaData = $this->oauthMetaBuilder->build($store);
             $client = new \NostoOAuthClient($metaData);
 
             $response['success'] = true;
             $response['redirect_url'] = $client->getAuthorizationUrl();
         }
 
-        return $this->_result->setData($response);
+        return $this->result->setData($response);
     }
 }

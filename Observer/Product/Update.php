@@ -28,7 +28,6 @@
 namespace Nosto\Tagging\Observer\Product;
 
 use Magento\Catalog\Model\Product;
-use Nosto\Tagging\Observer\Product\Base as ProductObserver;
 
 /**
  * Upsert event observer model.
@@ -38,7 +37,7 @@ use Nosto\Tagging\Observer\Product\Base as ProductObserver;
  * @package  Nosto_Tagging
  * @author   Nosto Solutions Ltd <magento@nosto.com>
  */
-class Update extends ProductObserver
+class Update extends Base
 {
     /**
      * @inheritdoc

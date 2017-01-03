@@ -10,7 +10,7 @@ namespace Nosto\Tagging\CustomerData;
 use Magento\Customer\CustomerData\SectionSourceInterface;
 use Magento\Customer\Helper\Session\CurrentCustomer;
 use Magento\Framework\Stdlib\CookieManagerInterface;
-use Nosto\Tagging\Helper\Data as NostoDataHelper;
+use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Model\Customer as NostoCustomer;
 
 class CustomerTagging implements SectionSourceInterface
@@ -56,7 +56,7 @@ class CustomerTagging implements SectionSourceInterface
                 'first_name' => $customer->getFirstname(),
                 'last_name' => $customer->getLastname(),
                 'email' => $customer->getEmail(),
-                'hcid' => NostoDataHelper::generateVisitorChecksum($nostoCustomerId),
+                'hcid' => NostoHelperData::generateVisitorChecksum($nostoCustomerId),
             ];
         }
 

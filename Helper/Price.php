@@ -41,7 +41,7 @@ use Magento\Sales\Model\Order\Item;
  */
 class Price extends AbstractHelper
 {
-    private $_catalogHelper;
+    private $catalogHelper;
 
     /**
      * Constructor.
@@ -55,7 +55,7 @@ class Price extends AbstractHelper
     ) {
         parent::__construct($context);
 
-        $this->_catalogHelper = $catalogHelper;
+        $this->catalogHelper = $catalogHelper;
     }
 
     /**
@@ -124,7 +124,7 @@ class Price extends AbstractHelper
                 }
                 $price = $minimalPrice;
                 if ($inclTax && $cheapestAssociatedProduct) {
-                    $price = $this->_catalogHelper->getTaxPrice(
+                    $price = $this->catalogHelper->getTaxPrice(
                         $cheapestAssociatedProduct,
                         $price,
                         true
@@ -139,7 +139,7 @@ class Price extends AbstractHelper
                 if ($finalPrice) {
                     $price = $product->getFinalPrice();
                 } elseif ($inclTax) {
-                    $price = $this->_catalogHelper->getTaxPrice(
+                    $price = $this->catalogHelper->getTaxPrice(
                         $product,
                         $product->getPrice(),
                         true
@@ -154,7 +154,7 @@ class Price extends AbstractHelper
                     ? $product->getFinalPrice()
                     : $product->getPrice();
                 if ($inclTax) {
-                    $price = $this->_catalogHelper->getTaxPrice(
+                    $price = $this->catalogHelper->getTaxPrice(
                         $product,
                         $price,
                         true

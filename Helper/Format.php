@@ -32,19 +32,19 @@ use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 
 /**
- * Format helper used for common formatting tasks.
+ * NostoHelperFormat helper used for common formatting tasks.
  */
-class Format extends AbstractHelper
+class NostoHelperFormat extends AbstractHelper
 {
     /**
      * @var \NostoHelperPrice the nosto price formatter.
      */
-    protected $_priceFormatter;
+    protected $priceFormatter;
 
     /**
      * @var \NostoHelperDate the nosto date formatter.
      */
-    protected $_dateFormatter;
+    protected $dateFormatter;
 
     /**
      * Constructor.
@@ -60,12 +60,12 @@ class Format extends AbstractHelper
     ) {
         parent::__construct($context);
 
-        $this->_priceFormatter = $priceFormatter;
-        $this->_dateFormatter = $dateFormatter;
+        $this->priceFormatter = $priceFormatter;
+        $this->dateFormatter = $dateFormatter;
     }
 
     /**
-     * Formats price into Nosto format, e.g. 1000.99.
+     * NostoHelperFormats price into Nosto format, e.g. 1000.99.
      *
      * @see \NostoHelperPrice::format()
      * @param int|float|string $price the price string to format.
@@ -73,11 +73,11 @@ class Format extends AbstractHelper
      */
     public function formatPrice($price)
     {
-        return $this->_priceFormatter->format($price);
+        return $this->priceFormatter->format($price);
     }
 
     /**
-     * Formats date into Nosto format, i.e. Y-m-d.
+     * NostoHelperFormats date into Nosto format, i.e. Y-m-d.
      *
      * @see \NostoHelperDate::format()
      * @param string $date the date string to format.
@@ -85,6 +85,6 @@ class Format extends AbstractHelper
      */
     public function formatDate($date)
     {
-        return $this->_dateFormatter->format($date);
+        return $this->dateFormatter->format($date);
     }
 }

@@ -36,7 +36,7 @@ class Builder
     /**
      * @var LoggerInterface
      */
-    protected $_logger;
+    protected $logger;
 
     /**
      * @param CategoryRepositoryInterface $categoryRepository
@@ -46,8 +46,8 @@ class Builder
         CategoryRepositoryInterface $categoryRepository,
         LoggerInterface $logger
     ) {
-        $this->_categoryRepository = $categoryRepository;
-        $this->_logger = $logger;
+        $this->categoryRepository = $categoryRepository;
+        $this->logger = $logger;
     }
 
     /**
@@ -62,14 +62,14 @@ class Builder
             $data = [];
             $path = $category->getPath();
             foreach (explode('/', $path) as $categoryId) {
-                $category = $this->_categoryRepository->get($categoryId);
+                $category = $this->categoryRepository->get($categoryId);
                 if ($category && $category->getLevel() > 1) {
                     $data[] = $category->getName();
                 }
             }
             return count($data) ? '/' . implode('/', $data) : '';
         } catch (\NostoException $e) {
-            $this->_logger->error($e, ['exception' => $e]);
+            $this->logger->error($e, ['exception' => $e]);
         }
 
         return $nostoCategory;

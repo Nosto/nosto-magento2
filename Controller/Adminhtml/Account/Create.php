@@ -31,8 +31,8 @@ use Magento\Backend\App\Action\Context;
 use Magento\Framework\Controller\Result\Json;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
-use Nosto\Tagging\Helper\Account;
-use Nosto\Tagging\Model\Meta\Account\Builder as SignupBuilder;
+use Nosto\Tagging\Helper\Account as NostoAccountHelper;
+use Nosto\Tagging\Model\Meta\Account\Builder as NostoSignupBuilder;
 use Psr\Log\LoggerInterface;
 
 class Create extends Base
@@ -42,35 +42,35 @@ class Create extends Base
     /**
      * @var Json
      */
-    protected $_result;
-    private $_accountHelper;
-    private $_signupBuilder;
-    private $_storeManager;
-    private $_logger;
+    protected $result;
+    private $nostoHelperAccount;
+    private $signupBuilder;
+    private $storeManager;
+    private $logger;
 
     /**
      * @param Context $context
-     * @param Account $accountHelper
-     * @param SignupBuilder $signupBuilder
+     * @param NostoAccountHelper $nostoHelperAccount
+     * @param NostoSignupBuilder $signupBuilder
      * @param StoreManagerInterface $storeManager
      * @param Json $result
      * @param LoggerInterface $logger
      */
     public function __construct(
         Context $context,
-        Account $accountHelper,
-        SignupBuilder $signupBuilder,
+        NostoAccountHelper $nostoHelperAccount,
+        NostoSignupBuilder $signupBuilder,
         StoreManagerInterface $storeManager,
         Json $result,
         LoggerInterface $logger
     ) {
         parent::__construct($context);
 
-        $this->_accountHelper = $accountHelper;
-        $this->_signupBuilder = $signupBuilder;
-        $this->_storeManager = $storeManager;
-        $this->_result = $result;
-        $this->_logger = $logger;
+        $this->nostoHelperAccount = $nostoHelperAccount;
+        $this->signupBuilder = $signupBuilder;
+        $this->storeManager = $storeManager;
+        $this->result = $result;
+        $this->logger = $logger;
     }
 
     /**
@@ -82,12 +82,12 @@ class Create extends Base
 
         $storeId = $this->_request->getParam('store');
         /** @var Store $store */
-        $store = $this->_storeManager->getStore($storeId);
+        $store = $this->storeManager->getStore($storeId);
 
         if (!is_null($store)) {
             try {
                 $emailAddress = $this->_request->getParam('email');
-                $signupParams = $this->_signupBuilder->build($store);
+                $signupParams = $this->signupBuilder->build($store);
                 // todo: how to handle this class, DI?
                 if (\Zend_Validate::is($emailAddress, 'EmailAddress')) {
                     /** @var \NostoSignupOwner $owner */
@@ -100,11 +100,11 @@ class Create extends Base
                 $operation = new \NostoOperationAccount($signupParams);
                 $account = $operation->create();
 
-                if ($this->_accountHelper->saveAccount($account, $store)) {
+                if ($this->nostoHelperAccount->saveAccount($account, $store)) {
                     // todo
-                    //$this->_accountHelper->updateCurrencyExchangeRates($account, $store);
+                    //$this->nostoHelperAccount->updateCurrencyExchangeRates($account, $store);
                     $response['success'] = true;
-                    $response['redirect_url'] = $this->_accountHelper->getIframeUrl(
+                    $response['redirect_url'] = $this->nostoHelperAccount->getIframeUrl(
                         $store,
                         $account,
                         $owner,
@@ -115,12 +115,12 @@ class Create extends Base
                     );
                 }
             } catch (\NostoException $e) {
-                $this->_logger->error($e, ['exception' => $e]);
+                $this->logger->error($e, ['exception' => $e]);
             }
         }
 
         if (!$response['success']) {
-            $response['redirect_url'] = $this->_accountHelper->getIframeUrl(
+            $response['redirect_url'] = $this->nostoHelperAccount->getIframeUrl(
                 $store,
                 null, // account creation failed, so we have none.
                 [
@@ -130,6 +130,6 @@ class Create extends Base
             );
         }
 
-        return $this->_result->setData($response);
+        return $this->result->setData($response);
     }
 }

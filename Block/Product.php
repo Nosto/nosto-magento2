@@ -38,10 +38,10 @@ use Magento\Framework\Pricing\PriceCurrencyInterface;
 use Magento\Framework\Stdlib\StringUtils;
 use Magento\Framework\Url\EncoderInterface as UrlEncoder;
 use Magento\Store\Model\Store;
-use Nosto\Tagging\Helper\Data;
-use Nosto\Tagging\Helper\Format;
-use Nosto\Tagging\Model\Category\Builder as CategoryBuilder;
-use Nosto\Tagging\Model\Product\Builder as ProductBuilder;
+use Nosto\Tagging\Helper\Data as NostoHelperData;
+use Nosto\Tagging\Helper\Format as NostoHelperFormat;
+use Nosto\Tagging\Model\Category\Builder as NostoCategoryBuilder;
+use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
 
 /**
  * Product block used for outputting meta-data on the stores product pages.
@@ -53,27 +53,27 @@ class Product extends View
     /**
      * @inheritdoc
      */
-    protected $_template = 'product.phtml';
+    protected $template = 'product.phtml';
 
     /**
-     * @var ProductBuilder the product meta model builder.
+     * @var NostoProductBuilder the product meta model builder.
      */
-    protected $_productBuilder;
+    protected $nostoProductBuilder;
 
     /**
-     * @var CategoryBuilder the category meta model builder.
+     * @var NostoCategoryBuilder the category meta model builder.
      */
-    protected $_categoryBuilder;
+    protected $categoryBuilder;
 
     /**
-     * @var Data the data helper.
+     * @var NostoHelperData the data helper.
      */
-    protected $_dataHelper;
+    protected $nostoHelperData;
 
     /**
-     * @var Format the format helper.
+     * @var NostoHelperFormat the format helper.
      */
-    protected $_formatHelper;
+    protected $nostoFormatHelper;
 
     /**
      * Constructor.
@@ -88,10 +88,10 @@ class Product extends View
      * @param Session $customerSession the user session.
      * @param ProductRepositoryInterface $productRepository th product repository.
      * @param PriceCurrencyInterface $priceCurrency the price currency.
-     * @param ProductBuilder $productBuilder the product meta model builder.
-     * @param CategoryBuilder $categoryBuilder the category meta model builder.
-     * @param Data $dataHelper the data helper.
-     * @param Format $formatHelper the format helper.
+     * @param NostoProductBuilder $nostoProductBuilder the product meta model builder.
+     * @param NostoCategoryBuilder $categoryBuilder the category meta model builder.
+     * @param NostoHelperData $nostoHelperData the data helper.
+     * @param NostoHelperFormat $formatHelper the format helper.
      * @param array $data optional data.
      */
     public function __construct(
@@ -105,10 +105,10 @@ class Product extends View
         Session $customerSession,
         ProductRepositoryInterface $productRepository,
         PriceCurrencyInterface $priceCurrency,
-        ProductBuilder $productBuilder,
-        CategoryBuilder $categoryBuilder,
-        Data $dataHelper,
-        Format $formatHelper,
+        NostoProductBuilder $nostoProductBuilder,
+        NostoCategoryBuilder $categoryBuilder,
+        NostoHelperData $nostoHelperData,
+        NostoHelperFormat $formatHelper,
         array $data = []
     ) {
         parent::__construct(
@@ -125,10 +125,10 @@ class Product extends View
             $data
         );
 
-        $this->_productBuilder = $productBuilder;
-        $this->_categoryBuilder = $categoryBuilder;
-        $this->_dataHelper = $dataHelper;
-        $this->_formatHelper = $formatHelper;
+        $this->nostoProductBuilder = $nostoProductBuilder;
+        $this->categoryBuilder = $categoryBuilder;
+        $this->nostoHelperData = $nostoHelperData;
+        $this->nostoFormatHelper = $formatHelper;
     }
 
     /**
@@ -140,7 +140,7 @@ class Product extends View
     {
         /** @var Store $store */
         $store =  $this->_storeManager->getStore();
-        return $this->_productBuilder->build(
+        return $this->nostoProductBuilder->build(
             $this->getProduct(),
             $store
         );
@@ -155,29 +155,29 @@ class Product extends View
     {
         $category = $this->_coreRegistry->registry('current_category');
         return !is_null($category)
-            ? $this->_categoryBuilder->build($category)
+            ? $this->categoryBuilder->build($category)
             : null;
     }
 
     /**
-     * Formats a \NostoPrice object, e.g. "1234.56".
+     * NostoHelperFormats a \NostoPrice object, e.g. "1234.56".
      *
      * @param int $price the price to format.
      * @return string the formatted price.
      */
     public function formatNostoPrice($price)
     {
-        return $this->_formatHelper->formatPrice($price);
+        return $this->nostoFormatHelper->formatPrice($price);
     }
 
     /**
-     * Formats a \NostoDate object, e.g. "2015-12-24";
+     * NostoHelperFormats a \NostoDate object, e.g. "2015-12-24";
      *
      * @param string $date the date to format.
      * @return string the formatted date.
      */
     public function formatNostoDate($date)
     {
-        return $this->_formatHelper->formatDate($date);
+        return $this->nostoFormatHelper->formatDate($date);
     }
 }

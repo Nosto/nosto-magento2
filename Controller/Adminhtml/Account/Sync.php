@@ -31,8 +31,8 @@ use Magento\Backend\App\Action\Context;
 use Magento\Framework\Controller\Result\Json;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
-use Nosto\Tagging\Helper\Account;
-use Nosto\Tagging\Model\Meta\Oauth\Builder;
+use Nosto\Tagging\Helper\Account as NostoAccountHelper;
+use Nosto\Tagging\Model\Meta\Oauth\Builder as NostoOauthBuilder;
 
 class Sync extends Base
 {
@@ -41,31 +41,31 @@ class Sync extends Base
     /**
      * @var Json
      */
-    protected $_result;
-    private $_accountHelper;
-    private $_oauthMetaBuilder;
-    private $_storeManager;
+    protected $result;
+    private $nostoHelperAccount;
+    private $oauthMetaBuilder;
+    private $storeManager;
 
     /**
      * @param Context $context
-     * @param Account $accountHelper
-     * @param Builder $oauthMetaBuilder
+     * @param NostoAccountHelper $nostoHelperAccount
+     * @param NostoOauthBuilder $oauthMetaBuilder
      * @param StoreManagerInterface $storeManager
      * @param Json $result
      */
     public function __construct(
         Context $context,
-        Account $accountHelper,
-        Builder $oauthMetaBuilder,
+        NostoAccountHelper $nostoHelperAccount,
+        NostoOauthBuilder $oauthMetaBuilder,
         StoreManagerInterface $storeManager,
         Json $result
     ) {
         parent::__construct($context);
 
-        $this->_accountHelper = $accountHelper;
-        $this->_oauthMetaBuilder = $oauthMetaBuilder;
-        $this->_storeManager = $storeManager;
-        $this->_result = $result;
+        $this->nostoHelperAccount = $nostoHelperAccount;
+        $this->oauthMetaBuilder = $oauthMetaBuilder;
+        $this->storeManager = $storeManager;
+        $this->result = $result;
     }
 
     /**
@@ -77,19 +77,19 @@ class Sync extends Base
 
         $storeId = $this->_request->getParam('store');
         /** @var Store $store */
-        $store = $this->_storeManager->getStore($storeId);
+        $store = $this->storeManager->getStore($storeId);
         $account = !is_null($store)
-            ? $this->_accountHelper->findAccount($store)
+            ? $this->nostoHelperAccount->findAccount($store)
             : null;
 
         if (!is_null($store) && !is_null($account)) {
-            $metaData = $this->_oauthMetaBuilder->build($store, $account);
+            $metaData = $this->oauthMetaBuilder->build($store, $account);
             $client = new \NostoOAuthClient($metaData);
 
             $response['success'] = true;
             $response['redirect_url'] = $client->getAuthorizationUrl();
         }
 
-        return $this->_result->setData($response);
+        return $this->result->setData($response);
     }
 }

@@ -32,8 +32,8 @@ use Magento\Backend\Block\Template\Context as BlockContext;
 use Magento\Backend\Model\Auth\Session;
 use Magento\Framework\Exception\NotFoundException;
 use Magento\Store\Api\Data\StoreInterface;
-use Nosto\Tagging\Helper\Account;
-use Nosto\Tagging\Model\Meta\Account\Sso\Builder as SsoBuilder;
+use Nosto\Tagging\Helper\Account as NostoAccountHelper;
+use Nosto\Tagging\Model\Meta\Account\Sso\Builder as NostoSsoBuilder;
 
 /**
  * Iframe block for displaying the Nosto account management iframe.
@@ -50,32 +50,32 @@ class Iframe extends BlockTemplate
     /**
      * @inheritdoc
      */
-    protected $_template = 'iframe.phtml';
-    protected $_accountHelper;
-    private $_backendAuthSession;
-    private $_ssoBuilder;
+    protected $template = 'iframe.phtml';
+    protected $nostoHelperAccount;
+    private $backendAuthSession;
+    private $nostoSsoBuilder;
 
     /**
      * Constructor.
      *
      * @param BlockContext $context the context.
-     * @param Account $accountHelper the account helper.
+     * @param NostoAccountHelper $nostoHelperAccount the account helper.
      * @param Session $backendAuthSession
-     * @param SsoBuilder $ssoBuilder
+     * @param NostoSsoBuilder $nostoSsoBuilder
      * @param array $data
      */
     public function __construct(
         BlockContext $context,
-        Account $accountHelper,
+        NostoAccountHelper $nostoHelperAccount,
         Session $backendAuthSession,
-        SsoBuilder $ssoBuilder,
+        NostoSsoBuilder $nostoSsoBuilder,
         array $data = []
     ) {
         parent::__construct($context, $data);
 
-        $this->_accountHelper = $accountHelper;
-        $this->_backendAuthSession = $backendAuthSession;
-        $this->_ssoBuilder = $ssoBuilder;
+        $this->nostoHelperAccount = $nostoHelperAccount;
+        $this->backendAuthSession = $backendAuthSession;
+        $this->nostoSsoBuilder = $nostoSsoBuilder;
     }
 
     /**
@@ -94,7 +94,7 @@ class Iframe extends BlockTemplate
         // Pass any error/success messages we might have to the iframe.
         // These can be available when getting redirect back from the OAuth
         // front controller after connecting a Nosto account to a store.
-        $nostoMessage = $this->_backendAuthSession->getData('nosto_message');
+        $nostoMessage = $this->backendAuthSession->getData('nosto_message');
         if (is_array($nostoMessage) && !empty($nostoMessage)) {
             foreach ($nostoMessage as $key => $value) {
                 if (is_string($key) && !empty($value)) {
@@ -102,13 +102,13 @@ class Iframe extends BlockTemplate
                 }
             }
             /** @noinspection PhpUndefinedMethodInspection */
-            $this->_backendAuthSession->setData('nosto_message', null);
+            $this->backendAuthSession->setData('nosto_message', null);
         }
 
         $store = $this->getSelectedStore();
-        $account = $this->_accountHelper->findAccount($store);
-        $user = $this->_ssoBuilder->build();
-        return $this->_accountHelper->getIframeUrl($store, $account, $user, $params);
+        $account = $this->nostoHelperAccount->findAccount($store);
+        $user = $this->nostoSsoBuilder->build();
+        return $this->nostoHelperAccount->getIframeUrl($store, $account, $user, $params);
     }
 
     /**
@@ -142,14 +142,14 @@ class Iframe extends BlockTemplate
     /**
      * Returns the valid origin url regexp from where the iframe should accept
      * postMessage calls.
-     * This is configurable to support different origins based on $_ENV.
+     * This is configurable to support different origins based on $ENV.
      *
      * @return string the origin url regexp.
      */
     public function getIframeOrigin()
     {
-        return (isset($_ENV['NOSTO_IFRAME_ORIGIN_REGEXP']))
-            ? $_ENV['NOSTO_IFRAME_ORIGIN_REGEXP']
+        return (isset($ENV['NOSTO_IFRAME_ORIGIN_REGEXP']))
+            ? $ENV['NOSTO_IFRAME_ORIGIN_REGEXP']
             : self::DEFAULT_IFRAME_ORIGIN_REGEXP;
     }
 

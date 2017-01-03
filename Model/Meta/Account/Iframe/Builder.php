@@ -29,63 +29,63 @@ namespace Nosto\Tagging\Model\Meta\Account\Iframe;
 
 use Magento\Framework\Locale\ResolverInterface;
 use Magento\Store\Api\Data\StoreInterface;
-use Magento\Store\Model\Store;
-use Nosto\Tagging\Helper\Data;
-use Nosto\Tagging\Helper\Url;
+use Nosto\Tagging\Helper\Data as NostoHelperData;
+use Nosto\Tagging\Helper\Url as NostoHelperUrl;
+use NostoIframe;
 use Psr\Log\LoggerInterface;
 
 class Builder
 {
-    private $_urlHelper;
-    private $_dataHelper;
-    private $_localeResolver;
-    private $_logger;
+    private $nostoHelperUrl;
+    private $nostoHelperData;
+    private $localeResolver;
+    private $logger;
 
     /**
-     * @param Url $urlHelper
-     * @param Data $dataHelper
+     * @param NostoHelperUrl $nostoHelperUrl
+     * @param NostoHelperData $nostoHelperData
      * @param ResolverInterface $localeResolver
      * @param LoggerInterface $logger
      */
     public function __construct(
-        Url $urlHelper,
-        Data $dataHelper,
+        NostoHelperUrl $nostoHelperUrl,
+        NostoHelperData $nostoHelperData,
         ResolverInterface $localeResolver,
         LoggerInterface $logger
     ) {
-        $this->_urlHelper = $urlHelper;
-        $this->_dataHelper = $dataHelper;
-        $this->_localeResolver = $localeResolver;
-        $this->_logger = $logger;
+        $this->nostoHelperUrl = $nostoHelperUrl;
+        $this->nostoHelperData = $nostoHelperData;
+        $this->localeResolver = $localeResolver;
+        $this->logger = $logger;
     }
 
     /**
-     * @param StoreInterface|Store $store
-     * @return \NostoIframe
+     * @param StoreInterface $store
+     * @return NostoIframe
      */
     public function build(StoreInterface $store)
     {
-        $metaData = new \NostoIframe();
+        $metaData = new NostoIframe();
 
         try {
-            $metaData->setUniqueId($this->_dataHelper->getInstallationId());
+            $metaData->setUniqueId($this->nostoHelperData->getInstallationId());
 
-            $lang = substr($this->_localeResolver->getLocale(), 0, 2);
+            $lang = substr($this->localeResolver->getLocale(), 0, 2);
             $metaData->setLanguageIsoCode($lang);
             $lang = substr($store->getConfig('general/locale/code'), 0, 2);
             $metaData->setLanguageIsoCodeShop($lang);
 
             $metaData->setShopName($store->getName());
-            $metaData->setUniqueId($this->_dataHelper->getInstallationId());
-            $metaData->setVersionPlatform($this->_dataHelper->getPlatformVersion());
-            $metaData->setVersionModule($this->_dataHelper->getModuleVersion());
-            $metaData->setPreviewUrlProduct($this->_urlHelper->getPreviewUrlProduct($store));
-            $metaData->setPreviewUrlCategory($this->_urlHelper->getPreviewUrlCategory($store));
-            $metaData->setPreviewUrlSearch($this->_urlHelper->getPreviewUrlSearch($store));
-            $metaData->setPreviewUrlCart($this->_urlHelper->getPreviewUrlCart($store));
-            $metaData->setPreviewUrlFront($this->_urlHelper->getPreviewUrlFront($store));
+            $metaData->setUniqueId($this->nostoHelperData->getInstallationId());
+            $metaData->setVersionPlatform($this->nostoHelperData->getPlatformVersion());
+            $metaData->setVersionModule($this->nostoHelperData->getModuleVersion());
+            $metaData->setPreviewUrlProduct($this->nostoHelperUrl->getPreviewUrlProduct($store));
+            $metaData->setPreviewUrlCategory($this->nostoHelperUrl->getPreviewUrlCategory($store));
+            $metaData->setPreviewUrlSearch($this->nostoHelperUrl->getPreviewUrlSearch($store));
+            $metaData->setPreviewUrlCart($this->nostoHelperUrl->getPreviewUrlCart($store));
+            $metaData->setPreviewUrlFront($this->nostoHelperUrl->getPreviewUrlFront($store));
         } catch (\NostoException $e) {
-            $this->_logger->error($e, ['exception' => $e]);
+            $this->logger->error($e, ['exception' => $e]);
         }
 
         return $metaData;

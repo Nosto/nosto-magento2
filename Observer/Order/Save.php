@@ -32,12 +32,10 @@ use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Module\Manager as ModuleManager;
 use Magento\Sales\Model\Order;
 use Magento\Store\Model\StoreManagerInterface;
-use Nosto\Tagging\Api\Data\CustomerInterface as NostoCustomer;
-use Nosto\Tagging\Helper\Account as AccountHelper;
-use Nosto\Tagging\Helper\Data as DataHelper;
-use Nosto\Tagging\Model\Customer;
-use Nosto\Tagging\Model\Order\Builder;
-use Nosto\Tagging\Model\Order\Builder as OrderBuilder;
+use Nosto\Tagging\Helper\Account as NostoAccountHelper;
+use Nosto\Tagging\Helper\Data as NostoHelperData;
+use Nosto\Tagging\Model\Customer as NostoCustomer;
+use Nosto\Tagging\Model\Order\Builder as NostoOrderBuilder;
 use NostoHttpRequest;
 use Psr\Log\LoggerInterface;
 
@@ -48,70 +46,70 @@ use Psr\Log\LoggerInterface;
 class Save implements ObserverInterface
 {
     /**
-     * @var DataHelper
+     * @var NostoHelperData
      */
-    protected $_dataHelper;
+    protected $nostoHelperData;
 
     /**
-     * @var AccountHelper
+     * @var NostoAccountHelper
      */
-    protected $_accountHelper;
+    protected $nostoHelperAccount;
 
     /**
      * @var StoreManagerInterface
      */
-    protected $_storeManager;
+    protected $storeManager;
 
     /**
      * @var LoggerInterface
      */
-    protected $_logger;
+    protected $logger;
 
     /**
-     * @var Builder
+     * @var NostoOrderBuilder
      */
-    protected $_orderBuilder;
+    protected $nostoOrderBuilder;
 
     /**
      * @var ModuleManager
      */
-    protected $_moduleManager;
-    protected $_customerFactory;
+    protected $moduleManager;
+    protected $customerFactory;
 
     /** @noinspection PhpUndefinedClassInspection */
     /**
      * Constructor.
      *
-     * @param DataHelper $dataHelper
-     * @param AccountHelper $accountHelper
+     * @param NostoHelperData $nostoHelperData
+     * @param NostoAccountHelper $nostoHelperAccount
      * @param StoreManagerInterface $storeManager
      * @param LoggerInterface $logger
      * @param ModuleManager $moduleManager
      * @param CustomerFactory $customerFactory
-     * @param OrderBuilder $orderBuilder
+     * @param NostoOrderBuilder $orderBuilder
      */
     public function __construct(
-        DataHelper $dataHelper,
-        AccountHelper $accountHelper,
+        NostoHelperData $nostoHelperData,
+        NostoAccountHelper $nostoHelperAccount,
         StoreManagerInterface $storeManager,
         LoggerInterface $logger,
         ModuleManager $moduleManager,
         /** @noinspection PhpUndefinedClassInspection */
         CustomerFactory $customerFactory,
-        OrderBuilder $orderBuilder
+        NostoOrderBuilder $orderBuilder
     ) {
-        $this->_dataHelper = $dataHelper;
-        $this->_accountHelper = $accountHelper;
-        $this->_storeManager = $storeManager;
-        $this->_logger = $logger;
-        $this->_moduleManager = $moduleManager;
-        $this->_orderBuilder = $orderBuilder;
-        $this->_customerFactory = $customerFactory;
+        $this->nostoHelperData = $nostoHelperData;
+        $this->nostoHelperAccount = $nostoHelperAccount;
+        $this->storeManager = $storeManager;
+        $this->logger = $logger;
+        $this->moduleManager = $moduleManager;
+        $this->nostoOrderBuilder = $orderBuilder;
+        $this->customerFactory = $customerFactory;
 
         NostoHttpRequest::buildUserAgent(
             'Magento',
-            $dataHelper->getPlatformVersion(),
-            $dataHelper->getModuleVersion()
+            $nostoHelperData->getPlatformVersion(),
+            $nostoHelperData->getModuleVersion()
         );
     }
 
@@ -124,19 +122,19 @@ class Save implements ObserverInterface
      */
     public function execute(Observer $observer)
     {
-        if ($this->_moduleManager->isEnabled(DataHelper::MODULE_NAME)) {
+        if ($this->moduleManager->isEnabled(NostoHelperData::MODULE_NAME)) {
             /* @var Order $order */
             /** @noinspection PhpUndefinedMethodInspection */
             $order = $observer->getOrder();
-            $nostoOrder = $this->_orderBuilder->build($order);
-            $nostoAccount = $this->_accountHelper->findAccount(
-                $this->_storeManager->getStore()
+            $nostoOrder = $this->nostoOrderBuilder->build($order);
+            $nostoAccount = $this->nostoHelperAccount->findAccount(
+                $this->storeManager->getStore()
             );
             if ($nostoAccount !== null) {
                 $quoteId = $order->getQuoteId();
-                /** @var Customer $nostoCustomer */
+                /** @var NostoCustomer $nostoCustomer */
                 /** @noinspection PhpUndefinedMethodInspection */
-                $nostoCustomer = $this->_customerFactory
+                $nostoCustomer = $this->customerFactory
                     ->create()
                     ->load($quoteId, NostoCustomer::QUOTE_ID);
 
@@ -146,7 +144,7 @@ class Save implements ObserverInterface
                         $nostoCustomer->getNostoId());
 
                 } catch (\Exception $e) {
-                    $this->_logger->error(
+                    $this->logger->error(
                         sprintf(
                             "Failed to save order with quote #%s for customer #%s.
                         Message was: %s",

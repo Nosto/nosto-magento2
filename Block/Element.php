@@ -39,7 +39,7 @@ class Element extends Template
     /**
      * @inheritdoc
      */
-    protected $_template = 'element.phtml';
+    protected $template = 'element.phtml';
 
     /**
      * Returns the Nosto recommendation placeholder ID.

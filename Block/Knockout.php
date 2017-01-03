@@ -39,24 +39,24 @@ class Knockout extends Template
     /**
      * @var NostoAccountHelper
      */
-    protected $nostoAccountHelper;
+    protected $nostoHelperAccount;
 
     /**
      * Constructor
      *
      * @param Template\Context $context
-     * @param NostoAccountHelper $accountHelper
+     * @param NostoAccountHelper $nostoHelperAccount
      * @param array $data
      */
     public function __construct(
         Template\Context $context,
-        NostoAccountHelper $accountHelper,
+        NostoAccountHelper $nostoHelperAccount,
         array $data = []
     )
     {
 
         parent::__construct($context, $data);
-        $this->nostoAccountHelper = $accountHelper;
+        $this->nostoHelperAccount = $nostoHelperAccount;
     }
 
 
@@ -82,7 +82,7 @@ class Knockout extends Template
 
     private function nostoEnabled() {
         $enabled = false;
-        if ($this->nostoAccountHelper->nostoInstalledAndEnabled(
+        if ($this->nostoHelperAccount->nostoInstalledAndEnabled(
             $this->_storeManager->getStore()
         )) {
             $enabled= true;

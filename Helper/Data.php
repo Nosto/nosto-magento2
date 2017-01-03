@@ -38,9 +38,9 @@ use Magento\Store\Model\StoreManagerInterface;
 use NostoCryptRandom;
 
 /**
- * Data helper used for common tasks, mainly configurations.
+ * NostoHelperData helper used for common tasks, mainly configurations.
  */
-class Data extends AbstractHelper
+class NostoHelperData extends AbstractHelper
 {
     /**
      * Path to store config installation ID.
@@ -60,22 +60,22 @@ class Data extends AbstractHelper
     /**
      * @var StoreManagerInterface the store manager.
      */
-    protected $_storeManager;
+    protected $storeManager;
 
     /**
      * @var ModuleListInterface the module listing
      */
-    protected $_moduleListing;
+    protected $moduleListing;
 
     /**
      * @var WriterInterface the config writer.
      */
-    protected $_configWriter;
+    protected $configWriter;
 
     /**
-     * @var ProductMetadataInterface $_productMetaData.
+     * @var ProductMetadataInterface $productMetaData.
      */
-    protected $_productMetaData;
+    protected $productMetaData;
 
     const MODULE_NAME = 'Nosto_Tagging';
 
@@ -97,10 +97,10 @@ class Data extends AbstractHelper
     ) {
         parent::__construct($context);
 
-        $this->_storeManager = $storeManager;
-        $this->_moduleListing = $moduleListing;
-        $this->_configWriter = $configWriter;
-        $this->_productMetaData = $productMetadataInterface;
+        $this->storeManager = $storeManager;
+        $this->moduleListing = $moduleListing;
+        $this->configWriter = $configWriter;
+        $this->productMetaData = $productMetadataInterface;
     }
 
     /**
@@ -111,7 +111,7 @@ class Data extends AbstractHelper
     public function getStoreConfig($path, Store $store = null)
     {
         if (is_null($store)) {
-            $store = $this->_storeManager->getStore(true);
+            $store = $this->storeManager->getStore(true);
         }
         return $store->getConfig($path);
     }
@@ -131,7 +131,7 @@ class Data extends AbstractHelper
         if (empty($installationId)) {
             // Running bin2hex() will make the ID string length 64 characters.
             $installationId = bin2hex(NostoCryptRandom::getRandomString(32));
-            $this->_configWriter->save(
+            $this->configWriter->save(
                 self::XML_PATH_INSTALLATION_ID,
                 $installationId
             );
@@ -159,7 +159,7 @@ class Data extends AbstractHelper
      */
     public function getModuleVersion()
     {
-        $nostoModule = $this->_moduleListing->getOne('Nosto_Tagging');
+        $nostoModule = $this->moduleListing->getOne('Nosto_Tagging');
         if (!empty($nostoModule['setup_version'])) {
 
             return $nostoModule['setup_version'];
@@ -177,8 +177,8 @@ class Data extends AbstractHelper
     public function getPlatformVersion()
     {
         $version = 'unknown';
-        if ($this->_productMetaData->getVersion()) {
-            $version = $this->_productMetaData->getVersion();
+        if ($this->productMetaData->getVersion()) {
+            $version = $this->productMetaData->getVersion();
         } /** @noinspection PhpUndefinedClassConstantInspection */ elseif (defined(AppInterface::VERSION)) {
             /** @noinspection PhpUndefinedClassConstantInspection */
             $version = AppInterface::VERSION;

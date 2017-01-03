@@ -34,6 +34,7 @@ use /** @noinspection PhpUndefinedClassInspection */
     Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductCollectionFactory;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
+use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\Store;
 
 /**
@@ -45,23 +46,23 @@ class Url extends AbstractHelper
     /**
      * @var ProductCollectionFactory auto generated product collection factory.
      */
-    protected $_productCollectionFactory;
+    protected $productCollectionFactory;
 
     /** @noinspection PhpUndefinedClassInspection */
     /**
      * @var CategoryCollectionFactory auto generated category collection factory.
      */
-    protected $_categoryCollectionFactory;
+    protected $categoryCollectionFactory;
 
     /**
      * @var Visibility product visibility.
      */
-    protected $_productVisibility;
+    protected $productVisibility;
 
     /**
      * @var \Magento\Framework\Url frontend URL builder.
      */
-    protected $_urlBuilder;
+    protected $urlBuilder;
 
     /** @noinspection PhpUndefinedClassInspection */
     /**
@@ -84,10 +85,10 @@ class Url extends AbstractHelper
     ) {
         parent::__construct($context);
 
-        $this->_productCollectionFactory = $productCollectionFactory;
-        $this->_categoryCollectionFactory = $categoryCollectionFactory;
-        $this->_productVisibility = $productVisibility;
-        $this->_urlBuilder = $urlBuilder;
+        $this->productCollectionFactory = $productCollectionFactory;
+        $this->categoryCollectionFactory = $categoryCollectionFactory;
+        $this->productVisibility = $productVisibility;
+        $this->urlBuilder = $urlBuilder;
     }
 
     /**
@@ -103,9 +104,9 @@ class Url extends AbstractHelper
     {
         /** @var \Magento\Catalog\Model\ResourceModel\Product\Collection $collection */
         /** @noinspection PhpUndefinedMethodInspection */
-        $collection = $this->_productCollectionFactory->create();
+        $collection = $this->productCollectionFactory->create();
         $collection->addStoreFilter($store->getId());
-        $collection->setVisibility($this->_productVisibility->getVisibleInSiteIds());
+        $collection->setVisibility($this->productVisibility->getVisibleInSiteIds());
         $collection->addAttributeToFilter('status', ['eq' => '1']);
         $collection->setCurPage(1);
         $collection->setPageSize(1);
@@ -142,7 +143,7 @@ class Url extends AbstractHelper
         /** @noinspection PhpUndefinedClassInspection */
         /** @var \Magento\Catalog\Model\ResourceModel\Category\Collection $collection */
         /** @noinspection PhpUndefinedMethodInspection */
-        $collection = $this->_categoryCollectionFactory->create();
+        $collection = $this->categoryCollectionFactory->create();
         $collection->addAttributeToFilter('is_active', ['eq' => 1]);
         $collection->addAttributeToFilter('path', ['like' => "1/$rootCatId/%"]);
         $collection->setCurPage(1);
@@ -171,9 +172,9 @@ class Url extends AbstractHelper
      *
      * @return string the url.
      */
-    public function getPreviewUrlSearch(Store $store)
+    public function getPreviewUrlSearch(StoreInterface $store)
     {
-        $url = $this->_urlBuilder->getUrl(
+        $url = $this->urlBuilder->getUrl(
             'catalogsearch/result',
             array(
                 '_nosid' => true,
@@ -195,7 +196,7 @@ class Url extends AbstractHelper
      */
     public function getPreviewUrlCart(Store $store)
     {
-        $url = $this->_urlBuilder->getUrl(
+        $url = $this->urlBuilder->getUrl(
             'checkout/cart',
             array(
                 '_nosid' => true,
@@ -216,7 +217,7 @@ class Url extends AbstractHelper
      */
     public function getPreviewUrlFront(Store $store)
     {
-        $url = $this->_urlBuilder->getUrl(
+        $url = $this->urlBuilder->getUrl(
             '',
             array(
                 '_nosid' => true,

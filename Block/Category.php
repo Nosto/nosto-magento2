@@ -29,7 +29,7 @@ namespace Nosto\Tagging\Block;
 
 use Magento\Framework\Registry;
 use Magento\Framework\View\Element\Template;
-use Nosto\Tagging\Model\Category\Builder as CategoryBuilder;
+use Nosto\Tagging\Model\Category\Builder as NostoCategoryBuilder;
 
 /**
  * Category block used for outputting meta-data on the stores category pages.
@@ -41,36 +41,36 @@ class Category extends Template
     /**
      * @inheritdoc
      */
-    protected $_template = 'category.phtml';
+    protected $template = 'category.phtml';
 
     /**
      * @var Registry the framework registry.
      */
-    protected $_registry;
+    protected $registry;
 
     /**
-     * @var CategoryBuilder the category meta model builder.
+     * @var NostoCategoryBuilder the category meta model builder.
      */
-    protected $_categoryBuilder;
+    protected $categoryBuilder;
 
     /**
      * Constructor.
      *
      * @param Template\Context $context
      * @param Registry $registry
-     * @param CategoryBuilder $categoryBuilder
+     * @param NostoCategoryBuilder $categoryBuilder
      * @param array $data
      */
     public function __construct(
         Template\Context $context,
         Registry $registry,
-        CategoryBuilder $categoryBuilder,
+        NostoCategoryBuilder $categoryBuilder,
         array $data = []
     ) {
         parent::__construct($context, $data);
 
-        $this->_registry = $registry;
-        $this->_categoryBuilder = $categoryBuilder;
+        $this->registry = $registry;
+        $this->categoryBuilder = $categoryBuilder;
     }
 
     /**
@@ -80,7 +80,7 @@ class Category extends Template
      */
     public function getNostoCategory()
     {
-        $category = $this->_registry->registry('current_category');
-        return $this->_categoryBuilder->build($category);
+        $category = $this->registry->registry('current_category');
+        return $this->categoryBuilder->build($category);
     }
 }

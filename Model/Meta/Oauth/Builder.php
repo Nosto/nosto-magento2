@@ -44,9 +44,9 @@ class Builder
         Url $urlBuilder,
         LoggerInterface $logger
     ) {
-        $this->_localeResolver = $localeResolver;
-        $this->_urlBuilder = $urlBuilder;
-        $this->_logger = $logger;
+        $this->localeResolver = $localeResolver;
+        $this->urlBuilder = $urlBuilder;
+        $this->logger = $logger;
     }
 
     /**
@@ -60,7 +60,7 @@ class Builder
 
         try {
             $metaData->setScopes(\NostoApiToken::getApiTokenNames());
-            $redirectUrl = $this->_urlBuilder->getUrl(
+            $redirectUrl = $this->urlBuilder->getUrl(
                 'nosto/oauth',
                 [
                     '_nosid' => true,
@@ -69,13 +69,13 @@ class Builder
                 ]
             );
             $metaData->setRedirectUrl($redirectUrl);
-            $lang = substr($this->_localeResolver->getLocale(), 0, 2);
+            $lang = substr($this->localeResolver->getLocale(), 0, 2);
             $metaData->setLanguage($lang);
             if (!is_null($account)) {
                 $metaData->setAccount($account);
             }
         } catch (\NostoException $e) {
-            $this->_logger->error($e, ['exception' => $e]);
+            $this->logger->error($e, ['exception' => $e]);
         }
 
         return $metaData;

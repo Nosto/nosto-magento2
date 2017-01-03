@@ -34,41 +34,41 @@ use Magento\Framework\Exception\CouldNotSaveException;
 use Magento\Framework\Exception\State\InputMismatchException;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
-use Nosto\Tagging\Helper\Account;
-use Nosto\Tagging\Model\Meta\Oauth\Builder;
+use Nosto\Tagging\Helper\Account as NostoAccountHelper;
+use Nosto\Tagging\Model\Meta\Oauth\Builder as NostoOauthBuilder;
 use Psr\Log\LoggerInterface;
 
 class Index extends Action
 {
-    private $_logger;
-    private $_backendUrlBuilder;
-    private $_accountHelper;
-    private $_oauthMetaBuilder;
-    private $_storeManager;
+    private $logger;
+    private $backendUrlBuilder;
+    private $nostoHelperAccount;
+    private $oauthMetaBuilder;
+    private $storeManager;
 
     /**
      * @param Context $context
      * @param LoggerInterface $logger
      * @param StoreManagerInterface $storeManager
      * @param UrlInterface $backendUrlBuilder
-     * @param Account $accountHelper
-     * @param Builder $oauthMetaBuilder
+     * @param NostoAccountHelper $nostoHelperAccount
+     * @param NostoOauthBuilder $oauthMetaBuilder
      */
     public function __construct(
         Context $context,
         LoggerInterface $logger,
         StoreManagerInterface $storeManager,
         UrlInterface $backendUrlBuilder,
-        Account $accountHelper,
-        Builder $oauthMetaBuilder
+        NostoAccountHelper $nostoHelperAccount,
+        NostoOauthBuilder $oauthMetaBuilder
     ) {
         parent::__construct($context);
 
-        $this->_logger = $logger;
-        $this->_storeManager = $storeManager;
-        $this->_backendUrlBuilder = $backendUrlBuilder;
-        $this->_accountHelper = $accountHelper;
-        $this->_oauthMetaBuilder = $oauthMetaBuilder;
+        $this->logger = $logger;
+        $this->storeManager = $storeManager;
+        $this->backendUrlBuilder = $backendUrlBuilder;
+        $this->nostoHelperAccount = $nostoHelperAccount;
+        $this->oauthMetaBuilder = $oauthMetaBuilder;
     }
 
     /**
@@ -85,7 +85,7 @@ class Index extends Action
     {
         $request = $this->getRequest();
         /** @var Store $store */
-        $store = $this->_storeManager->getStore();
+        $store = $this->storeManager->getStore();
         if (($authCode = $request->getParam('code')) !== null) {
             try {
                 $this->connectAccount($authCode, $store);
@@ -95,7 +95,7 @@ class Index extends Action
                     'store' => (int)$store->getId(),
                 ];
             } catch (\Exception $e) {
-                $this->_logger->error($e, ['exception' => $e]);
+                $this->logger->error($e, ['exception' => $e]);
                 $params = [
                     'message_type' => \NostoMessage::TYPE_ERROR,
                     'message_code' => \NostoMessage::CODE_ACCOUNT_CONNECT,
@@ -111,7 +111,7 @@ class Index extends Action
             if (($desc = $request->getParam('error_description')) !== null) {
                 $logMsg .= ' - ' . $desc;
             }
-            $this->_logger->error($logMsg);
+            $this->logger->error($logMsg);
             $this->redirectBackend(
                 'nosto/account/proxy',
                 [
@@ -141,7 +141,7 @@ class Index extends Action
     {
         /** @var \Magento\Framework\App\Response\Http $response */
         $response = $this->getResponse();
-        $response->setRedirect($this->_backendUrlBuilder->getUrl($path, $args));
+        $response->setRedirect($this->backendUrlBuilder->getUrl($path, $args));
         return $response;
     }
 
@@ -155,8 +155,8 @@ class Index extends Action
      */
     protected function connectAccount($authCode, $store)
     {
-        $oldAccount = $this->_accountHelper->findAccount($store);
-        $meta = $this->_oauthMetaBuilder->build($store, $oldAccount);
+        $oldAccount = $this->nostoHelperAccount->findAccount($store);
+        $meta = $this->oauthMetaBuilder->build($store, $oldAccount);
         $operation = new \NostoOperationOauthSync($meta);
         $newAccount = $operation->exchange($authCode);
 
@@ -166,12 +166,12 @@ class Index extends Action
             throw new InputMismatchException(__('Failed to synchronise Nosto account details, account mismatch.'));
         }
 
-        if (!$this->_accountHelper->saveAccount($newAccount, $store)) {
+        if (!$this->nostoHelperAccount->saveAccount($newAccount, $store)) {
             throw new CouldNotSaveException(__('Failed to save Nosto account.'));
         }
 
         // todo
-//        $this->_accountHelper->updateCurrencyExchangeRates($newAccount, $store);
-//        $this->_accountHelper->updateAccount($newAccount, $store);
+//        $this->nostoHelperAccount->updateCurrencyExchangeRates($newAccount, $store);
+//        $this->nostoHelperAccount->updateAccount($newAccount, $store);
     }
 }

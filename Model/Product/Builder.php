@@ -32,67 +32,67 @@ use Magento\Catalog\Model\Product;
 use Magento\Eav\Model\Entity\Attribute;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Store\Model\Store;
-use Nosto\Tagging\Helper\Data as DataHelper;
-use Nosto\Tagging\Helper\Price as PriceHelper;
-use Nosto\Tagging\Model\Category\Builder as CategoryBuilder;
+use Nosto\Tagging\Helper\Data as NostoHelperData;
+use Nosto\Tagging\Helper\Price as NostoPriceHelper;
+use Nosto\Tagging\Model\Category\Builder as NostoCategoryBuilder;
 use Psr\Log\LoggerInterface;
 
 class Builder
 {
     /**
-     * @var DataHelper
+     * @var NostoHelperData
      */
-    protected $_dataHelper;
+    protected $nostoDataHelper;
 
     /**
-     * @var PriceHelper
+     * @var NostoPriceHelper
      */
-    protected $_priceHelper;
+    protected $nostoPriceHelper;
 
     /**
-     * @var CategoryBuilder
+     * @var NostoCategoryBuilder
      */
-    protected $_categoryBuilder;
+    protected $NostoCategoryBuilder;
 
     /**
      * @var CategoryRepositoryInterface
      */
-    protected $_categoryRepository;
+    protected $categoryRepository;
 
     /**
      * Event manager
      *
      * @var ManagerInterface
      */
-    protected $_eventManager;
+    protected $eventManager;
 
     /**
      * @var LoggerInterface
      */
-    protected $_logger;
+    protected $logger;
 
     /**
-     * @param DataHelper $dataHelper
-     * @param PriceHelper $priceHelper
-     * @param CategoryBuilder $categoryBuilder
+     * @param NostoHelperData $nostoHelperData
+     * @param NostoPriceHelper $priceHelper
+     * @param NostoCategoryBuilder $categoryBuilder
      * @param CategoryRepositoryInterface $categoryRepository
      * @param LoggerInterface $logger
      * @param ManagerInterface $eventManager
      */
     public function __construct(
-        DataHelper $dataHelper,
-        PriceHelper $priceHelper,
-        CategoryBuilder $categoryBuilder,
+        NostoHelperData $nostoHelperData,
+        NostoPriceHelper $priceHelper,
+        NostoCategoryBuilder $categoryBuilder,
         CategoryRepositoryInterface $categoryRepository,
         LoggerInterface $logger,
         ManagerInterface $eventManager
     ) {
-        $this->_dataHelper = $dataHelper;
-        $this->_priceHelper = $priceHelper;
-        $this->_categoryBuilder = $categoryBuilder;
-        $this->_categoryRepository = $categoryRepository;
-        $this->_logger = $logger;
-        $this->_eventManager = $eventManager;
+        $this->nostoDataHelper = $nostoHelperData;
+        $this->nostoPriceHelper = $priceHelper;
+        $this->categoryBuilder = $categoryBuilder;
+        $this->categoryRepository = $categoryRepository;
+        $this->logger = $logger;
+        $this->eventManager = $eventManager;
     }
 
     /**
@@ -109,9 +109,9 @@ class Builder
             $nostoProduct->setProductId($product->getId());
             $nostoProduct->setName($product->getName());
             $nostoProduct->setImageUrl($this->buildImageUrl($product, $store));
-            $price = $this->_priceHelper->getProductFinalPriceInclTax($product);
+            $price = $this->nostoPriceHelper->getProductFinalPriceInclTax($product);
             $nostoProduct->setPrice($price);
-            $listPrice = $this->_priceHelper->getProductPriceInclTax($product);
+            $listPrice = $this->nostoPriceHelper->getProductPriceInclTax($product);
             $nostoProduct->setListPrice($listPrice);
             $nostoProduct->setCurrencyCode($store->getBaseCurrencyCode());
             $nostoProduct->setAvailable($product->isAvailable());
@@ -139,10 +139,10 @@ class Builder
                 $nostoProduct->setTag1($tags);
             }
         } catch (\NostoException $e) {
-            $this->_logger->error($e, ['exception' => $e]);
+            $this->logger->error($e, ['exception' => $e]);
         }
 
-        $this->_eventManager->dispatch(
+        $this->eventManager->dispatch(
             'nosto_product_load_after',
             ['product' => $nostoProduct]
         );
@@ -174,7 +174,7 @@ class Builder
      */
     protected function buildImageUrl(Product $product, Store $store)
     {
-        $primary = $this->_dataHelper->getProductImageVersion($store);
+        $primary = $this->nostoDataHelper->getProductImageVersion($store);
         $secondary = 'image'; // The "base" image.
         $media = $product->getMediaAttributeValues();
         $image = (isset($media[$primary])
@@ -197,7 +197,7 @@ class Builder
     {
         $categories = [];
         foreach ($product->getCategoryCollection() as $category) {
-            $categories[] = $this->_categoryBuilder->build($category);
+            $categories[] = $this->categoryBuilder->build($category);
         }
         return $categories;
     }

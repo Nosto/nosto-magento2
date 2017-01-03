@@ -31,7 +31,7 @@ use Magento\Backend\App\Action\Context;
 use Magento\Framework\Controller\Result\Json;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
-use Nosto\Tagging\Helper\Account;
+use Nosto\Tagging\Helper\Account as NostoAccountHelper;
 
 class Delete extends Base
 {
@@ -40,27 +40,27 @@ class Delete extends Base
     /**
      * @var Json
      */
-    protected $_result;
-    private $_storeManager;
-    private $_accountHelper;
+    protected $result;
+    private $storeManager;
+    private $nostoHelperAccount;
 
     /**
      * @param Context $context
-     * @param Account $accountHelper
+     * @param NostoAccountHelper $nostoHelperAccount
      * @param StoreManagerInterface $storeManager
      * @param Json $result
      */
     public function __construct(
         Context $context,
-        Account $accountHelper,
+        NostoAccountHelper $nostoHelperAccount,
         StoreManagerInterface $storeManager,
         Json $result
     ) {
         parent::__construct($context);
 
-        $this->_accountHelper = $accountHelper;
-        $this->_storeManager = $storeManager;
-        $this->_result = $result;
+        $this->nostoHelperAccount = $nostoHelperAccount;
+        $this->storeManager = $storeManager;
+        $this->result = $result;
     }
 
     /**
@@ -72,15 +72,15 @@ class Delete extends Base
 
         $storeId = $this->_request->getParam('store');
         /** @var Store $store */
-        $store = $this->_storeManager->getStore($storeId);
+        $store = $this->storeManager->getStore($storeId);
         $account = !is_null($store)
-            ? $this->_accountHelper->findAccount($store)
+            ? $this->nostoHelperAccount->findAccount($store)
             : null;
 
         if (!is_null($store) && !is_null($account)) {
-            if ($this->_accountHelper->deleteAccount($account, $store)) {
+            if ($this->nostoHelperAccount->deleteAccount($account, $store)) {
                 $response['success'] = true;
-                $response['redirect_url'] = $this->_accountHelper->getIframeUrl(
+                $response['redirect_url'] = $this->nostoHelperAccount->getIframeUrl(
                     $store,
                     null, // we don't have an account anymore
                     [
@@ -92,7 +92,7 @@ class Delete extends Base
         }
 
         if (!$response['success']) {
-            $response['redirect_url'] = $this->_accountHelper->getIframeUrl(
+            $response['redirect_url'] = $this->nostoHelperAccount->getIframeUrl(
                 $store,
                 $account,
                 [
@@ -102,6 +102,6 @@ class Delete extends Base
             );
         }
 
-        return $this->_result->setData($response);
+        return $this->result->setData($response);
     }
 }

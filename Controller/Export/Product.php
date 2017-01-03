@@ -33,8 +33,8 @@ use /** @noinspection PhpUndefinedClassInspection */
 use Magento\Framework\App\Action\Context;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
-use Nosto\Tagging\Helper\Account as AccountHelper;
-use Nosto\Tagging\Model\Product\Builder as ProductBuilder;
+use Nosto\Tagging\Helper\Account as NostoAccountHelper;
+use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
 
 /**
  * Product export controller used to export product history to Nosto in order to
@@ -46,9 +46,9 @@ use Nosto\Tagging\Model\Product\Builder as ProductBuilder;
 class Product extends Base
 {
 
-    private $_productCollectionFactory;
-    private $_productVisibility;
-    private $_productBuilder;
+    private $productCollectionFactory;
+    private $productVisibility;
+    private $nostoProductBuilder;
 
     /** @noinspection PhpUndefinedClassInspection */
     /**
@@ -58,8 +58,8 @@ class Product extends Base
      * @param ProductCollectionFactory $productCollectionFactory
      * @param ProductVisibility $productVisibility
      * @param StoreManagerInterface $storeManager
-     * @param AccountHelper $accountHelper
-     * @param ProductBuilder $productBuilder
+     * @param NostoAccountHelper $nostoHelperAccount
+     * @param NostoProductBuilder $nostoProductBuilder
      */
     public function __construct(
         Context $context,
@@ -67,14 +67,14 @@ class Product extends Base
         ProductCollectionFactory $productCollectionFactory,
         ProductVisibility $productVisibility,
         StoreManagerInterface $storeManager,
-        AccountHelper $accountHelper,
-        ProductBuilder $productBuilder
+        NostoAccountHelper $nostoHelperAccount,
+        NostoProductBuilder $nostoProductBuilder
     ) {
-        parent::__construct($context, $storeManager, $accountHelper);
+        parent::__construct($context, $storeManager, $nostoHelperAccount);
 
-        $this->_productCollectionFactory = $productCollectionFactory;
-        $this->_productVisibility = $productVisibility;
-        $this->_productBuilder = $productBuilder;
+        $this->productCollectionFactory = $productCollectionFactory;
+        $this->productVisibility = $productVisibility;
+        $this->nostoProductBuilder = $nostoProductBuilder;
     }
 
     /**
@@ -84,8 +84,8 @@ class Product extends Base
     {
         /** @var \Magento\Catalog\Model\ResourceModel\Product\Collection $collection */
         /** @noinspection PhpUndefinedMethodInspection */
-        $collection = $this->_productCollectionFactory->create();
-        $collection->setVisibility($this->_productVisibility->getVisibleInSiteIds());
+        $collection = $this->productCollectionFactory->create();
+        $collection->setVisibility($this->productVisibility->getVisibleInSiteIds());
         $collection->addAttributeToFilter('status', ['eq' => '1']);
         $collection->addStoreFilter($store->getId());
         return $collection;
@@ -101,7 +101,7 @@ class Product extends Base
         $items = $collection->loadData();
         foreach ($items as $product) {
             /** @var \Magento\Catalog\Model\Product $product */
-            $exportCollection[] = $this->_productBuilder->build($product, $store);
+            $exportCollection[] = $this->nostoProductBuilder->build($product, $store);
         }
         return $exportCollection;
     }

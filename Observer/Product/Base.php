@@ -33,73 +33,73 @@ use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Module\Manager as ModuleManager;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
-use Nosto\Tagging\Helper\Account as AccountHelper;
-use Nosto\Tagging\Helper\Data as DataHelper;
-use Nosto\Tagging\Model\Product\Builder as ProductBuilder;
+use Nosto\Tagging\Helper\Account as NostoAccountHelper;
+use Nosto\Tagging\Helper\Data as NostoHelperData;
+use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
 use NostoHttpRequest;
 use Psr\Log\LoggerInterface;
 
 abstract class Base implements ObserverInterface
 {
     /**
-     * @var DataHelper
+     * @var NostoHelperData
      */
-    protected $_dataHelper;
+    protected $nostoHelperData;
 
     /**
-     * @var AccountHelper
+     * @var NostoAccountHelper
      */
-    protected $_accountHelper;
+    protected $nostoHelperAccount;
 
     /**
-     * @var ProductBuilder
+     * @var NostoProductBuilder
      */
-    protected $_productBuilder;
+    protected $nostoProductBuilder;
 
     /**
      * @var StoreManagerInterface
      */
-    protected $_storeManager;
+    protected $storeManager;
 
     /**
      * @var LoggerInterface
      */
-    protected $_logger;
+    protected $logger;
 
     /**
      * @var ModuleManager
      */
-    protected $_moduleManager;
+    protected $moduleManager;
 
     /**
      * Constructor.
      *
-     * @param DataHelper $dataHelper
-     * @param AccountHelper $accountHelper
-     * @param ProductBuilder $productBuilder
+     * @param NostoHelperData $nostoHelperData
+     * @param NostoAccountHelper $nostoHelperAccount
+     * @param NostoProductBuilder $nostoProductBuilder
      * @param StoreManagerInterface $storeManager
      * @param LoggerInterface $logger
      * @param ModuleManager $moduleManager
      */
     public function __construct(
-        DataHelper $dataHelper,
-        AccountHelper $accountHelper,
-        ProductBuilder $productBuilder,
+        NostoHelperData $nostoHelperData,
+        NostoAccountHelper $nostoHelperAccount,
+        NostoProductBuilder $nostoProductBuilder,
         StoreManagerInterface $storeManager,
         LoggerInterface $logger,
         ModuleManager $moduleManager
     ) {
-        $this->_dataHelper = $dataHelper;
-        $this->_accountHelper = $accountHelper;
-        $this->_productBuilder = $productBuilder;
-        $this->_storeManager = $storeManager;
-        $this->_logger = $logger;
-        $this->_moduleManager = $moduleManager;
+        $this->nostoHelperData = $nostoHelperData;
+        $this->nostoHelperAccount = $nostoHelperAccount;
+        $this->nostoProductBuilder = $nostoProductBuilder;
+        $this->storeManager = $storeManager;
+        $this->logger = $logger;
+        $this->moduleManager = $moduleManager;
 
         NostoHttpRequest::buildUserAgent(
             'Magento',
-            $dataHelper->getPlatformVersion(),
-            $dataHelper->getModuleVersion()
+            $nostoHelperData->getPlatformVersion(),
+            $nostoHelperData->getModuleVersion()
         );
     }
 
@@ -112,7 +112,7 @@ abstract class Base implements ObserverInterface
      */
     public function execute(Observer $observer)
     {
-        if ($this->_moduleManager->isEnabled(DataHelper::MODULE_NAME)) {
+        if ($this->moduleManager->isEnabled(NostoHelperData::MODULE_NAME)) {
             // Always "delete" the product for all stores it is available in.
             // This is done to avoid data inconsistencies as even if a product
             // is edited for only one store, the updated data can reflect in
@@ -122,9 +122,9 @@ abstract class Base implements ObserverInterface
             $product = $observer->getProduct();
             foreach ($product->getStoreIds() as $storeId) {
                 /** @var Store $store */
-                $store = $this->_storeManager->getStore($storeId);
+                $store = $this->storeManager->getStore($storeId);
                 /** @var \NostoAccount $account */
-                $account = $this->_accountHelper->findAccount($store);
+                $account = $this->nostoHelperAccount->findAccount($store);
                 if ($account === null) {
                     continue;
                 }
@@ -135,7 +135,7 @@ abstract class Base implements ObserverInterface
 
                 // Load the product model for this particular store view.
                 /** @var \NostoProduct $model */
-                $metaProduct = $this->_productBuilder->build($product, $store);
+                $metaProduct = $this->nostoProductBuilder->build($product, $store);
                 if (is_null($metaProduct)) {
                     continue;
                 }
@@ -145,7 +145,7 @@ abstract class Base implements ObserverInterface
                     $op->addProduct($metaProduct);
                     $this->doRequest($op);
                 } catch (\NostoException $e) {
-                    $this->_logger->error($e, ['exception' => $e]);
+                    $this->logger->error($e, ['exception' => $e]);
                 }
             }
         }

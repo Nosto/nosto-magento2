@@ -45,12 +45,12 @@ class Index extends Base
     /**
      * @var PageFactory
      */
-    protected $_resultPageFactory;
+    protected $resultPageFactory;
 
     /**
      * @var StoreManagerInterface
      */
-    protected $_storeManager;
+    protected $storeManager;
 
     /**
      * @param Context $context
@@ -64,8 +64,8 @@ class Index extends Base
     ) {
         parent::__construct($context);
 
-        $this->_resultPageFactory = $resultPageFactory;
-        $this->_storeManager = $storeManager;
+        $this->resultPageFactory = $resultPageFactory;
+        $this->storeManager = $storeManager;
     }
 
     /**
@@ -77,7 +77,7 @@ class Index extends Base
             // If we are not under a store view, then redirect to the first
             // found one. Nosto is configured per store.
             /** @var Website $website */
-            foreach ($this->_storeManager->getWebsites() as $website) {
+            foreach ($this->storeManager->getWebsites() as $website) {
                 /** @noinspection PhpUndefinedMethodInspection */
                 $storeId = $website->getDefaultGroup()->getDefaultStoreId();
                 if (!empty($storeId)) {
@@ -88,10 +88,10 @@ class Index extends Base
         }
 
         /** @var Page $result */
-        $result = $this->_resultPageFactory->create();
+        $result = $this->resultPageFactory->create();
         $result->setActiveMenu(self::ADMIN_RESOURCE);
         $result->getConfig()->getTitle()->prepend(
-            __('Nosto - Account Settings')
+            __('Nosto - NostoAccountHelper Settings')
         );
 
         return $result;
@@ -108,10 +108,10 @@ class Index extends Base
     protected function getSelectedStore()
     {
         $store = null;
-        if ($this->_storeManager->isSingleStoreMode()) {
-            $store = $this->_storeManager->getStore(true);
-        } elseif (($storeId = $this->_storeManager->getStore()->getId())) {
-            $store = $this->_storeManager->getStore($storeId);
+        if ($this->storeManager->isSingleStoreMode()) {
+            $store = $this->storeManager->getStore(true);
+        } elseif (($storeId = $this->storeManager->getStore()->getId())) {
+            $store = $this->storeManager->getStore($storeId);
         }
 
         return $store;

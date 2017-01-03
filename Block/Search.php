@@ -39,7 +39,7 @@ class Search extends Result
     /**
      * @inheritdoc
      */
-    protected $_template = 'search.phtml';
+    protected $template = 'search.phtml';
 
     /**
      * Returns the current escaped search term

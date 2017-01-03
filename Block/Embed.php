@@ -30,8 +30,8 @@ namespace Nosto\Tagging\Block;
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Element\Template\Context;
 use Magento\Store\Model\Store;
-use Nosto\Tagging\Helper\Account;
-use Nosto\Tagging\Helper\Data;
+use Nosto\Tagging\Helper\Account as NostoAccountHelper;
+use Nosto\Tagging\Helper\Data as NostoHelperData;
 
 /**
  * Embed script block that includes the Nosto script in the page <head>.
@@ -47,28 +47,28 @@ class Embed extends Template
     /**
      * @inheritdoc
      */
-    protected $_template = 'embed.phtml';
-    private $_accountHelper;
-    private $_dataHelper;
+    protected $template = 'embed.phtml';
+    private $nostoHelperAccount;
+    private $nostoHelperData;
 
     /**
      * Constructor.
      *
      * @param Context $context the context.
-     * @param Account $accountHelper the account helper.
-     * @param Data $dataHelper the data helper.
+     * @param NostoAccountHelper $nostoHelperAccount the account helper.
+     * @param NostoHelperData $nostoHelperData the data helper.
      * @param array $data optional data.
      */
     public function __construct(
         Context $context,
-        Account $accountHelper,
-        Data $dataHelper,
+        NostoAccountHelper $nostoHelperAccount,
+        NostoHelperData $nostoHelperData,
         array $data = []
     ) {
         parent::__construct($context, $data);
 
-        $this->_accountHelper = $accountHelper;
-        $this->_dataHelper = $dataHelper;
+        $this->nostoHelperAccount = $nostoHelperAccount;
+        $this->nostoHelperData = $nostoHelperData;
     }
 
     /**
@@ -80,7 +80,7 @@ class Embed extends Template
     {
         /** @var Store $store */
         $store = $this->_storeManager->getStore(true);
-        $account = $this->_accountHelper->findAccount($store);
+        $account = $this->nostoHelperAccount->findAccount($store);
         return !is_null($account) ? $account->getName() : '';
     }
 
@@ -93,8 +93,8 @@ class Embed extends Template
      */
     public function getServerAddress()
     {
-        return isset($_ENV['NOSTO_SERVER_URL'])
-            ? $_ENV['NOSTO_SERVER_URL']
+        return isset($ENV['NOSTO_SERVER_URL'])
+            ? $ENV['NOSTO_SERVER_URL']
             : self::DEFAULT_SERVER_ADDRESS;
     }
 }

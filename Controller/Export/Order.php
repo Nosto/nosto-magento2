@@ -30,8 +30,8 @@ namespace Nosto\Tagging\Controller\Export;
 use Magento\Framework\App\Action\Context;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
-use Nosto\Tagging\Helper\Account as AccountHelper;
-use Nosto\Tagging\Model\Order\Builder as OrderBuilder;
+use Nosto\Tagging\Helper\Account as NostoAccountHelper;
+use Nosto\Tagging\Model\Order\Builder as NostoOrderBuilder;
 
 /**
  * Order export controller used to export order history to Nosto in order to
@@ -43,8 +43,8 @@ use Nosto\Tagging\Model\Order\Builder as OrderBuilder;
 class Order extends Base
 {
 
-    private $_orderCollectionFactory;
-    private $_orderBuilder;
+    private $orderCollectionFactory;
+    private $nostoOrderBuilder;
 
     /** @noinspection PhpUndefinedClassInspection */
     /**
@@ -53,21 +53,21 @@ class Order extends Base
      * @param Context $context
      * @param OrderCollectionFactory $orderCollectionFactory
      * @param StoreManagerInterface $storeManager
-     * @param AccountHelper $accountHelper
-     * @param OrderBuilder $orderBuilder
+     * @param NostoAccountHelper $nostoHelperAccount
+     * @param NostoOrderBuilder $orderBuilder
      */
     public function __construct(
         Context $context,
         /** @noinspection PhpUndefinedClassInspection */
         OrderCollectionFactory $orderCollectionFactory,
         StoreManagerInterface $storeManager,
-        AccountHelper $accountHelper,
-        OrderBuilder $orderBuilder
+        NostoAccountHelper $nostoHelperAccount,
+        NostoOrderBuilder $orderBuilder
     ) {
-        parent::__construct($context, $storeManager, $accountHelper);
+        parent::__construct($context, $storeManager, $nostoHelperAccount);
 
-        $this->_orderCollectionFactory = $orderCollectionFactory;
-        $this->_orderBuilder = $orderBuilder;
+        $this->orderCollectionFactory = $orderCollectionFactory;
+        $this->nostoOrderBuilder = $orderBuilder;
     }
 
     /**
@@ -77,7 +77,7 @@ class Order extends Base
     {
         /** @var \Magento\Sales\Model\ResourceModel\Order\Collection $collection */
         /** @noinspection PhpUndefinedMethodInspection */
-        $collection = $this->_orderCollectionFactory->create();
+        $collection = $this->orderCollectionFactory->create();
         $collection->addAttributeToFilter('store_id', ['eq' => $store->getId()]);
         return $collection;
     }
@@ -91,7 +91,7 @@ class Order extends Base
         $exportCollection = new \NostoExportOrderCollection();
         foreach ($collection->getItems() as $order) {
             /** @var \Magento\Sales\Model\Order $order */
-            $exportCollection[] = $this->_orderBuilder->build($order);
+            $exportCollection[] = $this->nostoOrderBuilder->build($order);
         }
         return $exportCollection;
     }
