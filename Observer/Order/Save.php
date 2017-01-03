@@ -32,7 +32,7 @@ use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Module\Manager as ModuleManager;
 use Magento\Sales\Model\Order;
 use Magento\Store\Model\StoreManagerInterface;
-use Nosto\Tagging\Helper\Account as NostoAccountHelper;
+use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Model\Customer as NostoCustomer;
 use Nosto\Tagging\Model\Order\Builder as NostoOrderBuilder;
@@ -51,7 +51,7 @@ class Save implements ObserverInterface
     protected $nostoHelperData;
 
     /**
-     * @var NostoAccountHelper
+     * @var NostoHelperAccount
      */
     protected $nostoHelperAccount;
 
@@ -81,7 +81,7 @@ class Save implements ObserverInterface
      * Constructor.
      *
      * @param NostoHelperData $nostoHelperData
-     * @param NostoAccountHelper $nostoHelperAccount
+     * @param NostoHelperAccount $nostoHelperAccount
      * @param StoreManagerInterface $storeManager
      * @param LoggerInterface $logger
      * @param ModuleManager $moduleManager
@@ -90,7 +90,7 @@ class Save implements ObserverInterface
      */
     public function __construct(
         NostoHelperData $nostoHelperData,
-        NostoAccountHelper $nostoHelperAccount,
+        NostoHelperAccount $nostoHelperAccount,
         StoreManagerInterface $storeManager,
         LoggerInterface $logger,
         ModuleManager $moduleManager,

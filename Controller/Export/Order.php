@@ -30,7 +30,7 @@ namespace Nosto\Tagging\Controller\Export;
 use Magento\Framework\App\Action\Context;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
-use Nosto\Tagging\Helper\Account as NostoAccountHelper;
+use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Model\Order\Builder as NostoOrderBuilder;
 
 /**
@@ -53,7 +53,7 @@ class Order extends Base
      * @param Context $context
      * @param OrderCollectionFactory $orderCollectionFactory
      * @param StoreManagerInterface $storeManager
-     * @param NostoAccountHelper $nostoHelperAccount
+     * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoOrderBuilder $orderBuilder
      */
     public function __construct(
@@ -61,7 +61,7 @@ class Order extends Base
         /** @noinspection PhpUndefinedClassInspection */
         OrderCollectionFactory $orderCollectionFactory,
         StoreManagerInterface $storeManager,
-        NostoAccountHelper $nostoHelperAccount,
+        NostoHelperAccount $nostoHelperAccount,
         NostoOrderBuilder $orderBuilder
     ) {
         parent::__construct($context, $storeManager, $nostoHelperAccount);

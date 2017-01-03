@@ -31,7 +31,7 @@ use Magento\Backend\App\Action\Context;
 use Magento\Framework\Controller\Result\Json;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
-use Nosto\Tagging\Helper\Account as NostoAccountHelper;
+use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Model\Meta\Oauth\Builder as NostoOauthBuilder;
 
 class Sync extends Base
@@ -48,14 +48,14 @@ class Sync extends Base
 
     /**
      * @param Context $context
-     * @param NostoAccountHelper $nostoHelperAccount
+     * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoOauthBuilder $oauthMetaBuilder
      * @param StoreManagerInterface $storeManager
      * @param Json $result
      */
     public function __construct(
         Context $context,
-        NostoAccountHelper $nostoHelperAccount,
+        NostoHelperAccount $nostoHelperAccount,
         NostoOauthBuilder $oauthMetaBuilder,
         StoreManagerInterface $storeManager,
         Json $result

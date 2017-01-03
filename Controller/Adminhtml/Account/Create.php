@@ -31,7 +31,7 @@ use Magento\Backend\App\Action\Context;
 use Magento\Framework\Controller\Result\Json;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
-use Nosto\Tagging\Helper\Account as NostoAccountHelper;
+use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Model\Meta\Account\Builder as NostoSignupBuilder;
 use Psr\Log\LoggerInterface;
 
@@ -50,7 +50,7 @@ class Create extends Base
 
     /**
      * @param Context $context
-     * @param NostoAccountHelper $nostoHelperAccount
+     * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoSignupBuilder $signupBuilder
      * @param StoreManagerInterface $storeManager
      * @param Json $result
@@ -58,7 +58,7 @@ class Create extends Base
      */
     public function __construct(
         Context $context,
-        NostoAccountHelper $nostoHelperAccount,
+        NostoHelperAccount $nostoHelperAccount,
         NostoSignupBuilder $signupBuilder,
         StoreManagerInterface $storeManager,
         Json $result,

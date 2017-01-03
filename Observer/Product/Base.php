@@ -33,7 +33,7 @@ use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Module\Manager as ModuleManager;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
-use Nosto\Tagging\Helper\Account as NostoAccountHelper;
+use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
 use NostoHttpRequest;
@@ -47,7 +47,7 @@ abstract class Base implements ObserverInterface
     protected $nostoHelperData;
 
     /**
-     * @var NostoAccountHelper
+     * @var NostoHelperAccount
      */
     protected $nostoHelperAccount;
 
@@ -75,7 +75,7 @@ abstract class Base implements ObserverInterface
      * Constructor.
      *
      * @param NostoHelperData $nostoHelperData
-     * @param NostoAccountHelper $nostoHelperAccount
+     * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoProductBuilder $nostoProductBuilder
      * @param StoreManagerInterface $storeManager
      * @param LoggerInterface $logger
@@ -83,7 +83,7 @@ abstract class Base implements ObserverInterface
      */
     public function __construct(
         NostoHelperData $nostoHelperData,
-        NostoAccountHelper $nostoHelperAccount,
+        NostoHelperAccount $nostoHelperAccount,
         NostoProductBuilder $nostoProductBuilder,
         StoreManagerInterface $storeManager,
         LoggerInterface $logger,

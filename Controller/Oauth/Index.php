@@ -34,7 +34,7 @@ use Magento\Framework\Exception\CouldNotSaveException;
 use Magento\Framework\Exception\State\InputMismatchException;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
-use Nosto\Tagging\Helper\Account as NostoAccountHelper;
+use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Model\Meta\Oauth\Builder as NostoOauthBuilder;
 use Psr\Log\LoggerInterface;
 
@@ -51,7 +51,7 @@ class Index extends Action
      * @param LoggerInterface $logger
      * @param StoreManagerInterface $storeManager
      * @param UrlInterface $backendUrlBuilder
-     * @param NostoAccountHelper $nostoHelperAccount
+     * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoOauthBuilder $oauthMetaBuilder
      */
     public function __construct(
@@ -59,7 +59,7 @@ class Index extends Action
         LoggerInterface $logger,
         StoreManagerInterface $storeManager,
         UrlInterface $backendUrlBuilder,
-        NostoAccountHelper $nostoHelperAccount,
+        NostoHelperAccount $nostoHelperAccount,
         NostoOauthBuilder $oauthMetaBuilder
     ) {
         parent::__construct($context);

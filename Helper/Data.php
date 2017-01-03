@@ -40,7 +40,7 @@ use NostoCryptRandom;
 /**
  * NostoHelperData helper used for common tasks, mainly configurations.
  */
-class NostoHelperData extends AbstractHelper
+class Data extends AbstractHelper
 {
     /**
      * Path to store config installation ID.

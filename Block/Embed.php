@@ -30,7 +30,7 @@ namespace Nosto\Tagging\Block;
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Element\Template\Context;
 use Magento\Store\Model\Store;
-use Nosto\Tagging\Helper\Account as NostoAccountHelper;
+use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 
 /**
@@ -55,13 +55,13 @@ class Embed extends Template
      * Constructor.
      *
      * @param Context $context the context.
-     * @param NostoAccountHelper $nostoHelperAccount the account helper.
+     * @param NostoHelperAccount $nostoHelperAccount the account helper.
      * @param NostoHelperData $nostoHelperData the data helper.
      * @param array $data optional data.
      */
     public function __construct(
         Context $context,
-        NostoAccountHelper $nostoHelperAccount,
+        NostoHelperAccount $nostoHelperAccount,
         NostoHelperData $nostoHelperData,
         array $data = []
     ) {

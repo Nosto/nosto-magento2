@@ -28,7 +28,7 @@
 namespace Nosto\Tagging\Block;
 
 use Magento\Framework\View\Element\Template;
-use Nosto\Tagging\Helper\Account as NostoAccountHelper;
+use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 
 /**
  * Cart block used for cart tagging.
@@ -37,7 +37,7 @@ class Knockout extends Template
 {
 
     /**
-     * @var NostoAccountHelper
+     * @var NostoHelperAccount
      */
     protected $nostoHelperAccount;
 
@@ -45,12 +45,12 @@ class Knockout extends Template
      * Constructor
      *
      * @param Template\Context $context
-     * @param NostoAccountHelper $nostoHelperAccount
+     * @param NostoHelperAccount $nostoHelperAccount
      * @param array $data
      */
     public function __construct(
         Template\Context $context,
-        NostoAccountHelper $nostoHelperAccount,
+        NostoHelperAccount $nostoHelperAccount,
         array $data = []
     )
     {

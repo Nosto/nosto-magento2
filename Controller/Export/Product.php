@@ -33,7 +33,7 @@ use /** @noinspection PhpUndefinedClassInspection */
 use Magento\Framework\App\Action\Context;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
-use Nosto\Tagging\Helper\Account as NostoAccountHelper;
+use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
 
 /**
@@ -58,7 +58,7 @@ class Product extends Base
      * @param ProductCollectionFactory $productCollectionFactory
      * @param ProductVisibility $productVisibility
      * @param StoreManagerInterface $storeManager
-     * @param NostoAccountHelper $nostoHelperAccount
+     * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoProductBuilder $nostoProductBuilder
      */
     public function __construct(
@@ -67,7 +67,7 @@ class Product extends Base
         ProductCollectionFactory $productCollectionFactory,
         ProductVisibility $productVisibility,
         StoreManagerInterface $storeManager,
-        NostoAccountHelper $nostoHelperAccount,
+        NostoHelperAccount $nostoHelperAccount,
         NostoProductBuilder $nostoProductBuilder
     ) {
         parent::__construct($context, $storeManager, $nostoHelperAccount);

@@ -35,7 +35,6 @@ use /** @noinspection PhpUndefinedClassInspection */
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 use Magento\Store\Api\Data\StoreInterface;
-use Magento\Store\Model\Store;
 
 /**
  * Url helper class for common URL related tasks.
@@ -96,11 +95,10 @@ class Url extends AbstractHelper
      * The product is the first one found in the database for the store.
      * The preview url includes "nostodebug=true" parameter.
      *
-     * @param Store $store the store to get the url for.
-     *
+     * @param StoreInterface $store the store to get the url for.
      * @return string the url.
      */
-    public function getPreviewUrlProduct(Store $store)
+    public function getPreviewUrlProduct(StoreInterface $store)
     {
         /** @var \Magento\Catalog\Model\ResourceModel\Product\Collection $collection */
         /** @noinspection PhpUndefinedMethodInspection */
@@ -133,12 +131,12 @@ class Url extends AbstractHelper
      * The category is the first one found in the database for the store.
      * The preview url includes "nostodebug=true" parameter.
      *
-     * @param Store $store the store to get the url for.
-     *
+     * @param StoreInterface $store the store to get the url for.
      * @return string the url.
      */
-    public function getPreviewUrlCategory(Store $store)
+    public function getPreviewUrlCategory(StoreInterface $store)
     {
+        /** @noinspection PhpUndefinedMethodInspection */
         $rootCatId = (int)$store->getRootCategoryId();
         /** @noinspection PhpUndefinedClassInspection */
         /** @var \Magento\Catalog\Model\ResourceModel\Category\Collection $collection */
@@ -168,8 +166,7 @@ class Url extends AbstractHelper
      * The search query in the URL is "q=nosto".
      * The preview url includes "nostodebug=true" parameter.
      *
-     * @param Store $store the store to get the url for.
-     *
+     * @param StoreInterface $store the store to get the url for.
      * @return string the url.
      */
     public function getPreviewUrlSearch(StoreInterface $store)
@@ -190,11 +187,10 @@ class Url extends AbstractHelper
      * Gets the absolute preview URL to the given store's cart page.
      * The preview url includes "nostodebug=true" parameter.
      *
-     * @param Store $store the store to get the url for.
-     *
+     * @param StoreInterface $store the store to get the url for.
      * @return string the url.
      */
-    public function getPreviewUrlCart(Store $store)
+    public function getPreviewUrlCart(StoreInterface $store)
     {
         $url = $this->urlBuilder->getUrl(
             'checkout/cart',
@@ -211,11 +207,10 @@ class Url extends AbstractHelper
      * Gets the absolute preview URL to the given store's front page.
      * The preview url includes "nostodebug=true" parameter.
      *
-     * @param Store $store the store to get the url for.
-     *
+     * @param StoreInterface $store the store to get the url for.
      * @return string the url.
      */
-    public function getPreviewUrlFront(Store $store)
+    public function getPreviewUrlFront(StoreInterface $store)
     {
         $url = $this->urlBuilder->getUrl(
             '',

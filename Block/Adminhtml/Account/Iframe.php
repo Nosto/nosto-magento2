@@ -32,7 +32,7 @@ use Magento\Backend\Block\Template\Context as BlockContext;
 use Magento\Backend\Model\Auth\Session;
 use Magento\Framework\Exception\NotFoundException;
 use Magento\Store\Api\Data\StoreInterface;
-use Nosto\Tagging\Helper\Account as NostoAccountHelper;
+use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Model\Meta\Account\Sso\Builder as NostoSsoBuilder;
 
 /**
@@ -59,14 +59,14 @@ class Iframe extends BlockTemplate
      * Constructor.
      *
      * @param BlockContext $context the context.
-     * @param NostoAccountHelper $nostoHelperAccount the account helper.
+     * @param NostoHelperAccount $nostoHelperAccount the account helper.
      * @param Session $backendAuthSession
      * @param NostoSsoBuilder $nostoSsoBuilder
      * @param array $data
      */
     public function __construct(
         BlockContext $context,
-        NostoAccountHelper $nostoHelperAccount,
+        NostoHelperAccount $nostoHelperAccount,
         Session $backendAuthSession,
         NostoSsoBuilder $nostoSsoBuilder,
         array $data = []

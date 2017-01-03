@@ -41,10 +41,10 @@ use NostoHelperIframe;
 
 
 /**
- * NostoAccountHelper helper class for common tasks related to Nosto accounts.
+ * NostoHelperAccount helper class for common tasks related to Nosto accounts.
  * Everything related to saving/updating/deleting accounts happens in here.
  */
-class NostoAccountHelper extends AbstractHelper
+class Account extends AbstractHelper
 {
     /**
      * Path to store config nosto account name.

@@ -33,7 +33,7 @@ use Magento\Framework\Controller\Result\Raw;
 use Magento\Framework\Controller\ResultFactory;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
-use Nosto\Tagging\Helper\Account as NostoAccountHelper;
+use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use NostoExportCollectionInterface;
 
 /**
@@ -55,12 +55,12 @@ abstract class Base extends Action
      *
      * @param Context $context
      * @param StoreManagerInterface $storeManager
-     * @param NostoAccountHelper $nostoHelperAccount
+     * @param NostoHelperAccount $nostoHelperAccount
      */
     public function __construct(
         Context $context,
         StoreManagerInterface $storeManager,
-        nostoAccountHelper $nostoHelperAccount
+        NostoHelperAccount $nostoHelperAccount
     ) {
         parent::__construct($context);
 

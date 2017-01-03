@@ -34,7 +34,7 @@ use Magento\Framework\App\Helper\Context;
 /**
  * NostoHelperFormat helper used for common formatting tasks.
  */
-class NostoHelperFormat extends AbstractHelper
+class Format extends AbstractHelper
 {
     /**
      * @var \NostoHelperPrice the nosto price formatter.
