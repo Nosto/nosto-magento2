@@ -38,9 +38,9 @@ define([
             //noinspection JSUnusedGlobalSymbols
             this.customerTagging = customerData.get('customer-tagging');
         },
-        sendTagging: function() {
+        sendTagging: function () {
             if (typeof nostojs === 'function') {
-                nostojs(function(api){
+                nostojs(function (api) {
                     $('#nosto_customer_tagging')
                         .removeClass('nosto_customer_hidden')
                         .addClass('nosto_customer');

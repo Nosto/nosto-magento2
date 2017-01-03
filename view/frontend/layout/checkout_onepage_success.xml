@@ -38,7 +38,8 @@
                     <argument name="value" xsi:type="string">thankyou-nosto-1</argument>
                 </action>
             </block>
-            <block class="Nosto\Tagging\Block\Element" name="nosto.page.orderconfirmation2" after="nosto.page.orderconfirmation1">
+            <block class="Nosto\Tagging\Block\Element" name="nosto.page.orderconfirmation2"
+                   after="nosto.page.orderconfirmation1">
                 <action method="setData">
                     <argument name="name" xsi:type="string">nostoId</argument>
                     <argument name="value" xsi:type="string">thankyou-nosto-2</argument>

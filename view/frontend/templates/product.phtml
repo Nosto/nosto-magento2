@@ -31,33 +31,34 @@ $product = $this->getNostoProduct();
 $category = $this->getNostoCategory();
 ?>
 
-<!-- Nosto Product Tagging -->
-<div class="nosto_product" style="display:none">
-    <span class="url"><?php echo $this->escapeUrl($product->getUrl()); ?></span>
-    <span class="product_id"><?php echo $this->escapeHtml($product->getProductId()); ?></span>
-    <span class="name"><?php echo $this->escapeHtml($product->getName()); ?></span>
-    <span class="image_url"><?php echo $this->escapeUrl($product->getImageUrl()); ?></span>
-    <span class="price"><?php echo $this->formatNostoPrice($product->getPrice()); ?></span>
-    <span class="price_currency_code"><?php echo $product->getCurrencyCode(); ?></span>
-    <span class="availability"><?php echo $product->getAvailability(); ?></span>
-    <?php foreach ($product->getCategories() as $cat) : ?>
-        <span class="category"><?php echo $this->escapeHtml($cat); ?></span>
-    <?php endforeach; ?>
-    <?php if ($product->getFullDescription()) : ?>
-        <span class="description"><?php echo $this->escapeHtml($this->stripTags($product->getFullDescription())); ?></span>
-    <?php endif; ?>
-    <?php if ($product->getListPrice()) : ?>
-        <span class="list_price"><?php echo $this->formatNostoPrice($product->getListPrice()); ?></span>
-    <?php endif; ?>
-    <?php if ($product->getBrand()) : ?>
-        <span class="brand"><?php echo $this->escapeHtml($product->getBrand()); ?></span>
-    <?php endif; ?>
-    <?php foreach ($product->getTags() as $type => $tags) : ?>
-        <?php foreach ($tags as $tag) : ?>
-            <span class="<?php echo $this->escapeQuote($type); ?>"><?php echo $this->escapeHtml($tag); ?></span>
+    <!-- Nosto Product Tagging -->
+    <div class="nosto_product" style="display:none">
+        <span class="url"><?php echo $this->escapeUrl($product->getUrl()); ?></span>
+        <span class="product_id"><?php echo $this->escapeHtml($product->getProductId()); ?></span>
+        <span class="name"><?php echo $this->escapeHtml($product->getName()); ?></span>
+        <span class="image_url"><?php echo $this->escapeUrl($product->getImageUrl()); ?></span>
+        <span class="price"><?php echo $this->formatNostoPrice($product->getPrice()); ?></span>
+        <span class="price_currency_code"><?php echo $product->getCurrencyCode(); ?></span>
+        <span class="availability"><?php echo $product->getAvailability(); ?></span>
+        <?php foreach ($product->getCategories() as $cat) : ?>
+            <span class="category"><?php echo $this->escapeHtml($cat); ?></span>
         <?php endforeach; ?>
-    <?php endforeach; ?>
-</div>
+        <?php if ($product->getFullDescription()) : ?>
+            <span
+                class="description"><?php echo $this->escapeHtml($this->stripTags($product->getFullDescription())); ?></span>
+        <?php endif; ?>
+        <?php if ($product->getListPrice()) : ?>
+            <span class="list_price"><?php echo $this->formatNostoPrice($product->getListPrice()); ?></span>
+        <?php endif; ?>
+        <?php if ($product->getBrand()) : ?>
+            <span class="brand"><?php echo $this->escapeHtml($product->getBrand()); ?></span>
+        <?php endif; ?>
+        <?php foreach ($product->getTags() as $type => $tags) : ?>
+            <?php foreach ($tags as $tag) : ?>
+                <span class="<?php echo $this->escapeQuote($type); ?>"><?php echo $this->escapeHtml($tag); ?></span>
+            <?php endforeach; ?>
+        <?php endforeach; ?>
+    </div>
 <?php if ($category) : ?>
     <div class="nosto_category" style="display:none"><?php echo $this->escapeHtml($category); ?></div>
 <?php endif; ?>

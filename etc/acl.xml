@@ -26,13 +26,14 @@
   -->
 
 <!--suppress XmlUnboundNsPrefix -->
-<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Acl/etc/acl.xsd">
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Acl/etc/acl.xsd">
     <acl>
         <resources>
             <resource id="Magento_Backend::admin">
                 <resource id="Magento_Backend::marketing">
-                    <resource id="Nosto_Tagging::nosto" title="Nosto" sortOrder="500" >
-                        <resource id="Nosto_Tagging::system_nosto_account" title="Account Settings" sortOrder="10" />
+                    <resource id="Nosto_Tagging::nosto" title="Nosto" sortOrder="500">
+                        <resource id="Nosto_Tagging::system_nosto_account" title="Account Settings" sortOrder="10"/>
                     </resource>
                 </resource>
             </resource>

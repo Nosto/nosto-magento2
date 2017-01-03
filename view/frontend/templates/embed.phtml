@@ -28,5 +28,7 @@
 /** @var \Nosto\Tagging\Block\Embed $this */
 ?>
 <?php if ($this->getServerAddress() && $this->getAccountName()) : ?>
-    <script type="text/javascript" src="//<?php echo $this->getServerAddress() ?>/include/<?php echo $this->getAccountName(); ?>" async></script>
+    <script type="text/javascript"
+            src="//<?php echo $this->getServerAddress() ?>/include/<?php echo $this->getAccountName(); ?>"
+            async></script>
 <?php endif; ?>

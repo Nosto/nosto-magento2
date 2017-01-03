@@ -1,20 +1,22 @@
 {
-    "name": "nosto/module-nostotagging",
-    "description": "Increase your conversion rate and average order value by delivering your customers personalized product recommendations throughout their shopping journey.",
-    "type": "magento2-module",
-    "version": "1.0.1",
-    "license": [
-        "OSL-3.0"
-    ],
-    "minimum-stability": "dev",
-    "require": {
-        "php": ">=5.5.0",
-        "nosto/php-sdk": "2.4.2"
+  "name": "nosto/module-nostotagging",
+  "description": "Increase your conversion rate and average order value by delivering your customers personalized product recommendations throughout their shopping journey.",
+  "type": "magento2-module",
+  "version": "1.0.1",
+  "license": [
+    "OSL-3.0"
+  ],
+  "minimum-stability": "dev",
+  "require": {
+    "php": ">=5.5.0",
+    "nosto/php-sdk": "2.4.2"
+  },
+  "autoload": {
+    "psr-4": {
+      "Nosto\\Tagging\\": ""
     },
-    "autoload": {
-        "psr-4": {
-          "Nosto\\Tagging\\": ""
-        },
-        "files": [ "registration.php" ]
-    }
+    "files": [
+      "registration.php"
+    ]
+  }
 }

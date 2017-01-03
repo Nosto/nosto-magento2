@@ -37,16 +37,19 @@ $order = $this->getNostoOrder();
         <span class="external_order_ref"><?php echo $this->escapeHtml($order->getExternalOrderRef()); ?></span>
         <?php if ($order->getOrderStatus()) : ?>
             <span class="order_status_code"><?php echo $this->escapeHtml($order->getOrderStatus()->getCode()); ?></span>
-            <span class="order_status_label"><?php echo $this->escapeHtml($order->getOrderStatus()->getLabel()); ?></span>
+            <span
+                class="order_status_label"><?php echo $this->escapeHtml($order->getOrderStatus()->getLabel()); ?></span>
         <?php endif; ?>
         <span class="payment_provider"><?php echo $this->escapeHtml($order->getPaymentProvider()); ?></span>
         <div class="buyer">
             <?php if ($order->getBuyerInfo()) : ?>
                 <?php if ($order->getBuyerInfo()->getFirstName()) : ?>
-                    <span class="first_name"><?php echo $this->escapeHtml($order->getBuyerInfo()->getFirstName()); ?></span>
+                    <span
+                        class="first_name"><?php echo $this->escapeHtml($order->getBuyerInfo()->getFirstName()); ?></span>
                 <?php endif; ?>
                 <?php if ($order->getBuyerInfo()->getLastName()) : ?>
-                    <span class="last_name"><?php echo $this->escapeHtml($order->getBuyerInfo()->getLastName()); ?></span>
+                    <span
+                        class="last_name"><?php echo $this->escapeHtml($order->getBuyerInfo()->getLastName()); ?></span>
                 <?php endif; ?>
                 <?php if ($order->getBuyerInfo()->getEmail()) : ?>
                     <span class="email"><?php echo $this->escapeHtml($order->getBuyerInfo()->getEmail()); ?></span>

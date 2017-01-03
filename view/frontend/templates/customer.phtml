@@ -33,18 +33,20 @@
  */
 ?>
 <!-- Nosto Customer Tagging -->
-<div id="nosto_customer_tagging" class="nosto_customer_hidden" style="display:none" data-bind="scope: 'customerTagging'" data-role="nosto-customer-tagging">
+<div id="nosto_customer_tagging" class="nosto_customer_hidden" style="display:none" data-bind="scope: 'customerTagging'"
+     data-role="nosto-customer-tagging">
     <!-- ko if: customerTagging().first_name -->
-        <!-- ko foreach: {data: customerTagging(), afterRender: sendTagging } -->
-            <span class="first_name" data-bind="text: $data.first_name"></span>
-            <span class="last_name" data-bind="text: $data.last_name"></span>
-            <span class="email" data-bind="text: $data.email"></span>
-            <span class="hcid" data-bind="text: $data.hcid" ></span>
-        <!-- /ko -->
+    <!-- ko foreach: {data: customerTagging(), afterRender: sendTagging } -->
+    <span class="first_name" data-bind="text: $data.first_name"></span>
+    <span class="last_name" data-bind="text: $data.last_name"></span>
+    <span class="email" data-bind="text: $data.email"></span>
+    <span class="hcid" data-bind="text: $data.hcid"></span>
+    <!-- /ko -->
     <!-- /ko -->
 </div>
 <script type="text/x-magento-init">
 {"[data-role=nosto-customer-tagging]": {"Magento_Ui/js/core/app": <?php /* @escapeNotVerified */
     /** @noinspection PhpUndefinedVariableInspection */
-    echo $block->getJsLayout();?>}}
+    echo $block->getJsLayout(); ?>}}
+
 </script>

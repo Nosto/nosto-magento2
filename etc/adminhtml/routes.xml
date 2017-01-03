@@ -26,7 +26,8 @@
   -->
 
 <!--suppress XmlUnboundNsPrefix -->
-<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:App/etc/routes.xsd">
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:App/etc/routes.xsd">
     <router id="admin">
         <route id="nosto" frontName="nosto">
             <module name="Nosto_Tagging" before="Magento_Backend"/>
