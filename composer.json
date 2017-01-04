@@ -14,7 +14,7 @@
   "repositories": [
         {
             "type": "vcs",
-            "url":  "git@github.com:Nosto/php-sdk.git"
+            "url":  "git@github.com:Nosto/nosto-php-sdk.git"
         }
     ],
   "autoload": {
