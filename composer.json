@@ -9,7 +9,7 @@
   "minimum-stability": "dev",
   "require": {
     "php": ">=5.5.0",
-    "nosto/php-sdk": "2.4.2"
+    "nosto/php-sdk": "dev-feature/refactor-and-improve-sdk"
   },
   "autoload": {
     "psr-4": {
