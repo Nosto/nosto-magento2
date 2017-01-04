@@ -11,6 +11,12 @@
     "php": ">=5.5.0",
     "nosto/php-sdk": "dev-feature/refactor-and-improve-sdk"
   },
+  "repositories": [
+        {
+            "type": "vcs",
+            "url":  "git@github.com:Nosto/php-sdk.git"
+        }
+    ],
   "autoload": {
     "psr-4": {
       "Nosto\\Tagging\\": ""
