@@ -35,7 +35,7 @@ use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
-use NostoExportProductCollection;
+use NostoProductCollection;
 
 /**
  * Product export controller used to export product history to Nosto in order to
@@ -98,7 +98,7 @@ class Product extends Base
     protected function buildExportCollection($collection, Store $store)
     {
         /** @var \Magento\Catalog\Model\ResourceModel\Product\Collection $collection */
-        $exportCollection = new NostoExportProductCollection();
+        $exportCollection = new NostoProductCollection();
         $items = $collection->loadData();
         foreach ($items as $product) {
             /** @var \Magento\Catalog\Model\Product $product */

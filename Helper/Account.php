@@ -40,6 +40,7 @@ use Nosto\Tagging\Model\Meta\Account\Iframe\Builder as NostoIframeMetaBuilder;
 use NostoAccount;
 use NostoAccountInterface;
 use NostoApiToken;
+use NostoCurrentUser;
 use NostoHelperIframe;
 use NostoOperationUninstall;
 use NostoSignupOwnerInterface;
@@ -152,10 +153,10 @@ class Account extends AbstractHelper
      *
      * @param NostoAccount $account the account to remove.
      * @param Store $store the store.
-     *
+     * @param NostoCurrentUser $currentUser
      * @return bool true on success, false otherwise.
      */
-    public function deleteAccount(NostoAccount $account, Store $store)
+    public function deleteAccount(NostoAccount $account, Store $store, NostoCurrentUser $currentUser)
     {
         if ((int)$store->getId() < 1) {
             return false;
@@ -175,7 +176,7 @@ class Account extends AbstractHelper
         try {
             // Notify Nosto that the account was deleted.
             $service = new NostoOperationUninstall($account);
-            $service->delete();
+            $service->delete($currentUser);
         } catch (\NostoException $e) {
             // Failures are logged but not shown to the user.
             $this->_logger->error($e, ['exception' => $e]);

@@ -37,7 +37,7 @@ use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Model\Customer as NostoCustomer;
 use Nosto\Tagging\Model\Order\Builder as NostoOrderBuilder;
 use NostoHttpRequest;
-use NostoOperationOrder;
+use NostoOperationOrderConfirmation;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -139,10 +139,9 @@ class Save implements ObserverInterface
                     ->create()
                     ->load($quoteId, NostoCustomer::QUOTE_ID);
 
-                $orderService = new NostoOperationOrder($nostoAccount);
+                $orderService = new NostoOperationOrderConfirmation($nostoAccount);
                 try {
-                    $orderService->confirm($nostoOrder,
-                        $nostoCustomer->getNostoId());
+                    $orderService->send($nostoOrder, $nostoCustomer->getNostoId());
 
                 } catch (\Exception $e) {
                     $this->logger->error(

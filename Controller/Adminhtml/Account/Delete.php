@@ -32,6 +32,7 @@ use Magento\Framework\Controller\Result\Json;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
+use Nosto\Tagging\Model\User\Builder as NostoCurrentUserBuilder;
 use NostoMessage;
 
 class Delete extends Base
@@ -44,16 +45,19 @@ class Delete extends Base
     protected $result;
     private $storeManager;
     private $nostoHelperAccount;
+    private $currentUserBuilder;
 
     /**
      * @param Context $context
      * @param NostoHelperAccount $nostoHelperAccount
+     * @param NostoCurrentUserBuilder $currentUserBuilder
      * @param StoreManagerInterface $storeManager
      * @param Json $result
      */
     public function __construct(
         Context $context,
         NostoHelperAccount $nostoHelperAccount,
+        NostoCurrentUserBuilder $currentUserBuilder,
         StoreManagerInterface $storeManager,
         Json $result
     ) {
@@ -62,6 +66,7 @@ class Delete extends Base
         $this->nostoHelperAccount = $nostoHelperAccount;
         $this->storeManager = $storeManager;
         $this->result = $result;
+        $this->currentUserBuilder = $currentUserBuilder;
     }
 
     /**
@@ -79,7 +84,8 @@ class Delete extends Base
             : null;
 
         if (!is_null($store) && !is_null($account)) {
-            if ($this->nostoHelperAccount->deleteAccount($account, $store)) {
+            $currentUser = $this->currentUserBuilder->build();
+            if ($this->nostoHelperAccount->deleteAccount($account, $store, $currentUser)) {
                 $response['success'] = true;
                 $response['redirect_url'] = $this->nostoHelperAccount->getIframeUrl(
                     $store,

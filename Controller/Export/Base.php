@@ -35,7 +35,7 @@ use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use NostoExportCollectionInterface;
-use NostoExporter;
+use NostoHelperExporter;
 
 /**
  * Export base controller that all export controllers must extend.
@@ -134,7 +134,7 @@ abstract class Base extends Action
         $store = $this->storeManager->getStore(true);
         $account = $this->nostoHelperAccount->findAccount($store);
         if ($account !== null) {
-            $cipherText = NostoExporter::export($account, $collection);
+            $cipherText = NostoHelperExporter::export($account, $collection);
             $result->setContents($cipherText);
         }
         return $result;

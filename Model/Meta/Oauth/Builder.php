@@ -72,7 +72,7 @@ class Builder
             );
             $metaData->setRedirectUrl($redirectUrl);
             $lang = substr($this->localeResolver->getLocale(), 0, 2);
-            $metaData->setLanguage($lang);
+            $metaData->setLanguageIsoCode($lang);
             if (!is_null($account)) {
                 $metaData->setAccount($account);
             }

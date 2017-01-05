@@ -35,7 +35,7 @@ use Magento\Framework\AppInterface;
 use Magento\Framework\Module\ModuleListInterface;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
-use NostoCryptRandom;
+use phpseclib\Crypt\Random;
 
 /**
  * NostoHelperData helper used for common tasks, mainly configurations.
@@ -124,7 +124,7 @@ class Data extends AbstractHelper
         );
         if (empty($installationId)) {
             // Running bin2hex() will make the ID string length 64 characters.
-            $installationId = bin2hex(NostoCryptRandom::getRandomString(32));
+            $installationId = bin2hex(Random::string(32));
             $this->configWriter->save(
                 self::XML_PATH_INSTALLATION_ID,
                 $installationId

@@ -25,10 +25,10 @@
  * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
-namespace Nosto\Tagging\Model\Meta\Account\Owner;
+namespace Nosto\Tagging\Model\User;
 
 use Magento\Backend\Model\Auth\Session;
-use NostoSignupOwner;
+use NostoCurrentUser;
 use Psr\Log\LoggerInterface;
 
 class Builder
@@ -49,11 +49,11 @@ class Builder
     }
 
     /**
-     * @return NostoSignupOwner
+     * @return NostoCurrentUser
      */
     public function build()
     {
-        $metaData = new NostoSignupOwner();
+        $metaData = new NostoCurrentUser();
 
         try {
             $user = $this->backendAuthSession->getUser();
