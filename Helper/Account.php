@@ -93,15 +93,13 @@ class Account extends AbstractHelper
      * @param IframeMetaBuilder $iframeMetaBuilder the builder for iframe meta models.
      * @param \NostoHelperIframe $iframeHelper
      * @param WriterInterface $appConfig the app config writer.
-     * @param ModuleManager $moduleManager
      */
     public function __construct(
         Context $context,
         SsoMetaBuilder $ssoMetaBuilder,
         IframeMetaBuilder $iframeMetaBuilder,
         \NostoHelperIframe $iframeHelper,
-        WriterInterface $appConfig,
-        ModuleManager $moduleManager
+        WriterInterface $appConfig
     ) {
         parent::__construct($context);
 
@@ -109,7 +107,7 @@ class Account extends AbstractHelper
         $this->_iframeMetaBuilder = $iframeMetaBuilder;
         $this->_iframeHelper = $iframeHelper;
         $this->_config = $appConfig;
-        $this->_moduleManager = $moduleManager;
+        $this->_moduleManager = $context->getModuleManager();
     }
 
     /**
