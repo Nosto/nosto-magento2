@@ -73,11 +73,6 @@ class Account extends AbstractHelper
     protected $nostoIframeMetaBuilder;
 
     /**
-     * @var NostoHelperIframe the Nosto SDK iframe helper.
-     */
-    protected $iframeHelper;
-
-    /**
      * @var WriterInterface the app config writer.
      */
     protected $config;
@@ -92,21 +87,18 @@ class Account extends AbstractHelper
      *
      * @param Context $context the context.
      * @param NostoIframeMetaBuilder $iframeMetaBuilder the builder for iframe meta models.
-     * @param NostoHelperIframe $iframeHelper
      * @param WriterInterface $appConfig the app config writer.
      * @param ModuleManager $moduleManager
      */
     public function __construct(
         Context $context,
         NostoIframeMetaBuilder $iframeMetaBuilder,
-        NostoHelperIframe $iframeHelper,
         WriterInterface $appConfig,
         ModuleManager $moduleManager
     ) {
         parent::__construct($context);
 
         $this->nostoIframeMetaBuilder = $iframeMetaBuilder;
-        $this->iframeHelper = $iframeHelper;
         $this->config = $appConfig;
         $this->moduleManager = $moduleManager;
     }
@@ -207,7 +199,7 @@ class Account extends AbstractHelper
         if (self::IFRAME_VERSION > 0) {
             $params['v'] = self::IFRAME_VERSION;
         }
-        return $this->iframeHelper->getUrl(
+        return NostoHelperIframe::getUrl(
             $this->nostoIframeMetaBuilder->build($store),
             $account,
             $currentUser,
