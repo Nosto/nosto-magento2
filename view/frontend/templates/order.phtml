@@ -34,13 +34,16 @@ $order = $this->getNostoOrder();
     <!-- Nosto Order Tagging -->
     <div class="nosto_purchase_order" style="display:none">
         <span class="order_number"><?php echo $order->getOrderNumber(); ?></span>
-        <span class="external_order_ref"><?php echo $this->escapeHtml($order->getExternalOrderRef()); ?></span>
+        <span
+            class="external_order_ref"><?php echo $this->escapeHtml($order->getExternalOrderRef()); ?></span>
         <?php if ($order->getOrderStatus()) : ?>
-            <span class="order_status_code"><?php echo $this->escapeHtml($order->getOrderStatus()->getCode()); ?></span>
+            <span
+                class="order_status_code"><?php echo $this->escapeHtml($order->getOrderStatus()->getCode()); ?></span>
             <span
                 class="order_status_label"><?php echo $this->escapeHtml($order->getOrderStatus()->getLabel()); ?></span>
         <?php endif; ?>
-        <span class="payment_provider"><?php echo $this->escapeHtml($order->getPaymentProvider()); ?></span>
+        <span
+            class="payment_provider"><?php echo $this->escapeHtml($order->getPaymentProvider()); ?></span>
         <div class="buyer">
             <?php if ($order->getBuyerInfo()) : ?>
                 <?php if ($order->getBuyerInfo()->getFirstName()) : ?>
@@ -52,7 +55,8 @@ $order = $this->getNostoOrder();
                         class="last_name"><?php echo $this->escapeHtml($order->getBuyerInfo()->getLastName()); ?></span>
                 <?php endif; ?>
                 <?php if ($order->getBuyerInfo()->getEmail()) : ?>
-                    <span class="email"><?php echo $this->escapeHtml($order->getBuyerInfo()->getEmail()); ?></span>
+                    <span
+                        class="email"><?php echo $this->escapeHtml($order->getBuyerInfo()->getEmail()); ?></span>
                 <?php endif; ?>
             <?php endif; ?>
         </div>
@@ -62,8 +66,10 @@ $order = $this->getNostoOrder();
                     <span class="product_id"><?php echo (int)$item->getProductId(); ?></span>
                     <span class="quantity"><?php echo (int)$item->getQuantity(); ?></span>
                     <span class="name"><?php echo $this->escapeHtml($item->getName()); ?></span>
-                    <span class="unit_price"><?php echo $this->formatNostoPrice($item->getUnitPrice()); ?></span>
-                    <span class="price_currency_code"><?php echo strtoupper($item->getCurrencyCode()); ?></span>
+                    <span
+                        class="unit_price"><?php echo $this->formatNostoPrice($item->getUnitPrice()); ?></span>
+                    <span
+                        class="price_currency_code"><?php echo strtoupper($item->getCurrencyCode()); ?></span>
                 </div>
             <?php endforeach; ?>
         </div>

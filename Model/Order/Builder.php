@@ -36,12 +36,11 @@ use Magento\Framework\ObjectManagerInterface;
 use Magento\GroupedProduct\Model\Product\Type\Grouped;
 use Magento\Sales\Model\Order;
 use Magento\Sales\Model\Order\Item;
-use /** @noinspection PhpUndefinedClassInspection */
-    Magento\SalesRule\Model\RuleFactory as SalesRuleFactory;
+use Magento\SalesRule\Model\RuleFactory as SalesRuleFactory;
 use Nosto\Tagging\Helper\Price as NostoPriceHelper;
+use NostoLineItem;
 use NostoOrder;
 use NostoOrderBuyer;
-use NostoLineItem;
 use NostoOrderStatus;
 use Psr\Log\LoggerInterface;
 

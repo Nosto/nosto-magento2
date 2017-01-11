@@ -48,17 +48,20 @@ $category = $this->getNostoCategory();
                 class="description"><?php echo $this->escapeHtml($this->stripTags($product->getFullDescription())); ?></span>
         <?php endif; ?>
         <?php if ($product->getListPrice()) : ?>
-            <span class="list_price"><?php echo $this->formatNostoPrice($product->getListPrice()); ?></span>
+            <span
+                class="list_price"><?php echo $this->formatNostoPrice($product->getListPrice()); ?></span>
         <?php endif; ?>
         <?php if ($product->getBrand()) : ?>
             <span class="brand"><?php echo $this->escapeHtml($product->getBrand()); ?></span>
         <?php endif; ?>
         <?php foreach ($product->getTags() as $type => $tags) : ?>
             <?php foreach ($tags as $tag) : ?>
-                <span class="<?php echo $this->escapeQuote($type); ?>"><?php echo $this->escapeHtml($tag); ?></span>
+                <span
+                    class="<?php echo $this->escapeQuote($type); ?>"><?php echo $this->escapeHtml($tag); ?></span>
             <?php endforeach; ?>
         <?php endforeach; ?>
     </div>
 <?php if ($category) : ?>
-    <div class="nosto_category" style="display:none"><?php echo $this->escapeHtml($category); ?></div>
+    <div class="nosto_category"
+         style="display:none"><?php echo $this->escapeHtml($category); ?></div>
 <?php endif; ?>

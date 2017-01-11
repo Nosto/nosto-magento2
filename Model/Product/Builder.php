@@ -115,7 +115,7 @@ class Builder
             $nostoProduct->setPrice($price);
             $listPrice = $this->nostoPriceHelper->getProductPriceInclTax($product);
             $nostoProduct->setListPrice($listPrice);
-            $nostoProduct->setCurrencyCode($store->getBaseCurrencyCode());
+            $nostoProduct->setPriceCurrencyCode($store->getBaseCurrencyCode());
             $nostoProduct->setAvailable($product->isAvailable());
             $nostoProduct->setCategories($this->buildCategories($product));
 

@@ -14,8 +14,7 @@ use Magento\Store\Api\StoreManagementInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Nosto\Tagging\Model\Cart\Builder as NostoCartBuilder;
 use Nosto\Tagging\Model\Customer as NostoCustomer;
-use /** @noinspection PhpUndefinedClassInspection */
-    Nosto\Tagging\Model\CustomerFactory as NostoCustomerFactory;
+use Nosto\Tagging\Model\CustomerFactory as NostoCustomerFactory;
 use NostoLineItem;
 
 class CartTagging implements SectionSourceInterface

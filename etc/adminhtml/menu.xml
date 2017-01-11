@@ -31,7 +31,9 @@
     <menu>
         <add id="Nosto_Tagging::nosto" title="Nosto" module="Nosto_Tagging" sortOrder="50"
              resource="Nosto_Tagging::nosto" parent="Magento_Backend::marketing"/>
-        <add id="Nosto_Tagging::system_nosto" title="Nosto Dashboard" module="Nosto_Tagging" sortOrder="10"
-             resource="Nosto_Tagging::system_nosto_account" action="nosto/account" parent="Nosto_Tagging::nosto"/>
+        <add id="Nosto_Tagging::system_nosto" title="Nosto Dashboard" module="Nosto_Tagging"
+             sortOrder="10"
+             resource="Nosto_Tagging::system_nosto_account" action="nosto/account"
+             parent="Nosto_Tagging::nosto"/>
     </menu>
 </config>

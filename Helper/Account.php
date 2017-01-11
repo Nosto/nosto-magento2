@@ -156,8 +156,11 @@ class Account extends AbstractHelper
      * @param NostoCurrentUser $currentUser
      * @return bool true on success, false otherwise.
      */
-    public function deleteAccount(NostoAccount $account, Store $store, NostoCurrentUser $currentUser)
-    {
+    public function deleteAccount(
+        NostoAccount $account,
+        Store $store,
+        NostoCurrentUser $currentUser
+    ) {
         if ((int)$store->getId() < 1) {
             return false;
         }

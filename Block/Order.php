@@ -31,8 +31,7 @@ use Magento\Checkout\Block\Success;
 use Magento\Checkout\Model\Session;
 use Magento\Framework\Registry;
 use Magento\Framework\View\Element\Template;
-use /** @noinspection PhpUndefinedClassInspection */
-    Magento\Sales\Model\OrderFactory;
+use Magento\Sales\Model\OrderFactory;
 use Nosto\Tagging\Model\Order\Builder as NostoOrderBuilder;
 use NostoHelperDate;
 use NostoHelperPrice;

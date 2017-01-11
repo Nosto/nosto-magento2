@@ -28,10 +28,8 @@
 namespace Nosto\Tagging\Helper;
 
 use Magento\Catalog\Model\Product\Visibility;
-use /** @noinspection PhpUndefinedClassInspection */
-    Magento\Catalog\Model\ResourceModel\Category\CollectionFactory as CategoryCollectionFactory;
-use /** @noinspection PhpUndefinedClassInspection */
-    Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductCollectionFactory;
+use Magento\Catalog\Model\ResourceModel\Category\CollectionFactory as CategoryCollectionFactory;
+use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductCollectionFactory;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 use Magento\Store\Api\Data\StoreInterface;

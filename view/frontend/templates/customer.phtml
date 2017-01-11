@@ -33,7 +33,8 @@
  */
 ?>
 <!-- Nosto Customer Tagging -->
-<div id="nosto_customer_tagging" class="nosto_customer_hidden" style="display:none" data-bind="scope: 'customerTagging'"
+<div id="nosto_customer_tagging" class="nosto_customer_hidden" style="display:none"
+     data-bind="scope: 'customerTagging'"
      data-role="nosto-customer-tagging">
     <!-- ko if: customerTagging().first_name -->
     <!-- ko foreach: {data: customerTagging(), afterRender: sendTagging } -->
@@ -48,5 +49,6 @@
 {"[data-role=nosto-customer-tagging]": {"Magento_Ui/js/core/app": <?php /* @escapeNotVerified */
     /** @noinspection PhpUndefinedVariableInspection */
     echo $block->getJsLayout(); ?>}}
+
 
 </script>

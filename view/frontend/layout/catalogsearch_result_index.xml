@@ -32,20 +32,23 @@
     <body>
         <!-- Adds 2 content placeholders; 1 before and 1 after the search result -->
         <referenceContainer name="content">
-            <block class="Nosto\Tagging\Block\PageType" name="nosto.page.type.search" after="-" template="pagetype.phtml">
+            <block class="Nosto\Tagging\Block\PageType" name="nosto.page.type.search" after="-"
+                   template="pagetype.phtml">
                 <action method="setData">
                     <argument name="name" xsi:type="string">page_type</argument>
                     <argument name="value" xsi:type="string">search</argument>
                 </action>
             </block>
             <block class="Nosto\Tagging\Block\Search" name="nosto.search" template="search.phtml"/>
-            <block class="Nosto\Tagging\Block\Element" name="nosto.page.search1" before="search.result" template="element.phtml">
+            <block class="Nosto\Tagging\Block\Element" name="nosto.page.search1"
+                   before="search.result" template="element.phtml">
                 <action method="setData">
                     <argument name="name" xsi:type="string">nostoId</argument>
                     <argument name="value" xsi:type="string">nosto-page-search1</argument>
                 </action>
             </block>
-            <block class="Nosto\Tagging\Block\Element" name="nosto.page.search2" after="nosto.page.search1" template="element.phtml">
+            <block class="Nosto\Tagging\Block\Element" name="nosto.page.search2"
+                   after="nosto.page.search1" template="element.phtml">
                 <action method="setData">
                     <argument name="name" xsi:type="string">nostoId</argument>
                     <argument name="value" xsi:type="string">nosto-page-search2</argument>

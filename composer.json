@@ -12,11 +12,11 @@
     "nosto/php-sdk": "dev-feature/refactor-and-improve-sdk"
   },
   "repositories": [
-        {
-            "type": "vcs",
-            "url":  "git@github.com:Nosto/nosto-php-sdk.git"
-        }
-    ],
+    {
+      "type": "vcs",
+      "url": "git@github.com:Nosto/nosto-php-sdk.git"
+    }
+  ],
   "autoload": {
     "psr-4": {
       "Nosto\\Tagging\\": ""
