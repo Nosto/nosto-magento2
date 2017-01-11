@@ -31,6 +31,13 @@
       xsi:noNamespaceSchemaLocation="../../../../../../../lib/internal/Magento/Framework/View/Layout/etc/page_configuration.xsd">
     <body>
         <referenceContainer name="content">
+            <block class="Nosto\Tagging\Block\PageType" name="nosto.page.type.cart" after="-"
+                   template="pagetype.phtml">
+                <action method="setData">
+                    <argument name="name" xsi:type="string">page_type</argument>
+                    <argument name="value" xsi:type="string">cart</argument>
+                </action>
+            </block>
             <block class="Nosto\Tagging\Block\Element" name="nosto.page.cart1" after="checkout.cart"
                    template="element.phtml">
                 <action method="setData">
