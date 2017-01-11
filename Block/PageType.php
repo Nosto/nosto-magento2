@@ -27,22 +27,40 @@
 
 namespace Nosto\Tagging\Block;
 
-use Magento\CatalogSearch\Block\Result;
+use Magento\Framework\View\Element\Template;
+use Magento\Framework\View\Element\Template\Context;
 
 /**
- * Search block used for outputting meta-data on the stores search pages.
- * This meta-data is sent to Nosto via JavaScript when users are browsing the
- * pages in the store.
+ * Page type block used for outputting page-type on the different pages.
  */
-class Search extends Result
+class PageType extends Template
 {
     /**
-     * Returns the current escaped search term
-     *
-     * @return string the search term
+     * Default type assigned to the page if none is set in the layout xml.
      */
-    public function getNostoSearchTerm()
+    const DEFAULT_TYPE = 'unknown';
+
+    /**
+     * Constructor.
+     *
+     * @param Context $context the context.
+     * @param array $data optional data.
+     */
+    public function __construct(
+        Context $context,
+        array $data = []
+    ) {
+        parent::__construct($context, $data);
+    }
+
+    /**
+     * Return the page-type of the current page. If none is defined in the layout xml,
+     * then set a default one.
+     *
+     * @return string
+     */
+    public function getPageTypeName()
     {
-        return $this->catalogSearchData->getEscapedQueryText();
+        return $this->getData('page_type') ? $this->getData('page_type') : self::DEFAULT_TYPE;
     }
 }

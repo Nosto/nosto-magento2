@@ -37,13 +37,13 @@ use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\Store;
 use Nosto\Tagging\Helper\Data as NostoHelper;
 use Nosto\Tagging\Model\Meta\Account\Iframe\Builder as NostoIframeMetaBuilder;
+use Nosto\Tagging\Model\User\Builder as NostoCurrentUserBuilder;
 use NostoAccount;
 use NostoAccountInterface;
 use NostoApiToken;
 use NostoCurrentUser;
 use NostoHelperIframe;
 use NostoOperationUninstall;
-use NostoSignupOwnerInterface;
 
 
 /**
@@ -73,6 +73,11 @@ class Account extends AbstractHelper
     protected $nostoIframeMetaBuilder;
 
     /**
+     * @var NostoCurrentUserBuilder the builder for current user
+     */
+    protected $nostoCurrentUserBuilder;
+
+    /**
      * @var WriterInterface the app config writer.
      */
     protected $config;
@@ -87,18 +92,21 @@ class Account extends AbstractHelper
      *
      * @param Context $context the context.
      * @param NostoIframeMetaBuilder $iframeMetaBuilder the builder for iframe meta models.
+     * @param NostoCurrentUserBuilder $nostoCurrentUserBuilder
      * @param WriterInterface $appConfig the app config writer.
      * @param ModuleManager $moduleManager
      */
     public function __construct(
         Context $context,
         NostoIframeMetaBuilder $iframeMetaBuilder,
+        NostoCurrentUserBuilder $nostoCurrentUserBuilder,
         WriterInterface $appConfig,
         ModuleManager $moduleManager
     ) {
         parent::__construct($context);
 
         $this->nostoIframeMetaBuilder = $iframeMetaBuilder;
+        $this->nostoCurrentUserBuilder = $nostoCurrentUserBuilder;
         $this->config = $appConfig;
         $this->moduleManager = $moduleManager;
     }
@@ -186,14 +194,12 @@ class Account extends AbstractHelper
      *
      * @param StoreInterface $store the store to get the url for.
      * @param NostoAccountInterface $account the account to get the iframe url for.
-     * @param NostoSignupOwnerInterface $currentUser
      * @param array $params optional extra params for the url.
      * @return string the iframe url.
      */
     public function getIframeUrl(
         StoreInterface $store,
         NostoAccountInterface $account = null,
-        NostoSignupOwnerInterface $currentUser,
         array $params = []
     ) {
         if (self::IFRAME_VERSION > 0) {
@@ -202,7 +208,7 @@ class Account extends AbstractHelper
         return NostoHelperIframe::getUrl(
             $this->nostoIframeMetaBuilder->build($store),
             $account,
-            $currentUser,
+            $this->nostoCurrentUserBuilder->build(),
             $params
         );
     }

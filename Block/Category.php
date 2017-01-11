@@ -39,11 +39,6 @@ use Nosto\Tagging\Model\Category\Builder as NostoCategoryBuilder;
 class Category extends Template
 {
     /**
-     * @inheritdoc
-     */
-    protected $template = 'category.phtml';
-
-    /**
      * @var Registry the framework registry.
      */
     protected $registry;

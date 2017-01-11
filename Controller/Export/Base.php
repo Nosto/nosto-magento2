@@ -34,7 +34,7 @@ use Magento\Framework\Controller\ResultFactory;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
-use NostoExportCollectionInterface;
+use NostoCollection;
 use NostoHelperExporter;
 
 /**
@@ -95,7 +95,7 @@ abstract class Base extends Action
         }
         $collection->load();
 
-        /** @var NostoExportCollectionInterface $exportCollection */
+        /** @var NostoCollection $exportCollection */
         $exportCollection = $this->buildExportCollection($collection, $store);
         return $this->export($exportCollection);
     }
@@ -122,11 +122,10 @@ abstract class Base extends Action
     /**
      * Encrypts the export collection and outputs it to the browser.
      *
-     * @param NostoExportCollectionInterface $collection the data collection to export.
-     *
+     * @param NostoCollection $collection the data collection to export.
      * @return Raw
      */
-    protected function export(NostoExportCollectionInterface $collection)
+    protected function export(NostoCollection $collection)
     {
         /** @var Raw $result */
         $result = $this->resultFactory->create(ResultFactory::TYPE_RAW);

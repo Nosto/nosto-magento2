@@ -31,20 +31,26 @@
       xsi:noNamespaceSchemaLocation="../../../../../../../lib/internal/Magento/Framework/View/Layout/etc/page_configuration.xsd">
     <body>
         <referenceContainer name="content">
-            <block class="Nosto\Tagging\Block\Product" name="nosto.product"/>
-            <block class="Nosto\Tagging\Block\Element" name="nosto.page.product1" after="-">
+            <block class="Nosto\Tagging\Block\PageType" name="nosto.page.type.product" after="-" template="pagetype.phtml">
+                <action method="setData">
+                    <argument name="name" xsi:type="string">page_type</argument>
+                    <argument name="value" xsi:type="string">product</argument>
+                </action>
+            </block>
+            <block class="Nosto\Tagging\Block\Product" name="nosto.product" template="product.phtml" />
+            <block class="Nosto\Tagging\Block\Element" name="nosto.page.product1" after="-" template="element.phtml">
                 <action method="setData">
                     <argument name="name" xsi:type="string">nostoId</argument>
                     <argument name="value" xsi:type="string">nosto-page-product1</argument>
                 </action>
             </block>
-            <block class="Nosto\Tagging\Block\Element" name="nosto.page.product2" after="nosto.page.product1">
+            <block class="Nosto\Tagging\Block\Element" name="nosto.page.product2" after="nosto.page.product1" template="element.phtml">
                 <action method="setData">
                     <argument name="name" xsi:type="string">nostoId</argument>
                     <argument name="value" xsi:type="string">nosto-page-product2</argument>
                 </action>
             </block>
-            <block class="Nosto\Tagging\Block\Element" name="nosto.page.product3" after="nosto.page.product2">
+            <block class="Nosto\Tagging\Block\Element" name="nosto.page.product3" after="nosto.page.product2" template="element.phtml">
                 <action method="setData">
                     <argument name="name" xsi:type="string">nostoId</argument>
                     <argument name="value" xsi:type="string">nosto-page-product3</argument>

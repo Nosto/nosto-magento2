@@ -27,6 +27,7 @@
 
 namespace Nosto\Tagging\Model\Meta\Account\Iframe;
 
+use Magento\Backend\Model\Auth\Session;
 use Magento\Framework\Locale\ResolverInterface;
 use Magento\Store\Api\Data\StoreInterface;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
@@ -39,22 +40,27 @@ class Builder
     private $nostoHelperUrl;
     private $nostoHelperData;
     private $localeResolver;
+    private $backendAuthSession;
     private $logger;
 
     /**
      * @param NostoHelperUrl $nostoHelperUrl
      * @param NostoHelperData $nostoHelperData
+     * @param Session $backendAuthSession
      * @param ResolverInterface $localeResolver
      * @param LoggerInterface $logger
+     * @internal param NostoCurrentUserBuilder $nostoCurrentUserBuilder
      */
     public function __construct(
         NostoHelperUrl $nostoHelperUrl,
         NostoHelperData $nostoHelperData,
+        Session $backendAuthSession,
         ResolverInterface $localeResolver,
         LoggerInterface $logger
     ) {
         $this->nostoHelperUrl = $nostoHelperUrl;
         $this->nostoHelperData = $nostoHelperData;
+        $this->backendAuthSession = $backendAuthSession;
         $this->localeResolver = $localeResolver;
         $this->logger = $logger;
     }
@@ -76,6 +82,8 @@ class Builder
             $lang = substr($store->getConfig('general/locale/code'), 0, 2);
             $metaData->setLanguageIsoCodeShop($lang);
 
+            $metaData->setEmail($this->backendAuthSession->getUser()->getEmail());
+            $metaData->setPlatform('magento');
             $metaData->setShopName($store->getName());
             $metaData->setUniqueId($this->nostoHelperData->getInstallationId());
             $metaData->setVersionPlatform($this->nostoHelperData->getPlatformVersion());

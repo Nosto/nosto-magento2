@@ -39,9 +39,10 @@ use Magento\Framework\Stdlib\StringUtils;
 use Magento\Framework\Url\EncoderInterface as UrlEncoder;
 use Magento\Store\Model\Store;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
-use Nosto\Tagging\Helper\Format as NostoHelperFormat;
 use Nosto\Tagging\Model\Category\Builder as NostoCategoryBuilder;
 use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
+use NostoHelperDate;
+use NostoHelperPrice;
 use NostoProduct;
 
 /**
@@ -51,11 +52,6 @@ use NostoProduct;
  */
 class Product extends View
 {
-    /**
-     * @inheritdoc
-     */
-    protected $template = 'product.phtml';
-
     /**
      * @var NostoProductBuilder the product meta model builder.
      */
@@ -70,11 +66,6 @@ class Product extends View
      * @var NostoHelperData the data helper.
      */
     protected $nostoHelperData;
-
-    /**
-     * @var NostoHelperFormat the format helper.
-     */
-    protected $nostoFormatHelper;
 
     /**
      * Constructor.
@@ -92,7 +83,6 @@ class Product extends View
      * @param NostoProductBuilder $nostoProductBuilder the product meta model builder.
      * @param NostoCategoryBuilder $categoryBuilder the category meta model builder.
      * @param NostoHelperData $nostoHelperData the data helper.
-     * @param NostoHelperFormat $formatHelper the format helper.
      * @param array $data optional data.
      */
     public function __construct(
@@ -109,7 +99,6 @@ class Product extends View
         NostoProductBuilder $nostoProductBuilder,
         NostoCategoryBuilder $categoryBuilder,
         NostoHelperData $nostoHelperData,
-        NostoHelperFormat $formatHelper,
         array $data = []
     ) {
         parent::__construct(
@@ -129,7 +118,6 @@ class Product extends View
         $this->nostoProductBuilder = $nostoProductBuilder;
         $this->categoryBuilder = $categoryBuilder;
         $this->nostoHelperData = $nostoHelperData;
-        $this->nostoFormatHelper = $formatHelper;
     }
 
     /**
@@ -161,14 +149,14 @@ class Product extends View
     }
 
     /**
-     * Formats a price, e.g. "1234.56".
+     * Formats a price e.g. "1234.56".
      *
      * @param int $price the price to format.
      * @return string the formatted price.
      */
     public function formatNostoPrice($price)
     {
-        return $this->nostoFormatHelper->formatPrice($price);
+        return NostoHelperPrice::format($price);
     }
 
     /**
@@ -179,6 +167,6 @@ class Product extends View
      */
     public function formatNostoDate($date)
     {
-        return $this->nostoFormatHelper->formatDate($date);
+        return NostoHelperDate::format($date);
     }
 }

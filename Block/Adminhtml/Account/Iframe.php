@@ -107,8 +107,7 @@ class Iframe extends BlockTemplate
 
         $store = $this->getSelectedStore();
         $account = $this->nostoHelperAccount->findAccount($store);
-        $user = $this->nostoSsoBuilder->build();
-        return $this->nostoHelperAccount->getIframeUrl($store, $account, $user, $params);
+        return $this->nostoHelperAccount->getIframeUrl($store, $account, $params);
     }
 
     /**

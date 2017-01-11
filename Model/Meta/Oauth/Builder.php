@@ -70,6 +70,7 @@ class Builder
                     '_scope' => $store->getCode(),
                 ]
             );
+            $metaData->setClientId('magento');
             $metaData->setRedirectUrl($redirectUrl);
             $lang = substr($this->localeResolver->getLocale(), 0, 2);
             $metaData->setLanguageIsoCode($lang);

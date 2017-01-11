@@ -39,11 +39,6 @@ use Nosto\Tagging\Helper\Data as NostoHelperData;
 class Meta extends Template
 {
     /**
-     * @inheritdoc
-     */
-    protected $template = 'meta.phtml';
-
-    /**
      * @var NostoHelperData the module data helper.
      */
     protected $nostoHelperData;

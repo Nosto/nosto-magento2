@@ -111,7 +111,6 @@ class Create extends Base
                     $response['redirect_url'] = $this->nostoHelperAccount->getIframeUrl(
                         $store,
                         $account,
-                        $owner,
                         [
                             'message_type' => NostoMessage::TYPE_SUCCESS,
                             'message_code' => NostoMessage::CODE_ACCOUNT_CREATE,

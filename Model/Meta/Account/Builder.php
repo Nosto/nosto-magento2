@@ -40,7 +40,7 @@ use Psr\Log\LoggerInterface;
 class Builder
 {
     const API_TOKEN = 'YBDKYwSqTCzSsU8Bwbg4im2pkHMcgTy9cCX7vevjJwON1UISJIwXOLMM0a8nZY7h';
-    const PLATFORM_NAME = 'Magento';
+    const PLATFORM_NAME = 'magento';
     private $nostoHelperData;
     private $accountOwnerMetaBuilder;
     private $accountBillingMetaBuilder;

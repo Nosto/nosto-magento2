@@ -33,8 +33,9 @@ use Magento\Framework\Registry;
 use Magento\Framework\View\Element\Template;
 use /** @noinspection PhpUndefinedClassInspection */
     Magento\Sales\Model\OrderFactory;
-use Nosto\Tagging\Helper\Format as NostoHelperFormat;
 use Nosto\Tagging\Model\Order\Builder as NostoOrderBuilder;
+use NostoHelperDate;
+use NostoHelperPrice;
 use NostoOrder;
 
 /**
@@ -45,11 +46,6 @@ use NostoOrder;
 class Order extends Success
 {
     /**
-     * @inheritdoc
-     */
-    protected $template = 'order.phtml';
-
-    /**
      * @var NostoOrderBuilder the order meta model builder.
      */
     protected $nostoOrderBuilder;
@@ -59,10 +55,6 @@ class Order extends Success
      */
     protected $registry;
 
-    /**
-     * @var NostoHelperFormat the format helper.
-     */
-    protected $nostoFormatHelper;
     /**
      * @var Session
      */
@@ -75,7 +67,6 @@ class Order extends Success
      * @param Template\Context $context
      * @param OrderFactory $orderFactory
      * @param NostoOrderBuilder $orderBuilder
-     * @param NostoHelperFormat $formatHelper
      * @param Session $checkoutSession
      * @param array $data
      * @internal param Registry $registry
@@ -86,7 +77,6 @@ class Order extends Success
         /** @noinspection PhpUndefinedClassInspection */
         OrderFactory $orderFactory,
         NostoOrderBuilder $orderBuilder,
-        NostoHelperFormat $formatHelper,
         Session $checkoutSession,
         array $data = []
     ) {
@@ -96,7 +86,6 @@ class Order extends Success
             $data
         );
 
-        $this->nostoFormatHelper = $formatHelper;
         $this->checkoutSession = $checkoutSession;
         $this->nostoOrderBuilder = $orderBuilder;
     }
@@ -120,7 +109,7 @@ class Order extends Success
      */
     public function formatNostoPrice($price)
     {
-        return $this->nostoFormatHelper->formatPrice($price);
+        return NostoHelperPrice::format($price);
     }
 
     /**
@@ -131,6 +120,6 @@ class Order extends Success
      */
     public function formatNostoDate($date)
     {
-        return $this->nostoFormatHelper->formatDate($date);
+        return NostoHelperDate::format($date);
     }
 }
