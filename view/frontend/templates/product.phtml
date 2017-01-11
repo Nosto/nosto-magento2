@@ -38,14 +38,14 @@ $category = $this->getNostoCategory();
         <span class="name"><?php echo $this->escapeHtml($product->getName()); ?></span>
         <span class="image_url"><?php echo $this->escapeUrl($product->getImageUrl()); ?></span>
         <span class="price"><?php echo $this->formatNostoPrice($product->getPrice()); ?></span>
-        <span class="price_currency_code"><?php echo $product->getCurrencyCode(); ?></span>
+        <span class="price_currency_code"><?php echo $product->getPriceCurrencyCode(); ?></span>
         <span class="availability"><?php echo $product->getAvailability(); ?></span>
         <?php foreach ($product->getCategories() as $cat) : ?>
             <span class="category"><?php echo $this->escapeHtml($cat); ?></span>
         <?php endforeach; ?>
-        <?php if ($product->getFullDescription()) : ?>
+        <?php if ($product->getDescription()) : ?>
             <span
-                class="description"><?php echo $this->escapeHtml($this->stripTags($product->getFullDescription())); ?></span>
+                class="description"><?php echo $this->escapeHtml($this->stripTags($product->getDescription())); ?></span>
         <?php endif; ?>
         <?php if ($product->getListPrice()) : ?>
             <span
@@ -54,11 +54,14 @@ $category = $this->getNostoCategory();
         <?php if ($product->getBrand()) : ?>
             <span class="brand"><?php echo $this->escapeHtml($product->getBrand()); ?></span>
         <?php endif; ?>
-        <?php foreach ($product->getTags() as $type => $tags) : ?>
-            <?php foreach ($tags as $tag) : ?>
-                <span
-                    class="<?php echo $this->escapeQuote($type); ?>"><?php echo $this->escapeHtml($tag); ?></span>
-            <?php endforeach; ?>
+        <?php foreach ($product->getTag1() as $tag) : ?>
+            <span class="tag1"><?php echo $this->escapeHtml($tag); ?></span>
+        <?php endforeach; ?>
+        <?php foreach ($product->getTag2() as $tag) : ?>
+            <span class="tag2"><?php echo $this->escapeHtml($tag); ?></span>
+        <?php endforeach; ?>
+        <?php foreach ($product->getTag3() as $tag) : ?>
+            <span class="tag3"><?php echo $this->escapeHtml($tag); ?></span>
         <?php endforeach; ?>
     </div>
 <?php if ($category) : ?>
