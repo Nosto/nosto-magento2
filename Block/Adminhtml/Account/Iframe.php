@@ -34,6 +34,9 @@ use Magento\Framework\Exception\NotFoundException;
 use Magento\Store\Api\Data\StoreInterface;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Model\Meta\Account\Sso\Builder as NostoSsoBuilder;
+use Nosto\Tagging\Model\Meta\Account\Iframe\Builder as NostoIframeMetaBuilder;
+use Nosto\Tagging\Model\User\Builder as NostoCurrentUserBuilder;
+use NostoHelperIframe;
 
 /**
  * Iframe block for displaying the Nosto account management iframe.
@@ -46,14 +49,11 @@ class Iframe extends BlockTemplate
      * Default iframe origin regexp for validating window.postMessage() calls.
      */
     const DEFAULT_IFRAME_ORIGIN_REGEXP = '(https:\/\/(.*)\.hub\.nosto\.com)|(https:\/\/my\.nosto\.com)';
-
-    /**
-     * @inheritdoc
-     */
-    protected $template = 'iframe.phtml';
     protected $nostoHelperAccount;
     private $backendAuthSession;
     private $nostoSsoBuilder;
+    private $nostoIframeMetaBuilder;
+    private $nostoCurrentUserBuilder;
 
     /**
      * Constructor.
@@ -62,6 +62,8 @@ class Iframe extends BlockTemplate
      * @param NostoHelperAccount $nostoHelperAccount the account helper.
      * @param Session $backendAuthSession
      * @param NostoSsoBuilder $nostoSsoBuilder
+     * @param NostoIframeMetaBuilder $iframeMetaBuilder
+     * @param NostoCurrentUserBuilder $nostoCurrentUserBuilder
      * @param array $data
      */
     public function __construct(
@@ -69,6 +71,8 @@ class Iframe extends BlockTemplate
         NostoHelperAccount $nostoHelperAccount,
         Session $backendAuthSession,
         NostoSsoBuilder $nostoSsoBuilder,
+        NostoIframeMetaBuilder $iframeMetaBuilder,
+        NostoCurrentUserBuilder $nostoCurrentUserBuilder,
         array $data = []
     ) {
         parent::__construct($context, $data);
@@ -76,6 +80,8 @@ class Iframe extends BlockTemplate
         $this->nostoHelperAccount = $nostoHelperAccount;
         $this->backendAuthSession = $backendAuthSession;
         $this->nostoSsoBuilder = $nostoSsoBuilder;
+        $this->nostoIframeMetaBuilder = $iframeMetaBuilder;
+        $this->nostoCurrentUserBuilder = $nostoCurrentUserBuilder;
     }
 
     /**
@@ -89,8 +95,6 @@ class Iframe extends BlockTemplate
      */
     public function getIframeUrl()
     {
-        $params = array();
-
         // Pass any error/success messages we might have to the iframe.
         // These can be available when getting redirect back from the OAuth
         // front controller after connecting a Nosto account to a store.
@@ -107,7 +111,12 @@ class Iframe extends BlockTemplate
 
         $store = $this->getSelectedStore();
         $account = $this->nostoHelperAccount->findAccount($store);
-        return $this->nostoHelperAccount->getIframeUrl($store, $account, $params);
+        return NostoHelperIframe::getUrl(
+            $this->nostoIframeMetaBuilder->build($store),
+            $account,
+            $this->nostoCurrentUserBuilder->build(),
+            array()
+        );
     }
 
     /**

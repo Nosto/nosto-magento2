@@ -33,7 +33,10 @@ use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Model\Meta\Account\Builder as NostoSignupBuilder;
+use Nosto\Tagging\Model\Meta\Account\Iframe\Builder as NostoIframeMetaBuilder;
+use Nosto\Tagging\Model\User\Builder as NostoCurrentUserBuilder;
 use NostoException;
+use NostoHelperIframe;
 use NostoMessage;
 use NostoOperationAccount;
 use NostoSignupOwner;
@@ -48,14 +51,21 @@ class Create extends Base
      */
     protected $result;
     private $nostoHelperAccount;
-    private $signupBuilder;
+    private $nostoCurrentUserBuilder;
+    /**
+     * @var NostoIframeMetaBuilder
+     */
+    private $nostoIframeMetaBuilder;
+    private $nostoSignupBuilder;
     private $storeManager;
     private $logger;
 
     /**
      * @param Context $context
      * @param NostoHelperAccount $nostoHelperAccount
-     * @param NostoSignupBuilder $signupBuilder
+     * @param NostoSignupBuilder $nostoSignupBuilder
+     * @param NostoIframeMetaBuilder $nostoIframeMetaBuilder
+     * @param NostoCurrentUserBuilder $nostoCurrentUserBuilder
      * @param StoreManagerInterface $storeManager
      * @param Json $result
      * @param LoggerInterface $logger
@@ -63,7 +73,9 @@ class Create extends Base
     public function __construct(
         Context $context,
         NostoHelperAccount $nostoHelperAccount,
-        NostoSignupBuilder $signupBuilder,
+        NostoSignupBuilder $nostoSignupBuilder,
+        NostoIframeMetaBuilder $nostoIframeMetaBuilder,
+        NostoCurrentUserBuilder $nostoCurrentUserBuilder,
         StoreManagerInterface $storeManager,
         Json $result,
         LoggerInterface $logger
@@ -71,7 +83,9 @@ class Create extends Base
         parent::__construct($context);
 
         $this->nostoHelperAccount = $nostoHelperAccount;
-        $this->signupBuilder = $signupBuilder;
+        $this->nostoSignupBuilder = $nostoSignupBuilder;
+        $this->nostoIframeMetaBuilder = $nostoIframeMetaBuilder;
+        $this->nostoCurrentUserBuilder = $nostoCurrentUserBuilder;
         $this->storeManager = $storeManager;
         $this->result = $result;
         $this->logger = $logger;
@@ -91,7 +105,7 @@ class Create extends Base
         if (!is_null($store)) {
             try {
                 $emailAddress = $this->_request->getParam('email');
-                $signupParams = $this->signupBuilder->build($store);
+                $signupParams = $this->nostoSignupBuilder->build($store);
                 // todo: how to handle this class, DI?
                 if (\Zend_Validate::is($emailAddress, 'EmailAddress')) {
                     /** @var NostoSignupOwner $owner */
@@ -108,9 +122,10 @@ class Create extends Base
                     // todo
                     //$this->nostoHelperAccount->updateCurrencyExchangeRates($account, $store);
                     $response['success'] = true;
-                    $response['redirect_url'] = $this->nostoHelperAccount->getIframeUrl(
-                        $store,
+                    $response['redirect_url'] = NostoHelperIframe::getUrl(
+                        $this->nostoIframeMetaBuilder->build($store),
                         $account,
+                        $this->nostoCurrentUserBuilder->build(),
                         [
                             'message_type' => NostoMessage::TYPE_SUCCESS,
                             'message_code' => NostoMessage::CODE_ACCOUNT_CREATE,
@@ -123,9 +138,10 @@ class Create extends Base
         }
 
         if (!$response['success']) {
-            $response['redirect_url'] = $this->nostoHelperAccount->getIframeUrl(
-                $store,
+            $response['redirect_url'] = NostoHelperIframe::getUrl(
+                $this->nostoIframeMetaBuilder->build($store),
                 null, // account creation failed, so we have none.
+                $this->nostoCurrentUserBuilder->build(),
                 [
                     'message_type' => NostoMessage::TYPE_ERROR,
                     'message_code' => NostoMessage::CODE_ACCOUNT_CREATE,
