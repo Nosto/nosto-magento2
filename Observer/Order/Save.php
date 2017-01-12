@@ -135,7 +135,6 @@ class Save implements ObserverInterface
             if ($nostoAccount !== null) {
                 $quoteId = $order->getQuoteId();
                 /** @var NostoCustomer $nostoCustomer */
-                /** @noinspection PhpUndefinedMethodInspection */
                 $nostoCustomer = $this->customerFactory
                     ->create()
                     ->load($quoteId, NostoCustomer::QUOTE_ID);

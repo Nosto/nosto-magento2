@@ -118,7 +118,7 @@ class CartTagging implements SectionSourceInterface
                 'quantity' => $item->getQuantity(),
                 'name' => $item->getName(),
                 'unit_price' => $item->getUnitPrice(),
-                'price_currency_code' => $item->getCurrencyCode(),
+                'price_currency_code' => $item->getPriceCurrencyCode(),
                 'total_count' => $itemCount,
                 'index' => $addedCount
             ];
@@ -178,7 +178,6 @@ class CartTagging implements SectionSourceInterface
                 $nostoCustomer->setUpdatedAt(new \DateTime('now'));
             }
             try {
-                /** @noinspection PhpUndefinedMethodInspection */
                 $nostoCustomer->save();
             } catch (\Exception $e) {
                 //Todo - handle errors, maybe log?

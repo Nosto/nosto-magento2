@@ -170,8 +170,7 @@ class Price extends AbstractHelper
      * Get the final price in base currency for an ordered item including
      * taxes as discounts.
      *
-     * @param Item $item the item model.
-     *
+     * @param OrderItem $item the item model.
      * @return float
      */
     public function getItemFinalPriceInclTax(OrderItem $item)
