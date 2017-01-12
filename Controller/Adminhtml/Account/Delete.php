@@ -32,8 +32,8 @@ use Magento\Framework\Controller\Result\Json;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
-use Nosto\Tagging\Model\User\Builder as NostoCurrentUserBuilder;
 use Nosto\Tagging\Model\Meta\Account\Iframe\Builder as NostoIframeMetaBuilder;
+use Nosto\Tagging\Model\User\Builder as NostoCurrentUserBuilder;
 use NostoHelperIframe;
 use NostoMessage;
 

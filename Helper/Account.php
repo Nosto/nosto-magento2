@@ -91,7 +91,6 @@ class Account extends AbstractHelper
     }
 
 
-
     /**
      * Saves the account and the associated api tokens for the store.
      *

@@ -35,11 +35,11 @@ use Magento\Store\Model\StoreManagerInterface;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Model\Customer as NostoCustomer;
+use Nosto\Tagging\Model\CustomerFactory;
 use Nosto\Tagging\Model\Order\Builder as NostoOrderBuilder;
 use NostoHttpRequest;
 use NostoOperationOrderConfirmation;
 use Psr\Log\LoggerInterface;
-use Nosto\Tagging\Model\CustomerFactory;
 
 /**
  * Class Save

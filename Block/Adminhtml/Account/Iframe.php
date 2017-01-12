@@ -33,8 +33,8 @@ use Magento\Backend\Model\Auth\Session;
 use Magento\Framework\Exception\NotFoundException;
 use Magento\Store\Api\Data\StoreInterface;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
-use Nosto\Tagging\Model\Meta\Account\Sso\Builder as NostoSsoBuilder;
 use Nosto\Tagging\Model\Meta\Account\Iframe\Builder as NostoIframeMetaBuilder;
+use Nosto\Tagging\Model\Meta\Account\Sso\Builder as NostoSsoBuilder;
 use Nosto\Tagging\Model\User\Builder as NostoCurrentUserBuilder;
 use NostoHelperIframe;
 
