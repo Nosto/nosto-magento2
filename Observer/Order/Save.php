@@ -39,6 +39,7 @@ use Nosto\Tagging\Model\Order\Builder as NostoOrderBuilder;
 use NostoHttpRequest;
 use NostoOperationOrderConfirmation;
 use Psr\Log\LoggerInterface;
+use Nosto\Tagging\Model\CustomerFactory;
 
 /**
  * Class Save
