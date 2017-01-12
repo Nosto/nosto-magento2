@@ -30,13 +30,11 @@
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xsi:noNamespaceSchemaLocation="../../../../../../../lib/internal/Magento/Framework/View/Layout/etc/page_configuration.xsd">
     <body>
-        <referenceContainer name="head.additional">
-            <block class="Nosto\Tagging\Block\Meta" name="nosto.meta" template="meta.phtml"/>
-            <block class="Magento\Framework\View\Element\Template" name="nosto.jstub"
-                   template="jsstub.phtml"/>
-            <block class="Nosto\Tagging\Block\Embed" name="nosto.embed" after="nosto.jstub"
-                   template="embed.phtml"/>
-        </referenceContainer>
+        <referenceBlock name="head.additional">
+            <block class="Nosto\Tagging\Block\Meta" name="nosto.meta" template="Nosto_Tagging::meta.phtml"/>
+            <block class="Magento\Framework\View\Element\Template" name="nosto.jstub" template="Nosto_Tagging::jsstub.phtml"/>
+            <block class="Nosto\Tagging\Block\Embed" name="nosto.embed" after="nosto.jstub" template="Nosto_Tagging::embed.phtml"/>
+        </referenceBlock>
         <referenceContainer name="content">
             <block class="Nosto\Tagging\Block\Knockout" name="nosto.cart" before="-"
                    template="Nosto_Tagging::cart.phtml">

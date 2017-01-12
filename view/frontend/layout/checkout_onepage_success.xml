@@ -32,23 +32,23 @@
     <body>
         <referenceContainer name="content">
             <block class="Nosto\Tagging\Block\PageType" name="nosto.page.type.order" after="-"
-                   template="pagetype.phtml">
+                   template="Nosto_Tagging::pagetype.phtml">
                 <action method="setData">
                     <argument name="name" xsi:type="string">page_type</argument>
                     <argument name="value" xsi:type="string">order</argument>
                 </action>
             </block>
             <block class="Nosto\Tagging\Block\Order" name="nosto.order" cacheable="false"
-                   template="order.phtml"/>
+                   template="Nosto_Tagging::order.phtml"/>
             <block class="Nosto\Tagging\Block\Element" name="nosto.page.orderconfirmation1"
-                   after="-" template="element.phtml">
+                   after="-" template="Nosto_Tagging::element.phtml">
                 <action method="setData">
                     <argument name="name" xsi:type="string">nostoId</argument>
                     <argument name="value" xsi:type="string">thankyou-nosto-1</argument>
                 </action>
             </block>
             <block class="Nosto\Tagging\Block\Element" name="nosto.page.orderconfirmation2"
-                   after="nosto.page.orderconfirmation1" template="element.phtml">
+                   after="nosto.page.orderconfirmation1" template="Nosto_Tagging::element.phtml">
                 <action method="setData">
                     <argument name="name" xsi:type="string">nostoId</argument>
                     <argument name="value" xsi:type="string">thankyou-nosto-2</argument>

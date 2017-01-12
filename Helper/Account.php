@@ -79,18 +79,18 @@ class Account extends AbstractHelper
      *
      * @param Context $context the context.
      * @param WriterInterface $appConfig the app config writer.
-     * @param ModuleManager $moduleManager
      */
     public function __construct(
         Context $context,
-        WriterInterface $appConfig,
-        ModuleManager $moduleManager
+        WriterInterface $appConfig
     ) {
         parent::__construct($context);
 
         $this->config = $appConfig;
-        $this->moduleManager = $moduleManager;
+        $this->_moduleManager = $context->getModuleManager();
     }
+
+
 
     /**
      * Saves the account and the associated api tokens for the store.

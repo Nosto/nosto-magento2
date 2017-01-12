@@ -2,6 +2,13 @@
 
 ## Changelog
 
+* 1.1.1
+    * Fix the errors when running Magento compiler
+    * Change the block definition of referenceContainer to referenceBlock
+    
+* 1.1.0
+    * Use Knockout.js for dynamic cart and customer tagging in order to handle full page cache correctly
+    
 * 1.0.1
     * Add "js stub" for Nosto script
     * Fix issue with orders when Nosto module is installed but Nosto account is not connected
