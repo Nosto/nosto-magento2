@@ -91,7 +91,7 @@ class Index extends Base
         $result = $this->resultPageFactory->create();
         $result->setActiveMenu(self::ADMIN_RESOURCE);
         $result->getConfig()->getTitle()->prepend(
-            __('Nosto - NostoHelperAccount Settings')
+            __('Nosto - Account Settings')
         );
 
         return $result;

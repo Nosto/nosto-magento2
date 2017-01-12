@@ -95,6 +95,7 @@ class Iframe extends BlockTemplate
      */
     public function getIframeUrl()
     {
+        $params = [];
         // Pass any error/success messages we might have to the iframe.
         // These can be available when getting redirect back from the OAuth
         // front controller after connecting a Nosto account to a store.
@@ -115,7 +116,7 @@ class Iframe extends BlockTemplate
             $this->nostoIframeMetaBuilder->build($store),
             $account,
             $this->nostoCurrentUserBuilder->build(),
-            array()
+            $params
         );
     }
 

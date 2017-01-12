@@ -41,7 +41,7 @@ class Proxy extends Base
     /**
      * @inheritdoc
      */
-    protected $publicActions = ['proxy'];
+    protected $_publicActions = ['proxy'];
     /** @var Session */
     private $backendAuthSession;
 
