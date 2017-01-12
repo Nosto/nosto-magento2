@@ -114,7 +114,7 @@ class Builder
                     $nostoStatus = new NostoOrderStatus();
                     $nostoStatus->setCode($item->getStatus());
                     $nostoStatus->setLabel($item->getStatusLabel());
-                    $nostoOrder->addOrderStatus($nostoStatus);
+                    $nostoOrder->setOrderStatus($nostoStatus);
                 }
             }
 
@@ -123,7 +123,7 @@ class Builder
             $nostoBuyer->setFirstName($order->getCustomerFirstname());
             $nostoBuyer->setLastName($order->getCustomerLastname());
             $nostoBuyer->setEmail($order->getCustomerEmail());
-            $nostoOrder->setBuyerInfo($nostoBuyer);
+            $nostoOrder->setCustomer($nostoBuyer);
 
             // Add each ordered item as a line item
             /** @var Item $item */
@@ -139,7 +139,7 @@ class Builder
                 } catch (Exception $E) {
                     $nostoItem->setPrice(0);
                 }
-                $nostoItem->setCurrencyCode($order->getOrderCurrencyCode());
+                $nostoItem->setPriceCurrencyCode($order->getOrderCurrencyCode());
                 $nostoOrder->addPurchasedItems($nostoItem);
             }
 
