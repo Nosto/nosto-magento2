@@ -87,7 +87,7 @@ class Account extends AbstractHelper
         parent::__construct($context);
 
         $this->config = $appConfig;
-        $this->_moduleManager = $context->getModuleManager();
+        $this->moduleManager = $context->getModuleManager();
     }
 
 
