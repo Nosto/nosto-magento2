@@ -40,7 +40,7 @@ $order = $this->getNostoOrder();
             <span
                 class="order_status_code"><?php echo $this->escapeHtml($order->getOrderStatusCode()); ?></span>
             <span
-                class="order_status_label"><?php echo $this->escapeHtml($order->getOrderStatusDescription()); ?></span>
+                class="order_status_label"><?php echo $this->escapeHtml($order->getOrderStatusLabel()); ?></span>
         <?php endif; ?>
         <span
             class="payment_provider"><?php echo $this->escapeHtml($order->getPaymentProvider()); ?></span>
