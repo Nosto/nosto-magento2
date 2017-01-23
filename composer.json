@@ -3,6 +3,13 @@
   "description": "Increase your conversion rate and average order value by delivering your customers personalized product recommendations throughout their shopping journey.",
   "type": "magento2-module",
   "version": "1.1.1",
+  "require-dev": {
+    "etsy/phan": "dev-master",
+    "phpmd/phpmd": "^2.5",
+    "sebastian/phpcpd": "*",
+    "phpdocumentor/reflection-docblock": "3.0.0",
+    "phing/phing": "2.*"
+  },
   "license": [
     "OSL-3.0"
   ],
