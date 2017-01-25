@@ -28,12 +28,12 @@
 namespace Nosto\Tagging\Model\Order;
 
 use Exception;
-use Nosto\Tagging\Model\Order\Item\Builder as NostoOrderItemBuilder;
 use Magento\Framework\ObjectManagerInterface;
 use Magento\Sales\Model\Order;
 use Magento\Sales\Model\Order\Item;
 use Magento\SalesRule\Model\RuleFactory as SalesRuleFactory;
 use Nosto\Tagging\Helper\Price as NostoPriceHelper;
+use Nosto\Tagging\Model\Order\Item\Builder as NostoOrderItemBuilder;
 use NostoLineItem;
 use NostoOrder;
 use NostoOrderBuyer;
@@ -127,7 +127,8 @@ class Builder
             // Add each ordered item as a line item
             /** @var Item $item */
             foreach ($order->getAllVisibleItems() as $item) {
-                $nostoItem = $this->nostoOrderItemBuilder->build($item, $order->getOrderCurrencyCode());
+                $nostoItem = $this->nostoOrderItemBuilder->build($item,
+                    $order->getOrderCurrencyCode());
                 $nostoOrder->addPurchasedItems($nostoItem);
             }
 

@@ -28,13 +28,14 @@
 namespace Nosto\Tagging\Model\Cart\Item;
 
 use Magento\Catalog\Model\Product\Type;
+use Magento\Catalog\Model\ResourceModel\Eav\Attribute;
 use Magento\Framework\ObjectManagerInterface;
 use Magento\Quote\Model\Quote\Item;
-use Magento\Catalog\Model\ResourceModel\Eav\Attribute;
 
 class Simple
 {
-    public static function getType() {
+    public static function getType()
+    {
         return Type::TYPE_SIMPLE;
     }
 

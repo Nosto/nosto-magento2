@@ -27,14 +27,15 @@
 
 namespace Nosto\Tagging\Model\Order\Item;
 
+use Magento\Catalog\Model\Product;
 use Magento\Framework\ObjectManagerInterface;
 use Magento\GroupedProduct\Model\Product\Type\Grouped as Type;
 use Magento\Sales\Model\Order\Item;
-use Magento\Catalog\Model\Product;
 
 class Grouped
 {
-    public static function getType() {
+    public static function getType()
+    {
         return Type::TYPE_CODE;
     }
 

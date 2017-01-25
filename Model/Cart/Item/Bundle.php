@@ -32,7 +32,8 @@ use Magento\Quote\Model\Quote\Item;
 
 class Bundle
 {
-    public static function getType() {
+    public static function getType()
+    {
         return Type::TYPE_BUNDLE;
     }
 

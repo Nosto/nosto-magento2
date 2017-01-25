@@ -28,7 +28,6 @@
 namespace Nosto\Tagging\Model\ResourceModel;
 
 use Magento\Framework\Model\ResourceModel\Db\AbstractDb;
-use Magento\Framework\Model\ResourceModel\Db\Context;
 
 class Customer extends AbstractDb
 {
