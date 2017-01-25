@@ -32,6 +32,7 @@ use Magento\Backend\Block\Template\Context as BlockContext;
 use Magento\Backend\Model\Auth\Session;
 use Magento\Framework\Exception\NotFoundException;
 use Magento\Store\Api\Data\StoreInterface;
+use Nosto;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Model\Meta\Account\Iframe\Builder as NostoIframeMetaBuilder;
 use Nosto\Tagging\Model\Meta\Account\Sso\Builder as NostoSsoBuilder;
@@ -182,8 +183,6 @@ class Iframe extends BlockTemplate
      */
     public function getIframeOrigin()
     {
-        return (isset($_ENV['NOSTO_IFRAME_ORIGIN_REGEXP']))
-            ? $_ENV['NOSTO_IFRAME_ORIGIN_REGEXP']
-            : self::DEFAULT_IFRAME_ORIGIN_REGEXP;
+        return Nosto::getEnvVariable('NOSTO_IFRAME_ORIGIN_REGEXP', self::DEFAULT_IFRAME_ORIGIN_REGEXP);
     }
 }

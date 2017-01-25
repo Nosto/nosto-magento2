@@ -153,14 +153,16 @@ class CartTagging implements SectionSourceInterface
         $quoteId = $this->getQuote()->getId();
         if (!empty($quoteId) && !empty($nostoCustomerId)) {
             /** @noinspection PhpUndefinedMethodInspection */
-            $nostoCustomer = $this->nostoCustomerFactory
+            $customerQuery = $this->nostoCustomerFactory
                 ->create()
                 ->getCollection()
                 ->addFieldToFilter(NostoCustomer::QUOTE_ID, $quoteId)
                 ->addFieldToFilter(NostoCustomer::NOSTO_ID, $nostoCustomerId)
                 ->setPageSize(1)
-                ->setCurPage(1)
-                ->getFirstItem();
+                ->setCurPage(1);
+
+            /** @noinspection PhpUndefinedMethodInspection */
+            $nostoCustomer = $customerQuery->getFirstItem(); // @codingStandardsIgnoreLine
             /** @noinspection PhpUndefinedMethodInspection */
             if ($nostoCustomer->hasData(NostoCustomer::CUSTOMER_ID)) {
                 /** @noinspection PhpUndefinedMethodInspection */

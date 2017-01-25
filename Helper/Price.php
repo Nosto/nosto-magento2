@@ -67,7 +67,7 @@ class Price extends AbstractHelper
      */
     public function getProductPriceInclTax($product)
     {
-        return $this->_getProductPrice($product, false, true);
+        return $this->getProductPrice($product, false, true);
     }
 
     /**
@@ -79,14 +79,13 @@ class Price extends AbstractHelper
      *
      * @return float
      */
-    protected function _getProductPrice($product, $finalPrice = false, $inclTax = true)
+    protected function getProductPrice($product, $finalPrice = false, $inclTax = true)
     {
         switch ($product->getTypeId()) {
             // Get the bundle product "from" price.
             case ProductType::TYPE_BUNDLE:
                 /** @var BundlePrice $priceModel */
                 $priceModel = $product->getPriceModel();
-                // todo: from price discount?
                 $price = $priceModel->getTotalPrices($product, 'min', $inclTax);
                 break;
 
@@ -163,7 +162,7 @@ class Price extends AbstractHelper
      */
     public function getProductFinalPriceInclTax($product)
     {
-        return $this->_getProductPrice($product, true, true);
+        return $this->getProductPrice($product, true, true);
     }
 
     /**

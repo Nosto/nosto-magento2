@@ -129,7 +129,6 @@ class Data extends AbstractHelper
                 self::XML_PATH_INSTALLATION_ID,
                 $installationId
             );
-            // todo: clear cache.
         }
         return $installationId;
     }
@@ -168,10 +167,8 @@ class Data extends AbstractHelper
     {
         $nostoModule = $this->moduleListing->getOne('Nosto_Tagging');
         if (!empty($nostoModule['setup_version'])) {
-
             return $nostoModule['setup_version'];
         } else {
-
             return 'unknown';
         }
     }
@@ -192,5 +189,4 @@ class Data extends AbstractHelper
         }
         return $version;
     }
-
 }

@@ -31,6 +31,7 @@ use Magento\Catalog\Api\CategoryRepositoryInterface;
 use Magento\Catalog\Model\Product;
 use Magento\Eav\Model\Entity\Attribute;
 use Magento\Framework\Event\ManagerInterface;
+use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\Store;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Price as NostoPriceHelper;
@@ -99,10 +100,10 @@ class Builder
 
     /**
      * @param Product $product
-     * @param Store $store
+     * @param StoreInterface $store
      * @return NostoProduct
      */
-    public function build(Product $product, Store $store)
+    public function build(Product $product, StoreInterface $store)
     {
         $nostoProduct = new NostoProduct();
 
@@ -154,10 +155,10 @@ class Builder
 
     /**
      * @param Product $product
-     * @param Store $store
+     * @param StoreInterface $store
      * @return string
      */
-    protected function buildUrl(Product $product, Store $store)
+    protected function buildUrl(Product $product, StoreInterface $store)
     {
         return $product->getUrlInStore(
             [
@@ -171,10 +172,10 @@ class Builder
 
     /**
      * @param Product $product
-     * @param Store $store
+     * @param StoreInterface $store
      * @return string|null
      */
-    protected function buildImageUrl(Product $product, Store $store)
+    protected function buildImageUrl(Product $product, StoreInterface $store)
     {
         $primary = $this->nostoDataHelper->getProductImageVersion($store);
         $secondary = 'image'; // The "base" image.

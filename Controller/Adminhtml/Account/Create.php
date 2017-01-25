@@ -106,7 +106,6 @@ class Create extends Base
             try {
                 $emailAddress = $this->_request->getParam('email');
                 $signupParams = $this->nostoSignupBuilder->build($store);
-                // todo: how to handle this class, DI?
                 if (\Zend_Validate::is($emailAddress, 'EmailAddress')) {
                     /** @var NostoSignupOwner $owner */
                     $owner = $signupParams->getOwner();
@@ -119,8 +118,6 @@ class Create extends Base
                 $account = $operation->create();
 
                 if ($this->nostoHelperAccount->saveAccount($account, $store)) {
-                    // todo
-                    //$this->nostoHelperAccount->updateCurrencyExchangeRates($account, $store);
                     $response['success'] = true;
                     $response['redirect_url'] = NostoHelperIframe::getUrl(
                         $this->nostoIframeMetaBuilder->build($store),

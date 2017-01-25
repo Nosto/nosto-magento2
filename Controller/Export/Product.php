@@ -94,11 +94,12 @@ class Product extends Base
     /**
      * @inheritdoc
      */
-    protected function buildExportCollection($collection, Store $store)
+    protected function buildExportCollection($collection)
     {
         /** @var \Magento\Catalog\Model\ResourceModel\Product\Collection $collection */
         $exportCollection = new NostoProductCollection();
         $items = $collection->loadData();
+        $store = $this->storeManager->getStore(true);
         foreach ($items as $product) {
             /** @var \Magento\Catalog\Model\Product $product */
             $exportCollection[] = $this->nostoProductBuilder->build($product, $store);

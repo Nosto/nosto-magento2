@@ -229,7 +229,7 @@ class Builder
                     foreach ($attributes as $id => $value) {
                         /** @var Attribute $attribute */
                         $attribute = $this->objectManager->get('Magento\Catalog\Model\ResourceModel\Eav\Attribute')
-                            ->load($id);
+                            ->load($id); // @codingStandardsIgnoreLine
                         $label = $attribute->getSource()->getOptionText($value);
                         if (!empty($label)) {
                             $optNames[] = $label;
@@ -299,7 +299,7 @@ class Builder
                 }
                 $ruleIds = explode(',', $item->getAppliedRuleIds());
                 foreach ($ruleIds as $ruleId) {
-                    $rule = $this->salesRuleFactory->create()->load($ruleId);
+                    $rule = $this->salesRuleFactory->create()->load($ruleId); // @codingStandardsIgnoreLine
                     $appliedRules[$ruleId] = $rule->getName();
                 }
             }

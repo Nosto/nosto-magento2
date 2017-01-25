@@ -124,7 +124,6 @@ class Index extends Action
                 ]
             );
         } else {
-            // todo
             /** @var \Magento\Framework\App\Response\Http $response */
             $response = $this->getResponse();
             $response->setHttpResponseCode(404);
@@ -155,10 +154,6 @@ class Index extends Action
         if (!$this->nostoHelperAccount->saveAccount($newAccount, $store)) {
             throw new CouldNotSaveException(__('Failed to save Nosto account.'));
         }
-
-        // todo
-//        $this->nostoHelperAccount->updateCurrencyExchangeRates($newAccount, $store);
-//        $this->nostoHelperAccount->updateAccount($newAccount, $store);
     }
 
     /**

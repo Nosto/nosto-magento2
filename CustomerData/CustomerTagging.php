@@ -65,8 +65,7 @@ class CustomerTagging implements SectionSourceInterface
     {
 
         $data = [];
-        if (
-            $this->currentCustomer instanceof CurrentCustomer
+        if ($this->currentCustomer instanceof CurrentCustomer
             && $this->currentCustomer->getCustomerId()
         ) {
             $customer = $this->currentCustomer->getCustomer();

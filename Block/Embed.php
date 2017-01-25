@@ -30,6 +30,7 @@ namespace Nosto\Tagging\Block;
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Element\Template\Context;
 use Magento\Store\Model\Store;
+use Nosto;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 
@@ -88,8 +89,6 @@ class Embed extends Template
      */
     public function getServerAddress()
     {
-        return isset($_ENV['NOSTO_SERVER_URL'])
-            ? $_ENV['NOSTO_SERVER_URL']
-            : self::DEFAULT_SERVER_ADDRESS;
+        return Nosto::getEnvVariable('NOSTO_SERVER_URL', self::DEFAULT_SERVER_ADDRESS);
     }
 }

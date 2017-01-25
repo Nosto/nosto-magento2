@@ -27,7 +27,6 @@
 
 namespace Nosto\Tagging\Controller\Adminhtml\Account;
 
-
 use Magento\Backend\App\Action;
 
 abstract class Base extends Action

@@ -33,19 +33,6 @@ use Magento\Framework\Model\ResourceModel\Db\Context;
 class Customer extends AbstractDb
 {
     /**
-     * Construct
-     *
-     * @param \Magento\Framework\Model\ResourceModel\Db\Context $context
-     * @param string|null $resourcePrefix
-     */
-    public function __construct(
-        Context $context,
-        $resourcePrefix = null
-    ) {
-        parent::__construct($context, $resourcePrefix);
-    }
-
-    /**
      * Initialize resource model
      *
      * @return void

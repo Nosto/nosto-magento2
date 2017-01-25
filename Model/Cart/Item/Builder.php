@@ -107,7 +107,9 @@ class Builder
         if (!is_null($parentItem)) {
             return $parentItem->getProduct()->getSku();
         } elseif ($item->getProductType() === 'simple') {
-            // todo: if the product has a configurable parent and there is "super_attribute" data in the buy request, assume we need to use the parent product SKU, just like in Magento 1.
+            // todo: if the product has a configurable parent and there is "super_attribute"
+            // data in the buy request, assume we need to use the parent product SKU, just
+            // like in Magento 1.
         }
 
         return $item->getProduct()->getSku();

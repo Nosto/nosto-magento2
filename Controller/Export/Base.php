@@ -114,10 +114,9 @@ abstract class Base extends Action
      * collection object with all the items added
      *
      * @param \Magento\Sales\Model\ResourceModel\Order\Collection $collection
-     * @param Store $store The store object for the current store
      * @return \Magento\Sales\Model\ResourceModel\Order\Collection The collection
      */
-    abstract protected function buildExportCollection($collection, Store $store);
+    abstract protected function buildExportCollection($collection);
 
     /**
      * Encrypts the export collection and outputs it to the browser.

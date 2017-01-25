@@ -42,7 +42,6 @@ use NostoApiToken;
 use NostoCurrentUser;
 use NostoOperationUninstall;
 
-
 /**
  * NostoHelperAccount helper class for common tasks related to Nosto accounts.
  * Everything related to saving/updating/deleting accounts happens in here.
@@ -210,11 +209,9 @@ class Account extends AbstractHelper
             if (is_array($tokens) && !empty($tokens)) {
                 foreach ($tokens as $name => $value) {
                     try {
-                        $account->addApiToken(
-                            new NostoApiToken($name, $value)
-                        );
+                        $account->addApiToken(new NostoApiToken($name, $value));
                     } catch (Exception $e) {
-
+                        $this->_logger->error($e, ['exception' => $e]);
                     }
                 }
             }

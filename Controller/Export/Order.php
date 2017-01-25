@@ -87,7 +87,7 @@ class Order extends Base
     /**
      * @inheritdoc
      */
-    protected function buildExportCollection($collection, Store $store)
+    protected function buildExportCollection($collection)
     {
         /** @var \Magento\Sales\Model\ResourceModel\Order\Collection $collection */
         $exportCollection = new NostoOrderCollection();

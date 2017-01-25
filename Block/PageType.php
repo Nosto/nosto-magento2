@@ -41,19 +41,6 @@ class PageType extends Template
     const DEFAULT_TYPE = 'unknown';
 
     /**
-     * Constructor.
-     *
-     * @param Context $context the context.
-     * @param array $data optional data.
-     */
-    public function __construct(
-        Context $context,
-        array $data = []
-    ) {
-        parent::__construct($context, $data);
-    }
-
-    /**
      * Return the page-type of the current page. If none is defined in the layout xml,
      * then set a default one.
      *
