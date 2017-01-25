@@ -36,6 +36,7 @@
 
 namespace Nosto\Tagging\Observer\Product;
 
+use Magento\Store\Model\Store;
 use Magento\Catalog\Model\Product;
 
 /**
@@ -53,7 +54,7 @@ class Delete extends Base
      */
     protected function doRequest(\NostoOperationProduct $operation)
     {
-        $operation->delete();
+        $operation->upsert();
     }
 
     /**
@@ -62,5 +63,13 @@ class Delete extends Base
     protected function validateProduct(Product $product)
     {
         return true;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function buildProduct(Product $product, Store $store) {
+        $product = $this->nostoProductBuilder->build($product, $store);
+        return $product->setAvailability(\NostoProductInterface::DISCONTINUED);
     }
 }

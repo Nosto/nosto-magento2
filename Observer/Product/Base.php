@@ -147,7 +147,7 @@ abstract class Base implements ObserverInterface
 
                 // Load the product model for this particular store view.
                 /** @var NostoProduct $model */
-                $metaProduct = $this->nostoProductBuilder->build($product, $store);
+                $metaProduct = $this->buildProduct($product, $store);
                 if (is_null($metaProduct)) {
                     continue;
                 }
@@ -161,6 +161,17 @@ abstract class Base implements ObserverInterface
                 }
             }
         }
+    }
+
+    /**
+     * Builds the product object for the operation using the builder
+     *
+     * @param Product $product the product to be built
+     * @param Store $store the store for which to build the product
+     * @return NostoProduct the built product
+     */
+    protected function buildProduct(Product $product, Store $store) {
+        return $this->nostoProductBuilder->build($product, $store);
     }
 
     /**
