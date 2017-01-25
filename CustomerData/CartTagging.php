@@ -35,6 +35,7 @@ use Nosto\Tagging\Model\Cart\Builder as NostoCartBuilder;
 use Nosto\Tagging\Model\Customer as NostoCustomer;
 use Nosto\Tagging\Model\CustomerFactory as NostoCustomerFactory;
 use NostoLineItem;
+use Psr\Log\LoggerInterface;
 
 class CartTagging implements SectionSourceInterface
 {
@@ -70,12 +71,19 @@ class CartTagging implements SectionSourceInterface
      */
     protected $quote = null;
 
+    /**
+     * @var LoggerInterface
+     */
+    protected $logger;
+
+
     /** @noinspection PhpUndefinedClassInspection */
     /**
      * @param CartHelper $cartHelper
      * @param NostoCartBuilder $nostoCartBuilder
      * @param StoreManagerInterface $storeManager
      * @param CookieManagerInterface $cookieManager
+     * @param LoggerInterface $logger
      * @param NostoCustomerFactory $nostoCustomerFactory
      */
     public function __construct(
@@ -83,12 +91,14 @@ class CartTagging implements SectionSourceInterface
         NostoCartBuilder $nostoCartBuilder,
         StoreManagerInterface $storeManager,
         CookieManagerInterface $cookieManager,
+        LoggerInterface $logger,
         /** @noinspection PhpUndefinedClassInspection */
         NostoCustomerFactory $nostoCustomerFactory
     ) {
         $this->cartHelper = $cartHelper;
         $this->nostoCartBuilder = $nostoCartBuilder;
         $this->storeManager = $storeManager;
+        $this->logger = $logger;
         $this->cookieManager = $cookieManager;
         $this->nostoCustomerFactory = $nostoCustomerFactory;
     }
@@ -182,7 +192,7 @@ class CartTagging implements SectionSourceInterface
             try {
                 $nostoCustomer->save();
             } catch (\Exception $e) {
-                //Todo - handle errors, maybe log?
+                $this->logger->error($e, ['exception' => $e]);
             }
         }
     }

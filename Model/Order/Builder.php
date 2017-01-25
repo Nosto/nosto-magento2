@@ -28,12 +28,8 @@
 namespace Nosto\Tagging\Model\Order;
 
 use Exception;
-use Magento\Catalog\Model\Product;
-use Magento\Catalog\Model\Product\Type;
-use Magento\Catalog\Model\ResourceModel\Eav\Attribute;
-use Magento\ConfigurableProduct\Model\Product\Type\Configurable;
+use Nosto\Tagging\Model\Order\Item\Builder as NostoOrderItemBuilder;
 use Magento\Framework\ObjectManagerInterface;
-use Magento\GroupedProduct\Model\Product\Type\Grouped;
 use Magento\Sales\Model\Order;
 use Magento\Sales\Model\Order\Item;
 use Magento\SalesRule\Model\RuleFactory as SalesRuleFactory;
@@ -72,6 +68,7 @@ class Builder
      * @param LoggerInterface $logger
      * @param SalesRuleFactory $salesRuleFactory
      * @param NostoPriceHelper $priceHelper
+     * @param NostoOrderItemBuilder $nostoOrderItemBuilder
      * @param ObjectManagerInterface $objectManager
      */
     public function __construct(
@@ -79,11 +76,13 @@ class Builder
         /** @noinspection PhpUndefinedClassInspection */
         SalesRuleFactory $salesRuleFactory,
         NostoPriceHelper $priceHelper,
+        NostoOrderItemBuilder $nostoOrderItemBuilder,
         ObjectManagerInterface $objectManager
     ) {
         $this->logger = $logger;
         $this->salesRuleFactory = $salesRuleFactory;
         $this->nostoPriceHelper = $priceHelper;
+        $this->nostoOrderItemBuilder = $nostoOrderItemBuilder;
         $this->objectManager = $objectManager;
     }
 
@@ -128,18 +127,7 @@ class Builder
             // Add each ordered item as a line item
             /** @var Item $item */
             foreach ($order->getAllVisibleItems() as $item) {
-                $nostoItem = new NostoLineItem();
-                $nostoItem->setProductId((int)$this->buildItemProductId($item));
-                $nostoItem->setQuantity((int)$item->getQtyOrdered());
-                $nostoItem->setName($this->buildItemName($item));
-                try {
-                    $nostoItem->setPrice(
-                        $this->nostoPriceHelper->getItemFinalPriceInclTax($item)
-                    );
-                } catch (Exception $E) {
-                    $nostoItem->setPrice(0);
-                }
-                $nostoItem->setPriceCurrencyCode($order->getOrderCurrencyCode());
+                $nostoItem = $this->nostoOrderItemBuilder->build($item, $order->getOrderCurrencyCode());
                 $nostoOrder->addPurchasedItems($nostoItem);
             }
 
@@ -164,121 +152,12 @@ class Builder
                 );
                 $nostoOrder->addPurchasedItems($nostoItem);
             }
+
         } catch (Exception $e) {
             $this->logger->error($e, ['exception' => $e]);
         }
 
         return $nostoOrder;
-    }
-
-    /**
-     * Returns the product id for a quote item.
-     * Always try to find the "parent" product ID if the product is a child of
-     * another product type. We do this because it is the parent product that
-     * we tag on the product page, and the child does not always have it's own
-     * product page. This is important because it is the tagged info on the
-     * product page that is used to generate recommendations and email content.
-     *
-     * @param Item $item the sales item model.
-     *
-     * @return int
-     */
-    protected function buildItemProductId(Item $item)
-    {
-        $parent = $item->getProductOptionByCode('super_product_config');
-        if (isset($parent['product_id'])) {
-            return $parent['product_id'];
-        } elseif ($item->getProductType() === Type::TYPE_SIMPLE) {
-            $type = $item->getProduct()->getTypeInstance();
-            $parentIds = $type->getParentIdsByChild($item->getProductId());
-            $attributes = $item->getBuyRequest()->getData('super_attribute');
-            // If the product has a configurable parent, we assume we should tag
-            // the parent. If there are many parent IDs, we are safer to tag the
-            // products own ID.
-            if (count($parentIds) === 1 && !empty($attributes)) {
-                return $parentIds[0];
-            }
-        }
-        return $item->getProductId();
-    }
-
-    /**
-     * Returns the name for a sales item.
-     * Configurable products will have their chosen options added to their name.
-     * Bundle products will have their chosen child product names added.
-     * Grouped products will have their parents name prepended.
-     * All others will have their own name only.
-     *
-     * @param Item $item the sales item model.
-     *
-     * @return string
-     */
-    protected function buildItemName(Item $item)
-    {
-        $name = $item->getName();
-        $optNames = array();
-        if ($item->getProductType() === Type::TYPE_SIMPLE) {
-            $type = $item->getProduct()->getTypeInstance();
-            $parentIds = $type->getParentIdsByChild($item->getProductId());
-            // If the product has a configurable parent, we assume we should tag
-            // the parent. If there are many parent IDs, we are safer to tag the
-            // products own name alone.
-            if (count($parentIds) === 1) {
-                $attributes = $item->getBuyRequest()->getData('super_attribute');
-                if (is_array($attributes)) {
-                    foreach ($attributes as $id => $value) {
-                        /** @var Attribute $attribute */
-                        $attribute = $this->objectManager->get('Magento\Catalog\Model\ResourceModel\Eav\Attribute')
-                            ->load($id); // @codingStandardsIgnoreLine
-                        $label = $attribute->getSource()->getOptionText($value);
-                        if (!empty($label)) {
-                            $optNames[] = $label;
-                        }
-                    }
-                }
-            }
-        } elseif ($item->getProductType() === Configurable::TYPE_CODE) {
-            $opts = $item->getProductOptionByCode('attributes_info');
-            if (is_array($opts)) {
-                foreach ($opts as $opt) {
-                    if (isset($opt['value']) && is_string($opt['value'])) {
-                        $optNames[] = $opt['value'];
-                    }
-                }
-            }
-        } elseif ($item->getProductType() === Type::TYPE_BUNDLE) {
-            $opts = $item->getProductOptionByCode('bundle_options');
-            if (is_array($opts)) {
-                foreach ($opts as $opt) {
-                    if (isset($opt['value']) && is_array($opt['value'])) {
-                        foreach ($opt['value'] as $val) {
-                            $qty = '';
-                            if (isset($val['qty']) && is_int($val['qty'])) {
-                                $qty .= $val['qty'] . ' x ';
-                            }
-                            if (isset($val['title']) && is_string($val['title'])) {
-                                $optNames[] = $qty . $val['title'];
-                            }
-                        }
-                    }
-                }
-            }
-        } elseif ($item->getProductType() === Grouped::TYPE_CODE) {
-            $config = $item->getProductOptionByCode('super_product_config');
-            if (isset($config['product_id'])) {
-                /** @var Product $parent */
-                $parent = $this->objectManager->get('Magento\Catalog\Model\Product')
-                    ->load($config['product_id']);
-                $parentName = $parent->getName();
-                if (!empty($parentName)) {
-                    $name = $parentName . ' - ' . $name;
-                }
-            }
-        }
-        if (!empty($optNames)) {
-            $name .= ' (' . implode(', ', $optNames) . ')';
-        }
-        return $name;
     }
 
     /**

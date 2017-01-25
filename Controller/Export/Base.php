@@ -96,7 +96,7 @@ abstract class Base extends Action
         $collection->load();
 
         /** @var NostoCollection $exportCollection */
-        $exportCollection = $this->buildExportCollection($collection, $store);
+        $exportCollection = $this->buildExportCollection($collection);
         return $this->export($exportCollection);
     }
 

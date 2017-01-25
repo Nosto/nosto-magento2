@@ -34,7 +34,6 @@ use Magento\Catalog\Model\Product\Type as ProductType;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 use Magento\GroupedProduct\Model\Product\Type\Grouped as GroupedType;
-use Magento\Sales\Model\Order\Item as OrderItem;
 
 /**
  * Price helper used for product price related tasks.
@@ -163,17 +162,5 @@ class Price extends AbstractHelper
     public function getProductFinalPriceInclTax($product)
     {
         return $this->getProductPrice($product, true, true);
-    }
-
-    /**
-     * Get the final price in base currency for an ordered item including
-     * taxes as discounts.
-     *
-     * @param OrderItem $item the item model.
-     * @return float
-     */
-    public function getItemFinalPriceInclTax(OrderItem $item)
-    {
-        return $item->getPriceInclTax() - $item->getBaseDiscountAmount();
     }
 }

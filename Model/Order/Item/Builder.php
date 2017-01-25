@@ -25,13 +25,13 @@
  * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
-namespace Nosto\Tagging\Model\Cart\Item;
+namespace Nosto\Tagging\Model\Order\Item;
 
 use Exception;
 use Magento\Catalog\Model\Product\Type;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\ObjectManagerInterface;
-use Magento\Quote\Model\Quote\Item;
+use Magento\Sales\Model\Order\Item;
 use NostoLineItem;
 use Psr\Log\LoggerInterface;
 
@@ -41,10 +41,12 @@ class Builder
      * @var LoggerInterface
      */
     protected $logger;
+
     /**
      * @var ObjectManagerInterface
      */
     protected $objectManager;
+
     /**
      * Event manager
      *
@@ -73,55 +75,61 @@ class Builder
      * @param Item $item
      * @param $currencyCode
      * @return NostoLineItem
-     * @internal param Store $store
      */
     public function build(Item $item, $currencyCode)
     {
-        $cartItem = new NostoLineItem();
-        $cartItem->setPriceCurrencyCode($currencyCode);
-        $cartItem->setProductId($this->buildItemId($item));
-        $cartItem->setQuantity($item->getQty());
+        $nostoItem = new NostoLineItem();
+        $nostoItem->setPriceCurrencyCode($currencyCode);
+        $nostoItem->setProductId((int)$this->buildItemProductId($item));
+        $nostoItem->setQuantity((int)$item->getQtyOrdered());
         switch ($item->getProductType()) {
             case Simple::getType():
-                $cartItem->setName(Simple::buildItemName($this->objectManager, $item));
+                $nostoItem->setName(Simple::buildItemName($this->objectManager, $item));
                 break;
             case Configurable::getType():
-                $cartItem->setName(Configurable::buildItemName($item));
+                $nostoItem->setName(Configurable::buildItemName($item));
                 break;
             case Bundle::getType():
-                $cartItem->setName(Bundle::buildItemName($item));
+                $nostoItem->setName(Bundle::buildItemName($item));
                 break;
             case Grouped::getType():
-                $cartItem->setName(Grouped::buildItemName($this->objectManager, $item));
+                $nostoItem->setName(Grouped::buildItemName($this->objectManager, $item));
                 break;
         }
         try {
-            $cartItem->setPrice($item->getBasePriceInclTax());
+            $nostoItem->setPrice($item->getPriceInclTax() - $item->getBaseDiscountAmount());
         } catch (Exception $e) {
-            $cartItem->setPrice(0);
+            $nostoItem->setPrice(0);
         }
 
         $this->eventManager->dispatch(
-            'nosto_cart_item_load_after',
-            ['item' => $cartItem]
+            'nosto_order_item_load_after',
+            ['item' => $nostoItem]
         );
 
-        return $cartItem;
+        return $nostoItem;
     }
 
     /**
-     * @param Item $item
-     * @return string
+     * Returns the product id for a quote item.
+     * Always try to find the "parent" product ID if the product is a child of
+     * another product type. We do this because it is the parent product that
+     * we tag on the product page, and the child does not always have it's own
+     * product page. This is important because it is the tagged info on the
+     * product page that is used to generate recommendations and email content.
+     *
+     * @param Item $item the sales item model.
+     *
+     * @return int
      */
-    protected function buildItemId(Item $item)
+    protected function buildItemProductId(Item $item)
     {
-        /** @var Item $parentItem */
-        $parentItem = $item->getOptionByCode('product_type');
-        if (!is_null($parentItem)) {
-            return $parentItem->getProduct()->getSku();
+        $parent = $item->getProductOptionByCode('super_product_config');
+        if (isset($parent['product_id'])) {
+            return $parent['product_id'];
         } elseif ($item->getProductType() === Type::TYPE_SIMPLE) {
             $type = $item->getProduct()->getTypeInstance();
-            $parentIds = $type->getParentIdsByChild($item->getItemId());
+            $parentIds = $type->getParentIdsByChild($item->getProductId());
             $attributes = $item->getBuyRequest()->getData('super_attribute');
             // If the product has a configurable parent, we assume we should tag
             // the parent. If there are many parent IDs, we are safer to tag the
@@ -130,7 +138,6 @@ class Builder
                 return $parentIds[0];
             }
         }
-
-        return $item->getProduct()->getSku();
+        return $item->getProductId();
     }
 }
