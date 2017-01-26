@@ -140,6 +140,6 @@ class Builder
             }
         }
 
-        return $item->getProduct()->getSku();
+        return $item->getProduct()->getId();
     }
 }
