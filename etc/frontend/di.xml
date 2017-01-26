@@ -40,11 +40,8 @@
     <type name="Magento\Customer\CustomerData\SectionPoolInterface">
         <arguments>
             <argument name="sectionSourceMap" xsi:type="array">
-                <item name="customer-tagging" xsi:type="string">
-                    Nosto\Tagging\CustomerData\CustomerTagging
-                </item>
-                <item name="cart-tagging" xsi:type="string">Nosto\Tagging\CustomerData\CartTagging
-                </item>
+                <item name="customer-tagging" xsi:type="string">Nosto\Tagging\CustomerData\CustomerTagging</item>
+                <item name="cart-tagging" xsi:type="string">Nosto\Tagging\CustomerData\CartTagging</item>
             </argument>
         </arguments>
     </type>

@@ -54,9 +54,7 @@
                     <argument name="jsLayout" xsi:type="array">
                         <item name="components" xsi:type="array">
                             <item name="cartTagging" xsi:type="array">
-                                <item name="component" xsi:type="string">
-                                    Nosto_Tagging/js/view/cart-tagging
-                                </item>
+                                <item name="component" xsi:type="string">Nosto_Tagging/js/view/cart-tagging</item>
                             </item>
                         </item>
                     </argument>
@@ -68,9 +66,7 @@
                     <argument name="jsLayout" xsi:type="array">
                         <item name="components" xsi:type="array">
                             <item name="customerTagging" xsi:type="array">
-                                <item name="component" xsi:type="string">
-                                    Nosto_Tagging/js/view/customer-tagging
-                                </item>
+                                <item name="component" xsi:type="string">Nosto_Tagging/js/view/customer-tagging</item>
                             </item>
                         </item>
                     </argument>

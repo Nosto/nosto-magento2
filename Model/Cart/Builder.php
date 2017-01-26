@@ -96,11 +96,11 @@ class Builder
     public function build(Quote $quote, Store $store)
     {
         /** @var NostoCart $nostoCart */
-        $nostoCart = $this->objectManager->create('NostoCart', null);
+        $nostoCart = $this->objectManager->create('NostoCart', array());
 
         foreach ($quote->getAllVisibleItems() as $item) {
             try {
-                $cartItem = $this->nostoCartItemBuilder->build($item, $store);
+                $cartItem = $this->nostoCartItemBuilder->build($item, $store->getBaseCurrencyCode());
                 $nostoCart->addItem($cartItem);
             } catch (\NostoException $e) {
                 $this->logger->error($e, ['exception' => $e]);
