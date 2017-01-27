@@ -83,85 +83,130 @@ define([
 
         var json = ('' + event.data).substr(7);
         var data = JSON.parse(json);
-        if (typeof data === 'object' && data.type) {
-            switch (data.type) {
-                case TYPE_NEW_ACCOUNT:
-                    $.ajax({
-                        url: settings.urls.createAccount,
-                        type: 'POST',
-                        dataType: 'json',
-                        data: $.extend(settings.xhrParams, {email: data.params.email}),
-                        showLoader: false
-                    }).done(function (response) {
-                        if (response.redirect_url) {
+
+        switch (data.type) {
+            case TYPE_NEW_ACCOUNT:
+                var post_data = {email: data.params.email};
+                if (data.params.details) {
+                    post_data.details = JSON.stringify(data.params.details);
+                }
+                xhr(settings.urls.createAccount, {
+                    data: post_data,
+                    success: function (response) {
+                        if (response.success && response.redirect_url) {
                             settings.element.src = response.redirect_url;
-                        } else {
-                            throw new Error('Nosto: failed to handle account creation.');
                         }
-                    });
-                    break;
+                    }
+                });
+                break;
 
-                case TYPE_CONNECT_ACCOUNT:
-                    $.ajax({
-                        url: settings.urls.connectAccount,
-                        type: 'POST',
-                        dataType: 'json',
-                        data: settings.xhrParams,
-                        showLoader: false
-                    }).done(function (response) {
-                        if (response.redirect_url) {
-                            if (response.success && response.success === true) {
-                                window.location.href = response.redirect_url;
-                            } else {
-                                settings.element.src = response.redirect_url;
-                            }
-                        } else {
-                            throw new Error('Nosto: failed to handle account connection.');
-                        }
-                    });
-                    break;
-
-                case TYPE_SYNC_ACCOUNT:
-                    $.ajax({
-                        url: settings.urls.syncAccount,
-                        type: 'POST',
-                        dataType: 'json',
-                        data: settings.xhrParams,
-                        showLoader: false
-                    }).done(function (response) {
-                        if (response.redirect_url) {
-                            if (response.success && response.success === true) {
-                                window.location.href = response.redirect_url;
-                            } else {
-                                settings.element.src = response.redirect_url;
-                            }
-                        } else {
-                            throw new Error('Nosto: failed to handle account sync.');
-                        }
-                    });
-                    break;
-
-                case TYPE_REMOVE_ACCOUNT:
-                    $.ajax({
-                        url: settings.urls.deleteAccount,
-                        type: 'POST',
-                        dataType: 'json',
-                        data: settings.xhrParams,
-                        showLoader: false
-                    }).done(function (response) {
-                        if (response.redirect_url) {
+            case TYPE_CONNECT_ACCOUNT:
+                xhr(settings.urls.connectAccount, {
+                    success: function (response) {
+                        if (response.success && response.redirect_url) {
+                            window.location.href = response.redirect_url;
+                        } else if (!response.success && response.redirect_url) {
                             settings.element.src = response.redirect_url;
-                        } else {
-                            throw new Error('Nosto: failed to handle account deletion.');
                         }
-                    });
-                    break;
+                    }
+                });
+                break;
 
-                default:
-                    throw new Error('Nosto: invalid postMessage `type`.');
-            }
+            case TYPE_SYNC_ACCOUNT:
+                xhr(settings.urls.syncAccount, {
+                    success: function (response) {
+                        if (response.success && response.redirect_url) {
+                            window.location.href = response.redirect_url;
+                        } else if (!response.success && response.redirect_url) {
+                            settings.element.src = response.redirect_url;
+                        }
+                    }
+                });
+                break;
+
+            case TYPE_REMOVE_ACCOUNT:
+                xhr(settings.urls.deleteAccount, {
+                    success: function (response) {
+                        if (response.success && response.redirect_url) {
+                            settings.element.src = response.redirect_url;
+                        }
+                    }
+                });
+                break;
+
+            default:
+                throw new Error("Nosto: invalid postMessage `type`.");
         }
     };
+
+    /**
+     * Creates a new XMLHttpRequest.
+     *
+     * Usage example:
+     *
+     * xhr("http://localhost/target.html", {
+     *      "method": "POST",
+     *      "data": {"key": "value"},
+     *      "success": function (response) { // handle success request }
+     * });
+     *
+     * @param {String} url the url to call.
+     * @param {Object} params optional params.
+     */
+    function xhr(url, params) {
+        var options = extendObject({
+            method: "POST",
+            async: true,
+            data: {}
+        }, params);
+        // Always add the Magento form_key property for request authorization.
+        options.data.form_key = window.FORM_KEY;
+        var oReq = new XMLHttpRequest();
+        if (typeof options.success === "function") {
+            oReq.addEventListener("load", function (e) {
+                options.success(JSON.parse(e.target.response));
+            }, false);
+        }
+        oReq.open(options.method, decodeURIComponent(url), options.async);
+        oReq.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+        oReq.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        oReq.send(buildQueryString(options.data));
+    }
+
+    /**
+     * Extends a literal object with data from the other object.
+     *
+     * @param {Object} obj1 the object to extend.
+     * @param {Object} obj2 the object to extend from.
+     * @returns {Object}
+     */
+    function extendObject(obj1, obj2) {
+        for (var key in obj2) {
+            if (obj2.hasOwnProperty(key)) {
+                obj1[key] = obj2[key];
+            }
+        }
+        return obj1;
+    }
+
+    /**
+     * Builds a query string based on params.
+     *
+     * @param {Object} params the params to turn into a query string.
+     * @returns {string} the built query string.
+     */
+    function buildQueryString(params) {
+        var queryString = "";
+        for (var key in params) {
+            if (params.hasOwnProperty(key)) {
+                if (queryString !== "") {
+                    queryString += "&";
+                }
+                queryString += encodeURIComponent(key)+"="+encodeURIComponent(params[key]);
+            }
+        }
+        return queryString;
+    }
 
     /**
      * @param {Object} config

@@ -126,7 +126,6 @@ class Builder
                 }
             }
 
-            // Set the buyer information
             $nostoBuyer = new NostoOrderBuyer();
             $nostoBuyer->setFirstName($order->getCustomerFirstname());
             $nostoBuyer->setLastName($order->getCustomerLastname());

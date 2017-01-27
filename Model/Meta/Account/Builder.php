@@ -41,7 +41,6 @@ use Magento\Framework\UrlInterface;
 use Magento\Store\Model\Store;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Model\Meta\Account\Billing\Builder as NostoBillingBuilder;
-use Nosto\Tagging\Model\Meta\Account\Owner\Builder as NostoOwnerBuilder;
 use NostoHttpRequest;
 use NostoSignup;
 use Psr\Log\LoggerInterface;
@@ -51,27 +50,23 @@ class Builder
     const API_TOKEN = 'YBDKYwSqTCzSsU8Bwbg4im2pkHMcgTy9cCX7vevjJwON1UISJIwXOLMM0a8nZY7h';
     const PLATFORM_NAME = 'magento';
     private $nostoHelperData;
-    private $accountOwnerMetaBuilder;
     private $accountBillingMetaBuilder;
     private $localeResolver;
     private $logger;
 
     /**
      * @param NostoHelperData $nostoHelperData
-     * @param NostoOwnerBuilder $nostoAccountOwnerMetaBuilder
      * @param NostoBillingBuilder $nostoAccountBillingMetaBuilder
      * @param ResolverInterface $localeResolver
      * @param LoggerInterface $logger
      */
     public function __construct(
         NostoHelperData $nostoHelperData,
-        NostoOwnerBuilder $nostoAccountOwnerMetaBuilder,
         NostoBillingBuilder $nostoAccountBillingMetaBuilder,
         ResolverInterface $localeResolver,
         LoggerInterface $logger
     ) {
         $this->nostoHelperData = $nostoHelperData;
-        $this->accountOwnerMetaBuilder = $nostoAccountOwnerMetaBuilder;
         $this->accountBillingMetaBuilder = $nostoAccountBillingMetaBuilder;
         $this->localeResolver = $localeResolver;
         $this->logger = $logger;
@@ -79,9 +74,11 @@ class Builder
 
     /**
      * @param Store $store
+     * @param $accountOwner
+     * @param $signupDetails
      * @return NostoSignup
      */
-    public function build(Store $store)
+    public function build(Store $store, $accountOwner, $signupDetails)
     {
         $metaData = new NostoSignup(Builder::PLATFORM_NAME, Builder::API_TOKEN, null);
 
@@ -110,12 +107,12 @@ class Builder
             $metaData->setLanguageCode($lang);
             $lang = substr($this->localeResolver->getLocale(), 0, 2);
             $metaData->setOwnerLanguageCode($lang);
-
-            $owner = $this->accountOwnerMetaBuilder->build();
-            $metaData->setOwner($owner);
+            $metaData->setOwner($accountOwner);
 
             $billing = $this->accountBillingMetaBuilder->build($store);
             $metaData->setBillingDetails($billing);
+
+            $metaData->setDetails($signupDetails);
         } catch (\NostoException $e) {
             $this->logger->error($e, ['exception' => $e]);
         }

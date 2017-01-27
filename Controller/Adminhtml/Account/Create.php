@@ -44,11 +44,11 @@ use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Model\Meta\Account\Builder as NostoSignupBuilder;
 use Nosto\Tagging\Model\Meta\Account\Iframe\Builder as NostoIframeMetaBuilder;
 use Nosto\Tagging\Model\User\Builder as NostoCurrentUserBuilder;
+use Nosto\Tagging\Model\Meta\Account\Owner\Builder as NostoOwnerBuilder;
 use NostoException;
 use NostoHelperIframe;
 use NostoMessage;
 use NostoOperationAccount;
-use NostoSignupOwner;
 use Psr\Log\LoggerInterface;
 
 class Create extends Base
@@ -65,6 +65,10 @@ class Create extends Base
      * @var NostoIframeMetaBuilder
      */
     private $nostoIframeMetaBuilder;
+    /**
+     * @var NostoOwnerBuilder
+     */
+    private $nostoOwnerBuilder;
     private $nostoSignupBuilder;
     private $storeManager;
     private $logger;
@@ -75,6 +79,7 @@ class Create extends Base
      * @param NostoSignupBuilder $nostoSignupBuilder
      * @param NostoIframeMetaBuilder $nostoIframeMetaBuilder
      * @param NostoCurrentUserBuilder $nostoCurrentUserBuilder
+     * @param NostoOwnerBuilder $nostoOwnerBuilder
      * @param StoreManagerInterface $storeManager
      * @param Json $result
      * @param LoggerInterface $logger
@@ -85,6 +90,7 @@ class Create extends Base
         NostoSignupBuilder $nostoSignupBuilder,
         NostoIframeMetaBuilder $nostoIframeMetaBuilder,
         NostoCurrentUserBuilder $nostoCurrentUserBuilder,
+        NostoOwnerBuilder $nostoOwnerBuilder,
         StoreManagerInterface $storeManager,
         Json $result,
         LoggerInterface $logger
@@ -94,6 +100,7 @@ class Create extends Base
         $this->nostoHelperAccount = $nostoHelperAccount;
         $this->nostoSignupBuilder = $nostoSignupBuilder;
         $this->nostoIframeMetaBuilder = $nostoIframeMetaBuilder;
+        $this->nostoOwnerBuilder = $nostoOwnerBuilder;
         $this->nostoCurrentUserBuilder = $nostoCurrentUserBuilder;
         $this->storeManager = $storeManager;
         $this->result = $result;
@@ -113,16 +120,24 @@ class Create extends Base
 
         if (!is_null($store)) {
             try {
-                $emailAddress = $this->_request->getParam('email');
-                $signupParams = $this->nostoSignupBuilder->build($store);
-                if (\Zend_Validate::is($emailAddress, 'EmailAddress')) {
-                    /** @var NostoSignupOwner $owner */
-                    $owner = $signupParams->getOwner();
-                    $owner->setEmail($emailAddress);
-                } else {
-                    throw new NostoException("Invalid email address " . $emailAddress);
+                $signupDetails = $this->_request->getParam('details');
+                if (!empty($signupDetails)) {
+                    $signupDetails = json_decode($signupDetails, true);
                 }
 
+                $emailAddress = $this->_request->getParam('email');
+                $accountOwner = $this->nostoOwnerBuilder->build();
+                if ($accountOwner->getEmail() !== $emailAddress) {
+                    if (\Zend_Validate::is($emailAddress, 'EmailAddress')) {
+                        $accountOwner->setFirstName(null);
+                        $accountOwner->setLastName(null);
+                        $accountOwner->setEmail($emailAddress);
+                    } else {
+                        throw new NostoException("Invalid email address " . $emailAddress);
+                    }
+                }
+
+                $signupParams = $this->nostoSignupBuilder->build($store, $accountOwner, $signupDetails);
                 $operation = new NostoOperationAccount($signupParams);
                 $account = $operation->create();
 

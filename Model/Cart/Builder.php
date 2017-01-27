@@ -95,8 +95,7 @@ class Builder
      */
     public function build(Quote $quote, Store $store)
     {
-        /** @var NostoCart $nostoCart */
-        $nostoCart = $this->objectManager->create('NostoCart', array());
+        $nostoCart = new NostoCart();
 
         foreach ($quote->getAllVisibleItems() as $item) {
             try {
