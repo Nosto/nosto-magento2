@@ -170,7 +170,8 @@ abstract class Base implements ObserverInterface
      * @param Store $store the store for which to build the product
      * @return NostoProduct the built product
      */
-    protected function buildProduct(Product $product, Store $store) {
+    protected function buildProduct(Product $product, Store $store)
+    {
         return $this->nostoProductBuilder->build($product, $store);
     }
 

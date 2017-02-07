@@ -58,7 +58,7 @@ class Simple
     public static function buildItemName(ObjectManagerInterface $objectManager, Item $item)
     {
         $name = $item->getName();
-        $optNames = array();
+        $optNames = [];
         $type = $item->getProduct()->getTypeInstance();
         $parentIds = $type->getParentIdsByChild($item->getProductId());
         // If the product has a configurable parent, we assume we should tag

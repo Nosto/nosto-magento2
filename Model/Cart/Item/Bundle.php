@@ -56,7 +56,7 @@ class Bundle
     public static function buildItemName(Item $item)
     {
         $name = $item->getName();
-        $optNames = array();
+        $optNames = [];
         $type = $item->getProduct()->getTypeInstance();
         $opts = $type->getOrderOptions($item->getProduct());
         if (is_array($opts)) {

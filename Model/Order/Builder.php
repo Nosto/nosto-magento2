@@ -160,7 +160,6 @@ class Builder
                 );
                 $nostoOrder->addPurchasedItems($nostoItem);
             }
-
         } catch (Exception $e) {
             $this->logger->error($e, ['exception' => $e]);
         }
@@ -177,7 +176,7 @@ class Builder
     protected function buildDiscountRuleDescription(Order $order)
     {
         try {
-            $appliedRules = array();
+            $appliedRules = [];
             foreach ($order->getAllVisibleItems() as $item) {
                 /* @var Item $item */
                 $itemAppliedRules = $item->getAppliedRuleIds();

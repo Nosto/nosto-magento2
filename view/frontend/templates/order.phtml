@@ -75,8 +75,7 @@ $order = $this->getNostoOrder();
                     <span class="product_id"><?php echo (int)$item->getProductId(); ?></span>
                     <span class="quantity"><?php echo (int)$item->getQuantity(); ?></span>
                     <span class="name"><?php echo $this->escapeHtml($item->getName()); ?></span>
-                    <span
-                        class="unit_price"><?php echo $this->formatNostoPrice($item->getUnitPrice()); ?></span>
+                    <span class="unit_price"><?php echo $this->formatNostoPrice($item->getUnitPrice()); ?></span>
                     <span
                         class="price_currency_code"><?php echo strtoupper($item->getPriceCurrencyCode()); ?></span>
                 </div>

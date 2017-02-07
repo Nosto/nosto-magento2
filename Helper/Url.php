@@ -175,7 +175,7 @@ class Url extends AbstractHelper
             /** @var \Magento\Catalog\Model\Category $category */
             $url = $category->getUrl();
             $url = $this->replaceQueryParamsInUrl(
-                array('___store' => $store->getCode()),
+                ['___store' => $store->getCode()],
                 $url
             );
             return $this->addNostoDebugParamToUrl($url);
@@ -208,13 +208,13 @@ class Url extends AbstractHelper
     {
         $url = $this->urlBuilder->getUrl(
             'catalogsearch/result',
-            array(
+            [
                 '_nosid' => true,
                 '_scope_to_url' => true,
                 '_scope' => $store->getCode(),
-            )
+            ]
         );
-        $url = $this->replaceQueryParamsInUrl(array('q' => 'nosto'), $url);
+        $url = $this->replaceQueryParamsInUrl(['q' => 'nosto'], $url);
         return $this->addNostoDebugParamToUrl($url);
     }
 
@@ -229,11 +229,11 @@ class Url extends AbstractHelper
     {
         $url = $this->urlBuilder->getUrl(
             'checkout/cart',
-            array(
+            [
                 '_nosid' => true,
                 '_scope_to_url' => true,
                 '_scope' => $store->getCode(),
-            )
+            ]
         );
         return $this->addNostoDebugParamToUrl($url);
     }
@@ -249,11 +249,11 @@ class Url extends AbstractHelper
     {
         $url = $this->urlBuilder->getUrl(
             '',
-            array(
+            [
                 '_nosid' => true,
                 '_scope_to_url' => true,
                 '_scope' => $store->getCode(),
-            )
+            ]
         );
         return $this->addNostoDebugParamToUrl($url);
     }

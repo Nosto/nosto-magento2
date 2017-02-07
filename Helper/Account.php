@@ -113,7 +113,7 @@ class Account extends AbstractHelper
             return false;
         }
 
-        $tokens = array();
+        $tokens = [];
         foreach ($account->getTokens() as $token) {
             $tokens[$token->getName()] = $token->getValue();
         }

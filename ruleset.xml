@@ -36,9 +36,24 @@
 
 <!--suppress XmlUnboundNsPrefix -->
 <ruleset name="Magento">
+    <file>./Api</file>
+    <file>./Block</file>
+    <file>./Controller</file>
+    <file>./CustomerData</file>
+    <file>./Helper</file>
+    <file>./Model</file>
+    <file>./Observer</file>
+    <file>./Setup</file>
+    <file>./view</file>
     <exclude-pattern>*.js</exclude-pattern>
+    <config name="installed_paths" value="vendor/magento-ecg/coding-standard/,vendor/magento/marketplace-eqp/" />
     <description>The Magento coding standard.</description>
-    <rule ref="EcgM2">
+    <rule ref="./vendor/magento-ecg/coding-standard/EcgM2">
         <exclude name="Ecg.PHP.PrivateClassMember"/>
+        <exclude name="Ecg.Performance.Loop"/>
+    </rule>
+    <rule ref="./vendor/magento/marketplace-eqp/MEQP2">
+        <exclude name="Squiz.PHP.CommentedOutCode"/>
+        <exclude name="Generic.Metrics.CyclomaticComplexity"/>
     </rule>
 </ruleset>

@@ -68,7 +68,8 @@ class Delete extends Base
     /**
      * @inheritdoc
      */
-    protected function buildProduct(Product $product, Store $store) {
+    protected function buildProduct(Product $product, Store $store)
+    {
         $product = $this->nostoProductBuilder->build($product, $store);
         return $product->setAvailability(\NostoProductInterface::DISCONTINUED);
     }

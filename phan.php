@@ -36,11 +36,17 @@
 
 return [
     'directory_list' => [
-        'src',
-        'vendor'
+         'Api',
+         'Block',
+         'Controller',
+         'CustomerData',
+         'Model',
+         'vendor/vlucas',
+         'vendor/nosto/php-sdk',
+         'vendor/phpseclib',
+         'vendor/magento'
     ],
     "exclude_analysis_directory_list" => [
-        'vendor/',
-        'src/libs/'
+        'vendor/'
     ],
 ];

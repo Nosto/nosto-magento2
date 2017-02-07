@@ -131,7 +131,7 @@ class Builder
 
             // Optional properties.
 
-            $descriptions = array();
+            $descriptions = [];
             if ($product->hasData('short_description')) {
                 $descriptions[] = $product->getData('short_description');
             }
