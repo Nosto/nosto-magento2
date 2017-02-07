@@ -49,22 +49,22 @@ class Builder
     /**
      * @var NostoCartItemBuilder
      */
-    protected $nostoCartItemBuilder;
+    private $nostoCartItemBuilder;
 
     /**
      * @var LoggerInterface
      */
-    protected $logger;
+    private $logger;
+
     /**
      * @var ObjectManagerInterface
      */
-    protected $objectManager;
+    private $objectManager;
+
     /**
-     * Event manager
-     *
      * @var ManagerInterface
      */
-    protected $eventManager;
+    private $eventManager;
 
     /**
      * Constructor.

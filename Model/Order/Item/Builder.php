@@ -49,19 +49,19 @@ class Builder
     /**
      * @var LoggerInterface
      */
-    protected $logger;
+    private $logger;
 
     /**
      * @var ObjectManagerInterface
      */
-    protected $objectManager;
+    private $objectManager;
 
     /**
      * Event manager
      *
      * @var ManagerInterface
      */
-    protected $eventManager;
+    private $eventManager;
 
     /**
      * Constructor.
@@ -131,7 +131,7 @@ class Builder
      *
      * @return int
      */
-    protected function buildItemProductId(Item $item)
+    public function buildItemProductId(Item $item)
     {
         $parent = $item->getProductOptionByCode('super_product_config');
         if (isset($parent['product_id'])) {

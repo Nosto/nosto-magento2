@@ -38,6 +38,7 @@ namespace Nosto\Tagging\CustomerData;
 use Magento\Checkout\Helper\Cart as CartHelper;
 use Magento\Customer\CustomerData\SectionSourceInterface;
 use Magento\Framework\Stdlib\CookieManagerInterface;
+use Magento\Framework\Stdlib\DateTime\DateTime;
 use Magento\Store\Api\StoreManagementInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Nosto\Tagging\Model\Cart\Builder as NostoCartBuilder;
@@ -52,39 +53,43 @@ class CartTagging implements SectionSourceInterface
     /**
      * @var \Magento\Checkout\Helper\Cart
      */
-    protected $cartHelper;
+    private $cartHelper;
 
     /**
      * @var NostoCartBuilder
      */
-    protected $nostoCartBuilder;
+    private $nostoCartBuilder;
 
     /**
      * @var StoreManagementInterface
      */
-    protected $storeManager;
+    private $storeManager;
 
     /**
      * @var CookieManagerInterface
      */
-    protected $cookieManager;
+    private $cookieManager;
 
     /** @noinspection PhpUndefinedClassInspection */
     /**
      * @var NostoCustomerFactory
      */
-    protected $nostoCustomerFactory;
+    private $nostoCustomerFactory;
 
     /**
      * @var \Magento\Quote\Model\Quote|null
      */
-    protected $quote = null;
+    private $quote = null;
 
     /**
      * @var LoggerInterface
      */
-    protected $logger;
+    private $logger;
 
+    /**
+     * @var DateTime
+     */
+    private $date;
 
     /** @noinspection PhpUndefinedClassInspection */
     /**
@@ -93,6 +98,7 @@ class CartTagging implements SectionSourceInterface
      * @param StoreManagerInterface $storeManager
      * @param CookieManagerInterface $cookieManager
      * @param LoggerInterface $logger
+     * @param DateTime $date
      * @param NostoCustomerFactory $nostoCustomerFactory
      */
     public function __construct(
@@ -101,6 +107,7 @@ class CartTagging implements SectionSourceInterface
         StoreManagerInterface $storeManager,
         CookieManagerInterface $cookieManager,
         LoggerInterface $logger,
+        DateTime $date,
         /** @noinspection PhpUndefinedClassInspection */
         NostoCustomerFactory $nostoCustomerFactory
     ) {
@@ -108,6 +115,7 @@ class CartTagging implements SectionSourceInterface
         $this->nostoCartBuilder = $nostoCartBuilder;
         $this->storeManager = $storeManager;
         $this->logger = $logger;
+        $this->date = $date;
         $this->cookieManager = $cookieManager;
         $this->nostoCustomerFactory = $nostoCustomerFactory;
     }
@@ -155,7 +163,7 @@ class CartTagging implements SectionSourceInterface
      *
      * @return \Magento\Quote\Model\Quote
      */
-    protected function getQuote()
+    public function getQuote()
     {
         if (!$this->quote) {
             $cart = $this->cartHelper->getCart();
@@ -185,7 +193,7 @@ class CartTagging implements SectionSourceInterface
             /** @noinspection PhpUndefinedMethodInspection */
             if ($nostoCustomer->hasData(NostoCustomer::CUSTOMER_ID)) {
                 /** @noinspection PhpUndefinedMethodInspection */
-                $nostoCustomer->setUpdatedAt(new \DateTime('now'));
+                $nostoCustomer->setUpdatedAt($this->date->date());
             } else {
                 /** @noinspection PhpUndefinedMethodInspection */
                 $nostoCustomer = $this->nostoCustomerFactory->create();
@@ -194,9 +202,9 @@ class CartTagging implements SectionSourceInterface
                 /** @noinspection PhpUndefinedMethodInspection */
                 $nostoCustomer->setNostoId($nostoCustomerId);
                 /** @noinspection PhpUndefinedMethodInspection */
-                $nostoCustomer->setCreatedAt(new \DateTime('now'));
+                $nostoCustomer->setCreatedAt($this->date->date());
                 /** @noinspection PhpUndefinedMethodInspection */
-                $nostoCustomer->setUpdatedAt(new \DateTime('now'));
+                $nostoCustomer->setUpdatedAt($this->date->date());
             }
             try {
                 $nostoCustomer->save();
@@ -211,7 +219,7 @@ class CartTagging implements SectionSourceInterface
      *
      * @return \Magento\Quote\Model\Quote\Item[]
      */
-    protected function getAllQuoteItems()
+    public function getAllQuoteItems()
     {
 
         $quote = $this->getQuote();

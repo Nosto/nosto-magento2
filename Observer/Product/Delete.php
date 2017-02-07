@@ -52,7 +52,7 @@ class Delete extends Base
     /**
      * @inheritdoc
      */
-    protected function doRequest(\NostoOperationProduct $operation)
+    public function doRequest(\NostoOperationProduct $operation)
     {
         $operation->upsert();
     }
@@ -60,7 +60,7 @@ class Delete extends Base
     /**
      * @inheritdoc
      */
-    protected function validateProduct(Product $product)
+    public function validateProduct(Product $product)
     {
         return true;
     }
@@ -68,7 +68,7 @@ class Delete extends Base
     /**
      * @inheritdoc
      */
-    protected function buildProduct(Product $product, Store $store)
+    public function buildProduct(Product $product, Store $store)
     {
         $product = $this->nostoProductBuilder->build($product, $store);
         return $product->setAvailability(\NostoProductInterface::DISCONTINUED);

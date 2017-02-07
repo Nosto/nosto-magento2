@@ -87,7 +87,7 @@ class Price extends AbstractHelper
      *
      * @return float
      */
-    protected function getProductPrice($product, $finalPrice = false, $inclTax = true)
+    public function getProductPrice($product, $finalPrice = false, $inclTax = true)
     {
         switch ($product->getTypeId()) {
             // Get the bundle product "from" price.

@@ -54,23 +54,23 @@ class Builder
     /**
      * @var LoggerInterface
      */
-    protected $logger;
+    private $logger;
 
     /** @noinspection PhpUndefinedClassInspection */
     /**
      * @var SalesRuleFactory
      */
-    protected $salesRuleFactory;
+    private $salesRuleFactory;
 
     /**
      * @var NostoPriceHelper
      */
-    protected $nostoPriceHelper;
+    private $nostoPriceHelper;
 
     /**
      * @var ObjectManagerInterface
      */
-    protected $objectManager;
+    private $objectManager;
 
     /** @noinspection PhpUndefinedClassInspection */
     /**
@@ -173,7 +173,7 @@ class Builder
      * @param Order $order
      * @return string discount description
      */
-    protected function buildDiscountRuleDescription(Order $order)
+    public function buildDiscountRuleDescription(Order $order)
     {
         try {
             $appliedRules = [];

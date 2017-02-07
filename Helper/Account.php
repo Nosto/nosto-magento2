@@ -75,12 +75,12 @@ class Account extends AbstractHelper
     /**
      * @var WriterInterface the app config writer.
      */
-    protected $config;
+    private $config;
 
     /**
      * @var ModuleManager
      */
-    protected $moduleManager;
+    private $moduleManager;
 
     /**
      * Constructor.
@@ -97,7 +97,6 @@ class Account extends AbstractHelper
         $this->config = $appConfig;
         $this->moduleManager = $context->getModuleManager();
     }
-
 
     /**
      * Saves the account and the associated api tokens for the store.

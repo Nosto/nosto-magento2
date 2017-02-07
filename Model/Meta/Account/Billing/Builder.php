@@ -42,7 +42,7 @@ use Psr\Log\LoggerInterface;
 
 class Builder
 {
-    protected $logger;
+    private $logger;
 
     /**
      * @param LoggerInterface $logger

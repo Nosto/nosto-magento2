@@ -66,22 +66,26 @@ class Data extends AbstractHelper
      */
     const VISITOR_HASH_ALGO = 'sha256';
     const MODULE_NAME = 'Nosto_Tagging';
+
     /**
      * @var StoreManagerInterface the store manager.
      */
-    protected $storeManager;
+    private $storeManager;
+
     /**
      * @var ModuleListInterface the module listing
      */
-    protected $moduleListing;
+    private $moduleListing;
+
     /**
      * @var WriterInterface the config writer.
      */
-    protected $configWriter;
+    private $configWriter;
+
     /**
      * @var ProductMetadataInterface $productMetaData .
      */
-    protected $productMetaData;
+    private $productMetaData;
 
     /**
      * Constructor.
@@ -161,7 +165,7 @@ class Data extends AbstractHelper
      */
     public function getStoreConfig($path, Store $store = null)
     {
-        if (is_null($store)) {
+        if ($store === null) {
             $store = $this->storeManager->getStore(true);
         }
         return $store->getConfig($path);

@@ -50,7 +50,7 @@ class Connect extends Base
     /**
      * @var Json
      */
-    protected $result;
+    private $result;
     private $oauthMetaBuilder;
     private $storeManager;
 
@@ -84,7 +84,7 @@ class Connect extends Base
         /** @var Store $store */
         $store = $this->storeManager->getStore($storeId);
 
-        if (!is_null($store)) {
+        if ($store !== null) {
             $metaData = $this->oauthMetaBuilder->build($store);
             $client = new NostoOAuthClient($metaData);
 

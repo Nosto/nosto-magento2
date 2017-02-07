@@ -51,7 +51,9 @@ class Proxy extends Base
      * @inheritdoc
      */
     protected $_publicActions = ['proxy'];
-    /** @var Session */
+    /**
+     * @var Session
+     */
     private $backendAuthSession;
 
     /**
@@ -81,7 +83,7 @@ class Proxy extends Base
         $type = $this->_request->getParam('message_type');
         $code = $this->_request->getParam('message_code');
         $text = $this->_request->getParam('message_text');
-        if (!is_null($type) && !is_null($code)) {
+        if ($type !== null && $code !== null) {
             /** @noinspection PhpUndefinedMethodInspection */
             $this->backendAuthSession->setData(
                 'nosto_message',

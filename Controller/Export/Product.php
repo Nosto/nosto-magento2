@@ -57,6 +57,7 @@ class Product extends Base
 
     private $productCollectionFactory;
     private $productVisibility;
+    private $storeManager;
     private $nostoProductBuilder;
 
     /** @noinspection PhpUndefinedClassInspection */
@@ -81,6 +82,7 @@ class Product extends Base
     ) {
         parent::__construct($context, $storeManager, $nostoHelperAccount);
 
+        $this->storeManager = $storeManager;
         $this->productCollectionFactory = $productCollectionFactory;
         $this->productVisibility = $productVisibility;
         $this->nostoProductBuilder = $nostoProductBuilder;
@@ -89,7 +91,7 @@ class Product extends Base
     /**
      * @inheritdoc
      */
-    protected function getCollection(Store $store)
+    protected function getCollection(Store $store) // @codingStandardsIgnoreLine
     {
         /** @var \Magento\Catalog\Model\ResourceModel\Product\Collection $collection */
         /** @noinspection PhpUndefinedMethodInspection */
@@ -103,7 +105,7 @@ class Product extends Base
     /**
      * @inheritdoc
      */
-    protected function buildExportCollection($collection)
+    protected function buildExportCollection($collection) // @codingStandardsIgnoreLine
     {
         /** @var \Magento\Catalog\Model\ResourceModel\Product\Collection $collection */
         $exportCollection = new NostoProductCollection();

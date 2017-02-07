@@ -44,11 +44,10 @@ use Nosto\Tagging\Helper\Account as NostoHelperAccount;
  */
 class Knockout extends Template
 {
-
     /**
      * @var NostoHelperAccount
      */
-    protected $nostoHelperAccount;
+    private $nostoHelperAccount;
 
     /**
      * Constructor
@@ -66,7 +65,6 @@ class Knockout extends Template
         parent::__construct($context, $data);
         $this->nostoHelperAccount = $nostoHelperAccount;
     }
-
 
     public function getTemplate()
     {

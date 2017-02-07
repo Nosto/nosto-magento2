@@ -84,7 +84,7 @@ class Order extends Base
     /**
      * @inheritdoc
      */
-    protected function getCollection(Store $store)
+    protected function getCollection(Store $store) // @codingStandardsIgnoreLine
     {
         /** @var \Magento\Sales\Model\ResourceModel\Order\Collection $collection */
         /** @noinspection PhpUndefinedMethodInspection */
@@ -96,7 +96,7 @@ class Order extends Base
     /**
      * @inheritdoc
      */
-    protected function buildExportCollection($collection)
+    protected function buildExportCollection($collection) // @codingStandardsIgnoreLine
     {
         /** @var \Magento\Sales\Model\ResourceModel\Order\Collection $collection */
         $exportCollection = new NostoOrderCollection();

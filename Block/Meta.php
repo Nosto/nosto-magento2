@@ -50,7 +50,7 @@ class Meta extends Template
     /**
      * @var NostoHelperData the module data helper.
      */
-    protected $nostoHelperData;
+    private $nostoHelperData;
 
     /**
      * Constructor.

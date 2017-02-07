@@ -57,8 +57,8 @@ abstract class Base extends Action
     const CREATED_AT = 'created_at';
     const ENTITY_ID = 'entity_id';
 
-    protected $storeManager;
-    protected $nostoHelperAccount;
+    private $storeManager;
+    private $nostoHelperAccount;
 
     /**
      * Constructor.
@@ -116,7 +116,7 @@ abstract class Base extends Action
      * @param Store $store The store object for the current store
      * @return \Magento\Sales\Model\ResourceModel\Order\Collection The collection
      */
-    abstract protected function getCollection(Store $store);
+    abstract protected function getCollection(Store $store); // @codingStandardsIgnoreLine
 
     /**
      * Abstract function that should be implemented to return the built export
@@ -125,7 +125,7 @@ abstract class Base extends Action
      * @param \Magento\Sales\Model\ResourceModel\Order\Collection $collection
      * @return \Magento\Sales\Model\ResourceModel\Order\Collection The collection
      */
-    abstract protected function buildExportCollection($collection);
+    abstract protected function buildExportCollection($collection); // @codingStandardsIgnoreLine
 
     /**
      * Encrypts the export collection and outputs it to the browser.
@@ -133,7 +133,7 @@ abstract class Base extends Action
      * @param NostoCollection $collection the data collection to export.
      * @return Raw
      */
-    protected function export(NostoCollection $collection)
+    public function export(NostoCollection $collection)
     {
         /** @var Raw $result */
         $result = $this->resultFactory->create(ResultFactory::TYPE_RAW);

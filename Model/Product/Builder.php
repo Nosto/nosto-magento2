@@ -53,34 +53,34 @@ class Builder
     /**
      * @var NostoHelperData
      */
-    protected $nostoDataHelper;
+    private $nostoDataHelper;
 
     /**
      * @var NostoPriceHelper
      */
-    protected $nostoPriceHelper;
+    private $nostoPriceHelper;
 
     /**
      * @var NostoCategoryBuilder
      */
-    protected $NostoCategoryBuilder;
+    private $nostoCategoryBuilder;
 
     /**
      * @var CategoryRepositoryInterface
      */
-    protected $categoryRepository;
+    private $categoryRepository;
 
     /**
      * Event manager
      *
      * @var ManagerInterface
      */
-    protected $eventManager;
+    private $eventManager;
 
     /**
      * @var LoggerInterface
      */
-    protected $logger;
+    private $logger;
 
     /**
      * @param NostoHelperData $nostoHelperData
@@ -100,7 +100,7 @@ class Builder
     ) {
         $this->nostoDataHelper = $nostoHelperData;
         $this->nostoPriceHelper = $priceHelper;
-        $this->categoryBuilder = $categoryBuilder;
+        $this->nostoCategoryBuilder = $categoryBuilder;
         $this->categoryRepository = $categoryRepository;
         $this->logger = $logger;
         $this->eventManager = $eventManager;
@@ -138,7 +138,7 @@ class Builder
             if ($product->hasData('description')) {
                 $descriptions[] = $product->getData('description');
             }
-            if (count($descriptions) > 0) {
+            if (!empty($descriptions)) {
                 $nostoProduct->setDescription(implode(' ', $descriptions));
             }
 
@@ -167,7 +167,7 @@ class Builder
      * @param StoreInterface $store
      * @return string
      */
-    protected function buildUrl(Product $product, StoreInterface $store)
+    public function buildUrl(Product $product, StoreInterface $store)
     {
         return $product->getUrlInStore(
             [
@@ -184,7 +184,7 @@ class Builder
      * @param StoreInterface $store
      * @return string|null
      */
-    protected function buildImageUrl(Product $product, StoreInterface $store)
+    public function buildImageUrl(Product $product, StoreInterface $store)
     {
         $primary = $this->nostoDataHelper->getProductImageVersion($store);
         $secondary = 'image'; // The "base" image.
@@ -205,11 +205,11 @@ class Builder
      * @param Product $product
      * @return array
      */
-    protected function buildCategories(Product $product)
+    public function buildCategories(Product $product)
     {
         $categories = [];
         foreach ($product->getCategoryCollection() as $category) {
-            $categories[] = $this->categoryBuilder->build($category);
+            $categories[] = $this->nostoCategoryBuilder->build($category);
         }
         return $categories;
     }
@@ -218,7 +218,7 @@ class Builder
      * @param Product $product
      * @return array
      */
-    protected function buildTags(Product $product)
+    public function buildTags(Product $product)
     {
         $tags = [];
         /** @var Attribute $attr */
@@ -228,9 +228,7 @@ class Builder
             ) {
                 $label = $attr->getStoreLabel();
                 $value = $attr->getFrontend()->getValue($product);
-                if (is_string($label) && strlen($label)
-                    && is_string($value) && strlen($value)
-                ) {
+                if (is_string($label) && $label !== "" && is_string($value) && $value !== "") {
                     $tags[] = "{$label}: {$value}";
                 }
             }

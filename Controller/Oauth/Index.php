@@ -147,7 +147,7 @@ class Index extends Action
      * @param Store $store the store the account is connect for.
      * @throws \Exception if the connection fails.
      */
-    protected function connectAccount($authCode, $store)
+    private function connectAccount($authCode, $store)
     {
         $oldAccount = $this->nostoHelperAccount->findAccount($store);
         $meta = $this->oauthMetaBuilder->build($store, $oldAccount);
@@ -156,7 +156,7 @@ class Index extends Action
 
         // If we are updating an existing account,
         // double check that we got the same account back from Nosto.
-        if (!is_null($oldAccount) && $newAccount->getName() !== $oldAccount->getName()) {
+        if ($oldAccount !== null && $newAccount->getName() !== $oldAccount->getName()) {
             throw new InputMismatchException(__('Failed to synchronise Nosto account details, account mismatch.'));
         }
 

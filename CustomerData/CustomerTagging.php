@@ -43,15 +43,15 @@ use Nosto\Tagging\Model\Customer as NostoCustomer;
 
 class CustomerTagging implements SectionSourceInterface
 {
-    /*
+    /**
      * @var CurrentCustomer
      */
-    protected $currentCustomer;
+    private $currentCustomer;
 
-    /*
+    /**
      * @var CookieManagerInterface
      */
-    protected $cookieManager;
+    private $cookieManager;
 
     /**
      * Constructor
@@ -72,7 +72,6 @@ class CustomerTagging implements SectionSourceInterface
      */
     public function getSectionData()
     {
-
         $data = [];
         if ($this->currentCustomer instanceof CurrentCustomer
             && $this->currentCustomer->getCustomerId()

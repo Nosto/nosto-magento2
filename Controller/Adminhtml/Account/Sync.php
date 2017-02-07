@@ -51,7 +51,7 @@ class Sync extends Base
     /**
      * @var Json
      */
-    protected $result;
+    private $result;
     private $nostoHelperAccount;
     private $oauthMetaBuilder;
     private $storeManager;
@@ -88,11 +88,9 @@ class Sync extends Base
         $storeId = $this->_request->getParam('store');
         /** @var Store $store */
         $store = $this->storeManager->getStore($storeId);
-        $account = !is_null($store)
-            ? $this->nostoHelperAccount->findAccount($store)
-            : null;
+        $account = $store !== null ? $this->nostoHelperAccount->findAccount($store) : null;
 
-        if (!is_null($store) && !is_null($account)) {
+        if ($store !== null && $account !== null) {
             $metaData = $this->oauthMetaBuilder->build($store, $account);
             $client = new NostoOAuthClient($metaData);
 

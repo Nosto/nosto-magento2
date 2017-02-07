@@ -53,23 +53,23 @@ class Url extends AbstractHelper
     /**
      * @var ProductCollectionFactory auto generated product collection factory.
      */
-    protected $productCollectionFactory;
+    private $productCollectionFactory;
 
     /** @noinspection PhpUndefinedClassInspection */
     /**
      * @var CategoryCollectionFactory auto generated category collection factory.
      */
-    protected $categoryCollectionFactory;
+    private $categoryCollectionFactory;
 
     /**
      * @var Visibility product visibility.
      */
-    protected $productVisibility;
+    private $productVisibility;
 
     /**
      * @var \Magento\Framework\Url frontend URL builder.
      */
-    protected $urlBuilder;
+    private $urlBuilder;
 
     /** @noinspection PhpUndefinedClassInspection */
     /**

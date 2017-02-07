@@ -59,33 +59,37 @@ class Save implements ObserverInterface
     /**
      * @var NostoHelperData
      */
-    protected $nostoHelperData;
+    private $nostoHelperData;
 
     /**
      * @var NostoHelperAccount
      */
-    protected $nostoHelperAccount;
+    private $nostoHelperAccount;
 
     /**
      * @var StoreManagerInterface
      */
-    protected $storeManager;
+    private $storeManager;
 
     /**
      * @var LoggerInterface
      */
-    protected $logger;
+    private $logger;
 
     /**
      * @var NostoOrderBuilder
      */
-    protected $nostoOrderBuilder;
+    private $nostoOrderBuilder;
 
     /**
      * @var ModuleManager
      */
-    protected $moduleManager;
-    protected $customerFactory;
+    private $moduleManager;
+
+    /**
+     * @var CustomerFactory
+     */
+    private $customerFactory;
 
     /** @noinspection PhpUndefinedClassInspection */
     /**

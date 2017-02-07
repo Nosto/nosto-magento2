@@ -43,8 +43,7 @@ use Psr\Log\LoggerInterface;
 
 class Builder
 {
-    protected $factory;
-    protected $logger;
+    private $logger;
     private $backendAuthSession;
 
     /**
@@ -68,7 +67,7 @@ class Builder
 
         try {
             $user = $this->backendAuthSession->getUser();
-            if (!is_null($user)) {
+            if ($user !== null) {
                 $metaData->setFirstName($user->getFirstName());
                 $metaData->setLastName($user->getLastName());
                 $metaData->setEmail($user->getEmail());

@@ -64,17 +64,17 @@ class Product extends View
     /**
      * @var NostoProductBuilder the product meta model builder.
      */
-    protected $nostoProductBuilder;
+    private $nostoProductBuilder;
 
     /**
      * @var NostoCategoryBuilder the category meta model builder.
      */
-    protected $categoryBuilder;
+    private $categoryBuilder;
 
     /**
      * @var NostoHelperData the data helper.
      */
-    protected $nostoHelperData;
+    private $nostoHelperData;
 
     /**
      * Constructor.
@@ -152,9 +152,7 @@ class Product extends View
     public function getNostoCategory()
     {
         $category = $this->_coreRegistry->registry('current_category');
-        return !is_null($category)
-            ? $this->categoryBuilder->build($category)
-            : null;
+        return $category !== null ? $this->categoryBuilder->build($category) : null;
     }
 
     /**

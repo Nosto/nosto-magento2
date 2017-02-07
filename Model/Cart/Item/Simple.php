@@ -38,7 +38,7 @@ namespace Nosto\Tagging\Model\Cart\Item;
 
 use Magento\Catalog\Model\Product\Type;
 use Magento\Catalog\Model\ResourceModel\Eav\Attribute;
-use Magento\Framework\ObjectManagerInterface;
+use Magento\Framework\App\ObjectManager;
 use Magento\Quote\Model\Quote\Item;
 
 class Simple
@@ -51,16 +51,16 @@ class Simple
     /**
      * Returns the name of the product. Simple products will have their own name
      *
-     * @param ObjectManagerInterface $objectManager
      * @param Item $item the ordered item
      * @return string the name of the product
      */
-    public static function buildItemName(ObjectManagerInterface $objectManager, Item $item)
+    public static function buildItemName(Item $item)
     {
         $name = $item->getName();
         $optNames = [];
         $type = $item->getProduct()->getTypeInstance();
         $parentIds = $type->getParentIdsByChild($item->getItemId());
+        $objectManager = ObjectManager::getInstance();
         // If the product has a configurable parent, we assume we should tag
         // the parent. If there are many parent IDs, we are safer to tag the
         // products own name alone.
@@ -69,8 +69,7 @@ class Simple
             if (is_array($attributes)) {
                 foreach ($attributes as $id => $value) {
                     /** @var Attribute $attribute */
-                    $attribute = $objectManager->get('Magento\Catalog\Model\ResourceModel\Eav\Attribute')
-                        ->load($id); // @codingStandardsIgnoreLine
+                    $attribute = $objectManager->get(Attribute::class)->load($id); // @codingStandardsIgnoreLine
                     $label = $attribute->getSource()->getOptionText($value);
                     if (!empty($label)) {
                         $optNames[] = $label;

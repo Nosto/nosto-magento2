@@ -45,7 +45,7 @@ class Builder
     /**
      * @var LoggerInterface
      */
-    protected $logger;
+    private $logger;
 
     /**
      * @param CategoryRepositoryInterface $categoryRepository

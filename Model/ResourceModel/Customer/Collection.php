@@ -45,7 +45,7 @@ class Collection extends AbstractCollection
      *
      * @return void
      */
-    protected function _construct()
+    public function _construct()
     {
         $this->_init(
             'Nosto\Tagging\Model\Customer',

@@ -56,32 +56,32 @@ abstract class Base implements ObserverInterface
     /**
      * @var NostoHelperData
      */
-    protected $nostoHelperData;
+    private $nostoHelperData;
 
     /**
      * @var NostoHelperAccount
      */
-    protected $nostoHelperAccount;
+    private $nostoHelperAccount;
 
     /**
      * @var NostoProductBuilder
      */
-    protected $nostoProductBuilder;
+    private $nostoProductBuilder;
 
     /**
      * @var StoreManagerInterface
      */
-    protected $storeManager;
+    private $storeManager;
 
     /**
      * @var LoggerInterface
      */
-    protected $logger;
+    private $logger;
 
     /**
      * @var ModuleManager
      */
-    protected $moduleManager;
+    private $moduleManager;
 
     /**
      * Constructor.
@@ -148,7 +148,7 @@ abstract class Base implements ObserverInterface
                 // Load the product model for this particular store view.
                 /** @var NostoProduct $model */
                 $metaProduct = $this->buildProduct($product, $store);
-                if (is_null($metaProduct)) {
+                if ($metaProduct === null) {
                     continue;
                 }
 
@@ -170,7 +170,7 @@ abstract class Base implements ObserverInterface
      * @param Store $store the store for which to build the product
      * @return NostoProduct the built product
      */
-    protected function buildProduct(Product $product, Store $store)
+    public function buildProduct(Product $product, Store $store)
     {
         return $this->nostoProductBuilder->build($product, $store);
     }
@@ -180,11 +180,11 @@ abstract class Base implements ObserverInterface
      *
      * @param Product $product the product from the event
      */
-    abstract protected function validateProduct(Product $product);
+    abstract public function validateProduct(Product $product);
 
     /**
      * @param NostoOperationProduct $operation
      * @return mixed
      */
-    abstract protected function doRequest(NostoOperationProduct $operation);
+    abstract public function doRequest(NostoOperationProduct $operation);
 }

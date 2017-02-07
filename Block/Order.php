@@ -56,17 +56,17 @@ class Order extends Success
     /**
      * @var NostoOrderBuilder the order meta model builder.
      */
-    protected $nostoOrderBuilder;
+    private $nostoOrderBuilder;
 
     /**
      * @var Registry the framework registry.
      */
-    protected $registry;
+    private $registry;
 
     /**
      * @var Session
      */
-    protected $checkoutSession;
+    private $checkoutSession;
 
     /** @noinspection PhpUndefinedClassInspection */
     /**

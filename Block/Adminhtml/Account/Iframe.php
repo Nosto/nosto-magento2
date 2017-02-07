@@ -59,7 +59,7 @@ class Iframe extends BlockTemplate
      * Default iframe origin regexp for validating window.postMessage() calls.
      */
     const DEFAULT_IFRAME_ORIGIN_REGEXP = '(https:\/\/(.*)\.hub\.nosto\.com)|(https:\/\/my\.nosto\.com)';
-    protected $nostoHelperAccount;
+    private $nostoHelperAccount;
     private $backendAuthSession;
     private $nostoSsoBuilder;
     private $nostoIframeMetaBuilder;

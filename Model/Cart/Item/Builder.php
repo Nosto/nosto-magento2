@@ -49,17 +49,17 @@ class Builder
     /**
      * @var LoggerInterface
      */
-    protected $logger;
+    private $logger;
+
     /**
      * @var ObjectManagerInterface
      */
-    protected $objectManager;
+    private $objectManager;
+
     /**
-     * Event manager
-     *
      * @var ManagerInterface
      */
-    protected $eventManager;
+    private $eventManager;
 
     /**
      * Constructor.
@@ -92,7 +92,7 @@ class Builder
         $cartItem->setQuantity($item->getQty());
         switch ($item->getProductType()) {
             case Simple::getType():
-                $cartItem->setName(Simple::buildItemName($this->objectManager, $item));
+                $cartItem->setName(Simple::buildItemName($item));
                 break;
             case Configurable::getType():
                 $cartItem->setName(Configurable::buildItemName($item));
@@ -101,7 +101,7 @@ class Builder
                 $cartItem->setName(Bundle::buildItemName($item));
                 break;
             case Grouped::getType():
-                $cartItem->setName(Grouped::buildItemName($this->objectManager, $item));
+                $cartItem->setName(Grouped::buildItemName($item));
                 break;
         }
         try {
@@ -122,11 +122,11 @@ class Builder
      * @param Item $item
      * @return string
      */
-    protected function buildItemId(Item $item)
+    public function buildItemId(Item $item)
     {
         /** @var Item $parentItem */
         $parentItem = $item->getOptionByCode('product_type');
-        if (!is_null($parentItem)) {
+        if ($parentItem !== null) {
             return $parentItem->getProduct()->getSku();
         } elseif ($item->getProductType() === Type::TYPE_SIMPLE) {
             $type = $item->getProduct()->getTypeInstance();

@@ -54,12 +54,12 @@ class Index extends Base
     /**
      * @var PageFactory
      */
-    protected $resultPageFactory;
+    private $resultPageFactory;
 
     /**
      * @var StoreManagerInterface
      */
-    protected $storeManager;
+    private $storeManager;
 
     /**
      * @param Context $context
@@ -114,7 +114,7 @@ class Index extends Base
      *
      * @return Store|null the store or null if not found.
      */
-    protected function getSelectedStore()
+    private function getSelectedStore()
     {
         $store = null;
         if ($this->storeManager->isSingleStoreMode()) {

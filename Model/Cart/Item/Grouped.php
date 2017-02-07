@@ -37,7 +37,7 @@
 namespace Nosto\Tagging\Model\Cart\Item;
 
 use Magento\Catalog\Model\Product;
-use Magento\Framework\ObjectManagerInterface;
+use Magento\Framework\App\ObjectManager;
 use Magento\GroupedProduct\Model\Product\Type\Grouped as Type;
 use Magento\Quote\Model\Quote\Item;
 
@@ -52,17 +52,17 @@ class Grouped
      * Returns the name of the product. Grouped products will have their parent's name prepended to
      * their name.
      *
-     * @param ObjectManagerInterface $objectManager
      * @param Item $item the ordered item
      * @return string the name of the product
      */
-    public static function buildItemName(ObjectManagerInterface $objectManager, Item $item)
+    public static function buildItemName(Item $item)
     {
         $name = $item->getName();
         $config = $item->getBuyRequest()->getData('super_product_config');
+        $objectManager = ObjectManager::getInstance();
         if (isset($config['product_id'])) {
             /** @var Product $parent */
-            $parent = $objectManager->get('Magento\Catalog\Model\Product')->load($config['product_id']);
+            $parent = $objectManager->get(Product::class)->load($config['product_id']); // @codingStandardsIgnoreLine
             $parentName = $parent->getName();
             if (!empty($parentName)) {
                 $name = $parentName . ' - ' . $name;

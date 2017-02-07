@@ -50,12 +50,12 @@ class Category extends Template
     /**
      * @var Registry the framework registry.
      */
-    protected $registry;
+    private $registry;
 
     /**
      * @var NostoCategoryBuilder the category meta model builder.
      */
-    protected $categoryBuilder;
+    private $categoryBuilder;
 
     /**
      * Constructor.

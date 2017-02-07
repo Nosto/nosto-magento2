@@ -51,7 +51,7 @@ class Update extends Base
     /**
      * @inheritdoc
      */
-    protected function doRequest(\NostoOperationProduct $operation)
+    public function doRequest(\NostoOperationProduct $operation)
     {
         $operation->upsert();
     }
@@ -59,7 +59,7 @@ class Update extends Base
     /**
      * @inheritdoc
      */
-    protected function validateProduct(Product $product)
+    public function validateProduct(Product $product)
     {
         return $product->isVisibleInSiteVisibility();
     }

@@ -58,7 +58,7 @@ class Create extends Base
     /**
      * @var Json
      */
-    protected $result;
+    private $result;
     private $nostoHelperAccount;
     private $nostoCurrentUserBuilder;
     /**
@@ -118,7 +118,7 @@ class Create extends Base
         /** @var Store $store */
         $store = $this->storeManager->getStore($storeId);
 
-        if (!is_null($store)) {
+        if ($store !== null) {
             try {
                 $signupDetails = $this->_request->getParam('details');
                 if (!empty($signupDetails)) {
