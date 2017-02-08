@@ -50,7 +50,7 @@ class Proxy extends Base
     /**
      * @inheritdoc
      */
-    protected $_publicActions = ['proxy'];
+    protected $_publicActions = ['proxy']; // @codingStandardsIgnoreLine
     /**
      * @var Session
      */

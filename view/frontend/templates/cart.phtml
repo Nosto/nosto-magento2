@@ -58,5 +58,6 @@
     <!-- /ko -->
 </div>
 <script type="text/x-magento-init">
-{"[data-role=nosto-cart-tagging]": {"Magento_Ui/js/core/app": <?php echo $block->getJsLayout(); ?>}}
+{"[data-role=nosto-cart-tagging]": {"Magento_Ui/js/core/app": <?php /** @var \Magento\Backend\Block\AbstractBlock $block */
+    echo $block->getJsLayout(); ?>}}
 </script>

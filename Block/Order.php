@@ -38,7 +38,6 @@ namespace Nosto\Tagging\Block;
 
 use Magento\Checkout\Block\Success;
 use Magento\Checkout\Model\Session;
-use Magento\Framework\Registry;
 use Magento\Framework\View\Element\Template;
 use Magento\Sales\Model\OrderFactory;
 use Nosto\Tagging\Model\Order\Builder as NostoOrderBuilder;
@@ -57,11 +56,6 @@ class Order extends Success
      * @var NostoOrderBuilder the order meta model builder.
      */
     private $nostoOrderBuilder;
-
-    /**
-     * @var Registry the framework registry.
-     */
-    private $registry;
 
     /**
      * @var Session

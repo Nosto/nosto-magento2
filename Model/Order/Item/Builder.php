@@ -93,7 +93,7 @@ class Builder
         $nostoItem->setQuantity((int)$item->getQtyOrdered());
         switch ($item->getProductType()) {
             case Simple::getType():
-                $nostoItem->setName(Simple::buildItemName($this->objectManager, $item));
+                $nostoItem->setName(Simple::buildItemName($item));
                 break;
             case Configurable::getType():
                 $nostoItem->setName(Configurable::buildItemName($item));
@@ -102,7 +102,7 @@ class Builder
                 $nostoItem->setName(Bundle::buildItemName($item));
                 break;
             case Grouped::getType():
-                $nostoItem->setName(Grouped::buildItemName($this->objectManager, $item));
+                $nostoItem->setName(Grouped::buildItemName($item));
                 break;
         }
         try {
