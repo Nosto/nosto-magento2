@@ -39,7 +39,7 @@ use Magento\Checkout\Helper\Cart as CartHelper;
 use Magento\Customer\CustomerData\SectionSourceInterface;
 use Magento\Framework\Stdlib\CookieManagerInterface;
 use Magento\Framework\Stdlib\DateTime\DateTime;
-use Magento\Store\Api\StoreManagementInterface;
+
 use Magento\Store\Model\StoreManagerInterface;
 use Nosto\Tagging\Model\Cart\Builder as NostoCartBuilder;
 use Nosto\Tagging\Model\Customer as NostoCustomer;
@@ -49,46 +49,13 @@ use Psr\Log\LoggerInterface;
 
 class CartTagging implements SectionSourceInterface
 {
-
-    /**
-     * @var \Magento\Checkout\Helper\Cart
-     */
     private $cartHelper;
-
-    /**
-     * @var NostoCartBuilder
-     */
     private $nostoCartBuilder;
-
-    /**
-     * @var StoreManagementInterface
-     */
     private $storeManager;
-
-    /**
-     * @var CookieManagerInterface
-     */
     private $cookieManager;
-
-    /** @noinspection PhpUndefinedClassInspection */
-    /**
-     * @var NostoCustomerFactory
-     */
     private $nostoCustomerFactory;
-
-    /**
-     * @var \Magento\Quote\Model\Quote|null
-     */
     private $quote = null;
-
-    /**
-     * @var LoggerInterface
-     */
     private $logger;
-
-    /**
-     * @var DateTime
-     */
     private $date;
 
     /** @noinspection PhpUndefinedClassInspection */
@@ -173,6 +140,9 @@ class CartTagging implements SectionSourceInterface
         return $this->quote;
     }
 
+    /**
+     * @suppress PhanDeprecatedFunction
+     */
     private function updateNostoId()
     {
         // Handle the Nosto customer & quote mapping
@@ -190,10 +160,8 @@ class CartTagging implements SectionSourceInterface
 
             /** @noinspection PhpUndefinedMethodInspection */
             $nostoCustomer = $customerQuery->getFirstItem(); // @codingStandardsIgnoreLine
-            /** @noinspection PhpUndefinedMethodInspection */
             if ($nostoCustomer->hasData(NostoCustomer::CUSTOMER_ID)) {
-                /** @noinspection PhpUndefinedMethodInspection */
-                $nostoCustomer->setUpdatedAt($this->date->date());
+                $nostoCustomer->setUpdatedAt(self::getNow());
             } else {
                 /** @noinspection PhpUndefinedMethodInspection */
                 $nostoCustomer = $this->nostoCustomerFactory->create();
@@ -201,17 +169,26 @@ class CartTagging implements SectionSourceInterface
                 $nostoCustomer->setQuoteId($quoteId);
                 /** @noinspection PhpUndefinedMethodInspection */
                 $nostoCustomer->setNostoId($nostoCustomerId);
-                /** @noinspection PhpUndefinedMethodInspection */
-                $nostoCustomer->setCreatedAt($this->date->date());
-                /** @noinspection PhpUndefinedMethodInspection */
-                $nostoCustomer->setUpdatedAt($this->date->date());
+                $nostoCustomer->setCreatedAt(self::getNow());
+                $nostoCustomer->setUpdatedAt(self::getNow());
             }
             try {
+                /** @noinspection PhpDeprecationInspection */
                 $nostoCustomer->save();
             } catch (\Exception $e) {
                 $this->logger->error($e->__toString());
             }
         }
+    }
+
+    /**
+     * Returns the current datetime object
+     *
+     * @return \DateTime the current datetime
+     */
+    private function getNow()
+    {
+        return \DateTime::createFromFormat('Y-m-d H:i:s', $this->date->date());
     }
 
     /**
@@ -221,8 +198,6 @@ class CartTagging implements SectionSourceInterface
      */
     public function getAllQuoteItems()
     {
-
-        $quote = $this->getQuote();
-        return $quote->getAllVisibleItems();
+        return $this->getQuote()->getAllVisibleItems();
     }
 }

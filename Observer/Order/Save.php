@@ -107,6 +107,7 @@ class Save implements ObserverInterface
      *
      * @param Observer $observer
      * @return void
+     * @suppress PhanDeprecatedFunction
      */
     public function execute(Observer $observer)
     {
@@ -121,6 +122,7 @@ class Save implements ObserverInterface
             if ($nostoAccount !== null) {
                 $quoteId = $order->getQuoteId();
                 /** @var NostoCustomer $nostoCustomer */
+                /** @noinspection PhpDeprecationInspection */
                 $nostoCustomer = $this->customerFactory
                     ->create()
                     ->load($quoteId, NostoCustomer::QUOTE_ID);

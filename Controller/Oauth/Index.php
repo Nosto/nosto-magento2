@@ -39,8 +39,10 @@ namespace Nosto\Tagging\Controller\Oauth;
 use Magento\Backend\Model\UrlInterface;
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
+use Magento\Framework\App\Response\Http;
 use Magento\Framework\Exception\CouldNotSaveException;
 use Magento\Framework\Exception\State\InputMismatchException;
+use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
@@ -133,9 +135,10 @@ class Index extends Action
                 ]
             );
         } else {
-            /** @var \Magento\Framework\App\Response\Http $response */
             $response = $this->getResponse();
-            $response->setHttpResponseCode(404);
+            if ($response instanceof Http) {
+                $response->setHttpResponseCode(404);
+            }
         }
     }
 
@@ -143,11 +146,11 @@ class Index extends Action
      * Tries to connect the Nosto account and saves the account details to the
      * store config.
      *
-     * @param string $authCode the OAuth authorization code by which to get the account details from Nosto.
-     * @param Store $store the store the account is connect for.
+     * @param string $authCode the OAuth authorization code by which to get the account details
+     * @param StoreInterface|Store $store the store the account is connect for.
      * @throws \Exception if the connection fails.
      */
-    private function connectAccount($authCode, $store)
+    private function connectAccount($authCode, StoreInterface $store)
     {
         $oldAccount = $this->nostoHelperAccount->findAccount($store);
         $meta = $this->oauthMetaBuilder->build($store, $oldAccount);
@@ -170,14 +173,14 @@ class Index extends Action
      *
      * @param string $path the backend path to redirect to.
      * @param array $args the url arguments.
-     *
      * @return \Magento\Framework\App\ResponseInterface the response.
      */
     private function redirectBackend($path, $args = [])
     {
-        /** @var \Magento\Framework\App\Response\Http $response */
         $response = $this->getResponse();
-        $response->setRedirect($this->backendUrlBuilder->getUrl($path, $args));
+        if ($response instanceof Http) {
+            $response->setRedirect($this->backendUrlBuilder->getUrl($path, $args));
+        }
         return $response;
     }
 }

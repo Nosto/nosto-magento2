@@ -47,10 +47,6 @@ use NostoOAuthClient;
 class Sync extends Base
 {
     const ADMIN_RESOURCE = 'Nosto_Tagging::system_nosto_account';
-
-    /**
-     * @var Json
-     */
     private $result;
     private $nostoHelperAccount;
     private $oauthMetaBuilder;

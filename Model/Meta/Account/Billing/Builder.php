@@ -36,6 +36,8 @@
 
 namespace Nosto\Tagging\Model\Meta\Account\Billing;
 
+use Magento\Framework\Event\ManagerInterface;
+use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\Store;
 use NostoSignupBilling;
 use Psr\Log\LoggerInterface;
@@ -43,20 +45,23 @@ use Psr\Log\LoggerInterface;
 class Builder
 {
     private $logger;
+    private $eventManager;
 
     /**
      * @param LoggerInterface $logger
+     * @param ManagerInterface $eventManager
      */
-    public function __construct(LoggerInterface $logger)
+    public function __construct(LoggerInterface $logger, ManagerInterface $eventManager)
     {
         $this->logger = $logger;
+        $this->eventManager = $eventManager;
     }
 
     /**
-     * @param Store $store
+     * @param StoreInterface|Store $store
      * @return NostoSignupBilling
      */
-    public function build(Store $store)
+    public function build(StoreInterface $store)
     {
         $metaData = new NostoSignupBilling();
 
@@ -68,6 +73,8 @@ class Builder
         } catch (\NostoException $e) {
             $this->logger->error($e->__toString());
         }
+
+        $this->eventManager->dispatch('nosto_account_billing_load_after', ['billing' => $metaData]);
 
         return $metaData;
     }

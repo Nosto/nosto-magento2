@@ -41,6 +41,7 @@ use Magento\Catalog\Model\Product\Type;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\ObjectManagerInterface;
 use Magento\Sales\Model\Order\Item;
+
 use NostoLineItem;
 use Psr\Log\LoggerInterface;
 
@@ -76,7 +77,7 @@ class Builder
     {
         $nostoItem = new NostoLineItem();
         $nostoItem->setPriceCurrencyCode($currencyCode);
-        $nostoItem->setProductId((int)$this->buildItemProductId($item));
+        $nostoItem->setProductId($this->buildItemProductId($item));
         $nostoItem->setQuantity((int)$item->getQtyOrdered());
         switch ($item->getProductType()) {
             case Simple::getType():
@@ -98,10 +99,7 @@ class Builder
             $nostoItem->setPrice(0);
         }
 
-        $this->eventManager->dispatch(
-            'nosto_order_item_load_after',
-            ['item' => $nostoItem]
-        );
+        $this->eventManager->dispatch('nosto_order_item_load_after', ['item' => $nostoItem]);
 
         return $nostoItem;
     }
@@ -115,8 +113,7 @@ class Builder
      * product page that is used to generate recommendations and email content.
      *
      * @param Item $item the sales item model.
-     *
-     * @return int
+     * @return string
      */
     public function buildItemProductId(Item $item)
     {
@@ -134,6 +131,6 @@ class Builder
                 return $parentIds[0];
             }
         }
-        return $item->getProductId();
+        return (string) $item->getProductId();
     }
 }

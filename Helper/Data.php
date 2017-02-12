@@ -42,7 +42,7 @@ use Magento\Framework\App\Helper\Context;
 use Magento\Framework\App\ProductMetadataInterface;
 use Magento\Framework\AppInterface;
 use Magento\Framework\Module\ModuleListInterface;
-use Magento\Store\Model\Store;
+use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use phpseclib\Crypt\Random;
 
@@ -133,21 +133,21 @@ class Data extends AbstractHelper
     /**
      * Return the product image version to include in product tagging.
      *
-     * @param \Magento\Store\Model\Store|null $store the store model or null.
+     * @param StoreInterface $store the store model or null.
      *
      * @return string
      */
-    public function getProductImageVersion(Store $store = null)
+    public function getProductImageVersion(StoreInterface $store = null)
     {
         return $this->getStoreConfig(self::XML_PATH_IMAGE_VERSION, $store);
     }
 
     /**
      * @param string $path
-     * @param Store|null $store
+     * @param StoreManagerInterface $store
      * @return mixed|null
      */
-    public function getStoreConfig($path, Store $store = null)
+    public function getStoreConfig($path, StoreManagerInterface $store = null)
     {
         if ($store === null) {
             $store = $this->storeManager->getStore(true);
@@ -174,6 +174,7 @@ class Data extends AbstractHelper
      * Returns the version number of the platform the e-commerce installation
      *
      * @return string the platforms's version
+     * @suppress PhanUndeclaredConstant
      */
     public function getPlatformVersion()
     {

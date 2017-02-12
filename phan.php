@@ -43,6 +43,7 @@ return [
          'Model',
          'Helper',
          'Observer',
+         '.phan/stubs',
          'vendor/vlucas',
          'vendor/nosto/php-sdk',
          'vendor/phpseclib',
@@ -50,6 +51,7 @@ return [
          'vendor/psr'
     ],
     "exclude_analysis_directory_list" => [
-        'vendor/'
+        'vendor/',
+        '.phan/stubs'
     ],
 ];

@@ -37,6 +37,7 @@
 namespace Nosto\Tagging\Model\Meta\Account\Sso;
 
 use Magento\Backend\Model\Auth\Session;
+use Magento\Framework\Event\ManagerInterface;
 use NostoSignupOwner;
 use NostoSignupOwnerInterface;
 use Psr\Log\LoggerInterface;
@@ -45,17 +46,21 @@ class Builder
 {
     private $logger;
     private $backendAuthSession;
+    private $eventManager;
 
     /**
      * @param Session $backendAuthSession
      * @param LoggerInterface $logger
+     * @param ManagerInterface $eventManager
      */
     public function __construct(
         Session $backendAuthSession,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        ManagerInterface $eventManager
     ) {
         $this->backendAuthSession = $backendAuthSession;
         $this->logger = $logger;
+        $this->eventManager = $eventManager;
     }
 
     /**
@@ -75,6 +80,8 @@ class Builder
         } catch (\NostoException $e) {
             $this->logger->error($e->__toString());
         }
+
+        $this->eventManager->dispatch('nosto_sso_load_after', ['sso' => $metaData]);
 
         return $metaData;
     }

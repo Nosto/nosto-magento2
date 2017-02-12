@@ -92,7 +92,7 @@ class Builder
 
         try {
             $nostoProduct->setUrl($this->buildUrl($product, $store));
-            $nostoProduct->setProductId($product->getId());
+            $nostoProduct->setProductId((string) $product->getId());
             $nostoProduct->setName($product->getName());
             $nostoProduct->setImageUrl($this->buildImageUrl($product, $store));
             $price = $this->nostoPriceHelper->getProductFinalPriceInclTax($product);
@@ -129,10 +129,7 @@ class Builder
             $this->logger->error($e->__toString());
         }
 
-        $this->eventManager->dispatch(
-            'nosto_product_load_after',
-            ['product' => $nostoProduct]
-        );
+        $this->eventManager->dispatch('nosto_product_load_after', ['product' => $nostoProduct]);
 
         return $nostoProduct;
     }

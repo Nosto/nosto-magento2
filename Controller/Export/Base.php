@@ -36,10 +36,14 @@
 
 namespace Nosto\Tagging\Controller\Export;
 
+use Magento\Catalog\Model\ResourceModel\Product\Collection as ProductCollection;
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\Controller\Result\Raw;
 use Magento\Framework\Controller\ResultFactory;
+use Magento\Framework\Model\ResourceModel\Db\VersionControl\Collection;
+use Magento\Sales\Model\ResourceModel\Order\Collection as OrderCollection;
+use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
@@ -87,9 +91,7 @@ abstract class Base extends Action
     public function execute()
     {
         $store = $this->storeManager->getStore(true);
-        /** @var \Magento\Sales\Model\ResourceModel\Order\Collection $collection */
         $collection = $this->getCollection($store);
-        $collection->addAttributeToSelect('*');
 
         $id = $this->getRequest()->getParam(self::ID, false);
         if (!empty($id)) {
@@ -103,7 +105,6 @@ abstract class Base extends Action
         }
         $collection->load();
 
-        /** @var NostoCollection $exportCollection */
         $exportCollection = $this->buildExportCollection($collection);
         return $this->export($exportCollection);
     }
@@ -112,19 +113,19 @@ abstract class Base extends Action
      * Abstract function that should be implemented to return the correct
      * collection object with the controller specific filters applied
      *
-     * @param StoreManagerInterface $store The store object for the current store
-     * @return \Magento\Sales\Model\ResourceModel\Order\Collection The collection
+     * @param StoreInterface $store The store object for the current store
+     * @return Collection The collection
      */
-    abstract protected function getCollection(StoreManagerInterface $store); // @codingStandardsIgnoreLine
+    abstract protected function getCollection(StoreInterface $store); // @codingStandardsIgnoreLine
 
     /**
      * Abstract function that should be implemented to return the built export
      * collection object with all the items added
      *
-     * @param \Magento\Sales\Model\ResourceModel\Order\Collection $collection
-     * @return \Magento\Sales\Model\ResourceModel\Order\Collection The collection
+     * @param Collection $collection
+     * @return NostoCollection the collection with the items to export
      */
-    abstract protected function buildExportCollection($collection); // @codingStandardsIgnoreLine
+    abstract protected function buildExportCollection(Collection $collection); // @codingStandardsIgnoreLine
 
     /**
      * Encrypts the export collection and outputs it to the browser.
@@ -134,14 +135,15 @@ abstract class Base extends Action
      */
     public function export(NostoCollection $collection)
     {
-        /** @var Raw $result */
         $result = $this->resultFactory->create(ResultFactory::TYPE_RAW);
         /** @var Store $store */
         $store = $this->storeManager->getStore(true);
         $account = $this->nostoHelperAccount->findAccount($store);
         if ($account !== null) {
             $cipherText = NostoHelperExporter::export($account, $collection);
-            $result->setContents($cipherText);
+            if ($result instanceof Raw) {
+                $result->setContents($cipherText);
+            }
         }
         return $result;
     }

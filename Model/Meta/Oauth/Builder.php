@@ -36,10 +36,11 @@
 
 namespace Nosto\Tagging\Model\Meta\Oauth;
 
+use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\Locale\ResolverInterface;
 use Magento\Framework\Url;
+use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\Store;
-use Magento\Store\Model\StoreManagerInterface;
 use NostoAccount;
 use NostoOAuth;
 use Psr\Log\LoggerInterface;
@@ -49,28 +50,32 @@ class Builder
     private $localeResolver;
     private $urlBuilder;
     private $logger;
+    private $eventManager;
 
     /**
      * @param ResolverInterface $localeResolver
      * @param Url $urlBuilder
      * @param LoggerInterface $logger
+     * @param ManagerInterface $eventManager
      */
     public function __construct(
         ResolverInterface $localeResolver,
         Url $urlBuilder,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        ManagerInterface $eventManager
     ) {
         $this->localeResolver = $localeResolver;
         $this->urlBuilder = $urlBuilder;
         $this->logger = $logger;
+        $this->eventManager = $eventManager;
     }
 
     /**
-     * @param StoreManagerInterface|Store $store
+     * @param StoreInterface|Store $store
      * @param NostoAccount $account
      * @return NostoOauth
      */
-    public function build(StoreManagerInterface $store, NostoAccount $account = null)
+    public function build(StoreInterface $store, NostoAccount $account = null)
     {
         $metaData = new NostoOAuth();
 
@@ -95,6 +100,8 @@ class Builder
         } catch (\NostoException $e) {
             $this->logger->error($e->__toString());
         }
+
+        $this->eventManager->dispatch('nosto_oauth_load_after', ['oauth' => $metaData]);
 
         return $metaData;
     }

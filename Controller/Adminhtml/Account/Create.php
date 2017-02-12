@@ -38,7 +38,7 @@ namespace Nosto\Tagging\Controller\Adminhtml\Account;
 
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\Controller\Result\Json;
-use Magento\Store\Model\Store;
+
 use Magento\Store\Model\StoreManagerInterface;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Model\Meta\Account\Builder as NostoSignupBuilder;
@@ -109,13 +109,13 @@ class Create extends Base
 
     /**
      * @return Json
+     * @suppress PhanTypeMismatchArgument
      */
     public function execute()
     {
         $response = ['success' => false];
 
         $storeId = $this->_request->getParam('store');
-        /** @var Store $store */
         $store = $this->storeManager->getStore($storeId);
 
         if ($store !== null) {

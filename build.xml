@@ -88,7 +88,7 @@
     </target>
 
     <target name="phpmd">
-        <exec executable="./lib/bin/phpmd" passthru="true">
+        <exec executable="./vendor/bin/phpmd" passthru="true">
             <arg value="app"/>
             <arg value="--exclude"/>
             <arg value="vendor"/>
@@ -129,7 +129,7 @@
             <arg value="--progress-bar"/>
             <arg value="--signature-compatibility"/>
             <arg value="--config-file=phan.php"/>
-            <arg value="."/>
+            <arg value="--dead-code-detection"/>
         </exec>
     </target>
 

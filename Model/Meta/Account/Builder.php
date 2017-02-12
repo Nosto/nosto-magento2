@@ -36,9 +36,12 @@
 
 namespace Nosto\Tagging\Model\Meta\Account;
 
+use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\Locale\ResolverInterface;
 use Magento\Framework\UrlInterface;
+use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\Store;
+
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Model\Meta\Account\Billing\Builder as NostoBillingBuilder;
 use NostoHttpRequest;
@@ -53,32 +56,36 @@ class Builder
     private $accountBillingMetaBuilder;
     private $localeResolver;
     private $logger;
+    private $eventManager;
 
     /**
      * @param NostoHelperData $nostoHelperData
      * @param NostoBillingBuilder $nostoAccountBillingMetaBuilder
      * @param ResolverInterface $localeResolver
      * @param LoggerInterface $logger
+     * @param ManagerInterface $eventManager
      */
     public function __construct(
         NostoHelperData $nostoHelperData,
         NostoBillingBuilder $nostoAccountBillingMetaBuilder,
         ResolverInterface $localeResolver,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        ManagerInterface $eventManager
     ) {
         $this->nostoHelperData = $nostoHelperData;
         $this->accountBillingMetaBuilder = $nostoAccountBillingMetaBuilder;
         $this->localeResolver = $localeResolver;
         $this->logger = $logger;
+        $this->eventManager = $eventManager;
     }
 
     /**
-     * @param Store $store
+     * @param StoreInterface|Store $store
      * @param $accountOwner
      * @param $signupDetails
      * @return NostoSignup
      */
-    public function build(Store $store, $accountOwner, $signupDetails)
+    public function build(StoreInterface $store, $accountOwner, $signupDetails)
     {
         $metaData = new NostoSignup(Builder::PLATFORM_NAME, Builder::API_TOKEN, null);
 
@@ -93,7 +100,7 @@ class Builder
                     ]
                 )
             );
-            $metaData->setName(substr(sha1(rand()), 0, 8));
+            $metaData->setName(substr(sha1((string) rand()), 0, 8));
             $metaData->setFrontPageUrl(
                 NostoHttpRequest::replaceQueryParamInUrl(
                     '___store',
@@ -116,6 +123,8 @@ class Builder
         } catch (\NostoException $e) {
             $this->logger->error($e->__toString());
         }
+
+        $this->eventManager->dispatch('nosto_account_load_after', ['account' => $metaData]);
 
         return $metaData;
     }

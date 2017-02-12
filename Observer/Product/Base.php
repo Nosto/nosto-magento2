@@ -40,6 +40,7 @@ use Magento\Catalog\Model\Product;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Module\Manager as ModuleManager;
+use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
@@ -55,7 +56,7 @@ abstract class Base implements ObserverInterface
 {
     private $nostoHelperData;
     private $nostoHelperAccount;
-    protected $nostoProductBuilder;
+    private $nostoProductBuilder;
     private $storeManager;
     private $logger;
     private $moduleManager;
@@ -144,10 +145,10 @@ abstract class Base implements ObserverInterface
      * Builds the product object for the operation using the builder
      *
      * @param Product $product the product to be built
-     * @param Store $store the store for which to build the product
+     * @param StoreInterface $store the store for which to build the product
      * @return NostoProduct the built product
      */
-    public function buildProduct(Product $product, Store $store)
+    public function buildProduct(Product $product, StoreInterface $store)
     {
         return $this->nostoProductBuilder->build($product, $store);
     }

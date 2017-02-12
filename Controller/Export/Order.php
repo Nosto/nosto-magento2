@@ -37,7 +37,9 @@
 namespace Nosto\Tagging\Controller\Export;
 
 use Magento\Framework\App\Action\Context;
+use Magento\Framework\Model\ResourceModel\Db\VersionControl\Collection;
 use Magento\Sales\Model\ResourceModel\Order\CollectionFactory as OrderCollectionFactory;
+use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Model\Order\Builder as NostoOrderBuilder;
@@ -52,7 +54,6 @@ use NostoOrderCollection;
  */
 class Order extends Base
 {
-
     private $orderCollectionFactory;
     private $nostoOrderBuilder;
 
@@ -83,25 +84,27 @@ class Order extends Base
     /**
      * @inheritdoc
      */
-    protected function getCollection(StoreManagerInterface $store) // @codingStandardsIgnoreLine
+    protected function getCollection(StoreInterface $store) // @codingStandardsIgnoreLine
     {
         /** @var \Magento\Sales\Model\ResourceModel\Order\Collection $collection */
         /** @noinspection PhpUndefinedMethodInspection */
         $collection = $this->orderCollectionFactory->create();
         $collection->addAttributeToFilter('store_id', ['eq' => $store->getId()]);
+        $collection->addAttributeToSelect('*');
         return $collection;
     }
 
     /**
      * @inheritdoc
      */
-    protected function buildExportCollection($collection) // @codingStandardsIgnoreLine
+    protected function buildExportCollection(Collection $collection) // @codingStandardsIgnoreLine
     {
         /** @var \Magento\Sales\Model\ResourceModel\Order\Collection $collection */
         $exportCollection = new NostoOrderCollection();
-        foreach ($collection->getItems() as $order) {
+        $items = $collection->loadData();
+        foreach ($items as $order) {
             /** @var \Magento\Sales\Model\Order $order */
-            $exportCollection[] = $this->nostoOrderBuilder->build($order);
+            $exportCollection->append($this->nostoOrderBuilder->build($order));
         }
         return $exportCollection;
     }

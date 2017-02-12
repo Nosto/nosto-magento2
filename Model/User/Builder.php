@@ -37,6 +37,7 @@
 namespace Nosto\Tagging\Model\User;
 
 use Magento\Backend\Model\Auth\Session;
+use Magento\Framework\Event\ManagerInterface;
 use NostoCurrentUser;
 use Psr\Log\LoggerInterface;
 
@@ -44,17 +45,21 @@ class Builder
 {
     private $logger;
     private $backendAuthSession;
+    private $eventManager;
 
     /**
      * @param Session $backendAuthSession
      * @param LoggerInterface $logger
+     * @param ManagerInterface $eventManager
      */
     public function __construct(
         Session $backendAuthSession,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        ManagerInterface $eventManager
     ) {
         $this->backendAuthSession = $backendAuthSession;
         $this->logger = $logger;
+        $this->eventManager = $eventManager;
     }
 
     /**
@@ -74,6 +79,8 @@ class Builder
         } catch (\NostoException $e) {
             $this->logger->error($e->__toString());
         }
+
+        $this->eventManager->dispatch('nosto_user_load_after', ['user' => $metaData]);
 
         return $metaData;
     }

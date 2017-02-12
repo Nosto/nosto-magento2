@@ -36,8 +36,14 @@
 
 namespace Nosto\Tagging\Observer\Product;
 
+use Magento\Framework\Module\Manager as ModuleManager;
 use Magento\Store\Model\Store;
 use Magento\Catalog\Model\Product;
+use Magento\Store\Model\StoreManagerInterface;
+use Nosto\Tagging\Helper\Account as NostoHelperAccount;
+use Nosto\Tagging\Helper\Data as NostoHelperData;
+use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
+use Psr\Log\LoggerInterface;
 
 /**
  * Delete event observer model.
@@ -49,6 +55,28 @@ use Magento\Catalog\Model\Product;
  */
 class Delete extends Base
 {
+    private $nostoProductBuilder;
+
+    public function __construct(
+        NostoHelperData $nostoHelperData,
+        NostoHelperAccount $nostoHelperAccount,
+        NostoProductBuilder $nostoProductBuilder,
+        StoreManagerInterface $storeManager,
+        LoggerInterface $logger,
+        ModuleManager $moduleManager
+    ) {
+        parent::__construct(
+            $nostoHelperData,
+            $nostoHelperAccount,
+            $nostoProductBuilder,
+            $storeManager,
+            $logger,
+            $moduleManager
+        );
+
+        $this->nostoProductBuilder = $nostoProductBuilder;
+    }
+
     /**
      * @inheritdoc
      */

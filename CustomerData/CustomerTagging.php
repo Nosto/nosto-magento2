@@ -43,14 +43,7 @@ use Nosto\Tagging\Model\Customer as NostoCustomer;
 
 class CustomerTagging implements SectionSourceInterface
 {
-    /**
-     * @var CurrentCustomer
-     */
     private $currentCustomer;
-
-    /**
-     * @var CookieManagerInterface
-     */
     private $cookieManager;
 
     /**

@@ -98,11 +98,10 @@ class Account extends AbstractHelper
      * Saves the account and the associated api tokens for the store.
      *
      * @param NostoAccountInterface $account the account to save.
-     * @param Store $store the store.
-     *
+     * @param StoreInterface|Store $store the store.
      * @return bool true on success, false otherwise.
      */
-    public function saveAccount(NostoAccountInterface $account, Store $store)
+    public function saveAccount(NostoAccountInterface $account, StoreInterface $store)
     {
         if ((int)$store->getId() < 1) {
             return false;
@@ -135,15 +134,12 @@ class Account extends AbstractHelper
      * Removes an account with associated api tokens for the store.
      *
      * @param NostoAccount $account the account to remove.
-     * @param Store $store the store.
+     * @param StoreInterface|Store $store the store.
      * @param NostoCurrentUser $currentUser
      * @return bool true on success, false otherwise.
      */
-    public function deleteAccount(
-        NostoAccount $account,
-        Store $store,
-        NostoCurrentUser $currentUser
-    ) {
+    public function deleteAccount(NostoAccount $account, StoreInterface $store, NostoCurrentUser $currentUser)
+    {
         if ((int)$store->getId() < 1) {
             return false;
         }
@@ -214,7 +210,7 @@ class Account extends AbstractHelper
                     try {
                         $account->addApiToken(new NostoApiToken($name, $value));
                     } catch (Exception $e) {
-                        $this->_logger->error($e, ['exception' => $e]);
+                        $this->_logger->error($e->__toString());
                     }
                 }
             }

@@ -39,6 +39,7 @@ namespace Nosto\Tagging\Model\Cart;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\ObjectManagerInterface;
 use Magento\Quote\Model\Quote;
+use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\Store;
 use Nosto\Tagging\Model\Cart\Item\Builder as NostoCartItemBuilder;
 use NostoCart;
@@ -74,11 +75,11 @@ class Builder
 
     /**
      * @param Quote $quote
-     * @param Store $store
+     * @param StoreInterface|Store $store
      * @return NostoCart
      * @internal param array $items
      */
-    public function build(Quote $quote, Store $store)
+    public function build(Quote $quote, StoreInterface $store)
     {
         $nostoCart = new NostoCart();
 
@@ -91,10 +92,7 @@ class Builder
             }
         }
 
-        $this->eventManager->dispatch(
-            'nosto_cart_load_after',
-            ['cart' => $nostoCart]
-        );
+        $this->eventManager->dispatch('nosto_cart_load_after', ['cart' => $nostoCart]);
 
         return $nostoCart;
     }

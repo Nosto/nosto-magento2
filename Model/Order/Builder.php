@@ -37,6 +37,7 @@
 namespace Nosto\Tagging\Model\Order;
 
 use Exception;
+use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\ObjectManagerInterface;
 use Magento\Sales\Model\Order;
 use Magento\Sales\Model\Order\Item;
@@ -57,6 +58,7 @@ class Builder
     private $nostoPriceHelper;
     private $objectManager;
     private $nostoOrderItemBuilder;
+    private $eventManager;
 
     /** @noinspection PhpUndefinedClassInspection */
     /**
@@ -65,6 +67,7 @@ class Builder
      * @param NostoPriceHelper $priceHelper
      * @param NostoOrderItemBuilder $nostoOrderItemBuilder
      * @param ObjectManagerInterface $objectManager
+     * @param ManagerInterface $eventManager
      */
     public function __construct(
         LoggerInterface $logger,
@@ -72,13 +75,15 @@ class Builder
         SalesRuleFactory $salesRuleFactory,
         NostoPriceHelper $priceHelper,
         NostoOrderItemBuilder $nostoOrderItemBuilder,
-        ObjectManagerInterface $objectManager
+        ObjectManagerInterface $objectManager,
+        ManagerInterface $eventManager
     ) {
         $this->logger = $logger;
         $this->salesRuleFactory = $salesRuleFactory;
         $this->nostoPriceHelper = $priceHelper;
         $this->nostoOrderItemBuilder = $nostoOrderItemBuilder;
         $this->objectManager = $objectManager;
+        $this->eventManager = $eventManager;
     }
 
     /**
@@ -150,6 +155,8 @@ class Builder
             $this->logger->error($e->__toString());
         }
 
+        $this->eventManager->dispatch('nosto_order_load_after', ['order' => $nostoOrder]);
+
         return $nostoOrder;
     }
 
@@ -158,6 +165,7 @@ class Builder
      *
      * @param Order $order
      * @return string discount description
+     * @suppress PhanDeprecatedFunction
      */
     public function buildDiscountRuleDescription(Order $order)
     {
@@ -171,6 +179,7 @@ class Builder
                 }
                 $ruleIds = explode(',', $item->getAppliedRuleIds());
                 foreach ($ruleIds as $ruleId) {
+                    /** @noinspection PhpDeprecationInspection */
                     $rule = $this->salesRuleFactory->create()->load($ruleId); // @codingStandardsIgnoreLine
                     $appliedRules[$ruleId] = $rule->getName();
                 }

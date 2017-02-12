@@ -50,15 +50,7 @@ use Magento\Store\Model\Website;
 class Index extends Base
 {
     const ADMIN_RESOURCE = 'Nosto_Tagging::system_nosto_account';
-
-    /**
-     * @var PageFactory
-     */
     private $resultPageFactory;
-
-    /**
-     * @var StoreManagerInterface
-     */
     private $storeManager;
 
     /**
@@ -96,12 +88,11 @@ class Index extends Base
             }
         }
 
-        /** @var Page $result */
         $result = $this->resultPageFactory->create();
-        $result->setActiveMenu(self::ADMIN_RESOURCE);
-        $result->getConfig()->getTitle()->prepend(
-            __('Nosto - Account Settings')
-        );
+        if ($result instanceof Page) {
+            $result->setActiveMenu(self::ADMIN_RESOURCE);
+            $result->getConfig()->getTitle()->prepend(__('Nosto - Account Settings'));
+        }
 
         return $result;
     }

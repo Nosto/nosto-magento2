@@ -39,6 +39,8 @@ namespace Nosto\Tagging\Controller\Export;
 use Magento\Catalog\Model\Product\Visibility as ProductVisibility;
 use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductCollectionFactory;
 use Magento\Framework\App\Action\Context;
+use Magento\Framework\Model\ResourceModel\Db\VersionControl\Collection;
+use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
@@ -53,7 +55,6 @@ use NostoProductCollection;
  */
 class Product extends Base
 {
-
     private $productCollectionFactory;
     private $productVisibility;
     private $storeManager;
@@ -90,7 +91,7 @@ class Product extends Base
     /**
      * @inheritdoc
      */
-    protected function getCollection(StoreManagerInterface $store) // @codingStandardsIgnoreLine
+    protected function getCollection(StoreInterface $store) // @codingStandardsIgnoreLine
     {
         /** @var \Magento\Catalog\Model\ResourceModel\Product\Collection $collection */
         /** @noinspection PhpUndefinedMethodInspection */
@@ -98,13 +99,14 @@ class Product extends Base
         $collection->setVisibility($this->productVisibility->getVisibleInSiteIds());
         $collection->addAttributeToFilter('status', ['eq' => '1']);
         $collection->addStoreFilter($store->getId());
+        $collection->addAttributeToSelect('*');
         return $collection;
     }
 
     /**
      * @inheritdoc
      */
-    protected function buildExportCollection($collection) // @codingStandardsIgnoreLine
+    protected function buildExportCollection(Collection $collection) // @codingStandardsIgnoreLine
     {
         /** @var \Magento\Catalog\Model\ResourceModel\Product\Collection $collection */
         $exportCollection = new NostoProductCollection();
@@ -112,7 +114,7 @@ class Product extends Base
         $store = $this->storeManager->getStore(true);
         foreach ($items as $product) {
             /** @var \Magento\Catalog\Model\Product $product */
-            $exportCollection[] = $this->nostoProductBuilder->build($product, $store);
+            $exportCollection->append($this->nostoProductBuilder->build($product, $store));
         }
         return $exportCollection;
     }

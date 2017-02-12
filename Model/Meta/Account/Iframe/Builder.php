@@ -37,6 +37,7 @@
 namespace Nosto\Tagging\Model\Meta\Account\Iframe;
 
 use Magento\Backend\Model\Auth\Session;
+use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\Locale\ResolverInterface;
 use Magento\Store\Api\Data\StoreInterface;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
@@ -51,6 +52,7 @@ class Builder
     private $localeResolver;
     private $backendAuthSession;
     private $logger;
+    private $eventManager;
 
     /**
      * @param NostoHelperUrl $nostoHelperUrl
@@ -58,20 +60,22 @@ class Builder
      * @param Session $backendAuthSession
      * @param ResolverInterface $localeResolver
      * @param LoggerInterface $logger
-     * @internal param NostoCurrentUserBuilder $nostoCurrentUserBuilder
+     * @param ManagerInterface $eventManager
      */
     public function __construct(
         NostoHelperUrl $nostoHelperUrl,
         NostoHelperData $nostoHelperData,
         Session $backendAuthSession,
         ResolverInterface $localeResolver,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        ManagerInterface $eventManager
     ) {
         $this->nostoHelperUrl = $nostoHelperUrl;
         $this->nostoHelperData = $nostoHelperData;
         $this->backendAuthSession = $backendAuthSession;
         $this->localeResolver = $localeResolver;
         $this->logger = $logger;
+        $this->eventManager = $eventManager;
     }
 
     /**
@@ -105,6 +109,8 @@ class Builder
         } catch (\NostoException $e) {
             $this->logger->error($e->__toString());
         }
+
+        $this->eventManager->dispatch('nosto_iframe_load_after', ['iframe' => $metaData]);
 
         return $metaData;
     }

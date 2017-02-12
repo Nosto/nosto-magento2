@@ -84,46 +84,48 @@ class Price extends AbstractHelper
      * @param Product $product the product model.
      * @param bool $finalPrice if final price.
      * @param bool $inclTax if tax is to be included.
-     *
      * @return float
+     * @suppress PhanTypeMismatchArgument
      */
     public function getProductPrice($product, $finalPrice = false, $inclTax = true)
     {
         switch ($product->getTypeId()) {
             // Get the bundle product "from" price.
             case ProductType::TYPE_BUNDLE:
-                /** @var BundlePrice $priceModel */
                 $priceModel = $product->getPriceModel();
-                $price = $priceModel->getTotalPrices($product, 'min', $inclTax);
+                if ($priceModel instanceof BundlePrice) {
+                    $price = $priceModel->getTotalPrices($product, 'min', $inclTax);
+                } else {
+                    $price = null;
+                }
                 break;
 
             // No constant for this value was found (Magento ver. 1.0.0-beta).
             // Get the grouped product "minimal" price.
             case 'grouped':
-                /* @var $typeInstance GroupedType */
                 $typeInstance = $product->getTypeInstance();
-                $associatedProducts = $typeInstance
-                    ->setStoreFilter($product->getStore(), $product)
-                    ->getAssociatedProducts($product);
-                $cheapestAssociatedProduct = null;
-                $minimalPrice = 0;
-                foreach ($associatedProducts as $associatedProduct) {
-                    /** @var Product $associatedProduct */
-                    $tmpPrice = $finalPrice
-                        ? $associatedProduct->getFinalPrice()
-                        : $associatedProduct->getPrice();
-                    if ($minimalPrice === 0 || $minimalPrice > $tmpPrice) {
-                        $minimalPrice = $tmpPrice;
-                        $cheapestAssociatedProduct = $associatedProduct;
+                if ($typeInstance instanceof GroupedType) {
+                    $associatedProducts = $typeInstance
+                        ->setStoreFilter($product->getStore(), $product)
+                        ->getAssociatedProducts($product);
+                    $cheapestAssociatedProduct = null;
+                    $minimalPrice = 0;
+                    foreach ($associatedProducts as $associatedProduct) {
+                        /** @var Product $associatedProduct */
+                        $tmpPrice = $finalPrice
+                            ? $associatedProduct->getFinalPrice()
+                            : $associatedProduct->getPrice();
+                        if ($minimalPrice === 0 || $minimalPrice > $tmpPrice) {
+                            $minimalPrice = $tmpPrice;
+                            $cheapestAssociatedProduct = $associatedProduct;
+                        }
                     }
-                }
-                $price = $minimalPrice;
-                if ($inclTax && $cheapestAssociatedProduct) {
-                    $price = $this->catalogHelper->getTaxPrice(
-                        $cheapestAssociatedProduct,
-                        $price,
-                        true
-                    );
+                    $price = $minimalPrice;
+                    if ($inclTax && $cheapestAssociatedProduct !== null) {
+                        $price = $this->catalogHelper->getTaxPrice($cheapestAssociatedProduct, $price, true);
+                    }
+                } else {
+                    $price = null;
                 }
                 break;
 
@@ -134,26 +136,16 @@ class Price extends AbstractHelper
                 if ($finalPrice) {
                     $price = $product->getFinalPrice();
                 } elseif ($inclTax) {
-                    $price = $this->catalogHelper->getTaxPrice(
-                        $product,
-                        $product->getPrice(),
-                        true
-                    );
+                    $price = $this->catalogHelper->getTaxPrice($product, $product->getPrice(), true);
                 } else {
                     $price = $product->getPrice();
                 }
                 break;
 
             default:
-                $price = $finalPrice
-                    ? $product->getFinalPrice()
-                    : $product->getPrice();
+                $price = $finalPrice ? $product->getFinalPrice() : $product->getPrice();
                 if ($inclTax) {
-                    $price = $this->catalogHelper->getTaxPrice(
-                        $product,
-                        $price,
-                        true
-                    );
+                    $price = $this->catalogHelper->getTaxPrice($product, $price, true);
                 }
                 break;
         }

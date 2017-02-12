@@ -71,7 +71,6 @@ class Builder
      * @param Item $item
      * @param $currencyCode
      * @return NostoLineItem
-     * @internal param Store $store
      */
     public function build(Item $item, $currencyCode)
     {
@@ -99,10 +98,7 @@ class Builder
             $cartItem->setPrice(0);
         }
 
-        $this->eventManager->dispatch(
-            'nosto_cart_item_load_after',
-            ['item' => $cartItem]
-        );
+        $this->eventManager->dispatch('nosto_cart_item_load_after', ['item' => $cartItem]);
 
         return $cartItem;
     }
@@ -129,6 +125,6 @@ class Builder
             }
         }
 
-        return $item->getProduct()->getId();
+        return (string) $item->getProduct()->getId();
     }
 }
