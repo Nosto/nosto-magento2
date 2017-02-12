@@ -46,24 +46,9 @@ use Psr\Log\LoggerInterface;
 
 class Builder
 {
-    /**
-     * @var NostoCartItemBuilder
-     */
     private $nostoCartItemBuilder;
-
-    /**
-     * @var LoggerInterface
-     */
     private $logger;
-
-    /**
-     * @var ObjectManagerInterface
-     */
     private $objectManager;
-
-    /**
-     * @var ManagerInterface
-     */
     private $eventManager;
 
     /**
@@ -102,7 +87,7 @@ class Builder
                 $cartItem = $this->nostoCartItemBuilder->build($item, $store->getBaseCurrencyCode());
                 $nostoCart->addItem($cartItem);
             } catch (\NostoException $e) {
-                $this->logger->error($e, ['exception' => $e]);
+                $this->logger->error($e->__toString());
             }
         }
 

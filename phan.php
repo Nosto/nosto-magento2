@@ -41,10 +41,13 @@ return [
          'Controller',
          'CustomerData',
          'Model',
+         'Helper',
+         'Observer',
          'vendor/vlucas',
          'vendor/nosto/php-sdk',
          'vendor/phpseclib',
-         'vendor/magento'
+         'vendor/magento',
+         'vendor/psr'
     ],
     "exclude_analysis_directory_list" => [
         'vendor/'

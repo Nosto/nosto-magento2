@@ -51,26 +51,12 @@ use Psr\Log\LoggerInterface;
 
 class Builder
 {
-    /**
-     * @var LoggerInterface
-     */
     private $logger;
-
     /** @noinspection PhpUndefinedClassInspection */
-    /**
-     * @var SalesRuleFactory
-     */
     private $salesRuleFactory;
-
-    /**
-     * @var NostoPriceHelper
-     */
     private $nostoPriceHelper;
-
-    /**
-     * @var ObjectManagerInterface
-     */
     private $objectManager;
+    private $nostoOrderItemBuilder;
 
     /** @noinspection PhpUndefinedClassInspection */
     /**
@@ -161,7 +147,7 @@ class Builder
                 $nostoOrder->addPurchasedItems($nostoItem);
             }
         } catch (Exception $e) {
-            $this->logger->error($e, ['exception' => $e]);
+            $this->logger->error($e->__toString());
         }
 
         return $nostoOrder;

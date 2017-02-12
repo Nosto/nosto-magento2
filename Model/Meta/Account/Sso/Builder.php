@@ -73,7 +73,7 @@ class Builder
                 $metaData->setEmail($user->getEmail());
             }
         } catch (\NostoException $e) {
-            $this->logger->error($e, ['exception' => $e]);
+            $this->logger->error($e->__toString());
         }
 
         return $metaData;

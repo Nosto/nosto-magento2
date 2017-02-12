@@ -39,12 +39,17 @@ namespace Nosto\Tagging\Model\Meta\Oauth;
 use Magento\Framework\Locale\ResolverInterface;
 use Magento\Framework\Url;
 use Magento\Store\Model\Store;
+use Magento\Store\Model\StoreManagerInterface;
 use NostoAccount;
 use NostoOAuth;
 use Psr\Log\LoggerInterface;
 
 class Builder
 {
+    private $localeResolver;
+    private $urlBuilder;
+    private $logger;
+
     /**
      * @param ResolverInterface $localeResolver
      * @param Url $urlBuilder
@@ -61,11 +66,11 @@ class Builder
     }
 
     /**
-     * @param Store $store
+     * @param StoreManagerInterface|Store $store
      * @param NostoAccount $account
      * @return NostoOauth
      */
-    public function build(Store $store, NostoAccount $account = null)
+    public function build(StoreManagerInterface $store, NostoAccount $account = null)
     {
         $metaData = new NostoOAuth();
 
@@ -88,7 +93,7 @@ class Builder
                 $metaData->setAccount($account);
             }
         } catch (\NostoException $e) {
-            $this->logger->error($e, ['exception' => $e]);
+            $this->logger->error($e->__toString());
         }
 
         return $metaData;

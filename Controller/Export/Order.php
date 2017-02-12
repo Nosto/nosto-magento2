@@ -38,7 +38,6 @@ namespace Nosto\Tagging\Controller\Export;
 
 use Magento\Framework\App\Action\Context;
 use Magento\Sales\Model\ResourceModel\Order\CollectionFactory as OrderCollectionFactory;
-use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Model\Order\Builder as NostoOrderBuilder;
@@ -84,7 +83,7 @@ class Order extends Base
     /**
      * @inheritdoc
      */
-    protected function getCollection(Store $store) // @codingStandardsIgnoreLine
+    protected function getCollection(StoreManagerInterface $store) // @codingStandardsIgnoreLine
     {
         /** @var \Magento\Sales\Model\ResourceModel\Order\Collection $collection */
         /** @noinspection PhpUndefinedMethodInspection */

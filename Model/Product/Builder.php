@@ -50,36 +50,11 @@ use Psr\Log\LoggerInterface;
 
 class Builder
 {
-    /**
-     * @var NostoHelperData
-     */
     private $nostoDataHelper;
-
-    /**
-     * @var NostoPriceHelper
-     */
     private $nostoPriceHelper;
-
-    /**
-     * @var NostoCategoryBuilder
-     */
     private $nostoCategoryBuilder;
-
-    /**
-     * @var CategoryRepositoryInterface
-     */
     private $categoryRepository;
-
-    /**
-     * Event manager
-     *
-     * @var ManagerInterface
-     */
     private $eventManager;
-
-    /**
-     * @var LoggerInterface
-     */
     private $logger;
 
     /**
@@ -151,7 +126,7 @@ class Builder
                 $nostoProduct->setTag1($tags);
             }
         } catch (\NostoException $e) {
-            $this->logger->error($e, ['exception' => $e]);
+            $this->logger->error($e->__toString());
         }
 
         $this->eventManager->dispatch(

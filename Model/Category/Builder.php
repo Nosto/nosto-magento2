@@ -42,10 +42,8 @@ use Psr\Log\LoggerInterface;
 
 class Builder
 {
-    /**
-     * @var LoggerInterface
-     */
     private $logger;
+    private $categoryRepository;
 
     /**
      * @param CategoryRepositoryInterface $categoryRepository
@@ -78,7 +76,7 @@ class Builder
             }
             return count($data) ? '/' . implode('/', $data) : '';
         } catch (\NostoException $e) {
-            $this->logger->error($e, ['exception' => $e]);
+            $this->logger->error($e->__toString());
         }
 
         return $nostoCategory;

@@ -60,15 +60,7 @@ class Url extends AbstractHelper
      * @var CategoryCollectionFactory auto generated category collection factory.
      */
     private $categoryCollectionFactory;
-
-    /**
-     * @var Visibility product visibility.
-     */
     private $productVisibility;
-
-    /**
-     * @var \Magento\Framework\Url frontend URL builder.
-     */
     private $urlBuilder;
 
     /** @noinspection PhpUndefinedClassInspection */

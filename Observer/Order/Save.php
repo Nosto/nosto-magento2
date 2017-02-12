@@ -56,39 +56,12 @@ use Psr\Log\LoggerInterface;
  */
 class Save implements ObserverInterface
 {
-    /**
-     * @var NostoHelperData
-     */
     private $nostoHelperData;
-
-    /**
-     * @var NostoHelperAccount
-     */
     private $nostoHelperAccount;
-
-    /**
-     * @var StoreManagerInterface
-     */
     private $storeManager;
-
-    /**
-     * @var LoggerInterface
-     */
     private $logger;
-
-    /**
-     * @var NostoOrderBuilder
-     */
     private $nostoOrderBuilder;
-
-    /**
-     * @var ModuleManager
-     */
     private $moduleManager;
-
-    /**
-     * @var CustomerFactory
-     */
     private $customerFactory;
 
     /** @noinspection PhpUndefinedClassInspection */

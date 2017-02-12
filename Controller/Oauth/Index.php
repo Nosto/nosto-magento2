@@ -106,7 +106,7 @@ class Index extends Action
                     'store' => (int)$store->getId(),
                 ];
             } catch (\Exception $e) {
-                $this->logger->error($e, ['exception' => $e]);
+                $this->logger->error($e->__toString());
                 $params = [
                     'message_type' => NostoMessage::TYPE_ERROR,
                     'message_code' => NostoMessage::CODE_ACCOUNT_CONNECT,

@@ -39,7 +39,6 @@ namespace Nosto\Tagging\Controller\Export;
 use Magento\Catalog\Model\Product\Visibility as ProductVisibility;
 use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductCollectionFactory;
 use Magento\Framework\App\Action\Context;
-use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
@@ -91,7 +90,7 @@ class Product extends Base
     /**
      * @inheritdoc
      */
-    protected function getCollection(Store $store) // @codingStandardsIgnoreLine
+    protected function getCollection(StoreManagerInterface $store) // @codingStandardsIgnoreLine
     {
         /** @var \Magento\Catalog\Model\ResourceModel\Product\Collection $collection */
         /** @noinspection PhpUndefinedMethodInspection */

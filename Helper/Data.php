@@ -66,25 +66,9 @@ class Data extends AbstractHelper
      */
     const VISITOR_HASH_ALGO = 'sha256';
     const MODULE_NAME = 'Nosto_Tagging';
-
-    /**
-     * @var StoreManagerInterface the store manager.
-     */
     private $storeManager;
-
-    /**
-     * @var ModuleListInterface the module listing
-     */
     private $moduleListing;
-
-    /**
-     * @var WriterInterface the config writer.
-     */
     private $configWriter;
-
-    /**
-     * @var ProductMetadataInterface $productMetaData .
-     */
     private $productMetaData;
 
     /**

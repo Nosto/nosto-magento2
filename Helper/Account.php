@@ -40,7 +40,6 @@ use Exception;
 use Magento\Framework\App\Config\Storage\WriterInterface;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
-use Magento\Framework\Module\Manager as ModuleManager;
 use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\Store;
@@ -50,6 +49,7 @@ use NostoAccountInterface;
 use NostoApiToken;
 use NostoCurrentUser;
 use NostoOperationUninstall;
+use Psr\Log\LoggerInterface;
 
 /**
  * NostoHelperAccount helper class for common tasks related to Nosto accounts.
@@ -71,31 +71,27 @@ class Account extends AbstractHelper
      * Platform UI version
      */
     const IFRAME_VERSION = 0;
-
-    /**
-     * @var WriterInterface the app config writer.
-     */
     private $config;
-
-    /**
-     * @var ModuleManager
-     */
     private $moduleManager;
+    private $logger;
 
     /**
      * Constructor.
      *
      * @param Context $context the context.
      * @param WriterInterface $appConfig the app config writer.
+     * @param LoggerInterface $logger
      */
     public function __construct(
         Context $context,
-        WriterInterface $appConfig
+        WriterInterface $appConfig,
+        LoggerInterface $logger
     ) {
         parent::__construct($context);
 
         $this->config = $appConfig;
         $this->moduleManager = $context->getModuleManager();
+        $this->logger = $logger;
     }
 
     /**
@@ -168,8 +164,7 @@ class Account extends AbstractHelper
             $service = new NostoOperationUninstall($account);
             $service->delete($currentUser);
         } catch (\NostoException $e) {
-            // Failures are logged but not shown to the user.
-            $this->_logger->error($e, ['exception' => $e]);
+            $this->logger->error($e->__toString());
         }
 
         $store->resetConfig();

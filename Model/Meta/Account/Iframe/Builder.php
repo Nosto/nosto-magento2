@@ -103,7 +103,7 @@ class Builder
             $metaData->setPreviewUrlCart($this->nostoHelperUrl->getPreviewUrlCart($store));
             $metaData->setPreviewUrlFront($this->nostoHelperUrl->getPreviewUrlFront($store));
         } catch (\NostoException $e) {
-            $this->logger->error($e, ['exception' => $e]);
+            $this->logger->error($e->__toString());
         }
 
         return $metaData;

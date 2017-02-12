@@ -46,21 +46,8 @@ use Psr\Log\LoggerInterface;
 
 class Builder
 {
-    /**
-     * @var LoggerInterface
-     */
     private $logger;
-
-    /**
-     * @var ObjectManagerInterface
-     */
     private $objectManager;
-
-    /**
-     * Event manager
-     *
-     * @var ManagerInterface
-     */
     private $eventManager;
 
     /**

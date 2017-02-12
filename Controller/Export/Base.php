@@ -86,7 +86,6 @@ abstract class Base extends Action
      */
     public function execute()
     {
-        /** @var Store $store */
         $store = $this->storeManager->getStore(true);
         /** @var \Magento\Sales\Model\ResourceModel\Order\Collection $collection */
         $collection = $this->getCollection($store);
@@ -113,10 +112,10 @@ abstract class Base extends Action
      * Abstract function that should be implemented to return the correct
      * collection object with the controller specific filters applied
      *
-     * @param Store $store The store object for the current store
+     * @param StoreManagerInterface $store The store object for the current store
      * @return \Magento\Sales\Model\ResourceModel\Order\Collection The collection
      */
-    abstract protected function getCollection(Store $store); // @codingStandardsIgnoreLine
+    abstract protected function getCollection(StoreManagerInterface $store); // @codingStandardsIgnoreLine
 
     /**
      * Abstract function that should be implemented to return the built export

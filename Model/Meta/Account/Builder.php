@@ -114,7 +114,7 @@ class Builder
 
             $metaData->setDetails($signupDetails);
         } catch (\NostoException $e) {
-            $this->logger->error($e, ['exception' => $e]);
+            $this->logger->error($e->__toString());
         }
 
         return $metaData;

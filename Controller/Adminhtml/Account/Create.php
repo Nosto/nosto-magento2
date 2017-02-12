@@ -154,7 +154,7 @@ class Create extends Base
                     );
                 }
             } catch (NostoException $e) {
-                $this->logger->error($e, ['exception' => $e]);
+                $this->logger->error($e->__toString());
             }
         }
 

@@ -209,7 +209,7 @@ class CartTagging implements SectionSourceInterface
             try {
                 $nostoCustomer->save();
             } catch (\Exception $e) {
-                $this->logger->error($e, ['exception' => $e]);
+                $this->logger->error($e->__toString());
             }
         }
     }

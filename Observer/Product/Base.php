@@ -53,34 +53,11 @@ use Psr\Log\LoggerInterface;
 
 abstract class Base implements ObserverInterface
 {
-    /**
-     * @var NostoHelperData
-     */
     private $nostoHelperData;
-
-    /**
-     * @var NostoHelperAccount
-     */
     private $nostoHelperAccount;
-
-    /**
-     * @var NostoProductBuilder
-     */
-    private $nostoProductBuilder;
-
-    /**
-     * @var StoreManagerInterface
-     */
+    protected $nostoProductBuilder;
     private $storeManager;
-
-    /**
-     * @var LoggerInterface
-     */
     private $logger;
-
-    /**
-     * @var ModuleManager
-     */
     private $moduleManager;
 
     /**
@@ -157,7 +134,7 @@ abstract class Base implements ObserverInterface
                     $op->addProduct($metaProduct);
                     $this->doRequest($op);
                 } catch (\NostoException $e) {
-                    $this->logger->error($e, ['exception' => $e]);
+                    $this->logger->error($e->__toString());
                 }
             }
         }
