@@ -37,6 +37,7 @@
 namespace Nosto\Tagging\Observer\Product;
 
 use Magento\Framework\Module\Manager as ModuleManager;
+use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\Store;
 use Magento\Catalog\Model\Product;
 use Magento\Store\Model\StoreManagerInterface;
@@ -96,7 +97,7 @@ class Delete extends Base
     /**
      * @inheritdoc
      */
-    public function buildProduct(Product $product, Store $store)
+    public function buildProduct(Product $product, StoreInterface $store)
     {
         $product = $this->nostoProductBuilder->build($product, $store);
         return $product->setAvailability(\NostoProductInterface::DISCONTINUED);

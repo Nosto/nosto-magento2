@@ -80,18 +80,17 @@ class Account extends AbstractHelper
      *
      * @param Context $context the context.
      * @param WriterInterface $appConfig the app config writer.
-     * @param LoggerInterface $logger
+     * @internal param LoggerInterface $logger
      */
     public function __construct(
         Context $context,
-        WriterInterface $appConfig,
-        LoggerInterface $logger
+        WriterInterface $appConfig
     ) {
         parent::__construct($context);
 
         $this->config = $appConfig;
         $this->moduleManager = $context->getModuleManager();
-        $this->logger = $logger;
+        $this->logger = $context->getLogger();
     }
 
     /**
