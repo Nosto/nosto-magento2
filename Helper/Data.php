@@ -144,10 +144,10 @@ class Data extends AbstractHelper
 
     /**
      * @param string $path
-     * @param StoreManagerInterface $store
+     * @param StoreInterface $store
      * @return mixed|null
      */
-    public function getStoreConfig($path, StoreManagerInterface $store = null)
+    public function getStoreConfig($path, StoreInterface $store = null)
     {
         if ($store === null) {
             $store = $this->storeManager->getStore(true);

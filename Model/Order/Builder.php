@@ -39,6 +39,7 @@ namespace Nosto\Tagging\Model\Order;
 use Exception;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\ObjectManagerInterface;
+use Magento\Framework\Phrase;
 use Magento\Sales\Model\Order;
 use Magento\Sales\Model\Order\Item;
 use Magento\SalesRule\Model\RuleFactory as SalesRuleFactory;
@@ -101,22 +102,16 @@ class Builder
             $nostoOrder->setExternalOrderRef($order->getRealOrderId());
             $nostoOrder->setCreatedDate($order->getCreatedAt());
             $nostoOrder->setPaymentProvider($order->getPayment()->getMethod());
-            if ($order->getStatus()) {
+            $orderStatus = $order->getStatus();
+            if ($orderStatus) {
                 $nostoStatus = new NostoOrderStatus();
-                $nostoStatus->setCode($order->getStatus());
-                $nostoStatus->setLabel($order->getStatusLabel());
-                $nostoOrder->addOrderStatus($nostoStatus);
-            }
-            /** @var Order\Status\History $item */
-            foreach ($order->getAllStatusHistory() as $item) {
-                if ($item->getStatus()) {
-                    $nostoStatus = new NostoOrderStatus();
-                    $nostoStatus->setCode($item->getStatus());
-                    $nostoStatus->setLabel($item->getStatusLabel());
-                    $nostoOrder->setOrderStatus($nostoStatus);
+                $nostoStatus->setCode($orderStatus);
+                $nostoStatus->setDate($order->getUpdatedAt());
+                if ($order->getStatusLabel() instanceof Phrase) {
+                    $nostoStatus->setLabel($order->getStatusLabel()->getText());
                 }
+                $nostoOrder->setOrderStatus($nostoStatus);
             }
-
             $nostoBuyer = new NostoOrderBuyer();
             $nostoBuyer->setFirstName($order->getCustomerFirstname());
             $nostoBuyer->setLastName($order->getCustomerLastname());
