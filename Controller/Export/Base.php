@@ -122,10 +122,10 @@ abstract class Base extends Action
      * Abstract function that should be implemented to return the built export
      * collection object with all the items added
      *
-     * @param Collection $collection
+     * @param mixed $collection
      * @return NostoCollection the collection with the items to export
      */
-    abstract protected function buildExportCollection(Collection $collection); // @codingStandardsIgnoreLine
+    abstract protected function buildExportCollection($collection); // @codingStandardsIgnoreLine
 
     /**
      * Encrypts the export collection and outputs it to the browser.

@@ -48,6 +48,8 @@ $order = $this->getNostoOrder();
         <?php if ($order->getOrderStatusCode()) : ?>
             <span
                 class="order_status_code"><?php echo $this->escapeHtml($order->getOrderStatusCode()); ?></span>
+        <?php endif; ?>
+        <?php if ($order->getOrderStatusLabel()) : ?>
             <span
                 class="order_status_label"><?php echo $this->escapeHtml($order->getOrderStatusLabel()); ?></span>
         <?php endif; ?>

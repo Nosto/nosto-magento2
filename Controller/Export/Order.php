@@ -97,11 +97,23 @@ class Order extends Base
     /**
      * @inheritdoc
      */
-    protected function buildExportCollection(Collection $collection) // @codingStandardsIgnoreLine
+    protected function buildExportCollection($collection) // @codingStandardsIgnoreLine
     {
         /** @var \Magento\Sales\Model\ResourceModel\Order\Collection $collection */
         $exportCollection = new NostoOrderCollection();
         $items = $collection->loadData();
+        if (
+            $items instanceof \Traversable === false
+            && !is_array($items)
+        ) {
+            throw new \NostoException(
+                sprintf(
+                    'Invalid collection type %s for product export',
+                    get_class($collection)
+                )
+            );
+        }
+
         foreach ($items as $order) {
             /** @var \Magento\Sales\Model\Order $order */
             $exportCollection->append($this->nostoOrderBuilder->build($order));

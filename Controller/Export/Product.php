@@ -106,12 +106,23 @@ class Product extends Base
     /**
      * @inheritdoc
      */
-    protected function buildExportCollection(Collection $collection) // @codingStandardsIgnoreLine
+    protected function buildExportCollection($collection) // @codingStandardsIgnoreLine
     {
         /** @var \Magento\Catalog\Model\ResourceModel\Product\Collection $collection */
         $exportCollection = new NostoProductCollection();
         $items = $collection->loadData();
         $store = $this->storeManager->getStore(true);
+        if (
+            $items instanceof \Traversable === false
+            && !is_array($items)
+        ) {
+            throw new \NostoException(
+                sprintf(
+                    'Invalid collection type %s for product export',
+                    get_class($collection)
+                )
+            );
+        }
         foreach ($items as $product) {
             /** @var \Magento\Catalog\Model\Product $product */
             $exportCollection->append($this->nostoProductBuilder->build($product, $store));
