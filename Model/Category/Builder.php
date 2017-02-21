@@ -30,6 +30,7 @@ namespace Nosto\Tagging\Model\Category;
 use Magento\Catalog\Api\CategoryRepositoryInterface;
 use Magento\Catalog\Model\Category;
 use Nosto\Tagging\Model\Category\Factory as CategoryFactory;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Psr\Log\LoggerInterface;
 
 class Builder
@@ -85,11 +86,16 @@ class Builder
         $data = [];
         $path = $category->getPath();
         foreach (explode('/', $path) as $categoryId) {
-            $category = $this->_categoryRepository->get($categoryId);
-            if ($category && $category->getLevel() > 1) {
-                $data[] = $category->getName();
+            try {
+                $category = $this->_categoryRepository->get($categoryId);
+                if ($category && $category->getLevel() > 1) {
+                    $data[] = $category->getName();
+                }
+            } catch (NoSuchEntityException $e) {
+                // No need for further processing
             }
         }
+
         return count($data) ? '/' . implode('/', $data) : '';
     }
 }
