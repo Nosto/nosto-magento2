@@ -93,8 +93,8 @@ class Embed extends Template
      */
     public function getServerAddress()
     {
-        return gentenv('NOSTO_SERVER_URL')
-            ? gentenv('NOSTO_SERVER_URL')
+        return getenv('NOSTO_SERVER_URL')
+            ? getenv('NOSTO_SERVER_URL')
             : self::DEFAULT_SERVER_ADDRESS;
     }
 }
