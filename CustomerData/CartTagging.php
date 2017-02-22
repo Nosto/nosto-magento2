@@ -11,6 +11,7 @@ use Magento\Customer\CustomerData\SectionSourceInterface;
 use Magento\Checkout\Helper\Cart as CartHelper;
 use Magento\Store\Api\StoreManagementInterface;
 use Magento\Store\Model\StoreManagerInterface;
+use Nosto\Sdk\NostoCartItemInterface;
 use Nosto\Tagging\Model\Cart\Builder as NostoCartBuilder;
 use Magento\Framework\Stdlib\CookieManagerInterface;
 use Nosto\Tagging\Model\Customer as NostoCustomer;
@@ -88,7 +89,7 @@ class CartTagging implements SectionSourceInterface
         $itemCount = $cart->getItemsCount();
         $data["itemCount"] = $itemCount;
         $addedCount = 0;
-        /* @var \NostoCartItemInterface $item */
+        /* @var NostoCartItemInterface $item */
         foreach ($nostoCart->getItems() as $item) {
             $addedCount++;
             $data["items"][] = [

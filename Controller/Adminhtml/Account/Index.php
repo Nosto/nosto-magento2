@@ -34,6 +34,7 @@ use Magento\Framework\Controller\Result\Redirect;
 use Magento\Framework\View\Result\PageFactory;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
+use Magento\Store\Model\Website;
 
 /**
  *
@@ -76,7 +77,9 @@ class Index extends Action
         if (!$this->getSelectedStore()) {
             // If we are not under a store view, then redirect to the first
             // found one. Nosto is configured per store.
+            /** @var Website $website */
             foreach ($this->_storeManager->getWebsites() as $website) {
+                /** @noinspection PhpUndefinedMethodInspection */
                 $storeId = $website->getDefaultGroup()->getDefaultStoreId();
                 if (!empty($storeId)) {
                     return $this->resultRedirectFactory->create()

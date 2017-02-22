@@ -48,7 +48,7 @@ class Factory
      * Create new cart item object.
      *
      * @param array $data
-     * @return \NostoCartItem
+     * @return \Nosto\Sdk\NostoCartItem
      */
     public function create(array $data = [])
     {

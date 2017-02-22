@@ -32,6 +32,7 @@ use Magento\Backend\Block\Template\Context as BlockContext;
 use Magento\Backend\Model\Auth\Session;
 use Magento\Framework\Exception\NotFoundException;
 use Magento\Store\Api\Data\StoreInterface;
+use Magento\Store\Model\Store;
 use Nosto\Tagging\Helper\Account;
 
 /**
@@ -100,9 +101,11 @@ class Iframe extends BlockTemplate
                     $params[$key] = $value;
                 }
             }
+            /** @noinspection PhpUndefinedMethodInspection */
             $this->_backendAuthSession->setData('nosto_message', null);
         }
 
+        /** @var Store $store */
         $store = $this->getSelectedStore();
         $account = $this->_accountHelper->findAccount($store);
         return $this->_accountHelper->getIframeUrl($store, $account, $params);

@@ -34,9 +34,9 @@ use Magento\Catalog\Model\ResourceModel\ProductFactory;
 use Magento\Framework\App\Action\Context;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
+use Nosto\Sdk\NostoExportCollectionProduct;
 use Nosto\Tagging\Helper\Account as AccountHelper;
 use Nosto\Tagging\Model\Product\Builder as ProductBuilder;
-use NostoExportCollectionProduct;
 
 /**
  * Product export controller used to export product history to Nosto in order to
@@ -85,6 +85,7 @@ class Product extends Base
     protected function getCollection(Store $store)
     {
         /** @var \Magento\Catalog\Model\ResourceModel\Product\Collection $collection */
+        /** @noinspection PhpUndefinedMethodInspection */
         $collection = $this->_productCollectionFactory->create();
         $collection->setVisibility($this->_productVisibility->getVisibleInSiteIds());
         $collection->addAttributeToFilter('status', ['eq' => '1']);

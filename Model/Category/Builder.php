@@ -62,7 +62,7 @@ class Builder
 
     /**
      * @param Category $category
-     * @return \NostoCategory
+     * @return \Nosto\Sdk\NostoCategory
      */
     public function build(Category $category)
     {
@@ -70,7 +70,7 @@ class Builder
 
         try {
             $nostoCategory->setPath($this->buildPath($category));
-        } catch (\NostoException $e) {
+        } catch (\Nosto\Sdk\NostoException $e) {
             $this->_logger->error($e, ['exception' => $e]);
         }
 

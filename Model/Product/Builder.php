@@ -97,11 +97,11 @@ class Builder
     /**
      * @param Product $product
      * @param Store $store
-     * @return \NostoProduct
+     * @return \Nosto\Sdk\NostoProduct
      */
     public function build(Product $product, Store $store)
     {
-        $nostoProduct = new \NostoProduct();
+        $nostoProduct = new \Nosto\Sdk\NostoProduct();
 
         try {
             $nostoProduct->setUrl($this->buildUrl($product, $store));
@@ -109,17 +109,17 @@ class Builder
             $nostoProduct->setName($product->getName());
             $nostoProduct->setImageUrl($this->buildImageUrl($product, $store));
             $price = $this->_priceHelper->getProductFinalPriceInclTax($product);
-            $nostoProduct->setPrice(new \NostoPrice($price));
+            $nostoProduct->setPrice(new \Nosto\Sdk\NostoPrice($price));
             $listPrice = $this->_priceHelper->getProductPriceInclTax($product);
-            $nostoProduct->setListPrice(new \NostoPrice($listPrice));
+            $nostoProduct->setListPrice(new \Nosto\Sdk\NostoPrice($listPrice));
             $nostoProduct->setCurrency(
-                new \NostoCurrencyCode($store->getBaseCurrencyCode())
+                new \Nosto\Sdk\NostoCurrencyCode($store->getBaseCurrencyCode())
             );
             $nostoProduct->setAvailability(
-                new \NostoProductAvailability(
+                new \Nosto\Sdk\NostoProductAvailability(
                     $product->isAvailable()
-                        ? \NostoProductAvailability::IN_STOCK
-                        : \NostoProductAvailability::OUT_OF_STOCK
+                        ? \Nosto\Sdk\NostoProductAvailability::IN_STOCK
+                        : \Nosto\Sdk\NostoProductAvailability::OUT_OF_STOCK
                 )
             );
             $nostoProduct->setCategories($this->buildCategories($product));
@@ -147,10 +147,10 @@ class Builder
             }
             if ($product->hasData('created_at')) {
                 if (($timestamp = strtotime($product->getData('created_at')))) {
-                    $nostoProduct->setDatePublished(new \NostoDate($timestamp));
+                    $nostoProduct->setDatePublished(new \Nosto\Sdk\NostoDate($timestamp));
                 }
             }
-        } catch (\NostoException $e) {
+        } catch (\Nosto\Sdk\NostoException $e) {
             $this->_logger->error($e, ['exception' => $e]);
         }
 
@@ -222,6 +222,7 @@ class Builder
     {
         $tags = [];
 
+        /** @var \Magento\Catalog\Model\Entity\Attribute $attr */
         foreach ($product->getAttributes() as $attr) {
             if ($attr->getIsVisibleOnFront()
                 && $product->hasData($attr->getAttributeCode())
@@ -237,7 +238,7 @@ class Builder
         }
 
         if (!$product->canConfigure()) {
-            $tags[] = \NostoProduct::PRODUCT_ADD_TO_CART;
+            $tags[] = \Nosto\Sdk\NostoProduct::PRODUCT_ADD_TO_CART;
         }
 
         return $tags;

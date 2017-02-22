@@ -33,9 +33,11 @@ use Magento\Framework\Registry;
 use Magento\Framework\View\Element\Template;
 use /** @noinspection PhpUndefinedClassInspection */
     Magento\Sales\Model\OrderFactory;
+use Nosto\Sdk\NostoDate;
+use Nosto\Sdk\NostoOrder;
+use Nosto\Sdk\NostoPrice;
 use Nosto\Tagging\Helper\Format;
 use Nosto\Tagging\Model\Order\Builder as OrderBuilder;
-use NostoPrice;
 
 /**
  * Category block used for outputting meta-data on the stores category pages.
@@ -104,7 +106,7 @@ class Order extends Success
     /**
      * Returns the Nosto order meta-data model.
      *
-     * @return \NostoOrder the order meta data model.
+     * @return NostoOrder the order meta data model.
      */
     public function getNostoOrder()
     {
@@ -126,10 +128,10 @@ class Order extends Success
     /**
      * Formats a \NostoDate object, e.g. "2015-12-24";
      *
-     * @param \NostoDate $date the date to format.
+     * @param NostoDate $date the date to format.
      * @return string the formatted date.
      */
-    public function formatNostoDate(\NostoDate $date)
+    public function formatNostoDate(NostoDate $date)
     {
         return $this->_formatHelper->formatDate($date);
     }

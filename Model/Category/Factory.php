@@ -48,7 +48,7 @@ class Factory
      * Create new product object.
      *
      * @param array $data
-     * @return \NostoCategory
+     * @return \Nosto\Sdk\NostoCategory
      */
     public function create(array $data = [])
     {
