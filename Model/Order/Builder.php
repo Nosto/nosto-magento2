@@ -31,19 +31,20 @@ use Exception;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\Product\Type;
 use Magento\Catalog\Model\ResourceModel\Eav\Attribute;
+use Magento\Framework\App\ObjectManager;
 use Magento\SalesRule\Model\RuleFactory as SalesRuleFactory;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable;
 use Magento\GroupedProduct\Model\Product\Type\Grouped;
 use Magento\Sales\Model\Order;
 use Magento\Sales\Model\Order\Item;
-use NostoCurrencyCode;
-use NostoDate;
-use NostoOrderBuyer;
-use NostoOrderItem;
-use NostoOrderPaymentProvider;
-use NostoOrderStatus;
+use Nosto\Sdk\NostoCurrencyCode;
+use Nosto\Sdk\NostoDate;
+use Nosto\Sdk\NostoOrderBuyer;
+use Nosto\Sdk\NostoOrderItem;
+use Nosto\Sdk\NostoOrderPaymentProvider;
+use Nosto\Sdk\NostoOrderStatus;
+use Nosto\Sdk\NostoPrice;
 use Nosto\Tagging\Helper\Price as PriceHelper;
-use NostoPrice;
 use Psr\Log\LoggerInterface;
 use Nosto\Tagging\Helper\Item as NostoItemHelper;
 
@@ -92,11 +93,11 @@ class Builder
      * Loads the order info from a Magento order model.
      *
      * @param Order $order the order model.
-     * @return \NostoOrder
+     * @return \Nosto\Sdk\NostoOrder
      */
     public function build(Order $order)
     {
-        $nostoOrder = new \NostoOrder();
+        $nostoOrder = new \Nosto\Sdk\NostoOrder();
 
         try {
             $nostoCurrency = new NostoCurrencyCode($order->getOrderCurrencyCode());
@@ -140,7 +141,7 @@ class Builder
                             $this->_priceHelper->getItemFinalPriceInclTax($item)
                         )
                     );
-                } catch (\NostoInvalidArgumentException $E) {
+                } catch (\Nosto\Sdk\NostoInvalidArgumentException $E) {
                     $nostoItem->setUnitPrice(
                         new NostoPrice(0)
                     );
@@ -256,7 +257,7 @@ class Builder
                 if (is_array($attributes)) {
                     foreach ($attributes as $id => $value) {
                         /** @var Attribute $attribute */
-                        $attribute = $this->_objectManager->get('Magento\Catalog\Model\ResourceModel\Eav\Attribute')
+                        $attribute = ObjectManager::getInstance()->get('Magento\Catalog\Model\ResourceModel\Eav\Attribute')
                             ->load($id);
                         $label = $attribute->getSource()->getOptionText($value);
                         if (!empty($label)) {
@@ -295,7 +296,7 @@ class Builder
             $config = $item->getProductOptionByCode('super_product_config');
             if (isset($config['product_id'])) {
                 /** @var Product $parent */
-                $parent = $this->_objectManager->get('Magento\Catalog\Model\Product')
+                $parent = ObjectManager::getInstance()->get('Magento\Catalog\Model\Product')
                     ->load($config['product_id']);
                 $parentName = $parent->getName();
                 if (!empty($parentName)) {

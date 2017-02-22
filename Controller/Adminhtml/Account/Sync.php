@@ -32,6 +32,7 @@ use Magento\Backend\App\Action\Context;
 use Magento\Framework\Controller\Result\Json;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
+use Nosto\Sdk\NostoOAuthClient;
 use Nosto\Tagging\Helper\Account;
 use Nosto\Tagging\Model\Meta\Oauth\Builder;
 
@@ -85,7 +86,7 @@ class Sync extends Action
 
         if (!is_null($store) && !is_null($account)) {
             $metaData = $this->_oauthMetaBuilder->build($store, $account);
-            $client = new \NostoOAuthClient($metaData);
+            $client = new NostoOAuthClient($metaData);
 
             $response['success'] = true;
             $response['redirect_url'] = $client->getAuthorizationUrl();

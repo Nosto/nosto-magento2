@@ -28,6 +28,8 @@
 namespace Nosto\Tagging\Model\Meta\Account\Owner;
 
 use Magento\Backend\Model\Auth\Session;
+use Magento\User\Model\User;
+use Nosto\Sdk\NostoOwner;
 use Psr\Log\LoggerInterface;
 
 class Builder
@@ -47,20 +49,21 @@ class Builder
     }
 
     /**
-     * @return \NostoOwner
+     * @return NostoOwner
      */
     public function build()
     {
-        $metaData = new \NostoOwner();
+        $metaData = new NostoOwner();
 
         try {
+            /** @var User $user */
             $user = $this->_backendAuthSession->getUser();
             if (!is_null($user)) {
-                $metaData->setFirstName($user->getFirstname());
-                $metaData->setLastName($user->getLastname());
+                $metaData->setFirstName($user->getFirstName());
+                $metaData->setLastName($user->getLastName());
                 $metaData->setEmail($user->getEmail());
             }
-        } catch (\NostoException $e) {
+        } catch (\Nosto\Sdk\NostoException $e) {
             $this->_logger->error($e, ['exception' => $e]);
         }
 

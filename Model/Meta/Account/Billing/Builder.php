@@ -28,6 +28,8 @@
 namespace Nosto\Tagging\Model\Meta\Account\Billing;
 
 use Magento\Store\Model\Store;
+use Nosto\Sdk\NostoBilling;
+use Nosto\Sdk\NostoCountryCode;
 use Psr\Log\LoggerInterface;
 
 class Builder
@@ -44,18 +46,18 @@ class Builder
 
     /**
      * @param Store $store
-     * @return \NostoBilling
+     * @return NostoBilling
      */
     public function build(Store $store)
     {
-        $metaData = new \NostoBilling();
+        $metaData = new NostoBilling();
 
         try {
             $country = $store->getConfig('general/country/default');
             if (!empty($country)) {
-                $metaData->setCountry(new \NostoCountryCode($country));
+                $metaData->setCountry(new NostoCountryCode($country));
             }
-        } catch (\NostoException $e) {
+        } catch (\Nosto\Sdk\NostoException $e) {
             $this->_logger->error($e, ['exception' => $e]);
         }
 

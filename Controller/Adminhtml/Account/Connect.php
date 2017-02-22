@@ -32,6 +32,7 @@ use Magento\Backend\App\Action\Context;
 use Magento\Framework\Controller\Result\Json;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
+use Nosto\Sdk\NostoOAuthClient;
 use Nosto\Tagging\Model\Meta\Oauth\Builder;
 
 class Connect extends Action
@@ -77,7 +78,7 @@ class Connect extends Action
 
         if (!is_null($store)) {
             $metaData = $this->_oauthMetaBuilder->build($store);
-            $client = new \NostoOAuthClient($metaData);
+            $client = new NostoOAuthClient($metaData);
 
             $response['success'] = true;
             $response['redirect_url'] = $client->getAuthorizationUrl();

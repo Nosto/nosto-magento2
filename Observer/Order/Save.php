@@ -28,9 +28,10 @@
 namespace Nosto\Tagging\Observer\Order;
 
 use Magento\Framework\Event\Observer;
-use Magento\Payment\Model\Cart\SalesModel\Order;
+use Magento\Sales\Model\Order;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Framework\Module\Manager as ModuleManager;
+use Nosto\Sdk\NostoServiceOrder;
 use Nosto\Tagging\Helper\Data as DataHelper;
 use Nosto\Tagging\Helper\Account as AccountHelper;
 use Magento\Framework\Event\ObserverInterface;
@@ -80,6 +81,8 @@ class Save implements ObserverInterface
      * @var CustomerFactory
      */
     protected $_customerFactory;
+    /** @noinspection PhpUndefinedClassInspection */
+    /** @noinspection PhpUndefinedClassInspection */
 
     /**
      * Constructor.
@@ -121,6 +124,7 @@ class Save implements ObserverInterface
     {
         if ($this->_moduleManager->isEnabled(DataHelper::MODULE_NAME)) {
             /* @var Order $order */
+            /** @noinspection PhpUndefinedMethodInspection */
             $order = $observer->getOrder();
             $nostoOrder = $this->_orderBuilder->build($order);
             $nostoAccount = $this->_accountHelper->findAccount(
@@ -128,16 +132,19 @@ class Save implements ObserverInterface
             );
             if ($nostoAccount !== null) {
                 $quoteId = $order->getQuoteId();
+                /** @noinspection PhpUndefinedMethodInspection */
                 $nostoCustomer = $this->_customerFactory
                     ->create()
                     ->load($quoteId, NostoCustomer::QUOTE_ID);
 
-                $orderService = new \NostoServiceOrder($nostoAccount);
+                $orderService = new NostoServiceOrder($nostoAccount);
                 try {
+                    /** @noinspection PhpUndefinedMethodInspection */
                     $orderService->confirm($nostoOrder,
                         $nostoCustomer->getNostoId());
 
                 } catch (\Exception $e) {
+                    /** @noinspection PhpUndefinedMethodInspection */
                     $this->_logger->error(
                         sprintf(
                             "Failed to save order with quote #%s for customer #%s.

@@ -32,6 +32,10 @@ use Magento\Backend\App\Action\Context;
 use Magento\Framework\Controller\Result\Json;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
+use Nosto\Sdk\NostoException;
+use Nosto\Sdk\NostoMessage;
+use Nosto\Sdk\NostoOwner;
+use Nosto\Sdk\NostoServiceAccount;
 use Nosto\Tagging\Helper\Account;
 use Nosto\Tagging\Model\Meta\Account\Builder;
 use Psr\Log\LoggerInterface;
@@ -57,7 +61,7 @@ class Create extends Action
      * @param StoreManagerInterface $storeManager
      * @param Json $result
      * @param LoggerInterface $logger
-     * @param \NostoServiceAccount $accountService
+     * @param NostoServiceAccount $accountService
      */
     public function __construct(
         Context $context,
@@ -66,7 +70,7 @@ class Create extends Action
         StoreManagerInterface $storeManager,
         Json $result,
         LoggerInterface $logger,
-        \NostoServiceAccount $accountService
+        NostoServiceAccount $accountService
     ) {
         parent::__construct($context);
 
@@ -95,7 +99,7 @@ class Create extends Action
                 $metaData = $this->_accountMetaBuilder->build($store);
                 // todo: how to handle this class, DI?
                 if (\Zend_Validate::is($emailAddress, 'EmailAddress')) {
-                    /** @var \NostoOwner $owner */
+                    /** @var NostoOwner $owner */
                     $owner = $metaData->getOwner();
                     $owner->setEmail($emailAddress);
                 }
@@ -110,12 +114,12 @@ class Create extends Action
                         $store,
                         $account,
                         [
-                            'message_type' => \NostoMessage::TYPE_SUCCESS,
-                            'message_code' => \NostoMessage::CODE_ACCOUNT_CREATE,
+                            'message_type' => NostoMessage::TYPE_SUCCESS,
+                            'message_code' => NostoMessage::CODE_ACCOUNT_CREATE,
                         ]
                     );
                 }
-            } catch (\NostoException $e) {
+            } catch (NostoException $e) {
                 $this->_logger->error($e, ['exception' => $e]);
             }
         }
@@ -125,8 +129,8 @@ class Create extends Action
                 $store,
                 null, // account creation failed, so we have none.
                 [
-                    'message_type' => \NostoMessage::TYPE_ERROR,
-                    'message_code' => \NostoMessage::CODE_ACCOUNT_CREATE,
+                    'message_type' => NostoMessage::TYPE_ERROR,
+                    'message_code' => NostoMessage::CODE_ACCOUNT_CREATE,
                 ]
             );
         }

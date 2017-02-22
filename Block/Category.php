@@ -29,6 +29,7 @@ namespace Nosto\Tagging\Block;
 
 use Magento\Framework\Registry;
 use Magento\Framework\View\Element\Template;
+use Nosto\Sdk\NostoCategory;
 use Nosto\Tagging\Model\Category\Builder as CategoryBuilder;
 
 /**
@@ -76,7 +77,7 @@ class Category extends Template
     /**
      * Returns the Nosto category meta-data model.
      *
-     * @return \NostoCategory the category meta data model.
+     * @return NostoCategory the category meta data model.
      */
     public function getNostoCategory()
     {

@@ -96,7 +96,7 @@ class Builder
     /**
      * @param array $items
      * @param Store $store
-     * @return \NostoCart
+     * @return \Nosto\Sdk\NostoCart
      */
     public function build(array $items, Store $store)
     {
@@ -104,7 +104,7 @@ class Builder
 
         try {
             $nostoCart->setItems($this->buildItems($items, $store));
-        } catch (\NostoException $e) {
+        } catch (\Nosto\Sdk\NostoException $e) {
             $this->_logger->error($e, ['exception' => $e]);
         }
 
@@ -114,7 +114,7 @@ class Builder
     /**
      * @param Item[] $items
      * @param Store $store
-     * @return \NostoCartItemInterface[]
+     * @return \Nosto\Sdk\NostoCartItemInterface[]
      */
     protected function buildItems(array $items, Store $store)
     {
@@ -127,13 +127,13 @@ class Builder
                 $cartItem->setQuantity((int)$item->getQty());
                 $cartItem->setName($this->buildItemName($item));
                 $cartItem->setUnitPrice(
-                    new \NostoPrice($item->getBasePriceInclTax())
+                    new \Nosto\Sdk\NostoPrice($item->getBasePriceInclTax())
                 );
                 $cartItem->setCurrency(
-                    new \NostoCurrencyCode($store->getBaseCurrencyCode())
+                    new \Nosto\Sdk\NostoCurrencyCode($store->getBaseCurrencyCode())
                 );
                 $cartItems[] = $cartItem;
-            } catch (\NostoException $e) {
+            } catch (\Nosto\Sdk\NostoException $e) {
 
             }
         }

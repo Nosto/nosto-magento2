@@ -28,10 +28,8 @@
 namespace Nosto\Tagging\Helper;
 
 use Magento\Catalog\Model\Product\Visibility;
-use /** @noinspection PhpUndefinedClassInspection */
-    Magento\Catalog\Model\ResourceModel\Category\CollectionFactory as CategoryCollectionFactory;
-use /** @noinspection PhpUndefinedClassInspection */
-    Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductCollectionFactory;
+use Magento\Catalog\Model\ResourceModel\Category\CollectionFactory as CategoryCollectionFactory;
+use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductCollectionFactory;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 use Magento\Store\Model\Store;
@@ -236,7 +234,7 @@ class Url extends AbstractHelper
      */
     public function replaceQueryParamsInUrl(array $params, $url)
     {
-        return \NostoHttpRequest::replaceQueryParamsInUrl($params, $url);
+        return \Nosto\Sdk\NostoHttpRequest::replaceQueryParamsInUrl($params, $url);
     }
 
     /**
@@ -247,7 +245,7 @@ class Url extends AbstractHelper
      */
     public function addNostoDebugParamToUrl($url)
     {
-        return \NostoHttpRequest::replaceQueryParamInUrl(
+        return \Nosto\Sdk\NostoHttpRequest::replaceQueryParamInUrl(
             'nostodebug',
             'true',
             $url

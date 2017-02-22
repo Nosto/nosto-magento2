@@ -30,6 +30,7 @@ namespace Nosto\Tagging\Model\Meta\Oauth;
 use Magento\Framework\Locale\ResolverInterface;
 use Magento\Framework\Url;
 use Magento\Store\Model\Store;
+use Nosto\Sdk\NostoLanguageCode;
 use Psr\Log\LoggerInterface;
 
 class Builder
@@ -51,15 +52,15 @@ class Builder
 
     /**
      * @param Store $store
-     * @param \NostoAccount $account
-     * @return \NostoOauth
+     * @param \Nosto\Sdk\NostoAccount $account
+     * @return \Nosto\Sdk\NostoOauth
      */
-    public function build(Store $store, \NostoAccount $account = null)
+    public function build(Store $store, \Nosto\Sdk\NostoAccount $account = null)
     {
-        $metaData = new \NostoOauth();
+        $metaData = new \Nosto\Sdk\NostoOauth();
 
         try {
-            $metaData->setScopes(\NostoApiToken::getApiTokenNames());
+            $metaData->setScopes(\Nosto\Sdk\NostoApiToken::getApiTokenNames());
             $redirectUrl = $this->_urlBuilder->getUrl(
                 'nosto/oauth',
                 [
@@ -70,11 +71,11 @@ class Builder
             );
             $metaData->setRedirectUrl($redirectUrl);
             $lang = substr($this->_localeResolver->getLocale(), 0, 2);
-            $metaData->setLanguage(new \NostoLanguageCode($lang));
+            $metaData->setLanguage(new NostoLanguageCode($lang));
             if (!is_null($account)) {
                 $metaData->setAccount($account);
             }
-        } catch (\NostoException $e) {
+        } catch (\Nosto\Sdk\NostoException $e) {
             $this->_logger->error($e, ['exception' => $e]);
         }
 

@@ -9,7 +9,17 @@
     "minimum-stability": "dev",
     "require": {
         "php": ">=5.5.0",
-        "nosto/php-sdk": "2.4.2"
+        "nosto/php-sdk": "2.5.0"
+    },
+    "repositories": [
+      {
+        "type": "composer",
+        "url": "https://repo.magento.com/"
+      }
+    ],
+    "require-dev": {
+        "phing/phing": "2.*",
+        "magento/product-community-edition": "^2.1.0"
     },
     "autoload": {
         "psr-4": {

@@ -1,8 +1,19 @@
 <?xml version="1.0"?>
 <!--suppress XmlUnboundNsPrefix -->
 <ruleset name="Magento">
- <description>The Magento coding standard.</description>
- <rule ref="PSR2">
-  <exclude name="PSR2.Classes.PropertyDeclaration.Underscore"/>
- </rule>
+    <file>./Api</file>
+    <file>./Block</file>
+    <file>./Controller</file>
+    <file>./CustomerData</file>
+    <file>./Helper</file>
+    <file>./Model</file>
+    <file>./Observer</file>
+    <file>./Setup</file>
+    <file>./view</file>
+    <exclude-pattern>*.js</exclude-pattern>
+    <rule ref="MEQP2">
+        <exclude name="Squiz.PHP.CommentedOutCode"/>
+        <exclude name="Generic.Metrics.CyclomaticComplexity"/>
+        <exclude name="MEQP2.Classes.ObjectInstantiation"/>
+    </rule>
 </ruleset>

@@ -129,7 +129,7 @@ class Data extends AbstractHelper
         );
         if (empty($installationId)) {
             // Running bin2hex() will make the ID string length 64 characters.
-            $installationId = bin2hex(\phpseclib_Crypt_Random::string(32));
+            $installationId = bin2hex(\Phpseclib\phpseclib_Crypt_Random::string(32));
             $this->_configWriter->save(
                 self::XML_PATH_INSTALLATION_ID,
                 $installationId
@@ -178,7 +178,8 @@ class Data extends AbstractHelper
         $version = 'unknown';
         if ($this->_productMetaData->getVersion()) {
             $version = $this->_productMetaData->getVersion();
-        } elseif (defined(AppInterface::VERSION)) {
+        } /** @noinspection PhpUndefinedClassConstantInspection */ elseif (defined(AppInterface::VERSION)) {
+            /** @noinspection PhpUndefinedClassConstantInspection */
             $version = AppInterface::VERSION;
         }
         return $version;

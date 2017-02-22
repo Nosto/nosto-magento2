@@ -29,6 +29,8 @@ namespace Nosto\Tagging\Model\Meta\Account\Iframe;
 
 use Magento\Framework\Locale\ResolverInterface;
 use Magento\Store\Model\Store;
+use Nosto\Sdk\NostoIframe;
+use Nosto\Sdk\NostoLanguageCode;
 use Nosto\Tagging\Helper\Data;
 use Nosto\Tagging\Helper\Url;
 use Psr\Log\LoggerInterface;
@@ -60,19 +62,19 @@ class Builder
 
     /**
      * @param Store $store
-     * @return \NostoIframe
+     * @return NostoIframe
      */
     public function build(Store $store)
     {
-        $metaData = new \NostoIframe();
+        $metaData = new NostoIframe();
 
         try {
             $metaData->setUniqueId($this->_dataHelper->getInstallationId());
 
             $lang = substr($this->_localeResolver->getLocale(), 0, 2);
-            $metaData->setLanguage(new \NostoLanguageCode($lang));
+            $metaData->setLanguage(new NostoLanguageCode($lang));
             $lang = substr($store->getConfig('general/locale/code'), 0, 2);
-            $metaData->setShopLanguage(new \NostoLanguageCode($lang));
+            $metaData->setShopLanguage(new NostoLanguageCode($lang));
 
             $metaData->setShopName($store->getName());
             $metaData->setUniqueId($this->_dataHelper->getInstallationId());
@@ -83,7 +85,7 @@ class Builder
             $metaData->setPreviewUrlSearch($this->_urlHelper->getPreviewUrlSearch($store));
             $metaData->setPreviewUrlCart($this->_urlHelper->getPreviewUrlCart($store));
             $metaData->setPreviewUrlFront($this->_urlHelper->getPreviewUrlFront($store));
-        } catch (\NostoException $e) {
+        } catch (\Nosto\Sdk\NostoException $e) {
             $this->_logger->error($e, ['exception' => $e]);
         }
 
