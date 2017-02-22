@@ -52,6 +52,6 @@ class Factory
      */
     public function create(array $data = [])
     {
-        return $this->_objectManager->create('NostoCart', $data);
+        return $this->_objectManager->create('Nosto\Sdk\NostoCart', $data);
     }
 }
