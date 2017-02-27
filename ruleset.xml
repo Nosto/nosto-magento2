@@ -11,6 +11,7 @@
     <file>./Setup</file>
     <file>./view</file>
     <exclude-pattern>*.js</exclude-pattern>
+    <config name="installed_paths" value="vendor/magento-ecg/coding-standard/,vendor/magento/marketplace-eqp/" />
     <rule ref="MEQP2">
         <exclude name="Squiz.PHP.CommentedOutCode"/>
         <exclude name="Generic.Metrics.CyclomaticComplexity"/>
