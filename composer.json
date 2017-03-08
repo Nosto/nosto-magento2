@@ -9,7 +9,7 @@
     "minimum-stability": "dev",
     "require": {
         "php": ">=5.5.0",
-        "nosto/php-sdk": "2.5.1"
+        "nosto/php-sdk": "2.5.2"
     },
     "repositories": [
       {
