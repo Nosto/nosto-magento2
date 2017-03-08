@@ -28,6 +28,7 @@
 namespace Nosto\Tagging\Observer\Product;
 
 use Magento\Catalog\Model\Product;
+use Nosto\Sdk\NostoServiceProduct;
 use Nosto\Tagging\Observer\Product\Base as ProductObserver;
 
 /**
@@ -43,7 +44,7 @@ class Update extends ProductObserver
     /**
      * @inheritdoc
      */
-    protected function doRequest(\NostoServiceProduct $operation)
+    protected function doRequest(NostoServiceProduct $operation)
     {
         $operation->upsert();
     }

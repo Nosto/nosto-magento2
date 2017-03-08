@@ -48,10 +48,10 @@ class Factory
      * Create new cart object.
      *
      * @param array $data
-     * @return \NostoCart
+     * @return \Nosto\Sdk\NostoCart
      */
     public function create(array $data = [])
     {
-        return $this->_objectManager->create('NostoCart', $data);
+        return $this->_objectManager->create('Nosto\Sdk\NostoCart', $data);
     }
 }

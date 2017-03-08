@@ -2,6 +2,10 @@
 
 ## Changelog
 
+* 1.2.0-RC1
+    * Bump to SDK version 2.5.2
+    * Make compatible with MEQP
+    
 * 1.1.1
     * Fix the errors when running Magento compiler
     * Change the block definition of referenceContainer to referenceBlock

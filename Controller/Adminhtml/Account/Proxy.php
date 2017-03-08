@@ -75,6 +75,7 @@ class Proxy extends Action
         $code = $this->_request->getParam('message_code');
         $text = $this->_request->getParam('message_text');
         if (!is_null($type) && !is_null($code)) {
+            /** @noinspection PhpUndefinedMethodInspection */
             $this->_backendAuthSession->setData(
                 'nosto_message',
                 [

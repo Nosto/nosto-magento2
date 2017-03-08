@@ -30,6 +30,9 @@ namespace Nosto\Tagging\Model\Meta\Account;
 use Magento\Framework\Locale\ResolverInterface;
 use Magento\Framework\UrlInterface;
 use Magento\Store\Model\Store;
+use Nosto\Sdk\NostoCurrencyCode;
+use Nosto\Sdk\NostoHttpRequest;
+use Nosto\Sdk\NostoLanguageCode;
 use Nosto\Tagging\Helper\Currency;
 use Nosto\Tagging\Helper\Data;
 use Nosto\Tagging\Model\Meta\Account\Billing\Builder as BillingBuilder;
@@ -64,11 +67,11 @@ class Builder
 
     /**
      * @param Store $store
-     * @return \NostoAccount
+     * @return \Nosto\Sdk\NostoAccount
      */
     public function build(Store $store)
     {
-        $metaData = new \NostoAccount();
+        $metaData = new \Nosto\Sdk\NostoAccount();
 
         try {
             $metaData->setTitle(
@@ -83,7 +86,7 @@ class Builder
             );
             $metaData->setName(substr(sha1(rand()), 0, 8));
             $metaData->setFrontPageUrl(
-                \NostoHttpRequest::replaceQueryParamInUrl(
+                NostoHttpRequest::replaceQueryParamInUrl(
                     '___store',
                     $store->getCode(),
                     $store->getBaseUrl(UrlInterface::URL_TYPE_WEB)
@@ -91,19 +94,19 @@ class Builder
             );
 
             $metaData->setCurrency(
-                new \NostoCurrencyCode($store->getBaseCurrencyCode())
+                new NostoCurrencyCode($store->getBaseCurrencyCode())
             );
             $lang = substr($store->getConfig('general/locale/code'), 0, 2);
-            $metaData->setLanguage(new \NostoLanguageCode($lang));
+            $metaData->setLanguage(new NostoLanguageCode($lang));
             $lang = substr($this->_localeResolver->getLocale(), 0, 2);
-            $metaData->setOwnerLanguage(new \NostoLanguageCode($lang));
+            $metaData->setOwnerLanguage(new NostoLanguageCode($lang));
 
             $owner = $this->_accountOwnerMetaBuilder->build();
             $metaData->setOwner($owner);
 
             $billing = $this->_accountBillingMetaBuilder->build($store);
             $metaData->setBilling($billing);
-        } catch (\NostoException $e) {
+        } catch (\Nosto\Sdk\NostoException $e) {
             $this->_logger->error($e, ['exception' => $e]);
         }
 

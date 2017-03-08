@@ -38,6 +38,10 @@ use Magento\Framework\Pricing\PriceCurrencyInterface;
 use Magento\Framework\Stdlib\StringUtils;
 use Magento\Framework\Url\EncoderInterface as UrlEncoder;
 use Magento\Store\Model\Store;
+use Nosto\Sdk\NostoCategory;
+use Nosto\Sdk\NostoDate;
+use Nosto\Sdk\NostoPrice;
+use Nosto\Sdk\NostoProduct;
 use Nosto\Tagging\Helper\Data;
 use Nosto\Tagging\Helper\Format;
 use Nosto\Tagging\Model\Category\Builder as CategoryBuilder;
@@ -134,7 +138,7 @@ class Product extends View
     /**
      * Returns the Nosto product DTO.
      *
-     * @return \NostoProduct the product meta data model.
+     * @return NostoProduct the product meta data model.
      */
     public function getNostoProduct()
     {
@@ -149,7 +153,7 @@ class Product extends View
     /**
      * Returns the Nosto category DTO.
      *
-     * @return \NostoCategory the category meta data model.
+     * @return NostoCategory the category meta data model.
      */
     public function getNostoCategory()
     {
@@ -162,10 +166,10 @@ class Product extends View
     /**
      * Formats a \NostoPrice object, e.g. "1234.56".
      *
-     * @param \NostoPrice $price the price to format.
+     * @param NostoPrice $price the price to format.
      * @return string the formatted price.
      */
-    public function formatNostoPrice(\NostoPrice $price)
+    public function formatNostoPrice(NostoPrice $price)
     {
         return $this->_formatHelper->formatPrice($price);
     }
@@ -173,10 +177,10 @@ class Product extends View
     /**
      * Formats a \NostoDate object, e.g. "2015-12-24";
      *
-     * @param \NostoDate $date the date to format.
+     * @param NostoDate $date the date to format.
      * @return string the formatted date.
      */
-    public function formatNostoDate(\NostoDate $date)
+    public function formatNostoDate(NostoDate $date)
     {
         return $this->_formatHelper->formatDate($date);
     }

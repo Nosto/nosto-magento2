@@ -34,6 +34,8 @@ use Magento\Framework\Exception\CouldNotSaveException;
 use Magento\Framework\Exception\State\InputMismatchException;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
+use Nosto\Sdk\NostoMessage;
+use Nosto\Sdk\NostoServiceAccount;
 use Nosto\Tagging\Helper\Account;
 use Nosto\Tagging\Model\Meta\Oauth\Builder;
 use Psr\Log\LoggerInterface;
@@ -54,7 +56,7 @@ class Index extends Action
      * @param UrlInterface $backendUrlBuilder
      * @param Account $accountHelper
      * @param Builder $oauthMetaBuilder
-     * @param \NostoServiceAccount $accountService
+     * @param NostoServiceAccount $accountService
      */
     public function __construct(
         Context $context,
@@ -63,7 +65,7 @@ class Index extends Action
         UrlInterface $backendUrlBuilder,
         Account $accountHelper,
         Builder $oauthMetaBuilder,
-        \NostoServiceAccount $accountService
+        NostoServiceAccount $accountService
     ) {
         parent::__construct($context);
 
@@ -94,15 +96,15 @@ class Index extends Action
             try {
                 $this->connectAccount($authCode, $store);
                 $params = [
-                    'message_type' => \NostoMessage::TYPE_SUCCESS,
-                    'message_code' => \NostoMessage::CODE_ACCOUNT_CONNECT,
+                    'message_type' => NostoMessage::TYPE_SUCCESS,
+                    'message_code' => NostoMessage::CODE_ACCOUNT_CONNECT,
                     'store' => (int)$store->getId(),
                 ];
             } catch (\Exception $e) {
                 $this->_logger->error($e, ['exception' => $e]);
                 $params = [
-                    'message_type' => \NostoMessage::TYPE_ERROR,
-                    'message_code' => \NostoMessage::CODE_ACCOUNT_CONNECT,
+                    'message_type' => NostoMessage::TYPE_ERROR,
+                    'message_code' => NostoMessage::CODE_ACCOUNT_CONNECT,
                     'store' => (int)$store->getId(),
                 ];
             }
@@ -119,8 +121,8 @@ class Index extends Action
             $this->redirectBackend(
                 'nosto/account/proxy',
                 [
-                    'message_type' => \NostoMessage::TYPE_ERROR,
-                    'message_code' => \NostoMessage::CODE_ACCOUNT_CONNECT,
+                    'message_type' => NostoMessage::TYPE_ERROR,
+                    'message_code' => NostoMessage::CODE_ACCOUNT_CONNECT,
                     'message_text' => $desc,
                     'store' => (int)$store->getId(),
                 ]

@@ -29,8 +29,7 @@ namespace Nosto\Tagging\Helper;
 
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
-use /** @noinspection PhpUndefinedClassInspection */
-    Zend_Currency;
+use Nosto\Sdk\NostoHelperCurrency;
 
 /**
  * Currency helper used for currency related tasks.
@@ -38,7 +37,7 @@ use /** @noinspection PhpUndefinedClassInspection */
 class Currency extends AbstractHelper
 {
     /**
-     * @var \NostoHelperCurrency the Nosto currency helper.
+     * @var NostoHelperCurrency the Nosto currency helper.
      */
     protected $_currencyHelper;
 
@@ -46,11 +45,11 @@ class Currency extends AbstractHelper
      * Constructor.
      *
      * @param Context $context the context.
-     * @param \NostoHelperCurrency $currencyHelper the Nosto currency helper.
+     * @param NostoHelperCurrency $currencyHelper the Nosto currency helper.
      */
     public function __construct(
         Context $context,
-        \NostoHelperCurrency $currencyHelper
+        NostoHelperCurrency $currencyHelper
     ) {
         parent::__construct($context);
 
@@ -62,14 +61,14 @@ class Currency extends AbstractHelper
      *
      * @param string $locale the locale to get the currency format in.
      * @param string $currencyCode the currency ISO 4217 code to get the currency in.
-     * @return \NostoCurrency the parsed currency.
+     * @return \Nosto\Sdk\NostoCurrency the parsed currency.
      */
     public function getCurrencyObject($locale, $currencyCode)
     {
         /** @noinspection PhpUndefinedClassInspection */
         return $this->_currencyHelper->parseZendCurrencyFormat(
             $currencyCode,
-            new Zend_Currency($locale, $currencyCode)
+            new \Zend_Currency($locale, $currencyCode)
         );
     }
 }

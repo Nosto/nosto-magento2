@@ -33,6 +33,10 @@ use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Module\Manager as ModuleManager;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
+use Nosto\Sdk\NostoAccount;
+use Nosto\Sdk\NostoException;
+use Nosto\Sdk\NostoProduct;
+use Nosto\Sdk\NostoServiceProduct;
 use Nosto\Tagging\Helper\Account as AccountHelper;
 use Nosto\Tagging\Helper\Data as DataHelper;
 use Nosto\Tagging\Model\Product\Builder as ProductBuilder;
@@ -116,7 +120,7 @@ abstract class Base implements ObserverInterface
             foreach ($product->getStoreIds() as $storeId) {
                 /** @var Store $store */
                 $store = $this->_storeManager->getStore($storeId);
-                /** @var \NostoAccount $account */
+                /** @var NostoAccount $account */
                 $account = $this->_accountHelper->findAccount($store);
                 if ($account === null) {
                     continue;
@@ -127,17 +131,17 @@ abstract class Base implements ObserverInterface
                 }
 
                 // Load the product model for this particular store view.
-                /** @var \NostoProduct $model */
+                /** @var NostoProduct $model */
                 $metaProduct = $this->_productBuilder->build($product, $store);
                 if (is_null($metaProduct)) {
                     continue;
                 }
 
                 try {
-                    $op = new \NostoServiceProduct($account);
+                    $op = new NostoServiceProduct($account);
                     $op->addProduct($metaProduct);
                     $this->doRequest($op);
-                } catch (\NostoException $e) {
+                } catch (NostoException $e) {
                     $this->_logger->error($e, ['exception' => $e]);
                 }
             }
@@ -152,8 +156,8 @@ abstract class Base implements ObserverInterface
     abstract protected function validateProduct(Product $product);
 
     /**
-     * @param \NostoServiceProduct $operation
+     * @param NostoServiceProduct $operation
      * @return mixed
      */
-    abstract protected function doRequest(\NostoServiceProduct $operation);
+    abstract protected function doRequest(NostoServiceProduct $operation);
 }

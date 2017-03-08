@@ -48,10 +48,10 @@ class Factory
      * Create new product object.
      *
      * @param array $data
-     * @return \NostoCategory
+     * @return \Nosto\Sdk\NostoCategory
      */
     public function create(array $data = [])
     {
-        return $this->_objectManager->create('NostoCategory', $data);
+        return $this->_objectManager->create('Nosto\Sdk\NostoCategory', $data);
     }
 }
