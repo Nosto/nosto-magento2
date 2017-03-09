@@ -2,8 +2,8 @@
 
 ## Changelog
 
-* 1.2.0
-    * Bump to SDK version 2.5.0
+* 1.2.0-RC1
+    * Bump to SDK version 2.5.2
     * Make compatible with MEQP
     
 * 1.1.1
