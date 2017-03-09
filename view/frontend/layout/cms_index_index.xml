@@ -1,0 +1,13 @@
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceContainer name="content">
+            <container htmlClass="nosto_page_type hidden" htmlTag="div" name="front.nosto.page.tag.container">
+                <block class="Magento\Framework\View\Element\Text" name="front.nosto.page.tag">
+                    <arguments>
+                        <argument name="text" xsi:type="string">front</argument>
+                    </arguments>
+                </block>
+            </container>
+        </referenceContainer>
+    </body>
+</page>

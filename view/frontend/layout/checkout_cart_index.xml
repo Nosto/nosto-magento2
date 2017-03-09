@@ -48,6 +48,13 @@
                     <argument name="value" xsi:type="string">nosto-page-cart3</argument>
                 </action>
             </block>
+            <container htmlClass="nosto_page_type hidden" htmlTag="div" name="cart.nosto.page.tag.container">
+                <block class="Magento\Framework\View\Element\Text" name="cart.nosto.page.tag">
+                    <arguments>
+                        <argument name="text" xsi:type="string">cart</argument>
+                    </arguments>
+                </block>
+            </container>
         </referenceContainer>
     </body>
 </page>

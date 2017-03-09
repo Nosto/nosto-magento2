@@ -43,6 +43,13 @@
                     <argument name="value" xsi:type="string">thankyou-nosto-2</argument>
                 </action>
             </block>
+            <container htmlClass="nosto_page_type hidden" htmlTag="div" name="success.nosto.page.tag.container">
+                <block class="Magento\Framework\View\Element\Text" name="success.nosto.page.tag">
+                    <arguments>
+                        <argument name="text" xsi:type="string">order</argument>
+                    </arguments>
+                </block>
+            </container>
         </referenceContainer>
     </body>
 </page>
