@@ -27,5 +27,5 @@
 
 <!--suppress XmlUnboundNsPrefix -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Module/etc/module.xsd">
-    <module name="Nosto_Tagging" setup_version="1.2.0-RC2" />
+    <module name="Nosto_Tagging" setup_version="1.2.0" />
 </config>

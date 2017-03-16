@@ -2,6 +2,9 @@
 
 ## Changelog
 
+* 1.2.0
+    * Stable release
+
 * 1.2.0-RC2
     * Updated the composer lock
     * Removed the minimum stability flag
