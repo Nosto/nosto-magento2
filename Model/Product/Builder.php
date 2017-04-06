@@ -41,11 +41,12 @@ use Magento\Catalog\Model\Product;
 use Magento\Eav\Model\Entity\Attribute;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Store\Api\Data\StoreInterface;
+use Magento\Catalog\Model\Product\Gallery\ReadHandler as GalleryReadHandler;
+use Nosto\Exception\NostoException;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Price as NostoPriceHelper;
 use Nosto\Tagging\Model\Category\Builder as NostoCategoryBuilder;
-use NostoProduct;
-use NostoProductInterface;
+use Nosto\Types\Product\ProductInterface;
 use Psr\Log\LoggerInterface;
 
 class Builder
@@ -54,6 +55,7 @@ class Builder
     private $nostoPriceHelper;
     private $nostoCategoryBuilder;
     private $categoryRepository;
+    private $galleryReadHandler;
     private $eventManager;
     private $logger;
 
@@ -64,6 +66,7 @@ class Builder
      * @param CategoryRepositoryInterface $categoryRepository
      * @param LoggerInterface $logger
      * @param ManagerInterface $eventManager
+     * @param GalleryReadHandler $galleryReadHandler
      */
     public function __construct(
         NostoHelperData $nostoHelperData,
@@ -71,7 +74,8 @@ class Builder
         NostoCategoryBuilder $categoryBuilder,
         CategoryRepositoryInterface $categoryRepository,
         LoggerInterface $logger,
-        ManagerInterface $eventManager
+        ManagerInterface $eventManager,
+        GalleryReadHandler $galleryReadHandler
     ) {
         $this->nostoDataHelper = $nostoHelperData;
         $this->nostoPriceHelper = $priceHelper;
@@ -79,16 +83,17 @@ class Builder
         $this->categoryRepository = $categoryRepository;
         $this->logger = $logger;
         $this->eventManager = $eventManager;
+        $this->galleryReadHandler = $galleryReadHandler;
     }
 
     /**
      * @param Product $product
      * @param StoreInterface $store
-     * @return NostoProduct
+     * @return \Nosto\Object\Product\Product
      */
     public function build(Product $product, StoreInterface $store)
     {
-        $nostoProduct = new NostoProduct();
+        $nostoProduct = new \Nosto\Object\Product\Product();
 
         try {
             $nostoProduct->setUrl($this->buildUrl($product, $store));
@@ -103,6 +108,7 @@ class Builder
             $nostoProduct->setPriceCurrencyCode($store->getBaseCurrencyCode());
             $nostoProduct->setAvailable($product->isAvailable());
             $nostoProduct->setCategories($this->buildCategories($product));
+            $nostoProduct->setAlternateImageUrls($this->buildAlternativeImages($product));
 
             // Optional properties.
 
@@ -125,7 +131,7 @@ class Builder
             if (($tags = $this->buildTags($product)) !== []) {
                 $nostoProduct->setTag1($tags);
             }
-        } catch (\NostoException $e) {
+        } catch (NostoException $e) {
             $this->logger->error($e->__toString());
         }
 
@@ -207,9 +213,26 @@ class Builder
         }
 
         if (!$product->canConfigure()) {
-            $tags[] = NostoProductInterface::ADD_TO_CART;
+            $tags[] = ProductInterface::ADD_TO_CART;
         }
 
         return $tags;
+    }
+
+    /**
+     * Adds the alternative image urls
+     *
+     * @param Product $product the product model.
+     * @return array
+     */
+    protected function buildAlternativeImages(Product $product)
+    {
+        $images = [];
+        $this->galleryReadHandler->execute($product);
+        foreach ($product->getMediaGalleryImages() as $image) {
+            if (isset($image['url']) && (isset($image['exclude']) && empty($image['exclude']))) {
+                $images[] = $image['url'];
+            }
+        }
     }
 }

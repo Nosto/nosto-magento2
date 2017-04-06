@@ -43,6 +43,9 @@ use Magento\Framework\Phrase;
 use Magento\Sales\Model\Order;
 use Magento\Sales\Model\Order\Item;
 use Magento\SalesRule\Model\RuleFactory as SalesRuleFactory;
+use Nosto\Object\Cart\LineItem;
+use Nosto\Object\Order\Buyer;
+use Nosto\Object\Order\OrderStatus;
 use Nosto\Tagging\Helper\Price as NostoPriceHelper;
 use Nosto\Tagging\Model\Order\Item\Builder as NostoOrderItemBuilder;
 use NostoLineItem;
@@ -91,20 +94,20 @@ class Builder
      * Loads the order info from a Magento order model.
      *
      * @param Order $order the order model.
-     * @return NostoOrder
+     * @return \Nosto\Object\Order\Order
      */
     public function build(Order $order)
     {
-        $nostoOrder = new NostoOrder();
+        $nostoOrder = new \Nosto\Object\Order\Order();
 
         try {
             $nostoOrder->setOrderNumber($order->getId());
             $nostoOrder->setExternalOrderRef($order->getRealOrderId());
-            $nostoOrder->setCreatedDate($order->getCreatedAt());
+            $nostoOrder->setCreatedAt($order->getCreatedAt());
             $nostoOrder->setPaymentProvider($order->getPayment()->getMethod());
             $orderStatus = $order->getStatus();
             if ($orderStatus) {
-                $nostoStatus = new NostoOrderStatus();
+                $nostoStatus = new OrderStatus();
                 $nostoStatus->setCode($orderStatus);
                 $nostoStatus->setDate($order->getUpdatedAt());
                 if ($order->getStatusLabel() instanceof Phrase) {
@@ -112,7 +115,7 @@ class Builder
                 }
                 $nostoOrder->setOrderStatus($nostoStatus);
             }
-            $nostoBuyer = new NostoOrderBuyer();
+            $nostoBuyer = new Buyer();
             $nostoBuyer->setFirstName($order->getCustomerFirstname());
             $nostoBuyer->setLastName($order->getCustomerLastname());
             $nostoBuyer->setEmail($order->getCustomerEmail());
@@ -127,7 +130,7 @@ class Builder
 
             // Add discounts as a pseudo line item
             if (($discount = $order->getDiscountAmount()) < 0) {
-                $nostoItem = new NostoLineItem();
+                $nostoItem = new LineItem();
                 $nostoItem->loadSpecialItemData(
                     $this->buildDiscountRuleDescription($order),
                     $discount,
@@ -138,7 +141,7 @@ class Builder
 
             // Add shipping and handling as a pseudo line item
             if (($shippingInclTax = $order->getShippingInclTax()) > 0) {
-                $nostoItem = new NostoLineItem();
+                $nostoItem = new LineItem();
                 $nostoItem->loadSpecialItemData(
                     'Shipping and handling',
                     $shippingInclTax,

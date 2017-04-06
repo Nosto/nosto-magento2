@@ -42,6 +42,7 @@ use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\ObjectManagerInterface;
 use Magento\Sales\Model\Order\Item;
 
+use Nosto\Object\Cart\LineItem;
 use NostoLineItem;
 use Psr\Log\LoggerInterface;
 
@@ -71,11 +72,11 @@ class Builder
     /**
      * @param Item $item
      * @param $currencyCode
-     * @return NostoLineItem
+     * @return LineItem
      */
     public function build(Item $item, $currencyCode)
     {
-        $nostoItem = new NostoLineItem();
+        $nostoItem = new LineItem();
         $nostoItem->setPriceCurrencyCode($currencyCode);
         $nostoItem->setProductId($this->buildItemProductId($item));
         $nostoItem->setQuantity((int)$item->getQtyOrdered());

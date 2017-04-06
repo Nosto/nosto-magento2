@@ -40,6 +40,7 @@ use Magento\Backend\App\Action\Context;
 use Magento\Framework\Controller\Result\Json;
 
 use Magento\Store\Model\StoreManagerInterface;
+use Nosto\Operation\AccountSignup;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Model\Meta\Account\Builder as NostoSignupBuilder;
 use Nosto\Tagging\Model\Meta\Account\Iframe\Builder as NostoIframeMetaBuilder;
@@ -138,7 +139,7 @@ class Create extends Base
                 }
 
                 $signupParams = $this->nostoSignupBuilder->build($store, $accountOwner, $signupDetails);
-                $operation = new NostoOperationAccount($signupParams);
+                $operation = new AccountSignup($signupParams);
                 $account = $operation->create();
 
                 if ($this->nostoHelperAccount->saveAccount($account, $store)) {

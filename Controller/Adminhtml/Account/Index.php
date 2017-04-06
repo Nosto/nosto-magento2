@@ -40,7 +40,7 @@ use Magento\Backend\App\Action\Context;
 use Magento\Backend\Model\View\Result\Page;
 use Magento\Framework\Controller\Result\Redirect;
 use Magento\Framework\View\Result\PageFactory;
-use Magento\Store\Model\Store;
+use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Store\Model\Website;
 
@@ -103,7 +103,7 @@ class Index extends Base
      * If it is a multi store setup, the expect a store id to passed in the
      * request params and return that store as the current one.
      *
-     * @return Store|null the store or null if not found.
+     * @return StoreInterface|null the store or null if not found.
      */
     private function getSelectedStore()
     {

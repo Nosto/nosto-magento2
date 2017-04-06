@@ -38,6 +38,7 @@ namespace Nosto\Tagging\Model\Meta\Account\Sso;
 
 use Magento\Backend\Model\Auth\Session;
 use Magento\Framework\Event\ManagerInterface;
+use Nosto\Object\Signup\Owner;
 use NostoSignupOwner;
 use NostoSignupOwnerInterface;
 use Psr\Log\LoggerInterface;
@@ -64,11 +65,11 @@ class Builder
     }
 
     /**
-     * @return NostoSignupOwnerInterface
+     * @return Owner
      */
     public function build()
     {
-        $metaData = new NostoSignupOwner();
+        $metaData = new Owner();
 
         try {
             $user = $this->backendAuthSession->getUser();

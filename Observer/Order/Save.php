@@ -41,6 +41,7 @@ use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Module\Manager as ModuleManager;
 use Magento\Sales\Model\Order;
 use Magento\Store\Model\StoreManagerInterface;
+use Nosto\Operation\OrderConfirm;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Model\Customer as NostoCustomer;
@@ -127,7 +128,7 @@ class Save implements ObserverInterface
                     ->create()
                     ->load($quoteId, NostoCustomer::QUOTE_ID);
 
-                $orderService = new NostoOperationOrder($nostoAccount);
+                $orderService = new OrderConfirm($nostoAccount);
                 try {
                     $orderService->send($nostoOrder, $nostoCustomer->getNostoId());
                 } catch (\Exception $e) {

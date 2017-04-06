@@ -41,6 +41,8 @@ use Magento\Framework\Locale\ResolverInterface;
 use Magento\Framework\Url;
 use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\Store;
+use Nosto\Object\OAuth;
+use Nosto\Object\Signup\Account;
 use NostoAccount;
 use NostoOAuth;
 use Psr\Log\LoggerInterface;
@@ -72,12 +74,12 @@ class Builder
 
     /**
      * @param StoreInterface|Store $store
-     * @param NostoAccount $account
-     * @return NostoOauth
+     * @param Account $account
+     * @return OAuth
      */
-    public function build(StoreInterface $store, NostoAccount $account = null)
+    public function build(StoreInterface $store, Account $account = null)
     {
-        $metaData = new NostoOAuth();
+        $metaData = new OAuth();
 
         try {
             $metaData->setScopes(\NostoApiToken::getApiTokenNames());

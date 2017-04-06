@@ -45,6 +45,7 @@ use Magento\Framework\Exception\State\InputMismatchException;
 use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
+use Nosto\Operation\OAuth\ExchangeTokens;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Model\Meta\Oauth\Builder as NostoOauthBuilder;
 use NostoMessage;
@@ -154,7 +155,7 @@ class Index extends Action
     {
         $oldAccount = $this->nostoHelperAccount->findAccount($store);
         $meta = $this->oauthMetaBuilder->build($store, $oldAccount);
-        $operation = new NostoOperationOauthSync($meta);
+        $operation = new ExchangeTokens($meta);
         $newAccount = $operation->exchange($authCode);
 
         // If we are updating an existing account,

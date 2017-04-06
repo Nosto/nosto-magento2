@@ -43,13 +43,12 @@ use Magento\Framework\Module\Manager as ModuleManager;
 use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
+use Nosto\Object\Signup\Account;
+use Nosto\Operation\UpsertProduct;
+use Nosto\Request\Http\HttpRequest;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
-use NostoAccount;
-use NostoHttpRequest;
-use NostoOperationProduct;
-use NostoProduct;
 use Psr\Log\LoggerInterface;
 
 abstract class Base implements ObserverInterface
@@ -86,7 +85,7 @@ abstract class Base implements ObserverInterface
         $this->logger = $logger;
         $this->moduleManager = $moduleManager;
 
-        NostoHttpRequest::buildUserAgent(
+        HttpRequest::buildUserAgent(
             'Magento',
             $nostoHelperData->getPlatformVersion(),
             $nostoHelperData->getModuleVersion()
@@ -113,7 +112,7 @@ abstract class Base implements ObserverInterface
             foreach ($product->getStoreIds() as $storeId) {
                 /** @var Store $store */
                 $store = $this->storeManager->getStore($storeId);
-                /** @var NostoAccount $account */
+                /** @var Account $account */
                 $account = $this->nostoHelperAccount->findAccount($store);
                 if ($account === null) {
                     continue;
@@ -131,7 +130,7 @@ abstract class Base implements ObserverInterface
                 }
 
                 try {
-                    $op = new NostoOperationProduct($account);
+                    $op = new UpsertProduct($account);
                     $op->addProduct($metaProduct);
                     $this->doRequest($op);
                 } catch (\NostoException $e) {
@@ -146,7 +145,7 @@ abstract class Base implements ObserverInterface
      *
      * @param Product $product the product to be built
      * @param StoreInterface $store the store for which to build the product
-     * @return NostoProduct the built product
+     * @return \Nosto\Object\Product\Product the built product
      */
     public function buildProduct(Product $product, StoreInterface $store)
     {
@@ -161,8 +160,8 @@ abstract class Base implements ObserverInterface
     abstract public function validateProduct(Product $product);
 
     /**
-     * @param NostoOperationProduct $operation
+     * @param UpsertProduct $operation
      * @return mixed
      */
-    abstract public function doRequest(NostoOperationProduct $operation);
+    abstract public function doRequest(UpsertProduct $operation);
 }

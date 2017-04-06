@@ -36,13 +36,11 @@
 
 namespace Nosto\Tagging\Controller\Export;
 
-use Magento\Catalog\Model\ResourceModel\Product\Collection as ProductCollection;
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\Controller\Result\Raw;
 use Magento\Framework\Controller\ResultFactory;
 use Magento\Framework\Model\ResourceModel\Db\VersionControl\Collection;
-use Magento\Sales\Model\ResourceModel\Order\Collection as OrderCollection;
 use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;

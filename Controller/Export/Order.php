@@ -37,10 +37,10 @@
 namespace Nosto\Tagging\Controller\Export;
 
 use Magento\Framework\App\Action\Context;
-use Magento\Framework\Model\ResourceModel\Db\VersionControl\Collection;
 use Magento\Sales\Model\ResourceModel\Order\CollectionFactory as OrderCollectionFactory;
 use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\StoreManagerInterface;
+use Nosto\Object\Order\OrderCollection;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Model\Order\Builder as NostoOrderBuilder;
 use NostoOrderCollection;
@@ -100,7 +100,7 @@ class Order extends Base
     protected function buildExportCollection($collection) // @codingStandardsIgnoreLine
     {
         /** @var \Magento\Sales\Model\ResourceModel\Order\Collection $collection */
-        $exportCollection = new NostoOrderCollection();
+        $exportCollection = new OrderCollection();
         $items = $collection->loadData();
         if (
             $items instanceof \Traversable === false

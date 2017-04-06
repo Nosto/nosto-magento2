@@ -38,6 +38,7 @@ namespace Nosto\Tagging\Model\User;
 
 use Magento\Backend\Model\Auth\Session;
 use Magento\Framework\Event\ManagerInterface;
+use Nosto\Object\User;
 use NostoCurrentUser;
 use Psr\Log\LoggerInterface;
 
@@ -63,11 +64,11 @@ class Builder
     }
 
     /**
-     * @return NostoCurrentUser
+     * @return User
      */
     public function build()
     {
-        $metaData = new NostoCurrentUser();
+        $metaData = new User();
 
         try {
             $user = $this->backendAuthSession->getUser();

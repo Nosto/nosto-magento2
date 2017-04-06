@@ -39,6 +39,7 @@ namespace Nosto\Tagging\Model\Meta\Account\Billing;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\Store;
+use Nosto\Object\Signup\Billing;
 use NostoSignupBilling;
 use Psr\Log\LoggerInterface;
 
@@ -59,11 +60,11 @@ class Builder
 
     /**
      * @param StoreInterface|Store $store
-     * @return NostoSignupBilling
+     * @return Billing
      */
     public function build(StoreInterface $store)
     {
-        $metaData = new NostoSignupBilling();
+        $metaData = new Billing();
 
         try {
             $country = $store->getConfig('general/country/default');

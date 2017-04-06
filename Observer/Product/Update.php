@@ -37,6 +37,7 @@
 namespace Nosto\Tagging\Observer\Product;
 
 use Magento\Catalog\Model\Product;
+use Nosto\Operation\UpsertProduct;
 
 /**
  * Upsert event observer model.
@@ -51,7 +52,7 @@ class Update extends Base
     /**
      * @inheritdoc
      */
-    public function doRequest(\NostoOperationProduct $operation)
+    public function doRequest(UpsertProduct $operation)
     {
         $operation->upsert();
     }

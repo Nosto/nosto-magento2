@@ -132,16 +132,13 @@ class Product extends View
     /**
      * Returns the Nosto product DTO.
      *
-     * @return NostoProduct the product meta data model.
+     * @return \Nosto\Object\Product\Product the product meta data model.
      */
     public function getNostoProduct()
     {
         /** @var Store $store */
         $store = $this->_storeManager->getStore();
-        return $this->nostoProductBuilder->build(
-            $this->getProduct(),
-            $store
-        );
+        return $this->nostoProductBuilder->build($this->getProduct(), $store);
     }
 
     /**

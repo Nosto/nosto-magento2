@@ -43,13 +43,11 @@ use Magento\Framework\App\Helper\Context;
 use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\Store;
+use Nosto\Object\User;
+use Nosto\Operation\UninstallAccount;
+use Nosto\Request\Api\Token;
 use Nosto\Tagging\Helper\Data as NostoHelper;
-use NostoAccount;
-use NostoAccountInterface;
-use NostoApiToken;
-use NostoCurrentUser;
-use NostoOperationUninstall;
-use Psr\Log\LoggerInterface;
+use Nosto\Types\Signup\AccountInterface;
 
 /**
  * NostoHelperAccount helper class for common tasks related to Nosto accounts.
@@ -96,11 +94,11 @@ class Account extends AbstractHelper
     /**
      * Saves the account and the associated api tokens for the store.
      *
-     * @param NostoAccountInterface $account the account to save.
+     * @param AccountInterface $account the account to save.
      * @param StoreInterface|Store $store the store.
      * @return bool true on success, false otherwise.
      */
-    public function saveAccount(NostoAccountInterface $account, StoreInterface $store)
+    public function saveAccount(AccountInterface $account, StoreInterface $store)
     {
         if ((int)$store->getId() < 1) {
             return false;
@@ -132,12 +130,12 @@ class Account extends AbstractHelper
     /**
      * Removes an account with associated api tokens for the store.
      *
-     * @param NostoAccount $account the account to remove.
+     * @param \Nosto\Object\Signup\Account $account the account to remove.
      * @param StoreInterface|Store $store the store.
-     * @param NostoCurrentUser $currentUser
+     * @param User $currentUser
      * @return bool true on success, false otherwise.
      */
-    public function deleteAccount(NostoAccount $account, StoreInterface $store, NostoCurrentUser $currentUser)
+    public function deleteAccount(\Nosto\Object\Signup\Account $account, StoreInterface $store, User $currentUser)
     {
         if ((int)$store->getId() < 1) {
             return false;
@@ -156,7 +154,7 @@ class Account extends AbstractHelper
 
         try {
             // Notify Nosto that the account was deleted.
-            $service = new NostoOperationUninstall($account);
+            $service = new UninstallAccount($account);
             $service->delete($currentUser);
         } catch (\NostoException $e) {
             $this->logger->error($e->__toString());
@@ -190,7 +188,7 @@ class Account extends AbstractHelper
      * Returns the account with associated api tokens for the store.
      *
      * @param StoreInterface $store the store.
-     * @return NostoAccount|null the account or null if not found.
+     * @return \Nosto\Object\Signup\Account|null the account or null if not found.
      */
     public function findAccount(StoreInterface $store)
     {
@@ -198,7 +196,7 @@ class Account extends AbstractHelper
         $accountName = $store->getConfig(self::XML_PATH_ACCOUNT);
 
         if (!empty($accountName)) {
-            $account = new NostoAccount($accountName);
+            $account = new \Nosto\Object\Signup\Account($accountName);
             /** @noinspection PhpUndefinedMethodInspection */
             $tokens = json_decode(
                 $store->getConfig(self::XML_PATH_TOKENS),
@@ -207,7 +205,7 @@ class Account extends AbstractHelper
             if (is_array($tokens) && !empty($tokens)) {
                 foreach ($tokens as $name => $value) {
                     try {
-                        $account->addApiToken(new NostoApiToken($name, $value));
+                        $account->addApiToken(new Token($name, $value));
                     } catch (Exception $e) {
                         $this->_logger->error($e->__toString());
                     }

@@ -38,9 +38,9 @@ namespace Nosto\Tagging\Observer\Product;
 
 use Magento\Framework\Module\Manager as ModuleManager;
 use Magento\Store\Api\Data\StoreInterface;
-use Magento\Store\Model\Store;
 use Magento\Catalog\Model\Product;
 use Magento\Store\Model\StoreManagerInterface;
+use Nosto\Operation\UpsertProduct;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
@@ -81,8 +81,9 @@ class Delete extends Base
     /**
      * @inheritdoc
      */
-    public function doRequest(\NostoOperationProduct $operation)
+    public function doRequest(UpsertProduct $operation)
     {
+        //TODO: Delete
         $operation->upsert();
     }
 

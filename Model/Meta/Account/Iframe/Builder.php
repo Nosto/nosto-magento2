@@ -40,6 +40,7 @@ use Magento\Backend\Model\Auth\Session;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\Locale\ResolverInterface;
 use Magento\Store\Api\Data\StoreInterface;
+use Nosto\Object\Iframe;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Url as NostoHelperUrl;
 use NostoIframe;
@@ -80,11 +81,11 @@ class Builder
 
     /**
      * @param StoreInterface $store
-     * @return NostoIframe
+     * @return Iframe
      */
     public function build(StoreInterface $store)
     {
-        $metaData = new NostoIframe();
+        $metaData = new Iframe();
 
         try {
             $metaData->setUniqueId($this->nostoHelperData->getInstallationId());

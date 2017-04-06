@@ -41,6 +41,7 @@ use Magento\Framework\Stdlib\CookieManagerInterface;
 use Magento\Framework\Stdlib\DateTime\DateTime;
 
 use Magento\Store\Model\StoreManagerInterface;
+use Nosto\Object\Cart\LineItem;
 use Nosto\Tagging\Model\Cart\Builder as NostoCartBuilder;
 use Nosto\Tagging\Model\Customer as NostoCustomer;
 use Nosto\Tagging\Model\CustomerFactory as NostoCustomerFactory;
@@ -104,7 +105,7 @@ class CartTagging implements SectionSourceInterface
         $itemCount = $cart->getItemsCount();
         $data["itemCount"] = $itemCount;
         $addedCount = 0;
-        /* @var NostoLineItem $item */
+        /* @var LineItem $item */
         foreach ($nostoCart->getItems() as $item) {
             $addedCount++;
             $data["items"][] = [
@@ -170,7 +171,6 @@ class CartTagging implements SectionSourceInterface
                 /** @noinspection PhpUndefinedMethodInspection */
                 $nostoCustomer->setNostoId($nostoCustomerId);
                 $nostoCustomer->setCreatedAt(self::getNow());
-                $nostoCustomer->setUpdatedAt(self::getNow());
             }
             try {
                 /** @noinspection PhpDeprecationInspection */

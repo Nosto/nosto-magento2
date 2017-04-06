@@ -42,6 +42,7 @@ use Magento\Framework\UrlInterface;
 use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\Store;
 
+use Nosto\Object\Signup;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Model\Meta\Account\Billing\Builder as NostoBillingBuilder;
 use NostoHttpRequest;
@@ -83,11 +84,11 @@ class Builder
      * @param StoreInterface|Store $store
      * @param $accountOwner
      * @param $signupDetails
-     * @return NostoSignup
+     * @return Signup
      */
     public function build(StoreInterface $store, $accountOwner, $signupDetails)
     {
-        $metaData = new NostoSignup(Builder::PLATFORM_NAME, Builder::API_TOKEN, null);
+        $metaData = new Signup(Builder::PLATFORM_NAME, Builder::API_TOKEN, null);
 
         try {
             $metaData->setTitle(
