@@ -38,6 +38,7 @@ namespace Nosto\Tagging\Block;
 
 use Magento\Framework\Registry;
 use Magento\Framework\View\Element\Template;
+use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Model\Category\Builder as NostoCategoryBuilder;
 
 /**
@@ -47,15 +48,9 @@ use Nosto\Tagging\Model\Category\Builder as NostoCategoryBuilder;
  */
 class Category extends Template
 {
-    /**
-     * @var Registry the framework registry.
-     */
     private $registry;
-
-    /**
-     * @var NostoCategoryBuilder the category meta model builder.
-     */
     private $categoryBuilder;
+    private $nostoHelperAccount;
 
     /**
      * Constructor.
@@ -63,18 +58,21 @@ class Category extends Template
      * @param Template\Context $context
      * @param Registry $registry
      * @param NostoCategoryBuilder $categoryBuilder
+     * @param NostoHelperAccount $nostoHelperAccount
      * @param array $data
      */
     public function __construct(
         Template\Context $context,
         Registry $registry,
         NostoCategoryBuilder $categoryBuilder,
+        NostoHelperAccount $nostoHelperAccount,
         array $data = []
     ) {
         parent::__construct($context, $data);
 
         $this->registry = $registry;
         $this->categoryBuilder = $categoryBuilder;
+        $this->nostoHelperAccount = $nostoHelperAccount;
     }
 
     /**
@@ -86,5 +84,20 @@ class Category extends Template
     {
         $category = $this->registry->registry('current_category');
         return $this->categoryBuilder->build($category);
+    }
+
+    /**
+     * Overridden method that only outputs any markup if the extension is enabled and an account
+     * exists for the current store view.
+     *
+     * @return string the markup or an empty string (if an account doesn't exist)
+     */
+    protected function _toHtml()
+    {
+        if ($this->nostoHelperAccount->nostoInstalledAndEnabled($this->_storeManager->getStore())) {
+            return parent::_toHtml();
+        } else {
+            return '';
+        }
     }
 }

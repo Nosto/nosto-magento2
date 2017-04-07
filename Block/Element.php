@@ -37,6 +37,8 @@
 namespace Nosto\Tagging\Block;
 
 use Magento\Framework\View\Element\Template;
+use Magento\Framework\View\Element\Template\Context;
+use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 
 /**
  * Element block used for outputting a recommendation placeholders on the stores pages.
@@ -45,6 +47,25 @@ use Magento\Framework\View\Element\Template;
  */
 class Element extends Template
 {
+    private $nostoHelperAccount;
+
+    /**
+     * Constructor.
+     *
+     * @param Context $context the context.
+     * @param NostoHelperAccount $nostoHelperAccount the account helper.
+     * @param array $data optional data.
+     */
+    public function __construct(
+        Context $context,
+        NostoHelperAccount $nostoHelperAccount,
+        array $data = []
+    ) {
+        parent::__construct($context, $data);
+
+        $this->nostoHelperAccount = $nostoHelperAccount;
+    }
+
     /**
      * Returns the Nosto recommendation placeholder ID.
      *
@@ -55,5 +76,20 @@ class Element extends Template
     public function getElementId()
     {
         return $this->getData('nostoId');
+    }
+
+    /**
+     * Overridden method that only outputs any markup if the extension is enabled and an account
+     * exists for the current store view.
+     *
+     * @return string the markup or an empty string (if an account doesn't exist)
+     */
+    protected function _toHtml()
+    {
+        if ($this->nostoHelperAccount->nostoInstalledAndEnabled($this->_storeManager->getStore())) {
+            return parent::_toHtml();
+        } else {
+            return '';
+        }
     }
 }

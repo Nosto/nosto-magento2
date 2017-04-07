@@ -42,6 +42,7 @@ use Magento\Framework\View\Element\Template;
 use Magento\Sales\Model\OrderFactory;
 use Nosto\Helper\DateHelper;
 use Nosto\Helper\PriceHelper;
+use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Model\Order\Builder as NostoOrderBuilder;
 
 /**
@@ -51,15 +52,9 @@ use Nosto\Tagging\Model\Order\Builder as NostoOrderBuilder;
  */
 class Order extends Success
 {
-    /**
-     * @var NostoOrderBuilder the order meta model builder.
-     */
     private $nostoOrderBuilder;
-
-    /**
-     * @var Session
-     */
     private $checkoutSession;
+    private $nostoHelperAccount;
 
     /** @noinspection PhpUndefinedClassInspection */
     /**
@@ -69,6 +64,7 @@ class Order extends Success
      * @param OrderFactory $orderFactory
      * @param NostoOrderBuilder $orderBuilder
      * @param Session $checkoutSession
+     * @param NostoHelperAccount $nostoHelperAccount
      * @param array $data
      * @internal param Registry $registry
      * @internal param CategoryBuilder $categoryBuilder
@@ -79,6 +75,7 @@ class Order extends Success
         OrderFactory $orderFactory,
         NostoOrderBuilder $orderBuilder,
         Session $checkoutSession,
+        NostoHelperAccount $nostoHelperAccount,
         array $data = []
     ) {
         parent::__construct(
@@ -89,6 +86,7 @@ class Order extends Success
 
         $this->checkoutSession = $checkoutSession;
         $this->nostoOrderBuilder = $orderBuilder;
+        $this->nostoHelperAccount = $nostoHelperAccount;
     }
 
     /**
@@ -122,5 +120,20 @@ class Order extends Success
     public function formatNostoDate($date)
     {
         return DateHelper::format($date);
+    }
+
+    /**
+     * Overridden method that only outputs any markup if the extension is enabled and an account
+     * exists for the current store view.
+     *
+     * @return string the markup or an empty string (if an account doesn't exist)
+     */
+    protected function _toHtml()
+    {
+        if ($this->nostoHelperAccount->nostoInstalledAndEnabled($this->_storeManager->getStore())) {
+            return parent::_toHtml();
+        } else {
+            return '';
+        }
     }
 }

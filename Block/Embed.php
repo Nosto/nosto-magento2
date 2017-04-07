@@ -100,4 +100,19 @@ class Embed extends Template
     {
         return Nosto::getEnvVariable('NOSTO_SERVER_URL', self::DEFAULT_SERVER_ADDRESS);
     }
+
+    /**
+     * Overridden method that only outputs any markup if the extension is enabled and an account
+     * exists for the current store view.
+     *
+     * @return string the markup or an empty string (if an account doesn't exist)
+     */
+    protected function _toHtml()
+    {
+        if ($this->nostoHelperAccount->nostoInstalledAndEnabled($this->_storeManager->getStore())) {
+            return parent::_toHtml();
+        } else {
+            return '';
+        }
+    }
 }
