@@ -40,16 +40,15 @@ use Magento\Backend\App\Action\Context;
 use Magento\Framework\Controller\Result\Json;
 
 use Magento\Store\Model\StoreManagerInterface;
+use Nosto\Exception\NostoException;
+use Nosto\Helper\IframeHelper;
+use Nosto\Nosto;
 use Nosto\Operation\AccountSignup;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Model\Meta\Account\Builder as NostoSignupBuilder;
 use Nosto\Tagging\Model\Meta\Account\Iframe\Builder as NostoIframeMetaBuilder;
 use Nosto\Tagging\Model\User\Builder as NostoCurrentUserBuilder;
 use Nosto\Tagging\Model\Meta\Account\Owner\Builder as NostoOwnerBuilder;
-use NostoException;
-use NostoHelperIframe;
-use NostoMessage;
-use NostoOperationAccount;
 use Psr\Log\LoggerInterface;
 
 class Create extends Base
@@ -144,13 +143,13 @@ class Create extends Base
 
                 if ($this->nostoHelperAccount->saveAccount($account, $store)) {
                     $response['success'] = true;
-                    $response['redirect_url'] = NostoHelperIframe::getUrl(
+                    $response['redirect_url'] = IframeHelper::getUrl(
                         $this->nostoIframeMetaBuilder->build($store),
                         $account,
                         $this->nostoCurrentUserBuilder->build(),
                         [
-                            'message_type' => NostoMessage::TYPE_SUCCESS,
-                            'message_code' => NostoMessage::CODE_ACCOUNT_CREATE,
+                            'message_type' => Nosto::TYPE_SUCCESS,
+                            'message_code' => Nosto::CODE_ACCOUNT_CREATE,
                         ]
                     );
                 }
@@ -160,13 +159,13 @@ class Create extends Base
         }
 
         if (!$response['success']) {
-            $response['redirect_url'] = NostoHelperIframe::getUrl(
+            $response['redirect_url'] = IframeHelper::getUrl(
                 $this->nostoIframeMetaBuilder->build($store),
                 null, // account creation failed, so we have none.
                 $this->nostoCurrentUserBuilder->build(),
                 [
-                    'message_type' => NostoMessage::TYPE_ERROR,
-                    'message_code' => NostoMessage::CODE_ACCOUNT_CREATE,
+                    'message_type' => Nosto::TYPE_ERROR,
+                    'message_code' => Nosto::CODE_ACCOUNT_CREATE,
                 ]
             );
         }

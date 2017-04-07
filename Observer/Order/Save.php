@@ -42,13 +42,12 @@ use Magento\Framework\Module\Manager as ModuleManager;
 use Magento\Sales\Model\Order;
 use Magento\Store\Model\StoreManagerInterface;
 use Nosto\Operation\OrderConfirm;
+use Nosto\Request\Http\HttpRequest;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Model\Customer as NostoCustomer;
 use Nosto\Tagging\Model\CustomerFactory;
 use Nosto\Tagging\Model\Order\Builder as NostoOrderBuilder;
-use NostoHttpRequest;
-use NostoOperationOrder;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -95,7 +94,7 @@ class Save implements ObserverInterface
         $this->nostoOrderBuilder = $orderBuilder;
         $this->customerFactory = $customerFactory;
 
-        NostoHttpRequest::buildUserAgent(
+        HttpRequest::buildUserAgent(
             'Magento',
             $nostoHelperData->getPlatformVersion(),
             $nostoHelperData->getModuleVersion()

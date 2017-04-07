@@ -47,12 +47,11 @@ use Magento\Framework\Pricing\PriceCurrencyInterface;
 use Magento\Framework\Stdlib\StringUtils;
 use Magento\Framework\Url\EncoderInterface as UrlEncoder;
 use Magento\Store\Model\Store;
+use Nosto\Helper\DateHelper;
+use Nosto\Helper\PriceHelper;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Model\Category\Builder as NostoCategoryBuilder;
 use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
-use NostoHelperDate;
-use NostoHelperPrice;
-use NostoProduct;
 
 /**
  * Product block used for outputting meta-data on the stores product pages.
@@ -160,7 +159,7 @@ class Product extends View
      */
     public function formatNostoPrice($price)
     {
-        return NostoHelperPrice::format($price);
+        return PriceHelper::format($price);
     }
 
     /**
@@ -171,6 +170,6 @@ class Product extends View
      */
     public function formatNostoDate($date)
     {
-        return NostoHelperDate::format($date);
+        return DateHelper::format($date);
     }
 }

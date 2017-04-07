@@ -41,10 +41,10 @@ use Magento\Framework\Locale\ResolverInterface;
 use Magento\Framework\Url;
 use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\Store;
+use Nosto\Exception\NostoException;
 use Nosto\Object\OAuth;
 use Nosto\Object\Signup\Account;
-use NostoAccount;
-use NostoOAuth;
+use Nosto\Request\Api\Token;
 use Psr\Log\LoggerInterface;
 
 class Builder
@@ -82,7 +82,7 @@ class Builder
         $metaData = new OAuth();
 
         try {
-            $metaData->setScopes(\NostoApiToken::getApiTokenNames());
+            $metaData->setScopes(Token::getApiTokenNames());
             $redirectUrl = $this->urlBuilder->getUrl(
                 'nosto/oauth',
                 [
@@ -99,7 +99,7 @@ class Builder
             if ($account !== null) {
                 $metaData->setAccount($account);
             }
-        } catch (\NostoException $e) {
+        } catch (NostoException $e) {
             $this->logger->error($e->__toString());
         }
 

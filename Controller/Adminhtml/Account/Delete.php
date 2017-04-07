@@ -40,11 +40,11 @@ use Magento\Backend\App\Action\Context;
 use Magento\Framework\Controller\Result\Json;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
+use Nosto\Helper\IframeHelper;
+use Nosto\Nosto;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Model\Meta\Account\Iframe\Builder as NostoIframeMetaBuilder;
 use Nosto\Tagging\Model\User\Builder as NostoCurrentUserBuilder;
-use NostoHelperIframe;
-use NostoMessage;
 
 class Delete extends Base
 {
@@ -96,26 +96,26 @@ class Delete extends Base
             $currentUser = $this->nostoCurrentUserBuilder->build();
             if ($this->nostoHelperAccount->deleteAccount($account, $store, $currentUser)) {
                 $response['success'] = true;
-                $response['redirect_url'] = NostoHelperIframe::getUrl(
+                $response['redirect_url'] = IframeHelper::getUrl(
                     $this->nostoIframeMetaBuilder->build($store),
                     null, // we don't have an account anymore
                     $this->nostoCurrentUserBuilder->build(),
                     [
-                        'message_type' => NostoMessage::TYPE_SUCCESS,
-                        'message_code' => NostoMessage::CODE_ACCOUNT_DELETE,
+                        'message_type' => Nosto::TYPE_SUCCESS,
+                        'message_code' => Nosto::CODE_ACCOUNT_DELETE,
                     ]
                 );
             }
         }
 
         if (!$response['success']) {
-            $response['redirect_url'] = NostoHelperIframe::getUrl(
+            $response['redirect_url'] = IframeHelper::getUrl(
                 $this->nostoIframeMetaBuilder->build($store),
                 $account,
                 $this->nostoCurrentUserBuilder->build(),
                 [
-                    'message_type' => NostoMessage::TYPE_ERROR,
-                    'message_code' => NostoMessage::CODE_ACCOUNT_DELETE,
+                    'message_type' => Nosto::TYPE_ERROR,
+                    'message_code' => Nosto::CODE_ACCOUNT_DELETE,
                 ]
             );
         }

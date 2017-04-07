@@ -43,7 +43,6 @@ use Magento\Framework\ObjectManagerInterface;
 use Magento\Sales\Model\Order\Item;
 
 use Nosto\Object\Cart\LineItem;
-use NostoLineItem;
 use Psr\Log\LoggerInterface;
 
 class Builder

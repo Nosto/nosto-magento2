@@ -40,10 +40,10 @@ use Magento\Backend\Model\Auth\Session;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\Locale\ResolverInterface;
 use Magento\Store\Api\Data\StoreInterface;
+use Nosto\Exception\NostoException;
 use Nosto\Object\Iframe;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Url as NostoHelperUrl;
-use NostoIframe;
 use Psr\Log\LoggerInterface;
 
 class Builder
@@ -107,7 +107,7 @@ class Builder
             $metaData->setPreviewUrlSearch($this->nostoHelperUrl->getPreviewUrlSearch($store));
             $metaData->setPreviewUrlCart($this->nostoHelperUrl->getPreviewUrlCart($store));
             $metaData->setPreviewUrlFront($this->nostoHelperUrl->getPreviewUrlFront($store));
-        } catch (\NostoException $e) {
+        } catch (NostoException $e) {
             $this->logger->error($e->__toString());
         }
 

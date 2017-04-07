@@ -48,10 +48,6 @@ use Nosto\Object\Order\Buyer;
 use Nosto\Object\Order\OrderStatus;
 use Nosto\Tagging\Helper\Price as NostoPriceHelper;
 use Nosto\Tagging\Model\Order\Item\Builder as NostoOrderItemBuilder;
-use NostoLineItem;
-use NostoOrder;
-use NostoOrderBuyer;
-use NostoOrderStatus;
 use Psr\Log\LoggerInterface;
 
 class Builder

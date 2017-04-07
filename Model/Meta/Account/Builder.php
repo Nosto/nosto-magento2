@@ -42,11 +42,11 @@ use Magento\Framework\UrlInterface;
 use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\Store;
 
+use Nosto\Exception\NostoException;
 use Nosto\Object\Signup;
+use Nosto\Request\Http\HttpRequest;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Model\Meta\Account\Billing\Builder as NostoBillingBuilder;
-use NostoHttpRequest;
-use NostoSignup;
 use Psr\Log\LoggerInterface;
 
 class Builder
@@ -103,7 +103,7 @@ class Builder
             );
             $metaData->setName(substr(sha1((string) rand()), 0, 8));
             $metaData->setFrontPageUrl(
-                NostoHttpRequest::replaceQueryParamInUrl(
+                HttpRequest::replaceQueryParamInUrl(
                     '___store',
                     $store->getCode(),
                     $store->getBaseUrl(UrlInterface::URL_TYPE_WEB)
@@ -121,7 +121,7 @@ class Builder
             $metaData->setBillingDetails($billing);
 
             $metaData->setDetails($signupDetails);
-        } catch (\NostoException $e) {
+        } catch (NostoException $e) {
             $this->logger->error($e->__toString());
         }
 

@@ -44,6 +44,7 @@ use Nosto\Operation\UpsertProduct;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
+use Nosto\Types\Product\ProductInterface;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -101,6 +102,6 @@ class Delete extends Base
     public function buildProduct(Product $product, StoreInterface $store)
     {
         $product = $this->nostoProductBuilder->build($product, $store);
-        return $product->setAvailability(\NostoProductInterface::DISCONTINUED);
+        return $product->setAvailability(ProductInterface::DISCONTINUED);
     }
 }

@@ -44,9 +44,9 @@ use Magento\Framework\Model\ResourceModel\Db\VersionControl\Collection;
 use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
+use Nosto\Helper\ExportHelper;
+use Nosto\Object\Collection\AbstractCollection;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
-use NostoCollection;
-use NostoHelperExporter;
 
 /**
  * Export base controller that all export controllers must extend.
@@ -121,24 +121,24 @@ abstract class Base extends Action
      * collection object with all the items added
      *
      * @param mixed $collection
-     * @return NostoCollection the collection with the items to export
+     * @return AbstractCollection the collection with the items to export
      */
     abstract protected function buildExportCollection($collection); // @codingStandardsIgnoreLine
 
     /**
      * Encrypts the export collection and outputs it to the browser.
      *
-     * @param NostoCollection $collection the data collection to export.
+     * @param AbstractCollection $collection the data collection to export.
      * @return Raw
      */
-    public function export(NostoCollection $collection)
+    public function export(AbstractCollection $collection)
     {
         $result = $this->resultFactory->create(ResultFactory::TYPE_RAW);
         /** @var Store $store */
         $store = $this->storeManager->getStore(true);
         $account = $this->nostoHelperAccount->findAccount($store);
         if ($account !== null) {
-            $cipherText = NostoHelperExporter::export($account, $collection);
+            $cipherText = ExportHelper::export($account, $collection);
             if ($result instanceof Raw) {
                 $result->setContents($cipherText);
             }

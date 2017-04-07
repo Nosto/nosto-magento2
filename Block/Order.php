@@ -40,10 +40,9 @@ use Magento\Checkout\Block\Success;
 use Magento\Checkout\Model\Session;
 use Magento\Framework\View\Element\Template;
 use Magento\Sales\Model\OrderFactory;
+use Nosto\Helper\DateHelper;
+use Nosto\Helper\PriceHelper;
 use Nosto\Tagging\Model\Order\Builder as NostoOrderBuilder;
-use NostoHelperDate;
-use NostoHelperPrice;
-use NostoOrder;
 
 /**
  * Category block used for outputting meta-data on the stores category pages.
@@ -111,7 +110,7 @@ class Order extends Success
      */
     public function formatNostoPrice($price)
     {
-        return NostoHelperPrice::format($price);
+        return PriceHelper::format($price);
     }
 
     /**
@@ -122,6 +121,6 @@ class Order extends Success
      */
     public function formatNostoDate($date)
     {
-        return NostoHelperDate::format($date);
+        return DateHelper::format($date);
     }
 }

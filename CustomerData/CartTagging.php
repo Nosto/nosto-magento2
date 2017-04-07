@@ -45,7 +45,6 @@ use Nosto\Object\Cart\LineItem;
 use Nosto\Tagging\Model\Cart\Builder as NostoCartBuilder;
 use Nosto\Tagging\Model\Customer as NostoCustomer;
 use Nosto\Tagging\Model\CustomerFactory as NostoCustomerFactory;
-use NostoLineItem;
 use Psr\Log\LoggerInterface;
 
 class CartTagging implements SectionSourceInterface

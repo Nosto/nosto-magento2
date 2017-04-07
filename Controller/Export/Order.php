@@ -40,10 +40,10 @@ use Magento\Framework\App\Action\Context;
 use Magento\Sales\Model\ResourceModel\Order\CollectionFactory as OrderCollectionFactory;
 use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\StoreManagerInterface;
+use Nosto\Exception\NostoException;
 use Nosto\Object\Order\OrderCollection;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Model\Order\Builder as NostoOrderBuilder;
-use NostoOrderCollection;
 
 /**
  * Order export controller used to export order history to Nosto in order to
@@ -106,7 +106,7 @@ class Order extends Base
             $items instanceof \Traversable === false
             && !is_array($items)
         ) {
-            throw new \NostoException(
+            throw new NostoException(
                 sprintf(
                     'Invalid collection type %s for product export',
                     get_class($collection)

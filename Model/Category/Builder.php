@@ -38,7 +38,9 @@ namespace Nosto\Tagging\Model\Category;
 
 use Magento\Catalog\Api\CategoryRepositoryInterface;
 use Magento\Catalog\Model\Category;
+use Nosto\Exception\NostoException;
 use Psr\Log\LoggerInterface;
+use Magento\Catalog\Model\Product;
 
 class Builder
 {
@@ -55,6 +57,19 @@ class Builder
     ) {
         $this->categoryRepository = $categoryRepository;
         $this->logger = $logger;
+    }
+
+    /**
+     * @param Product $product
+     * @return array
+     */
+    public function buildCategories(Product $product)
+    {
+        $categories = [];
+        foreach ($product->getCategoryCollection() as $category) {
+            $categories[] = $this->build($category);
+        }
+        return $categories;
     }
 
     /**
@@ -75,7 +90,7 @@ class Builder
                 }
             }
             return count($data) ? '/' . implode('/', $data) : '';
-        } catch (\NostoException $e) {
+        } catch (NostoException $e) {
             $this->logger->error($e->__toString());
         }
 

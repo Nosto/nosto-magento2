@@ -42,7 +42,6 @@ use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
 use Nosto\Helper\OAuthHelper;
 use Nosto\Tagging\Model\Meta\Oauth\Builder as NostoOauthBuilder;
-use NostoOAuthClient;
 
 class Connect extends Base
 {

@@ -45,11 +45,10 @@ use Magento\Framework\Exception\State\InputMismatchException;
 use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
+use Nosto\Nosto;
 use Nosto\Operation\OAuth\ExchangeTokens;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Model\Meta\Oauth\Builder as NostoOauthBuilder;
-use NostoMessage;
-use NostoOperationOauthSync;
 use Psr\Log\LoggerInterface;
 
 class Index extends Action
@@ -104,15 +103,15 @@ class Index extends Action
             try {
                 $this->connectAccount($authCode, $store);
                 $params = [
-                    'message_type' => NostoMessage::TYPE_SUCCESS,
-                    'message_code' => NostoMessage::CODE_ACCOUNT_CONNECT,
+                    'message_type' => Nosto::TYPE_SUCCESS,
+                    'message_code' => Nosto::CODE_ACCOUNT_CONNECT,
                     'store' => (int)$store->getId(),
                 ];
             } catch (\Exception $e) {
                 $this->logger->error($e->__toString());
                 $params = [
-                    'message_type' => NostoMessage::TYPE_ERROR,
-                    'message_code' => NostoMessage::CODE_ACCOUNT_CONNECT,
+                    'message_type' => Nosto::TYPE_ERROR,
+                    'message_code' => Nosto::CODE_ACCOUNT_CONNECT,
                     'store' => (int)$store->getId(),
                 ];
             }
@@ -129,8 +128,8 @@ class Index extends Action
             $this->redirectBackend(
                 'nosto/account/proxy',
                 [
-                    'message_type' => NostoMessage::TYPE_ERROR,
-                    'message_code' => NostoMessage::CODE_ACCOUNT_CONNECT,
+                    'message_type' => Nosto::TYPE_ERROR,
+                    'message_code' => Nosto::CODE_ACCOUNT_CONNECT,
                     'message_text' => $desc,
                     'store' => (int)$store->getId(),
                 ]

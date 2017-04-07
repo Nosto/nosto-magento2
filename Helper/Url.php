@@ -42,7 +42,7 @@ use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductColl
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 use Magento\Store\Api\Data\StoreInterface;
-use NostoHttpRequest;
+use Nosto\Request\Http\HttpRequest;
 
 /**
  * Url helper class for common URL related tasks.
@@ -134,7 +134,7 @@ class Url extends AbstractHelper
      */
     public function addNostoDebugParamToUrl($url)
     {
-        return NostoHttpRequest::replaceQueryParamInUrl(
+        return HttpRequest::replaceQueryParamInUrl(
             'nostodebug',
             'true',
             $url
@@ -185,7 +185,7 @@ class Url extends AbstractHelper
      */
     public function replaceQueryParamsInUrl(array $params, $url)
     {
-        return NostoHttpRequest::replaceQueryParamsInUrl($params, $url);
+        return HttpRequest::replaceQueryParamsInUrl($params, $url);
     }
 
     /**

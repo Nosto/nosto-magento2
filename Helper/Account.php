@@ -43,6 +43,7 @@ use Magento\Framework\App\Helper\Context;
 use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\Store;
+use Nosto\Exception\NostoException;
 use Nosto\Object\User;
 use Nosto\Operation\UninstallAccount;
 use Nosto\Request\Api\Token;
@@ -156,7 +157,7 @@ class Account extends AbstractHelper
             // Notify Nosto that the account was deleted.
             $service = new UninstallAccount($account);
             $service->delete($currentUser);
-        } catch (\NostoException $e) {
+        } catch (NostoException $e) {
             $this->logger->error($e->__toString());
         }
 

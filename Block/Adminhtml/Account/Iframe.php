@@ -41,12 +41,12 @@ use Magento\Backend\Block\Template\Context as BlockContext;
 use Magento\Backend\Model\Auth\Session;
 use Magento\Framework\Exception\NotFoundException;
 use Magento\Store\Api\Data\StoreInterface;
-use Nosto;
+use Nosto\Helper\IframeHelper;
+use Nosto\Nosto;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Model\Meta\Account\Iframe\Builder as NostoIframeMetaBuilder;
 use Nosto\Tagging\Model\Meta\Account\Sso\Builder as NostoSsoBuilder;
 use Nosto\Tagging\Model\User\Builder as NostoCurrentUserBuilder;
-use NostoHelperIframe;
 
 /**
  * Iframe block for displaying the Nosto account management iframe.
@@ -122,7 +122,7 @@ class Iframe extends BlockTemplate
 
         $store = $this->getSelectedStore();
         $account = $this->nostoHelperAccount->findAccount($store);
-        return NostoHelperIframe::getUrl(
+        return IframeHelper::getUrl(
             $this->nostoIframeMetaBuilder->build($store),
             $account,
             $this->nostoCurrentUserBuilder->build(),

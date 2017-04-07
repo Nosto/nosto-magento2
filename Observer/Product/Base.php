@@ -43,6 +43,7 @@ use Magento\Framework\Module\Manager as ModuleManager;
 use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
+use Nosto\Exception\NostoException;
 use Nosto\Object\Signup\Account;
 use Nosto\Operation\UpsertProduct;
 use Nosto\Request\Http\HttpRequest;
@@ -123,7 +124,7 @@ abstract class Base implements ObserverInterface
                 }
 
                 // Load the product model for this particular store view.
-                /** @var NostoProduct $model */
+                /** @var \Nosto\Object\Product\Product $model */
                 $metaProduct = $this->buildProduct($product, $store);
                 if ($metaProduct === null) {
                     continue;
@@ -133,7 +134,7 @@ abstract class Base implements ObserverInterface
                     $op = new UpsertProduct($account);
                     $op->addProduct($metaProduct);
                     $this->doRequest($op);
-                } catch (\NostoException $e) {
+                } catch (NostoException $e) {
                     $this->logger->error($e->__toString());
                 }
             }

@@ -107,7 +107,7 @@ class Builder
             /** @noinspection PhpUndefinedMethodInspection */
             $nostoProduct->setPriceCurrencyCode($store->getBaseCurrencyCode());
             $nostoProduct->setAvailable($product->isAvailable());
-            $nostoProduct->setCategories($this->buildCategories($product));
+            $nostoProduct->setCategories($this->nostoCategoryBuilder->buildCategories($product));
             $nostoProduct->setAlternateImageUrls($this->buildAlternativeImages($product));
 
             // Optional properties.
@@ -177,19 +177,6 @@ class Builder
         }
 
         return $product->getMediaConfig()->getMediaUrl($image);
-    }
-
-    /**
-     * @param Product $product
-     * @return array
-     */
-    public function buildCategories(Product $product)
-    {
-        $categories = [];
-        foreach ($product->getCategoryCollection() as $category) {
-            $categories[] = $this->nostoCategoryBuilder->build($category);
-        }
-        return $categories;
     }
 
     /**
