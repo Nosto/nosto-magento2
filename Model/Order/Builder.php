@@ -120,7 +120,8 @@ class Builder
             // Add each ordered item as a line item
             /** @var Item $item */
             foreach ($order->getAllVisibleItems() as $item) {
-                $nostoItem = $this->nostoOrderItemBuilder->build($item, $order->getOrderCurrencyCode());
+                $nostoItem = $this->nostoOrderItemBuilder->build($item,
+                    $order->getOrderCurrencyCode());
                 $nostoOrder->addPurchasedItems($nostoItem);
             }
 

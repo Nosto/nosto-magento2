@@ -41,7 +41,6 @@ use Magento\Catalog\Model\Product\Type;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\ObjectManagerInterface;
 use Magento\Sales\Model\Order\Item;
-
 use Nosto\Object\Cart\LineItem;
 use Psr\Log\LoggerInterface;
 
@@ -131,6 +130,6 @@ class Builder
                 return $parentIds[0];
             }
         }
-        return (string) $item->getProductId();
+        return (string)$item->getProductId();
     }
 }

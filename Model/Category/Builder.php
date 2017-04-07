@@ -38,9 +38,9 @@ namespace Nosto\Tagging\Model\Category;
 
 use Magento\Catalog\Api\CategoryRepositoryInterface;
 use Magento\Catalog\Model\Category;
+use Magento\Catalog\Model\Product;
 use Nosto\Exception\NostoException;
 use Psr\Log\LoggerInterface;
-use Magento\Catalog\Model\Product;
 
 class Builder
 {

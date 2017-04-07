@@ -38,10 +38,10 @@ namespace Nosto\Tagging\Model\Product;
 
 use Magento\Catalog\Api\CategoryRepositoryInterface;
 use Magento\Catalog\Model\Product;
+use Magento\Catalog\Model\Product\Gallery\ReadHandler as GalleryReadHandler;
 use Magento\Eav\Model\Entity\Attribute;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Store\Api\Data\StoreInterface;
-use Magento\Catalog\Model\Product\Gallery\ReadHandler as GalleryReadHandler;
 use Nosto\Exception\NostoException;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Price as NostoPriceHelper;
@@ -97,7 +97,7 @@ class Builder
 
         try {
             $nostoProduct->setUrl($this->buildUrl($product, $store));
-            $nostoProduct->setProductId((string) $product->getId());
+            $nostoProduct->setProductId((string)$product->getId());
             $nostoProduct->setName($product->getName());
             $nostoProduct->setImageUrl($this->buildImageUrl($product, $store));
             $price = $this->nostoPriceHelper->getProductFinalPriceInclTax($product);
@@ -180,6 +180,23 @@ class Builder
     }
 
     /**
+     * Adds the alternative image urls
+     *
+     * @param Product $product the product model.
+     * @return array
+     */
+    protected function buildAlternativeImages(Product $product)
+    {
+        $images = [];
+        $this->galleryReadHandler->execute($product);
+        foreach ($product->getMediaGalleryImages() as $image) {
+            if (isset($image['url']) && (isset($image['exclude']) && empty($image['exclude']))) {
+                $images[] = $image['url'];
+            }
+        }
+    }
+
+    /**
      * @param Product $product
      * @return array
      */
@@ -204,22 +221,5 @@ class Builder
         }
 
         return $tags;
-    }
-
-    /**
-     * Adds the alternative image urls
-     *
-     * @param Product $product the product model.
-     * @return array
-     */
-    protected function buildAlternativeImages(Product $product)
-    {
-        $images = [];
-        $this->galleryReadHandler->execute($product);
-        foreach ($product->getMediaGalleryImages() as $image) {
-            if (isset($image['url']) && (isset($image['exclude']) && empty($image['exclude']))) {
-                $images[] = $image['url'];
-            }
-        }
     }
 }

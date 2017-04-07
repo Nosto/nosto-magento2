@@ -33,6 +33,7 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
+
 namespace Nosto\Tagging\CustomerData;
 
 use Magento\Customer\CustomerData\SectionSourceInterface;

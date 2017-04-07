@@ -36,9 +36,9 @@
 
 namespace Nosto\Tagging\Observer\Product;
 
+use Magento\Catalog\Model\Product;
 use Magento\Framework\Module\Manager as ModuleManager;
 use Magento\Store\Api\Data\StoreInterface;
-use Magento\Catalog\Model\Product;
 use Magento\Store\Model\StoreManagerInterface;
 use Nosto\Operation\UpsertProduct;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;

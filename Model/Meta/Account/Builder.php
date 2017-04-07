@@ -41,7 +41,6 @@ use Magento\Framework\Locale\ResolverInterface;
 use Magento\Framework\UrlInterface;
 use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\Store;
-
 use Nosto\Exception\NostoException;
 use Nosto\Object\Signup;
 use Nosto\Request\Http\HttpRequest;
@@ -101,7 +100,7 @@ class Builder
                     ]
                 )
             );
-            $metaData->setName(substr(sha1((string) rand()), 0, 8));
+            $metaData->setName(substr(sha1((string)rand()), 0, 8));
             $metaData->setFrontPageUrl(
                 HttpRequest::replaceQueryParamInUrl(
                     '___store',

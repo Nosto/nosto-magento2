@@ -29,54 +29,54 @@
 <!--suppress XmlUnboundNsPrefix, PhingDomInspection -->
 <project name="nostotagging" default="dist">
 
-    <property name="package"  value="${phing.project.name}" override="true" />
-    <property name="buildsrc" value="./build/src" override="false" />
-    <property name="buildbin" value="./build/bin" override="false" />
-    <property name="buildroot" value="./build" override="true" />
-    <property name="builddest" value="./build/package" override="true" />
-    <property name="srcdir"   value="${project.basedir}" override="true" />
+    <property name="package" value="${phing.project.name}" override="true"/>
+    <property name="buildsrc" value="./build/src" override="false"/>
+    <property name="buildbin" value="./build/bin" override="false"/>
+    <property name="buildroot" value="./build" override="true"/>
+    <property name="builddest" value="./build/package" override="true"/>
+    <property name="srcdir" value="${project.basedir}" override="true"/>
     <!--suppress PhingDomInspection -->
-    <property name="packagename"   value="Nosto_Tagging-${version}.tgz" override="true" />
+    <property name="packagename" value="Nosto_Tagging-${version}.tgz" override="true"/>
 
     <!-- ============================================  -->
     <!-- Target: prepare                               -->
     <!-- ============================================  -->
     <target name="prepare">
-        <echo msg="Cleaning up directory ./build" />
-        <delete dir="${builddest}" />
-        <delete dir="${buildsrc}" />
-        <mkdir dir="${builddest}" />
-        <mkdir dir="${buildsrc}" />
+        <echo msg="Cleaning up directory ./build"/>
+        <delete dir="${builddest}"/>
+        <delete dir="${buildsrc}"/>
+        <mkdir dir="${builddest}"/>
+        <mkdir dir="${buildsrc}"/>
         <copy todir="${buildsrc}">
-            <fileset refid="sourcefiles" />
+            <fileset refid="sourcefiles"/>
         </copy>
-        <phingcall target="updatedependencies" />
+        <phingcall target="updatedependencies"/>
     </target>
 
     <target name="updatedependencies">
-        <echo msg="Updating dependencies" />
+        <echo msg="Updating dependencies"/>
         <exec executable="composer" dir="${buildsrc}">
-            <arg value="install" />
+            <arg value="install"/>
         </exec>
-        <echo msg="Files copied and compressed" />
+        <echo msg="Files copied and compressed"/>
     </target>
 
     <fileset dir="${srcdir}" id="sourcefiles">
         <patternset id="nostotagging.sources">
-            <include name="**" />
-            <exclude name="*.DS_STORE" />
-            <exclude name="**/.idea/**" />
-            <exclude name="**/tests/**" />
-            <exclude name="**/phing/**" />
-            <exclude name="**/build/**" />
-            <exclude name="**/node_modules/**" />
-            <exclude name="**/build.xml" />
-            <exclude name="**/ruleset.xml" />
-            <exclude name="**/*codeception*" />
-            <exclude name="vendor/**" />
-            <exclude name="package.json*" />
-            <exclude name="Gruntfile.js*" />
-            <exclude name="*.tgz" />
+            <include name="**"/>
+            <exclude name="*.DS_STORE"/>
+            <exclude name="**/.idea/**"/>
+            <exclude name="**/tests/**"/>
+            <exclude name="**/phing/**"/>
+            <exclude name="**/build/**"/>
+            <exclude name="**/node_modules/**"/>
+            <exclude name="**/build.xml"/>
+            <exclude name="**/ruleset.xml"/>
+            <exclude name="**/*codeception*"/>
+            <exclude name="vendor/**"/>
+            <exclude name="package.json*"/>
+            <exclude name="Gruntfile.js*"/>
+            <exclude name="*.tgz"/>
         </patternset>
     </fileset>
 
@@ -84,7 +84,7 @@
     <!-- Target: build                                 -->
     <!-- ============================================  -->
     <target name="build" depends="prepare">
-        <echo msg="Building a package with magazine" />
+        <echo msg="Building a package with magazine"/>
     </target>
 
     <target name="phpmd">
@@ -134,6 +134,6 @@
     </target>
 
     <target name="dist" depends="phpcbf, phpcs, phan, phpmd, phpcpd, build">
-        <echo msg="All done" />
+        <echo msg="All done"/>
     </target>
 </project>

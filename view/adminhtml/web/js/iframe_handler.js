@@ -202,7 +202,7 @@ define([
                 if (queryString !== "") {
                     queryString += "&";
                 }
-                queryString += encodeURIComponent(key)+"="+encodeURIComponent(params[key]);
+                queryString += encodeURIComponent(key) + "=" + encodeURIComponent(params[key]);
             }
         }
         return queryString;

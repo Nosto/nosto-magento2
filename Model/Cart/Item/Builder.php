@@ -125,6 +125,6 @@ class Builder
             }
         }
 
-        return (string) $item->getProduct()->getId();
+        return (string)$item->getProduct()->getId();
     }
 }

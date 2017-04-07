@@ -46,7 +46,8 @@
     <file>./Setup</file>
     <file>./view</file>
     <exclude-pattern>*.js</exclude-pattern>
-    <config name="installed_paths" value="vendor/magento-ecg/coding-standard/,vendor/magento/marketplace-eqp/" />
+    <config name="installed_paths"
+            value="vendor/magento-ecg/coding-standard/,vendor/magento/marketplace-eqp/"/>
     <description>The Magento coding standard.</description>
     <rule ref="./vendor/magento-ecg/coding-standard/EcgM2">
         <exclude name="Ecg.PHP.PrivateClassMember"/>

@@ -38,7 +38,6 @@ namespace Nosto\Tagging\Controller\Adminhtml\Account;
 
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\Controller\Result\Json;
-
 use Magento\Store\Model\StoreManagerInterface;
 use Nosto\Exception\NostoException;
 use Nosto\Helper\IframeHelper;
@@ -47,8 +46,8 @@ use Nosto\Operation\AccountSignup;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Model\Meta\Account\Builder as NostoSignupBuilder;
 use Nosto\Tagging\Model\Meta\Account\Iframe\Builder as NostoIframeMetaBuilder;
-use Nosto\Tagging\Model\User\Builder as NostoCurrentUserBuilder;
 use Nosto\Tagging\Model\Meta\Account\Owner\Builder as NostoOwnerBuilder;
+use Nosto\Tagging\Model\User\Builder as NostoCurrentUserBuilder;
 use Psr\Log\LoggerInterface;
 
 class Create extends Base
@@ -137,7 +136,8 @@ class Create extends Base
                     }
                 }
 
-                $signupParams = $this->nostoSignupBuilder->build($store, $accountOwner, $signupDetails);
+                $signupParams = $this->nostoSignupBuilder->build($store, $accountOwner,
+                    $signupDetails);
                 $operation = new AccountSignup($signupParams);
                 $account = $operation->create();
 

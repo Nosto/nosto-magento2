@@ -33,13 +33,13 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
+
 namespace Nosto\Tagging\CustomerData;
 
 use Magento\Checkout\Helper\Cart as CartHelper;
 use Magento\Customer\CustomerData\SectionSourceInterface;
 use Magento\Framework\Stdlib\CookieManagerInterface;
 use Magento\Framework\Stdlib\DateTime\DateTime;
-
 use Magento\Store\Model\StoreManagerInterface;
 use Nosto\Object\Cart\LineItem;
 use Nosto\Tagging\Model\Cart\Builder as NostoCartBuilder;

@@ -36,19 +36,19 @@
 
 return [
     'directory_list' => [
-         'Api',
-         'Block',
-         'Controller',
-         'CustomerData',
-         'Model',
-         'Helper',
-         'Observer',
-         '.phan/stubs',
-         'vendor/vlucas',
-         'vendor/nosto/php-sdk',
-         'vendor/phpseclib',
-         'vendor/magento',
-         'vendor/psr'
+        'Api',
+        'Block',
+        'Controller',
+        'CustomerData',
+        'Model',
+        'Helper',
+        'Observer',
+        '.phan/stubs',
+        'vendor/vlucas',
+        'vendor/nosto/php-sdk',
+        'vendor/phpseclib',
+        'vendor/magento',
+        'vendor/psr'
     ],
     "exclude_analysis_directory_list" => [
         'vendor/',

@@ -142,6 +142,13 @@ abstract class Base implements ObserverInterface
     }
 
     /**
+     * Validate whether the event should be handled or not
+     *
+     * @param Product $product the product from the event
+     */
+    abstract public function validateProduct(Product $product);
+
+    /**
      * Builds the product object for the operation using the builder
      *
      * @param Product $product the product to be built
@@ -152,13 +159,6 @@ abstract class Base implements ObserverInterface
     {
         return $this->nostoProductBuilder->build($product, $store);
     }
-
-    /**
-     * Validate whether the event should be handled or not
-     *
-     * @param Product $product the product from the event
-     */
-    abstract public function validateProduct(Product $product);
 
     /**
      * @param UpsertProduct $operation
