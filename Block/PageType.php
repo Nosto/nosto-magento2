@@ -44,11 +44,11 @@ use Nosto\Tagging\Helper\Account as NostoHelperAccount;
  */
 class PageType extends Template
 {
+    private $nostoHelperAccount;
     /**
      * Default type assigned to the page if none is set in the layout xml.
      */
     const DEFAULT_TYPE = 'unknown';
-    private $nostoHelperAccount;
 
     /**
      * Constructor.
