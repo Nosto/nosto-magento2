@@ -194,6 +194,8 @@ class Builder
                 $images[] = $image['url'];
             }
         }
+
+        return $images;
     }
 
     /**
