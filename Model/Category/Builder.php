@@ -36,6 +36,7 @@
 
 namespace Nosto\Tagging\Model\Category;
 
+use Magento\Framework\Event\ManagerInterface;
 use Magento\Catalog\Api\CategoryRepositoryInterface;
 use Magento\Catalog\Model\Category;
 use Magento\Catalog\Model\Product;
@@ -46,17 +47,21 @@ class Builder
 {
     private $logger;
     private $categoryRepository;
+    private $eventManager;
 
     /**
      * @param CategoryRepositoryInterface $categoryRepository
      * @param LoggerInterface $logger
+     * @param ManagerInterface $eventManager
      */
     public function __construct(
         CategoryRepositoryInterface $categoryRepository,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        ManagerInterface $eventManager
     ) {
         $this->categoryRepository = $categoryRepository;
         $this->logger = $logger;
+        $this->eventManager = $eventManager;
     }
 
     /**
@@ -93,6 +98,8 @@ class Builder
         } catch (NostoException $e) {
             $this->logger->error($e->__toString());
         }
+
+        $this->eventManager->dispatch('nosto_category_load_after', ['category' => $nostoCategory]);
 
         return $nostoCategory;
     }

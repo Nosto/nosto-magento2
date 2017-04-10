@@ -68,21 +68,21 @@ class Builder
      */
     public function build()
     {
-        $metaData = new Owner();
+        $owner = new Owner();
 
         try {
             $user = $this->backendAuthSession->getUser();
             if ($user !== null) {
-                $metaData->setFirstName($user->getFirstName());
-                $metaData->setLastName($user->getLastName());
-                $metaData->setEmail($user->getEmail());
+                $owner->setFirstName($user->getFirstName());
+                $owner->setLastName($user->getLastName());
+                $owner->setEmail($user->getEmail());
             }
         } catch (NostoException $e) {
             $this->logger->error($e->__toString());
         }
 
-        $this->eventManager->dispatch('nosto_sso_load_after', ['sso' => $metaData]);
+        $this->eventManager->dispatch('nosto_sso_load_after', ['sso' => $owner]);
 
-        return $metaData;
+        return $owner;
     }
 }
