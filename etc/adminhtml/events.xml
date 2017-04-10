@@ -45,4 +45,10 @@
         <observer name="nosto_product_delete_observer"
                   instance="Nosto\Tagging\Observer\Product\Delete"/>
     </event>
+    <event name="backend_auth_user_login_success">
+        <observer name="nosto_update_settings_observer"
+                  instance="Nosto\Tagging\Observer\Settings\Update"/>
+        <observer name="nosto_update_exchange_rates_observer"
+                  instance="Nosto\Tagging\Observer\Rates\Update"/>
+    </event>
 </config>

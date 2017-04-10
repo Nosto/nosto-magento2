@@ -40,9 +40,13 @@ use Magento\Bundle\Model\Product\Price as BundlePrice;
 use Magento\Catalog\Helper\Data as CatalogHelper;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\Product\Type as ProductType;
+use Magento\Directory\Helper\Data as DirectoryHelper;
+use Magento\Directory\Model\CurrencyFactory;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 use Magento\GroupedProduct\Model\Product\Type\Grouped as GroupedType;
+use Magento\Store\Api\Data\StoreInterface;
+use Magento\Store\Model\Store;
 
 /**
  * Price helper used for product price related tasks.
@@ -50,32 +54,43 @@ use Magento\GroupedProduct\Model\Product\Type\Grouped as GroupedType;
 class Price extends AbstractHelper
 {
     private $catalogHelper;
+    private $directoryHelper;
+    /**
+     * @var CurrencyFactory
+     */
+    private $currencyFactory;
 
     /**
      * Constructor.
      *
      * @param Context $context the context.
      * @param CatalogHelper $catalogHelper the catalog helper.
+     * @param DirectoryHelper $directoryHelper
+     * @param CurrencyFactory $currencyFactory
      */
     public function __construct(
         Context $context,
-        CatalogHelper $catalogHelper
+        CatalogHelper $catalogHelper,
+        DirectoryHelper $directoryHelper,
+        CurrencyFactory $currencyFactory
     ) {
         parent::__construct($context);
 
         $this->catalogHelper = $catalogHelper;
+        $this->directoryHelper = $directoryHelper;
+        $this->currencyFactory = $currencyFactory;
     }
 
     /**
      * Gets the unit price for a product model including taxes.
      *
+     * @param $store
      * @param Product $product the product model.
-     *
      * @return float
      */
-    public function getProductPriceInclTax($product)
+    public function getProductPriceInclTax(StoreInterface $store, Product $product)
     {
-        return $this->getProductPrice($product, false, true);
+        return $this->convertToBaseCurrency($store, $this->getProductPrice($product, false, true));
     }
 
     /**
@@ -158,12 +173,29 @@ class Price extends AbstractHelper
     /**
      * Get the final price for a product model including taxes.
      *
+     * @param StoreInterface|Store $store
      * @param Product $product the product model.
-     *
      * @return float
      */
-    public function getProductFinalPriceInclTax($product)
+    public function getProductFinalPriceInclTax(StoreInterface $store, Product $product)
     {
-        return $this->getProductPrice($product, true, true);
+        return $this->convertToBaseCurrency($store, $this->getProductPrice($product, true, true));
+    }
+
+    /**
+     * Helper method that converts a price from the current currency to the store's base currency.
+     * If the currency currency is the same as the store's base currency, the same value is
+     * automatically returned.
+     *
+     * @param StoreInterface|Store $store the store to whose base currency to convert the amount to
+     * @param float $amount the amount that should be converted to the store's base currency
+     * @return float the amount converted into the store's base currency
+     */
+    public function convertToBaseCurrency(StoreInterface $store, $amount)
+    {
+        $rateToBase = $this->currencyFactory->create()->load($store->getCurrentCurrencyCode())->getAnyRate($store->getBaseCurrencyCode());
+        var_dump($amount);
+        var_dump($rateToBase);
+        return $amount * $rateToBase;
     }
 }

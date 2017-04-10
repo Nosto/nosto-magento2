@@ -48,7 +48,6 @@ use Magento\Framework\Stdlib\StringUtils;
 use Magento\Framework\Url\EncoderInterface as UrlEncoder;
 use Magento\Store\Model\Store;
 use Nosto\Helper\DateHelper;
-use Nosto\Helper\PriceHelper;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Model\Category\Builder as NostoCategoryBuilder;
 use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
@@ -152,17 +151,6 @@ class Product extends View
     }
 
     /**
-     * Formats a price e.g. "1234.56".
-     *
-     * @param int $price the price to format.
-     * @return string the formatted price.
-     */
-    public function formatNostoPrice($price)
-    {
-        return PriceHelper::format($price);
-    }
-
-    /**
      * Formats a date, e.g. "2015-12-24";
      *
      * @param string $date the date to format.
@@ -171,5 +159,18 @@ class Product extends View
     public function formatNostoDate($date)
     {
         return DateHelper::format($date);
+    }
+
+    /**
+     * Checks if store uses more than one currency in order to decide whether to hide or show the
+     * nosto_variation tagging.
+     *
+     * @return bool a boolean value indicating whether the store has more than one currency
+     */
+    public function hasMultipleCurrencies()
+    {
+        /** @var Store $store */
+        $store = $this->_storeManager->getStore(true);
+        return count($store->getAvailableCurrencyCodes(true)) > 1;
     }
 }

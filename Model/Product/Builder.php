@@ -42,6 +42,7 @@ use Magento\Catalog\Model\Product\Gallery\ReadHandler as GalleryReadHandler;
 use Magento\Eav\Model\Entity\Attribute;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Store\Api\Data\StoreInterface;
+use Magento\Store\Model\Store;
 use Nosto\Exception\NostoException;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Price as NostoPriceHelper;
@@ -88,7 +89,7 @@ class Builder
 
     /**
      * @param Product $product
-     * @param StoreInterface $store
+     * @param StoreInterface|Store $store
      * @return \Nosto\Object\Product\Product
      */
     public function build(Product $product, StoreInterface $store)
@@ -100,15 +101,23 @@ class Builder
             $nostoProduct->setProductId((string)$product->getId());
             $nostoProduct->setName($product->getName());
             $nostoProduct->setImageUrl($this->buildImageUrl($product, $store));
-            $price = $this->nostoPriceHelper->getProductFinalPriceInclTax($product);
+            $price = $this->nostoPriceHelper->getProductFinalPriceInclTax($store, $product);
             $nostoProduct->setPrice($price);
-            $listPrice = $this->nostoPriceHelper->getProductPriceInclTax($product);
+            $listPrice = $this->nostoPriceHelper->getProductPriceInclTax($store, $product);
+            /*var_dump($product->getPrice());
+            var_dump($product);
+            var_dump($product->getData('price'));
+            var_dump($product->getPriceModel()->getPrice($product));
+            var_dump($product->getPriceModel()->getFinalPrice(null, $product));
+            var_dump($product->getPriceModel()->getBasePrice($product));*/
             $nostoProduct->setListPrice($listPrice);
-            /** @noinspection PhpUndefinedMethodInspection */
             $nostoProduct->setPriceCurrencyCode($store->getBaseCurrencyCode());
             $nostoProduct->setAvailable($product->isAvailable());
             $nostoProduct->setCategories($this->nostoCategoryBuilder->buildCategories($product));
             $nostoProduct->setAlternateImageUrls($this->buildAlternativeImages($product));
+            if (count($store->getAvailableCurrencyCodes(true)) > 1) {
+                $nostoProduct->setVariationId($store->getBaseCurrencyCode());
+            }
 
             // Optional properties.
 
