@@ -61,10 +61,6 @@ class Data extends AbstractHelper
      */
     const XML_PATH_IMAGE_VERSION = 'nosto_tagging/image_options/image_version';
 
-    /**
-     * @var string the algorithm to use for hashing visitor id.
-     */
-    const VISITOR_HASH_ALGO = 'sha256';
     const MODULE_NAME = 'Nosto_Tagging';
     private $storeManager;
     private $moduleListing;
@@ -93,18 +89,6 @@ class Data extends AbstractHelper
         $this->moduleListing = $moduleListing;
         $this->configWriter = $configWriter;
         $this->productMetaData = $productMetadataInterface;
-    }
-
-    /**
-     * Return the checksum for string
-     *
-     * @param string $string
-     *
-     * @return string
-     */
-    public static function generateVisitorChecksum($string)
-    {
-        return hash(self::VISITOR_HASH_ALGO, $string);
     }
 
     /**

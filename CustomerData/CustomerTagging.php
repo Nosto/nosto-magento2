@@ -36,16 +36,20 @@
 
 namespace Nosto\Tagging\CustomerData;
 
+use Magento\Customer\Api\Data\CustomerInterface;
 use Magento\Customer\CustomerData\SectionSourceInterface;
 use Magento\Customer\Helper\Session\CurrentCustomer;
 use Magento\Framework\Stdlib\CookieManagerInterface;
-use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Model\Customer as NostoCustomer;
 
 class CustomerTagging implements SectionSourceInterface
 {
     private $currentCustomer;
     private $cookieManager;
+    /**
+     * @var string the algorithm to use for hashing visitor id.
+     */
+    const VISITOR_HASH_ALGO = 'sha256';
 
     /**
      * Constructor
@@ -76,10 +80,35 @@ class CustomerTagging implements SectionSourceInterface
                 'first_name' => $customer->getFirstname(),
                 'last_name' => $customer->getLastname(),
                 'email' => $customer->getEmail(),
-                'hcid' => NostoHelperData::generateVisitorChecksum($nostoCustomerId),
+                'hcid' => $this->generateVisitorChecksum($nostoCustomerId),
+                'customer_reference' => $this->generateCustomerReference($customer)
             ];
         }
 
         return $data;
+    }
+
+    /**
+     * Return the checksum for string
+     *
+     * @param string $string
+     * @return string
+     */
+    public static function generateVisitorChecksum($string)
+    {
+        return hash(self::VISITOR_HASH_ALGO, $string);
+    }
+
+
+    /**
+     * Return the checksum / customer reference for customer
+     *
+     * @param CustomerInterface $customer
+     * @return string
+     */
+    public function generateCustomerReference(CustomerInterface $customer)
+    {
+        /** @noinspection PhpUndefinedMethodInspection */
+        return uniqid(substr(md5($customer->getId() . $customer->getEmail()), 0, 8), true);
     }
 }
