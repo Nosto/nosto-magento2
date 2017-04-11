@@ -59,9 +59,6 @@ class Builder
     private $galleryReadHandler;
     private $eventManager;
     private $logger;
-    /**
-     * @var ReviewFactory
-     */
     private $reviewFactory;
 
     /**
