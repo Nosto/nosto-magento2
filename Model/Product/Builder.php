@@ -123,11 +123,21 @@ class Builder
                 $nostoProduct->setDescription(implode(' ', $descriptions));
             }
 
-            if ($product->hasData('manufacturer')) {
-                $nostoProduct->setBrand(
-                    $product->getAttributeText('manufacturer')
-                );
+            $brandAttribute = $this->nostoDataHelper->getBrandAttribute($store);
+            if ($product->hasData($brandAttribute)) {
+                $nostoProduct->setBrand($product->getData($brandAttribute));
             }
+
+            $marginAttribute = $this->nostoDataHelper->getMarginAttribute($store);
+            if ($product->hasData($marginAttribute)) {
+                $nostoProduct->setSupplierCost($product->getData($marginAttribute));
+            }
+
+            $gtinAttribute = $this->nostoDataHelper->getGtinAttribute($store);
+            if ($product->hasData($gtinAttribute)) {
+                $nostoProduct->setGtin($product->getData($gtinAttribute));
+            }
+
             if (($tags = $this->buildTags($product)) !== []) {
                 $nostoProduct->setTag1($tags);
             }

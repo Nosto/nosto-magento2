@@ -75,6 +75,9 @@ $category = $this->getNostoCategory();
         <?php foreach ($product->getAlternateImageUrls() as $alternateImageUrl): ?>
             <span class="alternate_image_url"><?php echo $this->escapeHtml($alternateImageUrl); ?></span>
         <?php endforeach; ?>
+        <?php if ($product->getGtin()) : ?>
+            <span class="gtin"><?php echo $this->escapeHtml($product->getGtin()); ?></span>
+        <?php endif; ?>
     </div>
 <?php if ($category) : ?>
     <div class="nosto_category"
