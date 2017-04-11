@@ -85,8 +85,6 @@ class Service
                 $service = new UpdateSettings($account);
                 return $service->update($settings);
             } catch (Exception $e) {
-                var_dump($e);
-                die('fff');
                 $this->logger->error($e->__toString());
             }
         } else {
