@@ -41,6 +41,7 @@ use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\Product\Gallery\ReadHandler as GalleryReadHandler;
 use Magento\Eav\Model\Entity\Attribute;
 use Magento\Framework\Event\ManagerInterface;
+use Magento\Review\Model\ReviewFactory;
 use Magento\Store\Api\Data\StoreInterface;
 use Nosto\Exception\NostoException;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
@@ -58,6 +59,10 @@ class Builder
     private $galleryReadHandler;
     private $eventManager;
     private $logger;
+    /**
+     * @var ReviewFactory
+     */
+    private $reviewFactory;
 
     /**
      * @param NostoHelperData $nostoHelperData
@@ -67,6 +72,7 @@ class Builder
      * @param LoggerInterface $logger
      * @param ManagerInterface $eventManager
      * @param GalleryReadHandler $galleryReadHandler
+     * @param ReviewFactory $reviewFactory
      */
     public function __construct(
         NostoHelperData $nostoHelperData,
@@ -75,7 +81,8 @@ class Builder
         CategoryRepositoryInterface $categoryRepository,
         LoggerInterface $logger,
         ManagerInterface $eventManager,
-        GalleryReadHandler $galleryReadHandler
+        GalleryReadHandler $galleryReadHandler,
+        ReviewFactory $reviewFactory
     ) {
         $this->nostoDataHelper = $nostoHelperData;
         $this->nostoPriceHelper = $priceHelper;
@@ -84,6 +91,7 @@ class Builder
         $this->logger = $logger;
         $this->eventManager = $eventManager;
         $this->galleryReadHandler = $galleryReadHandler;
+        $this->reviewFactory = $reviewFactory;
     }
 
     /**
@@ -109,6 +117,8 @@ class Builder
             $nostoProduct->setAvailable($product->isAvailable());
             $nostoProduct->setCategories($this->nostoCategoryBuilder->buildCategories($product));
             $nostoProduct->setAlternateImageUrls($this->buildAlternativeImages($product));
+            $nostoProduct->setRatingValue($this->buildRatingValue($product, $store));
+            $nostoProduct->setReviewCount($this->buildReviewCount($product, $store));
 
             // Optional properties.
 
@@ -138,6 +148,38 @@ class Builder
         $this->eventManager->dispatch('nosto_product_load_after', ['product' => $nostoProduct]);
 
         return $nostoProduct;
+    }
+
+    /**
+     * Helper method to fetch and return the normalised rating value for a product. The rating is
+     * normalised to a 0-5 value.
+     *
+     * @param Product $product the product whose rating value to fetch
+     * @param StoreInterface $store the store scope in which to fetch the rating
+     * @return float the normalized rating value of the product
+     */
+    private function buildRatingValue(Product $product, StoreInterface $store) {
+        if (!$product->getRatingSummary()) {
+            $this->reviewFactory->create()->getEntitySummary($product, $store->getId());
+        }
+
+        return round($product->getRatingSummary()->getRatingSummary() / 20, 1);
+    }
+
+    /**
+     * Helper method to fetch and return the total review count for a product. The review counts are
+     * returned as is.
+     *
+     * @param Product $product the product whose rating value to fetch
+     * @param StoreInterface $store the store scope in which to fetch the rating
+     * @return float the normalized rating value of the product
+     */
+    private function buildReviewCount(Product $product, StoreInterface $store) {
+        if (!$product->getRatingSummary()) {
+            $this->reviewFactory->create()->getEntitySummary($product, $store->getId());
+        }
+
+        return $product->getRatingSummary()->getReviewsCount();
     }
 
     /**

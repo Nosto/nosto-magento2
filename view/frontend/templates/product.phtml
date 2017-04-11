@@ -75,6 +75,12 @@ $category = $this->getNostoCategory();
         <?php foreach ($product->getAlternateImageUrls() as $alternateImageUrl): ?>
             <span class="alternate_image_url"><?php echo $this->escapeHtml($alternateImageUrl); ?></span>
         <?php endforeach; ?>
+        <?php if ($product->getReviewCount()): ?>
+            <span class="review_count"><?php echo $this->escapeHtml($product->getReviewCount()); ?></span>
+        <?php endif; ?>
+        <?php if ($product->getRatingValue()): ?>
+            <span class="rating_value"><?php echo $this->escapeHtml($product->getRatingValue()); ?></span>
+        <?php endif; ?>
     </div>
 <?php if ($category) : ?>
     <div class="nosto_category"
