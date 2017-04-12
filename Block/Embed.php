@@ -49,12 +49,13 @@ use Nosto\Tagging\Helper\Data as NostoHelperData;
  */
 class Embed extends Template
 {
+    use TaggingTrait;
+
+    private $nostoHelperData;
     /**
      * The default Nosto server address to use if none is configured.
      */
     const DEFAULT_SERVER_ADDRESS = 'connect.nosto.com';
-    private $nostoHelperAccount;
-    private $nostoHelperData;
 
     /**
      * Constructor.

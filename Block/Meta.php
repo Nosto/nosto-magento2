@@ -39,6 +39,7 @@ namespace Nosto\Tagging\Block;
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Element\Template\Context;
 use Magento\Store\Model\Store;
+use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 
 /**
@@ -47,9 +48,8 @@ use Nosto\Tagging\Helper\Data as NostoHelperData;
  */
 class Meta extends Template
 {
-    /**
-     * @var NostoHelperData the module data helper.
-     */
+    use TaggingTrait;
+
     private $nostoHelperData;
 
     /**
@@ -57,16 +57,19 @@ class Meta extends Template
      *
      * @param Context $context the context.
      * @param NostoHelperData $nostoHelperData the data helper.
+     * @param NostoHelperAccount $nostoHelperAccount
      * @param array $data optional data.
      */
     public function __construct(
         Context $context,
         NostoHelperData $nostoHelperData,
+        NostoHelperAccount $nostoHelperAccount,
         array $data = []
     ) {
         parent::__construct($context, $data);
 
         $this->nostoHelperData = $nostoHelperData;
+        $this->nostoHelperAccount = $nostoHelperAccount;
     }
 
     /**
