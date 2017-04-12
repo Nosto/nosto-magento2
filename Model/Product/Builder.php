@@ -38,7 +38,6 @@ namespace Nosto\Tagging\Model\Product;
 
 use Magento\Catalog\Api\CategoryRepositoryInterface;
 use Magento\Catalog\Model\Product;
-use Magento\Catalog\Model\Product\Gallery\ReadHandler as GalleryReadHandler;
 use Magento\Eav\Model\Entity\Attribute;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Review\Model\ReviewFactory;
@@ -56,7 +55,6 @@ class Builder
     private $nostoPriceHelper;
     private $nostoCategoryBuilder;
     private $categoryRepository;
-    private $galleryReadHandler;
     private $eventManager;
     private $logger;
     private $reviewFactory;
@@ -68,7 +66,6 @@ class Builder
      * @param CategoryRepositoryInterface $categoryRepository
      * @param LoggerInterface $logger
      * @param ManagerInterface $eventManager
-     * @param GalleryReadHandler $galleryReadHandler
      * @param ReviewFactory $reviewFactory
      */
     public function __construct(
@@ -78,7 +75,6 @@ class Builder
         CategoryRepositoryInterface $categoryRepository,
         LoggerInterface $logger,
         ManagerInterface $eventManager,
-        GalleryReadHandler $galleryReadHandler,
         ReviewFactory $reviewFactory
     ) {
         $this->nostoDataHelper = $nostoHelperData;
@@ -87,7 +83,6 @@ class Builder
         $this->categoryRepository = $categoryRepository;
         $this->logger = $logger;
         $this->eventManager = $eventManager;
-        $this->galleryReadHandler = $galleryReadHandler;
         $this->reviewFactory = $reviewFactory;
     }
 
@@ -113,7 +108,6 @@ class Builder
             $nostoProduct->setPriceCurrencyCode($store->getBaseCurrencyCode());
             $nostoProduct->setAvailable($product->isAvailable());
             $nostoProduct->setCategories($this->nostoCategoryBuilder->buildCategories($product));
-            $nostoProduct->setAlternateImageUrls($this->buildAlternativeImages($product));
             $nostoProduct->setRatingValue($this->buildRatingValue($product, $store));
             $nostoProduct->setReviewCount($this->buildReviewCount($product, $store));
 
@@ -156,10 +150,12 @@ class Builder
      * @return float the normalized rating value of the product
      */
     private function buildRatingValue(Product $product, StoreInterface $store) {
+        /** @noinspection PhpUndefinedMethodInspection */
         if (!$product->getRatingSummary()) {
             $this->reviewFactory->create()->getEntitySummary($product, $store->getId());
         }
 
+        /** @noinspection PhpUndefinedMethodInspection */
         return round($product->getRatingSummary()->getRatingSummary() / 20, 1);
     }
 
@@ -172,10 +168,12 @@ class Builder
      * @return float the normalized rating value of the product
      */
     private function buildReviewCount(Product $product, StoreInterface $store) {
+        /** @noinspection PhpUndefinedMethodInspection */
         if (!$product->getRatingSummary()) {
             $this->reviewFactory->create()->getEntitySummary($product, $store->getId());
         }
 
+        /** @noinspection PhpUndefinedMethodInspection */
         return $product->getRatingSummary()->getReviewsCount();
     }
 
@@ -216,25 +214,6 @@ class Builder
         }
 
         return $product->getMediaConfig()->getMediaUrl($image);
-    }
-
-    /**
-     * Adds the alternative image urls
-     *
-     * @param Product $product the product model.
-     * @return array
-     */
-    protected function buildAlternativeImages(Product $product)
-    {
-        $images = [];
-        $this->galleryReadHandler->execute($product);
-        foreach ($product->getMediaGalleryImages() as $image) {
-            if (isset($image['url']) && (isset($image['disabled']) && $image['disabled'] !== '1')) {
-                $images[] = $image['url'];
-            }
-        }
-
-        return $images;
     }
 
     /**
