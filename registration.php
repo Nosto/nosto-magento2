@@ -34,10 +34,10 @@
  *
  */
 
+use Dotenv\Dotenv;
 use Magento\Framework\Component\ComponentRegistrar;
 
-ComponentRegistrar::register(
-    ComponentRegistrar::MODULE,
-    'Nosto_Tagging',
-    __DIR__
-);
+ComponentRegistrar::register(ComponentRegistrar::MODULE, 'Nosto_Tagging', __DIR__);
+
+$dotenv = new Dotenv(dirname(__FILE__)); // @codingStandardsIgnoreLine
+$dotenv->overload();
