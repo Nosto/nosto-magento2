@@ -61,6 +61,8 @@ use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
  */
 class Product extends View
 {
+    use TaggingTrait;
+
     private $nostoProductBuilder;
     private $categoryBuilder;
     private $nostoHelperData;
@@ -165,20 +167,5 @@ class Product extends View
     public function formatNostoDate($date)
     {
         return DateHelper::format($date);
-    }
-
-    /**
-     * Overridden method that only outputs any markup if the extension is enabled and an account
-     * exists for the current store view.
-     *
-     * @return string the markup or an empty string (if an account doesn't exist)
-     */
-    protected function _toHtml()
-    {
-        if ($this->nostoHelperAccount->nostoInstalledAndEnabled($this->_storeManager->getStore())) {
-            return parent::_toHtml();
-        } else {
-            return '';
-        }
     }
 }

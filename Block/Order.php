@@ -52,9 +52,10 @@ use Nosto\Tagging\Model\Order\Builder as NostoOrderBuilder;
  */
 class Order extends Success
 {
+    use TaggingTrait;
+
     private $nostoOrderBuilder;
     private $checkoutSession;
-    private $nostoHelperAccount;
 
     /** @noinspection PhpUndefinedClassInspection */
     /**
@@ -120,20 +121,5 @@ class Order extends Success
     public function formatNostoDate($date)
     {
         return DateHelper::format($date);
-    }
-
-    /**
-     * Overridden method that only outputs any markup if the extension is enabled and an account
-     * exists for the current store view.
-     *
-     * @return string the markup or an empty string (if an account doesn't exist)
-     */
-    protected function _toHtml()
-    {
-        if ($this->nostoHelperAccount->nostoInstalledAndEnabled($this->_storeManager->getStore())) {
-            return parent::_toHtml();
-        } else {
-            return '';
-        }
     }
 }

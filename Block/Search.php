@@ -50,7 +50,7 @@ use Nosto\Tagging\Helper\Account as NostoHelperAccount;
  */
 class Search extends Result
 {
-    private $nostoHelperAccount;
+    use TaggingTrait;
 
     /**
      * Constructor.
@@ -83,20 +83,5 @@ class Search extends Result
     public function getNostoSearchTerm()
     {
         return $this->catalogSearchData->getEscapedQueryText();
-    }
-
-    /**
-     * Overridden method that only outputs any markup if the extension is enabled and an account
-     * exists for the current store view.
-     *
-     * @return string the markup or an empty string (if an account doesn't exist)
-     */
-    protected function _toHtml()
-    {
-        if ($this->nostoHelperAccount->nostoInstalledAndEnabled($this->_storeManager->getStore())) {
-            return parent::_toHtml();
-        } else {
-            return '';
-        }
     }
 }

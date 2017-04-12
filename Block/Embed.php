@@ -49,7 +49,8 @@ use Nosto\Tagging\Helper\Data as NostoHelperData;
  */
 class Embed extends Template
 {
-    private $nostoHelperAccount;
+    use TaggingTrait;
+
     private $nostoHelperData;
     /**
      * The default Nosto server address to use if none is configured.
@@ -99,20 +100,5 @@ class Embed extends Template
     public function getServerAddress()
     {
         return Nosto::getEnvVariable('NOSTO_SERVER_URL', self::DEFAULT_SERVER_ADDRESS);
-    }
-
-    /**
-     * Overridden method that only outputs any markup if the extension is enabled and an account
-     * exists for the current store view.
-     *
-     * @return string the markup or an empty string (if an account doesn't exist)
-     */
-    protected function _toHtml()
-    {
-        if ($this->nostoHelperAccount->nostoInstalledAndEnabled($this->_storeManager->getStore())) {
-            return parent::_toHtml();
-        } else {
-            return '';
-        }
     }
 }

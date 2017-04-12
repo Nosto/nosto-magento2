@@ -44,7 +44,8 @@ use Nosto\Tagging\Helper\Account as NostoHelperAccount;
  */
 class PageType extends Template
 {
-    private $nostoHelperAccount;
+    use TaggingTrait;
+
     /**
      * Default type assigned to the page if none is set in the layout xml.
      */
@@ -76,20 +77,5 @@ class PageType extends Template
     public function getPageTypeName()
     {
         return $this->getData('page_type') ? $this->getData('page_type') : self::DEFAULT_TYPE;
-    }
-
-    /**
-     * Overridden method that only outputs any markup if the extension is enabled and an account
-     * exists for the current store view.
-     *
-     * @return string the markup or an empty string (if an account doesn't exist)
-     */
-    protected function _toHtml()
-    {
-        if ($this->nostoHelperAccount->nostoInstalledAndEnabled($this->_storeManager->getStore())) {
-            return parent::_toHtml();
-        } else {
-            return '';
-        }
     }
 }

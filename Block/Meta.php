@@ -48,8 +48,9 @@ use Nosto\Tagging\Helper\Data as NostoHelperData;
  */
 class Meta extends Template
 {
+    use TaggingTrait;
+
     private $nostoHelperData;
-    private $nostoHelperAccount;
 
     /**
      * Constructor.
@@ -101,20 +102,5 @@ class Meta extends Template
         /** @var Store $store */
         $store = $this->_storeManager->getStore(true);
         return substr($store->getConfig('general/locale/code'), 0, 2);
-    }
-
-    /**
-     * Overridden method that only outputs any markup if the extension is enabled and an account
-     * exists for the current store view.
-     *
-     * @return string the markup or an empty string (if an account doesn't exist)
-     */
-    protected function _toHtml()
-    {
-        if ($this->nostoHelperAccount->nostoInstalledAndEnabled($this->_storeManager->getStore())) {
-            return parent::_toHtml();
-        } else {
-            return '';
-        }
     }
 }
