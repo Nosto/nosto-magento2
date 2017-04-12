@@ -89,7 +89,9 @@ class CustomerTagging implements SectionSourceInterface
     }
 
     /**
-     * Return the checksum for string
+     * Return the checksum for for the customer tagging i.e hashed cookie identifier or HCID for
+     * short. This is used to sign the tagging so that if it is in fact cached, the cookie and
+     * tagging signature won't match and we'll be able to show a warning.
      *
      * @param string $string
      * @return string
@@ -98,7 +100,6 @@ class CustomerTagging implements SectionSourceInterface
     {
         return hash(self::VISITOR_HASH_ALGO, $string);
     }
-
 
     /**
      * Return the checksum / customer reference for customer

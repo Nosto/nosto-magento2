@@ -57,6 +57,10 @@ class CartTagging implements SectionSourceInterface
     private $quote = null;
     private $logger;
     private $date;
+    /**
+     * @var string the algorithm to use for hashing visitor id.
+     */
+    const VISITOR_HASH_ALGO = 'sha256';
 
     /** @noinspection PhpUndefinedClassInspection */
     /**
@@ -92,7 +96,9 @@ class CartTagging implements SectionSourceInterface
      */
     public function getSectionData()
     {
+        $nostoCustomerId = $this->cookieManager->getCookie(NostoCustomer::COOKIE_NAME);
         $data = [
+            'hcid' => $this->generateVisitorChecksum($nostoCustomerId),
             "items" => [],
             "itemCount" => 0,
         ];
@@ -178,6 +184,19 @@ class CartTagging implements SectionSourceInterface
                 $this->logger->error($e->__toString());
             }
         }
+    }
+
+    /**
+     * Return the checksum for for the customer tagging i.e hashed cookie identifier or HCID for
+     * short. This is used to sign the tagging so that if it is in fact cached, the cookie and
+     * tagging signature won't match and we'll be able to show a warning.
+     *
+     * @param string $string
+     * @return string
+     */
+    public static function generateVisitorChecksum($string)
+    {
+        return hash(self::VISITOR_HASH_ALGO, $string);
     }
 
     /**
