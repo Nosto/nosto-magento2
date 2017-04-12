@@ -48,6 +48,7 @@ define([
             this.cartTagging = customerData.get('cart-tagging');
         },
         sendTagging: function (elements, data) {
+            //noinspection JSUnresolvedVariable
             if (
                 typeof data !== "undefined"
                 && data.total_count > 0

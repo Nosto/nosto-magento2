@@ -40,7 +40,7 @@ use Magento\Backend\Model\Auth\Session;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\Locale\ResolverInterface;
 use Magento\Store\Api\Data\StoreInterface;
-use Nosto\Exception\NostoException;
+use Nosto\NostoException;
 use Nosto\Object\Iframe;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Url as NostoHelperUrl;

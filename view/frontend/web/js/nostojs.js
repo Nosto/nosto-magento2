@@ -35,9 +35,9 @@
 
 define([], function () {
     //noinspection AmdModulesDependencies
-    if (typeof nostojs == 'function') {
+    if (typeof nostojs === 'function') {
         return nostojs;
-    } else if (typeof window['nostojs'] == 'function') {
+    } else if (typeof window['nostojs'] === 'function') {
         return window['nostojs'];
     }
 });
