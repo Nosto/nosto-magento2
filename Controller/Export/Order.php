@@ -40,7 +40,7 @@ use Magento\Framework\App\Action\Context;
 use Magento\Sales\Model\ResourceModel\Order\CollectionFactory as OrderCollectionFactory;
 use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\StoreManagerInterface;
-use Nosto\Exception\NostoException;
+use Nosto\NostoException;
 use Nosto\Object\Order\OrderCollection;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Model\Order\Builder as NostoOrderBuilder;

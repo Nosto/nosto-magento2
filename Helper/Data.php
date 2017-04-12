@@ -43,6 +43,7 @@ use Magento\Framework\App\ProductMetadataInterface;
 use Magento\Framework\AppInterface;
 use Magento\Framework\Module\ModuleListInterface;
 use Magento\Store\Api\Data\StoreInterface;
+use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
 use phpseclib\Crypt\Random;
 
@@ -144,7 +145,7 @@ class Data extends AbstractHelper
 
     /**
      * @param string $path
-     * @param StoreInterface $store
+     * @param StoreInterface|Store $store
      * @return mixed|null
      */
     public function getStoreConfig($path, StoreInterface $store = null)

@@ -44,9 +44,6 @@ use Nosto\Tagging\Helper\Account as NostoHelperAccount;
  */
 class Knockout extends Template
 {
-    /**
-     * @var NostoHelperAccount
-     */
     private $nostoHelperAccount;
 
     /**
