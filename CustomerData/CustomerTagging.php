@@ -42,14 +42,10 @@ use Magento\Customer\Helper\Session\CurrentCustomer;
 use Magento\Framework\Stdlib\CookieManagerInterface;
 use Nosto\Tagging\Model\Customer as NostoCustomer;
 
-class CustomerTagging implements SectionSourceInterface
+class CustomerTagging extends HashedTagging implements SectionSourceInterface
 {
     private $currentCustomer;
     private $cookieManager;
-    /**
-     * @var string the algorithm to use for hashing visitor id.
-     */
-    const VISITOR_HASH_ALGO = 'sha256';
 
     /**
      * Constructor
@@ -86,19 +82,6 @@ class CustomerTagging implements SectionSourceInterface
         }
 
         return $data;
-    }
-
-    /**
-     * Return the checksum for for the customer tagging i.e hashed cookie identifier or HCID for
-     * short. This is used to sign the tagging so that if it is in fact cached, the cookie and
-     * tagging signature won't match and we'll be able to show a warning.
-     *
-     * @param string $string
-     * @return string
-     */
-    public static function generateVisitorChecksum($string)
-    {
-        return hash(self::VISITOR_HASH_ALGO, $string);
     }
 
     /**
