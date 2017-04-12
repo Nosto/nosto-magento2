@@ -38,7 +38,7 @@ namespace Nosto\Tagging\Model\User;
 
 use Magento\Backend\Model\Auth\Session;
 use Magento\Framework\Event\ManagerInterface;
-use Nosto\Exception\NostoException;
+use Nosto\NostoException;
 use Nosto\Object\User;
 use Psr\Log\LoggerInterface;
 

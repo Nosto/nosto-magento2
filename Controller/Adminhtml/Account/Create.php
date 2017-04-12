@@ -39,7 +39,7 @@ namespace Nosto\Tagging\Controller\Adminhtml\Account;
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\Controller\Result\Json;
 use Magento\Store\Model\StoreManagerInterface;
-use Nosto\Exception\NostoException;
+use Nosto\NostoException;
 use Nosto\Helper\IframeHelper;
 use Nosto\Nosto;
 use Nosto\Operation\AccountSignup;

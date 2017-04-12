@@ -36,7 +36,12 @@
 
 namespace Nosto\Tagging\Block;
 
+use Magento\Catalog\Model\Layer\Resolver as LayerResolver;
 use Magento\CatalogSearch\Block\Result;
+use Magento\CatalogSearch\Helper\Data;
+use Magento\Framework\View\Element\Template\Context;
+use Magento\Search\Model\QueryFactory;
+use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 
 /**
  * Search block used for outputting meta-data on the stores search pages.
@@ -45,6 +50,31 @@ use Magento\CatalogSearch\Block\Result;
  */
 class Search extends Result
 {
+    use TaggingTrait;
+
+    /**
+     * Constructor.
+     *
+     * @param Context $context the context.
+     * @param LayerResolver $layerResolver
+     * @param Data $catalogSearchData
+     * @param QueryFactory $queryFactory
+     * @param NostoHelperAccount $nostoHelperAccount the account helper.
+     * @param array $data optional data.
+     */
+    public function __construct(
+        Context $context,
+        LayerResolver $layerResolver,
+        Data $catalogSearchData,
+        QueryFactory $queryFactory,
+        NostoHelperAccount $nostoHelperAccount,
+        array $data = []
+    ) {
+        parent::__construct($context, $layerResolver, $this->catalogSearchData, $queryFactory);
+
+        $this->nostoHelperAccount = $nostoHelperAccount;
+    }
+
     /**
      * Returns the current escaped search term
      *
