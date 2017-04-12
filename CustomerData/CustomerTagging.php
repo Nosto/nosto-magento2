@@ -93,6 +93,6 @@ class CustomerTagging extends HashedTagging implements SectionSourceInterface
     public function generateCustomerReference(CustomerInterface $customer)
     {
         /** @noinspection PhpUndefinedMethodInspection */
-        return uniqid(substr(md5($customer->getId() . $customer->getEmail()), 0, 8), true);
+        return md5($customer->getId() . $customer->getEmail());
     }
 }
