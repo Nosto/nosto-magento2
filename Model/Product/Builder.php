@@ -163,7 +163,12 @@ class Builder
         }
 
         /** @noinspection PhpUndefinedMethodInspection */
-        return round($product->getRatingSummary()->getRatingSummary() / 20, 1);
+        if ($product->getRatingSummary()->getReviewsCount() > 0) {
+            /** @noinspection PhpUndefinedMethodInspection */
+            return round($product->getRatingSummary()->getRatingSummary() / 20, 1);
+        }  else {
+            return null;
+        }
     }
 
     /**
@@ -182,7 +187,12 @@ class Builder
         }
 
         /** @noinspection PhpUndefinedMethodInspection */
-        return $product->getRatingSummary()->getReviewsCount();
+        if ($product->getRatingSummary()->getReviewsCount() > 0) {
+            /** @noinspection PhpUndefinedMethodInspection */
+            return $product->getRatingSummary()->getReviewsCount();
+        }  else {
+            return null;
+        }
     }
 
     /**
