@@ -36,13 +36,13 @@
 
 namespace Nosto\Tagging\CustomerData;
 
+use Magento\Customer\Api\Data\CustomerInterface;
 use Magento\Customer\CustomerData\SectionSourceInterface;
 use Magento\Customer\Helper\Session\CurrentCustomer;
 use Magento\Framework\Stdlib\CookieManagerInterface;
-use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Model\Customer as NostoCustomer;
 
-class CustomerTagging implements SectionSourceInterface
+class CustomerTagging extends HashedTagging implements SectionSourceInterface
 {
     private $currentCustomer;
     private $cookieManager;
@@ -76,10 +76,23 @@ class CustomerTagging implements SectionSourceInterface
                 'first_name' => $customer->getFirstname(),
                 'last_name' => $customer->getLastname(),
                 'email' => $customer->getEmail(),
-                'hcid' => NostoHelperData::generateVisitorChecksum($nostoCustomerId),
+                'hcid' => $this->generateVisitorChecksum($nostoCustomerId),
+                'customer_reference' => $this->generateCustomerReference($customer)
             ];
         }
 
         return $data;
+    }
+
+    /**
+     * Return the checksum / customer reference for customer
+     *
+     * @param CustomerInterface $customer
+     * @return string
+     */
+    public function generateCustomerReference(CustomerInterface $customer)
+    {
+        /** @noinspection PhpUndefinedMethodInspection */
+        return md5($customer->getId() . $customer->getEmail());
     }
 }

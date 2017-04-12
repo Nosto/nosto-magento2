@@ -48,7 +48,7 @@ use Nosto\Tagging\Model\Customer;
 use Nosto\Tagging\Model\CustomerFactory as NostoCustomerFactory;
 use Psr\Log\LoggerInterface;
 
-class CartTagging implements SectionSourceInterface
+class CartTagging extends HashedTagging implements SectionSourceInterface
 {
     private $cartHelper;
     private $nostoCartBuilder;
@@ -93,7 +93,9 @@ class CartTagging implements SectionSourceInterface
      */
     public function getSectionData()
     {
+        $nostoCustomerId = $this->cookieManager->getCookie(NostoCustomer::COOKIE_NAME);
         $data = [
+            'hcid' => parent::generateVisitorChecksum($nostoCustomerId),
             "items" => [],
             "itemCount" => 0,
         ];
