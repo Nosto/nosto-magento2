@@ -42,6 +42,7 @@ use Magento\Framework\View\Element\Template;
 use Magento\Sales\Model\OrderFactory;
 use Nosto\Helper\DateHelper;
 use Nosto\Helper\PriceHelper;
+use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Model\Order\Builder as NostoOrderBuilder;
 
 /**
@@ -51,14 +52,9 @@ use Nosto\Tagging\Model\Order\Builder as NostoOrderBuilder;
  */
 class Order extends Success
 {
-    /**
-     * @var NostoOrderBuilder the order meta model builder.
-     */
-    private $nostoOrderBuilder;
+    use TaggingTrait;
 
-    /**
-     * @var Session
-     */
+    private $nostoOrderBuilder;
     private $checkoutSession;
 
     /** @noinspection PhpUndefinedClassInspection */
@@ -69,6 +65,7 @@ class Order extends Success
      * @param OrderFactory $orderFactory
      * @param NostoOrderBuilder $orderBuilder
      * @param Session $checkoutSession
+     * @param NostoHelperAccount $nostoHelperAccount
      * @param array $data
      * @internal param Registry $registry
      * @internal param CategoryBuilder $categoryBuilder
@@ -79,6 +76,7 @@ class Order extends Success
         OrderFactory $orderFactory,
         NostoOrderBuilder $orderBuilder,
         Session $checkoutSession,
+        NostoHelperAccount $nostoHelperAccount,
         array $data = []
     ) {
         parent::__construct(
@@ -89,6 +87,7 @@ class Order extends Success
 
         $this->checkoutSession = $checkoutSession;
         $this->nostoOrderBuilder = $orderBuilder;
+        $this->nostoHelperAccount = $nostoHelperAccount;
     }
 
     /**
