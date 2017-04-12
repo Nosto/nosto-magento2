@@ -145,7 +145,7 @@ class Data extends AbstractHelper
 
     /**
      * @param string $path
-     * @param StoreInterface $store
+     * @param StoreInterface|Store $store
      * @return mixed|null
      */
     public function getStoreConfig($path, StoreInterface $store = null)
