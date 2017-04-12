@@ -43,7 +43,7 @@ use Magento\Framework\App\Helper\Context;
 use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\Store;
-use Nosto\Exception\NostoException;
+use Nosto\NostoException;
 use Nosto\Object\User;
 use Nosto\Operation\UninstallAccount;
 use Nosto\Request\Api\Token;

@@ -45,7 +45,7 @@ use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
 use Nosto\Helper\ExportHelper;
-use Nosto\Object\Collection\AbstractCollection;
+use Nosto\Object\AbstractCollection;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 
 /**
