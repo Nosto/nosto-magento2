@@ -43,7 +43,7 @@ use Magento\Framework\Module\Manager as ModuleManager;
 use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
-use Nosto\Exception\NostoException;
+use Nosto\NostoException;
 use Nosto\Object\Signup\Account;
 use Nosto\Operation\UpsertProduct;
 use Nosto\Request\Http\HttpRequest;
