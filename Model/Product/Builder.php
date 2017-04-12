@@ -38,7 +38,6 @@ namespace Nosto\Tagging\Model\Product;
 
 use Magento\Catalog\Api\CategoryRepositoryInterface;
 use Magento\Catalog\Model\Product;
-use Magento\Catalog\Model\Product\Gallery\ReadHandler as GalleryReadHandler;
 use Magento\Eav\Model\Entity\Attribute;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Store\Api\Data\StoreInterface;
@@ -55,7 +54,6 @@ class Builder
     private $nostoPriceHelper;
     private $nostoCategoryBuilder;
     private $categoryRepository;
-    private $galleryReadHandler;
     private $eventManager;
     private $logger;
 
@@ -66,7 +64,6 @@ class Builder
      * @param CategoryRepositoryInterface $categoryRepository
      * @param LoggerInterface $logger
      * @param ManagerInterface $eventManager
-     * @param GalleryReadHandler $galleryReadHandler
      */
     public function __construct(
         NostoHelperData $nostoHelperData,
@@ -74,8 +71,7 @@ class Builder
         NostoCategoryBuilder $categoryBuilder,
         CategoryRepositoryInterface $categoryRepository,
         LoggerInterface $logger,
-        ManagerInterface $eventManager,
-        GalleryReadHandler $galleryReadHandler
+        ManagerInterface $eventManager
     ) {
         $this->nostoDataHelper = $nostoHelperData;
         $this->nostoPriceHelper = $priceHelper;
@@ -83,7 +79,6 @@ class Builder
         $this->categoryRepository = $categoryRepository;
         $this->logger = $logger;
         $this->eventManager = $eventManager;
-        $this->galleryReadHandler = $galleryReadHandler;
     }
 
     /**
@@ -108,7 +103,6 @@ class Builder
             $nostoProduct->setPriceCurrencyCode($store->getBaseCurrencyCode());
             $nostoProduct->setAvailable($product->isAvailable());
             $nostoProduct->setCategories($this->nostoCategoryBuilder->buildCategories($product));
-            $nostoProduct->setAlternateImageUrls($this->buildAlternativeImages($product));
 
             // Optional properties.
 
@@ -177,25 +171,6 @@ class Builder
         }
 
         return $product->getMediaConfig()->getMediaUrl($image);
-    }
-
-    /**
-     * Adds the alternative image urls
-     *
-     * @param Product $product the product model.
-     * @return array
-     */
-    protected function buildAlternativeImages(Product $product)
-    {
-        $images = [];
-        $this->galleryReadHandler->execute($product);
-        foreach ($product->getMediaGalleryImages() as $image) {
-            if (isset($image['url']) && (isset($image['disabled']) && $image['disabled'] !== '1')) {
-                $images[] = $image['url'];
-            }
-        }
-
-        return $images;
     }
 
     /**
