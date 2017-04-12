@@ -44,6 +44,7 @@ use Magento\Store\Api\Data\StoreInterface;
 use Nosto\Exception\NostoException;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Price as NostoPriceHelper;
+use Nosto\Tagging\Helper\Stock as NostoStockHelper;
 use Nosto\Tagging\Model\Category\Builder as NostoCategoryBuilder;
 use Nosto\Types\Product\ProductInterface;
 use Psr\Log\LoggerInterface;
@@ -53,6 +54,7 @@ class Builder
     private $nostoDataHelper;
     private $nostoPriceHelper;
     private $nostoCategoryBuilder;
+    private $nostoStockHelper;
     private $categoryRepository;
     private $eventManager;
     private $logger;
@@ -61,6 +63,7 @@ class Builder
      * @param NostoHelperData $nostoHelperData
      * @param NostoPriceHelper $priceHelper
      * @param NostoCategoryBuilder $categoryBuilder
+     * @param NostoStockHelper $stockHelper
      * @param CategoryRepositoryInterface $categoryRepository
      * @param LoggerInterface $logger
      * @param ManagerInterface $eventManager
@@ -69,6 +72,7 @@ class Builder
         NostoHelperData $nostoHelperData,
         NostoPriceHelper $priceHelper,
         NostoCategoryBuilder $categoryBuilder,
+        NostoStockHelper $stockHelper,
         CategoryRepositoryInterface $categoryRepository,
         LoggerInterface $logger,
         ManagerInterface $eventManager
@@ -79,6 +83,7 @@ class Builder
         $this->categoryRepository = $categoryRepository;
         $this->logger = $logger;
         $this->eventManager = $eventManager;
+        $this->nostoStockHelper = $stockHelper;
     }
 
     /**
@@ -103,6 +108,7 @@ class Builder
             $nostoProduct->setPriceCurrencyCode($store->getBaseCurrencyCode());
             $nostoProduct->setAvailable($product->isAvailable());
             $nostoProduct->setCategories($this->nostoCategoryBuilder->buildCategories($product));
+            $nostoProduct->setInventoryLevel($this->nostoStockHelper->getQty($product));
 
             // Optional properties.
 
