@@ -46,6 +46,7 @@ use Magento\Store\Api\Data\StoreInterface;
 use Nosto\NostoException;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Price as NostoPriceHelper;
+use Nosto\Tagging\Helper\Stock as NostoStockHelper;
 use Nosto\Tagging\Model\Category\Builder as NostoCategoryBuilder;
 use Nosto\Types\Product\ProductInterface;
 use Psr\Log\LoggerInterface;
@@ -55,6 +56,7 @@ class Builder
     private $nostoDataHelper;
     private $nostoPriceHelper;
     private $nostoCategoryBuilder;
+    private $nostoStockHelper;
     private $categoryRepository;
     private $galleryReadHandler;
     private $eventManager;
@@ -65,6 +67,7 @@ class Builder
      * @param NostoHelperData $nostoHelperData
      * @param NostoPriceHelper $priceHelper
      * @param NostoCategoryBuilder $categoryBuilder
+     * @param NostoStockHelper $stockHelper
      * @param CategoryRepositoryInterface $categoryRepository
      * @param LoggerInterface $logger
      * @param ManagerInterface $eventManager
@@ -75,6 +78,7 @@ class Builder
         NostoHelperData $nostoHelperData,
         NostoPriceHelper $priceHelper,
         NostoCategoryBuilder $categoryBuilder,
+        NostoStockHelper $stockHelper,
         CategoryRepositoryInterface $categoryRepository,
         LoggerInterface $logger,
         ManagerInterface $eventManager,
@@ -87,6 +91,7 @@ class Builder
         $this->categoryRepository = $categoryRepository;
         $this->logger = $logger;
         $this->eventManager = $eventManager;
+        $this->nostoStockHelper = $stockHelper;
         $this->reviewFactory = $reviewFactory;
         $this->galleryReadHandler = $galleryReadHandler;
     }
@@ -113,12 +118,12 @@ class Builder
             $nostoProduct->setPriceCurrencyCode($store->getBaseCurrencyCode());
             $nostoProduct->setAvailable($product->isAvailable());
             $nostoProduct->setCategories($this->nostoCategoryBuilder->buildCategories($product));
+            $nostoProduct->setInventoryLevel($this->nostoStockHelper->getQty($product));
             $nostoProduct->setRatingValue($this->buildRatingValue($product, $store));
             $nostoProduct->setReviewCount($this->buildReviewCount($product, $store));
             $nostoProduct->setAlternateImageUrls($this->buildAlternativeImages($product));
 
             // Optional properties.
-
             $descriptions = [];
             if ($product->hasData('short_description')) {
                 $descriptions[] = $product->getData('short_description');
