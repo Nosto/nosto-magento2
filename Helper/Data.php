@@ -60,7 +60,22 @@ class Data extends AbstractHelper
     /**
      * Path to store config product image version setting.
      */
-    const XML_PATH_IMAGE_VERSION = 'nosto_tagging/image_options/image_version';
+    const XML_PATH_IMAGE_VERSION = 'nosto/images/version';
+
+    /**
+     * Path to the configuration object that store's the brand attribute
+     */
+    const XML_PATH_BRAND_ATTRIBUTE = 'nosto/optional/brand';
+
+    /**
+     * Path to the configuration object that store's the margin attribute
+     */
+    const XML_PATH_MARGIN_ATTRIBUTE = 'nosto/optional/margin';
+
+    /**
+     * Path to the configuration object that store's the GTIN attribute
+     */
+    const XML_PATH_GTIN_ATTRIBUTE = 'nosto/optional/gtin';
 
     const MODULE_NAME = 'Nosto_Tagging';
     private $storeManager;
@@ -116,15 +131,47 @@ class Data extends AbstractHelper
     }
 
     /**
-     * Return the product image version to include in product tagging.
+     * Returns the value of the selected image version option from the configuration table
      *
      * @param StoreInterface $store the store model or null.
-     *
-     * @return string
+     * @return string the configuration value
      */
     public function getProductImageVersion(StoreInterface $store = null)
     {
         return $this->getStoreConfig(self::XML_PATH_IMAGE_VERSION, $store);
+    }
+
+    /**
+     * Returns the value of the selected brand attribute from the configuration table
+     *
+     * @param StoreInterface $store the store model or null.
+     * @return string the configuration value
+     */
+    public function getBrandAttribute(StoreInterface $store = null)
+    {
+        return $this->getStoreConfig(self::XML_PATH_BRAND_ATTRIBUTE, $store);
+    }
+
+    /**
+     * Returns the value of the selected margin attribute from the configuration table
+     *
+     * @param StoreInterface $store the store model or null.
+     * @return string the configuration value
+     */
+    public function getMarginAttribute(StoreInterface $store = null)
+    {
+        return $this->getStoreConfig(self::XML_PATH_MARGIN_ATTRIBUTE, $store);
+    }
+
+    /**
+     * Returns the value of the selected GTIN attribute from the configuration table
+     *
+     * @param StoreInterface $store the store model or null.
+     * @return string the configuration value
+     */
+    public function getGtinAttribute(StoreInterface $store = null)
+    {
+        return $this->getStoreConfig(self::XML_PATH_GTIN_ATTRIBUTE, $store);
     }
 
     /**

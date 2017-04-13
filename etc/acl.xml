@@ -46,6 +46,15 @@
                                   sortOrder="10"/>
                     </resource>
                 </resource>
+                <resource id="Magento_Backend::stores">
+                    <resource id="Magento_Backend::stores_settings">
+                        <resource id="Magento_Config::config">
+                            <resource id="Nosto_Tagging::config_nosto"
+                                      title="Nosto Configuration Section" translate="title"
+                                      sortOrder="1100"/>
+                        </resource>
+                    </resource>
+                </resource>
             </resource>
         </resources>
     </acl>
