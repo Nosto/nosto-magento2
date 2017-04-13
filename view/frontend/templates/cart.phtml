@@ -45,6 +45,7 @@
 <div class="nosto_cart_hidden" style="display:none" data-bind="scope: 'cartTagging'"
      data-role="nosto-cart-tagging"
      id="nosto_cart_tagging">
+    <span class="hcid" data-bind="text: cartTagging().hcid"></span>
     <!-- ko if: cartTagging().itemCount > 0 -->
     <!-- ko foreach: {data: cartTagging().items, afterRender: sendTagging } -->
     <div class="line_item">

@@ -43,6 +43,7 @@ use Magento\Framework\App\ProductMetadataInterface;
 use Magento\Framework\AppInterface;
 use Magento\Framework\Module\ModuleListInterface;
 use Magento\Store\Api\Data\StoreInterface;
+use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
 use phpseclib\Crypt\Random;
 
@@ -59,12 +60,23 @@ class Data extends AbstractHelper
     /**
      * Path to store config product image version setting.
      */
-    const XML_PATH_IMAGE_VERSION = 'nosto_tagging/image_options/image_version';
+    const XML_PATH_IMAGE_VERSION = 'nosto/images/version';
 
     /**
-     * @var string the algorithm to use for hashing visitor id.
+     * Path to the configuration object that store's the brand attribute
      */
-    const VISITOR_HASH_ALGO = 'sha256';
+    const XML_PATH_BRAND_ATTRIBUTE = 'nosto/optional/brand';
+
+    /**
+     * Path to the configuration object that store's the margin attribute
+     */
+    const XML_PATH_MARGIN_ATTRIBUTE = 'nosto/optional/margin';
+
+    /**
+     * Path to the configuration object that store's the GTIN attribute
+     */
+    const XML_PATH_GTIN_ATTRIBUTE = 'nosto/optional/gtin';
+
     const MODULE_NAME = 'Nosto_Tagging';
     private $storeManager;
     private $moduleListing;
@@ -96,18 +108,6 @@ class Data extends AbstractHelper
     }
 
     /**
-     * Return the checksum for string
-     *
-     * @param string $string
-     *
-     * @return string
-     */
-    public static function generateVisitorChecksum($string)
-    {
-        return hash(self::VISITOR_HASH_ALGO, $string);
-    }
-
-    /**
      * Returns a unique ID that identifies this Magento installation.
      * This ID is sent to the Nosto account config iframe and used to link all
      * Nosto accounts used on this installation.
@@ -131,11 +131,10 @@ class Data extends AbstractHelper
     }
 
     /**
-     * Return the product image version to include in product tagging.
+     * Returns the value of the selected image version option from the configuration table
      *
      * @param StoreInterface $store the store model or null.
-     *
-     * @return string
+     * @return string the configuration value
      */
     public function getProductImageVersion(StoreInterface $store = null)
     {
@@ -143,8 +142,41 @@ class Data extends AbstractHelper
     }
 
     /**
+     * Returns the value of the selected brand attribute from the configuration table
+     *
+     * @param StoreInterface $store the store model or null.
+     * @return string the configuration value
+     */
+    public function getBrandAttribute(StoreInterface $store = null)
+    {
+        return $this->getStoreConfig(self::XML_PATH_BRAND_ATTRIBUTE, $store);
+    }
+
+    /**
+     * Returns the value of the selected margin attribute from the configuration table
+     *
+     * @param StoreInterface $store the store model or null.
+     * @return string the configuration value
+     */
+    public function getMarginAttribute(StoreInterface $store = null)
+    {
+        return $this->getStoreConfig(self::XML_PATH_MARGIN_ATTRIBUTE, $store);
+    }
+
+    /**
+     * Returns the value of the selected GTIN attribute from the configuration table
+     *
+     * @param StoreInterface $store the store model or null.
+     * @return string the configuration value
+     */
+    public function getGtinAttribute(StoreInterface $store = null)
+    {
+        return $this->getStoreConfig(self::XML_PATH_GTIN_ATTRIBUTE, $store);
+    }
+
+    /**
      * @param string $path
-     * @param StoreInterface $store
+     * @param StoreInterface|Store $store
      * @return mixed|null
      */
     public function getStoreConfig($path, StoreInterface $store = null)

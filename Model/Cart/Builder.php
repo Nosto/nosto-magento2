@@ -41,7 +41,7 @@ use Magento\Framework\ObjectManagerInterface;
 use Magento\Quote\Model\Quote;
 use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\Store;
-use Nosto\Exception\NostoException;
+use Nosto\NostoException;
 use Nosto\Object\Cart\Cart;
 use Nosto\Tagging\Model\Cart\Item\Builder as NostoCartItemBuilder;
 use Psr\Log\LoggerInterface;

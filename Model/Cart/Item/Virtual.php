@@ -34,47 +34,14 @@
  *
  */
 
-namespace Nosto\Tagging\Block;
+namespace Nosto\Tagging\Model\Cart\Item;
 
-use Magento\Framework\View\Element\Template;
-use Magento\Framework\View\Element\Template\Context;
-use Nosto\Tagging\Helper\Account as NostoHelperAccount;
+use Magento\Catalog\Model\Product\Type;
 
-/**
- * Element block used for outputting a recommendation placeholders on the stores pages.
- * This placeholder is then populated with recommendations from Nosto on the
- * client side.
- */
-class Element extends Template
+class Virtual extends Simple
 {
-    use TaggingTrait;
-
-    /**
-     * Constructor.
-     *
-     * @param Context $context the context.
-     * @param NostoHelperAccount $nostoHelperAccount the account helper.
-     * @param array $data optional data.
-     */
-    public function __construct(
-        Context $context,
-        NostoHelperAccount $nostoHelperAccount,
-        array $data = []
-    ) {
-        parent::__construct($context, $data);
-
-        $this->nostoHelperAccount = $nostoHelperAccount;
-    }
-
-    /**
-     * Returns the Nosto recommendation placeholder ID.
-     *
-     * This ID needs to match an existing recommendation element in Nosto.
-     *
-     * @return string the ID.
-     */
-    public function getElementId()
+    public static function getType()
     {
-        return $this->getData('nostoId');
+        return Type::TYPE_VIRTUAL;
     }
 }

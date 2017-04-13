@@ -38,10 +38,12 @@ namespace Nosto\Tagging\Model\Product;
 
 use Magento\Catalog\Api\CategoryRepositoryInterface;
 use Magento\Catalog\Model\Product;
+use Magento\Catalog\Model\Product\Gallery\ReadHandler as GalleryReadHandler;
 use Magento\Eav\Model\Entity\Attribute;
 use Magento\Framework\Event\ManagerInterface;
+use Magento\Review\Model\ReviewFactory;
 use Magento\Store\Api\Data\StoreInterface;
-use Nosto\Exception\NostoException;
+use Nosto\NostoException;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Price as NostoPriceHelper;
 use Nosto\Tagging\Helper\Stock as NostoStockHelper;
@@ -56,8 +58,10 @@ class Builder
     private $nostoCategoryBuilder;
     private $nostoStockHelper;
     private $categoryRepository;
+    private $galleryReadHandler;
     private $eventManager;
     private $logger;
+    private $reviewFactory;
 
     /**
      * @param NostoHelperData $nostoHelperData
@@ -67,6 +71,8 @@ class Builder
      * @param CategoryRepositoryInterface $categoryRepository
      * @param LoggerInterface $logger
      * @param ManagerInterface $eventManager
+     * @param ReviewFactory $reviewFactory
+     * @param GalleryReadHandler $galleryReadHandler
      */
     public function __construct(
         NostoHelperData $nostoHelperData,
@@ -75,7 +81,9 @@ class Builder
         NostoStockHelper $stockHelper,
         CategoryRepositoryInterface $categoryRepository,
         LoggerInterface $logger,
-        ManagerInterface $eventManager
+        ManagerInterface $eventManager,
+        ReviewFactory $reviewFactory,
+        GalleryReadHandler $galleryReadHandler
     ) {
         $this->nostoDataHelper = $nostoHelperData;
         $this->nostoPriceHelper = $priceHelper;
@@ -84,6 +92,8 @@ class Builder
         $this->logger = $logger;
         $this->eventManager = $eventManager;
         $this->nostoStockHelper = $stockHelper;
+        $this->reviewFactory = $reviewFactory;
+        $this->galleryReadHandler = $galleryReadHandler;
     }
 
     /**
@@ -109,9 +119,11 @@ class Builder
             $nostoProduct->setAvailable($product->isAvailable());
             $nostoProduct->setCategories($this->nostoCategoryBuilder->buildCategories($product));
             $nostoProduct->setInventoryLevel($this->nostoStockHelper->getQty($product));
+            $nostoProduct->setRatingValue($this->buildRatingValue($product, $store));
+            $nostoProduct->setReviewCount($this->buildReviewCount($product, $store));
+            $nostoProduct->setAlternateImageUrls($this->buildAlternativeImages($product));
 
             // Optional properties.
-
             $descriptions = [];
             if ($product->hasData('short_description')) {
                 $descriptions[] = $product->getData('short_description');
@@ -123,11 +135,21 @@ class Builder
                 $nostoProduct->setDescription(implode(' ', $descriptions));
             }
 
-            if ($product->hasData('manufacturer')) {
-                $nostoProduct->setBrand(
-                    $product->getAttributeText('manufacturer')
-                );
+            $brandAttribute = $this->nostoDataHelper->getBrandAttribute($store);
+            if ($product->hasData($brandAttribute)) {
+                $nostoProduct->setBrand($product->getData($brandAttribute));
             }
+
+            $marginAttribute = $this->nostoDataHelper->getMarginAttribute($store);
+            if ($product->hasData($marginAttribute)) {
+                $nostoProduct->setSupplierCost($product->getData($marginAttribute));
+            }
+
+            $gtinAttribute = $this->nostoDataHelper->getGtinAttribute($store);
+            if ($product->hasData($gtinAttribute)) {
+                $nostoProduct->setGtin($product->getData($gtinAttribute));
+            }
+
             if (($tags = $this->buildTags($product)) !== []) {
                 $nostoProduct->setTag1($tags);
             }
@@ -138,6 +160,54 @@ class Builder
         $this->eventManager->dispatch('nosto_product_load_after', ['product' => $nostoProduct]);
 
         return $nostoProduct;
+    }
+
+    /**
+     * Helper method to fetch and return the normalised rating value for a product. The rating is
+     * normalised to a 0-5 value.
+     *
+     * @param Product $product the product whose rating value to fetch
+     * @param StoreInterface $store the store scope in which to fetch the rating
+     * @return float the normalized rating value of the product
+     */
+    private function buildRatingValue(Product $product, StoreInterface $store)
+    {
+        /** @noinspection PhpUndefinedMethodInspection */
+        if (!$product->getRatingSummary()) {
+            $this->reviewFactory->create()->getEntitySummary($product, $store->getId());
+        }
+
+        /** @noinspection PhpUndefinedMethodInspection */
+        if ($product->getRatingSummary()->getReviewsCount() > 0) {
+            /** @noinspection PhpUndefinedMethodInspection */
+            return round($product->getRatingSummary()->getRatingSummary() / 20, 1);
+        }  else {
+            return null;
+        }
+    }
+
+    /**
+     * Helper method to fetch and return the total review count for a product. The review counts are
+     * returned as is.
+     *
+     * @param Product $product the product whose rating value to fetch
+     * @param StoreInterface $store the store scope in which to fetch the rating
+     * @return float the normalized rating value of the product
+     */
+    private function buildReviewCount(Product $product, StoreInterface $store)
+    {
+        /** @noinspection PhpUndefinedMethodInspection */
+        if (!$product->getRatingSummary()) {
+            $this->reviewFactory->create()->getEntitySummary($product, $store->getId());
+        }
+
+        /** @noinspection PhpUndefinedMethodInspection */
+        if ($product->getRatingSummary()->getReviewsCount() > 0) {
+            /** @noinspection PhpUndefinedMethodInspection */
+            return $product->getRatingSummary()->getReviewsCount();
+        }  else {
+            return null;
+        }
     }
 
     /**
@@ -177,6 +247,25 @@ class Builder
         }
 
         return $product->getMediaConfig()->getMediaUrl($image);
+    }
+
+    /**
+     * Adds the alternative image urls
+     *
+     * @param Product $product the product model.
+     * @return array
+     */
+    protected function buildAlternativeImages(Product $product)
+    {
+        $images = [];
+        $this->galleryReadHandler->execute($product);
+        foreach ($product->getMediaGalleryImages() as $image) {
+            if (isset($image['url']) && (isset($image['disabled']) && $image['disabled'] !== '1')) {
+                $images[] = $image['url'];
+            }
+        }
+
+        return $images;
     }
 
     /**
