@@ -86,14 +86,12 @@ class Factory
         if ($product->getTypeId() === ConfigurableType::TYPE_CODE) {
 
             $nostoSkus = [];
-            $associatedProducts = $this->configurableType->getUsedProducts($product);
-            $configurableAttributes = $this->configurableType->getConfigurableAttributes($product);
+            $attributes = $this->configurableType->getConfigurableAttributes($product);
 
-            /** @var Product $associatedProduct */
-            foreach ($associatedProducts as $associatedProduct) {
+            /** @var Product $product */
+            foreach ($this->configurableType->getUsedProducts($product) as $product) {
                 try {
-                    $nostoSkus[] = $this->nostoSkuBuilder->build($associatedProduct, $store,
-                        $configurableAttributes);
+                    $nostoSkus[] = $this->nostoSkuBuilder->build($product, $store, $attributes);
                 } catch (NostoException $e) {
                     $this->logger->error($e->__toString());
                 }
