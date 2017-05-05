@@ -46,7 +46,7 @@ use Nosto\Tagging\Helper\Price as NostoPriceHelper;
 use Nosto\Tagging\Model\Product\Sku\Builder as NostoSkuBuilder;
 use Psr\Log\LoggerInterface;
 
-class Factory
+class Collection
 {
     private $configurableType;
     private $logger;

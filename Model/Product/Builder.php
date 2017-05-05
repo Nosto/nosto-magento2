@@ -46,9 +46,9 @@ use Magento\Store\Api\Data\StoreInterface;
 use Nosto\NostoException;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Price as NostoPriceHelper;
-use Nosto\Tagging\Model\Product\Sku\Factory as NostoSkuFactory;
 use Nosto\Tagging\Helper\Stock as NostoStockHelper;
 use Nosto\Tagging\Model\Category\Builder as NostoCategoryBuilder;
+use Nosto\Tagging\Model\Product\Sku\Collection as NostoSkuCollection;
 use Nosto\Types\Product\ProductInterface;
 use Psr\Log\LoggerInterface;
 
@@ -63,14 +63,14 @@ class Builder
     private $eventManager;
     private $logger;
     private $reviewFactory;
-    private $nostoSkuFactory;
+    private $skuCollection;
 
     /**
      * @param NostoHelperData $nostoHelperData
      * @param NostoPriceHelper $priceHelper
      * @param NostoCategoryBuilder $categoryBuilder
      * @param NostoStockHelper $stockHelper
-     * @param NostoSkuFactory $skuFactory
+     * @param NostoSkuCollection $skuCollection
      * @param CategoryRepositoryInterface $categoryRepository
      * @param LoggerInterface $logger
      * @param ManagerInterface $eventManager
@@ -82,7 +82,7 @@ class Builder
         NostoPriceHelper $priceHelper,
         NostoCategoryBuilder $categoryBuilder,
         NostoStockHelper $stockHelper,
-        NostoSkuFactory $skuFactory,
+        NostoSkuCollection $skuCollection,
         CategoryRepositoryInterface $categoryRepository,
         LoggerInterface $logger,
         ManagerInterface $eventManager,
@@ -98,7 +98,7 @@ class Builder
         $this->nostoStockHelper = $stockHelper;
         $this->reviewFactory = $reviewFactory;
         $this->galleryReadHandler = $galleryReadHandler;
-        $this->nostoSkuFactory = $skuFactory;
+        $this->skuCollection = $skuCollection;
     }
 
     /**
@@ -127,7 +127,7 @@ class Builder
             $nostoProduct->setRatingValue($this->buildRatingValue($product, $store));
             $nostoProduct->setReviewCount($this->buildReviewCount($product, $store));
             $nostoProduct->setAlternateImageUrls($this->buildAlternativeImages($product));
-            $nostoProduct->setSkus($this->nostoSkuFactory->build($product, $store));
+            $nostoProduct->setSkus($this->skuCollection->build($product, $store));
 
             // Optional properties.
             $descriptions = [];
@@ -187,7 +187,7 @@ class Builder
         if ($product->getRatingSummary()->getReviewsCount() > 0) {
             /** @noinspection PhpUndefinedMethodInspection */
             return round($product->getRatingSummary()->getRatingSummary() / 20, 1);
-        }  else {
+        } else {
             return null;
         }
     }
@@ -211,7 +211,7 @@ class Builder
         if ($product->getRatingSummary()->getReviewsCount() > 0) {
             /** @noinspection PhpUndefinedMethodInspection */
             return $product->getRatingSummary()->getReviewsCount();
-        }  else {
+        } else {
             return null;
         }
     }
