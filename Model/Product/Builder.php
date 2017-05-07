@@ -48,6 +48,7 @@ use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Price as NostoPriceHelper;
 use Nosto\Tagging\Helper\Stock as NostoStockHelper;
 use Nosto\Tagging\Model\Category\Builder as NostoCategoryBuilder;
+use Nosto\Tagging\Model\Product\Url\Builder as NostoUrlBuilder;
 use Nosto\Types\Product\ProductInterface;
 use Psr\Log\LoggerInterface;
 
@@ -62,6 +63,7 @@ class Builder
     private $eventManager;
     private $logger;
     private $reviewFactory;
+    private $urlBuilder;
 
     /**
      * @param NostoHelperData $nostoHelperData
@@ -73,6 +75,7 @@ class Builder
      * @param ManagerInterface $eventManager
      * @param ReviewFactory $reviewFactory
      * @param GalleryReadHandler $galleryReadHandler
+     * @param NostoUrlBuilder $urlBuilder
      */
     public function __construct(
         NostoHelperData $nostoHelperData,
@@ -83,7 +86,8 @@ class Builder
         LoggerInterface $logger,
         ManagerInterface $eventManager,
         ReviewFactory $reviewFactory,
-        GalleryReadHandler $galleryReadHandler
+        GalleryReadHandler $galleryReadHandler,
+        NostoUrlBuilder $urlBuilder
     ) {
         $this->nostoDataHelper = $nostoHelperData;
         $this->nostoPriceHelper = $priceHelper;
@@ -94,6 +98,7 @@ class Builder
         $this->nostoStockHelper = $stockHelper;
         $this->reviewFactory = $reviewFactory;
         $this->galleryReadHandler = $galleryReadHandler;
+        $this->urlBuilder = $urlBuilder;
     }
 
     /**
@@ -106,7 +111,7 @@ class Builder
         $nostoProduct = new \Nosto\Object\Product\Product();
 
         try {
-            $nostoProduct->setUrl($this->buildUrl($product, $store));
+            $nostoProduct->setUrl($this->urlBuilder->getUrlInStore($product, $store->getId()));
             $nostoProduct->setProductId((string)$product->getId());
             $nostoProduct->setName($product->getName());
             $nostoProduct->setImageUrl($this->buildImageUrl($product, $store));
@@ -181,7 +186,7 @@ class Builder
         if ($product->getRatingSummary()->getReviewsCount() > 0) {
             /** @noinspection PhpUndefinedMethodInspection */
             return round($product->getRatingSummary()->getRatingSummary() / 20, 1);
-        }  else {
+        } else {
             return null;
         }
     }
@@ -205,26 +210,9 @@ class Builder
         if ($product->getRatingSummary()->getReviewsCount() > 0) {
             /** @noinspection PhpUndefinedMethodInspection */
             return $product->getRatingSummary()->getReviewsCount();
-        }  else {
+        } else {
             return null;
         }
-    }
-
-    /**
-     * @param Product $product
-     * @param StoreInterface $store
-     * @return string
-     */
-    public function buildUrl(Product $product, StoreInterface $store)
-    {
-        return $product->getUrlInStore(
-            [
-                '_ignore_category' => true,
-                '_nosid' => true,
-                '_scope_to_url' => true,
-                '_scope' => $store->getCode(),
-            ]
-        );
     }
 
     /**
