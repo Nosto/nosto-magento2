@@ -53,14 +53,13 @@ class Search extends Result
     use TaggingTrait;
 
     /**
-     * Constructor.
-     *
-     * @param Context $context the context.
+     * Search constructor.
+     * @param Context $context
      * @param LayerResolver $layerResolver
      * @param Data $catalogSearchData
      * @param QueryFactory $queryFactory
-     * @param NostoHelperAccount $nostoHelperAccount the account helper.
-     * @param array $data optional data.
+     * @param NostoHelperAccount $nostoHelperAccount
+     * @param array $data
      */
     public function __construct(
         Context $context,
@@ -70,7 +69,7 @@ class Search extends Result
         NostoHelperAccount $nostoHelperAccount,
         array $data = []
     ) {
-        parent::__construct($context, $layerResolver, $this->catalogSearchData, $queryFactory);
+        parent::__construct($context, $layerResolver, $catalogSearchData, $queryFactory, $data);
 
         $this->nostoHelperAccount = $nostoHelperAccount;
     }
