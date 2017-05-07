@@ -86,23 +86,17 @@ class Builder extends DataObject
 
     public function getUrlInStore(Product $product, $storeId)
     {
-        $routePath = '';
         $routeParams = [];
+        $requestPath = '';
 
-        $requestPath = $product->getRequestPath();
-        if (empty($requestPath) && $requestPath !== false) {
-            $filterData = [
-                UrlRewrite::ENTITY_ID => $product->getId(),
-                UrlRewrite::ENTITY_TYPE => ProductUrlRewriteGenerator::ENTITY_TYPE,
-                UrlRewrite::STORE_ID => $storeId,
-            ];
-            $rewrite = $this->urlFinder->findOneByData($filterData);
-            if ($rewrite) {
-                $requestPath = $rewrite->getRequestPath();
-                $product->setRequestPath($requestPath);
-            } else {
-                $product->setRequestPath(false);
-            }
+        $filterData = [
+            UrlRewrite::ENTITY_ID => $product->getId(),
+            UrlRewrite::ENTITY_TYPE => ProductUrlRewriteGenerator::ENTITY_TYPE,
+            UrlRewrite::STORE_ID => $storeId,
+        ];
+        $rewrite = $this->urlFinder->findOneByData($filterData);
+        if ($rewrite) {
+            $requestPath = $rewrite->getRequestPath();
         }
 
         $routeParams['_nosid'] = true;          // Remove the session identifier from the URL
@@ -111,6 +105,6 @@ class Builder extends DataObject
         $routeParams['_direct'] = $requestPath; // Set the product's slug as the URL
         $routeParams['_query'] = [];            // Reset the cached URL instance GET query params
 
-        return $this->urlFactory->setScope($storeId)->getUrl($routePath, $routeParams);
+        return $this->urlFactory->setScope($storeId)->getUrl('', $routeParams);
     }
 }
