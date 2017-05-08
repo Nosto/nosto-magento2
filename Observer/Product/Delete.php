@@ -37,6 +37,7 @@
 namespace Nosto\Tagging\Observer\Product;
 
 use Magento\Catalog\Model\Product;
+use Magento\Catalog\Model\ProductFactory;
 use Magento\Framework\Module\Manager as ModuleManager;
 use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\StoreManagerInterface;
@@ -46,6 +47,7 @@ use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
 use Nosto\Types\Product\ProductInterface;
 use Psr\Log\LoggerInterface;
+use Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable as ConfigurableProduct;
 
 /**
  * Delete event observer model.
@@ -59,13 +61,27 @@ class Delete extends Base
 {
     private $nostoProductBuilder;
 
+    /**
+     * Delete constructor.
+     *
+     * @param NostoHelperData $nostoHelperData
+     * @param NostoHelperAccount $nostoHelperAccount
+     * @param NostoProductBuilder $nostoProductBuilder
+     * @param StoreManagerInterface $storeManager
+     * @param LoggerInterface $logger
+     * @param ModuleManager $moduleManager
+     * @param ProductFactory $productFactory
+     * @param ConfigurableProduct $configurableProduct
+     */
     public function __construct(
         NostoHelperData $nostoHelperData,
         NostoHelperAccount $nostoHelperAccount,
         NostoProductBuilder $nostoProductBuilder,
         StoreManagerInterface $storeManager,
         LoggerInterface $logger,
-        ModuleManager $moduleManager
+        ModuleManager $moduleManager,
+        ProductFactory $productFactory,
+        ConfigurableProduct $configurableProduct
     ) {
         parent::__construct(
             $nostoHelperData,
@@ -73,7 +89,9 @@ class Delete extends Base
             $nostoProductBuilder,
             $storeManager,
             $logger,
-            $moduleManager
+            $moduleManager,
+            $productFactory,
+            $configurableProduct
         );
 
         $this->nostoProductBuilder = $nostoProductBuilder;
@@ -84,7 +102,6 @@ class Delete extends Base
      */
     public function doRequest(UpsertProduct $operation)
     {
-        //TODO: Delete
         $operation->upsert();
     }
 
