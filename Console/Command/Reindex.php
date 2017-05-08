@@ -160,6 +160,7 @@ class Reindex extends Command
                         $count = $count + $limit;
                     }
                 } catch (Exception $e) {
+                    $output->writeln("An error occurred");
                     $output->writeln($e->getMessage());
                     $this->logger->error($e->__toString());
                 }
