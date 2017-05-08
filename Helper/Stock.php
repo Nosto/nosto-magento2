@@ -94,7 +94,7 @@ class Stock extends AbstractHelper
                     if (is_array($variants) && count($variants) > 0) { // @codingStandardsIgnoreLine
                         foreach ($variants as $variantId) {
                             /* @var Product $productModel */
-                            $productModel = $this->productFactory->load($variantId); // @codingStandardsIgnoreLine
+                            $productModel = $this->productFactory->create()->load($variantId); // @codingStandardsIgnoreLine
                             $products[] = $productModel;
                         }
                     }
