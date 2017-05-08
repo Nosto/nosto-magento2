@@ -81,7 +81,7 @@ $category = $this->getNostoCategory();
         <?php if ($product->getRatingValue()): ?>
             <span class="rating_value"><?php echo $this->escapeHtml($product->getRatingValue()); ?></span>
         <?php endif; ?>
-        <?php if (is_array($product->getSkus())) : ?>
+        <?php if ($product->getSkus() instanceof \Nosto\Object\Product\SkuCollection) : ?>
             <?php /* @var \Nosto\Object\Product\Sku $sku */ ?>
             <?php foreach ($product->getSkus() as $sku) : ?>
                 <span class="nosto_sku">

@@ -41,6 +41,7 @@ use Magento\Catalog\Model\Product\Gallery\ReadHandler as GalleryReadHandler;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable as ConfigurableType;
 use Magento\Store\Api\Data\StoreInterface;
 use Nosto\NostoException;
+use Nosto\Object\Product\SkuCollection;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Price as NostoPriceHelper;
 use Nosto\Tagging\Model\Product\Sku\Builder as NostoSkuBuilder;
@@ -79,25 +80,24 @@ class Collection
     /**
      * @param Product $product
      * @param StoreInterface $store
-     * @return \Nosto\Object\Product\Sku[]
+     * @return SkuCollection
      */
     public function build(Product $product, StoreInterface $store)
     {
+        $skuCollection = new SkuCollection();
         if ($product->getTypeId() === ConfigurableType::TYPE_CODE) {
-
-            $nostoSkus = [];
             $attributes = $this->configurableType->getConfigurableAttributes($product);
-
             /** @var Product $product */
             foreach ($this->configurableType->getUsedProducts($product) as $product) {
                 try {
-                    $nostoSkus[] = $this->nostoSkuBuilder->build($product, $store, $attributes);
+                    $sku = $this->nostoSkuBuilder->build($product, $store, $attributes);
+                    $skuCollection->append($sku);
                 } catch (NostoException $e) {
                     $this->logger->error($e->__toString());
                 }
             }
-
-            return $nostoSkus;
         }
+
+        return $skuCollection;
     }
 }
