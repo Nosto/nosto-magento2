@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Copyright (c) 2017, Nosto Solutions Ltd
  * All rights reserved.
@@ -37,6 +36,7 @@
 
 namespace Nosto\Tagging\Console\Command;
 
+use Exception;
 use Magento\Catalog\Model\Product\Visibility as ProductVisibility;
 use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductCollectionFactory;
 use Magento\Framework\App\Area;
@@ -67,7 +67,12 @@ class Reindex extends Command
     private $state;
 
     /**
-     * Reindex constructor.
+     * Constructor to instantiating the reindex command. This constructor uses proxy classes for
+     * two of the Nosto objects to prevent introspection of constructor parameters when the DI
+     * compile command is run.
+     * Not using the proxy classes will lead to a "Area code not set" exception being thrown in the
+     * compile phase.
+     *
      * @param State $state
      * @param ProductCollectionFactory $productCollectionFactory
      * @param ProductVisibility $productVisibility
@@ -99,7 +104,7 @@ class Reindex extends Command
         $this->logger = $logger;
         $this->state = $state;
 
-        HttpRequest::$responseTimeout = 20;
+        HttpRequest::$responseTimeout = 60;
     }
 
     /**
@@ -140,7 +145,8 @@ class Reindex extends Command
                         $this->logger->info("Fetching $limit products from offset $count");
 
                         /** @var \Nosto\Object\Product\Product $model */
-                        $products = $this->nostoProductCollection->buildMany($store, $limit, $count);
+                        $products = $this->nostoProductCollection->buildMany($store, $limit,
+                            $count);
                         if (empty($products) || !$products) {
                             break;
                         }
@@ -153,7 +159,7 @@ class Reindex extends Command
                         $op->upsert();
                         $count = $count + $limit;
                     }
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     $output->writeln($e->getMessage());
                     $this->logger->error($e->__toString());
                 }
