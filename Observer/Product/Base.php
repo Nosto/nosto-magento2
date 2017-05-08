@@ -37,13 +37,14 @@
 namespace Nosto\Tagging\Observer\Product;
 
 use Magento\Catalog\Model\Product;
+use Magento\Catalog\Model\ProductFactory;
+use Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable as ConfigurableProduct;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Module\Manager as ModuleManager;
 use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
-use Magento\Swatches\Model\Plugin\Configurable;
 use Nosto\NostoException;
 use Nosto\Object\Signup\Account;
 use Nosto\Operation\UpsertProduct;
@@ -52,8 +53,6 @@ use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
 use Psr\Log\LoggerInterface;
-use Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable as ConfigurableProduct;
-use Magento\Catalog\Model\ProductFactory;
 
 abstract class Base implements ObserverInterface
 {
@@ -119,7 +118,7 @@ abstract class Base implements ObserverInterface
             $product = $observer->getProduct();
             // Figure out if we're updating a parent product
             $parentProducts = $this->configurableProduct->getParentIdsByChild($product->getId());
-            if(!empty($parentProducts[0])){
+            if (!empty($parentProducts[0])) {
                 $product = $this->productFactory->create()->load($parentProducts[0]);
             }
             foreach ($product->getStoreIds() as $storeId) {
@@ -128,6 +127,10 @@ abstract class Base implements ObserverInterface
                 /** @var Account $account */
                 $account = $this->nostoHelperAccount->findAccount($store);
                 if ($account === null) {
+                    continue;
+                }
+
+                if (!$this->nostoHelperData->isProductUpdatesEnabled($store)) {
                     continue;
                 }
 

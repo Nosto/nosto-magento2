@@ -123,13 +123,24 @@ class Builder
             $nostoProduct->setPriceCurrencyCode($store->getBaseCurrencyCode());
             $nostoProduct->setAvailable($product->isAvailable());
             $nostoProduct->setCategories($this->nostoCategoryBuilder->buildCategories($product));
-            $nostoProduct->setInventoryLevel($this->nostoStockHelper->getQty($product));
-            $nostoProduct->setRatingValue($this->buildRatingValue($product, $store));
-            $nostoProduct->setReviewCount($this->buildReviewCount($product, $store));
-            $nostoProduct->setAlternateImageUrls($this->buildAlternativeImages($product));
-            $nostoProduct->setSkus($this->skuCollection->build($product, $store));
 
-            // Optional properties.
+            if ($this->nostoDataHelper->isInventoryTaggingEnabled($store)) {
+                $nostoProduct->setInventoryLevel($this->nostoStockHelper->getQty($product));
+            }
+
+            if ($this->nostoDataHelper->isRatingTaggingEnabled($store)) {
+                $nostoProduct->setRatingValue($this->buildRatingValue($product, $store));
+                $nostoProduct->setReviewCount($this->buildReviewCount($product, $store));
+            }
+
+            if ($this->nostoDataHelper->isAltimgTaggingEnabled($store)) {
+                $nostoProduct->setAlternateImageUrls($this->buildAlternativeImages($product));
+            }
+
+            if ($this->nostoDataHelper->isVariationTaggingEnabled($store)) {
+                $nostoProduct->setSkus($this->skuCollection->build($product, $store));
+            }
+
             $descriptions = [];
             if ($product->hasData('short_description')) {
                 $descriptions[] = $product->getData('short_description');
