@@ -90,8 +90,8 @@ class Builder
             $nostoSku->setName($product->getName());
             $nostoSku->setAvailability($product->isAvailable() ? 'InStock' : 'OutOfStock');
             $nostoSku->setImageUrl($this->buildImageUrl($product, $store));
-            $nostoSku->setPrice($price = $this->nostoPriceHelper->getProductFinalPriceInclTax($product));
-            $nostoSku->setListPrice($price = $this->nostoPriceHelper->getProductFinalPriceInclTax($product));
+            $nostoSku->setPrice($price = $this->nostoPriceHelper->getProductFinalPriceInclTax($store, $product));
+            $nostoSku->setListPrice($price = $this->nostoPriceHelper->getProductFinalPriceInclTax($store, $product));
 
             $gtinAttribute = $this->nostoDataHelper->getGtinAttribute($store);
             if ($product->hasData($gtinAttribute)) {

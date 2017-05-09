@@ -43,8 +43,6 @@ use Magento\Eav\Model\Entity\Attribute;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Review\Model\ReviewFactory;
 use Magento\Store\Api\Data\StoreInterface;
-use Magento\Store\Model\Store;
-use Nosto\Exception\NostoException;
 use Nosto\NostoException;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Price as NostoPriceHelper;
@@ -118,13 +116,13 @@ class Builder
         $nostoProduct = new \Nosto\Object\Product\Product();
 
         try {
-            $nostoProduct->setUrl($this->buildUrl($product, $store));
+            $nostoProduct->setUrl($this->urlBuilder->getUrlInStore($product, $store));
             $nostoProduct->setProductId((string)$product->getId());
             $nostoProduct->setName($product->getName());
             $nostoProduct->setImageUrl($this->buildImageUrl($product, $store));
-            $price = $this->nostoPriceHelper->getProductFinalPriceInclTax($product);
+            $price = $this->nostoPriceHelper->getProductFinalPriceInclTax($store, $product);
             $nostoProduct->setPrice($price);
-            $listPrice = $this->nostoPriceHelper->getProductPriceInclTax($product);
+            $listPrice = $this->nostoPriceHelper->getProductPriceInclTax($store, $product);
             $nostoProduct->setListPrice($listPrice);
             /** @noinspection PhpUndefinedMethodInspection */
             $nostoProduct->setPriceCurrencyCode($store->getBaseCurrencyCode());

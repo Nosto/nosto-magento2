@@ -34,7 +34,7 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Account\Settings\Currencies;
+namespace Nosto\Tagging\Model\Meta\Account\Settings\Currencies;
 
 use Exception;
 use Magento\Directory\Model\CurrencyFactory;

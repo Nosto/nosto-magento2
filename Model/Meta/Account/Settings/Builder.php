@@ -40,10 +40,10 @@ use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\UrlInterface;
 use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\Store;
-use Nosto\Exception\NostoException;
+use Nosto\NostoException;
 use Nosto\Object\Settings;
 use Nosto\Request\Http\HttpRequest;
-use Nosto\Tagging\Model\Account\Settings\Currencies\Builder as NostoCurrenciesBuilder;
+use Nosto\Tagging\Model\Meta\Account\Settings\Currencies\Builder as NostoCurrenciesBuilder;
 use Psr\Log\LoggerInterface;
 
 class Builder
