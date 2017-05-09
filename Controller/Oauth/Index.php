@@ -36,25 +36,24 @@
 
 namespace Nosto\Tagging\Controller\Oauth;
 
+use Exception;
 use Magento\Backend\Model\UrlInterface;
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\App\Response\Http;
-use Magento\Framework\Exception\CouldNotSaveException;
-use Magento\Framework\Exception\State\InputMismatchException;
-use Magento\Store\Api\Data\StoreInterface;
-use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
-use Nosto\Nosto;
-use Nosto\Operation\OAuth\ExchangeTokens;
+use Nosto\Mixins\OauthTrait;
+use Nosto\OAuth;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Model\Meta\Oauth\Builder as NostoOauthBuilder;
+use Nosto\Types\Signup\AccountInterface;
 use Psr\Log\LoggerInterface;
 
 class Index extends Action
 {
+    use OauthTrait;
     private $logger;
-    private $backendUrlBuilder;
+    private $urlBuilder;
     private $nostoHelperAccount;
     private $oauthMetaBuilder;
     private $storeManager;
@@ -63,7 +62,7 @@ class Index extends Action
      * @param Context $context
      * @param LoggerInterface $logger
      * @param StoreManagerInterface $storeManager
-     * @param UrlInterface $backendUrlBuilder
+     * @param UrlInterface $urlBuilder
      * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoOauthBuilder $oauthMetaBuilder
      */
@@ -71,7 +70,7 @@ class Index extends Action
         Context $context,
         LoggerInterface $logger,
         StoreManagerInterface $storeManager,
-        UrlInterface $backendUrlBuilder,
+        UrlInterface $urlBuilder,
         NostoHelperAccount $nostoHelperAccount,
         NostoOauthBuilder $oauthMetaBuilder
     ) {
@@ -79,108 +78,93 @@ class Index extends Action
 
         $this->logger = $logger;
         $this->storeManager = $storeManager;
-        $this->backendUrlBuilder = $backendUrlBuilder;
+        $this->urlBuilder = $urlBuilder;
         $this->nostoHelperAccount = $nostoHelperAccount;
         $this->oauthMetaBuilder = $oauthMetaBuilder;
     }
 
     /**
-     * Handles the redirect from Nosto oauth2 authorization server when an
-     * existing account is connected to a store.
-     * This is handled in the front end as the oauth2 server validates the
-     * "return_url" sent in the first step of the authorization cycle, and
-     * requires it to be from the same domain that the account is configured
-     * for and only redirects to that domain.
+     * Handles the redirect from Nosto oauth2 authorization server when an existing account is
+     * connected to a store. This is handled in the front end as the oauth2 server validates the
+     * "return_url" sent in the first step of the authorization cycle, and requires it to be from
+     * the same domain that the account is configured for and only redirects to that domain.
      *
      * @return void
      */
     public function execute()
     {
-        $request = $this->getRequest();
-        /** @var Store $store */
-        $store = $this->storeManager->getStore();
-        if (($authCode = $request->getParam('code')) !== null) {
-            try {
-                $this->connectAccount($authCode, $store);
-                $params = [
-                    'message_type' => Nosto::TYPE_SUCCESS,
-                    'message_code' => Nosto::CODE_ACCOUNT_CONNECT,
-                    'store' => (int)$store->getId(),
-                ];
-            } catch (\Exception $e) {
-                $this->logger->error($e->__toString());
-                $params = [
-                    'message_type' => Nosto::TYPE_ERROR,
-                    'message_code' => Nosto::CODE_ACCOUNT_CONNECT,
-                    'store' => (int)$store->getId(),
-                ];
-            }
-            $this->redirectBackend('nosto/account/proxy', $params);
-        } elseif (($error = $request->getParam('error')) !== null) {
-            $logMsg = $error;
-            if (($reason = $request->getParam('error_reason')) !== null) {
-                $logMsg .= ' - ' . $reason;
-            }
-            if (($desc = $request->getParam('error_description')) !== null) {
-                $logMsg .= ' - ' . $desc;
-            }
-            $this->logger->error($logMsg);
-            $this->redirectBackend(
-                'nosto/account/proxy',
-                [
-                    'message_type' => Nosto::TYPE_ERROR,
-                    'message_code' => Nosto::CODE_ACCOUNT_CONNECT,
-                    'message_text' => $desc,
-                    'store' => (int)$store->getId(),
-                ]
-            );
-        } else {
-            $response = $this->getResponse();
-            if ($response instanceof Http) {
-                $response->setHttpResponseCode(404);
-            }
-        }
+        self::connect();
     }
 
     /**
-     * Tries to connect the Nosto account and saves the account details to the
-     * store config.
+     * Implemented trait method that is responsible for fetching the OAuth parameters used for all
+     * OAuth operations
      *
-     * @param string $authCode the OAuth authorization code by which to get the account details
-     * @param StoreInterface|Store $store the store the account is connect for.
-     * @throws \Exception if the connection fails.
+     * @return Oauth the OAuth parameters for the operations
      */
-    private function connectAccount($authCode, StoreInterface $store)
+    public function getMeta()
     {
-        $oldAccount = $this->nostoHelperAccount->findAccount($store);
-        $meta = $this->oauthMetaBuilder->build($store, $oldAccount);
-        $operation = new ExchangeTokens($meta);
-        $newAccount = $operation->exchange($authCode);
-
-        // If we are updating an existing account,
-        // double check that we got the same account back from Nosto.
-        if ($oldAccount !== null && $newAccount->getName() !== $oldAccount->getName()) {
-            throw new InputMismatchException(__('Failed to synchronise Nosto account details, account mismatch.'));
-        }
-
-        if (!$this->nostoHelperAccount->saveAccount($newAccount, $store)) {
-            throw new CouldNotSaveException(__('Failed to save Nosto account.'));
-        }
+        $account = $this->nostoHelperAccount->findAccount($this->storeManager->getStore());
+        return $this->oauthMetaBuilder->build($this->storeManager->getStore(), $account);
     }
 
     /**
-     * Redirects the user to the Magento backend.
+     * Implemented trait method that is responsible for saving an account with the all tokens for
+     * the current store view (as defined by the parameter.)
      *
-     * @param string $path the backend path to redirect to.
-     * @param array $args the url arguments.
-     * @return \Magento\Framework\App\ResponseInterface the response.
+     * @param AccountInterface $account the account to save
+     * @return boolean a boolean value indicating whether the account was saved
      */
-    private function redirectBackend($path, $args = [])
+    public function save(AccountInterface $account)
+    {
+        return $this->nostoHelperAccount->saveAccount($account, $this->storeManager->getStore());
+    }
+
+    /**
+     * Implemented trait method that redirects the user with the authentication params to the
+     * admin controller.
+     *
+     * @param array $params the parameters to be used when building the redirect
+     */
+    public function redirect(array $params)
     {
         $response = $this->getResponse();
         if ($response instanceof Http) {
-            $response->setRedirect($this->backendUrlBuilder->getUrl($path, $args));
+            $params['store'] = (int)$this->storeManager->getStore()->getId();
+            $response->setRedirect($this->urlBuilder->getUrl('nosto/account/proxy', $params));
         }
-        return $response;
+    }
+
+    /**
+     * Implemented trait method that is a utility responsible for fetching a specified query
+     * parameter from the GET request.
+     *
+     * @param string $name the name of the query parameter to fetch
+     * @return string the value of the specified query parameter
+     */
+    public function getParam($name)
+    {
+        return $this->getRequest()->getParam($name);
+    }
+
+    /**
+     * Implemented trait method that is responsible for logging an exception to the Magento error
+     * log when an error occurs.
+     *
+     * @param Exception $e the exception to be logged
+     */
+    public function logError(Exception $e)
+    {
+        $this->logger->error($e->__toString());
+    }
+
+    /**
+     * Implemented trait method that is responsible for redirecting the user to a 404 page when
+     * the authorization code is invalid.
+     */
+    public function notFound()
+    {
+        /** @noinspection PhpUndefinedMethodInspection */
+        $this->getResponse()->setHttpResponseCode(404);
     }
 }
