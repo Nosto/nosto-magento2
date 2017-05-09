@@ -48,6 +48,8 @@ use Magento\Framework\Stdlib\StringUtils;
 use Magento\Framework\Url\EncoderInterface as UrlEncoder;
 use Magento\Store\Model\Store;
 use Nosto\Helper\DateHelper;
+use Nosto\Helper\PriceHelper;
+use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Model\Category\Builder as NostoCategoryBuilder;
 use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
@@ -59,20 +61,12 @@ use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
  */
 class Product extends View
 {
-    /**
-     * @var NostoProductBuilder the product meta model builder.
-     */
+    use TaggingTrait;
+
     private $nostoProductBuilder;
-
-    /**
-     * @var NostoCategoryBuilder the category meta model builder.
-     */
     private $categoryBuilder;
-
-    /**
-     * @var NostoHelperData the data helper.
-     */
     private $nostoHelperData;
+    private $nostoHelperAccount;
 
     /**
      * Constructor.
@@ -90,6 +84,7 @@ class Product extends View
      * @param NostoProductBuilder $nostoProductBuilder the product meta model builder.
      * @param NostoCategoryBuilder $categoryBuilder the category meta model builder.
      * @param NostoHelperData $nostoHelperData the data helper.
+     * @param NostoHelperAccount $nostoHelperAccount
      * @param array $data optional data.
      */
     public function __construct(
@@ -106,6 +101,7 @@ class Product extends View
         NostoProductBuilder $nostoProductBuilder,
         NostoCategoryBuilder $categoryBuilder,
         NostoHelperData $nostoHelperData,
+        NostoHelperAccount $nostoHelperAccount,
         array $data = []
     ) {
         parent::__construct(
@@ -125,6 +121,7 @@ class Product extends View
         $this->nostoProductBuilder = $nostoProductBuilder;
         $this->categoryBuilder = $categoryBuilder;
         $this->nostoHelperData = $nostoHelperData;
+        $this->nostoHelperAccount = $nostoHelperAccount;
     }
 
     /**
@@ -148,6 +145,17 @@ class Product extends View
     {
         $category = $this->_coreRegistry->registry('current_category');
         return $category !== null ? $this->categoryBuilder->build($category) : null;
+    }
+
+    /**
+     * Formats a price e.g. "1234.56".
+     *
+     * @param int $price the price to format.
+     * @return string the formatted price.
+     */
+    public function formatNostoPrice($price)
+    {
+        return PriceHelper::format($price);
     }
 
     /**

@@ -37,13 +37,15 @@
 namespace Nosto\Tagging\Observer\Product;
 
 use Magento\Catalog\Model\Product;
+use Magento\Catalog\Model\ProductFactory;
+use Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable as ConfigurableProduct;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Module\Manager as ModuleManager;
 use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
-use Nosto\Exception\NostoException;
+use Nosto\NostoException;
 use Nosto\Object\Signup\Account;
 use Nosto\Operation\UpsertProduct;
 use Nosto\Request\Http\HttpRequest;
@@ -60,6 +62,8 @@ abstract class Base implements ObserverInterface
     private $storeManager;
     private $logger;
     private $moduleManager;
+    private $productFactory;
+    private $configurableProduct;
 
     /**
      * Constructor.
@@ -70,6 +74,8 @@ abstract class Base implements ObserverInterface
      * @param StoreManagerInterface $storeManager
      * @param LoggerInterface $logger
      * @param ModuleManager $moduleManager
+     * @param ProductFactory $productFactory
+     * @param ConfigurableProduct $configurableProduct
      */
     public function __construct(
         NostoHelperData $nostoHelperData,
@@ -77,7 +83,9 @@ abstract class Base implements ObserverInterface
         NostoProductBuilder $nostoProductBuilder,
         StoreManagerInterface $storeManager,
         LoggerInterface $logger,
-        ModuleManager $moduleManager
+        ModuleManager $moduleManager,
+        ProductFactory $productFactory,
+        ConfigurableProduct $configurableProduct
     ) {
         $this->nostoHelperData = $nostoHelperData;
         $this->nostoHelperAccount = $nostoHelperAccount;
@@ -85,6 +93,8 @@ abstract class Base implements ObserverInterface
         $this->storeManager = $storeManager;
         $this->logger = $logger;
         $this->moduleManager = $moduleManager;
+        $this->productFactory = $productFactory;
+        $this->configurableProduct = $configurableProduct;
 
         HttpRequest::buildUserAgent(
             'Magento',
@@ -103,19 +113,24 @@ abstract class Base implements ObserverInterface
     public function execute(Observer $observer)
     {
         if ($this->moduleManager->isEnabled(NostoHelperData::MODULE_NAME)) {
-            // Always "delete" the product for all stores it is available in.
-            // This is done to avoid data inconsistencies as even if a product
-            // is edited for only one store, the updated data can reflect in
-            // other stores as well.
             /* @var \Magento\Catalog\Model\Product $product */
             /** @noinspection PhpUndefinedMethodInspection */
             $product = $observer->getProduct();
+            // Figure out if we're updating a parent product
+            $parentProducts = $this->configurableProduct->getParentIdsByChild($product->getId());
+            if (!empty($parentProducts[0])) {
+                $product = $this->productFactory->create()->load($parentProducts[0]);
+            }
             foreach ($product->getStoreIds() as $storeId) {
                 /** @var Store $store */
                 $store = $this->storeManager->getStore($storeId);
                 /** @var Account $account */
                 $account = $this->nostoHelperAccount->findAccount($store);
                 if ($account === null) {
+                    continue;
+                }
+
+                if (!$this->nostoHelperData->isProductUpdatesEnabled($store)) {
                     continue;
                 }
 

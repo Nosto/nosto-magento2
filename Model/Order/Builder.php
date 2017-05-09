@@ -36,10 +36,10 @@
 
 namespace Nosto\Tagging\Model\Order;
 
+use DateTime;
 use Exception;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\ObjectManagerInterface;
-use Magento\Framework\Phrase;
 use Magento\Sales\Model\Order;
 use Magento\Sales\Model\Order\Item;
 use Magento\SalesRule\Model\RuleFactory as SalesRuleFactory;
@@ -99,16 +99,13 @@ class Builder
         try {
             $nostoOrder->setOrderNumber($order->getId());
             $nostoOrder->setExternalOrderRef($order->getRealOrderId());
-            $nostoOrder->setCreatedAt($order->getCreatedAt());
+            $nostoOrder->setCreatedAt(DateTime::createFromFormat('Y-m-d', $order->getCreatedAtFormatted('Y-m-d')));
             $nostoOrder->setPaymentProvider($order->getPayment()->getMethod());
-            $orderStatus = $order->getStatus();
-            if ($orderStatus) {
+            if ($order->getStatus()) {
                 $nostoStatus = new OrderStatus();
-                $nostoStatus->setCode($orderStatus);
+                $nostoStatus->setCode($order->getStatus());
                 $nostoStatus->setDate($order->getUpdatedAt());
-                if ($order->getStatusLabel() instanceof Phrase) {
-                    $nostoStatus->setLabel($order->getStatusLabel()->getText());
-                }
+                $nostoStatus->setLabel($order->getStatusLabel());
                 $nostoOrder->setOrderStatus($nostoStatus);
             }
             $nostoBuyer = new Buyer();

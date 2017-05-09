@@ -46,7 +46,7 @@ $category = $this->getNostoCategory();
         <span class="product_id"><?php echo $this->escapeHtml($product->getProductId()); ?></span>
         <span class="name"><?php echo $this->escapeHtml($product->getName()); ?></span>
         <span class="image_url"><?php echo $this->escapeUrl($product->getImageUrl()); ?></span>
-        <span class="price"><?php echo $product->getPrice(); ?></span>
+        <span class="price"><?php echo $this->formatNostoPrice($product->getPrice()); ?></span>
         <span class="price_currency_code"><?php echo $product->getPriceCurrencyCode(); ?></span>
         <span class="availability"><?php echo $product->getAvailability(); ?></span>
         <?php foreach ($product->getCategories() as $cat) : ?>
@@ -58,7 +58,7 @@ $category = $this->getNostoCategory();
         <?php endif; ?>
         <?php if ($product->getListPrice()) : ?>
             <span
-                class="list_price"><?php echo $product->getListPrice(); ?></span>
+                class="list_price"><?php echo $this->formatNostoPrice($product->getListPrice()); ?></span>
         <?php endif; ?>
         <?php if ($product->getBrand()) : ?>
             <span class="brand"><?php echo $this->escapeHtml($product->getBrand()); ?></span>
@@ -74,6 +74,37 @@ $category = $this->getNostoCategory();
         <?php endforeach; ?>
         <?php if ($this->hasMultipleCurrencies()): ?>
             <span class="variation_id"><?php echo $this->escapeHtml($product->getVariationId()); ?></span>
+        <?php endif; ?>
+        <?php if ($product->getGtin()) : ?>
+            <span class="gtin"><?php echo $this->escapeHtml($product->getGtin()); ?></span>
+        <?php endif; ?>
+        <?php if ($product->getReviewCount()): ?>
+            <span class="review_count"><?php echo $this->escapeHtml($product->getReviewCount()); ?></span>
+        <?php endif; ?>
+        <?php if ($product->getRatingValue()): ?>
+            <span class="rating_value"><?php echo $this->escapeHtml($product->getRatingValue()); ?></span>
+        <?php endif; ?>
+        <?php if ($product->getSkus() instanceof \Nosto\Object\Product\SkuCollection) : ?>
+            <?php /* @var \Nosto\Object\Product\Sku $sku */ ?>
+            <?php foreach ($product->getSkus() as $sku) : ?>
+                <span class="nosto_sku">
+                <span class="id"><?php echo $this->escapeHtml($sku->getId()); ?></span>
+                <span class="name"><?php echo $this->escapeHtml($sku->getName()); ?></span>
+                <span class="price"><?php echo $this->escapeHtml($sku->getPrice()); ?></span>
+                <span class="list_price"><?php echo $this->escapeHtml($sku->getListPrice()); ?></span>
+                <span class="url"><?php echo $this->escapeHtml($sku->getUrl()); ?></span>
+                <span class="image_url"><?php echo $this->escapeHtml($sku->getImageUrl()); ?></span>
+                <span class="gtin"><?php echo $this->escapeHtml($sku->getGtin()); ?></span>
+                <span class="availability"><?php echo $this->escapeHtml($sku->getAvailability()); ?></span>
+                <span class="custom_fields">
+                <?php if (is_array($sku->getCustomAttributes())) : ?>
+                    <?php foreach ($sku->getCustomAttributes() as $key=>$val) : ?>
+                        <span class="<?php echo $this->escapeHtml($key); ?>"><?php echo $this->escapeHtml($val); ?></span>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+                </span>
+            </span>
+            <?php endforeach; ?>
         <?php endif; ?>
         <?php foreach ($product->getAlternateImageUrls() as $alternateImageUrl): ?>
             <span class="alternate_image_url"><?php echo $this->escapeHtml($alternateImageUrl); ?></span>

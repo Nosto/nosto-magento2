@@ -34,47 +34,25 @@
  *
  */
 
-namespace Nosto\Tagging\Block;
+namespace Nosto\Tagging\Model\Config\Source;
 
-use Magento\Framework\View\Element\Template;
-use Magento\Framework\View\Element\Template\Context;
-use Nosto\Tagging\Helper\Account as NostoHelperAccount;
+use Magento\Catalog\Model\ResourceModel\Product\Attribute\Collection;
 
 /**
- * Element block used for outputting a recommendation placeholders on the stores pages.
- * This placeholder is then populated with recommendations from Nosto on the
- * client side.
+ * Option array class to generate a list of selectable options that allows the merchant to choose
+ * any image attribute for his image tag.
+ *
+ * @package Nosto\Tagging\Model\Config\Source
  */
-class Element extends Template
+class Image extends Selector
 {
-    use TaggingTrait;
-
-    /**
-     * Constructor.
-     *
-     * @param Context $context the context.
-     * @param NostoHelperAccount $nostoHelperAccount the account helper.
-     * @param array $data optional data.
-     */
-    public function __construct(
-        Context $context,
-        NostoHelperAccount $nostoHelperAccount,
-        array $data = []
-    ) {
-        parent::__construct($context, $data);
-
-        $this->nostoHelperAccount = $nostoHelperAccount;
+    public function filterCollection(Collection $collection)
+    {
+        $collection->setFrontendInputTypeFilter('media_image');
     }
 
-    /**
-     * Returns the Nosto recommendation placeholder ID.
-     *
-     * This ID needs to match an existing recommendation element in Nosto.
-     *
-     * @return string the ID.
-     */
-    public function getElementId()
+    function isNullable()
     {
-        return $this->getData('nostoId');
+        return false;
     }
 }

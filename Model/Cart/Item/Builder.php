@@ -80,6 +80,8 @@ class Builder
         $cartItem->setQuantity($item->getQty());
         switch ($item->getProductType()) {
             case Simple::getType():
+            case Virtual::getType():
+            case Downloadable::getType():
                 $cartItem->setName(Simple::buildItemName($item));
                 break;
             case Configurable::getType():

@@ -34,73 +34,70 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Category;
+namespace Nosto\Tagging\Model\Product\Sku;
 
-use Magento\Framework\Event\ManagerInterface;
-use Magento\Catalog\Api\CategoryRepositoryInterface;
-use Magento\Catalog\Model\Category;
 use Magento\Catalog\Model\Product;
+use Magento\Catalog\Model\Product\Gallery\ReadHandler as GalleryReadHandler;
+use Magento\ConfigurableProduct\Model\Product\Type\Configurable as ConfigurableType;
+use Magento\Store\Api\Data\StoreInterface;
 use Nosto\NostoException;
+use Nosto\Object\Product\SkuCollection;
+use Nosto\Tagging\Helper\Data as NostoHelperData;
+use Nosto\Tagging\Helper\Price as NostoPriceHelper;
+use Nosto\Tagging\Model\Product\Sku\Builder as NostoSkuBuilder;
 use Psr\Log\LoggerInterface;
 
-class Builder
+class Collection
 {
+    private $configurableType;
     private $logger;
-    private $categoryRepository;
-    private $eventManager;
+    private $nostoHelperData;
+    private $nostoPriceHelper;
+    private $nostoSkuBuilder;
 
     /**
-     * @param CategoryRepositoryInterface $categoryRepository
+     * Builder constructor.
      * @param LoggerInterface $logger
-     * @param ManagerInterface $eventManager
+     * @param ConfigurableType $configurableType
+     * @param NostoHelperData $nostoHelperData
+     * @param NostoPriceHelper $priceHelper
+     * @param Builder $nostoSkuBuilder
      */
     public function __construct(
-        CategoryRepositoryInterface $categoryRepository,
         LoggerInterface $logger,
-        ManagerInterface $eventManager
+        ConfigurableType $configurableType,
+        NostoHelperData $nostoHelperData,
+        NostoPriceHelper $priceHelper,
+        NostoSkuBuilder $nostoSkuBuilder
     ) {
-        $this->categoryRepository = $categoryRepository;
+        $this->configurableType = $configurableType;
         $this->logger = $logger;
-        $this->eventManager = $eventManager;
+        $this->nostoHelperData = $nostoHelperData;
+        $this->nostoPriceHelper = $priceHelper;
+        $this->nostoSkuBuilder = $nostoSkuBuilder;
     }
 
     /**
      * @param Product $product
-     * @return array
+     * @param StoreInterface $store
+     * @return SkuCollection
      */
-    public function buildCategories(Product $product)
+    public function build(Product $product, StoreInterface $store)
     {
-        $categories = [];
-        foreach ($product->getCategoryCollection() as $category) {
-            $categories[] = $this->build($category);
-        }
-        return $categories;
-    }
-
-    /**
-     * @param Category $category
-     * @return string
-     */
-    public function build(Category $category)
-    {
-        $nostoCategory = '';
-
-        try {
-            $data = [];
-            $path = $category->getPath();
-            foreach (explode('/', $path) as $categoryId) {
-                $category = $this->categoryRepository->get($categoryId);
-                if ($category && $category->getLevel() > 1) {
-                    $data[] = $category->getName();
+        $skuCollection = new SkuCollection();
+        if ($product->getTypeId() === ConfigurableType::TYPE_CODE) {
+            $attributes = $this->configurableType->getConfigurableAttributes($product);
+            /** @var Product $product */
+            foreach ($this->configurableType->getUsedProducts($product) as $product) {
+                try {
+                    $sku = $this->nostoSkuBuilder->build($product, $store, $attributes);
+                    $skuCollection->append($sku);
+                } catch (NostoException $e) {
+                    $this->logger->error($e->__toString());
                 }
             }
-            return count($data) ? '/' . implode('/', $data) : '';
-        } catch (NostoException $e) {
-            $this->logger->error($e->__toString());
         }
 
-        $this->eventManager->dispatch('nosto_category_load_after', ['category' => $nostoCategory]);
-
-        return $nostoCategory;
+        return $skuCollection;
     }
 }

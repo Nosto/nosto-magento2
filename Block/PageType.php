@@ -37,16 +37,36 @@
 namespace Nosto\Tagging\Block;
 
 use Magento\Framework\View\Element\Template;
+use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 
 /**
  * Page type block used for outputting page-type on the different pages.
  */
 class PageType extends Template
 {
+    use TaggingTrait;
+
     /**
      * Default type assigned to the page if none is set in the layout xml.
      */
     const DEFAULT_TYPE = 'unknown';
+
+    /**
+     * Constructor.
+     *
+     * @param Template\Context $context
+     * @param NostoHelperAccount $nostoHelperAccount
+     * @param array $data
+     */
+    public function __construct(
+        Template\Context $context,
+        NostoHelperAccount $nostoHelperAccount,
+        array $data = []
+    ) {
+        parent::__construct($context, $data);
+
+        $this->nostoHelperAccount = $nostoHelperAccount;
+    }
 
     /**
      * Return the page-type of the current page. If none is defined in the layout xml,
