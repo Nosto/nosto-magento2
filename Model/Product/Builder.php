@@ -116,7 +116,7 @@ class Builder
         $nostoProduct = new \Nosto\Object\Product\Product();
 
         try {
-            $nostoProduct->setUrl($this->urlBuilder->getUrlInStore($product, $store->getId()));
+            $nostoProduct->setUrl($this->urlBuilder->getUrlInStore($product, $store));
             $nostoProduct->setProductId((string)$product->getId());
             $nostoProduct->setName($product->getName());
             $nostoProduct->setImageUrl($this->buildImageUrl($product, $store));

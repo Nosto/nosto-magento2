@@ -41,6 +41,7 @@ use Magento\CatalogUrlRewrite\Model\ProductUrlRewriteGenerator;
 use Magento\Framework\DataObject;
 use Magento\Framework\Filter\FilterManager;
 use Magento\Framework\Url;
+use Magento\Store\Api\Data\StoreInterface;
 use Magento\UrlRewrite\Model\UrlFinderInterface;
 use Magento\UrlRewrite\Service\V1\Data\UrlRewrite;
 
@@ -84,7 +85,7 @@ class Builder extends DataObject
         $this->urlFactory = $urlFactory;
     }
 
-    public function getUrlInStore(Product $product, $storeId)
+    public function getUrlInStore(Product $product, StoreInterface $store)
     {
         $routeParams = [];
         $requestPath = '';
@@ -92,7 +93,7 @@ class Builder extends DataObject
         $filterData = [
             UrlRewrite::ENTITY_ID => $product->getId(),
             UrlRewrite::ENTITY_TYPE => ProductUrlRewriteGenerator::ENTITY_TYPE,
-            UrlRewrite::STORE_ID => $storeId,
+            UrlRewrite::STORE_ID => $store->getId(),
         ];
         $rewrite = $this->urlFinder->findOneByData($filterData);
         if ($rewrite) {
@@ -100,11 +101,11 @@ class Builder extends DataObject
         }
 
         $routeParams['_nosid'] = true;          // Remove the session identifier from the URL
-        $routeParams['_scope'] = $storeId;      // Specify the store identifier for the URL
+        $routeParams['_scope'] = $store->getId();      // Specify the store identifier for the URL
         $routeParams['_scope_to_url'] = true;   // Add the store's scope to the URL
         $routeParams['_direct'] = $requestPath; // Set the product's slug as the URL
         $routeParams['_query'] = [];            // Reset the cached URL instance GET query params
 
-        return $this->urlFactory->setScope($storeId)->getUrl('', $routeParams);
+        return $this->urlFactory->setScope($store->getId())->getUrl('', $routeParams);
     }
 }
