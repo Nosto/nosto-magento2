@@ -77,6 +77,31 @@ class Data extends AbstractHelper
      */
     const XML_PATH_GTIN_ATTRIBUTE = 'nosto/optional/gtin';
 
+    /**
+     * Path to the configuration object that stores the preference to tag variation data
+     */
+    const XML_PATH_VARIATION_TAGGING = 'nosto/flags/variation_tagging';
+
+    /**
+     * Path to the configuration object that stores the preference to tag alt. image data
+     */
+    const XML_PATH_ALTIMG_TAGGING = 'nosto/flags/altimg_tagging';
+
+    /**
+     * Path to the configuration object that stores the preference to tag rating and review data
+     */
+    const XML_PATH_RATING_TAGGING = 'nosto/flags/rating_tagging';
+
+    /**
+     * Path to the configuration object that stores the preference to tag inventory data
+     */
+    const XML_PATH_INVENTORY_TAGGING = 'nosto/flags/inventory_tagging';
+
+    /**
+     * Path to the configuration object that stores the preference for real time product updates
+     */
+    const XML_PATH_PRODUCT_UPDATES = 'nosto/flags/product_updates';
+
     const MODULE_NAME = 'Nosto_Tagging';
     private $storeManager;
     private $moduleListing;
@@ -172,6 +197,61 @@ class Data extends AbstractHelper
     public function getGtinAttribute(StoreInterface $store = null)
     {
         return $this->getStoreConfig(self::XML_PATH_GTIN_ATTRIBUTE, $store);
+    }
+
+    /**
+     * Returns if variation data tagging is enabled from the configuration table
+     *
+     * @param StoreInterface $store the store model or null.
+     * @return bool the configuration value
+     */
+    public function isVariationTaggingEnabled(StoreInterface $store = null)
+    {
+        return (bool)$this->getStoreConfig(self::XML_PATH_VARIATION_TAGGING, $store);
+    }
+
+    /**
+     * Returns if alt. image data tagging is enabled from the configuration table
+     *
+     * @param StoreInterface $store the store model or null.
+     * @return bool the configuration value
+     */
+    public function isAltimgTaggingEnabled(StoreInterface $store = null)
+    {
+        return (bool)$this->getStoreConfig(self::XML_PATH_ALTIMG_TAGGING, $store);
+    }
+
+    /**
+     * Returns if rating and review data tagging is enabled from the configuration table
+     *
+     * @param StoreInterface $store the store model or null.
+     * @return bool the configuration value
+     */
+    public function isRatingTaggingEnabled(StoreInterface $store = null)
+    {
+        return (bool)$this->getStoreConfig(self::XML_PATH_RATING_TAGGING, $store);
+    }
+
+    /**
+     * Returns if inventory data tagging is enabled from the configuration table
+     *
+     * @param StoreInterface $store the store model or null.
+     * @return bool the configuration value
+     */
+    public function isInventoryTaggingEnabled(StoreInterface $store = null)
+    {
+        return (bool)$this->getStoreConfig(self::XML_PATH_INVENTORY_TAGGING, $store);
+    }
+
+    /**
+     * Returns if real time product updates are enabled from the configuration table
+     *
+     * @param StoreInterface $store the store model or null.
+     * @return bool the configuration value
+     */
+    public function isProductUpdatesEnabled(StoreInterface $store = null)
+    {
+        return (bool)$this->getStoreConfig(self::XML_PATH_PRODUCT_UPDATES, $store);
     }
 
     /**

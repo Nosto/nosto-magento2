@@ -48,6 +48,7 @@ use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Price as NostoPriceHelper;
 use Nosto\Tagging\Helper\Stock as NostoStockHelper;
 use Nosto\Tagging\Model\Category\Builder as NostoCategoryBuilder;
+use Nosto\Tagging\Model\Product\Url\Builder as NostoUrlBuilder;
 use Nosto\Tagging\Model\Product\Sku\Collection as NostoSkuCollection;
 use Nosto\Types\Product\ProductInterface;
 use Psr\Log\LoggerInterface;
@@ -63,6 +64,7 @@ class Builder
     private $eventManager;
     private $logger;
     private $reviewFactory;
+    private $urlBuilder;
     private $skuCollection;
 
     /**
@@ -76,6 +78,7 @@ class Builder
      * @param ManagerInterface $eventManager
      * @param ReviewFactory $reviewFactory
      * @param GalleryReadHandler $galleryReadHandler
+     * @param NostoUrlBuilder $urlBuilder
      */
     public function __construct(
         NostoHelperData $nostoHelperData,
@@ -87,7 +90,8 @@ class Builder
         LoggerInterface $logger,
         ManagerInterface $eventManager,
         ReviewFactory $reviewFactory,
-        GalleryReadHandler $galleryReadHandler
+        GalleryReadHandler $galleryReadHandler,
+        NostoUrlBuilder $urlBuilder
     ) {
         $this->nostoDataHelper = $nostoHelperData;
         $this->nostoPriceHelper = $priceHelper;
@@ -98,6 +102,7 @@ class Builder
         $this->nostoStockHelper = $stockHelper;
         $this->reviewFactory = $reviewFactory;
         $this->galleryReadHandler = $galleryReadHandler;
+        $this->urlBuilder = $urlBuilder;
         $this->skuCollection = $skuCollection;
     }
 
@@ -111,7 +116,7 @@ class Builder
         $nostoProduct = new \Nosto\Object\Product\Product();
 
         try {
-            $nostoProduct->setUrl($this->buildUrl($product, $store));
+            $nostoProduct->setUrl($this->urlBuilder->getUrlInStore($product, $store));
             $nostoProduct->setProductId((string)$product->getId());
             $nostoProduct->setName($product->getName());
             $nostoProduct->setImageUrl($this->buildImageUrl($product, $store));
@@ -123,13 +128,24 @@ class Builder
             $nostoProduct->setPriceCurrencyCode($store->getBaseCurrencyCode());
             $nostoProduct->setAvailable($product->isAvailable());
             $nostoProduct->setCategories($this->nostoCategoryBuilder->buildCategories($product));
-            $nostoProduct->setInventoryLevel($this->nostoStockHelper->getQty($product));
-            $nostoProduct->setRatingValue($this->buildRatingValue($product, $store));
-            $nostoProduct->setReviewCount($this->buildReviewCount($product, $store));
-            $nostoProduct->setAlternateImageUrls($this->buildAlternativeImages($product));
-            $nostoProduct->setSkus($this->skuCollection->build($product, $store));
 
-            // Optional properties.
+            if ($this->nostoDataHelper->isInventoryTaggingEnabled($store)) {
+                $nostoProduct->setInventoryLevel($this->nostoStockHelper->getQty($product));
+            }
+
+            if ($this->nostoDataHelper->isRatingTaggingEnabled($store)) {
+                $nostoProduct->setRatingValue($this->buildRatingValue($product, $store));
+                $nostoProduct->setReviewCount($this->buildReviewCount($product, $store));
+            }
+
+            if ($this->nostoDataHelper->isAltimgTaggingEnabled($store)) {
+                $nostoProduct->setAlternateImageUrls($this->buildAlternativeImages($product));
+            }
+
+            if ($this->nostoDataHelper->isVariationTaggingEnabled($store)) {
+                $nostoProduct->setSkus($this->skuCollection->build($product, $store));
+            }
+
             $descriptions = [];
             if ($product->hasData('short_description')) {
                 $descriptions[] = $product->getData('short_description');
@@ -214,23 +230,6 @@ class Builder
         } else {
             return null;
         }
-    }
-
-    /**
-     * @param Product $product
-     * @param StoreInterface $store
-     * @return string
-     */
-    public function buildUrl(Product $product, StoreInterface $store)
-    {
-        return $product->getUrlInStore(
-            [
-                '_ignore_category' => true,
-                '_nosid' => true,
-                '_scope_to_url' => true,
-                '_scope' => $store->getCode(),
-            ]
-        );
     }
 
     /**
