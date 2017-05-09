@@ -45,8 +45,7 @@ use Magento\Directory\Model\CurrencyFactory;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 use Magento\GroupedProduct\Model\Product\Type\Grouped as GroupedType;
-use Magento\Store\Api\Data\StoreInterface;
-use Magento\Store\Model\Store;
+use Magento\ConfigurableProduct\Model\Product\Type\Configurable as ConfigurableType;
 
 /**
  * Price helper used for product price related tasks.
@@ -75,7 +74,6 @@ class Price extends AbstractHelper
         CurrencyFactory $currencyFactory
     ) {
         parent::__construct($context);
-
         $this->catalogHelper = $catalogHelper;
         $this->directoryHelper = $directoryHelper;
         $this->currencyFactory = $currencyFactory;
@@ -84,13 +82,14 @@ class Price extends AbstractHelper
     /**
      * Gets the unit price for a product model including taxes.
      *
-     * @param $store
      * @param Product $product the product model.
      * @return float
      */
-    public function getProductPriceInclTax(StoreInterface $store, Product $product)
+    public function getProductPriceInclTax(Product $product)
     {
-        return $this->convertToBaseCurrency($store, $this->getProductPrice($product, false, true));
+        $price = $this->getProductPrice($product, false, true);
+
+        return $price;
     }
 
     /**
@@ -102,8 +101,11 @@ class Price extends AbstractHelper
      * @return float
      * @suppress PhanTypeMismatchArgument
      */
-    public function getProductPrice($product, $finalPrice = false, $inclTax = true)
-    {
+    public function getProductPrice(
+        Product $product,
+        $finalPrice = false,
+        $inclTax = true
+    ) {
         switch ($product->getTypeId()) {
             // Get the bundle product "from" price.
             case ProductType::TYPE_BUNDLE:
@@ -145,15 +147,31 @@ class Price extends AbstractHelper
                 }
                 break;
 
-            // No constant for this value was found (Magento ver. 1.0.0-beta).
-            // The configurable product has the tax already applied in the
-            // "final" price, but not in the regular price.
-            case 'configurable':
+            // We will use the SKU that has the lowest final price
+            case ConfigurableType::TYPE_CODE:
+                $productType = $product->getTypeInstance();
+                $products = $productType->getUsedProducts($product);
+                $skus = [];
+                $finalPrices = [];
+                foreach ($products as $sku) {
+                    $finalPrices[$sku->getId()] = $this->getProductPrice(
+                        $sku,
+                        true,
+                        true
+                    );
+                    $skus[$sku->getId()] = $sku;
+                }
+                asort($finalPrices, SORT_NUMERIC);
+                $min = array_keys($finalPrices)[0];
+                if (!empty($skus[$min])) {
+                    $simpleProduct = $skus[$min];
+                } else { // Fallback to given product
+                    $simpleProduct = $product;
+                }
                 if ($finalPrice) {
-                    $price = $product->getFinalPrice();
-                } elseif ($inclTax) {
-                    $price = $this->catalogHelper->getTaxPrice($product, $product->getPrice(),
-                        true);
+                    $price = $this->getProductFinalPriceInclTax($simpleProduct);
+                } elseif ($inclTax){
+                    $price = $this->InclTax($simpleProduct);
                 } else {
                     $price = $product->getPrice();
                 }
@@ -173,29 +191,13 @@ class Price extends AbstractHelper
     /**
      * Get the final price for a product model including taxes.
      *
-     * @param StoreInterface|Store $store
      * @param Product $product the product model.
      * @return float
      */
-    public function getProductFinalPriceInclTax(StoreInterface $store, Product $product)
+    public function getProductFinalPriceInclTax(Product $product)
     {
-        return $this->convertToBaseCurrency($store, $this->getProductPrice($product, true, true));
-    }
+        $price = $this->getProductPrice($product, true, true);
 
-    /**
-     * Helper method that converts a price from the current currency to the store's base currency.
-     * If the currency currency is the same as the store's base currency, the same value is
-     * automatically returned.
-     *
-     * @param StoreInterface|Store $store the store to whose base currency to convert the amount to
-     * @param float $amount the amount that should be converted to the store's base currency
-     * @return float the amount converted into the store's base currency
-     */
-    public function convertToBaseCurrency(StoreInterface $store, $amount)
-    {
-        $rateToBase = $this->currencyFactory->create()->load($store->getCurrentCurrencyCode())->getAnyRate($store->getBaseCurrencyCode());
-        var_dump($amount);
-        var_dump($rateToBase);
-        return $amount * $rateToBase;
+        return $price;
     }
 }

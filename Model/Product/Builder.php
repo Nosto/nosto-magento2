@@ -120,9 +120,9 @@ class Builder
             $nostoProduct->setProductId((string)$product->getId());
             $nostoProduct->setName($product->getName());
             $nostoProduct->setImageUrl($this->buildImageUrl($product, $store));
-            $price = $this->nostoPriceHelper->getProductFinalPriceInclTax($store, $product);
+            $price = $this->nostoPriceHelper->getProductFinalPriceInclTax($product);
             $nostoProduct->setPrice($price);
-            $listPrice = $this->nostoPriceHelper->getProductPriceInclTax($store, $product);
+            $listPrice = $this->nostoPriceHelper->getProductPriceInclTax($product);
             $nostoProduct->setListPrice($listPrice);
             /** @noinspection PhpUndefinedMethodInspection */
             $nostoProduct->setPriceCurrencyCode($store->getBaseCurrencyCode());
@@ -132,24 +132,19 @@ class Builder
             if (count($store->getAvailableCurrencyCodes(true)) > 1) {
                 $nostoProduct->setVariationId($store->getBaseCurrencyCode());
             }
-
             if ($this->nostoDataHelper->isInventoryTaggingEnabled($store)) {
                 $nostoProduct->setInventoryLevel($this->nostoStockHelper->getQty($product));
             }
-
             if ($this->nostoDataHelper->isRatingTaggingEnabled($store)) {
                 $nostoProduct->setRatingValue($this->buildRatingValue($product, $store));
                 $nostoProduct->setReviewCount($this->buildReviewCount($product, $store));
             }
-
             if ($this->nostoDataHelper->isAltimgTaggingEnabled($store)) {
                 $nostoProduct->setAlternateImageUrls($this->buildAlternativeImages($product));
             }
-
             if ($this->nostoDataHelper->isVariationTaggingEnabled($store)) {
                 $nostoProduct->setSkus($this->skuCollection->build($product, $store));
             }
-
             $descriptions = [];
             if ($product->hasData('short_description')) {
                 $descriptions[] = $product->getData('short_description');
@@ -160,29 +155,24 @@ class Builder
             if (!empty($descriptions)) {
                 $nostoProduct->setDescription(implode(' ', $descriptions));
             }
-
             $brandAttribute = $this->nostoDataHelper->getBrandAttribute($store);
             if ($product->hasData($brandAttribute)) {
                 $nostoProduct->setBrand($product->getData($brandAttribute));
             }
-
             $marginAttribute = $this->nostoDataHelper->getMarginAttribute($store);
             if ($product->hasData($marginAttribute)) {
                 $nostoProduct->setSupplierCost($product->getData($marginAttribute));
             }
-
             $gtinAttribute = $this->nostoDataHelper->getGtinAttribute($store);
             if ($product->hasData($gtinAttribute)) {
                 $nostoProduct->setGtin($product->getData($gtinAttribute));
             }
-
             if (($tags = $this->buildTags($product)) !== []) {
                 $nostoProduct->setTag1($tags);
             }
         } catch (NostoException $e) {
             $this->logger->error($e->__toString());
         }
-
         $this->eventManager->dispatch('nosto_product_load_after', ['product' => $nostoProduct]);
 
         return $nostoProduct;

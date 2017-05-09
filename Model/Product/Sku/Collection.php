@@ -37,7 +37,6 @@
 namespace Nosto\Tagging\Model\Product\Sku;
 
 use Magento\Catalog\Model\Product;
-use Magento\Catalog\Model\Product\Gallery\ReadHandler as GalleryReadHandler;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable as ConfigurableType;
 use Magento\Store\Api\Data\StoreInterface;
 use Nosto\NostoException;
