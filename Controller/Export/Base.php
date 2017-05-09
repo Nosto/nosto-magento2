@@ -40,7 +40,6 @@ use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\Controller\Result\Raw;
 use Magento\Framework\Controller\ResultFactory;
-use Magento\Framework\Model\ResourceModel\Db\VersionControl\Collection;
 use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
@@ -56,8 +55,6 @@ abstract class Base extends Action
     const ID = 'id';
     const LIMIT = 'limit';
     const OFFSET = 'offset';
-    const CREATED_AT = 'created_at';
-    const ENTITY_ID = 'entity_id';
 
     private $storeManager;
     private $nostoHelperAccount;
@@ -89,22 +86,14 @@ abstract class Base extends Action
     public function execute()
     {
         $store = $this->storeManager->getStore(true);
-        $collection = $this->getCollection($store);
-
         $id = $this->getRequest()->getParam(self::ID, false);
         if (!empty($id)) {
-            $collection->addFieldToFilter(self::ENTITY_ID, $id);
+            return $this->export($this->buildSingleExportCollection($store, $id));
         } else {
             $pageSize = (int)$this->getRequest()->getParam(self::LIMIT, 100);
             $currentOffset = (int)$this->getRequest()->getParam(self::OFFSET, 0);
-            $currentPage = ($currentOffset / $pageSize) + 1;
-            $collection->getSelect()->limitPage($currentPage, $pageSize);
-            $collection->setOrder(self::CREATED_AT, $collection::SORT_ORDER_DESC);
+            return $this->export($this->buildExportCollection($store, $pageSize, $currentOffset));
         }
-        $collection->load();
-
-        $exportCollection = $this->buildExportCollection($collection);
-        return $this->export($exportCollection);
     }
 
     /**
@@ -112,18 +101,21 @@ abstract class Base extends Action
      * collection object with the controller specific filters applied
      *
      * @param StoreInterface $store The store object for the current store
-     * @return Collection The collection
+     * @param $id
+     * @return AbstractCollection The collection
      */
-    abstract protected function getCollection(StoreInterface $store); // @codingStandardsIgnoreLine
+    abstract protected function buildSingleExportCollection(StoreInterface $store, $id);
 
     /**
      * Abstract function that should be implemented to return the built export
      * collection object with all the items added
      *
-     * @param mixed $collection
+     * @param StoreInterface $store
+     * @param int $limit
+     * @param int $offset
      * @return AbstractCollection the collection with the items to export
      */
-    abstract protected function buildExportCollection($collection); // @codingStandardsIgnoreLine
+    abstract protected function buildExportCollection(StoreInterface $store, $limit = 100, $offset = 0);
 
     /**
      * Encrypts the export collection and outputs it to the browser.

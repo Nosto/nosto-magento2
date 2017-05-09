@@ -41,10 +41,8 @@ use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductColl
 use Magento\Framework\App\Action\Context;
 use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\StoreManagerInterface;
-use Nosto\NostoException;
-use Nosto\Object\Product\ProductCollection;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
-use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
+use Nosto\Tagging\Model\Product\Collection as NostoProductCollection;
 
 /**
  * Product export controller used to export product history to Nosto in order to
@@ -58,7 +56,7 @@ class Product extends Base
     private $productCollectionFactory;
     private $productVisibility;
     private $storeManager;
-    private $nostoProductBuilder;
+    private $nostoProductCollection;
 
     /** @noinspection PhpUndefinedClassInspection */
     /**
@@ -69,7 +67,7 @@ class Product extends Base
      * @param ProductVisibility $productVisibility
      * @param StoreManagerInterface $storeManager
      * @param NostoHelperAccount $nostoHelperAccount
-     * @param NostoProductBuilder $nostoProductBuilder
+     * @param NostoProductCollection $nostoProductCollection
      */
     public function __construct(
         Context $context,
@@ -78,55 +76,29 @@ class Product extends Base
         ProductVisibility $productVisibility,
         StoreManagerInterface $storeManager,
         NostoHelperAccount $nostoHelperAccount,
-        NostoProductBuilder $nostoProductBuilder
+        NostoProductCollection $nostoProductCollection
     ) {
         parent::__construct($context, $storeManager, $nostoHelperAccount);
 
         $this->storeManager = $storeManager;
         $this->productCollectionFactory = $productCollectionFactory;
         $this->productVisibility = $productVisibility;
-        $this->nostoProductBuilder = $nostoProductBuilder;
+        $this->nostoProductCollection = $nostoProductCollection;
     }
 
     /**
      * @inheritdoc
      */
-    protected function getCollection(StoreInterface $store) // @codingStandardsIgnoreLine
+    protected function buildExportCollection(StoreInterface $store, $limit = 100, $offset = 0)
     {
-        /** @var \Magento\Catalog\Model\ResourceModel\Product\Collection $collection */
-        /** @noinspection PhpUndefinedMethodInspection */
-        $collection = $this->productCollectionFactory->create();
-        $collection->setVisibility($this->productVisibility->getVisibleInSiteIds());
-        $collection->addAttributeToFilter('status', ['eq' => '1']);
-        $collection->addStoreFilter($store->getId());
-        $collection->addAttributeToSelect('*');
-        return $collection;
+        return $this->nostoProductCollection->buildMany($store, $limit, $offset);
     }
 
     /**
      * @inheritdoc
      */
-    protected function buildExportCollection($collection) // @codingStandardsIgnoreLine
+    protected function buildSingleExportCollection(StoreInterface $store, $id)
     {
-        /** @var \Magento\Catalog\Model\ResourceModel\Product\Collection $collection */
-        $exportCollection = new ProductCollection();
-        $items = $collection->loadData();
-        $store = $this->storeManager->getStore(true);
-        if (
-            $items instanceof \Traversable === false
-            && !is_array($items)
-        ) {
-            throw new NostoException(
-                sprintf(
-                    'Invalid collection type %s for product export',
-                    get_class($collection)
-                )
-            );
-        }
-        foreach ($items as $product) {
-            /** @var \Magento\Catalog\Model\Product $product */
-            $exportCollection->append($this->nostoProductBuilder->build($product, $store));
-        }
-        return $exportCollection;
+        return $this->nostoProductCollection->buildSingle($store, $id);
     }
 }
