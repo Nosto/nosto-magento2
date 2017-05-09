@@ -49,6 +49,7 @@ use Nosto\Tagging\Helper\Price as NostoPriceHelper;
 use Nosto\Tagging\Helper\Stock as NostoStockHelper;
 use Nosto\Tagging\Model\Category\Builder as NostoCategoryBuilder;
 use Nosto\Tagging\Model\Product\Url\Builder as NostoUrlBuilder;
+use Nosto\Tagging\Model\Product\Sku\Collection as NostoSkuCollection;
 use Nosto\Types\Product\ProductInterface;
 use Psr\Log\LoggerInterface;
 
@@ -64,12 +65,14 @@ class Builder
     private $logger;
     private $reviewFactory;
     private $urlBuilder;
+    private $skuCollection;
 
     /**
      * @param NostoHelperData $nostoHelperData
      * @param NostoPriceHelper $priceHelper
      * @param NostoCategoryBuilder $categoryBuilder
      * @param NostoStockHelper $stockHelper
+     * @param NostoSkuCollection $skuCollection
      * @param CategoryRepositoryInterface $categoryRepository
      * @param LoggerInterface $logger
      * @param ManagerInterface $eventManager
@@ -82,6 +85,7 @@ class Builder
         NostoPriceHelper $priceHelper,
         NostoCategoryBuilder $categoryBuilder,
         NostoStockHelper $stockHelper,
+        NostoSkuCollection $skuCollection,
         CategoryRepositoryInterface $categoryRepository,
         LoggerInterface $logger,
         ManagerInterface $eventManager,
@@ -99,6 +103,7 @@ class Builder
         $this->reviewFactory = $reviewFactory;
         $this->galleryReadHandler = $galleryReadHandler;
         $this->urlBuilder = $urlBuilder;
+        $this->skuCollection = $skuCollection;
     }
 
     /**
@@ -127,6 +132,7 @@ class Builder
             $nostoProduct->setRatingValue($this->buildRatingValue($product, $store));
             $nostoProduct->setReviewCount($this->buildReviewCount($product, $store));
             $nostoProduct->setAlternateImageUrls($this->buildAlternativeImages($product));
+            $nostoProduct->setSkus($this->skuCollection->build($product, $store));
 
             // Optional properties.
             $descriptions = [];
