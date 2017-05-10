@@ -171,7 +171,7 @@ class Price extends AbstractHelper
                 if ($finalPrice) {
                     $price = $this->getProductFinalPriceInclTax($simpleProduct);
                 } elseif ($inclTax){
-                    $price = $this->InclTax($simpleProduct);
+                    $price = $this->getProductPriceInclTax($simpleProduct);
                 } else {
                     $price = $product->getPrice();
                 }
