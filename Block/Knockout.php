@@ -37,6 +37,7 @@
 namespace Nosto\Tagging\Block;
 
 use Magento\Framework\View\Element\Template;
+use Magento\Framework\View\Element\Template\Context;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 
 /**
@@ -49,12 +50,12 @@ class Knockout extends Template
     /**
      * Constructor
      *
-     * @param Template\Context $context
+     * @param Context $context
      * @param NostoHelperAccount $nostoHelperAccount
      * @param array $data
      */
     public function __construct(
-        Template\Context $context,
+        Context $context,
         NostoHelperAccount $nostoHelperAccount,
         array $data = []
     ) {

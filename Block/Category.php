@@ -38,6 +38,7 @@ namespace Nosto\Tagging\Block;
 
 use Magento\Framework\Registry;
 use Magento\Framework\View\Element\Template;
+use Magento\Framework\View\Element\Template\Context;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Model\Category\Builder as NostoCategoryBuilder;
 
@@ -48,7 +49,9 @@ use Nosto\Tagging\Model\Category\Builder as NostoCategoryBuilder;
  */
 class Category extends Template
 {
-    use TaggingTrait;
+    use TaggingTrait {
+        TaggingTrait::__construct as taggingConstruct;
+    }
 
     private $registry;
     private $categoryBuilder;
@@ -56,14 +59,14 @@ class Category extends Template
     /**
      * Constructor.
      *
-     * @param Template\Context $context
+     * @param Context $context
      * @param Registry $registry
      * @param NostoCategoryBuilder $categoryBuilder
      * @param NostoHelperAccount $nostoHelperAccount
      * @param array $data
      */
     public function __construct(
-        Template\Context $context,
+        Context $context,
         Registry $registry,
         NostoCategoryBuilder $categoryBuilder,
         NostoHelperAccount $nostoHelperAccount,
@@ -71,9 +74,9 @@ class Category extends Template
     ) {
         parent::__construct($context, $data);
 
+        $this->taggingConstruct($nostoHelperAccount);
         $this->registry = $registry;
         $this->categoryBuilder = $categoryBuilder;
-        $this->nostoHelperAccount = $nostoHelperAccount;
     }
 
     /**

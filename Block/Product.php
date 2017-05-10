@@ -61,12 +61,13 @@ use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
  */
 class Product extends View
 {
-    use TaggingTrait;
+    use TaggingTrait {
+        TaggingTrait::__construct as taggingConstruct;
+    }
 
     private $nostoProductBuilder;
     private $categoryBuilder;
     private $nostoHelperData;
-    private $nostoHelperAccount;
 
     /**
      * Constructor.
@@ -118,10 +119,10 @@ class Product extends View
             $data
         );
 
+        $this->taggingConstruct($nostoHelperAccount);
         $this->nostoProductBuilder = $nostoProductBuilder;
         $this->categoryBuilder = $categoryBuilder;
         $this->nostoHelperData = $nostoHelperData;
-        $this->nostoHelperAccount = $nostoHelperAccount;
     }
 
     /**
