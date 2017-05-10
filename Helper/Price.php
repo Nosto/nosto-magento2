@@ -39,13 +39,14 @@ namespace Nosto\Tagging\Helper;
 use Magento\Bundle\Model\Product\Price as BundlePrice;
 use Magento\Catalog\Helper\Data as CatalogHelper;
 use Magento\Catalog\Model\Product;
-use Magento\Catalog\Model\Product\Type as ProductType;
 use Magento\Directory\Helper\Data as DirectoryHelper;
 use Magento\Directory\Model\CurrencyFactory;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 use Magento\GroupedProduct\Model\Product\Type\Grouped as GroupedType;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable as ConfigurableType;
+use Magento\Bundle\Model\Product\Type as BundleType;
+use Magento\Catalog\Model\ProductFactory;
 
 /**
  * Price helper used for product price related tasks.
@@ -54,10 +55,8 @@ class Price extends AbstractHelper
 {
     private $catalogHelper;
     private $directoryHelper;
-    /**
-     * @var CurrencyFactory
-     */
     private $currencyFactory;
+    private $productFactory;
 
     /**
      * Constructor.
@@ -66,17 +65,20 @@ class Price extends AbstractHelper
      * @param CatalogHelper $catalogHelper the catalog helper.
      * @param DirectoryHelper $directoryHelper
      * @param CurrencyFactory $currencyFactory
+     * @param ProductFactory $productFactory
      */
     public function __construct(
         Context $context,
         CatalogHelper $catalogHelper,
         DirectoryHelper $directoryHelper,
-        CurrencyFactory $currencyFactory
+        CurrencyFactory $currencyFactory,
+        ProductFactory $productFactory
     ) {
         parent::__construct($context);
         $this->catalogHelper = $catalogHelper;
         $this->directoryHelper = $directoryHelper;
         $this->currencyFactory = $currencyFactory;
+        $this->productFactory= $productFactory;
     }
 
     /**
@@ -108,18 +110,44 @@ class Price extends AbstractHelper
     ) {
         switch ($product->getTypeId()) {
             // Get the bundle product "from" price.
-            case ProductType::TYPE_BUNDLE:
+            case BundleType::TYPE_CODE:
                 $priceModel = $product->getPriceModel();
                 if ($priceModel instanceof BundlePrice) {
-                    $price = $priceModel->getTotalPrices($product, 'min', $inclTax);
+                    if ($finalPrice) {
+                        $price = $priceModel->getTotalPrices(
+                            $product,
+                            'min',
+                            $inclTax
+                        );
+                    } else {
+                        $productType = $product->getTypeInstance();
+                        $childProducts = $productType->getChildrenIds(
+                            $product->getId()
+                        );
+                        $listPrice = 0;
+                        foreach ($childProducts as $skuIds) {
+                            if (is_array($skuIds)) {
+                                try {
+                                    $skuId = reset($skuIds);
+                                    $sku = $this->productFactory->create()->load(
+                                        $skuId
+                                    );
+                                    $listPrice += $this->getProductPriceInclTax(
+                                        $sku
+                                    );
+                                } catch (\Exception $e) {}
+                            }
+                        }
+
+                        $price = $listPrice;
+                    }
                 } else {
                     $price = null;
                 }
                 break;
 
-            // No constant for this value was found (Magento ver. 1.0.0-beta).
             // Get the grouped product "minimal" price.
-            case 'grouped':
+            case GroupedType::TYPE_CODE:
                 $typeInstance = $product->getTypeInstance();
                 if ($typeInstance instanceof GroupedType) {
                     $associatedProducts = $typeInstance
