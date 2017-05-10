@@ -50,7 +50,9 @@ use Nosto\Tagging\Helper\Account as NostoHelperAccount;
  */
 class Search extends Result
 {
-    use TaggingTrait;
+    use TaggingTrait {
+        TaggingTrait::__construct as taggingConstruct;
+    }
 
     /**
      * Search constructor.
@@ -71,7 +73,7 @@ class Search extends Result
     ) {
         parent::__construct($context, $layerResolver, $catalogSearchData, $queryFactory, $data);
 
-        $this->nostoHelperAccount = $nostoHelperAccount;
+        $this->taggingConstruct($nostoHelperAccount);
     }
 
     /**

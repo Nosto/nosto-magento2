@@ -49,7 +49,9 @@ use Nosto\Tagging\Helper\Data as NostoHelperData;
  */
 class Embed extends Template
 {
-    use TaggingTrait;
+    use TaggingTrait {
+        TaggingTrait::__construct as taggingConstruct;
+    }
 
     private $nostoHelperData;
     /**
@@ -73,6 +75,7 @@ class Embed extends Template
     ) {
         parent::__construct($context, $data);
 
+        $this->taggingConstruct($nostoHelperAccount);
         $this->nostoHelperAccount = $nostoHelperAccount;
         $this->nostoHelperData = $nostoHelperData;
     }

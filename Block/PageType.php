@@ -37,6 +37,7 @@
 namespace Nosto\Tagging\Block;
 
 use Magento\Framework\View\Element\Template;
+use Magento\Framework\View\Element\Template\Context;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 
 /**
@@ -44,7 +45,9 @@ use Nosto\Tagging\Helper\Account as NostoHelperAccount;
  */
 class PageType extends Template
 {
-    use TaggingTrait;
+    use TaggingTrait {
+        TaggingTrait::__construct as taggingConstruct;
+    }
 
     /**
      * Default type assigned to the page if none is set in the layout xml.
@@ -54,18 +57,18 @@ class PageType extends Template
     /**
      * Constructor.
      *
-     * @param Template\Context $context
+     * @param Context $context
      * @param NostoHelperAccount $nostoHelperAccount
      * @param array $data
      */
     public function __construct(
-        Template\Context $context,
+        Context $context,
         NostoHelperAccount $nostoHelperAccount,
         array $data = []
     ) {
         parent::__construct($context, $data);
 
-        $this->nostoHelperAccount = $nostoHelperAccount;
+        $this->taggingConstruct($nostoHelperAccount);
     }
 
     /**

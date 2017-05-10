@@ -40,11 +40,11 @@ use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 
 trait TaggingTrait
 {
-
-    /**
-     * @var NostoHelperAccount
-     */
     private $nostoHelperAccount;
+
+    public function __construct(NostoHelperAccount $nostoHelperAccount) {
+        $this->nostoHelperAccount = $nostoHelperAccount;
+    }
 
     /**
      * Overridden method that only outputs any markup if the extension is enabled and an account
