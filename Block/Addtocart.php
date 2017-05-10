@@ -47,7 +47,9 @@ use Nosto\Tagging\Helper\Account as NostoHelperAccount;
  */
 class Addtocart extends Template
 {
-    use TaggingTrait;
+    use TaggingTrait {
+        TaggingTrait::__construct as taggingConstruct;
+    }
 
     protected $urlEncoder;
 
@@ -67,6 +69,7 @@ class Addtocart extends Template
     ) {
         parent::__construct($context, $data);
 
+        $this->taggingConstruct($nostoHelperAccount);
         $this->urlEncoder = $urlEncoder;
     }
 
