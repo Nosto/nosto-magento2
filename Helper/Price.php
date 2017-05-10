@@ -39,8 +39,6 @@ namespace Nosto\Tagging\Helper;
 use Magento\Bundle\Model\Product\Price as BundlePrice;
 use Magento\Catalog\Helper\Data as CatalogHelper;
 use Magento\Catalog\Model\Product;
-use Magento\Directory\Helper\Data as DirectoryHelper;
-use Magento\Directory\Model\CurrencyFactory;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 use Magento\GroupedProduct\Model\Product\Type\Grouped as GroupedType;
@@ -54,8 +52,6 @@ use Magento\Catalog\Model\ProductFactory;
 class Price extends AbstractHelper
 {
     private $catalogHelper;
-    private $directoryHelper;
-    private $currencyFactory;
     private $productFactory;
 
     /**
@@ -63,21 +59,15 @@ class Price extends AbstractHelper
      *
      * @param Context $context the context.
      * @param CatalogHelper $catalogHelper the catalog helper.
-     * @param DirectoryHelper $directoryHelper
-     * @param CurrencyFactory $currencyFactory
      * @param ProductFactory $productFactory
      */
     public function __construct(
         Context $context,
         CatalogHelper $catalogHelper,
-        DirectoryHelper $directoryHelper,
-        CurrencyFactory $currencyFactory,
         ProductFactory $productFactory
     ) {
         parent::__construct($context);
         $this->catalogHelper = $catalogHelper;
-        $this->directoryHelper = $directoryHelper;
-        $this->currencyFactory = $currencyFactory;
         $this->productFactory= $productFactory;
     }
 

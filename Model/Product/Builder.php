@@ -43,6 +43,7 @@ use Magento\Eav\Model\Entity\Attribute;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Review\Model\ReviewFactory;
 use Magento\Store\Api\Data\StoreInterface;
+use Nosto\Tagging\Helper\Currency as CurrencyHelper;
 use Nosto\NostoException;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Price as NostoPriceHelper;
@@ -66,6 +67,7 @@ class Builder
     private $reviewFactory;
     private $urlBuilder;
     private $skuCollection;
+    private $currencyHelper;
 
     /**
      * @param NostoHelperData $nostoHelperData
@@ -79,6 +81,7 @@ class Builder
      * @param ReviewFactory $reviewFactory
      * @param GalleryReadHandler $galleryReadHandler
      * @param NostoUrlBuilder $urlBuilder
+     * @param CurrencyHelper $currencyHelper
      */
     public function __construct(
         NostoHelperData $nostoHelperData,
@@ -91,7 +94,8 @@ class Builder
         ManagerInterface $eventManager,
         ReviewFactory $reviewFactory,
         GalleryReadHandler $galleryReadHandler,
-        NostoUrlBuilder $urlBuilder
+        NostoUrlBuilder $urlBuilder,
+        CurrencyHelper $currencyHelper
     ) {
         $this->nostoDataHelper = $nostoHelperData;
         $this->nostoPriceHelper = $priceHelper;
@@ -104,6 +108,7 @@ class Builder
         $this->galleryReadHandler = $galleryReadHandler;
         $this->urlBuilder = $urlBuilder;
         $this->skuCollection = $skuCollection;
+        $this->currencyHelper = $currencyHelper;
     }
 
     /**
@@ -120,18 +125,26 @@ class Builder
             $nostoProduct->setProductId((string)$product->getId());
             $nostoProduct->setName($product->getName());
             $nostoProduct->setImageUrl($this->buildImageUrl($product, $store));
-            $price = $this->nostoPriceHelper->getProductFinalPriceInclTax($product);
+            $price = $this->currencyHelper->convertToTaggingPrice(
+                $this->nostoPriceHelper->getProductFinalPriceInclTax(
+                    $product
+                ),
+                $store
+            );
+
             $nostoProduct->setPrice($price);
             $listPrice = $this->nostoPriceHelper->getProductPriceInclTax($product);
             $nostoProduct->setListPrice($listPrice);
             /** @noinspection PhpUndefinedMethodInspection */
-            $nostoProduct->setPriceCurrencyCode($store->getBaseCurrencyCode());
+            $nostoProduct->setPriceCurrencyCode(
+                $this->currencyHelper->getTaggingCurrency($store)->getCode()
+            );
             $nostoProduct->setAvailable($product->isAvailable());
             $nostoProduct->setCategories($this->nostoCategoryBuilder->buildCategories($product));
             $nostoProduct->setAlternateImageUrls($this->buildAlternativeImages($product));
-            if (count($store->getAvailableCurrencyCodes(true)) > 1) {
-                $nostoProduct->setVariationId($store->getBaseCurrencyCode());
-            }
+            $nostoProduct->setVariationId(
+                $this->currencyHelper->getTaggingCurrency($store)->getCode()
+            );
             if ($this->nostoDataHelper->isInventoryTaggingEnabled($store)) {
                 $nostoProduct->setInventoryLevel($this->nostoStockHelper->getQty($product));
             }
