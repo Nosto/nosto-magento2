@@ -33,11 +33,18 @@
  *
  */
 
-var config = {
-    map: {
-        '*': {
-            nostojs: 'Nosto_Tagging/js/nostojs',
-            recobuy:  'Nosto_Tagging/js/recobuy'
-        }
-    }
-};
+define(['catalogAddToCart', 'jquery'], function (addToCart, $) {
+
+    //noinspection SpellCheckingInspection
+    var form = $('#nosto_addtocart_form');
+    var helper = new addToCart();
+
+    window.Nosto = {};
+    window.Nosto.addProductToCart = function (productId) {
+        form.find('input[name="product"]').val(productId);
+        form.find('input[name="qty"]').val(1);
+        helper.ajaxSubmit(form);
+    };
+
+    return window.Nosto;
+});

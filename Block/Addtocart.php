@@ -1,4 +1,5 @@
-/*
+<?php
+/**
  * Copyright (c) 2017, Nosto Solutions Ltd
  * All rights reserved.
  *
@@ -33,11 +34,65 @@
  *
  */
 
-var config = {
-    map: {
-        '*': {
-            nostojs: 'Nosto_Tagging/js/nostojs',
-            recobuy:  'Nosto_Tagging/js/recobuy'
-        }
+namespace Nosto\Tagging\Block;
+
+use Magento\Framework\App\ActionInterface;
+use Magento\Framework\Url\EncoderInterface;
+use Magento\Framework\View\Element\Template;
+use Magento\Framework\View\Element\Template\Context;
+use Nosto\Tagging\Helper\Account as NostoHelperAccount;
+
+/**
+ * Embed script block that includes the Nosto script in the page <head> to be included on all pages.
+ */
+class Addtocart extends Template
+{
+    use TaggingTrait;
+
+    protected $urlEncoder;
+
+    /**
+     * Constructor.
+     *
+     * @param Context $context
+     * @param EncoderInterface $urlEncoder
+     * @param NostoHelperAccount $nostoHelperAccount
+     * @param array $data
+     */
+    public function __construct(
+        Context $context,
+        EncoderInterface $urlEncoder,
+        NostoHelperAccount $nostoHelperAccount,
+        array $data = []
+    ) {
+        parent::__construct($context, $data);
+
+        $this->urlEncoder = $urlEncoder;
     }
-};
+
+    /**
+     * Retrieve url for add product to cart
+     *
+     * @return  string
+     */
+    public function getSubmitUrl()
+    {
+        $continueUrl = $this->urlEncoder->encode($this->_urlBuilder->getCurrentUrl());
+
+        $routeParams = [
+            ActionInterface::PARAM_NAME_URL_ENCODED => $continueUrl,
+            '_secure' => $this->getRequest()->isSecure()
+        ];
+
+        $routeParams['_scope'] = $this->_storeManager->getStore(true)->getId();
+        $routeParams['_scope_to_url'] = true;
+
+        if ($this->getRequest()->getRouteName() == 'checkout'
+            && $this->getRequest()->getControllerName() == 'cart'
+        ) {
+            $routeParams['in_cart'] = 1;
+        }
+
+        return $this->_urlBuilder->getUrl('checkout/cart/add', $routeParams);
+    }
+}
