@@ -35,7 +35,7 @@
  */
 
 return [
-    'exclude_file_regex' => '@^vendor/.*/(tests|Tests)/@',
+    'exclude_file_regex' => '@^vendor/.*/(tests|test|Tests|Test)/@',
     'directory_list' => [
         'Api',
         'Block',
