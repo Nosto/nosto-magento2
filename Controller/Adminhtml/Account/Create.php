@@ -49,6 +49,8 @@ use Nosto\Tagging\Model\Meta\Account\Iframe\Builder as NostoIframeMetaBuilder;
 use Nosto\Tagging\Model\Meta\Account\Owner\Builder as NostoOwnerBuilder;
 use Nosto\Tagging\Model\User\Builder as NostoCurrentUserBuilder;
 use Psr\Log\LoggerInterface;
+use Nosto\Tagging\Model\Rates\Service as NostoRatesService;
+use Nosto\Tagging\Helper\Currency as NostoCurrencyHelper;
 
 class Create extends Base
 {
@@ -60,13 +62,9 @@ class Create extends Base
     private $result;
     private $nostoHelperAccount;
     private $nostoCurrentUserBuilder;
-    /**
-     * @var NostoIframeMetaBuilder
-     */
     private $nostoIframeMetaBuilder;
-    /**
-     * @var NostoOwnerBuilder
-     */
+    private $nostoRatesService;
+    private $nostoCurrencyHelper;
     private $nostoOwnerBuilder;
     private $nostoSignupBuilder;
     private $storeManager;
@@ -82,6 +80,7 @@ class Create extends Base
      * @param StoreManagerInterface $storeManager
      * @param Json $result
      * @param LoggerInterface $logger
+     * @param NostoRatesService $nostoRatesService
      */
     public function __construct(
         Context $context,
@@ -92,7 +91,9 @@ class Create extends Base
         NostoOwnerBuilder $nostoOwnerBuilder,
         StoreManagerInterface $storeManager,
         Json $result,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        NostoRatesService $nostoRatesService,
+        NostoCurrencyHelper $nostoCurrencyHelper
     ) {
         parent::__construct($context);
 
@@ -104,6 +105,8 @@ class Create extends Base
         $this->storeManager = $storeManager;
         $this->result = $result;
         $this->logger = $logger;
+        $this->nostoRatesService = $nostoRatesService;
+        $this->nostoCurrencyHelper = $nostoCurrencyHelper;
     }
 
     /**
@@ -152,6 +155,12 @@ class Create extends Base
                             'message_code' => Nosto::CODE_ACCOUNT_CREATE,
                         ]
                     );
+
+                    if ($this->nostoCurrencyHelper->getCurrencyCount($store) > 1) {
+                        try {
+                            $this->nostoRatesService->update($store);
+                        } catch (\Exception $e) {}
+                    }
                 }
             } catch (NostoException $e) {
                 $this->logger->error($e->__toString());
