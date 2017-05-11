@@ -39,6 +39,7 @@ namespace Nosto\Tagging\Model\Order;
 use Exception;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\ObjectManagerInterface;
+use Magento\Framework\Phrase;
 use Magento\Sales\Model\Order;
 use Magento\Sales\Model\Order\Item;
 use Magento\SalesRule\Model\RuleFactory as SalesRuleFactory;
@@ -109,7 +110,10 @@ class Builder
                 $nostoStatus = new OrderStatus();
                 $nostoStatus->setCode($order->getStatus());
                 $nostoStatus->setDate($order->getUpdatedAt());
-                $nostoStatus->setLabel($order->getStatusLabel());
+                $label = $order->getStatusLabel();
+                if ($label instanceof Phrase) {
+                    $nostoStatus->setLabel($label->getText());
+                }
                 $nostoOrder->setOrderStatus($nostoStatus);
             }
             $nostoBuyer = new Buyer();
