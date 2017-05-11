@@ -118,8 +118,8 @@ abstract class Base implements ObserverInterface
             $product = $observer->getProduct();
             // Figure out if we're updating a parent product
             $parentProducts = $this->configurableProduct->getParentIdsByChild($product->getId());
-            if (!empty($parentProducts[0])) {
-                $product = $this->productFactory->create()->load($parentProducts[0]);
+            if (!empty($parentProducts[0]) && is_int($parentProducts[0])) {
+                $product = $this->productFactory->create()->load((int)$parentProducts[0]);
             }
             foreach ($product->getStoreIds() as $storeId) {
                 /** @var Store $store */

@@ -88,6 +88,7 @@ class Customer extends AbstractModel implements CustomerInterface
 
     /**
      * @inheritdoc
+     * @suppress PhanParamSignatureMismatch
      */
     public function setCustomerId($customerId)
     {
@@ -96,6 +97,7 @@ class Customer extends AbstractModel implements CustomerInterface
 
     /**
      * @inheritdoc
+     * @suppress PhanParamSignatureMismatch
      */
     public function setQuoteId($quoteId)
     {
@@ -104,6 +106,7 @@ class Customer extends AbstractModel implements CustomerInterface
 
     /**
      * @inheritdoc
+     * @suppress PhanParamSignatureMismatch
      */
     public function setNostoId($nostoId)
     {
