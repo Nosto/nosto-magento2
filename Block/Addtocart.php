@@ -37,6 +37,7 @@
 namespace Nosto\Tagging\Block;
 
 use Magento\Framework\App\ActionInterface;
+use Magento\Framework\App\Request\Http;
 use Magento\Framework\Url\EncoderInterface;
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Element\Template\Context;
@@ -82,18 +83,16 @@ class Addtocart extends Template
     {
         $continueUrl = $this->urlEncoder->encode($this->_urlBuilder->getCurrentUrl());
 
-        $routeParams = [
-            ActionInterface::PARAM_NAME_URL_ENCODED => $continueUrl,
-            '_secure' => $this->getRequest()->isSecure()
-        ];
-
+        $routeParams = [ActionInterface::PARAM_NAME_URL_ENCODED => $continueUrl];
+        $routeParams['_secure'] = $this->getRequest()->isSecure();
         $routeParams['_scope'] = $this->_storeManager->getStore(true)->getId();
         $routeParams['_scope_to_url'] = true;
 
-        if ($this->getRequest()->getRouteName() == 'checkout'
-            && $this->getRequest()->getControllerName() == 'cart'
-        ) {
-            $routeParams['in_cart'] = 1;
+        $request = $this->getRequest();
+        if ($request instanceof Http) {
+            if ($request->getRouteName() == 'checkout' && $request->getControllerName() == 'cart') {
+                $routeParams['in_cart'] = 1;
+            }
         }
 
         return $this->_urlBuilder->getUrl('checkout/cart/add', $routeParams);

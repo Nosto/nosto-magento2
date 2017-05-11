@@ -164,7 +164,9 @@ class Index extends Action
      */
     public function notFound()
     {
-        /** @noinspection PhpUndefinedMethodInspection */
-        $this->getResponse()->setHttpResponseCode(404);
+        $response = $this->getResponse();
+        if ($response instanceof Http) {
+            $response->setHttpResponseCode(404);
+        }
     }
 }

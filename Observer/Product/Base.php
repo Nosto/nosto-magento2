@@ -109,6 +109,7 @@ abstract class Base implements ObserverInterface
      *
      * @param Observer $observer
      * @return void
+     * @suppress PhanDeprecatedFunction
      */
     public function execute(Observer $observer)
     {

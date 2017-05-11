@@ -79,6 +79,7 @@ class Stock extends AbstractHelper
      * @param Product $product
      * @return int
      * @suppress PhanUndeclaredMethod
+     * @suppress PhanDeprecatedFunction
      */
     public function getQty(Product $product)
     {
