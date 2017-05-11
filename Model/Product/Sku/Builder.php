@@ -41,10 +41,12 @@ use Magento\Catalog\Model\Product\Gallery\ReadHandler as GalleryReadHandler;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable\Attribute as ConfigurableAttribute;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Store\Api\Data\StoreInterface;
+use Magento\Store\Model\Store;
 use Nosto\NostoException;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Price as NostoPriceHelper;
 use Psr\Log\LoggerInterface;
+use Nosto\Tagging\Helper\Currency as CurrencyHelper;
 
 class Builder
 {
@@ -53,6 +55,7 @@ class Builder
     private $galleryReadHandler;
     private $eventManager;
     private $logger;
+    private $nostoCurrencyHelper;
 
     /**
      * @param NostoHelperData $nostoHelperData
@@ -60,28 +63,31 @@ class Builder
      * @param LoggerInterface $logger
      * @param ManagerInterface $eventManager
      * @param GalleryReadHandler $galleryReadHandler
+     * @param CurrencyHelper $nostoCurrencyHelper
      */
     public function __construct(
         NostoHelperData $nostoHelperData,
         NostoPriceHelper $priceHelper,
         LoggerInterface $logger,
         ManagerInterface $eventManager,
-        GalleryReadHandler $galleryReadHandler
+        GalleryReadHandler $galleryReadHandler,
+        CurrencyHelper $nostoCurrencyHelper
     ) {
         $this->nostoDataHelper = $nostoHelperData;
         $this->nostoPriceHelper = $priceHelper;
         $this->logger = $logger;
         $this->eventManager = $eventManager;
         $this->galleryReadHandler = $galleryReadHandler;
+        $this->nostoCurrencyHelper = $nostoCurrencyHelper;
     }
 
     /**
      * @param Product $product
-     * @param StoreInterface $store
+     * @param Store $store
      * @param ConfigurableAttribute[] $attributes
      * @return \Nosto\Object\Product\Sku
      */
-    public function build(Product $product, StoreInterface $store, $attributes)
+    public function build(Product $product, Store $store, $attributes)
     {
         $nostoSku = new \Nosto\Object\Product\Sku();
 
@@ -90,9 +96,20 @@ class Builder
             $nostoSku->setName($product->getName());
             $nostoSku->setAvailability($product->isAvailable() ? 'InStock' : 'OutOfStock');
             $nostoSku->setImageUrl($this->buildImageUrl($product, $store));
-            $nostoSku->setPrice($price = $this->nostoPriceHelper->getProductFinalPriceInclTax($product));
-            $nostoSku->setListPrice($price = $this->nostoPriceHelper->getProductPriceInclTax($product));
-
+            $price = $this->nostoCurrencyHelper->convertToTaggingPrice(
+                $this->nostoPriceHelper->getProductFinalPriceInclTax(
+                    $product
+                ),
+                $store
+            );
+            $nostoSku->setPrice($price);
+            $listPrice = $this->nostoCurrencyHelper->convertToTaggingPrice(
+                $this->nostoPriceHelper->getProductPriceInclTax(
+                    $product
+                ),
+                $store
+            );
+            $nostoSku->setListPrice($listPrice);
             $gtinAttribute = $this->nostoDataHelper->getGtinAttribute($store);
             if ($product->hasData($gtinAttribute)) {
                 $nostoSku->setGtin($product->getData($gtinAttribute));

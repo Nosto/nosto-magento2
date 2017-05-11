@@ -43,6 +43,7 @@ use Magento\Eav\Model\Entity\Attribute;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Review\Model\ReviewFactory;
 use Magento\Store\Api\Data\StoreInterface;
+use Magento\Store\Model\Store;
 use Nosto\Tagging\Helper\Currency as CurrencyHelper;
 use Nosto\NostoException;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
@@ -67,7 +68,7 @@ class Builder
     private $reviewFactory;
     private $urlBuilder;
     private $skuCollection;
-    private $currencyHelper;
+    private $nostoCurrencyHelper;
 
     /**
      * @param NostoHelperData $nostoHelperData
@@ -81,7 +82,7 @@ class Builder
      * @param ReviewFactory $reviewFactory
      * @param GalleryReadHandler $galleryReadHandler
      * @param NostoUrlBuilder $urlBuilder
-     * @param CurrencyHelper $currencyHelper
+     * @param CurrencyHelper $nostoCurrencyHelper
      */
     public function __construct(
         NostoHelperData $nostoHelperData,
@@ -95,7 +96,7 @@ class Builder
         ReviewFactory $reviewFactory,
         GalleryReadHandler $galleryReadHandler,
         NostoUrlBuilder $urlBuilder,
-        CurrencyHelper $currencyHelper
+        CurrencyHelper $nostoCurrencyHelper
     ) {
         $this->nostoDataHelper = $nostoHelperData;
         $this->nostoPriceHelper = $priceHelper;
@@ -108,15 +109,15 @@ class Builder
         $this->galleryReadHandler = $galleryReadHandler;
         $this->urlBuilder = $urlBuilder;
         $this->skuCollection = $skuCollection;
-        $this->currencyHelper = $currencyHelper;
+        $this->nostoCurrencyHelper = $nostoCurrencyHelper;
     }
 
     /**
      * @param Product $product
-     * @param StoreInterface $store
+     * @param Store $store
      * @return \Nosto\Object\Product\Product
      */
-    public function build(Product $product, StoreInterface $store)
+    public function build(Product $product, Store $store)
     {
         $nostoProduct = new \Nosto\Object\Product\Product();
 
@@ -125,26 +126,34 @@ class Builder
             $nostoProduct->setProductId((string)$product->getId());
             $nostoProduct->setName($product->getName());
             $nostoProduct->setImageUrl($this->buildImageUrl($product, $store));
-            $price = $this->currencyHelper->convertToTaggingPrice(
+            $price = $this->nostoCurrencyHelper->convertToTaggingPrice(
                 $this->nostoPriceHelper->getProductFinalPriceInclTax(
                     $product
                 ),
                 $store
             );
-
             $nostoProduct->setPrice($price);
-            $listPrice = $this->nostoPriceHelper->getProductPriceInclTax($product);
-            $nostoProduct->setListPrice($listPrice);
-            /** @noinspection PhpUndefinedMethodInspection */
-            $nostoProduct->setPriceCurrencyCode(
-                $this->currencyHelper->getTaggingCurrency($store)->getCode()
+            $listPrice = $this->nostoCurrencyHelper->convertToTaggingPrice(
+                $this->nostoPriceHelper->getProductPriceInclTax(
+                    $product
+                ),
+                $store
             );
+            $nostoProduct->setListPrice($listPrice);
+            $nostoProduct->setPriceCurrencyCode(
+                $this->nostoCurrencyHelper->getTaggingCurrency(
+                    $store
+                )->getCode()
+            );
+            $nostoProduct->setVariationId(
+                $this->nostoCurrencyHelper->getTaggingCurrency(
+                    $store
+                )->getCode()
+            );
+
             $nostoProduct->setAvailable($product->isAvailable());
             $nostoProduct->setCategories($this->nostoCategoryBuilder->buildCategories($product));
             $nostoProduct->setAlternateImageUrls($this->buildAlternativeImages($product));
-            $nostoProduct->setVariationId(
-                $this->currencyHelper->getTaggingCurrency($store)->getCode()
-            );
             if ($this->nostoDataHelper->isInventoryTaggingEnabled($store)) {
                 $nostoProduct->setInventoryLevel($this->nostoStockHelper->getQty($product));
             }
