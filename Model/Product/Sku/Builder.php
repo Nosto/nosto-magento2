@@ -134,10 +134,10 @@ class Builder
 
     /**
      * @param Product $product
-     * @param StoreInterface $store
+     * @param Store $store
      * @return string|null
      */
-    public function buildImageUrl(Product $product, StoreInterface $store)
+    public function buildImageUrl(Product $product, Store $store)
     {
         $primary = $this->nostoDataHelper->getProductImageVersion($store);
         $secondary = 'image'; // The "base" image.

@@ -38,12 +38,12 @@ namespace Nosto\Tagging\Model\Order;
 
 use Magento\Sales\Api\Data\EntityInterface;
 use Magento\Sales\Model\ResourceModel\Order\CollectionFactory as OrderCollectionFactory;
-use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Nosto\NostoException;
 use Nosto\Object\Order\OrderCollection;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Model\Order\Builder as NostoOrderBuilder;
+use Magento\Store\Model\Store;
 
 class Collection
 {
@@ -64,7 +64,7 @@ class Collection
         $this->nostoOrderBuilder = $nostoOrderBuilder;
     }
 
-    protected function getCollection(StoreInterface $store) // @codingStandardsIgnoreLine
+    protected function getCollection(Store $store)
     {
         /** @var \Magento\Sales\Model\ResourceModel\Order\Collection $collection */
         /** @noinspection PhpUndefinedMethodInspection */
@@ -75,11 +75,11 @@ class Collection
     }
 
     /**
-     * @param StoreInterface $store
+     * @param Store $store
      * @param $id
      * @return OrderCollection
      */
-    public function buildSingle(StoreInterface $store, $id)
+    public function buildSingle(Store $store, $id)
     {
         $collection = $this->getCollection($store);
         $collection->addFieldToFilter(EntityInterface::ENTITY_ID, $id);
@@ -87,12 +87,12 @@ class Collection
     }
 
     /**
-     * @param StoreInterface $store
+     * @param Store $store
      * @param int $limit
      * @param int $offset
      * @return OrderCollection
      */
-    public function buildMany(StoreInterface $store, $limit = 100, $offset = 0)
+    public function buildMany(Store $store, $limit = 100, $offset = 0)
     {
         $collection = $this->getCollection($store);
         $currentPage = ($offset / $limit) + 1;
@@ -102,12 +102,12 @@ class Collection
     }
 
     /**
-     * @param StoreInterface $store
+     * @param Store $store
      * @param $collection
      * @return OrderCollection
      * @throws NostoException
      */
-    private function build(StoreInterface $store, $collection)
+    private function build(Store $store, $collection)
     {
         /** @var \Magento\Sales\Model\ResourceModel\Order\Collection $collection */
         $orders = new OrderCollection();

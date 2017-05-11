@@ -39,7 +39,7 @@ namespace Nosto\Tagging\Model\Product;
 use Magento\Catalog\Model\Product\Visibility as ProductVisibility;
 use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductCollectionFactory;
 use Magento\Sales\Api\Data\EntityInterface;
-use Magento\Store\Api\Data\StoreInterface;
+use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
 use Nosto\NostoException;
 use Nosto\Object\Product\ProductCollection;
@@ -69,7 +69,7 @@ class Collection
         $this->nostoProductBuilder = $nostoProductBuilder;
     }
 
-    protected function getCollection(StoreInterface $store) // @codingStandardsIgnoreLine
+    protected function getCollection(Store $store)
     {
         /** @var \Magento\Catalog\Model\ResourceModel\Product\Collection $collection */
         /** @noinspection PhpUndefinedMethodInspection */
@@ -82,11 +82,11 @@ class Collection
     }
 
     /**
-     * @param StoreInterface $store
+     * @param Store $store
      * @param $id
      * @return ProductCollection
      */
-    public function buildSingle(StoreInterface $store, $id)
+    public function buildSingle(Store $store, $id)
     {
         $collection = $this->getCollection($store);
         $collection->addFieldToFilter(EntityInterface::ENTITY_ID, $id);
@@ -94,12 +94,12 @@ class Collection
     }
 
     /**
-     * @param StoreInterface $store
+     * @param Store $store
      * @param int $limit
      * @param int $offset
      * @return ProductCollection
      */
-    public function buildMany(StoreInterface $store, $limit = 100, $offset = 0)
+    public function buildMany(Store $store, $limit = 100, $offset = 0)
     {
         $collection = $this->getCollection($store);
         $currentPage = ($offset / $limit) + 1;
@@ -108,7 +108,7 @@ class Collection
         return $this->build($store, $collection);
     }
 
-    private function build(StoreInterface $store, $collection)
+    private function build(Store $store, $collection)
     {
         /** @var \Magento\Catalog\Model\ResourceModel\Product\Collection $collection */
         $products = new ProductCollection();

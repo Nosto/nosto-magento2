@@ -38,7 +38,7 @@ namespace Nosto\Tagging\Model\Product\Sku;
 
 use Magento\Catalog\Model\Product;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable as ConfigurableType;
-use Magento\Store\Api\Data\StoreInterface;
+use Magento\Store\Model\Store;
 use Nosto\NostoException;
 use Nosto\Object\Product\SkuCollection;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
@@ -78,10 +78,10 @@ class Collection
 
     /**
      * @param Product $product
-     * @param StoreInterface $store
+     * @param Store $store
      * @return SkuCollection
      */
-    public function build(Product $product, StoreInterface $store)
+    public function build(Product $product, Store $store)
     {
         $skuCollection = new SkuCollection();
         if ($product->getTypeId() === ConfigurableType::TYPE_CODE) {

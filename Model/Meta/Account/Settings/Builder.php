@@ -38,7 +38,6 @@ namespace Nosto\Tagging\Model\Account\Settings;
 
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\UrlInterface;
-use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\Store;
 use Nosto\NostoException;
 use Nosto\Object\Settings;
@@ -68,10 +67,10 @@ class Builder
     }
 
     /**
-     * @param StoreInterface|Store $store
+     * @param Store $store
      * @return Settings
      */
-    public function build(StoreInterface $store)
+    public function build(Store $store)
     {
         $settings = new Settings();
 
