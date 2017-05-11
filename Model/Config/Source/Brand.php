@@ -52,7 +52,7 @@ class Brand extends Selector
         $collection->addFieldToFilter('attribute_code', array('nin' => array('sku')));
     }
 
-    function isNullable()
+    public function isNullable()
     {
         return true;
     }

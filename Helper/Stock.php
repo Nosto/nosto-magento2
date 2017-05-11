@@ -127,7 +127,7 @@ class Stock extends AbstractHelper
      * @param array|Product[] $productCollection
      * @return int|mixed
      */
-    protected function getMinQty(array $productCollection)
+    private function getMinQty(array $productCollection)
     {
         $quantities = array();
         $minQty = 0;
@@ -149,7 +149,7 @@ class Stock extends AbstractHelper
      * @param array|Product[] $productCollection
      * @return int
      */
-    protected function getQtySum(array $productCollection)
+    private function getQtySum(array $productCollection)
     {
         $qty = 0;
         /* @var Product $product */

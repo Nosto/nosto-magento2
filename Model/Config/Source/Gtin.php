@@ -51,7 +51,7 @@ class Gtin extends Selector
         $collection->setFrontendInputTypeFilter('text');
     }
 
-    function isNullable()
+    public function isNullable()
     {
         return true;
     }

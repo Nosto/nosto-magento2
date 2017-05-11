@@ -110,7 +110,7 @@ abstract class Selector implements ArrayInterface
         return $options;
     }
 
-    abstract function filterCollection(Collection $collection);
+    abstract public function filterCollection(Collection $collection);
 
-    abstract function isNullable();
+    abstract public function isNullable();
 }

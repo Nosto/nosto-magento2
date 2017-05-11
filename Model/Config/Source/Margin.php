@@ -51,7 +51,7 @@ class Margin extends Selector
         $collection->setFrontendInputTypeFilter('price');
     }
 
-    function isNullable()
+    public function isNullable()
     {
         return true;
     }
