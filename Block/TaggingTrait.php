@@ -52,7 +52,7 @@ trait TaggingTrait
      *
      * @return string the markup or an empty string (if an account doesn't exist)
      */
-    protected function _toHtml()
+    public function _toHtml()
     {
         /** @noinspection PhpUndefinedMethodInspection */
         if ($this->nostoHelperAccount->nostoInstalledAndEnabled($this->_storeManager->getStore())) {

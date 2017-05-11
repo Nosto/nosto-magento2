@@ -88,7 +88,7 @@ class Order extends Base
     /**
      * @inheritdoc
      */
-    protected function buildExportCollection(StoreInterface $store, $limit = 100, $offset = 0)
+    public function buildExportCollection(StoreInterface $store, $limit = 100, $offset = 0)
     {
         return $this->nostoOrderCollection->buildMany($store, $limit, $offset);
     }
@@ -96,7 +96,7 @@ class Order extends Base
     /**
      * @inheritdoc
      */
-    protected function buildSingleExportCollection(StoreInterface $store, $id)
+    public function buildSingleExportCollection(StoreInterface $store, $id)
     {
         return $this->nostoOrderCollection->buildSingle($store, $id);
     }

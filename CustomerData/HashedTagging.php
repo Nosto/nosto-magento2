@@ -24,7 +24,7 @@ abstract class HashedTagging
      * @param string $string
      * @return string
      */
-    protected static function generateVisitorChecksum($string)
+    public static function generateVisitorChecksum($string)
     {
         return hash(self::VISITOR_HASH_ALGO, $string);
     }
