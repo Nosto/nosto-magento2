@@ -41,7 +41,6 @@ use Magento\Directory\Model\CurrencyFactory;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\Locale\Bundle\DataBundle;
 use Magento\Framework\Locale\ResolverInterface as LocaleResolver;
-use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\Store;
 use Nosto\Object\Format;
 use Psr\Log\LoggerInterface;
@@ -72,11 +71,11 @@ class Builder
     }
 
     /**
-     * @param StoreInterface|Store $store
+     * @param Store $store
      * @return array
      * @suppress PhanTypeArraySuspicious
      */
-    public function build(StoreInterface $store)
+    public function build(Store $store)
     {
         $currencies = array();
 

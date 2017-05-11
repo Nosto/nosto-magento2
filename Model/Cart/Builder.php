@@ -39,7 +39,6 @@ namespace Nosto\Tagging\Model\Cart;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\ObjectManagerInterface;
 use Magento\Quote\Model\Quote;
-use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\Store;
 use Nosto\NostoException;
 use Nosto\Object\Cart\Cart;
@@ -76,11 +75,11 @@ class Builder
 
     /**
      * @param Quote $quote
-     * @param StoreInterface|Store $store
+     * @param Store $store
      * @return Cart
      * @internal param array $items
      */
-    public function build(Quote $quote, StoreInterface $store)
+    public function build(Quote $quote, Store $store)
     {
         $nostoCart = new Cart();
 

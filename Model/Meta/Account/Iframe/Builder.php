@@ -39,7 +39,7 @@ namespace Nosto\Tagging\Model\Meta\Account\Iframe;
 use Magento\Backend\Model\Auth\Session;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\Locale\ResolverInterface;
-use Magento\Store\Api\Data\StoreInterface;
+use Magento\Store\Model\Store;
 use Nosto\NostoException;
 use Nosto\Object\Iframe;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
@@ -80,10 +80,10 @@ class Builder
     }
 
     /**
-     * @param StoreInterface $store
+     * @param Store $store
      * @return Iframe
      */
-    public function build(StoreInterface $store)
+    public function build(Store $store)
     {
         $metaData = new Iframe();
 

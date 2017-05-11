@@ -39,7 +39,6 @@ namespace Nosto\Tagging\Model\Meta\Oauth;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\Locale\ResolverInterface;
 use Magento\Framework\Url;
-use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\Store;
 use Nosto\NostoException;
 use Nosto\OAuth;
@@ -73,11 +72,11 @@ class Builder
     }
 
     /**
-     * @param StoreInterface|Store $store
+     * @param Store $store
      * @param Account $account
      * @return OAuth
      */
-    public function build(StoreInterface $store, Account $account = null)
+    public function build(Store $store, Account $account = null)
     {
         $metaData = new OAuth();
 

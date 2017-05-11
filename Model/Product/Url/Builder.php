@@ -41,7 +41,7 @@ use Magento\CatalogUrlRewrite\Model\ProductUrlRewriteGenerator;
 use Magento\Framework\DataObject;
 use Magento\Framework\Filter\FilterManager;
 use Magento\Framework\Url;
-use Magento\Store\Api\Data\StoreInterface;
+use Magento\Store\Model\Store;
 use Magento\UrlRewrite\Model\UrlFinderInterface;
 use Magento\UrlRewrite\Service\V1\Data\UrlRewrite;
 
@@ -85,7 +85,7 @@ class Builder extends DataObject
         $this->urlFactory = $urlFactory;
     }
 
-    public function getUrlInStore(Product $product, StoreInterface $store)
+    public function getUrlInStore(Product $product, Store $store)
     {
         $routeParams = [];
         $requestPath = '';

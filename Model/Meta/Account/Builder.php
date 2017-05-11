@@ -39,7 +39,6 @@ namespace Nosto\Tagging\Model\Meta\Account;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\Locale\ResolverInterface;
 use Magento\Framework\UrlInterface;
-use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\Store;
 use Nosto\NostoException;
 use Nosto\Object\Signup\Signup;
@@ -80,12 +79,12 @@ class Builder
     }
 
     /**
-     * @param StoreInterface|Store $store
+     * @param Store $store
      * @param $accountOwner
      * @param $signupDetails
      * @return Signup
      */
-    public function build(StoreInterface $store, $accountOwner, $signupDetails)
+    public function build(Store $store, $accountOwner, $signupDetails)
     {
         $metaData = new Signup(Builder::PLATFORM_NAME, Builder::API_TOKEN, null);
 

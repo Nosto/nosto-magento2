@@ -38,7 +38,6 @@ namespace Nosto\Tagging\Model\Rates;
 
 use Exception;
 use Magento\Framework\Event\ManagerInterface;
-use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\Store;
 use Nosto\Operation\SyncRates;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
@@ -74,10 +73,10 @@ class Service
      * Sends a currency exchange rate update request to Nosto via the API. Checks if multi currency
      * is enabled for the store before attempting to send the exchange rates.
      *
-     * @param StoreInterface|Store $store the store for which the rates are to be updated.
+     * @param Store $store the store for which the rates are to be updated.
      * @return bool a boolean value indicating whether the operation was successful
      */
-    public function update(StoreInterface $store)
+    public function update(Store $store)
     {
         if ($account = $this->nostoHelperAccount->findAccount($store)) {
             $rates = $this->nostoExchangeRatesBuilder->build($store);

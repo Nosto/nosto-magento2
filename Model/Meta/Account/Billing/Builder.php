@@ -37,7 +37,6 @@
 namespace Nosto\Tagging\Model\Meta\Account\Billing;
 
 use Magento\Framework\Event\ManagerInterface;
-use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\Store;
 use Nosto\NostoException;
 use Nosto\Object\Signup\Billing;
@@ -59,10 +58,10 @@ class Builder
     }
 
     /**
-     * @param StoreInterface|Store $store
+     * @param Store $store
      * @return Billing
      */
-    public function build(StoreInterface $store)
+    public function build(Store $store)
     {
         $metaData = new Billing();
 

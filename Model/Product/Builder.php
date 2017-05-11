@@ -42,7 +42,6 @@ use Magento\Catalog\Model\Product\Gallery\ReadHandler as GalleryReadHandler;
 use Magento\Eav\Model\Entity\Attribute;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Review\Model\ReviewFactory;
-use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\Store;
 use Nosto\Tagging\Helper\Currency as CurrencyHelper;
 use Nosto\NostoException;
@@ -205,10 +204,10 @@ class Builder
      * normalised to a 0-5 value.
      *
      * @param Product $product the product whose rating value to fetch
-     * @param StoreInterface $store the store scope in which to fetch the rating
+     * @param Store $store the store scope in which to fetch the rating
      * @return float|null the normalized rating value of the product
      */
-    private function buildRatingValue(Product $product, StoreInterface $store)
+    private function buildRatingValue(Product $product, Store $store)
     {
         /** @noinspection PhpUndefinedMethodInspection */
         if (!$product->getRatingSummary()) {
@@ -229,10 +228,10 @@ class Builder
      * returned as is.
      *
      * @param Product $product the product whose rating value to fetch
-     * @param StoreInterface $store the store scope in which to fetch the rating
+     * @param Store $store the store scope in which to fetch the rating
      * @return int|null the normalized rating value of the product
      */
-    private function buildReviewCount(Product $product, StoreInterface $store)
+    private function buildReviewCount(Product $product, Store $store)
     {
         /** @noinspection PhpUndefinedMethodInspection */
         if (!$product->getRatingSummary()) {
@@ -250,10 +249,10 @@ class Builder
 
     /**
      * @param Product $product
-     * @param StoreInterface $store
+     * @param Store $store
      * @return string|null
      */
-    public function buildImageUrl(Product $product, StoreInterface $store)
+    public function buildImageUrl(Product $product, Store $store)
     {
         $primary = $this->nostoDataHelper->getProductImageVersion($store);
         $secondary = 'image'; // The "base" image.
