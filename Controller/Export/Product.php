@@ -89,7 +89,7 @@ class Product extends Base
     /**
      * @inheritdoc
      */
-    protected function buildExportCollection(StoreInterface $store, $limit = 100, $offset = 0)
+    public function buildExportCollection(StoreInterface $store, $limit = 100, $offset = 0)
     {
         return $this->nostoProductCollection->buildMany($store, $limit, $offset);
     }
@@ -97,7 +97,7 @@ class Product extends Base
     /**
      * @inheritdoc
      */
-    protected function buildSingleExportCollection(StoreInterface $store, $id)
+    public function buildSingleExportCollection(StoreInterface $store, $id)
     {
         return $this->nostoProductCollection->buildSingle($store, $id);
     }
