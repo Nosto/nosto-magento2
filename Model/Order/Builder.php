@@ -36,7 +36,6 @@
 
 namespace Nosto\Tagging\Model\Order;
 
-use DateTime;
 use Exception;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\ObjectManagerInterface;
@@ -95,11 +94,16 @@ class Builder
     public function build(Order $order)
     {
         $nostoOrder = new \Nosto\Object\Order\Order();
-
         try {
             $nostoOrder->setOrderNumber($order->getId());
             $nostoOrder->setExternalOrderRef($order->getRealOrderId());
-            $nostoOrder->setCreatedAt(DateTime::createFromFormat('Y-m-d', $order->getCreatedAtFormatted('Y-m-d')));
+            $orderCreated = $order->getCreatedAt();
+            if (is_string($orderCreated)) {
+                $orderCreatedDate = \DateTime::createFromFormat('Y-m-d H:i:s', $orderCreated);
+                if ($orderCreatedDate instanceof \DateTimeInterface) {
+                    $nostoOrder->setCreatedAt($orderCreatedDate);
+                }
+            }
             $nostoOrder->setPaymentProvider($order->getPayment()->getMethod());
             if ($order->getStatus()) {
                 $nostoStatus = new OrderStatus();
