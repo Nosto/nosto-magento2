@@ -50,6 +50,12 @@ return [
         'vendor/magento',
         'vendor/psr'
     ],
+    'exclude_file_list' => [
+        'vendor/magento/zendframework1/library/Zend/Validate/Hostname/Biz.php',
+        'vendor/magento/zendframework1/library/Zend/Validate/Hostname/Cn.php',
+        'vendor/magento/zendframework1/library/Zend/Validate/Hostname/Com.php',
+        'vendor/magento/zendframework1/library/Zend/Validate/Hostname/Jp.php',
+    ],
     "exclude_analysis_directory_list" => [
         'vendor/',
         '.phan/stubs'
