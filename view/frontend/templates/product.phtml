@@ -47,6 +47,9 @@ $category = $this->getNostoCategory();
         <span class="name"><?php echo $this->escapeHtml($product->getName()); ?></span>
         <span class="image_url"><?php echo $this->escapeUrl($product->getImageUrl()); ?></span>
         <span class="price"><?php echo $this->formatNostoPrice($product->getPrice()); ?></span>
+        <?php if ($product->getListPrice()) : ?>
+            <span class="list_price"><?php echo $this->formatNostoPrice($product->getListPrice()); ?></span>
+        <?php endif; ?>
         <span class="price_currency_code"><?php echo $product->getPriceCurrencyCode(); ?></span>
         <span class="availability"><?php echo $product->getAvailability(); ?></span>
         <?php foreach ($product->getCategories() as $cat) : ?>
@@ -55,10 +58,6 @@ $category = $this->getNostoCategory();
         <?php if ($product->getDescription()) : ?>
             <span
                 class="description"><?php echo $this->escapeHtml($this->stripTags($product->getDescription())); ?></span>
-        <?php endif; ?>
-        <?php if ($product->getListPrice()) : ?>
-            <span
-                class="list_price"><?php echo $this->formatNostoPrice($product->getListPrice()); ?></span>
         <?php endif; ?>
         <?php if ($product->getBrand()) : ?>
             <span class="brand"><?php echo $this->escapeHtml($product->getBrand()); ?></span>
