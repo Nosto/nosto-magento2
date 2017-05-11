@@ -72,8 +72,12 @@ class Builder
     {
         $categories = [];
         foreach ($product->getCategoryCollection() as $category) {
-            $categories[] = $this->build($category);
+            $categoryString = $this->build($category);
+            if (!empty($categoryString)) {
+                $categories[] = $categoryString;
+            }
         }
+
         return $categories;
     }
 
@@ -84,22 +88,28 @@ class Builder
     public function build(Category $category)
     {
         $nostoCategory = '';
-
         try {
             $data = [];
             $path = $category->getPath();
             foreach (explode('/', $path) as $categoryId) {
                 $category = $this->categoryRepository->get($categoryId);
-                if ($category && $category->getLevel() > 1) {
+                if (
+                    $category instanceof Category
+                    && $category->getLevel() > 1
+                    && !empty($category->getName())
+                ) {
                     $data[] = $category->getName();
                 }
             }
-            return count($data) ? '/' . implode('/', $data) : '';
+            $nostoCategory = count($data) ? '/' . implode('/', $data) : '';
         } catch (NostoException $e) {
             $this->logger->error($e->__toString());
         }
-
-        $this->eventManager->dispatch('nosto_category_load_after', ['category' => $nostoCategory]);
+        if (empty($nostoCategory)) {
+            $nostoCategory = null;
+        } else {
+            $this->eventManager->dispatch('nosto_category_load_after', ['category' => $nostoCategory]);
+        }
 
         return $nostoCategory;
     }
