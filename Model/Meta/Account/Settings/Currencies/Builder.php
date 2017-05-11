@@ -74,6 +74,7 @@ class Builder
     /**
      * @param StoreInterface|Store $store
      * @return array
+     * @suppress PhanTypeArraySuspicious
      */
     public function build(StoreInterface $store)
     {
