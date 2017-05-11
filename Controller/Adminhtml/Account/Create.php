@@ -136,8 +136,11 @@ class Create extends Base
                     }
                 }
 
-                $signupParams = $this->nostoSignupBuilder->build($store, $accountOwner,
-                    $signupDetails);
+                $signupParams = $this->nostoSignupBuilder->build(
+                    $store,
+                    $accountOwner,
+                    $signupDetails
+                );
                 $operation = new AccountSignup($signupParams);
                 $account = $operation->create();
 

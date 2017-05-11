@@ -42,7 +42,8 @@ trait TaggingTrait
 {
     private $nostoHelperAccount;
 
-    public function __construct(NostoHelperAccount $nostoHelperAccount) {
+    public function __construct(NostoHelperAccount $nostoHelperAccount)
+    {
         $this->nostoHelperAccount = $nostoHelperAccount;
     }
 

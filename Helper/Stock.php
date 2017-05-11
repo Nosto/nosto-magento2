@@ -89,7 +89,7 @@ class Stock extends AbstractHelper
                 /** @var Bundled $productType */
                 $productType = $product->getTypeInstance();
                 $bundledItemIds = $productType->getChildrenIds($product->getId(), $required = true);
-                $products = array();
+                $products = [];
                 foreach ($bundledItemIds as $variants) {
                     if (is_array($variants) && count($variants) > 0) { // @codingStandardsIgnoreLine
                         foreach ($variants as $variantId) {
@@ -129,7 +129,7 @@ class Stock extends AbstractHelper
      */
     private function getMinQty(array $productCollection)
     {
-        $quantities = array();
+        $quantities = [];
         $minQty = 0;
         /* @var Product $product */
         foreach ($productCollection as $product) {

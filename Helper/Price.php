@@ -122,8 +122,11 @@ class Price extends AbstractHelper
                     }
                     $price = $minimalPrice;
                     if ($inclTax && $cheapestAssociatedProduct !== null) {
-                        $price = $this->catalogHelper->getTaxPrice($cheapestAssociatedProduct,
-                            $price, true);
+                        $price = $this->catalogHelper->getTaxPrice(
+                            $cheapestAssociatedProduct,
+                            $price,
+                            true
+                        );
                     }
                 } else {
                     $price = null;
@@ -137,8 +140,11 @@ class Price extends AbstractHelper
                 if ($finalPrice) {
                     $price = $product->getFinalPrice();
                 } elseif ($inclTax) {
-                    $price = $this->catalogHelper->getTaxPrice($product, $product->getPrice(),
-                        true);
+                    $price = $this->catalogHelper->getTaxPrice(
+                        $product,
+                        $product->getPrice(),
+                        true
+                    );
                 } else {
                     $price = $product->getPrice();
                 }

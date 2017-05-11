@@ -49,7 +49,7 @@ class Brand extends Selector
     public function filterCollection(Collection $collection)
     {
         $collection->setFrontendInputTypeFilter('text');
-        $collection->addFieldToFilter('attribute_code', array('nin' => array('sku')));
+        $collection->addFieldToFilter('attribute_code', ['nin' => ['sku']]);
     }
 
     public function isNullable()

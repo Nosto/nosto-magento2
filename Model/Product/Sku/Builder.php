@@ -106,7 +106,6 @@ class Builder
                     $this->logger->error($e->__toString());
                 }
             }
-
         } catch (NostoException $e) {
             $this->logger->error($e->__toString());
         }
