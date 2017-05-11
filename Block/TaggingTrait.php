@@ -40,11 +40,12 @@ use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 
 trait TaggingTrait
 {
-
-    /**
-     * @var NostoHelperAccount
-     */
     private $nostoHelperAccount;
+
+    public function __construct(NostoHelperAccount $nostoHelperAccount)
+    {
+        $this->nostoHelperAccount = $nostoHelperAccount;
+    }
 
     /**
      * Overridden method that only outputs any markup if the extension is enabled and an account
@@ -52,7 +53,7 @@ trait TaggingTrait
      *
      * @return string the markup or an empty string (if an account doesn't exist)
      */
-    protected function _toHtml()
+    public function _toHtml()
     {
         /** @noinspection PhpUndefinedMethodInspection */
         if ($this->nostoHelperAccount->nostoInstalledAndEnabled($this->_storeManager->getStore())) {

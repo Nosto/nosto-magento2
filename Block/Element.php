@@ -47,7 +47,9 @@ use Nosto\Tagging\Helper\Account as NostoHelperAccount;
  */
 class Element extends Template
 {
-    use TaggingTrait;
+    use TaggingTrait {
+        TaggingTrait::__construct as taggingConstruct;
+    }
 
     /**
      * Constructor.
@@ -63,7 +65,7 @@ class Element extends Template
     ) {
         parent::__construct($context, $data);
 
-        $this->nostoHelperAccount = $nostoHelperAccount;
+        $this->taggingConstruct($nostoHelperAccount);
     }
 
     /**

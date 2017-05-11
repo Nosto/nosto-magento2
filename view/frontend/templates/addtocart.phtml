@@ -34,26 +34,15 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Config\Source;
-
-use Magento\Catalog\Model\ResourceModel\Product\Attribute\Collection;
-
-/**
- * Option array class to generate a list of selectable options that allows the merchant to choose
- * any attribute for his brand tag.
- *
- * @package Nosto\Tagging\Model\Config\Source
- */
-class Brand extends Selector
-{
-    public function filterCollection(Collection $collection)
-    {
-        $collection->setFrontendInputTypeFilter('text');
-        $collection->addFieldToFilter('attribute_code', ['nin' => ['sku']]);
-    }
-
-    public function isNullable()
-    {
-        return true;
-    }
-}
+/** @var \Nosto\Tagging\Block\Addtocart $this */
+?>
+<form action="<?php echo $this->getSubmitUrl() ?>" method="post" id="nosto_addtocart_form">
+    <?php echo $this->getBlockHtml('formkey') ?>
+    <input type="hidden" name="qty" value="1">
+    <input type="hidden" name="product">
+</form>
+<script type="text/javascript">
+    require(['recobuy'], function (module) {
+        window.Nosto = module;
+    })
+</script>

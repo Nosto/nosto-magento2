@@ -89,7 +89,7 @@ class Stock extends AbstractHelper
                 /** @var Bundled $productType */
                 $productType = $product->getTypeInstance();
                 $bundledItemIds = $productType->getChildrenIds($product->getId(), $required = true);
-                $products = array();
+                $products = [];
                 foreach ($bundledItemIds as $variants) {
                     if (is_array($variants) && count($variants) > 0) { // @codingStandardsIgnoreLine
                         foreach ($variants as $variantId) {
@@ -127,9 +127,9 @@ class Stock extends AbstractHelper
      * @param array|Product[] $productCollection
      * @return int|mixed
      */
-    protected function getMinQty(array $productCollection)
+    private function getMinQty(array $productCollection)
     {
-        $quantities = array();
+        $quantities = [];
         $minQty = 0;
         /* @var Product $product */
         foreach ($productCollection as $product) {
@@ -149,7 +149,7 @@ class Stock extends AbstractHelper
      * @param array|Product[] $productCollection
      * @return int
      */
-    protected function getQtySum(array $productCollection)
+    private function getQtySum(array $productCollection)
     {
         $qty = 0;
         /* @var Product $product */

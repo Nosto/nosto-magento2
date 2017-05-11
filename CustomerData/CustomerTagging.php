@@ -77,22 +77,10 @@ class CustomerTagging extends HashedTagging implements SectionSourceInterface
                 'last_name' => $customer->getLastname(),
                 'email' => $customer->getEmail(),
                 'hcid' => $this->generateVisitorChecksum($nostoCustomerId),
-                'customer_reference' => $this->generateCustomerReference($customer)
+                'customer_reference' => $this->generateVisitorChecksum($customer->getId() . $customer->getEmail())
             ];
         }
 
         return $data;
-    }
-
-    /**
-     * Return the checksum / customer reference for customer
-     *
-     * @param CustomerInterface $customer
-     * @return string
-     */
-    public function generateCustomerReference(CustomerInterface $customer)
-    {
-        /** @noinspection PhpUndefinedMethodInspection */
-        return md5($customer->getId() . $customer->getEmail());
     }
 }

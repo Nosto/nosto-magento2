@@ -36,64 +36,66 @@
 
 namespace Nosto\Tagging\Block;
 
+use Magento\Framework\App\ActionInterface;
+use Magento\Framework\Url\EncoderInterface;
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Element\Template\Context;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 
 /**
- * Cart block used for cart tagging.
+ * Embed script block that includes the Nosto script in the page <head> to be included on all pages.
  */
-class Knockout extends Template
+class Addtocart extends Template
 {
-    private $nostoHelperAccount;
+    use TaggingTrait {
+        TaggingTrait::__construct as taggingConstruct;
+    }
+
+    private $urlEncoder;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Context $context
+     * @param EncoderInterface $urlEncoder
      * @param NostoHelperAccount $nostoHelperAccount
      * @param array $data
      */
     public function __construct(
         Context $context,
+        EncoderInterface $urlEncoder,
         NostoHelperAccount $nostoHelperAccount,
         array $data = []
     ) {
-
         parent::__construct($context, $data);
-        $this->nostoHelperAccount = $nostoHelperAccount;
+
+        $this->taggingConstruct($nostoHelperAccount);
+        $this->urlEncoder = $urlEncoder;
     }
 
-    public function getTemplate()
+    /**
+     * Retrieve url for add product to cart
+     *
+     * @return  string
+     */
+    public function getSubmitUrl()
     {
-        $template = null;
-        if ($this->nostoEnabled()) {
-            $template = parent::getTemplate();
-        }
+        $continueUrl = $this->urlEncoder->encode($this->_urlBuilder->getCurrentUrl());
 
-        return $template;
-    }
+        $routeParams = [
+            ActionInterface::PARAM_NAME_URL_ENCODED => $continueUrl,
+            '_secure' => $this->getRequest()->isSecure()
+        ];
 
-    private function nostoEnabled()
-    {
-        $enabled = false;
-        if ($this->nostoHelperAccount->nostoInstalledAndEnabled(
-            $this->_storeManager->getStore()
-        )
+        $routeParams['_scope'] = $this->_storeManager->getStore(true)->getId();
+        $routeParams['_scope_to_url'] = true;
+
+        if ($this->getRequest()->getRouteName() == 'checkout'
+            && $this->getRequest()->getControllerName() == 'cart'
         ) {
-            $enabled = true;
+            $routeParams['in_cart'] = 1;
         }
 
-        return $enabled;
-    }
-
-    public function getJsLayout()
-    {
-        $jsLayout = null;
-        if ($this->nostoEnabled()) {
-            $jsLayout = parent::getJsLayout();
-        }
-
-        return $jsLayout;
+        return $this->_urlBuilder->getUrl('checkout/cart/add', $routeParams);
     }
 }

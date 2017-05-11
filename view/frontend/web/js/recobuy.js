@@ -1,5 +1,4 @@
-<?php
-/**
+/*
  * Copyright (c) 2017, Nosto Solutions Ltd
  * All rights reserved.
  *
@@ -34,26 +33,45 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Config\Source;
+define(['catalogAddToCart', 'nostojs', 'jquery'], function (addToCart, nostojs, $) {
 
-use Magento\Catalog\Model\ResourceModel\Product\Attribute\Collection;
+    //noinspection SpellCheckingInspection
+    var form = $('#nosto_addtocart_form');
+    var helper = new addToCart();
 
-/**
- * Option array class to generate a list of selectable options that allows the merchant to choose
- * any attribute for his brand tag.
- *
- * @package Nosto\Tagging\Model\Config\Source
- */
-class Brand extends Selector
-{
-    public function filterCollection(Collection $collection)
-    {
-        $collection->setFrontendInputTypeFilter('text');
-        $collection->addFieldToFilter('attribute_code', ['nin' => ['sku']]);
+    Recobuy = {};
+    Recobuy.addProductToCart = function (productId, element) {
+
+        if (typeof element === 'object') {
+            var slotId = this.resolveContextSlotId(element);
+            if (slotId) {
+                nostojs(function (api) {
+                    api.recommendedProductAddedToCart(productId, slotId);
+                });
+            }
+        }
+
+        form.find('input[name="product"]').val(productId);
+        form.find('input[name="qty"]').val(1);
+        helper.ajaxSubmit(form);
+    };
+
+    Recobuy.resolveContextSlotId = function (element) {
+        var m = 20;
+        var n = 0;
+        var e = element;
+        while (typeof e.parentElement !== "undefined" && e.parentElement) {
+            ++n;
+            e = e.parentElement;
+            if (e.getAttribute('class') === 'nosto_element' && e.getAttribute('id')) {
+                return e.getAttribute('id');
+            }
+            if (n >= m) {
+                return false;
+            }
+        }
+        return false;
     }
 
-    public function isNullable()
-    {
-        return true;
-    }
-}
+    return Recobuy;
+});

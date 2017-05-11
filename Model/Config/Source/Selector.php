@@ -78,8 +78,8 @@ abstract class Selector implements ArrayInterface
 
         $collection = $this->attributeCollectionFactory->create();
         $collection->setEntityTypeFilter($entity->getId());
-        $collection->addFieldToFilter('attribute_code', array(
-            'nin' => array(
+        $collection->addFieldToFilter('attribute_code', [
+            'nin' => [
                 'name',
                 'category_ids',
                 'has_options',
@@ -92,25 +92,24 @@ abstract class Selector implements ArrayInterface
                 'required_options',
                 'tier_price',
                 'meta_title'
-            )
-        ));
+            ]
+        ]);
         $this->filterCollection($collection);
 
-        $options = $this->isNullable() ? array(array('value' => 0, 'label' => 'None')) : array();
+        $options = $this->isNullable() ? [['value' => 0, 'label' => 'None']] : [];
 
         /** @var Attribute $attribute */
         foreach ($collection->load() as $attribute) {
-            $options[] = array(
+            $options[] = [
                 'value' => $attribute->getAttributeCode(),
                 'label' => $attribute->getFrontend()->getLabel(),
-            );
-
+            ];
         }
 
         return $options;
     }
 
-    abstract function filterCollection(Collection $collection);
+    abstract public function filterCollection(Collection $collection);
 
-    abstract function isNullable();
+    abstract public function isNullable();
 }

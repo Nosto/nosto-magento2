@@ -36,7 +36,8 @@
 var config = {
     map: {
         '*': {
-            nostojs: 'Nosto_Tagging/js/nostojs'
+            nostojs: 'Nosto_Tagging/js/nostojs',
+            recobuy:  'Nosto_Tagging/js/recobuy'
         }
     }
 };

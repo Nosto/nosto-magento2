@@ -40,10 +40,8 @@ use Magento\Framework\App\Action\Context;
 use Magento\Sales\Model\ResourceModel\Order\CollectionFactory as OrderCollectionFactory;
 use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\StoreManagerInterface;
-use Nosto\NostoException;
-use Nosto\Object\Order\OrderCollection;
+use Nosto\Tagging\Model\Order\Collection as NostoOrderCollection;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
-use Nosto\Tagging\Model\Order\Builder as NostoOrderBuilder;
 
 /**
  * Order export controller used to export order history to Nosto in order to
@@ -54,10 +52,16 @@ use Nosto\Tagging\Model\Order\Builder as NostoOrderBuilder;
  */
 class Order extends Base
 {
-    private $orderCollectionFactory;
-    private $nostoOrderBuilder;
-
     /** @noinspection PhpUndefinedClassInspection */
+    /**
+     * @var OrderCollectionFactory
+     */
+    private $orderCollectionFactory;
+    /**
+     * @var NostoOrderCollection
+     */
+    private $nostoOrderCollection;
+
     /**
      * Constructor.
      *
@@ -65,7 +69,8 @@ class Order extends Base
      * @param OrderCollectionFactory $orderCollectionFactory
      * @param StoreManagerInterface $storeManager
      * @param NostoHelperAccount $nostoHelperAccount
-     * @param NostoOrderBuilder $orderBuilder
+     * @param NostoOrderCollection $nostoOrderCollection
+     * @internal param NostoOrderBuilder $orderBuilder
      */
     public function __construct(
         Context $context,
@@ -73,51 +78,26 @@ class Order extends Base
         OrderCollectionFactory $orderCollectionFactory,
         StoreManagerInterface $storeManager,
         NostoHelperAccount $nostoHelperAccount,
-        NostoOrderBuilder $orderBuilder
+        NostoOrderCollection $nostoOrderCollection
     ) {
         parent::__construct($context, $storeManager, $nostoHelperAccount);
-
         $this->orderCollectionFactory = $orderCollectionFactory;
-        $this->nostoOrderBuilder = $orderBuilder;
+        $this->nostoOrderCollection = $nostoOrderCollection;
     }
 
     /**
      * @inheritdoc
      */
-    protected function getCollection(StoreInterface $store) // @codingStandardsIgnoreLine
+    public function buildExportCollection(StoreInterface $store, $limit = 100, $offset = 0)
     {
-        /** @var \Magento\Sales\Model\ResourceModel\Order\Collection $collection */
-        /** @noinspection PhpUndefinedMethodInspection */
-        $collection = $this->orderCollectionFactory->create();
-        $collection->addAttributeToFilter('store_id', ['eq' => $store->getId()]);
-        $collection->addAttributeToSelect('*');
-        return $collection;
+        return $this->nostoOrderCollection->buildMany($store, $limit, $offset);
     }
 
     /**
      * @inheritdoc
      */
-    protected function buildExportCollection($collection) // @codingStandardsIgnoreLine
+    public function buildSingleExportCollection(StoreInterface $store, $id)
     {
-        /** @var \Magento\Sales\Model\ResourceModel\Order\Collection $collection */
-        $exportCollection = new OrderCollection();
-        $items = $collection->loadData();
-        if (
-            $items instanceof \Traversable === false
-            && !is_array($items)
-        ) {
-            throw new NostoException(
-                sprintf(
-                    'Invalid collection type %s for product export',
-                    get_class($collection)
-                )
-            );
-        }
-
-        foreach ($items as $order) {
-            /** @var \Magento\Sales\Model\Order $order */
-            $exportCollection->append($this->nostoOrderBuilder->build($order));
-        }
-        return $exportCollection;
+        return $this->nostoOrderCollection->buildSingle($store, $id);
     }
 }

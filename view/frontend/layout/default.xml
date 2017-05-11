@@ -50,15 +50,16 @@
         <referenceContainer name="content">
             <block class="Nosto\Tagging\Block\Variation" name="nosto.variation" before="-"
                    template="Nosto_Tagging::variation.phtml"/>
-            <block class="Nosto\Tagging\Block\Knockout" name="nosto.cart" after="nosto.variation"
+            <block class="Nosto\Tagging\Block\Addtocart" name="nosto.page.type.addtocart" after="-"
+                   template="Nosto_Tagging::addtocart.phtml">
+            </block>
+            <block class="Nosto\Tagging\Block\Knockout" name="nosto.cart" before="-"
                    template="Nosto_Tagging::cart.phtml">
                 <arguments>
                     <argument name="jsLayout" xsi:type="array">
                         <item name="components" xsi:type="array">
                             <item name="cartTagging" xsi:type="array">
-                                <item name="component" xsi:type="string">
-                                    Nosto_Tagging/js/view/cart-tagging
-                                </item>
+                                <item name="component" xsi:type="string">Nosto_Tagging/js/view/cart-tagging</item>
                             </item>
                         </item>
                     </argument>
@@ -70,9 +71,7 @@
                     <argument name="jsLayout" xsi:type="array">
                         <item name="components" xsi:type="array">
                             <item name="customerTagging" xsi:type="array">
-                                <item name="component" xsi:type="string">
-                                    Nosto_Tagging/js/view/customer-tagging
-                                </item>
+                                <item name="component" xsi:type="string">Nosto_Tagging/js/view/customer-tagging</item>
                             </item>
                         </item>
                     </argument>

@@ -48,7 +48,9 @@ use Nosto\Tagging\Helper\Data as NostoHelperData;
  */
 class Meta extends Template
 {
-    use TaggingTrait;
+    use TaggingTrait {
+        TaggingTrait::__construct as taggingConstruct;
+    }
 
     private $nostoHelperData;
 
@@ -68,8 +70,8 @@ class Meta extends Template
     ) {
         parent::__construct($context, $data);
 
+        $this->taggingConstruct($nostoHelperAccount);
         $this->nostoHelperData = $nostoHelperData;
-        $this->nostoHelperAccount = $nostoHelperAccount;
     }
 
     /**

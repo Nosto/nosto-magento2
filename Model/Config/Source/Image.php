@@ -51,7 +51,7 @@ class Image extends Selector
         $collection->setFrontendInputTypeFilter('media_image');
     }
 
-    function isNullable()
+    public function isNullable()
     {
         return false;
     }

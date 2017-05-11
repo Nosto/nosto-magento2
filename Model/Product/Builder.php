@@ -276,7 +276,7 @@ class Builder
      * @param Product $product the product model.
      * @return array
      */
-    protected function buildAlternativeImages(Product $product)
+    public function buildAlternativeImages(Product $product)
     {
         $images = [];
         $this->galleryReadHandler->execute($product);
