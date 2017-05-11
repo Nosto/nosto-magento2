@@ -169,4 +169,17 @@ class Product extends View
     {
         return DateHelper::format($date);
     }
+
+    /**
+     * Checks if store uses more than one currency in order to decide whether to hide or show the
+     * nosto_variation tagging.
+     *
+     * @return bool a boolean value indicating whether the store has more than one currency
+     */
+    public function hasMultipleCurrencies()
+    {
+        /** @var Store $store */
+        $store = $this->_storeManager->getStore(true);
+        return count($store->getAvailableCurrencyCodes(true)) > 1;
+    }
 }

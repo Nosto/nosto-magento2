@@ -34,69 +34,72 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Product\Sku;
+namespace Nosto\Tagging\Model\Rates;
 
-use Magento\Catalog\Model\Product;
-use Magento\ConfigurableProduct\Model\Product\Type\Configurable as ConfigurableType;
+use Magento\Directory\Model\Currency;
+use Magento\Directory\Model\CurrencyFactory;
+use Magento\Framework\Event\ManagerInterface;
 use Magento\Store\Api\Data\StoreInterface;
-use Nosto\NostoException;
-use Nosto\Object\Product\SkuCollection;
-use Nosto\Tagging\Helper\Data as NostoHelperData;
-use Nosto\Tagging\Helper\Price as NostoPriceHelper;
-use Nosto\Tagging\Model\Product\Sku\Builder as NostoSkuBuilder;
+use Magento\Store\Model\Store;
+use Nosto\Exception\NostoException;
+use Nosto\Object\ExchangeRate;
+use Nosto\Object\ExchangeRateCollection;
 use Psr\Log\LoggerInterface;
 
-class Collection
+class Builder
 {
-    private $configurableType;
     private $logger;
-    private $nostoHelperData;
-    private $nostoPriceHelper;
-    private $nostoSkuBuilder;
+    private $eventManager;
+    private $currencyFactory;
 
     /**
-     * Builder constructor.
      * @param LoggerInterface $logger
-     * @param ConfigurableType $configurableType
-     * @param NostoHelperData $nostoHelperData
-     * @param NostoPriceHelper $priceHelper
-     * @param Builder $nostoSkuBuilder
+     * @param ManagerInterface $eventManager
+     * @param CurrencyFactory $currencyFactory
      */
     public function __construct(
         LoggerInterface $logger,
-        ConfigurableType $configurableType,
-        NostoHelperData $nostoHelperData,
-        NostoPriceHelper $priceHelper,
-        NostoSkuBuilder $nostoSkuBuilder
+        ManagerInterface $eventManager,
+        CurrencyFactory $currencyFactory
     ) {
-        $this->configurableType = $configurableType;
         $this->logger = $logger;
-        $this->nostoHelperData = $nostoHelperData;
-        $this->nostoPriceHelper = $priceHelper;
-        $this->nostoSkuBuilder = $nostoSkuBuilder;
+        $this->eventManager = $eventManager;
+        $this->currencyFactory = $currencyFactory;
     }
 
     /**
-     * @param Product $product
-     * @param StoreInterface $store
-     * @return SkuCollection
+     * Builds the collection of exchange-rates for the specified store view. The collection of rates
+     * contains rates from the store's base currency to each of the other currencies.
+     *
+     * @param StoreInterface|Store $store the store view for which to build the exchange rates
+     * @return ExchangeRateCollection the collection of exchange rates for the store
      */
-    public function build(Product $product, StoreInterface $store)
+    public function build(StoreInterface $store)
     {
-        $skuCollection = new SkuCollection();
-        if ($product->getTypeId() === ConfigurableType::TYPE_CODE) {
-            $attributes = $this->configurableType->getConfigurableAttributes($product);
-            /** @var Product $product */
-            foreach ($this->configurableType->getUsedProducts($product) as $product) {
-                try {
-                    $sku = $this->nostoSkuBuilder->build($product, $store, $attributes);
-                    $skuCollection->append($sku);
-                } catch (NostoException $e) {
-                    $this->logger->error($e->__toString());
+        $exchangeRates = new ExchangeRateCollection();
+
+        try {
+            $currencyCodes = $store->getAvailableCurrencyCodes(true);
+            $baseCurrencyCode = $store->getBaseCurrencyCode();
+
+            /** @var Currency $currencyModel */
+            $currencyModel = $currency = $this->currencyFactory->create();
+            $rates = $currencyModel->getCurrencyRates($baseCurrencyCode, $currencyCodes);
+            foreach ($rates as $code => $rate) {
+                if ($baseCurrencyCode === $code) {
+                    continue; // Skip base currency.
                 }
+
+                $this->logger->info(sprintf('The rate from %s to %s is %f', $baseCurrencyCode,
+                    $code, $rate));
+                $exchangeRates->addRate($code, new ExchangeRate($code, $rate));
             }
+        } catch (NostoException $e) {
+            $this->logger->error($e->__toString());
         }
 
-        return $skuCollection;
+        $this->eventManager->dispatch('nosto_exchange_rates_load_after', ['rates' => $exchangeRates]);
+
+        return $exchangeRates;
     }
 }

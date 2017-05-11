@@ -43,6 +43,8 @@ use Magento\Eav\Model\Entity\Attribute;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Review\Model\ReviewFactory;
 use Magento\Store\Api\Data\StoreInterface;
+use Magento\Store\Model\Store;
+use Nosto\Tagging\Helper\Currency as CurrencyHelper;
 use Nosto\NostoException;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Price as NostoPriceHelper;
@@ -66,6 +68,7 @@ class Builder
     private $reviewFactory;
     private $urlBuilder;
     private $skuCollection;
+    private $nostoCurrencyHelper;
 
     /**
      * @param NostoHelperData $nostoHelperData
@@ -79,6 +82,7 @@ class Builder
      * @param ReviewFactory $reviewFactory
      * @param GalleryReadHandler $galleryReadHandler
      * @param NostoUrlBuilder $urlBuilder
+     * @param CurrencyHelper $nostoCurrencyHelper
      */
     public function __construct(
         NostoHelperData $nostoHelperData,
@@ -91,7 +95,8 @@ class Builder
         ManagerInterface $eventManager,
         ReviewFactory $reviewFactory,
         GalleryReadHandler $galleryReadHandler,
-        NostoUrlBuilder $urlBuilder
+        NostoUrlBuilder $urlBuilder,
+        CurrencyHelper $nostoCurrencyHelper
     ) {
         $this->nostoDataHelper = $nostoHelperData;
         $this->nostoPriceHelper = $priceHelper;
@@ -104,14 +109,15 @@ class Builder
         $this->galleryReadHandler = $galleryReadHandler;
         $this->urlBuilder = $urlBuilder;
         $this->skuCollection = $skuCollection;
+        $this->nostoCurrencyHelper = $nostoCurrencyHelper;
     }
 
     /**
      * @param Product $product
-     * @param StoreInterface $store
+     * @param Store $store
      * @return \Nosto\Object\Product\Product
      */
-    public function build(Product $product, StoreInterface $store)
+    public function build(Product $product, Store $store)
     {
         $nostoProduct = new \Nosto\Object\Product\Product();
 
@@ -120,32 +126,47 @@ class Builder
             $nostoProduct->setProductId((string)$product->getId());
             $nostoProduct->setName($product->getName());
             $nostoProduct->setImageUrl($this->buildImageUrl($product, $store));
-            $price = $this->nostoPriceHelper->getProductFinalPriceInclTax($product);
+            $price = $this->nostoCurrencyHelper->convertToTaggingPrice(
+                $this->nostoPriceHelper->getProductFinalPriceInclTax(
+                    $product
+                ),
+                $store
+            );
             $nostoProduct->setPrice($price);
-            $listPrice = $this->nostoPriceHelper->getProductPriceInclTax($product);
+            $listPrice = $this->nostoCurrencyHelper->convertToTaggingPrice(
+                $this->nostoPriceHelper->getProductPriceInclTax(
+                    $product
+                ),
+                $store
+            );
             $nostoProduct->setListPrice($listPrice);
-            /** @noinspection PhpUndefinedMethodInspection */
-            $nostoProduct->setPriceCurrencyCode($store->getBaseCurrencyCode());
+            $nostoProduct->setPriceCurrencyCode(
+                $this->nostoCurrencyHelper->getTaggingCurrency(
+                    $store
+                )->getCode()
+            );
+            $nostoProduct->setVariationId(
+                $this->nostoCurrencyHelper->getTaggingCurrency(
+                    $store
+                )->getCode()
+            );
+
             $nostoProduct->setAvailable($product->isAvailable());
             $nostoProduct->setCategories($this->nostoCategoryBuilder->buildCategories($product));
-
+            $nostoProduct->setAlternateImageUrls($this->buildAlternativeImages($product));
             if ($this->nostoDataHelper->isInventoryTaggingEnabled($store)) {
                 $nostoProduct->setInventoryLevel($this->nostoStockHelper->getQty($product));
             }
-
             if ($this->nostoDataHelper->isRatingTaggingEnabled($store)) {
                 $nostoProduct->setRatingValue($this->buildRatingValue($product, $store));
                 $nostoProduct->setReviewCount($this->buildReviewCount($product, $store));
             }
-
             if ($this->nostoDataHelper->isAltimgTaggingEnabled($store)) {
                 $nostoProduct->setAlternateImageUrls($this->buildAlternativeImages($product));
             }
-
             if ($this->nostoDataHelper->isVariationTaggingEnabled($store)) {
                 $nostoProduct->setSkus($this->skuCollection->build($product, $store));
             }
-
             $descriptions = [];
             if ($product->hasData('short_description')) {
                 $descriptions[] = $product->getData('short_description');
@@ -156,29 +177,24 @@ class Builder
             if (!empty($descriptions)) {
                 $nostoProduct->setDescription(implode(' ', $descriptions));
             }
-
             $brandAttribute = $this->nostoDataHelper->getBrandAttribute($store);
             if ($product->hasData($brandAttribute)) {
                 $nostoProduct->setBrand($product->getData($brandAttribute));
             }
-
             $marginAttribute = $this->nostoDataHelper->getMarginAttribute($store);
             if ($product->hasData($marginAttribute)) {
                 $nostoProduct->setSupplierCost($product->getData($marginAttribute));
             }
-
             $gtinAttribute = $this->nostoDataHelper->getGtinAttribute($store);
             if ($product->hasData($gtinAttribute)) {
                 $nostoProduct->setGtin($product->getData($gtinAttribute));
             }
-
             if (($tags = $this->buildTags($product)) !== []) {
                 $nostoProduct->setTag1($tags);
             }
         } catch (NostoException $e) {
             $this->logger->error($e->__toString());
         }
-
         $this->eventManager->dispatch('nosto_product_load_after', ['product' => $nostoProduct]);
 
         return $nostoProduct;

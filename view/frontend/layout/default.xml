@@ -48,6 +48,8 @@
                    template="Nosto_Tagging::embed.phtml"/>
         </referenceBlock>
         <referenceContainer name="content">
+            <block class="Nosto\Tagging\Block\Variation" name="nosto.variation" before="-"
+                   template="Nosto_Tagging::variation.phtml"/>
             <block class="Nosto\Tagging\Block\Addtocart" name="nosto.page.type.addtocart" after="-"
                    template="Nosto_Tagging::addtocart.phtml">
             </block>

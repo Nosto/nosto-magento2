@@ -34,69 +34,69 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Product\Sku;
+namespace Nosto\Tagging\Observer\Rates;
 
-use Magento\Catalog\Model\Product;
-use Magento\ConfigurableProduct\Model\Product\Type\Configurable as ConfigurableType;
-use Magento\Store\Api\Data\StoreInterface;
-use Nosto\NostoException;
-use Nosto\Object\Product\SkuCollection;
+use Magento\Framework\Event\Observer;
+use Magento\Framework\Event\ObserverInterface;
+use Magento\Framework\Module\Manager as ModuleManager;
+use Magento\Store\Model\StoreManagerInterface;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
-use Nosto\Tagging\Helper\Price as NostoPriceHelper;
-use Nosto\Tagging\Model\Product\Sku\Builder as NostoSkuBuilder;
+use Nosto\Tagging\Model\Rates\Service as NostoRatesService;
 use Psr\Log\LoggerInterface;
 
-class Collection
+/**
+ * Observer to update the exchange rates for each of the store views if the module is enabled and
+ * an account exists for the store view.
+ *
+ * @package Nosto\Tagging\Observer\Rates
+ */
+class Update implements ObserverInterface
 {
-    private $configurableType;
+    private $storeManager;
     private $logger;
-    private $nostoHelperData;
-    private $nostoPriceHelper;
-    private $nostoSkuBuilder;
+    private $moduleManager;
+    private $nostoRatesService;
 
     /**
-     * Builder constructor.
+     * Constructor.
+     *
      * @param LoggerInterface $logger
-     * @param ConfigurableType $configurableType
-     * @param NostoHelperData $nostoHelperData
-     * @param NostoPriceHelper $priceHelper
-     * @param Builder $nostoSkuBuilder
+     * @param ModuleManager $moduleManager
+     * @param StoreManagerInterface $storeManager
+     * @param NostoRatesService $nostoRatesService
      */
     public function __construct(
         LoggerInterface $logger,
-        ConfigurableType $configurableType,
-        NostoHelperData $nostoHelperData,
-        NostoPriceHelper $priceHelper,
-        NostoSkuBuilder $nostoSkuBuilder
+        ModuleManager $moduleManager,
+        StoreManagerInterface $storeManager,
+        NostoRatesService $nostoRatesService
     ) {
-        $this->configurableType = $configurableType;
         $this->logger = $logger;
-        $this->nostoHelperData = $nostoHelperData;
-        $this->nostoPriceHelper = $priceHelper;
-        $this->nostoSkuBuilder = $nostoSkuBuilder;
+        $this->moduleManager = $moduleManager;
+        $this->storeManager = $storeManager;
+        $this->nostoRatesService = $nostoRatesService;
     }
 
     /**
-     * @param Product $product
-     * @param StoreInterface $store
-     * @return SkuCollection
+     * Observer method to update the exchange rates for each for the store views by invoking the
+     * rates management service
+     *
+     * @param Observer $observer the dispatched event
      */
-    public function build(Product $product, StoreInterface $store)
+    public function execute(Observer $observer)
     {
-        $skuCollection = new SkuCollection();
-        if ($product->getTypeId() === ConfigurableType::TYPE_CODE) {
-            $attributes = $this->configurableType->getConfigurableAttributes($product);
-            /** @var Product $product */
-            foreach ($this->configurableType->getUsedProducts($product) as $product) {
-                try {
-                    $sku = $this->nostoSkuBuilder->build($product, $store, $attributes);
-                    $skuCollection->append($sku);
-                } catch (NostoException $e) {
-                    $this->logger->error($e->__toString());
-                }
-            }
+        if (!$this->moduleManager->isEnabled(NostoHelperData::MODULE_NAME)) {
+            return;
         }
 
-        return $skuCollection;
+        $this->logger->info('Updating settings to Nosto for all store views');
+        foreach ($this->storeManager->getStores(false) as $store) {
+            $this->logger->info('Updating settings for ' . $store->getName());
+            if ($this->nostoRatesService->update($store)) {
+                $this->logger->info('Successfully updated the settings for the store view');
+            } else {
+                $this->logger->warning('Unable to update the settings for the store view');
+            }
+        }
     }
 }

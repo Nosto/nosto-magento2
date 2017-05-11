@@ -34,69 +34,64 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Product\Sku;
+namespace Nosto\Tagging\Model\Account\Settings;
 
-use Magento\Catalog\Model\Product;
-use Magento\ConfigurableProduct\Model\Product\Type\Configurable as ConfigurableType;
+use Exception;
+use Magento\Framework\Event\ManagerInterface;
 use Magento\Store\Api\Data\StoreInterface;
-use Nosto\NostoException;
-use Nosto\Object\Product\SkuCollection;
-use Nosto\Tagging\Helper\Data as NostoHelperData;
-use Nosto\Tagging\Helper\Price as NostoPriceHelper;
-use Nosto\Tagging\Model\Product\Sku\Builder as NostoSkuBuilder;
+use Magento\Store\Model\Store;
+use Nosto\Operation\UpdateSettings;
+use Nosto\Tagging\Helper\Account as NostoHelperAccount;
+use Nosto\Tagging\Model\Account\Settings\Builder as NostoSettingsBuilder;
 use Psr\Log\LoggerInterface;
 
-class Collection
+class Service
 {
-    private $configurableType;
     private $logger;
-    private $nostoHelperData;
-    private $nostoPriceHelper;
-    private $nostoSkuBuilder;
+    private $eventManager;
+    private $nostoHelperAccount;
+    private $nostoSettingsBuilder;
 
     /**
-     * Builder constructor.
      * @param LoggerInterface $logger
-     * @param ConfigurableType $configurableType
-     * @param NostoHelperData $nostoHelperData
-     * @param NostoPriceHelper $priceHelper
-     * @param Builder $nostoSkuBuilder
+     * @param ManagerInterface $eventManager
+     * @param NostoHelperAccount $nostoHelperAccount
+     * @param NostoSettingsBuilder $nostoSettingsBuilder
      */
     public function __construct(
         LoggerInterface $logger,
-        ConfigurableType $configurableType,
-        NostoHelperData $nostoHelperData,
-        NostoPriceHelper $priceHelper,
-        NostoSkuBuilder $nostoSkuBuilder
+        ManagerInterface $eventManager,
+        NostoHelperAccount $nostoHelperAccount,
+        NostoSettingsBuilder $nostoSettingsBuilder
     ) {
-        $this->configurableType = $configurableType;
         $this->logger = $logger;
-        $this->nostoHelperData = $nostoHelperData;
-        $this->nostoPriceHelper = $priceHelper;
-        $this->nostoSkuBuilder = $nostoSkuBuilder;
+        $this->eventManager = $eventManager;
+        $this->nostoHelperAccount = $nostoHelperAccount;
+        $this->nostoSettingsBuilder = $nostoSettingsBuilder;
     }
 
     /**
-     * @param Product $product
-     * @param StoreInterface $store
-     * @return SkuCollection
+     * Sends a account settings update request to Nosto via the API.
+     *
+     * @param StoreInterface|Store $store the store for which the settings are to be updated.
+     * @return bool a boolean value indicating whether the operation was successful
      */
-    public function build(Product $product, StoreInterface $store)
+    public function update(StoreInterface $store)
     {
-        $skuCollection = new SkuCollection();
-        if ($product->getTypeId() === ConfigurableType::TYPE_CODE) {
-            $attributes = $this->configurableType->getConfigurableAttributes($product);
-            /** @var Product $product */
-            foreach ($this->configurableType->getUsedProducts($product) as $product) {
-                try {
-                    $sku = $this->nostoSkuBuilder->build($product, $store, $attributes);
-                    $skuCollection->append($sku);
-                } catch (NostoException $e) {
-                    $this->logger->error($e->__toString());
-                }
+        if ($account = $this->nostoHelperAccount->findAccount($store)) {
+            $settings = $this->nostoSettingsBuilder->build($store);
+
+            try {
+                $service = new UpdateSettings($account);
+                return $service->update($settings);
+            } catch (Exception $e) {
+                $this->logger->error($e->__toString());
             }
+        } else {
+            $this->logger->info('Skipping update; an account doesn\'t exist for ' .
+                $store->getName());
         }
 
-        return $skuCollection;
+        return false;
     }
 }
