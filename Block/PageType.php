@@ -68,7 +68,7 @@ class PageType extends Template
     ) {
         parent::__construct($context, $data);
 
-        $this->taggingConstruct($nostoHelperAccount);
+        $this->taggingConstruct($nostoHelperAccount, $context->getStoreManager());
     }
 
     /**

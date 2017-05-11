@@ -26,4 +26,5 @@ interface StoreInterface extends \Magento\Framework\Api\ExtensibleDataInterface
     public function getBaseCurrencyCode();
     public function getWebsite();
     public function getGroup();
+    public function getBaseUrl($type = UrlInterface::URL_TYPE_LINK, $secure = null);
 }

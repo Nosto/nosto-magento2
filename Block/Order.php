@@ -82,7 +82,7 @@ class Order extends Success
     ) {
         parent::__construct($context, $orderFactory, $data);
 
-        $this->taggingConstruct($nostoHelperAccount);
+        $this->taggingConstruct($nostoHelperAccount, $context->getStoreManager());
         $this->checkoutSession = $checkoutSession;
         $this->nostoOrderBuilder = $orderBuilder;
     }

@@ -36,15 +36,20 @@
 
 namespace Nosto\Tagging\Block;
 
+use Magento\Store\Model\StoreManagerInterface;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 
 trait TaggingTrait
 {
     private $nostoHelperAccount;
+    private $storeManager;
 
-    public function __construct(NostoHelperAccount $nostoHelperAccount)
-    {
+    public function __construct(
+        NostoHelperAccount $nostoHelperAccount,
+        StoreManagerInterface $storeManager
+    ) {
         $this->nostoHelperAccount = $nostoHelperAccount;
+        $this->storeManager = $storeManager;
     }
 
     /**
@@ -52,11 +57,12 @@ trait TaggingTrait
      * exists for the current store view.
      *
      * @return string the markup or an empty string (if an account doesn't exist)
+     * @suppress PhanTraitParentReference
      */
     public function _toHtml()
     {
         /** @noinspection PhpUndefinedMethodInspection */
-        if ($this->nostoHelperAccount->nostoInstalledAndEnabled($this->_storeManager->getStore())) {
+        if ($this->nostoHelperAccount->nostoInstalledAndEnabled($this->storeManager->getStore())) {
             /** @noinspection PhpUndefinedMethodInspection */
             return parent::_toHtml();
         } else {

@@ -74,7 +74,7 @@ class Category extends Template
     ) {
         parent::__construct($context, $data);
 
-        $this->taggingConstruct($nostoHelperAccount);
+        $this->taggingConstruct($nostoHelperAccount, $context->getStoreManager());
         $this->registry = $registry;
         $this->categoryBuilder = $categoryBuilder;
     }

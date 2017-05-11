@@ -73,7 +73,7 @@ class Search extends Result
     ) {
         parent::__construct($context, $layerResolver, $catalogSearchData, $queryFactory, $data);
 
-        $this->taggingConstruct($nostoHelperAccount);
+        $this->taggingConstruct($nostoHelperAccount, $context->getStoreManager());
     }
 
     /**

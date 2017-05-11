@@ -119,7 +119,7 @@ class Collection
         }
         foreach ($items as $order) {
             /** @var \Magento\Sales\Model\Order $order */
-            $orders->append($this->nostoOrderBuilder->build($order, $store));
+            $orders->append($this->nostoOrderBuilder->build($order));
         }
         return $orders;
     }

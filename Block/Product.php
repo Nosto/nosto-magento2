@@ -119,7 +119,7 @@ class Product extends View
             $data
         );
 
-        $this->taggingConstruct($nostoHelperAccount);
+        $this->taggingConstruct($nostoHelperAccount, $context->getStoreManager());
         $this->nostoProductBuilder = $nostoProductBuilder;
         $this->categoryBuilder = $categoryBuilder;
         $this->nostoHelperData = $nostoHelperData;

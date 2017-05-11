@@ -206,7 +206,7 @@ class Builder
      *
      * @param Product $product the product whose rating value to fetch
      * @param StoreInterface $store the store scope in which to fetch the rating
-     * @return float the normalized rating value of the product
+     * @return float|null the normalized rating value of the product
      */
     private function buildRatingValue(Product $product, StoreInterface $store)
     {
@@ -230,7 +230,7 @@ class Builder
      *
      * @param Product $product the product whose rating value to fetch
      * @param StoreInterface $store the store scope in which to fetch the rating
-     * @return int the normalized rating value of the product
+     * @return int|null the normalized rating value of the product
      */
     private function buildReviewCount(Product $product, StoreInterface $store)
     {

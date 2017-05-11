@@ -53,6 +53,7 @@ class Embed extends Template
         TaggingTrait::__construct as taggingConstruct;
     }
 
+    private $nostoHelperAccount;
     private $nostoHelperData;
     /**
      * The default Nosto server address to use if none is configured.
@@ -75,9 +76,9 @@ class Embed extends Template
     ) {
         parent::__construct($context, $data);
 
-        $this->taggingConstruct($nostoHelperAccount);
-        $this->nostoHelperAccount = $nostoHelperAccount;
+        $this->taggingConstruct($nostoHelperAccount, $context->getStoreManager());
         $this->nostoHelperData = $nostoHelperData;
+        $this->nostoHelperAccount = $nostoHelperAccount;
     }
 
     /**
