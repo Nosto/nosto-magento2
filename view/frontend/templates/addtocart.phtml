@@ -1,4 +1,5 @@
-/*
+<?php
+/**
  * Copyright (c) 2017, Nosto Solutions Ltd
  * All rights reserved.
  *
@@ -33,11 +34,15 @@
  *
  */
 
-var config = {
-    map: {
-        '*': {
-            nostojs: 'Nosto_Tagging/js/nostojs',
-            recobuy:  'Nosto_Tagging/js/recobuy'
-        }
-    }
-};
+/** @var \Nosto\Tagging\Block\Addtocart $this */
+?>
+<form action="<?php echo $this->getSubmitUrl() ?>" method="post" id="nosto_addtocart_form">
+    <?php echo $this->getBlockHtml('formkey') ?>
+    <input type="hidden" name="qty" value="1">
+    <input type="hidden" name="product">
+</form>
+<script type="text/javascript">
+    require(['recobuy'], function (module) {
+        window.Nosto = module;
+    })
+</script>

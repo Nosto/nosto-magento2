@@ -33,11 +33,45 @@
  *
  */
 
-var config = {
-    map: {
-        '*': {
-            nostojs: 'Nosto_Tagging/js/nostojs',
-            recobuy:  'Nosto_Tagging/js/recobuy'
+define(['catalogAddToCart', 'nostojs', 'jquery'], function (addToCart, nostojs, $) {
+
+    //noinspection SpellCheckingInspection
+    var form = $('#nosto_addtocart_form');
+    var helper = new addToCart();
+
+    Recobuy = {};
+    Recobuy.addProductToCart = function (productId, element) {
+
+        if (typeof element === 'object') {
+            var slotId = this.resolveContextSlotId(element);
+            if (slotId) {
+                nostojs(function (api) {
+                    api.recommendedProductAddedToCart(productId, slotId);
+                });
+            }
         }
+
+        form.find('input[name="product"]').val(productId);
+        form.find('input[name="qty"]').val(1);
+        helper.ajaxSubmit(form);
+    };
+
+    Recobuy.resolveContextSlotId = function (element) {
+        var m = 20;
+        var n = 0;
+        var e = element;
+        while (typeof e.parentElement !== "undefined" && e.parentElement) {
+            ++n;
+            e = e.parentElement;
+            if (e.getAttribute('class') === 'nosto_element' && e.getAttribute('id')) {
+                return e.getAttribute('id');
+            }
+            if (n >= m) {
+                return false;
+            }
+        }
+        return false;
     }
-};
+
+    return Recobuy;
+});
