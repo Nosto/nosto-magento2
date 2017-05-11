@@ -57,7 +57,7 @@ $category = $this->getNostoCategory();
         <?php endforeach; ?>
         <?php if ($product->getDescription()) : ?>
             <span
-                class="description"><?php echo $this->escapeHtml($this->stripTags($product->getDescription())); ?></span>
+                    class="description"><?php echo $this->escapeHtml($this->stripTags($product->getDescription())); ?></span>
         <?php endif; ?>
         <?php if ($product->getBrand()) : ?>
             <span class="brand"><?php echo $this->escapeHtml($product->getBrand()); ?></span>
@@ -97,7 +97,7 @@ $category = $this->getNostoCategory();
                 <span class="availability"><?php echo $this->escapeHtml($sku->getAvailability()); ?></span>
                 <span class="custom_fields">
                 <?php if (is_array($sku->getCustomAttributes())) : ?>
-                    <?php foreach ($sku->getCustomAttributes() as $key=>$val) : ?>
+                    <?php foreach ($sku->getCustomAttributes() as $key => $val) : ?>
                         <span class="<?php echo $this->escapeHtml($key); ?>"><?php echo $this->escapeHtml($val); ?></span>
                     <?php endforeach; ?>
                 <?php endif; ?>

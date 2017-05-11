@@ -43,8 +43,8 @@ use Magento\Framework\Stdlib\DateTime\DateTime;
 use Magento\Store\Model\StoreManagerInterface;
 use Nosto\Object\Cart\LineItem;
 use Nosto\Tagging\Model\Cart\Builder as NostoCartBuilder;
-use Nosto\Tagging\Model\Customer as NostoCustomer;
 use Nosto\Tagging\Model\Customer;
+use Nosto\Tagging\Model\Customer as NostoCustomer;
 use Nosto\Tagging\Model\CustomerFactory as NostoCustomerFactory;
 use Psr\Log\LoggerInterface;
 

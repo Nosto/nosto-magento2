@@ -97,7 +97,8 @@ class Builder
             $this->logger->error($e->__toString());
         }
 
-        $this->eventManager->dispatch('nosto_exchange_rates_load_after', ['rates' => $exchangeRates]);
+        $this->eventManager->dispatch('nosto_exchange_rates_load_after',
+            ['rates' => $exchangeRates]);
 
         return $exchangeRates;
     }

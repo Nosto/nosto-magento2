@@ -36,11 +36,11 @@
 
 namespace Nosto\Tagging\Helper;
 
-use Magento\Directory\Model\CurrencyFactory;
-use Magento\Framework\App\Helper\Context;
-use Magento\Framework\App\Helper\AbstractHelper;
-use Magento\Store\Model\Store;
 use Magento\Directory\Model\Currency as MagentoCurrency;
+use Magento\Directory\Model\CurrencyFactory;
+use Magento\Framework\App\Helper\AbstractHelper;
+use Magento\Framework\App\Helper\Context;
+use Magento\Store\Model\Store;
 
 /**
  * Currency helper used for currency related tasks.

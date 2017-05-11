@@ -38,12 +38,12 @@ namespace Nosto\Tagging\Model\Order;
 
 use Magento\Sales\Api\Data\EntityInterface;
 use Magento\Sales\Model\ResourceModel\Order\CollectionFactory as OrderCollectionFactory;
+use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
 use Nosto\NostoException;
 use Nosto\Object\Order\OrderCollection;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Model\Order\Builder as NostoOrderBuilder;
-use Magento\Store\Model\Store;
 
 class Collection
 {

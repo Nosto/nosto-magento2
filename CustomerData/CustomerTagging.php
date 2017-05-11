@@ -36,7 +36,6 @@
 
 namespace Nosto\Tagging\CustomerData;
 
-use Magento\Customer\Api\Data\CustomerInterface;
 use Magento\Customer\CustomerData\SectionSourceInterface;
 use Magento\Customer\Helper\Session\CurrentCustomer;
 use Magento\Framework\Stdlib\CookieManagerInterface;

@@ -36,10 +36,10 @@
 
 namespace Nosto\Tagging\Model\Category;
 
-use Magento\Framework\Event\ManagerInterface;
 use Magento\Catalog\Api\CategoryRepositoryInterface;
 use Magento\Catalog\Model\Category;
 use Magento\Catalog\Model\Product;
+use Magento\Framework\Event\ManagerInterface;
 use Nosto\NostoException;
 use Psr\Log\LoggerInterface;
 
@@ -108,7 +108,8 @@ class Builder
         if (empty($nostoCategory)) {
             $nostoCategory = null;
         } else {
-            $this->eventManager->dispatch('nosto_category_load_after', ['category' => $nostoCategory]);
+            $this->eventManager->dispatch('nosto_category_load_after',
+                ['category' => $nostoCategory]);
         }
 
         return $nostoCategory;

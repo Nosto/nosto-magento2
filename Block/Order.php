@@ -38,7 +38,6 @@ namespace Nosto\Tagging\Block;
 
 use Magento\Checkout\Block\Success;
 use Magento\Checkout\Model\Session;
-use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Element\Template\Context;
 use Magento\Sales\Model\OrderFactory;
 use Nosto\Helper\DateHelper;

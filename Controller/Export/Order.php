@@ -40,8 +40,8 @@ use Magento\Framework\App\Action\Context;
 use Magento\Sales\Model\ResourceModel\Order\CollectionFactory as OrderCollectionFactory;
 use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\StoreManagerInterface;
-use Nosto\Tagging\Model\Order\Collection as NostoOrderCollection;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
+use Nosto\Tagging\Model\Order\Collection as NostoOrderCollection;
 
 /**
  * Order export controller used to export order history to Nosto in order to

@@ -39,18 +39,18 @@ namespace Nosto\Tagging\Controller\Adminhtml\Account;
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\Controller\Result\Json;
 use Magento\Store\Model\StoreManagerInterface;
-use Nosto\NostoException;
 use Nosto\Helper\IframeHelper;
 use Nosto\Nosto;
+use Nosto\NostoException;
 use Nosto\Operation\AccountSignup;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
+use Nosto\Tagging\Helper\Currency as NostoCurrencyHelper;
 use Nosto\Tagging\Model\Meta\Account\Builder as NostoSignupBuilder;
 use Nosto\Tagging\Model\Meta\Account\Iframe\Builder as NostoIframeMetaBuilder;
 use Nosto\Tagging\Model\Meta\Account\Owner\Builder as NostoOwnerBuilder;
+use Nosto\Tagging\Model\Rates\Service as NostoRatesService;
 use Nosto\Tagging\Model\User\Builder as NostoCurrentUserBuilder;
 use Psr\Log\LoggerInterface;
-use Nosto\Tagging\Model\Rates\Service as NostoRatesService;
-use Nosto\Tagging\Helper\Currency as NostoCurrencyHelper;
 
 class Create extends Base
 {
@@ -162,7 +162,8 @@ class Create extends Base
                     if ($this->nostoCurrencyHelper->getCurrencyCount($store) > 1) {
                         try {
                             $this->nostoRatesService->update($store);
-                        } catch (\Exception $e) {}
+                        } catch (\Exception $e) {
+                        }
                     }
                 }
             } catch (NostoException $e) {

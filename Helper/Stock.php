@@ -37,9 +37,9 @@
 namespace Nosto\Tagging\Helper;
 
 use Magento\Bundle\Model\Product\Type as Bundled;
-use Magento\Catalog\Model\ProductFactory;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\Product\Type as ProductType;
+use Magento\Catalog\Model\ProductFactory;
 use Magento\CatalogInventory\Api\StockStateInterface;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable;
 use Magento\Framework\App\Helper\AbstractHelper;

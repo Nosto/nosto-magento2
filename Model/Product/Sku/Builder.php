@@ -42,10 +42,10 @@ use Magento\ConfigurableProduct\Model\Product\Type\Configurable\Attribute as Con
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Store\Model\Store;
 use Nosto\NostoException;
+use Nosto\Tagging\Helper\Currency as CurrencyHelper;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Price as NostoPriceHelper;
 use Psr\Log\LoggerInterface;
-use Nosto\Tagging\Helper\Currency as CurrencyHelper;
 
 class Builder
 {
