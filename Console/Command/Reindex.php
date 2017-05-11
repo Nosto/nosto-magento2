@@ -110,7 +110,7 @@ class Reindex extends Command
     /**
      * {@inheritdoc}
      */
-    protected function configure()
+    public function configure()
     {
         $this->setName('nosto:reindex');
         $this->setDescription('Syncs the product catalog with Nosto');
@@ -126,7 +126,7 @@ class Reindex extends Command
      * @param OutputInterface $output the command line output interface for logging
      * @return int|null|void
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    public function execute(InputInterface $input, OutputInterface $output)
     {
         if ($this->moduleManager->isEnabled(NostoHelperData::MODULE_NAME)) {
             $limit = (int)$input->getOption('batch');
