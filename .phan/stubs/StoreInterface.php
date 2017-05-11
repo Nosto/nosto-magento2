@@ -2,9 +2,11 @@
 
 namespace Magento\Store\Api\Data;
 
+use Magento\Framework\Api\ExtensibleDataInterface;
+use Magento\Framework\UrlInterface;
 use Magento\Store\Api\Data\StoreExtensionInterface;
 
-interface StoreInterface extends \Magento\Framework\Api\ExtensibleDataInterface
+interface StoreInterface extends ExtensibleDataInterface
 {
     public function getId();
     public function setId($id);
