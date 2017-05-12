@@ -150,7 +150,7 @@ class Builder
                 )->getCode()
             );
 
-            $nostoProduct->setAvailable($product->isAvailable());
+            $nostoProduct->setAvailable($this->buildAvailability($product));
             $nostoProduct->setCategories($this->nostoCategoryBuilder->buildCategories($product));
             $nostoProduct->setAlternateImageUrls($this->buildAlternativeImages($product));
             if ($this->nostoDataHelper->isInventoryTaggingEnabled($store)) {
@@ -198,6 +198,23 @@ class Builder
 
         return $nostoProduct;
     }
+
+    /**
+     * Generates the availability for the product
+     *
+     * @param Product $product
+     * @return string
+     */
+    private function buildAvailability(Product $product)
+    {
+        $availability = ProductInterface::OUT_OF_STOCK;
+        if ($product->isAvailable()) {
+            $availability = ProductInterface::OUT_OF_STOCK;
+        }
+
+        return $availability;
+    }
+
 
     /**
      * Helper method to fetch and return the normalised rating value for a product. The rating is
