@@ -50,7 +50,7 @@ use Nosto\Helper\DateHelper;
 use Nosto\Helper\PriceHelper;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
-use Nosto\Tagging\Helper\Store as NostoHelperStore;
+use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Model\Category\Builder as NostoCategoryBuilder;
 use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
 
@@ -68,7 +68,7 @@ class Product extends View
     private $nostoProductBuilder;
     private $categoryBuilder;
     private $nostoHelperData;
-    private $nostoHelperStore;
+    private $nostoHelperScope;
 
     /**
      * Constructor.
@@ -87,7 +87,7 @@ class Product extends View
      * @param NostoCategoryBuilder $categoryBuilder the category meta model builder.
      * @param NostoHelperData $nostoHelperData the data helper.
      * @param NostoHelperAccount $nostoHelperAccount
-     * @param NostoHelperStore $nostoHelperStore
+     * @param NostoHelperScope $nostoHelperScope
      * @param array $data optional data.
      */
     public function __construct(
@@ -105,7 +105,7 @@ class Product extends View
         NostoCategoryBuilder $categoryBuilder,
         NostoHelperData $nostoHelperData,
         NostoHelperAccount $nostoHelperAccount,
-        NostoHelperStore $nostoHelperStore,
+        NostoHelperScope $nostoHelperScope,
         array $data = []
     ) {
         parent::__construct(
@@ -122,11 +122,11 @@ class Product extends View
             $data
         );
 
-        $this->taggingConstruct($nostoHelperAccount, $nostoHelperStore);
+        $this->taggingConstruct($nostoHelperAccount, $nostoHelperScope);
         $this->nostoProductBuilder = $nostoProductBuilder;
         $this->categoryBuilder = $categoryBuilder;
         $this->nostoHelperData = $nostoHelperData;
-        $this->nostoHelperStore = $nostoHelperStore;
+        $this->nostoHelperScope = $nostoHelperScope;
     }
 
     /**
@@ -136,7 +136,7 @@ class Product extends View
      */
     public function getNostoProduct()
     {
-        $store = $this->nostoHelperStore->getStore();
+        $store = $this->nostoHelperScope->getStore();
         return $this->nostoProductBuilder->build($this->getProduct(), $store);
     }
 
@@ -181,7 +181,7 @@ class Product extends View
      */
     public function hasMultipleCurrencies()
     {
-        $store = $this->nostoHelperStore->getStore(true);
+        $store = $this->nostoHelperScope->getStore(true);
         return count($store->getAvailableCurrencyCodes(true)) > 1;
     }
 }

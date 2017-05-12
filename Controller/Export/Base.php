@@ -44,7 +44,7 @@ use Magento\Store\Model\Store;
 use Nosto\Helper\ExportHelper;
 use Nosto\Object\AbstractCollection;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
-use Nosto\Tagging\Helper\Store as NostoHelperStore;
+use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 
 /**
  * Export base controller that all export controllers must extend.
@@ -56,24 +56,24 @@ abstract class Base extends Action
     const OFFSET = 'offset';
 
     private $nostoHelperAccount;
-    private $nostoHelperStore;
+    private $nostoHelperScope;
 
     /**
      * Constructor.
      *
      * @param Context $context
-     * @param NostoHelperStore $nostoHelperStore
+     * @param NostoHelperScope $nostoHelperScope
      * @param NostoHelperAccount $nostoHelperAccount
      */
     public function __construct(
         Context $context,
-        NostoHelperStore $nostoHelperStore,
+        NostoHelperScope $nostoHelperScope,
         NostoHelperAccount $nostoHelperAccount
     ) {
         parent::__construct($context);
 
         $this->nostoHelperAccount = $nostoHelperAccount;
-        $this->nostoHelperStore = $nostoHelperStore;
+        $this->nostoHelperScope = $nostoHelperScope;
     }
 
     /**
@@ -84,7 +84,7 @@ abstract class Base extends Action
      */
     public function execute()
     {
-        $store = $this->nostoHelperStore->getStore(true);
+        $store = $this->nostoHelperScope->getStore(true);
         $id = $this->getRequest()->getParam(self::ID, false);
         if (!empty($id)) {
             return $this->export($this->buildSingleExportCollection($store, $id));
@@ -125,7 +125,7 @@ abstract class Base extends Action
     public function export(AbstractCollection $collection)
     {
         $result = $this->resultFactory->create(ResultFactory::TYPE_RAW);
-        $store = $this->nostoHelperStore->getStore(true);
+        $store = $this->nostoHelperScope->getStore(true);
         $account = $this->nostoHelperAccount->findAccount($store);
         if ($account !== null) {
             $cipherText = ExportHelper::export($account, $collection);

@@ -41,7 +41,7 @@ use Magento\Framework\View\Element\Template\Context;
 use Nosto\Nosto;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
-use Nosto\Tagging\Helper\Store as NostoHelperStore;
+use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 
 /**
  * Embed script block that includes the Nosto script in the page <head>.
@@ -59,7 +59,7 @@ class Embed extends Template
      * The default Nosto server address to use if none is configured.
      */
     const DEFAULT_SERVER_ADDRESS = 'connect.nosto.com';
-    private $nostoHelperStore;
+    private $nostoHelperScope;
 
     /**
      * Constructor.
@@ -67,22 +67,22 @@ class Embed extends Template
      * @param Context $context the context.
      * @param NostoHelperAccount $nostoHelperAccount the account helper.
      * @param NostoHelperData $nostoHelperData the data helper.
-     * @param NostoHelperStore $nostoHelperStore
+     * @param NostoHelperScope $nostoHelperScope
      * @param array $data optional data.
      */
     public function __construct(
         Context $context,
         NostoHelperAccount $nostoHelperAccount,
         NostoHelperData $nostoHelperData,
-        NostoHelperStore $nostoHelperStore,
+        NostoHelperScope $nostoHelperScope,
         array $data = []
     ) {
         parent::__construct($context, $data);
 
-        $this->taggingConstruct($nostoHelperAccount, $nostoHelperStore);
+        $this->taggingConstruct($nostoHelperAccount, $nostoHelperScope);
         $this->nostoHelperData = $nostoHelperData;
         $this->nostoHelperAccount = $nostoHelperAccount;
-        $this->nostoHelperStore = $nostoHelperStore;
+        $this->nostoHelperScope = $nostoHelperScope;
     }
 
     /**
@@ -92,7 +92,7 @@ class Embed extends Template
      */
     public function getAccountName()
     {
-        $store = $this->nostoHelperStore->getStore(true);
+        $store = $this->nostoHelperScope->getStore(true);
         $account = $this->nostoHelperAccount->findAccount($store);
         return $account !== null ? $account->getName() : '';
     }

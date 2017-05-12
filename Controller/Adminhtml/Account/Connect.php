@@ -39,7 +39,7 @@ namespace Nosto\Tagging\Controller\Adminhtml\Account;
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\Controller\Result\Json;
 use Nosto\Helper\OAuthHelper;
-use Nosto\Tagging\Helper\Store as NostoHelperStore;
+use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Model\Meta\Oauth\Builder as NostoOauthBuilder;
 
 class Connect extends Base
@@ -47,25 +47,25 @@ class Connect extends Base
     const ADMIN_RESOURCE = 'Nosto_Tagging::system_nosto_account';
     private $result;
     private $oauthMetaBuilder;
-    private $nostoHelperStore;
+    private $nostoHelperScope;
 
     /**
      * @param Context $context
      * @param NostoOauthBuilder $oauthMetaBuilder
-     * @param NostoHelperStore $nostoHelperStore
+     * @param NostoHelperScope $nostoHelperScope
      * @param Json $result
      */
     public function __construct(
         Context $context,
         NostoOauthBuilder $oauthMetaBuilder,
-        NostoHelperStore $nostoHelperStore,
+        NostoHelperScope $nostoHelperScope,
         Json $result
     ) {
         parent::__construct($context);
 
         $this->oauthMetaBuilder = $oauthMetaBuilder;
         $this->result = $result;
-        $this->nostoHelperStore = $nostoHelperStore;
+        $this->nostoHelperScope = $nostoHelperScope;
     }
 
     /**
@@ -76,7 +76,7 @@ class Connect extends Base
         $response = ['success' => false];
 
         $storeId = $this->_request->getParam('store');
-        $store = $this->nostoHelperStore->getStore($storeId);
+        $store = $this->nostoHelperScope->getStore($storeId);
 
         if ($store !== null) {
             $metaData = $this->oauthMetaBuilder->build($store);

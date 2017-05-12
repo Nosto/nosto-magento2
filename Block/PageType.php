@@ -39,7 +39,7 @@ namespace Nosto\Tagging\Block;
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Element\Template\Context;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
-use Nosto\Tagging\Helper\Store as NostoHelperStore;
+use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 
 /**
  * Page type block used for outputting page-type on the different pages.
@@ -60,18 +60,18 @@ class PageType extends Template
      *
      * @param Context $context
      * @param NostoHelperAccount $nostoHelperAccount
-     * @param NostoHelperStore $nostoHelperStore
+     * @param NostoHelperScope $nostoHelperScope
      * @param array $data
      */
     public function __construct(
         Context $context,
         NostoHelperAccount $nostoHelperAccount,
-        NostoHelperStore $nostoHelperStore,
+        NostoHelperScope $nostoHelperScope,
         array $data = []
     ) {
         parent::__construct($context, $data);
 
-        $this->taggingConstruct($nostoHelperAccount, $nostoHelperStore);
+        $this->taggingConstruct($nostoHelperAccount, $nostoHelperScope);
     }
 
     /**

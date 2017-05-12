@@ -42,7 +42,7 @@ use Magento\Framework\Url\EncoderInterface;
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Element\Template\Context;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
-use Nosto\Tagging\Helper\Store as NostoHelperStore;
+use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 
 /**
  * Embed script block that includes the Nosto script in the page <head> to be included on all pages.
@@ -54,7 +54,7 @@ class Addtocart extends Template
     }
 
     private $urlEncoder;
-    private $nostoHelperStore;
+    private $nostoHelperScope;
 
     /**
      * Constructor.
@@ -62,21 +62,21 @@ class Addtocart extends Template
      * @param Context $context
      * @param EncoderInterface $urlEncoder
      * @param NostoHelperAccount $nostoHelperAccount
-     * @param NostoHelperStore $nostoHelperStore
+     * @param NostoHelperScope $nostoHelperScope
      * @param array $data
      */
     public function __construct(
         Context $context,
         EncoderInterface $urlEncoder,
         NostoHelperAccount $nostoHelperAccount,
-        NostoHelperStore $nostoHelperStore,
+        NostoHelperScope $nostoHelperScope,
         array $data = []
     ) {
         parent::__construct($context, $data);
 
-        $this->taggingConstruct($nostoHelperAccount, $nostoHelperStore);
+        $this->taggingConstruct($nostoHelperAccount, $nostoHelperScope);
         $this->urlEncoder = $urlEncoder;
-        $this->nostoHelperStore = $nostoHelperStore;
+        $this->nostoHelperScope = $nostoHelperScope;
     }
 
     /**
@@ -90,7 +90,7 @@ class Addtocart extends Template
 
         $routeParams = [ActionInterface::PARAM_NAME_URL_ENCODED => $continueUrl];
         $routeParams['_secure'] = $this->getRequest()->isSecure();
-        $routeParams['_scope'] = $this->nostoHelperStore->getStore(true)->getId();
+        $routeParams['_scope'] = $this->nostoHelperScope->getStore(true)->getId();
         $routeParams['_scope_to_url'] = true;
 
         $request = $this->getRequest();

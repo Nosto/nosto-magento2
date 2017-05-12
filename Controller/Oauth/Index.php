@@ -44,7 +44,7 @@ use Magento\Framework\App\Response\Http;
 use Nosto\Mixins\OauthTrait;
 use Nosto\OAuth;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
-use Nosto\Tagging\Helper\Store as NostoHelperStore;
+use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Model\Meta\Oauth\Builder as NostoOauthBuilder;
 use Nosto\Types\Signup\AccountInterface;
 use Psr\Log\LoggerInterface;
@@ -56,12 +56,12 @@ class Index extends Action
     private $urlBuilder;
     private $nostoHelperAccount;
     private $oauthMetaBuilder;
-    private $nostoHelperStore;
+    private $nostoHelperScope;
 
     /**
      * @param Context $context
      * @param LoggerInterface $logger
-     * @param NostoHelperStore $nostoHelperStore
+     * @param NostoHelperScope $nostoHelperScope
      * @param UrlInterface $urlBuilder
      * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoOauthBuilder $oauthMetaBuilder
@@ -69,7 +69,7 @@ class Index extends Action
     public function __construct(
         Context $context,
         LoggerInterface $logger,
-        NostoHelperStore $nostoHelperStore,
+        NostoHelperScope $nostoHelperScope,
         UrlInterface $urlBuilder,
         NostoHelperAccount $nostoHelperAccount,
         NostoOauthBuilder $oauthMetaBuilder
@@ -80,7 +80,7 @@ class Index extends Action
         $this->urlBuilder = $urlBuilder;
         $this->nostoHelperAccount = $nostoHelperAccount;
         $this->oauthMetaBuilder = $oauthMetaBuilder;
-        $this->nostoHelperStore = $nostoHelperStore;
+        $this->nostoHelperScope = $nostoHelperScope;
     }
 
     /**
@@ -104,8 +104,8 @@ class Index extends Action
      */
     public function getMeta()
     {
-        $account = $this->nostoHelperAccount->findAccount($this->nostoHelperStore->getStore());
-        return $this->oauthMetaBuilder->build($this->nostoHelperStore->getStore(), $account);
+        $account = $this->nostoHelperAccount->findAccount($this->nostoHelperScope->getStore());
+        return $this->oauthMetaBuilder->build($this->nostoHelperScope->getStore(), $account);
     }
 
     /**
@@ -118,7 +118,7 @@ class Index extends Action
     public function save(AccountInterface $account)
     {
         return $this->nostoHelperAccount->saveAccount($account,
-            $this->nostoHelperStore->getStore());
+            $this->nostoHelperScope->getStore());
     }
 
     /**
@@ -131,7 +131,7 @@ class Index extends Action
     {
         $response = $this->getResponse();
         if ($response instanceof Http) {
-            $params['store'] = (int)$this->nostoHelperStore->getStore()->getId();
+            $params['store'] = (int)$this->nostoHelperScope->getStore()->getId();
             $response->setRedirect($this->urlBuilder->getUrl('nosto/account/proxy', $params));
         }
     }

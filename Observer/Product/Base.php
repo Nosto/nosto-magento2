@@ -48,7 +48,7 @@ use Nosto\Operation\UpsertProduct;
 use Nosto\Request\Http\HttpRequest;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
-use Nosto\Tagging\Helper\Store as NostoHelperStore;
+use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
 use Psr\Log\LoggerInterface;
 
@@ -61,7 +61,7 @@ abstract class Base implements ObserverInterface
     private $moduleManager;
     private $productFactory;
     private $configurableProduct;
-    private $nostoHelperStore;
+    private $nostoHelperScope;
 
     /**
      * Constructor.
@@ -69,7 +69,7 @@ abstract class Base implements ObserverInterface
      * @param NostoHelperData $nostoHelperData
      * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoProductBuilder $nostoProductBuilder
-     * @param NostoHelperStore $nostoHelperStore
+     * @param NostoHelperScope $nostoHelperScope
      * @param LoggerInterface $logger
      * @param ModuleManager $moduleManager
      * @param ProductFactory $productFactory
@@ -79,7 +79,7 @@ abstract class Base implements ObserverInterface
         NostoHelperData $nostoHelperData,
         NostoHelperAccount $nostoHelperAccount,
         NostoProductBuilder $nostoProductBuilder,
-        NostoHelperStore $nostoHelperStore,
+        NostoHelperScope $nostoHelperScope,
         LoggerInterface $logger,
         ModuleManager $moduleManager,
         ProductFactory $productFactory,
@@ -98,7 +98,7 @@ abstract class Base implements ObserverInterface
             $nostoHelperData->getPlatformVersion(),
             $nostoHelperData->getModuleVersion()
         );
-        $this->nostoHelperStore = $nostoHelperStore;
+        $this->nostoHelperScope = $nostoHelperScope;
     }
 
     /**
@@ -122,7 +122,7 @@ abstract class Base implements ObserverInterface
                 $product = $this->productFactory->create()->load((int)$parentProducts[0]);
             }
             foreach ($product->getStoreIds() as $storeId) {
-                $store = $this->nostoHelperStore->getStore($storeId);
+                $store = $this->nostoHelperScope->getStore($storeId);
                 $account = $this->nostoHelperAccount->findAccount($store);
                 if ($account === null) {
                     continue;
@@ -137,7 +137,6 @@ abstract class Base implements ObserverInterface
                 }
 
                 // Load the product model for this particular store view.
-                /** @var \Nosto\Object\Product\Product $model */
                 $metaProduct = $this->buildProduct($product, $store);
                 if ($metaProduct === null) {
                     continue;

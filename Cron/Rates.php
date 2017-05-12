@@ -37,7 +37,7 @@
 
 namespace Nosto\Tagging\Cron;
 
-use Nosto\Tagging\Helper\Store as NostoHelperStore;
+use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Model\Rates\Service as NostoRatesService;
 use Psr\Log\LoggerInterface;
 
@@ -51,29 +51,29 @@ class Rates
 {
     protected $logger;
     private $nostoRatesService;
-    private $nostoHelperStore;
+    private $nostoHelperScope;
 
     /**
      * Rates constructor.
      *
      * @param LoggerInterface $logger
-     * @param NostoHelperStore $nostoHelperStore
+     * @param NostoHelperScope $nostoHelperScope
      * @param NostoRatesService $nostoRatesService
      */
     public function __construct(
         LoggerInterface $logger,
-        NostoHelperStore $nostoHelperStore,
+        NostoHelperScope $nostoHelperScope,
         NostoRatesService $nostoRatesService
     ) {
         $this->logger = $logger;
         $this->nostoRatesService = $nostoRatesService;
-        $this->nostoHelperStore = $nostoHelperStore;
+        $this->nostoHelperScope = $nostoHelperScope;
     }
 
     public function execute()
     {
         $this->logger->info('Updating exchange rates to Nosto for all store views');
-        foreach ($this->nostoHelperStore->getStores(false) as $store) {
+        foreach ($this->nostoHelperScope->getStores(false) as $store) {
             $this->logger->info('Updating exchange rates for ' . $store->getName());
             if ($this->nostoRatesService->update($store)) {
                 $this->logger->info('Successfully updated the exchange rates for the store view');

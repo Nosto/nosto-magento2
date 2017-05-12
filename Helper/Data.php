@@ -44,7 +44,7 @@ use Magento\Framework\AppInterface;
 use Magento\Framework\Module\ModuleListInterface;
 use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\Store;
-use Nosto\Tagging\Helper\Store as NostoHelperStore;
+use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use phpseclib\Crypt\Random;
 
 /**
@@ -106,23 +106,20 @@ class Data extends AbstractHelper
     private $moduleListing;
     private $configWriter;
     private $productMetaData;
-    /**
-     * @var \Nosto\Tagging\Helper\Store
-     */
-    private $nostoHelperStore;
+    private $nostoHelperScope;
 
     /**
      * Constructor.
      *
      * @param Context $context the context.
-     * @param NostoHelperStore $nostoHelperStore
+     * @param NostoHelperScope $nostoHelperScope
      * @param ModuleListInterface $moduleListing
      * @param WriterInterface $configWriter
      * @param ProductMetadataInterface $productMetadataInterface
      */
     public function __construct(
         Context $context,
-        NostoHelperStore $nostoHelperStore,
+        NostoHelperScope $nostoHelperScope,
         ModuleListInterface $moduleListing,
         WriterInterface $configWriter,
         ProductMetadataInterface $productMetadataInterface
@@ -132,7 +129,7 @@ class Data extends AbstractHelper
         $this->moduleListing = $moduleListing;
         $this->configWriter = $configWriter;
         $this->productMetaData = $productMetadataInterface;
-        $this->nostoHelperStore = $nostoHelperStore;
+        $this->nostoHelperScope = $nostoHelperScope;
     }
 
     /**
@@ -265,7 +262,7 @@ class Data extends AbstractHelper
     public function getStoreConfig($path, StoreInterface $store = null)
     {
         if ($store === null) {
-            $store = $this->nostoHelperStore->getStore(true);
+            $store = $this->nostoHelperScope->getStore(true);
         }
         return $store->getConfig($path);
     }

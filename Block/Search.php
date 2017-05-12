@@ -42,7 +42,7 @@ use Magento\CatalogSearch\Helper\Data;
 use Magento\Framework\View\Element\Template\Context;
 use Magento\Search\Model\QueryFactory;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
-use Nosto\Tagging\Helper\Store as NostoHelperStore;
+use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 
 /**
  * Search block used for outputting meta-data on the stores search pages.
@@ -62,7 +62,7 @@ class Search extends Result
      * @param Data $catalogSearchData
      * @param QueryFactory $queryFactory
      * @param NostoHelperAccount $nostoHelperAccount
-     * @param NostoHelperStore $nostoHelperStore
+     * @param NostoHelperScope $nostoHelperScope
      * @param array $data
      */
     public function __construct(
@@ -71,12 +71,12 @@ class Search extends Result
         Data $catalogSearchData,
         QueryFactory $queryFactory,
         NostoHelperAccount $nostoHelperAccount,
-        NostoHelperStore $nostoHelperStore,
+        NostoHelperScope $nostoHelperScope,
         array $data = []
     ) {
         parent::__construct($context, $layerResolver, $catalogSearchData, $queryFactory, $data);
 
-        $this->taggingConstruct($nostoHelperAccount, $nostoHelperStore);
+        $this->taggingConstruct($nostoHelperAccount, $nostoHelperScope);
     }
 
     /**

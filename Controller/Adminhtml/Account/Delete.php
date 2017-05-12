@@ -41,7 +41,7 @@ use Magento\Framework\Controller\Result\Json;
 use Nosto\Helper\IframeHelper;
 use Nosto\Nosto;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
-use Nosto\Tagging\Helper\Store as NostoHelperStore;
+use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Model\Meta\Account\Iframe\Builder as NostoIframeMetaBuilder;
 use Nosto\Tagging\Model\User\Builder as NostoCurrentUserBuilder;
 
@@ -52,14 +52,14 @@ class Delete extends Base
     private $nostoHelperAccount;
     private $nostoCurrentUserBuilder;
     private $nostoIframeMetaBuilder;
-    private $nostoHelperStore;
+    private $nostoHelperScope;
 
     /**
      * @param Context $context
      * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoIframeMetaBuilder $nostoIframeMetaBuilder
      * @param NostoCurrentUserBuilder $nostoCurrentUserBuilder
-     * @param NostoHelperStore $nostoHelperStore
+     * @param NostoHelperScope $nostoHelperScope
      * @param Json $result
      */
     public function __construct(
@@ -67,7 +67,7 @@ class Delete extends Base
         NostoHelperAccount $nostoHelperAccount,
         NostoIframeMetaBuilder $nostoIframeMetaBuilder,
         NostoCurrentUserBuilder $nostoCurrentUserBuilder,
-        NostoHelperStore $nostoHelperStore,
+        NostoHelperScope $nostoHelperScope,
         Json $result
     ) {
         parent::__construct($context);
@@ -76,7 +76,7 @@ class Delete extends Base
         $this->nostoHelperAccount = $nostoHelperAccount;
         $this->result = $result;
         $this->nostoCurrentUserBuilder = $nostoCurrentUserBuilder;
-        $this->nostoHelperStore = $nostoHelperStore;
+        $this->nostoHelperScope = $nostoHelperScope;
     }
 
     /**
@@ -87,7 +87,7 @@ class Delete extends Base
         $response = ['success' => false];
 
         $storeId = $this->_request->getParam('store');
-        $store = $this->nostoHelperStore->getStore($storeId);
+        $store = $this->nostoHelperScope->getStore($storeId);
         $account = $store !== null ? $this->nostoHelperAccount->findAccount($store) : null;
 
         if ($store !== null && $account !== null) {

@@ -40,7 +40,7 @@ use Magento\Framework\App\Action\Context;
 use Magento\Sales\Model\ResourceModel\Order\CollectionFactory as OrderCollectionFactory;
 use Magento\Store\Model\Store;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
-use Nosto\Tagging\Helper\Store as NostoHelperStore;
+use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Model\Order\Collection as NostoOrderCollection;
 
 /**
@@ -60,7 +60,7 @@ class Order extends Base
      *
      * @param Context $context
      * @param OrderCollectionFactory $orderCollectionFactory
-     * @param NostoHelperStore $nostoHelperStore
+     * @param NostoHelperScope $nostoHelperScope
      * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoOrderCollection $nostoOrderCollection
      */
@@ -68,11 +68,11 @@ class Order extends Base
         Context $context,
         /** @noinspection PhpUndefinedClassInspection */
         OrderCollectionFactory $orderCollectionFactory,
-        NostoHelperStore $nostoHelperStore,
+        NostoHelperScope $nostoHelperScope,
         NostoHelperAccount $nostoHelperAccount,
         NostoOrderCollection $nostoOrderCollection
     ) {
-        parent::__construct($context, $nostoHelperStore, $nostoHelperAccount);
+        parent::__construct($context, $nostoHelperScope, $nostoHelperAccount);
         $this->orderCollectionFactory = $orderCollectionFactory;
         $this->nostoOrderCollection = $nostoOrderCollection;
     }

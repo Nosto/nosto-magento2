@@ -30,7 +30,7 @@ namespace Nosto\Tagging\Block;
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Element\Template\Context;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
-use Nosto\Tagging\Helper\Store as NostoHelperStore;
+use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 
 /**
  * Page type block used for outputting the variation identifier on the different pages.
@@ -41,26 +41,26 @@ class Variation extends Template
         TaggingTrait::__construct as taggingConstruct;
     }
 
-    private $nostoHelperStore;
+    private $nostoHelperScope;
 
     /**
      * Constructor.
      *
      * @param Context $context
      * @param NostoHelperAccount $nostoHelperAccount
-     * @param NostoHelperStore $nostoHelperStore
+     * @param NostoHelperScope $nostoHelperScope
      * @param array $data
      */
     public function __construct(
         Context $context,
         NostoHelperAccount $nostoHelperAccount,
-        NostoHelperStore $nostoHelperStore,
+        NostoHelperScope $nostoHelperScope,
         array $data = []
     ) {
         parent::__construct($context, $data);
 
-        $this->taggingConstruct($nostoHelperAccount, $nostoHelperStore);
-        $this->nostoHelperStore = $nostoHelperStore;
+        $this->taggingConstruct($nostoHelperAccount, $nostoHelperScope);
+        $this->nostoHelperScope = $nostoHelperScope;
     }
 
     /**
@@ -70,7 +70,7 @@ class Variation extends Template
      */
     public function getVariationId()
     {
-        $store = $this->nostoHelperStore->getStore(true);
+        $store = $this->nostoHelperScope->getStore(true);
         return $store->getCurrentCurrencyCode();
     }
 
@@ -82,7 +82,7 @@ class Variation extends Template
      */
     public function hasMultipleCurrencies()
     {
-        $store = $this->nostoHelperStore->getStore(true);
+        $store = $this->nostoHelperScope->getStore(true);
         return count($store->getAvailableCurrencyCodes(true)) > 1;
     }
 }

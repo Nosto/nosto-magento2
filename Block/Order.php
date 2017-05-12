@@ -43,7 +43,7 @@ use Magento\Sales\Model\OrderFactory;
 use Nosto\Helper\DateHelper;
 use Nosto\Helper\PriceHelper;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
-use Nosto\Tagging\Helper\Store as NostoHelperStore;
+use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Model\Order\Builder as NostoOrderBuilder;
 
 /**
@@ -69,7 +69,7 @@ class Order extends Success
      * @param NostoOrderBuilder $orderBuilder
      * @param Session $checkoutSession
      * @param NostoHelperAccount $nostoHelperAccount
-     * @param NostoHelperStore $nostoHelperStore
+     * @param NostoHelperScope $nostoHelperScope
      * @param array $data
      */
     public function __construct(
@@ -79,12 +79,12 @@ class Order extends Success
         NostoOrderBuilder $orderBuilder,
         Session $checkoutSession,
         NostoHelperAccount $nostoHelperAccount,
-        NostoHelperStore $nostoHelperStore,
+        NostoHelperScope $nostoHelperScope,
         array $data = []
     ) {
         parent::__construct($context, $orderFactory, $data);
 
-        $this->taggingConstruct($nostoHelperAccount, $nostoHelperStore);
+        $this->taggingConstruct($nostoHelperAccount, $nostoHelperScope);
         $this->checkoutSession = $checkoutSession;
         $this->nostoOrderBuilder = $orderBuilder;
     }

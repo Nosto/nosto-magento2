@@ -43,7 +43,7 @@ use Magento\Store\Model\Store;
 use Nosto\NostoException;
 use Nosto\Object\Product\ProductCollection;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
-use Nosto\Tagging\Helper\Store as NostoHelperStore;
+use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
 
 class Collection
@@ -53,12 +53,12 @@ class Collection
     private $productVisibility;
     private $nostoHelperAccount;
     private $nostoProductBuilder;
-    private $nostoHelperStore;
+    private $nostoHelperScope;
 
     public function __construct(
         ProductCollectionFactory $productCollectionFactory,
         ProductVisibility $productVisibility,
-        NostoHelperStore $nostoHelperStore,
+        NostoHelperScope $nostoHelperScope,
         NostoHelperAccount $nostoHelperAccount,
         NostoProductBuilder $nostoProductBuilder
     ) {
@@ -66,7 +66,7 @@ class Collection
         $this->productVisibility = $productVisibility;
         $this->nostoHelperAccount = $nostoHelperAccount;
         $this->nostoProductBuilder = $nostoProductBuilder;
-        $this->nostoHelperStore = $nostoHelperStore;
+        $this->nostoHelperScope = $nostoHelperScope;
     }
 
     protected function getCollection(Store $store)

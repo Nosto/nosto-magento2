@@ -37,24 +37,24 @@
 namespace Nosto\Tagging\Block;
 
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
-use Nosto\Tagging\Helper\Store as NostoHelperStore;
+use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 
 trait TaggingTrait
 {
     private $nostoHelperAccount;
-    private $nostoHelperStore;
+    private $nostoHelperScope;
 
     /**
      * TaggingTrait constructor.
      * @param NostoHelperAccount $nostoHelperAccount
-     * @param NostoHelperStore $nostoHelperStore
+     * @param NostoHelperScope $nostoHelperScope
      */
     public function __construct(
         NostoHelperAccount $nostoHelperAccount,
-        NostoHelperStore $nostoHelperStore
+        NostoHelperScope $nostoHelperScope
     ) {
         $this->nostoHelperAccount = $nostoHelperAccount;
-        $this->nostoHelperStore = $nostoHelperStore;
+        $this->nostoHelperScope = $nostoHelperScope;
     }
 
     /**
@@ -66,7 +66,7 @@ trait TaggingTrait
      */
     public function _toHtml()
     {
-        if ($this->nostoHelperAccount->nostoInstalledAndEnabled($this->nostoHelperStore->getStore())) {
+        if ($this->nostoHelperAccount->nostoInstalledAndEnabled($this->nostoHelperScope->getStore())) {
             /** @noinspection PhpUndefinedMethodInspection */
             return parent::_toHtml();
         } else {

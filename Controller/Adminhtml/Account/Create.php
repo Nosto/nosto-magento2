@@ -44,7 +44,7 @@ use Nosto\NostoException;
 use Nosto\Operation\AccountSignup;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Currency as NostoCurrencyHelper;
-use Nosto\Tagging\Helper\Store as NostoHelperStore;
+use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Model\Meta\Account\Builder as NostoSignupBuilder;
 use Nosto\Tagging\Model\Meta\Account\Iframe\Builder as NostoIframeMetaBuilder;
 use Nosto\Tagging\Model\Meta\Account\Owner\Builder as NostoOwnerBuilder;
@@ -64,7 +64,7 @@ class Create extends Base
     private $nostoOwnerBuilder;
     private $nostoSignupBuilder;
     private $logger;
-    private $nostoHelperStore;
+    private $nostoHelperScope;
 
     /**
      * @param Context $context
@@ -73,7 +73,7 @@ class Create extends Base
      * @param NostoIframeMetaBuilder $nostoIframeMetaBuilder
      * @param NostoCurrentUserBuilder $nostoCurrentUserBuilder
      * @param NostoOwnerBuilder $nostoOwnerBuilder
-     * @param NostoHelperStore $nostoHelperStore
+     * @param NostoHelperScope $nostoHelperScope
      * @param Json $result
      * @param LoggerInterface $logger
      * @param NostoRatesService $nostoRatesService
@@ -86,7 +86,7 @@ class Create extends Base
         NostoIframeMetaBuilder $nostoIframeMetaBuilder,
         NostoCurrentUserBuilder $nostoCurrentUserBuilder,
         NostoOwnerBuilder $nostoOwnerBuilder,
-        NostoHelperStore $nostoHelperStore,
+        NostoHelperScope $nostoHelperScope,
         Json $result,
         LoggerInterface $logger,
         NostoRatesService $nostoRatesService,
@@ -103,7 +103,7 @@ class Create extends Base
         $this->logger = $logger;
         $this->nostoRatesService = $nostoRatesService;
         $this->nostoCurrencyHelper = $nostoCurrencyHelper;
-        $this->nostoHelperStore = $nostoHelperStore;
+        $this->nostoHelperScope = $nostoHelperScope;
     }
 
     /**
@@ -115,7 +115,7 @@ class Create extends Base
         $response = ['success' => false];
 
         $storeId = $this->_request->getParam('store');
-        $store = $this->nostoHelperStore->getStore($storeId);
+        $store = $this->nostoHelperScope->getStore($storeId);
 
         if ($store !== null) {
             try {

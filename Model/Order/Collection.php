@@ -42,7 +42,7 @@ use Magento\Store\Model\Store;
 use Nosto\NostoException;
 use Nosto\Object\Order\OrderCollection;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
-use Nosto\Tagging\Helper\Store as NostoHelperStore;
+use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Model\Order\Builder as NostoOrderBuilder;
 
 class Collection
@@ -50,18 +50,18 @@ class Collection
     private $orderCollectionFactory;
     private $nostoHelperAccount;
     private $nostoOrderBuilder;
-    private $nostoHelperStore;
+    private $nostoHelperScope;
 
     public function __construct(
         OrderCollectionFactory $orderCollectionFactory,
-        NostoHelperStore $nostoHelperStore,
+        NostoHelperScope $nostoHelperScope,
         NostoHelperAccount $nostoHelperAccount,
         NostoOrderBuilder $nostoOrderBuilder
     ) {
         $this->orderCollectionFactory = $orderCollectionFactory;
         $this->nostoHelperAccount = $nostoHelperAccount;
         $this->nostoOrderBuilder = $nostoOrderBuilder;
-        $this->nostoHelperStore = $nostoHelperStore;
+        $this->nostoHelperScope = $nostoHelperScope;
     }
 
     protected function getCollection(Store $store)

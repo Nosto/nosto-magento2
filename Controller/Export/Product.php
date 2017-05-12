@@ -41,7 +41,7 @@ use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductColl
 use Magento\Framework\App\Action\Context;
 use Magento\Store\Model\Store;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
-use Nosto\Tagging\Helper\Store as NostoHelperStore;
+use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Model\Product\Collection as NostoProductCollection;
 
 /**
@@ -63,7 +63,7 @@ class Product extends Base
      * @param Context $context
      * @param ProductCollectionFactory $productCollectionFactory
      * @param ProductVisibility $productVisibility
-     * @param NostoHelperStore $nostoHelperStore
+     * @param NostoHelperScope $nostoHelperScope
      * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoProductCollection $nostoProductCollection
      */
@@ -72,11 +72,11 @@ class Product extends Base
         /** @noinspection PhpUndefinedClassInspection */
         ProductCollectionFactory $productCollectionFactory,
         ProductVisibility $productVisibility,
-        NostoHelperStore $nostoHelperStore,
+        NostoHelperScope $nostoHelperScope,
         NostoHelperAccount $nostoHelperAccount,
         NostoProductCollection $nostoProductCollection
     ) {
-        parent::__construct($context, $nostoHelperStore, $nostoHelperAccount);
+        parent::__construct($context, $nostoHelperScope, $nostoHelperAccount);
 
         $this->productCollectionFactory = $productCollectionFactory;
         $this->productVisibility = $productVisibility;

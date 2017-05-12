@@ -41,28 +41,28 @@ use Magento\Backend\Model\View\Result\Page;
 use Magento\Framework\Controller\Result\Redirect;
 use Magento\Framework\View\Result\PageFactory;
 use Magento\Store\Api\Data\StoreInterface;
-use Nosto\Tagging\Helper\Store as NostoHelperStore;
+use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 
 class Index extends Base
 {
     const ADMIN_RESOURCE = 'Nosto_Tagging::system_nosto_account';
     private $resultPageFactory;
-    private $nostoHelperStore;
+    private $nostoHelperScope;
 
     /**
      * @param Context $context
      * @param PageFactory $resultPageFactory
-     * @param NostoHelperStore $nostoHelperStore
+     * @param NostoHelperScope $nostoHelperScope
      */
     public function __construct(
         Context $context,
         PageFactory $resultPageFactory,
-        NostoHelperStore $nostoHelperStore
+        NostoHelperScope $nostoHelperScope
     ) {
         parent::__construct($context);
 
         $this->resultPageFactory = $resultPageFactory;
-        $this->nostoHelperStore = $nostoHelperStore;
+        $this->nostoHelperScope = $nostoHelperScope;
     }
 
     /**
@@ -73,7 +73,7 @@ class Index extends Base
         if (!$this->getSelectedStore()) {
             // If we are not under a store view, then redirect to the first
             // found one. Nosto is configured per store.
-            foreach ($this->nostoHelperStore->getWebsites() as $website) {
+            foreach ($this->nostoHelperScope->getWebsites() as $website) {
                 /** @noinspection PhpUndefinedMethodInspection */
                 $storeId = $website->getDefaultGroup()->getDefaultStoreId();
                 if (!empty($storeId)) {
@@ -103,10 +103,10 @@ class Index extends Base
     private function getSelectedStore()
     {
         $store = null;
-        if ($this->nostoHelperStore->isSingleStoreMode()) {
-            $store = $this->nostoHelperStore->getStore(true);
-        } elseif (($storeId = $this->nostoHelperStore->getStore()->getId())) {
-            $store = $this->nostoHelperStore->getStore($storeId);
+        if ($this->nostoHelperScope->isSingleStoreMode()) {
+            $store = $this->nostoHelperScope->getStore(true);
+        } elseif (($storeId = $this->nostoHelperScope->getStore()->getId())) {
+            $store = $this->nostoHelperScope->getStore($storeId);
         }
 
         return $store;

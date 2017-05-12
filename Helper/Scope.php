@@ -41,12 +41,12 @@ use Magento\Framework\App\Helper\Context;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Store\Model\Website;
 
-class Store extends AbstractHelper
+class Scope extends AbstractHelper
 {
     private $storeManager;
 
     /**
-     * Store constructor.
+     * Scope constructor.
      * @param Context $context
      * @param StoreManagerInterface $storeManager
      */

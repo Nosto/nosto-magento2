@@ -44,7 +44,7 @@ use Nosto\Operation\OrderConfirm;
 use Nosto\Request\Http\HttpRequest;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
-use Nosto\Tagging\Helper\Store as NostoHelperStore;
+use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Model\Customer as NostoCustomer;
 use Nosto\Tagging\Model\CustomerFactory;
 use Nosto\Tagging\Model\Order\Builder as NostoOrderBuilder;
@@ -62,7 +62,7 @@ class Save implements ObserverInterface
     private $nostoOrderBuilder;
     private $moduleManager;
     private $customerFactory;
-    private $nostoHelperStore;
+    private $nostoHelperScope;
 
     /** @noinspection PhpUndefinedClassInspection */
     /**
@@ -70,7 +70,7 @@ class Save implements ObserverInterface
      *
      * @param NostoHelperData $nostoHelperData
      * @param NostoHelperAccount $nostoHelperAccount
-     * @param NostoHelperStore $nostoHelperStore
+     * @param NostoHelperScope $nostoHelperScope
      * @param LoggerInterface $logger
      * @param ModuleManager $moduleManager
      * @param CustomerFactory $customerFactory
@@ -79,7 +79,7 @@ class Save implements ObserverInterface
     public function __construct(
         NostoHelperData $nostoHelperData,
         NostoHelperAccount $nostoHelperAccount,
-        NostoHelperStore $nostoHelperStore,
+        NostoHelperScope $nostoHelperScope,
         LoggerInterface $logger,
         ModuleManager $moduleManager,
         /** @noinspection PhpUndefinedClassInspection */
@@ -98,7 +98,7 @@ class Save implements ObserverInterface
             $nostoHelperData->getPlatformVersion(),
             $nostoHelperData->getModuleVersion()
         );
-        $this->nostoHelperStore = $nostoHelperStore;
+        $this->nostoHelperScope = $nostoHelperScope;
     }
 
     /**
@@ -117,7 +117,7 @@ class Save implements ObserverInterface
             $order = $observer->getOrder();
             $nostoOrder = $this->nostoOrderBuilder->build($order);
             $nostoAccount = $this->nostoHelperAccount->findAccount(
-                $this->nostoHelperStore->getStore()
+                $this->nostoHelperScope->getStore()
             );
             if ($nostoAccount !== null) {
                 $quoteId = $order->getQuoteId();

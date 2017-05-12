@@ -44,7 +44,7 @@ use Magento\Store\Model\Store;
 use Nosto\Helper\IframeHelper;
 use Nosto\Nosto;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
-use Nosto\Tagging\Helper\Store as NostoHelperStore;
+use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Model\Meta\Account\Iframe\Builder as NostoIframeMetaBuilder;
 use Nosto\Tagging\Model\Meta\Account\Sso\Builder as NostoSsoBuilder;
 use Nosto\Tagging\Model\User\Builder as NostoCurrentUserBuilder;
@@ -65,7 +65,7 @@ class Iframe extends BlockTemplate
     private $nostoSsoBuilder;
     private $nostoIframeMetaBuilder;
     private $nostoCurrentUserBuilder;
-    private $nostoHelperStore;
+    private $nostoHelperScope;
 
     /**
      * Constructor.
@@ -76,7 +76,7 @@ class Iframe extends BlockTemplate
      * @param NostoSsoBuilder $nostoSsoBuilder
      * @param NostoIframeMetaBuilder $iframeMetaBuilder
      * @param NostoCurrentUserBuilder $nostoCurrentUserBuilder
-     * @param NostoHelperStore $nostoHelperStore
+     * @param NostoHelperScope $nostoHelperScope
      * @param array $data
      */
     public function __construct(
@@ -86,7 +86,7 @@ class Iframe extends BlockTemplate
         NostoSsoBuilder $nostoSsoBuilder,
         NostoIframeMetaBuilder $iframeMetaBuilder,
         NostoCurrentUserBuilder $nostoCurrentUserBuilder,
-        NostoHelperStore $nostoHelperStore,
+        NostoHelperScope $nostoHelperScope,
         array $data = []
     ) {
         parent::__construct($context, $data);
@@ -96,7 +96,7 @@ class Iframe extends BlockTemplate
         $this->nostoSsoBuilder = $nostoSsoBuilder;
         $this->nostoIframeMetaBuilder = $iframeMetaBuilder;
         $this->nostoCurrentUserBuilder = $nostoCurrentUserBuilder;
-        $this->nostoHelperStore = $nostoHelperStore;
+        $this->nostoHelperScope = $nostoHelperScope;
     }
 
     /**
@@ -146,12 +146,12 @@ class Iframe extends BlockTemplate
     public function getSelectedStore()
     {
         $store = null;
-        if ($this->nostoHelperStore->isSingleStoreMode()) {
-            $store = $this->nostoHelperStore->getStore(true);
+        if ($this->nostoHelperScope->isSingleStoreMode()) {
+            $store = $this->nostoHelperScope->getStore(true);
         } elseif (($storeId = $this->_request->getParam('store'))) {
-            $store = $this->nostoHelperStore->getStore($storeId);
-        } elseif (($this->nostoHelperStore->getStore())) {
-            $store = $this->nostoHelperStore->getStore();
+            $store = $this->nostoHelperScope->getStore($storeId);
+        } elseif (($this->nostoHelperScope->getStore())) {
+            $store = $this->nostoHelperScope->getStore();
         } else {
             throw new NotFoundException(__('Store not found.'));
         }

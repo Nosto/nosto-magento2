@@ -40,7 +40,7 @@ use Magento\Backend\App\Action\Context;
 use Magento\Framework\Controller\Result\Json;
 use Nosto\Helper\OAuthHelper;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
-use Nosto\Tagging\Helper\Store as NostoHelperStore;
+use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Model\Meta\Oauth\Builder as NostoOauthBuilder;
 
 class Sync extends Base
@@ -49,20 +49,20 @@ class Sync extends Base
     private $result;
     private $nostoHelperAccount;
     private $oauthMetaBuilder;
-    private $nostoHelperStore;
+    private $nostoHelperScope;
 
     /**
      * @param Context $context
      * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoOauthBuilder $oauthMetaBuilder
-     * @param NostoHelperStore $nostoHelperStore
+     * @param NostoHelperScope $nostoHelperScope
      * @param Json $result
      */
     public function __construct(
         Context $context,
         NostoHelperAccount $nostoHelperAccount,
         NostoOauthBuilder $oauthMetaBuilder,
-        NostoHelperStore $nostoHelperStore,
+        NostoHelperScope $nostoHelperScope,
         Json $result
     ) {
         parent::__construct($context);
@@ -70,7 +70,7 @@ class Sync extends Base
         $this->nostoHelperAccount = $nostoHelperAccount;
         $this->oauthMetaBuilder = $oauthMetaBuilder;
         $this->result = $result;
-        $this->nostoHelperStore = $nostoHelperStore;
+        $this->nostoHelperScope = $nostoHelperScope;
     }
 
     /**
@@ -81,7 +81,7 @@ class Sync extends Base
         $response = ['success' => false];
 
         $storeId = $this->_request->getParam('store');
-        $store = $this->nostoHelperStore->getStore($storeId);
+        $store = $this->nostoHelperScope->getStore($storeId);
         $account = $store !== null ? $this->nostoHelperAccount->findAccount($store) : null;
 
         if ($store !== null && $account !== null) {

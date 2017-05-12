@@ -40,7 +40,7 @@ use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Element\Template\Context;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
-use Nosto\Tagging\Helper\Store as NostoHelperStore;
+use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 
 /**
  * Meta data block for outputting <meta> elements in the page <head>.
@@ -53,7 +53,7 @@ class Meta extends Template
     }
 
     private $nostoHelperData;
-    private $nostoHelperStore;
+    private $nostoHelperScope;
 
     /**
      * Constructor.
@@ -61,21 +61,21 @@ class Meta extends Template
      * @param Context $context the context.
      * @param NostoHelperData $nostoHelperData the data helper.
      * @param NostoHelperAccount $nostoHelperAccount
-     * @param NostoHelperStore $nostoHelperStore
+     * @param NostoHelperScope $nostoHelperScope
      * @param array $data optional data.
      */
     public function __construct(
         Context $context,
         NostoHelperData $nostoHelperData,
         NostoHelperAccount $nostoHelperAccount,
-        NostoHelperStore $nostoHelperStore,
+        NostoHelperScope $nostoHelperScope,
         array $data = []
     ) {
         parent::__construct($context, $data);
 
-        $this->taggingConstruct($nostoHelperAccount, $nostoHelperStore);
+        $this->taggingConstruct($nostoHelperAccount, $nostoHelperScope);
         $this->nostoHelperData = $nostoHelperData;
-        $this->nostoHelperStore = $nostoHelperStore;
+        $this->nostoHelperScope = $nostoHelperScope;
     }
 
     /**
@@ -105,7 +105,7 @@ class Meta extends Template
      */
     public function getLanguageCode()
     {
-        $store = $this->nostoHelperStore->getStore(true);
+        $store = $this->nostoHelperScope->getStore(true);
         return substr($store->getConfig('general/locale/code'), 0, 2);
     }
 }

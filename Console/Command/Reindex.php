@@ -47,7 +47,7 @@ use Nosto\Operation\UpsertProduct;
 use Nosto\Request\Http\HttpRequest;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
-use Nosto\Tagging\Helper\Store as NostoHelperStore;
+use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Model\Product\Collection as NostoProductCollection;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
@@ -64,7 +64,7 @@ class Reindex extends Command
     private $moduleManager;
     private $logger;
     private $state;
-    private $nostoHelperStore;
+    private $nostoHelperScope;
 
     /**
      * Constructor to instantiating the reindex command. This constructor uses proxy classes for
@@ -76,7 +76,7 @@ class Reindex extends Command
      * @param State $state
      * @param ProductCollectionFactory $productCollectionFactory
      * @param ProductVisibility $productVisibility
-     * @param NostoHelperStore $nostoHelperStore
+     * @param NostoHelperScope $nostoHelperScope
      * @param LoggerInterface $logger
      * @param ModuleManager $moduleManager
      * @param NostoHelperAccount\Proxy $nostoHelperAccount
@@ -86,7 +86,7 @@ class Reindex extends Command
         State $state,
         ProductCollectionFactory $productCollectionFactory,
         ProductVisibility $productVisibility,
-        NostoHelperStore $nostoHelperStore,
+        NostoHelperScope $nostoHelperScope,
         LoggerInterface $logger,
         ModuleManager $moduleManager,
         NostoHelperAccount\Proxy $nostoHelperAccount,
@@ -104,7 +104,7 @@ class Reindex extends Command
         $this->state = $state;
 
         HttpRequest::$responseTimeout = 60;
-        $this->nostoHelperStore = $nostoHelperStore;
+        $this->nostoHelperScope = $nostoHelperScope;
     }
 
     /**
@@ -131,7 +131,7 @@ class Reindex extends Command
         if ($this->moduleManager->isEnabled(NostoHelperData::MODULE_NAME)) {
             $limit = (int)$input->getOption('batch');
 
-            foreach ($this->nostoHelperStore->getStores() as $store) {
+            foreach ($this->nostoHelperScope->getStores() as $store) {
                 /** @var Account $account */
                 $account = $this->nostoHelperAccount->findAccount($store);
                 if ($account === null) {

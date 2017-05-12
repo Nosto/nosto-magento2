@@ -44,7 +44,7 @@ use Magento\Store\Model\Store;
 use Nosto\Operation\UpsertProduct;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
-use Nosto\Tagging\Helper\Store as NostoHelperStore;
+use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
 use Nosto\Types\Product\ProductInterface;
 use Psr\Log\LoggerInterface;
@@ -67,7 +67,7 @@ class Delete extends Base
      * @param NostoHelperData $nostoHelperData
      * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoProductBuilder $nostoProductBuilder
-     * @param NostoHelperStore $nostoHelperStore
+     * @param NostoHelperScope $nostoHelperScope
      * @param LoggerInterface $logger
      * @param ModuleManager $moduleManager
      * @param ProductFactory $productFactory
@@ -77,7 +77,7 @@ class Delete extends Base
         NostoHelperData $nostoHelperData,
         NostoHelperAccount $nostoHelperAccount,
         NostoProductBuilder $nostoProductBuilder,
-        NostoHelperStore $nostoHelperStore,
+        NostoHelperScope $nostoHelperScope,
         LoggerInterface $logger,
         ModuleManager $moduleManager,
         ProductFactory $productFactory,
@@ -87,7 +87,7 @@ class Delete extends Base
             $nostoHelperData,
             $nostoHelperAccount,
             $nostoProductBuilder,
-            $nostoHelperStore,
+            $nostoHelperScope,
             $logger,
             $moduleManager,
             $productFactory,
