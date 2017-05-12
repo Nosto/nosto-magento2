@@ -120,6 +120,7 @@ class Price extends AbstractHelper
                             if (is_array($skuIds)) {
                                 try {
                                     $skuId = reset($skuIds);
+                                    /** @noinspection PhpDeprecationInspection */
                                     $sku = $this->productFactory->create()->load(
                                         $skuId
                                     );
@@ -169,30 +170,35 @@ class Price extends AbstractHelper
             // We will use the SKU that has the lowest final price
             case ConfigurableType::TYPE_CODE:
                 $productType = $product->getTypeInstance();
-                $products = $productType->getUsedProducts($product);
-                $skus = [];
-                $finalPrices = [];
-                foreach ($products as $sku) {
-                    $finalPrices[$sku->getId()] = $this->getProductPrice(
-                        $sku,
-                        true,
-                        true
-                    );
-                    $skus[$sku->getId()] = $sku;
-                }
-                asort($finalPrices, SORT_NUMERIC);
-                $min = array_keys($finalPrices)[0];
-                if (!empty($skus[$min])) {
-                    $simpleProduct = $skus[$min];
-                } else { // Fallback to given product
-                    $simpleProduct = $product;
-                }
-                if ($finalPrice) {
-                    $price = $this->getProductFinalPriceInclTax($simpleProduct);
-                } elseif ($inclTax){
-                    $price = $this->getProductPriceInclTax($simpleProduct);
+                if ($productType instanceof ConfigurableType) {
+                    $products = $productType->getUsedProducts($product);
+                    $skus = [];
+                    $finalPrices = [];
+                    /** @var Product $sku */
+                    foreach ($products as $sku) {
+                        $finalPrices[$sku->getId()] = $this->getProductPrice(
+                            $sku,
+                            true,
+                            true
+                        );
+                        $skus[$sku->getId()] = $sku;
+                    }
+                    asort($finalPrices, SORT_NUMERIC);
+                    $min = array_keys($finalPrices)[0];
+                    if (!empty($skus[$min])) {
+                        $simpleProduct = $skus[$min];
+                    } else { // Fallback to given product
+                        $simpleProduct = $product;
+                    }
+                    if ($finalPrice) {
+                        $price = $this->getProductFinalPriceInclTax($simpleProduct);
+                    } elseif ($inclTax) {
+                        $price = $this->getProductPriceInclTax($simpleProduct);
+                    } else {
+                        $price = $product->getPrice();
+                    }
                 } else {
-                    $price = $product->getPrice();
+                    $price = null;
                 }
                 break;
 
