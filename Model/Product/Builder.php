@@ -150,7 +150,7 @@ class Builder
                 )->getCode()
             );
 
-            $nostoProduct->setAvailable($this->buildAvailability($product));
+            $nostoProduct->setAvailability($this->buildAvailability($product));
             $nostoProduct->setCategories($this->nostoCategoryBuilder->buildCategories($product));
             $nostoProduct->setAlternateImageUrls($this->buildAlternativeImages($product));
             if ($this->nostoDataHelper->isInventoryTaggingEnabled($store)) {
