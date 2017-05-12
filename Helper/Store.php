@@ -39,6 +39,7 @@ namespace Nosto\Tagging\Helper;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 use Magento\Store\Model\StoreManagerInterface;
+use Magento\Store\Model\Website;
 
 class Store extends AbstractHelper
 {
@@ -91,10 +92,11 @@ class Store extends AbstractHelper
      *
      * @param bool $withDefault
      * @param bool $codeKey
-     * @return \Magento\Store\Api\Data\WebsiteInterface[]
+     * @return Website[]
      */
     public function getWebsites($withDefault = false, $codeKey = false)
     {
+        /** @noinspection PhpIncompatibleReturnTypeInspection */
         return $this->storeManager->getWebsites($withDefault, $codeKey);
     }
 }

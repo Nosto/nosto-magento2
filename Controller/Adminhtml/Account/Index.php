@@ -41,7 +41,6 @@ use Magento\Backend\Model\View\Result\Page;
 use Magento\Framework\Controller\Result\Redirect;
 use Magento\Framework\View\Result\PageFactory;
 use Magento\Store\Api\Data\StoreInterface;
-use Magento\Store\Model\Website;
 use Nosto\Tagging\Helper\Store as NostoHelperStore;
 
 class Index extends Base
@@ -74,7 +73,6 @@ class Index extends Base
         if (!$this->getSelectedStore()) {
             // If we are not under a store view, then redirect to the first
             // found one. Nosto is configured per store.
-            /** @var Website $website */
             foreach ($this->nostoHelperStore->getWebsites() as $website) {
                 /** @noinspection PhpUndefinedMethodInspection */
                 $storeId = $website->getDefaultGroup()->getDefaultStoreId();
