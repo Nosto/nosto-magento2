@@ -40,8 +40,8 @@ use Magento\Checkout\Helper\Cart as CartHelper;
 use Magento\Customer\CustomerData\SectionSourceInterface;
 use Magento\Framework\Stdlib\CookieManagerInterface;
 use Magento\Framework\Stdlib\DateTime\DateTime;
-use Magento\Store\Model\StoreManagerInterface;
 use Nosto\Object\Cart\LineItem;
+use Nosto\Tagging\Helper\Store as NostoHelperStore;
 use Nosto\Tagging\Model\Cart\Builder as NostoCartBuilder;
 use Nosto\Tagging\Model\Customer;
 use Nosto\Tagging\Model\Customer as NostoCustomer;
@@ -52,18 +52,18 @@ class CartTagging extends HashedTagging implements SectionSourceInterface
 {
     private $cartHelper;
     private $nostoCartBuilder;
-    private $storeManager;
     private $cookieManager;
     private $nostoCustomerFactory;
     private $quote = null;
     private $logger;
     private $date;
+    private $nostoHelperStore;
 
     /** @noinspection PhpUndefinedClassInspection */
     /**
      * @param CartHelper $cartHelper
      * @param NostoCartBuilder $nostoCartBuilder
-     * @param StoreManagerInterface $storeManager
+     * @param NostoHelperStore $nostoHelperStore
      * @param CookieManagerInterface $cookieManager
      * @param LoggerInterface $logger
      * @param DateTime $date
@@ -72,7 +72,7 @@ class CartTagging extends HashedTagging implements SectionSourceInterface
     public function __construct(
         CartHelper $cartHelper,
         NostoCartBuilder $nostoCartBuilder,
-        StoreManagerInterface $storeManager,
+        NostoHelperStore $nostoHelperStore,
         CookieManagerInterface $cookieManager,
         LoggerInterface $logger,
         DateTime $date,
@@ -81,11 +81,11 @@ class CartTagging extends HashedTagging implements SectionSourceInterface
     ) {
         $this->cartHelper = $cartHelper;
         $this->nostoCartBuilder = $nostoCartBuilder;
-        $this->storeManager = $storeManager;
         $this->logger = $logger;
         $this->date = $date;
         $this->cookieManager = $cookieManager;
         $this->nostoCustomerFactory = $nostoCustomerFactory;
+        $this->nostoHelperStore = $nostoHelperStore;
     }
 
     /**
@@ -102,7 +102,7 @@ class CartTagging extends HashedTagging implements SectionSourceInterface
         $cart = $this->cartHelper->getCart();
         $nostoCart = $this->nostoCartBuilder->build(
             $this->getQuote(),
-            $this->storeManager->getStore()
+            $this->nostoHelperStore->getStore()
         );
         $itemCount = $cart->getItemsCount();
         $data["itemCount"] = $itemCount;

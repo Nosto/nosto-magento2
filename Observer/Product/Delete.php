@@ -40,11 +40,11 @@ use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\ProductFactory;
 use Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable as ConfigurableProduct;
 use Magento\Framework\Module\Manager as ModuleManager;
-use Magento\Store\Api\Data\StoreInterface;
-use Magento\Store\Model\StoreManagerInterface;
+use Magento\Store\Model\Store;
 use Nosto\Operation\UpsertProduct;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
+use Nosto\Tagging\Helper\Store as NostoHelperStore;
 use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
 use Nosto\Types\Product\ProductInterface;
 use Psr\Log\LoggerInterface;
@@ -67,7 +67,7 @@ class Delete extends Base
      * @param NostoHelperData $nostoHelperData
      * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoProductBuilder $nostoProductBuilder
-     * @param StoreManagerInterface $storeManager
+     * @param NostoHelperStore $nostoHelperStore
      * @param LoggerInterface $logger
      * @param ModuleManager $moduleManager
      * @param ProductFactory $productFactory
@@ -77,7 +77,7 @@ class Delete extends Base
         NostoHelperData $nostoHelperData,
         NostoHelperAccount $nostoHelperAccount,
         NostoProductBuilder $nostoProductBuilder,
-        StoreManagerInterface $storeManager,
+        NostoHelperStore $nostoHelperStore,
         LoggerInterface $logger,
         ModuleManager $moduleManager,
         ProductFactory $productFactory,
@@ -87,7 +87,7 @@ class Delete extends Base
             $nostoHelperData,
             $nostoHelperAccount,
             $nostoProductBuilder,
-            $storeManager,
+            $nostoHelperStore,
             $logger,
             $moduleManager,
             $productFactory,
@@ -116,7 +116,7 @@ class Delete extends Base
     /**
      * @inheritdoc
      */
-    public function buildProduct(Product $product, StoreInterface $store)
+    public function buildProduct(Product $product, Store $store)
     {
         $product = $this->nostoProductBuilder->build($product, $store);
         return $product->setAvailability(ProductInterface::DISCONTINUED);

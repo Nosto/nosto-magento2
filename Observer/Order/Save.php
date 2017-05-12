@@ -40,11 +40,11 @@ use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Module\Manager as ModuleManager;
 use Magento\Sales\Model\Order;
-use Magento\Store\Model\StoreManagerInterface;
 use Nosto\Operation\OrderConfirm;
 use Nosto\Request\Http\HttpRequest;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
+use Nosto\Tagging\Helper\Store as NostoHelperStore;
 use Nosto\Tagging\Model\Customer as NostoCustomer;
 use Nosto\Tagging\Model\CustomerFactory;
 use Nosto\Tagging\Model\Order\Builder as NostoOrderBuilder;
@@ -58,11 +58,11 @@ class Save implements ObserverInterface
 {
     private $nostoHelperData;
     private $nostoHelperAccount;
-    private $storeManager;
     private $logger;
     private $nostoOrderBuilder;
     private $moduleManager;
     private $customerFactory;
+    private $nostoHelperStore;
 
     /** @noinspection PhpUndefinedClassInspection */
     /**
@@ -70,7 +70,7 @@ class Save implements ObserverInterface
      *
      * @param NostoHelperData $nostoHelperData
      * @param NostoHelperAccount $nostoHelperAccount
-     * @param StoreManagerInterface $storeManager
+     * @param NostoHelperStore $nostoHelperStore
      * @param LoggerInterface $logger
      * @param ModuleManager $moduleManager
      * @param CustomerFactory $customerFactory
@@ -79,7 +79,7 @@ class Save implements ObserverInterface
     public function __construct(
         NostoHelperData $nostoHelperData,
         NostoHelperAccount $nostoHelperAccount,
-        StoreManagerInterface $storeManager,
+        NostoHelperStore $nostoHelperStore,
         LoggerInterface $logger,
         ModuleManager $moduleManager,
         /** @noinspection PhpUndefinedClassInspection */
@@ -88,7 +88,6 @@ class Save implements ObserverInterface
     ) {
         $this->nostoHelperData = $nostoHelperData;
         $this->nostoHelperAccount = $nostoHelperAccount;
-        $this->storeManager = $storeManager;
         $this->logger = $logger;
         $this->moduleManager = $moduleManager;
         $this->nostoOrderBuilder = $orderBuilder;
@@ -99,6 +98,7 @@ class Save implements ObserverInterface
             $nostoHelperData->getPlatformVersion(),
             $nostoHelperData->getModuleVersion()
         );
+        $this->nostoHelperStore = $nostoHelperStore;
     }
 
     /**
@@ -117,7 +117,7 @@ class Save implements ObserverInterface
             $order = $observer->getOrder();
             $nostoOrder = $this->nostoOrderBuilder->build($order);
             $nostoAccount = $this->nostoHelperAccount->findAccount(
-                $this->storeManager->getStore()
+                $this->nostoHelperStore->getStore()
             );
             if ($nostoAccount !== null) {
                 $quoteId = $order->getQuoteId();

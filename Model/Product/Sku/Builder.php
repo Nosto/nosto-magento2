@@ -42,6 +42,7 @@ use Magento\ConfigurableProduct\Model\Product\Type\Configurable\Attribute as Con
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Store\Model\Store;
 use Nosto\NostoException;
+use Nosto\Object\Product\Sku;
 use Nosto\Tagging\Helper\Currency as CurrencyHelper;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Price as NostoPriceHelper;
@@ -84,11 +85,11 @@ class Builder
      * @param Product $product
      * @param Store $store
      * @param ConfigurableAttribute[] $attributes
-     * @return \Nosto\Object\Product\Sku
+     * @return Sku
      */
     public function build(Product $product, Store $store, $attributes)
     {
-        $nostoSku = new \Nosto\Object\Product\Sku();
+        $nostoSku = new Sku();
 
         try {
             $nostoSku->setId($product->getId());

@@ -41,10 +41,10 @@ use Magento\Backend\Model\UrlInterface;
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\App\Response\Http;
-use Magento\Store\Model\StoreManagerInterface;
 use Nosto\Mixins\OauthTrait;
 use Nosto\OAuth;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
+use Nosto\Tagging\Helper\Store as NostoHelperStore;
 use Nosto\Tagging\Model\Meta\Oauth\Builder as NostoOauthBuilder;
 use Nosto\Types\Signup\AccountInterface;
 use Psr\Log\LoggerInterface;
@@ -56,12 +56,12 @@ class Index extends Action
     private $urlBuilder;
     private $nostoHelperAccount;
     private $oauthMetaBuilder;
-    private $storeManager;
+    private $nostoHelperStore;
 
     /**
      * @param Context $context
      * @param LoggerInterface $logger
-     * @param StoreManagerInterface $storeManager
+     * @param NostoHelperStore $nostoHelperStore
      * @param UrlInterface $urlBuilder
      * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoOauthBuilder $oauthMetaBuilder
@@ -69,7 +69,7 @@ class Index extends Action
     public function __construct(
         Context $context,
         LoggerInterface $logger,
-        StoreManagerInterface $storeManager,
+        NostoHelperStore $nostoHelperStore,
         UrlInterface $urlBuilder,
         NostoHelperAccount $nostoHelperAccount,
         NostoOauthBuilder $oauthMetaBuilder
@@ -77,10 +77,10 @@ class Index extends Action
         parent::__construct($context);
 
         $this->logger = $logger;
-        $this->storeManager = $storeManager;
         $this->urlBuilder = $urlBuilder;
         $this->nostoHelperAccount = $nostoHelperAccount;
         $this->oauthMetaBuilder = $oauthMetaBuilder;
+        $this->nostoHelperStore = $nostoHelperStore;
     }
 
     /**
@@ -104,8 +104,8 @@ class Index extends Action
      */
     public function getMeta()
     {
-        $account = $this->nostoHelperAccount->findAccount($this->storeManager->getStore());
-        return $this->oauthMetaBuilder->build($this->storeManager->getStore(), $account);
+        $account = $this->nostoHelperAccount->findAccount($this->nostoHelperStore->getStore());
+        return $this->oauthMetaBuilder->build($this->nostoHelperStore->getStore(), $account);
     }
 
     /**
@@ -117,7 +117,8 @@ class Index extends Action
      */
     public function save(AccountInterface $account)
     {
-        return $this->nostoHelperAccount->saveAccount($account, $this->storeManager->getStore());
+        return $this->nostoHelperAccount->saveAccount($account,
+            $this->nostoHelperStore->getStore());
     }
 
     /**
@@ -130,7 +131,7 @@ class Index extends Action
     {
         $response = $this->getResponse();
         if ($response instanceof Http) {
-            $params['store'] = (int)$this->storeManager->getStore()->getId();
+            $params['store'] = (int)$this->nostoHelperStore->getStore()->getId();
             $response->setRedirect($this->urlBuilder->getUrl('nosto/account/proxy', $params));
         }
     }

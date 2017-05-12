@@ -38,11 +38,10 @@ namespace Nosto\Tagging\Controller\Adminhtml\Account;
 
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\Controller\Result\Json;
-use Magento\Store\Model\Store;
-use Magento\Store\Model\StoreManagerInterface;
 use Nosto\Helper\IframeHelper;
 use Nosto\Nosto;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
+use Nosto\Tagging\Helper\Store as NostoHelperStore;
 use Nosto\Tagging\Model\Meta\Account\Iframe\Builder as NostoIframeMetaBuilder;
 use Nosto\Tagging\Model\User\Builder as NostoCurrentUserBuilder;
 
@@ -50,17 +49,17 @@ class Delete extends Base
 {
     const ADMIN_RESOURCE = 'Nosto_Tagging::system_nosto_account';
     private $result;
-    private $storeManager;
     private $nostoHelperAccount;
     private $nostoCurrentUserBuilder;
     private $nostoIframeMetaBuilder;
+    private $nostoHelperStore;
 
     /**
      * @param Context $context
      * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoIframeMetaBuilder $nostoIframeMetaBuilder
      * @param NostoCurrentUserBuilder $nostoCurrentUserBuilder
-     * @param StoreManagerInterface $storeManager
+     * @param NostoHelperStore $nostoHelperStore
      * @param Json $result
      */
     public function __construct(
@@ -68,16 +67,16 @@ class Delete extends Base
         NostoHelperAccount $nostoHelperAccount,
         NostoIframeMetaBuilder $nostoIframeMetaBuilder,
         NostoCurrentUserBuilder $nostoCurrentUserBuilder,
-        StoreManagerInterface $storeManager,
+        NostoHelperStore $nostoHelperStore,
         Json $result
     ) {
         parent::__construct($context);
 
         $this->nostoIframeMetaBuilder = $nostoIframeMetaBuilder;
         $this->nostoHelperAccount = $nostoHelperAccount;
-        $this->storeManager = $storeManager;
         $this->result = $result;
         $this->nostoCurrentUserBuilder = $nostoCurrentUserBuilder;
+        $this->nostoHelperStore = $nostoHelperStore;
     }
 
     /**
@@ -88,8 +87,7 @@ class Delete extends Base
         $response = ['success' => false];
 
         $storeId = $this->_request->getParam('store');
-        /** @var Store $store */
-        $store = $this->storeManager->getStore($storeId);
+        $store = $this->nostoHelperStore->getStore($storeId);
         $account = $store !== null ? $this->nostoHelperAccount->findAccount($store) : null;
 
         if ($store !== null && $account !== null) {

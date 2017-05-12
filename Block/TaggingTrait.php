@@ -36,20 +36,25 @@
 
 namespace Nosto\Tagging\Block;
 
-use Magento\Store\Model\StoreManagerInterface;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
+use Nosto\Tagging\Helper\Store as NostoHelperStore;
 
 trait TaggingTrait
 {
     private $nostoHelperAccount;
-    private $storeManager;
+    private $nostoHelperStore;
 
+    /**
+     * TaggingTrait constructor.
+     * @param NostoHelperAccount $nostoHelperAccount
+     * @param NostoHelperStore $nostoHelperStore
+     */
     public function __construct(
         NostoHelperAccount $nostoHelperAccount,
-        StoreManagerInterface $storeManager
+        NostoHelperStore $nostoHelperStore
     ) {
         $this->nostoHelperAccount = $nostoHelperAccount;
-        $this->storeManager = $storeManager;
+        $this->nostoHelperStore = $nostoHelperStore;
     }
 
     /**
@@ -61,8 +66,7 @@ trait TaggingTrait
      */
     public function _toHtml()
     {
-        /** @noinspection PhpUndefinedMethodInspection */
-        if ($this->nostoHelperAccount->nostoInstalledAndEnabled($this->storeManager->getStore())) {
+        if ($this->nostoHelperAccount->nostoInstalledAndEnabled($this->nostoHelperStore->getStore())) {
             /** @noinspection PhpUndefinedMethodInspection */
             return parent::_toHtml();
         } else {

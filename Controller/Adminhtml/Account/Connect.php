@@ -38,9 +38,8 @@ namespace Nosto\Tagging\Controller\Adminhtml\Account;
 
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\Controller\Result\Json;
-use Magento\Store\Model\Store;
-use Magento\Store\Model\StoreManagerInterface;
 use Nosto\Helper\OAuthHelper;
+use Nosto\Tagging\Helper\Store as NostoHelperStore;
 use Nosto\Tagging\Model\Meta\Oauth\Builder as NostoOauthBuilder;
 
 class Connect extends Base
@@ -48,25 +47,25 @@ class Connect extends Base
     const ADMIN_RESOURCE = 'Nosto_Tagging::system_nosto_account';
     private $result;
     private $oauthMetaBuilder;
-    private $storeManager;
+    private $nostoHelperStore;
 
     /**
      * @param Context $context
      * @param NostoOauthBuilder $oauthMetaBuilder
-     * @param StoreManagerInterface $storeManager
+     * @param NostoHelperStore $nostoHelperStore
      * @param Json $result
      */
     public function __construct(
         Context $context,
         NostoOauthBuilder $oauthMetaBuilder,
-        StoreManagerInterface $storeManager,
+        NostoHelperStore $nostoHelperStore,
         Json $result
     ) {
         parent::__construct($context);
 
         $this->oauthMetaBuilder = $oauthMetaBuilder;
-        $this->storeManager = $storeManager;
         $this->result = $result;
+        $this->nostoHelperStore = $nostoHelperStore;
     }
 
     /**
@@ -77,8 +76,7 @@ class Connect extends Base
         $response = ['success' => false];
 
         $storeId = $this->_request->getParam('store');
-        /** @var Store $store */
-        $store = $this->storeManager->getStore($storeId);
+        $store = $this->nostoHelperStore->getStore($storeId);
 
         if ($store !== null) {
             $metaData = $this->oauthMetaBuilder->build($store);

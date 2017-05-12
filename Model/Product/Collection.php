@@ -40,10 +40,10 @@ use Magento\Catalog\Model\Product\Visibility as ProductVisibility;
 use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductCollectionFactory;
 use Magento\Sales\Api\Data\EntityInterface;
 use Magento\Store\Model\Store;
-use Magento\Store\Model\StoreManagerInterface;
 use Nosto\NostoException;
 use Nosto\Object\Product\ProductCollection;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
+use Nosto\Tagging\Helper\Store as NostoHelperStore;
 use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
 
 class Collection
@@ -51,22 +51,22 @@ class Collection
 
     private $productCollectionFactory;
     private $productVisibility;
-    private $storeManager;
     private $nostoHelperAccount;
     private $nostoProductBuilder;
+    private $nostoHelperStore;
 
     public function __construct(
         ProductCollectionFactory $productCollectionFactory,
         ProductVisibility $productVisibility,
-        StoreManagerInterface $storeManager,
+        NostoHelperStore $nostoHelperStore,
         NostoHelperAccount $nostoHelperAccount,
         NostoProductBuilder $nostoProductBuilder
     ) {
         $this->productCollectionFactory = $productCollectionFactory;
         $this->productVisibility = $productVisibility;
-        $this->storeManager = $storeManager;
         $this->nostoHelperAccount = $nostoHelperAccount;
         $this->nostoProductBuilder = $nostoProductBuilder;
+        $this->nostoHelperStore = $nostoHelperStore;
     }
 
     protected function getCollection(Store $store)

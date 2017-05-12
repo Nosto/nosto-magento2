@@ -38,9 +38,9 @@ namespace Nosto\Tagging\Block;
 
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Element\Template\Context;
-use Magento\Store\Model\Store;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
+use Nosto\Tagging\Helper\Store as NostoHelperStore;
 
 /**
  * Meta data block for outputting <meta> elements in the page <head>.
@@ -53,6 +53,7 @@ class Meta extends Template
     }
 
     private $nostoHelperData;
+    private $nostoHelperStore;
 
     /**
      * Constructor.
@@ -60,18 +61,21 @@ class Meta extends Template
      * @param Context $context the context.
      * @param NostoHelperData $nostoHelperData the data helper.
      * @param NostoHelperAccount $nostoHelperAccount
+     * @param NostoHelperStore $nostoHelperStore
      * @param array $data optional data.
      */
     public function __construct(
         Context $context,
         NostoHelperData $nostoHelperData,
         NostoHelperAccount $nostoHelperAccount,
+        NostoHelperStore $nostoHelperStore,
         array $data = []
     ) {
         parent::__construct($context, $data);
 
-        $this->taggingConstruct($nostoHelperAccount, $context->getStoreManager());
+        $this->taggingConstruct($nostoHelperAccount, $nostoHelperStore);
         $this->nostoHelperData = $nostoHelperData;
+        $this->nostoHelperStore = $nostoHelperStore;
     }
 
     /**
@@ -101,8 +105,7 @@ class Meta extends Template
      */
     public function getLanguageCode()
     {
-        /** @var Store $store */
-        $store = $this->_storeManager->getStore(true);
+        $store = $this->nostoHelperStore->getStore(true);
         return substr($store->getConfig('general/locale/code'), 0, 2);
     }
 }

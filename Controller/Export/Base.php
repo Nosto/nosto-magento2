@@ -40,12 +40,11 @@ use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\Controller\Result\Raw;
 use Magento\Framework\Controller\ResultFactory;
-use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\Store;
-use Magento\Store\Model\StoreManagerInterface;
 use Nosto\Helper\ExportHelper;
 use Nosto\Object\AbstractCollection;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
+use Nosto\Tagging\Helper\Store as NostoHelperStore;
 
 /**
  * Export base controller that all export controllers must extend.
@@ -56,25 +55,25 @@ abstract class Base extends Action
     const LIMIT = 'limit';
     const OFFSET = 'offset';
 
-    private $storeManager;
     private $nostoHelperAccount;
+    private $nostoHelperStore;
 
     /**
      * Constructor.
      *
      * @param Context $context
-     * @param StoreManagerInterface $storeManager
+     * @param NostoHelperStore $nostoHelperStore
      * @param NostoHelperAccount $nostoHelperAccount
      */
     public function __construct(
         Context $context,
-        StoreManagerInterface $storeManager,
+        NostoHelperStore $nostoHelperStore,
         NostoHelperAccount $nostoHelperAccount
     ) {
         parent::__construct($context);
 
-        $this->storeManager = $storeManager;
         $this->nostoHelperAccount = $nostoHelperAccount;
+        $this->nostoHelperStore = $nostoHelperStore;
     }
 
     /**
@@ -85,7 +84,7 @@ abstract class Base extends Action
      */
     public function execute()
     {
-        $store = $this->storeManager->getStore(true);
+        $store = $this->nostoHelperStore->getStore(true);
         $id = $this->getRequest()->getParam(self::ID, false);
         if (!empty($id)) {
             return $this->export($this->buildSingleExportCollection($store, $id));
@@ -100,26 +99,22 @@ abstract class Base extends Action
      * Abstract function that should be implemented to return the correct
      * collection object with the controller specific filters applied
      *
-     * @param StoreInterface $store The store object for the current store
+     * @param Store $store The store object for the current store
      * @param $id
      * @return AbstractCollection The collection
      */
-    abstract protected function buildSingleExportCollection(StoreInterface $store, $id);
+    abstract protected function buildSingleExportCollection(Store $store, $id);
 
     /**
      * Abstract function that should be implemented to return the built export
      * collection object with all the items added
      *
-     * @param StoreInterface $store
+     * @param Store $store
      * @param int $limit
      * @param int $offset
      * @return AbstractCollection the collection with the items to export
      */
-    abstract protected function buildExportCollection(
-        StoreInterface $store,
-        $limit = 100,
-        $offset = 0
-    );
+    abstract protected function buildExportCollection(Store $store, $limit = 100, $offset = 0);
 
     /**
      * Encrypts the export collection and outputs it to the browser.
@@ -130,8 +125,7 @@ abstract class Base extends Action
     public function export(AbstractCollection $collection)
     {
         $result = $this->resultFactory->create(ResultFactory::TYPE_RAW);
-        /** @var Store $store */
-        $store = $this->storeManager->getStore(true);
+        $store = $this->nostoHelperStore->getStore(true);
         $account = $this->nostoHelperAccount->findAccount($store);
         if ($account !== null) {
             $cipherText = ExportHelper::export($account, $collection);

@@ -38,9 +38,9 @@ namespace Nosto\Tagging\Controller\Export;
 
 use Magento\Framework\App\Action\Context;
 use Magento\Sales\Model\ResourceModel\Order\CollectionFactory as OrderCollectionFactory;
-use Magento\Store\Api\Data\StoreInterface;
-use Magento\Store\Model\StoreManagerInterface;
+use Magento\Store\Model\Store;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
+use Nosto\Tagging\Helper\Store as NostoHelperStore;
 use Nosto\Tagging\Model\Order\Collection as NostoOrderCollection;
 
 /**
@@ -52,14 +52,7 @@ use Nosto\Tagging\Model\Order\Collection as NostoOrderCollection;
  */
 class Order extends Base
 {
-    /** @noinspection PhpUndefinedClassInspection */
-    /**
-     * @var OrderCollectionFactory
-     */
     private $orderCollectionFactory;
-    /**
-     * @var NostoOrderCollection
-     */
     private $nostoOrderCollection;
 
     /**
@@ -67,20 +60,19 @@ class Order extends Base
      *
      * @param Context $context
      * @param OrderCollectionFactory $orderCollectionFactory
-     * @param StoreManagerInterface $storeManager
+     * @param NostoHelperStore $nostoHelperStore
      * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoOrderCollection $nostoOrderCollection
-     * @internal param NostoOrderBuilder $orderBuilder
      */
     public function __construct(
         Context $context,
         /** @noinspection PhpUndefinedClassInspection */
         OrderCollectionFactory $orderCollectionFactory,
-        StoreManagerInterface $storeManager,
+        NostoHelperStore $nostoHelperStore,
         NostoHelperAccount $nostoHelperAccount,
         NostoOrderCollection $nostoOrderCollection
     ) {
-        parent::__construct($context, $storeManager, $nostoHelperAccount);
+        parent::__construct($context, $nostoHelperStore, $nostoHelperAccount);
         $this->orderCollectionFactory = $orderCollectionFactory;
         $this->nostoOrderCollection = $nostoOrderCollection;
     }
@@ -88,7 +80,7 @@ class Order extends Base
     /**
      * @inheritdoc
      */
-    public function buildExportCollection(StoreInterface $store, $limit = 100, $offset = 0)
+    public function buildExportCollection(Store $store, $limit = 100, $offset = 0)
     {
         return $this->nostoOrderCollection->buildMany($store, $limit, $offset);
     }
@@ -96,7 +88,7 @@ class Order extends Base
     /**
      * @inheritdoc
      */
-    public function buildSingleExportCollection(StoreInterface $store, $id)
+    public function buildSingleExportCollection(Store $store, $id)
     {
         return $this->nostoOrderCollection->buildSingle($store, $id);
     }

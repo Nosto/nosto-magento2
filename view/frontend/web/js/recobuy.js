@@ -71,7 +71,7 @@ define(['catalogAddToCart', 'nostojs', 'jquery'], function (addToCart, nostojs, 
             }
         }
         return false;
-    }
+    };
 
     return Recobuy;
 });

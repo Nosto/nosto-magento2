@@ -28,31 +28,39 @@
 namespace Nosto\Tagging\Block;
 
 use Magento\Framework\View\Element\Template;
-use Magento\Store\Model\Store;
+use Magento\Framework\View\Element\Template\Context;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
+use Nosto\Tagging\Helper\Store as NostoHelperStore;
 
 /**
  * Page type block used for outputting the variation identifier on the different pages.
  */
 class Variation extends Template
 {
-    private $nostoHelperAccount;
+    use TaggingTrait {
+        TaggingTrait::__construct as taggingConstruct;
+    }
+
+    private $nostoHelperStore;
 
     /**
      * Constructor.
      *
-     * @param Template\Context $context
+     * @param Context $context
      * @param NostoHelperAccount $nostoHelperAccount
+     * @param NostoHelperStore $nostoHelperStore
      * @param array $data
      */
     public function __construct(
-        Template\Context $context,
+        Context $context,
         NostoHelperAccount $nostoHelperAccount,
+        NostoHelperStore $nostoHelperStore,
         array $data = []
     ) {
         parent::__construct($context, $data);
 
-        $this->nostoHelperAccount = $nostoHelperAccount;
+        $this->taggingConstruct($nostoHelperAccount, $nostoHelperStore);
+        $this->nostoHelperStore = $nostoHelperStore;
     }
 
     /**
@@ -62,8 +70,7 @@ class Variation extends Template
      */
     public function getVariationId()
     {
-        /** @var Store $store */
-        $store = $this->_storeManager->getStore(true);
+        $store = $this->nostoHelperStore->getStore(true);
         return $store->getCurrentCurrencyCode();
     }
 
@@ -75,23 +82,7 @@ class Variation extends Template
      */
     public function hasMultipleCurrencies()
     {
-        /** @var Store $store */
-        $store = $this->_storeManager->getStore(true);
+        $store = $this->nostoHelperStore->getStore(true);
         return count($store->getAvailableCurrencyCodes(true)) > 1;
-    }
-
-    /**
-     * Overridden method that only outputs any markup if the extension is enabled and an account
-     * exists for the current store view.
-     *
-     * @return string the markup or an empty string (if an account doesn't exist)
-     */
-    protected function _toHtml()
-    {
-        if ($this->nostoHelperAccount->nostoInstalledAndEnabled($this->_storeManager->getStore())) {
-            return parent::_toHtml();
-        } else {
-            return '';
-        }
     }
 }

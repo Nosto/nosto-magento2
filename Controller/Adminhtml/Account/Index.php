@@ -41,32 +41,29 @@ use Magento\Backend\Model\View\Result\Page;
 use Magento\Framework\Controller\Result\Redirect;
 use Magento\Framework\View\Result\PageFactory;
 use Magento\Store\Api\Data\StoreInterface;
-use Magento\Store\Model\StoreManagerInterface;
 use Magento\Store\Model\Website;
+use Nosto\Tagging\Helper\Store as NostoHelperStore;
 
-/**
- *
- */
 class Index extends Base
 {
     const ADMIN_RESOURCE = 'Nosto_Tagging::system_nosto_account';
     private $resultPageFactory;
-    private $storeManager;
+    private $nostoHelperStore;
 
     /**
      * @param Context $context
      * @param PageFactory $resultPageFactory
-     * @param StoreManagerInterface $storeManager
+     * @param NostoHelperStore $nostoHelperStore
      */
     public function __construct(
         Context $context,
         PageFactory $resultPageFactory,
-        StoreManagerInterface $storeManager
+        NostoHelperStore $nostoHelperStore
     ) {
         parent::__construct($context);
 
         $this->resultPageFactory = $resultPageFactory;
-        $this->storeManager = $storeManager;
+        $this->nostoHelperStore = $nostoHelperStore;
     }
 
     /**
@@ -78,7 +75,7 @@ class Index extends Base
             // If we are not under a store view, then redirect to the first
             // found one. Nosto is configured per store.
             /** @var Website $website */
-            foreach ($this->storeManager->getWebsites() as $website) {
+            foreach ($this->nostoHelperStore->getWebsites() as $website) {
                 /** @noinspection PhpUndefinedMethodInspection */
                 $storeId = $website->getDefaultGroup()->getDefaultStoreId();
                 if (!empty($storeId)) {
@@ -108,10 +105,10 @@ class Index extends Base
     private function getSelectedStore()
     {
         $store = null;
-        if ($this->storeManager->isSingleStoreMode()) {
-            $store = $this->storeManager->getStore(true);
-        } elseif (($storeId = $this->storeManager->getStore()->getId())) {
-            $store = $this->storeManager->getStore($storeId);
+        if ($this->nostoHelperStore->isSingleStoreMode()) {
+            $store = $this->nostoHelperStore->getStore(true);
+        } elseif (($storeId = $this->nostoHelperStore->getStore()->getId())) {
+            $store = $this->nostoHelperStore->getStore($storeId);
         }
 
         return $store;

@@ -38,10 +38,10 @@ namespace Nosto\Tagging\Block;
 
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Element\Template\Context;
-use Magento\Store\Model\Store;
 use Nosto\Nosto;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
+use Nosto\Tagging\Helper\Store as NostoHelperStore;
 
 /**
  * Embed script block that includes the Nosto script in the page <head>.
@@ -59,6 +59,7 @@ class Embed extends Template
      * The default Nosto server address to use if none is configured.
      */
     const DEFAULT_SERVER_ADDRESS = 'connect.nosto.com';
+    private $nostoHelperStore;
 
     /**
      * Constructor.
@@ -66,19 +67,22 @@ class Embed extends Template
      * @param Context $context the context.
      * @param NostoHelperAccount $nostoHelperAccount the account helper.
      * @param NostoHelperData $nostoHelperData the data helper.
+     * @param NostoHelperStore $nostoHelperStore
      * @param array $data optional data.
      */
     public function __construct(
         Context $context,
         NostoHelperAccount $nostoHelperAccount,
         NostoHelperData $nostoHelperData,
+        NostoHelperStore $nostoHelperStore,
         array $data = []
     ) {
         parent::__construct($context, $data);
 
-        $this->taggingConstruct($nostoHelperAccount, $context->getStoreManager());
+        $this->taggingConstruct($nostoHelperAccount, $nostoHelperStore);
         $this->nostoHelperData = $nostoHelperData;
         $this->nostoHelperAccount = $nostoHelperAccount;
+        $this->nostoHelperStore = $nostoHelperStore;
     }
 
     /**
@@ -88,8 +92,7 @@ class Embed extends Template
      */
     public function getAccountName()
     {
-        /** @var Store $store */
-        $store = $this->_storeManager->getStore(true);
+        $store = $this->nostoHelperStore->getStore(true);
         $account = $this->nostoHelperAccount->findAccount($store);
         return $account !== null ? $account->getName() : '';
     }

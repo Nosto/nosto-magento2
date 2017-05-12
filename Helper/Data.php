@@ -44,7 +44,7 @@ use Magento\Framework\AppInterface;
 use Magento\Framework\Module\ModuleListInterface;
 use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\Store;
-use Magento\Store\Model\StoreManagerInterface;
+use Nosto\Tagging\Helper\Store as NostoHelperStore;
 use phpseclib\Crypt\Random;
 
 /**
@@ -103,33 +103,36 @@ class Data extends AbstractHelper
     const XML_PATH_PRODUCT_UPDATES = 'nosto/flags/product_updates';
 
     const MODULE_NAME = 'Nosto_Tagging';
-    private $storeManager;
     private $moduleListing;
     private $configWriter;
     private $productMetaData;
+    /**
+     * @var \Nosto\Tagging\Helper\Store
+     */
+    private $nostoHelperStore;
 
     /**
      * Constructor.
      *
      * @param Context $context the context.
-     * @param StoreManagerInterface $storeManager the store manager.
+     * @param NostoHelperStore $nostoHelperStore
      * @param ModuleListInterface $moduleListing
      * @param WriterInterface $configWriter
      * @param ProductMetadataInterface $productMetadataInterface
      */
     public function __construct(
         Context $context,
-        StoreManagerInterface $storeManager,
+        NostoHelperStore $nostoHelperStore,
         ModuleListInterface $moduleListing,
         WriterInterface $configWriter,
         ProductMetadataInterface $productMetadataInterface
     ) {
         parent::__construct($context);
 
-        $this->storeManager = $storeManager;
         $this->moduleListing = $moduleListing;
         $this->configWriter = $configWriter;
         $this->productMetaData = $productMetadataInterface;
+        $this->nostoHelperStore = $nostoHelperStore;
     }
 
     /**
@@ -262,7 +265,7 @@ class Data extends AbstractHelper
     public function getStoreConfig($path, StoreInterface $store = null)
     {
         if ($store === null) {
-            $store = $this->storeManager->getStore(true);
+            $store = $this->nostoHelperStore->getStore(true);
         }
         return $store->getConfig($path);
     }

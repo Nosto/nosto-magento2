@@ -39,29 +39,29 @@ namespace Nosto\Tagging\Model\Order;
 use Magento\Sales\Api\Data\EntityInterface;
 use Magento\Sales\Model\ResourceModel\Order\CollectionFactory as OrderCollectionFactory;
 use Magento\Store\Model\Store;
-use Magento\Store\Model\StoreManagerInterface;
 use Nosto\NostoException;
 use Nosto\Object\Order\OrderCollection;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
+use Nosto\Tagging\Helper\Store as NostoHelperStore;
 use Nosto\Tagging\Model\Order\Builder as NostoOrderBuilder;
 
 class Collection
 {
     private $orderCollectionFactory;
-    private $storeManager;
     private $nostoHelperAccount;
     private $nostoOrderBuilder;
+    private $nostoHelperStore;
 
     public function __construct(
         OrderCollectionFactory $orderCollectionFactory,
-        StoreManagerInterface $storeManager,
+        NostoHelperStore $nostoHelperStore,
         NostoHelperAccount $nostoHelperAccount,
         NostoOrderBuilder $nostoOrderBuilder
     ) {
         $this->orderCollectionFactory = $orderCollectionFactory;
-        $this->storeManager = $storeManager;
         $this->nostoHelperAccount = $nostoHelperAccount;
         $this->nostoOrderBuilder = $nostoOrderBuilder;
+        $this->nostoHelperStore = $nostoHelperStore;
     }
 
     protected function getCollection(Store $store)
@@ -107,8 +107,11 @@ class Collection
      * @return OrderCollection
      * @throws NostoException
      */
-    private function build(Store $store, $collection)
-    {
+    private function build(
+        /** @noinspection PhpUnusedParameterInspection */
+        Store $store,
+        $collection
+    ) {
         /** @var \Magento\Sales\Model\ResourceModel\Order\Collection $collection */
         $orders = new OrderCollection();
         $items = $collection->loadData();

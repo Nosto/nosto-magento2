@@ -38,13 +38,13 @@ namespace Nosto\Tagging\Controller\Adminhtml\Account;
 
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\Controller\Result\Json;
-use Magento\Store\Model\StoreManagerInterface;
 use Nosto\Helper\IframeHelper;
 use Nosto\Nosto;
 use Nosto\NostoException;
 use Nosto\Operation\AccountSignup;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Currency as NostoCurrencyHelper;
+use Nosto\Tagging\Helper\Store as NostoHelperStore;
 use Nosto\Tagging\Model\Meta\Account\Builder as NostoSignupBuilder;
 use Nosto\Tagging\Model\Meta\Account\Iframe\Builder as NostoIframeMetaBuilder;
 use Nosto\Tagging\Model\Meta\Account\Owner\Builder as NostoOwnerBuilder;
@@ -55,10 +55,6 @@ use Psr\Log\LoggerInterface;
 class Create extends Base
 {
     const ADMIN_RESOURCE = 'Nosto_Tagging::system_nosto_account';
-
-    /**
-     * @var Json
-     */
     private $result;
     private $nostoHelperAccount;
     private $nostoCurrentUserBuilder;
@@ -67,8 +63,8 @@ class Create extends Base
     private $nostoCurrencyHelper;
     private $nostoOwnerBuilder;
     private $nostoSignupBuilder;
-    private $storeManager;
     private $logger;
+    private $nostoHelperStore;
 
     /**
      * @param Context $context
@@ -77,10 +73,11 @@ class Create extends Base
      * @param NostoIframeMetaBuilder $nostoIframeMetaBuilder
      * @param NostoCurrentUserBuilder $nostoCurrentUserBuilder
      * @param NostoOwnerBuilder $nostoOwnerBuilder
-     * @param StoreManagerInterface $storeManager
+     * @param NostoHelperStore $nostoHelperStore
      * @param Json $result
      * @param LoggerInterface $logger
      * @param NostoRatesService $nostoRatesService
+     * @param NostoCurrencyHelper $nostoCurrencyHelper
      */
     public function __construct(
         Context $context,
@@ -89,7 +86,7 @@ class Create extends Base
         NostoIframeMetaBuilder $nostoIframeMetaBuilder,
         NostoCurrentUserBuilder $nostoCurrentUserBuilder,
         NostoOwnerBuilder $nostoOwnerBuilder,
-        StoreManagerInterface $storeManager,
+        NostoHelperStore $nostoHelperStore,
         Json $result,
         LoggerInterface $logger,
         NostoRatesService $nostoRatesService,
@@ -102,11 +99,11 @@ class Create extends Base
         $this->nostoIframeMetaBuilder = $nostoIframeMetaBuilder;
         $this->nostoOwnerBuilder = $nostoOwnerBuilder;
         $this->nostoCurrentUserBuilder = $nostoCurrentUserBuilder;
-        $this->storeManager = $storeManager;
         $this->result = $result;
         $this->logger = $logger;
         $this->nostoRatesService = $nostoRatesService;
         $this->nostoCurrencyHelper = $nostoCurrencyHelper;
+        $this->nostoHelperStore = $nostoHelperStore;
     }
 
     /**
@@ -118,7 +115,7 @@ class Create extends Base
         $response = ['success' => false];
 
         $storeId = $this->_request->getParam('store');
-        $store = $this->storeManager->getStore($storeId);
+        $store = $this->nostoHelperStore->getStore($storeId);
 
         if ($store !== null) {
             try {

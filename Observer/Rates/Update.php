@@ -39,8 +39,8 @@ namespace Nosto\Tagging\Observer\Rates;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Module\Manager as ModuleManager;
-use Magento\Store\Model\StoreManagerInterface;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
+use Nosto\Tagging\Helper\Store as NostoHelperStore;
 use Nosto\Tagging\Model\Rates\Service as NostoRatesService;
 use Psr\Log\LoggerInterface;
 
@@ -52,29 +52,29 @@ use Psr\Log\LoggerInterface;
  */
 class Update implements ObserverInterface
 {
-    private $storeManager;
     private $logger;
     private $moduleManager;
     private $nostoRatesService;
+    private $nostoHelperStore;
 
     /**
      * Constructor.
      *
      * @param LoggerInterface $logger
      * @param ModuleManager $moduleManager
-     * @param StoreManagerInterface $storeManager
+     * @param NostoHelperStore $nostoHelperStore
      * @param NostoRatesService $nostoRatesService
      */
     public function __construct(
         LoggerInterface $logger,
         ModuleManager $moduleManager,
-        StoreManagerInterface $storeManager,
+        NostoHelperStore $nostoHelperStore,
         NostoRatesService $nostoRatesService
     ) {
         $this->logger = $logger;
         $this->moduleManager = $moduleManager;
-        $this->storeManager = $storeManager;
         $this->nostoRatesService = $nostoRatesService;
+        $this->nostoHelperStore = $nostoHelperStore;
     }
 
     /**
@@ -90,7 +90,7 @@ class Update implements ObserverInterface
         }
 
         $this->logger->info('Updating settings to Nosto for all store views');
-        foreach ($this->storeManager->getStores(false) as $store) {
+        foreach ($this->nostoHelperStore->getStores(false) as $store) {
             $this->logger->info('Updating settings for ' . $store->getName());
             if ($this->nostoRatesService->update($store)) {
                 $this->logger->info('Successfully updated the settings for the store view');

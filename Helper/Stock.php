@@ -95,6 +95,7 @@ class Stock extends AbstractHelper
                     if (is_array($variants) && count($variants) > 0) { // @codingStandardsIgnoreLine
                         foreach ($variants as $variantId) {
                             /* @var Product $productModel */
+                            /** @noinspection PhpDeprecationInspection */
                             $productModel = $this->productFactory->create()->load($variantId); // @codingStandardsIgnoreLine
                             $products[] = $productModel;
                         }

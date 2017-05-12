@@ -39,6 +39,7 @@ namespace Nosto\Tagging\Block;
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Element\Template\Context;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
+use Nosto\Tagging\Helper\Store as NostoHelperStore;
 
 /**
  * Cart block used for cart tagging.
@@ -46,22 +47,26 @@ use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 class Knockout extends Template
 {
     private $nostoHelperAccount;
+    private $nostoHelperStore;
 
     /**
      * Constructor
      *
      * @param Context $context
      * @param NostoHelperAccount $nostoHelperAccount
+     * @param NostoHelperStore $nostoHelperStore
      * @param array $data
      */
     public function __construct(
         Context $context,
         NostoHelperAccount $nostoHelperAccount,
+        NostoHelperStore $nostoHelperStore,
         array $data = []
     ) {
 
         parent::__construct($context, $data);
         $this->nostoHelperAccount = $nostoHelperAccount;
+        $this->nostoHelperStore = $nostoHelperStore;
     }
 
     public function getTemplate()
@@ -78,7 +83,7 @@ class Knockout extends Template
     {
         $enabled = false;
         if ($this->nostoHelperAccount->nostoInstalledAndEnabled(
-            $this->_storeManager->getStore()
+            $this->nostoHelperStore->getStore()
         )
         ) {
             $enabled = true;

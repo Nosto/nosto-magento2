@@ -46,11 +46,11 @@ use Magento\Framework\Locale\FormatInterface;
 use Magento\Framework\Pricing\PriceCurrencyInterface;
 use Magento\Framework\Stdlib\StringUtils;
 use Magento\Framework\Url\EncoderInterface as UrlEncoder;
-use Magento\Store\Model\Store;
 use Nosto\Helper\DateHelper;
 use Nosto\Helper\PriceHelper;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
+use Nosto\Tagging\Helper\Store as NostoHelperStore;
 use Nosto\Tagging\Model\Category\Builder as NostoCategoryBuilder;
 use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
 
@@ -68,6 +68,7 @@ class Product extends View
     private $nostoProductBuilder;
     private $categoryBuilder;
     private $nostoHelperData;
+    private $nostoHelperStore;
 
     /**
      * Constructor.
@@ -86,6 +87,7 @@ class Product extends View
      * @param NostoCategoryBuilder $categoryBuilder the category meta model builder.
      * @param NostoHelperData $nostoHelperData the data helper.
      * @param NostoHelperAccount $nostoHelperAccount
+     * @param NostoHelperStore $nostoHelperStore
      * @param array $data optional data.
      */
     public function __construct(
@@ -103,6 +105,7 @@ class Product extends View
         NostoCategoryBuilder $categoryBuilder,
         NostoHelperData $nostoHelperData,
         NostoHelperAccount $nostoHelperAccount,
+        NostoHelperStore $nostoHelperStore,
         array $data = []
     ) {
         parent::__construct(
@@ -119,10 +122,11 @@ class Product extends View
             $data
         );
 
-        $this->taggingConstruct($nostoHelperAccount, $context->getStoreManager());
+        $this->taggingConstruct($nostoHelperAccount, $nostoHelperStore);
         $this->nostoProductBuilder = $nostoProductBuilder;
         $this->categoryBuilder = $categoryBuilder;
         $this->nostoHelperData = $nostoHelperData;
+        $this->nostoHelperStore = $nostoHelperStore;
     }
 
     /**
@@ -132,8 +136,7 @@ class Product extends View
      */
     public function getNostoProduct()
     {
-        /** @var Store $store */
-        $store = $this->_storeManager->getStore();
+        $store = $this->nostoHelperStore->getStore();
         return $this->nostoProductBuilder->build($this->getProduct(), $store);
     }
 
@@ -178,8 +181,7 @@ class Product extends View
      */
     public function hasMultipleCurrencies()
     {
-        /** @var Store $store */
-        $store = $this->_storeManager->getStore(true);
+        $store = $this->nostoHelperStore->getStore(true);
         return count($store->getAvailableCurrencyCodes(true)) > 1;
     }
 }

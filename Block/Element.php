@@ -39,6 +39,7 @@ namespace Nosto\Tagging\Block;
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Element\Template\Context;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
+use Nosto\Tagging\Helper\Store as NostoHelperStore;
 
 /**
  * Element block used for outputting a recommendation placeholders on the stores pages.
@@ -56,16 +57,18 @@ class Element extends Template
      *
      * @param Context $context the context.
      * @param NostoHelperAccount $nostoHelperAccount the account helper.
+     * @param NostoHelperStore $nostoHelperStore
      * @param array $data optional data.
      */
     public function __construct(
         Context $context,
         NostoHelperAccount $nostoHelperAccount,
+        NostoHelperStore $nostoHelperStore,
         array $data = []
     ) {
         parent::__construct($context, $data);
 
-        $this->taggingConstruct($nostoHelperAccount, $context->getStoreManager());
+        $this->taggingConstruct($nostoHelperAccount, $nostoHelperStore);
     }
 
     /**

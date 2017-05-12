@@ -42,15 +42,13 @@ use Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable as
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Module\Manager as ModuleManager;
-use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\Store;
-use Magento\Store\Model\StoreManagerInterface;
 use Nosto\NostoException;
-use Nosto\Object\Signup\Account;
 use Nosto\Operation\UpsertProduct;
 use Nosto\Request\Http\HttpRequest;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
+use Nosto\Tagging\Helper\Store as NostoHelperStore;
 use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
 use Psr\Log\LoggerInterface;
 
@@ -59,11 +57,11 @@ abstract class Base implements ObserverInterface
     private $nostoHelperData;
     private $nostoHelperAccount;
     private $nostoProductBuilder;
-    private $storeManager;
     private $logger;
     private $moduleManager;
     private $productFactory;
     private $configurableProduct;
+    private $nostoHelperStore;
 
     /**
      * Constructor.
@@ -71,7 +69,7 @@ abstract class Base implements ObserverInterface
      * @param NostoHelperData $nostoHelperData
      * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoProductBuilder $nostoProductBuilder
-     * @param StoreManagerInterface $storeManager
+     * @param NostoHelperStore $nostoHelperStore
      * @param LoggerInterface $logger
      * @param ModuleManager $moduleManager
      * @param ProductFactory $productFactory
@@ -81,7 +79,7 @@ abstract class Base implements ObserverInterface
         NostoHelperData $nostoHelperData,
         NostoHelperAccount $nostoHelperAccount,
         NostoProductBuilder $nostoProductBuilder,
-        StoreManagerInterface $storeManager,
+        NostoHelperStore $nostoHelperStore,
         LoggerInterface $logger,
         ModuleManager $moduleManager,
         ProductFactory $productFactory,
@@ -90,7 +88,6 @@ abstract class Base implements ObserverInterface
         $this->nostoHelperData = $nostoHelperData;
         $this->nostoHelperAccount = $nostoHelperAccount;
         $this->nostoProductBuilder = $nostoProductBuilder;
-        $this->storeManager = $storeManager;
         $this->logger = $logger;
         $this->moduleManager = $moduleManager;
         $this->productFactory = $productFactory;
@@ -101,6 +98,7 @@ abstract class Base implements ObserverInterface
             $nostoHelperData->getPlatformVersion(),
             $nostoHelperData->getModuleVersion()
         );
+        $this->nostoHelperStore = $nostoHelperStore;
     }
 
     /**
@@ -120,12 +118,11 @@ abstract class Base implements ObserverInterface
             // Figure out if we're updating a parent product
             $parentProducts = $this->configurableProduct->getParentIdsByChild($product->getId());
             if (!empty($parentProducts[0]) && is_int($parentProducts[0])) {
+                /** @noinspection PhpDeprecationInspection */
                 $product = $this->productFactory->create()->load((int)$parentProducts[0]);
             }
             foreach ($product->getStoreIds() as $storeId) {
-                /** @var Store $store */
-                $store = $this->storeManager->getStore($storeId);
-                /** @var Account $account */
+                $store = $this->nostoHelperStore->getStore($storeId);
                 $account = $this->nostoHelperAccount->findAccount($store);
                 if ($account === null) {
                     continue;
@@ -168,10 +165,10 @@ abstract class Base implements ObserverInterface
      * Builds the product object for the operation using the builder
      *
      * @param Product $product the product to be built
-     * @param StoreInterface $store the store for which to build the product
+     * @param Store $store the store for which to build the product
      * @return \Nosto\Object\Product\Product the built product
      */
-    public function buildProduct(Product $product, StoreInterface $store)
+    public function buildProduct(Product $product, Store $store)
     {
         return $this->nostoProductBuilder->build($product, $store);
     }

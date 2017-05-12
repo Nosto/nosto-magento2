@@ -37,7 +37,7 @@
 
 namespace Nosto\Tagging\Cron;
 
-use Magento\Store\Model\StoreManagerInterface;
+use Nosto\Tagging\Helper\Store as NostoHelperStore;
 use Nosto\Tagging\Model\Rates\Service as NostoRatesService;
 use Psr\Log\LoggerInterface;
 
@@ -50,30 +50,30 @@ use Psr\Log\LoggerInterface;
 class Rates
 {
     protected $logger;
-    private $storeManager;
     private $nostoRatesService;
+    private $nostoHelperStore;
 
     /**
      * Rates constructor.
      *
      * @param LoggerInterface $logger
-     * @param StoreManagerInterface $storeManager
+     * @param NostoHelperStore $nostoHelperStore
      * @param NostoRatesService $nostoRatesService
      */
     public function __construct(
         LoggerInterface $logger,
-        StoreManagerInterface $storeManager,
+        NostoHelperStore $nostoHelperStore,
         NostoRatesService $nostoRatesService
     ) {
         $this->logger = $logger;
-        $this->storeManager = $storeManager;
         $this->nostoRatesService = $nostoRatesService;
+        $this->nostoHelperStore = $nostoHelperStore;
     }
 
     public function execute()
     {
         $this->logger->info('Updating exchange rates to Nosto for all store views');
-        foreach ($this->storeManager->getStores(false) as $store) {
+        foreach ($this->nostoHelperStore->getStores(false) as $store) {
             $this->logger->info('Updating exchange rates for ' . $store->getName());
             if ($this->nostoRatesService->update($store)) {
                 $this->logger->info('Successfully updated the exchange rates for the store view');

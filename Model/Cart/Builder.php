@@ -59,7 +59,6 @@ class Builder
      * @param LoggerInterface $logger
      * @param ObjectManagerInterface $objectManager
      * @param ManagerInterface $eventManager
-     * @internal param CartItemFactory $cartItemFactory
      */
     public function __construct(
         NostoCartItemBuilder $nostoCartItemBuilder,
@@ -77,7 +76,6 @@ class Builder
      * @param Quote $quote
      * @param Store $store
      * @return Cart
-     * @internal param array $items
      */
     public function build(Quote $quote, Store $store)
     {

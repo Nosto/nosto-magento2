@@ -40,10 +40,11 @@ use Magento\Backend\Block\Template as BlockTemplate;
 use Magento\Backend\Block\Template\Context as BlockContext;
 use Magento\Backend\Model\Auth\Session;
 use Magento\Framework\Exception\NotFoundException;
-use Magento\Store\Api\Data\StoreInterface;
+use Magento\Store\Model\Store;
 use Nosto\Helper\IframeHelper;
 use Nosto\Nosto;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
+use Nosto\Tagging\Helper\Store as NostoHelperStore;
 use Nosto\Tagging\Model\Meta\Account\Iframe\Builder as NostoIframeMetaBuilder;
 use Nosto\Tagging\Model\Meta\Account\Sso\Builder as NostoSsoBuilder;
 use Nosto\Tagging\Model\User\Builder as NostoCurrentUserBuilder;
@@ -64,6 +65,7 @@ class Iframe extends BlockTemplate
     private $nostoSsoBuilder;
     private $nostoIframeMetaBuilder;
     private $nostoCurrentUserBuilder;
+    private $nostoHelperStore;
 
     /**
      * Constructor.
@@ -74,6 +76,7 @@ class Iframe extends BlockTemplate
      * @param NostoSsoBuilder $nostoSsoBuilder
      * @param NostoIframeMetaBuilder $iframeMetaBuilder
      * @param NostoCurrentUserBuilder $nostoCurrentUserBuilder
+     * @param NostoHelperStore $nostoHelperStore
      * @param array $data
      */
     public function __construct(
@@ -83,6 +86,7 @@ class Iframe extends BlockTemplate
         NostoSsoBuilder $nostoSsoBuilder,
         NostoIframeMetaBuilder $iframeMetaBuilder,
         NostoCurrentUserBuilder $nostoCurrentUserBuilder,
+        NostoHelperStore $nostoHelperStore,
         array $data = []
     ) {
         parent::__construct($context, $data);
@@ -92,6 +96,7 @@ class Iframe extends BlockTemplate
         $this->nostoSsoBuilder = $nostoSsoBuilder;
         $this->nostoIframeMetaBuilder = $iframeMetaBuilder;
         $this->nostoCurrentUserBuilder = $nostoCurrentUserBuilder;
+        $this->nostoHelperStore = $nostoHelperStore;
     }
 
     /**
@@ -135,19 +140,18 @@ class Iframe extends BlockTemplate
      * Nosto can only be configured on a store basis, and if we cannot find a
      * store, an exception is thrown.
      *
-     * @return StoreInterface the store.
-     *
+     * @return Store the store.
      * @throws NotFoundException store not found.
      */
     public function getSelectedStore()
     {
         $store = null;
-        if ($this->_storeManager->isSingleStoreMode()) {
-            $store = $this->_storeManager->getStore(true);
+        if ($this->nostoHelperStore->isSingleStoreMode()) {
+            $store = $this->nostoHelperStore->getStore(true);
         } elseif (($storeId = $this->_request->getParam('store'))) {
-            $store = $this->_storeManager->getStore($storeId);
-        } elseif (($this->_storeManager->getStore())) {
-            $store = $this->_storeManager->getStore();
+            $store = $this->nostoHelperStore->getStore($storeId);
+        } elseif (($this->nostoHelperStore->getStore())) {
+            $store = $this->nostoHelperStore->getStore();
         } else {
             throw new NotFoundException(__('Store not found.'));
         }

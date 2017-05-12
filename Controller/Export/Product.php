@@ -39,9 +39,9 @@ namespace Nosto\Tagging\Controller\Export;
 use Magento\Catalog\Model\Product\Visibility as ProductVisibility;
 use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductCollectionFactory;
 use Magento\Framework\App\Action\Context;
-use Magento\Store\Api\Data\StoreInterface;
-use Magento\Store\Model\StoreManagerInterface;
+use Magento\Store\Model\Store;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
+use Nosto\Tagging\Helper\Store as NostoHelperStore;
 use Nosto\Tagging\Model\Product\Collection as NostoProductCollection;
 
 /**
@@ -55,17 +55,15 @@ class Product extends Base
 {
     private $productCollectionFactory;
     private $productVisibility;
-    private $storeManager;
     private $nostoProductCollection;
 
-    /** @noinspection PhpUndefinedClassInspection */
     /**
      * Constructor.
      *
      * @param Context $context
      * @param ProductCollectionFactory $productCollectionFactory
      * @param ProductVisibility $productVisibility
-     * @param StoreManagerInterface $storeManager
+     * @param NostoHelperStore $nostoHelperStore
      * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoProductCollection $nostoProductCollection
      */
@@ -74,13 +72,12 @@ class Product extends Base
         /** @noinspection PhpUndefinedClassInspection */
         ProductCollectionFactory $productCollectionFactory,
         ProductVisibility $productVisibility,
-        StoreManagerInterface $storeManager,
+        NostoHelperStore $nostoHelperStore,
         NostoHelperAccount $nostoHelperAccount,
         NostoProductCollection $nostoProductCollection
     ) {
-        parent::__construct($context, $storeManager, $nostoHelperAccount);
+        parent::__construct($context, $nostoHelperStore, $nostoHelperAccount);
 
-        $this->storeManager = $storeManager;
         $this->productCollectionFactory = $productCollectionFactory;
         $this->productVisibility = $productVisibility;
         $this->nostoProductCollection = $nostoProductCollection;
@@ -89,7 +86,7 @@ class Product extends Base
     /**
      * @inheritdoc
      */
-    public function buildExportCollection(StoreInterface $store, $limit = 100, $offset = 0)
+    public function buildExportCollection(Store $store, $limit = 100, $offset = 0)
     {
         return $this->nostoProductCollection->buildMany($store, $limit, $offset);
     }
@@ -97,7 +94,7 @@ class Product extends Base
     /**
      * @inheritdoc
      */
-    public function buildSingleExportCollection(StoreInterface $store, $id)
+    public function buildSingleExportCollection(Store $store, $id)
     {
         return $this->nostoProductCollection->buildSingle($store, $id);
     }

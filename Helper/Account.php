@@ -40,7 +40,6 @@ use Exception;
 use Magento\Framework\App\Config\Storage\WriterInterface;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
-use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\Store;
 use Nosto\NostoException;
@@ -79,7 +78,6 @@ class Account extends AbstractHelper
      *
      * @param Context $context the context.
      * @param WriterInterface $appConfig the app config writer.
-     * @internal param LoggerInterface $logger
      */
     public function __construct(
         Context $context,
@@ -96,10 +94,10 @@ class Account extends AbstractHelper
      * Saves the account and the associated api tokens for the store.
      *
      * @param AccountInterface $account the account to save.
-     * @param StoreInterface|Store $store the store.
+     * @param Store $store the store.
      * @return bool true on success, false otherwise.
      */
-    public function saveAccount(AccountInterface $account, StoreInterface $store)
+    public function saveAccount(AccountInterface $account, Store $store)
     {
         if ((int)$store->getId() < 1) {
             return false;
@@ -132,13 +130,13 @@ class Account extends AbstractHelper
      * Removes an account with associated api tokens for the store.
      *
      * @param \Nosto\Object\Signup\Account $account the account to remove.
-     * @param StoreInterface|Store $store the store.
+     * @param Store $store the store.
      * @param User $currentUser
      * @return bool true on success, false otherwise.
      */
     public function deleteAccount(
         \Nosto\Object\Signup\Account $account,
-        StoreInterface $store,
+        Store $store,
         User $currentUser
     ) {
         if ((int)$store->getId() < 1) {
@@ -172,10 +170,10 @@ class Account extends AbstractHelper
     /**
      * Checks if Nosto module is enabled and Nosto account is set
      *
-     * @param StoreInterface $store
+     * @param Store $store
      * @return bool
      */
-    public function nostoInstalledAndEnabled(StoreInterface $store)
+    public function nostoInstalledAndEnabled(Store $store)
     {
 
         $enabled = false;
@@ -191,10 +189,10 @@ class Account extends AbstractHelper
     /**
      * Returns the account with associated api tokens for the store.
      *
-     * @param StoreInterface $store the store.
+     * @param Store $store the store.
      * @return \Nosto\Object\Signup\Account|null the account or null if not found.
      */
-    public function findAccount(StoreInterface $store)
+    public function findAccount(Store $store)
     {
         /** @noinspection PhpUndefinedMethodInspection */
         $accountName = $store->getConfig(self::XML_PATH_ACCOUNT);

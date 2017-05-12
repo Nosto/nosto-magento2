@@ -40,6 +40,7 @@ use Magento\Framework\Registry;
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Element\Template\Context;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
+use Nosto\Tagging\Helper\Store as NostoHelperStore;
 use Nosto\Tagging\Model\Category\Builder as NostoCategoryBuilder;
 
 /**
@@ -63,6 +64,7 @@ class Category extends Template
      * @param Registry $registry
      * @param NostoCategoryBuilder $categoryBuilder
      * @param NostoHelperAccount $nostoHelperAccount
+     * @param NostoHelperStore $nostoHelperStore
      * @param array $data
      */
     public function __construct(
@@ -70,11 +72,12 @@ class Category extends Template
         Registry $registry,
         NostoCategoryBuilder $categoryBuilder,
         NostoHelperAccount $nostoHelperAccount,
+        NostoHelperStore $nostoHelperStore,
         array $data = []
     ) {
         parent::__construct($context, $data);
 
-        $this->taggingConstruct($nostoHelperAccount, $context->getStoreManager());
+        $this->taggingConstruct($nostoHelperAccount, $nostoHelperStore);
         $this->registry = $registry;
         $this->categoryBuilder = $categoryBuilder;
     }

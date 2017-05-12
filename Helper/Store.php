@@ -34,37 +34,67 @@
  *
  */
 
-/**
- * Template for cart tagging. The actual data is populated via
- * Magento's KnockoutJS logic.
- *
- * @see \Nosto\Tagging\CustomerData\CartTagging
- */
-?>
-<!-- Nosto Cart Tagging -->
-<div class="nosto_cart_hidden" style="display:none" data-bind="scope: 'cartTagging'"
-     data-role="nosto-cart-tagging"
-     id="nosto_cart_tagging">
-    <span class="hcid" data-bind="text: cartTagging().hcid"></span>
-    <!-- ko if: cartTagging().itemCount > 0 -->
-    <!-- ko foreach: {data: cartTagging().items, afterRender: sendTagging } -->
-    <div class="line_item">
-        <span class="product_id" data-bind="text: $data.product_id"></span>
-        <span class="quantity" data-bind="text: $data.quantity"></span>
-        <span class="name" data-bind="text: $data.name"></span>
-        <span class="unit_price" data-bind="text: $data.unit_price"></span>
-        <span class="price_currency_code" data-bind="text: $data.price_currency_code"></span>
-    </div>
-    <!-- /ko -->
-    <!-- /ko -->
-</div>
-<script type="text/x-magento-init">
-{"[data-role=nosto-cart-tagging]": {"Magento_Ui/js/core/app": <?php /** @var \Magento\Backend\Block\AbstractBlock $block */
-    echo $block->getJsLayout(); ?>}}
+namespace Nosto\Tagging\Helper;
 
+use Magento\Framework\App\Helper\AbstractHelper;
+use Magento\Framework\App\Helper\Context;
+use Magento\Store\Model\StoreManagerInterface;
 
+class Store extends AbstractHelper
+{
+    private $storeManager;
 
+    /**
+     * Store constructor.
+     * @param Context $context
+     * @param StoreManagerInterface $storeManager
+     */
+    public function __construct(
+        Context $context,
+        StoreManagerInterface $storeManager
+    ) {
+        parent::__construct($context);
+        $this->storeManager = $storeManager;
+    }
 
+    /**
+     * @param null|string|bool|int|\Magento\Store\Api\Data\StoreInterface $storeId
+     * @return \Magento\Store\Model\Store
+     */
+    public function getStore($storeId = null)
+    {
+        /** @noinspection PhpIncompatibleReturnTypeInspection */
+        return $this->storeManager->getStore($storeId);
+    }
 
+    /**
+     * @param bool $withDefault
+     * @param bool $codeKey
+     * @return \Magento\Store\Model\Store[]
+     */
+    public function getStores($withDefault = false, $codeKey = false)
+    {
+        /** @noinspection PhpIncompatibleReturnTypeInspection */
+        return $this->storeManager->getStores($withDefault, $codeKey);
+    }
 
-</script>
+    /**
+     * @return bool
+     */
+    public function isSingleStoreMode()
+    {
+        return $this->storeManager->isSingleStoreMode();
+    }
+
+    /**
+     * Get loaded websites
+     *
+     * @param bool $withDefault
+     * @param bool $codeKey
+     * @return \Magento\Store\Api\Data\WebsiteInterface[]
+     */
+    public function getWebsites($withDefault = false, $codeKey = false)
+    {
+        return $this->storeManager->getWebsites($withDefault, $codeKey);
+    }
+}
