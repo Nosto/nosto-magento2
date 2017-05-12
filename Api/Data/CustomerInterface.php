@@ -77,6 +77,8 @@ interface CustomerInterface
     /**
      * Set customer id
      * @param int $customerId
+     *
+     * @return self
      */
     public function setCustomerId($customerId);
 
@@ -89,18 +91,24 @@ interface CustomerInterface
     /**
      * Set Nosto Id
      * @param string $nostoId
+     *
+     * @return self
      */
     public function setNostoId($nostoId);
 
     /**
      * Set created at time
      * @param \DateTime $createdAt
+     *
+     * @return self
      */
     public function setCreatedAt(\DateTime $createdAt);
 
     /**
      * Set updated at time
      * @param \DateTime $updatedAt
+     *
+     * @return self
      */
     public function setUpdatedAt(\DateTime $updatedAt);
 }
