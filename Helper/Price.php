@@ -92,6 +92,7 @@ class Price extends AbstractHelper
      * @param bool $inclTax if tax is to be included.
      * @return float
      * @suppress PhanTypeMismatchArgument
+     * @suppress PhanDeprecatedFunction
      */
     public function getProductPrice(
         Product $product,
