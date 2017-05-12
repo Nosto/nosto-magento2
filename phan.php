@@ -65,4 +65,7 @@ return [
         'vendor/',
         '.phan/stubs'
     ],
+    'suppress_issue_types' => [
+        'PhanParamSignatureMismatch',
+    ]
 ];
