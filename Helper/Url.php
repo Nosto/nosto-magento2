@@ -41,7 +41,7 @@ use Magento\Catalog\Model\ResourceModel\Category\CollectionFactory as CategoryCo
 use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductCollectionFactory;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
-use Magento\Store\Api\Data\StoreInterface;
+use Magento\Store\Model\Store;
 use Nosto\Request\Http\HttpRequest;
 
 /**
@@ -49,16 +49,7 @@ use Nosto\Request\Http\HttpRequest;
  */
 class Url extends AbstractHelper
 {
-    /** @noinspection PhpUndefinedClassInspection */
-    /**
-     * @var ProductCollectionFactory auto generated product collection factory.
-     */
     private $productCollectionFactory;
-
-    /** @noinspection PhpUndefinedClassInspection */
-    /**
-     * @var CategoryCollectionFactory auto generated category collection factory.
-     */
     private $categoryCollectionFactory;
     private $productVisibility;
     private $urlBuilder;
@@ -95,10 +86,10 @@ class Url extends AbstractHelper
      * The product is the first one found in the database for the store.
      * The preview url includes "nostodebug=true" parameter.
      *
-     * @param StoreInterface $store the store to get the url for.
+     * @param Store $store the store to get the url for.
      * @return string the url.
      */
-    public function getPreviewUrlProduct(StoreInterface $store)
+    public function getPreviewUrlProduct(Store $store)
     {
         /** @var \Magento\Catalog\Model\ResourceModel\Product\Collection $collection */
         /** @noinspection PhpUndefinedMethodInspection */
@@ -146,12 +137,12 @@ class Url extends AbstractHelper
      * The category is the first one found in the database for the store.
      * The preview url includes "nostodebug=true" parameter.
      *
-     * @param StoreInterface $store the store to get the url for.
+     * @param Store $store the store to get the url for.
      * @return string the url.
+     *
      */
-    public function getPreviewUrlCategory(StoreInterface $store)
+    public function getPreviewUrlCategory(Store $store)
     {
-        /** @noinspection PhpUndefinedMethodInspection */
         $rootCatId = (int)$store->getRootCategoryId();
         /** @noinspection PhpUndefinedClassInspection */
         /** @var \Magento\Catalog\Model\ResourceModel\Category\Collection $collection */
@@ -193,10 +184,10 @@ class Url extends AbstractHelper
      * The search query in the URL is "q=nosto".
      * The preview url includes "nostodebug=true" parameter.
      *
-     * @param StoreInterface $store the store to get the url for.
+     * @param Store $store the store to get the url for.
      * @return string the url.
      */
-    public function getPreviewUrlSearch(StoreInterface $store)
+    public function getPreviewUrlSearch(Store $store)
     {
         $url = $this->urlBuilder->getUrl(
             'catalogsearch/result',
@@ -214,10 +205,10 @@ class Url extends AbstractHelper
      * Gets the absolute preview URL to the given store's cart page.
      * The preview url includes "nostodebug=true" parameter.
      *
-     * @param StoreInterface $store the store to get the url for.
+     * @param Store $store the store to get the url for.
      * @return string the url.
      */
-    public function getPreviewUrlCart(StoreInterface $store)
+    public function getPreviewUrlCart(Store $store)
     {
         $url = $this->urlBuilder->getUrl(
             'checkout/cart',
@@ -234,10 +225,10 @@ class Url extends AbstractHelper
      * Gets the absolute preview URL to the given store's front page.
      * The preview url includes "nostodebug=true" parameter.
      *
-     * @param StoreInterface $store the store to get the url for.
+     * @param Store $store the store to get the url for.
      * @return string the url.
      */
-    public function getPreviewUrlFront(StoreInterface $store)
+    public function getPreviewUrlFront(Store $store)
     {
         $url = $this->urlBuilder->getUrl(
             '',

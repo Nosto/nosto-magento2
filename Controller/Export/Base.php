@@ -96,8 +96,8 @@ abstract class Base extends Action
     }
 
     /**
-     * Abstract function that should be implemented to return the correct
-     * collection object with the controller specific filters applied
+     * Abstract function that should be implemented to return the correct collection object with
+     * the controller specific filters applied
      *
      * @param Store $store The store object for the current store
      * @param $id
@@ -106,8 +106,8 @@ abstract class Base extends Action
     abstract protected function buildSingleExportCollection(Store $store, $id);
 
     /**
-     * Abstract function that should be implemented to return the built export
-     * collection object with all the items added
+     * Abstract function that should be implemented to return the built export collection object
+     * with all the items added
      *
      * @param Store $store
      * @param int $limit
