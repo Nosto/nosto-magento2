@@ -48,6 +48,7 @@ use Nosto\Operation\UninstallAccount;
 use Nosto\Request\Api\Token;
 use Nosto\Tagging\Helper\Data as NostoHelper;
 use Nosto\Types\Signup\AccountInterface;
+use Nosto\Object\Signup\Account as NostoSignupAccount;
 
 /**
  * NostoHelperAccount helper class for common tasks related to Nosto accounts.
@@ -129,13 +130,13 @@ class Account extends AbstractHelper
     /**
      * Removes an account with associated api tokens for the store.
      *
-     * @param \Nosto\Object\Signup\Account $account the account to remove.
+     * @param NostoSignupAccount $account the account to remove.
      * @param Store $store the store.
      * @param User $currentUser
      * @return bool true on success, false otherwise.
      */
     public function deleteAccount(
-        \Nosto\Object\Signup\Account $account,
+        NostoSignupAccount $account,
         Store $store,
         User $currentUser
     ) {
@@ -175,7 +176,6 @@ class Account extends AbstractHelper
      */
     public function nostoInstalledAndEnabled(Store $store)
     {
-
         $enabled = false;
         if ($this->moduleManager->isEnabled(NostoHelper::MODULE_NAME)) {
             if ($this->findAccount($store)) {
@@ -190,7 +190,7 @@ class Account extends AbstractHelper
      * Returns the account with associated api tokens for the store.
      *
      * @param Store $store the store.
-     * @return \Nosto\Object\Signup\Account|null the account or null if not found.
+     * @return NostoSignupAccount|null the account or null if not found.
      */
     public function findAccount(Store $store)
     {
@@ -198,7 +198,7 @@ class Account extends AbstractHelper
         $accountName = $store->getConfig(self::XML_PATH_ACCOUNT);
 
         if (!empty($accountName)) {
-            $account = new \Nosto\Object\Signup\Account($accountName);
+            $account = new NostoSignupAccount($accountName);
             /** @noinspection PhpUndefinedMethodInspection */
             $tokens = json_decode(
                 $store->getConfig(self::XML_PATH_TOKENS),
@@ -213,9 +213,48 @@ class Account extends AbstractHelper
                     }
                 }
             }
+            $missingTokens = false;
+            foreach ($this->forgeMissingApiTokens($account) as $token) {
+                $account->addApiToken($token);
+                $missingTokens = true;
+            }
+            if ($missingTokens) {
+                $this->saveAccount($account, $store);
+            }
+
             return $account;
         }
 
         return null;
+    }
+
+    /**
+     * Creates tokens for settings and rates if those are missing
+     *
+     * @param AccountInterface $account
+     * @return Token[]
+     */
+    private function forgeMissingApiTokens(AccountInterface $account)
+    {
+        $tokens = [];
+        $ssoToken = $account->getApiToken(Token::API_SSO);
+        if ($ssoToken instanceof Token) {
+            if (!$account->getApiToken(Token::API_EXCHANGE_RATES)) {
+                $ratesToken = new Token(
+                    Token::API_EXCHANGE_RATES,
+                    $ssoToken->getValue()
+                );
+                $tokens[] = $ratesToken;
+            }
+            if (!$account->getApiToken(Token::API_SETTINGS)) {
+                $settingsToken = new Token(
+                    Token::API_SETTINGS,
+                    $ssoToken->getValue()
+                );
+                $tokens[] = $settingsToken;
+            }
+        }
+
+        return $tokens;
     }
 }
