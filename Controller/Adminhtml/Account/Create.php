@@ -78,6 +78,7 @@ class Create extends Base
      * @param LoggerInterface $logger
      * @param NostoRatesService $nostoRatesService
      * @param NostoCurrencyHelper $nostoCurrencyHelper
+     * @SuppressWarnings(PHPMD.ExcessiveParameterList)
      */
     public function __construct(
         Context $context,
