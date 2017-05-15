@@ -110,6 +110,7 @@ class Create extends Base
     /**
      * @return Json
      * @suppress PhanTypeMismatchArgument
+     * @SuppressWarnings(PHPMD.CyclomaticComplexity
      */
     public function execute()
     {

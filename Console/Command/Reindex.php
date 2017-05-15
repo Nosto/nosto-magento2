@@ -125,6 +125,7 @@ class Reindex extends Command
      * @param InputInterface $input the command line input interface for reading arguments
      * @param OutputInterface $output the command line output interface for logging
      * @return int|null|void
+     * @SuppressWarnings(PHPMD.CyclomaticComplexity
      */
     public function execute(InputInterface $input, OutputInterface $output)
     {

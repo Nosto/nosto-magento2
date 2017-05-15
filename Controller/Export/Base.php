@@ -81,6 +81,7 @@ abstract class Base extends Action
      * encrypts the JSON and returns the result
      *
      * @return Raw
+     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      */
     public function execute()
     {
