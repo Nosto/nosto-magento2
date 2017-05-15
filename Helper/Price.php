@@ -45,6 +45,7 @@ use Magento\GroupedProduct\Model\Product\Type\Grouped as GroupedType;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable as ConfigurableType;
 use Magento\Bundle\Model\Product\Type as BundleType;
 use Magento\Catalog\Model\ProductFactory;
+use Psr\Log\LoggerInterface;
 
 /**
  * Price helper used for product price related tasks.
@@ -53,6 +54,7 @@ class Price extends AbstractHelper
 {
     private $catalogHelper;
     private $productFactory;
+    private $logger;
 
     /**
      * Constructor.
@@ -64,11 +66,13 @@ class Price extends AbstractHelper
     public function __construct(
         Context $context,
         CatalogHelper $catalogHelper,
-        ProductFactory $productFactory
+        ProductFactory $productFactory,
+        LoggerInterface $logger
     ) {
         parent::__construct($context);
         $this->catalogHelper = $catalogHelper;
-        $this->productFactory= $productFactory;
+        $this->productFactory = $productFactory;
+        $this->logger = $logger;
     }
 
     /**
@@ -128,10 +132,10 @@ class Price extends AbstractHelper
                                         $sku
                                     );
                                 } catch (\Exception $e) {
+                                    $this->logger->error($e->__toString());
                                 }
                             }
                         }
-
                         $price = $listPrice;
                     }
                 } else {
