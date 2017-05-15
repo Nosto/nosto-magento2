@@ -162,6 +162,7 @@ class Create extends Base
                         try {
                             $this->nostoRatesService->update($store);
                         } catch (\Exception $e) {
+                            $this->logger->error($e->__toString());
                         }
                     }
                 }
