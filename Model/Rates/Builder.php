@@ -89,16 +89,22 @@ class Builder
                     continue; // Skip base currency.
                 }
 
-                $this->logger->info(sprintf('The rate from %s to %s is %f', $baseCurrencyCode,
-                    $code, $rate));
+                $this->logger->info(sprintf(
+                    'The rate from %s to %s is %f',
+                    $baseCurrencyCode,
+                    $code,
+                    $rate
+                ));
                 $exchangeRates->addRate($code, new ExchangeRate($code, $rate));
             }
         } catch (NostoException $e) {
             $this->logger->error($e->__toString());
         }
 
-        $this->eventManager->dispatch('nosto_exchange_rates_load_after',
-            ['rates' => $exchangeRates]);
+        $this->eventManager->dispatch(
+            'nosto_exchange_rates_load_after',
+            ['rates' => $exchangeRates]
+        );
 
         return $exchangeRates;
     }

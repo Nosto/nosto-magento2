@@ -108,7 +108,8 @@ class Collection
      * @throws NostoException
      */
     private function build(
-        /** @noinspection PhpUnusedParameterInspection */
+
+                /** @noinspection PhpUnusedParameterInspection */
         Store $store,
         $collection
     ) {

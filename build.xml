@@ -89,9 +89,9 @@
 
     <target name="phpmd">
         <exec executable="./vendor/bin/phpmd" passthru="true">
-            <arg value="app"/>
+            <arg value="."/>
             <arg value="--exclude"/>
-            <arg value="vendor"/>
+            <arg value="vendor,var"/>
             <arg value="text"/>
             <arg value="codesize,"/>
             <arg value="naming,"/>

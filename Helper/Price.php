@@ -127,7 +127,8 @@ class Price extends AbstractHelper
                                     $listPrice += $this->getProductPriceInclTax(
                                         $sku
                                     );
-                                } catch (\Exception $e) {}
+                                } catch (\Exception $e) {
+                                }
                             }
                         }
 
@@ -159,8 +160,11 @@ class Price extends AbstractHelper
                     }
                     $price = $minimalPrice;
                     if ($inclTax && $cheapestAssociatedProduct !== null) {
-                        $price = $this->catalogHelper->getTaxPrice($cheapestAssociatedProduct,
-                            $price, true);
+                        $price = $this->catalogHelper->getTaxPrice(
+                            $cheapestAssociatedProduct,
+                            $price,
+                            true
+                        );
                     }
                 } else {
                     $price = null;

@@ -117,8 +117,10 @@ class Index extends Action
      */
     public function save(AccountInterface $account)
     {
-        return $this->nostoHelperAccount->saveAccount($account,
-            $this->nostoHelperScope->getStore());
+        return $this->nostoHelperAccount->saveAccount(
+            $account,
+            $this->nostoHelperScope->getStore()
+        );
     }
 
     /**

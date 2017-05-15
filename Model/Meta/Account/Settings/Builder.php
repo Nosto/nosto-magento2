@@ -100,8 +100,11 @@ class Builder
      */
     private static function buildURL(Store $store)
     {
-        return HttpRequest::replaceQueryParamInUrl('___store', $store->getCode(),
-            $store->getBaseUrl(UrlInterface::URL_TYPE_WEB));
+        return HttpRequest::replaceQueryParamInUrl(
+            '___store',
+            $store->getCode(),
+            $store->getBaseUrl(UrlInterface::URL_TYPE_WEB)
+        );
     }
 
     /**
@@ -113,7 +116,9 @@ class Builder
      */
     private static function buildTitle(Store $store)
     {
-        return implode(' - ',
-            [$store->getWebsite()->getName(), $store->getGroup()->getName(), $store->getName()]);
+        return implode(
+            ' - ',
+            [$store->getWebsite()->getName(), $store->getGroup()->getName(), $store->getName()]
+        );
     }
 }

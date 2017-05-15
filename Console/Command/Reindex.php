@@ -144,8 +144,11 @@ class Reindex extends Command
                         $output->writeln("Fetching $limit products from offset $count");
                         $this->logger->info("Fetching $limit products from offset $count");
 
-                        $products = $this->nostoProductCollection->buildMany($store, $limit,
-                            $count);
+                        $products = $this->nostoProductCollection->buildMany(
+                            $store,
+                            $limit,
+                            $count
+                        );
                         if (empty($products) || !$products || count($products) === 0) {
                             break;
                         }

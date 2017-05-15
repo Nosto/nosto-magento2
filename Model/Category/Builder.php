@@ -93,8 +93,7 @@ class Builder
             $path = $category->getPath();
             foreach (explode('/', $path) as $categoryId) {
                 $category = $this->categoryRepository->get($categoryId);
-                if (
-                    $category instanceof Category
+                if ($category instanceof Category
                     && $category->getLevel() > 1
                     && !empty($category->getName())
                 ) {
@@ -108,8 +107,10 @@ class Builder
         if (empty($nostoCategory)) {
             $nostoCategory = null;
         } else {
-            $this->eventManager->dispatch('nosto_category_load_after',
-                ['category' => $nostoCategory]);
+            $this->eventManager->dispatch(
+                'nosto_category_load_after',
+                ['category' => $nostoCategory]
+            );
         }
 
         return $nostoCategory;

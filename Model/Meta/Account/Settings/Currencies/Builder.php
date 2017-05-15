@@ -77,7 +77,7 @@ class Builder
      */
     public function build(Store $store)
     {
-        $currencies = array();
+        $currencies = [];
 
         try {
             $storeLocale = $store->getConfig('general/locale/code');
@@ -122,7 +122,6 @@ class Builder
             $currencyCodes = $store->getAvailableCurrencyCodes(true);
             if (is_array($currencyCodes) && !empty($currencyCodes)) {
                 foreach ($currencyCodes as $currencyCode) {
-
                     $currency = $this->currencyFactory->create()->load($currencyCode);
                     $currencies[$currency->getCode()] = new Format(
                         $symbolPosition,
