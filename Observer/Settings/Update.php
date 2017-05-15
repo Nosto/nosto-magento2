@@ -83,7 +83,7 @@ class Update implements ObserverInterface
      *
      * @param Observer $observer the dispatched event
      */
-    public function execute(Observer $observer)
+    public function execute(Observer $observer) // @codingStandardsIgnoreLine
     {
         if (!$this->moduleManager->isEnabled(NostoHelperData::MODULE_NAME)) {
             return;

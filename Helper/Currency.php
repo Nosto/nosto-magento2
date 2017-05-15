@@ -84,7 +84,6 @@ class Currency extends AbstractHelper
         return $taggingPrice;
     }
 
-
     /**
      * Returns the currency that must be used in tagging
      *

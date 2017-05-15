@@ -215,7 +215,6 @@ class Builder
         return $availability;
     }
 
-
     /**
      * Helper method to fetch and return the normalised rating value for a product. The rating is
      * normalised to a 0-5 value.

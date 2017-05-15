@@ -52,10 +52,10 @@ class InstallSchema implements InstallSchemaInterface
      * @param ModuleContextInterface $context
      * @return void
      */
-    public function install(
+    public function install( // @codingStandardsIgnoreLine
         SchemaSetupInterface $setup,
         ModuleContextInterface $context
-    ) // @codingStandardsIgnoreLine
+    )
     {
         $installer = $setup;
         $installer->startSetup();
