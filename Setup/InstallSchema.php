@@ -55,8 +55,8 @@ class InstallSchema implements InstallSchemaInterface
     public function install( // @codingStandardsIgnoreLine
         SchemaSetupInterface $setup,
         ModuleContextInterface $context
-    )
-    {
+    ) {
+    
         $installer = $setup;
         $installer->startSetup();
         $table = $installer->getConnection()

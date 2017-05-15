@@ -59,5 +59,6 @@
         <exclude name="Squiz.PHP.CommentedOutCode"/>
         <exclude name="Generic.Metrics.CyclomaticComplexity"/>
         <exclude name="MEQP2.Classes.ObjectInstantiation"/>
+        <exclude name="MEQP2.Classes.PublicNonInterfaceMethods"/>
     </rule>
 </ruleset>

@@ -150,7 +150,7 @@ class Reindex extends Command
                             $limit,
                             $count
                         );
-                        if (empty($products) || !$products || count($products) === 0) {
+                        if (empty($products) || !$products || count($products) === 0) { // @codingStandardsIgnoreLine
                             break;
                         }
 
