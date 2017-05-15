@@ -209,7 +209,7 @@ class Builder
     {
         $availability = ProductInterface::OUT_OF_STOCK;
         if ($product->isAvailable()) {
-            $availability = ProductInterface::OUT_OF_STOCK;
+            $availability = ProductInterface::IN_STOCK;
         }
 
         return $availability;
