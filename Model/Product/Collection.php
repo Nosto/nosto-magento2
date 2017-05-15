@@ -69,7 +69,7 @@ class Collection
         $this->nostoHelperScope = $nostoHelperScope;
     }
 
-    protected function getCollection(Store $store)
+    public function getCollection(Store $store)
     {
         /** @var \Magento\Catalog\Model\ResourceModel\Product\Collection $collection */
         /** @noinspection PhpUndefinedMethodInspection */
