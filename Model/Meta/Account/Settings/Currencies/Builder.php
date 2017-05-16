@@ -122,7 +122,7 @@ class Builder
             $currencyCodes = $store->getAvailableCurrencyCodes(true);
             if (is_array($currencyCodes) && !empty($currencyCodes)) {
                 foreach ($currencyCodes as $currencyCode) {
-                    $currency = $this->currencyFactory->create()->load($currencyCode);
+                    $currency = $this->currencyFactory->create()->load($currencyCode); // @codingStandardsIgnoreLine
                     $currencies[$currency->getCode()] = new Format(
                         $symbolPosition,
                         $currency->getCurrencySymbol(),
