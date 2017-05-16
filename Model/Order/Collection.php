@@ -106,7 +106,8 @@ class Collection
      * @return OrderCollection
      * @throws NostoException
      */
-    private function build($collection) {
+    private function build($collection)
+    {
         /** @var \Magento\Sales\Model\ResourceModel\Order\Collection $collection */
         $orders = new OrderCollection();
         $items = $collection->loadData();
