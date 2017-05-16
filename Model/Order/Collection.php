@@ -64,7 +64,7 @@ class Collection
         $this->nostoHelperScope = $nostoHelperScope;
     }
 
-    protected function getCollection(Store $store)
+    public function getCollection(Store $store)
     {
         /** @var \Magento\Sales\Model\ResourceModel\Order\Collection $collection */
         /** @noinspection PhpUndefinedMethodInspection */
@@ -83,7 +83,7 @@ class Collection
     {
         $collection = $this->getCollection($store);
         $collection->addFieldToFilter(EntityInterface::ENTITY_ID, $id);
-        return $this->build($store, $collection);
+        return $this->build($collection);
     }
 
     /**
@@ -98,21 +98,15 @@ class Collection
         $currentPage = ($offset / $limit) + 1;
         $collection->getSelect()->limitPage($currentPage, $limit);
         $collection->setOrder(EntityInterface::CREATED_AT, $collection::SORT_ORDER_DESC);
-        return $this->build($store, $collection);
+        return $this->build($collection);
     }
 
     /**
-     * @param Store $store
      * @param $collection
      * @return OrderCollection
      * @throws NostoException
      */
-    private function build(
-
-                /** @noinspection PhpUnusedParameterInspection */
-        Store $store,
-        $collection
-    ) {
+    private function build($collection) {
         /** @var \Magento\Sales\Model\ResourceModel\Order\Collection $collection */
         $orders = new OrderCollection();
         $items = $collection->loadData();
