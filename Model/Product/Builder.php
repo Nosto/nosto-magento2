@@ -178,15 +178,15 @@ class Builder
             }
             $brandAttribute = $this->nostoDataHelper->getBrandAttribute($store);
             if ($product->hasData($brandAttribute)) {
-                $nostoProduct->setBrand($product->getData($brandAttribute));
+                $nostoProduct->setBrand($this->getAttributeValue($product, $brandAttribute));
             }
             $marginAttribute = $this->nostoDataHelper->getMarginAttribute($store);
             if ($product->hasData($marginAttribute)) {
-                $nostoProduct->setSupplierCost($product->getData($marginAttribute));
+                $nostoProduct->setSupplierCost($this->getAttributeValue($product, $marginAttribute));
             }
             $gtinAttribute = $this->nostoDataHelper->getGtinAttribute($store);
             if ($product->hasData($gtinAttribute)) {
-                $nostoProduct->setGtin($product->getData($gtinAttribute));
+                $nostoProduct->setGtin($this->getAttributeValue($product, $marginAttribute));
             }
             if (($tags = $this->buildTags($product)) !== []) {
                 $nostoProduct->setTag1($tags);
@@ -311,23 +311,40 @@ class Builder
     public function buildTags(Product $product)
     {
         $tags = [];
-        /** @var Attribute $attr */
-        foreach ($product->getAttributes() as $attr) {
-            if ($attr->getIsVisibleOnFront()
-                && $product->hasData($attr->getAttributeCode())
-            ) {
-                $label = $attr->getStoreLabel();
-                $value = $attr->getFrontend()->getValue($product);
-                if (is_string($label) && $label !== "" && is_string($value) && $value !== "") {
-                    $tags[] = "{$label}: {$value}";
-                }
-            }
-        }
 
         if (!$product->canConfigure()) {
             $tags[] = ProductInterface::ADD_TO_CART;
         }
 
         return $tags;
+    }
+
+    /**
+     * Resolves "textual" product attribute value
+     *
+     * @param Product $product
+     * @param $attribute
+     * @return bool|float|int|null|string
+     */
+    private function getAttributeValue(Product $product, $attribute)
+    {
+        $value = null;
+        try {
+            $attributes = $product->getAttributes();
+            if (isset($attributes[$attribute])) {
+                $attributeObject = $attributes[$attribute];
+                $frontend = $attributeObject->getFrontend();
+                $frontendValue = $frontend->getValue($product);
+                if (is_array($frontendValue)) {
+                    $value = implode(",", $frontendValue);
+                } elseif (is_scalar($frontendValue)) {
+                    $value = $frontendValue;
+                }
+            }
+        } catch (\Exception $e) {
+            $this->logger->error($e);
+        }
+
+        return $value;
     }
 }

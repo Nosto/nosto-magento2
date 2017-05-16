@@ -48,7 +48,7 @@ class Gtin extends Selector
 {
     public function filterCollection(Collection $collection)
     {
-        $collection->setFrontendInputTypeFilter('text');
+        $collection->setFrontendInputTypeFilter(['text', 'textarea']);
     }
 
     public function isNullable()
