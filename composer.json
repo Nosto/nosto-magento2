@@ -4,6 +4,7 @@
   "type": "magento2-module",
   "version": "2.0.0",
   "require-dev": {
+    "php": ">=5.5.0",
     "etsy/phan": "0.8.0",
     "phpmd/phpmd": "^2.5",
     "sebastian/phpcpd": "*",
@@ -11,14 +12,14 @@
     "phing/phing": "2.*",
     "magento/marketplace-eqp": "1.0.4",
     "magento-ecg/coding-standard": "*",
-    "magento/product-community-edition": "^2.1.0"
+    "magento/product-community-edition": "^2.1.0",
+    "magento/marketplace-tools": "dev-master"
   },
   "license": [
     "OSL-3.0"
   ],
   "minimum-stability": "dev",
   "require": {
-    "php": ">=5.5.0",
     "nosto/php-sdk": "3.0.3"
   },
   "repositories": [
@@ -33,6 +34,18 @@
     {
       "type": "vcs",
       "url": "https://github.com/magento/marketplace-eqp"
+    },
+    {
+      "type": "package",
+      "package": {
+        "name": "magento/marketplace-tools",
+        "version": "dev-master",
+        "source": {
+          "url": "https://github.com/magento/marketplace-tools",
+          "type": "git",
+          "reference": "origin/master"
+        }
+      }
     }
   ],
   "autoload": {
