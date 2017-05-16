@@ -104,16 +104,18 @@ class Stock extends AbstractHelper
                 $qty = $this->getMinQty($products);
                 break;
             case Grouped::TYPE_CODE:
-                /** @var Grouped $productType */
                 $productType = $product->getTypeInstance();
-                $products = $productType->getAssociatedProducts($product);
-                $qty = $this->getMinQty($products);
+                if ($productType instanceof Grouped) {
+                    $products = $productType->getAssociatedProducts($product);
+                    $qty = $this->getMinQty($products);
+                }
                 break;
             case Configurable::TYPE_CODE:
-                /** @var Configurable $productType */
                 $productType = $product->getTypeInstance();
-                $products = $productType->getUsedProducts($product);
-                $qty = $this->getQtySum($products);
+                if ($productType instanceof Configurable) {
+                    $products = $productType->getUsedProducts($product);
+                    $qty = $this->getQtySum($products);
+                }
                 break;
             default:
                 $qty += $this->stockItem->getStockQty($product->getId());
