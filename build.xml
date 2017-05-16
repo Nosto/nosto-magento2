@@ -104,7 +104,9 @@
     <target name="phpcpd">
         <exec executable="./vendor/bin/phpcpd" passthru="true">
             <arg value="--min-lines=1"/>
-            <arg value="app"/>
+            <arg value="."/>
+            <arg value="--exclude"/>
+            <arg value="vendor,var,build"/>
         </exec>
     </target>
 
