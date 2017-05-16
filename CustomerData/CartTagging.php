@@ -162,7 +162,7 @@ class CartTagging extends HashedTagging implements SectionSourceInterface
                 ->setCurPage(1);
 
             /** @var Customer $nostoCustomer */
-            $nostoCustomer = $customerQuery->getFirstItem();
+            $nostoCustomer = $customerQuery->getFirstItem(); // @codingStandardsIgnoreLine
             if ($nostoCustomer->hasData(NostoCustomer::CUSTOMER_ID)) {
                 $nostoCustomer->setUpdatedAt(self::getNow());
             } else {
