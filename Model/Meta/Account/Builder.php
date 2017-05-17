@@ -45,7 +45,7 @@ use Nosto\Object\Signup\Signup;
 use Nosto\Request\Http\HttpRequest;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Model\Meta\Account\Billing\Builder as NostoBillingBuilder;
-use Psr\Log\LoggerInterface;
+use Nosto\Tagging\Helper\Sentry as NostoHelperSentry;
 
 class Builder
 {
@@ -54,27 +54,27 @@ class Builder
     private $nostoHelperData;
     private $accountBillingMetaBuilder;
     private $localeResolver;
-    private $logger;
+    private $nostoHelperSentry;
     private $eventManager;
 
     /**
      * @param NostoHelperData $nostoHelperData
      * @param NostoBillingBuilder $nostoAccountBillingMetaBuilder
      * @param ResolverInterface $localeResolver
-     * @param LoggerInterface $logger
+     * @param NostoHelperSentry $nostoHelperSentry
      * @param ManagerInterface $eventManager
      */
     public function __construct(
         NostoHelperData $nostoHelperData,
         NostoBillingBuilder $nostoAccountBillingMetaBuilder,
         ResolverInterface $localeResolver,
-        LoggerInterface $logger,
+        NostoHelperSentry $nostoHelperSentry,
         ManagerInterface $eventManager
     ) {
         $this->nostoHelperData = $nostoHelperData;
         $this->accountBillingMetaBuilder = $nostoAccountBillingMetaBuilder;
         $this->localeResolver = $localeResolver;
-        $this->logger = $logger;
+        $this->nostoHelperSentry = $nostoHelperSentry;
         $this->eventManager = $eventManager;
     }
 
@@ -120,7 +120,7 @@ class Builder
 
             $metaData->setDetails($signupDetails);
         } catch (NostoException $e) {
-            $this->logger->error($e->__toString());
+            $this->nostoHelperSentry->error($e);
         }
 
         $this->eventManager->dispatch('nosto_account_load_after', ['account' => $metaData]);

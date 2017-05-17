@@ -50,14 +50,14 @@ use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
-use Psr\Log\LoggerInterface;
+use Nosto\Tagging\Helper\Sentry as NostoHelperSentry;
 
 abstract class Base implements ObserverInterface
 {
     private $nostoHelperData;
     private $nostoHelperAccount;
     private $nostoProductBuilder;
-    private $logger;
+    private $nostoHelperSentry;
     private $moduleManager;
     private $productFactory;
     private $configurableProduct;
@@ -70,7 +70,7 @@ abstract class Base implements ObserverInterface
      * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoProductBuilder $nostoProductBuilder
      * @param NostoHelperScope $nostoHelperScope
-     * @param LoggerInterface $logger
+     * @param NostoHelperSentry $nostoHelperSentry
      * @param ModuleManager $moduleManager
      * @param ProductFactory $productFactory
      * @param ConfigurableProduct $configurableProduct
@@ -80,7 +80,7 @@ abstract class Base implements ObserverInterface
         NostoHelperAccount $nostoHelperAccount,
         NostoProductBuilder $nostoProductBuilder,
         NostoHelperScope $nostoHelperScope,
-        LoggerInterface $logger,
+        NostoHelperSentry $nostoHelperSentry,
         ModuleManager $moduleManager,
         ProductFactory $productFactory,
         ConfigurableProduct $configurableProduct
@@ -88,7 +88,7 @@ abstract class Base implements ObserverInterface
         $this->nostoHelperData = $nostoHelperData;
         $this->nostoHelperAccount = $nostoHelperAccount;
         $this->nostoProductBuilder = $nostoProductBuilder;
-        $this->logger = $logger;
+        $this->nostoHelperSentry = $nostoHelperSentry;
         $this->moduleManager = $moduleManager;
         $this->productFactory = $productFactory;
         $this->configurableProduct = $configurableProduct;
@@ -147,7 +147,7 @@ abstract class Base implements ObserverInterface
                     $op->addProduct($metaProduct);
                     $this->doRequest($op);
                 } catch (NostoException $e) {
-                    $this->logger->error($e->__toString());
+                    $this->nostoHelperSentry->error($e);
                 }
             }
         }

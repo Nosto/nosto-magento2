@@ -84,6 +84,7 @@ class Product extends Base
     }
 
     /**
+     * @inheritdoc
      * @suppress PhanParamSignatureMismatch
      */
     public function buildExportCollection(Store $store, $limit = 100, $offset = 0)
@@ -92,6 +93,7 @@ class Product extends Base
     }
 
     /**
+     * @inheritdoc
      * @suppress PhanParamSignatureMismatch
      */
     public function buildSingleExportCollection(Store $store, $id)

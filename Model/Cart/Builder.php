@@ -43,12 +43,12 @@ use Magento\Store\Model\Store;
 use Nosto\NostoException;
 use Nosto\Object\Cart\Cart;
 use Nosto\Tagging\Model\Cart\Item\Builder as NostoCartItemBuilder;
-use Psr\Log\LoggerInterface;
+use Nosto\Tagging\Helper\Sentry as NostoHelperSentry;
 
 class Builder
 {
     private $nostoCartItemBuilder;
-    private $logger;
+    private $nostoHelperSentry;
     private $objectManager;
     private $eventManager;
 
@@ -56,19 +56,19 @@ class Builder
      * Constructor.
      *
      * @param NostoCartItemBuilder $nostoCartItemBuilder
-     * @param LoggerInterface $logger
+     * @param NostoHelperSentry $nostoHelperSentry
      * @param ObjectManagerInterface $objectManager
      * @param ManagerInterface $eventManager
      */
     public function __construct(
         NostoCartItemBuilder $nostoCartItemBuilder,
-        LoggerInterface $logger,
+        NostoHelperSentry $nostoHelperSentry,
         ObjectManagerInterface $objectManager,
         ManagerInterface $eventManager
     ) {
         $this->objectManager = $objectManager;
         $this->nostoCartItemBuilder = $nostoCartItemBuilder;
-        $this->logger = $logger;
+        $this->nostoHelperSentry = $nostoHelperSentry;
         $this->eventManager = $eventManager;
     }
 
@@ -89,7 +89,7 @@ class Builder
                 );
                 $nostoCart->addItem($cartItem);
             } catch (NostoException $e) {
-                $this->logger->error($e->__toString());
+                $this->nostoHelperSentry->error($e);
             }
         }
 

@@ -43,31 +43,31 @@ use Magento\Framework\Locale\Bundle\DataBundle;
 use Magento\Framework\Locale\ResolverInterface as LocaleResolver;
 use Magento\Store\Model\Store;
 use Nosto\Object\Format;
-use Psr\Log\LoggerInterface;
+use Nosto\Tagging\Helper\Sentry as NostoHelperSentry;
 
 class Builder
 {
-    private $logger;
+    private $nostoHelperSentry;
     private $eventManager;
     private $currencyFactory;
     private $localeResolver;
 
     /**
-     * @param LoggerInterface $logger
+     * @param NostoHelperSentry $nostoHelperSentry
      * @param ManagerInterface $eventManager
      * @param CurrencyFactory $currencyFactory
      * @param LocaleResolver $localeResolver
      */
     public function __construct(
-        LoggerInterface $logger,
+        NostoHelperSentry $nostoHelperSentry,
         ManagerInterface $eventManager,
         CurrencyFactory $currencyFactory,
         LocaleResolver $localeResolver
     ) {
-        $this->logger = $logger;
         $this->eventManager = $eventManager;
         $this->currencyFactory = $currencyFactory;
         $this->localeResolver = $localeResolver;
+        $this->nostoHelperSentry = $nostoHelperSentry;
     }
 
     /**
@@ -133,7 +133,7 @@ class Builder
                 }
             }
         } catch (Exception $e) {
-            $this->logger->error($e->__toString());
+            $this->nostoHelperSentry->error($e);
         }
 
         $this->eventManager->dispatch('nosto_currencies_load_after', ['currencies' => $currencies]);

@@ -42,31 +42,36 @@ use Magento\Store\Model\Store;
 use Nosto\Operation\SyncRates;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Model\Rates\Builder as NostoExchangeRatesBuilder;
+use Nosto\Tagging\Helper\Sentry as NostoHelperSentry;
 use Psr\Log\LoggerInterface;
 
 class Service
 {
-    private $logger;
+    private $nostoHelperSentry;
     private $eventManager;
     private $nostoExchangeRatesBuilder;
     private $nostoHelperAccount;
+    private $logger;
 
     /**
-     * @param LoggerInterface $logger
+     * @param NostoHelperSentry $nostoHelperSentry
      * @param ManagerInterface $eventManager
+     * @param LoggerInterface $logger
      * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoExchangeRatesBuilder $nostoExchangeRatesBuilder
      */
     public function __construct(
-        LoggerInterface $logger,
+        NostoHelperSentry $nostoHelperSentry,
         ManagerInterface $eventManager,
+        LoggerInterface $logger,
         NostoHelperAccount $nostoHelperAccount,
         NostoExchangeRatesBuilder $nostoExchangeRatesBuilder
     ) {
-        $this->logger = $logger;
+        $this->nostoHelperSentry = $nostoHelperSentry;
         $this->eventManager = $eventManager;
         $this->nostoExchangeRatesBuilder = $nostoExchangeRatesBuilder;
         $this->nostoHelperAccount = $nostoHelperAccount;
+        $this->logger = $logger;
     }
 
     /**
@@ -92,7 +97,7 @@ class Service
                 $service = new SyncRates($account);
                 return $service->update($rates);
             } catch (Exception $e) {
-                $this->logger->error($e->__toString());
+                $this->nostoHelperSentry->error($e);
             }
         } else {
             $this->logger->info('Skipping update; an account doesn\'t exist for ' .

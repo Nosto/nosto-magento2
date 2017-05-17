@@ -44,30 +44,30 @@ use Nosto\NostoException;
 use Nosto\OAuth;
 use Nosto\Object\Signup\Account;
 use Nosto\Request\Api\Token;
-use Psr\Log\LoggerInterface;
+use Nosto\Tagging\Helper\Sentry as NostoHelperSentry;
 
 class Builder
 {
     private $localeResolver;
     private $urlBuilder;
-    private $logger;
+    private $nostoHelperSentry;
     private $eventManager;
 
     /**
      * @param ResolverInterface $localeResolver
      * @param Url $urlBuilder
-     * @param LoggerInterface $logger
+     * @param NostoHelperSentry $nostoHelperSentry
      * @param ManagerInterface $eventManager
      */
     public function __construct(
         ResolverInterface $localeResolver,
         Url $urlBuilder,
-        LoggerInterface $logger,
+        NostoHelperSentry $nostoHelperSentry,
         ManagerInterface $eventManager
     ) {
         $this->localeResolver = $localeResolver;
         $this->urlBuilder = $urlBuilder;
-        $this->logger = $logger;
+        $this->nostoHelperSentry = $nostoHelperSentry;
         $this->eventManager = $eventManager;
     }
 
@@ -99,7 +99,7 @@ class Builder
                 $metaData->setAccount($account);
             }
         } catch (NostoException $e) {
-            $this->logger->error($e->__toString());
+            $this->nostoHelperSentry->error($e);
         }
 
         $this->eventManager->dispatch('nosto_oauth_load_after', ['oauth' => $metaData]);

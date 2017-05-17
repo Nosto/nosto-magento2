@@ -44,36 +44,36 @@ use Nosto\Object\Product\SkuCollection;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Price as NostoPriceHelper;
 use Nosto\Tagging\Model\Product\Sku\Builder as NostoSkuBuilder;
-use Psr\Log\LoggerInterface;
+use Nosto\Tagging\Helper\Sentry as NostoHelperSentry;
 
 class Collection
 {
     private $configurableType;
-    private $logger;
+    private $nostoHelperSentry;
     private $nostoHelperData;
     private $nostoPriceHelper;
     private $nostoSkuBuilder;
 
     /**
      * Builder constructor.
-     * @param LoggerInterface $logger
+     * @param NostoHelperSentry $nostoHelperSentry
      * @param ConfigurableType $configurableType
      * @param NostoHelperData $nostoHelperData
      * @param NostoPriceHelper $priceHelper
      * @param Builder $nostoSkuBuilder
      */
     public function __construct(
-        LoggerInterface $logger,
+        NostoHelperSentry $nostoHelperSentry,
         ConfigurableType $configurableType,
         NostoHelperData $nostoHelperData,
         NostoPriceHelper $priceHelper,
         NostoSkuBuilder $nostoSkuBuilder
     ) {
         $this->configurableType = $configurableType;
-        $this->logger = $logger;
         $this->nostoHelperData = $nostoHelperData;
         $this->nostoPriceHelper = $priceHelper;
         $this->nostoSkuBuilder = $nostoSkuBuilder;
+        $this->nostoHelperSentry = $nostoHelperSentry;
     }
 
     /**
@@ -92,7 +92,7 @@ class Collection
                     $sku = $this->nostoSkuBuilder->build($product, $store, $attributes);
                     $skuCollection->append($sku);
                 } catch (NostoException $e) {
-                    $this->logger->error($e->__toString());
+                    $this->nostoHelperSentry->error($e);
                 }
             }
         }

@@ -46,7 +46,7 @@ use Nosto\Object\Product\Sku;
 use Nosto\Tagging\Helper\Currency as CurrencyHelper;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Price as NostoPriceHelper;
-use Psr\Log\LoggerInterface;
+use Nosto\Tagging\Helper\Sentry as NostoHelperSentry;
 
 class Builder
 {
@@ -54,13 +54,13 @@ class Builder
     private $nostoPriceHelper;
     private $galleryReadHandler;
     private $eventManager;
-    private $logger;
+    private $nostoHelperSentry;
     private $nostoCurrencyHelper;
 
     /**
      * @param NostoHelperData $nostoHelperData
      * @param NostoPriceHelper $priceHelper
-     * @param LoggerInterface $logger
+     * @param NostoHelperSentry $nostoHelperSentry
      * @param ManagerInterface $eventManager
      * @param GalleryReadHandler $galleryReadHandler
      * @param CurrencyHelper $nostoCurrencyHelper
@@ -68,17 +68,17 @@ class Builder
     public function __construct(
         NostoHelperData $nostoHelperData,
         NostoPriceHelper $priceHelper,
-        LoggerInterface $logger,
+        NostoHelperSentry $nostoHelperSentry,
         ManagerInterface $eventManager,
         GalleryReadHandler $galleryReadHandler,
         CurrencyHelper $nostoCurrencyHelper
     ) {
         $this->nostoDataHelper = $nostoHelperData;
         $this->nostoPriceHelper = $priceHelper;
-        $this->logger = $logger;
         $this->eventManager = $eventManager;
         $this->galleryReadHandler = $galleryReadHandler;
         $this->nostoCurrencyHelper = $nostoCurrencyHelper;
+        $this->nostoHelperSentry = $nostoHelperSentry;
     }
 
     /**
@@ -120,11 +120,11 @@ class Builder
                     $code = $attribute->getProductAttribute()->getAttributeCode();
                     $nostoSku->addCustomAttribute($code, $product->getAttributeText($code));
                 } catch (NostoException $e) {
-                    $this->logger->error($e->__toString());
+                    $this->nostoHelperSentry->error($e);
                 }
             }
         } catch (NostoException $e) {
-            $this->logger->error($e->__toString());
+            $this->nostoHelperSentry->error($e);
         }
 
         $this->eventManager->dispatch('nosto_sku_load_after', ['sku' => $nostoSku]);

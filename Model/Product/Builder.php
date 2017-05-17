@@ -52,7 +52,7 @@ use Nosto\Tagging\Model\Category\Builder as NostoCategoryBuilder;
 use Nosto\Tagging\Model\Product\Sku\Collection as NostoSkuCollection;
 use Nosto\Tagging\Model\Product\Url\Builder as NostoUrlBuilder;
 use Nosto\Types\Product\ProductInterface;
-use Psr\Log\LoggerInterface;
+use Nosto\Tagging\Helper\Sentry as NostoHelperSentry;
 
 class Builder
 {
@@ -63,7 +63,7 @@ class Builder
     private $categoryRepository;
     private $galleryReadHandler;
     private $eventManager;
-    private $logger;
+    private $nostoHelperSentry;
     private $reviewFactory;
     private $urlBuilder;
     private $skuCollection;
@@ -76,7 +76,7 @@ class Builder
      * @param NostoStockHelper $stockHelper
      * @param NostoSkuCollection $skuCollection
      * @param CategoryRepositoryInterface $categoryRepository
-     * @param LoggerInterface $logger
+     * @param NostoHelperSentry $nostoHelperSentry
      * @param ManagerInterface $eventManager
      * @param ReviewFactory $reviewFactory
      * @param GalleryReadHandler $galleryReadHandler
@@ -90,7 +90,7 @@ class Builder
         NostoStockHelper $stockHelper,
         NostoSkuCollection $skuCollection,
         CategoryRepositoryInterface $categoryRepository,
-        LoggerInterface $logger,
+        NostoHelperSentry $nostoHelperSentry,
         ManagerInterface $eventManager,
         ReviewFactory $reviewFactory,
         GalleryReadHandler $galleryReadHandler,
@@ -101,7 +101,7 @@ class Builder
         $this->nostoPriceHelper = $priceHelper;
         $this->nostoCategoryBuilder = $categoryBuilder;
         $this->categoryRepository = $categoryRepository;
-        $this->logger = $logger;
+        $this->nostoHelperSentry = $nostoHelperSentry;
         $this->eventManager = $eventManager;
         $this->nostoStockHelper = $stockHelper;
         $this->reviewFactory = $reviewFactory;
@@ -192,7 +192,7 @@ class Builder
                 $nostoProduct->setTag1($tags);
             }
         } catch (NostoException $e) {
-            $this->logger->error($e->__toString());
+            $this->nostoHelperSentry->error($e);
         }
         $this->eventManager->dispatch('nosto_product_load_after', ['product' => $nostoProduct]);
 

@@ -42,29 +42,29 @@ use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\ObjectManagerInterface;
 use Magento\Sales\Model\Order\Item;
 use Nosto\Object\Cart\LineItem;
-use Psr\Log\LoggerInterface;
+use Nosto\Tagging\Helper\Sentry as NostoHelperSentry;
 
 class Builder
 {
-    private $logger;
+    private $nostoHelperSentry;
     private $objectManager;
     private $eventManager;
 
     /**
      * Constructor.
      *
-     * @param LoggerInterface $logger
+     * @param NostoHelperSentry $nostoHelperSentry
      * @param ObjectManagerInterface $objectManager
      * @param ManagerInterface $eventManager
      */
     public function __construct(
-        LoggerInterface $logger,
+        NostoHelperSentry $nostoHelperSentry,
         ObjectManagerInterface $objectManager,
         ManagerInterface $eventManager
     ) {
         $this->objectManager = $objectManager;
-        $this->logger = $logger;
         $this->eventManager = $eventManager;
+        $this->nostoHelperSentry = $nostoHelperSentry;
     }
 
     /**

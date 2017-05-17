@@ -50,7 +50,7 @@ use Nosto\Tagging\Model\Meta\Account\Iframe\Builder as NostoIframeMetaBuilder;
 use Nosto\Tagging\Model\Meta\Account\Owner\Builder as NostoOwnerBuilder;
 use Nosto\Tagging\Model\Rates\Service as NostoRatesService;
 use Nosto\Tagging\Model\User\Builder as NostoCurrentUserBuilder;
-use Psr\Log\LoggerInterface;
+use Nosto\Tagging\Helper\Sentry as NostoHelperSentry;
 
 class Create extends Base
 {
@@ -63,7 +63,7 @@ class Create extends Base
     private $nostoCurrencyHelper;
     private $nostoOwnerBuilder;
     private $nostoSignupBuilder;
-    private $logger;
+    private $nostoHelperSentry;
     private $nostoHelperScope;
 
     /**
@@ -75,7 +75,7 @@ class Create extends Base
      * @param NostoOwnerBuilder $nostoOwnerBuilder
      * @param NostoHelperScope $nostoHelperScope
      * @param Json $result
-     * @param LoggerInterface $logger
+     * @param NostoHelperSentry $nostoHelperSentry
      * @param NostoRatesService $nostoRatesService
      * @param NostoCurrencyHelper $nostoCurrencyHelper
      * @SuppressWarnings(PHPMD.ExcessiveParameterList)
@@ -89,7 +89,7 @@ class Create extends Base
         NostoOwnerBuilder $nostoOwnerBuilder,
         NostoHelperScope $nostoHelperScope,
         Json $result,
-        LoggerInterface $logger,
+        NostoHelperSentry $nostoHelperSentry,
         NostoRatesService $nostoRatesService,
         NostoCurrencyHelper $nostoCurrencyHelper
     ) {
@@ -101,10 +101,10 @@ class Create extends Base
         $this->nostoOwnerBuilder = $nostoOwnerBuilder;
         $this->nostoCurrentUserBuilder = $nostoCurrentUserBuilder;
         $this->result = $result;
-        $this->logger = $logger;
         $this->nostoRatesService = $nostoRatesService;
         $this->nostoCurrencyHelper = $nostoCurrencyHelper;
         $this->nostoHelperScope = $nostoHelperScope;
+        $this->nostoHelperSentry = $nostoHelperSentry;
     }
 
     /**
@@ -162,12 +162,12 @@ class Create extends Base
                         try {
                             $this->nostoRatesService->update($store);
                         } catch (\Exception $e) {
-                            $this->logger->error($e->__toString());
+                            $this->nostoHelperSentry->error($e);
                         }
                     }
                 }
             } catch (NostoException $e) {
-                $this->logger->error($e->__toString());
+                $this->nostoHelperSentry->error($e);
             }
         }
 

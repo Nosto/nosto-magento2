@@ -40,26 +40,26 @@ use Magento\Backend\Model\Auth\Session;
 use Magento\Framework\Event\ManagerInterface;
 use Nosto\NostoException;
 use Nosto\Object\User;
-use Psr\Log\LoggerInterface;
+use Nosto\Tagging\Helper\Sentry as NostoHelperSentry;
 
 class Builder
 {
-    private $logger;
+    private $nostoHelperSentry;
     private $backendAuthSession;
     private $eventManager;
 
     /**
      * @param Session $backendAuthSession
-     * @param LoggerInterface $logger
+     * @param NostoHelperSentry $nostoHelperSentry
      * @param ManagerInterface $eventManager
      */
     public function __construct(
         Session $backendAuthSession,
-        LoggerInterface $logger,
+        NostoHelperSentry $nostoHelperSentry,
         ManagerInterface $eventManager
     ) {
         $this->backendAuthSession = $backendAuthSession;
-        $this->logger = $logger;
+        $this->nostoHelperSentry = $nostoHelperSentry;
         $this->eventManager = $eventManager;
     }
 
@@ -78,7 +78,7 @@ class Builder
                 $metaData->setEmail($user->getEmail());
             }
         } catch (NostoException $e) {
-            $this->logger->error($e->__toString());
+            $this->nostoHelperSentry->error($e);
         }
 
         $this->eventManager->dispatch('nosto_user_load_after', ['user' => $metaData]);

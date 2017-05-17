@@ -49,6 +49,7 @@ use Nosto\Request\Api\Token;
 use Nosto\Tagging\Helper\Data as NostoHelper;
 use Nosto\Types\Signup\AccountInterface;
 use Nosto\Object\Signup\Account as NostoSignupAccount;
+use Nosto\Tagging\Helper\Sentry as NostoHelperSentry;
 
 /**
  * NostoHelperAccount helper class for common tasks related to Nosto accounts.
@@ -70,25 +71,28 @@ class Account extends AbstractHelper
      * Platform UI version
      */
     const IFRAME_VERSION = 0;
+
     private $config;
     private $moduleManager;
-    private $logger;
+    private $nostoHelperSentry;
 
     /**
      * Constructor.
      *
      * @param Context $context the context.
      * @param WriterInterface $appConfig the app config writer.
+     * @param NostoHelperSentry $nostoHelperSentry
      */
     public function __construct(
         Context $context,
-        WriterInterface $appConfig
+        WriterInterface $appConfig,
+        NostoHelperSentry $nostoHelperSentry
     ) {
         parent::__construct($context);
 
         $this->config = $appConfig;
         $this->moduleManager = $context->getModuleManager();
-        $this->logger = $context->getLogger();
+        $this->nostoHelperSentry = $nostoHelperSentry;
     }
 
     /**
@@ -160,7 +164,7 @@ class Account extends AbstractHelper
             $service = new UninstallAccount($account);
             $service->delete($currentUser);
         } catch (NostoException $e) {
-            $this->logger->error($e->__toString());
+            $this->nostoHelperSentry->error($e);
         }
 
         $store->resetConfig();
@@ -209,7 +213,7 @@ class Account extends AbstractHelper
                     try {
                         $account->addApiToken(new Token($name, $value));
                     } catch (Exception $e) {
-                        $this->_logger->error($e->__toString());
+                        $this->nostoHelperSentry->error($e);
                     }
                 }
             }

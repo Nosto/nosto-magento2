@@ -66,11 +66,12 @@ class Sentry extends AbstractHelper
         $this->nostoHelperScope = $nostoHelperScope;
     }
 
-    public function getPlatformVersion(\Exception $e)
+    public function error(\Exception $e)
     {
         $client = new \Raven_Client('https://22ea9e5f70404157bf4f81e420d35bf1:23a0c572164748f7aafd9659d396a144@sentry.io/169186');
         $client->setRelease($this->nostoHelperData->getModuleVersion());
         $client->setEnvironment($this->nostoHelperData->getPlatformVersion());
         $client->name = $this->nostoHelperScope->getStore()->getBaseUrl();
+        $client->exception($e);
     }
 }

@@ -48,11 +48,11 @@ use Nosto\Object\Order\Buyer;
 use Nosto\Object\Order\OrderStatus;
 use Nosto\Tagging\Helper\Price as NostoPriceHelper;
 use Nosto\Tagging\Model\Order\Item\Builder as NostoOrderItemBuilder;
-use Psr\Log\LoggerInterface;
+use Nosto\Tagging\Helper\Sentry as NostoHelperSentry;
 
 class Builder
 {
-    private $logger;
+    private $nostoHelperSentry;
     /** @noinspection PhpUndefinedClassInspection */
     private $salesRuleFactory;
     private $nostoPriceHelper;
@@ -62,7 +62,7 @@ class Builder
 
     /** @noinspection PhpUndefinedClassInspection */
     /**
-     * @param LoggerInterface $logger
+     * @param NostoHelperSentry $nostoHelperSentry
      * @param SalesRuleFactory $salesRuleFactory
      * @param NostoPriceHelper $priceHelper
      * @param NostoOrderItemBuilder $nostoOrderItemBuilder
@@ -70,7 +70,7 @@ class Builder
      * @param ManagerInterface $eventManager
      */
     public function __construct(
-        LoggerInterface $logger,
+        NostoHelperSentry $nostoHelperSentry,
         /** @noinspection PhpUndefinedClassInspection */
         SalesRuleFactory $salesRuleFactory,
         NostoPriceHelper $priceHelper,
@@ -78,7 +78,7 @@ class Builder
         ObjectManagerInterface $objectManager,
         ManagerInterface $eventManager
     ) {
-        $this->logger = $logger;
+        $this->nostoHelperSentry = $nostoHelperSentry;
         $this->salesRuleFactory = $salesRuleFactory;
         $this->nostoPriceHelper = $priceHelper;
         $this->nostoOrderItemBuilder = $nostoOrderItemBuilder;
@@ -154,7 +154,7 @@ class Builder
                 $nostoOrder->addPurchasedItems($nostoItem);
             }
         } catch (Exception $e) {
-            $this->logger->error($e->__toString());
+            $this->nostoHelperSentry->error($e);
         }
 
         $this->eventManager->dispatch('nosto_order_load_after', ['order' => $nostoOrder]);

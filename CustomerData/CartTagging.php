@@ -46,7 +46,7 @@ use Nosto\Tagging\Model\Cart\Builder as NostoCartBuilder;
 use Nosto\Tagging\Model\Customer;
 use Nosto\Tagging\Model\Customer as NostoCustomer;
 use Nosto\Tagging\Model\CustomerFactory as NostoCustomerFactory;
-use Psr\Log\LoggerInterface;
+use Nosto\Tagging\Helper\Sentry as NostoHelperSentry;
 
 class CartTagging extends HashedTagging implements SectionSourceInterface
 {
@@ -55,7 +55,7 @@ class CartTagging extends HashedTagging implements SectionSourceInterface
     private $cookieManager;
     private $nostoCustomerFactory;
     private $quote = null;
-    private $logger;
+    private $nostoHelperSentry;
     private $date;
     private $nostoHelperScope;
 
@@ -65,7 +65,7 @@ class CartTagging extends HashedTagging implements SectionSourceInterface
      * @param NostoCartBuilder $nostoCartBuilder
      * @param NostoHelperScope $nostoHelperScope
      * @param CookieManagerInterface $cookieManager
-     * @param LoggerInterface $logger
+     * @param NostoHelperSentry $nostoHelperSentry
      * @param DateTime $date
      * @param NostoCustomerFactory $nostoCustomerFactory
      */
@@ -74,18 +74,18 @@ class CartTagging extends HashedTagging implements SectionSourceInterface
         NostoCartBuilder $nostoCartBuilder,
         NostoHelperScope $nostoHelperScope,
         CookieManagerInterface $cookieManager,
-        LoggerInterface $logger,
+        NostoHelperSentry $nostoHelperSentry,
         DateTime $date,
         /** @noinspection PhpUndefinedClassInspection */
         NostoCustomerFactory $nostoCustomerFactory
     ) {
         $this->cartHelper = $cartHelper;
         $this->nostoCartBuilder = $nostoCartBuilder;
-        $this->logger = $logger;
         $this->date = $date;
         $this->cookieManager = $cookieManager;
         $this->nostoCustomerFactory = $nostoCustomerFactory;
         $this->nostoHelperScope = $nostoHelperScope;
+        $this->nostoHelperSentry = $nostoHelperSentry;
     }
 
     /**
@@ -178,7 +178,7 @@ class CartTagging extends HashedTagging implements SectionSourceInterface
                 /** @noinspection PhpDeprecationInspection */
                 $nostoCustomer->save();
             } catch (\Exception $e) {
-                $this->logger->error($e->__toString());
+                $this->nostoHelperSentry->error($e);
             }
         }
     }
