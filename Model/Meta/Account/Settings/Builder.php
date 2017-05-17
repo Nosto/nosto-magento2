@@ -34,7 +34,7 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Account\Settings;
+namespace Nosto\Tagging\Model\Meta\Account\Settings;
 
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\UrlInterface;
