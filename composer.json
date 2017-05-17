@@ -19,7 +19,8 @@
   "minimum-stability": "dev",
   "require": {
     "php": ">=5.5.0",
-    "nosto/php-sdk": "3.0.3"
+    "nosto/php-sdk": "3.0.3",
+    "sentry/sentry": "1.6.2"
   },
   "repositories": [
     {
