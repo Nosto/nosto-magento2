@@ -34,13 +34,43 @@
  *
  */
 
-use Dotenv\Dotenv;
-use Magento\Framework\Component\ComponentRegistrar;
+namespace Nosto\Tagging\Helper;
 
-ComponentRegistrar::register(ComponentRegistrar::MODULE, 'Nosto_Tagging', __DIR__);
-Raven_Autoloader::register();
+use Magento\Framework\App\Helper\AbstractHelper;
+use Magento\Framework\App\Helper\Context;
+use Nosto\Tagging\Helper\Data as NostoHelperData;
+use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 
-if (file_exists(dirname(__FILE__) . DIRECTORY_SEPARATOR . '.env')) {
-    $dotenv = new Dotenv(dirname(__FILE__)); // @codingStandardsIgnoreLine
-    $dotenv->overload();
+/**
+ * NostoHelperData helper used for common tasks, mainly configurations.
+ */
+class Sentry extends AbstractHelper
+{
+    private $nostoHelperData;
+    private $nostoHelperScope;
+
+    /**
+     * Sentry constructor.
+     * @param Context $context
+     * @param Data $nostoHelperData
+     * @param NostoHelperScope $nostoHelperScope
+     */
+    public function __construct(
+        Context $context,
+        NostoHelperData $nostoHelperData,
+        NostoHelperScope $nostoHelperScope
+    ) {
+        parent::__construct($context);
+
+        $this->nostoHelperData = $nostoHelperData;
+        $this->nostoHelperScope = $nostoHelperScope;
+    }
+
+    public function getPlatformVersion(\Exception $e)
+    {
+        $client = new \Raven_Client('https://22ea9e5f70404157bf4f81e420d35bf1:23a0c572164748f7aafd9659d396a144@sentry.io/169186');
+        $client->setRelease($this->nostoHelperData->getModuleVersion());
+        $client->setEnvironment($this->nostoHelperData->getPlatformVersion());
+        $client->name = $this->nostoHelperScope->getStore()->getBaseUrl();
+    }
 }
