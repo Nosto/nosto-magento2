@@ -2,6 +2,9 @@
 
 ## Changelog
 
+### 2.0.0-RC2
+* Namespace fixes
+
 ### 2.0.0-RC1
 * Add possibility to use following attributes in Nosto 
   * GTIN
