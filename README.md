@@ -2,6 +2,9 @@
 
 ## Changelog
 
+### 2.0.0-RC3
+* Change the command name `nosto:reindex` to `nosto:sync:products`to avoid overlapping with Magento's reindex command
+
 ### 2.0.0-RC2
 * Namespace fixes
 
