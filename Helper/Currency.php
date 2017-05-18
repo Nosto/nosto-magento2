@@ -95,7 +95,7 @@ class Currency extends AbstractHelper
         $currencyCount = $this->getCurrencyCount($store);
         $taggingCurrency = $store->getBaseCurrency();
         if ($currencyCount == 1) {
-            $taggingCurrency = $store->getCurrentCurrency();
+            $taggingCurrency = $store->getDefaultCurrency();
         }
 
         return $taggingCurrency;
