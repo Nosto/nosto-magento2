@@ -56,7 +56,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class Reindex extends Command
+class SyncProducts extends Command
 {
     private $productCollectionFactory;
     private $productVisibility;
@@ -117,7 +117,7 @@ class Reindex extends Command
      */
     public function configure()
     {
-        $this->setName('nosto:reindex');
+        $this->setName('nosto:sync:products');
         $this->setDescription('Syncs the product catalog with Nosto');
         $this->addOption('batch', 'b', InputOption::VALUE_OPTIONAL, 'Products per batch', 20);
     }
