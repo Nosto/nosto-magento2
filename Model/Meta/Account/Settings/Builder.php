@@ -42,6 +42,7 @@ use Magento\Store\Model\Store;
 use Nosto\NostoException;
 use Nosto\Object\Settings;
 use Nosto\Request\Http\HttpRequest;
+use Nosto\Tagging\Helper\Currency as NostoHelperCurrency;
 use Nosto\Tagging\Model\Meta\Account\Settings\Currencies\Builder as NostoCurrenciesBuilder;
 use Psr\Log\LoggerInterface;
 
@@ -50,20 +51,24 @@ class Builder
     private $logger;
     private $eventManager;
     private $nostoCurrenciesBuilder;
+    private $nostoHelperCurrency;
 
     /**
      * @param LoggerInterface $logger
      * @param ManagerInterface $eventManager
+     * @param NostoHelperCurrency $nostoHelperCurrency
      * @param NostoCurrenciesBuilder $nostoCurrenciesBuilder
      */
     public function __construct(
         LoggerInterface $logger,
         ManagerInterface $eventManager,
+        NostoHelperCurrency $nostoHelperCurrency,
         NostoCurrenciesBuilder $nostoCurrenciesBuilder
     ) {
         $this->logger = $logger;
         $this->eventManager = $eventManager;
         $this->nostoCurrenciesBuilder = $nostoCurrenciesBuilder;
+        $this->nostoHelperCurrency = $nostoHelperCurrency;
     }
 
     /**
@@ -80,7 +85,7 @@ class Builder
             $settings->setCurrencyCode($store->getBaseCurrencyCode());
             $settings->setLanguageCode(substr($store->getConfig('general/locale/code'), 0, 2));
             $settings->setUseCurrencyExchangeRates(count($store->getAvailableCurrencyCodes(true)) > 1);
-            $settings->setDefaultVariantId($store->getBaseCurrencyCode());
+            $settings->setDefaultVariantId($this->nostoHelperCurrency->getTaggingCurrency($store));
             $settings->setCurrencies($this->nostoCurrenciesBuilder->build($store));
         } catch (NostoException $e) {
             $this->logger->error($e->__toString());
