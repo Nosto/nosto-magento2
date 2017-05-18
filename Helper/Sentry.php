@@ -40,6 +40,7 @@ use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
+use Psr\Log\LoggerInterface;
 
 /**
  * NostoHelperData helper used for common tasks, mainly configurations.
@@ -48,15 +49,18 @@ class Sentry extends AbstractHelper
 {
     private $nostoHelperData;
     private $nostoHelperScope;
+    private $logger;
 
     /**
      * Sentry constructor.
      * @param Context $context
+     * @param LoggerInterface $logger
      * @param Data $nostoHelperData
      * @param NostoHelperScope $nostoHelperScope
      */
     public function __construct(
         Context $context,
+        LoggerInterface $logger,
         NostoHelperData $nostoHelperData,
         NostoHelperScope $nostoHelperScope
     ) {
@@ -64,14 +68,18 @@ class Sentry extends AbstractHelper
 
         $this->nostoHelperData = $nostoHelperData;
         $this->nostoHelperScope = $nostoHelperScope;
+        $this->logger = $logger;
     }
 
     public function error(\Exception $e)
     {
-        $client = new \Raven_Client('https://22ea9e5f70404157bf4f81e420d35bf1:23a0c572164748f7aafd9659d396a144@sentry.io/169186');
-        $client->setRelease($this->nostoHelperData->getModuleVersion());
-        $client->setEnvironment($this->nostoHelperData->getPlatformVersion());
-        $client->name = $this->nostoHelperScope->getStore()->getBaseUrl();
-        $client->exception($e);
+        $this->logger->error($e->getTraceAsString());
+        if ($this->nostoHelperData->isSentryUpdatesEnabled()) {
+            $client = new \Raven_Client('https://22ea9e5f70404157bf4f81e420d35bf1:23a0c572164748f7aafd9659d396a144@sentry.io/169186');
+            $client->setRelease($this->nostoHelperData->getModuleVersion());
+            $client->setEnvironment($this->nostoHelperData->getPlatformVersion());
+            $client->name = $this->nostoHelperScope->getStore()->getBaseUrl();
+            $client->exception($e);
+        }
     }
 }

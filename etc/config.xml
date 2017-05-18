@@ -13,6 +13,7 @@
                 <rating_tagging>1</rating_tagging>
                 <inventory_tagging>1</inventory_tagging>
                 <product_updates>1</product_updates>
+                <sentry_updates>1</sentry_updates>
             </flags>
         </nosto>
     </default>
