@@ -37,7 +37,6 @@
 namespace Nosto\Tagging\Helper;
 
 use Magento\Directory\Model\Currency as MagentoCurrency;
-use Magento\Directory\Model\CurrencyFactory;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 use Magento\Store\Model\Store;
@@ -48,20 +47,15 @@ use Magento\Store\Model\Store;
 class Currency extends AbstractHelper
 {
 
-    private $currencyFactory;
-
     /**
      * Constructor.
      *
      * @param Context $context the context.
-     * @param CurrencyFactory $currencyFactory
      */
     public function __construct(
-        Context $context,
-        CurrencyFactory $currencyFactory
+        Context $context
     ) {
         parent::__construct($context);
-        $this->currencyFactory = $currencyFactory;
     }
 
     /**

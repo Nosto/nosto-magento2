@@ -85,7 +85,7 @@ class Builder
             $settings->setCurrencyCode($store->getBaseCurrencyCode());
             $settings->setLanguageCode(substr($store->getConfig('general/locale/code'), 0, 2));
             $settings->setUseCurrencyExchangeRates(count($store->getAvailableCurrencyCodes(true)) > 1);
-            $settings->setDefaultVariantId($this->nostoHelperCurrency->getTaggingCurrency($store));
+            $settings->setDefaultVariantId($this->nostoHelperCurrency->getTaggingCurrency($store)->getCode());
             $settings->setCurrencies($this->nostoCurrenciesBuilder->build($store));
         } catch (NostoException $e) {
             $this->logger->error($e->__toString());
