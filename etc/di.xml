@@ -41,7 +41,7 @@
     <type name="Magento\Framework\Console\CommandList">
         <arguments>
             <argument name="commands" xsi:type="array">
-                <item name="reindex" xsi:type="object">Nosto\Tagging\Console\Command\Reindex</item>
+                <item name="syncproducts" xsi:type="object">Nosto\Tagging\Console\Command\SyncProducts</item>
             </argument>
         </arguments>
     </type>
