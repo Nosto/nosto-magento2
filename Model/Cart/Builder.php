@@ -43,7 +43,6 @@ use Magento\Store\Model\Store;
 use Nosto\NostoException;
 use Nosto\Object\Cart\Cart;
 use Nosto\Tagging\Model\Cart\Item\Builder as NostoCartItemBuilder;
-use Nosto\Tagging\Helper\Currency as NostoHelperCurrency;
 use Psr\Log\LoggerInterface;
 
 class Builder
@@ -52,20 +51,17 @@ class Builder
     private $logger;
     private $objectManager;
     private $eventManager;
-    private $nostoHelperCurrency;
 
     /**
      * Constructor.
      *
      * @param NostoCartItemBuilder $nostoCartItemBuilder
-     * @param NostoHelperCurrency $nostoHelperCurrency
      * @param LoggerInterface $logger
      * @param ObjectManagerInterface $objectManager
      * @param ManagerInterface $eventManager
      */
     public function __construct(
         NostoCartItemBuilder $nostoCartItemBuilder,
-        NostoHelperCurrency $nostoHelperCurrency,
         LoggerInterface $logger,
         ObjectManagerInterface $objectManager,
         ManagerInterface $eventManager
@@ -74,7 +70,6 @@ class Builder
         $this->nostoCartItemBuilder = $nostoCartItemBuilder;
         $this->logger = $logger;
         $this->eventManager = $eventManager;
-        $this->nostoHelperCurrency = $nostoHelperCurrency;
     }
 
     /**
@@ -90,7 +85,7 @@ class Builder
             try {
                 $cartItem = $this->nostoCartItemBuilder->build(
                     $item,
-                    $this->nostoHelperCurrency->getTaggingCurrency($store)->getCode()
+                    $store->getCurrentCurrencyCode() ?: $store->getDefaultCurrencyCode()
                 );
                 $nostoCart->addItem($cartItem);
             } catch (NostoException $e) {
