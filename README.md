@@ -2,6 +2,9 @@
 
 ## Changelog
 
+### 2.0.0-RC4
+* Corrected the currency handling for the account creation, cart and settings.
+
 ### 2.0.0-RC3
 * Change the command name `nosto:reindex` to `nosto:sync:products`to avoid overlapping with Magento's reindex command
 
