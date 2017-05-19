@@ -38,7 +38,6 @@ namespace Nosto\Tagging\Helper;
 
 use Magento\Directory\Model\Currency as MagentoCurrency;
 use Magento\Framework\App\Helper\AbstractHelper;
-use Magento\Framework\App\Helper\Context;
 use Magento\Store\Model\Store;
 
 /**
@@ -46,18 +45,6 @@ use Magento\Store\Model\Store;
  */
 class Currency extends AbstractHelper
 {
-
-    /**
-     * Constructor.
-     *
-     * @param Context $context the context.
-     */
-    public function __construct(
-        Context $context
-    ) {
-        parent::__construct($context);
-    }
-
     /**
      * If the store uses multiple currencies the prices are converted from base
      * currency into given currency. Otherwise the given price is returned.
