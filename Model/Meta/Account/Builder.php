@@ -44,6 +44,7 @@ use Nosto\NostoException;
 use Nosto\Object\Signup\Signup;
 use Nosto\Request\Http\HttpRequest;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
+use Nosto\Tagging\Helper\Currency as NostoHelperCurrency;
 use Nosto\Tagging\Model\Meta\Account\Billing\Builder as NostoBillingBuilder;
 use Psr\Log\LoggerInterface;
 
@@ -56,9 +57,11 @@ class Builder
     private $localeResolver;
     private $logger;
     private $eventManager;
+    private $nostoHelperCurrency;
 
     /**
      * @param NostoHelperData $nostoHelperData
+     * @param NostoHelperCurrency $nostoHelperCurrency
      * @param NostoBillingBuilder $nostoAccountBillingMetaBuilder
      * @param ResolverInterface $localeResolver
      * @param LoggerInterface $logger
@@ -66,6 +69,7 @@ class Builder
      */
     public function __construct(
         NostoHelperData $nostoHelperData,
+        NostoHelperCurrency $nostoHelperCurrency,
         NostoBillingBuilder $nostoAccountBillingMetaBuilder,
         ResolverInterface $localeResolver,
         LoggerInterface $logger,
@@ -76,6 +80,7 @@ class Builder
         $this->localeResolver = $localeResolver;
         $this->logger = $logger;
         $this->eventManager = $eventManager;
+        $this->nostoHelperCurrency = $nostoHelperCurrency;
     }
 
     /**
@@ -108,7 +113,7 @@ class Builder
                 )
             );
 
-            $metaData->setCurrencyCode($store->getBaseCurrencyCode());
+            $metaData->setCurrencyCode($this->nostoHelperCurrency->getTaggingCurrency($store)->getCode());
             $lang = substr($store->getConfig('general/locale/code'), 0, 2);
             $metaData->setLanguageCode($lang);
             $lang = substr($this->localeResolver->getLocale(), 0, 2);
