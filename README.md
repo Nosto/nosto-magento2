@@ -2,6 +2,9 @@
 
 ## Changelog
 
+### 2.0.0-RC5
+* Fix issues with cart and order prices
+
 ### 2.0.0-RC4
 * Corrected the currency handling for the account creation, cart and settings.
 
