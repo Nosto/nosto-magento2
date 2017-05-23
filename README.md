@@ -2,6 +2,10 @@
 
 ## Changelog
 
+
+### 2.0.0-RC6
+* Fix variation identifier when creating an account
+
 ### 2.0.0-RC5
 * Fix issues with cart and order prices
 
