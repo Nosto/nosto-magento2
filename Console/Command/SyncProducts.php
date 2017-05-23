@@ -81,6 +81,7 @@ class SyncProducts extends Command
      * @param ModuleManager $moduleManager
      * @param NostoHelperAccount\Proxy $nostoHelperAccount
      * @param NostoProductCollection\Proxy $nostoProductCollection
+     * @param NostoHelperData\Proxy $nostoHelperData
      */
     public function __construct(
         State $state,
@@ -90,7 +91,9 @@ class SyncProducts extends Command
         LoggerInterface $logger,
         ModuleManager $moduleManager,
         NostoHelperAccount\Proxy $nostoHelperAccount,
-        NostoProductCollection\Proxy $nostoProductCollection
+        NostoProductCollection\Proxy $nostoProductCollection,
+        NostoHelperData\Proxy $nostoHelperData
+
     ) {
         $state->setAreaCode(Area::AREA_FRONTEND);
         parent::__construct();
@@ -102,9 +105,14 @@ class SyncProducts extends Command
         $this->moduleManager = $moduleManager;
         $this->logger = $logger;
         $this->state = $state;
+        $this->nostoHelperScope = $nostoHelperScope;
 
         HttpRequest::$responseTimeout = 60;
-        $this->nostoHelperScope = $nostoHelperScope;
+        HttpRequest::buildUserAgent(
+            NostoHelperData::PLATFORM_NAME,
+            $nostoHelperData->getPlatformVersion(),
+            $nostoHelperData->getModuleVersion()
+        );
     }
 
     /**

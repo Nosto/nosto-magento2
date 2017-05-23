@@ -2,6 +2,9 @@
 
 ## Changelog
 
+### 2.0.0-RC7
+* Fix handling the HTTP response code 100 (Continue)
+* Add correct user agent header for Nosto API calls
 
 ### 2.0.0-RC6
 * Fix variation identifier when creating an account
