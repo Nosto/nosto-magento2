@@ -39,7 +39,6 @@ namespace Nosto\Tagging\Model\Product;
 use Magento\Catalog\Api\CategoryRepositoryInterface;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\Product\Gallery\ReadHandler as GalleryReadHandler;
-use Magento\Eav\Model\Entity\Attribute;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Review\Model\ReviewFactory;
 use Magento\Store\Model\Store;

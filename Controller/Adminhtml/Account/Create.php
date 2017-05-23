@@ -166,7 +166,7 @@ class Create extends Base
                         }
                     }
                 }
-            } catch (NostoException $e) {
+            } catch (\Exception $e) {
                 $this->nostoHelperSentry->error($e);
             }
         }

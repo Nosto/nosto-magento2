@@ -38,9 +38,10 @@ namespace Nosto\Tagging\Helper;
 
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
+use Magento\Framework\Filesystem\DirectoryList;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
+use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
-use Psr\Log\LoggerInterface;
 
 /**
  * NostoHelperData helper used for common tasks, mainly configurations.
@@ -49,36 +50,53 @@ class Sentry extends AbstractHelper
 {
     private $nostoHelperData;
     private $nostoHelperScope;
-    private $logger;
+    private $directoryList;
+    private $nostoHelperAccount;
 
     /**
      * Sentry constructor.
      * @param Context $context
-     * @param LoggerInterface $logger
+     * @param DirectoryList $directoryList
      * @param Data $nostoHelperData
+     * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoHelperScope $nostoHelperScope
      */
     public function __construct(
         Context $context,
-        LoggerInterface $logger,
+        DirectoryList $directoryList,
         NostoHelperData $nostoHelperData,
+        NostoHelperAccount $nostoHelperAccount,
         NostoHelperScope $nostoHelperScope
     ) {
         parent::__construct($context);
 
         $this->nostoHelperData = $nostoHelperData;
         $this->nostoHelperScope = $nostoHelperScope;
-        $this->logger = $logger;
+        $this->directoryList = $directoryList;
+        $this->nostoHelperAccount = $nostoHelperAccount;
     }
 
     public function error(\Exception $e)
     {
-        $this->logger->error($e->getTraceAsString());
+        $this->_logger->error($e->getTraceAsString());
         if ($this->nostoHelperData->isSentryUpdatesEnabled()) {
+            $store = $this->nostoHelperScope->getStore(true);
+
             $client = new \Raven_Client('https://22ea9e5f70404157bf4f81e420d35bf1:23a0c572164748f7aafd9659d396a144@sentry.io/169186');
+            $client->setPrefixes(array($this->directoryList->getRoot()));
             $client->setRelease($this->nostoHelperData->getModuleVersion());
             $client->setEnvironment($this->nostoHelperData->getPlatformVersion());
-            $client->name = $this->nostoHelperScope->getStore()->getBaseUrl();
+
+            $client->tags_context(array('php' => phpversion()));
+            $client->user_context(
+                array(
+                    'merchant_id' => $this->nostoHelperAccount->findAccount($store)->getName(),
+                    'default_currency' => $store->getDefaultCurrencyCode(),
+                    'base_currency' => $store->getBaseCurrencyCode(),
+                    'base_url' => $store->getBaseUrl(),
+                    'store_code' => $store->getCode()
+                )
+            );
             $client->exception($e);
         }
     }
