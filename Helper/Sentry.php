@@ -36,6 +36,7 @@
 
 namespace Nosto\Tagging\Helper;
 
+use Magento\Framework\App\State;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 use Magento\Framework\Filesystem\DirectoryList;
@@ -52,9 +53,11 @@ class Sentry extends AbstractHelper
     private $nostoHelperScope;
     private $directoryList;
     private $nostoHelperAccount;
+    private $state;
 
     /**
      * Sentry constructor.
+     * @param State $state
      * @param Context $context
      * @param DirectoryList $directoryList
      * @param Data $nostoHelperData
@@ -62,6 +65,7 @@ class Sentry extends AbstractHelper
      * @param NostoHelperScope $nostoHelperScope
      */
     public function __construct(
+        State $state,
         Context $context,
         DirectoryList $directoryList,
         NostoHelperData $nostoHelperData,
@@ -74,6 +78,7 @@ class Sentry extends AbstractHelper
         $this->nostoHelperScope = $nostoHelperScope;
         $this->directoryList = $directoryList;
         $this->nostoHelperAccount = $nostoHelperAccount;
+        $this->state = $state;
     }
 
     public function error(\Exception $e)
@@ -87,7 +92,6 @@ class Sentry extends AbstractHelper
             $client->setRelease($this->nostoHelperData->getModuleVersion());
             $client->setEnvironment($this->nostoHelperData->getPlatformVersion());
 
-            $client->tags_context(array('php' => phpversion()));
             $client->user_context(
                 array(
                     'merchant_id' => $this->nostoHelperAccount->findAccount($store)->getName(),
@@ -95,6 +99,14 @@ class Sentry extends AbstractHelper
                     'base_currency' => $store->getBaseCurrencyCode(),
                     'base_url' => $store->getBaseUrl(),
                     'store_code' => $store->getCode()
+                )
+            );
+            $client->tags_context(
+                array(
+                    'edition' => strtolower($this->nostoHelperData->getPlatformEdition()),
+                    'area' => $this->state->getAreaCode(),
+                    'mode' => $this->state->getMode(),
+                    'php' => phpversion()
                 )
             );
             $client->exception($e);

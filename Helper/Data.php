@@ -324,4 +324,14 @@ class Data extends AbstractHelper
         }
         return $version;
     }
+
+    /**
+     * Returns the edition of the platform the e-commerce installation
+     *
+     * @return string the platforms's edition
+     */
+    public function getPlatformEdition()
+    {
+        return $this->productMetaData->getEdition() ?: 'unknown';
+    }
 }
