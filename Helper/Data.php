@@ -107,7 +107,16 @@ class Data extends AbstractHelper
      */
     const XML_PATH_SENTRY_UPDATES = 'nosto/flags/sentry_updates';
 
+    /**
+     * Name of the module
+     */
     const MODULE_NAME = 'Nosto_Tagging';
+
+    /**
+     * Name of the platform
+     */
+    const PLATFORM_NAME = 'Magento';
+
     private $moduleListing;
     private $configWriter;
     private $productMetaData;

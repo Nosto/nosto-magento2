@@ -90,7 +90,7 @@ class Builder
                 break;
         }
         try {
-            $cartItem->setPrice($item->getBasePriceInclTax());
+            $cartItem->setPrice($item->getPriceInclTax());
         } catch (Exception $e) {
             $cartItem->setPrice(0);
         }

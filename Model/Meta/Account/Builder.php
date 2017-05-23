@@ -43,9 +43,11 @@ use Magento\Store\Model\Store;
 use Nosto\NostoException;
 use Nosto\Object\Signup\Signup;
 use Nosto\Request\Http\HttpRequest;
+use Nosto\Tagging\Helper\Currency as NostoHelperCurrency;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
-use Nosto\Tagging\Model\Meta\Account\Billing\Builder as NostoBillingBuilder;
 use Nosto\Tagging\Helper\Sentry as NostoHelperSentry;
+use Nosto\Tagging\Model\Meta\Account\Billing\Builder as NostoBillingBuilder;
+use Nosto\Tagging\Model\Meta\Account\Settings\Currencies\Builder as NostoCurrenciesBuilder;
 
 class Builder
 {
@@ -56,17 +58,23 @@ class Builder
     private $localeResolver;
     private $nostoHelperSentry;
     private $eventManager;
+    private $nostoHelperCurrency;
+    private $nostoCurrenciesBuilder;
 
     /**
      * @param NostoHelperData $nostoHelperData
+     * @param NostoHelperCurrency $nostoHelperCurrency
      * @param NostoBillingBuilder $nostoAccountBillingMetaBuilder
+     * @param NostoCurrenciesBuilder $nostoCurrenciesBuilder
      * @param ResolverInterface $localeResolver
      * @param NostoHelperSentry $nostoHelperSentry
      * @param ManagerInterface $eventManager
      */
     public function __construct(
         NostoHelperData $nostoHelperData,
+        NostoHelperCurrency $nostoHelperCurrency,
         NostoBillingBuilder $nostoAccountBillingMetaBuilder,
+        NostoCurrenciesBuilder $nostoCurrenciesBuilder,
         ResolverInterface $localeResolver,
         NostoHelperSentry $nostoHelperSentry,
         ManagerInterface $eventManager
@@ -76,6 +84,8 @@ class Builder
         $this->localeResolver = $localeResolver;
         $this->nostoHelperSentry = $nostoHelperSentry;
         $this->eventManager = $eventManager;
+        $this->nostoHelperCurrency = $nostoHelperCurrency;
+        $this->nostoCurrenciesBuilder = $nostoCurrenciesBuilder;
     }
 
     /**
@@ -108,12 +118,15 @@ class Builder
                 )
             );
 
-            $metaData->setCurrencyCode($store->getBaseCurrencyCode());
+            $metaData->setCurrencies($this->nostoCurrenciesBuilder->build($store));
+            $metaData->setCurrencyCode($this->nostoHelperCurrency->getTaggingCurrency($store)->getCode());
             $lang = substr($store->getConfig('general/locale/code'), 0, 2);
             $metaData->setLanguageCode($lang);
             $lang = substr($this->localeResolver->getLocale(), 0, 2);
             $metaData->setOwnerLanguageCode($lang);
             $metaData->setOwner($accountOwner);
+            $metaData->setDefaultVariantId(
+                $this->nostoHelperCurrency->getTaggingCurrency($store)->getCode());
 
             $billing = $this->accountBillingMetaBuilder->build($store);
             $metaData->setBillingDetails($billing);

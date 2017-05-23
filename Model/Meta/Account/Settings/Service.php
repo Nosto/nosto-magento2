@@ -34,15 +34,15 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Account\Settings;
+namespace Nosto\Tagging\Model\Meta\Account\Settings;
 
 use Exception;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Store\Model\Store;
 use Nosto\Operation\UpdateSettings;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
-use Nosto\Tagging\Model\Account\Settings\Builder as NostoSettingsBuilder;
 use Nosto\Tagging\Helper\Sentry as NostoHelperSentry;
+use Nosto\Tagging\Model\Meta\Account\Settings as NostoSettingsBuilder;
 use Psr\Log\LoggerInterface;
 
 class Service

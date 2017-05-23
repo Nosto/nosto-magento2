@@ -125,16 +125,17 @@ class Builder
             // Add each ordered item as a line item
             /** @var Item $item */
             foreach ($order->getAllVisibleItems() as $item) {
-                $nostoItem = $this->nostoOrderItemBuilder->build(
-                    $item,
-                    $order->getOrderCurrencyCode()
-                );
+                $nostoItem = $this->nostoOrderItemBuilder->build($item);
                 $nostoOrder->addPurchasedItems($nostoItem);
             }
 
             // Add discounts as a pseudo line item
             if (($discount = $order->getDiscountAmount()) < 0) {
                 $nostoItem = new LineItem();
+                if ($order->getBaseCurrencyCode() !== $order->getOrderCurrencyCode()) {
+                    $baseCurrency = $order->getBaseCurrency();
+                    $discount = $baseCurrency->convert($discount, $order->getOrderCurrencyCode());
+                }
                 $nostoItem->loadSpecialItemData(
                     $this->buildDiscountRuleDescription($order),
                     $discount,
@@ -142,10 +143,13 @@ class Builder
                 );
                 $nostoOrder->addPurchasedItems($nostoItem);
             }
-
             // Add shipping and handling as a pseudo line item
             if (($shippingInclTax = $order->getShippingInclTax()) > 0) {
                 $nostoItem = new LineItem();
+                if ($order->getBaseCurrencyCode() !== $order->getOrderCurrencyCode()) {
+                    $baseCurrency = $order->getBaseCurrency();
+                    $shippingInclTax = $baseCurrency->convert($shippingInclTax, $order->getOrderCurrencyCode());
+                }
                 $nostoItem->loadSpecialItemData(
                     'Shipping and handling',
                     $shippingInclTax,

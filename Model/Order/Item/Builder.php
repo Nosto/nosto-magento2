@@ -69,13 +69,13 @@ class Builder
 
     /**
      * @param Item $item
-     * @param $currencyCode
      * @return LineItem
      */
-    public function build(Item $item, $currencyCode)
+    public function build(Item $item)
     {
+        $order = $item->getOrder();
         $nostoItem = new LineItem();
-        $nostoItem->setPriceCurrencyCode($currencyCode);
+        $nostoItem->setPriceCurrencyCode($order->getOrderCurrencyCode());
         $nostoItem->setProductId($this->buildItemProductId($item));
         $nostoItem->setQuantity((int)$item->getQtyOrdered());
         switch ($item->getProductType()) {
@@ -93,7 +93,14 @@ class Builder
                 break;
         }
         try {
-            $nostoItem->setPrice($item->getPriceInclTax() - $item->getBaseDiscountAmount());
+            $price = $item->getBasePrice() + $item->getBaseTaxAmount() - $item->getBaseDiscountAmount();
+            // The item prices are always in base currency, convert to order currency if non base currency
+            // is used for the order
+            if ($order->getBaseCurrencyCode() !== $order->getOrderCurrencyCode()) {
+                $baseCurrency = $order->getBaseCurrency();
+                $price = $baseCurrency->convert($price, $order->getOrderCurrencyCode());
+            }
+            $nostoItem->setPrice($price);
         } catch (Exception $e) {
             $nostoItem->setPrice(0);
         }

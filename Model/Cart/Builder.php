@@ -85,7 +85,7 @@ class Builder
             try {
                 $cartItem = $this->nostoCartItemBuilder->build(
                     $item,
-                    $store->getBaseCurrencyCode()
+                    $store->getCurrentCurrencyCode() ?: $store->getDefaultCurrencyCode()
                 );
                 $nostoCart->addItem($cartItem);
             } catch (NostoException $e) {

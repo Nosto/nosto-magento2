@@ -41,7 +41,7 @@ use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Module\Manager as ModuleManager;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
-use Nosto\Tagging\Model\Account\Settings\Service as NostoSettingsService;
+use Nosto\Tagging\Model\Meta\Account\Settings\Service as NostoSettingsService;
 use Psr\Log\LoggerInterface;
 
 /**

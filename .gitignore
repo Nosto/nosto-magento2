@@ -2,3 +2,6 @@
 vendor
 .htaccess*
 .env
+build
+pub
+bin

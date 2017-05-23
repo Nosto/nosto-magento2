@@ -34,7 +34,7 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Account\Settings;
+namespace Nosto\Tagging\Model\Meta\Account\Settings;
 
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\UrlInterface;
@@ -42,6 +42,7 @@ use Magento\Store\Model\Store;
 use Nosto\NostoException;
 use Nosto\Object\Settings;
 use Nosto\Request\Http\HttpRequest;
+use Nosto\Tagging\Helper\Currency as NostoHelperCurrency;
 use Nosto\Tagging\Model\Meta\Account\Settings\Currencies\Builder as NostoCurrenciesBuilder;
 use Nosto\Tagging\Helper\Sentry as NostoHelperSentry;
 
@@ -50,20 +51,24 @@ class Builder
     private $nostoHelperSentry;
     private $eventManager;
     private $nostoCurrenciesBuilder;
+    private $nostoHelperCurrency;
 
     /**
      * @param NostoHelperSentry $nostoHelperSentry
      * @param ManagerInterface $eventManager
+     * @param NostoHelperCurrency $nostoHelperCurrency
      * @param NostoCurrenciesBuilder $nostoCurrenciesBuilder
      */
     public function __construct(
         NostoHelperSentry $nostoHelperSentry,
         ManagerInterface $eventManager,
+        NostoHelperCurrency $nostoHelperCurrency,
         NostoCurrenciesBuilder $nostoCurrenciesBuilder
     ) {
         $this->nostoHelperSentry = $nostoHelperSentry;
         $this->eventManager = $eventManager;
         $this->nostoCurrenciesBuilder = $nostoCurrenciesBuilder;
+        $this->nostoHelperCurrency = $nostoHelperCurrency;
     }
 
     /**
@@ -80,7 +85,7 @@ class Builder
             $settings->setCurrencyCode($store->getBaseCurrencyCode());
             $settings->setLanguageCode(substr($store->getConfig('general/locale/code'), 0, 2));
             $settings->setUseCurrencyExchangeRates(count($store->getAvailableCurrencyCodes(true)) > 1);
-            $settings->setDefaultVariantId($store->getBaseCurrencyCode());
+            $settings->setDefaultVariantId($this->nostoHelperCurrency->getTaggingCurrency($store)->getCode());
             $settings->setCurrencies($this->nostoCurrenciesBuilder->build($store));
         } catch (NostoException $e) {
             $this->nostoHelperSentry->error($e);

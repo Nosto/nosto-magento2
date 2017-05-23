@@ -94,7 +94,7 @@ abstract class Base implements ObserverInterface
         $this->configurableProduct = $configurableProduct;
 
         HttpRequest::buildUserAgent(
-            'Magento',
+            NostoHelperData::PLATFORM_NAME,
             $nostoHelperData->getPlatformVersion(),
             $nostoHelperData->getModuleVersion()
         );
