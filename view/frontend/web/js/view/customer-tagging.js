@@ -53,7 +53,7 @@ define([
                     $('#nosto_customer_tagging')
                         .removeClass('nosto_customer_hidden')
                         .addClass('nosto_customer');
-                    api.sendTagging('nosto_customer_tagging');
+                    api.resendCustomerTagging('nosto_customer_tagging');
                 });
             }
         }

@@ -58,7 +58,7 @@ define([
                     $('#nosto_cart_tagging')
                         .removeClass('nosto_cart_hidden')
                         .addClass('nosto_cart');
-                    api.sendTagging("nosto_cart_tagging");
+                    api.resendCartTagging("nosto_cart_tagging");
                 });
             }
         }
