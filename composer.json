@@ -55,5 +55,8 @@
     "files": [
       "registration.php"
     ]
+  },
+  "archive": {
+    "exclude": [".DS_STORE", ".idea", ".phan", "ruleset.xml", "phan.*", ".gitignore"]
   }
 }
