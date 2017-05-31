@@ -1,43 +1,50 @@
 <?php
 /**
- * Magento
+ * Copyright (c) 2017, Nosto Solutions Ltd
+ * All rights reserved.
  *
- * NOTICE OF LICENSE
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
  *
- * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.txt.
- * It is also available through the world-wide-web at this URL:
- * http://opensource.org/licenses/osl-3.0.php
- * If you did not receive a copy of the license and are unable to
- * obtain it through the world-wide-web, please send an email
- * to license@magentocommerce.com so we can send you a copy immediately.
+ * 1. Redistributions of source code must retain the above copyright notice,
+ * this list of conditions and the following disclaimer.
  *
- * DISCLAIMER
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
  *
- * Do not edit or add to this file if you wish to upgrade Magento to newer
- * versions in the future. If you wish to customize Magento for your
- * needs please refer to http://www.magentocommerce.com for more information.
+ * 3. Neither the name of the copyright holder nor the names of its contributors
+ * may be used to endorse or promote products derived from this software without
+ * specific prior written permission.
  *
- * @category  Nosto
- * @package   Nosto_Tagging
- * @author    Nosto Solutions Ltd <magento@nosto.com>
- * @copyright Copyright (c) 2013-2016 Nosto Solutions Ltd (http://www.nosto.com)
- * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * @author Nosto Solutions Ltd <contact@nosto.com>
+ * @copyright 2017 Nosto Solutions Ltd
+ * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
+ *
  */
 
 namespace Nosto\Tagging\Block;
 
 use Magento\Checkout\Block\Success;
 use Magento\Checkout\Model\Session;
-use Magento\Framework\Registry;
-use Magento\Framework\View\Element\Template;
-use /** @noinspection PhpUndefinedClassInspection */
-    Magento\Sales\Model\OrderFactory;
-use Nosto\Sdk\NostoDate;
-use Nosto\Sdk\NostoOrder;
-use Nosto\Sdk\NostoPrice;
-use Nosto\Tagging\Helper\Format;
-use Nosto\Tagging\Model\Order\Builder as OrderBuilder;
+use Magento\Framework\View\Element\Template\Context;
+use Magento\Sales\Model\OrderFactory;
+use Nosto\Helper\DateHelper;
+use Nosto\Helper\PriceHelper;
+use Nosto\Tagging\Helper\Account as NostoHelperAccount;
+use Nosto\Tagging\Helper\Scope as NostoHelperScope;
+use Nosto\Tagging\Model\Order\Builder as NostoOrderBuilder;
 
 /**
  * Category block used for outputting meta-data on the stores category pages.
@@ -46,93 +53,72 @@ use Nosto\Tagging\Model\Order\Builder as OrderBuilder;
  */
 class Order extends Success
 {
-    /**
-     * @inheritdoc
-     */
-    protected $_template = 'order.phtml';
+    use TaggingTrait {
+        TaggingTrait::__construct as taggingConstruct;
+    }
 
-    /**
-     * @var OrderBuilder the order meta model builder.
-     */
-    protected $_orderBuilder;
-
-    /**
-     * @var Registry the framework registry.
-     */
-    protected $_registry;
-
-    /**
-     * @var Format the format helper.
-     */
-    protected $_formatHelper;
-    /**
-     * @var Session
-     */
-    protected $_checkoutSession;
+    private $nostoOrderBuilder;
+    private $checkoutSession;
 
     /** @noinspection PhpUndefinedClassInspection */
     /**
      * Constructor.
      *
-     * @param Template\Context $context
+     * @param Context $context
      * @param OrderFactory $orderFactory
-     * @param OrderBuilder $orderBuilder
-     * @param Format $formatHelper
+     * @param NostoOrderBuilder $orderBuilder
      * @param Session $checkoutSession
+     * @param NostoHelperAccount $nostoHelperAccount
+     * @param NostoHelperScope $nostoHelperScope
      * @param array $data
-     * @internal param Registry $registry
-     * @internal param CategoryBuilder $categoryBuilder
      */
     public function __construct(
-        Template\Context $context,
+        Context $context,
         /** @noinspection PhpUndefinedClassInspection */
         OrderFactory $orderFactory,
-        OrderBuilder $orderBuilder,
-        Format $formatHelper,
+        NostoOrderBuilder $orderBuilder,
         Session $checkoutSession,
+        NostoHelperAccount $nostoHelperAccount,
+        NostoHelperScope $nostoHelperScope,
         array $data = []
     ) {
-        parent::__construct(
-            $context,
-            $orderFactory,
-            $data
-        );
+        parent::__construct($context, $orderFactory, $data);
 
-        $this->_formatHelper = $formatHelper;
-        $this->_checkoutSession = $checkoutSession;
-        $this->_orderBuilder = $orderBuilder;
+        $this->taggingConstruct($nostoHelperAccount, $nostoHelperScope);
+        $this->checkoutSession = $checkoutSession;
+        $this->nostoOrderBuilder = $orderBuilder;
     }
 
     /**
      * Returns the Nosto order meta-data model.
      *
-     * @return NostoOrder the order meta data model.
+     * @return \Nosto\Object\Order\Order the order meta data model.
      */
     public function getNostoOrder()
     {
         /** @var \Magento\Sales\Model\Order $order */
-        return $this->_orderBuilder->build($this->_checkoutSession->getLastRealOrder());
+        return $this->nostoOrderBuilder->build($this->checkoutSession->getLastRealOrder());
     }
 
     /**
-     * Formats a \NostoPrice object, e.g. "1234.56".
+     * Formats a price e.g. "1234.56".
      *
-     * @param NostoPrice $price the price to format.
+     * @param int $price the price to format.
      * @return string the formatted price.
      */
-    public function formatNostoPrice(NostoPrice $price)
+    public function formatNostoPrice($price)
     {
-        return $this->_formatHelper->formatPrice($price);
+        return PriceHelper::format($price);
     }
 
     /**
-     * Formats a \NostoDate object, e.g. "2015-12-24";
+     * Formats a date, e.g. "2015-12-24";
      *
-     * @param NostoDate $date the date to format.
+     * @param string $date the date to format.
      * @return string the formatted date.
      */
-    public function formatNostoDate(NostoDate $date)
+    public function formatNostoDate($date)
     {
-        return $this->_formatHelper->formatDate($date);
+        return DateHelper::format($date);
     }
 }

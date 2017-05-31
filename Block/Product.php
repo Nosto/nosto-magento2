@@ -1,28 +1,37 @@
 <?php
 /**
- * Magento
+ * Copyright (c) 2017, Nosto Solutions Ltd
+ * All rights reserved.
  *
- * NOTICE OF LICENSE
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
  *
- * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.txt.
- * It is also available through the world-wide-web at this URL:
- * http://opensource.org/licenses/osl-3.0.php
- * If you did not receive a copy of the license and are unable to
- * obtain it through the world-wide-web, please send an email
- * to license@magentocommerce.com so we can send you a copy immediately.
+ * 1. Redistributions of source code must retain the above copyright notice,
+ * this list of conditions and the following disclaimer.
  *
- * DISCLAIMER
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
  *
- * Do not edit or add to this file if you wish to upgrade Magento to newer
- * versions in the future. If you wish to customize Magento for your
- * needs please refer to http://www.magentocommerce.com for more information.
+ * 3. Neither the name of the copyright holder nor the names of its contributors
+ * may be used to endorse or promote products derived from this software without
+ * specific prior written permission.
  *
- * @category  Nosto
- * @package   Nosto_Tagging
- * @author    Nosto Solutions Ltd <magento@nosto.com>
- * @copyright Copyright (c) 2013-2016 Nosto Solutions Ltd (http://www.nosto.com)
- * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * @author Nosto Solutions Ltd <contact@nosto.com>
+ * @copyright 2017 Nosto Solutions Ltd
+ * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
+ *
  */
 
 namespace Nosto\Tagging\Block;
@@ -37,15 +46,13 @@ use Magento\Framework\Locale\FormatInterface;
 use Magento\Framework\Pricing\PriceCurrencyInterface;
 use Magento\Framework\Stdlib\StringUtils;
 use Magento\Framework\Url\EncoderInterface as UrlEncoder;
-use Magento\Store\Model\Store;
-use Nosto\Sdk\NostoCategory;
-use Nosto\Sdk\NostoDate;
-use Nosto\Sdk\NostoPrice;
-use Nosto\Sdk\NostoProduct;
-use Nosto\Tagging\Helper\Data;
-use Nosto\Tagging\Helper\Format;
-use Nosto\Tagging\Model\Category\Builder as CategoryBuilder;
-use Nosto\Tagging\Model\Product\Builder as ProductBuilder;
+use Nosto\Helper\DateHelper;
+use Nosto\Helper\PriceHelper;
+use Nosto\Tagging\Helper\Account as NostoHelperAccount;
+use Nosto\Tagging\Helper\Data as NostoHelperData;
+use Nosto\Tagging\Helper\Scope as NostoHelperScope;
+use Nosto\Tagging\Model\Category\Builder as NostoCategoryBuilder;
+use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
 
 /**
  * Product block used for outputting meta-data on the stores product pages.
@@ -54,30 +61,14 @@ use Nosto\Tagging\Model\Product\Builder as ProductBuilder;
  */
 class Product extends View
 {
-    /**
-     * @inheritdoc
-     */
-    protected $_template = 'product.phtml';
+    use TaggingTrait {
+        TaggingTrait::__construct as taggingConstruct;
+    }
 
-    /**
-     * @var ProductBuilder the product meta model builder.
-     */
-    protected $_productBuilder;
-
-    /**
-     * @var CategoryBuilder the category meta model builder.
-     */
-    protected $_categoryBuilder;
-
-    /**
-     * @var Data the data helper.
-     */
-    protected $_dataHelper;
-
-    /**
-     * @var Format the format helper.
-     */
-    protected $_formatHelper;
+    private $nostoProductBuilder;
+    private $categoryBuilder;
+    private $nostoHelperData;
+    private $nostoHelperScope;
 
     /**
      * Constructor.
@@ -92,11 +83,13 @@ class Product extends View
      * @param Session $customerSession the user session.
      * @param ProductRepositoryInterface $productRepository th product repository.
      * @param PriceCurrencyInterface $priceCurrency the price currency.
-     * @param ProductBuilder $productBuilder the product meta model builder.
-     * @param CategoryBuilder $categoryBuilder the category meta model builder.
-     * @param Data $dataHelper the data helper.
-     * @param Format $formatHelper the format helper.
+     * @param NostoProductBuilder $nostoProductBuilder the product meta model builder.
+     * @param NostoCategoryBuilder $categoryBuilder the category meta model builder.
+     * @param NostoHelperData $nostoHelperData the data helper.
+     * @param NostoHelperAccount $nostoHelperAccount
+     * @param NostoHelperScope $nostoHelperScope
      * @param array $data optional data.
+     * @SuppressWarnings(PHPMD.ExcessiveParameterList)
      */
     public function __construct(
         Context $context,
@@ -109,10 +102,11 @@ class Product extends View
         Session $customerSession,
         ProductRepositoryInterface $productRepository,
         PriceCurrencyInterface $priceCurrency,
-        ProductBuilder $productBuilder,
-        CategoryBuilder $categoryBuilder,
-        Data $dataHelper,
-        Format $formatHelper,
+        NostoProductBuilder $nostoProductBuilder,
+        NostoCategoryBuilder $categoryBuilder,
+        NostoHelperData $nostoHelperData,
+        NostoHelperAccount $nostoHelperAccount,
+        NostoHelperScope $nostoHelperScope,
         array $data = []
     ) {
         parent::__construct(
@@ -129,59 +123,66 @@ class Product extends View
             $data
         );
 
-        $this->_productBuilder = $productBuilder;
-        $this->_categoryBuilder = $categoryBuilder;
-        $this->_dataHelper = $dataHelper;
-        $this->_formatHelper = $formatHelper;
+        $this->taggingConstruct($nostoHelperAccount, $nostoHelperScope);
+        $this->nostoProductBuilder = $nostoProductBuilder;
+        $this->categoryBuilder = $categoryBuilder;
+        $this->nostoHelperData = $nostoHelperData;
+        $this->nostoHelperScope = $nostoHelperScope;
     }
 
     /**
      * Returns the Nosto product DTO.
      *
-     * @return NostoProduct the product meta data model.
+     * @return \Nosto\Object\Product\Product the product meta data model.
      */
     public function getNostoProduct()
     {
-        /** @var Store $store */
-        $store =  $this->_storeManager->getStore();
-        return $this->_productBuilder->build(
-            $this->getProduct(),
-            $store
-        );
+        $store = $this->nostoHelperScope->getStore();
+        return $this->nostoProductBuilder->build($this->getProduct(), $store);
     }
 
     /**
      * Returns the Nosto category DTO.
      *
-     * @return NostoCategory the category meta data model.
+     * @return string the current category as a slash-delimited string
      */
     public function getNostoCategory()
     {
         $category = $this->_coreRegistry->registry('current_category');
-        return !is_null($category)
-            ? $this->_categoryBuilder->build($category)
-            : null;
+        return $category !== null ? $this->categoryBuilder->build($category) : null;
     }
 
     /**
-     * Formats a \NostoPrice object, e.g. "1234.56".
+     * Formats a price e.g. "1234.56".
      *
-     * @param NostoPrice $price the price to format.
+     * @param int $price the price to format.
      * @return string the formatted price.
      */
-    public function formatNostoPrice(NostoPrice $price)
+    public function formatNostoPrice($price)
     {
-        return $this->_formatHelper->formatPrice($price);
+        return PriceHelper::format($price);
     }
 
     /**
-     * Formats a \NostoDate object, e.g. "2015-12-24";
+     * Formats a date, e.g. "2015-12-24";
      *
-     * @param NostoDate $date the date to format.
+     * @param string $date the date to format.
      * @return string the formatted date.
      */
-    public function formatNostoDate(NostoDate $date)
+    public function formatNostoDate($date)
     {
-        return $this->_formatHelper->formatDate($date);
+        return DateHelper::format($date);
+    }
+
+    /**
+     * Checks if store uses more than one currency in order to decide whether to hide or show the
+     * nosto_variation tagging.
+     *
+     * @return bool a boolean value indicating whether the store has more than one currency
+     */
+    public function hasMultipleCurrencies()
+    {
+        $store = $this->nostoHelperScope->getStore(true);
+        return count($store->getAvailableCurrencyCodes(true)) > 1;
     }
 }

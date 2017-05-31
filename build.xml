@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  ~ Magento
+  ~
+  ~ NOTICE OF LICENSE
+  ~
+  ~ This source file is subject to the Open Software License (OSL 3.0)
+  ~ that is bundled with this package in the file LICENSE.txt.
+  ~ It is also available through the world-wide-web at this URL:
+  ~ http://opensource.org/licenses/osl-3.0.php
+  ~ If you did not receive a copy of the license and are unable to
+  ~ obtain it through the world-wide-web, please send an email
+  ~ to license@magentocommerce.com so we can send you a copy immediately.
+  ~
+  ~ DISCLAIMER
+  ~
+  ~ Do not edit or add to this file if you wish to upgrade Magento to newer
+  ~ versions in the future. If you wish to customize Magento for your
+  ~ needs please refer to http://www.magentocommerce.com for more information.
+  ~
+  ~ @category  Nosto
+  ~ @package   Nosto_Tagging
+  ~ @author    Nosto Solutions Ltd <magento@nosto.com>
+  ~ @copyright Copyright (c) 2013-2017 Nosto Solutions Ltd (http://www.nosto.com)
+  ~ @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+  -->
+
+<!--suppress XmlUnboundNsPrefix, PhingDomInspection -->
+<project name="nostotagging" default="dist">
+
+    <property name="package" value="${phing.project.name}" override="true"/>
+    <property name="buildsrc" value="${project.basedir}/build/src" override="false"/>
+    <property name="buildbin" value="${project.basedir}/build/bin" override="false"/>
+    <property name="buildroot" value="${project.basedir}/build" override="true"/>
+    <property name="builddest" value="${project.basedir}/build/package" override="true"/>
+    <property name="srcdir" value="${project.basedir}" override="true"/>
+    <!--suppress PhingDomInspection -->
+    <property name="packagename" value="nosto-tagging-${version}.zip" override="true"/>
+
+    <!-- ============================================  -->
+    <!-- Target: prepare                               -->
+    <!-- ============================================  -->
+    <target name="prepare">
+        <echo msg="Cleaning up directory ./build"/>
+        <delete dir="${builddest}"/>
+        <delete dir="${buildsrc}"/>
+        <mkdir dir="${builddest}"/>
+        <mkdir dir="${buildsrc}"/>
+        <copy todir="${buildsrc}">
+            <fileset refid="sourcefiles"/>
+        </copy>
+    </target>
+
+    <fileset dir="${srcdir}" id="sourcefiles">
+        <patternset id="nostotagging.sources">
+            <include name="**"/>
+            <exclude name="*.DS_STORE"/>
+            <exclude name="**/.idea/**"/>
+            <exclude name=".git/**"/>
+            <exclude name=".phan/**"/>
+            <exclude name="phan.php"/>
+            <exclude name=".gitignore"/>
+            <exclude name="**/tests/**"/>
+            <exclude name="**/bin/**"/>
+            <exclude name="**/build/**"/>
+            <exclude name="**/build.xml"/>
+            <exclude name="**/ruleset.xml"/>
+            <exclude name="**/*codeception*"/>
+            <exclude name="**/var/**"/>
+            <exclude name="**/vendor/**"/>
+            <exclude name="**/pub/**"/>
+            <exclude name="package.json*"/>
+            <exclude name="Gruntfile.js*"/>
+            <exclude name="*.tgz"/>
+        </patternset>
+    </fileset>
+
+    <target name="phpmd">
+        <exec executable="./vendor/bin/phpmd" passthru="true">
+            <arg value="."/>
+            <arg value="--exclude"/>
+            <arg value="vendor,var,build"/>
+            <arg value="text"/>
+            <arg value="codesize,"/>
+            <arg value="naming,"/>
+            <arg value="unusedcode,"/>
+            <arg value="controversial,"/>
+            <arg value="design"/>
+        </exec>
+    </target>
+
+    <target name="phpcpd">
+        <exec executable="./vendor/bin/phpcpd" passthru="true">
+            <arg value="--min-lines=1"/>
+            <arg value="."/>
+            <arg value="--exclude"/>
+            <arg value="vendor,var,build"/>
+        </exec>
+    </target>
+
+    <target name="phpcbf">
+        <exec executable="./vendor/bin/phpcbf" passthru="true">
+            <arg value="--colors"/>
+            <arg value="--report-width=auto"/>
+            <arg value="--standard=ruleset.xml"/>
+        </exec>
+    </target>
+
+    <target name="phpcs" depends="phpcbf">
+        <exec executable="./vendor/bin/phpcs" passthru="true">
+            <arg value="--colors"/>
+            <arg value="--report-width=auto"/>
+            <arg value="--standard=ruleset.xml"/>
+        </exec>
+    </target>
+
+    <target name="phan">
+        <exec executable="./vendor/bin/phan" passthru="true">
+            <arg value="--progress-bar"/>
+            <arg value="--signature-compatibility"/>
+            <arg value="--config-file=phan.php"/>
+            <arg value="--dead-code-detection"/>
+        </exec>
+    </target>
+
+    <target name="build" depends="prepare">
+        <echo msg="Building a package"/>
+        <exec executable="zip" dir="${buildsrc}">
+            <arg value="-r"/>
+            <arg value="${packagename}"/>
+            <arg value="./"/>
+        </exec>
+        <!--suppress PhingDomInspection -->
+        <move file="${buildsrc}/${packagename}"
+              tofile="${builddest}/${packagename}"/>
+        <echo msg="Files copied and compressed"/>
+    </target>
+
+    <target name="validate" depends="phpcbf, phpcs, phan, phpmd, phpcpd">
+        <echo msg="Validating packages"/>
+    </target>
+
+    <target name="marketplacevalidation" depends="build">
+        <exec executable="php" dir="./vendor/magento/marketplace-tools/">
+            <arg value="validate_m2_package.php"></arg>
+            <arg value="${builddest}/${packagename}"></arg>
+        </exec>
+    </target>
+
+    <target name="dist" depends="validate, build">
+        <phingcall target="marketplacevalidation"></phingcall>
+        <echo msg="All done"/>
+    </target>
+</project>

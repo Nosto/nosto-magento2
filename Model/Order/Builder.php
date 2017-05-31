@@ -1,179 +1,167 @@
 <?php
 /**
- * Magento
+ * Copyright (c) 2017, Nosto Solutions Ltd
+ * All rights reserved.
  *
- * NOTICE OF LICENSE
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
  *
- * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.txt.
- * It is also available through the world-wide-web at this URL:
- * http://opensource.org/licenses/osl-3.0.php
- * If you did not receive a copy of the license and are unable to
- * obtain it through the world-wide-web, please send an email
- * to license@magentocommerce.com so we can send you a copy immediately.
+ * 1. Redistributions of source code must retain the above copyright notice,
+ * this list of conditions and the following disclaimer.
  *
- * DISCLAIMER
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
  *
- * Do not edit or add to this file if you wish to upgrade Magento to newer
- * versions in the future. If you wish to customize Magento for your
- * needs please refer to http://www.magentocommerce.com for more information.
+ * 3. Neither the name of the copyright holder nor the names of its contributors
+ * may be used to endorse or promote products derived from this software without
+ * specific prior written permission.
  *
- * @category  Nosto
- * @package   Nosto_Tagging
- * @author    Nosto Solutions Ltd <magento@nosto.com>
- * @copyright Copyright (c) 2013-2016 Nosto Solutions Ltd (http://www.nosto.com)
- * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * @author Nosto Solutions Ltd <contact@nosto.com>
+ * @copyright 2017 Nosto Solutions Ltd
+ * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
+ *
  */
 
 namespace Nosto\Tagging\Model\Order;
 
 use Exception;
-use Magento\Catalog\Model\Product;
-use Magento\Catalog\Model\Product\Type;
-use Magento\Catalog\Model\ResourceModel\Eav\Attribute;
-use Magento\Framework\App\ObjectManager;
-use Magento\SalesRule\Model\RuleFactory as SalesRuleFactory;
-use Magento\ConfigurableProduct\Model\Product\Type\Configurable;
-use Magento\GroupedProduct\Model\Product\Type\Grouped;
+use Magento\Framework\Event\ManagerInterface;
+use Magento\Framework\ObjectManagerInterface;
+use Magento\Framework\Phrase;
 use Magento\Sales\Model\Order;
 use Magento\Sales\Model\Order\Item;
-use Nosto\Sdk\NostoCurrencyCode;
-use Nosto\Sdk\NostoDate;
-use Nosto\Sdk\NostoOrderBuyer;
-use Nosto\Sdk\NostoOrderItem;
-use Nosto\Sdk\NostoOrderPaymentProvider;
-use Nosto\Sdk\NostoOrderStatus;
-use Nosto\Sdk\NostoPrice;
-use Nosto\Tagging\Helper\Price as PriceHelper;
+use Magento\SalesRule\Model\RuleFactory as SalesRuleFactory;
+use Nosto\Object\Cart\LineItem;
+use Nosto\Object\Order\Buyer;
+use Nosto\Object\Order\OrderStatus;
+use Nosto\Tagging\Helper\Price as NostoPriceHelper;
+use Nosto\Tagging\Model\Order\Item\Builder as NostoOrderItemBuilder;
 use Psr\Log\LoggerInterface;
-use Nosto\Tagging\Helper\Item as NostoItemHelper;
 
 class Builder
 {
-    /**
-     * @var LoggerInterface
-     */
-    protected $_logger;
+    private $logger;
+    /** @noinspection PhpUndefinedClassInspection */
+    private $salesRuleFactory;
+    private $nostoPriceHelper;
+    private $objectManager;
+    private $nostoOrderItemBuilder;
+    private $eventManager;
 
-    /**
-     * @var SalesRuleFactory
-     */
-    protected $_salesRuleFactory;
-
-    /**
-     * @var PriceHelper
-     */
-    protected $_priceHelper;
-
-    /**
-     * @var NostoItemHelper
-     */
-    protected $_nostoItemHelper;
-
+    /** @noinspection PhpUndefinedClassInspection */
     /**
      * @param LoggerInterface $logger
      * @param SalesRuleFactory $salesRuleFactory
-     * @param PriceHelper $priceHelper
-     * @param NostoItemHelper $nostoItemHelper
-     * @internal param ObjectManager $objectManager
+     * @param NostoPriceHelper $priceHelper
+     * @param NostoOrderItemBuilder $nostoOrderItemBuilder
+     * @param ObjectManagerInterface $objectManager
+     * @param ManagerInterface $eventManager
      */
     public function __construct(
         LoggerInterface $logger,
+        /** @noinspection PhpUndefinedClassInspection */
         SalesRuleFactory $salesRuleFactory,
-        PriceHelper $priceHelper,
-        NostoItemHelper $nostoItemHelper
+        NostoPriceHelper $priceHelper,
+        NostoOrderItemBuilder $nostoOrderItemBuilder,
+        ObjectManagerInterface $objectManager,
+        ManagerInterface $eventManager
     ) {
-        $this->_logger = $logger;
-        $this->_salesRuleFactory= $salesRuleFactory;
-        $this->_priceHelper = $priceHelper;
-        $this->_nostoItemHelper = $nostoItemHelper;
+        $this->logger = $logger;
+        $this->salesRuleFactory = $salesRuleFactory;
+        $this->nostoPriceHelper = $priceHelper;
+        $this->nostoOrderItemBuilder = $nostoOrderItemBuilder;
+        $this->objectManager = $objectManager;
+        $this->eventManager = $eventManager;
     }
 
     /**
      * Loads the order info from a Magento order model.
      *
      * @param Order $order the order model.
-     * @return \Nosto\Sdk\NostoOrder
+     * @return \Nosto\Object\Order\Order
      */
     public function build(Order $order)
     {
-        $nostoOrder = new \Nosto\Sdk\NostoOrder();
-
+        $nostoOrder = new \Nosto\Object\Order\Order();
         try {
-            $nostoCurrency = new NostoCurrencyCode($order->getOrderCurrencyCode());
             $nostoOrder->setOrderNumber($order->getId());
-            $nostoOrder->setExternalRef($order->getRealOrderId());
-            $nostoOrder->setCreatedDate(new NostoDate(strtotime($order->getCreatedAt())));
-            $nostoOrder->setPaymentProvider(new NostoOrderPaymentProvider($order->getPayment()->getMethod()));
-            if ($order->getStatus()) {
-                $nostoStatus = new NostoOrderStatus();
-                $nostoStatus->setCode($order->getStatus());
-                $nostoStatus->setLabel($order->getStatusLabel());
-                $nostoOrder->setStatus($nostoStatus);
-            }
-            foreach ($order->getAllStatusHistory() as $item) {
-                if ($item->getStatus()) {
-                    $nostoStatus = new NostoOrderStatus();
-                    $nostoStatus->setCode($item->getStatus());
-                    $nostoStatus->setLabel($item->getStatusLabel());
-                    $nostoStatus->setCreatedAt(new NostoDate(strtotime($item->getCreatedAt())));
-                    $nostoOrder->addHistoryStatus($nostoStatus);
+            $nostoOrder->setExternalOrderRef($order->getRealOrderId());
+            $orderCreated = $order->getCreatedAt();
+            if (is_string($orderCreated)) {
+                $orderCreatedDate = \DateTime::createFromFormat('Y-m-d H:i:s', $orderCreated);
+                if ($orderCreatedDate instanceof \DateTimeInterface) {
+                    $nostoOrder->setCreatedAt($orderCreatedDate);
                 }
             }
-
-            // Set the buyer information
-            $nostoBuyer = new NostoOrderBuyer();
+            $nostoOrder->setPaymentProvider($order->getPayment()->getMethod());
+            if ($order->getStatus()) {
+                $nostoStatus = new OrderStatus();
+                $nostoStatus->setCode($order->getStatus());
+                $nostoStatus->setDate($order->getUpdatedAt());
+                $label = $order->getStatusLabel();
+                if ($label instanceof Phrase) {
+                    $nostoStatus->setLabel($label->getText());
+                }
+                $nostoOrder->setOrderStatus($nostoStatus);
+            }
+            $nostoBuyer = new Buyer();
             $nostoBuyer->setFirstName($order->getCustomerFirstname());
             $nostoBuyer->setLastName($order->getCustomerLastname());
             $nostoBuyer->setEmail($order->getCustomerEmail());
-            $nostoOrder->setBuyer($nostoBuyer);
+            $nostoOrder->setCustomer($nostoBuyer);
 
             // Add each ordered item as a line item
             /** @var Item $item */
             foreach ($order->getAllVisibleItems() as $item) {
-                $nostoItem = new NostoOrderItem();
-                $nostoItem->setItemId((int)$this->buildItemProductId($item));
-                $nostoItem->setQuantity((int)$item->getQtyOrdered());
-                $nostoItem->setName($this->buildItemName($item));
-                try {
-                    $nostoItem->setUnitPrice(
-                        new NostoPrice(
-                            $this->_priceHelper->getItemFinalPriceInclTax($item)
-                        )
-                    );
-                } catch (\Nosto\Sdk\NostoInvalidArgumentException $E) {
-                    $nostoItem->setUnitPrice(
-                        new NostoPrice(0)
-                    );
-                }
-                $nostoItem->setCurrency($nostoCurrency);
-                $nostoOrder->addItem($nostoItem);
+                $nostoItem = $this->nostoOrderItemBuilder->build($item);
+                $nostoOrder->addPurchasedItems($nostoItem);
             }
 
             // Add discounts as a pseudo line item
             if (($discount = $order->getDiscountAmount()) < 0) {
-                $nostoItem = new NostoOrderItem();
-                $nostoItem->setItemId(-1);
-                $nostoItem->setQuantity(1);
-                $nostoItem->setName($this->buildDiscountRuleDescription($order));
-                $nostoItem->setUnitPrice(new NostoPrice($discount));
-                $nostoItem->setCurrency($nostoCurrency);
-                $nostoOrder->addItem($nostoItem);
+                $nostoItem = new LineItem();
+                if ($order->getBaseCurrencyCode() !== $order->getOrderCurrencyCode()) {
+                    $baseCurrency = $order->getBaseCurrency();
+                    $discount = $baseCurrency->convert($discount, $order->getOrderCurrencyCode());
+                }
+                $nostoItem->loadSpecialItemData(
+                    $this->buildDiscountRuleDescription($order),
+                    $discount,
+                    $order->getOrderCurrencyCode()
+                );
+                $nostoOrder->addPurchasedItems($nostoItem);
             }
-
             // Add shipping and handling as a pseudo line item
             if (($shippingInclTax = $order->getShippingInclTax()) > 0) {
-                $nostoItem = new NostoOrderItem();
-                $nostoItem->setItemId(-1);
-                $nostoItem->setQuantity(1);
-                $nostoItem->setName('Shipping and handling');
-                $nostoItem->setUnitPrice(new NostoPrice($shippingInclTax));
-                $nostoItem->setCurrency($nostoCurrency);
-                $nostoOrder->addItem($nostoItem);
+                $nostoItem = new LineItem();
+                if ($order->getBaseCurrencyCode() !== $order->getOrderCurrencyCode()) {
+                    $baseCurrency = $order->getBaseCurrency();
+                    $shippingInclTax = $baseCurrency->convert($shippingInclTax, $order->getOrderCurrencyCode());
+                }
+                $nostoItem->loadSpecialItemData(
+                    'Shipping and handling',
+                    $shippingInclTax,
+                    $order->getOrderCurrencyCode()
+                );
+                $nostoOrder->addPurchasedItems($nostoItem);
             }
         } catch (Exception $e) {
-            $this->_logger->error($e, ['exception' => $e]);
+            $this->logger->error($e->__toString());
         }
+
+        $this->eventManager->dispatch('nosto_order_load_after', ['order' => $nostoOrder]);
 
         return $nostoOrder;
     }
@@ -183,11 +171,12 @@ class Builder
      *
      * @param Order $order
      * @return string discount description
+     * @suppress PhanDeprecatedFunction
      */
-    protected function buildDiscountRuleDescription(Order $order)
+    public function buildDiscountRuleDescription(Order $order)
     {
         try {
-            $appliedRules = array();
+            $appliedRules = [];
             foreach ($order->getAllVisibleItems() as $item) {
                 /* @var Item $item */
                 $itemAppliedRules = $item->getAppliedRuleIds();
@@ -196,7 +185,8 @@ class Builder
                 }
                 $ruleIds = explode(',', $item->getAppliedRuleIds());
                 foreach ($ruleIds as $ruleId) {
-                    $rule = $this->_salesRuleFactory->create()->load($ruleId);
+                    /** @noinspection PhpDeprecationInspection */
+                    $rule = $this->salesRuleFactory->create()->load($ruleId); // @codingStandardsIgnoreLine
                     $appliedRules[$ruleId] = $rule->getName();
                 }
             }
@@ -212,101 +202,5 @@ class Builder
         }
 
         return $discountTxt;
-    }
-
-    /**
-     * Returns the product id for a quote item.
-     * Always try to find the "parent" product ID if the product is a child of
-     * another product type. We do this because it is the parent product that
-     * we tag on the product page, and the child does not always have it's own
-     * product page. This is important because it is the tagged info on the
-     * product page that is used to generate recommendations and email content.
-     *
-     * @param Item $item the sales item model.
-     *
-     * @return int
-     */
-    protected function buildItemProductId(Item $item)
-    {
-        return $this->_nostoItemHelper->buildProductId($item);
-    }
-
-    /**
-     * Returns the name for a sales item.
-     * Configurable products will have their chosen options added to their name.
-     * Bundle products will have their chosen child product names added.
-     * Grouped products will have their parents name prepended.
-     * All others will have their own name only.
-     *
-     * @param Item $item the sales item model.
-     *
-     * @return string
-     */
-    protected function buildItemName(Item $item)
-    {
-        $name = $item->getName();
-        $optNames = array();
-        if ($item->getProductType() === Type::TYPE_SIMPLE) {
-            $type = $item->getProduct()->getTypeInstance();
-            $parentIds = $type->getParentIdsByChild($item->getProductId());
-            // If the product has a configurable parent, we assume we should tag
-            // the parent. If there are many parent IDs, we are safer to tag the
-            // products own name alone.
-            if (count($parentIds) === 1) {
-                $attributes = $item->getBuyRequest()->getData('super_attribute');
-                if (is_array($attributes)) {
-                    foreach ($attributes as $id => $value) {
-                        /** @var Attribute $attribute */
-                        $attribute = ObjectManager::getInstance()->get('Magento\Catalog\Model\ResourceModel\Eav\Attribute')
-                            ->load($id);
-                        $label = $attribute->getSource()->getOptionText($value);
-                        if (!empty($label)) {
-                            $optNames[] = $label;
-                        }
-                    }
-                }
-            }
-        } elseif ($item->getProductType() === Configurable::TYPE_CODE) {
-            $opts = $item->getProductOptionByCode('attributes_info');
-            if (is_array($opts)) {
-                foreach ($opts as $opt) {
-                    if (isset($opt['value']) && is_string($opt['value'])) {
-                        $optNames[] = $opt['value'];
-                    }
-                }
-            }
-        } elseif ($item->getProductType() === Type::TYPE_BUNDLE) {
-            $opts = $item->getProductOptionByCode('bundle_options');
-            if (is_array($opts)) {
-                foreach ($opts as $opt) {
-                    if (isset($opt['value']) && is_array($opt['value'])) {
-                        foreach ($opt['value'] as $val) {
-                            $qty = '';
-                            if (isset($val['qty']) && is_int($val['qty'])) {
-                                $qty .= $val['qty'] . ' x ';
-                            }
-                            if (isset($val['title']) && is_string($val['title'])) {
-                                $optNames[] = $qty . $val['title'];
-                            }
-                        }
-                    }
-                }
-            }
-        } elseif ($item->getProductType() === Grouped::TYPE_CODE) {
-            $config = $item->getProductOptionByCode('super_product_config');
-            if (isset($config['product_id'])) {
-                /** @var Product $parent */
-                $parent = ObjectManager::getInstance()->get('Magento\Catalog\Model\Product')
-                    ->load($config['product_id']);
-                $parentName = $parent->getName();
-                if (!empty($parentName)) {
-                    $name = $parentName . ' - ' . $name;
-                }
-            }
-        }
-        if (!empty($optNames)) {
-            $name .= ' (' . implode(', ', $optNames) . ')';
-        }
-        return $name;
     }
 }

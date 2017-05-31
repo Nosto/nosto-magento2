@@ -1,68 +1,82 @@
 <?php
 /**
- * Magento
+ * Copyright (c) 2017, Nosto Solutions Ltd
+ * All rights reserved.
  *
- * NOTICE OF LICENSE
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
  *
- * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.txt.
- * It is also available through the world-wide-web at this URL:
- * http://opensource.org/licenses/osl-3.0.php
- * If you did not receive a copy of the license and are unable to
- * obtain it through the world-wide-web, please send an email
- * to license@magentocommerce.com so we can send you a copy immediately.
+ * 1. Redistributions of source code must retain the above copyright notice,
+ * this list of conditions and the following disclaimer.
  *
- * DISCLAIMER
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
  *
- * Do not edit or add to this file if you wish to upgrade Magento to newer
- * versions in the future. If you wish to customize Magento for your
- * needs please refer to http://www.magentocommerce.com for more information.
+ * 3. Neither the name of the copyright holder nor the names of its contributors
+ * may be used to endorse or promote products derived from this software without
+ * specific prior written permission.
  *
- * @category  Nosto
- * @package   Nosto_Tagging
- * @author    Nosto Solutions Ltd <magento@nosto.com>
- * @copyright Copyright (c) 2013-2016 Nosto Solutions Ltd (http://www.nosto.com)
- * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * @author Nosto Solutions Ltd <contact@nosto.com>
+ * @copyright 2017 Nosto Solutions Ltd
+ * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
+ *
  */
 
 namespace Nosto\Tagging\Controller\Adminhtml\Account;
 
-use Magento\Backend\App\Action;
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\Controller\Result\Json;
-use Magento\Store\Model\Store;
-use Magento\Store\Model\StoreManagerInterface;
-use Nosto\Sdk\NostoMessage;
-use Nosto\Tagging\Helper\Account;
+use Nosto\Helper\IframeHelper;
+use Nosto\Nosto;
+use Nosto\Tagging\Helper\Account as NostoHelperAccount;
+use Nosto\Tagging\Helper\Scope as NostoHelperScope;
+use Nosto\Tagging\Model\Meta\Account\Iframe\Builder as NostoIframeMetaBuilder;
+use Nosto\Tagging\Model\User\Builder as NostoCurrentUserBuilder;
 
-class Delete extends Action
+class Delete extends Base
 {
     const ADMIN_RESOURCE = 'Nosto_Tagging::system_nosto_account';
-
-    /**
-     * @var Json
-     */
-    protected $_result;
-    private $_storeManager;
-    private $_accountHelper;
+    private $result;
+    private $nostoHelperAccount;
+    private $nostoCurrentUserBuilder;
+    private $nostoIframeMetaBuilder;
+    private $nostoHelperScope;
 
     /**
      * @param Context $context
-     * @param Account $accountHelper
-     * @param StoreManagerInterface $storeManager
+     * @param NostoHelperAccount $nostoHelperAccount
+     * @param NostoIframeMetaBuilder $nostoIframeMetaBuilder
+     * @param NostoCurrentUserBuilder $nostoCurrentUserBuilder
+     * @param NostoHelperScope $nostoHelperScope
      * @param Json $result
      */
     public function __construct(
         Context $context,
-        Account $accountHelper,
-        StoreManagerInterface $storeManager,
+        NostoHelperAccount $nostoHelperAccount,
+        NostoIframeMetaBuilder $nostoIframeMetaBuilder,
+        NostoCurrentUserBuilder $nostoCurrentUserBuilder,
+        NostoHelperScope $nostoHelperScope,
         Json $result
     ) {
         parent::__construct($context);
 
-        $this->_accountHelper = $accountHelper;
-        $this->_storeManager = $storeManager;
-        $this->_result = $result;
+        $this->nostoIframeMetaBuilder = $nostoIframeMetaBuilder;
+        $this->nostoHelperAccount = $nostoHelperAccount;
+        $this->result = $result;
+        $this->nostoCurrentUserBuilder = $nostoCurrentUserBuilder;
+        $this->nostoHelperScope = $nostoHelperScope;
     }
 
     /**
@@ -73,47 +87,37 @@ class Delete extends Action
         $response = ['success' => false];
 
         $storeId = $this->_request->getParam('store');
-        /** @var Store $store */
-        $store = $this->_storeManager->getStore($storeId);
-        $account = !is_null($store)
-            ? $this->_accountHelper->findAccount($store)
-            : null;
+        $store = $this->nostoHelperScope->getStore($storeId);
+        $account = $store !== null ? $this->nostoHelperAccount->findAccount($store) : null;
 
-        if (!is_null($store) && !is_null($account)) {
-            if ($this->_accountHelper->deleteAccount($account, $store)) {
+        if ($store !== null && $account !== null) {
+            $currentUser = $this->nostoCurrentUserBuilder->build();
+            if ($this->nostoHelperAccount->deleteAccount($account, $store, $currentUser)) {
                 $response['success'] = true;
-                $response['redirect_url'] = $this->_accountHelper->getIframeUrl(
-                    $store,
+                $response['redirect_url'] = IframeHelper::getUrl(
+                    $this->nostoIframeMetaBuilder->build($store),
                     null, // we don't have an account anymore
+                    $this->nostoCurrentUserBuilder->build(),
                     [
-                        'message_type' => NostoMessage::TYPE_SUCCESS,
-                        'message_code' => NostoMessage::CODE_ACCOUNT_DELETE,
+                        'message_type' => Nosto::TYPE_SUCCESS,
+                        'message_code' => Nosto::CODE_ACCOUNT_DELETE,
                     ]
                 );
             }
         }
 
         if (!$response['success']) {
-            $response['redirect_url'] = $this->_accountHelper->getIframeUrl(
-                $store,
+            $response['redirect_url'] = IframeHelper::getUrl(
+                $this->nostoIframeMetaBuilder->build($store),
                 $account,
+                $this->nostoCurrentUserBuilder->build(),
                 [
-                    'message_type' => NostoMessage::TYPE_ERROR,
-                    'message_code' => NostoMessage::CODE_ACCOUNT_DELETE,
+                    'message_type' => Nosto::TYPE_ERROR,
+                    'message_code' => Nosto::CODE_ACCOUNT_DELETE,
                 ]
             );
         }
 
-        return $this->_result->setData($response);
-    }
-
-    /**
-     * Is the user allowed to view Nosto account settings
-     *
-     * @return bool
-     */
-    protected function _isAllowed()
-    {
-        return $this->_authorization->isAllowed(self::ADMIN_RESOURCE);
+        return $this->result->setData($response);
     }
 }

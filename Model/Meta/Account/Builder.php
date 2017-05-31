@@ -1,77 +1,102 @@
 <?php
 /**
- * Magento
+ * Copyright (c) 2017, Nosto Solutions Ltd
+ * All rights reserved.
  *
- * NOTICE OF LICENSE
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
  *
- * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.txt.
- * It is also available through the world-wide-web at this URL:
- * http://opensource.org/licenses/osl-3.0.php
- * If you did not receive a copy of the license and are unable to
- * obtain it through the world-wide-web, please send an email
- * to license@magentocommerce.com so we can send you a copy immediately.
+ * 1. Redistributions of source code must retain the above copyright notice,
+ * this list of conditions and the following disclaimer.
  *
- * DISCLAIMER
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
  *
- * Do not edit or add to this file if you wish to upgrade Magento to newer
- * versions in the future. If you wish to customize Magento for your
- * needs please refer to http://www.magentocommerce.com for more information.
+ * 3. Neither the name of the copyright holder nor the names of its contributors
+ * may be used to endorse or promote products derived from this software without
+ * specific prior written permission.
  *
- * @category  Nosto
- * @package   Nosto_Tagging
- * @author    Nosto Solutions Ltd <magento@nosto.com>
- * @copyright Copyright (c) 2013-2016 Nosto Solutions Ltd (http://www.nosto.com)
- * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * @author Nosto Solutions Ltd <contact@nosto.com>
+ * @copyright 2017 Nosto Solutions Ltd
+ * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
+ *
  */
 
 namespace Nosto\Tagging\Model\Meta\Account;
 
+use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\Locale\ResolverInterface;
 use Magento\Framework\UrlInterface;
 use Magento\Store\Model\Store;
-use Nosto\Sdk\NostoCurrencyCode;
-use Nosto\Sdk\NostoHttpRequest;
-use Nosto\Sdk\NostoLanguageCode;
-use Nosto\Tagging\Helper\Currency;
-use Nosto\Tagging\Helper\Data;
-use Nosto\Tagging\Model\Meta\Account\Billing\Builder as BillingBuilder;
-use Nosto\Tagging\Model\Meta\Account\Owner\Builder as OwnerBuilder;
+use Nosto\NostoException;
+use Nosto\Object\Signup\Signup;
+use Nosto\Request\Http\HttpRequest;
+use Nosto\Tagging\Helper\Data as NostoHelperData;
+use Nosto\Tagging\Helper\Currency as NostoHelperCurrency;
+use Nosto\Tagging\Model\Meta\Account\Billing\Builder as NostoBillingBuilder;
+use Nosto\Tagging\Model\Meta\Account\Settings\Currencies\Builder as NostoCurrenciesBuilder;
 use Psr\Log\LoggerInterface;
 
 class Builder
 {
+    const API_TOKEN = 'YBDKYwSqTCzSsU8Bwbg4im2pkHMcgTy9cCX7vevjJwON1UISJIwXOLMM0a8nZY7h';
+    const PLATFORM_NAME = 'magento';
+    private $nostoHelperData;
+    private $accountBillingMetaBuilder;
+    private $localeResolver;
+    private $logger;
+    private $eventManager;
+    private $nostoHelperCurrency;
+    private $nostoCurrenciesBuilder;
+
     /**
-     * @param Data $dataHelper
-     * @param Currency $currencyHelper
-     * @param OwnerBuilder $accountOwnerMetaBuilder
-     * @param BillingBuilder $accountBillingMetaBuilder
+     * @param NostoHelperData $nostoHelperData
+     * @param NostoHelperCurrency $nostoHelperCurrency
+     * @param NostoBillingBuilder $nostoAccountBillingMetaBuilder
+     * @param NostoCurrenciesBuilder $nostoCurrenciesBuilder
      * @param ResolverInterface $localeResolver
      * @param LoggerInterface $logger
+     * @param ManagerInterface $eventManager
      */
     public function __construct(
-        Data $dataHelper,
-        Currency $currencyHelper,
-        OwnerBuilder $accountOwnerMetaBuilder,
-        BillingBuilder $accountBillingMetaBuilder,
+        NostoHelperData $nostoHelperData,
+        NostoHelperCurrency $nostoHelperCurrency,
+        NostoBillingBuilder $nostoAccountBillingMetaBuilder,
+        NostoCurrenciesBuilder $nostoCurrenciesBuilder,
         ResolverInterface $localeResolver,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        ManagerInterface $eventManager
     ) {
-        $this->_dataHelper = $dataHelper;
-        $this->_currencyHelper = $currencyHelper;
-        $this->_accountOwnerMetaBuilder = $accountOwnerMetaBuilder;
-        $this->_accountBillingMetaBuilder = $accountBillingMetaBuilder;
-        $this->_localeResolver = $localeResolver;
-        $this->_logger = $logger;
+        $this->nostoHelperData = $nostoHelperData;
+        $this->accountBillingMetaBuilder = $nostoAccountBillingMetaBuilder;
+        $this->localeResolver = $localeResolver;
+        $this->logger = $logger;
+        $this->eventManager = $eventManager;
+        $this->nostoHelperCurrency = $nostoHelperCurrency;
+        $this->nostoCurrenciesBuilder = $nostoCurrenciesBuilder;
     }
 
     /**
      * @param Store $store
-     * @return \Nosto\Sdk\NostoAccount
+     * @param $accountOwner
+     * @param $signupDetails
+     * @return Signup
      */
-    public function build(Store $store)
+    public function build(Store $store, $accountOwner, $signupDetails)
     {
-        $metaData = new \Nosto\Sdk\NostoAccount();
+        $metaData = new Signup(Builder::PLATFORM_NAME, Builder::API_TOKEN, null);
 
         try {
             $metaData->setTitle(
@@ -84,31 +109,34 @@ class Builder
                     ]
                 )
             );
-            $metaData->setName(substr(sha1(rand()), 0, 8));
+            $metaData->setName(substr(sha1((string)rand()), 0, 8));
             $metaData->setFrontPageUrl(
-                NostoHttpRequest::replaceQueryParamInUrl(
+                HttpRequest::replaceQueryParamInUrl(
                     '___store',
                     $store->getCode(),
                     $store->getBaseUrl(UrlInterface::URL_TYPE_WEB)
                 )
             );
 
-            $metaData->setCurrency(
-                new NostoCurrencyCode($store->getBaseCurrencyCode())
-            );
+            $metaData->setCurrencies($this->nostoCurrenciesBuilder->build($store));
+            $metaData->setCurrencyCode($this->nostoHelperCurrency->getTaggingCurrency($store)->getCode());
             $lang = substr($store->getConfig('general/locale/code'), 0, 2);
-            $metaData->setLanguage(new NostoLanguageCode($lang));
-            $lang = substr($this->_localeResolver->getLocale(), 0, 2);
-            $metaData->setOwnerLanguage(new NostoLanguageCode($lang));
+            $metaData->setLanguageCode($lang);
+            $lang = substr($this->localeResolver->getLocale(), 0, 2);
+            $metaData->setOwnerLanguageCode($lang);
+            $metaData->setOwner($accountOwner);
+            $metaData->setDefaultVariantId(
+                $this->nostoHelperCurrency->getTaggingCurrency($store)->getCode());
 
-            $owner = $this->_accountOwnerMetaBuilder->build();
-            $metaData->setOwner($owner);
+            $billing = $this->accountBillingMetaBuilder->build($store);
+            $metaData->setBillingDetails($billing);
 
-            $billing = $this->_accountBillingMetaBuilder->build($store);
-            $metaData->setBilling($billing);
-        } catch (\Nosto\Sdk\NostoException $e) {
-            $this->_logger->error($e, ['exception' => $e]);
+            $metaData->setDetails($signupDetails);
+        } catch (NostoException $e) {
+            $this->logger->error($e->__toString());
         }
+
+        $this->eventManager->dispatch('nosto_account_load_after', ['account' => $metaData]);
 
         return $metaData;
     }

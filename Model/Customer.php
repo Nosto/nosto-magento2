@@ -1,28 +1,37 @@
 <?php
 /**
- * Magento
+ * Copyright (c) 2017, Nosto Solutions Ltd
+ * All rights reserved.
  *
- * NOTICE OF LICENSE
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
  *
- * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.txt.
- * It is also available through the world-wide-web at this URL:
- * http://opensource.org/licenses/osl-3.0.php
- * If you did not receive a copy of the license and are unable to
- * obtain it through the world-wide-web, please send an email
- * to license@magentocommerce.com so we can send you a copy immediately.
+ * 1. Redistributions of source code must retain the above copyright notice,
+ * this list of conditions and the following disclaimer.
  *
- * DISCLAIMER
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
  *
- * Do not edit or add to this file if you wish to upgrade Magento to newer
- * versions in the future. If you wish to customize Magento for your
- * needs please refer to http://www.magentocommerce.com for more information.
+ * 3. Neither the name of the copyright holder nor the names of its contributors
+ * may be used to endorse or promote products derived from this software without
+ * specific prior written permission.
  *
- * @category  Nosto
- * @package   Nosto_Tagging
- * @author    Nosto Solutions Ltd <magento@nosto.com>
- * @copyright Copyright (c) 2013-2016 Nosto Solutions Ltd (http://www.nosto.com)
- * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * @author Nosto Solutions Ltd <contact@nosto.com>
+ * @copyright 2017 Nosto Solutions Ltd
+ * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
+ *
  */
 
 namespace Nosto\Tagging\Model;
@@ -36,16 +45,6 @@ class Customer extends AbstractModel implements CustomerInterface
      * Name of cookie that holds Nosto visitor id
      */
     const COOKIE_NAME = '2c_cId';
-
-    /**
-     * Initialize resource model
-     *
-     * @return void
-     */
-    protected function _construct()
-    {
-        $this->_init('Nosto\Tagging\Model\ResourceModel\Customer');
-    }
 
     /**
      * @inheritdoc
@@ -76,7 +75,7 @@ class Customer extends AbstractModel implements CustomerInterface
      */
     public function getCreatedAt()
     {
-        return  $this->getData(self::CREATED_AT);
+        return $this->getData(self::CREATED_AT);
     }
 
     /**
@@ -89,6 +88,7 @@ class Customer extends AbstractModel implements CustomerInterface
 
     /**
      * @inheritdoc
+     * @suppress PhanParamSignatureMismatch
      */
     public function setCustomerId($customerId)
     {
@@ -97,6 +97,7 @@ class Customer extends AbstractModel implements CustomerInterface
 
     /**
      * @inheritdoc
+     * @suppress PhanParamSignatureMismatch
      */
     public function setQuoteId($quoteId)
     {
@@ -105,6 +106,7 @@ class Customer extends AbstractModel implements CustomerInterface
 
     /**
      * @inheritdoc
+     * @suppress PhanParamSignatureMismatch
      */
     public function setNostoId($nostoId)
     {
@@ -125,5 +127,15 @@ class Customer extends AbstractModel implements CustomerInterface
     public function setUpdatedAt(\DateTime $updatedAt)
     {
         return $this->setData(self::UPDATED_AT, $updatedAt);
+    }
+
+    /**
+     * Initialize resource model
+     *
+     * @return void
+     */
+    public function _construct()
+    {
+        $this->_init('Nosto\Tagging\Model\ResourceModel\Customer');
     }
 }

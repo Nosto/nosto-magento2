@@ -1,0 +1,140 @@
+<?xml version="1.0"?>
+<!--
+  ~ Copyright (c) 2017, Nosto Solutions Ltd
+  ~ All rights reserved.
+  ~
+  ~ Redistribution and use in source and binary forms, with or without modification,
+  ~ are permitted provided that the following conditions are met:
+  ~
+  ~ 1. Redistributions of source code must retain the above copyright notice,
+  ~ this list of conditions and the following disclaimer.
+  ~
+  ~ 2. Redistributions in binary form must reproduce the above copyright notice,
+  ~ this list of conditions and the following disclaimer in the documentation
+  ~ and/or other materials provided with the distribution.
+  ~
+  ~ 3. Neither the name of the copyright holder nor the names of its contributors
+  ~ may be used to endorse or promote products derived from this software without
+  ~ specific prior written permission.
+  ~
+  ~ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+  ~ ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+  ~ WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+  ~ DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
+  ~ ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+  ~ (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+  ~ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+  ~ ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+  ~ (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+  ~ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  ~
+  ~ @author Nosto Solutions Ltd <contact@nosto.com>
+  ~ @copyright 2017 Nosto Solutions Ltd
+  ~ @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
+  ~
+  -->
+
+<!--suppress XmlUnboundNsPrefix -->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <section id="nosto" translate="label" type="text" sortOrder="102" showInDefault="1"
+                 showInWebsite="1" showInStore="1">
+            <label>Nosto</label>
+            <tab>service</tab>
+            <resource>Nosto_Tagging::config_nosto</resource>
+            <group id="images" translate="label" type="text" sortOrder="10" showInDefault="1"
+                   showInWebsite="1" showInStore="1">
+                <label>Image Options</label>
+                <field id="version" translate="label comment" type="select" sortOrder="10"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Image Version</label>
+                    <comment>Select the image version that you would like to use for the
+                        recommendation thumbnails
+                    </comment>
+                    <source_model>Nosto\Tagging\Model\Config\Source\Image</source_model>
+                </field>
+            </group>
+            <group id="optional" translate="label" type="text" sortOrder="20" showInDefault="1"
+                   showInWebsite="1" showInStore="1">
+                <label>Other Options</label>
+                <field id="brand" translate="label comment" type="select" sortOrder="10"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Brand</label>
+                    <comment>Select the attribute that you would like to use as your brand
+                        attribute. Tagging the brand allows you to use brand data as filtering
+                        conditions filtering in recommendations.
+                    </comment>
+                    <source_model>Nosto\Tagging\Model\Config\Source\Brand</source_model>
+                </field>
+                <field id="margin" translate="label comment" type="select" sortOrder="20"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Supplier Cost</label>
+                    <comment>Select the attribute that you would like to use as your supplier-cost
+                        attribute. Tagging the supplier-cost enables us to deduce the margin and
+                        allows you to use margin data as filtering conditions in recommendations.
+                    </comment>
+                    <source_model>Nosto\Tagging\Model\Config\Source\Margin</source_model>
+                </field>
+                <field id="gtin" translate="label comment" type="select" sortOrder="30"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>GTIN</label>
+                    <comment>Select the attribute that you would like to use as your GTIN
+                        attribute.
+                    </comment>
+                    <source_model>Nosto\Tagging\Model\Config\Source\Gtin</source_model>
+                </field>
+            </group>
+            <group id="flags" translate="label" type="text" sortOrder="30" showInDefault="1"
+                   showInWebsite="1" showInStore="1">
+                <label>Feature Flags</label>
+                <comment>Feature flags to enable or disable optional tagging data. Toggling any of
+                    these fields will require a full catalog reindex. Please contact a customer
+                    service representative of Nosto to request a full catalog reindex.
+                </comment>
+                <field id="variation_tagging" translate="label comment" type="select" sortOrder="10"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enable Variations</label>
+                    <comment><![CDATA[Enable tagging variation data for use in recommendations.
+                        <strong style="color:red">Warning!</strong> Enabling variation data
+                        tagging may minutely impact performance.]]>
+                    </comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="altimg_tagging" translate="label comment" type="select" sortOrder="20"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enable Alternate Images</label>
+                    <comment>Enable tagging alternate images data for use in recommendations.
+                    </comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="rating_tagging" translate="label comment" type="select" sortOrder="30"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enable Ratings &amp; Reviews</label>
+                    <comment>Enable tagging rating and review data for use in recommendations.
+                    </comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="inventory_tagging" translate="label comment" type="select" sortOrder="40"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enable Inventory Levels</label>
+                    <comment><![CDATA[Enable tagging inventory level data for use in recommendations.
+                        <strong style="color:red">Warning!</strong> Enabling variation data
+                        tagging may minutely impact performance.]]>
+                    </comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="product_updates" translate="label comment" type="select" sortOrder="50"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Product Updates</label>
+                    <comment><![CDATA[Enable real time product updates for keeping the catalog in sync.
+                        <strong style="color:red">Warning!</strong> Disabling this feature may
+                        lead to products with incorrect pricing and availability data to be displayed
+                        in recommendations.]]>
+                    </comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>

@@ -1,163 +1,100 @@
 <?php
 /**
- * Magento
+ * Copyright (c) 2017, Nosto Solutions Ltd
+ * All rights reserved.
  *
- * NOTICE OF LICENSE
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
  *
- * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.txt.
- * It is also available through the world-wide-web at this URL:
- * http://opensource.org/licenses/osl-3.0.php
- * If you did not receive a copy of the license and are unable to
- * obtain it through the world-wide-web, please send an email
- * to license@magentocommerce.com so we can send you a copy immediately.
+ * 1. Redistributions of source code must retain the above copyright notice,
+ * this list of conditions and the following disclaimer.
  *
- * DISCLAIMER
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
  *
- * Do not edit or add to this file if you wish to upgrade Magento to newer
- * versions in the future. If you wish to customize Magento for your
- * needs please refer to http://www.magentocommerce.com for more information.
+ * 3. Neither the name of the copyright holder nor the names of its contributors
+ * may be used to endorse or promote products derived from this software without
+ * specific prior written permission.
  *
- * @category  Nosto
- * @package   Nosto_Tagging
- * @author    Nosto Solutions Ltd <magento@nosto.com>
- * @copyright Copyright (c) 2013-2016 Nosto Solutions Ltd (http://www.nosto.com)
- * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * @author Nosto Solutions Ltd <contact@nosto.com>
+ * @copyright 2017 Nosto Solutions Ltd
+ * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
+ *
  */
 
 namespace Nosto\Tagging\Model\Cart;
 
-use Magento\Quote\Model\Quote\Item;
+use Magento\Framework\Event\ManagerInterface;
+use Magento\Framework\ObjectManagerInterface;
+use Magento\Quote\Model\Quote;
 use Magento\Store\Model\Store;
-use Nosto\Tagging\Helper\Data as DataHelper;
-use Nosto\Tagging\Helper\Price as PriceHelper;
-use Nosto\Tagging\Model\Cart\Item\Factory as CartItemFactory;
+use Nosto\NostoException;
+use Nosto\Object\Cart\Cart;
+use Nosto\Tagging\Model\Cart\Item\Builder as NostoCartItemBuilder;
 use Psr\Log\LoggerInterface;
-use Nosto\Tagging\Helper\Item as NostoItemHelper;
 
 class Builder
 {
-    /**
-     * @var Factory
-     */
-    protected $_cartFactory;
-
-    /**
-     * @var CartItemFactory
-     */
-    protected $_cartItemFactory;
-
-    /**
-     * @var DataHelper
-     */
-    protected $_dataHelper;
-
-    /**
-     * @var PriceHelper
-     */
-    protected $_priceHelper;
-
-    /**
-     * @var NostoItemHelper
-     */
-    protected $_nostoItemHelper;
-
-    /**
-     * @var LoggerInterface
-     */
-    protected $_logger;
+    private $nostoCartItemBuilder;
+    private $logger;
+    private $objectManager;
+    private $eventManager;
 
     /**
      * Constructor.
      *
-     * @param Factory $cartFactory
-     * @param CartItemFactory $cartItemFactory
-     * @param DataHelper $dataHelper
-     * @param PriceHelper $priceHelper
-     * @param NostoItemHelper $nostoItemHelper
+     * @param NostoCartItemBuilder $nostoCartItemBuilder
      * @param LoggerInterface $logger
+     * @param ObjectManagerInterface $objectManager
+     * @param ManagerInterface $eventManager
      */
     public function __construct(
-        Factory $cartFactory,
-        CartItemFactory $cartItemFactory,
-        DataHelper $dataHelper,
-        PriceHelper $priceHelper,
-        NostoItemHelper $nostoItemHelper,
-        LoggerInterface $logger
+        NostoCartItemBuilder $nostoCartItemBuilder,
+        LoggerInterface $logger,
+        ObjectManagerInterface $objectManager,
+        ManagerInterface $eventManager
     ) {
-        $this->_cartFactory = $cartFactory;
-        $this->_cartItemFactory = $cartItemFactory;
-        $this->_dataHelper = $dataHelper;
-        $this->_priceHelper = $priceHelper;
-        $this->_logger = $logger;
-        $this->_nostoItemHelper = $nostoItemHelper;
+        $this->objectManager = $objectManager;
+        $this->nostoCartItemBuilder = $nostoCartItemBuilder;
+        $this->logger = $logger;
+        $this->eventManager = $eventManager;
     }
 
     /**
-     * @param array $items
+     * @param Quote $quote
      * @param Store $store
-     * @return \Nosto\Sdk\NostoCart
+     * @return Cart
      */
-    public function build(array $items, Store $store)
+    public function build(Quote $quote, Store $store)
     {
-        $nostoCart = $this->_cartFactory->create();
+        $nostoCart = new Cart();
 
-        try {
-            $nostoCart->setItems($this->buildItems($items, $store));
-        } catch (\Nosto\Sdk\NostoException $e) {
-            $this->_logger->error($e, ['exception' => $e]);
-        }
-
-        return $nostoCart;
-    }
-
-    /**
-     * @param Item[] $items
-     * @param Store $store
-     * @return \Nosto\Sdk\NostoCartItemInterface[]
-     */
-    protected function buildItems(array $items, Store $store)
-    {
-        $cartItems = array();
-
-        foreach ($items as $item) {
+        foreach ($quote->getAllVisibleItems() as $item) {
             try {
-                $cartItem = $this->_cartItemFactory->create();
-                $cartItem->setItemId($this->buildItemId($item));
-                $cartItem->setQuantity((int)$item->getQty());
-                $cartItem->setName($this->buildItemName($item));
-                $cartItem->setUnitPrice(
-                    new \Nosto\Sdk\NostoPrice($item->getBasePriceInclTax())
+                $cartItem = $this->nostoCartItemBuilder->build(
+                    $item,
+                    $store->getCurrentCurrencyCode() ?: $store->getDefaultCurrencyCode()
                 );
-                $cartItem->setCurrency(
-                    new \Nosto\Sdk\NostoCurrencyCode($store->getBaseCurrencyCode())
-                );
-                $cartItems[] = $cartItem;
-            } catch (\Nosto\Sdk\NostoException $e) {
-
+                $nostoCart->addItem($cartItem);
+            } catch (NostoException $e) {
+                $this->logger->error($e->__toString());
             }
         }
 
-        return $cartItems;
-    }
+        $this->eventManager->dispatch('nosto_cart_load_after', ['cart' => $nostoCart]);
 
-    /**
-     * @param Item $item
-     * @return string
-     */
-    protected function buildItemId(Item $item)
-    {
-
-        return $this->_nostoItemHelper->buildProductId($item);
-    }
-
-    /**
-     * @param Item $item
-     * @return string
-     */
-    protected function buildItemName(Item $item)
-    {
-        // todo: the name must include the variant properties just like in Magento 1
-        return $item->getName();
+        return $nostoCart;
     }
 }

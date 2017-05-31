@@ -1,150 +1,188 @@
 <?php
 /**
- * Magento
+ * Copyright (c) 2017, Nosto Solutions Ltd
+ * All rights reserved.
  *
- * NOTICE OF LICENSE
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
  *
- * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.txt.
- * It is also available through the world-wide-web at this URL:
- * http://opensource.org/licenses/osl-3.0.php
- * If you did not receive a copy of the license and are unable to
- * obtain it through the world-wide-web, please send an email
- * to license@magentocommerce.com so we can send you a copy immediately.
+ * 1. Redistributions of source code must retain the above copyright notice,
+ * this list of conditions and the following disclaimer.
  *
- * DISCLAIMER
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
  *
- * Do not edit or add to this file if you wish to upgrade Magento to newer
- * versions in the future. If you wish to customize Magento for your
- * needs please refer to http://www.magentocommerce.com for more information.
+ * 3. Neither the name of the copyright holder nor the names of its contributors
+ * may be used to endorse or promote products derived from this software without
+ * specific prior written permission.
  *
- * @category  Nosto
- * @package   Nosto_Tagging
- * @author    Nosto Solutions Ltd <magento@nosto.com>
- * @copyright Copyright (c) 2013-2016 Nosto Solutions Ltd (http://www.nosto.com)
- * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * @author Nosto Solutions Ltd <contact@nosto.com>
+ * @copyright 2017 Nosto Solutions Ltd
+ * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
+ *
  */
 
 namespace Nosto\Tagging\Controller\Adminhtml\Account;
 
-use Magento\Backend\App\Action;
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\Controller\Result\Json;
-use Magento\Store\Model\Store;
-use Magento\Store\Model\StoreManagerInterface;
-use Nosto\Sdk\NostoException;
-use Nosto\Sdk\NostoMessage;
-use Nosto\Sdk\NostoOwner;
-use Nosto\Sdk\NostoServiceAccount;
-use Nosto\Tagging\Helper\Account;
-use Nosto\Tagging\Model\Meta\Account\Builder;
+use Nosto\Helper\IframeHelper;
+use Nosto\Nosto;
+use Nosto\NostoException;
+use Nosto\Operation\AccountSignup;
+use Nosto\Tagging\Helper\Account as NostoHelperAccount;
+use Nosto\Tagging\Helper\Currency as NostoCurrencyHelper;
+use Nosto\Tagging\Helper\Scope as NostoHelperScope;
+use Nosto\Tagging\Model\Meta\Account\Builder as NostoSignupBuilder;
+use Nosto\Tagging\Model\Meta\Account\Iframe\Builder as NostoIframeMetaBuilder;
+use Nosto\Tagging\Model\Meta\Account\Owner\Builder as NostoOwnerBuilder;
+use Nosto\Tagging\Model\Rates\Service as NostoRatesService;
+use Nosto\Tagging\Model\User\Builder as NostoCurrentUserBuilder;
 use Psr\Log\LoggerInterface;
 
-class Create extends Action
+class Create extends Base
 {
     const ADMIN_RESOURCE = 'Nosto_Tagging::system_nosto_account';
-
-    /**
-     * @var Json
-     */
-    protected $_result;
-    private $_accountHelper;
-    private $_accountMetaBuilder;
-    private $_storeManager;
-    private $_accountService;
-    private $_logger;
+    private $result;
+    private $nostoHelperAccount;
+    private $nostoCurrentUserBuilder;
+    private $nostoIframeMetaBuilder;
+    private $nostoRatesService;
+    private $nostoCurrencyHelper;
+    private $nostoOwnerBuilder;
+    private $nostoSignupBuilder;
+    private $logger;
+    private $nostoHelperScope;
 
     /**
      * @param Context $context
-     * @param Account $accountHelper
-     * @param Builder $accountMetaBuilder
-     * @param StoreManagerInterface $storeManager
+     * @param NostoHelperAccount $nostoHelperAccount
+     * @param NostoSignupBuilder $nostoSignupBuilder
+     * @param NostoIframeMetaBuilder $nostoIframeMetaBuilder
+     * @param NostoCurrentUserBuilder $nostoCurrentUserBuilder
+     * @param NostoOwnerBuilder $nostoOwnerBuilder
+     * @param NostoHelperScope $nostoHelperScope
      * @param Json $result
      * @param LoggerInterface $logger
-     * @param NostoServiceAccount $accountService
+     * @param NostoRatesService $nostoRatesService
+     * @param NostoCurrencyHelper $nostoCurrencyHelper
+     * @SuppressWarnings(PHPMD.ExcessiveParameterList)
      */
     public function __construct(
         Context $context,
-        Account $accountHelper,
-        Builder $accountMetaBuilder,
-        StoreManagerInterface $storeManager,
+        NostoHelperAccount $nostoHelperAccount,
+        NostoSignupBuilder $nostoSignupBuilder,
+        NostoIframeMetaBuilder $nostoIframeMetaBuilder,
+        NostoCurrentUserBuilder $nostoCurrentUserBuilder,
+        NostoOwnerBuilder $nostoOwnerBuilder,
+        NostoHelperScope $nostoHelperScope,
         Json $result,
         LoggerInterface $logger,
-        NostoServiceAccount $accountService
+        NostoRatesService $nostoRatesService,
+        NostoCurrencyHelper $nostoCurrencyHelper
     ) {
         parent::__construct($context);
 
-        $this->_accountHelper = $accountHelper;
-        $this->_accountMetaBuilder = $accountMetaBuilder;
-        $this->_storeManager = $storeManager;
-        $this->_result = $result;
-        $this->_logger = $logger;
-        $this->_accountService = $accountService;
+        $this->nostoHelperAccount = $nostoHelperAccount;
+        $this->nostoSignupBuilder = $nostoSignupBuilder;
+        $this->nostoIframeMetaBuilder = $nostoIframeMetaBuilder;
+        $this->nostoOwnerBuilder = $nostoOwnerBuilder;
+        $this->nostoCurrentUserBuilder = $nostoCurrentUserBuilder;
+        $this->result = $result;
+        $this->logger = $logger;
+        $this->nostoRatesService = $nostoRatesService;
+        $this->nostoCurrencyHelper = $nostoCurrencyHelper;
+        $this->nostoHelperScope = $nostoHelperScope;
     }
 
     /**
      * @return Json
+     * @suppress PhanTypeMismatchArgument
+     * @SuppressWarnings(PHPMD.CyclomaticComplexity
      */
     public function execute()
     {
         $response = ['success' => false];
 
         $storeId = $this->_request->getParam('store');
-        /** @var Store $store */
-        $store = $this->_storeManager->getStore($storeId);
+        $store = $this->nostoHelperScope->getStore($storeId);
 
-        if (!is_null($store)) {
+        if ($store !== null) {
             try {
-                $emailAddress = $this->_request->getParam('email');
-                $metaData = $this->_accountMetaBuilder->build($store);
-                // todo: how to handle this class, DI?
-                if (\Zend_Validate::is($emailAddress, 'EmailAddress')) {
-                    /** @var NostoOwner $owner */
-                    $owner = $metaData->getOwner();
-                    $owner->setEmail($emailAddress);
+                $signupDetails = $this->_request->getParam('details');
+                if (!empty($signupDetails)) {
+                    $signupDetails = json_decode($signupDetails, true);
                 }
 
-                $account = $this->_accountService->create($metaData);
+                $emailAddress = $this->_request->getParam('email');
+                $accountOwner = $this->nostoOwnerBuilder->build();
+                if ($accountOwner->getEmail() !== $emailAddress) {
+                    if (\Zend_Validate::is($emailAddress, 'EmailAddress')) {
+                        $accountOwner->setFirstName(null);
+                        $accountOwner->setLastName(null);
+                        $accountOwner->setEmail($emailAddress);
+                    } else {
+                        throw new NostoException("Invalid email address " . $emailAddress);
+                    }
+                }
 
-                if ($this->_accountHelper->saveAccount($account, $store)) {
-                    // todo
-                    //$this->_accountHelper->updateCurrencyExchangeRates($account, $store);
+                $signupParams = $this->nostoSignupBuilder->build(
+                    $store,
+                    $accountOwner,
+                    $signupDetails
+                );
+                $operation = new AccountSignup($signupParams);
+                $account = $operation->create();
+
+                if ($this->nostoHelperAccount->saveAccount($account, $store)) {
                     $response['success'] = true;
-                    $response['redirect_url'] = $this->_accountHelper->getIframeUrl(
-                        $store,
+                    $response['redirect_url'] = IframeHelper::getUrl(
+                        $this->nostoIframeMetaBuilder->build($store),
                         $account,
+                        $this->nostoCurrentUserBuilder->build(),
                         [
-                            'message_type' => NostoMessage::TYPE_SUCCESS,
-                            'message_code' => NostoMessage::CODE_ACCOUNT_CREATE,
+                            'message_type' => Nosto::TYPE_SUCCESS,
+                            'message_code' => Nosto::CODE_ACCOUNT_CREATE,
                         ]
                     );
+
+                    if ($this->nostoCurrencyHelper->getCurrencyCount($store) > 1) {
+                        try {
+                            $this->nostoRatesService->update($store);
+                        } catch (\Exception $e) {
+                            $this->logger->error($e->__toString());
+                        }
+                    }
                 }
             } catch (NostoException $e) {
-                $this->_logger->error($e, ['exception' => $e]);
+                $this->logger->error($e->__toString());
             }
         }
 
         if (!$response['success']) {
-            $response['redirect_url'] = $this->_accountHelper->getIframeUrl(
-                $store,
+            $response['redirect_url'] = IframeHelper::getUrl(
+                $this->nostoIframeMetaBuilder->build($store),
                 null, // account creation failed, so we have none.
+                $this->nostoCurrentUserBuilder->build(),
                 [
-                    'message_type' => NostoMessage::TYPE_ERROR,
-                    'message_code' => NostoMessage::CODE_ACCOUNT_CREATE,
+                    'message_type' => Nosto::TYPE_ERROR,
+                    'message_code' => Nosto::CODE_ACCOUNT_CREATE,
                 ]
             );
         }
 
-        return $this->_result->setData($response);
-    }
-
-    /**
-     * Is the user allowed to view Nosto account settings
-     *
-     * @return bool
-     */
-    protected function _isAllowed()
-    {
-        return $this->_authorization->isAllowed(self::ADMIN_RESOURCE);
+        return $this->result->setData($response);
     }
 }

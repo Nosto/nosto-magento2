@@ -1,31 +1,62 @@
 {
-    "name": "nosto/module-nostotagging",
-    "description": "Increase your conversion rate and average order value by delivering your customers personalized product recommendations throughout their shopping journey.",
-    "type": "magento2-module",
-    "version": "1.2.0",
-    "license": [
-        "OSL-3.0"
-    ],
-    "require": {
-        "php": ">=5.5.0",
-        "nosto/php-sdk": "2.5.2"
+  "name": "nosto/module-nostotagging",
+  "description": "Increase your conversion rate and average order value by delivering your customers personalized product recommendations throughout their shopping journey.",
+  "type": "magento2-module",
+  "version": "2.0.0",
+  "require-dev": {
+    "php": ">=5.5.0",
+    "etsy/phan": "0.8.0",
+    "phpmd/phpmd": "^2.5",
+    "sebastian/phpcpd": "*",
+    "phpdocumentor/reflection-docblock": "3.0.0",
+    "phing/phing": "2.*",
+    "magento/marketplace-eqp": "1.0.4",
+    "magento-ecg/coding-standard": "*",
+    "magento/product-community-edition": "^2.1.0",
+    "magento/marketplace-tools": "dev-master"
+  },
+  "license": [
+    "OSL-3.0"
+  ],
+  "minimum-stability": "dev",
+  "require": {
+    "nosto/php-sdk": "3.0.4"
+  },
+  "repositories": [
+    {
+      "type": "composer",
+      "url": "https://repo.magento.com/"
     },
-    "repositories": [
-      {
-        "type": "composer",
-        "url": "https://repo.magento.com/"
+    {
+      "type": "vcs",
+      "url": "git@github.com:Nosto/nosto-php-sdk.git"
+    },
+    {
+      "type": "vcs",
+      "url": "https://github.com/magento/marketplace-eqp"
+    },
+    {
+      "type": "package",
+      "package": {
+        "name": "magento/marketplace-tools",
+        "version": "dev-master",
+        "source": {
+          "url": "https://github.com/magento/marketplace-tools",
+          "type": "git",
+          "reference": "origin/master"
+        }
       }
-    ],
-    "require-dev": {
-        "phing/phing": "2.*",
-        "magento/product-community-edition": "^2.1.0",
-        "magento/marketplace-eqp": "^1.0",
-        "squizlabs/php_codesniffer": "2.*"
-    },
-    "autoload": {
-        "psr-4": {
-          "Nosto\\Tagging\\": ""
-        },
-        "files": [ "registration.php" ]
     }
+  ],
+  "autoload": {
+    "psr-4": {
+      "Nosto\\Tagging\\": ""
+    },
+    "files": [
+      "registration.php"
+    ]
+  },
+  "archive": {
+    "exclude": [".DS_STORE", ".idea", ".phan", "ruleset.xml", "phan.*", ".gitignore"]
+  }
 }

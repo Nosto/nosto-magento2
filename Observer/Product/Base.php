@@ -1,103 +1,104 @@
 <?php
 /**
- * Magento
+ * Copyright (c) 2017, Nosto Solutions Ltd
+ * All rights reserved.
  *
- * NOTICE OF LICENSE
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
  *
- * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.txt.
- * It is also available through the world-wide-web at this URL:
- * http://opensource.org/licenses/osl-3.0.php
- * If you did not receive a copy of the license and are unable to
- * obtain it through the world-wide-web, please send an email
- * to license@magentocommerce.com so we can send you a copy immediately.
+ * 1. Redistributions of source code must retain the above copyright notice,
+ * this list of conditions and the following disclaimer.
  *
- * DISCLAIMER
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
  *
- * Do not edit or add to this file if you wish to upgrade Magento to newer
- * versions in the future. If you wish to customize Magento for your
- * needs please refer to http://www.magentocommerce.com for more information.
+ * 3. Neither the name of the copyright holder nor the names of its contributors
+ * may be used to endorse or promote products derived from this software without
+ * specific prior written permission.
  *
- * @category  Nosto
- * @package   Nosto_Tagging
- * @author    Nosto Solutions Ltd <magento@nosto.com>
- * @copyright Copyright (c) 2013-2016 Nosto Solutions Ltd (http://www.nosto.com)
- * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * @author Nosto Solutions Ltd <contact@nosto.com>
+ * @copyright 2017 Nosto Solutions Ltd
+ * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
+ *
  */
 
 namespace Nosto\Tagging\Observer\Product;
 
 use Magento\Catalog\Model\Product;
+use Magento\Catalog\Model\ProductFactory;
+use Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable as ConfigurableProduct;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Module\Manager as ModuleManager;
 use Magento\Store\Model\Store;
-use Magento\Store\Model\StoreManagerInterface;
-use Nosto\Sdk\NostoAccount;
-use Nosto\Sdk\NostoException;
-use Nosto\Sdk\NostoProduct;
-use Nosto\Sdk\NostoServiceProduct;
-use Nosto\Tagging\Helper\Account as AccountHelper;
-use Nosto\Tagging\Helper\Data as DataHelper;
-use Nosto\Tagging\Model\Product\Builder as ProductBuilder;
+use Nosto\NostoException;
+use Nosto\Operation\UpsertProduct;
+use Nosto\Request\Http\HttpRequest;
+use Nosto\Tagging\Helper\Account as NostoHelperAccount;
+use Nosto\Tagging\Helper\Data as NostoHelperData;
+use Nosto\Tagging\Helper\Scope as NostoHelperScope;
+use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
 use Psr\Log\LoggerInterface;
 
 abstract class Base implements ObserverInterface
 {
-    /**
-     * @var DataHelper
-     */
-    protected $_dataHelper;
-
-    /**
-     * @var AccountHelper
-     */
-    protected $_accountHelper;
-
-    /**
-     * @var ProductBuilder
-     */
-    protected $_productBuilder;
-
-    /**
-     * @var StoreManagerInterface
-     */
-    protected $_storeManager;
-
-    /**
-     * @var LoggerInterface
-     */
-    protected $_logger;
-
-    /**
-     * @var ModuleManager
-     */
-    protected $_moduleManager;
+    private $nostoHelperData;
+    private $nostoHelperAccount;
+    private $nostoProductBuilder;
+    private $logger;
+    private $moduleManager;
+    private $productFactory;
+    private $configurableProduct;
+    private $nostoHelperScope;
 
     /**
      * Constructor.
      *
-     * @param DataHelper $dataHelper
-     * @param AccountHelper $accountHelper
-     * @param ProductBuilder $productBuilder
-     * @param StoreManagerInterface $storeManager
+     * @param NostoHelperData $nostoHelperData
+     * @param NostoHelperAccount $nostoHelperAccount
+     * @param NostoProductBuilder $nostoProductBuilder
+     * @param NostoHelperScope $nostoHelperScope
      * @param LoggerInterface $logger
      * @param ModuleManager $moduleManager
+     * @param ProductFactory $productFactory
+     * @param ConfigurableProduct $configurableProduct
      */
     public function __construct(
-        DataHelper $dataHelper,
-        AccountHelper $accountHelper,
-        ProductBuilder $productBuilder,
-        StoreManagerInterface $storeManager,
+        NostoHelperData $nostoHelperData,
+        NostoHelperAccount $nostoHelperAccount,
+        NostoProductBuilder $nostoProductBuilder,
+        NostoHelperScope $nostoHelperScope,
         LoggerInterface $logger,
-        ModuleManager $moduleManager
+        ModuleManager $moduleManager,
+        ProductFactory $productFactory,
+        ConfigurableProduct $configurableProduct
     ) {
-        $this->_dataHelper = $dataHelper;
-        $this->_accountHelper = $accountHelper;
-        $this->_productBuilder = $productBuilder;
-        $this->_storeManager = $storeManager;
-        $this->_logger = $logger;
-        $this->_moduleManager = $moduleManager;
+        $this->nostoHelperData = $nostoHelperData;
+        $this->nostoHelperAccount = $nostoHelperAccount;
+        $this->nostoProductBuilder = $nostoProductBuilder;
+        $this->logger = $logger;
+        $this->moduleManager = $moduleManager;
+        $this->productFactory = $productFactory;
+        $this->configurableProduct = $configurableProduct;
+
+        HttpRequest::buildUserAgent(
+            NostoHelperData::PLATFORM_NAME,
+            $nostoHelperData->getPlatformVersion(),
+            $nostoHelperData->getModuleVersion()
+        );
+        $this->nostoHelperScope = $nostoHelperScope;
     }
 
     /**
@@ -106,23 +107,28 @@ abstract class Base implements ObserverInterface
      *
      * @param Observer $observer
      * @return void
+     * @suppress PhanDeprecatedFunction
      */
     public function execute(Observer $observer)
     {
-        if ($this->_moduleManager->isEnabled(DataHelper::MODULE_NAME)) {
-            // Always "delete" the product for all stores it is available in.
-            // This is done to avoid data inconsistencies as even if a product
-            // is edited for only one store, the updated data can reflect in
-            // other stores as well.
+        if ($this->moduleManager->isEnabled(NostoHelperData::MODULE_NAME)) {
             /* @var \Magento\Catalog\Model\Product $product */
             /** @noinspection PhpUndefinedMethodInspection */
             $product = $observer->getProduct();
+            // Figure out if we're updating a parent product
+            $parentProducts = $this->configurableProduct->getParentIdsByChild($product->getId());
+            if (!empty($parentProducts[0]) && is_int($parentProducts[0])) {
+                /** @noinspection PhpDeprecationInspection */
+                $product = $this->productFactory->create()->load((int)$parentProducts[0]);
+            }
             foreach ($product->getStoreIds() as $storeId) {
-                /** @var Store $store */
-                $store = $this->_storeManager->getStore($storeId);
-                /** @var NostoAccount $account */
-                $account = $this->_accountHelper->findAccount($store);
+                $store = $this->nostoHelperScope->getStore($storeId);
+                $account = $this->nostoHelperAccount->findAccount($store);
                 if ($account === null) {
+                    continue;
+                }
+
+                if (!$this->nostoHelperData->isProductUpdatesEnabled($store)) {
                     continue;
                 }
 
@@ -131,18 +137,17 @@ abstract class Base implements ObserverInterface
                 }
 
                 // Load the product model for this particular store view.
-                /** @var NostoProduct $model */
-                $metaProduct = $this->_productBuilder->build($product, $store);
-                if (is_null($metaProduct)) {
+                $metaProduct = $this->buildProduct($product, $store);
+                if ($metaProduct === null) {
                     continue;
                 }
 
                 try {
-                    $op = new NostoServiceProduct($account);
+                    $op = new UpsertProduct($account);
                     $op->addProduct($metaProduct);
                     $this->doRequest($op);
                 } catch (NostoException $e) {
-                    $this->_logger->error($e, ['exception' => $e]);
+                    $this->logger->error($e->__toString());
                 }
             }
         }
@@ -153,11 +158,23 @@ abstract class Base implements ObserverInterface
      *
      * @param Product $product the product from the event
      */
-    abstract protected function validateProduct(Product $product);
+    abstract public function validateProduct(Product $product);
 
     /**
-     * @param NostoServiceProduct $operation
+     * Builds the product object for the operation using the builder
+     *
+     * @param Product $product the product to be built
+     * @param Store $store the store for which to build the product
+     * @return \Nosto\Object\Product\Product the built product
+     */
+    public function buildProduct(Product $product, Store $store)
+    {
+        return $this->nostoProductBuilder->build($product, $store);
+    }
+
+    /**
+     * @param UpsertProduct $operation
      * @return mixed
      */
-    abstract protected function doRequest(NostoServiceProduct $operation);
+    abstract public function doRequest(UpsertProduct $operation);
 }

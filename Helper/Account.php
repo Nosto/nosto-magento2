@@ -1,49 +1,57 @@
 <?php
 /**
- * Magento
+ * Copyright (c) 2017, Nosto Solutions Ltd
+ * All rights reserved.
  *
- * NOTICE OF LICENSE
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
  *
- * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.txt.
- * It is also available through the world-wide-web at this URL:
- * http://opensource.org/licenses/osl-3.0.php
- * If you did not receive a copy of the license and are unable to
- * obtain it through the world-wide-web, please send an email
- * to license@magentocommerce.com so we can send you a copy immediately.
+ * 1. Redistributions of source code must retain the above copyright notice,
+ * this list of conditions and the following disclaimer.
  *
- * DISCLAIMER
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
  *
- * Do not edit or add to this file if you wish to upgrade Magento to newer
- * versions in the future. If you wish to customize Magento for your
- * needs please refer to http://www.magentocommerce.com for more information.
+ * 3. Neither the name of the copyright holder nor the names of its contributors
+ * may be used to endorse or promote products derived from this software without
+ * specific prior written permission.
  *
- * @category  Nosto
- * @package   Nosto_Tagging
- * @author    Nosto Solutions Ltd <magento@nosto.com>
- * @copyright Copyright (c) 2013-2016 Nosto Solutions Ltd (http://www.nosto.com)
- * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * @author Nosto Solutions Ltd <contact@nosto.com>
+ * @copyright 2017 Nosto Solutions Ltd
+ * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
+ *
  */
 
 namespace Nosto\Tagging\Helper;
 
+use Exception;
 use Magento\Framework\App\Config\Storage\WriterInterface;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
-use Magento\Framework\Module\Manager as ModuleManager;
-use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\Store;
-use Nosto\Sdk\NostoAccount;
-use Nosto\Sdk\NostoException;
-use Nosto\Sdk\NostoServiceAccount;
+use Nosto\NostoException;
+use Nosto\Object\User;
+use Nosto\Operation\UninstallAccount;
+use Nosto\Request\Api\Token;
 use Nosto\Tagging\Helper\Data as NostoHelper;
-use Nosto\Tagging\Model\Meta\Account\Iframe\Builder as IframeMetaBuilder;
-use Nosto\Tagging\Model\Meta\Account\Sso\Builder as SsoMetaBuilder;
-
+use Nosto\Types\Signup\AccountInterface;
+use Nosto\Object\Signup\Account as NostoSignupAccount;
 
 /**
- * Account helper class for common tasks related to Nosto accounts.
+ * NostoHelperAccount helper class for common tasks related to Nosto accounts.
  * Everything related to saving/updating/deleting accounts happens in here.
  */
 class Account extends AbstractHelper
@@ -62,118 +70,52 @@ class Account extends AbstractHelper
      * Platform UI version
      */
     const IFRAME_VERSION = 0;
-
-    /**
-     * @var SsoMetaBuilder the builder for sso meta models.
-     */
-    protected $_ssoMetaBuilder;
-
-    /**
-     * @var IframeMetaBuilder the builder for iframe meta models.
-     */
-    protected $_iframeMetaBuilder;
-
-    /**
-     * @var \Nosto\Sdk\NostoHelperIframe the Nosto SDK iframe helper.
-     */
-    protected $_iframeHelper;
-
-    /**
-     * @var WriterInterface the app config writer.
-     */
-    protected $_config;
-
-    /**
-     * @var ModuleManager
-     */
-    protected $_moduleManager;
+    private $config;
+    private $moduleManager;
+    private $logger;
 
     /**
      * Constructor.
      *
      * @param Context $context the context.
-     * @param SsoMetaBuilder $ssoMetaBuilder the builder for sso meta models.
-     * @param IframeMetaBuilder $iframeMetaBuilder the builder for iframe meta models.
-     * @param \Nosto\Sdk\NostoHelperIframe $iframeHelper
      * @param WriterInterface $appConfig the app config writer.
      */
     public function __construct(
         Context $context,
-        SsoMetaBuilder $ssoMetaBuilder,
-        IframeMetaBuilder $iframeMetaBuilder,
-        \Nosto\Sdk\NostoHelperIframe $iframeHelper,
         WriterInterface $appConfig
     ) {
         parent::__construct($context);
 
-        $this->_ssoMetaBuilder = $ssoMetaBuilder;
-        $this->_iframeMetaBuilder = $iframeMetaBuilder;
-        $this->_iframeHelper = $iframeHelper;
-        $this->_config = $appConfig;
-        $this->_moduleManager = $context->getModuleManager();
-    }
-
-    /**
-     * Returns the account with associated api tokens for the store.
-     *
-     * @param StoreInterface $store the store.
-     *
-     * @return NostoAccount|null the account or null if not found.
-     */
-    public function findAccount(StoreInterface $store)
-    {
-        /** @var Store $store */
-        $accountName = $store->getConfig(self::XML_PATH_ACCOUNT);
-
-        if (!empty($accountName)) {
-            $account = new NostoAccount($accountName);
-            $tokens = json_decode(
-                $store->getConfig(self::XML_PATH_TOKENS),
-                true
-            );
-            if (is_array($tokens) && !empty($tokens)) {
-                foreach ($tokens as $name => $value) {
-                    try {
-                        $account->addApiToken(
-                            new \Nosto\Sdk\NostoApiToken($name, $value)
-                        );
-                    } catch (\Nosto\Sdk\NostoInvalidArgumentException $e) {
-
-                    }
-                }
-            }
-            return $account;
-        }
-
-        return null;
+        $this->config = $appConfig;
+        $this->moduleManager = $context->getModuleManager();
+        $this->logger = $context->getLogger();
     }
 
     /**
      * Saves the account and the associated api tokens for the store.
      *
-     * @param \Nosto\Sdk\NostoAccountMetaInterface $account the account to save.
+     * @param AccountInterface $account the account to save.
      * @param Store $store the store.
-     *
      * @return bool true on success, false otherwise.
      */
-    public function saveAccount(\Nosto\Sdk\NostoAccountMetaInterface $account, Store $store)
+    public function saveAccount(AccountInterface $account, Store $store)
     {
         if ((int)$store->getId() < 1) {
             return false;
         }
 
-        $tokens = array();
+        $tokens = [];
         foreach ($account->getTokens() as $token) {
             $tokens[$token->getName()] = $token->getValue();
         }
 
-        $this->_config->save(
+        $this->config->save(
             self::XML_PATH_ACCOUNT,
             $account->getName(),
             ScopeInterface::SCOPE_STORES,
             $store->getId()
         );
-        $this->_config->save(
+        $this->config->save(
             self::XML_PATH_TOKENS,
             json_encode($tokens),
             ScopeInterface::SCOPE_STORES,
@@ -188,23 +130,26 @@ class Account extends AbstractHelper
     /**
      * Removes an account with associated api tokens for the store.
      *
-     * @param NostoAccount $account the account to remove.
+     * @param NostoSignupAccount $account the account to remove.
      * @param Store $store the store.
-     *
+     * @param User $currentUser
      * @return bool true on success, false otherwise.
      */
-    public function deleteAccount(NostoAccount $account, Store $store)
-    {
+    public function deleteAccount(
+        NostoSignupAccount $account,
+        Store $store,
+        User $currentUser
+    ) {
         if ((int)$store->getId() < 1) {
             return false;
         }
 
-        $this->_config->delete(
+        $this->config->delete(
             self::XML_PATH_ACCOUNT,
             ScopeInterface::SCOPE_STORES,
             $store->getId()
         );
-        $this->_config->delete(
+        $this->config->delete(
             self::XML_PATH_TOKENS,
             ScopeInterface::SCOPE_STORES,
             $store->getId()
@@ -212,11 +157,10 @@ class Account extends AbstractHelper
 
         try {
             // Notify Nosto that the account was deleted.
-            $service = new NostoServiceAccount();
-            $service->delete($account);
+            $service = new UninstallAccount($account);
+            $service->delete($currentUser);
         } catch (NostoException $e) {
-            // Failures are logged but not shown to the user.
-            $this->_logger->error($e, ['exception' => $e]);
+            $this->logger->error($e->__toString());
         }
 
         $store->resetConfig();
@@ -225,47 +169,92 @@ class Account extends AbstractHelper
     }
 
     /**
-     * Returns the account administration iframe url.
-     * If there is no account, the "front page" url will be returned where an
-     * account can be created from.
-     *
-     * @param Store $store the store to get the url for.
-     * @param NostoAccount $account the account to get the iframe url for.
-     * @param array $params optional extra params for the url.
-     *
-     * @return string the iframe url.
-     */
-    public function getIframeUrl(
-        Store $store,
-        NostoAccount $account = null,
-        array $params = []
-    ) {
-        if (self::IFRAME_VERSION > 0) {
-            $params['v'] = self::IFRAME_VERSION;
-        }
-        return $this->_iframeHelper->getUrl(
-            $this->_ssoMetaBuilder->build(),
-            $this->_iframeMetaBuilder->build($store),
-            $account,
-            $params
-        );
-    }
-
-    /**
      * Checks if Nosto module is enabled and Nosto account is set
      *
-     * @param StoreInterface $store
+     * @param Store $store
      * @return bool
      */
-    public function nostoInstalledAndEnabled(StoreInterface $store) {
-
+    public function nostoInstalledAndEnabled(Store $store)
+    {
         $enabled = false;
-        if ($this->_moduleManager->isEnabled(NostoHelper::MODULE_NAME)) {
+        if ($this->moduleManager->isEnabled(NostoHelper::MODULE_NAME)) {
             if ($this->findAccount($store)) {
                 $enabled = true;
             }
         }
 
         return $enabled;
+    }
+
+    /**
+     * Returns the account with associated api tokens for the store.
+     *
+     * @param Store $store the store.
+     * @return NostoSignupAccount|null the account or null if not found.
+     */
+    public function findAccount(Store $store)
+    {
+        /** @noinspection PhpUndefinedMethodInspection */
+        $accountName = $store->getConfig(self::XML_PATH_ACCOUNT);
+
+        if (!empty($accountName)) {
+            $account = new NostoSignupAccount($accountName);
+            /** @noinspection PhpUndefinedMethodInspection */
+            $tokens = json_decode(
+                $store->getConfig(self::XML_PATH_TOKENS),
+                true
+            );
+            if (is_array($tokens) && !empty($tokens)) {
+                foreach ($tokens as $name => $value) {
+                    try {
+                        $account->addApiToken(new Token($name, $value));
+                    } catch (Exception $e) {
+                        $this->_logger->error($e->__toString());
+                    }
+                }
+            }
+            $missingTokens = false;
+            foreach ($this->forgeMissingApiTokens($account) as $token) {
+                $account->addApiToken($token);
+                $missingTokens = true;
+            }
+            if ($missingTokens) {
+                $this->saveAccount($account, $store);
+            }
+
+            return $account;
+        }
+
+        return null;
+    }
+
+    /**
+     * Creates tokens for settings and rates if those are missing
+     *
+     * @param AccountInterface $account
+     * @return Token[]
+     */
+    private function forgeMissingApiTokens(AccountInterface $account)
+    {
+        $tokens = [];
+        $ssoToken = $account->getApiToken(Token::API_SSO);
+        if ($ssoToken instanceof Token) {
+            if (!$account->getApiToken(Token::API_EXCHANGE_RATES)) {
+                $ratesToken = new Token(
+                    Token::API_EXCHANGE_RATES,
+                    $ssoToken->getValue()
+                );
+                $tokens[] = $ratesToken;
+            }
+            if (!$account->getApiToken(Token::API_SETTINGS)) {
+                $settingsToken = new Token(
+                    Token::API_SETTINGS,
+                    $ssoToken->getValue()
+                );
+                $tokens[] = $settingsToken;
+            }
+        }
+
+        return $tokens;
     }
 }

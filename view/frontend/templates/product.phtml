@@ -1,28 +1,37 @@
 <?php
 /**
- * Magento
+ * Copyright (c) 2017, Nosto Solutions Ltd
+ * All rights reserved.
  *
- * NOTICE OF LICENSE
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
  *
- * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.txt.
- * It is also available through the world-wide-web at this URL:
- * http://opensource.org/licenses/osl-3.0.php
- * If you did not receive a copy of the license and are unable to
- * obtain it through the world-wide-web, please send an email
- * to license@magentocommerce.com so we can send you a copy immediately.
+ * 1. Redistributions of source code must retain the above copyright notice,
+ * this list of conditions and the following disclaimer.
  *
- * DISCLAIMER
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
  *
- * Do not edit or add to this file if you wish to upgrade Magento to newer
- * versions in the future. If you wish to customize Magento for your
- * needs please refer to http://www.magentocommerce.com for more information.
+ * 3. Neither the name of the copyright holder nor the names of its contributors
+ * may be used to endorse or promote products derived from this software without
+ * specific prior written permission.
  *
- * @category  Nosto
- * @package   Nosto_Tagging
- * @author    Nosto Solutions Ltd <magento@nosto.com>
- * @copyright Copyright (c) 2013-2016 Nosto Solutions Ltd (http://www.nosto.com)
- * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * @author Nosto Solutions Ltd <contact@nosto.com>
+ * @copyright 2017 Nosto Solutions Ltd
+ * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
+ *
  */
 
 /** @var \Nosto\Tagging\Block\Product $this */
@@ -31,42 +40,76 @@ $product = $this->getNostoProduct();
 $category = $this->getNostoCategory();
 ?>
 
-<!-- Nosto Product Tagging -->
-<div class="nosto_product" style="display:none">
-    <span class="url"><?php echo $this->escapeUrl($product->getUrl()); ?></span>
-    <span class="product_id"><?php echo $this->escapeHtml($product->getProductId()); ?></span>
-    <span class="name"><?php echo $this->escapeHtml($product->getName()); ?></span>
-    <span class="image_url"><?php echo $this->escapeUrl($product->getImageUrl()); ?></span>
-    <?php if ($product->getPrice()) : ?>
+    <!-- Nosto Product Tagging -->
+    <div class="nosto_product" style="display:none">
+        <span class="url"><?php echo $this->escapeUrl($product->getUrl()); ?></span>
+        <span class="product_id"><?php echo $this->escapeHtml($product->getProductId()); ?></span>
+        <span class="name"><?php echo $this->escapeHtml($product->getName()); ?></span>
+        <span class="image_url"><?php echo $this->escapeUrl($product->getImageUrl()); ?></span>
         <span class="price"><?php echo $this->formatNostoPrice($product->getPrice()); ?></span>
-    <?php endif; ?>
-    <?php if ($product->getCurrency()) : ?>
-        <span class="price_currency_code"><?php echo $this->escapeHtml($product->getCurrency()->getCode()); ?></span>
-    <?php endif; ?>
-    <?php if ($product->getAvailability()) : ?>
-        <span class="availability"><?php echo $this->escapeHtml($product->getAvailability()->getAvailability()); ?></span>
-    <?php endif; ?>
-    <?php foreach ($product->getCategories() as $cat) : ?>
-        <span class="category"><?php echo $this->escapeHtml($cat->getPath()); ?></span>
-    <?php endforeach; ?>
-    <?php if ($product->getDescription()) : ?>
-        <span class="description"><?php echo $this->escapeHtml($this->stripTags($product->getDescription())); ?></span>
-    <?php endif; ?>
-    <?php if ($product->getListPrice()) : ?>
-        <span class="list_price"><?php echo $this->formatNostoPrice($product->getListPrice()); ?></span>
-    <?php endif; ?>
-    <?php if ($product->getBrand()) : ?>
-        <span class="brand"><?php echo $this->escapeHtml($product->getBrand()); ?></span>
-    <?php endif; ?>
-    <?php foreach ($product->getTags() as $type => $tags) : ?>
-        <?php foreach ($tags as $tag) : ?>
-            <span class="<?php echo $this->escapeQuote($type); ?>"><?php echo $this->escapeHtml($tag); ?></span>
+        <?php if ($product->getListPrice()) : ?>
+            <span class="list_price"><?php echo $this->formatNostoPrice($product->getListPrice()); ?></span>
+        <?php endif; ?>
+        <span class="price_currency_code"><?php echo $product->getPriceCurrencyCode(); ?></span>
+        <span class="availability"><?php echo $product->getAvailability(); ?></span>
+        <?php foreach ($product->getCategories() as $cat) : ?>
+            <span class="category"><?php echo $this->escapeHtml($cat); ?></span>
         <?php endforeach; ?>
-    <?php endforeach; ?>
-    <?php if ($product->getDatePublished()) : ?>
-        <span class="date_published"><?php echo $this->formatNostoDate($product->getDatePublished()); ?></span>
-    <?php endif; ?>
-</div>
+        <?php if ($product->getDescription()) : ?>
+            <span
+                    class="description"><?php echo $this->escapeHtml($this->stripTags($product->getDescription())); ?></span>
+        <?php endif; ?>
+        <?php if ($product->getBrand()) : ?>
+            <span class="brand"><?php echo $this->escapeHtml($product->getBrand()); ?></span>
+        <?php endif; ?>
+        <?php foreach ($product->getTag1() as $tag) : ?>
+            <span class="tag1"><?php echo $this->escapeHtml($tag); ?></span>
+        <?php endforeach; ?>
+        <?php foreach ($product->getTag2() as $tag) : ?>
+            <span class="tag2"><?php echo $this->escapeHtml($tag); ?></span>
+        <?php endforeach; ?>
+        <?php foreach ($product->getTag3() as $tag) : ?>
+            <span class="tag3"><?php echo $this->escapeHtml($tag); ?></span>
+        <?php endforeach; ?>
+        <?php if ($this->hasMultipleCurrencies()): ?>
+            <span class="variation_id"><?php echo $this->escapeHtml($product->getVariationId()); ?></span>
+        <?php endif; ?>
+        <?php if ($product->getGtin()) : ?>
+            <span class="gtin"><?php echo $this->escapeHtml($product->getGtin()); ?></span>
+        <?php endif; ?>
+        <?php if ($product->getReviewCount()): ?>
+            <span class="review_count"><?php echo $this->escapeHtml($product->getReviewCount()); ?></span>
+        <?php endif; ?>
+        <?php if ($product->getRatingValue()): ?>
+            <span class="rating_value"><?php echo $this->escapeHtml($product->getRatingValue()); ?></span>
+        <?php endif; ?>
+        <?php if ($product->getSkus() instanceof \Nosto\Object\Product\SkuCollection) : ?>
+            <?php /* @var \Nosto\Object\Product\Sku $sku */ ?>
+            <?php foreach ($product->getSkus() as $sku) : ?>
+                <span class="nosto_sku">
+                <span class="id"><?php echo $this->escapeHtml($sku->getId()); ?></span>
+                <span class="name"><?php echo $this->escapeHtml($sku->getName()); ?></span>
+                <span class="price"><?php echo $this->escapeHtml($sku->getPrice()); ?></span>
+                <span class="list_price"><?php echo $this->escapeHtml($sku->getListPrice()); ?></span>
+                <span class="url"><?php echo $this->escapeHtml($sku->getUrl()); ?></span>
+                <span class="image_url"><?php echo $this->escapeHtml($sku->getImageUrl()); ?></span>
+                <span class="gtin"><?php echo $this->escapeHtml($sku->getGtin()); ?></span>
+                <span class="availability"><?php echo $this->escapeHtml($sku->getAvailability()); ?></span>
+                <span class="custom_fields">
+                <?php if (is_array($sku->getCustomAttributes())) : ?>
+                    <?php foreach ($sku->getCustomAttributes() as $key => $val) : ?>
+                        <span class="<?php echo $this->escapeHtml($key); ?>"><?php echo $this->escapeHtml($val); ?></span>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+                </span>
+            </span>
+            <?php endforeach; ?>
+        <?php endif; ?>
+        <?php foreach ($product->getAlternateImageUrls() as $alternateImageUrl): ?>
+            <span class="alternate_image_url"><?php echo $this->escapeHtml($alternateImageUrl); ?></span>
+        <?php endforeach; ?>
+    </div>
 <?php if ($category) : ?>
-    <div class="nosto_category" style="display:none"><?php echo $this->escapeHtml($category->getPath()); ?></div>
+    <div class="nosto_category"
+         style="display:none"><?php echo $this->escapeHtml($category); ?></div>
 <?php endif; ?>

@@ -1,72 +1,68 @@
 <?php
 /**
- * Magento
+ * Copyright (c) 2017, Nosto Solutions Ltd
+ * All rights reserved.
  *
- * NOTICE OF LICENSE
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
  *
- * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.txt.
- * It is also available through the world-wide-web at this URL:
- * http://opensource.org/licenses/osl-3.0.php
- * If you did not receive a copy of the license and are unable to
- * obtain it through the world-wide-web, please send an email
- * to license@magentocommerce.com so we can send you a copy immediately.
+ * 1. Redistributions of source code must retain the above copyright notice,
+ * this list of conditions and the following disclaimer.
  *
- * DISCLAIMER
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
  *
- * Do not edit or add to this file if you wish to upgrade Magento to newer
- * versions in the future. If you wish to customize Magento for your
- * needs please refer to http://www.magentocommerce.com for more information.
+ * 3. Neither the name of the copyright holder nor the names of its contributors
+ * may be used to endorse or promote products derived from this software without
+ * specific prior written permission.
  *
- * @category  Nosto
- * @package   Nosto_Tagging
- * @author    Nosto Solutions Ltd <magento@nosto.com>
- * @copyright Copyright (c) 2013-2016 Nosto Solutions Ltd (http://www.nosto.com)
- * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * @author Nosto Solutions Ltd <contact@nosto.com>
+ * @copyright 2017 Nosto Solutions Ltd
+ * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
+ *
  */
 
 namespace Nosto\Tagging\Controller\Adminhtml\Account;
 
-use Magento\Backend\App\Action;
 use Magento\Backend\App\Action\Context;
 use Magento\Backend\Model\View\Result\Page;
 use Magento\Framework\Controller\Result\Redirect;
 use Magento\Framework\View\Result\PageFactory;
-use Magento\Store\Model\Store;
-use Magento\Store\Model\StoreManagerInterface;
-use Magento\Store\Model\Website;
+use Magento\Store\Api\Data\StoreInterface;
+use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 
-/**
- *
- */
-class Index extends Action
+class Index extends Base
 {
     const ADMIN_RESOURCE = 'Nosto_Tagging::system_nosto_account';
-
-    /**
-     * @var PageFactory
-     */
-    protected $_resultPageFactory;
-
-    /**
-     * @var StoreManagerInterface
-     */
-    protected $_storeManager;
+    private $resultPageFactory;
+    private $nostoHelperScope;
 
     /**
      * @param Context $context
      * @param PageFactory $resultPageFactory
-     * @param StoreManagerInterface $storeManager
+     * @param NostoHelperScope $nostoHelperScope
      */
     public function __construct(
         Context $context,
         PageFactory $resultPageFactory,
-        StoreManagerInterface $storeManager
+        NostoHelperScope $nostoHelperScope
     ) {
         parent::__construct($context);
 
-        $this->_resultPageFactory = $resultPageFactory;
-        $this->_storeManager = $storeManager;
+        $this->resultPageFactory = $resultPageFactory;
+        $this->nostoHelperScope = $nostoHelperScope;
     }
 
     /**
@@ -77,8 +73,7 @@ class Index extends Action
         if (!$this->getSelectedStore()) {
             // If we are not under a store view, then redirect to the first
             // found one. Nosto is configured per store.
-            /** @var Website $website */
-            foreach ($this->_storeManager->getWebsites() as $website) {
+            foreach ($this->nostoHelperScope->getWebsites() as $website) {
                 /** @noinspection PhpUndefinedMethodInspection */
                 $storeId = $website->getDefaultGroup()->getDefaultStoreId();
                 if (!empty($storeId)) {
@@ -88,12 +83,11 @@ class Index extends Action
             }
         }
 
-        /** @var Page $result */
-        $result = $this->_resultPageFactory->create();
-        $result->setActiveMenu(self::ADMIN_RESOURCE);
-        $result->getConfig()->getTitle()->prepend(
-            __('Nosto - Account Settings')
-        );
+        $result = $this->resultPageFactory->create();
+        if ($result instanceof Page) {
+            $result->setActiveMenu(self::ADMIN_RESOURCE);
+            $result->getConfig()->getTitle()->prepend(__('Nosto - Account Settings'));
+        }
 
         return $result;
     }
@@ -104,27 +98,17 @@ class Index extends Action
      * If it is a multi store setup, the expect a store id to passed in the
      * request params and return that store as the current one.
      *
-     * @return Store|null the store or null if not found.
+     * @return StoreInterface|null the store or null if not found.
      */
-    protected function getSelectedStore()
+    private function getSelectedStore()
     {
         $store = null;
-        if ($this->_storeManager->isSingleStoreMode()) {
-            $store = $this->_storeManager->getStore(true);
-        } elseif (($storeId = $this->_storeManager->getStore()->getId())) {
-            $store = $this->_storeManager->getStore($storeId);
+        if ($this->nostoHelperScope->isSingleStoreMode()) {
+            $store = $this->nostoHelperScope->getStore(true);
+        } elseif (($storeId = $this->nostoHelperScope->getStore()->getId())) {
+            $store = $this->nostoHelperScope->getStore($storeId);
         }
 
         return $store;
-    }
-
-    /**
-     * Is the user allowed to view Nosto account settings
-     *
-     * @return bool
-     */
-    protected function _isAllowed()
-    {
-        return $this->_authorization->isAllowed(self::ADMIN_RESOURCE);
     }
 }

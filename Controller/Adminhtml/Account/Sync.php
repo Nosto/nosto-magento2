@@ -1,73 +1,76 @@
 <?php
 /**
- * Magento
+ * Copyright (c) 2017, Nosto Solutions Ltd
+ * All rights reserved.
  *
- * NOTICE OF LICENSE
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
  *
- * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.txt.
- * It is also available through the world-wide-web at this URL:
- * http://opensource.org/licenses/osl-3.0.php
- * If you did not receive a copy of the license and are unable to
- * obtain it through the world-wide-web, please send an email
- * to license@magentocommerce.com so we can send you a copy immediately.
+ * 1. Redistributions of source code must retain the above copyright notice,
+ * this list of conditions and the following disclaimer.
  *
- * DISCLAIMER
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
  *
- * Do not edit or add to this file if you wish to upgrade Magento to newer
- * versions in the future. If you wish to customize Magento for your
- * needs please refer to http://www.magentocommerce.com for more information.
+ * 3. Neither the name of the copyright holder nor the names of its contributors
+ * may be used to endorse or promote products derived from this software without
+ * specific prior written permission.
  *
- * @category  Nosto
- * @package   Nosto_Tagging
- * @author    Nosto Solutions Ltd <magento@nosto.com>
- * @copyright Copyright (c) 2013-2016 Nosto Solutions Ltd (http://www.nosto.com)
- * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * @author Nosto Solutions Ltd <contact@nosto.com>
+ * @copyright 2017 Nosto Solutions Ltd
+ * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
+ *
  */
 
 namespace Nosto\Tagging\Controller\Adminhtml\Account;
 
-use Magento\Backend\App\Action;
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\Controller\Result\Json;
-use Magento\Store\Model\Store;
-use Magento\Store\Model\StoreManagerInterface;
-use Nosto\Sdk\NostoOAuthClient;
-use Nosto\Tagging\Helper\Account;
-use Nosto\Tagging\Model\Meta\Oauth\Builder;
+use Nosto\Helper\OAuthHelper;
+use Nosto\Tagging\Helper\Account as NostoHelperAccount;
+use Nosto\Tagging\Helper\Scope as NostoHelperScope;
+use Nosto\Tagging\Model\Meta\Oauth\Builder as NostoOauthBuilder;
 
-class Sync extends Action
+class Sync extends Base
 {
     const ADMIN_RESOURCE = 'Nosto_Tagging::system_nosto_account';
-
-    /**
-     * @var Json
-     */
-    protected $_result;
-    private $_accountHelper;
-    private $_oauthMetaBuilder;
-    private $_storeManager;
+    private $result;
+    private $nostoHelperAccount;
+    private $oauthMetaBuilder;
+    private $nostoHelperScope;
 
     /**
      * @param Context $context
-     * @param Account $accountHelper
-     * @param Builder $oauthMetaBuilder
-     * @param StoreManagerInterface $storeManager
+     * @param NostoHelperAccount $nostoHelperAccount
+     * @param NostoOauthBuilder $oauthMetaBuilder
+     * @param NostoHelperScope $nostoHelperScope
      * @param Json $result
      */
     public function __construct(
         Context $context,
-        Account $accountHelper,
-        Builder $oauthMetaBuilder,
-        StoreManagerInterface $storeManager,
+        NostoHelperAccount $nostoHelperAccount,
+        NostoOauthBuilder $oauthMetaBuilder,
+        NostoHelperScope $nostoHelperScope,
         Json $result
     ) {
         parent::__construct($context);
 
-        $this->_accountHelper = $accountHelper;
-        $this->_oauthMetaBuilder = $oauthMetaBuilder;
-        $this->_storeManager = $storeManager;
-        $this->_result = $result;
+        $this->nostoHelperAccount = $nostoHelperAccount;
+        $this->oauthMetaBuilder = $oauthMetaBuilder;
+        $this->result = $result;
+        $this->nostoHelperScope = $nostoHelperScope;
     }
 
     /**
@@ -78,30 +81,15 @@ class Sync extends Action
         $response = ['success' => false];
 
         $storeId = $this->_request->getParam('store');
-        /** @var Store $store */
-        $store = $this->_storeManager->getStore($storeId);
-        $account = !is_null($store)
-            ? $this->_accountHelper->findAccount($store)
-            : null;
+        $store = $this->nostoHelperScope->getStore($storeId);
+        $account = $store !== null ? $this->nostoHelperAccount->findAccount($store) : null;
 
-        if (!is_null($store) && !is_null($account)) {
-            $metaData = $this->_oauthMetaBuilder->build($store, $account);
-            $client = new NostoOAuthClient($metaData);
-
+        if ($store !== null && $account !== null) {
+            $metaData = $this->oauthMetaBuilder->build($store, $account);
             $response['success'] = true;
-            $response['redirect_url'] = $client->getAuthorizationUrl();
+            $response['redirect_url'] = OAuthHelper::getAuthorizationUrl($metaData);
         }
 
-        return $this->_result->setData($response);
-    }
-
-    /**
-     * Is the user allowed to view Nosto account settings
-     *
-     * @return bool
-     */
-    protected function _isAllowed()
-    {
-        return $this->_authorization->isAllowed(self::ADMIN_RESOURCE);
+        return $this->result->setData($response);
     }
 }

@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<!--suppress XmlUnboundNsPrefix -->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <nosto>
+            <images>
+                <version>image</version>
+            </images>
+            <flags>
+                <variation_tagging>1</variation_tagging>
+                <altimg_tagging>1</altimg_tagging>
+                <rating_tagging>1</rating_tagging>
+                <inventory_tagging>1</inventory_tagging>
+                <product_updates>1</product_updates>
+            </flags>
+        </nosto>
+    </default>
+</config>

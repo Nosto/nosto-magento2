@@ -1,28 +1,37 @@
 <?php
 /**
- * Magento
+ * Copyright (c) 2017, Nosto Solutions Ltd
+ * All rights reserved.
  *
- * NOTICE OF LICENSE
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
  *
- * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.txt.
- * It is also available through the world-wide-web at this URL:
- * http://opensource.org/licenses/osl-3.0.php
- * If you did not receive a copy of the license and are unable to
- * obtain it through the world-wide-web, please send an email
- * to license@magentocommerce.com so we can send you a copy immediately.
+ * 1. Redistributions of source code must retain the above copyright notice,
+ * this list of conditions and the following disclaimer.
  *
- * DISCLAIMER
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
  *
- * Do not edit or add to this file if you wish to upgrade Magento to newer
- * versions in the future. If you wish to customize Magento for your
- * needs please refer to http://www.magentocommerce.com for more information.
+ * 3. Neither the name of the copyright holder nor the names of its contributors
+ * may be used to endorse or promote products derived from this software without
+ * specific prior written permission.
  *
- * @category  Nosto
- * @package   Nosto_Tagging
- * @author    Nosto Solutions Ltd <magento@nosto.com>
- * @copyright Copyright (c) 2013-2016 Nosto Solutions Ltd (http://www.nosto.com)
- * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * @author Nosto Solutions Ltd <contact@nosto.com>
+ * @copyright 2017 Nosto Solutions Ltd
+ * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
+ *
  */
 
 namespace Nosto\Tagging\Helper;
@@ -33,33 +42,17 @@ use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductColl
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 use Magento\Store\Model\Store;
+use Nosto\Request\Http\HttpRequest;
 
 /**
  * Url helper class for common URL related tasks.
  */
 class Url extends AbstractHelper
 {
-    /** @noinspection PhpUndefinedClassInspection */
-    /**
-     * @var ProductCollectionFactory auto generated product collection factory.
-     */
-    protected $_productCollectionFactory;
-
-    /** @noinspection PhpUndefinedClassInspection */
-    /**
-     * @var CategoryCollectionFactory auto generated category collection factory.
-     */
-    protected $_categoryCollectionFactory;
-
-    /**
-     * @var Visibility product visibility.
-     */
-    protected $_productVisibility;
-
-    /**
-     * @var \Magento\Framework\Url frontend URL builder.
-     */
-    protected $_urlBuilder;
+    private $productCollectionFactory;
+    private $categoryCollectionFactory;
+    private $productVisibility;
+    private $urlBuilder;
 
     /** @noinspection PhpUndefinedClassInspection */
     /**
@@ -82,10 +75,10 @@ class Url extends AbstractHelper
     ) {
         parent::__construct($context);
 
-        $this->_productCollectionFactory = $productCollectionFactory;
-        $this->_categoryCollectionFactory = $categoryCollectionFactory;
-        $this->_productVisibility = $productVisibility;
-        $this->_urlBuilder = $urlBuilder;
+        $this->productCollectionFactory = $productCollectionFactory;
+        $this->categoryCollectionFactory = $categoryCollectionFactory;
+        $this->productVisibility = $productVisibility;
+        $this->urlBuilder = $urlBuilder;
     }
 
     /**
@@ -94,16 +87,15 @@ class Url extends AbstractHelper
      * The preview url includes "nostodebug=true" parameter.
      *
      * @param Store $store the store to get the url for.
-     *
      * @return string the url.
      */
     public function getPreviewUrlProduct(Store $store)
     {
-        /** @noinspection PhpUndefinedNamespaceInspection */
-        /** @var \Magento\Catalog\Model\Resource\Product\Collection $collection */
-        $collection = $this->_productCollectionFactory->create();
+        /** @var \Magento\Catalog\Model\ResourceModel\Product\Collection $collection */
+        /** @noinspection PhpUndefinedMethodInspection */
+        $collection = $this->productCollectionFactory->create();
         $collection->addStoreFilter($store->getId());
-        $collection->setVisibility($this->_productVisibility->getVisibleInSiteIds());
+        $collection->setVisibility($this->productVisibility->getVisibleInSiteIds());
         $collection->addAttributeToFilter('status', ['eq' => '1']);
         $collection->setCurPage(1);
         $collection->setPageSize(1);
@@ -126,21 +118,36 @@ class Url extends AbstractHelper
     }
 
     /**
+     * Adds the `nostodebug` parameter to a url.
+     *
+     * @param string $url the url.
+     * @return string the updated url.
+     */
+    public function addNostoDebugParamToUrl($url)
+    {
+        return HttpRequest::replaceQueryParamInUrl(
+            'nostodebug',
+            'true',
+            $url
+        );
+    }
+
+    /**
      * Gets the absolute preview URL to a given store's category page.
      * The category is the first one found in the database for the store.
      * The preview url includes "nostodebug=true" parameter.
      *
      * @param Store $store the store to get the url for.
-     *
      * @return string the url.
+     *
      */
     public function getPreviewUrlCategory(Store $store)
     {
         $rootCatId = (int)$store->getRootCategoryId();
-        /** @noinspection PhpUndefinedNamespaceInspection */
         /** @noinspection PhpUndefinedClassInspection */
-        /** @var \Magento\Catalog\Model\Resource\Category\Collection $collection */
-        $collection = $this->_categoryCollectionFactory->create();
+        /** @var \Magento\Catalog\Model\ResourceModel\Category\Collection $collection */
+        /** @noinspection PhpUndefinedMethodInspection */
+        $collection = $this->categoryCollectionFactory->create();
         $collection->addAttributeToFilter('is_active', ['eq' => 1]);
         $collection->addAttributeToFilter('path', ['like' => "1/$rootCatId/%"]);
         $collection->setCurPage(1);
@@ -151,78 +158,13 @@ class Url extends AbstractHelper
             /** @var \Magento\Catalog\Model\Category $category */
             $url = $category->getUrl();
             $url = $this->replaceQueryParamsInUrl(
-                array('___store' => $store->getCode()),
+                ['___store' => $store->getCode()],
                 $url
             );
             return $this->addNostoDebugParamToUrl($url);
         }
 
         return '';
-    }
-
-    /**
-     * Gets the absolute preview URL to the given store's search page.
-     * The search query in the URL is "q=nosto".
-     * The preview url includes "nostodebug=true" parameter.
-     *
-     * @param Store $store the store to get the url for.
-     *
-     * @return string the url.
-     */
-    public function getPreviewUrlSearch(Store $store)
-    {
-        $url = $this->_urlBuilder->getUrl(
-            'catalogsearch/result',
-            array(
-                '_nosid' => true,
-                '_scope_to_url' => true,
-                '_scope' => $store->getCode(),
-            )
-        );
-        $url = $this->replaceQueryParamsInUrl(array('q' => 'nosto'), $url);
-        return $this->addNostoDebugParamToUrl($url);
-    }
-
-    /**
-     * Gets the absolute preview URL to the given store's cart page.
-     * The preview url includes "nostodebug=true" parameter.
-     *
-     * @param Store $store the store to get the url for.
-     *
-     * @return string the url.
-     */
-    public function getPreviewUrlCart(Store $store)
-    {
-        $url = $this->_urlBuilder->getUrl(
-            'checkout/cart',
-            array(
-                '_nosid' => true,
-                '_scope_to_url' => true,
-                '_scope' => $store->getCode(),
-            )
-        );
-        return $this->addNostoDebugParamToUrl($url);
-    }
-
-    /**
-     * Gets the absolute preview URL to the given store's front page.
-     * The preview url includes "nostodebug=true" parameter.
-     *
-     * @param Store $store the store to get the url for.
-     *
-     * @return string the url.
-     */
-    public function getPreviewUrlFront(Store $store)
-    {
-        $url = $this->_urlBuilder->getUrl(
-            '',
-            array(
-                '_nosid' => true,
-                '_scope_to_url' => true,
-                '_scope' => $store->getCode(),
-            )
-        );
-        return $this->addNostoDebugParamToUrl($url);
     }
 
     /**
@@ -234,21 +176,68 @@ class Url extends AbstractHelper
      */
     public function replaceQueryParamsInUrl(array $params, $url)
     {
-        return \Nosto\Sdk\NostoHttpRequest::replaceQueryParamsInUrl($params, $url);
+        return HttpRequest::replaceQueryParamsInUrl($params, $url);
     }
 
     /**
-     * Adds the `nostodebug` parameter to a url.
+     * Gets the absolute preview URL to the given store's search page.
+     * The search query in the URL is "q=nosto".
+     * The preview url includes "nostodebug=true" parameter.
      *
-     * @param string $url the url.
-     * @return string the updated url.
+     * @param Store $store the store to get the url for.
+     * @return string the url.
      */
-    public function addNostoDebugParamToUrl($url)
+    public function getPreviewUrlSearch(Store $store)
     {
-        return \Nosto\Sdk\NostoHttpRequest::replaceQueryParamInUrl(
-            'nostodebug',
-            'true',
-            $url
+        $url = $this->urlBuilder->getUrl(
+            'catalogsearch/result',
+            [
+                '_nosid' => true,
+                '_scope_to_url' => true,
+                '_scope' => $store->getCode(),
+            ]
         );
+        $url = $this->replaceQueryParamsInUrl(['q' => 'nosto'], $url);
+        return $this->addNostoDebugParamToUrl($url);
+    }
+
+    /**
+     * Gets the absolute preview URL to the given store's cart page.
+     * The preview url includes "nostodebug=true" parameter.
+     *
+     * @param Store $store the store to get the url for.
+     * @return string the url.
+     */
+    public function getPreviewUrlCart(Store $store)
+    {
+        $url = $this->urlBuilder->getUrl(
+            'checkout/cart',
+            [
+                '_nosid' => true,
+                '_scope_to_url' => true,
+                '_scope' => $store->getCode(),
+            ]
+        );
+        return $this->addNostoDebugParamToUrl($url);
+    }
+
+    /**
+     * Gets the absolute preview URL to the given store's front page.
+     * The preview url includes "nostodebug=true" parameter.
+     *
+     * @param Store $store the store to get the url for.
+     * @return string the url.
+     */
+    public function getPreviewUrlFront(Store $store)
+    {
+        $url = $this->urlBuilder->getUrl(
+            '',
+            [
+                '_nosid' => true,
+                '_scope_to_url' => true,
+                '_scope' => $store->getCode(),
+            ]
+        );
+        return $this->addNostoDebugParamToUrl($url);
     }
 }

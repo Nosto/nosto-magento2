@@ -1,42 +1,48 @@
 <?php
 /**
- * Magento
+ * Copyright (c) 2017, Nosto Solutions Ltd
+ * All rights reserved.
  *
- * NOTICE OF LICENSE
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
  *
- * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.txt.
- * It is also available through the world-wide-web at this URL:
- * http://opensource.org/licenses/osl-3.0.php
- * If you did not receive a copy of the license and are unable to
- * obtain it through the world-wide-web, please send an email
- * to license@magentocommerce.com so we can send you a copy immediately.
+ * 1. Redistributions of source code must retain the above copyright notice,
+ * this list of conditions and the following disclaimer.
  *
- * DISCLAIMER
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
  *
- * Do not edit or add to this file if you wish to upgrade Magento to newer
- * versions in the future. If you wish to customize Magento for your
- * needs please refer to http://www.magentocommerce.com for more information.
+ * 3. Neither the name of the copyright holder nor the names of its contributors
+ * may be used to endorse or promote products derived from this software without
+ * specific prior written permission.
  *
- * @category  Nosto
- * @package   Nosto_Tagging
- * @author    Nosto Solutions Ltd <magento@nosto.com>
- * @copyright Copyright (c) 2013-2016 Nosto Solutions Ltd (http://www.nosto.com)
- * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * @author Nosto Solutions Ltd <contact@nosto.com>
+ * @copyright 2017 Nosto Solutions Ltd
+ * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
+ *
  */
 
 namespace Nosto\Tagging\Controller\Export;
 
 use Magento\Catalog\Model\Product\Visibility as ProductVisibility;
-use /** @noinspection PhpUndefinedClassInspection */
-    Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductCollectionFactory;
-use Magento\Catalog\Model\ResourceModel\ProductFactory;
+use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductCollectionFactory;
 use Magento\Framework\App\Action\Context;
 use Magento\Store\Model\Store;
-use Magento\Store\Model\StoreManagerInterface;
-use Nosto\Sdk\NostoExportCollectionProduct;
-use Nosto\Tagging\Helper\Account as AccountHelper;
-use Nosto\Tagging\Model\Product\Builder as ProductBuilder;
+use Nosto\Tagging\Helper\Account as NostoHelperAccount;
+use Nosto\Tagging\Helper\Scope as NostoHelperScope;
+use Nosto\Tagging\Model\Product\Collection as NostoProductCollection;
 
 /**
  * Product export controller used to export product history to Nosto in order to
@@ -47,64 +53,49 @@ use Nosto\Tagging\Model\Product\Builder as ProductBuilder;
  */
 class Product extends Base
 {
+    private $productCollectionFactory;
+    private $productVisibility;
+    private $nostoProductCollection;
 
-    private $_productCollectionFactory;
-    private $_productVisibility;
-    private $_productBuilder;
-
-    /** @noinspection PhpUndefinedClassInspection */
     /**
      * Constructor.
      *
      * @param Context $context
      * @param ProductCollectionFactory $productCollectionFactory
      * @param ProductVisibility $productVisibility
-     * @param StoreManagerInterface $storeManager
-     * @param AccountHelper $accountHelper
-     * @param ProductBuilder $productBuilder
+     * @param NostoHelperScope $nostoHelperScope
+     * @param NostoHelperAccount $nostoHelperAccount
+     * @param NostoProductCollection $nostoProductCollection
      */
     public function __construct(
         Context $context,
         /** @noinspection PhpUndefinedClassInspection */
         ProductCollectionFactory $productCollectionFactory,
         ProductVisibility $productVisibility,
-        StoreManagerInterface $storeManager,
-        AccountHelper $accountHelper,
-        ProductBuilder $productBuilder
+        NostoHelperScope $nostoHelperScope,
+        NostoHelperAccount $nostoHelperAccount,
+        NostoProductCollection $nostoProductCollection
     ) {
-        parent::__construct($context, $storeManager, $accountHelper);
+        parent::__construct($context, $nostoHelperScope, $nostoHelperAccount);
 
-        $this->_productCollectionFactory = $productCollectionFactory;
-        $this->_productVisibility = $productVisibility;
-        $this->_productBuilder = $productBuilder;
+        $this->productCollectionFactory = $productCollectionFactory;
+        $this->productVisibility = $productVisibility;
+        $this->nostoProductCollection = $nostoProductCollection;
     }
 
     /**
-     * @inheritdoc
+     * @suppress PhanParamSignatureMismatch
      */
-    protected function getCollection(Store $store)
+    public function buildExportCollection(Store $store, $limit = 100, $offset = 0)
     {
-        /** @var \Magento\Catalog\Model\ResourceModel\Product\Collection $collection */
-        /** @noinspection PhpUndefinedMethodInspection */
-        $collection = $this->_productCollectionFactory->create();
-        $collection->setVisibility($this->_productVisibility->getVisibleInSiteIds());
-        $collection->addAttributeToFilter('status', ['eq' => '1']);
-        $collection->addStoreFilter($store->getId());
-        return $collection;
+        return $this->nostoProductCollection->buildMany($store, $limit, $offset);
     }
 
     /**
-     * @inheritdoc
+     * @suppress PhanParamSignatureMismatch
      */
-    protected function buildExportCollection($collection, Store $store)
+    public function buildSingleExportCollection(Store $store, $id)
     {
-        /** @var \Magento\Catalog\Model\ResourceModel\Product\Collection $collection */
-        $exportCollection = new NostoExportCollectionProduct();
-        $items = $collection->loadData();
-        foreach ($items as $product) {
-            /** @var \Magento\Catalog\Model\Product $product */
-            $exportCollection[] = $this->_productBuilder->build($product, $store);
-        }
-        return $exportCollection;
+        return $this->nostoProductCollection->buildSingle($store, $id);
     }
 }

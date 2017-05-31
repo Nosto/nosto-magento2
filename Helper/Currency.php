@@ -1,35 +1,44 @@
 <?php
 /**
- * Magento
+ * Copyright (c) 2017, Nosto Solutions Ltd
+ * All rights reserved.
  *
- * NOTICE OF LICENSE
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
  *
- * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.txt.
- * It is also available through the world-wide-web at this URL:
- * http://opensource.org/licenses/osl-3.0.php
- * If you did not receive a copy of the license and are unable to
- * obtain it through the world-wide-web, please send an email
- * to license@magentocommerce.com so we can send you a copy immediately.
+ * 1. Redistributions of source code must retain the above copyright notice,
+ * this list of conditions and the following disclaimer.
  *
- * DISCLAIMER
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
  *
- * Do not edit or add to this file if you wish to upgrade Magento to newer
- * versions in the future. If you wish to customize Magento for your
- * needs please refer to http://www.magentocommerce.com for more information.
+ * 3. Neither the name of the copyright holder nor the names of its contributors
+ * may be used to endorse or promote products derived from this software without
+ * specific prior written permission.
  *
- * @category  Nosto
- * @package   Nosto_Tagging
- * @author    Nosto Solutions Ltd <magento@nosto.com>
- * @copyright Copyright (c) 2013-2016 Nosto Solutions Ltd (http://www.nosto.com)
- * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * @author Nosto Solutions Ltd <contact@nosto.com>
+ * @copyright 2017 Nosto Solutions Ltd
+ * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
+ *
  */
 
 namespace Nosto\Tagging\Helper;
 
+use Magento\Directory\Model\Currency as MagentoCurrency;
 use Magento\Framework\App\Helper\AbstractHelper;
-use Magento\Framework\App\Helper\Context;
-use Nosto\Sdk\NostoHelperCurrency;
+use Magento\Store\Model\Store;
 
 /**
  * Currency helper used for currency related tasks.
@@ -37,38 +46,52 @@ use Nosto\Sdk\NostoHelperCurrency;
 class Currency extends AbstractHelper
 {
     /**
-     * @var NostoHelperCurrency the Nosto currency helper.
-     */
-    protected $_currencyHelper;
-
-    /**
-     * Constructor.
+     * If the store uses multiple currencies the prices are converted from base
+     * currency into given currency. Otherwise the given price is returned.
      *
-     * @param Context $context the context.
-     * @param NostoHelperCurrency $currencyHelper the Nosto currency helper.
+     * @param float $basePrice The price of a product in base currency
+     * @param Store $store
+     * @return float
      */
-    public function __construct(
-        Context $context,
-        NostoHelperCurrency $currencyHelper
-    ) {
-        parent::__construct($context);
+    public function convertToTaggingPrice($basePrice, Store $store)
+    {
+        $taggingPrice = $basePrice;
+        $taggingCurrency = $this->getTaggingCurrency($store);
+        $baseCurrency = $store->getBaseCurrency();
+        if ($taggingCurrency->getCode() !== $baseCurrency->getCode()) {
+            $taggingPrice = $baseCurrency->convert($basePrice, $taggingCurrency);
+        }
 
-        $this->_currencyHelper = $currencyHelper;
+        return $taggingPrice;
     }
 
     /**
-     * Parses the format for a currency into a Nosto currency object.
+     * Returns the currency that must be used in tagging
      *
-     * @param string $locale the locale to get the currency format in.
-     * @param string $currencyCode the currency ISO 4217 code to get the currency in.
-     * @return \Nosto\Sdk\NostoCurrency the parsed currency.
+     * @param Store $store
+     * @return MagentoCurrency
      */
-    public function getCurrencyObject($locale, $currencyCode)
+    public function getTaggingCurrency(Store $store)
     {
-        /** @noinspection PhpUndefinedClassInspection */
-        return $this->_currencyHelper->parseZendCurrencyFormat(
-            $currencyCode,
-            new \Zend_Currency($locale, $currencyCode)
-        );
+        $currencyCount = $this->getCurrencyCount($store);
+        $taggingCurrency = $store->getBaseCurrency();
+        if ($currencyCount == 1) {
+            $taggingCurrency = $store->getDefaultCurrency();
+        }
+
+        return $taggingCurrency;
+    }
+
+    /**
+     * Returns the amount of currencies used in given store
+     *
+     * @param Store $store
+     * @return int
+     */
+    public function getCurrencyCount(Store $store)
+    {
+        $currencies = $store->getAvailableCurrencyCodes(true);
+
+        return count($currencies);
     }
 }

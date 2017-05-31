@@ -1,28 +1,37 @@
 <?php
 /**
- * Magento
+ * Copyright (c) 2017, Nosto Solutions Ltd
+ * All rights reserved.
  *
- * NOTICE OF LICENSE
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
  *
- * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.txt.
- * It is also available through the world-wide-web at this URL:
- * http://opensource.org/licenses/osl-3.0.php
- * If you did not receive a copy of the license and are unable to
- * obtain it through the world-wide-web, please send an email
- * to license@magentocommerce.com so we can send you a copy immediately.
+ * 1. Redistributions of source code must retain the above copyright notice,
+ * this list of conditions and the following disclaimer.
  *
- * DISCLAIMER
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
  *
- * Do not edit or add to this file if you wish to upgrade Magento to newer
- * versions in the future. If you wish to customize Magento for your
- * needs please refer to http://www.magentocommerce.com for more information.
+ * 3. Neither the name of the copyright holder nor the names of its contributors
+ * may be used to endorse or promote products derived from this software without
+ * specific prior written permission.
  *
- * @category  Nosto
- * @package   Nosto_Tagging
- * @author    Nosto Solutions Ltd <magento@nosto.com>
- * @copyright Copyright (c) 2013-2016 Nosto Solutions Ltd (http://www.nosto.com)
- * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * @author Nosto Solutions Ltd <contact@nosto.com>
+ * @copyright 2017 Nosto Solutions Ltd
+ * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
+ *
  */
 
 namespace Nosto\Tagging\Helper;
@@ -30,56 +39,49 @@ namespace Nosto\Tagging\Helper;
 use Magento\Bundle\Model\Product\Price as BundlePrice;
 use Magento\Catalog\Helper\Data as CatalogHelper;
 use Magento\Catalog\Model\Product;
-use Magento\Catalog\Model\Product\Type as ProductType;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 use Magento\GroupedProduct\Model\Product\Type\Grouped as GroupedType;
-use Magento\Sales\Model\Order\Item as OrderItem;
+use Magento\ConfigurableProduct\Model\Product\Type\Configurable as ConfigurableType;
+use Magento\Bundle\Model\Product\Type as BundleType;
+use Magento\Catalog\Model\ProductFactory;
 
 /**
  * Price helper used for product price related tasks.
  */
 class Price extends AbstractHelper
 {
-    private $_catalogHelper;
+    private $catalogHelper;
+    private $productFactory;
 
     /**
      * Constructor.
      *
      * @param Context $context the context.
      * @param CatalogHelper $catalogHelper the catalog helper.
+     * @param ProductFactory $productFactory
      */
     public function __construct(
         Context $context,
-        CatalogHelper $catalogHelper
+        CatalogHelper $catalogHelper,
+        ProductFactory $productFactory
     ) {
         parent::__construct($context);
-
-        $this->_catalogHelper = $catalogHelper;
+        $this->catalogHelper = $catalogHelper;
+        $this->productFactory = $productFactory;
     }
 
     /**
      * Gets the unit price for a product model including taxes.
      *
      * @param Product $product the product model.
-     *
      * @return float
      */
-    public function getProductPriceInclTax($product)
+    public function getProductPriceInclTax(Product $product)
     {
-        return $this->_getProductPrice($product, false, true);
-    }
+        $price = $this->getProductPrice($product, false, true);
 
-    /**
-     * Get the final price for a product model including taxes.
-     *
-     * @param Product $product the product model.
-     *
-     * @return float
-     */
-    public function getProductFinalPriceInclTax($product)
-    {
-        return $this->_getProductPrice($product, true, true);
+        return $price;
     }
 
     /**
@@ -88,77 +90,126 @@ class Price extends AbstractHelper
      * @param Product $product the product model.
      * @param bool $finalPrice if final price.
      * @param bool $inclTax if tax is to be included.
-     *
      * @return float
+     * @suppress PhanTypeMismatchArgument
+     * @suppress PhanDeprecatedFunction
      */
-    protected function _getProductPrice($product, $finalPrice = false, $inclTax = true)
-    {
+    public function getProductPrice(
+        Product $product,
+        $finalPrice = false,
+        $inclTax = true
+    ) {
         switch ($product->getTypeId()) {
             // Get the bundle product "from" price.
-            case ProductType::TYPE_BUNDLE:
-                /** @var BundlePrice $priceModel */
+            case BundleType::TYPE_CODE:
                 $priceModel = $product->getPriceModel();
-                // todo: from price discount?
-                $price = $priceModel->getTotalPrices($product, 'min', $inclTax);
-                break;
-
-            // No constant for this value was found (Magento ver. 1.0.0-beta).
-            // Get the grouped product "minimal" price.
-            case 'grouped':
-                /* @var $typeInstance GroupedType */
-                $typeInstance = $product->getTypeInstance();
-                $associatedProducts = $typeInstance
-                    ->setStoreFilter($product->getStore(), $product)
-                    ->getAssociatedProducts($product);
-                $cheapestAssociatedProduct = null;
-                $minimalPrice = 0;
-                foreach ($associatedProducts as $associatedProduct) {
-                    /** @var Product $associatedProduct */
-                    $tmpPrice = $finalPrice
-                        ? $associatedProduct->getFinalPrice()
-                        : $associatedProduct->getPrice();
-                    if ($minimalPrice === 0 || $minimalPrice > $tmpPrice) {
-                        $minimalPrice = $tmpPrice;
-                        $cheapestAssociatedProduct = $associatedProduct;
+                if ($priceModel instanceof BundlePrice) {
+                    if ($finalPrice) {
+                        $price = $priceModel->getTotalPrices(
+                            $product,
+                            'min',
+                            $inclTax
+                        );
+                    } else {
+                        $productType = $product->getTypeInstance();
+                        $childProducts = $productType->getChildrenIds(
+                            $product->getId()
+                        );
+                        $listPrice = 0;
+                        foreach ($childProducts as $skuIds) {
+                            if (is_array($skuIds)) {
+                                try {
+                                    $skuId = reset($skuIds);
+                                    /** @noinspection PhpDeprecationInspection */
+                                    $sku = $this->productFactory->create()->load(
+                                        $skuId
+                                    );
+                                    $listPrice += $this->getProductPriceInclTax(
+                                        $sku
+                                    );
+                                } catch (\Exception $e) {
+                                    $this->_logger->error($e->__toString());
+                                }
+                            }
+                        }
+                        $price = $listPrice;
                     }
-                }
-                $price = $minimalPrice;
-                if ($inclTax && $cheapestAssociatedProduct) {
-                    $price = $this->_catalogHelper->getTaxPrice(
-                        $cheapestAssociatedProduct,
-                        $price,
-                        true
-                    );
+                } else {
+                    $price = null;
                 }
                 break;
 
-            // No constant for this value was found (Magento ver. 1.0.0-beta).
-            // The configurable product has the tax already applied in the
-            // "final" price, but not in the regular price.
-            case 'configurable':
-                if ($finalPrice) {
-                    $price = $product->getFinalPrice();
-                } elseif ($inclTax) {
-                    $price = $this->_catalogHelper->getTaxPrice(
-                        $product,
-                        $product->getPrice(),
-                        true
-                    );
+            // Get the grouped product "minimal" price.
+            case GroupedType::TYPE_CODE:
+                $typeInstance = $product->getTypeInstance();
+                if ($typeInstance instanceof GroupedType) {
+                    $associatedProducts = $typeInstance
+                        ->setStoreFilter($product->getStore(), $product)
+                        ->getAssociatedProducts($product);
+                    $cheapestAssociatedProduct = null;
+                    $minimalPrice = 0;
+                    foreach ($associatedProducts as $associatedProduct) {
+                        /** @var Product $associatedProduct */
+                        $tmpPrice = $finalPrice
+                            ? $associatedProduct->getFinalPrice()
+                            : $associatedProduct->getPrice();
+                        if ($minimalPrice === 0 || $minimalPrice > $tmpPrice) {
+                            $minimalPrice = $tmpPrice;
+                            $cheapestAssociatedProduct = $associatedProduct;
+                        }
+                    }
+                    $price = $minimalPrice;
+                    if ($inclTax && $cheapestAssociatedProduct !== null) {
+                        $price = $this->catalogHelper->getTaxPrice(
+                            $cheapestAssociatedProduct,
+                            $price,
+                            true
+                        );
+                    }
                 } else {
-                    $price = $product->getPrice();
+                    $price = null;
+                }
+                break;
+
+            // We will use the SKU that has the lowest final price
+            case ConfigurableType::TYPE_CODE:
+                $productType = $product->getTypeInstance();
+                if ($productType instanceof ConfigurableType) {
+                    $products = $productType->getUsedProducts($product);
+                    $skus = [];
+                    $finalPrices = [];
+                    /** @var Product $sku */
+                    foreach ($products as $sku) {
+                        $finalPrices[$sku->getId()] = $this->getProductPrice(
+                            $sku,
+                            true,
+                            true
+                        );
+                        $skus[$sku->getId()] = $sku;
+                    }
+                    asort($finalPrices, SORT_NUMERIC);
+                    $min = array_keys($finalPrices)[0];
+                    if (!empty($skus[$min])) {
+                        $simpleProduct = $skus[$min];
+                    } else { // Fallback to given product
+                        $simpleProduct = $product;
+                    }
+                    if ($finalPrice) {
+                        $price = $this->getProductFinalPriceInclTax($simpleProduct);
+                    } elseif ($inclTax) {
+                        $price = $this->getProductPriceInclTax($simpleProduct);
+                    } else {
+                        $price = $product->getPrice();
+                    }
+                } else {
+                    $price = null;
                 }
                 break;
 
             default:
-                $price = $finalPrice
-                    ? $product->getFinalPrice()
-                    : $product->getPrice();
+                $price = $finalPrice ? $product->getFinalPrice() : $product->getPrice();
                 if ($inclTax) {
-                    $price = $this->_catalogHelper->getTaxPrice(
-                        $product,
-                        $price,
-                        true
-                    );
+                    $price = $this->catalogHelper->getTaxPrice($product, $price, true);
                 }
                 break;
         }
@@ -167,14 +218,15 @@ class Price extends AbstractHelper
     }
 
     /**
-     * Get the final price in base currency for an ordered item including
-     * taxes as discounts.
+     * Get the final price for a product model including taxes.
      *
-     * @param OrderItem $item the item model.
+     * @param Product $product the product model.
      * @return float
      */
-    public function getItemFinalPriceInclTax(OrderItem $item)
+    public function getProductFinalPriceInclTax(Product $product)
     {
-        return $item->getPriceInclTax() - $item->getBaseDiscountAmount();
+        $price = $this->getProductPrice($product, true, true);
+
+        return $price;
     }
 }

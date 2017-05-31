@@ -1,40 +1,47 @@
 <?php
 /**
- * Magento
+ * Copyright (c) 2017, Nosto Solutions Ltd
+ * All rights reserved.
  *
- * NOTICE OF LICENSE
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
  *
- * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.txt.
- * It is also available through the world-wide-web at this URL:
- * http://opensource.org/licenses/osl-3.0.php
- * If you did not receive a copy of the license and are unable to
- * obtain it through the world-wide-web, please send an email
- * to license@magentocommerce.com so we can send you a copy immediately.
+ * 1. Redistributions of source code must retain the above copyright notice,
+ * this list of conditions and the following disclaimer.
  *
- * DISCLAIMER
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
  *
- * Do not edit or add to this file if you wish to upgrade Magento to newer
- * versions in the future. If you wish to customize Magento for your
- * needs please refer to http://www.magentocommerce.com for more information.
+ * 3. Neither the name of the copyright holder nor the names of its contributors
+ * may be used to endorse or promote products derived from this software without
+ * specific prior written permission.
  *
- * @category  Nosto
- * @package   Nosto_Tagging
- * @author    Nosto Solutions Ltd <magento@nosto.com>
- * @copyright Copyright (c) 2013-2016 Nosto Solutions Ltd (http://www.nosto.com)
- * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * @author Nosto Solutions Ltd <contact@nosto.com>
+ * @copyright 2017 Nosto Solutions Ltd
+ * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
+ *
  */
 
 namespace Nosto\Tagging\Controller\Export;
 
 use Magento\Framework\App\Action\Context;
-use /** @noinspection PhpUndefinedClassInspection */
-    Magento\Sales\Model\ResourceModel\Order\CollectionFactory as OrderCollectionFactory;
+use Magento\Sales\Model\ResourceModel\Order\CollectionFactory as OrderCollectionFactory;
 use Magento\Store\Model\Store;
-use Magento\Store\Model\StoreManagerInterface;
-use Nosto\Sdk\NostoExportCollectionOrder;
-use Nosto\Tagging\Helper\Account as AccountHelper;
-use Nosto\Tagging\Model\Order\Builder as OrderBuilder;
+use Nosto\Tagging\Helper\Account as NostoHelperAccount;
+use Nosto\Tagging\Helper\Scope as NostoHelperScope;
+use Nosto\Tagging\Model\Order\Collection as NostoOrderCollection;
 
 /**
  * Order export controller used to export order history to Nosto in order to
@@ -45,56 +52,44 @@ use Nosto\Tagging\Model\Order\Builder as OrderBuilder;
  */
 class Order extends Base
 {
+    private $orderCollectionFactory;
+    private $nostoOrderCollection;
 
-    private $_orderCollectionFactory;
-    private $_orderBuilder;
-
-    /** @noinspection PhpUndefinedClassInspection */
     /**
      * Constructor.
      *
      * @param Context $context
      * @param OrderCollectionFactory $orderCollectionFactory
-     * @param StoreManagerInterface $storeManager
-     * @param AccountHelper $accountHelper
-     * @param OrderBuilder $orderBuilder
+     * @param NostoHelperScope $nostoHelperScope
+     * @param NostoHelperAccount $nostoHelperAccount
+     * @param NostoOrderCollection $nostoOrderCollection
      */
     public function __construct(
         Context $context,
         /** @noinspection PhpUndefinedClassInspection */
         OrderCollectionFactory $orderCollectionFactory,
-        StoreManagerInterface $storeManager,
-        AccountHelper $accountHelper,
-        OrderBuilder $orderBuilder
+        NostoHelperScope $nostoHelperScope,
+        NostoHelperAccount $nostoHelperAccount,
+        NostoOrderCollection $nostoOrderCollection
     ) {
-        parent::__construct($context, $storeManager, $accountHelper);
-
-        $this->_orderCollectionFactory = $orderCollectionFactory;
-        $this->_orderBuilder = $orderBuilder;
+        parent::__construct($context, $nostoHelperScope, $nostoHelperAccount);
+        $this->orderCollectionFactory = $orderCollectionFactory;
+        $this->nostoOrderCollection = $nostoOrderCollection;
     }
 
     /**
-     * @inheritdoc
+     * @suppress PhanParamSignatureMismatch
      */
-    protected function getCollection(Store $store)
+    public function buildExportCollection(Store $store, $limit = 100, $offset = 0)
     {
-        /** @var \Magento\Sales\Model\ResourceModel\Order\Collection $collection */
-        $collection = $this->_orderCollectionFactory->create();
-        $collection->addAttributeToFilter('store_id', ['eq' => $store->getId()]);
-        return $collection;
+        return $this->nostoOrderCollection->buildMany($store, $limit, $offset);
     }
 
     /**
-     * @inheritdoc
+     * @suppress PhanParamSignatureMismatch
      */
-    protected function buildExportCollection($collection, Store $store)
+    public function buildSingleExportCollection(Store $store, $id)
     {
-        /** @var \Magento\Sales\Model\ResourceModel\Order\Collection $collection */
-        $exportCollection = new NostoExportCollectionOrder();
-        foreach ($collection->getItems() as $order) {
-            /** @var \Magento\Sales\Model\Order $order */
-            $exportCollection[] = $this->_orderBuilder->build($order);
-        }
-        return $exportCollection;
+        return $this->nostoOrderCollection->buildSingle($store, $id);
     }
 }
