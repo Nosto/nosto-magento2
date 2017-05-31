@@ -48,7 +48,7 @@ use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Model\Customer as NostoCustomer;
 use Nosto\Tagging\Model\CustomerFactory;
 use Nosto\Tagging\Model\Order\Builder as NostoOrderBuilder;
-use Psr\Log\LoggerInterface;
+use Nosto\Tagging\Helper\Sentry as NostoHelperSentry;
 
 /**
  * Class Save
@@ -58,7 +58,7 @@ class Save implements ObserverInterface
 {
     private $nostoHelperData;
     private $nostoHelperAccount;
-    private $logger;
+    private $nostoHelperSentry;
     private $nostoOrderBuilder;
     private $moduleManager;
     private $customerFactory;
@@ -71,7 +71,7 @@ class Save implements ObserverInterface
      * @param NostoHelperData $nostoHelperData
      * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoHelperScope $nostoHelperScope
-     * @param LoggerInterface $logger
+     * @param NostoHelperSentry $nostoHelperSentry
      * @param ModuleManager $moduleManager
      * @param CustomerFactory $customerFactory
      * @param NostoOrderBuilder $orderBuilder
@@ -80,7 +80,7 @@ class Save implements ObserverInterface
         NostoHelperData $nostoHelperData,
         NostoHelperAccount $nostoHelperAccount,
         NostoHelperScope $nostoHelperScope,
-        LoggerInterface $logger,
+        NostoHelperSentry $nostoHelperSentry,
         ModuleManager $moduleManager,
         /** @noinspection PhpUndefinedClassInspection */
         CustomerFactory $customerFactory,
@@ -88,7 +88,7 @@ class Save implements ObserverInterface
     ) {
         $this->nostoHelperData = $nostoHelperData;
         $this->nostoHelperAccount = $nostoHelperAccount;
-        $this->logger = $logger;
+        $this->nostoHelperSentry = $nostoHelperSentry;
         $this->moduleManager = $moduleManager;
         $this->nostoOrderBuilder = $orderBuilder;
         $this->customerFactory = $customerFactory;
@@ -131,7 +131,7 @@ class Save implements ObserverInterface
                 try {
                     $orderService->send($nostoOrder, $nostoCustomer->getNostoId());
                 } catch (\Exception $e) {
-                    $this->logger->error(
+                    $this->nostoHelperSentry->error(
                         sprintf(
                             "Failed to save order with quote #%s for customer #%s.
                         Message was: %s",

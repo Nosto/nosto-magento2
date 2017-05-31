@@ -47,12 +47,12 @@ use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Model\Meta\Oauth\Builder as NostoOauthBuilder;
 use Nosto\Types\Signup\AccountInterface;
-use Psr\Log\LoggerInterface;
+use Nosto\Tagging\Helper\Sentry as NostoHelperSentry;
 
 class Index extends Action
 {
     use OauthTrait;
-    private $logger;
+    private $nostoHelperSentry;
     private $urlBuilder;
     private $nostoHelperAccount;
     private $oauthMetaBuilder;
@@ -60,7 +60,7 @@ class Index extends Action
 
     /**
      * @param Context $context
-     * @param LoggerInterface $logger
+     * @param NostoHelperSentry $nostoHelperSentry
      * @param NostoHelperScope $nostoHelperScope
      * @param UrlInterface $urlBuilder
      * @param NostoHelperAccount $nostoHelperAccount
@@ -68,7 +68,7 @@ class Index extends Action
      */
     public function __construct(
         Context $context,
-        LoggerInterface $logger,
+        NostoHelperSentry $nostoHelperSentry,
         NostoHelperScope $nostoHelperScope,
         UrlInterface $urlBuilder,
         NostoHelperAccount $nostoHelperAccount,
@@ -76,7 +76,7 @@ class Index extends Action
     ) {
         parent::__construct($context);
 
-        $this->logger = $logger;
+        $this->nostoHelperSentry = $nostoHelperSentry;
         $this->urlBuilder = $urlBuilder;
         $this->nostoHelperAccount = $nostoHelperAccount;
         $this->oauthMetaBuilder = $oauthMetaBuilder;
@@ -158,7 +158,7 @@ class Index extends Action
      */
     public function logError(Exception $e)
     {
-        $this->logger->error($e->__toString());
+        $this->nostoHelperSentry->error($e);
     }
 
     /**

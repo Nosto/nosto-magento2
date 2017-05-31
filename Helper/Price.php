@@ -45,6 +45,7 @@ use Magento\GroupedProduct\Model\Product\Type\Grouped as GroupedType;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable as ConfigurableType;
 use Magento\Bundle\Model\Product\Type as BundleType;
 use Magento\Catalog\Model\ProductFactory;
+use Nosto\Tagging\Helper\Sentry as NostoHelperSentry;
 
 /**
  * Price helper used for product price related tasks.
@@ -53,6 +54,7 @@ class Price extends AbstractHelper
 {
     private $catalogHelper;
     private $productFactory;
+    private $nostoHelperSentry;
 
     /**
      * Constructor.
@@ -60,15 +62,18 @@ class Price extends AbstractHelper
      * @param Context $context the context.
      * @param CatalogHelper $catalogHelper the catalog helper.
      * @param ProductFactory $productFactory
+     * @param NostoHelperSentry $nostoHelperSentry
      */
     public function __construct(
         Context $context,
         CatalogHelper $catalogHelper,
-        ProductFactory $productFactory
+        ProductFactory $productFactory,
+        NostoHelperSentry $nostoHelperSentry
     ) {
         parent::__construct($context);
         $this->catalogHelper = $catalogHelper;
         $this->productFactory = $productFactory;
+        $this->nostoHelperSentry = $nostoHelperSentry;
     }
 
     /**
@@ -128,7 +133,7 @@ class Price extends AbstractHelper
                                         $sku
                                     );
                                 } catch (\Exception $e) {
-                                    $this->_logger->error($e->__toString());
+                                    $this->nostoHelperSentry->error($e);
                                 }
                             }
                         }

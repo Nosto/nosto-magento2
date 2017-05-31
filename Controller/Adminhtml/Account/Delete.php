@@ -40,10 +40,12 @@ use Magento\Backend\App\Action\Context;
 use Magento\Framework\Controller\Result\Json;
 use Nosto\Helper\IframeHelper;
 use Nosto\Nosto;
+use Nosto\Operation\UninstallAccount;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Model\Meta\Account\Iframe\Builder as NostoIframeMetaBuilder;
 use Nosto\Tagging\Model\User\Builder as NostoCurrentUserBuilder;
+use Nosto\Tagging\Helper\Sentry as NostoHelperSentry;
 
 class Delete extends Base
 {
@@ -53,6 +55,7 @@ class Delete extends Base
     private $nostoCurrentUserBuilder;
     private $nostoIframeMetaBuilder;
     private $nostoHelperScope;
+    private $nostoHelperSentry;
 
     /**
      * @param Context $context
@@ -60,6 +63,7 @@ class Delete extends Base
      * @param NostoIframeMetaBuilder $nostoIframeMetaBuilder
      * @param NostoCurrentUserBuilder $nostoCurrentUserBuilder
      * @param NostoHelperScope $nostoHelperScope
+     * @param NostoHelperSentry $nostoHelperSentry
      * @param Json $result
      */
     public function __construct(
@@ -68,6 +72,7 @@ class Delete extends Base
         NostoIframeMetaBuilder $nostoIframeMetaBuilder,
         NostoCurrentUserBuilder $nostoCurrentUserBuilder,
         NostoHelperScope $nostoHelperScope,
+        NostoHelperSentry $nostoHelperSentry,
         Json $result
     ) {
         parent::__construct($context);
@@ -77,6 +82,7 @@ class Delete extends Base
         $this->result = $result;
         $this->nostoCurrentUserBuilder = $nostoCurrentUserBuilder;
         $this->nostoHelperScope = $nostoHelperScope;
+        $this->nostoHelperSentry = $nostoHelperSentry;
     }
 
     /**
@@ -91,18 +97,26 @@ class Delete extends Base
         $account = $store !== null ? $this->nostoHelperAccount->findAccount($store) : null;
 
         if ($store !== null && $account !== null) {
-            $currentUser = $this->nostoCurrentUserBuilder->build();
-            if ($this->nostoHelperAccount->deleteAccount($account, $store, $currentUser)) {
-                $response['success'] = true;
-                $response['redirect_url'] = IframeHelper::getUrl(
-                    $this->nostoIframeMetaBuilder->build($store),
-                    null, // we don't have an account anymore
-                    $this->nostoCurrentUserBuilder->build(),
-                    [
-                        'message_type' => Nosto::TYPE_SUCCESS,
-                        'message_code' => Nosto::CODE_ACCOUNT_DELETE,
-                    ]
-                );
+            try {
+                $currentUser = $this->nostoCurrentUserBuilder->build();
+
+                $operation = new UninstallAccount($account);
+                $operation->delete($currentUser);
+
+                if ($this->nostoHelperAccount->deleteAccount($account, $store, $currentUser)) {
+                    $response['success'] = true;
+                    $response['redirect_url'] = IframeHelper::getUrl(
+                        $this->nostoIframeMetaBuilder->build($store),
+                        null, // we don't have an account anymore
+                        $this->nostoCurrentUserBuilder->build(),
+                        [
+                            'message_type' => Nosto::TYPE_SUCCESS,
+                            'message_code' => Nosto::CODE_ACCOUNT_DELETE,
+                        ]
+                    );
+                }
+            } catch (\Exception $e) {
+                $this->nostoHelperSentry->error($e);
             }
         }
 

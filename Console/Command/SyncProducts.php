@@ -49,6 +49,7 @@ use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Model\Product\Collection as NostoProductCollection;
+use Nosto\Tagging\Helper\Sentry as NostoHelperSentry;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -62,9 +63,10 @@ class SyncProducts extends Command
     private $nostoHelperAccount;
     private $nostoProductCollection;
     private $moduleManager;
-    private $logger;
+    private $nostoHelperSentry;
     private $state;
     private $nostoHelperScope;
+    private $logger;
 
     /**
      * Constructor to instantiating the reindex command. This constructor uses proxy classes for
@@ -77,8 +79,9 @@ class SyncProducts extends Command
      * @param ProductCollectionFactory $productCollectionFactory
      * @param ProductVisibility $productVisibility
      * @param NostoHelperScope $nostoHelperScope
-     * @param LoggerInterface $logger
+     * @param NostoHelperSentry $nostoHelperSentry
      * @param ModuleManager $moduleManager
+     * @param LoggerInterface $logger
      * @param NostoHelperAccount\Proxy $nostoHelperAccount
      * @param NostoProductCollection\Proxy $nostoProductCollection
      * @param NostoHelperData\Proxy $nostoHelperData
@@ -88,8 +91,9 @@ class SyncProducts extends Command
         ProductCollectionFactory $productCollectionFactory,
         ProductVisibility $productVisibility,
         NostoHelperScope $nostoHelperScope,
-        LoggerInterface $logger,
+        NostoHelperSentry $nostoHelperSentry,
         ModuleManager $moduleManager,
+        LoggerInterface $logger,
         NostoHelperAccount\Proxy $nostoHelperAccount,
         NostoProductCollection\Proxy $nostoProductCollection,
         NostoHelperData\Proxy $nostoHelperData
@@ -103,9 +107,10 @@ class SyncProducts extends Command
         $this->nostoHelperAccount = $nostoHelperAccount;
         $this->nostoProductCollection = $nostoProductCollection;
         $this->moduleManager = $moduleManager;
-        $this->logger = $logger;
+        $this->nostoHelperSentry = $nostoHelperSentry;
         $this->state = $state;
         $this->nostoHelperScope = $nostoHelperScope;
+        $this->logger = $logger;
 
         HttpRequest::$responseTimeout = 60;
         HttpRequest::buildUserAgent(
@@ -173,7 +178,7 @@ class SyncProducts extends Command
                 } catch (Exception $e) {
                     $output->writeln("An error occurred");
                     $output->writeln($e->getMessage());
-                    $this->logger->error($e->__toString());
+                    $this->nostoHelperSentry->error($e);
                 }
             }
         }

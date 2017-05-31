@@ -44,7 +44,7 @@ use Nosto\NostoException;
 use Nosto\Object\Iframe;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Url as NostoHelperUrl;
-use Psr\Log\LoggerInterface;
+use Nosto\Tagging\Helper\Sentry as NostoHelperSentry;
 
 class Builder
 {
@@ -52,7 +52,7 @@ class Builder
     private $nostoHelperData;
     private $localeResolver;
     private $backendAuthSession;
-    private $logger;
+    private $nostoHelperSentry;
     private $eventManager;
 
     /**
@@ -60,7 +60,7 @@ class Builder
      * @param NostoHelperData $nostoHelperData
      * @param Session $backendAuthSession
      * @param ResolverInterface $localeResolver
-     * @param LoggerInterface $logger
+     * @param NostoHelperSentry $nostoHelperSentry
      * @param ManagerInterface $eventManager
      */
     public function __construct(
@@ -68,14 +68,14 @@ class Builder
         NostoHelperData $nostoHelperData,
         Session $backendAuthSession,
         ResolverInterface $localeResolver,
-        LoggerInterface $logger,
+        NostoHelperSentry $nostoHelperSentry,
         ManagerInterface $eventManager
     ) {
         $this->nostoHelperUrl = $nostoHelperUrl;
         $this->nostoHelperData = $nostoHelperData;
         $this->backendAuthSession = $backendAuthSession;
         $this->localeResolver = $localeResolver;
-        $this->logger = $logger;
+        $this->nostoHelperSentry = $nostoHelperSentry;
         $this->eventManager = $eventManager;
     }
 
@@ -108,7 +108,7 @@ class Builder
             $metaData->setPreviewUrlCart($this->nostoHelperUrl->getPreviewUrlCart($store));
             $metaData->setPreviewUrlFront($this->nostoHelperUrl->getPreviewUrlFront($store));
         } catch (NostoException $e) {
-            $this->logger->error($e->__toString());
+            $this->nostoHelperSentry->error($e);
         }
 
         $this->eventManager->dispatch('nosto_iframe_load_after', ['iframe' => $metaData]);

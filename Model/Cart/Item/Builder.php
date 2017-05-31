@@ -42,28 +42,23 @@ use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\ObjectManagerInterface;
 use Magento\Quote\Model\Quote\Item;
 use Nosto\Object\Cart\LineItem;
-use Psr\Log\LoggerInterface;
 
 class Builder
 {
-    private $logger;
     private $objectManager;
     private $eventManager;
 
     /**
      * Constructor.
      *
-     * @param LoggerInterface $logger
      * @param ObjectManagerInterface $objectManager
      * @param ManagerInterface $eventManager
      */
     public function __construct(
-        LoggerInterface $logger,
         ObjectManagerInterface $objectManager,
         ManagerInterface $eventManager
     ) {
         $this->objectManager = $objectManager;
-        $this->logger = $logger;
         $this->eventManager = $eventManager;
     }
 

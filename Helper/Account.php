@@ -36,19 +36,15 @@
 
 namespace Nosto\Tagging\Helper;
 
-use Exception;
 use Magento\Framework\App\Config\Storage\WriterInterface;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\Store;
-use Nosto\NostoException;
-use Nosto\Object\User;
-use Nosto\Operation\UninstallAccount;
+use Nosto\Object\Signup\Account as NostoSignupAccount;
 use Nosto\Request\Api\Token;
 use Nosto\Tagging\Helper\Data as NostoHelper;
 use Nosto\Types\Signup\AccountInterface;
-use Nosto\Object\Signup\Account as NostoSignupAccount;
 
 /**
  * NostoHelperAccount helper class for common tasks related to Nosto accounts.
@@ -70,9 +66,9 @@ class Account extends AbstractHelper
      * Platform UI version
      */
     const IFRAME_VERSION = 0;
+
     private $config;
     private $moduleManager;
-    private $logger;
 
     /**
      * Constructor.
@@ -88,7 +84,6 @@ class Account extends AbstractHelper
 
         $this->config = $appConfig;
         $this->moduleManager = $context->getModuleManager();
-        $this->logger = $context->getLogger();
     }
 
     /**
@@ -130,16 +125,10 @@ class Account extends AbstractHelper
     /**
      * Removes an account with associated api tokens for the store.
      *
-     * @param NostoSignupAccount $account the account to remove.
      * @param Store $store the store.
-     * @param User $currentUser
      * @return bool true on success, false otherwise.
      */
-    public function deleteAccount(
-        NostoSignupAccount $account,
-        Store $store,
-        User $currentUser
-    ) {
+    public function deleteAccount(Store $store) {
         if ((int)$store->getId() < 1) {
             return false;
         }
@@ -154,14 +143,6 @@ class Account extends AbstractHelper
             ScopeInterface::SCOPE_STORES,
             $store->getId()
         );
-
-        try {
-            // Notify Nosto that the account was deleted.
-            $service = new UninstallAccount($account);
-            $service->delete($currentUser);
-        } catch (NostoException $e) {
-            $this->logger->error($e->__toString());
-        }
 
         $store->resetConfig();
 
@@ -206,11 +187,7 @@ class Account extends AbstractHelper
             );
             if (is_array($tokens) && !empty($tokens)) {
                 foreach ($tokens as $name => $value) {
-                    try {
-                        $account->addApiToken(new Token($name, $value));
-                    } catch (Exception $e) {
-                        $this->_logger->error($e->__toString());
-                    }
+                    $account->addApiToken(new Token($name, $value));
                 }
             }
             $missingTokens = false;

@@ -103,6 +103,11 @@ class Data extends AbstractHelper
     const XML_PATH_PRODUCT_UPDATES = 'nosto/flags/product_updates';
 
     /**
+     * Path to the configuration object that stores the preference for tracking exception traces
+     */
+    const XML_PATH_SENTRY_UPDATES = 'nosto/flags/sentry_updates';
+
+    /**
      * Name of the module
      */
     const MODULE_NAME = 'Nosto_Tagging';
@@ -264,6 +269,17 @@ class Data extends AbstractHelper
     }
 
     /**
+     * Returns if  exception traces tracking are enabled from the configuration table
+     *
+     * @param StoreInterface $store the store model or null.
+     * @return bool the configuration value
+     */
+    public function isSentryUpdatesEnabled(StoreInterface $store = null)
+    {
+        return (bool)$this->getStoreConfig(self::XML_PATH_SENTRY_UPDATES, $store);
+    }
+
+    /**
      * @param string $path
      * @param StoreInterface|Store $store
      * @return mixed|null
@@ -307,5 +323,15 @@ class Data extends AbstractHelper
             $version = AppInterface::VERSION;
         }
         return $version;
+    }
+
+    /**
+     * Returns the edition of the platform the e-commerce installation
+     *
+     * @return string the platforms's edition
+     */
+    public function getPlatformEdition()
+    {
+        return $this->productMetaData->getEdition() ?: 'unknown';
     }
 }

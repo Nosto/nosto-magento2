@@ -44,28 +44,28 @@ use Nosto\Object\Settings;
 use Nosto\Request\Http\HttpRequest;
 use Nosto\Tagging\Helper\Currency as NostoHelperCurrency;
 use Nosto\Tagging\Model\Meta\Account\Settings\Currencies\Builder as NostoCurrenciesBuilder;
-use Psr\Log\LoggerInterface;
+use Nosto\Tagging\Helper\Sentry as NostoHelperSentry;
 
 class Builder
 {
-    private $logger;
+    private $nostoHelperSentry;
     private $eventManager;
     private $nostoCurrenciesBuilder;
     private $nostoHelperCurrency;
 
     /**
-     * @param LoggerInterface $logger
+     * @param NostoHelperSentry $nostoHelperSentry
      * @param ManagerInterface $eventManager
      * @param NostoHelperCurrency $nostoHelperCurrency
      * @param NostoCurrenciesBuilder $nostoCurrenciesBuilder
      */
     public function __construct(
-        LoggerInterface $logger,
+        NostoHelperSentry $nostoHelperSentry,
         ManagerInterface $eventManager,
         NostoHelperCurrency $nostoHelperCurrency,
         NostoCurrenciesBuilder $nostoCurrenciesBuilder
     ) {
-        $this->logger = $logger;
+        $this->nostoHelperSentry = $nostoHelperSentry;
         $this->eventManager = $eventManager;
         $this->nostoCurrenciesBuilder = $nostoCurrenciesBuilder;
         $this->nostoHelperCurrency = $nostoHelperCurrency;
@@ -88,7 +88,7 @@ class Builder
             $settings->setDefaultVariantId($this->nostoHelperCurrency->getTaggingCurrency($store)->getCode());
             $settings->setCurrencies($this->nostoCurrenciesBuilder->build($store));
         } catch (NostoException $e) {
-            $this->logger->error($e->__toString());
+            $this->nostoHelperSentry->error($e);
         }
 
         $this->eventManager->dispatch('nosto_settings_load_after', ['settings' => $settings]);

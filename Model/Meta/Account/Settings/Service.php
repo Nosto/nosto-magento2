@@ -41,32 +41,37 @@ use Magento\Framework\Event\ManagerInterface;
 use Magento\Store\Model\Store;
 use Nosto\Operation\UpdateSettings;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
+use Nosto\Tagging\Helper\Sentry as NostoHelperSentry;
 use Nosto\Tagging\Model\Meta\Account\Settings\Builder as NostoSettingsBuilder;
 use Psr\Log\LoggerInterface;
 
 class Service
 {
-    private $logger;
+    private $nostoHelperSentry;
     private $eventManager;
     private $nostoHelperAccount;
     private $nostoSettingsBuilder;
+    private $logger;
 
     /**
-     * @param LoggerInterface $logger
+     * @param NostoHelperSentry $nostoHelperSentry
      * @param ManagerInterface $eventManager
+     * @param LoggerInterface $logger
      * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoSettingsBuilder $nostoSettingsBuilder
      */
     public function __construct(
-        LoggerInterface $logger,
+        NostoHelperSentry $nostoHelperSentry,
         ManagerInterface $eventManager,
+        LoggerInterface $logger,
         NostoHelperAccount $nostoHelperAccount,
         NostoSettingsBuilder $nostoSettingsBuilder
     ) {
-        $this->logger = $logger;
+        $this->nostoHelperSentry = $nostoHelperSentry;
         $this->eventManager = $eventManager;
         $this->nostoHelperAccount = $nostoHelperAccount;
         $this->nostoSettingsBuilder = $nostoSettingsBuilder;
+        $this->logger = $logger;
     }
 
     /**
@@ -84,7 +89,7 @@ class Service
                 $service = new UpdateSettings($account);
                 return $service->update($settings);
             } catch (Exception $e) {
-                $this->logger->error($e->__toString());
+                $this->nostoHelperSentry->error($e);
             }
         } else {
             $this->logger->info('Skipping update; an account doesn\'t exist for ' .

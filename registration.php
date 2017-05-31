@@ -38,6 +38,7 @@ use Dotenv\Dotenv;
 use Magento\Framework\Component\ComponentRegistrar;
 
 ComponentRegistrar::register(ComponentRegistrar::MODULE, 'Nosto_Tagging', __DIR__);
+Raven_Autoloader::register();
 
 if (file_exists(dirname(__FILE__) . DIRECTORY_SEPARATOR . '.env')) {
     $dotenv = new Dotenv(dirname(__FILE__)); // @codingStandardsIgnoreLine

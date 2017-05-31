@@ -41,26 +41,26 @@ use Magento\Catalog\Model\Category;
 use Magento\Catalog\Model\Product;
 use Magento\Framework\Event\ManagerInterface;
 use Nosto\NostoException;
-use Psr\Log\LoggerInterface;
+use Nosto\Tagging\Helper\Sentry as NostoHelperSentry;
 
 class Builder
 {
-    private $logger;
+    private $nostoHelperSentry;
     private $categoryRepository;
     private $eventManager;
 
     /**
      * @param CategoryRepositoryInterface $categoryRepository
-     * @param LoggerInterface $logger
+     * @param NostoHelperSentry $nostoHelperSentry
      * @param ManagerInterface $eventManager
      */
     public function __construct(
         CategoryRepositoryInterface $categoryRepository,
-        LoggerInterface $logger,
+        NostoHelperSentry $nostoHelperSentry,
         ManagerInterface $eventManager
     ) {
         $this->categoryRepository = $categoryRepository;
-        $this->logger = $logger;
+        $this->nostoHelperSentry = $nostoHelperSentry;
         $this->eventManager = $eventManager;
     }
 
@@ -102,7 +102,7 @@ class Builder
             }
             $nostoCategory = count($data) ? '/' . implode('/', $data) : '';
         } catch (NostoException $e) {
-            $this->logger->error($e->__toString());
+            $this->nostoHelperSentry->error($e);
         }
         if (empty($nostoCategory)) {
             $nostoCategory = null;

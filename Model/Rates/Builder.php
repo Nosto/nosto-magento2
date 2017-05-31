@@ -43,27 +43,32 @@ use Magento\Store\Model\Store;
 use Nosto\NostoException;
 use Nosto\Object\ExchangeRate;
 use Nosto\Object\ExchangeRateCollection;
+use Nosto\Tagging\Helper\Sentry as NostoHelperSentry;
 use Psr\Log\LoggerInterface;
 
 class Builder
 {
-    private $logger;
+    private $nostoHelperSentry;
     private $eventManager;
     private $currencyFactory;
+    private $logger;
 
     /**
-     * @param LoggerInterface $logger
+     * @param NostoHelperSentry $nostoHelperSentry
      * @param ManagerInterface $eventManager
+     * @param LoggerInterface $logger
      * @param CurrencyFactory $currencyFactory
      */
     public function __construct(
-        LoggerInterface $logger,
+        NostoHelperSentry $nostoHelperSentry,
         ManagerInterface $eventManager,
+        LoggerInterface $logger,
         CurrencyFactory $currencyFactory
     ) {
-        $this->logger = $logger;
         $this->eventManager = $eventManager;
         $this->currencyFactory = $currencyFactory;
+        $this->nostoHelperSentry = $nostoHelperSentry;
+        $this->logger = $logger;
     }
 
     /**
@@ -98,7 +103,7 @@ class Builder
                 $exchangeRates->addRate($code, new ExchangeRate($code, $rate));
             }
         } catch (NostoException $e) {
-            $this->logger->error($e->__toString());
+            $this->nostoHelperSentry->error($e);
         }
 
         $this->eventManager->dispatch(
