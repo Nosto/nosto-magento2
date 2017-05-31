@@ -2,26 +2,7 @@
 
 ## Changelog
 
-### 2.0.0-RC7
-* Fix handling the HTTP response code 100 (Continue)
-* Add correct user agent header for Nosto API calls
-
-### 2.0.0-RC6
-* Fix variation identifier when creating an account
-
-### 2.0.0-RC5
-* Fix issues with cart and order prices
-
-### 2.0.0-RC4
-* Corrected the currency handling for the account creation, cart and settings.
-
-### 2.0.0-RC3
-* Change the command name `nosto:reindex` to `nosto:sync:products`to avoid overlapping with Magento's reindex command
-
-### 2.0.0-RC2
-* Namespace fixes
-
-### 2.0.0-RC1
+### 2.0.0
 * Add possibility to use following attributes in Nosto 
   * GTIN
   * brand
