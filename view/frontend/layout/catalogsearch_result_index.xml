@@ -64,6 +64,13 @@
                     <argument name="value" xsi:type="string">nosto-page-search2</argument>
                 </action>
             </block>
+            <container htmlClass="nosto_page_type hidden" htmlTag="div" name="search.nosto.page.tag.container">
+                <block class="Magento\Framework\View\Element\Text" name="search.nosto.page.tag">
+                    <arguments>
+                        <argument name="text" xsi:type="string">search</argument>
+                    </arguments>
+                </block>
+            </container>
         </referenceContainer>
     </body>
 </page>

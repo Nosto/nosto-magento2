@@ -63,6 +63,13 @@
                     <argument name="value" xsi:type="string">nosto-page-category2</argument>
                 </action>
             </block>
+            <container htmlClass="nosto_page_type hidden" htmlTag="div" name="category.nosto.page.tag.container">
+                <block class="Magento\Framework\View\Element\Text" name="category.nosto.page.tag">
+                    <arguments>
+                        <argument name="text" xsi:type="string">category</argument>
+                    </arguments>
+                </block>
+            </container>
         </referenceContainer>
     </body>
 </page>

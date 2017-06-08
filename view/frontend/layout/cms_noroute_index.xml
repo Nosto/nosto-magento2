@@ -68,6 +68,13 @@
                     <argument name="value" xsi:type="string">notfound-nosto-3</argument>
                 </action>
             </block>
+            <container htmlClass="nosto_page_type hidden" htmlTag="div" name="404.nosto.page.tag.container">
+                <block class="Magento\Framework\View\Element\Text" name="404.nosto.page.tag">
+                    <arguments>
+                        <argument name="text" xsi:type="string">notfound</argument>
+                    </arguments>
+                </block>
+            </container>
         </referenceContainer>
     </body>
 </page>
