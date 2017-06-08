@@ -96,8 +96,8 @@ $category = $this->getNostoCategory();
                 <span class="gtin"><?php echo $this->escapeHtml($sku->getGtin()); ?></span>
                 <span class="availability"><?php echo $this->escapeHtml($sku->getAvailability()); ?></span>
                 <span class="custom_fields">
-                <?php if (is_array($sku->getCustomAttributes())) : ?>
-                    <?php foreach ($sku->getCustomAttributes() as $key => $val) : ?>
+                <?php if (is_array($sku->getCustomFields())) : ?>
+                    <?php foreach ($sku->getCustomFields() as $key => $val) : ?>
                         <span class="<?php echo $this->escapeHtml($key); ?>"><?php echo $this->escapeHtml($val); ?></span>
                     <?php endforeach; ?>
                 <?php endif; ?>

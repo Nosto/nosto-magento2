@@ -137,7 +137,7 @@
         <echo msg="Files copied and compressed"/>
     </target>
 
-    <target name="validate" depends="phpcbf, phpcs, phan, phpmd, phpcpd">
+    <target name="validate" depends="phpcs, phan, phpmd, phpcpd">
         <echo msg="Validating packages"/>
     </target>
 
