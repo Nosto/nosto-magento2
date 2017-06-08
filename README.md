@@ -2,6 +2,9 @@
 
 ## Changelog
 
+### 2.0.1
+* Fix the multi-currency variation issue when only single currency is used
+
 ### 2.0.0
 * Add possibility to use following attributes in Nosto 
   * GTIN
