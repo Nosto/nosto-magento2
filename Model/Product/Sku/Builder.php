@@ -118,7 +118,7 @@ class Builder
             foreach ($attributes as $attribute) {
                 try {
                     $code = $attribute->getProductAttribute()->getAttributeCode();
-                    $nostoSku->addCustomAttribute($code, $product->getAttributeText($code));
+                    $nostoSku->addCustomField($code, $product->getAttributeText($code));
                 } catch (NostoException $e) {
                     $this->logger->error($e->__toString());
                 }

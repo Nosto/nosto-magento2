@@ -144,11 +144,14 @@ class Builder
                     $store
                 )->getCode()
             );
-            $nostoProduct->setVariationId(
-                $this->nostoCurrencyHelper->getTaggingCurrency(
-                    $store
-                )->getCode()
-            );
+
+            if ($this->nostoCurrencyHelper->getCurrencyCount($store) > 1) {
+                $nostoProduct->setVariationId(
+                    $this->nostoCurrencyHelper->getTaggingCurrency(
+                        $store
+                    )->getCode()
+                );
+            }
 
             $nostoProduct->setAvailability($this->buildAvailability($product));
             $nostoProduct->setCategories($this->nostoCategoryBuilder->buildCategories($product));
