@@ -30,6 +30,7 @@ namespace Nosto\Tagging\Block;
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Element\Template\Context;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
+use Nosto\Tagging\Helper\Currency as NostoHelperCurrency;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 
 /**
@@ -42,6 +43,7 @@ class Variation extends Template
     }
 
     private $nostoHelperScope;
+    private $nostoHelperCurrency;
 
     /**
      * Constructor.
@@ -55,12 +57,14 @@ class Variation extends Template
         Context $context,
         NostoHelperAccount $nostoHelperAccount,
         NostoHelperScope $nostoHelperScope,
+        NostoHelperCurrency $nostoHelperCurrency,
         array $data = []
     ) {
         parent::__construct($context, $data);
 
         $this->taggingConstruct($nostoHelperAccount, $nostoHelperScope);
         $this->nostoHelperScope = $nostoHelperScope;
+        $this->nostoHelperCurrency = $nostoHelperCurrency;
     }
 
     /**
@@ -83,6 +87,6 @@ class Variation extends Template
     public function hasMultipleCurrencies()
     {
         $store = $this->nostoHelperScope->getStore(true);
-        return count($store->getAvailableCurrencyCodes(true)) > 1;
+        return count($this->nostoHelperCurrency->getCurrencyCount($store)) > 1;
     }
 }
