@@ -197,7 +197,10 @@ class Builder
         } catch (NostoException $e) {
             $this->logger->error($e->__toString());
         }
-        $this->eventManager->dispatch('nosto_product_load_after', ['product' => $nostoProduct]);
+        $this->eventManager->dispatch(
+            'nosto_product_load_after',
+            ['product' => $nostoProduct, 'magentoProduct' => $product]
+        );
 
         return $nostoProduct;
     }

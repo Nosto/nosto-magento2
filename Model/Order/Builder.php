@@ -161,7 +161,7 @@ class Builder
             $this->logger->error($e->__toString());
         }
 
-        $this->eventManager->dispatch('nosto_order_load_after', ['order' => $nostoOrder]);
+        $this->eventManager->dispatch('nosto_order_load_after', ['order' => $nostoOrder, 'magentoOrder' => $order]);
 
         return $nostoOrder;
     }

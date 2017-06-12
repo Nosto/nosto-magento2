@@ -93,7 +93,7 @@ class Builder
             }
         }
 
-        $this->eventManager->dispatch('nosto_cart_load_after', ['cart' => $nostoCart]);
+        $this->eventManager->dispatch('nosto_cart_load_after', ['cart' => $nostoCart, 'magentoQuote' => $quote]);
 
         return $nostoCart;
     }
