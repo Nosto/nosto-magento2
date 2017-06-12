@@ -100,7 +100,7 @@ class Builder
             $cartItem->setPrice(0);
         }
 
-        $this->eventManager->dispatch('nosto_cart_item_load_after', ['item' => $cartItem]);
+        $this->eventManager->dispatch('nosto_cart_item_load_after', ['item' => $cartItem, 'magentoItem' => $item]);
 
         return $cartItem;
     }
