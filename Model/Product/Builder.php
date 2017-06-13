@@ -56,6 +56,8 @@ use Psr\Log\LoggerInterface;
 
 class Builder
 {
+    const CUSTOMIZED_TAGS = array('Tag1', 'Tag2', 'Tag3');
+
     private $nostoDataHelper;
     private $nostoPriceHelper;
     private $nostoCategoryBuilder;
@@ -194,6 +196,14 @@ class Builder
             if (($tags = $this->buildTags($product)) !== []) {
                 $nostoProduct->setTag1($tags);
             }
+
+
+            //update customized tag1
+            $attributes = $this->nostoDataHelper->getTag1Attributes($store);
+            $lala = $attributes;
+
+            $this->amendAttributeTags($product, $nostoProduct, $store);
+
         } catch (NostoException $e) {
             $this->logger->error($e->__toString());
         }
@@ -203,6 +213,43 @@ class Builder
         );
 
         return $nostoProduct;
+    }
+
+
+    /**
+     * Amends the product attributes to tags array if attributes are defined
+     * and are present in product
+     *
+     * @param Product $product the magento product model.
+     * @param \Nosto\Object\Product\Product $nostoProduct nosto product object
+     * @param Store $store the store model.
+     */
+    protected function amendAttributeTags(Product $product, \Nosto\Object\Product\Product $nostoProduct, Store $store)
+    {
+        foreach (self::CUSTOMIZED_TAGS as $tag) {
+            $getCustomizedAttribusMethodName = 'get'.$tag.'Attributes';
+            $addTagMethodName = 'add'.$tag;
+            $attributesConfig = $this->nostoDataHelper->$getCustomizedAttribusMethodName($store);
+            if ($attributesConfig == null) {
+                return;
+            }
+
+            $attributes = explode(',', $attributesConfig);
+
+            foreach ($attributes as $productAttribute) {
+                try {
+                    $attributeValue = $this->getAttributeValue($product, $productAttribute);
+                    if (empty($attributeValue)) {
+                        continue;
+                    }
+                    $nostoProduct->$addTagMethodName(sprintf('%s:%s', $productAttribute, $attributeValue));
+                    $lala =  $nostoProduct;
+                } catch (Exception $e) {
+                    $this->logger->error($e);
+                }
+            }
+
+        }
     }
 
     /**

@@ -102,6 +102,22 @@ class Data extends AbstractHelper
      */
     const XML_PATH_PRODUCT_UPDATES = 'nosto/flags/product_updates';
 
+
+    /**
+     * Path to the configuration object for customized tag1
+     */
+    const XML_PATH_TAG1 = 'nosto/attributes/tag1';
+
+    /**
+     * Path to the configuration object for customized tag1
+     */
+    const XML_PATH_TAG2 = 'nosto/attributes/tag2';
+
+    /**
+     * Path to the configuration object for customized tag1
+     */
+    const XML_PATH_TAG3 = 'nosto/attributes/tag3';
+
     /**
      * Name of the module
      */
@@ -307,5 +323,39 @@ class Data extends AbstractHelper
             $version = AppInterface::VERSION;
         }
         return $version;
+    }
+
+
+    /**
+     * Get tag1 mapping attributes
+     *
+     * @param StoreInterface $store the store model or null.
+     * @return array of attributes
+     */
+    public function getTag1Attributes(StoreInterface $store = null)
+    {
+        return $this->getStoreConfig(self::XML_PATH_TAG1, $store);
+    }
+
+    /**
+     * Get tag1 mapping attributes
+     *
+     * @param StoreInterface $store the store model or null.
+     * @return array of attributes
+     */
+    public function getTag2Attributes(StoreInterface $store = null)
+    {
+        return $this->getStoreConfig(self::XML_PATH_TAG2, $store);
+    }
+
+    /**
+     * Get tag1 mapping attributes
+     *
+     * @param StoreInterface $store the store model or null.
+     * @return array of attributes
+     */
+    public function getTag3Attributes(StoreInterface $store = null)
+    {
+        return $this->getStoreConfig(self::XML_PATH_TAG3, $store);
     }
 }
