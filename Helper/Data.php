@@ -102,7 +102,6 @@ class Data extends AbstractHelper
      */
     const XML_PATH_PRODUCT_UPDATES = 'nosto/flags/product_updates';
 
-
     /**
      * Path to the configuration object for customized tag1
      */
@@ -324,7 +323,6 @@ class Data extends AbstractHelper
         }
         return $version;
     }
-
 
     /**
      * Get tag1 mapping attributes

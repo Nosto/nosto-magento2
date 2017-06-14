@@ -93,7 +93,6 @@ class SyncProducts extends Command
         NostoHelperAccount\Proxy $nostoHelperAccount,
         NostoProductCollection\Proxy $nostoProductCollection,
         NostoHelperData\Proxy $nostoHelperData
-
     ) {
         $state->setAreaCode(Area::AREA_FRONTEND);
         parent::__construct();

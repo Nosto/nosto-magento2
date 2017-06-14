@@ -56,7 +56,7 @@ use Psr\Log\LoggerInterface;
 
 class Builder
 {
-    const CUSTOMIZED_TAGS = array('Tag1', 'Tag2', 'Tag3');
+    const CUSTOMIZED_TAGS = ['Tag1', 'Tag2', 'Tag3'];
 
     private $nostoDataHelper;
     private $nostoPriceHelper;
@@ -197,13 +197,8 @@ class Builder
                 $nostoProduct->setTag1($tags);
             }
 
-
             //update customized tag1
-            $attributes = $this->nostoDataHelper->getTag1Attributes($store);
-            $lala = $attributes;
-
             $this->amendAttributeTags($product, $nostoProduct, $store);
-
         } catch (NostoException $e) {
             $this->logger->error($e->__toString());
         }
@@ -243,7 +238,7 @@ class Builder
                     }
                     //addTag1(), addTag2() and addTag3() are called
                     $nostoProduct->$addTagMethodName(sprintf('%s:%s', $productAttribute, $attributeValue));
-                } catch (Exception $e) {
+                } catch (\Exception $e) {
                     $this->logger->error($e);
                 }
             }
@@ -390,7 +385,7 @@ class Builder
                     $value = implode(",", $frontendValue);
                 } elseif (is_scalar($frontendValue)) {
                     $value = $frontendValue;
-                } elseif ($frontendValue instanceof \Magento\Framework\Phrase) {
+                } elseif ($frontendValue instanceof Magento\Framework\Phrase) {
                     $value = (string)$frontendValue;
                 }
             }
