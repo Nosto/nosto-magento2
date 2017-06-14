@@ -6,7 +6,7 @@
  */
 -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Mview/etc/mview.xsd">
-    <view id="nosto_product_sync" class="Nosto\Tagging\Model\Indexer\Product\Sync" group="indexer">
+    <view id="nosto_sync_products" class="Nosto\Tagging\Model\Indexer\Product\Sync" group="indexer">
         <subscriptions>
             <table name="catalog_product_entity" entity_column="entity_id" />
             <table name="catalog_product_entity_datetime" entity_column="entity_id" />

@@ -1,5 +1,5 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../Indexer/etc/indexer.xsd">
-    <indexer id="nosto_sync_products" view_id="nosto_product_sync" class="Nosto\Tagging\Model\Indexer\Product\Sync">
+    <indexer id="nosto_sync_products" view_id="nosto_sync_products" class="Nosto\Tagging\Model\Indexer\Product\Sync">
         <title translate="true">Nosto Product Sync</title>
         <description translate="true">Synchronizes the products to Nosto</description>
     </indexer>
