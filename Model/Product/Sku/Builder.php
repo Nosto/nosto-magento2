@@ -126,6 +126,7 @@ class Builder
         } catch (NostoException $e) {
             $this->logger->error($e->__toString());
         }
+
         $this->eventManager->dispatch('nosto_sku_load_after', ['sku' => $nostoSku, 'magentoProduct' => $product]);
 
         return $nostoSku;
