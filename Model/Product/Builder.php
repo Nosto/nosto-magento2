@@ -215,7 +215,6 @@ class Builder
         return $nostoProduct;
     }
 
-
     /**
      * Amends the product attributes to tags array if attributes are defined
      * and are present in product
@@ -227,13 +226,13 @@ class Builder
     protected function amendAttributeTags(Product $product, \Nosto\Object\Product\Product $nostoProduct, Store $store)
     {
         foreach (self::CUSTOMIZED_TAGS as $tag) {
-            $getCustomizedAttribusMethodName = 'get'.$tag.'Attributes';
-            $addTagMethodName = 'add'.$tag;
+            $getCustomizedAttribusMethodName = 'get' . $tag . 'Attributes';
+            $addTagMethodName = 'add' . $tag;
+            //getTag1Attributes(), getTag2Attributes() and getTag3Attributes() are called
             $attributesConfig = $this->nostoDataHelper->$getCustomizedAttribusMethodName($store);
             if ($attributesConfig == null) {
-                return;
+                continue;
             }
-
             $attributes = explode(',', $attributesConfig);
 
             foreach ($attributes as $productAttribute) {
@@ -242,13 +241,12 @@ class Builder
                     if (empty($attributeValue)) {
                         continue;
                     }
+                    //addTag1(), addTag2() and addTag3() are called
                     $nostoProduct->$addTagMethodName(sprintf('%s:%s', $productAttribute, $attributeValue));
-                    $lala =  $nostoProduct;
                 } catch (Exception $e) {
                     $this->logger->error($e);
                 }
             }
-
         }
     }
 
@@ -392,6 +390,8 @@ class Builder
                     $value = implode(",", $frontendValue);
                 } elseif (is_scalar($frontendValue)) {
                     $value = $frontendValue;
+                } elseif ($frontendValue instanceof \Magento\Framework\Phrase) {
+                    $value = (string)$frontendValue;
                 }
             }
         } catch (\Exception $e) {

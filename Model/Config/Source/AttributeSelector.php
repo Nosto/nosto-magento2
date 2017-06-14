@@ -44,11 +44,10 @@ use Magento\Catalog\Model\ResourceModel\Product\Attribute\Collection;
  *
  * @package Nosto\Tagging\Model\Config\Source
  */
-class Attribute extends Selector
+class AttributeSelector extends Selector
 {
     public function filterCollection(Collection $collection)
     {
-        $collection->setFrontendInputTypeFilter(['text', 'select', 'textarea', 'multiselect']);
     }
 
     public function isNullable()
