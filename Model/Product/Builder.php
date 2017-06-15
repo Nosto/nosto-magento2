@@ -197,7 +197,7 @@ class Builder
                 $nostoProduct->setTag1($tags);
             }
 
-            //update customized tag1
+            //update customized tag1, Tag2 and Tag3
             $this->amendAttributeTags($product, $nostoProduct, $store);
         } catch (NostoException $e) {
             $this->logger->error($e->__toString());
