@@ -44,7 +44,7 @@ use Magento\Catalog\Model\ResourceModel\Product\Attribute\Collection;
  *
  * @package Nosto\Tagging\Model\Config\Source
  */
-class AttributeSelector extends Selector
+class Tags extends Selector
 {
     public function filterCollection(Collection $collection)
     {

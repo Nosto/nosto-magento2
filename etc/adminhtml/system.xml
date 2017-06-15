@@ -159,7 +159,7 @@
                     <label>Tag3</label>
                     <comment>Choose attributes that will be added to tag 3 when present
                     </comment>
-                    <source_model>Nosto\Tagging\Model\Config\Source\AttributeSelector</source_model>
+                    <source_model>Nosto\Tagging\Model\Config\Source\Tags</source_model>
                 </field>
             </group>
         </section>

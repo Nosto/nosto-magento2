@@ -56,7 +56,7 @@ use Psr\Log\LoggerInterface;
 
 class Builder
 {
-    const CUSTOMIZED_TAGS = ['Tag1', 'Tag2', 'Tag3'];
+    const CUSTOMIZED_TAGS = ['tag1', 'tag2', 'tag3'];
 
     private $nostoDataHelper;
     private $nostoPriceHelper;
@@ -221,10 +221,7 @@ class Builder
     protected function amendAttributeTags(Product $product, \Nosto\Object\Product\Product $nostoProduct, Store $store)
     {
         foreach (self::CUSTOMIZED_TAGS as $tag) {
-            $getCustomizedAttribusMethodName = 'get' . $tag . 'Attributes';
-            $addTagMethodName = 'add' . $tag;
-            //getTag1Attributes(), getTag2Attributes() and getTag3Attributes() are called
-            $attributesConfig = $this->nostoDataHelper->$getCustomizedAttribusMethodName($store);
+            $attributesConfig = $this->nostoDataHelper->getTagAttributes($store, $tag);
             if ($attributesConfig == null) {
                 continue;
             }
@@ -237,6 +234,7 @@ class Builder
                         continue;
                     }
                     //addTag1(), addTag2() and addTag3() are called
+                    $addTagMethodName = 'add' . $tag;
                     $nostoProduct->$addTagMethodName(sprintf('%s:%s', $productAttribute, $attributeValue));
                 } catch (\Exception $e) {
                     $this->logger->error($e);
