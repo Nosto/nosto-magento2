@@ -221,12 +221,10 @@ class Builder
     protected function amendAttributeTags(Product $product, \Nosto\Object\Product\Product $nostoProduct, Store $store)
     {
         foreach (self::CUSTOMIZED_TAGS as $tag) {
-            $attributesConfig = $this->nostoDataHelper->getTagAttributes($store, $tag);
-            if ($attributesConfig == null) {
+            $attributes = $this->nostoDataHelper->getTagAttributes($store, $tag);
+            if (!$attributes) {
                 continue;
             }
-            $attributes = explode(',', $attributesConfig);
-
             foreach ($attributes as $productAttribute) {
                 try {
                     $attributeValue = $this->getAttributeValue($product, $productAttribute);
