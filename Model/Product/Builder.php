@@ -56,6 +56,8 @@ use Psr\Log\LoggerInterface;
 
 class Builder
 {
+    const CUSTOMIZED_TAGS = ['Tag1', 'Tag2', 'Tag3'];
+
     private $nostoDataHelper;
     private $nostoPriceHelper;
     private $nostoCategoryBuilder;
@@ -194,6 +196,9 @@ class Builder
             if (($tags = $this->buildTags($product)) !== []) {
                 $nostoProduct->setTag1($tags);
             }
+
+            //update customized tag1
+            $this->amendAttributeTags($product, $nostoProduct, $store);
         } catch (NostoException $e) {
             $this->logger->error($e->__toString());
         }
@@ -203,6 +208,41 @@ class Builder
         );
 
         return $nostoProduct;
+    }
+
+    /**
+     * Amends the product attributes to tags array if attributes are defined
+     * and are present in product
+     *
+     * @param Product $product the magento product model.
+     * @param \Nosto\Object\Product\Product $nostoProduct nosto product object
+     * @param Store $store the store model.
+     */
+    protected function amendAttributeTags(Product $product, \Nosto\Object\Product\Product $nostoProduct, Store $store)
+    {
+        foreach (self::CUSTOMIZED_TAGS as $tag) {
+            $getCustomizedAttribusMethodName = 'get' . $tag . 'Attributes';
+            $addTagMethodName = 'add' . $tag;
+            //getTag1Attributes(), getTag2Attributes() and getTag3Attributes() are called
+            $attributesConfig = $this->nostoDataHelper->$getCustomizedAttribusMethodName($store);
+            if ($attributesConfig == null) {
+                continue;
+            }
+            $attributes = explode(',', $attributesConfig);
+
+            foreach ($attributes as $productAttribute) {
+                try {
+                    $attributeValue = $this->getAttributeValue($product, $productAttribute);
+                    if (empty($attributeValue)) {
+                        continue;
+                    }
+                    //addTag1(), addTag2() and addTag3() are called
+                    $nostoProduct->$addTagMethodName(sprintf('%s:%s', $productAttribute, $attributeValue));
+                } catch (\Exception $e) {
+                    $this->logger->error($e);
+                }
+            }
+        }
     }
 
     /**
@@ -345,6 +385,8 @@ class Builder
                     $value = implode(",", $frontendValue);
                 } elseif (is_scalar($frontendValue)) {
                     $value = $frontendValue;
+                } elseif ($frontendValue instanceof Magento\Framework\Phrase) {
+                    $value = (string)$frontendValue;
                 }
             }
         } catch (\Exception $e) {
