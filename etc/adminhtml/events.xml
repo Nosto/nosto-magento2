@@ -37,14 +37,14 @@
 <!--suppress XmlUnboundNsPrefix -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
-    <event name="catalog_product_save_commit_after">
-        <observer name="nosto_product_upsert_observer"
-                  instance="Nosto\Tagging\Observer\Product\Update"/>
-    </event>
-    <event name="catalog_product_delete_before">
-        <observer name="nosto_product_delete_observer"
-                  instance="Nosto\Tagging\Observer\Product\Delete"/>
-    </event>
+    <!--<event name="catalog_product_save_commit_after">-->
+        <!--<observer name="nosto_product_upsert_observer"-->
+                  <!--instance="Nosto\Tagging\Observer\Product\Update"/>-->
+    <!--</event>-->
+    <!--<event name="catalog_product_delete_before">-->
+        <!--<observer name="nosto_product_delete_observer"-->
+                  <!--instance="Nosto\Tagging\Observer\Product\Delete"/>-->
+    <!--</event>-->
     <event name="backend_auth_user_login_success">
         <observer name="nosto_update_settings_observer"
                   instance="Nosto\Tagging\Observer\Settings\Update"/>

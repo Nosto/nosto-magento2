@@ -15,8 +15,10 @@ use Psr\Log\LoggerInterface;
  * An indexer for Nosto product sync
  *
  */
-class Sync implements IndexerActionInterface, MviewActionInterface
+class Indexer implements IndexerActionInterface, MviewActionInterface
 {
+    const INDEXER_ID = 'nosto_sync_products';
+
     protected $productService;
     protected $productCollectionFactory;
     protected $logger;
@@ -67,20 +69,15 @@ class Sync implements IndexerActionInterface, MviewActionInterface
     public function executeRow($id)
     {
         $this->logger->debug('Exec row');
-
-        $collection = $this->productCollectionFactory->create()
-            ->addAttributeToFilter('id', ['eq' => $id]);
-        $this->productService->update($collection);
+        $this->execute([$id]);
     }
-
 
     public function execute($ids)
     {
         $this->logger->debug('Exec');
         $collection = $this->productCollectionFactory->create()
-            ->addAttributeToFilter('status', ['eq' => '1'])
+            ->addAttributeToFilter('entity_id', ['in' => $ids])
             ->addAttributeToSelect('*');
-        $collection->setPage(1,10);
 
         $this->productService->update($collection);
     }

@@ -37,6 +37,7 @@
 namespace Nosto\Tagging\Model\Product;
 
 use Magento\Catalog\Model\Product;
+use Magento\Catalog\Model\Product\Type;
 use Magento\Catalog\Model\Product\Visibility as ProductVisibility;
 use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductCollectionFactory;
 use Magento\Framework\App\State;
@@ -50,7 +51,13 @@ use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
 use Psr\Log\LoggerInterface;
 use Magento\Catalog\Model\ResourceModel\Product\Collection as ProductCollection;
 use Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable as ConfigurableProduct;
+use Magento\ConfigurableProduct\Model\Product\Type\Configurable as ConfigurableType;
 
+/**
+ * Service class for updating products to Nosto
+ *
+ * @package Nosto\Tagging\Model\Product
+ */
 class Service
 {
 
@@ -66,6 +73,8 @@ class Service
     private $nostoHelperAccount;
     private $nostoHelperData;
     private $configurableProduct;
+
+    public static $processed = [];
 
     /**
      * Constructor to instantiating the product update command. This constructor uses proxy classes for
@@ -95,7 +104,6 @@ class Service
         NostoHelperAccount\Proxy $nostoHelperAccount,
         NostoHelperData\Proxy $nostoHelperData,
         ConfigurableProduct $configurableProduct
-
     )
     {
         $this->productCollectionFactory = $productCollectionFactory;
@@ -118,14 +126,21 @@ class Service
         );
     }
 
+    /**
+     * Updates product collection to Nosto via API
+     *
+     * @param ProductCollection $productCollection
+     */
     public function update(ProductCollection $productCollection)
     {
-        $this->logger->debug('Updating Nosto shit');
         $productsInStores = [];
         $storesWithNoNosto = [];
         $currentBatch = 0;
         $productCounter = 0;
         foreach ($productCollection as $product) {
+            if (self::isProcessed($product->getId())) {
+                continue;
+            }
             foreach ($product->getStoreIds() as $storeId) {
                 if (in_array($storeId, $storesWithNoNosto)) {
                     continue;
@@ -139,26 +154,33 @@ class Service
                     }
                     $productsInStores[$storeId] = array();
                 }
-                $parentProducts
-                    = $this->configurableProduct->getParentIdsByChild($product->getId());
-                if (!empty($parentProducts[0]) && is_int($parentProducts[0])) {
-                    /** @noinspection PhpDeprecationInspection */
-                    $product = $this->productFactory->create()
-                        ->load((int)$parentProducts[0]);
+                $parentProducts = $this->resolveParentProducts($product);
+                $productsToUpdate = [];
+                if ($parentProducts instanceof ProductCollection) {
+                    foreach ($parentProducts as $parentProduct) {
+                        $productsToUpdate[] = $parentProduct;
+                    }
+                } else {
+                    $productsToUpdate[] = $product;
                 }
-                if ($productCounter > 0
-                    && $productCounter % self::$batchSize == 0
-                ) {
-                    ++$currentBatch;
-                }
-                if (empty($productsInStores[$storeId][$currentBatch])) {
-                    $productsInStores[$storeId][$currentBatch] = [];
-                }
-                $productsInStores[$storeId][$currentBatch][] = $product;
 
+                foreach ($productsToUpdate as $productToUpdate) {
+                    if ($productCounter > 0
+                        && $productCounter % self::$batchSize == 0
+                    ) {
+                        ++$currentBatch;
+                    }
+                    if (empty($productsInStores[$storeId][$currentBatch])) {
+                        $productsInStores[$storeId][$currentBatch] = [];
+                    }
+                    $productsInStores[$storeId][$currentBatch][] = $productToUpdate;
+                    $this->setVariationsAsProcessed($productToUpdate);
+                }
             }
+            self::$processed[] = $product->getId();
             ++$productCounter;
         }
+
         foreach ($productsInStores as $storeId => $batches) {
             $store = $this->nostoHelperScope->getStore($storeId);
             $account = $this->nostoHelperAccount->findAccount($store);
@@ -192,11 +214,80 @@ class Service
         }
     }
 
-    public function updateSingle(Product $product)
+    /**
+     * Resolves / checks if the product has configurable parent product
+     *
+     * @param Product $product
+     * @return ProductCollectionFactory|null
+     */
+    private function resolveParentProducts(Product $product)
     {
-        $productCollection = $this->productCollectionFactory->create();
-        $productCollection->addItem($product);
+        $parentProducts = null;
+        if ($product->getTypeId() === Type::TYPE_SIMPLE) {
+            $parentIds = $this->configurableProduct->getParentIdsByChild($product->getId());
+            if (count($parentIds) >0) {
+                $parentProducts = $this->productCollectionFactory->create()
+                    ->addAttributeToFilter('entity_id', ['in' => $parentIds])
+                    ->addAttributeToSelect('*');
+            }
+        }
+        self::addProcessed($product->getId());
 
-        return $this->update($productCollection);
+        return $parentProducts;
+    }
+
+    /**
+     * Sets a product id as processed
+     *
+     * @param $id
+     */
+    private static function addProcessed($id)
+    {
+        if (is_numeric($id)) {
+            self::$processed[$id] = $id;
+        }
+    }
+
+    /**
+     * Sets a product id as processed
+     *
+     * @param array $arr
+     */
+    private static function addProcessedArray(array $arr) {
+        foreach ($arr as $id) {
+            self::addProcessed($id);
+        }
+    }
+
+    /**
+     * Checks if product has been already processed
+     *
+     * @param $id
+     * @return bool
+     */
+    private static function isProcessed($id)
+    {
+        return isset(self::$processed[$id]);
+    }
+
+    /**
+     * Sets product variations as processed
+     *
+     * @param Product $product
+     */
+    private function setVariationsAsProcessed(Product $product)
+    {
+        if ($product->getTypeId() === ConfigurableType::TYPE_CODE) {
+            $childrenIds = $this->configurableProduct->getChildrenIds($product->getId());
+            if (count($childrenIds) > 0) {
+                foreach ($childrenIds as $val) {
+                    if (is_array($val)) {
+                        self::addProcessedArray($val);
+                    } else {
+                        self::addProcessed($val);
+                    }
+                }
+            }
+        }
     }
 }
