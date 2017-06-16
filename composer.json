@@ -58,5 +58,10 @@
   },
   "archive": {
     "exclude": [".DS_STORE", ".idea", ".phan", "ruleset.xml", "phan.*", ".gitignore"]
+  },
+  "scripts": {
+    "validate-archive": [
+      "php ./vendor/magento/marketplace-tools/validate_m2_package.php $@"
+    ]
   }
 }
