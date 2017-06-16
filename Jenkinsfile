@@ -20,7 +20,9 @@ node {
                 step([$class: 'hudson.plugins.checkstyle.CheckStylePublisher', pattern: 'phpcs.xml', unstableTotalAll:'0'])
 
             stage "Copy-Paste Detection"
-                sh "./vendor/bin/phpcpd --exclude=vendor --exclude=var --exclude=build --log-pmd=phpcpd.xml . || true"
+                catchError {
+                    sh "./vendor/bin/phpcpd --exclude=vendor --exclude=var --exclude=build --log-pmd=phpcpd.xml . || true"
+                }
 
             stage "Mess Detection"
                 catchError {
@@ -33,6 +35,11 @@ node {
                     sh "./vendor/bin/phan --dead-code-detection --signature-compatibility --config-file=phan.php --output-mode=checkstyle --output=phan.xml || true"
                 }
                 step([$class: 'hudson.plugins.checkstyle.CheckStylePublisher', pattern: 'phan.xml', unstableTotalAll:'0'])
+
+            stage "Package"
+                version = sh(returnStdout: true, script: 'git rev-parse --short HEAD').trim()
+                sh "composer archive --format=zip --file=${version}"
+                archiveArtifacts "${version}.zip"
         }
 
     stage "Cleanup"
