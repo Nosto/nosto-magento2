@@ -8,8 +8,6 @@ node {
         environment.inside {
             stage "Update Dependencies"
                 withCredentials([usernamePassword(credentialsId: 'magento', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-                  sh 'echo $PASSWORD'
-                  echo "$USERNAME"
                   sh "composer config repo.magento.com $USERNAME $PASSWORD"
                 }
                 sh "composer install"
