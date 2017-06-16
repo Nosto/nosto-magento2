@@ -41,6 +41,7 @@ use Magento\Customer\CustomerData\SectionSourceInterface;
 use Magento\Framework\Stdlib\CookieManagerInterface;
 use Magento\Framework\Stdlib\DateTime\DateTime;
 use Nosto\Object\Cart\LineItem;
+use Nosto\Tagging\Helper\Data;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Model\Cart\Builder as NostoCartBuilder;
 use Nosto\Tagging\Model\Customer;
@@ -173,6 +174,7 @@ class CartTagging extends HashedTagging implements SectionSourceInterface
                 /** @noinspection PhpUndefinedMethodInspection */
                 $nostoCustomer->setNostoId($nostoCustomerId);
                 $nostoCustomer->setCreatedAt(self::getNow());
+                $nostoCustomer->setRestoreCartHash($this->generateRestoreCartHash());
             }
             try {
                 /** @noinspection PhpDeprecationInspection */
@@ -181,6 +183,21 @@ class CartTagging extends HashedTagging implements SectionSourceInterface
                 $this->logger->error($e->__toString());
             }
         }
+    }
+
+    /**
+     * Generate unique hash for restore cart
+     *
+     * @return string
+     */
+    public function generateRestoreCartHash()
+    {
+        $hash = hash(
+            Data::VISITOR_HASH_ALGO,
+            uniqid('nostocartrestore')
+        );
+
+        return $hash;
     }
 
     /**

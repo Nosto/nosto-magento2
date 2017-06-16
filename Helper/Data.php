@@ -117,6 +117,11 @@ class Data extends AbstractHelper
      */
     const PLATFORM_NAME = 'Magento';
 
+    /**
+     * @var string the algorithm to use for hashing visitor id.
+     */
+    const VISITOR_HASH_ALGO = 'sha256';
+
     private $moduleListing;
     private $configWriter;
     private $productMetaData;
