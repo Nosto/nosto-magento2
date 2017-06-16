@@ -5,7 +5,7 @@ ENV LANG en_US.UTF-8
 ENV TERM xterm
 
 RUN apt-get update && \
-    apt-get -y -qq install nano tree git-core
+    apt-get -y -qq install nano tree git-core zlib1g-dev libicu-dev g++
 
 RUN git config --system user.name Docker && \
     git config --system user.email docker@localhost
@@ -17,6 +17,7 @@ RUN cd /tmp && \
     ./configure && \
     make install && \
     docker-php-ext-enable ast && \
+    docker-php-ext-install intl && \
     rm -rf /tmp/php-ast
 
 RUN groupadd -r plugins -g 113 
