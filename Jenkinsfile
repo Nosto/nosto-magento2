@@ -20,7 +20,7 @@ node {
                 step([$class: 'hudson.plugins.checkstyle.CheckStylePublisher', pattern: 'phpcs.xml', unstableTotalAll:'0'])
 
             stage "Copy-Paste Detection"
-                sh "./vendor/bin/phpcpd --exclude=vendor --exclude=var --exclude=build ."
+                sh "./vendor/bin/phpcpd --exclude=vendor --exclude=var --exclude=build --log-pmd=phpcpd.xml . || true"
 
             stage "Mess Detection"
                 catchError {
