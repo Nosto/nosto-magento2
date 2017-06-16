@@ -317,11 +317,11 @@ class Data extends AbstractHelper
     /**
      * Get tag1 mapping attributes
      *
-     * @param StoreInterface $store the store model or null.
      * @param $tagId tag1, tag2 or tag3
-     * @return array of attributes
+     * @param StoreInterface $store the store model or null.
+     * @return null|array of attributes
      */
-    public function getTagAttributes(StoreInterface $store = null, $tagId)
+    public function getTagAttributes($tagId, StoreInterface $store = null)
     {
         $attributesConfig = $this->getStoreConfig(self::XML_PATH_TAG . $tagId, $store);
         if ($attributesConfig == null) {

@@ -46,6 +46,7 @@ use Magento\Catalog\Model\ResourceModel\Product\Attribute\Collection;
  */
 class Tags extends Selector
 {
+    // @codingStandardsIgnoreLine
     public function filterCollection(Collection $collection)
     {
     }

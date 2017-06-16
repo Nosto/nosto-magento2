@@ -218,10 +218,10 @@ class Builder
      * @param \Nosto\Object\Product\Product $nostoProduct nosto product object
      * @param Store $store the store model.
      */
-    protected function amendAttributeTags(Product $product, \Nosto\Object\Product\Product $nostoProduct, Store $store)
+    private function amendAttributeTags(Product $product, \Nosto\Object\Product\Product $nostoProduct, Store $store)
     {
         foreach (self::CUSTOMIZED_TAGS as $tag) {
-            $attributes = $this->nostoDataHelper->getTagAttributes($store, $tag);
+            $attributes = $this->nostoDataHelper->getTagAttributes($tag, $store);
             if (!$attributes) {
                 continue;
             }
@@ -235,7 +235,7 @@ class Builder
                     $addTagMethodName = 'add' . $tag;
                     $nostoProduct->$addTagMethodName(sprintf('%s:%s', $productAttribute, $attributeValue));
                 } catch (\Exception $e) {
-                    $this->logger->error($e);
+                    $this->logger->error($e->__toString());
                 }
             }
         }
@@ -381,12 +381,12 @@ class Builder
                     $value = implode(",", $frontendValue);
                 } elseif (is_scalar($frontendValue)) {
                     $value = $frontendValue;
-                } elseif ($frontendValue instanceof Magento\Framework\Phrase) {
+                } elseif ($frontendValue instanceof \Magento\Framework\Phrase) {
                     $value = (string)$frontendValue;
                 }
             }
         } catch (\Exception $e) {
-            $this->logger->error($e);
+            $this->logger->error($e->__toString());
         }
 
         return $value;
