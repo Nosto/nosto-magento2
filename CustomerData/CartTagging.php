@@ -43,10 +43,12 @@ use Magento\Framework\Stdlib\DateTime\DateTime;
 use Nosto\Object\Cart\LineItem;
 use Nosto\Tagging\Helper\Data;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
+use Nosto\Tagging\Helper\Scope;
 use Nosto\Tagging\Model\Cart\Builder as NostoCartBuilder;
 use Nosto\Tagging\Model\Customer;
 use Nosto\Tagging\Model\Customer as NostoCustomer;
 use Nosto\Tagging\Model\CustomerFactory as NostoCustomerFactory;
+use Nosto\Tagging\Helper\Url;
 use Psr\Log\LoggerInterface;
 
 class CartTagging extends HashedTagging implements SectionSourceInterface
@@ -59,6 +61,8 @@ class CartTagging extends HashedTagging implements SectionSourceInterface
     private $logger;
     private $date;
     private $nostoHelperScope;
+    private $urlHelper;
+    private $scope;
 
     /** @noinspection PhpUndefinedClassInspection */
     /**
@@ -77,6 +81,8 @@ class CartTagging extends HashedTagging implements SectionSourceInterface
         CookieManagerInterface $cookieManager,
         LoggerInterface $logger,
         DateTime $date,
+        Url $urlHelper,
+        Scope $scope,
         /** @noinspection PhpUndefinedClassInspection */
         NostoCustomerFactory $nostoCustomerFactory
     ) {
@@ -87,6 +93,9 @@ class CartTagging extends HashedTagging implements SectionSourceInterface
         $this->cookieManager = $cookieManager;
         $this->nostoCustomerFactory = $nostoCustomerFactory;
         $this->nostoHelperScope = $nostoHelperScope;
+        $this->urlHelper = $urlHelper;
+        $this->scope = $scope;
+
     }
 
     /**
@@ -123,7 +132,12 @@ class CartTagging extends HashedTagging implements SectionSourceInterface
         }
 
         if ($data["itemCount"] > 0) {
-            $this->updateNostoId();
+            $nostoCustomer = $this->updateNostoId();
+            if ($nostoCustomer && $nostoCustomer->getRestoreCartHash()) {
+                $store = $this->scope->getStore();
+                $data['restore_cart_url'] = $this->urlHelper
+                    ->generateRestoreCartUrl($nostoCustomer->getRestoreCartHash(), $store);
+            }
         }
 
         return $data;
@@ -144,8 +158,10 @@ class CartTagging extends HashedTagging implements SectionSourceInterface
         return $this->quote;
     }
 
+    //TODO move it to a helper class
     /**
      * @suppress PhanDeprecatedFunction
+     * @return NostoCustomer|null
      */
     private function updateNostoId()
     {
@@ -164,7 +180,9 @@ class CartTagging extends HashedTagging implements SectionSourceInterface
 
             /** @var Customer $nostoCustomer */
             $nostoCustomer = $customerQuery->getFirstItem(); // @codingStandardsIgnoreLine
-            if ($nostoCustomer->hasData(NostoCustomer::CUSTOMER_ID)) {
+            if ($nostoCustomer->hasData(NostoCustomer::CUSTOMER_ID)
+                && $nostoCustomer->hasData(NostoCustomer::RESTORE_CART_HASH)
+            ) {
                 $nostoCustomer->setUpdatedAt(self::getNow());
             } else {
                 /** @noinspection PhpUndefinedMethodInspection */
@@ -179,10 +197,14 @@ class CartTagging extends HashedTagging implements SectionSourceInterface
             try {
                 /** @noinspection PhpDeprecationInspection */
                 $nostoCustomer->save();
+
+                return $nostoCustomer;
             } catch (\Exception $e) {
                 $this->logger->error($e->__toString());
             }
         }
+
+        return null;
     }
 
     /**

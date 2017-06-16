@@ -85,6 +85,12 @@ class Url extends AbstractHelper
      */
     const MAGENTO_URL_OPTION_LINK_TYPE = '_type';
 
+
+    /**
+     * Path to Nosto's restore cart controller
+     */
+    const NOSTO_PATH_RESTORE_CART = 'nosto/frontend/restoreCart';
+
     /**
      * The array option key for no session id in Magento's URLs.
      * The session id should be included into the URLs which are potentially
@@ -321,7 +327,7 @@ class Url extends AbstractHelper
         parse_str($userQuery, $urlParameters);
 
         $store->getUrl('cart');
-        $defaultParams = $this->getUrlOptionsWithNoSid($store);
+        $defaultParams = $this->getUrlOptionsWithNoSid();
         $url = $store->getUrl(
             self::MAGENTO_PATH_CART,
             $defaultParams
@@ -342,12 +348,30 @@ class Url extends AbstractHelper
     }
 
     /**
+     * Returns restore cart url
+     *
+     * @param string $hash
+     * @param Store $store
+     * @return string
+     */
+    public function generateRestoreCartUrl($hash, Store $store)
+    {
+        $params = $this->getUrlOptionsWithNoSid();
+        $params['h'] = $hash;
+        $url = $store->getUrl(
+            self::NOSTO_PATH_RESTORE_CART,
+            $params
+        );
+
+        return $url;
+    }
+
+    /**
      * Returns the default options for fetching Magento urls with no session id
      *
-     * @param Store $store
      * @return array
      */
-    protected function getUrlOptionsWithNoSid(Store $store)
+    protected function getUrlOptionsWithNoSid()
     {
         $params = array(
             self::MAGENTO_URL_OPTION_SCOPE_TO_URL => true,
