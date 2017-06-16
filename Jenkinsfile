@@ -10,7 +10,7 @@ node {
                 withCredentials([usernamePassword(credentialsId: 'magento', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                   sh "composer config http-basic.repo.magento.com $USERNAME $PASSWORD"
                 }
-                sh "composer install"
+                sh "composer install || true"
 
             stage "Code Sniffer"
                 catchError {
