@@ -323,7 +323,7 @@ class Data extends AbstractHelper
      */
     public function getTagAttributes(StoreInterface $store = null, $tagId)
     {
-        $attributesConfig = $this->getStoreConfig(self::XML_PATH_TAG.$tagId, $store);
+        $attributesConfig = $this->getStoreConfig(self::XML_PATH_TAG . $tagId, $store);
         if ($attributesConfig == null) {
             return null;
         }
