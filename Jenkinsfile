@@ -32,7 +32,7 @@ node {
 
             stage "Phan Analysis"
                 catchError {
-                    sh "./vendor/bin/phan --dead-code-detection --signature-compatibility --config-file=phan.php --output-mode=checkstyle --output=phan.xml || true"
+                    sh "./vendor/bin/phan --config-file=phan.php --output-mode=checkstyle --output=phan.xml || true"
                 }
                 step([$class: 'hudson.plugins.checkstyle.CheckStylePublisher', pattern: 'phan.xml', unstableTotalAll:'0'])
 
