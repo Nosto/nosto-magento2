@@ -26,7 +26,7 @@ node {
 
             stage "Mess Detection"
                 catchError {
-                    sh "./vendor/bin/phpmd . xml codesize,naming,unusedcode,controversial,design --exclude vendor,var,build,tests --reportfile phpmd.xml"
+                    sh "./vendor/bin/phpmd . xml codesize,naming,unusedcode,controversial,design --exclude vendor,var,build,tests --reportfile phpmd.xml || true"
                 }
                 //step([$class: 'PmdPublisher', pattern: 'phpmd.xml', unstableTotalAll:'0'])
 
