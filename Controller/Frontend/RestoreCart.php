@@ -106,7 +106,6 @@ class RestoreCart extends Action
         $currentUrl = $url->getCurrentUrl();
 
         if ($this->moduleManager->isEnabled(NostoHelperData::MODULE_NAME)) {
-
             if (!$this->checkoutSession->getQuoteId()) {
                 $restoreCartHash = $this->getRequest()->getParam(self::HASH_PARAM);
                 if (!$restoreCartHash) {
@@ -126,7 +125,7 @@ class RestoreCart extends Action
             }
         }
 
-        return $redirectUrl;
+        $this->_redirect($redirectUrl);
     }
 
     /**
@@ -160,7 +159,7 @@ class RestoreCart extends Action
 
         /** @var  $quoteCollection */
         $quoteCollection = $this->quoteFactory->create()->getCollection();
-        $quoteCollection->addFieldToFilter(CartInterface::KEY_ID, $quoteId)
+        $quoteCollection->addFieldToFilter(CartInterface::KEY_ENTITY_ID, $quoteId)
             ->setPageSize(1)
             ->setCurPage(1);
 

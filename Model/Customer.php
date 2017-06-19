@@ -146,7 +146,7 @@ class Customer extends AbstractModel implements CustomerInterface
      */
     public function getRestoreCartHash()
     {
-        $this->getData(self::RESTORE_CART_HASH);
+        return $this->getData(self::RESTORE_CART_HASH);
     }
 
     /**
@@ -157,6 +157,6 @@ class Customer extends AbstractModel implements CustomerInterface
      */
     public function setRestoreCartHash($restoreCartHash)
     {
-        $this->getData(self::RESTORE_CART_HASH, $restoreCartHash);
+        $this->setData(self::RESTORE_CART_HASH, $restoreCartHash);
     }
 }

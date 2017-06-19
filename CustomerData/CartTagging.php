@@ -158,8 +158,6 @@ class CartTagging extends HashedTagging implements SectionSourceInterface
         return $this->quote;
     }
 
-    //TODO move it to a helper class
-
     /**
      * @suppress PhanDeprecatedFunction
      * @return NostoCustomer|null
@@ -181,9 +179,10 @@ class CartTagging extends HashedTagging implements SectionSourceInterface
 
             /** @var Customer $nostoCustomer */
             $nostoCustomer = $customerQuery->getFirstItem(); // @codingStandardsIgnoreLine
-            if ($nostoCustomer->hasData(NostoCustomer::CUSTOMER_ID)
-                && $nostoCustomer->hasData(NostoCustomer::RESTORE_CART_HASH)
-            ) {
+            if ($nostoCustomer->hasData(NostoCustomer::CUSTOMER_ID)) {
+                if ($nostoCustomer->getRestoreCartHash() === null) {
+                    $nostoCustomer->setRestoreCartHash($this->generateRestoreCartHash());
+                }
                 $nostoCustomer->setUpdatedAt(self::getNow());
             } else {
                 /** @noinspection PhpUndefinedMethodInspection */
@@ -213,7 +212,7 @@ class CartTagging extends HashedTagging implements SectionSourceInterface
      *
      * @return string
      */
-    public function generateRestoreCartHash()
+    private function generateRestoreCartHash()
     {
         $hash = hash(
             Data::VISITOR_HASH_ALGO,
