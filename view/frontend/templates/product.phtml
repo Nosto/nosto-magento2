@@ -71,7 +71,7 @@ $category = $this->getNostoCategory();
         <?php foreach ($product->getTag3() as $tag) : ?>
             <span class="tag3"><?php echo $this->escapeHtml($tag); ?></span>
         <?php endforeach; ?>
-        <?php if ($this->hasMultipleCurrencies()): ?>
+        <?php if ($product->getVariationId()): ?>
             <span class="variation_id"><?php echo $this->escapeHtml($product->getVariationId()); ?></span>
         <?php endif; ?>
         <?php if ($product->getGtin()) : ?>
