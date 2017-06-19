@@ -1,6 +1,6 @@
 <?php
 
-namespace Mastering\SampleModule\Setup;
+namespace Nosto\Tagging\Setup;
 
 use Magento\Framework\DB\Ddl\Table;
 use Magento\Framework\Setup\UpgradeSchemaInterface;
@@ -20,15 +20,17 @@ class UpgradeSchema implements UpgradeSchemaInterface
         if (version_compare($context->getVersion(), '2.1.0', '<')) {
             $setup->getConnection()->addColumn(
                 $setup->getTable('nosto_tagging_customer'),
-                'CustomerInterface::RESTORE_CART_HASH',
+                CustomerInterface::RESTORE_CART_HASH,
                 [
                     'type' => Table::TYPE_TEXT,
                     'nullable' => true,
                     'comment' => 'Restore cart hash',
-                    'size' => CustomerInterface::NOSTO_TAGGING_RESTORE_CART_ATTRIBUTE_LENGTH
+//                    'size' => CustomerInterface::NOSTO_TAGGING_RESTORE_CART_ATTRIBUTE_LENGTH
                 ]
             );
         }
+
+        echo 'okokokookokokokokokokokokookokkokokokokokokokokokokokookokokokokokokokokokokokokokokokoko';
 
         $setup->endSetup();
     }
