@@ -159,6 +159,7 @@ class CartTagging extends HashedTagging implements SectionSourceInterface
     }
 
     //TODO move it to a helper class
+
     /**
      * @suppress PhanDeprecatedFunction
      * @return NostoCustomer|null

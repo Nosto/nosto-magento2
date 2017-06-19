@@ -334,7 +334,7 @@ class Url extends AbstractHelper
         );
 
         if (count($urlParameters) > 0) {
-            foreach ($urlParameters as $key=>$val) {
+            foreach ($urlParameters as $key => $val) {
                 $url = HttpRequest::replaceQueryParamInUrl(
                     $key,
                     $val,
