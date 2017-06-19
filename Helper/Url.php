@@ -341,7 +341,6 @@ class Url extends AbstractHelper
                     $url
                 );
             }
-
         }
 
         return $url;

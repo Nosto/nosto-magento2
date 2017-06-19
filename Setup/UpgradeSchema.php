@@ -30,8 +30,6 @@ class UpgradeSchema implements UpgradeSchemaInterface
             );
         }
 
-        echo 'okokokookokokokokokokokokookokkokokokokokokokokokokokookokokokokokokokokokokokokokokokoko';
-
         $setup->endSetup();
     }
 }
