@@ -50,6 +50,7 @@ use Nosto\Request\Http\HttpRequest;
  */
 class Url extends AbstractHelper
 {
+    const MAGENTO_PATH_SEARCH_RESULT = 'catalogsearch/result';
     /**
      * Path to Magento's cart controller
      */
@@ -178,9 +179,9 @@ class Url extends AbstractHelper
             /** @var \Magento\Catalog\Model\Product $product */
             $url = $product->getUrlInStore(
                 [
-                    '_nosid' => true,
-                    '_scope_to_url' => true,
-                    '_scope' => $store->getCode(),
+                    self::MAGENTO_URL_OPTION_NOSID => true,
+                    self::MAGENTO_URL_OPTION_SCOPE_TO_URL => true,
+                    self::MAGENTO_URL_OPTION_SCOPE => $store->getCode(),
                 ]
             );
             $url = $this->addNostoDebugParamToUrl($url);
@@ -262,11 +263,11 @@ class Url extends AbstractHelper
     public function getPreviewUrlSearch(Store $store)
     {
         $url = $this->urlBuilder->getUrl(
-            'catalogsearch/result',
+            self::MAGENTO_PATH_SEARCH_RESULT,
             [
-                '_nosid' => true,
-                '_scope_to_url' => true,
-                '_scope' => $store->getCode(),
+                self::MAGENTO_URL_OPTION_NOSID => true,
+                self::MAGENTO_URL_OPTION_SCOPE_TO_URL => true,
+                self::MAGENTO_URL_OPTION_SCOPE => $store->getCode(),
             ]
         );
         $url = $this->replaceQueryParamsInUrl(['q' => 'nosto'], $url);
@@ -283,11 +284,11 @@ class Url extends AbstractHelper
     public function getPreviewUrlCart(Store $store)
     {
         $url = $this->urlBuilder->getUrl(
-            'checkout/cart',
+            self::MAGENTO_PATH_CART,
             [
-                '_nosid' => true,
-                '_scope_to_url' => true,
-                '_scope' => $store->getCode(),
+                self::MAGENTO_URL_OPTION_NOSID => true,
+                self::MAGENTO_URL_OPTION_SCOPE_TO_URL => true,
+                self::MAGENTO_URL_OPTION_SCOPE => $store->getCode(),
             ]
         );
         return $this->addNostoDebugParamToUrl($url);
@@ -305,9 +306,9 @@ class Url extends AbstractHelper
         $url = $this->urlBuilder->getUrl(
             '',
             [
-                '_nosid' => true,
-                '_scope_to_url' => true,
-                '_scope' => $store->getCode(),
+                self::MAGENTO_URL_OPTION_NOSID => true,
+                self::MAGENTO_URL_OPTION_SCOPE_TO_URL => true,
+                self::MAGENTO_URL_OPTION_SCOPE => $store->getCode(),
             ]
         );
         return $this->addNostoDebugParamToUrl($url);
@@ -330,7 +331,6 @@ class Url extends AbstractHelper
             $urlParameters = [];
         }
 
-        $store->getUrl('cart');
         $defaultParams = $this->getUrlOptionsWithNoSid();
         $url = $store->getUrl(
             self::MAGENTO_PATH_CART,
