@@ -41,14 +41,12 @@ use Magento\Customer\CustomerData\SectionSourceInterface;
 use Magento\Framework\Stdlib\CookieManagerInterface;
 use Magento\Framework\Stdlib\DateTime\DateTime;
 use Nosto\Object\Cart\LineItem;
-use Nosto\Tagging\Helper\Data;
+use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
-use Nosto\Tagging\Helper\Scope;
 use Nosto\Tagging\Model\Cart\Builder as NostoCartBuilder;
-use Nosto\Tagging\Model\Customer;
 use Nosto\Tagging\Model\Customer as NostoCustomer;
 use Nosto\Tagging\Model\CustomerFactory as NostoCustomerFactory;
-use Nosto\Tagging\Helper\Url;
+use Nosto\Tagging\Helper\Url as NostoHelperUrl;
 use Psr\Log\LoggerInterface;
 
 class CartTagging extends HashedTagging implements SectionSourceInterface
@@ -81,8 +79,8 @@ class CartTagging extends HashedTagging implements SectionSourceInterface
         CookieManagerInterface $cookieManager,
         LoggerInterface $logger,
         DateTime $date,
-        Url $urlHelper,
-        Scope $scope,
+        NostoHelperUrl $urlHelper,
+        NostoHelperScope $scope,
         /** @noinspection PhpUndefinedClassInspection */
         NostoCustomerFactory $nostoCustomerFactory
     ) {
@@ -176,7 +174,7 @@ class CartTagging extends HashedTagging implements SectionSourceInterface
                 ->setPageSize(1)
                 ->setCurPage(1);
 
-            /** @var Customer $nostoCustomer */
+            /** @var NostoCustomer $nostoCustomer */
             $nostoCustomer = $customerQuery->getFirstItem(); // @codingStandardsIgnoreLine
             if ($nostoCustomer->hasData(NostoCustomer::CUSTOMER_ID)) {
                 if ($nostoCustomer->getRestoreCartHash() === null) {
@@ -214,7 +212,7 @@ class CartTagging extends HashedTagging implements SectionSourceInterface
     private function generateRestoreCartHash()
     {
         $hash = hash(
-            Data::VISITOR_HASH_ALGO,
+            NostoHelperData::VISITOR_HASH_ALGO,
             uniqid('nostocartrestore')
         );
 
