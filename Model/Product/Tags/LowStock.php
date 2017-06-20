@@ -48,7 +48,8 @@ class LowStock
      * LowStock constructor.
      * @param StockStateInterface $stockItem
      */
-    public function __construct(StockStateInterface $stockItem) {
+    public function __construct(StockStateInterface $stockItem)
+    {
         $this->stockItem = $stockItem;
     }
 
@@ -58,7 +59,8 @@ class LowStock
      * @param Product $product
      * @return bool
      */
-    public function build(Product $product) {
+    public function build(Product $product)
+    {
         if ($product->getTypeId() === Type::TYPE_SIMPLE) {
             return $this->stockItem->verifyNotification($product->getId());
         } else {
