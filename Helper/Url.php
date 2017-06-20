@@ -85,7 +85,6 @@ class Url extends AbstractHelper
      */
     const MAGENTO_URL_OPTION_LINK_TYPE = '_type';
 
-
     /**
      * Path to Nosto's restore cart controller
      */
@@ -333,7 +332,7 @@ class Url extends AbstractHelper
             $defaultParams
         );
 
-        if (count($urlParameters) > 0) {
+        if (!empty($urlParameters)) {
             foreach ($urlParameters as $key => $val) {
                 $url = HttpRequest::replaceQueryParamInUrl(
                     $key,
@@ -370,13 +369,13 @@ class Url extends AbstractHelper
      *
      * @return array
      */
-    protected function getUrlOptionsWithNoSid()
+    private function getUrlOptionsWithNoSid()
     {
-        $params = array(
+        $params = [
             self::MAGENTO_URL_OPTION_SCOPE_TO_URL => true,
             self::MAGENTO_URL_OPTION_NOSID => true,
             self::MAGENTO_URL_OPTION_LINK_TYPE => self::$urlType
-        );
+        ];
 
         return $params;
     }

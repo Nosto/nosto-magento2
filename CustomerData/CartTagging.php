@@ -95,7 +95,6 @@ class CartTagging extends HashedTagging implements SectionSourceInterface
         $this->nostoHelperScope = $nostoHelperScope;
         $this->urlHelper = $urlHelper;
         $this->scope = $scope;
-
     }
 
     /**

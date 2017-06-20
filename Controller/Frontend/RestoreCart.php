@@ -53,7 +53,6 @@ use Magento\Quote\Model\QuoteFactory;
 use Magento\Quote\Model\ResourceModel\Quote as ResourceQuote;
 use Psr\Log\LoggerInterface;
 
-
 class RestoreCart extends Action
 {
     /**
@@ -135,7 +134,7 @@ class RestoreCart extends Action
      * @return Quote|null
      * @throws NostoException
      */
-    protected function resolveQuote($restoreCartHash)
+    private function resolveQuote($restoreCartHash)
     {
         $customerQuery = $this->customerFactory
             ->create()
@@ -145,7 +144,7 @@ class RestoreCart extends Action
             ->setCurPage(1);
 
         /** @var Customer $nostoCustomer */
-        $nostoCustomer = $customerQuery->getFirstItem();
+        $nostoCustomer = $customerQuery->getFirstItem(); // @codingStandardsIgnoreLine
         if ($nostoCustomer == null || !$nostoCustomer->hasData() || $nostoCustomer->getQuoteId() === null) {
             throw new NostoException(
                 sprintf(
@@ -164,7 +163,7 @@ class RestoreCart extends Action
             ->setCurPage(1);
 
         /** @var Quote $quote */
-        $quote = $quoteCollection->getFirstItem();
+        $quote = $quoteCollection->getFirstItem(); // @codingStandardsIgnoreLine
         if ($quote == null || !$quote->hasData()) {
             throw new NostoException(
                 sprintf(
