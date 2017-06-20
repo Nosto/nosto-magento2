@@ -102,42 +102,45 @@ class Builder
     {
         // Handle the Nosto customer & quote mapping
         $nostoCustomerId = $this->cookieManager->getCookie(NostoCustomer::COOKIE_NAME);
-        $quoteId = $quote->getId();
-        if (!empty($quoteId) && !empty($nostoCustomerId)) {
-            /** @noinspection PhpUndefinedMethodInspection */
-            $customerQuery = $this->nostoCustomerFactory
-                ->create()
-                ->getCollection()
-                ->addFieldToFilter(NostoCustomer::QUOTE_ID, $quoteId)
-                ->addFieldToFilter(NostoCustomer::NOSTO_ID, $nostoCustomerId)
-                ->setPageSize(1)
-                ->setCurPage(1);
 
-            /** @var NostoCustomer $nostoCustomer */
-            $nostoCustomer = $customerQuery->getFirstItem(); // @codingStandardsIgnoreLine
-            if ($nostoCustomer->hasData(NostoCustomer::CUSTOMER_ID)) {
-                if ($nostoCustomer->getRestoreCartHash() === null) {
-                    $nostoCustomer->setRestoreCartHash($this->generateRestoreCartHash());
-                }
-                $nostoCustomer->setUpdatedAt(self::getNow());
-            } else {
-                /** @noinspection PhpUndefinedMethodInspection */
-                $nostoCustomer = $this->nostoCustomerFactory->create();
-                /** @noinspection PhpUndefinedMethodInspection */
-                $nostoCustomer->setQuoteId($quoteId);
-                /** @noinspection PhpUndefinedMethodInspection */
-                $nostoCustomer->setNostoId($nostoCustomerId);
-                $nostoCustomer->setCreatedAt(self::getNow());
+        if ($quote === null || $quote->getId() === null || empty($nostoCustomerId)) {
+            return null;
+        }
+
+        $quoteId = $quote->getId();
+        /** @noinspection PhpUndefinedMethodInspection */
+        $customerQuery = $this->nostoCustomerFactory
+            ->create()
+            ->getCollection()
+            ->addFieldToFilter(NostoCustomer::QUOTE_ID, $quoteId)
+            ->addFieldToFilter(NostoCustomer::NOSTO_ID, $nostoCustomerId)
+            ->setPageSize(1)
+            ->setCurPage(1);
+
+        /** @var NostoCustomer $nostoCustomer */
+        $nostoCustomer = $customerQuery->getFirstItem(); // @codingStandardsIgnoreLine
+        if ($nostoCustomer->hasData(NostoCustomer::CUSTOMER_ID)) {
+            if ($nostoCustomer->getRestoreCartHash() === null) {
                 $nostoCustomer->setRestoreCartHash($this->generateRestoreCartHash());
             }
-            try {
-                /** @noinspection PhpDeprecationInspection */
-                $nostoCustomer->save();
+            $nostoCustomer->setUpdatedAt(self::getNow());
+        } else {
+            /** @noinspection PhpUndefinedMethodInspection */
+            $nostoCustomer = $this->nostoCustomerFactory->create();
+            /** @noinspection PhpUndefinedMethodInspection */
+            $nostoCustomer->setQuoteId($quoteId);
+            /** @noinspection PhpUndefinedMethodInspection */
+            $nostoCustomer->setNostoId($nostoCustomerId);
+            $nostoCustomer->setCreatedAt(self::getNow());
+            $nostoCustomer->setRestoreCartHash($this->generateRestoreCartHash());
+        }
+        try {
+            /** @noinspection PhpDeprecationInspection */
+            $nostoCustomer->save();
 
-                return $nostoCustomer;
-            } catch (\Exception $e) {
-                $this->logger->error($e->__toString());
-            }
+            return $nostoCustomer;
+        } catch (\Exception $e) {
+            $this->logger->error($e->__toString());
         }
 
         return null;
@@ -176,7 +179,7 @@ class Builder
      * @param Store $store
      * @return string
      */
-    public function generateRestoreCartUrl($hash, Store $store)
+    private function generateRestoreCartUrl($hash, Store $store)
     {
         $params = NostoHelperUrl::getUrlOptionsWithNoSid();
         $params['h'] = $hash;
