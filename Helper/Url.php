@@ -322,8 +322,13 @@ class Url extends AbstractHelper
      */
     public function getUrlCart(Store $store, $currentUrl)
     {
+        // @codingStandardsIgnoreLine
         $userQuery = parse_url($currentUrl, PHP_URL_QUERY);
-        parse_str($userQuery, $urlParameters);
+        if (is_string($userQuery)) {
+            parse_str($userQuery, $urlParameters); // @codingStandardsIgnoreLine
+        } else {
+            $urlParameters = [];
+        }
 
         $store->getUrl('cart');
         $defaultParams = $this->getUrlOptionsWithNoSid();
