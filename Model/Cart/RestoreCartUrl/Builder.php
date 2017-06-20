@@ -36,6 +36,7 @@
 
 namespace Nosto\Tagging\Model\Cart\RestoreCartUrl;
 
+use Magento\Framework\Encryption\EncryptorInterface;
 use Magento\Quote\Model\Quote;
 use Magento\Store\Model\Store;
 use Magento\Framework\Stdlib\CookieManagerInterface;
@@ -51,6 +52,7 @@ class Builder
     private $logger;
     private $cookieManager;
     private $date;
+    private $encryptor;
     private $nostoCustomerFactory;
     private $urlHelper;
 
@@ -65,15 +67,17 @@ class Builder
     public function __construct(
         LoggerInterface $logger,
         CookieManagerInterface $cookieManager,
+        EncryptorInterface $encryptor,
         NostoCustomerFactory $nostoCustomerFactory,
         NostoHelperUrl $urlHelper,
         DateTime $date
     ) {
         $this->logger = $logger;
         $this->cookieManager = $cookieManager;
+        $this->encryptor = $encryptor;
+        $this->date = $date;
         $this->nostoCustomerFactory = $nostoCustomerFactory;
         $this->urlHelper = $urlHelper;
-        $this->date = $date;
     }
 
     /**
@@ -141,15 +145,16 @@ class Builder
 
     /**
      * Generate unique hash for restore cart
+     * Size of it equals to or less than restore_cart_hash column length
      *
      * @return string
      */
     private function generateRestoreCartHash()
     {
-        $hash = hash(
-            NostoHelperData::VISITOR_HASH_ALGO,
-            uniqid('nostocartrestore')
-        );
+        $hash = $this->encryptor->getHash(uniqid('nostocartrestore'));
+        if (strlen($hash) > NostoCustomer::NOSTO_TAGGING_RESTORE_CART_ATTRIBUTE_LENGTH) {
+            $hash = substr($hash, 0, NostoCustomer::NOSTO_TAGGING_RESTORE_CART_ATTRIBUTE_LENGTH);
+        }
 
         return $hash;
     }
