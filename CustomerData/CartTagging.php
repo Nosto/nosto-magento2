@@ -40,8 +40,8 @@ use Magento\Checkout\Helper\Cart as CartHelper;
 use Magento\Customer\CustomerData\SectionSourceInterface;
 use Magento\Framework\Stdlib\CookieManagerInterface;
 use Magento\Framework\Stdlib\DateTime\DateTime;
+use Magento\Quote\Model\Quote;
 use Nosto\Object\Cart\LineItem;
-use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Model\Cart\Builder as NostoCartBuilder;
 use Nosto\Tagging\Model\Customer as NostoCustomer;
@@ -58,6 +58,7 @@ class CartTagging extends HashedTagging implements SectionSourceInterface
     private $date;
     private $scopeHelper;
     private $urlHelper;
+    private $quote = null;
     private $nostoCartBuilder;
     private $nostoRestoreCartUrlBuilder;
     private $nostoCustomerFactory;
@@ -131,7 +132,7 @@ class CartTagging extends HashedTagging implements SectionSourceInterface
         if ($data["itemCount"] > 0) {
             $nostoCustomer = $this->updateNostoId();
             if ($nostoCustomer && $nostoCustomer->getRestoreCartHash()) {
-                $store = $this->scope->getStore();
+                $store = $this->scopeHelper->getStore();
                 $data['restore_cart_url'] = $this->nostoRestoreCartUrlBuilder
                     ->generateRestoreCartUrl($nostoCustomer->getRestoreCartHash(), $store);
             }

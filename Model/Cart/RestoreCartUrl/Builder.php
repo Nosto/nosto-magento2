@@ -178,26 +178,10 @@ class Builder
      */
     public function generateRestoreCartUrl($hash, Store $store)
     {
-        $params = $this->getUrlOptionsWithNoSid();
+        $params = NostoHelperUrl::getUrlOptionsWithNoSid();
         $params['h'] = $hash;
         $url = $store->getUrl(NostoHelperUrl::NOSTO_PATH_RESTORE_CART, $params);
 
         return $url;
-    }
-
-    /**
-     * Returns the default options for fetching Magento urls with no session id
-     *
-     * @return array
-     */
-    public function getUrlOptionsWithNoSid()
-    {
-        $params = [
-            NostoHelperUrl::MAGENTO_URL_OPTION_SCOPE_TO_URL => true,
-            NostoHelperUrl::MAGENTO_URL_OPTION_NOSID => true,
-            NostoHelperUrl::MAGENTO_URL_OPTION_LINK_TYPE => NostoHelperUrl::$urlType
-        ];
-
-        return $params;
     }
 }
