@@ -47,26 +47,26 @@ use Nosto\Tagging\Model\Cart\Builder as NostoCartBuilder;
 use Nosto\Tagging\Model\Customer as NostoCustomer;
 use Nosto\Tagging\Model\CustomerFactory as NostoCustomerFactory;
 use Nosto\Tagging\Helper\Url as NostoHelperUrl;
+use Nosto\Tagging\Model\Cart\RestoreCartUrl\Builder as NostoRestoreCartUrlBuilder;
 use Psr\Log\LoggerInterface;
 
 class CartTagging extends HashedTagging implements SectionSourceInterface
 {
     private $cartHelper;
-    private $nostoCartBuilder;
     private $cookieManager;
-    private $nostoCustomerFactory;
-    private $quote = null;
     private $logger;
     private $date;
-    private $nostoHelperScope;
+    private $scopeHelper;
     private $urlHelper;
-    private $scope;
+    private $nostoCartBuilder;
+    private $nostoRestoreCartUrlBuilder;
+    private $nostoCustomerFactory;
 
     /** @noinspection PhpUndefinedClassInspection */
     /**
      * @param CartHelper $cartHelper
      * @param NostoCartBuilder $nostoCartBuilder
-     * @param NostoHelperScope $nostoHelperScope
+     * @param NostoHelperScope $scopeHelper
      * @param CookieManagerInterface $cookieManager
      * @param LoggerInterface $logger
      * @param DateTime $date
@@ -74,25 +74,25 @@ class CartTagging extends HashedTagging implements SectionSourceInterface
      */
     public function __construct(
         CartHelper $cartHelper,
-        NostoCartBuilder $nostoCartBuilder,
-        NostoHelperScope $nostoHelperScope,
         CookieManagerInterface $cookieManager,
         LoggerInterface $logger,
         DateTime $date,
+        NostoCartBuilder $nostoCartBuilder,
+        NostoHelperScope $scopeHelper,
         NostoHelperUrl $urlHelper,
-        NostoHelperScope $scope,
         /** @noinspection PhpUndefinedClassInspection */
-        NostoCustomerFactory $nostoCustomerFactory
+        NostoCustomerFactory $nostoCustomerFactory,
+        NostoRestoreCartUrlBuilder $nostoRestoreCartUrlBuilder
     ) {
         $this->cartHelper = $cartHelper;
-        $this->nostoCartBuilder = $nostoCartBuilder;
         $this->logger = $logger;
         $this->date = $date;
         $this->cookieManager = $cookieManager;
-        $this->nostoCustomerFactory = $nostoCustomerFactory;
-        $this->nostoHelperScope = $nostoHelperScope;
+        $this->scopeHelper = $scopeHelper;
         $this->urlHelper = $urlHelper;
-        $this->scope = $scope;
+        $this->nostoCustomerFactory = $nostoCustomerFactory;
+        $this->nostoCartBuilder = $nostoCartBuilder;
+        $this->nostoRestoreCartUrlBuilder = $nostoRestoreCartUrlBuilder;
     }
 
     /**
@@ -109,7 +109,7 @@ class CartTagging extends HashedTagging implements SectionSourceInterface
         $cart = $this->cartHelper->getCart();
         $nostoCart = $this->nostoCartBuilder->build(
             $this->getQuote(),
-            $this->nostoHelperScope->getStore()
+            $this->scopeHelper->getStore()
         );
         $itemCount = $cart->getItemsCount();
         $data["itemCount"] = $itemCount;
@@ -132,7 +132,7 @@ class CartTagging extends HashedTagging implements SectionSourceInterface
             $nostoCustomer = $this->updateNostoId();
             if ($nostoCustomer && $nostoCustomer->getRestoreCartHash()) {
                 $store = $this->scope->getStore();
-                $data['restore_cart_url'] = $this->urlHelper
+                $data['restore_cart_url'] = $this->nostoRestoreCartUrlBuilder
                     ->generateRestoreCartUrl($nostoCustomer->getRestoreCartHash(), $store);
             }
         }
@@ -153,80 +153,6 @@ class CartTagging extends HashedTagging implements SectionSourceInterface
         }
 
         return $this->quote;
-    }
-
-    /**
-     * @suppress PhanDeprecatedFunction
-     * @return NostoCustomer|null
-     */
-    private function updateNostoId()
-    {
-        // Handle the Nosto customer & quote mapping
-        $nostoCustomerId = $this->cookieManager->getCookie(NostoCustomer::COOKIE_NAME);
-        $quoteId = $this->getQuote()->getId();
-        if (!empty($quoteId) && !empty($nostoCustomerId)) {
-            /** @noinspection PhpUndefinedMethodInspection */
-            $customerQuery = $this->nostoCustomerFactory
-                ->create()
-                ->getCollection()
-                ->addFieldToFilter(NostoCustomer::QUOTE_ID, $quoteId)
-                ->addFieldToFilter(NostoCustomer::NOSTO_ID, $nostoCustomerId)
-                ->setPageSize(1)
-                ->setCurPage(1);
-
-            /** @var NostoCustomer $nostoCustomer */
-            $nostoCustomer = $customerQuery->getFirstItem(); // @codingStandardsIgnoreLine
-            if ($nostoCustomer->hasData(NostoCustomer::CUSTOMER_ID)) {
-                if ($nostoCustomer->getRestoreCartHash() === null) {
-                    $nostoCustomer->setRestoreCartHash($this->generateRestoreCartHash());
-                }
-                $nostoCustomer->setUpdatedAt(self::getNow());
-            } else {
-                /** @noinspection PhpUndefinedMethodInspection */
-                $nostoCustomer = $this->nostoCustomerFactory->create();
-                /** @noinspection PhpUndefinedMethodInspection */
-                $nostoCustomer->setQuoteId($quoteId);
-                /** @noinspection PhpUndefinedMethodInspection */
-                $nostoCustomer->setNostoId($nostoCustomerId);
-                $nostoCustomer->setCreatedAt(self::getNow());
-                $nostoCustomer->setRestoreCartHash($this->generateRestoreCartHash());
-            }
-            try {
-                /** @noinspection PhpDeprecationInspection */
-                $nostoCustomer->save();
-
-                return $nostoCustomer;
-            } catch (\Exception $e) {
-                $this->logger->error($e->__toString());
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * Generate unique hash for restore cart
-     *
-     * @return string
-     */
-    private function generateRestoreCartHash()
-    {
-        $hash = hash(
-            NostoHelperData::VISITOR_HASH_ALGO,
-            uniqid('nostocartrestore')
-        );
-
-        return $hash;
-    }
-
-    /**
-     * Returns the current datetime object
-     *
-     * @return \DateTime the current datetime
-     */
-    private function getNow()
-    {
-        return \DateTime::createFromFormat('Y-m-d H:i:s', $this->date->date());
     }
 
     /**

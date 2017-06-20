@@ -349,39 +349,4 @@ class Url extends AbstractHelper
 
         return $url;
     }
-
-    /**
-     * Returns restore cart url
-     *
-     * @param string $hash
-     * @param Store $store
-     * @return string
-     */
-    public function generateRestoreCartUrl($hash, Store $store)
-    {
-        $params = $this->getUrlOptionsWithNoSid();
-        $params['h'] = $hash;
-        $url = $store->getUrl(
-            self::NOSTO_PATH_RESTORE_CART,
-            $params
-        );
-
-        return $url;
-    }
-
-    /**
-     * Returns the default options for fetching Magento urls with no session id
-     *
-     * @return array
-     */
-    private function getUrlOptionsWithNoSid()
-    {
-        $params = [
-            self::MAGENTO_URL_OPTION_SCOPE_TO_URL => true,
-            self::MAGENTO_URL_OPTION_NOSID => true,
-            self::MAGENTO_URL_OPTION_LINK_TYPE => self::$urlType
-        ];
-
-        return $params;
-    }
 }

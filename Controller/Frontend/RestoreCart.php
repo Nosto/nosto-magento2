@@ -40,17 +40,17 @@ use Magento\Checkout\Model\Session;
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
 use Magento\Quote\Api\Data\CartInterface;
-use Nosto\Tagging\Api\Data\CustomerInterface;
-use Nosto\Tagging\Helper\Url;
-use Nosto\Tagging\Helper\Scope;
 use Magento\Framework\Module\Manager as ModuleManager;
-use Nosto\Tagging\Helper\Data as NostoHelperData;
-use Nosto\Tagging\Model\CustomerFactory;
-use Nosto\Tagging\Model\Customer;
-use Nosto\NostoException;
 use Magento\Quote\Model\Quote;
 use Magento\Quote\Model\QuoteFactory;
 use Magento\Quote\Model\ResourceModel\Quote as ResourceQuote;
+use Nosto\Tagging\Api\Data\CustomerInterface;
+use Nosto\Tagging\Helper\Url as NostoHelperUrl;
+use Nosto\Tagging\Helper\Scope as NostoHelperScope;
+use Nosto\Tagging\Helper\Data as NostoHelperData;
+use Nosto\Tagging\Model\CustomerFactory as NostoCustomerFactory;
+use Nosto\Tagging\Model\Customer as NostoCustomer;
+use Nosto\NostoException;
 use Psr\Log\LoggerInterface;
 
 class RestoreCart extends Action
@@ -60,45 +60,45 @@ class RestoreCart extends Action
      */
     const HASH_PARAM = 'h';
 
-    private $urlHelper;
-    private $scope;
     private $context;
     private $moduleManager;
     private $checkoutSession;
-    private $customerFactory;
     private $quoteFactory;
     private $quoteResource;
     private $logger;
+    private $urlHelper;
+    private $scopeHelper;
+    private $nostoCustomerFactory;
 
     public function __construct(
         Context $context,
-        Url $urlHelper,
         ModuleManager $moduleManager,
         Session $checkoutSession,
-        CustomerFactory $customerFactory,
-        Scope $scope,
         QuoteFactory $quoteFactory,
         ResourceQuote $quoteResource,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        NostoHelperUrl $urlHelper,
+        NostoHelperScope $scopeHelper,
+        NostoCustomerFactory $nostoCustomerFactory
     ) {
         parent::__construct($context);
-        $this->urlHelper = $urlHelper;
-        $this->scope = $scope;
         $this->context = $context;
         $this->moduleManager = $moduleManager;
         $this->checkoutSession = $checkoutSession;
-        $this->customerFactory = $customerFactory;
         $this->quoteFactory = $quoteFactory;
         $this->quoteResource = $quoteResource;
         $this->logger = $logger;
+        $this->urlHelper = $urlHelper;
+        $this->scopeHelper = $scopeHelper;
+        $this->nostoCustomerFactory = $nostoCustomerFactory;
     }
 
     public function execute()
     {
-        $store = $this->scope->getStore();
+        $store = $this->scopeHelper->getStore();
         $storeId = $this->getRequest()->getParam('___store');
 
-        $baseUrl = $this->scope->getStore($storeId)->getBaseUrl();
+        $baseUrl = $this->scopeHelper->getStore($storeId)->getBaseUrl();
         $redirectUrl = $baseUrl;
 
         $url = $this->context->getUrl();
@@ -136,14 +136,14 @@ class RestoreCart extends Action
      */
     private function resolveQuote($restoreCartHash)
     {
-        $customerQuery = $this->customerFactory
+        $customerQuery = $this->nostoCustomerFactory
             ->create()
             ->getCollection()
             ->addFieldToFilter(CustomerInterface::RESTORE_CART_HASH, $restoreCartHash)
             ->setPageSize(1)
             ->setCurPage(1);
 
-        /** @var Customer $nostoCustomer */
+        /** @var NostoCustomer $nostoCustomer */
         $nostoCustomer = $customerQuery->getFirstItem(); // @codingStandardsIgnoreLine
         if ($nostoCustomer == null || !$nostoCustomer->hasData() || $nostoCustomer->getQuoteId() === null) {
             throw new NostoException(
