@@ -25,7 +25,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
                     'type' => Table::TYPE_TEXT,
                     'nullable' => true,
                     'comment' => 'Restore cart hash',
-//                    'size' => CustomerInterface::NOSTO_TAGGING_RESTORE_CART_ATTRIBUTE_LENGTH
+                    'length' => CustomerInterface::NOSTO_TAGGING_RESTORE_CART_ATTRIBUTE_LENGTH
                 ]
             );
         }
