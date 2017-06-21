@@ -36,6 +36,7 @@
 
 namespace Nosto\Tagging\Model\Cart;
 
+use Magento\Catalog\Model\Product;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\ObjectManagerInterface;
 use Magento\Quote\Model\Quote;
@@ -83,17 +84,19 @@ class Builder
 
         foreach ($quote->getAllVisibleItems() as $item) {
             try {
-                $cartItem = $this->nostoCartItemBuilder->build(
-                    $item,
-                    $store->getCurrentCurrencyCode() ?: $store->getDefaultCurrencyCode()
-                );
-                $nostoCart->addItem($cartItem);
+                if ($item->getProduct() instanceof Product) {
+                    $cartItem = $this->nostoCartItemBuilder->build(
+                        $item,
+                        $store->getCurrentCurrencyCode() ?: $store->getDefaultCurrencyCode()
+                    );
+                    $nostoCart->addItem($cartItem);
+                }
             } catch (NostoException $e) {
                 $this->logger->error($e->__toString());
             }
         }
 
-        $this->eventManager->dispatch('nosto_cart_load_after', ['cart' => $nostoCart]);
+        $this->eventManager->dispatch('nosto_cart_load_after', ['cart' => $nostoCart, 'magentoQuote' => $quote]);
 
         return $nostoCart;
     }

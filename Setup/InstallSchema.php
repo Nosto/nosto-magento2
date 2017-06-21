@@ -56,7 +56,7 @@ class InstallSchema implements InstallSchemaInterface
         SchemaSetupInterface $setup,
         ModuleContextInterface $context
     ) {
-    
+
         $installer = $setup;
         $installer->startSetup();
         $table = $installer->getConnection()
@@ -99,6 +99,13 @@ class InstallSchema implements InstallSchemaInterface
                 null,
                 ['nullable' => false],
                 'Updated Time'
+            )
+            ->addColumn(
+                CustomerInterface::RESTORE_CART_HASH,
+                Table::TYPE_TEXT,
+                CustomerInterface::NOSTO_TAGGING_RESTORE_CART_ATTRIBUTE_LENGTH,
+                ['nullable' => true],
+                'Restore cart hash'
             )
             ->addIndex(
                 $installer->getIdxName(

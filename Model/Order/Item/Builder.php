@@ -105,7 +105,7 @@ class Builder
             $nostoItem->setPrice(0);
         }
 
-        $this->eventManager->dispatch('nosto_order_item_load_after', ['item' => $nostoItem]);
+        $this->eventManager->dispatch('nosto_order_item_load_after', ['item' => $nostoItem, 'magentoItem' => $item]);
 
         return $nostoItem;
     }

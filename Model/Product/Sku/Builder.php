@@ -127,7 +127,7 @@ class Builder
             $this->logger->error($e->__toString());
         }
 
-        $this->eventManager->dispatch('nosto_sku_load_after', ['sku' => $nostoSku]);
+        $this->eventManager->dispatch('nosto_sku_load_after', ['sku' => $nostoSku, 'magentoProduct' => $product]);
 
         return $nostoSku;
     }

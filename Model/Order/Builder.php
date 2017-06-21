@@ -37,6 +37,7 @@
 namespace Nosto\Tagging\Model\Order;
 
 use Exception;
+use Magento\Catalog\Model\Product;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\ObjectManagerInterface;
 use Magento\Framework\Phrase;
@@ -125,8 +126,10 @@ class Builder
             // Add each ordered item as a line item
             /** @var Item $item */
             foreach ($order->getAllVisibleItems() as $item) {
-                $nostoItem = $this->nostoOrderItemBuilder->build($item);
-                $nostoOrder->addPurchasedItems($nostoItem);
+                if ($item->getProduct() instanceof Product) {
+                    $nostoItem = $this->nostoOrderItemBuilder->build($item);
+                    $nostoOrder->addPurchasedItems($nostoItem);
+                }
             }
 
             // Add discounts as a pseudo line item
@@ -161,7 +164,7 @@ class Builder
             $this->logger->error($e->__toString());
         }
 
-        $this->eventManager->dispatch('nosto_order_load_after', ['order' => $nostoOrder]);
+        $this->eventManager->dispatch('nosto_order_load_after', ['order' => $nostoOrder, 'magentoOrder' => $order]);
 
         return $nostoOrder;
     }

@@ -57,6 +57,6 @@
     ]
   },
   "archive": {
-    "exclude": [".DS_STORE", ".idea", ".phan", "ruleset.xml", "phan.*", ".gitignore"]
+    "exclude": [".DS_STORE", ".idea", ".phan", "ruleset.xml", "phan.*", ".gitignore", "build.xml"]
   }
 }

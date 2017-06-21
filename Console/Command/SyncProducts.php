@@ -93,9 +93,7 @@ class SyncProducts extends Command
         NostoHelperAccount\Proxy $nostoHelperAccount,
         NostoProductCollection\Proxy $nostoProductCollection,
         NostoHelperData\Proxy $nostoHelperData
-
     ) {
-        $state->setAreaCode(Area::AREA_FRONTEND);
         parent::__construct();
 
         $this->productCollectionFactory = $productCollectionFactory;
@@ -137,6 +135,10 @@ class SyncProducts extends Command
      */
     public function execute(InputInterface $input, OutputInterface $output)
     {
+        if (!$this->state->getAreaCode()) {
+            $this->state->setAreaCode(Area::AREA_FRONTEND);
+        }
+
         if ($this->moduleManager->isEnabled(NostoHelperData::MODULE_NAME)) {
             $limit = (int)$input->getOption('batch');
 

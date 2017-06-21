@@ -34,31 +34,25 @@
  *
  */
 
+namespace Nosto\Tagging\Model\Config\Source;
+
+use Magento\Catalog\Model\ResourceModel\Product\Attribute\Collection;
+
 /**
- * Template for cart tagging. The actual data is populated via
- * Magento's KnockoutJS logic.
+ * Option array class to generate a list of selectable options that allows the merchant to choose
+ * any attribute for his brand tag.
  *
- * @see \Nosto\Tagging\CustomerData\CartTagging
+ * @package Nosto\Tagging\Model\Config\Source
  */
-?>
-<!-- Nosto Cart Tagging -->
-<div class="nosto_cart_hidden" style="display:none" data-bind="scope: 'cartTagging'"
-     data-role="nosto-cart-tagging"
-     id="nosto_cart_tagging">
-    <span class="hcid" data-bind="text: cartTagging().hcid"></span>
-    <span class="restore_link" data-bind="text: cartTagging().restore_cart_url"></span>
-    <!-- ko if: cartTagging().itemCount > 0 -->
-    <!-- ko foreach: {data: cartTagging().items, afterRender: sendTagging } -->
-    <div class="line_item">
-        <span class="product_id" data-bind="text: $data.product_id"></span>
-        <span class="quantity" data-bind="text: $data.quantity"></span>
-        <span class="name" data-bind="text: $data.name"></span>
-        <span class="unit_price" data-bind="text: $data.unit_price"></span>
-        <span class="price_currency_code" data-bind="text: $data.price_currency_code"></span>
-    </div>
-    <!-- /ko -->
-    <!-- /ko -->
-</div>
-<script type="text/x-magento-init">
-{"[data-role=nosto-cart-tagging]": {"Magento_Ui/js/core/app": <?php /* @escapeNotVerified */ echo $block->getJsLayout();?>}}
-</script>
+class Tags extends Selector
+{
+    // @codingStandardsIgnoreLine
+    public function filterCollection(Collection $collection)
+    {
+    }
+
+    public function isNullable()
+    {
+        return true;
+    }
+}

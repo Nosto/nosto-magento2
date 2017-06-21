@@ -135,6 +135,33 @@
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
             </group>
+            <group id="attributes" translate="label" type="text" sortOrder="40" showInDefault="1"
+                   showInWebsite="1" showInStore="1">
+                <label>Attributes to tags</label>
+                <comment>Choose attributes that will be added to tags when present
+                </comment>
+                <field id="tag1" translate="label comment" type="multiselect" sortOrder="10"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Tag1</label>
+                    <comment>Choose attributes that will be added to tags 1 when present
+                    </comment>
+                    <source_model>Nosto\Tagging\Model\Config\Source\Tags</source_model>
+                </field>
+                <field id="tag2" translate="label comment" type="multiselect" sortOrder="20"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Tag2</label>
+                    <comment>Choose attributes that will be added to tag 2 when present
+                    </comment>
+                    <source_model>Nosto\Tagging\Model\Config\Source\Tags</source_model>
+                </field>
+                <field id="tag3" translate="label comment" type="multiselect" sortOrder="30"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Tag3</label>
+                    <comment>Choose attributes that will be added to tag 3 when present
+                    </comment>
+                    <source_model>Nosto\Tagging\Model\Config\Source\Tags</source_model>
+                </field>
+            </group>
         </section>
     </system>
 </config>
