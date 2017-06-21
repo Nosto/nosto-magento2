@@ -319,17 +319,13 @@ class Url extends AbstractHelper
      *
      * @param Store $store the store to get the url for.
      * @param string $currentUrl restore cart url
-     * @return string the url.
+     * @throws /Zend_Uri_Exception When the given $currentUrl is invalid
+     * @return string cart url.
      */
     public function getUrlCart(Store $store, $currentUrl)
     {
-        // @codingStandardsIgnoreLine
-        $userQuery = parse_url($currentUrl, PHP_URL_QUERY);
-        if (is_string($userQuery)) {
-            parse_str($userQuery, $urlParameters); // @codingStandardsIgnoreLine
-        } else {
-            $urlParameters = [];
-        }
+        $zendHttp = \Zend_Uri_Http::fromString($currentUrl);
+        $urlParameters = $zendHttp->getQueryAsArray();
 
         $defaultParams = $this->getUrlOptionsWithNoSid();
         $url = $store->getUrl(
