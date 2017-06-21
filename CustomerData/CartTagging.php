@@ -132,8 +132,12 @@ class CartTagging extends HashedTagging implements SectionSourceInterface
 
         if ($data["itemCount"] > 0) {
             $store = $this->scopeHelper->getStore();
-            $data['restore_cart_url'] = $this->nostoRestoreCartUrlBuilder
-                ->build($this->getQuote(), $store);
+            try {
+                $data['restore_cart_url'] = $this->nostoRestoreCartUrlBuilder
+                    ->build($this->getQuote(), $store);
+            } catch(\Exception $e) {
+                $this->logger->error($e->__toString());
+            }
         }
 
         return $data;
