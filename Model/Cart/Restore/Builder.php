@@ -34,7 +34,7 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Cart\RestoreCartUrl;
+namespace Nosto\Tagging\Model\Cart\Restore;
 
 use Magento\Framework\Encryption\EncryptorInterface;
 use Magento\Quote\Model\Quote;

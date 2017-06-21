@@ -47,7 +47,7 @@ use Nosto\Tagging\Model\Cart\Builder as NostoCartBuilder;
 use Nosto\Tagging\Model\Customer as NostoCustomer;
 use Nosto\Tagging\Model\CustomerFactory as NostoCustomerFactory;
 use Nosto\Tagging\Helper\Url as NostoHelperUrl;
-use Nosto\Tagging\Model\Cart\RestoreCartUrl\Builder as NostoRestoreCartUrlBuilder;
+use Nosto\Tagging\Model\Cart\Restore\Builder as NostoRestoreCartUrlBuilder;
 use Psr\Log\LoggerInterface;
 
 class CartTagging extends HashedTagging implements SectionSourceInterface
