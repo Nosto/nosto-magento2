@@ -70,6 +70,18 @@ class RestoreCart extends Action
     private $scopeHelper;
     private $nostoCustomerFactory;
 
+    /**
+     * RestoreCart constructor.
+     * @param Context $context
+     * @param ModuleManager $moduleManager
+     * @param Session $checkoutSession
+     * @param QuoteFactory $quoteFactory
+     * @param ResourceQuote $quoteResource
+     * @param LoggerInterface $logger
+     * @param NostoHelperUrl $urlHelper
+     * @param NostoHelperScope $scopeHelper
+     * @param NostoCustomerFactory $nostoCustomerFactory
+     */
     public function __construct(
         Context $context,
         ModuleManager $moduleManager,
@@ -96,10 +108,7 @@ class RestoreCart extends Action
     public function execute()
     {
         $store = $this->scopeHelper->getStore();
-        $storeId = $this->getRequest()->getParam('___store');
-
-        $baseUrl = $this->scopeHelper->getStore($storeId)->getBaseUrl();
-        $redirectUrl = $baseUrl;
+        $redirectUrl = $store->getBaseUrl();
 
         $url = $this->context->getUrl();
         $currentUrl = $url->getCurrentUrl();

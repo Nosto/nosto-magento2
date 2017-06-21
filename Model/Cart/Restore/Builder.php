@@ -60,6 +60,7 @@ class Builder
      * Builder constructor.
      * @param LoggerInterface $logger
      * @param CookieManagerInterface $cookieManager
+     * @param EncryptorInterface $encryptor
      * @param NostoCustomerFactory $nostoCustomerFactory
      * @param NostoHelperUrl $urlHelper
      * @param DateTime $date
@@ -181,7 +182,7 @@ class Builder
      */
     private function generateRestoreCartUrl($hash, Store $store)
     {
-        $params = NostoHelperUrl::getUrlOptionsWithNoSid();
+        $params = NostoHelperUrl::getUrlOptionsWithNoSid($store);
         $params['h'] = $hash;
         $url = $store->getUrl(NostoHelperUrl::NOSTO_PATH_RESTORE_CART, $params);
 

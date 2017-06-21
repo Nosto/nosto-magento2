@@ -327,7 +327,7 @@ class Url extends AbstractHelper
         $zendHttp = \Zend_Uri_Http::fromString($currentUrl);
         $urlParameters = $zendHttp->getQueryAsArray();
 
-        $defaultParams = $this->getUrlOptionsWithNoSid();
+        $defaultParams = self::getUrlOptionsWithNoSid($store);
         $url = $store->getUrl(
             self::MAGENTO_PATH_CART,
             $defaultParams
@@ -351,12 +351,13 @@ class Url extends AbstractHelper
      *
      * @return array
      */
-    public static function getUrlOptionsWithNoSid()
+    public static function getUrlOptionsWithNoSid(Store $store)
     {
         $params = [
             self::MAGENTO_URL_OPTION_SCOPE_TO_URL => true,
             self::MAGENTO_URL_OPTION_NOSID => true,
-            self::MAGENTO_URL_OPTION_LINK_TYPE => self::$urlType
+            self::MAGENTO_URL_OPTION_LINK_TYPE => self::$urlType,
+            self::MAGENTO_URL_OPTION_SCOPE => $store->getCode(),
         ];
 
         return $params;

@@ -106,6 +106,7 @@ class CartTagging extends HashedTagging implements SectionSourceInterface
             'hcid' => parent::generateVisitorChecksum($nostoCustomerId),
             "items" => [],
             "itemCount" => 0,
+            'restore_cart_url' => ''
         ];
         $cart = $this->cartHelper->getCart();
         $nostoCart = $this->nostoCartBuilder->build(
