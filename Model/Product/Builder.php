@@ -39,7 +39,6 @@ namespace Nosto\Tagging\Model\Product;
 use Magento\Catalog\Api\CategoryRepositoryInterface;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\Product\Gallery\ReadHandler as GalleryReadHandler;
-use Magento\Eav\Model\Entity\Attribute;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Review\Model\ReviewFactory;
 use Magento\Store\Model\Store;
@@ -51,6 +50,7 @@ use Nosto\Tagging\Helper\Stock as NostoStockHelper;
 use Nosto\Tagging\Model\Category\Builder as NostoCategoryBuilder;
 use Nosto\Tagging\Model\Product\Sku\Collection as NostoSkuCollection;
 use Nosto\Tagging\Model\Product\Url\Builder as NostoUrlBuilder;
+use Nosto\Tagging\Model\Product\Tags\LowStock as LowStockHelper;
 use Nosto\Types\Product\ProductInterface;
 use Psr\Log\LoggerInterface;
 
@@ -70,6 +70,7 @@ class Builder
     private $urlBuilder;
     private $skuCollection;
     private $nostoCurrencyHelper;
+    private $lowStockHelper;
 
     /**
      * @param NostoHelperData $nostoHelperData
@@ -84,6 +85,7 @@ class Builder
      * @param GalleryReadHandler $galleryReadHandler
      * @param NostoUrlBuilder $urlBuilder
      * @param CurrencyHelper $nostoCurrencyHelper
+     * @param LowStockHelper $lowStockHelper
      */
     public function __construct(
         NostoHelperData $nostoHelperData,
@@ -97,7 +99,8 @@ class Builder
         ReviewFactory $reviewFactory,
         GalleryReadHandler $galleryReadHandler,
         NostoUrlBuilder $urlBuilder,
-        CurrencyHelper $nostoCurrencyHelper
+        CurrencyHelper $nostoCurrencyHelper,
+        LowStockHelper $lowStockHelper
     ) {
         $this->nostoDataHelper = $nostoHelperData;
         $this->nostoPriceHelper = $priceHelper;
@@ -111,6 +114,7 @@ class Builder
         $this->urlBuilder = $urlBuilder;
         $this->skuCollection = $skuCollection;
         $this->nostoCurrencyHelper = $nostoCurrencyHelper;
+        $this->lowStockHelper = $lowStockHelper;
     }
 
     /**
@@ -356,6 +360,10 @@ class Builder
 
         if (!$product->canConfigure()) {
             $tags[] = ProductInterface::ADD_TO_CART;
+        }
+
+        if ($this->lowStockHelper->build($product)) {
+            $tags[] = ProductInterface::LOW_STOCK;
         }
 
         return $tags;
