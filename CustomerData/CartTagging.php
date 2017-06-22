@@ -86,7 +86,7 @@ class CartTagging extends HashedTagging implements SectionSourceInterface
         $this->logger = $logger;
         $this->date = $date;
         $this->cookieManager = $cookieManager;
-        $this->scopeHelper = $nostoScopeHelper;
+        $this->nostoScopeHelper = $nostoScopeHelper;
         $this->nostoCustomerFactory = $nostoCustomerFactory;
         $this->nostoCartBuilder = $nostoCartBuilder;
         $this->nostoRestoreCartUrlBuilder = $nostoRestoreCartUrlBuilder;
