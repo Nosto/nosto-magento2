@@ -34,41 +34,21 @@
  *
  */
 
-namespace Nosto\Tagging\Setup;
+namespace Nosto\Tagging\Model\ResourceModel;
 
-use Magento\Framework\DB\Ddl\Table;
-use Magento\Framework\Setup\UpgradeSchemaInterface;
-use Magento\Framework\Setup\ModuleContextInterface;
-use Magento\Framework\Setup\SchemaSetupInterface;
-use Nosto\Tagging\Api\Data\CustomerInterface;
-use Nosto\Tagging\Model\ResourceModel\Customer;
+use Magento\Framework\Model\ResourceModel\Db\AbstractDb;
+use Nosto\Tagging\Api\Data\ProductQueueInterface;
 
-class UpgradeSchema extends Core implements UpgradeSchemaInterface
+class ProductQueue extends AbstractDb
 {
+    const TABLE_NAME = 'nosto_tagging_product_queue';
     /**
-     * {@inheritdoc}
+     * Initialize resource model
+     *
+     * @return void
      */
-    public function upgrade(SchemaSetupInterface $setup, ModuleContextInterface $context)
+    public function _construct()
     {
-        $setup->startSetup();
-
-        if (version_compare($context->getVersion(), '2.1.0', '<')) {
-            $setup->getConnection()->addColumn(
-                $setup->getTable(Customer::TABLE_NAME),
-                CustomerInterface::RESTORE_CART_HASH,
-                [
-                    'type' => Table::TYPE_TEXT,
-                    'nullable' => true,
-                    'comment' => 'Restore cart hash',
-                    'length' => CustomerInterface::NOSTO_TAGGING_RESTORE_CART_ATTRIBUTE_LENGTH
-                ]
-            );
-        }
-
-        if (version_compare($context->getVersion(), '2.2.0', '<')) {
-            $this->createProductQueueTable($setup);
-        }
-
-        $setup->endSetup();
+        $this->_init(self::TABLE_NAME, ProductQueueInterface::PRODUCT_ID);
     }
 }

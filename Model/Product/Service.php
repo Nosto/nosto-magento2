@@ -48,10 +48,12 @@ use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
+use Nosto\Tagging\Model\ProductQueue;
 use Psr\Log\LoggerInterface;
 use Magento\Catalog\Model\ResourceModel\Product\Collection as ProductCollection;
 use Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable as ConfigurableProduct;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable as ConfigurableType;
+use Nosto\Tagging\Model\ProductQueueFactory as NostoProductQueueFactory;
 
 /**
  * Service class for updating products to Nosto
@@ -73,6 +75,7 @@ class Service
     private $nostoHelperAccount;
     private $nostoHelperData;
     private $configurableProduct;
+    private $nostoProductQueueFactory;
 
     public static $processed = [];
 
@@ -92,6 +95,7 @@ class Service
      * @param NostoHelperAccount\Proxy $nostoHelperAccount
      * @param NostoHelperData\Proxy $nostoHelperData
      * @param ConfigurableProduct $configurableProduct
+     * @param NostoProductQueueFactory $nostoProductQueueFactory
      */
     public function __construct(
         State $state,
@@ -103,7 +107,8 @@ class Service
         NostoProductBuilder $nostoProductBuilder,
         NostoHelperAccount\Proxy $nostoHelperAccount,
         NostoHelperData\Proxy $nostoHelperData,
-        ConfigurableProduct $configurableProduct
+        ConfigurableProduct $configurableProduct,
+        NostoProductQueueFactory $nostoProductQueueFactory
     )
     {
         $this->productCollectionFactory = $productCollectionFactory;
@@ -117,6 +122,7 @@ class Service
         $this->nostoHelperData = $nostoHelperData;
         $this->nostoHelperScope = $nostoHelperScope;
         $this->configurableProduct = $configurableProduct;
+        $this->nostoProductQueueFactory = $nostoProductQueueFactory;
 
         HttpRequest::$responseTimeout = 120;
         HttpRequest::buildUserAgent(
@@ -138,8 +144,23 @@ class Service
         $currentBatch = 0;
         $productCounter = 0;
         foreach ($productCollection as $product) {
-            if (self::isProcessed($product->getId())) {
+                if (self::isProcessed($product->getId())) {
                 continue;
+            }
+            /**
+             * ToDo
+             * - create repository interface and implementation for saving data
+             * - implement logic to efficiently (without db queries) fetch parent productIds only once
+             * - implement flush queue method that fetches all not synchonized entries from the table, create batches and updates those
+             * - once ready, ditch the observer and finalize the indexer
+             */
+            /* @var ProductQueue $nostoQueue */
+            $nostoQueue = $this->nostoProductQueueFactory->create()->load($product->getId());
+            if ($nostoQueue instanceof NostoProductQueue) {
+                continue;
+            } else {
+                $nostoQueue->setCreatedAt(new \DateTime('now'));
+                $nostoQueue->save();
             }
             foreach ($product->getStoreIds() as $storeId) {
                 if (in_array($storeId, $storesWithNoNosto)) {
@@ -152,7 +173,7 @@ class Service
                         $storesWithNoNosto[] = $storeId;
                         continue;
                     }
-                    $productsInStores[$storeId] = array();
+                    $productsInStores[$storeId] = [];
                 }
                 $parentProducts = $this->resolveParentProducts($product);
                 $productsToUpdate = [];
@@ -163,7 +184,6 @@ class Service
                 } else {
                     $productsToUpdate[] = $product;
                 }
-
                 foreach ($productsToUpdate as $productToUpdate) {
                     if ($productCounter > 0
                         && $productCounter % self::$batchSize == 0
@@ -177,7 +197,6 @@ class Service
                     $this->setVariationsAsProcessed($productToUpdate);
                 }
             }
-            self::$processed[] = $product->getId();
             ++$productCounter;
         }
 
@@ -240,11 +259,18 @@ class Service
      * Sets a product id as processed
      *
      * @param $id
+     * @param int|null $parentId
      */
-    private static function addProcessed($id)
+    private static function addProcessed($id, $parentId = null)
     {
         if (is_numeric($id)) {
-            self::$processed[$id] = $id;
+            if (!is_numeric($parentId)) {
+                $parentId = $id;
+            }
+            if (empty(self::$processed[$parentId])) {
+                self::$processed[$parentId] = [];
+            }
+            self::$processed[$parentId][] = $id;
         }
     }
 
@@ -252,22 +278,35 @@ class Service
      * Sets a product id as processed
      *
      * @param array $arr
+     * @param null $parentId
      */
-    private static function addProcessedArray(array $arr) {
+    private static function addProcessedArray(array $arr, $parentId = null) {
         foreach ($arr as $id) {
-            self::addProcessed($id);
+            self::addProcessed($id, $parentId);
         }
     }
 
     /**
      * Checks if product has been already processed
      *
-     * @param $id
+     * @param int $id id of the product
      * @return bool
      */
     private static function isProcessed($id)
     {
-        return isset(self::$processed[$id]);
+        $found = false;
+        if (isset(self::$processed[$id])) {
+            $found = true;
+        } else {
+            foreach (self::$processed as $parentId => $arr) {
+                if (in_array($id, $arr)) {
+                    $found = true;
+                    break;
+                }
+            }
+        }
+
+        return $found;
     }
 
     /**
@@ -282,9 +321,9 @@ class Service
             if (count($childrenIds) > 0) {
                 foreach ($childrenIds as $val) {
                     if (is_array($val)) {
-                        self::addProcessedArray($val);
+                        self::addProcessedArray($val, $product->getId());
                     } else {
-                        self::addProcessed($val);
+                        self::addProcessed($val, $product->getId());
                     }
                 }
             }

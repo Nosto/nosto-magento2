@@ -34,41 +34,56 @@
  *
  */
 
-namespace Nosto\Tagging\Setup;
+namespace Nosto\Tagging\Api\Data;
 
-use Magento\Framework\DB\Ddl\Table;
-use Magento\Framework\Setup\UpgradeSchemaInterface;
-use Magento\Framework\Setup\ModuleContextInterface;
-use Magento\Framework\Setup\SchemaSetupInterface;
-use Nosto\Tagging\Api\Data\CustomerInterface;
-use Nosto\Tagging\Model\ResourceModel\Customer;
-
-class UpgradeSchema extends Core implements UpgradeSchemaInterface
+interface ProductQueueInterface
 {
+    const PRODUCT_ID = 'product_id';
+    const CREATED_AT = 'created_at';
+    const SYNCHRONIZED_AT = 'synchronized_at';
+
     /**
-     * {@inheritdoc}
+     * Get product id
+     *
+     * @return int|null
      */
-    public function upgrade(SchemaSetupInterface $setup, ModuleContextInterface $context)
-    {
-        $setup->startSetup();
+    public function getProductId();
 
-        if (version_compare($context->getVersion(), '2.1.0', '<')) {
-            $setup->getConnection()->addColumn(
-                $setup->getTable(Customer::TABLE_NAME),
-                CustomerInterface::RESTORE_CART_HASH,
-                [
-                    'type' => Table::TYPE_TEXT,
-                    'nullable' => true,
-                    'comment' => 'Restore cart hash',
-                    'length' => CustomerInterface::NOSTO_TAGGING_RESTORE_CART_ATTRIBUTE_LENGTH
-                ]
-            );
-        }
+    /**
+     * Get created at time
+     *
+     * @return \DateTime
+     */
+    public function getCreatedAt();
 
-        if (version_compare($context->getVersion(), '2.2.0', '<')) {
-            $this->createProductQueueTable($setup);
-        }
+    /**
+     * Get synchronized at time
+     *
+     * @return \DateTime
+     */
+    public function getSynchronizedAt();
 
-        $setup->endSetup();
-    }
+    /**
+     * Set product id
+     *
+     * @param int $productId
+     * @return self
+     */
+    public function setProductId($productId);
+
+    /**
+     * Set created at time
+     *
+     * @param \DateTime $createdAt
+     * @return self
+     */
+    public function setCreatedAt(\DateTime $createdAt);
+
+    /**
+     * Set synchronized at time
+     *
+     * @param \DateTime $synchronizedAt
+     * @return self
+     */
+    public function setSynchronizedAt(\DateTime $synchronizedAt);
 }

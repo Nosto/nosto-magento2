@@ -34,41 +34,68 @@
  *
  */
 
-namespace Nosto\Tagging\Setup;
+namespace Nosto\Tagging\Model;
 
-use Magento\Framework\DB\Ddl\Table;
-use Magento\Framework\Setup\UpgradeSchemaInterface;
-use Magento\Framework\Setup\ModuleContextInterface;
-use Magento\Framework\Setup\SchemaSetupInterface;
-use Nosto\Tagging\Api\Data\CustomerInterface;
-use Nosto\Tagging\Model\ResourceModel\Customer;
+use Magento\Framework\Model\AbstractModel;
+use Nosto\Tagging\Api\Data\ProductQueueInterface;
 
-class UpgradeSchema extends Core implements UpgradeSchemaInterface
+class ProductQueue extends AbstractModel implements ProductQueueInterface
 {
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
-    public function upgrade(SchemaSetupInterface $setup, ModuleContextInterface $context)
+    public function getProductId()
     {
-        $setup->startSetup();
+        return $this->getData(self::PRODUCT_ID);
+    }
 
-        if (version_compare($context->getVersion(), '2.1.0', '<')) {
-            $setup->getConnection()->addColumn(
-                $setup->getTable(Customer::TABLE_NAME),
-                CustomerInterface::RESTORE_CART_HASH,
-                [
-                    'type' => Table::TYPE_TEXT,
-                    'nullable' => true,
-                    'comment' => 'Restore cart hash',
-                    'length' => CustomerInterface::NOSTO_TAGGING_RESTORE_CART_ATTRIBUTE_LENGTH
-                ]
-            );
-        }
+    /**
+     * @inheritdoc
+     */
+    public function getCreatedAt()
+    {
+        return $this->getData(self::CREATED_AT);
+    }
 
-        if (version_compare($context->getVersion(), '2.2.0', '<')) {
-            $this->createProductQueueTable($setup);
-        }
+    /**
+     * @inheritdoc
+     */
+    public function getSynchronizedAt()
+    {
+        return $this->getData(self::SYNCHRONIZED_AT);
+    }
 
-        $setup->endSetup();
+    /**
+     * @inheritdoc
+     */
+    public function setProductId($productId)
+    {
+        return $this->setData(self::PRODUCT_ID_ID, $productId);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setCreatedAt(\DateTime $createdAt)
+    {
+        return $this->setData(self::CREATED_AT, $createdAt);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setSynchronizedAt(\DateTime $synchronizedAt)
+    {
+        return $this->setData(self::SYNCHRONIZED_AT, $synchronizedAt);
+    }
+
+    /**
+     * Initialize resource model
+     *
+     * @return void
+     */
+    public function _construct()
+    {
+        $this->_init('Nosto\Tagging\Model\ResourceModel\ProductQueue');
     }
 }
