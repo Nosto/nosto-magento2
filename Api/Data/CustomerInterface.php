@@ -43,6 +43,12 @@ interface CustomerInterface
     const NOSTO_ID = 'nosto_id';
     const CREATED_AT = 'created_at';
     const UPDATED_AT = 'updated_at';
+    const RESTORE_CART_HASH = 'restore_cart_hash';
+
+    /**
+     * @var int The length of the restore cart attribute
+     */
+    const NOSTO_TAGGING_RESTORE_CART_ATTRIBUTE_LENGTH = 64;
 
     /**
      * Get customer id
@@ -78,6 +84,13 @@ interface CustomerInterface
      * @return \DateTime
      */
     public function getUpdatedAt();
+
+    /**
+     * Get restore cart hash
+     *
+     * @return string restore cart hash
+     */
+    public function getRestoreCartHash();
 
     /**
      * Set customer id
@@ -120,4 +133,12 @@ interface CustomerInterface
      * @return self
      */
     public function setUpdatedAt(\DateTime $updatedAt);
+
+    /**
+     * Set restore cart hash
+     *
+     * @param string $restoreCartHash
+     * @return self
+     */
+    public function setRestoreCartHash($restoreCartHash);
 }
