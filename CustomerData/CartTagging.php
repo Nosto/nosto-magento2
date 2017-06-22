@@ -46,7 +46,6 @@ use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Model\Cart\Builder as NostoCartBuilder;
 use Nosto\Tagging\Model\Customer as NostoCustomer;
 use Nosto\Tagging\Model\CustomerFactory as NostoCustomerFactory;
-use Nosto\Tagging\Helper\Url as NostoHelperUrl;
 use Nosto\Tagging\Model\Cart\Restore\Builder as NostoRestoreCartUrlBuilder;
 use Psr\Log\LoggerInterface;
 
@@ -56,9 +55,8 @@ class CartTagging extends HashedTagging implements SectionSourceInterface
     private $cookieManager;
     private $logger;
     private $date;
-    private $scopeHelper;
-    private $urlHelper;
     private $quote = null;
+    private $nostoScopeHelper;
     private $nostoCartBuilder;
     private $nostoRestoreCartUrlBuilder;
     private $nostoCustomerFactory;
@@ -67,7 +65,7 @@ class CartTagging extends HashedTagging implements SectionSourceInterface
     /**
      * @param CartHelper $cartHelper
      * @param NostoCartBuilder $nostoCartBuilder
-     * @param NostoHelperScope $scopeHelper
+     * @param NostoHelperScope $nostoScopeHelper
      * @param CookieManagerInterface $cookieManager
      * @param LoggerInterface $logger
      * @param DateTime $date
@@ -79,8 +77,7 @@ class CartTagging extends HashedTagging implements SectionSourceInterface
         LoggerInterface $logger,
         DateTime $date,
         NostoCartBuilder $nostoCartBuilder,
-        NostoHelperScope $scopeHelper,
-        NostoHelperUrl $urlHelper,
+        NostoHelperScope $nostoScopeHelper,
         /** @noinspection PhpUndefinedClassInspection */
         NostoCustomerFactory $nostoCustomerFactory,
         NostoRestoreCartUrlBuilder $nostoRestoreCartUrlBuilder
@@ -89,8 +86,7 @@ class CartTagging extends HashedTagging implements SectionSourceInterface
         $this->logger = $logger;
         $this->date = $date;
         $this->cookieManager = $cookieManager;
-        $this->scopeHelper = $scopeHelper;
-        $this->urlHelper = $urlHelper;
+        $this->scopeHelper = $nostoScopeHelper;
         $this->nostoCustomerFactory = $nostoCustomerFactory;
         $this->nostoCartBuilder = $nostoCartBuilder;
         $this->nostoRestoreCartUrlBuilder = $nostoRestoreCartUrlBuilder;
@@ -111,7 +107,7 @@ class CartTagging extends HashedTagging implements SectionSourceInterface
         $cart = $this->cartHelper->getCart();
         $nostoCart = $this->nostoCartBuilder->build(
             $this->getQuote(),
-            $this->scopeHelper->getStore()
+            $this->nostoScopeHelper->getStore()
         );
         $itemCount = $cart->getItemsCount();
         $data["itemCount"] = $itemCount;
@@ -131,7 +127,7 @@ class CartTagging extends HashedTagging implements SectionSourceInterface
         }
 
         if ($data["itemCount"] > 0) {
-            $store = $this->scopeHelper->getStore();
+            $store = $this->nostoScopeHelper->getStore();
             try {
                 $data['restore_cart_url'] = $this->nostoRestoreCartUrlBuilder
                     ->build($this->getQuote(), $store);

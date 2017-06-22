@@ -66,8 +66,8 @@ class RestoreCart extends Action
     private $quoteFactory;
     private $quoteResource;
     private $logger;
-    private $urlHelper;
-    private $scopeHelper;
+    private $nostoUrlHelper;
+    private $nostoScopeHelper;
     private $nostoCustomerFactory;
 
     /**
@@ -78,8 +78,8 @@ class RestoreCart extends Action
      * @param QuoteFactory $quoteFactory
      * @param ResourceQuote $quoteResource
      * @param LoggerInterface $logger
-     * @param NostoHelperUrl $urlHelper
-     * @param NostoHelperScope $scopeHelper
+     * @param NostoHelperUrl $nostoUrlHelper
+     * @param NostoHelperScope $nostoScopeHelper
      * @param NostoCustomerFactory $nostoCustomerFactory
      */
     public function __construct(
@@ -89,8 +89,8 @@ class RestoreCart extends Action
         QuoteFactory $quoteFactory,
         ResourceQuote $quoteResource,
         LoggerInterface $logger,
-        NostoHelperUrl $urlHelper,
-        NostoHelperScope $scopeHelper,
+        NostoHelperUrl $nostoUrlHelper,
+        NostoHelperScope $nostoScopeHelper,
         NostoCustomerFactory $nostoCustomerFactory
     ) {
         parent::__construct($context);
@@ -100,14 +100,14 @@ class RestoreCart extends Action
         $this->quoteFactory = $quoteFactory;
         $this->quoteResource = $quoteResource;
         $this->logger = $logger;
-        $this->urlHelper = $urlHelper;
-        $this->scopeHelper = $scopeHelper;
+        $this->nostoUrlHelper = $nostoUrlHelper;
+        $this->nostoScopeHelper = $nostoScopeHelper;
         $this->nostoCustomerFactory = $nostoCustomerFactory;
     }
 
     public function execute()
     {
-        $store = $this->scopeHelper->getStore();
+        $store = $this->nostoScopeHelper->getStore();
         $redirectUrl = $store->getBaseUrl();
 
         $url = $this->context->getUrl();
@@ -122,14 +122,14 @@ class RestoreCart extends Action
                     try {
                         $quote = $this->resolveQuote($restoreCartHash);
                         $this->checkoutSession->setQuoteId($quote->getId());
-                        $redirectUrl = $this->urlHelper->getUrlCart($store, $currentUrl);
+                        $redirectUrl = $this->nostoUrlHelper->getUrlCart($store, $currentUrl);
                     } catch (\Exception $e) {
                         $this->logger->error($e->__toString());
                         $this->messageManager->addErrorMessage('Sorry, we could not find your cart');
                     }
                 }
             } else {
-                $redirectUrl = $this->urlHelper->getUrlCart($store, $currentUrl);
+                $redirectUrl = $this->nostoUrlHelper->getUrlCart($store, $currentUrl);
             }
         }
 
