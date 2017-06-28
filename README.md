@@ -2,6 +2,20 @@
 
 ## Changelog
 
+### 2.1.0
+Improvements
+* Add support for restore cart link
+* Add possibility to add product attributes to Nosto tags
+* Add support for indicating low stock for a product
+* Add support for using thumb url
+* Include Magento's object for events dispatched by Nosto
+
+Bug fixes
+* Set area code outside constructor in product sync command
+* Remove multi-currency check from product template
+* Check Nosto account before rendering the javascript stub 
+* Add null checks item builders
+
 ### 2.0.1
 * Fix the multi-currency variation issue when only single currency is used
 
