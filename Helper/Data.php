@@ -103,6 +103,11 @@ class Data extends AbstractHelper
     const XML_PATH_PRODUCT_UPDATES = 'nosto/flags/product_updates';
 
     /**
+     * Path to the configuration object for customized tags
+     */
+    const XML_PATH_TAG = 'nosto/attributes/';
+
+    /**
      * Name of the module
      */
     const MODULE_NAME = 'Nosto_Tagging';
@@ -307,5 +312,22 @@ class Data extends AbstractHelper
             $version = AppInterface::VERSION;
         }
         return $version;
+    }
+
+    /**
+     * Get tag1 mapping attributes
+     *
+     * @param $tagId tag1, tag2 or tag3
+     * @param StoreInterface $store the store model or null.
+     * @return null|array of attributes
+     */
+    public function getTagAttributes($tagId, StoreInterface $store = null)
+    {
+        $attributesConfig = $this->getStoreConfig(self::XML_PATH_TAG . $tagId, $store);
+        if ($attributesConfig == null) {
+            return null;
+        }
+
+        return explode(',', $attributesConfig);
     }
 }

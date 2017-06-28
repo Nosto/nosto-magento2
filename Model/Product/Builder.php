@@ -39,7 +39,6 @@ namespace Nosto\Tagging\Model\Product;
 use Magento\Catalog\Api\CategoryRepositoryInterface;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\Product\Gallery\ReadHandler as GalleryReadHandler;
-use Magento\Eav\Model\Entity\Attribute;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Review\Model\ReviewFactory;
 use Magento\Store\Model\Store;
@@ -51,11 +50,14 @@ use Nosto\Tagging\Helper\Stock as NostoStockHelper;
 use Nosto\Tagging\Model\Category\Builder as NostoCategoryBuilder;
 use Nosto\Tagging\Model\Product\Sku\Collection as NostoSkuCollection;
 use Nosto\Tagging\Model\Product\Url\Builder as NostoUrlBuilder;
+use Nosto\Tagging\Model\Product\Tags\LowStock as LowStockHelper;
 use Nosto\Types\Product\ProductInterface;
 use Psr\Log\LoggerInterface;
 
 class Builder
 {
+    const CUSTOMIZED_TAGS = ['tag1', 'tag2', 'tag3'];
+
     private $nostoDataHelper;
     private $nostoPriceHelper;
     private $nostoCategoryBuilder;
@@ -68,6 +70,7 @@ class Builder
     private $urlBuilder;
     private $skuCollection;
     private $nostoCurrencyHelper;
+    private $lowStockHelper;
 
     /**
      * @param NostoHelperData $nostoHelperData
@@ -82,6 +85,7 @@ class Builder
      * @param GalleryReadHandler $galleryReadHandler
      * @param NostoUrlBuilder $urlBuilder
      * @param CurrencyHelper $nostoCurrencyHelper
+     * @param LowStockHelper $lowStockHelper
      */
     public function __construct(
         NostoHelperData $nostoHelperData,
@@ -95,7 +99,8 @@ class Builder
         ReviewFactory $reviewFactory,
         GalleryReadHandler $galleryReadHandler,
         NostoUrlBuilder $urlBuilder,
-        CurrencyHelper $nostoCurrencyHelper
+        CurrencyHelper $nostoCurrencyHelper,
+        LowStockHelper $lowStockHelper
     ) {
         $this->nostoDataHelper = $nostoHelperData;
         $this->nostoPriceHelper = $priceHelper;
@@ -109,6 +114,7 @@ class Builder
         $this->urlBuilder = $urlBuilder;
         $this->skuCollection = $skuCollection;
         $this->nostoCurrencyHelper = $nostoCurrencyHelper;
+        $this->lowStockHelper = $lowStockHelper;
     }
 
     /**
@@ -194,12 +200,49 @@ class Builder
             if (($tags = $this->buildTags($product)) !== []) {
                 $nostoProduct->setTag1($tags);
             }
+
+            //update customized tag1, Tag2 and Tag3
+            $this->amendAttributeTags($product, $nostoProduct, $store);
         } catch (NostoException $e) {
             $this->logger->error($e->__toString());
         }
-        $this->eventManager->dispatch('nosto_product_load_after', ['product' => $nostoProduct]);
+        $this->eventManager->dispatch(
+            'nosto_product_load_after',
+            ['product' => $nostoProduct, 'magentoProduct' => $product]
+        );
 
         return $nostoProduct;
+    }
+
+    /**
+     * Amends the product attributes to tags array if attributes are defined
+     * and are present in product
+     *
+     * @param Product $product the magento product model.
+     * @param \Nosto\Object\Product\Product $nostoProduct nosto product object
+     * @param Store $store the store model.
+     */
+    private function amendAttributeTags(Product $product, \Nosto\Object\Product\Product $nostoProduct, Store $store)
+    {
+        foreach (self::CUSTOMIZED_TAGS as $tag) {
+            $attributes = $this->nostoDataHelper->getTagAttributes($tag, $store);
+            if (!$attributes) {
+                continue;
+            }
+            foreach ($attributes as $productAttribute) {
+                try {
+                    $attributeValue = $this->getAttributeValue($product, $productAttribute);
+                    if (empty($attributeValue)) {
+                        continue;
+                    }
+                    //addTag1(), addTag2() and addTag3() are called
+                    $addTagMethodName = 'add' . $tag;
+                    $nostoProduct->$addTagMethodName(sprintf('%s:%s', $productAttribute, $attributeValue));
+                } catch (\Exception $e) {
+                    $this->logger->error($e->__toString());
+                }
+            }
+        }
     }
 
     /**
@@ -319,6 +362,10 @@ class Builder
             $tags[] = ProductInterface::ADD_TO_CART;
         }
 
+        if ($this->lowStockHelper->build($product)) {
+            $tags[] = ProductInterface::LOW_STOCK;
+        }
+
         return $tags;
     }
 
@@ -342,10 +389,12 @@ class Builder
                     $value = implode(",", $frontendValue);
                 } elseif (is_scalar($frontendValue)) {
                     $value = $frontendValue;
+                } elseif ($frontendValue instanceof \Magento\Framework\Phrase) {
+                    $value = (string)$frontendValue;
                 }
             }
         } catch (\Exception $e) {
-            $this->logger->error($e);
+            $this->logger->error($e->__toString());
         }
 
         return $value;
