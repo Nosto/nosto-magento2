@@ -82,7 +82,6 @@ class Embed extends Template
         $this->taggingConstruct($nostoHelperAccount, $nostoHelperScope);
         $this->nostoHelperData = $nostoHelperData;
         $this->nostoHelperAccount = $nostoHelperAccount;
-        $this->nostoHelperScope = $nostoHelperScope;
     }
 
     /**

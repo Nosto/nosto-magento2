@@ -42,7 +42,6 @@ class Variation extends Template
         TaggingTrait::__construct as taggingConstruct;
     }
 
-    private $nostoHelperScope;
     private $nostoHelperCurrency;
 
     /**
@@ -51,6 +50,7 @@ class Variation extends Template
      * @param Context $context
      * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoHelperScope $nostoHelperScope
+     * @param NostoHelperCurrency $nostoHelperCurrency
      * @param array $data
      */
     public function __construct(
@@ -63,7 +63,6 @@ class Variation extends Template
         parent::__construct($context, $data);
 
         $this->taggingConstruct($nostoHelperAccount, $nostoHelperScope);
-        $this->nostoHelperScope = $nostoHelperScope;
         $this->nostoHelperCurrency = $nostoHelperCurrency;
     }
 

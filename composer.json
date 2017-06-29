@@ -20,7 +20,7 @@
   ],
   "minimum-stability": "dev",
   "require": {
-    "nosto/php-sdk": "3.0.8"
+    "nosto/php-sdk": "3.0.9"
   },
   "repositories": [
     {
