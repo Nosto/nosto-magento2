@@ -4,25 +4,25 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "06ca30a63bfa701f03eff5cc28e0e7d5",
-    "content-hash": "1505b44d0ff3fa3a4bcd8894811b400d",
+    "hash": "defe04854651e714733c7162e9a1045c",
+    "content-hash": "bfddb244e5219013833340b2b71158b5",
     "packages": [
         {
             "name": "nosto/php-sdk",
-            "version": "3.0.9",
+            "version": "3.0.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Nosto/nosto-php-sdk.git",
-                "reference": "aec20621d16d5b7d7b09e6dc3bbbdd97dbb5f3fc"
+                "reference": "58c87cde1834c6ab9ce15b882b4bd3d172444e53"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Nosto/nosto-php-sdk/zipball/aec20621d16d5b7d7b09e6dc3bbbdd97dbb5f3fc",
-                "reference": "aec20621d16d5b7d7b09e6dc3bbbdd97dbb5f3fc",
+                "url": "https://api.github.com/repos/Nosto/nosto-php-sdk/zipball/58c87cde1834c6ab9ce15b882b4bd3d172444e53",
+                "reference": "58c87cde1834c6ab9ce15b882b4bd3d172444e53",
                 "shasum": ""
             },
             "require": {
-                "phpseclib/phpseclib": "2.0.5",
+                "phpseclib/phpseclib": "2.0.*",
                 "vlucas/phpdotenv": "2.4.0"
             },
             "require-dev": {
@@ -56,23 +56,23 @@
             ],
             "description": "PHP SDK for developing Nosto modules for e-commerce platforms",
             "support": {
-                "source": "https://github.com/Nosto/nosto-php-sdk/tree/3.0.9",
+                "source": "https://github.com/Nosto/nosto-php-sdk/tree/3.0.8",
                 "issues": "https://github.com/Nosto/nosto-php-sdk/issues"
             },
-            "time": "2017-06-29 08:02:40"
+            "time": "2017-06-07 08:37:50"
         },
         {
             "name": "phpseclib/phpseclib",
-            "version": "2.0.5",
+            "version": "2.0.x-dev",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpseclib/phpseclib.git",
-                "reference": "f8dd0e18d2328c447dd4190fecd11ef52680d968"
+                "reference": "47c419545afa35073b60c609c8b5aacb406a1f78"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpseclib/phpseclib/zipball/f8dd0e18d2328c447dd4190fecd11ef52680d968",
-                "reference": "f8dd0e18d2328c447dd4190fecd11ef52680d968",
+                "url": "https://api.github.com/repos/phpseclib/phpseclib/zipball/47c419545afa35073b60c609c8b5aacb406a1f78",
+                "reference": "47c419545afa35073b60c609c8b5aacb406a1f78",
                 "shasum": ""
             },
             "require": {
@@ -151,7 +151,7 @@
                 "x.509",
                 "x509"
             ],
-            "time": "2017-05-08 05:58:35"
+            "time": "2017-06-20 10:43:42"
         },
         {
             "name": "vlucas/phpdotenv",
