@@ -53,6 +53,9 @@ use Nosto\Tagging\Model\Customer as NostoCustomer;
 use Nosto\NostoException;
 use Psr\Log\LoggerInterface;
 
+/*
+ * Controller class for handling cart restoration
+ */
 class Cart extends Action
 {
     /**
