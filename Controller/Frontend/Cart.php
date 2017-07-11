@@ -53,7 +53,7 @@ use Nosto\Tagging\Model\Customer as NostoCustomer;
 use Nosto\NostoException;
 use Psr\Log\LoggerInterface;
 
-class RestoreCart extends Action
+class Cart extends Action
 {
     /**
      * The name of the hash parameter to look from URL
@@ -71,7 +71,7 @@ class RestoreCart extends Action
     private $nostoCustomerFactory;
 
     /**
-     * RestoreCart constructor.
+     * Cart constructor.
      * @param Context $context
      * @param ModuleManager $moduleManager
      * @param Session $checkoutSession

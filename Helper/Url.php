@@ -89,7 +89,7 @@ class Url extends AbstractHelper
     /**
      * Path to Nosto's restore cart controller
      */
-    const NOSTO_PATH_RESTORE_CART = 'nosto/frontend/restoreCart';
+    const NOSTO_PATH_RESTORE_CART = 'nosto/frontend/cart';
 
     /**
      * The array option key for no session id in Magento's URLs.
