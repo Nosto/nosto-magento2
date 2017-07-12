@@ -125,9 +125,12 @@ class Builder
             $lang = substr($this->localeResolver->getLocale(), 0, 2);
             $metaData->setOwnerLanguageCode($lang);
             $metaData->setOwner($accountOwner);
-            $metaData->setDefaultVariantId(
-                $this->nostoHelperCurrency->getTaggingCurrency($store)->getCode()
-            );
+            if ($this->nostoHelperCurrency->getCurrencyCount($store) > 1) {
+                $metaData->setDefaultVariantId(
+                    $this->nostoHelperCurrency->getTaggingCurrency($store)
+                        ->getCode()
+                );
+            }
 
             $billing = $this->accountBillingMetaBuilder->build($store);
             $metaData->setBillingDetails($billing);
