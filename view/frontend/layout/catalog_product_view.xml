@@ -47,7 +47,7 @@
                     <argument name="value" xsi:type="string">product</argument>
                 </action>
             </block>
-            <block class="Nosto\Tagging\Block\Product" name="nosto.product"
+            <block class="Nosto\Tagging\Block\Product" name="nosto.product" after="-"
                    template="product.phtml"/>
             <block class="Nosto\Tagging\Block\Element" name="nosto.page.product1" after="-"
                    template="Nosto_Tagging::element.phtml">

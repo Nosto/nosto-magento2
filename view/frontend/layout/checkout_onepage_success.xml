@@ -47,10 +47,10 @@
                     <argument name="value" xsi:type="string">order</argument>
                 </action>
             </block>
-            <block class="Nosto\Tagging\Block\Order" name="nosto.order" cacheable="false"
+            <block class="Nosto\Tagging\Block\Order" name="nosto.order" cacheable="false" after="-"
                    template="Nosto_Tagging::order.phtml"/>
             <block class="Nosto\Tagging\Block\Element" name="nosto.page.orderconfirmation1"
-                   after="-" template="Nosto_Tagging::element.phtml">
+                   after="nosto.order" template="Nosto_Tagging::element.phtml">
                 <action method="setData">
                     <argument name="name" xsi:type="string">nostoId</argument>
                     <argument name="value" xsi:type="string">thankyou-nosto-1</argument>
