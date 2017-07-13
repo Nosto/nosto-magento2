@@ -96,7 +96,7 @@ define([
                 xhr(settings.urls.createAccount, {
                     data: post_data,
                     success: function (response) {
-                        if (response.success && response.redirect_url) {
+                        if (response.redirect_url) {
                             settings.element.src = response.redirect_url;
                         }
                     }
