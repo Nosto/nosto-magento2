@@ -36,43 +36,30 @@
 
 namespace Nosto\Tagging\Observer\Product;
 
-use Magento\Catalog\Model\Product;
-use Magento\Store\Model\Store;
-use Nosto\Operation\UpsertProduct;
-use Nosto\Types\Product\ProductInterface;
+use Magento\Framework\Event\Observer;
+use Magento\Review\Model\Review as ReviewModel;
 
 /**
- * Delete event observer model.
- * Used to interact with Magento events.
+ * Product update model for Reviews and Ratings
  *
  * @category Nosto
  * @package  Nosto_Tagging
  * @author   Nosto Solutions Ltd <magento@nosto.com>
  */
-class Delete extends Base
+class Review extends Update
 {
     /**
      * @inheritdoc
      */
-    public function doRequest(UpsertProduct $operation)
+    protected function extractProduct(Observer $observer)
     {
-        $operation->upsert();
-    }
+        /* @var ReviewModel $review */
+        $review = $observer->getObject();
+        $product = null;
+        if ($review instanceof ReviewModel) {
+            $product = $this->productRepository->getById($review->getEntityPkValue());
+        }
 
-    /**
-     * @inheritdoc
-     */
-    public function validateProduct(Product $product)
-    {
-        return true;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function buildProduct(Product $product, Store $store)
-    {
-        $product = $this->nostoProductBuilder->build($product, $store);
-        return $product->setAvailability(ProductInterface::DISCONTINUED);
+        return $product;
     }
 }
