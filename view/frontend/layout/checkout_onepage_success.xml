@@ -35,33 +35,29 @@
   -->
 
 <!--suppress XmlUnboundNsPrefix -->
-<!--suppress XmlPathReference -->
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xsi:noNamespaceSchemaLocation="../../../../../../../lib/internal/Magento/Framework/View/Layout/etc/page_configuration.xsd">
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
     <body>
         <referenceContainer name="content">
             <block class="Nosto\Tagging\Block\PageType" name="nosto.page.type.order" after="-"
                    template="Nosto_Tagging::pagetype.phtml">
-                <action method="setData">
-                    <argument name="name" xsi:type="string">page_type</argument>
-                    <argument name="value" xsi:type="string">order</argument>
-                </action>
+                <arguments>
+                    <argument name="page_type" xsi:type="string">order</argument>
+                </arguments>
             </block>
             <block class="Nosto\Tagging\Block\Order" name="nosto.order" cacheable="false" after="-"
                    template="Nosto_Tagging::order.phtml"/>
             <block class="Nosto\Tagging\Block\Element" name="nosto.page.orderconfirmation1"
                    after="nosto.order" template="Nosto_Tagging::element.phtml">
-                <action method="setData">
-                    <argument name="name" xsi:type="string">nostoId</argument>
-                    <argument name="value" xsi:type="string">thankyou-nosto-1</argument>
-                </action>
+                <arguments>
+                    <argument name="nostoId" xsi:type="string">thankyou-nosto-1</argument>
+                </arguments>
             </block>
             <block class="Nosto\Tagging\Block\Element" name="nosto.page.orderconfirmation2"
                    after="nosto.page.orderconfirmation1" template="Nosto_Tagging::element.phtml">
-                <action method="setData">
-                    <argument name="name" xsi:type="string">nostoId</argument>
-                    <argument name="value" xsi:type="string">thankyou-nosto-2</argument>
-                </action>
+                <arguments>
+                    <argument name="nostoId" xsi:type="string">thankyou-nosto-2</argument>
+                </arguments>
             </block>
         </referenceContainer>
     </body>
