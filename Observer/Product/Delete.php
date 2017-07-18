@@ -119,6 +119,8 @@ class Delete extends Base
     public function buildProduct(Product $product, Store $store)
     {
         $product = $this->nostoProductBuilder->build($product, $store);
-        return $product->setAvailability(ProductInterface::DISCONTINUED);
+        $product->setAvailability(ProductInterface::DISCONTINUED);
+
+        return $product;
     }
 }
