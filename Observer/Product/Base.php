@@ -137,8 +137,14 @@ abstract class Base implements ObserverInterface
                         continue;
                     }
 
+                    $productInStore = $this->productRepository->getById(
+                        $product->getId(),
+                        false,
+                        $storeId,
+                        false
+                    );
                     // Load the product model for this particular store view.
-                    $metaProduct = $this->buildProduct($product, $store);
+                    $metaProduct = $this->buildProduct($productInStore, $store);
                     if ($metaProduct === null) {
                         continue;
                     }
