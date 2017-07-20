@@ -2,6 +2,20 @@
 
 ## Changelog
 
+### 2.2.0
+Improvements
+* Fix deprecated layout definitions
+* Display more descriptive errors when account opening fails
+* Rename restore cart controller to avoid routing issues with case sensitive setup
+* Add missing positioning attributes to layout definitions
+* Add "Do not edit" notifications to template files
+* Send product updates to Nosto when ratings and reviews are updated or added
+
+Bug fixes
+* Fix Nosto product handling in multi-store setup
+* Recover from invalid account opening requests
+* Remove default variation id from account opening if multiple currencies are not used
+
 ### 2.1.0
 Improvements
 * Add support for restore cart link

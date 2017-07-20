@@ -118,7 +118,7 @@ class Create extends Base
 
         $storeId = $this->_request->getParam('store');
         $store = $this->nostoHelperScope->getStore($storeId);
-
+        $messageText = null;
         if ($store !== null) {
             try {
                 $signupDetails = $this->_request->getParam('details');
@@ -168,18 +168,23 @@ class Create extends Base
                 }
             } catch (NostoException $e) {
                 $this->logger->error($e->__toString());
+                $messageText = $e->getMessage();
             }
         }
 
         if (!$response['success']) {
+            $params = [
+                'message_type' => Nosto::TYPE_ERROR,
+                'message_code' => Nosto::CODE_ACCOUNT_CREATE,
+            ];
+            if ($messageText) {
+                $params['message_text'] = $messageText;
+            }
             $response['redirect_url'] = IframeHelper::getUrl(
                 $this->nostoIframeMetaBuilder->build($store),
                 null, // account creation failed, so we have none.
                 $this->nostoCurrentUserBuilder->build(),
-                [
-                    'message_type' => Nosto::TYPE_ERROR,
-                    'message_code' => Nosto::CODE_ACCOUNT_CREATE,
-                ]
+                $params
             );
         }
 

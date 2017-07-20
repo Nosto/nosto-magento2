@@ -34,23 +34,32 @@
  *
  */
 
+namespace Nosto\Tagging\Observer\Product;
+
+use Magento\Framework\Event\Observer;
+use Magento\Review\Model\Review as ReviewModel;
+
 /**
- *     ______     ___     ____  _____  ___   _________   ________ ______  _____ _________
- *    |_   _ `. .'   `.  |_   \|_   _.'   `.|  _   _  | |_   __  |_   _ `|_   _|  _   _  |
- *      | | `. /  .-.  \   |   \ | |/  .-.  |_/ | | \_|   | |_ \_| | | `. \| | |_/ | | \_|
- *      | |  | | |   | |   | |\ \| || |   | |   | |       |  _| _  | |  | || |     | |
- *     _| |_.' \  `-'  /  _| |_\   |\  `-'  /  _| |_     _| |__/ |_| |_.' _| |_   _| |_
- *    |______.' `.___.'  |_____|\____`.___.'  |_____|   |________|______.|_____| |_____|
+ * Product update model for Reviews and Ratings
  *
- * Nosto sends information over both the API and the broswer tagging. Values for the tagging is generated
- * via the Nosto corresponding objects. In order to customize the values in the markup below, you will need
- * to override the core parts of the extension. Failure to do so will result in broken and incorrect
- * recommendations.
- * Please see a reference guide such as https://github.com/Nosto/nosto-magento2/wiki
+ * @category Nosto
+ * @package  Nosto_Tagging
+ * @author   Nosto Solutions Ltd <magento@nosto.com>
  */
+class Review extends Update
+{
+    /**
+     * @inheritdoc
+     */
+    protected function extractProduct(Observer $observer)
+    {
+        /* @var ReviewModel $review */
+        $review = $observer->getObject();
+        $product = null;
+        if ($review instanceof ReviewModel) {
+            $product = $this->productRepository->getById($review->getEntityPkValue());
+        }
 
-/** @var \Nosto\Tagging\Block\Search $this */
-?>
-
-<!-- Nosto Search Tagging -->
-<div class="nosto_search_term" style="display:none"><?php echo $this->getNostoSearchTerm(); ?></div>
+        return $product;
+    }
+}
