@@ -39,9 +39,7 @@ namespace Nosto\Tagging\Controller\Adminhtml\Account;
 use Magento\Backend\App\Action\Context;
 use Magento\Backend\Model\View\Result\Page;
 use Magento\Framework\Controller\Result\Redirect;
-use Magento\Framework\Exception\NotFoundException;
 use Magento\Framework\View\Result\PageFactory;
-use Magento\Store\Api\Data\StoreInterface;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 
 class Index extends Base
@@ -71,7 +69,7 @@ class Index extends Base
      */
     public function execute()
     {
-        if (!$this->getSelectedStore()) {
+        if (!$this->nostoHelperScope->getSelectedStore($this->getRequest())) {
             // If we are not under a store view, then redirect to the first
             // found one. Nosto is configured per store.
             foreach ($this->nostoHelperScope->getWebsites() as $website) {
@@ -91,30 +89,5 @@ class Index extends Base
         }
 
         return $result;
-    }
-
-    /**
-     * Returns the currently selected store.
-     * If it is single store setup, then just return the default store.
-     * If it is a multi store setup, the expect a store id to passed in the
-     * request params and return that store as the current one.
-     *
-     * @return StoreInterface the store or null if not found.
-     * @throws NotFoundException
-     */
-    public function getSelectedStore()
-    {
-        $store = null;
-        if ($this->nostoHelperScope->isSingleStoreMode()) {
-            $store = $this->nostoHelperScope->getStore(true);
-        } elseif (($storeId = $this->_request->getParam('store'))) {
-            $store = $this->nostoHelperScope->getStore($storeId);
-        } elseif (($this->nostoHelperScope->getStore())) {
-            $store = $this->nostoHelperScope->getStore();
-        } else {
-            throw new NotFoundException(__('Store not found.'));
-        }
-
-        return $store;
     }
 }
