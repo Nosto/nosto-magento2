@@ -65,7 +65,7 @@ class UpgradeSchema extends Core implements UpgradeSchemaInterface
             );
         }
 
-        if (version_compare($context->getVersion(), '2.2.0', '<')) {
+        if (version_compare($context->getVersion(), '2.3.0', '<')) {
             $this->createProductQueueTable($setup);
         }
 
