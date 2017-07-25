@@ -68,7 +68,6 @@ class Product extends View
     private $nostoProductBuilder;
     private $categoryBuilder;
     private $nostoHelperData;
-    private $nostoHelperScope;
 
     /**
      * Constructor.
@@ -127,7 +126,6 @@ class Product extends View
         $this->nostoProductBuilder = $nostoProductBuilder;
         $this->categoryBuilder = $categoryBuilder;
         $this->nostoHelperData = $nostoHelperData;
-        $this->nostoHelperScope = $nostoHelperScope;
     }
 
     /**

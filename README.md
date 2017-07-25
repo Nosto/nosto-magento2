@@ -2,6 +2,34 @@
 
 ## Changelog
 
+### 2.2.0
+Improvements
+* Fix deprecated layout definitions
+* Display more descriptive errors when account opening fails
+* Rename restore cart controller to avoid routing issues with case sensitive setup
+* Add missing positioning attributes to layout definitions
+* Add "Do not edit" notifications to template files
+* Send product updates to Nosto when ratings and reviews are updated or added
+
+Bug fixes
+* Fix Nosto product handling in multi-store setup
+* Recover from invalid account opening requests
+* Remove default variation id from account opening if multiple currencies are not used
+
+### 2.1.0
+Improvements
+* Add support for restore cart link
+* Add possibility to add product attributes to Nosto tags
+* Add support for indicating low stock for a product
+* Add support for using thumb url
+* Include Magento's object for events dispatched by Nosto
+
+Bug fixes
+* Set area code outside constructor in product sync command
+* Remove multi-currency check from product template
+* Check Nosto account before rendering the javascript stub 
+* Add null checks item builders
+
 ### 2.0.1
 * Fix the multi-currency variation issue when only single currency is used
 

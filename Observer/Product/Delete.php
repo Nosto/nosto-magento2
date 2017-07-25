@@ -37,17 +37,9 @@
 namespace Nosto\Tagging\Observer\Product;
 
 use Magento\Catalog\Model\Product;
-use Magento\Catalog\Model\ProductFactory;
-use Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable as ConfigurableProduct;
-use Magento\Framework\Module\Manager as ModuleManager;
 use Magento\Store\Model\Store;
 use Nosto\Operation\UpsertProduct;
-use Nosto\Tagging\Helper\Account as NostoHelperAccount;
-use Nosto\Tagging\Helper\Data as NostoHelperData;
-use Nosto\Tagging\Helper\Scope as NostoHelperScope;
-use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
 use Nosto\Types\Product\ProductInterface;
-use Psr\Log\LoggerInterface;
 
 /**
  * Delete event observer model.
@@ -59,44 +51,6 @@ use Psr\Log\LoggerInterface;
  */
 class Delete extends Base
 {
-    private $nostoProductBuilder;
-
-    /**
-     * Delete constructor.
-     *
-     * @param NostoHelperData $nostoHelperData
-     * @param NostoHelperAccount $nostoHelperAccount
-     * @param NostoProductBuilder $nostoProductBuilder
-     * @param NostoHelperScope $nostoHelperScope
-     * @param LoggerInterface $logger
-     * @param ModuleManager $moduleManager
-     * @param ProductFactory $productFactory
-     * @param ConfigurableProduct $configurableProduct
-     */
-    public function __construct(
-        NostoHelperData $nostoHelperData,
-        NostoHelperAccount $nostoHelperAccount,
-        NostoProductBuilder $nostoProductBuilder,
-        NostoHelperScope $nostoHelperScope,
-        LoggerInterface $logger,
-        ModuleManager $moduleManager,
-        ProductFactory $productFactory,
-        ConfigurableProduct $configurableProduct
-    ) {
-        parent::__construct(
-            $nostoHelperData,
-            $nostoHelperAccount,
-            $nostoProductBuilder,
-            $nostoHelperScope,
-            $logger,
-            $moduleManager,
-            $productFactory,
-            $configurableProduct
-        );
-
-        $this->nostoProductBuilder = $nostoProductBuilder;
-    }
-
     /**
      * @inheritdoc
      */
@@ -119,6 +73,8 @@ class Delete extends Base
     public function buildProduct(Product $product, Store $store)
     {
         $product = $this->nostoProductBuilder->build($product, $store);
-        return $product->setAvailability(ProductInterface::DISCONTINUED);
+        $product->setAvailability(ProductInterface::DISCONTINUED);
+
+        return $product;
     }
 }
