@@ -34,21 +34,29 @@
  *
  */
 
-namespace Nosto\Tagging\Model\ResourceModel;
+namespace Nosto\Tagging\Setup;
 
-use Magento\Framework\Model\ResourceModel\Db\AbstractDb;
-use Nosto\Tagging\Api\Data\CustomerInterface;
+use Magento\Framework\Setup\ModuleContextInterface;
+use Magento\Framework\Setup\SchemaSetupInterface;
+use Magento\Framework\Setup\UninstallInterface;
+use Nosto\Tagging\Model\ResourceModel\Customer;
+use Nosto\Tagging\Model\ResourceModel\ProductQueue;
 
-class Customer extends AbstractDb
+class Uninstall implements UninstallInterface
 {
-    const TABLE_NAME = 'nosto_tagging_customer';
-    /**
-     * Initialize resource model
-     *
-     * @return void
-     */
-    public function _construct()
+    public function uninstall(SchemaSetupInterface $setup, ModuleContextInterface $context)
     {
-        $this->_init(self::TABLE_NAME, CustomerInterface::CUSTOMER_ID);
+        $setup->startSetup();
+
+        $tablesToDrop = [
+            Customer::TABLE_NAME,
+            ProductQueue::TABLE_NAME
+        ];
+        $connection = $setup->getConnection();
+        foreach ($tablesToDrop as $tableName) {
+            $connection->dropTable($setup->getTable($tableName));
+        }
+        // ToDo - reset all Nosto settings
+        $setup->endSetup();
     }
 }

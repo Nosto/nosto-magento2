@@ -34,21 +34,22 @@
  *
  */
 
-namespace Nosto\Tagging\Model\ResourceModel;
+namespace Nosto\Tagging\Model\ResourceModel\Product\Queue;
 
-use Magento\Framework\Model\ResourceModel\Db\AbstractDb;
-use Nosto\Tagging\Api\Data\CustomerInterface;
+use Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection;
 
-class Customer extends AbstractDb
+class QueueCollection extends AbstractCollection
 {
-    const TABLE_NAME = 'nosto_tagging_customer';
     /**
-     * Initialize resource model
+     * Define resource model
      *
      * @return void
      */
     public function _construct()
     {
-        $this->_init(self::TABLE_NAME, CustomerInterface::CUSTOMER_ID);
+        $this->_init(
+            'Nosto\Tagging\Model\ProductQueue',
+            'Nosto\Tagging\Model\ResourceModel\ProductQueue'
+        );
     }
 }

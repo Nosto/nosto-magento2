@@ -37,11 +37,11 @@
 namespace Nosto\Tagging\Model\ResourceModel;
 
 use Magento\Framework\Model\ResourceModel\Db\AbstractDb;
-use Nosto\Tagging\Api\Data\CustomerInterface;
+use Nosto\Tagging\Api\Data\ProductQueueInterface;
 
-class Customer extends AbstractDb
+class ProductQueue extends AbstractDb
 {
-    const TABLE_NAME = 'nosto_tagging_customer';
+    const TABLE_NAME = 'nosto_tagging_product_queue';
     /**
      * Initialize resource model
      *
@@ -49,6 +49,6 @@ class Customer extends AbstractDb
      */
     public function _construct()
     {
-        $this->_init(self::TABLE_NAME, CustomerInterface::CUSTOMER_ID);
+        $this->_init(self::TABLE_NAME, ProductQueueInterface::PRODUCT_ID);
     }
 }

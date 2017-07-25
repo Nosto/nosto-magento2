@@ -34,21 +34,56 @@
  *
  */
 
-namespace Nosto\Tagging\Model\ResourceModel;
+namespace Nosto\Tagging\Api\Data;
 
-use Magento\Framework\Model\ResourceModel\Db\AbstractDb;
-use Nosto\Tagging\Api\Data\CustomerInterface;
-
-class Customer extends AbstractDb
+interface ProductQueueInterface
 {
-    const TABLE_NAME = 'nosto_tagging_customer';
+    const PRODUCT_ID = 'product_id';
+    const CREATED_AT = 'created_at';
+    const SYNCHRONIZED_AT = 'synchronized_at';
+
     /**
-     * Initialize resource model
+     * Get product id
      *
-     * @return void
+     * @return int|null
      */
-    public function _construct()
-    {
-        $this->_init(self::TABLE_NAME, CustomerInterface::CUSTOMER_ID);
-    }
+    public function getProductId();
+
+    /**
+     * Get created at time
+     *
+     * @return \DateTime
+     */
+    public function getCreatedAt();
+
+    /**
+     * Get synchronized at time
+     *
+     * @return \DateTime
+     */
+    public function getSynchronizedAt();
+
+    /**
+     * Set product id
+     *
+     * @param int $productId
+     * @return self
+     */
+    public function setProductId($productId);
+
+    /**
+     * Set created at time
+     *
+     * @param \DateTime $createdAt
+     * @return self
+     */
+    public function setCreatedAt(\DateTime $createdAt);
+
+    /**
+     * Set synchronized at time
+     *
+     * @param \DateTime $synchronizedAt
+     * @return self
+     */
+    public function setSynchronizedAt(\DateTime $synchronizedAt);
 }

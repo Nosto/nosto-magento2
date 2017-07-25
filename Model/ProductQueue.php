@@ -34,14 +34,61 @@
  *
  */
 
-namespace Nosto\Tagging\Model\ResourceModel;
+namespace Nosto\Tagging\Model;
 
-use Magento\Framework\Model\ResourceModel\Db\AbstractDb;
-use Nosto\Tagging\Api\Data\CustomerInterface;
+use Magento\Framework\Model\AbstractModel;
+use Nosto\Tagging\Api\Data\ProductQueueInterface;
 
-class Customer extends AbstractDb
+class ProductQueue extends AbstractModel implements ProductQueueInterface
 {
-    const TABLE_NAME = 'nosto_tagging_customer';
+    /**
+     * @inheritdoc
+     */
+    public function getProductId()
+    {
+        return $this->getData(self::PRODUCT_ID);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getCreatedAt()
+    {
+        return $this->getData(self::CREATED_AT);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getSynchronizedAt()
+    {
+        return $this->getData(self::SYNCHRONIZED_AT);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setProductId($productId)
+    {
+        return $this->setData(self::PRODUCT_ID_ID, $productId);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setCreatedAt(\DateTime $createdAt)
+    {
+        return $this->setData(self::CREATED_AT, $createdAt);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setSynchronizedAt(\DateTime $synchronizedAt)
+    {
+        return $this->setData(self::SYNCHRONIZED_AT, $synchronizedAt);
+    }
+
     /**
      * Initialize resource model
      *
@@ -49,6 +96,6 @@ class Customer extends AbstractDb
      */
     public function _construct()
     {
-        $this->_init(self::TABLE_NAME, CustomerInterface::CUSTOMER_ID);
+        $this->_init('Nosto\Tagging\Model\ResourceModel\ProductQueue');
     }
 }
