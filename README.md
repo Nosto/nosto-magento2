@@ -2,6 +2,11 @@
 
 ## Changelog
 
+### 2.2.1
+Bug fixes
+* Fix the price handling for configurable products with no SKUs
+* Fix product observer to fetch the parent configurable product
+
 ### 2.2.0
 Improvements
 * Fix deprecated layout definitions
