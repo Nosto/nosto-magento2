@@ -174,6 +174,7 @@ class Price extends AbstractHelper
             // We will use the SKU that has the lowest final price
             case ConfigurableType::TYPE_CODE:
                 $productType = $product->getTypeInstance();
+                $price = null;
                 if ($productType instanceof ConfigurableType) {
                     $products = $productType->getUsedProducts($product);
                     $skus = [];
@@ -188,21 +189,15 @@ class Price extends AbstractHelper
                         $skus[$sku->getId()] = $sku;
                     }
                     asort($finalPrices, SORT_NUMERIC);
-                    $min = array_keys($finalPrices)[0];
-                    if (!empty($skus[$min])) {
-                        $simpleProduct = $skus[$min];
-                    } else { // Fallback to given product
-                        $simpleProduct = $product;
+                    $keys = array_keys($finalPrices);
+                    if (!empty($keys[0]) && !empty($skus[$keys[0]])) {
+                        $simpleProduct = $skus[$keys[0]];
+                        if ($finalPrice) {
+                            $price = $this->getProductFinalPriceInclTax($simpleProduct);
+                        } else {
+                            $price = $this->getProductPriceInclTax($simpleProduct);
+                        }
                     }
-                    if ($finalPrice) {
-                        $price = $this->getProductFinalPriceInclTax($simpleProduct);
-                    } elseif ($inclTax) {
-                        $price = $this->getProductPriceInclTax($simpleProduct);
-                    } else {
-                        $price = $product->getPrice();
-                    }
-                } else {
-                    $price = null;
                 }
                 break;
 
