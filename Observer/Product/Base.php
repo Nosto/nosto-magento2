@@ -36,13 +36,11 @@
 
 namespace Nosto\Tagging\Observer\Product;
 
-use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\ProductRepository;
 use Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable as ConfigurableProduct;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
-use Magento\Framework\Intl\DateTimeFactory;
 use Magento\Framework\Module\Manager as ModuleManager;
 use Magento\Store\Model\Store;
 use Nosto\NostoException;
