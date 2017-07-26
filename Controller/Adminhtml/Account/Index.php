@@ -69,7 +69,9 @@ class Index extends Base
      */
     public function execute()
     {
-        if (!$this->nostoHelperScope->getSelectedStore($this->getRequest())) {
+        $store = $this->nostoHelperScope->getSelectedStore($this->getRequest());
+
+        if (!($store && $store->getId())) {
             // If we are not under a store view, then redirect to the first
             // found one. Nosto is configured per store.
             foreach ($this->nostoHelperScope->getWebsites() as $website) {
