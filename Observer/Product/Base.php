@@ -54,6 +54,9 @@ use Psr\Log\LoggerInterface;
 
 abstract class Base implements ObserverInterface
 {
+    const NEWS_FROM_DATE = 'news_from_date';
+    const NEWS_TO_DATE = 'news_to_date';
+
     private $nostoHelperData;
     private $nostoHelperAccount;
     private $logger;
@@ -115,12 +118,15 @@ abstract class Base implements ObserverInterface
             /* @var \Magento\Catalog\Model\Product $product */
             /** @noinspection PhpUndefinedMethodInspection */
             $product = $this->extractProduct($observer);
-            if ($product instanceof Product) {
+            if ($this->productPresent($product) && $product instanceof Product) {
                 // Figure out if we're updating a parent product
                 $parentProducts
                     = $this->configurableProduct->getParentIdsByChild($product->getId());
-                if (!empty($parentProducts[0]) && is_int($parentProducts[0])) {
-                    $product = $this->productRepository->getById($parentProducts[0]);
+                if (!empty($parentProducts[0]) && is_numeric($parentProducts[0])) {
+                    $parentProduct = $this->productRepository->getById((int)$parentProducts[0]);
+                    if ($parentProduct instanceof Product) {
+                        $product = $parentProduct;
+                    }
                 }
                 foreach ($product->getStoreIds() as $storeId) {
                     $store = $this->nostoHelperScope->getStore($storeId);
@@ -159,6 +165,36 @@ abstract class Base implements ObserverInterface
                 }
             }
         }
+    }
+
+    /**
+     * Checks if product is scheduled / staged or currently active one
+     *
+     * @param Product $product
+     * @return bool
+     */
+    protected function productPresent(Product $product)
+    {
+        $productPresent = true;
+        if ($product->hasData(self::NEWS_FROM_DATE)) {
+            $activeFromDateStr = $product->getData(self::NEWS_FROM_DATE);
+            $today = new \DateTime("now");
+            $activeFromDate = \DateTime::createFromFormat('Y-m-d H:i:s', $activeFromDateStr);
+
+            if ($today > $activeFromDate) {
+                if ($product->hasData(self::NEWS_TO_DATE)) {
+                    $activeToDateStr = $product->getData(self::NEWS_TO_DATE);
+                    $activeToDate = \DateTime::createFromFormat('Y-m-d H:i:s', $activeToDateStr);
+                    if ($activeToDate > $today) {
+                        $productPresent = false;
+                    }
+                }
+            } else {
+                $productPresent = false;
+            }
+        }
+
+        return $productPresent;
     }
 
     /**
