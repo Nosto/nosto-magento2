@@ -119,8 +119,11 @@ abstract class Base implements ObserverInterface
                 // Figure out if we're updating a parent product
                 $parentProducts
                     = $this->configurableProduct->getParentIdsByChild($product->getId());
-                if (!empty($parentProducts[0]) && is_int($parentProducts[0])) {
-                    $product = $this->productRepository->getById($parentProducts[0]);
+                if (!empty($parentProducts[0]) && is_numeric($parentProducts[0])) {
+                    $parentProduct = $this->productRepository->getById((int)$parentProducts[0]);
+                    if ($parentProduct instanceof Product) {
+                        $product = $parentProduct;
+                    }
                 }
                 foreach ($product->getStoreIds() as $storeId) {
                     $store = $this->nostoHelperScope->getStore($storeId);
