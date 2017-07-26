@@ -6,6 +6,7 @@
 Bug fixes
 * Fix the price handling for configurable products with no SKUs
 * Fix product observer to fetch the parent configurable product
+* Check if product is scheduled / staged before calling Nosto API 
 
 ### 2.2.0
 Improvements
