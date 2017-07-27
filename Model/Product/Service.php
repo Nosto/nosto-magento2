@@ -38,13 +38,8 @@ namespace Nosto\Tagging\Model\Product;
 
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\Product\Type;
-use Magento\Catalog\Model\Product\Visibility as ProductVisibility;
-use Magento\Catalog\Model\ResourceModel\Product\Collection as ProductCollection;
-use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductCollectionFactory;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable as ConfigurableType;
 use Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable as ConfigurableProduct;
-use Magento\Framework\App\State;
-use Magento\Framework\Module\Manager as ModuleManager;
 use Nosto\Operation\UpsertProduct;
 use Nosto\Request\Http\HttpRequest;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
@@ -52,6 +47,7 @@ use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
 use Psr\Log\LoggerInterface;
+use Nosto\Tagging\Model\Product\Repository as NostoProductRepository;
 
 /**
  * Service class for updating products to Nosto
@@ -63,16 +59,13 @@ class Service
 
     public static $batchSize = 4;
 
-    private $productCollectionFactory;
-    private $productVisibility;
     private $nostoProductBuilder;
-    private $moduleManager;
     private $logger;
-    private $state;
     private $nostoHelperScope;
     private $nostoHelperAccount;
     private $nostoHelperData;
     private $configurableProduct;
+    private $nostoProductRepository;
 
     public static $processed = [];
 
@@ -82,41 +75,31 @@ class Service
      * compile command is run.
      * Not using the proxy classes will lead to a "Area code not set" exception being thrown in the
      * compile phase.
-     * @param State $state
-     * @param ProductCollectionFactory $productCollectionFactory
-     * @param ProductVisibility $productVisibility
-     * @param NostoHelperScope $nostoHelperScope
      * @param LoggerInterface $logger
-     * @param ModuleManager $moduleManager
+     * @param NostoHelperScope\Proxy $nostoHelperScope
      * @param Builder $nostoProductBuilder
+     * @param ConfigurableProduct $configurableProduct
      * @param NostoHelperAccount\Proxy $nostoHelperAccount
      * @param NostoHelperData\Proxy $nostoHelperData
-     * @param ConfigurableProduct $configurableProduct
+     * @param NostoProductRepository\Proxy $nostoProductRepository
      */
     public function __construct(
-        State $state,
-        ProductCollectionFactory $productCollectionFactory,
-        ProductVisibility $productVisibility,
-        NostoHelperScope $nostoHelperScope,
         LoggerInterface $logger,
-        ModuleManager $moduleManager,
+        NostoHelperScope\Proxy $nostoHelperScope,
         NostoProductBuilder $nostoProductBuilder,
+        ConfigurableProduct $configurableProduct,
         NostoHelperAccount\Proxy $nostoHelperAccount,
         NostoHelperData\Proxy $nostoHelperData,
-        ConfigurableProduct $configurableProduct
+        NostoProductRepository\Proxy $nostoProductRepository
     )
     {
-        $this->productCollectionFactory = $productCollectionFactory;
-        $this->productVisibility = $productVisibility;
-        $this->nostoProductBuilder = $nostoProductBuilder;
-        $this->moduleManager = $moduleManager;
         $this->logger = $logger;
-        $this->state = $state;
-        $this->nostoProductCollection = $nostoHelperScope;
+        $this->nostoHelperScope = $nostoHelperScope;
+        $this->nostoProductBuilder = $nostoProductBuilder;
+        $this->configurableProduct = $configurableProduct;
         $this->nostoHelperAccount = $nostoHelperAccount;
         $this->nostoHelperData = $nostoHelperData;
-        $this->nostoHelperScope = $nostoHelperScope;
-        $this->configurableProduct = $configurableProduct;
+        $this->nostoProductRepository = $nostoProductRepository;
 
         HttpRequest::$responseTimeout = 120;
         HttpRequest::buildUserAgent(
@@ -129,15 +112,15 @@ class Service
     /**
      * Updates product collection to Nosto via API
      *
-     * @param ProductCollection $productCollection
+     * @param Product[] $products
      */
-    public function update(ProductCollection $productCollection)
+    public function update(array $products)
     {
         $productsInStores = [];
         $storesWithNoNosto = [];
         $currentBatch = 0;
         $productCounter = 0;
-        foreach ($productCollection as $product) {
+        foreach ($products as $product) {
             if (self::isProcessed($product->getId())) {
                 continue;
             }

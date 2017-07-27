@@ -36,12 +36,13 @@
 <!--suppress XmlUnboundNsPrefix -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
-    <preference for="Magento\Framework\Stdlib\CookieManagerInterface"
-                type="Magento\Framework\Stdlib\Cookie\PhpCookieManager"/>
+    <preference for="Magento\Framework\Stdlib\CookieManagerInterface" type="Magento\Framework\Stdlib\Cookie\PhpCookieManager"/>
+    <preference for="Magento\Framework\DB\LoggerInterface" type="Magento\Framework\DB\Logger\File"/>
     <type name="Magento\Framework\Console\CommandList">
         <arguments>
             <argument name="commands" xsi:type="array">
                 <item name="syncproducts" xsi:type="object">Nosto\Tagging\Console\Command\SyncProducts</item>
+                <item name="synctmp" xsi:type="object">Nosto\Tagging\Console\Command\TmpSync</item>
             </argument>
         </arguments>
     </type>

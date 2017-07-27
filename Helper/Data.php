@@ -315,6 +315,21 @@ class Data extends AbstractHelper
     }
 
     /**
+     * Returns the edition (community/enterprise) of the platform the e-commerce installation
+     *
+     * @return string the platforms's edition
+     */
+    public function getPlatformEdition()
+    {
+        $edition = 'unknown';
+        if ($this->productMetaData->getEdition()) {
+            $edition = $this->productMetaData->getEdition();
+        }
+
+        return $edition;
+    }
+
+    /**
      * Get tag1 mapping attributes
      *
      * @param $tagId tag1, tag2 or tag3
