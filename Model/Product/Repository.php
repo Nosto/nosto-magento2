@@ -63,12 +63,13 @@ class Repository
      * Not using the proxy classes will lead to a "Area code not set" exception being thrown in the
      * compile phase.
      *
-     * @param ProductRepository $productRepository
+     * @param ProductRepository\Proxy $productRepository
      * @param SearchCriteriaBuilder $searchCriteriaBuilder
      * @param Data $nostoDataHelper
+     * @param ConfigurableProduct $configurableProduct
      */
     public function __construct(
-        ProductRepository $productRepository,
+        ProductRepository\Proxy $productRepository,
         SearchCriteriaBuilder $searchCriteriaBuilder,
         Data $nostoDataHelper,
         ConfigurableProduct $configurableProduct

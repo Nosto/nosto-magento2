@@ -66,17 +66,17 @@ class TmpSync extends Command
      * @param NostoProductRepository\Proxy $nostoProductRepository
      */
     public function __construct(
-        State $state,
-        LoggerInterface $logger,
-        NostoProductService\Proxy $nostoProductService,
-        NostoProductRepository\Proxy $nostoProductRepository
+        State $state
+//        LoggerInterface $logger
+//        NostoProductService\Proxy $nostoProductService
+//        NostoProductRepository\Proxy $nostoProductRepository
     ) {
         parent::__construct();
 
         $this->logger = $logger;
-        $this->state = $state;
-        $this->nostoProductService = $nostoProductService;
-        $this->nostoProductRepository = $nostoProductRepository;
+//        $this->state = $state;
+//        $this->nostoProductService = $nostoProductService;
+//        $this->nostoProductRepository = $nostoProductRepository;
     }
 
     /**
@@ -105,20 +105,20 @@ class TmpSync extends Command
         } catch (LocalizedException $e) {
             $this->state->setAreaCode(Area::AREA_FRONTEND);
         }
-        $now = new \DateTime("now");
-        $products = $this->nostoProductRepository->getScheduledForUpdate($now)->getItems();
-        $output->writeln(
-            sprintf(
-                'Updating %d products to Nosto',
-                count($products)
-            )
-        );
-
-        try {
-            $this->nostoProductService->update($products);
-        } catch (\Exception $e) {
-            var_dump($e->getMessage());
-            die('FAIL');
-        }
+//        $now = new \DateTime("now");
+//        $products = $this->nostoProductRepository->getScheduledForUpdate($now)->getItems();
+//        $output->writeln(
+//            sprintf(
+//                'Updating %d products to Nosto',
+//                count($products)
+//            )
+//        );
+//
+//        try {
+//            $this->nostoProductService->update($products);
+//        } catch (\Exception $e) {
+//            var_dump($e->getMessage());
+//            die('FAIL');
+//        }
     }
 }
