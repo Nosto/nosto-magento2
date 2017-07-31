@@ -53,6 +53,8 @@ class TmpSync extends Command
     private $nostoProductService;
     private $nostoProductRepository;
 
+    public static $productUpdateInterval = 120;
+
     /**
      * Constructor to instantiating the reindex command. This constructor uses proxy classes for
      * two of the Nosto objects to prevent introspection of constructor parameters when the DI
@@ -66,17 +68,17 @@ class TmpSync extends Command
      * @param NostoProductRepository\Proxy $nostoProductRepository
      */
     public function __construct(
-        State $state
-//        LoggerInterface $logger
-//        NostoProductService\Proxy $nostoProductService
-//        NostoProductRepository\Proxy $nostoProductRepository
+        State $state,
+        LoggerInterface $logger,
+        NostoProductService\Proxy $nostoProductService,
+        NostoProductRepository\Proxy $nostoProductRepository
     ) {
         parent::__construct();
 
+        $this->state = $state;
         $this->logger = $logger;
-//        $this->state = $state;
-//        $this->nostoProductService = $nostoProductService;
-//        $this->nostoProductRepository = $nostoProductRepository;
+        $this->nostoProductService = $nostoProductService;
+        $this->nostoProductRepository = $nostoProductRepository;
     }
 
     /**
@@ -105,20 +107,22 @@ class TmpSync extends Command
         } catch (LocalizedException $e) {
             $this->state->setAreaCode(Area::AREA_FRONTEND);
         }
-//        $now = new \DateTime("now");
-//        $products = $this->nostoProductRepository->getScheduledForUpdate($now)->getItems();
-//        $output->writeln(
-//            sprintf(
-//                'Updating %d products to Nosto',
-//                count($products)
-//            )
-//        );
-//
-//        try {
-//            $this->nostoProductService->update($products);
-//        } catch (\Exception $e) {
-//            var_dump($e->getMessage());
-//            die('FAIL');
-//        }
+        $intervalSpec = sprintf('PT%dM', self::$productUpdateInterval);
+        $interval = new \DateInterval($intervalSpec);
+        $products = $this->nostoProductRepository->getUpdatedWithinInterval($interval)->getItems();
+        $output->writeln(
+            sprintf(
+                'Updating %d products to Nosto using interval %s',
+                count($products),
+                $intervalSpec
+            )
+        );
+        try {
+            $this->nostoProductService->update($products);
+        } catch (\Exception $e) {
+            // ToDo - add logging
+            $this->logger->error($e->getMessage());
+            die('FAIL');
+        }
     }
 }

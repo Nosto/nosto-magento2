@@ -57,7 +57,7 @@ use Nosto\Tagging\Model\Product\Repository as NostoProductRepository;
 class Service
 {
 
-    public static $batchSize = 4;
+    public static $batchSize = 10;
 
     private $nostoProductBuilder;
     private $logger;
@@ -67,7 +67,7 @@ class Service
     private $configurableProduct;
     private $nostoProductRepository;
 
-    public static $processed = [];
+    public $processed = [];
 
     /**
      * Constructor to instantiating the product update command. This constructor uses proxy classes for
@@ -120,17 +120,19 @@ class Service
         $storesWithNoNosto = [];
         $currentBatch = 0;
         $productCounter = 0;
+        $productCount = count($products);
+        $this->logger->info(
+            sprintf(
+                'Starting to sync %d products to Nosto with batch size %d',
+                $productCount,
+                self::$batchSize
+            )
+        );
+
         foreach ($products as $product) {
-            if (self::isProcessed($product->getId())) {
+            if ($this->isProcessed($product)) {
                 continue;
             }
-            /**
-             * ToDo
-             * - create repository interface and implementation for saving data
-             * - implement logic to efficiently (without db queries) fetch parent productIds only once
-             * - implement flush queue method that fetches all not synchonized entries from the table, create batches and updates those
-             * - once ready, ditch the observer and finalize the indexer
-             */
             foreach ($product->getStoreIds() as $storeId) {
                 if (in_array($storeId, $storesWithNoNosto)) {
                     continue;
@@ -144,7 +146,7 @@ class Service
                     }
                     $productsInStores[$storeId] = [];
                 }
-                $parentProducts = $this->resolveParentProducts($product);
+                $parentProducts = $this->nostoProductRepository->resolveParentProducts($product);
                 $productsToUpdate = [];
                 if ($parentProducts instanceof ProductCollection) {
                     foreach ($parentProducts as $parentProduct) {
@@ -163,11 +165,19 @@ class Service
                         $productsInStores[$storeId][$currentBatch] = [];
                     }
                     $productsInStores[$storeId][$currentBatch][] = $productToUpdate;
-                    $this->setVariationsAsProcessed($productToUpdate);
                 }
             }
             ++$productCounter;
+            $this->setProcessed($product);
         }
+        $totalBatches = $currentBatch+1;
+        $this->logger->info(
+            sprintf(
+                'Product batches (%d) ready for %d store(s)',
+                $totalBatches,
+                count($productsInStores)
+            )
+        );
 
         foreach ($productsInStores as $storeId => $batches) {
             $store = $this->nostoHelperScope->getStore($storeId);
@@ -178,7 +188,6 @@ class Service
             if (!$this->nostoHelperData->isProductUpdatesEnabled($store)) {
                 continue;
             }
-
             foreach ($batches as $batch => $products) {
                 $op = new UpsertProduct($account);
                 $productsAdded = 0;
@@ -196,80 +205,57 @@ class Service
                 try {
                     if ($productsAdded > 0) {
                         $op->upsert($op);
+                        $this->logger->info(
+                            sprintf(
+                                'Sent batch %d to for store %s (%d)',
+                                $batch,
+                                $store->getName(),
+                                $store->getId()
+                            )
+                        );
                     }
                 } catch (NostoException $e) {
-                    $this->logger->error($e->__toString());
+                    $this->logger->info(
+                        sprintf(
+                            'Failed to send batch %d to for store %s (%d)',
+                            $batch,
+                            $store->getName(),
+                            $store->getId()
+                        )
+                    );
+                    $this->logger->error($e->getMessage());
                 }
             }
         }
+        $this->logger->info('Product sync finished');
     }
 
     /**
-     * Resolves / checks if the product has configurable parent product
+     * Sets a product id as processed / queued
      *
      * @param Product $product
-     * @return ProductCollectionFactory|null
      */
-    private function resolveParentProducts(Product $product)
+    private function setProcessed(Product $product)
     {
-        $parentProducts = null;
-        if ($product->getTypeId() === Type::TYPE_SIMPLE) {
-            $parentIds = $this->configurableProduct->getParentIdsByChild($product->getId());
-            if (count($parentIds) >0) {
-                $parentProducts = $this->productCollectionFactory->create()
-                    ->addAttributeToFilter('entity_id', ['in' => $parentIds])
-                    ->addAttributeToSelect('*');
-            }
-        }
-
-        return $parentProducts;
-    }
-
-    /**
-     * Sets a product id as processed
-     *
-     * @param $id
-     * @param int|null $parentId
-     */
-    private static function addProcessed($id, $parentId = null)
-    {
-        if (is_numeric($id)) {
-            if (!is_numeric($parentId)) {
-                $parentId = $id;
-            }
-            if (empty(self::$processed[$parentId])) {
-                self::$processed[$parentId] = [];
-            }
-            self::$processed[$parentId][] = $id;
-        }
-    }
-
-    /**
-     * Sets a product id as processed
-     *
-     * @param array $arr
-     * @param null $parentId
-     */
-    private static function addProcessedArray(array $arr, $parentId = null) {
-        foreach ($arr as $id) {
-            self::addProcessed($id, $parentId);
-        }
+        // Get parent product and all skus
+        $parentProduct = $this->nostoProductRepository->resolveParentProducts($product);
+        
     }
 
     /**
      * Checks if product has been already processed
      *
-     * @param int $id id of the product
+     * @param Product $product
      * @return bool
      */
-    private static function isProcessed($id)
+    private function isProcessed(Product $product)
     {
         $found = false;
-        if (isset(self::$processed[$id])) {
+        if (isset($this->processed[$product->getId()])) {
             $found = true;
         } else {
-            foreach (self::$processed as $parentId => $arr) {
-                if (in_array($id, $arr)) {
+            foreach ($this->processed as $parentId => $arr) {
+                if (in_array($product->getId(), $arr)) {
                     $found = true;
                     break;
                 }
@@ -277,26 +263,5 @@ class Service
         }
 
         return $found;
-    }
-
-    /**
-     * Sets product variations as processed
-     *
-     * @param Product $product
-     */
-    private function setVariationsAsProcessed(Product $product)
-    {
-        if ($product->getTypeId() === ConfigurableType::TYPE_CODE) {
-            $childrenIds = $this->configurableProduct->getChildrenIds($product->getId());
-            if (count($childrenIds) > 0) {
-                foreach ($childrenIds as $val) {
-                    if (is_array($val)) {
-                        self::addProcessedArray($val, $product->getId());
-                    } else {
-                        self::addProcessed($val, $product->getId());
-                    }
-                }
-            }
-        }
     }
 }

@@ -51,6 +51,10 @@ use Magento\Catalog\Model\Product\Type;
  */
 class Repository
 {
+    const FIELD_UPDATED_AT = 'updated_at';
+
+    private $cache = array();
+
     private $nostoDataHelper;
     private $productRepository;
     private $searchCriteriaBuilder;
@@ -81,24 +85,20 @@ class Repository
     }
 
     /**
-     * Gets the products scheduled for update
-     * @param \DateTime $date
+     * Gets the products that updated within the given time interval
+     * @param \DateInterval $interval
      * @return SearchResultInterface
      */
-    public function getScheduledForUpdate(\DateTime $date)
+    public function getUpdatedWithinInterval(\DateInterval $interval)
     {
-        $platformEdition
-            = $this->nostoDataHelper->getPlatformEdition();
-        switch (strtolower($platformEdition)) {
-            case "enterprise":
-                $field = 'news_from_date';
-                break;
-            default:
-                $field = 'special_from_date';
-        }
+        $date = new \DateTime('now');
+        $previousDate = new \DateTime('now');
+        $previousDate->sub($interval);
+
         $searchCriteria = $this->searchCriteriaBuilder
-            ->addFilter($field, $date->format('Y-m-d'), 'lt')
-            ->setPageSize(5)
+            ->addFilter(self::FIELD_UPDATED_AT, $date->format('Y-m-d H:i:s'), 'lt')
+            ->addFilter(self::FIELD_UPDATED_AT, $previousDate->format('Y-m-d H:i:s'), 'gt')
+            ->setPageSize(14)
             ->setCurrentPage(1)
             ->create();
         $products = $this->productRepository->getList($searchCriteria);
@@ -108,11 +108,14 @@ class Repository
 
     /**
      * Gets the parent products for simple product
-     * @return SearchResultInterface
+     * @return Product[]
      */
     public function resolveParentProducts(Product $product)
     {
-        // ToDo - add caching fetched products here
+        if ($this->getParentsFromCache($product)) {
+
+            return $this->getParentsFromCache($product);
+        }
         $parentProducts = null;
         if ($product->getTypeId() === Type::TYPE_SIMPLE) {
             $parentIds = $this->configurableProduct->getParentIdsByChild($product->getId());
@@ -123,7 +126,35 @@ class Repository
                 $parentProducts = $this->productRepository->getList($searchCriteria)->getItems();
             }
         }
+        $this->saveParentsToCache($product, $parentProducts);
 
         return $parentProducts;
+    }
+
+    /**
+     * Returns the variations from
+     *
+     * @param Product $product
+     * @return mixed|null
+     */
+    private function getParentsFromCache(Product $product)
+    {
+        if (isset($this->cache[$product->getId()])) {
+
+            return $this->cache[$product->getId()];
+        }
+
+        return null;
+    }
+
+    /**
+     * Saves the parents products to internal cache to avoid redundant database queries
+     *
+     * @param Product $product
+     * @param $parentProducts
+     */
+    private function saveParentsToCache(Product $product, $parentProducts)
+    {
+        $this->cache[$product->getId()] = $parentProducts;
     }
 }

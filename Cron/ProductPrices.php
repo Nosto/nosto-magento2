@@ -82,11 +82,11 @@ class ProductPrices
     public function execute()
     {
         $this->logger->info('Synchronizing product prices to Nosto');
-        $searchCriteria = $this->searchCriteriaBuilder
-            ->addFilter('special_from_date', '2017-01-01', 'eq')
-            ->create();
-        $products = $this->productRepository->getList($searchCriteria)->getItems();
-        $this->nostoProductService->update($products);
+//        $searchCriteria = $this->searchCriteriaBuilder
+//            ->addFilter('special_from_date', '2017-01-01', 'eq')
+//            ->create();
+//        $products = $this->productRepository->getList($searchCriteria)->getItems();
+//        $this->nostoProductService->update($products);
         $this->logger->info('Product price synchronization finished');
     }
 
