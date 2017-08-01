@@ -41,6 +41,7 @@ use Magento\Catalog\Model\Product;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\ObjectManagerInterface;
 use Magento\Framework\Phrase;
+use Magento\Sales\Api\Data\OrderAddressInterface;
 use Magento\Sales\Model\Order;
 use Magento\Sales\Model\Order\Item;
 use Magento\SalesRule\Model\RuleFactory as SalesRuleFactory;
@@ -121,6 +122,12 @@ class Builder
             $nostoBuyer->setFirstName($order->getCustomerFirstname());
             $nostoBuyer->setLastName($order->getCustomerLastname());
             $nostoBuyer->setEmail($order->getCustomerEmail());
+            $address = $order->getBillingAddress();
+            if ($address instanceof OrderAddressInterface) {
+                $nostoBuyer->setPhone($address->getTelephone());
+                $nostoBuyer->setPostcode($address->getPostcode());
+                $nostoBuyer->setCountry($address->getCountryId());
+            }
             $nostoOrder->setCustomer($nostoBuyer);
 
             // Add each ordered item as a line item
