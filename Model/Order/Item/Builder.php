@@ -93,11 +93,10 @@ class Builder
                 break;
         }
         try {
+            $lineDiscount = 0;
             if ($item->getBaseDiscountAmount() > 0) {
                 // baseDiscountAmount contains the discount for the whole row
-                $lineDiscount = $item->getBaseDiscountAmount()/$item->getQtyOrdered();
-            } else {
-                $lineDiscount = 0;
+                $lineDiscount = $item->getBaseDiscountAmount() / $item->getQtyOrdered();
             }
             $price = $item->getBasePrice() + $item->getBaseTaxAmount() - $lineDiscount;
             // The item prices are always in base currency, convert to order currency if non base currency
