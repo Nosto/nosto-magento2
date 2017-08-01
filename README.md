@@ -2,6 +2,10 @@
 
 ## Changelog
 
+### 2.2.2
+Bug fixes
+* Fix the discount calculation in order items
+
 ### 2.2.1
 Bug fixes
 * Fix the price handling for configurable products with no SKUs
