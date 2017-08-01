@@ -34,28 +34,51 @@
  *
  */
 
-namespace Nosto\Tagging\Setup;
+namespace Nosto\Tagging\Api;
 
-use Magento\Framework\Setup\InstallSchemaInterface;
-use Magento\Framework\Setup\ModuleContextInterface;
-use Magento\Framework\Setup\SchemaSetupInterface;
+use Magento\Framework\Api\SearchCriteriaInterface;
+use Nosto\Tagging\Api\Data\ProductQueueInterface;
+use Nosto\Tagging\Api\Data\ProductQueueSearchResultsInterface;
 
-class InstallSchema extends Core implements InstallSchemaInterface
+interface ProductQueueRepositoryInterface
 {
     /**
-     * Installs DB schema for Nosto Tagging module
+     * Save Queue entry
      *
-     * @param SchemaSetupInterface $setup
-     * @param ModuleContextInterface $context
-     * @return void
+     * @param ProductQueueInterface $productQueue
+     * @param bool $saveOptions
+     * @return ProductQueueInterface
      */
-    public function install( // @codingStandardsIgnoreLine
-        SchemaSetupInterface $setup,
-        ModuleContextInterface $context
-    ) {
-        $setup->startSetup();
-        $this->createCustomerTable($setup);
-        $this->createProductQueueTable($setup);
-        $setup->endSetup();
-    }
+    public function save(ProductQueueInterface $productQueue, $saveOptions = false);
+
+    /**
+    /**
+     * Get info about queue entry by product id
+     *
+     * @param int $id
+     * @return ProductQueueInterface
+     */
+    public function getById($id);
+
+    /**
+     * Delete productQueue
+     *
+     * @param ProductQueueInterface $productQueue
+     * @return bool
+     */
+    public function delete(ProductQueueInterface $productQueue);
+
+    /**
+     * @param int $id
+     * @return bool
+     */
+    public function deleteById($id);
+
+    /**
+     * Get list of productQueues
+     *
+     * @param SearchCriteriaInterface $searchCriteria
+     * @return ProductQueueSearchResultsInterface
+     */
+    public function getList(SearchCriteriaInterface $searchCriteria);
 }

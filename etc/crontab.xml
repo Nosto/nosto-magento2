@@ -6,8 +6,5 @@
         <job name="nosto_exchange_rates" instance="Nosto\Tagging\Cron\Rates" method="execute">
             <schedule>* * * * *</schedule>
         </job>
-        <job name="nosto_sync_product_prices" instance="Nosto\Tagging\Cron\ProductPrices" method="execute">
-            <schedule>* * * * *</schedule>
-        </job>
     </group>
 </config>

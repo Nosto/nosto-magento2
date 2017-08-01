@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
   ~ Copyright (c) 2017, Nosto Solutions Ltd
   ~ All rights reserved.
@@ -32,23 +32,13 @@
   ~ @copyright 2017 Nosto Solutions Ltd
   ~ @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
   ~
-  -->
-
-<!--suppress XmlUnboundNsPrefix -->
-<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
-    <!--<event name="catalog_product_save_commit_after">-->
-        <!--<observer name="nosto_product_upsert_observer"-->
-                  <!--instance="Nosto\Tagging\Observer\Product\Update"/>-->
-    <!--</event>-->
-    <!--<event name="catalog_product_delete_before">-->
-        <!--<observer name="nosto_product_delete_observer"-->
-                  <!--instance="Nosto\Tagging\Observer\Product\Delete"/>-->
-    <!--</event>-->
-    <event name="backend_auth_user_login_success">
-        <observer name="nosto_update_settings_observer"
-                  instance="Nosto\Tagging\Observer\Settings\Update"/>
-        <observer name="nosto_update_exchange_rates_observer"
-                  instance="Nosto\Tagging\Observer\Rates\Update"/>
-    </event>
+  --><config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Mview/etc/mview.xsd">
+    <view id="nosto_queue_products" class="Nosto\Tagging\Model\Indexer\Queue\Observer" group="indexer">
+        <subscriptions>
+            <table name="catalog_product_entity" entity_column="entity_id" />
+            <table name="catalog_product_attribute" entity_column="entity_id" />
+            <table name="catalog_product_entity_int" entity_column="entity_id" />
+            <table name="catalog_product_entity_varchar" entity_column="entity_id" />
+        </subscriptions>
+    </view>
 </config>

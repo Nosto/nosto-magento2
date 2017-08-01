@@ -2,6 +2,10 @@
 
 ## Changelog
 
+### 2.3.0
+Improvements
+* Introduce indexer for Nosto products
+
 ### 2.2.2
 Bug fixes
 * Fix the discount calculation in order items

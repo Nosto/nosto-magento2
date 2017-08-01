@@ -52,6 +52,10 @@ use Magento\Catalog\Model\Product\Type;
 class Repository
 {
     const FIELD_UPDATED_AT = 'updated_at';
+    const FIELD_NEWS_FROM = 'news_from_date';
+    const FIELD_NEWS_TO = 'news_to_date';
+    const FIELD_SPECIAL_FROM_DATE = 'special_from_date';
+    const FIELD_SPECIAL_TO_DATE = 'special_to_date';
 
     private $cache = array();
 
@@ -95,6 +99,32 @@ class Repository
         $previousDate = new \DateTime('now');
         $previousDate->sub($interval);
 
+        $prod = $this->productRepository->getById(69);
+
+        $searchCriteria = $this->searchCriteriaBuilder
+            ->addFilter(self::FIELD_UPDATED_AT, $date->format('Y-m-d H:i:s'), 'lt')
+            ->setPageSize(1)
+            ->setCurrentPage(1)
+            ->create();
+        $products = $this->productRepository->getList($searchCriteria);
+
+        return $products;
+    }
+
+    /**
+     * Gets the products that have been scheduled for changes or the scheduling
+     * has ended recently
+     * @param \DateInterval $interval
+     * @return SearchResultInterface
+     */
+    public function getScheduledProducts(\DateInterval $interval)
+    {
+        $date = new \DateTime('now');
+        $previousDate = new \DateTime('now');
+        $previousDate->sub($interval);
+
+        // start schedule 1 hr < now & end schedule > now OR
+        // end schedule 1 hr < now
         $searchCriteria = $this->searchCriteriaBuilder
             ->addFilter(self::FIELD_UPDATED_AT, $date->format('Y-m-d H:i:s'), 'lt')
             ->addFilter(self::FIELD_UPDATED_AT, $previousDate->format('Y-m-d H:i:s'), 'gt')

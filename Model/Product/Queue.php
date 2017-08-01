@@ -34,28 +34,68 @@
  *
  */
 
-namespace Nosto\Tagging\Setup;
+namespace Nosto\Tagging\Model\Product;
 
-use Magento\Framework\Setup\InstallSchemaInterface;
-use Magento\Framework\Setup\ModuleContextInterface;
-use Magento\Framework\Setup\SchemaSetupInterface;
+use Magento\Framework\Model\AbstractModel;
+use Nosto\Tagging\Api\Data\ProductQueueInterface;
 
-class InstallSchema extends Core implements InstallSchemaInterface
+class Queue extends AbstractModel implements ProductQueueInterface
 {
     /**
-     * Installs DB schema for Nosto Tagging module
+     * @inheritdoc
+     */
+    public function getProductId()
+    {
+        return $this->getData(self::PRODUCT_ID);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getCreatedAt()
+    {
+        return $this->getData(self::CREATED_AT);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getSynchronizedAt()
+    {
+        return $this->getData(self::SYNCHRONIZED_AT);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setProductId($productId)
+    {
+        return $this->setData(self::PRODUCT_ID, $productId);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setCreatedAt(\DateTime $createdAt)
+    {
+        return $this->setData(self::CREATED_AT, $createdAt);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setSynchronizedAt(\DateTime $synchronizedAt)
+    {
+        return $this->setData(self::SYNCHRONIZED_AT, $synchronizedAt);
+    }
+
+    /**
+     * Initialize resource model
      *
-     * @param SchemaSetupInterface $setup
-     * @param ModuleContextInterface $context
      * @return void
      */
-    public function install( // @codingStandardsIgnoreLine
-        SchemaSetupInterface $setup,
-        ModuleContextInterface $context
-    ) {
-        $setup->startSetup();
-        $this->createCustomerTable($setup);
-        $this->createProductQueueTable($setup);
-        $setup->endSetup();
+    public function _construct()
+    {
+        $this->_init('Nosto\Tagging\Model\ResourceModel\Product\Queue');
     }
 }

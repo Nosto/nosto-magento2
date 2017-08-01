@@ -37,8 +37,6 @@
 namespace Nosto\Tagging\Model\Product;
 
 use Magento\Catalog\Model\Product;
-use Magento\Catalog\Model\Product\Type;
-use Magento\ConfigurableProduct\Model\Product\Type\Configurable as ConfigurableType;
 use Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable as ConfigurableProduct;
 use Nosto\Operation\UpsertProduct;
 use Nosto\Request\Http\HttpRequest;
@@ -46,6 +44,8 @@ use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
+use Nosto\Tagging\Model\Product\QueueRepository;
+use Nosto\Tagging\Model\Product\QueueFactory;
 use Psr\Log\LoggerInterface;
 use Nosto\Tagging\Model\Product\Repository as NostoProductRepository;
 
@@ -66,6 +66,8 @@ class Service
     private $nostoHelperData;
     private $configurableProduct;
     private $nostoProductRepository;
+    private $nostoQueueRepositoryFactory;
+    private $nostoQueueFactory;
 
     public $processed = [];
 
@@ -82,6 +84,8 @@ class Service
      * @param NostoHelperAccount\Proxy $nostoHelperAccount
      * @param NostoHelperData\Proxy $nostoHelperData
      * @param NostoProductRepository\Proxy $nostoProductRepository
+     * @param QueueRepository $nostoQueueRepository
+     * @param QueueFactory $nostoQueueFactory
      */
     public function __construct(
         LoggerInterface $logger,
@@ -90,7 +94,9 @@ class Service
         ConfigurableProduct $configurableProduct,
         NostoHelperAccount\Proxy $nostoHelperAccount,
         NostoHelperData\Proxy $nostoHelperData,
-        NostoProductRepository\Proxy $nostoProductRepository
+        NostoProductRepository\Proxy $nostoProductRepository,
+        QueueRepository $nostoQueueRepository,
+        QueueFactory $nostoQueueFactory
     )
     {
         $this->logger = $logger;
@@ -100,6 +106,8 @@ class Service
         $this->nostoHelperAccount = $nostoHelperAccount;
         $this->nostoHelperData = $nostoHelperData;
         $this->nostoProductRepository = $nostoProductRepository;
+        $this->nostoQueueRepository = $nostoQueueRepository;
+        $this->nostoQueueFactory = $nostoQueueFactory;
 
         HttpRequest::$responseTimeout = 120;
         HttpRequest::buildUserAgent(
@@ -107,6 +115,29 @@ class Service
             $nostoHelperData->getPlatformVersion(),
             $nostoHelperData->getModuleVersion()
         );
+    }
+
+    /**
+     * Updates product collection to Nosto via API
+     *
+     * @param Product[] $products
+     */
+    public function addToQueue(array $products)
+    {
+        $productCount = count($products);
+
+        $this->logger->info(
+            sprintf(
+                'Adding %d products to Nosto queue',
+                $productCount
+            )
+        );
+        foreach ($products as $product) {
+            $queue = $this->nostoQueueFactory->create();
+            $queue->setProductId($product->getId());
+            $queue->setCreatedAt(new \DateTime('now'));
+            $this->nostoQueueRepository->save($queue);
+        }
     }
 
     /**

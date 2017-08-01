@@ -34,28 +34,56 @@
  *
  */
 
-namespace Nosto\Tagging\Setup;
+namespace Nosto\Tagging\Api\Data;
 
-use Magento\Framework\Setup\InstallSchemaInterface;
-use Magento\Framework\Setup\ModuleContextInterface;
-use Magento\Framework\Setup\SchemaSetupInterface;
-
-class InstallSchema extends Core implements InstallSchemaInterface
+interface ProductQueueInterface
 {
+    const PRODUCT_ID = 'product_id';
+    const CREATED_AT = 'created_at';
+    const SYNCHRONIZED_AT = 'synchronized_at';
+
     /**
-     * Installs DB schema for Nosto Tagging module
+     * Get product id
      *
-     * @param SchemaSetupInterface $setup
-     * @param ModuleContextInterface $context
-     * @return void
+     * @return int|null
      */
-    public function install( // @codingStandardsIgnoreLine
-        SchemaSetupInterface $setup,
-        ModuleContextInterface $context
-    ) {
-        $setup->startSetup();
-        $this->createCustomerTable($setup);
-        $this->createProductQueueTable($setup);
-        $setup->endSetup();
-    }
+    public function getProductId();
+
+    /**
+     * Get created at time
+     *
+     * @return \DateTime
+     */
+    public function getCreatedAt();
+
+    /**
+     * Get synchronized at time
+     *
+     * @return \DateTime
+     */
+    public function getSynchronizedAt();
+
+    /**
+     * Set product id
+     *
+     * @param int $productId
+     * @return self
+     */
+    public function setProductId($productId);
+
+    /**
+     * Set created at time
+     *
+     * @param \DateTime $createdAt
+     * @return self
+     */
+    public function setCreatedAt(\DateTime $createdAt);
+
+    /**
+     * Set synchronized at time
+     *
+     * @param \DateTime $synchronizedAt
+     * @return self
+     */
+    public function setSynchronizedAt(\DateTime $synchronizedAt);
 }

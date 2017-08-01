@@ -53,7 +53,7 @@ class TmpSync extends Command
     private $nostoProductService;
     private $nostoProductRepository;
 
-    public static $productUpdateInterval = 1120;
+    public static $productUpdateInterval = 480;
 
     /**
      * Constructor to instantiating the reindex command. This constructor uses proxy classes for
@@ -94,7 +94,7 @@ class TmpSync extends Command
      * Main CLI method that loops through each of the store views and then fetches products in the
      * specified batch size. This continues until there are no more products returned by the
      * product collection factory.
-     *
+     *0
      * @param InputInterface $input the command line input interface for reading arguments
      * @param OutputInterface $output the command line output interface for logging
      * @return int|null|void
@@ -118,7 +118,7 @@ class TmpSync extends Command
             )
         );
         try {
-            $this->nostoProductService->update($products);
+            $this->nostoProductService->addToQueue($products);
         } catch (\Exception $e) {
             // ToDo - add logging
             $this->logger->error($e->getMessage());

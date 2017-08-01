@@ -38,6 +38,7 @@
         xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
     <preference for="Magento\Framework\Stdlib\CookieManagerInterface" type="Magento\Framework\Stdlib\Cookie\PhpCookieManager"/>
     <preference for="Magento\Framework\DB\LoggerInterface" type="Magento\Framework\DB\Logger\File"/>
+    <preference for="Nosto\Tagging\Api\Data\ProductQueueSearchResultsInterface" type="Nosto\Tagging\Model\Product\QueueSearchResults"/>
     <type name="Magento\Framework\Console\CommandList">
         <arguments>
             <argument name="commands" xsi:type="array">
@@ -45,5 +46,8 @@
                 <item name="synctmp" xsi:type="object">Nosto\Tagging\Console\Command\TmpSync</item>
             </argument>
         </arguments>
+    </type>
+    <type name="Magento\Catalog\Model\ResourceModel\Product">
+        <plugin name="nostoProduct" type="Nosto\Tagging\Model\Indexer\Queue\Observer"/>
     </type>
 </config>

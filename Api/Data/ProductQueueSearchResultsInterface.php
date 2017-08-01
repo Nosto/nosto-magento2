@@ -34,28 +34,24 @@
  *
  */
 
-namespace Nosto\Tagging\Setup;
+namespace Nosto\Tagging\Api\Data;
 
-use Magento\Framework\Setup\InstallSchemaInterface;
-use Magento\Framework\Setup\ModuleContextInterface;
-use Magento\Framework\Setup\SchemaSetupInterface;
+use Magento\Framework\Data\SearchResultInterface;
 
-class InstallSchema extends Core implements InstallSchemaInterface
+interface ProductQueueSearchResultsInterface extends SearchResultInterface
 {
     /**
-     * Installs DB schema for Nosto Tagging module
+     * Get attributes list.
      *
-     * @param SchemaSetupInterface $setup
-     * @param ModuleContextInterface $context
-     * @return void
+     * @return ProductQueueInterface[]
      */
-    public function install( // @codingStandardsIgnoreLine
-        SchemaSetupInterface $setup,
-        ModuleContextInterface $context
-    ) {
-        $setup->startSetup();
-        $this->createCustomerTable($setup);
-        $this->createProductQueueTable($setup);
-        $setup->endSetup();
-    }
+    public function getItems();
+
+    /**
+     * Set attributes list.
+     *
+     * @param ProductQueueInterface[] $items
+     * @return $this
+     */
+    public function setItems(array $items);
 }

@@ -34,28 +34,21 @@
  *
  */
 
-namespace Nosto\Tagging\Setup;
+namespace Nosto\Tagging\Model\ResourceModel\Product;
 
-use Magento\Framework\Setup\InstallSchemaInterface;
-use Magento\Framework\Setup\ModuleContextInterface;
-use Magento\Framework\Setup\SchemaSetupInterface;
+use Magento\Framework\Model\ResourceModel\Db\AbstractDb;
+use Nosto\Tagging\Api\Data\ProductQueueInterface;
 
-class InstallSchema extends Core implements InstallSchemaInterface
+class Queue extends AbstractDb
 {
+    const TABLE_NAME = 'nosto_tagging_product_queue';
     /**
-     * Installs DB schema for Nosto Tagging module
+     * Initialize resource model
      *
-     * @param SchemaSetupInterface $setup
-     * @param ModuleContextInterface $context
      * @return void
      */
-    public function install( // @codingStandardsIgnoreLine
-        SchemaSetupInterface $setup,
-        ModuleContextInterface $context
-    ) {
-        $setup->startSetup();
-        $this->createCustomerTable($setup);
-        $this->createProductQueueTable($setup);
-        $setup->endSetup();
+    public function _construct()
+    {
+        $this->_init(self::TABLE_NAME, ProductQueueInterface::PRODUCT_ID);
     }
 }
