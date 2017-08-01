@@ -217,8 +217,9 @@ class Service
                 } catch (NostoException $e) {
                     $this->logger->info(
                         sprintf(
-                            'Failed to send batch %d to for store %s (%d)',
+                            'Failed to send batch %d / %d for store %s (%d)',
                             $batch,
+                            $totalBatches,
                             $store->getName(),
                             $store->getId()
                         )

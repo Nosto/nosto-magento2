@@ -98,7 +98,7 @@ class Repository
         $searchCriteria = $this->searchCriteriaBuilder
             ->addFilter(self::FIELD_UPDATED_AT, $date->format('Y-m-d H:i:s'), 'lt')
             ->addFilter(self::FIELD_UPDATED_AT, $previousDate->format('Y-m-d H:i:s'), 'gt')
-            ->setPageSize(14)
+            ->setPageSize(150)
             ->setCurrentPage(1)
             ->create();
         $products = $this->productRepository->getList($searchCriteria);

@@ -53,7 +53,7 @@ class TmpSync extends Command
     private $nostoProductService;
     private $nostoProductRepository;
 
-    public static $productUpdateInterval = 120;
+    public static $productUpdateInterval = 1120;
 
     /**
      * Constructor to instantiating the reindex command. This constructor uses proxy classes for
