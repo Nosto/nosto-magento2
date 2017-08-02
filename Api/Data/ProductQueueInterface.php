@@ -41,7 +41,6 @@ interface ProductQueueInterface
     const ID = 'id';
     const PRODUCT_ID = 'product_id';
     const CREATED_AT = 'created_at';
-    const SYNCHRONIZED_AT = 'synchronized_at';
 
     /**
      * Get row id
@@ -63,13 +62,6 @@ interface ProductQueueInterface
      * @return \DateTime
      */
     public function getCreatedAt();
-
-    /**
-     * Get synchronized at time
-     *
-     * @return \DateTime
-     */
-    public function getSynchronizedAt();
 
     /**
      * Set id
@@ -94,12 +86,4 @@ interface ProductQueueInterface
      * @return self
      */
     public function setCreatedAt(\DateTime $createdAt);
-
-    /**
-     * Set synchronized at time
-     *
-     * @param \DateTime $synchronizedAt
-     * @return self
-     */
-    public function setSynchronizedAt(\DateTime $synchronizedAt);
 }

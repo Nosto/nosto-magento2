@@ -140,15 +140,7 @@ abstract class Core
                 null,
                 ['nullable' => false],
                 'Creation Time'
-            )
-            ->addColumn(
-                ProductQueueInterface::SYNCHRONIZED_AT,
-                Table::TYPE_DATETIME,
-                null,
-                ['nullable' => true],
-                'Synchronized Time'
-            )
-            ->setComment('Nosto product queue');
+            );
 
         $setup->getConnection()->createTable($table);
     }

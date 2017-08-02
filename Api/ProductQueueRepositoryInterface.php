@@ -46,10 +46,9 @@ interface ProductQueueRepositoryInterface
      * Save Queue entry
      *
      * @param ProductQueueInterface $productQueue
-     * @param bool $saveOptions
      * @return ProductQueueInterface
      */
-    public function save(ProductQueueInterface $productQueue, $saveOptions = false);
+    public function save(ProductQueueInterface $productQueue);
 
     /**
     /**

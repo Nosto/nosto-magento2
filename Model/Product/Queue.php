@@ -69,14 +69,6 @@ class Queue extends AbstractModel implements ProductQueueInterface
     /**
      * @inheritdoc
      */
-    public function getSynchronizedAt()
-    {
-        return $this->getData(self::SYNCHRONIZED_AT);
-    }
-
-    /**
-     * @inheritdoc
-     */
     public function setId($id)
     {
         return $this->setData(self::ID, $id);
@@ -96,14 +88,6 @@ class Queue extends AbstractModel implements ProductQueueInterface
     public function setCreatedAt(\DateTime $createdAt)
     {
         return $this->setData(self::CREATED_AT, $createdAt);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function setSynchronizedAt(\DateTime $synchronizedAt)
-    {
-        return $this->setData(self::SYNCHRONIZED_AT, $synchronizedAt);
     }
 
     /**
