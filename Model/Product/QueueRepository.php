@@ -42,9 +42,12 @@ use Nosto\Tagging\Api\Data\ProductQueueInterface;
 use Nosto\Tagging\Api\Data\ProductQueueSearchResultsInterface;
 use Nosto\Tagging\Api\ProductQueueRepositoryInterface;
 use Nosto\Tagging\Model\ResourceModel\Product\QueueCollection;
+use Nosto\Tagging\Model\ResourceModel\Product\Queue as QueueResource;
+use Nosto\Tagging\Model\Product\Queue as QueueFactory;
 
 class QueueRepository implements ProductQueueRepositoryInterface
 {
+    private $queueResource;
     private $queueFactory;
     private $queueCollectionFactory;
     private $queueSearchResultsFactory;
@@ -52,16 +55,19 @@ class QueueRepository implements ProductQueueRepositoryInterface
     /**
      * QueueRepository constructor.
      *
+     * @param QueueResource $queueResource
      * @param Queue $queueFactory
      * @param QueueCollection $queueCollectionFactory
      * @param ProductQueueSearchResultsInterface $queueSearchResultsFactory
      */
     public function __construct(
-        Queue $queueFactory,
+        QueueResource $queueResource,
+        QueueFactory $queueFactory,
         QueueCollection $queueCollectionFactory,
         ProductQueueSearchResultsInterface $queueSearchResultsFactory
     )
     {
+        $this->queueResource = $queueResource;
         $this->queueFactory = $queueFactory;
         $this->queueCollectionFactory = $queueCollectionFactory;
         $this->queueSearchResultsFactory = $queueSearchResultsFactory;
@@ -72,16 +78,26 @@ class QueueRepository implements ProductQueueRepositoryInterface
         $saveOptions = false
     )
     {
-        $productQueue->getResource()->save($productQueue);
+        $queue = $this->queueResource->save($productQueue);
 
-        return $productQueue;
+        return $queue;
     }
 
     public function getById($id)
     {
         /* @var $productQueue Queue */
-        $productQueue = $this->queueFactory->create();
-        $productQueue->getResource()->load($productQueue, $id);
+        $productQueue = $this->queueResource->load($this, $id);
+        if (!$productQueue->getId()) {
+            throw new NoSuchEntityException(__('Unable to find ProductQueue with ID "%1"', $id));
+        }
+
+        return $productQueue;
+    }
+
+    public function getByProductId($productId)
+    {
+        /* @var $productQueue Queue */
+        $productQueue = $this->queueResource->loadByProductId($this, $productId);
         if (!$productQueue->getId()) {
             throw new NoSuchEntityException(__('Unable to find ProductQueue with ID "%1"', $id));
         }
@@ -91,7 +107,7 @@ class QueueRepository implements ProductQueueRepositoryInterface
 
     public function delete(ProductQueueInterface $productQueue)
     {
-        $productQueue->getResource()->delete($productQueue);
+        $this->queueResource->delete($productQueue);
     }
 
     public function deleteById($id)

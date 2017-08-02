@@ -112,14 +112,25 @@ abstract class Core
         $table = $setup->getConnection()
             ->newTable($setup->getTable(ProductQueue::TABLE_NAME))
             ->addColumn(
+                ProductQueueInterface::ID,
+                Table::TYPE_INTEGER,
+                null,
+                [
+                    'auto_increment' => true,
+                    'nullable' => false,
+                    'identity' => true,
+                    'primary' => true,
+                    'unsigned' => true,
+                ],
+                'ID'
+            )
+            ->addColumn(
                 ProductQueueInterface::PRODUCT_ID,
                 Table::TYPE_INTEGER,
                 null,
                 [
-                    'identity' => true,
                     'nullable' => false,
-                    'primary' => true,
-                    'unsigned' => true
+                    'unsigned' => true,
                 ],
                 'Product ID'
             )
@@ -134,7 +145,7 @@ abstract class Core
                 ProductQueueInterface::SYNCHRONIZED_AT,
                 Table::TYPE_DATETIME,
                 null,
-                ['nullable' => false],
+                ['nullable' => true],
                 'Synchronized Time'
             )
             ->setComment('Nosto product queue');

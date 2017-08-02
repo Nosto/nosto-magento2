@@ -41,6 +41,15 @@ use Nosto\Tagging\Api\Data\ProductQueueInterface;
 
 class Queue extends AbstractModel implements ProductQueueInterface
 {
+
+    /**
+     * @inheritdoc
+     */
+    public function getId()
+    {
+        return $this->getData(self::ID);
+    }
+
     /**
      * @inheritdoc
      */
@@ -63,6 +72,14 @@ class Queue extends AbstractModel implements ProductQueueInterface
     public function getSynchronizedAt()
     {
         return $this->getData(self::SYNCHRONIZED_AT);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setId($id)
+    {
+        return $this->setData(self::ID, $id);
     }
 
     /**

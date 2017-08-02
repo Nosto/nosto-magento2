@@ -49,6 +49,6 @@ class Queue extends AbstractDb
      */
     public function _construct()
     {
-        $this->_init(self::TABLE_NAME, ProductQueueInterface::PRODUCT_ID);
+        $this->_init(self::TABLE_NAME, ProductQueueInterface::ID);
     }
 }

@@ -38,9 +38,17 @@ namespace Nosto\Tagging\Api\Data;
 
 interface ProductQueueInterface
 {
+    const ID = 'id';
     const PRODUCT_ID = 'product_id';
     const CREATED_AT = 'created_at';
     const SYNCHRONIZED_AT = 'synchronized_at';
+
+    /**
+     * Get row id
+     *
+     * @return int|null
+     */
+    public function getId();
 
     /**
      * Get product id
@@ -62,6 +70,14 @@ interface ProductQueueInterface
      * @return \DateTime
      */
     public function getSynchronizedAt();
+
+    /**
+     * Set id
+     *
+     * @param int $id
+     * @return self
+     */
+    public function setId($id);
 
     /**
      * Set product id
