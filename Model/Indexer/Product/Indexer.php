@@ -74,11 +74,11 @@ class Indexer implements IndexerActionInterface, MviewActionInterface
 
     public function execute($ids)
     {
-        $this->logger->debug('Exec');
-        $collection = $this->productCollectionFactory->create()
-            ->addAttributeToFilter('entity_id', ['in' => $ids])
-            ->addAttributeToSelect('*');
+//        $this->logger->debug('Exec');
+//        $collection = $this->productRepository->create()
+//            ->addAttributeToFilter('entity_id', ['in' => $ids])
+//            ->addAttributeToSelect('*');
 
-        $this->productService->update($collection);
+        $this->productService->addToQueue($ids);
     }
 }

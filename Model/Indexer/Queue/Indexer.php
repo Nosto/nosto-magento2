@@ -5,10 +5,10 @@
  */
 namespace Nosto\Tagging\Model\Indexer\Queue;
 
+use Magento\Catalog\Model\ProductRepository;
 use Magento\Framework\Indexer\ActionInterface as IndexerActionInterface;
 use Magento\Framework\Mview\ActionInterface as MviewActionInterface;
 use Nosto\Tagging\Model\Product\Service as ProductService;
-use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductCollectionFactory;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -20,31 +20,31 @@ class Indexer implements IndexerActionInterface, MviewActionInterface
     const INDEXER_ID = 'nosto_queue_products';
 
     protected $productService;
-    protected $productCollectionFactory;
+    protected $productRepository;
     protected $logger;
 
     /**
      * @param ProductService $productService
-     * @param ProductCollectionFactory $productCollectionFactory
-     * @internal param ProductService $context
+     * @param ProductRepository $productRepository
+     * @param LoggerInterface $logger
      */
     public function __construct(
         ProductService $productService,
-        ProductCollectionFactory $productCollectionFactory,
+        ProductRepository $productRepository,
         LoggerInterface $logger
 
     ) {
         $this->productService = $productService;
-        $this->productCollectionFactory = $productCollectionFactory;
+        $this->productRepository = $productRepository;
         $this->logger = $logger;
 
-        $this->logger->debug('Init indexer');
+        $this->logger->debug('Init Queue Indexer');
     }
 
     public function executeFull()
     {
         $this->logger->debug('Exec full');
-        $collection = $this->productCollectionFactory->create()
+        $collection = $this->productRepository->create()
             ->addAttributeToFilter('status', ['eq' => '1'])
             ->addAttributeToSelect('*');
         $collection->setPage(1,10);
@@ -57,7 +57,7 @@ class Indexer implements IndexerActionInterface, MviewActionInterface
     {
         $this->logger->debug('Exec list');
 
-        $collection = $this->productCollectionFactory->create()
+        $collection = $this->productRepository->create()
             ->addAttributeToFilter('status', ['eq' => '1'])
             ->addAttributeToSelect('*');
         $collection->setPage(1,10);
@@ -74,11 +74,7 @@ class Indexer implements IndexerActionInterface, MviewActionInterface
 
     public function execute($ids)
     {
-        $this->logger->debug('Exec');
-        $collection = $this->productCollectionFactory->create()
-            ->addAttributeToFilter('entity_id', ['in' => $ids])
-            ->addAttributeToSelect('*');
-
-        $this->productService->update($collection);
+        $this->productService->addToQueueByIds($ids);
+        $this->productService->flushQueue();
     }
 }

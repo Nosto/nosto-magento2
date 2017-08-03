@@ -123,6 +123,17 @@ class Service
     }
 
     /**
+     * Adds products to queue by id
+     *
+     * @param array $ids
+     */
+    public function addToQueueByIds(array $ids)
+    {
+        $products = $this->nostoProductRepository->getByIds($ids);
+        $this->addToQueue($products->getItems());
+
+    }
+    /**
      * Adds products to queue
      *
      * @param Product[] $products
@@ -130,7 +141,6 @@ class Service
     public function addToQueue(array $products)
     {
         $productCount = count($products);
-
         $this->logger->info(
             sprintf(
                 'Adding %d products to Nosto queue',
