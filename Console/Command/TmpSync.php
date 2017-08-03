@@ -98,7 +98,6 @@ class TmpSync extends Command
      * @param InputInterface $input the command line input interface for reading arguments
      * @param OutputInterface $output the command line output interface for logging
      * @return int|null|void
-     * @SuppressWarnings(PHPMD.CyclomaticComplexity
      */
     public function execute(InputInterface $input, OutputInterface $output)
     {
@@ -119,6 +118,14 @@ class TmpSync extends Command
         );
         try {
             $this->nostoProductService->addToQueue($products);
+        } catch (\Exception $e) {
+            // ToDo - add logging
+            $this->logger->error($e->getMessage());
+            die('FAIL');
+        }
+
+        try {
+            $this->nostoProductService->flushQueue();
         } catch (\Exception $e) {
             // ToDo - add logging
             $this->logger->error($e->getMessage());

@@ -41,6 +41,7 @@ use Magento\Catalog\Model\ProductRepository;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\Data\SearchResultInterface;
 use Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable as ConfigurableProduct;
+use Magento\Store\Model\Store;
 use Nosto\Tagging\Helper\Data;
 use Magento\Catalog\Model\Product\Type;
 
@@ -103,13 +104,30 @@ class Repository
 
         $searchCriteria = $this->searchCriteriaBuilder
             ->addFilter(self::FIELD_UPDATED_AT, $date->format('Y-m-d H:i:s'), 'lt')
-            ->setPageSize(1)
+            ->setPageSize(10)
             ->setCurrentPage(1)
             ->create();
         $products = $this->productRepository->getList($searchCriteria);
 
         return $products;
     }
+
+    /**
+     * Gets the products by ids
+     * has ended recently
+     * @param array $ids
+     * @return SearchResultInterface
+     */
+    public function getByIds(array $ids)
+    {
+        $searchCriteria = $this->searchCriteriaBuilder
+            ->addFilter('entity_id', $ids, 'in')
+            ->create();
+        $products = $this->productRepository->getList($searchCriteria);
+
+        return $products;
+    }
+
 
     /**
      * Gets the products that have been scheduled for changes or the scheduling
