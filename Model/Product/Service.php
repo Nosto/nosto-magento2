@@ -229,7 +229,7 @@ class Service
                         $op->addProduct($nostoProduct);
                     }
                     try {
-                        $op->upsert($op);
+                        $op->upsert();
                         $this->logger->info(
                             sprintf(
                                 'Sent %d products (batch %d / %d) to for store %s (%d)',
@@ -261,128 +261,12 @@ class Service
             $this->storeManager->setCurrentStore($originalStore);
         }
     }
-        /**
-     * Updates product collection to Nosto via API
+
+    /**
+     * Returns an array of stores where Nosto is installed
      *
-     * @param Product[] $products
+     * @return array
      */
-    public function updateByCollection(array $products)
-    {
-        $productsInStores = [];
-        $storesWithNoNosto = [];
-        $currentBatch = 0;
-        $productCounter = 0;
-        $productCount = count($products);
-        $this->logger->info(
-            sprintf(
-                'Starting to sync %d products to Nosto with batch size %d',
-                $productCount,
-                self::$batchSize
-            )
-        );
-
-        foreach ($products as $product) {
-            if ($this->isProcessed($product)) {
-                continue;
-            }
-            foreach ($product->getStoreIds() as $storeId) {
-                if (in_array($storeId, $storesWithNoNosto)) {
-                    continue;
-                }
-                if (empty($productsInStores[$storeId])) {
-                    $store = $this->nostoHelperScope->getStore($storeId);
-                    $account = $this->nostoHelperAccount->findAccount($store);
-                    if ($account === null) {
-                        $storesWithNoNosto[] = $storeId;
-                        continue;
-                    }
-                    $productsInStores[$storeId] = [];
-                }
-                $parentProducts = $this->nostoProductRepository->resolveParentProducts($product);
-                $productsToUpdate = [];
-                if ($parentProducts instanceof ProductCollection) {
-                    foreach ($parentProducts as $parentProduct) {
-                        $productsToUpdate[] = $parentProduct;
-                    }
-                } else {
-                    $productsToUpdate[] = $product;
-                }
-                foreach ($productsToUpdate as $productToUpdate) {
-                    if ($productCounter > 0
-                        && $productCounter % self::$batchSize == 0
-                    ) {
-                        ++$currentBatch;
-                    }
-                    if (empty($productsInStores[$storeId][$currentBatch])) {
-                        $productsInStores[$storeId][$currentBatch] = [];
-                    }
-                    $productsInStores[$storeId][$currentBatch][] = $productToUpdate;
-                }
-            }
-            ++$productCounter;
-            $this->setProcessed($product);
-        }
-        $totalBatches = $currentBatch+1;
-        $this->logger->info(
-            sprintf(
-                'Product batches (%d) ready for %d store(s)',
-                $totalBatches,
-                count($productsInStores)
-            )
-        );
-
-        foreach ($productsInStores as $storeId => $batches) {
-            $store = $this->nostoHelperScope->getStore($storeId);
-            $account = $this->nostoHelperAccount->findAccount($store);
-            if ($account === null) {
-                continue;
-            }
-            if (!$this->nostoHelperData->isProductUpdatesEnabled($store)) {
-                continue;
-            }
-            foreach ($batches as $batch => $products) {
-                $op = new UpsertProduct($account);
-                $productsAdded = 0;
-                foreach ($products as $product) {
-                    $nostoProduct = $this->nostoProductBuilder->build(
-                        $product,
-                        $store
-                    );
-                    if ($nostoProduct === null) {
-                        continue;
-                    }
-                    ++$productsAdded;
-                    $op->addProduct($nostoProduct);
-                }
-                try {
-                    if ($productsAdded > 0) {
-                        $op->upsert($op);
-                        $this->logger->info(
-                            sprintf(
-                                'Sent batch %d to for store %s (%d)',
-                                $batch,
-                                $store->getName(),
-                                $store->getId()
-                            )
-                        );
-                    }
-                } catch (NostoException $e) {
-                    $this->logger->info(
-                        sprintf(
-                            'Failed to send batch %d / %d for store %s (%d)',
-                            $batch,
-                            $totalBatches,
-                            $store->getName(),
-                            $store->getId()
-                        )
-                    );
-                    $this->logger->error($e->getMessage());
-                }
-            }
-        }
-        $this->logger->info('Product sync finished');
-    }
-
     private function getStoresWithNosto()
     {
         $stores = $this->nostoHelperScope->getStores();
@@ -395,40 +279,5 @@ class Service
         }
 
         return $storesWithNosto;
-    }
-
-    /**
-     * Sets a product id as processed / queued
-     *
-     * @param Product $product
-     */
-    private function setProcessed(Product $product)
-    {
-        // Get parent product and all skus
-        $parentProduct = $this->nostoProductRepository->resolveParentProducts($product);
-        
-    }
-
-    /**
-     * Checks if product has been already processed
-     *
-     * @param Product $product
-     * @return bool
-     */
-    private function isProcessed(Product $product)
-    {
-        $found = false;
-        if (isset($this->processed[$product->getId()])) {
-            $found = true;
-        } else {
-            foreach ($this->processed as $parentId => $arr) {
-                if (in_array($product->getId(), $arr)) {
-                    $found = true;
-                    break;
-                }
-            }
-        }
-
-        return $found;
     }
 }
