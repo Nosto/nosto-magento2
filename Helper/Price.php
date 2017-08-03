@@ -181,12 +181,14 @@ class Price extends AbstractHelper
                     $finalPrices = [];
                     /** @var Product $sku */
                     foreach ($products as $sku) {
-                        $finalPrices[$sku->getId()] = $this->getProductPrice(
-                            $sku,
-                            true,
-                            true
-                        );
-                        $skus[$sku->getId()] = $sku;
+                        if (!$sku->isDisabled()) {
+                            $finalPrices[$sku->getId()] = $this->getProductPrice(
+                                $sku,
+                                true,
+                                true
+                            );
+                            $skus[$sku->getId()] = $sku;
+                        }
                     }
                     asort($finalPrices, SORT_NUMERIC);
                     $keys = array_keys($finalPrices);
