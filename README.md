@@ -2,6 +2,10 @@
 
 ## Changelog
 
+### 2.2.3
+Bug fixes
+* Ignore disabled variations from price calculation and SKU tagging
+
 ### 2.2.2
 Bug fixes
 * Fix the discount calculation in order items
