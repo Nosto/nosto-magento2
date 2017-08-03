@@ -36,12 +36,14 @@
 
 namespace Nosto\Tagging\Model\Product;
 
+use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\Api\SearchCriteriaInterface;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Nosto\Tagging\Api\Data\ProductQueueInterface;
-use Nosto\Tagging\Model\Product\QueueSearchResultsFactory;
+use Nosto\Tagging\Api\Data\ProductQueueSearchResultsInterface;
 use Nosto\Tagging\Api\ProductQueueRepositoryInterface;
-use Nosto\Tagging\Model\ResourceModel\Product\QueueCollectionFactory;
+use Nosto\Tagging\Model\ResourceModel\Product\Queue\Collection as QueueCollection;
+use Nosto\Tagging\Model\ResourceModel\Product\Queue\CollectionFactory as QueueCollectionFactory;
 use Nosto\Tagging\Model\ResourceModel\Product\Queue as QueueResource;
 
 class QueueRepository implements ProductQueueRepositoryInterface
@@ -50,6 +52,7 @@ class QueueRepository implements ProductQueueRepositoryInterface
     private $queueFactory;
     private $queueCollectionFactory;
     private $queueSearchResultsFactory;
+    private $searchCriteriaBuilder;
 
     /**
      * QueueRepository constructor.
@@ -58,37 +61,48 @@ class QueueRepository implements ProductQueueRepositoryInterface
      * @param QueueFactory $queueFactory
      * @param QueueCollectionFactory $queueCollectionFactory
      * @param QueueSearchResultsFactory $queueSearchResultsFactory
+     * @param SearchCriteriaBuilder $searchCriteriaBuilder
      */
     public function __construct(
         QueueResource $queueResource,
         QueueFactory $queueFactory,
         QueueCollectionFactory $queueCollectionFactory,
-        QueueSearchResultsFactory $queueSearchResultsFactory
+        QueueSearchResultsFactory $queueSearchResultsFactory,
+        SearchCriteriaBuilder $searchCriteriaBuilder
     )
     {
         $this->queueResource = $queueResource;
         $this->queueFactory = $queueFactory;
         $this->queueCollectionFactory = $queueCollectionFactory;
         $this->queueSearchResultsFactory = $queueSearchResultsFactory;
+        $this->searchCriteriaBuilder = $searchCriteriaBuilder;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function save(ProductQueueInterface $productQueue)
     {
-        // ToDo - add check if product with same id already exists
-        $existing = $this->getByProductId($productQueue->getProductId());
-        if ($existing instanceof ProductQueueInterface) {
+        $existing = $this->getOneByProductId($productQueue->getProductId());
+        if ($existing instanceof ProductQueueInterface
+            && $existing->getId()
+        ) {
             return $existing;
         }
+        /** @noinspection PhpParamsInspection */
         $queue = $this->queueResource->save($productQueue);
 
         return $queue;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function getById($id)
     {
         /* @var $productQueue Queue */
         $productQueue = $this->queueFactory->create();
-        $productQueue->getResource()->load($this, $id);
+        $productQueue->getResource()->load($this->queueFactory->create(), $id);
         if (!$productQueue->getId()) {
             throw new NoSuchEntityException(__('Unable to find ProductQueue with ID "%1"', $id));
         }
@@ -96,48 +110,67 @@ class QueueRepository implements ProductQueueRepositoryInterface
         return $productQueue;
     }
 
-    public function getByProductId($productId)
+    /**
+     * @inheritdoc
+     */
+    public function getOneByProductId($productId)
     {
         /* @var $productQueue Queue */
         $productQueue = $this->queueFactory->create();
-        $productQueue->getResource()->load($this->queueFactory->create(), $productId, ProductQueueInterface::PRODUCT_ID);
-        if (!$productQueue->getId()) {
-            return null;
-        }
+        $productQueue->getResource()->load(
+            $productQueue,
+            $productId,
+            ProductQueueInterface::PRODUCT_ID
+        );
 
         return $productQueue;
     }
 
+    /**
+     * @inheritdoc
+     */
+    public function getByProductId($productId)
+    {
+        $searchCriteria = $this->searchCriteriaBuilder
+            ->addFilter(ProductQueueInterface::PRODUCT_ID, $productId, 'eq')
+            ->create();
+
+        return $this->getList($searchCriteria);
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function delete(ProductQueueInterface $productQueue)
     {
+        /** @noinspection PhpParamsInspection */
         $this->queueResource->delete($productQueue);
     }
 
-    public function deleteById($id)
-    {
-        $productQueue = $this->getById($id);
 
-        return $this->delete($productQueue);
-    }
-
+    /**
+     * @inheritdoc
+     */
     public function deleteByProductIds(array $ids)
     {
         foreach ($ids as $id) {
             $productQueue = $this->getByProductId($id);
-            if ($productQueue instanceof ProductQueueInterface) {
-                $this->delete($productQueue);
+            if ($productQueue instanceof ProductQueueSearchResultsInterface) {
+                foreach ($productQueue->getItems() as $entry) {
+                    $this->delete($entry);
+                }
             }
         }
     }
 
+    /**
+     * @inheritdoc
+     */
     public function getList(SearchCriteriaInterface $searchCriteria)
     {
+        /* @var QuoteCollection $collection */
         $collection = $this->queueFactory->create()->getCollection();
-
         $this->addFiltersToCollection($searchCriteria, $collection);
-        $this->addSortOrdersToCollection($searchCriteria, $collection);
-        $this->addPagingToCollection($searchCriteria, $collection);
-
         $collection->load();
         $searchResult = $this->queueSearchResultsFactory->create();
         $searchResult->setSearchCriteria($searchCriteria);
@@ -147,6 +180,9 @@ class QueueRepository implements ProductQueueRepositoryInterface
         return $searchResult;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function getAll()
     {
         $collection = $this->queueCollectionFactory->create();
@@ -158,7 +194,13 @@ class QueueRepository implements ProductQueueRepositoryInterface
         return $searchResult;
     }
 
-    private function addFiltersToCollection(SearchCriteriaInterface $searchCriteria, Collection $collection)
+    /**
+     * Adds filters to the collection
+     *
+     * @param SearchCriteriaInterface $searchCriteria
+     * @param QueueCollection $collection
+     */
+    private function addFiltersToCollection(SearchCriteriaInterface $searchCriteria, QueueCollection $collection)
     {
         foreach ($searchCriteria->getFilterGroups() as $filterGroup) {
             $fields = $conditions = [];

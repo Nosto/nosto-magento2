@@ -34,11 +34,11 @@
  *
  */
 
-namespace Nosto\Tagging\Model\ResourceModel\Product;
+namespace Nosto\Tagging\Model\ResourceModel\Product\Queue;
 
 use Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection;
 
-class QueueCollection extends AbstractCollection
+class Collection extends AbstractCollection
 {
     /**
      * Define resource model

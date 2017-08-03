@@ -68,10 +68,26 @@ interface ProductQueueRepositoryInterface
     public function delete(ProductQueueInterface $productQueue);
 
     /**
-     * @param int $id
+     * @param array $ids
      * @return bool
      */
-    public function deleteById($id);
+    public function deleteByProductIds(array $ids);
+
+    /**
+     * Returns all entries by product ids
+     *
+     * @param int $id
+     * @return ProductQueueSearchResultsInterface
+     */
+    public function getByProductId($id);
+
+    /**
+     * Returns single entry by product id
+     *
+     * @param int $id
+     * @return ProductQueueInterface
+     */
+    public function getOneByProductId($id);
 
     /**
      * Get list of productQueues
@@ -80,4 +96,11 @@ interface ProductQueueRepositoryInterface
      * @return ProductQueueSearchResultsInterface
      */
     public function getList(SearchCriteriaInterface $searchCriteria);
+
+    /**
+     * Returns all entries in product queue
+     *
+     * @return ProductQueueSearchResultsInterface
+     */
+    public function getAll();
 }

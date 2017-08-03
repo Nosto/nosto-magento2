@@ -170,9 +170,7 @@ class Service
         foreach ($queueEntries->getItems() as $queueEntry) {
             $productIds[] = $queueEntry->getProductId();
         }
-
         $this->update($productIds);
-
     }
 
     /**
@@ -194,7 +192,7 @@ class Service
             $totalBatchCount = ceil($productSearch->getTotalCount()/self::$batchSize);
             $this->logger->info(
                 sprintf(
-                    'Updating total of %d product in %d batches for store %s',
+                    'Updating total of %d unique products in %d batches for store %s',
                     $productSearch->getTotalCount(),
                     $totalBatchCount,
                     $store->getName()
@@ -212,8 +210,9 @@ class Service
                     $currentBatch[] = $product;
                 }
                 $currentBatchCount = count($currentBatch);
-                if ($currentBatchCount > 0
-                    && $currentBatchCount % self::$batchSize == 0
+                if (($currentBatchCount > 0
+                    && $currentBatchCount % self::$batchSize == 0)
+                    ||  $currentBatchCount == $productSearch->getTotalCount()
                 ) {
                     $deleteQueue = [];
                     $op = new UpsertProduct($nostoAccount);

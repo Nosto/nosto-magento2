@@ -100,11 +100,9 @@ class Repository
         $previousDate = new \DateTime('now');
         $previousDate->sub($interval);
 
-        $prod = $this->productRepository->getById(69);
-
         $searchCriteria = $this->searchCriteriaBuilder
             ->addFilter(self::FIELD_UPDATED_AT, $date->format('Y-m-d H:i:s'), 'lt')
-            ->setPageSize(10)
+            ->setPageSize(3)
             ->setCurrentPage(1)
             ->create();
         $products = $this->productRepository->getList($searchCriteria);
@@ -127,7 +125,6 @@ class Repository
 
         return $products;
     }
-
 
     /**
      * Gets the products that have been scheduled for changes or the scheduling
