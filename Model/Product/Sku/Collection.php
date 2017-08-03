@@ -88,11 +88,13 @@ class Collection
             $attributes = $this->configurableType->getConfigurableAttributes($product);
             /** @var Product $product */
             foreach ($this->configurableType->getUsedProducts($product) as $product) {
-                try {
-                    $sku = $this->nostoSkuBuilder->build($product, $store, $attributes);
-                    $skuCollection->append($sku);
-                } catch (NostoException $e) {
-                    $this->logger->error($e->__toString());
+                if (!$product->isDisabled()) {
+                    try {
+                        $sku = $this->nostoSkuBuilder->build($product, $store, $attributes);
+                        $skuCollection->append($sku);
+                    } catch (NostoException $e) {
+                        $this->logger->error($e->__toString());
+                    }
                 }
             }
         }

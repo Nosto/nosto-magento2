@@ -4,7 +4,11 @@
 
 ### 2.3.0
 Improvements
-* Introduce indexer for Nosto products
+* Introduce update queue and indexer for Nosto product updates
+
+### 2.2.3
+Bug fixes
+* Ignore disabled variations from price calculation and SKU tagging
 
 ### 2.2.2
 Bug fixes
