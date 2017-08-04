@@ -34,7 +34,7 @@
   ~
   -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../Indexer/etc/indexer.xsd">
-    <indexer id="nosto_queue_products" view_id="nosto_queue_products" class="Nosto\Tagging\Model\Indexer\Queue\Indexer">
+    <indexer id="nosto_queue_products" view_id="nosto_queue_products" class="Nosto\Tagging\Model\Indexer\Queue">
         <title translate="true">Nosto Product Queue</title>
         <description translate="true">Adds products to queue</description>
     </indexer>

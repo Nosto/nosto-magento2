@@ -59,7 +59,8 @@ use Nosto\Tagging\Model\Product\Repository as NostoProductRepository;
 class Service
 {
 
-    public static $batchSize = 10;
+    public static $batchSize = 50;
+    public static $responseTimeOut = 500;
 
     private $nostoProductBuilder;
     private $logger;
@@ -114,12 +115,34 @@ class Service
         $this->nostoQueueFactory = $nostoQueueFactory;
         $this->storeManager = $storeManager;
 
-        HttpRequest::$responseTimeout = 120;
+        HttpRequest::$responseTimeout = self::$responseTimeOut;
         HttpRequest::buildUserAgent(
             NostoHelperData::PLATFORM_NAME,
             $nostoHelperData->getPlatformVersion(),
             $nostoHelperData->getModuleVersion()
         );
+    }
+
+    /**
+     * Updates products to Nosto via API
+     *
+     * @param array $ids array of product ids
+     */
+    public function updateByIds(array $ids)
+    {
+        $this->addToQueueByIds($ids);
+        $this->flushQueue();
+    }
+
+    /**
+     * Adds products to queue by id
+     *
+     * @param Product[] array of product objects
+     */
+    public function update(array $products)
+    {
+        $this->addToQueue($products);
+        $this->flushQueue();
     }
 
     /**
@@ -133,6 +156,7 @@ class Service
         $this->addToQueue($products->getItems());
 
     }
+
     /**
      * Adds products to queue
      *
@@ -148,10 +172,22 @@ class Service
             )
         );
         foreach ($products as $product) {
-            $queue = $this->nostoQueueFactory->create();
-            $queue->setProductId($product->getId());
-            $queue->setCreatedAt(new \DateTime('now'));
-            $this->nostoQueueRepository->save($queue);
+            $productsForQueue = [];
+            $parentProducts = $this->nostoProductRepository->resolveParentProducts($product);
+            if (!empty($parentProducts)) {
+                foreach ($parentProducts as $parentProduct) {
+                    $productsForQueue[] = $parentProduct;
+                }
+            } else {
+                $productsForQueue[] = $product;
+            }
+
+            foreach ($productsForQueue as $productForQueue) {
+                $queue = $this->nostoQueueFactory->create();
+                $queue->setProductId($productForQueue->getId());
+                $queue->setCreatedAt(new \DateTime('now'));
+                $this->nostoQueueRepository->save($queue);
+            }
         }
         $this->logger->info(
             sprintf(
@@ -164,6 +200,7 @@ class Service
     /**
      * Updates all products in queue to Nosto
      *
+     * @return void
      */
     public function flushQueue()
     {
@@ -180,7 +217,7 @@ class Service
         foreach ($queueEntries->getItems() as $queueEntry) {
             $productIds[] = $queueEntry->getProductId();
         }
-        $this->update($productIds);
+        $this->process($productIds);
     }
 
     /**
@@ -188,7 +225,7 @@ class Service
      *
      * @param array $productIds
      */
-    public function update(array $productIds)
+    private function process(array $productIds)
     {
         $uniqueProductIds = array_unique($productIds);
         $storesWithNosto = $this->getStoresWithNosto();
@@ -209,35 +246,20 @@ class Service
                 )
             );
             $products = $productSearch->getItems();
-            $currentBatch = [];
+            $currentBatchCount = 0;
+            $op = new UpsertProduct($nostoAccount);
             foreach ($products as $product) {
-                $parentProducts = $this->nostoProductRepository->resolveParentProducts($product);
-                if ($parentProducts instanceof ProductCollection) {
-                    foreach ($parentProducts as $parentProduct) {
-                        $currentBatch[] = $parentProduct;
-                    }
-                } else {
-                    $currentBatch[] = $product;
-                }
-                $currentBatchCount = count($currentBatch);
+                ++$currentBatchCount;
+                $nostoProduct = $this->nostoProductBuilder->build(
+                    $product,
+                    $store
+                );
+                $deleteQueue[] = $product->getId();
+                $op->addProduct($nostoProduct);
                 if (($currentBatchCount > 0
                     && $currentBatchCount % self::$batchSize == 0)
                     ||  $currentBatchCount == $productSearch->getTotalCount()
                 ) {
-                    $deleteQueue = [];
-                    $op = new UpsertProduct($nostoAccount);
-                    /* @var Product $product */
-                    foreach ($currentBatch as $product) {
-                        $nostoProduct = $this->nostoProductBuilder->build(
-                            $product,
-                            $store
-                        );
-                        if ($nostoProduct === null) {
-                            continue;
-                        }
-                        $deleteQueue[] = $product->getId();
-                        $op->addProduct($nostoProduct);
-                    }
                     try {
                         $op->upsert();
                         $this->logger->info(
@@ -264,7 +286,7 @@ class Service
                         );
                         $this->logger->error($e->getMessage());
                     }
-                    $currentBatch = [];
+                    $currentBatchCount = 0;
                     ++$batchCounter;
                 }
             }

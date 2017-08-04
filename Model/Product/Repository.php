@@ -52,12 +52,6 @@ use Magento\Catalog\Model\Product\Type;
  */
 class Repository
 {
-    const FIELD_UPDATED_AT = 'updated_at';
-    const FIELD_NEWS_FROM = 'news_from_date';
-    const FIELD_NEWS_TO = 'news_to_date';
-    const FIELD_SPECIAL_FROM_DATE = 'special_from_date';
-    const FIELD_SPECIAL_TO_DATE = 'special_to_date';
-
     private $cache = array();
 
     private $nostoDataHelper;
@@ -90,29 +84,8 @@ class Repository
     }
 
     /**
-     * Gets the products that updated within the given time interval
-     * @param \DateInterval $interval
-     * @return SearchResultInterface
-     */
-    public function getUpdatedWithinInterval(\DateInterval $interval)
-    {
-        $date = new \DateTime('now');
-        $previousDate = new \DateTime('now');
-        $previousDate->sub($interval);
-
-        $searchCriteria = $this->searchCriteriaBuilder
-            ->addFilter(self::FIELD_UPDATED_AT, $date->format('Y-m-d H:i:s'), 'lt')
-            ->setPageSize(3)
-            ->setCurrentPage(1)
-            ->create();
-        $products = $this->productRepository->getList($searchCriteria);
-
-        return $products;
-    }
-
-    /**
-     * Gets the products by ids
-     * has ended recently
+     * Gets products by product ids
+     *
      * @param array $ids
      * @return SearchResultInterface
      */
@@ -127,32 +100,8 @@ class Repository
     }
 
     /**
-     * Gets the products that have been scheduled for changes or the scheduling
-     * has ended recently
-     * @param \DateInterval $interval
-     * @return SearchResultInterface
-     */
-    public function getScheduledProducts(\DateInterval $interval)
-    {
-        $date = new \DateTime('now');
-        $previousDate = new \DateTime('now');
-        $previousDate->sub($interval);
-
-        // start schedule 1 hr < now & end schedule > now OR
-        // end schedule 1 hr < now
-        $searchCriteria = $this->searchCriteriaBuilder
-            ->addFilter(self::FIELD_UPDATED_AT, $date->format('Y-m-d H:i:s'), 'lt')
-            ->addFilter(self::FIELD_UPDATED_AT, $previousDate->format('Y-m-d H:i:s'), 'gt')
-            ->setPageSize(150)
-            ->setCurrentPage(1)
-            ->create();
-        $products = $this->productRepository->getList($searchCriteria);
-
-        return $products;
-    }
-
-    /**
      * Gets the parent products for simple product
+     * @param Product $product
      * @return Product[]
      */
     public function resolveParentProducts(Product $product)

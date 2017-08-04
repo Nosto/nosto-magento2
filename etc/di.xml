@@ -47,7 +47,4 @@
             </argument>
         </arguments>
     </type>
-    <type name="Magento\Catalog\Model\ResourceModel\Product">
-        <plugin name="nostoProduct" type="Nosto\Tagging\Model\Indexer\Queue\Observer"/>
-    </type>
 </config>

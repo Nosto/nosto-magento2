@@ -39,6 +39,7 @@ namespace Nosto\Tagging\Setup;
 use Magento\Framework\DB\Adapter\AdapterInterface;
 use Magento\Framework\DB\Ddl\Table;
 use Magento\Framework\Setup\SchemaSetupInterface;
+use Magento\Paypal\Model\Pro;
 use Nosto\Tagging\Api\Data\CustomerInterface;
 use Nosto\Tagging\Api\Data\ProductQueueInterface;
 use Nosto\Tagging\Model\ResourceModel\Customer;
@@ -97,10 +98,10 @@ abstract class Core
             )
             ->addIndex(
                 $setup->getIdxName(
-                    'nosto_tagging_customer',
-                    ['quote_id', 'nosto_id']
+                    Customer::TABLE_NAME,
+                    [CustomerInterface::QUOTE_ID, CustomerInterface::NOSTO_ID]
                 ),
-                ['quote_id', 'nosto_id'],
+                [CustomerInterface::QUOTE_ID, CustomerInterface::NOSTO_ID],
                 ['type' => AdapterInterface::INDEX_TYPE_UNIQUE]
             )
             ->setComment('Nosto customer and order mapping');
@@ -140,6 +141,14 @@ abstract class Core
                 null,
                 ['nullable' => false],
                 'Creation Time'
+            )
+            ->addIndex(
+                $setup->getIdxName(
+                    ProductQueue::TABLE_NAME,
+                    [ProductQueueInterface::PRODUCT_ID]
+                ),
+                [ProductQueueInterface::PRODUCT_ID],
+                ['type' => AdapterInterface::INDEX_TYPE_UNIQUE]
             );
 
         $setup->getConnection()->createTable($table);
