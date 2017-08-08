@@ -33,9 +33,9 @@
   ~ @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
   ~
   -->
-<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../Indexer/etc/indexer.xsd">
-    <indexer id="nosto_queue_products" view_id="nosto_queue_products" class="Nosto\Tagging\Model\Indexer\Queue">
-        <title translate="true">Nosto Product Queue</title>
-        <description translate="true">Adds products to queue</description>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Indexer/etc/indexer.xsd">
+    <indexer id="nosto_product_sync" view_id="nosto_product_sync" class="Nosto\Tagging\Model\Indexer\Product\Indexer">
+        <title translate="true">Nosto Product Update</title>
+        <description translate="true">Updates products to Nosto</description>
     </indexer>
 </config>

@@ -87,7 +87,8 @@ class Collection
         if ($product->getTypeId() === ConfigurableType::TYPE_CODE) {
             $attributes = $this->configurableType->getConfigurableAttributes($product);
             /** @var Product $product */
-            foreach ($this->configurableType->getUsedProducts($product) as $product) {
+            $usedProducts = $this->configurableType->getUsedProducts($product);
+            foreach ($usedProducts as $product) {
                 if (!$product->isDisabled()) {
                     try {
                         $sku = $this->nostoSkuBuilder->build($product, $store, $attributes);

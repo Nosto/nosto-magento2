@@ -3,11 +3,12 @@
  * Copyright © 2016 Magento. All rights reserved.
  * See COPYING.txt for license details.
  */
-namespace Nosto\Tagging\Model\Indexer;
+namespace Nosto\Tagging\Model\Indexer\Product;
 
 use Magento\Catalog\Model\Product\Attribute\Source\Status;
 use Magento\Catalog\Model\ProductRepository;
-use Magento\Framework\Api\SearchCriteriaBuilder;use Magento\Framework\Indexer\ActionInterface as IndexerActionInterface;
+use Magento\Framework\Api\SearchCriteriaBuilder;
+use Magento\Framework\Indexer\ActionInterface as IndexerActionInterface;
 use Magento\Framework\Mview\ActionInterface as MviewActionInterface;
 use Nosto\Tagging\Model\Product\Service as ProductService;
 use Psr\Log\LoggerInterface;
@@ -16,10 +17,10 @@ use Psr\Log\LoggerInterface;
  * An indexer for Nosto product sync
  *
  */
-class Queue implements IndexerActionInterface, MviewActionInterface
+class Indexer implements IndexerActionInterface, MviewActionInterface
 {
-    const HARD_LIMIT_FOR_PRODUCTS = 100;
-    const INDEXER_ID = 'nosto_queue_products';
+    const HARD_LIMIT_FOR_PRODUCTS = 1000;
+    const INDEXER_ID = 'nosto_product_sync';
 
     private $productService;
     private $productRepository;
