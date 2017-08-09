@@ -37,12 +37,6 @@
     <view id="nosto_product_sync" class="Nosto\Tagging\Model\Indexer\Product\Indexer" group="indexer">
         <subscriptions>
             <table name="catalog_product_entity" entity_column="entity_id" />
-            <table name="catalog_product_entity_varchar" entity_column="entity_id" />
-        </subscriptions>
-    </view>
-    <view id="nosto_tmp_product" class="Nosto\Tagging\Model\Indexer\Tmp" group="indexer">
-        <subscriptions>
-            <table name="catalog_product_entity" entity_column="entity_id" />
             <table name="catalog_product_entity_datetime" entity_column="entity_id" />
             <table name="catalog_product_entity_decimal" entity_column="entity_id" />
             <table name="catalog_product_entity_gallery" entity_column="entity_id" />
@@ -54,5 +48,4 @@
             <table name="catalog_product_entity_varchar" entity_column="entity_id" />
         </subscriptions>
     </view>
-
 </config>

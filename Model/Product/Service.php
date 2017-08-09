@@ -38,12 +38,11 @@ namespace Nosto\Tagging\Model\Product;
 
 use Magento\Catalog\Model\Product;
 use Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable as ConfigurableProduct;
-use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManager;
-use Monolog\Processor\UidProcessor;
 use Nosto\Object\Signup\Account;
 use Nosto\Operation\UpsertProduct;
 use Nosto\Request\Http\HttpRequest;
+use Nosto\Tagging\Api\Data\ProductQueueInterface;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
@@ -153,8 +152,16 @@ class Service
     public function addToQueueByIds(array $ids)
     {
         $products = $this->nostoProductRepository->getByIds($ids);
-        $this->addToQueue($products->getItems());
-
+        if ($products->getTotalCount() > 0) {
+            $this->addToQueue($products->getItems());
+        } else { // If the product id(s) were deleted repo doesn't return any products
+            foreach ($ids as $productId) {
+                $queue = $this->nostoQueueFactory->create();
+                $queue->setProductId($productId);
+                $queue->setCreatedAt(new \DateTime('now'));
+                $this->nostoQueueRepository->save($queue);
+            }
+        }
     }
 
     /**
@@ -225,17 +232,20 @@ class Service
      *
      * @param array $productIds
      */
-    private function process(array $productIds)
+    protected function process(array $productIds)
     {
         $uniqueProductIds = array_unique($productIds);
+        $leftProducts = $uniqueProductIds;
         $storesWithNosto = $this->getStoresWithNosto();
-        // ToDo - check if the store scope setting works
         $originalStore = $this->storeManager->getStore();
         foreach ($storesWithNosto as $store) {
             $batchCounter = 1;
             $nostoAccount = $this->nostoHelperAccount->findAccount($store);
             $this->storeManager->setCurrentStore($store);
             $productSearch = $this->nostoProductRepository->getByIds($uniqueProductIds);
+            if ($productSearch->getTotalCount() == 0) {
+                continue;
+            }
             $totalBatchCount = ceil($productSearch->getTotalCount()/self::$batchSize);
             $this->logger->info(
                 sprintf(
@@ -248,8 +258,13 @@ class Service
             $products = $productSearch->getItems();
             $currentBatchCount = 0;
             $op = new UpsertProduct($nostoAccount);
+            /* @var Product $product*/
             foreach ($products as $product) {
                 ++$currentBatchCount;
+                $key = array_search($product->getId(), $leftProducts);
+                if ($key >= 0) {
+                    unset($leftProducts[$key]);
+                }
                 $nostoProduct = $this->nostoProductBuilder->build(
                     $product,
                     $store
@@ -273,15 +288,17 @@ class Service
                             )
                         );
                         $this->nostoQueueRepository->deleteByProductIds($deleteQueue);
-                    } catch (NostoException $e) {
+                    } catch (\Exception $e) {
                         $this->logger->info(
                             sprintf(
-                                'Failed to send %d products (batch %d / %d) for store %s (%d)',
+                                'Failed to send %d products (batch %d / %d) for store %s (%d)' .
+                                ' Error was %s' . ,
                                 $currentBatchCount,
                                 $batchCounter,
                                 $totalBatchCount,
                                 $store->getName(),
-                                $store->getId()
+                                $store->getId(),
+                                $e->getMessage()
                             )
                         );
                         $this->logger->error($e->getMessage());
@@ -292,6 +309,64 @@ class Service
             }
             $this->storeManager->setCurrentStore($originalStore);
         }
+
+        if (count($leftProducts) > 0) {
+            $this->processDelete($leftProducts);
+        }
+    }
+
+    /**
+     * Sends API calls to Nosto to delete / discontinue products
+     *
+     * @param array $productIds
+     */
+    protected function processDelete(array $productIds)
+    {
+        $uniqueProductIds = array_unique($productIds);
+        $storesWithNosto = $this->getStoresWithNosto();
+        $totalCount = count($uniqueProductIds);
+        foreach ($storesWithNosto as $store) {
+            $batchCounter = 1;
+            $nostoAccount = $this->nostoHelperAccount->findAccount($store);
+            if ($nostoAccount instanceof Account === false) {
+                continue;
+            }
+            $totalBatchCount = ceil($totalCount/self::$batchSize);
+            $this->logger->info(
+                sprintf(
+                    'Updating total of %d unique products in %d batches for store %s',
+                    $totalCount,
+                    $totalBatchCount,
+                    $store->getName()
+                )
+            );
+            $currentBatchCount = 0;
+            // ToDo - Add DeleteProduct in PHP SDK & call delete
+            foreach ($uniqueProductIds as $productId) {
+                ++$currentBatchCount;
+                // $nostoProduct = $this->nostoProductBuilder->buildForDeletion($productId);
+                $deleteQueue[] = $productId;
+                if (($currentBatchCount > 0
+                        && $currentBatchCount % self::$batchSize == 0)
+                    ||  $currentBatchCount == $totalCount
+                ) {
+                    $this->logger->info(
+                        sprintf(
+                            'Omitting API call for product delete for %d' .
+                            ' products (batch %d / %d) to for store %s (%d)',
+                            $currentBatchCount,
+                            $batchCounter,
+                            $totalCount,
+                            $store->getName(),
+                            $store->getId()
+                        )
+                    );
+                    $this->nostoQueueRepository->deleteByProductIds($deleteQueue);
+                    $currentBatchCount = 0;
+                    ++$batchCounter;
+                }
+            }
+        }
     }
 
     /**
@@ -299,7 +374,7 @@ class Service
      *
      * @return array
      */
-    private function getStoresWithNosto()
+    protected function getStoresWithNosto()
     {
         $stores = $this->nostoHelperScope->getStores();
         $storesWithNosto = [];

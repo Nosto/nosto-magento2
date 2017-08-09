@@ -43,7 +43,6 @@
         <arguments>
             <argument name="commands" xsi:type="array">
                 <item name="syncproducts" xsi:type="object">Nosto\Tagging\Console\Command\SyncProducts</item>
-                <item name="synctmp" xsi:type="object">Nosto\Tagging\Console\Command\TmpSync</item>
             </argument>
         </arguments>
     </type>

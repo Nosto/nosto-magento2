@@ -399,4 +399,19 @@ class Builder
 
         return $value;
     }
+
+    /**
+     * Builds a product with required info for deletion
+     *
+     * @param int $productId
+     * @return \Nosto\Object\Product\Product
+     */
+    public function buildForDeletion($productId)
+    {
+        $nostoProduct = new \Nosto\Object\Product\Product();
+        $nostoProduct->setProductId((string)$productId);
+        $nostoProduct->setAvailability(ProductInterface::DISCONTINUED);
+
+        return $nostoProduct;
+    }
 }
