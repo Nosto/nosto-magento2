@@ -292,7 +292,7 @@ class Service
                         $this->logger->info(
                             sprintf(
                                 'Failed to send %d products (batch %d / %d) for store %s (%d)' .
-                                ' Error was %s' . ,
+                                ' Error was %s',
                                 $currentBatchCount,
                                 $batchCounter,
                                 $totalBatchCount,
