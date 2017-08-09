@@ -46,7 +46,7 @@ use Magento\Review\Model\Review as ReviewModel;
  * @package  Nosto_Tagging
  * @author   Nosto Solutions Ltd <magento@nosto.com>
  */
-class Review extends Update
+class Review extends Base
 {
     /**
      * @inheritdoc
