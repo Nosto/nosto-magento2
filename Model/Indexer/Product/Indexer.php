@@ -25,26 +25,20 @@ class Indexer implements IndexerActionInterface, MviewActionInterface
     private $productService;
     private $productRepository;
     private $searchCriteriaBuilder;
-    private $logger;
 
     /**
      * @param ProductService $productService
      * @param ProductRepository $productRepository
-     * @param LoggerInterface $logger
      */
     public function __construct(
         ProductService $productService,
         ProductRepository $productRepository,
-        SearchCriteriaBuilder $searchCriteriaBuilder,
-        LoggerInterface $logger
+        SearchCriteriaBuilder $searchCriteriaBuilder
 
     ) {
         $this->productService = $productService;
         $this->productRepository = $productRepository;
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;
-        $this->logger = $logger;
-
-        $this->logger->debug('Init Queue Indexer');
     }
 
     /**
@@ -52,8 +46,6 @@ class Indexer implements IndexerActionInterface, MviewActionInterface
      */
     public function executeFull()
     {
-        $this->logger->debug('Execute FULL');
-
         // Fetch all enabled products
         $searchCriteria = $this->searchCriteriaBuilder
             ->addFilter('status', Status::STATUS_ENABLED, 'eq')

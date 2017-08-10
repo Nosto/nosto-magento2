@@ -37,6 +37,7 @@
 namespace Nosto\Tagging\Model\Product;
 
 use Magento\Catalog\Model\Product;
+use Magento\Catalog\Model\ProductFactory;
 use Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable as ConfigurableProduct;
 use Magento\Store\Model\StoreManager;
 use Nosto\Object\Signup\Account;
@@ -60,6 +61,7 @@ class Service
 
     public static $batchSize = 50;
     public static $responseTimeOut = 500;
+    private $productUpdatesActive = null;
 
     private $nostoProductBuilder;
     private $logger;
@@ -70,6 +72,7 @@ class Service
     private $nostoProductRepository;
     private $nostoQueueFactory;
     private $storeManager;
+    private $productFactory;
 
     public $processed = [];
 
@@ -89,6 +92,7 @@ class Service
      * @param QueueRepository $nostoQueueRepository
      * @param QueueFactory $nostoQueueFactory
      * @param StoreManager $storeManager
+     * @param ProductFactory $productFactory
      */
     public function __construct(
         LoggerInterface $logger,
@@ -100,7 +104,8 @@ class Service
         NostoProductRepository\Proxy $nostoProductRepository,
         QueueRepository $nostoQueueRepository,
         QueueFactory $nostoQueueFactory,
-        StoreManager $storeManager
+        StoreManager $storeManager,
+        ProductFactory $productFactory
     )
     {
         $this->logger = $logger;
@@ -113,6 +118,7 @@ class Service
         $this->nostoQueueRepository = $nostoQueueRepository;
         $this->nostoQueueFactory = $nostoQueueFactory;
         $this->storeManager = $storeManager;
+        $this->productFactory = $productFactory;
 
         HttpRequest::$responseTimeout = self::$responseTimeOut;
         HttpRequest::buildUserAgent(
@@ -156,10 +162,8 @@ class Service
             $this->addToQueue($products->getItems());
         } else { // If the product id(s) were deleted repo doesn't return any products
             foreach ($ids as $productId) {
-                $queue = $this->nostoQueueFactory->create();
-                $queue->setProductId($productId);
-                $queue->setCreatedAt(new \DateTime('now'));
-                $this->nostoQueueRepository->save($queue);
+                $productStub = $this->productFactory->create(['id' => $productId]);
+                $this->addToQueue([$productStub]);
             }
         }
     }
@@ -171,37 +175,41 @@ class Service
      */
     public function addToQueue(array $products)
     {
-        $productCount = count($products);
-        $this->logger->info(
-            sprintf(
-                'Adding %d products to Nosto queue',
-                $productCount
-            )
-        );
-        foreach ($products as $product) {
-            $productsForQueue = [];
-            $parentProducts = $this->nostoProductRepository->resolveParentProducts($product);
-            if (!empty($parentProducts)) {
-                foreach ($parentProducts as $parentProduct) {
-                    $productsForQueue[] = $parentProduct;
+        if ($this->productUpdatesActive()) {
+            $productCount = count($products);
+            $this->logger->info(
+                sprintf(
+                    'Adding %d products to Nosto queue',
+                    $productCount
+                )
+            );
+            foreach ($products as $product) {
+                $productsForQueue = [];
+                $parentProducts = $this->nostoProductRepository->resolveParentProducts($product);
+                if (!empty($parentProducts)) {
+                    foreach ($parentProducts as $parentProduct) {
+                        $productsForQueue[] = $parentProduct;
+                    }
+                } else {
+                    $productsForQueue[] = $product;
                 }
-            } else {
-                $productsForQueue[] = $product;
-            }
 
-            foreach ($productsForQueue as $productForQueue) {
-                $queue = $this->nostoQueueFactory->create();
-                $queue->setProductId($productForQueue->getId());
-                $queue->setCreatedAt(new \DateTime('now'));
-                $this->nostoQueueRepository->save($queue);
+                foreach ($productsForQueue as $productForQueue) {
+                    $queue = $this->nostoQueueFactory->create();
+                    $queue->setProductId($productForQueue->getId());
+                    $queue->setCreatedAt(new \DateTime('now'));
+                    $this->nostoQueueRepository->save($queue);
+                }
             }
+            $this->logger->info(
+                sprintf(
+                    'Added %d products to Nosto queue',
+                    $productCount
+                )
+            );
+        } else {
+            $this->logger->debug('Product API updates are disabled for all store views');
         }
-        $this->logger->info(
-            sprintf(
-                'Added %d products to Nosto queue',
-                $productCount
-            )
-        );
     }
 
     /**
@@ -211,20 +219,22 @@ class Service
      */
     public function flushQueue()
     {
-        $queueEntries = $this->nostoQueueRepository->getAll();
-        $queueCount = $queueEntries->getTotalCount();
+        if ($this->productUpdatesActive()) {
+            $queueEntries = $this->nostoQueueRepository->getAll();
+            $queueCount = $queueEntries->getTotalCount();
 
-        $this->logger->info(
-            sprintf(
-                'Flushing %d products from Nosto queue',
-                $queueCount
-            )
-        );
-        $productIds = [];
-        foreach ($queueEntries->getItems() as $queueEntry) {
-            $productIds[] = $queueEntry->getProductId();
+            $this->logger->info(
+                sprintf(
+                    'Flushing %d products from Nosto queue',
+                    $queueCount
+                )
+            );
+            $productIds = [];
+            foreach ($queueEntries->getItems() as $queueEntry) {
+                $productIds[] = $queueEntry->getProductId();
+            }
+            $this->process($productIds);
         }
-        $this->process($productIds);
     }
 
     /**
@@ -234,9 +244,14 @@ class Service
      */
     protected function process(array $productIds)
     {
+        if (!$this->productUpdatesActive()) {
+            $this->logger->debug('Product API updates are disabled for all store views');
+
+            return;
+        }
         $uniqueProductIds = array_unique($productIds);
         $leftProducts = $uniqueProductIds;
-        $storesWithNosto = $this->getStoresWithNosto();
+        $storesWithNosto = $this->nostoHelperAccount->getStoresWithNosto();
         $originalStore = $this->storeManager->getStore();
         foreach ($storesWithNosto as $store) {
             $batchCounter = 1;
@@ -323,7 +338,7 @@ class Service
     protected function processDelete(array $productIds)
     {
         $uniqueProductIds = array_unique($productIds);
-        $storesWithNosto = $this->getStoresWithNosto();
+        $storesWithNosto = $this->nostoHelperAccount->getStoresWithNosto();
         $totalCount = count($uniqueProductIds);
         foreach ($storesWithNosto as $store) {
             $batchCounter = 1;
@@ -370,21 +385,24 @@ class Service
     }
 
     /**
-     * Returns an array of stores where Nosto is installed
+     * Checks if at least one of the store views has product updates active
      *
-     * @return array
+     * @return bool
      */
-    protected function getStoresWithNosto()
+    protected function productUpdatesActive()
     {
-        $stores = $this->nostoHelperScope->getStores();
-        $storesWithNosto = [];
-        foreach ($stores as $store) {
-            $nostoAccount = $this->nostoHelperAccount->findAccount($store);
-            if ($nostoAccount instanceof Account) {
-                $storesWithNosto[] = $store;
+        if ($this->productUpdatesActive === null) {
+            // Loop through stores and check that at least one store has product
+            // updates via API active
+            $this->productUpdatesActive = false;
+            foreach ($this->nostoHelperAccount->getStoresWithNosto() as $store) {
+                if ($this->nostoHelperData->isProductUpdatesEnabled($store)) {
+                    $this->productUpdatesActive = true;
+                    break;
+                }
             }
         }
 
-        return $storesWithNosto;
+        return $this->productUpdatesActive;
     }
 }
