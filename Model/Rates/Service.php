@@ -88,6 +88,7 @@ class Service
             }
 
             try {
+                /** @noinspection PhpParamsInspection */
                 $this->logger->info(sprintf('Found %d currencies for store ', count($rates)));
                 $service = new SyncRates($account);
                 return $service->update($rates);

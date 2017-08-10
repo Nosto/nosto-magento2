@@ -64,12 +64,13 @@ class CartTagging extends HashedTagging implements SectionSourceInterface
     /** @noinspection PhpUndefinedClassInspection */
     /**
      * @param CartHelper $cartHelper
-     * @param NostoCartBuilder $nostoCartBuilder
-     * @param NostoHelperScope $nostoScopeHelper
      * @param CookieManagerInterface $cookieManager
      * @param LoggerInterface $logger
      * @param DateTime $date
+     * @param NostoCartBuilder $nostoCartBuilder
+     * @param NostoHelperScope $nostoScopeHelper
      * @param NostoCustomerFactory $nostoCustomerFactory
+     * @param NostoRestoreCartUrlBuilder $nostoRestoreCartUrlBuilder
      */
     public function __construct(
         CartHelper $cartHelper,

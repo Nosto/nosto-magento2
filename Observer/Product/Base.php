@@ -99,6 +99,7 @@ abstract class Base implements ObserverInterface
      */
     protected function extractProduct(Observer $observer)
     {
+        /** @noinspection PhpUndefinedMethodInspection */
         return $observer->getProduct();
     }
 }

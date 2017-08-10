@@ -40,6 +40,7 @@ use Magento\Catalog\Api\CategoryRepositoryInterface;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\Product\Gallery\ReadHandler as GalleryReadHandler;
 use Magento\Framework\Event\ManagerInterface;
+use Magento\Framework\Phrase;
 use Magento\Review\Model\ReviewFactory;
 use Magento\Store\Model\Store;
 use Nosto\NostoException;
@@ -389,7 +390,7 @@ class Builder
                     $value = implode(",", $frontendValue);
                 } elseif (is_scalar($frontendValue)) {
                     $value = $frontendValue;
-                } elseif ($frontendValue instanceof \Magento\Framework\Phrase) {
+                } elseif ($frontendValue instanceof Phrase) {
                     $value = (string)$frontendValue;
                 }
             }

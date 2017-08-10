@@ -97,6 +97,8 @@ class Builder
     }
 
     /**
+     * @param Quote $quote
+     *
      * @return NostoCustomer|null
      */
     private function updateNostoId(Quote $quote)

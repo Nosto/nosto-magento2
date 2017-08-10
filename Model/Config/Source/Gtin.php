@@ -48,6 +48,7 @@ class Gtin extends Selector
 {
     public function filterCollection(Collection $collection)
     {
+        /** @noinspection PhpParamsInspection */
         $collection->setFrontendInputTypeFilter(['text', 'textarea']);
     }
 

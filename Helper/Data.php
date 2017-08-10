@@ -332,7 +332,7 @@ class Data extends AbstractHelper
     /**
      * Get tag1 mapping attributes
      *
-     * @param $tagId tag1, tag2 or tag3
+     * @param string $tagId tag1, tag2 or tag3
      * @param StoreInterface $store the store model or null.
      * @return null|array of attributes
      */

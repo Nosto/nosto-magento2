@@ -170,6 +170,7 @@ class QueueRepository implements ProductQueueRepositoryInterface
     {
         /* @var QuoteCollection $collection */
         $collection = $this->queueFactory->create()->getCollection();
+        /** @noinspection PhpParamsInspection */
         $this->addFiltersToCollection($searchCriteria, $collection);
         $collection->load();
         $searchResult = $this->queueSearchResultsFactory->create();

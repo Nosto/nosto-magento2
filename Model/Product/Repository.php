@@ -87,7 +87,7 @@ class Repository
      * Gets products by product ids
      *
      * @param array $ids
-     * @return SearchResultInterface
+     * @return Product[]
      */
     public function getByIds(array $ids)
     {
@@ -129,7 +129,7 @@ class Repository
      * Returns the variations from
      *
      * @param Product $product
-     * @return mixed|null
+     * @return Product[]|null
      */
     private function getParentsFromCache(Product $product)
     {

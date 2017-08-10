@@ -29,6 +29,7 @@ class Indexer implements IndexerActionInterface, MviewActionInterface
     /**
      * @param ProductService $productService
      * @param ProductRepository $productRepository
+     * @param SearchCriteriaBuilder $searchCriteriaBuilder
      */
     public function __construct(
         ProductService $productService,

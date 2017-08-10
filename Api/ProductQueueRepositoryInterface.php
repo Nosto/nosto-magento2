@@ -51,7 +51,6 @@ interface ProductQueueRepositoryInterface
     public function save(ProductQueueInterface $productQueue);
 
     /**
-    /**
      * Get info about queue entry by product id
      *
      * @param int $id

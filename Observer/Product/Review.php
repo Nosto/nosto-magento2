@@ -54,6 +54,7 @@ class Review extends Base
     protected function extractProduct(Observer $observer)
     {
         /* @var ReviewModel $review */
+        /** @noinspection PhpUndefinedMethodInspection */
         $review = $observer->getObject();
         $product = null;
         if ($this->dataHelper->isRatingTaggingEnabled()

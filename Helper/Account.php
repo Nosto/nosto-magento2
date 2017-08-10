@@ -84,6 +84,7 @@ class Account extends AbstractHelper
      * @param Context $context the context.
      * @param WriterInterface $appConfig the app config writer.
      * @param Data $nostoHelperData
+     * @param Scope $nostoHelperScope
      */
     public function __construct(
         Context $context,
