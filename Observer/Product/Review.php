@@ -56,7 +56,9 @@ class Review extends Base
         /* @var ReviewModel $review */
         $review = $observer->getObject();
         $product = null;
-        if ($review instanceof ReviewModel) {
+        if ($this->dataHelper->isRatingTaggingEnabled()
+            && $review instanceof ReviewModel
+        ) {
             $product = $this->productRepository->getById($review->getEntityPkValue());
         }
 

@@ -49,6 +49,7 @@ abstract class Base implements ObserverInterface
     protected $moduleManager;
     protected $productService;
     protected $productRepository;
+    protected $dataHelper;
 
     /**
      * Constructor.
@@ -56,15 +57,18 @@ abstract class Base implements ObserverInterface
      * @param ModuleManager $moduleManager
      * @param NostoProductService $productService
      * @param ProductRepository $productRepository
+     * @param NostoHelperData $dataHelper
      */
     public function __construct(
         ModuleManager $moduleManager,
         NostoProductService $productService,
-        ProductRepository $productRepository
+        ProductRepository $productRepository,
+        NostoHelperData $dataHelper
     ) {
         $this->productService = $productService;
         $this->moduleManager = $moduleManager;
         $this->productRepository = $productRepository;
+        $this->dataHelper = $dataHelper;
     }
 
     /**
@@ -83,7 +87,7 @@ abstract class Base implements ObserverInterface
             $product = $this->extractProduct($observer);
 
             if ($product instanceof Product && $product->getId()) {
-                $this->productService->addToQueue([$product]);
+                $this->productService->update([$product]);
             }
         }
     }
