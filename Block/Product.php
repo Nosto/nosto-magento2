@@ -136,7 +136,11 @@ class Product extends View
     public function getNostoProduct()
     {
         $store = $this->nostoHelperScope->getStore();
-        return $this->nostoProductBuilder->build($this->getProduct(), $store);
+        return $this->nostoProductBuilder->build(
+            $this->getProduct(),
+            $store,
+            NostoProductBuilder::NOSTO_SCOPE_TAGGING
+        );
     }
 
     /**
