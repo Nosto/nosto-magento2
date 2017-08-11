@@ -57,6 +57,8 @@ use Psr\Log\LoggerInterface;
 class Builder
 {
     const CUSTOMIZED_TAGS = ['tag1', 'tag2', 'tag3'];
+    const NOSTO_SCOPE_TAGGING = 'tagging';
+    const NOSTO_SCOPE_API = 'api';
 
     private $nostoDataHelper;
     private $nostoPriceHelper;
@@ -120,10 +122,14 @@ class Builder
     /**
      * @param Product $product
      * @param Store $store
+     * @param string $nostoScope
      * @return \Nosto\Object\Product\Product
      */
-    public function build(Product $product, Store $store)
-    {
+    public function build(
+        Product $product,
+        Store $store,
+        $nostoScope = self::NOSTO_SCOPE_API
+    ) {
         $nostoProduct = new \Nosto\Object\Product\Product();
 
         try {
@@ -162,7 +168,9 @@ class Builder
             $nostoProduct->setAvailability($this->buildAvailability($product));
             $nostoProduct->setCategories($this->nostoCategoryBuilder->buildCategories($product));
             $nostoProduct->setAlternateImageUrls($this->buildAlternativeImages($product));
-            if ($this->nostoDataHelper->isInventoryTaggingEnabled($store)) {
+            if ($nostoScope == self::NOSTO_SCOPE_API
+                && $this->nostoDataHelper->isInventoryTaggingEnabled($store)
+            ) {
                 $nostoProduct->setInventoryLevel($this->nostoStockHelper->getQty($product));
             }
             if ($this->nostoDataHelper->isRatingTaggingEnabled($store)) {
@@ -190,7 +198,9 @@ class Builder
                 $nostoProduct->setBrand($this->getAttributeValue($product, $brandAttribute));
             }
             $marginAttribute = $this->nostoDataHelper->getMarginAttribute($store);
-            if ($product->hasData($marginAttribute)) {
+            if ($nostoScope == self::NOSTO_SCOPE_API
+                && $product->hasData($marginAttribute)
+            ) {
                 $nostoProduct->setSupplierCost($this->getAttributeValue($product, $marginAttribute));
             }
             $gtinAttribute = $this->nostoDataHelper->getGtinAttribute($store);

@@ -223,7 +223,11 @@ abstract class Base implements ObserverInterface
      */
     public function buildProduct(Product $product, Store $store)
     {
-        return $this->nostoProductBuilder->build($product, $store);
+        return $this->nostoProductBuilder->build(
+            $product,
+            $store,
+            NostoProductBuilder::NOSTO_SCOPE_API
+        );
     }
 
     /**
