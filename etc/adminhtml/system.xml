@@ -134,6 +134,13 @@
                     </comment>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
+                <field id="low_stock_indication" translate="label comment" type="select" sortOrder="50"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enable Low Stock Indication</label>
+                    <comment><![CDATA[Indicate in Nosto product tags if product's stock is running low]]>
+                    </comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
             </group>
             <group id="attributes" translate="label" type="text" sortOrder="40" showInDefault="1"
                    showInWebsite="1" showInStore="1">
