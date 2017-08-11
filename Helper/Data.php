@@ -103,6 +103,11 @@ class Data extends AbstractHelper
     const XML_PATH_PRODUCT_UPDATES = 'nosto/flags/product_updates';
 
     /**
+     * Path to the configuration object that stores the preference for low stock tagging
+     */
+    const XML_PATH_LOW_STOCK_INDICATION = 'nosto/flags/low_stock_indication';
+
+    /**
      * Path to the configuration object for customized tags
      */
     const XML_PATH_TAG = 'nosto/attributes/';
@@ -266,6 +271,17 @@ class Data extends AbstractHelper
     public function isProductUpdatesEnabled(StoreInterface $store = null)
     {
         return (bool)$this->getStoreConfig(self::XML_PATH_PRODUCT_UPDATES, $store);
+    }
+
+    /**
+     * Returns if low stock indication should be tagged
+     *
+     * @param StoreInterface $store the store model or null.
+     * @return bool the configuration value
+     */
+    public function isLowStockIndicationEnabled(StoreInterface $store = null)
+    {
+        return (bool)$this->getStoreConfig(self::XML_PATH_LOW_STOCK_INDICATION, $store);
     }
 
     /**
