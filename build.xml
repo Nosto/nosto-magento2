@@ -107,7 +107,7 @@
         </exec>
     </target>
 
-    <target name="phpcs" depends="phpcbf">
+    <target name="phpcs">
         <exec executable="./vendor/bin/phpcs" passthru="true">
             <arg value="--colors"/>
             <arg value="--report-width=auto"/>
