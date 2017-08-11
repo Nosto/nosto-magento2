@@ -39,7 +39,6 @@ namespace Nosto\Tagging\Setup;
 use Magento\Framework\DB\Adapter\AdapterInterface;
 use Magento\Framework\DB\Ddl\Table;
 use Magento\Framework\Setup\SchemaSetupInterface;
-use Magento\Paypal\Model\Pro;
 use Nosto\Tagging\Api\Data\CustomerInterface;
 use Nosto\Tagging\Api\Data\ProductQueueInterface;
 use Nosto\Tagging\Model\ResourceModel\Customer;
