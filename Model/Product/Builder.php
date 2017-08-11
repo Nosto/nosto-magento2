@@ -197,7 +197,7 @@ class Builder
             if ($product->hasData($gtinAttribute)) {
                 $nostoProduct->setGtin($this->getAttributeValue($product, $marginAttribute));
             }
-            if (($tags = $this->buildTags($product)) !== []) {
+            if (($tags = $this->buildTags($product, $store)) !== []) {
                 $nostoProduct->setTag1($tags);
             }
 
@@ -352,9 +352,10 @@ class Builder
 
     /**
      * @param Product $product
+     * @param Store $store
      * @return array
      */
-    public function buildTags(Product $product)
+    public function buildTags(Product $product, Store $store)
     {
         $tags = [];
 
@@ -362,7 +363,9 @@ class Builder
             $tags[] = ProductInterface::ADD_TO_CART;
         }
 
-        if ($this->lowStockHelper->build($product)) {
+        if ($this->nostoDataHelper->isLowStockIndicationEnabled($store)
+            && $this->lowStockHelper->build($product)
+        ) {
             $tags[] = ProductInterface::LOW_STOCK;
         }
 
