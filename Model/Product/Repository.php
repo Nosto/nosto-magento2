@@ -36,12 +36,14 @@
 
 namespace Nosto\Tagging\Model\Product;
 
+use Magento\Catalog\Api\Data\ProductSearchResultsInterface;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\ProductRepository;
+use Magento\Framework\Api\FilterBuilder;
+use Magento\Framework\Api\Search\FilterGroupBuilder;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\Data\SearchResultInterface;
 use Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable as ConfigurableProduct;
-use Magento\Store\Model\Store;
 use Nosto\Tagging\Helper\Data;
 use Magento\Catalog\Model\Product\Type;
 
@@ -58,6 +60,8 @@ class Repository
     private $productRepository;
     private $searchCriteriaBuilder;
     private $configurableProduct;
+    private $filterGroupBuilder;
+    private $filterBuilder;
 
     /**
      * Constructor to instantiating the reindex command. This constructor uses proxy classes for
@@ -70,29 +74,65 @@ class Repository
      * @param SearchCriteriaBuilder $searchCriteriaBuilder
      * @param Data $nostoDataHelper
      * @param ConfigurableProduct $configurableProduct
+     * @param FilterBuilder $filterBuilder
+     * @param FilterGroupBuilder $filterGroupBuilder
      */
     public function __construct(
         ProductRepository\Proxy $productRepository,
         SearchCriteriaBuilder $searchCriteriaBuilder,
         Data $nostoDataHelper,
-        ConfigurableProduct $configurableProduct
+        ConfigurableProduct $configurableProduct,
+        FilterBuilder $filterBuilder,
+        FilterGroupBuilder $filterGroupBuilder
     ) {
         $this->productRepository = $productRepository;
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;
         $this->nostoDataHelper = $nostoDataHelper;
         $this->configurableProduct = $configurableProduct;
+        $this->filterGroupBuilder = $filterGroupBuilder;
+        $this->filterBuilder = $filterBuilder;
     }
 
     /**
      * Gets products by product ids
      *
      * @param array $ids
-     * @return Product[]
+     * @return ProductSearchResultsInterface
      */
     public function getByIds(array $ids)
     {
         $searchCriteria = $this->searchCriteriaBuilder
             ->addFilter('entity_id', $ids, 'in')
+            ->create();
+        $products = $this->productRepository->getList($searchCriteria);
+
+        return $products;
+    }
+
+    /**
+     * Gets products that have scheduled pricing active
+     *
+     * @return ProductSearchResultsInterface
+     */
+    public function getWithActivePricingSchedule()
+    {
+        $today = new \DateTime("now");
+        $filterEndDateGreater = $this->filterBuilder
+            ->setField('special_to_date')
+            ->setValue($today->format('Y-m-d ' . '00:00:00'))
+            ->setConditionType('gt')
+            ->create();
+        $filterEndDateNotSet = $this->filterBuilder
+            ->setField('special_to_date')
+            ->setValue(['null' => true])
+            ->setConditionType('gt')
+            ->create();
+
+        $filterGroup = $this->filterGroupBuilder->setFilters([$filterEndDateGreater, $filterEndDateNotSet])->create();
+
+        $searchCriteria = $this->searchCriteriaBuilder
+            ->setFilterGroups([$filterGroup])
+            ->addFilter('special_from_date', $today->format('Y-m-d') . ' 00:00:00', 'gte')
             ->create();
         $products = $this->productRepository->getList($searchCriteria);
 
