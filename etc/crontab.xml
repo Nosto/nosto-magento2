@@ -4,7 +4,10 @@
         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Cron:etc/crontab.xsd">
     <group id="default">
         <job name="nosto_exchange_rates" instance="Nosto\Tagging\Cron\Rates" method="execute">
-            <schedule>* * * * *</schedule>
+            <schedule>4 * * * *</schedule>
+        </job>
+        <job name="nosto_update_prices" instance="Nosto\Tagging\Cron\Prices" method="execute">
+            <schedule>1 01,13 * * *</schedule>
         </job>
     </group>
 </config>
