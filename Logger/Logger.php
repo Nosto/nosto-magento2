@@ -44,8 +44,8 @@ class Logger extends MonologLogger
     public function exception(\Exception $exception)
     {
         NewRelic::reportException($exception);
-        return parent::error($exception->getMessage());
+
+        return parent::error($exception->__toString());
     }
 
 }
-
