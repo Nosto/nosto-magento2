@@ -53,7 +53,7 @@ use Nosto\Tagging\Model\Product\Sku\Collection as NostoSkuCollection;
 use Nosto\Tagging\Model\Product\Url\Builder as NostoUrlBuilder;
 use Nosto\Tagging\Model\Product\Tags\LowStock as LowStockHelper;
 use Nosto\Types\Product\ProductInterface;
-use Psr\Log\LoggerInterface;
+use Nosto\Tagging\Logger\Logger as NostoLogger;
 
 class Builder
 {
@@ -82,7 +82,7 @@ class Builder
      * @param NostoStockHelper $stockHelper
      * @param NostoSkuCollection $skuCollection
      * @param CategoryRepositoryInterface $categoryRepository
-     * @param LoggerInterface $logger
+     * @param NostoLogger $logger
      * @param ManagerInterface $eventManager
      * @param ReviewFactory $reviewFactory
      * @param GalleryReadHandler $galleryReadHandler
@@ -97,7 +97,7 @@ class Builder
         NostoStockHelper $stockHelper,
         NostoSkuCollection $skuCollection,
         CategoryRepositoryInterface $categoryRepository,
-        LoggerInterface $logger,
+        NostoLogger $logger,
         ManagerInterface $eventManager,
         ReviewFactory $reviewFactory,
         GalleryReadHandler $galleryReadHandler,
@@ -215,7 +215,7 @@ class Builder
             //update customized tag1, Tag2 and Tag3
             $this->amendAttributeTags($product, $nostoProduct, $store);
         } catch (NostoException $e) {
-            $this->logger->error($e->__toString());
+            $this->logger->exception($e);
         }
         $this->eventManager->dispatch(
             'nosto_product_load_after',
@@ -250,7 +250,7 @@ class Builder
                     $addTagMethodName = 'add' . $tag;
                     $nostoProduct->$addTagMethodName(sprintf('%s:%s', $productAttribute, $attributeValue));
                 } catch (\Exception $e) {
-                    $this->logger->error($e->__toString());
+                    $this->logger->exception($e);
                 }
             }
         }
@@ -408,7 +408,7 @@ class Builder
                 }
             }
         } catch (\Exception $e) {
-            $this->logger->error($e->__toString());
+            $this->logger->exception($e);
         }
 
         return $value;

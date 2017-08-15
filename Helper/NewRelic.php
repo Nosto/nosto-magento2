@@ -34,55 +34,32 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Meta\Account\Sso;
+namespace Nosto\Tagging\Helper;
 
-use Magento\Backend\Model\Auth\Session;
-use Magento\Framework\Event\ManagerInterface;
-use Nosto\NostoException;
-use Nosto\Object\Signup\Owner;
-use Nosto\Tagging\Logger\Logger as NostoLogger;
-
-class Builder
+/**
+ * New Relic wrapper utility
+ */
+class NewRelic
 {
-    private $logger;
-    private $backendAuthSession;
-    private $eventManager;
-
     /**
-     * @param Session $backendAuthSession
-     * @param NostoLogger $logger
-     * @param ManagerInterface $eventManager
+     * Checks if New Relic extension is loaded
+     *
+     * @return bool
      */
-    public function __construct(
-        Session $backendAuthSession,
-        NostoLogger $logger,
-        ManagerInterface $eventManager
-    ) {
-        $this->backendAuthSession = $backendAuthSession;
-        $this->logger = $logger;
-        $this->eventManager = $eventManager;
+    public static function newRelicAvailable()
+    {
+        return extension_loaded('newrelic');
     }
 
     /**
-     * @return Owner
+     * Reports an exception to new relic
+     *
+     * @param \Exception $exception
      */
-    public function build()
+    public static function reportException(\Exception $exception)
     {
-        $owner = new Owner();
-
-        try {
-            $user = $this->backendAuthSession->getUser();
-            if ($user !== null) {
-                $owner->setFirstName($user->getFirstName());
-                $owner->setLastName($user->getLastName());
-                $owner->setEmail($user->getEmail());
-            }
-        } catch (NostoException $e) {
-            $this->logger->exception($e);
+        if (self::newRelicAvailable()) {
+            newrelic_notice_error($exception->getMessage(), $exception);
         }
-
-        $this->eventManager->dispatch('nosto_sso_load_after', ['sso' => $owner]);
-
-        return $owner;
     }
 }

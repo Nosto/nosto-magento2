@@ -50,7 +50,7 @@ use Nosto\Object\Order\Buyer;
 use Nosto\Object\Order\OrderStatus;
 use Nosto\Tagging\Helper\Price as NostoPriceHelper;
 use Nosto\Tagging\Model\Order\Item\Builder as NostoOrderItemBuilder;
-use Psr\Log\LoggerInterface;
+use Nosto\Tagging\Logger\Logger as NostoLogger;
 
 class Builder
 {
@@ -64,7 +64,7 @@ class Builder
 
     /** @noinspection PhpUndefinedClassInspection */
     /**
-     * @param LoggerInterface $logger
+     * @param NostoLogger $logger
      * @param SalesRuleFactory $salesRuleFactory
      * @param NostoPriceHelper $priceHelper
      * @param NostoOrderItemBuilder $nostoOrderItemBuilder
@@ -72,7 +72,7 @@ class Builder
      * @param ManagerInterface $eventManager
      */
     public function __construct(
-        LoggerInterface $logger,
+        NostoLogger $logger,
         /** @noinspection PhpUndefinedClassInspection */
         SalesRuleFactory $salesRuleFactory,
         NostoPriceHelper $priceHelper,
@@ -168,7 +168,7 @@ class Builder
                 $nostoOrder->addPurchasedItems($nostoItem);
             }
         } catch (Exception $e) {
-            $this->logger->error($e->__toString());
+            $this->logger->exception($e);
         }
 
         $this->eventManager->dispatch('nosto_order_load_after', ['order' => $nostoOrder, 'magentoOrder' => $order]);

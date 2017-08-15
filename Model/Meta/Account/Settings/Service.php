@@ -42,7 +42,7 @@ use Magento\Store\Model\Store;
 use Nosto\Operation\UpdateSettings;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Model\Meta\Account\Settings\Builder as NostoSettingsBuilder;
-use Psr\Log\LoggerInterface;
+use Nosto\Tagging\Logger\Logger as NostoLogger;
 
 class Service
 {
@@ -52,13 +52,13 @@ class Service
     private $nostoSettingsBuilder;
 
     /**
-     * @param LoggerInterface $logger
+     * @param NostoLogger $logger
      * @param ManagerInterface $eventManager
      * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoSettingsBuilder $nostoSettingsBuilder
      */
     public function __construct(
-        LoggerInterface $logger,
+        NostoLogger $logger,
         ManagerInterface $eventManager,
         NostoHelperAccount $nostoHelperAccount,
         NostoSettingsBuilder $nostoSettingsBuilder
@@ -84,11 +84,13 @@ class Service
                 $service = new UpdateSettings($account);
                 return $service->update($settings);
             } catch (Exception $e) {
-                $this->logger->error($e->__toString());
+                $this->logger->exception($e);
             }
         } else {
-            $this->logger->info('Skipping update; an account doesn\'t exist for ' .
-                $store->getName());
+            $this->logger->info(
+                'Skipping update; an account doesn\'t exist for ' .
+                $store->getName()
+            );
         }
 
         return false;

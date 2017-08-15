@@ -44,7 +44,7 @@ use Nosto\NostoException;
 use Nosto\Object\Iframe;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Url as NostoHelperUrl;
-use Psr\Log\LoggerInterface;
+use Nosto\Tagging\Logger\Logger as NostoLogger;
 
 class Builder
 {
@@ -60,7 +60,7 @@ class Builder
      * @param NostoHelperData $nostoHelperData
      * @param Session $backendAuthSession
      * @param ResolverInterface $localeResolver
-     * @param LoggerInterface $logger
+     * @param NostoLogger $logger
      * @param ManagerInterface $eventManager
      */
     public function __construct(
@@ -68,7 +68,7 @@ class Builder
         NostoHelperData $nostoHelperData,
         Session $backendAuthSession,
         ResolverInterface $localeResolver,
-        LoggerInterface $logger,
+        NostoLogger $logger,
         ManagerInterface $eventManager
     ) {
         $this->nostoHelperUrl = $nostoHelperUrl;
@@ -108,7 +108,7 @@ class Builder
             $metaData->setPreviewUrlCart($this->nostoHelperUrl->getPreviewUrlCart($store));
             $metaData->setPreviewUrlFront($this->nostoHelperUrl->getPreviewUrlFront($store));
         } catch (NostoException $e) {
-            $this->logger->error($e->__toString());
+            $this->logger->exception($e);
         }
 
         $this->eventManager->dispatch('nosto_iframe_load_after', ['iframe' => $metaData]);

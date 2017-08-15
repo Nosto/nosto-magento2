@@ -47,7 +47,7 @@ use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Model\Meta\Oauth\Builder as NostoOauthBuilder;
 use Nosto\Types\Signup\AccountInterface;
-use Psr\Log\LoggerInterface;
+use Nosto\Tagging\Logger\Logger as NostoLogger;
 
 class Index extends Action
 {
@@ -60,7 +60,7 @@ class Index extends Action
 
     /**
      * @param Context $context
-     * @param LoggerInterface $logger
+     * @param NostoLogger $logger
      * @param NostoHelperScope $nostoHelperScope
      * @param UrlInterface $urlBuilder
      * @param NostoHelperAccount $nostoHelperAccount
@@ -68,7 +68,7 @@ class Index extends Action
      */
     public function __construct(
         Context $context,
-        LoggerInterface $logger,
+        NostoLogger $logger,
         NostoHelperScope $nostoHelperScope,
         UrlInterface $urlBuilder,
         NostoHelperAccount $nostoHelperAccount,
@@ -158,7 +158,7 @@ class Index extends Action
      */
     public function logError(Exception $e)
     {
-        $this->logger->error($e->__toString());
+        $this->logger->exception($e);
     }
 
     /**

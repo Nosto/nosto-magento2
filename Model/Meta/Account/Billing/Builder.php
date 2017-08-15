@@ -40,7 +40,7 @@ use Magento\Framework\Event\ManagerInterface;
 use Magento\Store\Model\Store;
 use Nosto\NostoException;
 use Nosto\Object\Signup\Billing;
-use Psr\Log\LoggerInterface;
+use Nosto\Tagging\Logger\Logger as NostoLogger;
 
 class Builder
 {
@@ -48,10 +48,10 @@ class Builder
     private $eventManager;
 
     /**
-     * @param LoggerInterface $logger
+     * @param NostoLogger $logger
      * @param ManagerInterface $eventManager
      */
-    public function __construct(LoggerInterface $logger, ManagerInterface $eventManager)
+    public function __construct(NostoLogger $logger, ManagerInterface $eventManager)
     {
         $this->logger = $logger;
         $this->eventManager = $eventManager;
@@ -71,7 +71,7 @@ class Builder
                 $metaData->setCountry($country);
             }
         } catch (NostoException $e) {
-            $this->logger->error($e->__toString());
+            $this->logger->exception($e);
         }
 
         $this->eventManager->dispatch('nosto_account_billing_load_after', ['billing' => $metaData]);

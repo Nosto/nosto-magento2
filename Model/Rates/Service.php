@@ -42,7 +42,7 @@ use Magento\Store\Model\Store;
 use Nosto\Operation\SyncRates;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Model\Rates\Builder as NostoExchangeRatesBuilder;
-use Psr\Log\LoggerInterface;
+use Nosto\Tagging\Logger\Logger as NostoLogger;
 
 class Service
 {
@@ -52,13 +52,13 @@ class Service
     private $nostoHelperAccount;
 
     /**
-     * @param LoggerInterface $logger
+     * @param NostoLogger $logger
      * @param ManagerInterface $eventManager
      * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoExchangeRatesBuilder $nostoExchangeRatesBuilder
      */
     public function __construct(
-        LoggerInterface $logger,
+        NostoLogger $logger,
         ManagerInterface $eventManager,
         NostoHelperAccount $nostoHelperAccount,
         NostoExchangeRatesBuilder $nostoExchangeRatesBuilder
@@ -81,7 +81,7 @@ class Service
         if ($account = $this->nostoHelperAccount->findAccount($store)) {
             $rates = $this->nostoExchangeRatesBuilder->build($store);
             if (empty($rates->getRates())) {
-                $this->logger->info('Skipping update; no multi-currency configured for ' .
+                $this->logger->debug('Skipping update; no multi-currency configured for ' .
                     $store->getName());
 
                 return false;
@@ -89,15 +89,23 @@ class Service
 
             try {
                 /** @noinspection PhpParamsInspection */
-                $this->logger->info(sprintf('Found %d currencies for store ', count($rates)));
+                $this->logger->info(
+                    sprintf(
+                        'Found %d currencies for store ',
+                        count($rates)
+                    )
+                );
                 $service = new SyncRates($account);
+
                 return $service->update($rates);
             } catch (Exception $e) {
-                $this->logger->error($e->__toString());
+                $this->logger->exception($e);
             }
         } else {
-            $this->logger->info('Skipping update; an account doesn\'t exist for ' .
-                $store->getName());
+            $this->logger->debug(
+                'Skipping update; an account doesn\'t exist for ' .
+                $store->getName()
+            );
         }
 
         return false;
