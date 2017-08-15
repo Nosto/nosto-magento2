@@ -34,55 +34,18 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Meta\Account\Sso;
+namespace Nosto\Tagging\Logger;
 
-use Magento\Backend\Model\Auth\Session;
-use Magento\Framework\Event\ManagerInterface;
-use Nosto\NostoException;
-use Nosto\Object\Signup\Owner;
-use Nosto\Tagging\Logger\Logger as NostoLogger;
+use Monolog\Logger as MonologLogger;
+use Nosto\Tagging\Helper\NewRelic;
 
-class Builder
+class Logger extends MonologLogger
 {
-    private $logger;
-    private $backendAuthSession;
-    private $eventManager;
-
-    /**
-     * @param Session $backendAuthSession
-     * @param NostoLogger $logger
-     * @param ManagerInterface $eventManager
-     */
-    public function __construct(
-        Session $backendAuthSession,
-        NostoLogger $logger,
-        ManagerInterface $eventManager
-    ) {
-        $this->backendAuthSession = $backendAuthSession;
-        $this->logger = $logger;
-        $this->eventManager = $eventManager;
-    }
-
-    /**
-     * @return Owner
-     */
-    public function build()
+    public function exception(\Exception $exception)
     {
-        $owner = new Owner();
-
-        try {
-            $user = $this->backendAuthSession->getUser();
-            if ($user !== null) {
-                $owner->setFirstName($user->getFirstName());
-                $owner->setLastName($user->getLastName());
-                $owner->setEmail($user->getEmail());
-            }
-        } catch (NostoException $e) {
-            $this->logger->exception($e);
-        }
-
-        $this->eventManager->dispatch('nosto_sso_load_after', ['sso' => $owner]);
-
-        return $owner;
+        NewRelic::reportException($exception);
+        return parent::error($exception->getMessage());
     }
+
 }
+

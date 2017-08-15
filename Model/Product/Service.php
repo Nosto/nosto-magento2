@@ -43,12 +43,11 @@ use Magento\Store\Model\StoreManager;
 use Nosto\Object\Signup\Account;
 use Nosto\Operation\UpsertProduct;
 use Nosto\Request\Http\HttpRequest;
-use Nosto\Tagging\Api\Data\ProductQueueInterface;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
-use Psr\Log\LoggerInterface;
+use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Product\Repository as NostoProductRepository;
 
 /**
@@ -82,7 +81,7 @@ class Service
      * compile command is run.
      * Not using the proxy classes will lead to a "Area code not set" exception being thrown in the
      * compile phase.
-     * @param LoggerInterface $logger
+     * @param NostoLogger $logger
      * @param NostoHelperScope\Proxy $nostoHelperScope
      * @param Builder $nostoProductBuilder
      * @param ConfigurableProduct $configurableProduct
@@ -95,7 +94,7 @@ class Service
      * @param ProductFactory $productFactory
      */
     public function __construct(
-        LoggerInterface $logger,
+        NostoLogger $logger,
         NostoHelperScope\Proxy $nostoHelperScope,
         NostoProductBuilder $nostoProductBuilder,
         ConfigurableProduct $configurableProduct,
@@ -304,7 +303,7 @@ class Service
                         );
                         $this->nostoQueueRepository->deleteByProductIds($deleteQueue);
                     } catch (\Exception $e) {
-                        $this->logger->info(
+                        $this->logger->error(
                             sprintf(
                                 'Failed to send %d products (batch %d / %d) for store %s (%d)' .
                                 ' Error was %s',
@@ -316,7 +315,7 @@ class Service
                                 $e->getMessage()
                             )
                         );
-                        $this->logger->error($e->getMessage());
+                        $this->logger->exception($e->getMessage());
                     }
                     $currentBatchCount = 0;
                     ++$batchCounter;

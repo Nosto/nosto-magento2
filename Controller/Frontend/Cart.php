@@ -51,7 +51,7 @@ use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Model\CustomerFactory as NostoCustomerFactory;
 use Nosto\Tagging\Model\Customer as NostoCustomer;
 use Nosto\NostoException;
-use Psr\Log\LoggerInterface;
+use Nosto\Tagging\Logger\Logger as NostoLogger;
 
 /*
  * Controller class for handling cart restoration
@@ -80,7 +80,7 @@ class Cart extends Action
      * @param Session $checkoutSession
      * @param QuoteFactory $quoteFactory
      * @param ResourceQuote $quoteResource
-     * @param LoggerInterface $logger
+     * @param NostoLogger $logger
      * @param NostoHelperUrl $nostoUrlHelper
      * @param NostoHelperScope $nostoScopeHelper
      * @param NostoCustomerFactory $nostoCustomerFactory
@@ -91,7 +91,7 @@ class Cart extends Action
         Session $checkoutSession,
         QuoteFactory $quoteFactory,
         ResourceQuote $quoteResource,
-        LoggerInterface $logger,
+        NostoLogger $logger,
         NostoHelperUrl $nostoUrlHelper,
         NostoHelperScope $nostoScopeHelper,
         NostoCustomerFactory $nostoCustomerFactory
@@ -127,7 +127,7 @@ class Cart extends Action
                         $this->checkoutSession->setQuoteId($quote->getId());
                         $redirectUrl = $this->nostoUrlHelper->getUrlCart($store, $currentUrl);
                     } catch (\Exception $e) {
-                        $this->logger->error($e->__toString());
+                        $this->logger->exception($e);
                         $this->messageManager->addErrorMessage('Sorry, we could not find your cart');
                     }
                 }

@@ -11,7 +11,6 @@ use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\Indexer\ActionInterface as IndexerActionInterface;
 use Magento\Framework\Mview\ActionInterface as MviewActionInterface;
 use Nosto\Tagging\Model\Product\Service as ProductService;
-use Psr\Log\LoggerInterface;
 
 /**
  * An indexer for Nosto product sync
