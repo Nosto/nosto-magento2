@@ -47,5 +47,4 @@ class Logger extends MonologLogger
 
         return parent::error($exception->__toString());
     }
-
 }
