@@ -84,29 +84,27 @@ class Prices
     {
         // This cron should be only ran for Magento 2 CE. Enterprise edition's staging
         // functionality works out-of-the-box with custom indexer
-        if (strtolower($this->nostoHelperData->getPlatformEdition()) !== 'community') {
-
-            return;
-        }
-
-        $this->logger->info('Updating advanced pricing');
-        $products = $this->nostoProductRepository->getWithActivePricingSchedule();
-        if ($products->getTotalCount() > 0) {
-            try {
-                $this->nostoProductService->update($products->getItems());
-                $this->logger->debug(
-                    sprintf(
-                        'Found %d products',
-                        $products->getTotalCount()
-                    )
-                );
-            } catch (\Exception $e) {
-                $this->logger->error(
-                    sprintf(
-                        'Failed to update products. Error was %s',
-                        $e->getMessage()
-                    )
-                );
+        if (strtolower($this->nostoHelperData->getPlatformEdition()) === 'community') {
+            $this->logger->info('Updating advanced pricing');
+            $products
+                = $this->nostoProductRepository->getWithActivePricingSchedule();
+            if ($products->getTotalCount() > 0) {
+                try {
+                    $this->nostoProductService->update($products->getItems());
+                    $this->logger->debug(
+                        sprintf(
+                            'Found %d products',
+                            $products->getTotalCount()
+                        )
+                    );
+                } catch (\Exception $e) {
+                    $this->logger->error(
+                        sprintf(
+                            'Failed to update products. Error was %s',
+                            $e->getMessage()
+                        )
+                    );
+                }
             }
         }
     }
