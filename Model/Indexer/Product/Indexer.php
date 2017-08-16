@@ -18,7 +18,7 @@ use Nosto\Tagging\Model\Product\Service as ProductService;
  */
 class Indexer implements IndexerActionInterface, MviewActionInterface
 {
-    const HARD_LIMIT_FOR_PRODUCTS = 1000;
+    const HARD_LIMIT_FOR_PRODUCTS = 10000000;
     const INDEXER_ID = 'nosto_product_sync';
 
     private $productService;
