@@ -34,7 +34,6 @@ class Indexer implements IndexerActionInterface, MviewActionInterface
         ProductService $productService,
         ProductRepository $productRepository,
         SearchCriteriaBuilder $searchCriteriaBuilder
-
     ) {
         $this->productService = $productService;
         $this->productRepository = $productRepository;

@@ -132,7 +132,7 @@ class CartTagging extends HashedTagging implements SectionSourceInterface
             try {
                 $data['restore_cart_url'] = $this->nostoRestoreCartUrlBuilder
                     ->build($this->getQuote(), $store);
-            } catch(\Exception $e) {
+            } catch (\Exception $e) {
                 $this->logger->exception($e);
             }
         }

@@ -54,7 +54,7 @@ use Magento\Catalog\Model\Product\Type;
  */
 class Repository
 {
-    private $cache = array();
+    private $cache = [];
 
     private $nostoDataHelper;
     private $productRepository;

@@ -105,8 +105,8 @@ class Service
         QueueFactory $nostoQueueFactory,
         StoreManager $storeManager,
         ProductFactory $productFactory
-    )
-    {
+    ) {
+    
         $this->logger = $logger;
         $this->nostoHelperScope = $nostoHelperScope;
         $this->nostoProductBuilder = $nostoProductBuilder;
@@ -287,7 +287,7 @@ class Service
                 $op->addProduct($nostoProduct);
                 if (($currentBatchCount > 0
                     && $currentBatchCount % self::$batchSize == 0)
-                    ||  $currentBatchCount == $productSearch->getTotalCount()
+                    || $currentBatchCount == $productSearch->getTotalCount()
                 ) {
                     try {
                         $op->upsert();
@@ -362,7 +362,7 @@ class Service
                 $deleteQueue[] = $productId;
                 if (($currentBatchCount > 0
                         && $currentBatchCount % self::$batchSize == 0)
-                    ||  $currentBatchCount == $totalCount
+                    || $currentBatchCount == $totalCount
                 ) {
                     $this->logger->info(
                         sprintf(
