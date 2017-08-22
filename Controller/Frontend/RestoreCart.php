@@ -36,7 +36,6 @@
 
 namespace Nosto\Tagging\Controller\Frontend;
 
-
 /**
  * Class for backwards compatibility with Nosto Magento 2 extension version 2.1.0
  *

@@ -42,7 +42,6 @@ use Magento\Framework\Indexer\IndexerRegistry;
 use Magento\Catalog\Model\Product\Action;
 use Magento\Framework\Model\AbstractModel;
 
-
 /**
  * Observer class to handle update on save mode
  */

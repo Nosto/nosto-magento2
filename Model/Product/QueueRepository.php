@@ -69,8 +69,8 @@ class QueueRepository implements ProductQueueRepositoryInterface
         QueueCollectionFactory $queueCollectionFactory,
         QueueSearchResultsFactory $queueSearchResultsFactory,
         SearchCriteriaBuilder $searchCriteriaBuilder
-    )
-    {
+    ) {
+    
         $this->queueResource = $queueResource;
         $this->queueFactory = $queueFactory;
         $this->queueCollectionFactory = $queueCollectionFactory;

@@ -46,7 +46,8 @@ use Nosto\Tagging\Model\ResourceModel\Product\Queue as ProductQueue;
 
 abstract class Core
 {
-    protected function createCustomerTable(SchemaSetupInterface $setup) {
+    protected function createCustomerTable(SchemaSetupInterface $setup)
+    {
         $table = $setup->getConnection()
             ->newTable($setup->getTable(Customer::TABLE_NAME))
             ->addColumn(
@@ -108,7 +109,8 @@ abstract class Core
         $setup->getConnection()->createTable($table);
     }
 
-    protected function createProductQueueTable(SchemaSetupInterface $setup) {
+    protected function createProductQueueTable(SchemaSetupInterface $setup)
+    {
         $table = $setup->getConnection()
             ->newTable($setup->getTable(ProductQueue::TABLE_NAME))
             ->addColumn(
