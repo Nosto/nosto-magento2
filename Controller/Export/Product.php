@@ -85,6 +85,10 @@ class Product extends Base
 
     /**
      * @suppress PhanParamSignatureMismatch
+     * @param Store $store
+     * @param int $limit
+     * @param int $offset
+     * @return \Nosto\Object\AbstractCollection|\Nosto\Object\Product\ProductCollection
      */
     public function buildExportCollection(Store $store, $limit = 100, $offset = 0)
     {
@@ -93,6 +97,9 @@ class Product extends Base
 
     /**
      * @suppress PhanParamSignatureMismatch
+     * @param Store $store
+     * @param $id
+     * @return \Nosto\Object\AbstractCollection|\Nosto\Object\Product\ProductCollection
      */
     public function buildSingleExportCollection(Store $store, $id)
     {

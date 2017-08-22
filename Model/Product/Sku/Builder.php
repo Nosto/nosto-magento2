@@ -46,7 +46,7 @@ use Nosto\Object\Product\Sku;
 use Nosto\Tagging\Helper\Currency as CurrencyHelper;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Price as NostoPriceHelper;
-use Psr\Log\LoggerInterface;
+use Nosto\Tagging\Logger\Logger as NostoLogger;
 
 class Builder
 {
@@ -60,7 +60,7 @@ class Builder
     /**
      * @param NostoHelperData $nostoHelperData
      * @param NostoPriceHelper $priceHelper
-     * @param LoggerInterface $logger
+     * @param NostoLogger $logger
      * @param ManagerInterface $eventManager
      * @param GalleryReadHandler $galleryReadHandler
      * @param CurrencyHelper $nostoCurrencyHelper
@@ -68,7 +68,7 @@ class Builder
     public function __construct(
         NostoHelperData $nostoHelperData,
         NostoPriceHelper $priceHelper,
-        LoggerInterface $logger,
+        NostoLogger $logger,
         ManagerInterface $eventManager,
         GalleryReadHandler $galleryReadHandler,
         CurrencyHelper $nostoCurrencyHelper
@@ -120,11 +120,11 @@ class Builder
                     $code = $attribute->getProductAttribute()->getAttributeCode();
                     $nostoSku->addCustomField($code, $product->getAttributeText($code));
                 } catch (NostoException $e) {
-                    $this->logger->error($e->__toString());
+                    $this->logger->exception($e);
                 }
             }
         } catch (NostoException $e) {
-            $this->logger->error($e->__toString());
+            $this->logger->exception($e);
         }
 
         $this->eventManager->dispatch('nosto_sku_load_after', ['sku' => $nostoSku, 'magentoProduct' => $product]);

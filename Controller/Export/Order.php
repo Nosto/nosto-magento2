@@ -78,7 +78,12 @@ class Order extends Base
     }
 
     /**
+     *
      * @suppress PhanParamSignatureMismatch
+     * @param Store $store
+     * @param int $limit
+     * @param int $offset
+     * @return \Nosto\Object\AbstractCollection|\Nosto\Object\Order\OrderCollection
      */
     public function buildExportCollection(Store $store, $limit = 100, $offset = 0)
     {
@@ -87,6 +92,9 @@ class Order extends Base
 
     /**
      * @suppress PhanParamSignatureMismatch
+     * @param Store $store
+     * @param int $id
+     * @return \Nosto\Object\AbstractCollection|\Nosto\Object\Order\OrderCollection
      */
     public function buildSingleExportCollection(Store $store, $id)
     {

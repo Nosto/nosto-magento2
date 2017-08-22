@@ -48,6 +48,7 @@ class Brand extends Selector
 {
     public function filterCollection(Collection $collection)
     {
+        /** @noinspection PhpParamsInspection */
         $collection->setFrontendInputTypeFilter(['text', 'select', 'textarea']);
         $collection->addFieldToFilter('attribute_code', ['nin' => ['sku']]);
     }

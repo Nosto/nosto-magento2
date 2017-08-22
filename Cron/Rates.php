@@ -39,7 +39,7 @@ namespace Nosto\Tagging\Cron;
 
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Model\Rates\Service as NostoRatesService;
-use Psr\Log\LoggerInterface;
+use Nosto\Tagging\Logger\Logger as NostoLogger;
 
 /**
  * Cronjob class that periodically updates exchange-rates to Nosto for each of the store views,
@@ -56,12 +56,12 @@ class Rates
     /**
      * Rates constructor.
      *
-     * @param LoggerInterface $logger
+     * @param NostoLogger $logger
      * @param NostoHelperScope $nostoHelperScope
      * @param NostoRatesService $nostoRatesService
      */
     public function __construct(
-        LoggerInterface $logger,
+        NostoLogger $logger,
         NostoHelperScope $nostoHelperScope,
         NostoRatesService $nostoRatesService
     ) {

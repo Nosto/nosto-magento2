@@ -43,9 +43,8 @@ use Magento\Framework\Stdlib\CookieManagerInterface;
 use Magento\Framework\Stdlib\DateTime\DateTime;
 use Nosto\Tagging\Model\Customer as NostoCustomer;
 use Nosto\Tagging\Model\CustomerFactory as NostoCustomerFactory;
-use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Url as NostoHelperUrl;
-use Psr\Log\LoggerInterface;
+use Nosto\Tagging\Logger\Logger as NostoLogger;
 
 class Builder
 {
@@ -58,7 +57,7 @@ class Builder
 
     /**
      * Builder constructor.
-     * @param LoggerInterface $logger
+     * @param NostoLogger $logger
      * @param CookieManagerInterface $cookieManager
      * @param EncryptorInterface $encryptor
      * @param NostoCustomerFactory $nostoCustomerFactory
@@ -66,7 +65,7 @@ class Builder
      * @param DateTime $date
      */
     public function __construct(
-        LoggerInterface $logger,
+        NostoLogger $logger,
         CookieManagerInterface $cookieManager,
         EncryptorInterface $encryptor,
         NostoCustomerFactory $nostoCustomerFactory,
@@ -97,6 +96,8 @@ class Builder
     }
 
     /**
+     * @param Quote $quote
+     *
      * @return NostoCustomer|null
      */
     private function updateNostoId(Quote $quote)
@@ -141,7 +142,7 @@ class Builder
 
             return $nostoCustomer;
         } catch (\Exception $e) {
-            $this->logger->error($e->__toString());
+            $this->logger->exception($e);
         }
 
         return null;

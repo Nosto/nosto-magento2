@@ -47,7 +47,7 @@ use Nosto\Tagging\Model\Cart\Builder as NostoCartBuilder;
 use Nosto\Tagging\Model\Customer as NostoCustomer;
 use Nosto\Tagging\Model\CustomerFactory as NostoCustomerFactory;
 use Nosto\Tagging\Model\Cart\Restore\Builder as NostoRestoreCartUrlBuilder;
-use Psr\Log\LoggerInterface;
+use Nosto\Tagging\Logger\Logger as NostoLogger;
 
 class CartTagging extends HashedTagging implements SectionSourceInterface
 {
@@ -64,17 +64,18 @@ class CartTagging extends HashedTagging implements SectionSourceInterface
     /** @noinspection PhpUndefinedClassInspection */
     /**
      * @param CartHelper $cartHelper
+     * @param CookieManagerInterface $cookieManager
+     * @param NostoLogger $logger
+     * @param DateTime $date
      * @param NostoCartBuilder $nostoCartBuilder
      * @param NostoHelperScope $nostoScopeHelper
-     * @param CookieManagerInterface $cookieManager
-     * @param LoggerInterface $logger
-     * @param DateTime $date
      * @param NostoCustomerFactory $nostoCustomerFactory
+     * @param NostoRestoreCartUrlBuilder $nostoRestoreCartUrlBuilder
      */
     public function __construct(
         CartHelper $cartHelper,
         CookieManagerInterface $cookieManager,
-        LoggerInterface $logger,
+        NostoLogger $logger,
         DateTime $date,
         NostoCartBuilder $nostoCartBuilder,
         NostoHelperScope $nostoScopeHelper,
@@ -131,8 +132,8 @@ class CartTagging extends HashedTagging implements SectionSourceInterface
             try {
                 $data['restore_cart_url'] = $this->nostoRestoreCartUrlBuilder
                     ->build($this->getQuote(), $store);
-            } catch(\Exception $e) {
-                $this->logger->error($e->__toString());
+            } catch (\Exception $e) {
+                $this->logger->exception($e);
             }
         }
 

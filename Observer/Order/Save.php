@@ -48,7 +48,7 @@ use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Model\Customer as NostoCustomer;
 use Nosto\Tagging\Model\CustomerFactory;
 use Nosto\Tagging\Model\Order\Builder as NostoOrderBuilder;
-use Psr\Log\LoggerInterface;
+use Nosto\Tagging\Logger\Logger as NostoLogger;
 
 /**
  * Class Save
@@ -71,7 +71,7 @@ class Save implements ObserverInterface
      * @param NostoHelperData $nostoHelperData
      * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoHelperScope $nostoHelperScope
-     * @param LoggerInterface $logger
+     * @param NostoLogger $logger
      * @param ModuleManager $moduleManager
      * @param CustomerFactory $customerFactory
      * @param NostoOrderBuilder $orderBuilder
@@ -80,7 +80,7 @@ class Save implements ObserverInterface
         NostoHelperData $nostoHelperData,
         NostoHelperAccount $nostoHelperAccount,
         NostoHelperScope $nostoHelperScope,
-        LoggerInterface $logger,
+        NostoLogger $logger,
         ModuleManager $moduleManager,
         /** @noinspection PhpUndefinedClassInspection */
         CustomerFactory $customerFactory,

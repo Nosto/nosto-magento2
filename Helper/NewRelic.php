@@ -34,47 +34,32 @@
  *
  */
 
-namespace Nosto\Tagging\Observer\Product;
-
-use Magento\Catalog\Model\Product;
-use Magento\Store\Model\Store;
-use Nosto\Operation\UpsertProduct;
-use Nosto\Types\Product\ProductInterface;
+namespace Nosto\Tagging\Helper;
 
 /**
- * Delete event observer model.
- * Used to interact with Magento events.
- *
- * @category Nosto
- * @package  Nosto_Tagging
- * @author   Nosto Solutions Ltd <magento@nosto.com>
+ * New Relic wrapper utility
  */
-class Delete extends Base
+class NewRelic
 {
     /**
-     * @inheritdoc
+     * Checks if New Relic extension is loaded
+     *
+     * @return bool
      */
-    public function doRequest(UpsertProduct $operation)
+    public static function newRelicAvailable()
     {
-        $operation->upsert();
+        return extension_loaded('newrelic');
     }
 
     /**
-     * @inheritdoc
+     * Reports an exception to new relic
+     *
+     * @param \Exception $exception
      */
-    public function validateProduct(Product $product)
+    public static function reportException(\Exception $exception)
     {
-        return true;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function buildProduct(Product $product, Store $store)
-    {
-        $product = $this->nostoProductBuilder->build($product, $store);
-        $product->setAvailability(ProductInterface::DISCONTINUED);
-
-        return $product;
+        if (self::newRelicAvailable()) {
+            newrelic_notice_error($exception->getMessage(), $exception);
+        }
     }
 }

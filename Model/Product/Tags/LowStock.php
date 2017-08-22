@@ -67,5 +67,4 @@ class LowStock
             return false;
         }
     }
-
 }

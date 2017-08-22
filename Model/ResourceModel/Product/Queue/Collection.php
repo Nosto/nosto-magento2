@@ -34,34 +34,22 @@
  *
  */
 
-namespace Nosto\Tagging\Observer\Product;
+namespace Nosto\Tagging\Model\ResourceModel\Product\Queue;
 
-use Magento\Catalog\Model\Product;
-use Nosto\Operation\UpsertProduct;
+use Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection;
 
-/**
- * Upsert event observer model.
- * Used to interact with Magento events.
- *
- * @category Nosto
- * @package  Nosto_Tagging
- * @author   Nosto Solutions Ltd <magento@nosto.com>
- */
-class Update extends Base
+class Collection extends AbstractCollection
 {
     /**
-     * @inheritdoc
+     * Define resource model
+     *
+     * @return void
      */
-    public function doRequest(UpsertProduct $operation)
+    public function _construct()
     {
-        $operation->upsert();
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function validateProduct(Product $product)
-    {
-        return $product->isVisibleInSiteVisibility();
+        $this->_init(
+            'Nosto\Tagging\Model\Product\Queue',
+            'Nosto\Tagging\Model\ResourceModel\Product\Queue'
+        );
     }
 }

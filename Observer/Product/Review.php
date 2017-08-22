@@ -46,7 +46,7 @@ use Magento\Review\Model\Review as ReviewModel;
  * @package  Nosto_Tagging
  * @author   Nosto Solutions Ltd <magento@nosto.com>
  */
-class Review extends Update
+class Review extends Base
 {
     /**
      * @inheritdoc
@@ -54,9 +54,12 @@ class Review extends Update
     protected function extractProduct(Observer $observer)
     {
         /* @var ReviewModel $review */
+        /** @noinspection PhpUndefinedMethodInspection */
         $review = $observer->getObject();
         $product = null;
-        if ($review instanceof ReviewModel) {
+        if ($this->dataHelper->isRatingTaggingEnabled()
+            && $review instanceof ReviewModel
+        ) {
             $product = $this->productRepository->getById($review->getEntityPkValue());
         }
 
