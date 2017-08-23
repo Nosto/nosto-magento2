@@ -1,5 +1,9 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 2.3.1
+* Define arguments for custom logger 
+* Handle non-existent categories in product category builder
+
 ### 2.3.0
 Improvements
 * Introduce update queue and custom indexer for Nosto product updates
