@@ -50,6 +50,6 @@ class Customer extends AbstractDb
      */
     public function _construct()
     {
-        $this->_init(self::TABLE_NAME, CustomerInterface::NOSTO_ID);
+        $this->_init(self::TABLE_NAME, CustomerInterface::CUSTOMER_ID);
     }
 }
