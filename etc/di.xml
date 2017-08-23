@@ -42,4 +42,13 @@
     <type name="Magento\Catalog\Model\ResourceModel\Product">
         <plugin name="nostoProductIndexer" type="Nosto\Tagging\Model\Indexer\Product\Observer"/>
     </type>
+    <type name="Nosto\Tagging\Logger\Logger">
+        <arguments>
+            <argument name="name" xsi:type="string">nosto</argument>
+            <argument name="handlers" xsi:type="array">
+                <item name="system" xsi:type="object">Magento\Framework\Logger\Handler\System</item>
+                <item name="debug" xsi:type="object">Magento\Framework\Logger\Handler\Debug</item>
+            </argument>
+        </arguments>
+    </type>
 </config>

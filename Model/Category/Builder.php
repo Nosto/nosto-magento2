@@ -40,6 +40,7 @@ use Magento\Catalog\Api\CategoryRepositoryInterface;
 use Magento\Catalog\Model\Category;
 use Magento\Catalog\Model\Product;
 use Magento\Framework\Event\ManagerInterface;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Nosto\NostoException;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 
@@ -92,7 +93,11 @@ class Builder
             $data = [];
             $path = $category->getPath();
             foreach (explode('/', $path) as $categoryId) {
-                $category = $this->categoryRepository->get($categoryId);
+                try {
+                    $category = $this->categoryRepository->get($categoryId);
+                } catch (NoSuchEntityException $noSuchEntityException) {
+                    continue;
+                }
                 if ($category instanceof Category
                     && $category->getLevel() > 1
                     && !empty($category->getName())
