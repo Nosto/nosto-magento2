@@ -3,6 +3,7 @@ All notable changes to this project will be documented in this file. This projec
 ### 2.3.1
 * Define arguments for custom logger 
 * Handle non-existent categories in product category builder
+* Move the second recommendation slot under the search results on search results page
 
 ### 2.3.0
 Improvements
