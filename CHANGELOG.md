@@ -1,5 +1,8 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 2.3.2
+* Fix Nosto customer saving 
+
 ### 2.3.1
 * Define arguments for custom logger 
 * Handle non-existent categories in product category builder
