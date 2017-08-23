@@ -55,7 +55,7 @@
                 </arguments>
             </block>
             <block class="Nosto\Tagging\Block\Element" name="nosto.page.search2"
-                   after="nosto.page.search1" template="Nosto_Tagging::element.phtml">
+                   after="search.result" template="Nosto_Tagging::element.phtml">
                 <arguments>
                     <argument name="nostoId" xsi:type="string">nosto-page-search2</argument>
                 </arguments>
