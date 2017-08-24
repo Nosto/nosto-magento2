@@ -1,0 +1,56 @@
+#!/bin/bash -x
+
+# Turn on monitor mode, required by job control
+set -m
+
+# Start MySQL
+service mysql start
+
+# Install Magento 2 if it's not already installed
+if [ ! -f /var/www/html/community-edition/.installed ]; then
+  echo "Installing Magento 2"
+  mysql -e "GRANT ALL ON *.* TO 'root'@'localhost' IDENTIFIED BY 'root'"
+  mysql -h localhost -uroot -proot -e "CREATE SCHEMA IF NOT EXISTS magento2"
+  cd /var/www/html/community-edition
+  bin/magento setup:install \
+    --timezone "Europe/Helsinki" \
+    --currency "EUR" \
+    --db-host "localhost" \
+    --db-name "magento2" \
+    --db-user "root" \
+    --db-password "root" \
+    --base-url "http://localhost/community-edition/" \
+    --use-rewrites 1 \
+    --use-secure 0 \
+    --base-url-secure "" \
+    --use-secure-admin 0 \
+    --admin-firstname "Admin" \
+    --admin-lastname "Admin" \
+    --admin-email "devnull@xxxnotarealdomain.com" \
+    --admin-user "admin" \
+    --admin-password "Admin12345" \
+    --backend-frontname "admin"
+
+  mysql -h localhost -uroot -proot -e "INSERT INTO magento2.core_config_data (config_id, scope, scope_id, path, value) VALUES (null, 'default', 0, 'dev/static/sign', 0);"
+
+  composer update --no-dev
+  composer require --update-no-dev nosto/module-nostotagging:@stable
+  bin/magento module:enable --clear-static-content Nosto_Tagging
+  cd /var/www/html/sample-data/dev/tools/
+  php -f build-sample-data.php -- --ce-source="/var/www/html/community-edition"
+  cd /var/www/html/community-edition
+  bin/magento setup:upgrade
+  bin/magento setup:di:compile
+  bin/magento setup:static-content:deploy
+  bin/magento deploy:mode:set --skip-compilation production
+  chown -R www-data:www-data /var/www/html/community-edition/
+  chown -R www-data:www-data /var/www/html/sample-data/
+  # Remove illegal Options definition
+  sed -i '/Options -MultiViews/d' /var/www/html/community-edition/pub/static/.htaccess
+  touch /var/www/html/community-edition/.installed
+else
+  echo "Magento 2 is installed"
+fi
+
+# Start Apache on foreground
+apachectl -D FOREGROUND
