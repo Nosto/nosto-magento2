@@ -315,7 +315,7 @@ class Service
                                 $e->getMessage()
                             )
                         );
-                        $this->logger->exception($e->getMessage());
+                        $this->logger->exception($e);
                     }
                     $currentBatchCount = 0;
                     ++$batchCounter;
