@@ -1,5 +1,8 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 2.3.3
+* Fix exception handling bug 
+
 ### 2.3.2
 * Fix Nosto customer saving 
 
