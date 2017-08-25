@@ -35,34 +35,30 @@
   -->
 
 <!--suppress XmlUnboundNsPrefix -->
-<!--suppress XmlPathReference -->
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xsi:noNamespaceSchemaLocation="../../../../../../../lib/internal/Magento/Framework/View/Layout/etc/page_configuration.xsd">
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
     <body>
         <!-- Adds 2 content placeholders; 1 before and 1 after the search result -->
         <referenceContainer name="content">
             <block class="Nosto\Tagging\Block\PageType" name="nosto.page.type.search" after="-"
                    template="Nosto_Tagging::pagetype.phtml">
-                <action method="setData">
-                    <argument name="name" xsi:type="string">page_type</argument>
-                    <argument name="value" xsi:type="string">search</argument>
-                </action>
+                <arguments>
+                    <argument name="page_type" xsi:type="string">search</argument>
+                </arguments>
             </block>
-            <block class="Nosto\Tagging\Block\Search" name="nosto.search"
+            <block class="Nosto\Tagging\Block\Search" name="nosto.search" after="-"
                    template="Nosto_Tagging::search.phtml"/>
             <block class="Nosto\Tagging\Block\Element" name="nosto.page.search1"
                    before="search.result" template="Nosto_Tagging::element.phtml">
-                <action method="setData">
-                    <argument name="name" xsi:type="string">nostoId</argument>
-                    <argument name="value" xsi:type="string">nosto-page-search1</argument>
-                </action>
+                <arguments>
+                    <argument name="nostoId" xsi:type="string">nosto-page-search1</argument>
+                </arguments>
             </block>
             <block class="Nosto\Tagging\Block\Element" name="nosto.page.search2"
-                   after="nosto.page.search1" template="Nosto_Tagging::element.phtml">
-                <action method="setData">
-                    <argument name="name" xsi:type="string">nostoId</argument>
-                    <argument name="value" xsi:type="string">nosto-page-search2</argument>
-                </action>
+                   after="search.result" template="Nosto_Tagging::element.phtml">
+                <arguments>
+                    <argument name="nostoId" xsi:type="string">nosto-page-search2</argument>
+                </arguments>
             </block>
         </referenceContainer>
     </body>

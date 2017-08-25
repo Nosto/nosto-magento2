@@ -47,7 +47,7 @@ use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Currency as NostoHelperCurrency;
 use Nosto\Tagging\Model\Meta\Account\Billing\Builder as NostoBillingBuilder;
 use Nosto\Tagging\Model\Meta\Account\Settings\Currencies\Builder as NostoCurrenciesBuilder;
-use Psr\Log\LoggerInterface;
+use Nosto\Tagging\Logger\Logger as NostoLogger;
 
 class Builder
 {
@@ -67,7 +67,7 @@ class Builder
      * @param NostoBillingBuilder $nostoAccountBillingMetaBuilder
      * @param NostoCurrenciesBuilder $nostoCurrenciesBuilder
      * @param ResolverInterface $localeResolver
-     * @param LoggerInterface $logger
+     * @param NostoLogger $logger
      * @param ManagerInterface $eventManager
      */
     public function __construct(
@@ -76,7 +76,7 @@ class Builder
         NostoBillingBuilder $nostoAccountBillingMetaBuilder,
         NostoCurrenciesBuilder $nostoCurrenciesBuilder,
         ResolverInterface $localeResolver,
-        LoggerInterface $logger,
+        NostoLogger $logger,
         ManagerInterface $eventManager
     ) {
         $this->nostoHelperData = $nostoHelperData;
@@ -125,15 +125,19 @@ class Builder
             $lang = substr($this->localeResolver->getLocale(), 0, 2);
             $metaData->setOwnerLanguageCode($lang);
             $metaData->setOwner($accountOwner);
-            $metaData->setDefaultVariantId(
-                $this->nostoHelperCurrency->getTaggingCurrency($store)->getCode());
+            if ($this->nostoHelperCurrency->getCurrencyCount($store) > 1) {
+                $metaData->setDefaultVariantId(
+                    $this->nostoHelperCurrency->getTaggingCurrency($store)
+                        ->getCode()
+                );
+            }
 
             $billing = $this->accountBillingMetaBuilder->build($store);
             $metaData->setBillingDetails($billing);
 
             $metaData->setDetails($signupDetails);
         } catch (NostoException $e) {
-            $this->logger->error($e->__toString());
+            $this->logger->exception($e);
         }
 
         $this->eventManager->dispatch('nosto_account_load_after', ['account' => $metaData]);

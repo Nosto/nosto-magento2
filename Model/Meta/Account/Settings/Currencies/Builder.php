@@ -36,14 +36,13 @@
 
 namespace Nosto\Tagging\Model\Meta\Account\Settings\Currencies;
 
-use Exception;
 use Magento\Directory\Model\CurrencyFactory;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\Locale\Bundle\DataBundle;
 use Magento\Framework\Locale\ResolverInterface as LocaleResolver;
 use Magento\Store\Model\Store;
 use Nosto\Object\Format;
-use Psr\Log\LoggerInterface;
+use Nosto\Tagging\Logger\Logger as NostoLogger;
 
 class Builder
 {
@@ -53,13 +52,13 @@ class Builder
     private $localeResolver;
 
     /**
-     * @param LoggerInterface $logger
+     * @param NostoLogger $logger
      * @param ManagerInterface $eventManager
      * @param CurrencyFactory $currencyFactory
      * @param LocaleResolver $localeResolver
      */
     public function __construct(
-        LoggerInterface $logger,
+        NostoLogger $logger,
         ManagerInterface $eventManager,
         CurrencyFactory $currencyFactory,
         LocaleResolver $localeResolver
@@ -132,8 +131,8 @@ class Builder
                     );
                 }
             }
-        } catch (Exception $e) {
-            $this->logger->error($e->__toString());
+        } catch (\Exception $e) {
+            $this->logger->exception($e);
         }
 
         $this->eventManager->dispatch('nosto_currencies_load_after', ['currencies' => $currencies]);

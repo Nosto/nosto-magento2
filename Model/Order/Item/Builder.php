@@ -42,28 +42,23 @@ use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\ObjectManagerInterface;
 use Magento\Sales\Model\Order\Item;
 use Nosto\Object\Cart\LineItem;
-use Psr\Log\LoggerInterface;
 
 class Builder
 {
-    private $logger;
     private $objectManager;
     private $eventManager;
 
     /**
      * Constructor.
      *
-     * @param LoggerInterface $logger
      * @param ObjectManagerInterface $objectManager
      * @param ManagerInterface $eventManager
      */
     public function __construct(
-        LoggerInterface $logger,
         ObjectManagerInterface $objectManager,
         ManagerInterface $eventManager
     ) {
         $this->objectManager = $objectManager;
-        $this->logger = $logger;
         $this->eventManager = $eventManager;
     }
 
@@ -93,7 +88,12 @@ class Builder
                 break;
         }
         try {
-            $price = $item->getBasePrice() + $item->getBaseTaxAmount() - $item->getBaseDiscountAmount();
+            $lineDiscount = 0;
+            if ($item->getBaseDiscountAmount() > 0) {
+                // baseDiscountAmount contains the discount for the whole row
+                $lineDiscount = $item->getBaseDiscountAmount() / $item->getQtyOrdered();
+            }
+            $price = $item->getBasePrice() + $item->getBaseTaxAmount() - $lineDiscount;
             // The item prices are always in base currency, convert to order currency if non base currency
             // is used for the order
             if ($order->getBaseCurrencyCode() !== $order->getOrderCurrencyCode()) {

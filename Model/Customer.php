@@ -138,4 +138,20 @@ class Customer extends AbstractModel implements CustomerInterface
     {
         $this->_init('Nosto\Tagging\Model\ResourceModel\Customer');
     }
+
+    /**
+     * @inheritdoc
+     */
+    public function getRestoreCartHash()
+    {
+        return $this->getData(self::RESTORE_CART_HASH);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setRestoreCartHash($restoreCartHash)
+    {
+        return $this->setData(self::RESTORE_CART_HASH, $restoreCartHash);
+    }
 }

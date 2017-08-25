@@ -49,6 +49,8 @@ use Nosto\Request\Api\Token;
 use Nosto\Tagging\Helper\Data as NostoHelper;
 use Nosto\Types\Signup\AccountInterface;
 use Nosto\Object\Signup\Account as NostoSignupAccount;
+use Nosto\Tagging\Helper\Data as NostoHelperData;
+use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 
 /**
  * NostoHelperAccount helper class for common tasks related to Nosto accounts.
@@ -73,22 +75,30 @@ class Account extends AbstractHelper
     private $config;
     private $moduleManager;
     private $logger;
+    private $nostoHelperData;
+    private $nostoHelperScope;
 
     /**
      * Constructor.
      *
      * @param Context $context the context.
      * @param WriterInterface $appConfig the app config writer.
+     * @param Data $nostoHelperData
+     * @param Scope $nostoHelperScope
      */
     public function __construct(
         Context $context,
-        WriterInterface $appConfig
+        WriterInterface $appConfig,
+        NostoHelperData $nostoHelperData,
+        NostoHelperScope $nostoHelperScope
     ) {
         parent::__construct($context);
 
         $this->config = $appConfig;
         $this->moduleManager = $context->getModuleManager();
         $this->logger = $context->getLogger();
+        $this->nostoHelperData = $nostoHelperData;
+        $this->nostoHelperScope = $nostoHelperScope;
     }
 
     /**
@@ -256,5 +266,24 @@ class Account extends AbstractHelper
         }
 
         return $tokens;
+    }
+
+    /**
+     * Returns an array of stores where Nosto is installed
+     *
+     * @return Store[]
+     */
+    public function getStoresWithNosto()
+    {
+        $stores = $this->nostoHelperScope->getStores();
+        $storesWithNosto = [];
+        foreach ($stores as $store) {
+            $nostoAccount = $this->findAccount($store);
+            if ($nostoAccount instanceof NostoSignupAccount) {
+                $storesWithNosto[] = $store;
+            }
+        }
+
+        return $storesWithNosto;
     }
 }

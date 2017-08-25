@@ -53,7 +53,6 @@ class Meta extends Template
     }
 
     private $nostoHelperData;
-    private $nostoHelperScope;
 
     /**
      * Constructor.
@@ -75,7 +74,6 @@ class Meta extends Template
 
         $this->taggingConstruct($nostoHelperAccount, $nostoHelperScope);
         $this->nostoHelperData = $nostoHelperData;
-        $this->nostoHelperScope = $nostoHelperScope;
     }
 
     /**

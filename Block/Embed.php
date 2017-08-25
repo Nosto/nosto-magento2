@@ -53,13 +53,11 @@ class Embed extends Template
         TaggingTrait::__construct as taggingConstruct;
     }
 
-    private $nostoHelperAccount;
     private $nostoHelperData;
     /**
      * The default Nosto server address to use if none is configured.
      */
     const DEFAULT_SERVER_ADDRESS = 'connect.nosto.com';
-    private $nostoHelperScope;
 
     /**
      * Constructor.
@@ -81,8 +79,6 @@ class Embed extends Template
 
         $this->taggingConstruct($nostoHelperAccount, $nostoHelperScope);
         $this->nostoHelperData = $nostoHelperData;
-        $this->nostoHelperAccount = $nostoHelperAccount;
-        $this->nostoHelperScope = $nostoHelperScope;
     }
 
     /**

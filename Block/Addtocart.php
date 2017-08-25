@@ -54,7 +54,6 @@ class Addtocart extends Template
     }
 
     private $urlEncoder;
-    private $nostoHelperScope;
 
     /**
      * Constructor.
@@ -76,7 +75,6 @@ class Addtocart extends Template
 
         $this->taggingConstruct($nostoHelperAccount, $nostoHelperScope);
         $this->urlEncoder = $urlEncoder;
-        $this->nostoHelperScope = $nostoHelperScope;
     }
 
     /**

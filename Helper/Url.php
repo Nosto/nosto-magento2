@@ -41,6 +41,7 @@ use Magento\Catalog\Model\ResourceModel\Category\CollectionFactory as CategoryCo
 use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductCollectionFactory;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
+use Magento\Framework\UrlInterface;
 use Magento\Store\Model\Store;
 use Nosto\Request\Http\HttpRequest;
 
@@ -49,6 +50,78 @@ use Nosto\Request\Http\HttpRequest;
  */
 class Url extends AbstractHelper
 {
+    const MAGENTO_PATH_SEARCH_RESULT = 'catalogsearch/result';
+    /**
+     * Path to Magento's cart controller
+     */
+    const MAGENTO_PATH_CART = 'checkout/cart';
+
+    /**
+     * The ___store parameter in Magento URLs
+     */
+    const MAGENTO_URL_PARAMETER_STORE = '___store';
+
+    /**
+     * The SID (session id) parameter in Magento URLs
+     */
+    const MAGENTO_URL_PARAMETER_SID = 'SID';
+
+    /**
+     * The array option key for scope in Magento's URLs
+     */
+    const MAGENTO_URL_OPTION_SCOPE = '_scope';
+
+    /**
+     * The array option key for using secure URLs in Magento
+     */
+    const MAGENTO_URL_OPTION_SECURE = '_secure';
+
+    /**
+     * The array option key for store to url in Magento's URLs
+     */
+    const MAGENTO_URL_OPTION_SCOPE_TO_URL = '_scope_to_url';
+
+    /**
+     * The array option key for URL type in Magento's URLs
+     */
+    const MAGENTO_URL_OPTION_LINK_TYPE = '_type';
+
+    /**
+     * Path to Nosto's restore cart controller
+     */
+    const NOSTO_PATH_RESTORE_CART = 'nosto/frontend/cart';
+
+    /**
+     * The array option key for no session id in Magento's URLs.
+     * The session id should be included into the URLs which are potentially
+     * used during the same session, e.g. Oauth redirect URL. For example for
+     * product URLs we cannot include the session id as the product URL should
+     * be the same for all visitors and it will be saved to Nosto.
+     */
+    const MAGENTO_URL_OPTION_NOSID = '_nosid';
+
+    /**
+     * The url type to be used for links.
+     *
+     * This is the only URL type that works correctly the URls when
+     * "Add Store Code to Urls" setting is set to "Yes"
+     *
+     * UrlInterface::URL_TYPE_WEB
+     * - returns an URL without rewrites and without store codes
+     *
+     * UrlInterface::URL_TYPE_LINK
+     * - returns an URL with rewrites and with store codes in URL (if
+     * setting "Add Store Code to Urls" set to yes)
+     *
+     * UrlInterface::URL_TYPE_DIRECT_LINK
+     * - returns an URL with rewrites but without store codes
+     *
+     * @see UrlInterface::URL_TYPE_LINK
+     *
+     * @var string
+     */
+    public static $urlType = UrlInterface::URL_TYPE_LINK;
+
     private $productCollectionFactory;
     private $categoryCollectionFactory;
     private $productVisibility;
@@ -106,9 +179,9 @@ class Url extends AbstractHelper
             /** @var \Magento\Catalog\Model\Product $product */
             $url = $product->getUrlInStore(
                 [
-                    '_nosid' => true,
-                    '_scope_to_url' => true,
-                    '_scope' => $store->getCode(),
+                    self::MAGENTO_URL_OPTION_NOSID => true,
+                    self::MAGENTO_URL_OPTION_SCOPE_TO_URL => true,
+                    self::MAGENTO_URL_OPTION_SCOPE => $store->getCode(),
                 ]
             );
             $url = $this->addNostoDebugParamToUrl($url);
@@ -190,11 +263,11 @@ class Url extends AbstractHelper
     public function getPreviewUrlSearch(Store $store)
     {
         $url = $this->urlBuilder->getUrl(
-            'catalogsearch/result',
+            self::MAGENTO_PATH_SEARCH_RESULT,
             [
-                '_nosid' => true,
-                '_scope_to_url' => true,
-                '_scope' => $store->getCode(),
+                self::MAGENTO_URL_OPTION_NOSID => true,
+                self::MAGENTO_URL_OPTION_SCOPE_TO_URL => true,
+                self::MAGENTO_URL_OPTION_SCOPE => $store->getCode(),
             ]
         );
         $url = $this->replaceQueryParamsInUrl(['q' => 'nosto'], $url);
@@ -211,11 +284,11 @@ class Url extends AbstractHelper
     public function getPreviewUrlCart(Store $store)
     {
         $url = $this->urlBuilder->getUrl(
-            'checkout/cart',
+            self::MAGENTO_PATH_CART,
             [
-                '_nosid' => true,
-                '_scope_to_url' => true,
-                '_scope' => $store->getCode(),
+                self::MAGENTO_URL_OPTION_NOSID => true,
+                self::MAGENTO_URL_OPTION_SCOPE_TO_URL => true,
+                self::MAGENTO_URL_OPTION_SCOPE => $store->getCode(),
             ]
         );
         return $this->addNostoDebugParamToUrl($url);
@@ -233,11 +306,60 @@ class Url extends AbstractHelper
         $url = $this->urlBuilder->getUrl(
             '',
             [
-                '_nosid' => true,
-                '_scope_to_url' => true,
-                '_scope' => $store->getCode(),
+                self::MAGENTO_URL_OPTION_NOSID => true,
+                self::MAGENTO_URL_OPTION_SCOPE_TO_URL => true,
+                self::MAGENTO_URL_OPTION_SCOPE => $store->getCode(),
             ]
         );
         return $this->addNostoDebugParamToUrl($url);
+    }
+
+    /**
+     * Gets the absolute URL to the current store view cart page.
+     *
+     * @param Store $store the store to get the url for.
+     * @param string $currentUrl restore cart url
+     * @throws /Zend_Uri_Exception When the given $currentUrl is invalid
+     * @return string cart url.
+     */
+    public function getUrlCart(Store $store, $currentUrl)
+    {
+        $zendHttp = \Zend_Uri_Http::fromString($currentUrl);
+        $urlParameters = $zendHttp->getQueryAsArray();
+
+        $defaultParams = self::getUrlOptionsWithNoSid($store);
+        $url = $store->getUrl(
+            self::MAGENTO_PATH_CART,
+            $defaultParams
+        );
+
+        if (!empty($urlParameters)) {
+            foreach ($urlParameters as $key => $val) {
+                $url = HttpRequest::replaceQueryParamInUrl(
+                    $key,
+                    $val,
+                    $url
+                );
+            }
+        }
+
+        return $url;
+    }
+
+    /**
+     * Returns the default options for fetching Magento urls with no session id
+     *
+     * @return array
+     */
+    public static function getUrlOptionsWithNoSid(Store $store)
+    {
+        $params = [
+            self::MAGENTO_URL_OPTION_SCOPE_TO_URL => true,
+            self::MAGENTO_URL_OPTION_NOSID => true,
+            self::MAGENTO_URL_OPTION_LINK_TYPE => self::$urlType,
+            self::MAGENTO_URL_OPTION_SCOPE => $store->getCode(),
+        ];
+
+        return $params;
     }
 }

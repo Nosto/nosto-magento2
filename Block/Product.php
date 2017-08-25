@@ -68,7 +68,6 @@ class Product extends View
     private $nostoProductBuilder;
     private $categoryBuilder;
     private $nostoHelperData;
-    private $nostoHelperScope;
 
     /**
      * Constructor.
@@ -127,7 +126,6 @@ class Product extends View
         $this->nostoProductBuilder = $nostoProductBuilder;
         $this->categoryBuilder = $categoryBuilder;
         $this->nostoHelperData = $nostoHelperData;
-        $this->nostoHelperScope = $nostoHelperScope;
     }
 
     /**
@@ -138,7 +136,11 @@ class Product extends View
     public function getNostoProduct()
     {
         $store = $this->nostoHelperScope->getStore();
-        return $this->nostoProductBuilder->build($this->getProduct(), $store);
+        return $this->nostoProductBuilder->build(
+            $this->getProduct(),
+            $store,
+            NostoProductBuilder::NOSTO_SCOPE_TAGGING
+        );
     }
 
     /**

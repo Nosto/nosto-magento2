@@ -37,68 +37,38 @@
 namespace Nosto\Tagging\Observer\Product;
 
 use Magento\Catalog\Model\Product;
-use Magento\Catalog\Model\ProductFactory;
-use Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable as ConfigurableProduct;
+use Magento\Catalog\Model\ProductRepository;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Module\Manager as ModuleManager;
-use Magento\Store\Model\Store;
-use Nosto\NostoException;
-use Nosto\Operation\UpsertProduct;
-use Nosto\Request\Http\HttpRequest;
-use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
-use Nosto\Tagging\Helper\Scope as NostoHelperScope;
-use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
-use Psr\Log\LoggerInterface;
+use Nosto\Tagging\Model\Product\Service as NostoProductService;
 
 abstract class Base implements ObserverInterface
 {
-    private $nostoHelperData;
-    private $nostoHelperAccount;
-    private $nostoProductBuilder;
-    private $logger;
-    private $moduleManager;
-    private $productFactory;
-    private $configurableProduct;
-    private $nostoHelperScope;
+    protected $moduleManager;
+    protected $productService;
+    protected $productRepository;
+    protected $dataHelper;
 
     /**
      * Constructor.
      *
-     * @param NostoHelperData $nostoHelperData
-     * @param NostoHelperAccount $nostoHelperAccount
-     * @param NostoProductBuilder $nostoProductBuilder
-     * @param NostoHelperScope $nostoHelperScope
-     * @param LoggerInterface $logger
      * @param ModuleManager $moduleManager
-     * @param ProductFactory $productFactory
-     * @param ConfigurableProduct $configurableProduct
+     * @param NostoProductService $productService
+     * @param ProductRepository $productRepository
+     * @param NostoHelperData $dataHelper
      */
     public function __construct(
-        NostoHelperData $nostoHelperData,
-        NostoHelperAccount $nostoHelperAccount,
-        NostoProductBuilder $nostoProductBuilder,
-        NostoHelperScope $nostoHelperScope,
-        LoggerInterface $logger,
         ModuleManager $moduleManager,
-        ProductFactory $productFactory,
-        ConfigurableProduct $configurableProduct
+        NostoProductService $productService,
+        ProductRepository $productRepository,
+        NostoHelperData $dataHelper
     ) {
-        $this->nostoHelperData = $nostoHelperData;
-        $this->nostoHelperAccount = $nostoHelperAccount;
-        $this->nostoProductBuilder = $nostoProductBuilder;
-        $this->logger = $logger;
+        $this->productService = $productService;
         $this->moduleManager = $moduleManager;
-        $this->productFactory = $productFactory;
-        $this->configurableProduct = $configurableProduct;
-
-        HttpRequest::buildUserAgent(
-            NostoHelperData::PLATFORM_NAME,
-            $nostoHelperData->getPlatformVersion(),
-            $nostoHelperData->getModuleVersion()
-        );
-        $this->nostoHelperScope = $nostoHelperScope;
+        $this->productRepository = $productRepository;
+        $this->dataHelper = $dataHelper;
     }
 
     /**
@@ -114,67 +84,22 @@ abstract class Base implements ObserverInterface
         if ($this->moduleManager->isEnabled(NostoHelperData::MODULE_NAME)) {
             /* @var \Magento\Catalog\Model\Product $product */
             /** @noinspection PhpUndefinedMethodInspection */
-            $product = $observer->getProduct();
-            // Figure out if we're updating a parent product
-            $parentProducts = $this->configurableProduct->getParentIdsByChild($product->getId());
-            if (!empty($parentProducts[0]) && is_int($parentProducts[0])) {
-                /** @noinspection PhpDeprecationInspection */
-                $product = $this->productFactory->create()->load((int)$parentProducts[0]);
-            }
-            foreach ($product->getStoreIds() as $storeId) {
-                $store = $this->nostoHelperScope->getStore($storeId);
-                $account = $this->nostoHelperAccount->findAccount($store);
-                if ($account === null) {
-                    continue;
-                }
+            $product = $this->extractProduct($observer);
 
-                if (!$this->nostoHelperData->isProductUpdatesEnabled($store)) {
-                    continue;
-                }
-
-                if (!$this->validateProduct($product)) {
-                    continue;
-                }
-
-                // Load the product model for this particular store view.
-                $metaProduct = $this->buildProduct($product, $store);
-                if ($metaProduct === null) {
-                    continue;
-                }
-
-                try {
-                    $op = new UpsertProduct($account);
-                    $op->addProduct($metaProduct);
-                    $this->doRequest($op);
-                } catch (NostoException $e) {
-                    $this->logger->error($e->__toString());
-                }
+            if ($product instanceof Product && $product->getId()) {
+                $this->productService->update([$product]);
             }
         }
     }
 
     /**
-     * Validate whether the event should be handled or not
-     *
-     * @param Product $product the product from the event
-     */
-    abstract public function validateProduct(Product $product);
-
-    /**
-     * Builds the product object for the operation using the builder
-     *
-     * @param Product $product the product to be built
-     * @param Store $store the store for which to build the product
-     * @return \Nosto\Object\Product\Product the built product
-     */
-    public function buildProduct(Product $product, Store $store)
-    {
-        return $this->nostoProductBuilder->build($product, $store);
-    }
-
-    /**
-     * @param UpsertProduct $operation
+     * Default method for extracting product from the observer
+     * @param Observer $observer
      * @return mixed
      */
-    abstract public function doRequest(UpsertProduct $operation);
+    protected function extractProduct(Observer $observer)
+    {
+        /** @noinspection PhpUndefinedMethodInspection */
+        return $observer->getProduct();
+    }
 }

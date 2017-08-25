@@ -42,7 +42,7 @@ use Magento\Framework\Module\Manager as ModuleManager;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Model\Rates\Service as NostoRatesService;
-use Psr\Log\LoggerInterface;
+use Nosto\Tagging\Logger\Logger as NostoLogger;
 
 /**
  * Observer to update the exchange rates for each of the store views if the module is enabled and
@@ -60,13 +60,13 @@ class Update implements ObserverInterface
     /**
      * Constructor.
      *
-     * @param LoggerInterface $logger
+     * @param NostoLogger $logger
      * @param ModuleManager $moduleManager
      * @param NostoHelperScope $nostoHelperScope
      * @param NostoRatesService $nostoRatesService
      */
     public function __construct(
-        LoggerInterface $logger,
+        NostoLogger $logger,
         ModuleManager $moduleManager,
         NostoHelperScope $nostoHelperScope,
         NostoRatesService $nostoRatesService

@@ -50,7 +50,7 @@ use Nosto\Tagging\Model\Meta\Account\Iframe\Builder as NostoIframeMetaBuilder;
 use Nosto\Tagging\Model\Meta\Account\Owner\Builder as NostoOwnerBuilder;
 use Nosto\Tagging\Model\Rates\Service as NostoRatesService;
 use Nosto\Tagging\Model\User\Builder as NostoCurrentUserBuilder;
-use Psr\Log\LoggerInterface;
+use Nosto\Tagging\Logger\Logger as NostoLogger;
 
 class Create extends Base
 {
@@ -75,7 +75,7 @@ class Create extends Base
      * @param NostoOwnerBuilder $nostoOwnerBuilder
      * @param NostoHelperScope $nostoHelperScope
      * @param Json $result
-     * @param LoggerInterface $logger
+     * @param NostoLogger $logger
      * @param NostoRatesService $nostoRatesService
      * @param NostoCurrencyHelper $nostoCurrencyHelper
      * @SuppressWarnings(PHPMD.ExcessiveParameterList)
@@ -89,7 +89,7 @@ class Create extends Base
         NostoOwnerBuilder $nostoOwnerBuilder,
         NostoHelperScope $nostoHelperScope,
         Json $result,
-        LoggerInterface $logger,
+        NostoLogger $logger,
         NostoRatesService $nostoRatesService,
         NostoCurrencyHelper $nostoCurrencyHelper
     ) {
@@ -118,7 +118,7 @@ class Create extends Base
 
         $storeId = $this->_request->getParam('store');
         $store = $this->nostoHelperScope->getStore($storeId);
-
+        $messageText = null;
         if ($store !== null) {
             try {
                 $signupDetails = $this->_request->getParam('details');
@@ -162,24 +162,29 @@ class Create extends Base
                         try {
                             $this->nostoRatesService->update($store);
                         } catch (\Exception $e) {
-                            $this->logger->error($e->__toString());
+                            $this->logger->exception($e);
                         }
                     }
                 }
             } catch (NostoException $e) {
-                $this->logger->error($e->__toString());
+                $this->logger->exception($e);
+                $messageText = $e->getMessage();
             }
         }
 
         if (!$response['success']) {
+            $params = [
+                'message_type' => Nosto::TYPE_ERROR,
+                'message_code' => Nosto::CODE_ACCOUNT_CREATE,
+            ];
+            if ($messageText) {
+                $params['message_text'] = $messageText;
+            }
             $response['redirect_url'] = IframeHelper::getUrl(
                 $this->nostoIframeMetaBuilder->build($store),
                 null, // account creation failed, so we have none.
                 $this->nostoCurrentUserBuilder->build(),
-                [
-                    'message_type' => Nosto::TYPE_ERROR,
-                    'message_code' => Nosto::CODE_ACCOUNT_CREATE,
-                ]
+                $params
             );
         }
 

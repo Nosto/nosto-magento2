@@ -36,6 +36,7 @@
 
 namespace Nosto\Tagging\Model\Cart;
 
+use Magento\Catalog\Model\Product;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\ObjectManagerInterface;
 use Magento\Quote\Model\Quote;
@@ -43,7 +44,7 @@ use Magento\Store\Model\Store;
 use Nosto\NostoException;
 use Nosto\Object\Cart\Cart;
 use Nosto\Tagging\Model\Cart\Item\Builder as NostoCartItemBuilder;
-use Psr\Log\LoggerInterface;
+use Nosto\Tagging\Logger\Logger as NostoLogger;
 
 class Builder
 {
@@ -56,13 +57,13 @@ class Builder
      * Constructor.
      *
      * @param NostoCartItemBuilder $nostoCartItemBuilder
-     * @param LoggerInterface $logger
+     * @param NostoLogger $logger
      * @param ObjectManagerInterface $objectManager
      * @param ManagerInterface $eventManager
      */
     public function __construct(
         NostoCartItemBuilder $nostoCartItemBuilder,
-        LoggerInterface $logger,
+        NostoLogger $logger,
         ObjectManagerInterface $objectManager,
         ManagerInterface $eventManager
     ) {
@@ -83,13 +84,15 @@ class Builder
 
         foreach ($quote->getAllVisibleItems() as $item) {
             try {
-                $cartItem = $this->nostoCartItemBuilder->build(
-                    $item,
-                    $store->getCurrentCurrencyCode() ?: $store->getDefaultCurrencyCode()
-                );
-                $nostoCart->addItem($cartItem);
+                if ($item->getProduct() instanceof Product) {
+                    $cartItem = $this->nostoCartItemBuilder->build(
+                        $item,
+                        $store->getCurrentCurrencyCode() ?: $store->getDefaultCurrencyCode()
+                    );
+                    $nostoCart->addItem($cartItem);
+                }
             } catch (NostoException $e) {
-                $this->logger->error($e->__toString());
+                $this->logger->exception($e);
             }
         }
 

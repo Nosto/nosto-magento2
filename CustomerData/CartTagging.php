@@ -40,52 +40,57 @@ use Magento\Checkout\Helper\Cart as CartHelper;
 use Magento\Customer\CustomerData\SectionSourceInterface;
 use Magento\Framework\Stdlib\CookieManagerInterface;
 use Magento\Framework\Stdlib\DateTime\DateTime;
+use Magento\Quote\Model\Quote;
 use Nosto\Object\Cart\LineItem;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Model\Cart\Builder as NostoCartBuilder;
-use Nosto\Tagging\Model\Customer;
 use Nosto\Tagging\Model\Customer as NostoCustomer;
 use Nosto\Tagging\Model\CustomerFactory as NostoCustomerFactory;
-use Psr\Log\LoggerInterface;
+use Nosto\Tagging\Model\Cart\Restore\Builder as NostoRestoreCartUrlBuilder;
+use Nosto\Tagging\Logger\Logger as NostoLogger;
 
 class CartTagging extends HashedTagging implements SectionSourceInterface
 {
     private $cartHelper;
-    private $nostoCartBuilder;
     private $cookieManager;
-    private $nostoCustomerFactory;
-    private $quote = null;
     private $logger;
     private $date;
-    private $nostoHelperScope;
+    private $quote = null;
+    private $nostoScopeHelper;
+    private $nostoCartBuilder;
+    private $nostoRestoreCartUrlBuilder;
+    private $nostoCustomerFactory;
 
     /** @noinspection PhpUndefinedClassInspection */
     /**
      * @param CartHelper $cartHelper
-     * @param NostoCartBuilder $nostoCartBuilder
-     * @param NostoHelperScope $nostoHelperScope
      * @param CookieManagerInterface $cookieManager
-     * @param LoggerInterface $logger
+     * @param NostoLogger $logger
      * @param DateTime $date
+     * @param NostoCartBuilder $nostoCartBuilder
+     * @param NostoHelperScope $nostoScopeHelper
      * @param NostoCustomerFactory $nostoCustomerFactory
+     * @param NostoRestoreCartUrlBuilder $nostoRestoreCartUrlBuilder
      */
     public function __construct(
         CartHelper $cartHelper,
-        NostoCartBuilder $nostoCartBuilder,
-        NostoHelperScope $nostoHelperScope,
         CookieManagerInterface $cookieManager,
-        LoggerInterface $logger,
+        NostoLogger $logger,
         DateTime $date,
+        NostoCartBuilder $nostoCartBuilder,
+        NostoHelperScope $nostoScopeHelper,
         /** @noinspection PhpUndefinedClassInspection */
-        NostoCustomerFactory $nostoCustomerFactory
+        NostoCustomerFactory $nostoCustomerFactory,
+        NostoRestoreCartUrlBuilder $nostoRestoreCartUrlBuilder
     ) {
         $this->cartHelper = $cartHelper;
-        $this->nostoCartBuilder = $nostoCartBuilder;
         $this->logger = $logger;
         $this->date = $date;
         $this->cookieManager = $cookieManager;
+        $this->nostoScopeHelper = $nostoScopeHelper;
         $this->nostoCustomerFactory = $nostoCustomerFactory;
-        $this->nostoHelperScope = $nostoHelperScope;
+        $this->nostoCartBuilder = $nostoCartBuilder;
+        $this->nostoRestoreCartUrlBuilder = $nostoRestoreCartUrlBuilder;
     }
 
     /**
@@ -98,11 +103,12 @@ class CartTagging extends HashedTagging implements SectionSourceInterface
             'hcid' => parent::generateVisitorChecksum($nostoCustomerId),
             "items" => [],
             "itemCount" => 0,
+            'restore_cart_url' => ''
         ];
         $cart = $this->cartHelper->getCart();
         $nostoCart = $this->nostoCartBuilder->build(
             $this->getQuote(),
-            $this->nostoHelperScope->getStore()
+            $this->nostoScopeHelper->getStore()
         );
         $itemCount = $cart->getItemsCount();
         $data["itemCount"] = $itemCount;
@@ -122,7 +128,13 @@ class CartTagging extends HashedTagging implements SectionSourceInterface
         }
 
         if ($data["itemCount"] > 0) {
-            $this->updateNostoId();
+            $store = $this->nostoScopeHelper->getStore();
+            try {
+                $data['restore_cart_url'] = $this->nostoRestoreCartUrlBuilder
+                    ->build($this->getQuote(), $store);
+            } catch (\Exception $e) {
+                $this->logger->exception($e);
+            }
         }
 
         return $data;
@@ -141,56 +153,6 @@ class CartTagging extends HashedTagging implements SectionSourceInterface
         }
 
         return $this->quote;
-    }
-
-    /**
-     * @suppress PhanDeprecatedFunction
-     */
-    private function updateNostoId()
-    {
-        // Handle the Nosto customer & quote mapping
-        $nostoCustomerId = $this->cookieManager->getCookie(NostoCustomer::COOKIE_NAME);
-        $quoteId = $this->getQuote()->getId();
-        if (!empty($quoteId) && !empty($nostoCustomerId)) {
-            /** @noinspection PhpUndefinedMethodInspection */
-            $customerQuery = $this->nostoCustomerFactory
-                ->create()
-                ->getCollection()
-                ->addFieldToFilter(NostoCustomer::QUOTE_ID, $quoteId)
-                ->addFieldToFilter(NostoCustomer::NOSTO_ID, $nostoCustomerId)
-                ->setPageSize(1)
-                ->setCurPage(1);
-
-            /** @var Customer $nostoCustomer */
-            $nostoCustomer = $customerQuery->getFirstItem(); // @codingStandardsIgnoreLine
-            if ($nostoCustomer->hasData(NostoCustomer::CUSTOMER_ID)) {
-                $nostoCustomer->setUpdatedAt(self::getNow());
-            } else {
-                /** @noinspection PhpUndefinedMethodInspection */
-                $nostoCustomer = $this->nostoCustomerFactory->create();
-                /** @noinspection PhpUndefinedMethodInspection */
-                $nostoCustomer->setQuoteId($quoteId);
-                /** @noinspection PhpUndefinedMethodInspection */
-                $nostoCustomer->setNostoId($nostoCustomerId);
-                $nostoCustomer->setCreatedAt(self::getNow());
-            }
-            try {
-                /** @noinspection PhpDeprecationInspection */
-                $nostoCustomer->save();
-            } catch (\Exception $e) {
-                $this->logger->error($e->__toString());
-            }
-        }
-    }
-
-    /**
-     * Returns the current datetime object
-     *
-     * @return \DateTime the current datetime
-     */
-    private function getNow()
-    {
-        return \DateTime::createFromFormat('Y-m-d H:i:s', $this->date->date());
     }
 
     /**

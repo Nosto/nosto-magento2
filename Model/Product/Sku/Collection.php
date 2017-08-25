@@ -44,7 +44,7 @@ use Nosto\Object\Product\SkuCollection;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Price as NostoPriceHelper;
 use Nosto\Tagging\Model\Product\Sku\Builder as NostoSkuBuilder;
-use Psr\Log\LoggerInterface;
+use Nosto\Tagging\Logger\Logger as NostoLogger;
 
 class Collection
 {
@@ -56,14 +56,14 @@ class Collection
 
     /**
      * Builder constructor.
-     * @param LoggerInterface $logger
+     * @param NostoLogger $logger
      * @param ConfigurableType $configurableType
      * @param NostoHelperData $nostoHelperData
      * @param NostoPriceHelper $priceHelper
      * @param Builder $nostoSkuBuilder
      */
     public function __construct(
-        LoggerInterface $logger,
+        NostoLogger $logger,
         ConfigurableType $configurableType,
         NostoHelperData $nostoHelperData,
         NostoPriceHelper $priceHelper,
@@ -87,12 +87,15 @@ class Collection
         if ($product->getTypeId() === ConfigurableType::TYPE_CODE) {
             $attributes = $this->configurableType->getConfigurableAttributes($product);
             /** @var Product $product */
-            foreach ($this->configurableType->getUsedProducts($product) as $product) {
-                try {
-                    $sku = $this->nostoSkuBuilder->build($product, $store, $attributes);
-                    $skuCollection->append($sku);
-                } catch (NostoException $e) {
-                    $this->logger->error($e->__toString());
+            $usedProducts = $this->configurableType->getUsedProducts($product);
+            foreach ($usedProducts as $product) {
+                if (!$product->isDisabled()) {
+                    try {
+                        $sku = $this->nostoSkuBuilder->build($product, $store, $attributes);
+                        $skuCollection->append($sku);
+                    } catch (NostoException $e) {
+                        $this->logger->exception($e);
+                    }
                 }
             }
         }

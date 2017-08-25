@@ -37,9 +37,11 @@
 namespace Nosto\Tagging\Model\Order;
 
 use Exception;
+use Magento\Catalog\Model\Product;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\ObjectManagerInterface;
 use Magento\Framework\Phrase;
+use Magento\Sales\Api\Data\OrderAddressInterface;
 use Magento\Sales\Model\Order;
 use Magento\Sales\Model\Order\Item;
 use Magento\SalesRule\Model\RuleFactory as SalesRuleFactory;
@@ -48,7 +50,7 @@ use Nosto\Object\Order\Buyer;
 use Nosto\Object\Order\OrderStatus;
 use Nosto\Tagging\Helper\Price as NostoPriceHelper;
 use Nosto\Tagging\Model\Order\Item\Builder as NostoOrderItemBuilder;
-use Psr\Log\LoggerInterface;
+use Nosto\Tagging\Logger\Logger as NostoLogger;
 
 class Builder
 {
@@ -62,7 +64,7 @@ class Builder
 
     /** @noinspection PhpUndefinedClassInspection */
     /**
-     * @param LoggerInterface $logger
+     * @param NostoLogger $logger
      * @param SalesRuleFactory $salesRuleFactory
      * @param NostoPriceHelper $priceHelper
      * @param NostoOrderItemBuilder $nostoOrderItemBuilder
@@ -70,7 +72,7 @@ class Builder
      * @param ManagerInterface $eventManager
      */
     public function __construct(
-        LoggerInterface $logger,
+        NostoLogger $logger,
         /** @noinspection PhpUndefinedClassInspection */
         SalesRuleFactory $salesRuleFactory,
         NostoPriceHelper $priceHelper,
@@ -120,13 +122,21 @@ class Builder
             $nostoBuyer->setFirstName($order->getCustomerFirstname());
             $nostoBuyer->setLastName($order->getCustomerLastname());
             $nostoBuyer->setEmail($order->getCustomerEmail());
+            $address = $order->getBillingAddress();
+            if ($address instanceof OrderAddressInterface) {
+                $nostoBuyer->setPhone($address->getTelephone());
+                $nostoBuyer->setPostcode($address->getPostcode());
+                $nostoBuyer->setCountry($address->getCountryId());
+            }
             $nostoOrder->setCustomer($nostoBuyer);
 
             // Add each ordered item as a line item
             /** @var Item $item */
             foreach ($order->getAllVisibleItems() as $item) {
-                $nostoItem = $this->nostoOrderItemBuilder->build($item);
-                $nostoOrder->addPurchasedItems($nostoItem);
+                if ($item->getProduct() instanceof Product) {
+                    $nostoItem = $this->nostoOrderItemBuilder->build($item);
+                    $nostoOrder->addPurchasedItems($nostoItem);
+                }
             }
 
             // Add discounts as a pseudo line item
@@ -158,7 +168,7 @@ class Builder
                 $nostoOrder->addPurchasedItems($nostoItem);
             }
         } catch (Exception $e) {
-            $this->logger->error($e->__toString());
+            $this->logger->exception($e);
         }
 
         $this->eventManager->dispatch('nosto_order_load_after', ['order' => $nostoOrder, 'magentoOrder' => $order]);
