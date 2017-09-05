@@ -63,8 +63,7 @@ define(['catalogAddToCart', 'nostojs', 'jquery'], function (addToCart, nostojs, 
         form.find('input[name="qty"]').val(1);
         helper.ajaxSubmit(form);
     };
-
-
+    
     Recobuy.resolveContextSlotId = function (element) {
         var m = 20;
         var n = 0;
