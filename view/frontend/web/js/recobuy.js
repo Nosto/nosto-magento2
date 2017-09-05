@@ -41,20 +41,29 @@ define(['catalogAddToCart', 'nostojs', 'jquery'], function (addToCart, nostojs, 
 
     Recobuy = {};
     Recobuy.addProductToCart = function (productId, element) {
+        var productData = {
+            "productId" : productId,
+            'skuId' : productId
+        };
+        Recobuy.addSkuToCart(productData, element);
+    };
 
+    //Product object must have fields productId and skuId productId: 123, skuId: 321
+    Recobuy.addSkuToCart = function (product, element) {
         if (typeof element === 'object') {
             var slotId = this.resolveContextSlotId(element);
             if (slotId) {
                 nostojs(function (api) {
-                    api.recommendedProductAddedToCart(productId, slotId);
+                    api.recommendedProductAddedToCart(product.productId, slotId);
                 });
             }
         }
 
-        form.find('input[name="product"]').val(productId);
+        form.find('input[name="product"]').val(product.skuId);
         form.find('input[name="qty"]').val(1);
         helper.ajaxSubmit(form);
     };
+
 
     Recobuy.resolveContextSlotId = function (element) {
         var m = 20;
