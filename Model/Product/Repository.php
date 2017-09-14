@@ -38,14 +38,13 @@ namespace Nosto\Tagging\Model\Product;
 
 use Magento\Catalog\Api\Data\ProductSearchResultsInterface;
 use Magento\Catalog\Model\Product;
+use Magento\Catalog\Model\Product\Type;
 use Magento\Catalog\Model\ProductRepository;
+use Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable as ConfigurableProduct;
 use Magento\Framework\Api\FilterBuilder;
 use Magento\Framework\Api\Search\FilterGroupBuilder;
 use Magento\Framework\Api\SearchCriteriaBuilder;
-use Magento\Framework\Data\SearchResultInterface;
-use Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable as ConfigurableProduct;
 use Nosto\Tagging\Helper\Data;
-use Magento\Catalog\Model\Product\Type;
 
 /**
  * Repository wrapper class for fetching products
@@ -54,7 +53,7 @@ use Magento\Catalog\Model\Product\Type;
  */
 class Repository
 {
-    private $cache = [];
+    private $parentProductIdCache = [];
 
     private $nostoDataHelper;
     private $productRepository;
@@ -141,54 +140,52 @@ class Repository
 
     /**
      * Gets the parent products for simple product
+     *
      * @param Product $product
-     * @return Product[]
+     * @return string[]|null
      */
-    public function resolveParentProducts(Product $product)
+    public function resolveParentProductIds(Product $product)
     {
-        if ($this->getParentsFromCache($product)) {
+        if ($this->getParentIdsFromCache($product)) {
 
-            return $this->getParentsFromCache($product);
+            return $this->getParentIdsFromCache($product);
         }
-        $parentProducts = null;
+        $parentProductIds = null;
         if ($product->getTypeId() === Type::TYPE_SIMPLE) {
-            $parentIds = $this->configurableProduct->getParentIdsByChild($product->getId());
-            if (count($parentIds) > 0) {
-                $searchCriteria = $this->searchCriteriaBuilder
-                    ->addFilter('entity_id', $parentIds, 'in')
-                    ->create();
-                $parentProducts = $this->productRepository->getList($searchCriteria)->getItems();
-            }
+            $parentProductIds = $this->configurableProduct->getParentIdsByChild(
+                $product->getId()
+            );
+            $this->saveParentIdsToCache($product, $parentProductIds);
         }
-        $this->saveParentsToCache($product, $parentProducts);
 
-        return $parentProducts;
+        return $parentProductIds;
     }
 
     /**
-     * Returns the variations from
+     * Get parent ids from cache. Return null if the cache is not available
      *
      * @param Product $product
-     * @return Product[]|null
+     * @return string[]|null
      */
-    private function getParentsFromCache(Product $product)
+    private function getParentIdsFromCache(Product $product)
     {
-        if (isset($this->cache[$product->getId()])) {
+        if (isset($this->parentProductIdCache[$product->getId()])) {
 
-            return $this->cache[$product->getId()];
+            return $this->parentProductIdCache[$product->getId()];
         }
 
         return null;
     }
 
     /**
-     * Saves the parents products to internal cache to avoid redundant database queries
+     * Saves the parents product ids to internal cache to avoid redundant
+     * database queries
      *
      * @param Product $product
-     * @param $parentProducts
+     * @param string[] $parentProductIds
      */
-    private function saveParentsToCache(Product $product, $parentProducts)
+    private function saveParentIdsToCache(Product $product, $parentProductIds)
     {
-        $this->cache[$product->getId()] = $parentProducts;
+        $this->parentProductIdCache[$product->getId()] = $parentProductIds;
     }
 }

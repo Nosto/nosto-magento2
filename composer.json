@@ -20,7 +20,7 @@
   ],
   "minimum-stability": "dev",
   "require": {
-    "nosto/php-sdk": "3.0.12"
+    "nosto/php-sdk": "dev-feature/support-delete-product#0acd7aa"
   },
   "repositories": [
     {
