@@ -98,7 +98,7 @@ class Builder
                 // baseDiscountAmount contains the discount for the whole row
                 $lineDiscount = $item->getBaseDiscountAmount() / $item->getQtyOrdered();
             }
-            $price = $item->getBasePrice() + $item->getBaseTaxAmount() - $lineDiscount;
+            $price = $item->getBasePrice() + $item->getBaseTaxAmount() / $item->getQtyOrdered() - $lineDiscount;
             // The item prices are always in base currency, convert to order currency if non base currency
             // is used for the order
             if ($order->getBaseCurrencyCode() !== $order->getOrderCurrencyCode()) {
