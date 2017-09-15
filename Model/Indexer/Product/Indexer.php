@@ -11,8 +11,6 @@ use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\Indexer\ActionInterface as IndexerActionInterface;
 use Magento\Framework\Mview\ActionInterface as MviewActionInterface;
 use Nosto\Tagging\Model\Product\Service as ProductService;
-use Nosto\Tagging\Logger\Logger as NostoLogger;
-
 
 /**
  * An indexer for Nosto product sync
@@ -26,16 +24,13 @@ class Indexer implements IndexerActionInterface, MviewActionInterface
     private $productService;
     private $productRepository;
     private $searchCriteriaBuilder;
-    private $logger;
 
     /**
-     * @param NostoLogger $logger
      * @param ProductService $productService
      * @param ProductRepository $productRepository
      * @param SearchCriteriaBuilder $searchCriteriaBuilder
      */
     public function __construct(
-        NostoLogger $logger,
         ProductService $productService,
         ProductRepository $productRepository,
         SearchCriteriaBuilder $searchCriteriaBuilder
@@ -43,7 +38,6 @@ class Indexer implements IndexerActionInterface, MviewActionInterface
         $this->productService = $productService;
         $this->productRepository = $productRepository;
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;
-        $this->logger = $logger;
     }
 
     /**
