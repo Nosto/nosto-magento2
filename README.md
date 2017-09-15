@@ -2,6 +2,10 @@
 
 ## Changelog
 
+### 2.2.4
+Bug fixes
+* Fix product unit price issue in the order confirmation
+
 ### 2.2.3
 Bug fixes
 * Ignore disabled variations from price calculation and SKU tagging
