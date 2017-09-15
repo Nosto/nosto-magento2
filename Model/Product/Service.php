@@ -193,7 +193,6 @@ class Service
                     $productCount
                 )
             );
-            //TODO if a child product has been deleted, its parent products will not be updated
             $productIdsForQueue = [];
             foreach ($products as $product) {
                 $parentProductIds = $this->nostoProductRepository->resolveParentProductIds($product);
@@ -372,7 +371,6 @@ class Service
                 $store->getName()
             )
         );
-        // ToDo - Add DeleteProduct in PHP SDK & call delete
         $op = new UpsertProduct($nostoAccount);
 
         foreach ($uniqueProductIds as $productId) {
@@ -382,7 +380,8 @@ class Service
         }
 
         try {
-            $op->discontinue();
+            //TODO - Add DeleteProduct in PHP SDK & call delete
+            //$op->discontinue();
             $this->logger->info(
                 sprintf(
                     'Sent %d products to for deletion %s (%d)',

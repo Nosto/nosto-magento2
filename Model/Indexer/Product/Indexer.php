@@ -28,7 +28,6 @@ class Indexer implements IndexerActionInterface, MviewActionInterface
     private $searchCriteriaBuilder;
     private $logger;
 
-
     /**
      * @param NostoLogger $logger
      * @param ProductService $productService
@@ -53,16 +52,13 @@ class Indexer implements IndexerActionInterface, MviewActionInterface
     public function executeFull()
     {
         // Fetch all enabled products
-//        $searchCriteria = $this->searchCriteriaBuilder
-//            ->addFilter('status', Status::STATUS_ENABLED, 'eq')
-//            ->setPageSize(self::HARD_LIMIT_FOR_PRODUCTS)
-//            ->setCurrentPage(1)
-//            ->create();
-//        $products = $this->productRepository->getList($searchCriteria);
-//        $this->productService->update($products->getItems());
-        $this->logger->info('executeFull() has been called');
-        //todo should clean up the queue table
-        //todo the deleted product not getting update
+        $searchCriteria = $this->searchCriteriaBuilder
+            ->addFilter('status', Status::STATUS_ENABLED, 'eq')
+            ->setPageSize(self::HARD_LIMIT_FOR_PRODUCTS)
+            ->setCurrentPage(1)
+            ->create();
+        $products = $this->productRepository->getList($searchCriteria);
+        $this->productService->update($products->getItems());
     }
 
     /**
@@ -70,7 +66,6 @@ class Indexer implements IndexerActionInterface, MviewActionInterface
      */
     public function executeList(array $ids)
     {
-        $this->logger->info('executeList() has been called,' . implode($ids));
         $this->execute($ids);
     }
 
@@ -79,7 +74,6 @@ class Indexer implements IndexerActionInterface, MviewActionInterface
      */
     public function executeRow($id)
     {
-        $this->logger->info('executeRow() has been called,' . $id);
         $this->execute([$id]);
     }
 
@@ -88,7 +82,6 @@ class Indexer implements IndexerActionInterface, MviewActionInterface
      */
     public function execute($ids)
     {
-        $this->logger->info('execute() has been called,' . implode($ids));
         $this->productService->updateByIds($ids);
     }
 }
