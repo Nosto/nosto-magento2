@@ -50,6 +50,7 @@ use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Product\Repository as NostoProductRepository;
+use \Nosto\Object\Product\Product as NostoProduct;
 
 
 /**
@@ -171,6 +172,8 @@ class Service
         $productsToBeDeleted = array_diff($ids, $existingProductIds);
         foreach ($productsToBeDeleted as $productId) {
             $productStub = $this->productFactory->create(['id' => $productId]);
+            $productStub->setId($productId);
+            $this->logger->info('add product to be deleted:' . $productStub->getId());
             $this->addToQueue([$productStub]);
         }
     }
@@ -370,9 +373,36 @@ class Service
             )
         );
         // ToDo - Add DeleteProduct in PHP SDK & call delete
-        foreach ($uniqueProductIds as $productId) {
-            // $nostoProduct = $this->nostoProductBuilder->buildForDeletion($productId);
+        $op = new UpsertProduct($nostoAccount);
 
+        foreach ($uniqueProductIds as $productId) {
+            $nostoProduct = $this->nostoProductBuilder->buildForDeletion($productId);
+            $op->addProduct($nostoProduct);
+            $this->logger->info('product to be deleted: ' . $productId);
+        }
+
+        try {
+            $op->discontinue();
+            $this->logger->info(
+                sprintf(
+                    'Sent %d products to for deletion %s (%d)',
+                    count($uniqueProductIds),
+                    $this->storeManager->getStore()->getName(),
+                    $store->getId()
+                )
+            );
+        } catch (\Exception $e) {
+            $this->logger->error(
+                sprintf(
+                    'Failed to send %d products for store %s (%d)' .
+                    ' Error was %s',
+                    count($uniqueProductIds),
+                    $store->getName(),
+                    $store->getId(),
+                    $e->getMessage()
+                )
+            );
+            $this->logger->exception($e);
         }
     }
 
