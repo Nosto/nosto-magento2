@@ -39,19 +39,17 @@ namespace Nosto\Tagging\Model\Product;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\ProductFactory;
 use Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable as ConfigurableProduct;
-use Magento\Store\Model\StoreManager;
 use Magento\Store\Model\Store;
+use Magento\Store\Model\StoreManager;
 use Nosto\Object\Signup\Account;
 use Nosto\Operation\UpsertProduct;
 use Nosto\Request\Http\HttpRequest;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
-use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
+use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
 use Nosto\Tagging\Model\Product\Repository as NostoProductRepository;
-use \Nosto\Object\Product\Product as NostoProduct;
-
 
 /**
  * Service class for updating products to Nosto
@@ -75,6 +73,7 @@ class Service
     private $nostoQueueFactory;
     private $storeManager;
     private $productFactory;
+    private $nostoQueueRepository;
 
     public $processed = [];
 
@@ -109,7 +108,7 @@ class Service
         StoreManager $storeManager,
         ProductFactory $productFactory
     ) {
-    
+
         $this->logger = $logger;
         $this->nostoHelperScope = $nostoHelperScope;
         $this->nostoProductBuilder = $nostoProductBuilder;
@@ -173,7 +172,6 @@ class Service
         foreach ($productsToBeDeleted as $productId) {
             $productStub = $this->productFactory->create(['id' => $productId]);
             $productStub->setId($productId);
-            $this->logger->info('add product to be deleted:' . $productStub->getId());
             $this->addToQueue([$productStub]);
         }
     }
@@ -233,7 +231,7 @@ class Service
      */
     public function flushQueue()
     {
-        while(true) {
+        while (true) {
             $queueEntries = $this->nostoQueueRepository->getFirstPage(self::$batchSize);
             $queueCount = $queueEntries->getTotalCount();
             if ($queueCount <= 0) {
