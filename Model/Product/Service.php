@@ -231,17 +231,16 @@ class Service
      */
     public function flushQueue()
     {
-        while (true) {
-            $queueEntries = $this->nostoQueueRepository->getFirstPage(self::$batchSize);
-            $queueCount = $queueEntries->getTotalCount();
-            if ($queueCount <= 0) {
-                break;
-            }
+        $queueEntries = $this->nostoQueueRepository->getFirstPage(self::$batchSize);
+        $remaining = $queueEntries->getTotalCount();
+        //keep the $maxBatches, as a safe fuse to prevent unexpected infinite loop
+        $maxBatches = $remaining / self::$batchSize;
 
+        while ($remaining > 0 && $maxBatches > 0) {
             $this->logger->info(
                 sprintf(
                     'Flushing %d products from Nosto queue',
-                    $queueCount
+                    $remaining
                 )
             );
 
@@ -257,6 +256,13 @@ class Service
                 //Regardless of success, delete it from the queue to avoid infinite loop
                 $this->nostoQueueRepository->deleteByProductIds($productIds);
             }
+
+            //prepare for next loop
+            $queueEntries = $this->nostoQueueRepository->getFirstPage(self::$batchSize);
+            $remaining = $queueEntries->getTotalCount();
+
+            //It is a safe fuse, to prevent unexpected infinite loop
+            $maxBatches--;
         }
     }
 
