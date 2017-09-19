@@ -13,6 +13,7 @@
                 <rating_tagging>1</rating_tagging>
                 <inventory_tagging>0</inventory_tagging>
                 <product_updates>1</product_updates>
+                <full_reindex>1</full_reindex>
                 <low_stock_indication>0</low_stock_indication>
             </flags>
         </nosto>

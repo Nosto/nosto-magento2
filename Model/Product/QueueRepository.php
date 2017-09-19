@@ -42,9 +42,9 @@ use Magento\Framework\Exception\NoSuchEntityException;
 use Nosto\Tagging\Api\Data\ProductQueueInterface;
 use Nosto\Tagging\Api\Data\ProductQueueSearchResultsInterface;
 use Nosto\Tagging\Api\ProductQueueRepositoryInterface;
+use Nosto\Tagging\Model\ResourceModel\Product\Queue as QueueResource;
 use Nosto\Tagging\Model\ResourceModel\Product\Queue\Collection as QueueCollection;
 use Nosto\Tagging\Model\ResourceModel\Product\Queue\CollectionFactory as QueueCollectionFactory;
-use Nosto\Tagging\Model\ResourceModel\Product\Queue as QueueResource;
 
 class QueueRepository implements ProductQueueRepositoryInterface
 {
@@ -70,7 +70,7 @@ class QueueRepository implements ProductQueueRepositoryInterface
         QueueSearchResultsFactory $queueSearchResultsFactory,
         SearchCriteriaBuilder $searchCriteriaBuilder
     ) {
-    
+
         $this->queueResource = $queueResource;
         $this->queueFactory = $queueFactory;
         $this->queueCollectionFactory = $queueCollectionFactory;
@@ -147,7 +147,6 @@ class QueueRepository implements ProductQueueRepositoryInterface
         $this->queueResource->delete($productQueue);
     }
 
-
     /**
      * @inheritdoc
      */
@@ -175,6 +174,24 @@ class QueueRepository implements ProductQueueRepositoryInterface
         $collection->load();
         $searchResult = $this->queueSearchResultsFactory->create();
         $searchResult->setSearchCriteria($searchCriteria);
+        $searchResult->setItems($collection->getItems());
+        $searchResult->setTotalCount($collection->getSize());
+
+        return $searchResult;
+    }
+
+
+    /**
+     * @inheritdoc
+     */
+    public function getFirstPage($pageSize)
+    {
+        /* @var QuoteCollection $collection */
+        $collection = $this->queueFactory->create()->getCollection();
+        $collection->setPageSize($pageSize);
+        $collection->setCurPage(1);
+        $collection->load();
+        $searchResult = $this->queueSearchResultsFactory->create();
         $searchResult->setItems($collection->getItems());
         $searchResult->setTotalCount($collection->getSize());
 
