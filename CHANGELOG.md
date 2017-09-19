@@ -1,7 +1,10 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 2.3.5
+* Fix indexer bugs
+ 
 ### 2.3.4
-* Fix tracking issue of adding sku to cart 
+* Fix tracking issue of adding sku to cart
 
 ### 2.3.3
 * Fix exception handling bug 
