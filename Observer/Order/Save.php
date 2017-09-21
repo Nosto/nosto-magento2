@@ -52,7 +52,6 @@ use Nosto\Tagging\Model\CustomerFactory;
 use Nosto\Tagging\Model\Indexer\Product\Indexer;
 use Nosto\Tagging\Model\Order\Builder as NostoOrderBuilder;
 
-
 /**
  * Class Save
  * @package Nosto\Tagging\Observer
@@ -99,7 +98,6 @@ class Save implements ObserverInterface
         $this->nostoOrderBuilder = $orderBuilder;
         $this->customerFactory = $customerFactory;
         $this->indexer = $indexerRegistry->get(Indexer::INDEXER_ID);
-
 
         HttpRequest::buildUserAgent(
             'Magento',
