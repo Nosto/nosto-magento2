@@ -40,8 +40,10 @@ use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\ProductRepository;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
+use Magento\Framework\Indexer\IndexerRegistry;
 use Magento\Framework\Module\Manager as ModuleManager;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
+use Nosto\Tagging\Model\Indexer\Product\Indexer;
 use Nosto\Tagging\Model\Product\Service as NostoProductService;
 
 abstract class Base implements ObserverInterface
@@ -50,6 +52,7 @@ abstract class Base implements ObserverInterface
     protected $productService;
     protected $productRepository;
     protected $dataHelper;
+    protected $indexer;
 
     /**
      * Constructor.
@@ -58,17 +61,20 @@ abstract class Base implements ObserverInterface
      * @param NostoProductService $productService
      * @param ProductRepository $productRepository
      * @param NostoHelperData $dataHelper
+     * @param IndexerRegistry $indexerRegistry
      */
     public function __construct(
         ModuleManager $moduleManager,
         NostoProductService $productService,
         ProductRepository $productRepository,
-        NostoHelperData $dataHelper
+        NostoHelperData $dataHelper,
+        IndexerRegistry $indexerRegistry
     ) {
         $this->productService = $productService;
         $this->moduleManager = $moduleManager;
         $this->productRepository = $productRepository;
         $this->dataHelper = $dataHelper;
+        $this->indexer = $indexerRegistry->get(Indexer::INDEXER_ID);
     }
 
     /**
@@ -81,7 +87,9 @@ abstract class Base implements ObserverInterface
      */
     public function execute(Observer $observer)
     {
-        if ($this->moduleManager->isEnabled(NostoHelperData::MODULE_NAME)) {
+        if ($this->moduleManager->isEnabled(NostoHelperData::MODULE_NAME)
+            && !$this->indexer->isScheduled()
+        ) {
             /* @var \Magento\Catalog\Model\Product $product */
             /** @noinspection PhpUndefinedMethodInspection */
             $product = $this->extractProduct($observer);
