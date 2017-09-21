@@ -379,7 +379,6 @@ class Service
 
         foreach ($uniqueProductIds as $productId) {
             $nostoProduct = $this->nostoProductBuilder->buildForDeletion($productId);
-            $nostoProduct->setProductId('');
             $op->addProduct($nostoProduct);
             $this->logger->info('product to be deleted: ' . $productId);
         }
