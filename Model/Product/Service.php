@@ -379,13 +379,13 @@ class Service
 
         foreach ($uniqueProductIds as $productId) {
             $nostoProduct = $this->nostoProductBuilder->buildForDeletion($productId);
+            $nostoProduct->setProductId('');
             $op->addProduct($nostoProduct);
             $this->logger->info('product to be deleted: ' . $productId);
         }
 
         try {
-            //TODO - Add DeleteProduct in PHP SDK & call delete
-            //$op->discontinue();
+            $op->upsert();
             $this->logger->info(
                 sprintf(
                     'Sent %d products to for deletion %s (%d)',

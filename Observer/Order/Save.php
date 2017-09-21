@@ -38,6 +38,7 @@ namespace Nosto\Tagging\Observer\Order;
 
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
+use Magento\Framework\Indexer\IndexerRegistry;
 use Magento\Framework\Module\Manager as ModuleManager;
 use Magento\Sales\Model\Order;
 use Nosto\Operation\OrderConfirm;
@@ -45,10 +46,12 @@ use Nosto\Request\Http\HttpRequest;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
+use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Customer as NostoCustomer;
 use Nosto\Tagging\Model\CustomerFactory;
+use Nosto\Tagging\Model\Indexer\Product\Indexer;
 use Nosto\Tagging\Model\Order\Builder as NostoOrderBuilder;
-use Nosto\Tagging\Logger\Logger as NostoLogger;
+
 
 /**
  * Class Save
@@ -63,6 +66,7 @@ class Save implements ObserverInterface
     private $moduleManager;
     private $customerFactory;
     private $nostoHelperScope;
+    private $indexer;
 
     /** @noinspection PhpUndefinedClassInspection */
     /**
@@ -75,6 +79,7 @@ class Save implements ObserverInterface
      * @param ModuleManager $moduleManager
      * @param CustomerFactory $customerFactory
      * @param NostoOrderBuilder $orderBuilder
+     * @param IndexerRegistry $indexerRegistry
      */
     public function __construct(
         NostoHelperData $nostoHelperData,
@@ -84,7 +89,8 @@ class Save implements ObserverInterface
         ModuleManager $moduleManager,
         /** @noinspection PhpUndefinedClassInspection */
         CustomerFactory $customerFactory,
-        NostoOrderBuilder $orderBuilder
+        NostoOrderBuilder $orderBuilder,
+        IndexerRegistry $indexerRegistry
     ) {
         $this->nostoHelperData = $nostoHelperData;
         $this->nostoHelperAccount = $nostoHelperAccount;
@@ -92,6 +98,8 @@ class Save implements ObserverInterface
         $this->moduleManager = $moduleManager;
         $this->nostoOrderBuilder = $orderBuilder;
         $this->customerFactory = $customerFactory;
+        $this->indexer = $indexerRegistry->get(Indexer::INDEXER_ID);
+
 
         HttpRequest::buildUserAgent(
             'Magento',
@@ -140,6 +148,19 @@ class Save implements ObserverInterface
                             $e->getMessage()
                         )
                     );
+                }
+
+                //update inventory level
+                if (!$this->indexer->isScheduled() && $this->nostoHelperData->isInventoryTaggingEnabled()) {
+                    $items = $nostoOrder->getPurchasedItems();
+                    if ($items) {
+                        $productIds = array();
+                        foreach ($items as $item) {
+                            $productIds[] = $item->getProductId();
+                        }
+
+                        $this->indexer->reindexList($productIds);
+                    }
                 }
             }
         }
