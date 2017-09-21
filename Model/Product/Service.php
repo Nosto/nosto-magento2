@@ -384,8 +384,7 @@ class Service
         }
 
         try {
-            //TODO - Add DeleteProduct in PHP SDK & call delete
-            //$op->discontinue();
+            $op->upsert();
             $this->logger->info(
                 sprintf(
                     'Sent %d products to for deletion %s (%d)',

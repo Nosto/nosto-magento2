@@ -1,5 +1,9 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 2.3.6
+* Update related products by indexer if catalog price rule, review and rating or inventory level get updated
+* Update parent product by indexer if its child product has been deleted
+
 ### 2.3.5
 * Fix indexer bugs
  
