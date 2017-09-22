@@ -42,12 +42,10 @@
 ?>
 <!-- Nosto filter tagging -->
 <?php $filters = $block->getActiveFilters() ?>
-<div class="nosto_filter" style="display:none">
-    <?php if (!empty($filters)): ?>
+<?php if (!empty($filters)): ?>
+    <div class="nosto_filter" style="display:none">
         <?php foreach ($filters as $filter): ?>
-            <span class="<?php echo $block->escapeHtml(__($filter->getName())); ?>">
-                <?php /* @escapeNotVerified */ echo $block->stripTags($filter->getLabel()) ?>
-            </span>
+            <span class="<?php echo $block->escapeHtml(__($filter->getName())); ?>"><?php /* @escapeNotVerified */ echo $block->stripTags($filter->getLabel()) ?></span>
         <?php endforeach; ?>
-    <?php endif; ?>
-</div>
+    </div>
+<?php endif; ?>
