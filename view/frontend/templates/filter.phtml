@@ -41,11 +41,17 @@
  */
 ?>
 <!-- Nosto filter tagging -->
-<?php $filters = $block->getActiveFilters() ?>
+<?php $filters = $block->getNostoFilters() ?>
 <?php if (!empty($filters)): ?>
     <div class="nosto_filter" style="display:none">
         <?php foreach ($filters as $filter): ?>
             <span class="<?php echo $block->escapeHtml(__($filter->getName())); ?>"><?php /* @escapeNotVerified */ echo $block->stripTags($filter->getLabel()) ?></span>
         <?php endforeach; ?>
     </div>
+<?php endif; ?>
+
+<?php $priceRange = $block->getNostoPriceRange() ?>
+<?php if (!empty($priceRange)): ?>
+    <span class="nosto_price_from" style="display:none"><?php echo $block->escapeHtml(__($priceRange[0])); ?></span>
+    <span class="nosto_price_from" style="display:none"><?php echo $block->escapeHtml(__($priceRange[1])); ?></span>
 <?php endif; ?>

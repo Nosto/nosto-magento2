@@ -39,6 +39,7 @@ namespace Nosto\Tagging\Block;
 use Magento\Catalog\Model\Layer\Resolver as LayerResolver;
 use Magento\Framework\View\Element\Template\Context;
 use Magento\LayeredNavigation\Block\Navigation\State;
+use Magento\CatalogSearch\Model\Layer\Filter\Price;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 
@@ -75,6 +76,48 @@ class Filter extends State
      */
     public function getNostoFilters()
     {
-        return $this->getActiveFilters();
+        $filters = $this->getActiveFilters();
+
+        if (!$filters) {
+            return null;
+        }
+
+        $validFilters = array();
+
+        /** @var \Magento\Catalog\Model\Layer\Filter\Item $filter */
+        foreach ($filters as $filter) {
+            $model = $filter->getFilter();
+            if ($model instanceof Price) {
+                continue;
+            }
+
+            $validFilters[] = $filter;
+        }
+
+        return $validFilters;
+    }
+
+    public function getNostoPriceRange()
+    {
+        $filters = $this->getActiveFilters();
+        if (!$filters) {
+            return null;
+        }
+
+        /** @var \Magento\Catalog\Model\Layer\Filter\Item $filter */
+        foreach ($filters as $filter) {
+            $model = $filter->getFilter();
+            if ($model instanceof Price) {
+                $data = $filter->getData();
+                if ($data && array_key_exists('value', $data)) {
+                    $value = $data['value'];
+                    if (is_array($value) && array_key_exists(1, $value) && array_key_exists(0, $value)) {
+                        return $value;
+                    }
+                }
+            }
+        }
+
+        return null;
     }
 }
