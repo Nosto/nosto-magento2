@@ -49,7 +49,7 @@ class Filter extends State
     }
 
     /**
-     * Search constructor.
+     * Filter constructor.
      * @param Context $context
      * @param LayerResolver $layerResolver
      * @param NostoHelperAccount $nostoHelperAccount
