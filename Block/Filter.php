@@ -36,13 +36,17 @@
 
 namespace Nosto\Tagging\Block;
 
+use Magento\Catalog\Api\CategoryRepositoryInterface;
+use Magento\Catalog\Model\Category as CategoryModel;
 use Magento\Catalog\Model\Layer\Resolver as LayerResolver;
+use Magento\CatalogSearch\Model\Layer\Filter\Category;
+use Magento\CatalogSearch\Model\Layer\Filter\Price;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\View\Element\Template\Context;
 use Magento\LayeredNavigation\Block\Navigation\State;
-use Magento\CatalogSearch\Model\Layer\Filter\Price;
-use Magento\CatalogSearch\Model\Layer\Filter\Category;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
+use Nosto\Tagging\Model\Category\Builder as NostoCategoryBuilder;
 
 class Filter extends State
 {
@@ -50,12 +54,17 @@ class Filter extends State
         TaggingTrait::__construct as taggingConstruct;
     }
 
+    private $categoryBuilder;
+    private $categoryRepository;
+
     /**
      * Filter constructor.
      * @param Context $context
      * @param LayerResolver $layerResolver
      * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoHelperScope $nostoHelperScope
+     * @param NostoCategoryBuilder $categoryBuilder
+     * @param CategoryRepositoryInterface $categoryRepository
      * @param array $data
      */
     public function __construct(
@@ -63,11 +72,15 @@ class Filter extends State
         LayerResolver $layerResolver,
         NostoHelperAccount $nostoHelperAccount,
         NostoHelperScope $nostoHelperScope,
+        NostoCategoryBuilder $categoryBuilder,
+        CategoryRepositoryInterface $categoryRepository,
         array $data = []
     ) {
         parent::__construct($context, $layerResolver, $data);
 
         $this->taggingConstruct($nostoHelperAccount, $nostoHelperScope);
+        $this->categoryBuilder = $categoryBuilder;
+        $this->categoryRepository = $categoryRepository;
     }
 
     /**
@@ -134,7 +147,17 @@ class Filter extends State
         foreach ($filters as $filter) {
             $model = $filter->getFilter();
             if ($model instanceof Category) {
-                $categories[] = $filter;
+                $categoryId = $filter->getValueString();
+                if ($categoryId) {
+                    try {
+                        $category = $this->categoryRepository->get((int)$categoryId);
+                        if ($category instanceof CategoryModel) {
+                            $categories[] = $this->categoryBuilder->build($category);
+                        }
+                    } catch (NoSuchEntityException $noSuchEntityException) {
+                        continue;
+                    }
+                }
             }
         }
 
