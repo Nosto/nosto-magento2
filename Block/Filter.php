@@ -40,6 +40,7 @@ use Magento\Catalog\Model\Layer\Resolver as LayerResolver;
 use Magento\Framework\View\Element\Template\Context;
 use Magento\LayeredNavigation\Block\Navigation\State;
 use Magento\CatalogSearch\Model\Layer\Filter\Price;
+use Magento\CatalogSearch\Model\Layer\Filter\Category;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 
@@ -87,7 +88,7 @@ class Filter extends State
         /** @var \Magento\Catalog\Model\Layer\Filter\Item $filter */
         foreach ($filters as $filter) {
             $model = $filter->getFilter();
-            if ($model instanceof Price) {
+            if ($model instanceof Price || $model instanceof Category) {
                 continue;
             }
 
@@ -119,5 +120,24 @@ class Filter extends State
         }
 
         return null;
+    }
+
+    public function getNostoCategoryFilters()
+    {
+        $filters = $this->getActiveFilters();
+        if (!$filters) {
+            return null;
+        }
+
+        $categories = array();
+        /** @var \Magento\Catalog\Model\Layer\Filter\Item $filter */
+        foreach ($filters as $filter) {
+            $model = $filter->getFilter();
+            if ($model instanceof Category) {
+                $categories[] = $filter;
+            }
+        }
+
+        return $categories;
     }
 }

@@ -53,3 +53,10 @@
     <span class="nosto_price_from" style="display:none"><?php echo $block->escapeHtml(__($priceRange[0])); ?></span>
     <span class="nosto_price_from" style="display:none"><?php echo $block->escapeHtml(__($priceRange[1])); ?></span>
 <?php endif; ?>
+
+<?php $filters = $block->getNostoCategoryFilters() ?>
+<?php if (!empty($filters)): ?>
+    <?php foreach ($filters as $filter): ?>
+        <div class="nosto_category" style="display:none"><?php /* @escapeNotVerified */ echo $block->stripTags($filter->getLabel()) ?></div>
+    <?php endforeach; ?>
+<?php endif; ?>
