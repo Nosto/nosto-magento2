@@ -8,7 +8,7 @@
                 <version>image</version>
             </images>
             <flags>
-                <variation_tagging>0</variation_tagging>
+                <variation_tagging>1</variation_tagging>
                 <altimg_tagging>1</altimg_tagging>
                 <rating_tagging>1</rating_tagging>
                 <inventory_tagging>0</inventory_tagging>
