@@ -84,14 +84,13 @@ RUN        service mysql start && \
            mysql -e "GRANT ALL ON *.* TO 'root'@'localhost' IDENTIFIED BY 'root'" && \
            mysql -h localhost -uroot -proot -e "CREATE SCHEMA IF NOT EXISTS magento2" && \
            cd /var/www/html && \
-           composer config --global store-auths false && \
            composer config --global repositories.0 composer https://repo.magento.com && \
            composer config --global http-basic.repo.magento.com $repouser $repopass && \
            composer create-project magento/community-edition && \
            cd community-edition && \
            composer config --unset minimum-stability && \
            composer config repositories.0 composer https://repo.magento.com && \
-           composer config http-basic.repo.magento.com $REPOUSER $REPOPASS && \
+           composer config http-basic.repo.magento.com $repouser $repopass && \
            chmod +x bin/magento && \
            bin/magento setup:install \
               --timezone          "Europe/Helsinki" \
