@@ -8,11 +8,12 @@
                 <version>image</version>
             </images>
             <flags>
-                <variation_tagging>0</variation_tagging>
+                <variation_tagging>1</variation_tagging>
                 <altimg_tagging>1</altimg_tagging>
                 <rating_tagging>1</rating_tagging>
                 <inventory_tagging>0</inventory_tagging>
                 <product_updates>1</product_updates>
+                <full_reindex>1</full_reindex>
                 <low_stock_indication>0</low_stock_indication>
             </flags>
         </nosto>

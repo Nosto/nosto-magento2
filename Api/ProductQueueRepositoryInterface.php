@@ -97,6 +97,14 @@ interface ProductQueueRepositoryInterface
     public function getList(SearchCriteriaInterface $searchCriteria);
 
     /**
+     * Get list of productQueues
+     *
+     * @param int $pageSize
+     * @return ProductQueueSearchResultsInterface
+     */
+    public function getFirstPage($pageSize);
+
+    /**
      * Returns all entries in product queue
      *
      * @return ProductQueueSearchResultsInterface

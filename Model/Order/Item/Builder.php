@@ -93,7 +93,8 @@ class Builder
                 // baseDiscountAmount contains the discount for the whole row
                 $lineDiscount = $item->getBaseDiscountAmount() / $item->getQtyOrdered();
             }
-            $price = $item->getBasePrice() + $item->getBaseTaxAmount() - $lineDiscount;
+            $taxPerUnit = $item->getBaseTaxAmount() / $item->getQtyOrdered();
+            $price = $item->getBasePrice() + $taxPerUnit - $lineDiscount;
             // The item prices are always in base currency, convert to order currency if non base currency
             // is used for the order
             if ($order->getBaseCurrencyCode() !== $order->getOrderCurrencyCode()) {
@@ -105,7 +106,10 @@ class Builder
             $nostoItem->setPrice(0);
         }
 
-        $this->eventManager->dispatch('nosto_order_item_load_after', ['item' => $nostoItem, 'magentoItem' => $item]);
+        $this->eventManager->dispatch(
+            'nosto_order_item_load_after',
+            ['item' => $nostoItem, 'magentoItem' => $item]
+        );
 
         return $nostoItem;
     }

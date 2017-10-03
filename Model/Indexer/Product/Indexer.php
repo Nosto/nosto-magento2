@@ -3,6 +3,7 @@
  * Copyright © 2016 Magento. All rights reserved.
  * See COPYING.txt for license details.
  */
+
 namespace Nosto\Tagging\Model\Indexer\Product;
 
 use Magento\Catalog\Model\Product\Attribute\Source\Status;
@@ -10,6 +11,8 @@ use Magento\Catalog\Model\ProductRepository;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\Indexer\ActionInterface as IndexerActionInterface;
 use Magento\Framework\Mview\ActionInterface as MviewActionInterface;
+use Nosto\Tagging\Helper\Data as NostoHelperData;
+use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Product\Service as ProductService;
 
 /**
@@ -24,20 +27,28 @@ class Indexer implements IndexerActionInterface, MviewActionInterface
     private $productService;
     private $productRepository;
     private $searchCriteriaBuilder;
+    private $dataHelper;
+    private $logger;
 
     /**
      * @param ProductService $productService
      * @param ProductRepository $productRepository
      * @param SearchCriteriaBuilder $searchCriteriaBuilder
+     * @param NostoHelperData $dataHelper
+     * @param NostoLogger $logger
      */
     public function __construct(
         ProductService $productService,
         ProductRepository $productRepository,
-        SearchCriteriaBuilder $searchCriteriaBuilder
+        SearchCriteriaBuilder $searchCriteriaBuilder,
+        NostoHelperData $dataHelper,
+        NostoLogger $logger
     ) {
         $this->productService = $productService;
         $this->productRepository = $productRepository;
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;
+        $this->dataHelper = $dataHelper;
+        $this->logger = $logger;
     }
 
     /**
@@ -45,14 +56,18 @@ class Indexer implements IndexerActionInterface, MviewActionInterface
      */
     public function executeFull()
     {
-        // Fetch all enabled products
-        $searchCriteria = $this->searchCriteriaBuilder
-            ->addFilter('status', Status::STATUS_ENABLED, 'eq')
-            ->setPageSize(self::HARD_LIMIT_FOR_PRODUCTS)
-            ->setCurrentPage(1)
-            ->create();
-        $products = $this->productRepository->getList($searchCriteria);
-        $this->productService->update($products->getItems());
+        if ($this->dataHelper->isFullReindexEnabled()) {
+            // Fetch all enabled products
+            $searchCriteria = $this->searchCriteriaBuilder
+                ->addFilter('status', Status::STATUS_ENABLED, 'eq')
+                ->setPageSize(self::HARD_LIMIT_FOR_PRODUCTS)
+                ->setCurrentPage(1)
+                ->create();
+            $products = $this->productRepository->getList($searchCriteria);
+            $this->productService->update($products->getItems());
+        } else {
+            $this->logger->info('Skip full reindex since full reindex is disabled.');
+        }
     }
 
     /**
