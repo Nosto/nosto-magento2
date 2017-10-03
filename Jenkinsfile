@@ -3,7 +3,9 @@
 pipeline {
 
   environment {
-    FOO = "foo"
+    withCredentials([usernamePassword(credentialsId: 'amazon', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+      FOO = "foo"
+    }
   }
 
   agent {
