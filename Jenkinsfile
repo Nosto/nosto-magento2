@@ -22,6 +22,7 @@ pipeline {
       steps {
         catchError {
           sh "pwd"
+          sh "ls /var/www/html"
           sh "./vendor/bin/phpcbf --standard=ruleset.xml || true"
           sh "./vendor/bin/phpcs --standard=ruleset.xml --report=checkstyle --report-file=phpcs.xml || true"
         }
