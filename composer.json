@@ -14,6 +14,9 @@
     "magento/marketplace-eqp": "1.*",
     "magento/marketplace-tools": "dev-master"
   },
+  "suggest": {
+    "magento/product-community-edition": "2.*"
+  },
   "license": [
     "OSL-3.0"
   ],
