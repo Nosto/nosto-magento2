@@ -13,16 +13,17 @@ pipeline {
   }
 
   stages {
-    stage('Checkout') {
+    stage('"Prepare environment"') {
       steps {
         checkout scm
       }
     }
-    stage('Prebuild') {
+    stage('"Code Sniffer"') {
       steps {
         script {
-          sh 'echo hi'
+          sh 'ls'
         }
+        checkstyle 'phpcs.xml'
       }
     }
   }
