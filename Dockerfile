@@ -1,7 +1,5 @@
 FROM ubuntu:14.04
 
-ARG REPOUSER
-ARG REPOPASS
 ENV LANGUAGE en_US.UTF-8
 ENV LANG en_US.UTF-8
 ENV TERM xterm
@@ -12,6 +10,10 @@ ENV MAGENTO_ADMIN_USER admin
 ENV MAGENTO_ADMIN_PASSWORD Admin12345
 ENV COMPOSER_ALLOW_SUPERUSER 1
 ENV DEBIAN_FRONTEND noninteractive
+
+# Satis credentials for repo.magento.com to download the community edtition
+ARG         repouser=569521a9babbeda71b5cb25ce40168a3
+ARG         repopass=ef77d5e321fec542f3102e2059f3d192
 
 # Environment variables to force the extension to connect to a specified instance
 ENV         NOSTO_SERVER_URL staging.nosto.com
@@ -84,7 +86,7 @@ RUN        service mysql start && \
            cd /var/www/html && \
            composer config --global store-auths false && \
            composer config --global repositories.0 composer https://repo.magento.com && \
-           composer config --global http-basic.repo.magento.com $REPOUSER $REPOPASS && \
+           composer config --global http-basic.repo.magento.com $repouser $repopass && \
            composer create-project magento/community-edition && \
            cd community-edition && \
            composer config --unset minimum-stability && \

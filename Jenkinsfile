@@ -1,18 +1,8 @@
 #!/usr/bin/env groovy
 
-def FOO = credentials('magento')
-
 pipeline {
 
-  environment {
-    MAGENTO = credentials('magento')
-  }
-
-  agent {
-    dockerfile {
-      additionalBuildArgs "--build-arg REPOUSER=${env.MAGENTO_USR} --build-arg REPOPASS=${FOO}"
-    }
-  }
+  agent { dockerfile true }
 
   stages {
     stage('Prepare environment') {
@@ -20,6 +10,7 @@ pipeline {
         checkout scm
       }
     }
+
     stage('Code Sniffer') {
       steps {
         catchError {
@@ -29,6 +20,7 @@ pipeline {
         step([$class: 'hudson.plugins.checkstyle.CheckStylePublisher', pattern: 'phpcs.xml', unstableTotalAll:'0'])
       }
     }
+
     stage('Mess Detection') {
       steps {
         catchError {
@@ -37,6 +29,7 @@ pipeline {
         //step([$class: 'PmdPublisher', pattern: 'phpmd.xml', unstableTotalAll:'0'])
       }
     }
+
     stage('Phan Analysis') {
       steps {
         catchError {
@@ -45,6 +38,7 @@ pipeline {
         step([$class: 'hudson.plugins.checkstyle.CheckStylePublisher', pattern: 'phan.xml', unstableTotalAll:'0'])
       }
     }
+
     stage('Package') {
       steps {
         script {
