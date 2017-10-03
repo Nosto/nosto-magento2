@@ -21,7 +21,7 @@ pipeline {
         script {
           sh 'echo hi'
         }
-      }§
+      }
     }
   }
 }
