@@ -63,5 +63,11 @@ pipeline {
         archiveArtifacts "${version}.zip"
       }
     }
+
+    post {
+      always {
+        deleteDir()
+      }
+    }
   }
 }
