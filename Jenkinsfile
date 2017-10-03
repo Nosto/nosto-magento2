@@ -8,12 +8,12 @@ pipeline {
 
   agent {
     dockerfile {
-      additionalBuildArgs '--build-arg REPOUSER=${MAGENTO_USR} --build-arg REPOPASS=${MAGENTO_USR}'
+      additionalBuildArgs '--build-arg REPOUSER=${env.MAGENTO_USR} --build-arg REPOPASS=${env.MAGENTO_USR}'
     }
   }
 
   stages {
-    stage('"Prepare environment"') {
+    stage('Prepare environment') {
       steps {
         checkout scm
       }
