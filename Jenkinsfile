@@ -13,7 +13,6 @@ pipeline {
 
     stage('Update Dependencies') {
       steps {
-        sh "whoami"
         sh "composer config --list --global"
         sh "composer install"
       }
