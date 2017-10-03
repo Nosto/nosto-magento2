@@ -4,11 +4,12 @@ pipeline {
 
   environment {
     MAGENTO = credentials('magento')
+    FOO = 'hello'
   }
 
   agent {
     dockerfile {
-      additionalBuildArgs "--build-arg REPOUSER=${env.MAGENTO_USR} --build-arg REPOPASS=${env.MAGENTO_USR}"
+      additionalBuildArgs "--build-arg REPOUSER=${env.MAGENTO_USR} --build-arg REPOPASS=${env.FOO}"
     }
   }
 
