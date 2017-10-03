@@ -1,15 +1,16 @@
 #!/usr/bin/env groovy
 
+def FOO = credentials('magento')
+
 pipeline {
 
   environment {
     MAGENTO = credentials('magento')
-    FOO = 'hello'
   }
 
   agent {
     dockerfile {
-      additionalBuildArgs "--build-arg REPOUSER=${env.MAGENTO_USR} --build-arg REPOPASS=${env.FOO}"
+      additionalBuildArgs "--build-arg REPOUSER=${env.MAGENTO_USR} --build-arg REPOPASS=${FOO}"
     }
   }
 
