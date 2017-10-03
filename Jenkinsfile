@@ -13,9 +13,8 @@ pipeline {
 
     stage('Update Dependencies') {
       steps {
-        catchError {
-          sh "composer install"
-        }
+        sh "whoami"
+        sh "composer install"
       }
     }
 
