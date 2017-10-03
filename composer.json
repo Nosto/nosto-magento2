@@ -12,8 +12,10 @@
     "phing/phing": "2.*",
     "magento-ecg/coding-standard": "2.*",
     "magento/marketplace-eqp": "1.*",
-    "magento/product-community-edition": "^2.1.0",
     "magento/marketplace-tools": "dev-master"
+  },
+  "suggest": {
+    "magento/product-community-edition": "2.*"
   },
   "license": [
     "OSL-3.0"
