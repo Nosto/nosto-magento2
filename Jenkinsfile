@@ -3,7 +3,7 @@
 pipeline {
 
   environment {
-    MAGENTO = credentials('sauce-lab-dev')
+    MAGENTO = credentials('magento')
   }
 
   agent {
