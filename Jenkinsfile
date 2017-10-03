@@ -11,6 +11,13 @@ pipeline {
       }
     }
 
+    stage('Update Dependencies') {
+    steps {
+      catchError {
+        sh "composer install"
+      }
+    }
+
     stage('Code Sniffer') {
       steps {
         catchError {
