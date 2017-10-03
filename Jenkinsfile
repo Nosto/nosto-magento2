@@ -15,8 +15,8 @@ pipeline {
       }
     }
     stage('Prebuild') {
-      script {
-        steps {
+      steps {
+        script {
           sh 'echo hi'
         }
       }
