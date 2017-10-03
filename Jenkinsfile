@@ -12,9 +12,10 @@ pipeline {
     }
 
     stage('Update Dependencies') {
-    steps {
-      catchError {
-        sh "composer install"
+      steps {
+        catchError {
+          sh "composer install"
+        }
       }
     }
 
