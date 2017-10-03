@@ -4,6 +4,7 @@ pipeline {
 
   environment {
     MAGENTO = credentials('magento')
+    FOO = 'moomoo'
   }
 
   agent any
@@ -13,6 +14,7 @@ pipeline {
         echo "${MAGENTO}"
         echo "${env.MAGENTO}"
         echo "${env.MAGENTO_USR}"
+        echo "${env.FOO}"
       }
     }
   }
