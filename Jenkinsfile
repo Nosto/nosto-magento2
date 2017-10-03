@@ -3,8 +3,10 @@
 pipeline {
 
   agent {
-    dockerfile {
-      additionalBuildArgs '--build-arg REPOUSER=foo --build-arg REPOPASS=bar'
+    withCredentials([usernamePassword(credentialsId: 'amazon', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+      dockerfile {
+        additionalBuildArgs '--build-arg REPOUSER=foo --build-arg REPOPASS=bar'
+        }
     }
   }
 
@@ -19,7 +21,7 @@ pipeline {
         script {
           sh 'echo hi'
         }
-      }
+      }§
     }
   }
 }
