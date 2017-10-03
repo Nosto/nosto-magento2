@@ -1,0 +1,36 @@
+FROM m2test
+
+RUN set -m
+
+WORKDIR "/var/www/html/"
+
+
+COPY default.conf /etc/apache2/sites-enabled
+RUN service mysql restart && \
+    mysql -e "GRANT ALL ON *.* TO 'root'@'localhost' IDENTIFIED BY 'root'" && \
+    mysql -h localhost -uroot -proot -e "CREATE SCHEMA IF NOT EXISTS magento2" && \
+    cd /var/www/html && \
+    composer create-project magento/community-edition && \
+    cd community-edition && \
+    chmod +x bin/magento && \
+    bin/magento setup:install \
+        --timezone "Europe/Helsinki" \
+        --currency "EUR" \
+        --db-host "localhost" \
+        --db-name "magento2" \
+        --db-user "root" \
+        --db-password "root" \
+        --base-url "http://localhost/community-edition/" \
+        --use-rewrites 1 \
+        --use-secure 0 \
+        --base-url-secure "https://localhost/community-edition/" \
+        --use-secure-admin 0 \
+        --admin-firstname "Admin" \
+        --admin-lastname "Admin" \
+        --admin-email "devnull@xxxnotarealdomain.com" \
+        --admin-user "admin" \
+        --admin-password "Admin12345" \
+        --backend-frontname "admin"
+
+EXPOSE 443 80
+ENTRYPOINT ["/usr/sbin/apache2ctl", "-D", "FOREGROUND"]

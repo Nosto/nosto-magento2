@@ -10,9 +10,15 @@ ENV MYSQL_ENV_MYSQL_USER root
 ENV MYSQL_ENV_MYSQL_ROOT root
 ENV MAGENTO_ADMIN_USER admin
 ENV MAGENTO_ADMIN_PASSWORD Admin12345
-ENV VIRTUAL_HOST localhost
 ENV COMPOSER_ALLOW_SUPERUSER 1
 ENV DEBIAN_FRONTEND noninteractive
+
+# Environment variables to force the extension to connect to a specified instance
+ENV         NOSTO_SERVER_URL staging.nosto.com
+ENV         NOSTO_API_BASE_URL https://staging.nosto.com/api
+ENV         NOSTO_OAUTH_BASE_URL https://staging.nosto.com/oauth
+ENV         NOSTO_WEB_HOOK_BASE_URL https://staging.nosto.com
+ENV         NOSTO_IFRAME_ORIGIN_REGEXP .*
 
 MAINTAINER  Nosto "platforms@nosto.com"
 
