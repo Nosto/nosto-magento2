@@ -4,7 +4,7 @@ pipeline {
 
   agent {
     dockerfile {
-      additionalBuildArgs '--build-arg REPOUSER=foo REPOPASS=bar'
+      additionalBuildArgs '--build-arg REPOUSER=foo --build-arg REPOPASS=bar'
     }
   }
 
