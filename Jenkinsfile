@@ -3,14 +3,12 @@
 pipeline {
 
   environment {
-    withCredentials([usernamePassword(credentialsId: 'amazon', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-      FOO = "foo"
-    }
+    MAGENTO = credentials('sauce-lab-dev')
   }
 
   agent {
     dockerfile {
-      additionalBuildArgs '--build-arg REPOUSER=foo --build-arg REPOPASS=bar'
+      additionalBuildArgs '--build-arg REPOUSER=${MAGENTO_USR} --build-arg REPOPASS=${MAGENTO_USR}'
     }
   }
 
