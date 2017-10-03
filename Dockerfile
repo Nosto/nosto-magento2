@@ -1,5 +1,7 @@
 FROM ubuntu:14.04
 
+ARG REPOUSER
+ARG REPOPASS
 ENV LANGUAGE en_US.UTF-8
 ENV LANG en_US.UTF-8
 ENV TERM xterm
@@ -12,54 +14,118 @@ ENV VIRTUAL_HOST localhost
 ENV COMPOSER_ALLOW_SUPERUSER 1
 ENV DEBIAN_FRONTEND noninteractive
 
-MAINTAINER Nosto "platforms@nosto.com"
+MAINTAINER  Nosto "platforms@nosto.com"
 
-# Utils
-RUN apt-get update && apt-get -y install unzip wget libfreetype6-dev libjpeg-dev libmcrypt-dev libreadline-dev libpng-dev libicu-dev mysql-client libmcrypt-dev libxml2-dev libxslt1-dev vim nano git nano tree
+RUN         export LC_ALL=en_US.UTF-8
+# Install all core dependencies required for setting up Apache and PHP atleast
+RUN         apt-get update && \
+            apt-get -y install unzip && \
+            apt-get -y install wget && \
+            apt-get -y install libfreetype6-dev && \
+            apt-get -y install libjpeg-dev && \
+            apt-get -y install libmcrypt-dev && \
+            apt-get -y install libreadline-dev && \
+            apt-get -y install libpng-dev && \
+            apt-get -y install libicu-dev && \
+            apt-get -y install mysql-client && \
+            apt-get -y install libmcrypt-dev && \
+            apt-get -y install libxml2-dev && \
+            apt-get -y install libxslt1-dev && \
+            apt-get -y install vim && \
+            apt-get -y install nano && \
+            apt-get -y install git && \
+            apt-get -y install nano && \
+            apt-get -y install tree && \
+            apt-get -y install curl && \
+            apt-get -y install software-properties-common && \
+            apt-get -y install language-pack-en-base && \
+            apt-get -y install supervisor
 
-# Supervisor
-RUN apt-get install -y software-properties-common
+# Add the custom PHP repository to install the PHP modules. In order to use the
+# command to add a repo, the package software-properties-common must be already
+# installed
+RUN        add-apt-repository ppa:ondrej/php
 
-RUN apt-get install -y language-pack-en-base
-RUN LC_ALL=en_US.UTF-8 add-apt-repository ppa:ondrej/php
-
-# Apache & PHP & MySQL
-RUN apt-get update && apt-get -y install apache2 php7.0 mysql-client-core-5.6 mysql-server-core-5.6 mysql-server-5.6
-RUN a2enmod rewrite
-
-# PHP extensions
-RUN apt-get install -y php7.0-dev php7.0-gd php7.0-mcrypt php7.0-intl php7.0-xsl php7.0-zip php7.0-bcmath php7.0-curl php7.0-mbstring php7.0-mysql
-RUN cd /tmp && \
-    git clone https://github.com/nikic/php-ast.git && \
-    cd php-ast && \
-    phpize && \
-    ./configure && \
-    make install && \
-    rm -rf /tmp/php-ast
-
-COPY .docker/index.php /var/www/html/
-COPY .docker/init-and-run /usr/bin/init-and-run
-RUN chmod +x /usr/bin/init-and-run
-COPY .docker/php/extensions/* /etc/php/7.0/mods-available/
-RUN rm /etc/apache2/sites-enabled/*
-COPY .docker/apache/* /etc/apache2/sites-enabled
-RUN ln -s /etc/php/7.0/mods-available/ast.ini /etc/php/7.0/apache2/conf.d/20-ast.ini
-RUN ln -s /etc/php/7.0/mods-available/ast.ini /etc/php/7.0/cli/conf.d/20-ast.ini
+# Install Apache, MySQL and all the required development and prod PHP modules
+RUN        apt-get update && \
+           apt-get -y install apache2 && \
+           apt-get -y install php7.0 && \
+           apt-get -y install mysql-client-core-5.6 && \
+           apt-get -y install mysql-server-core-5.6 && \
+           apt-get -y install mysql-server-5.6 && \
+           apt-get -y install php7.0-dev && \
+           apt-get -y install php7.0-gd && \
+           apt-get -y install php7.0-mcrypt && \
+           apt-get -y install php7.0-intl && \
+           apt-get -y install php7.0-xsl && \
+           apt-get -y install php7.0-zip && \
+           apt-get -y install php7.0-bcmath && \
+           apt-get -y install php7.0-curl && \
+           apt-get -y install php7.0-mbstring && \
+           apt-get -y install php7.0-mysql && \
+           apt-get -y install php-ast && \
+           apt-get -y install php7.0-soap && \
+           a2enmod rewrite && phpenmod ast soap && \
+           a2dissite 000-default.conf
 
 RUN php -r "readfile('https://getcomposer.org/installer');" > composer-setup.php && \
     php composer-setup.php --install-dir=/usr/local/bin --filename=composer && \
     php -r "unlink('composer-setup.php');"
 
-WORKDIR "/var/www/html/"
-RUN composer create-project magento/community-edition
-RUN chmod +x /var/www/html/community-edition/bin/magento
+RUN        service mysql start && \
+           mysql -e "GRANT ALL ON *.* TO 'root'@'localhost' IDENTIFIED BY 'root'" && \
+           mysql -h localhost -uroot -proot -e "CREATE SCHEMA IF NOT EXISTS magento2" && \
+           cd /var/www/html && \
+           composer config --global store-auths false && \
+           composer config --global repositories.0 composer https://repo.magento.com && \
+           composer config --global http-basic.repo.magento.com $REPOUSER $REPOPASS && \
+           composer create-project magento/community-edition && \
+           cd community-edition && \
+           composer config --unset minimum-stability && \
+           composer config repositories.0 composer https://repo.magento.com && \
+           composer config http-basic.repo.magento.com $REPOUSER $REPOPASS && \
+           chmod +x bin/magento && \
+           bin/magento setup:install \
+              --timezone          "Europe/Helsinki" \
+              --currency          "EUR" \
+              --db-host           "localhost" \
+              --db-name           "magento2" \
+              --db-user           "root" \
+              --db-password       "root" \
+              --base-url          "http://localhost/community-edition/" \
+              --use-rewrites       1 \
+              --use-secure         0 \
+              --base-url-secure   "https://localhost/community-edition/" \
+              --use-secure-admin   0 \
+              --admin-firstname   "Admin" \
+              --admin-lastname    "User" \
+              --admin-email       "admin@nosto.com" \
+              --admin-user        "admin" \
+              --admin-password    "Admin12345" \
+              --backend-frontname "admin" && \
+           bin/magento deploy:mode:set --skip-compilation production && \
+           bin/magento sampledata:deploy && \
+           bin/magento setup:upgrade && \
+           bin/magento setup:di:compile && \
+           service mysql stop && \
+           chown -R www-data:www-data /var/www/html/community-edition/
 
-# Magento 2 sample data
-RUN mkdir /var/www/html/sample-data
-WORKDIR "/var/www/html/sample-data"
-RUN git clone https://github.com/magento/magento2-sample-data .
-RUN git checkout tags/2.1.8
+# Set the working directory to the Magento installation then install the latest
+# version of the extension without the development dependencies. The dependency
+# injection is then generated and all static content is deployed.
+# Notice that MySQL is also shut down to prevent database corruption.
+WORKDIR    /var/www/html/community-edition
+RUN        service mysql start && \
+           composer require --update-no-dev nosto/module-nostotagging:@stable && \
+           bin/magento deploy:mode:set --skip-compilation production && \
+           bin/magento module:enable --clear-static-content Nosto_Tagging && \
+           bin/magento setup:upgrade && \
+           bin/magento setup:di:compile && \
+           bin/magento setup:static-content:deploy && \
+           service mysql stop && \
+           chown -R www-data:www-data /var/www/html/community-edition/
 
-WORKDIR "/"
-EXPOSE 443 80 3306
-ENTRYPOINT ["init-and-run"]
+EXPOSE     443 80
+COPY       default.conf     /etc/apache2/sites-enabled
+COPY       supervisord.conf /etc/supervisord.conf
+ENTRYPOINT ["supervisord", "-c", "/etc/supervisord.conf"]
