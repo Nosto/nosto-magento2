@@ -63,8 +63,10 @@ pipeline {
 
     stage('Test') {
       steps {
-        dir('/var/www/html/community-edition') {
-          sh "composer install nosto/nosto-magento#dev-develop"
+        script {
+          dir('/var/www/html/community-edition') {
+            sh "composer install nosto/nosto-magento#dev-develop"
+          }
         }
       }
     }
