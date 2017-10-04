@@ -132,9 +132,8 @@ RUN        service mysql start && \
            service mysql stop && \
            chown -R www-data:www-data /var/www/html/community-edition/
 
-RUN        groupadd -r plugins -g 113
-RUN        useradd -ms /bin/bash -u 113 -r -g plugins plugins
-RUN        usermod -a -G www-data plugins
+RUN        groupadd -r plugins -g 113 && \
+           useradd -ms /bin/bash -u 113 -r -G plugins,www-data plugins
 USER       plugins
 EXPOSE     443 80
 COPY       default.conf     /etc/apache2/sites-enabled
