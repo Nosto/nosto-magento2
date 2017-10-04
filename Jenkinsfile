@@ -46,6 +46,7 @@ pipeline {
         catchError {
           sh "./vendor/bin/phan --config-file=phan.php --output-mode=checkstyle --output=phan.xml || true"
         }
+        sh 'ls -lah'
         checkstyle pattern: 'phan.xml', unstableTotalAll:'0'
       }
     }
