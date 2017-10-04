@@ -12,7 +12,8 @@
     "phing/phing": "2.*",
     "magento-ecg/coding-standard": "2.*",
     "magento/marketplace-eqp": "1.*",
-    "magento/marketplace-tools": "dev-master"
+    "magento/marketplace-tools": "dev-master",
+    "magento/framework": "*"
   },
   "suggest": {
     "magento/product-community-edition": "2.*"
