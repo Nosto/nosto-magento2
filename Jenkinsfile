@@ -71,9 +71,8 @@ pipeline {
           sh 'groups www-data'
           sh 'ls -lah /var/www/html'
           sh 'ls -lah /var/www/html/community-edition/'
-          dir('/var/www/html/community-edition') {
-            sh "composer install nosto/nosto-magento#dev-develop"
-          }
+          sh 'cd /var/www/html/community-edition'
+          sh "composer install nosto/nosto-magento#dev-develop"
         }
       }
     }
