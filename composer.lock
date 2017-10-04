@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "f22a06ad6e8b918b3f8e129ab7a9e338",
+    "content-hash": "ef53cf5015633fd774aef8979483a045",
     "packages": [
         {
             "name": "nosto/php-sdk",
@@ -1796,12 +1796,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/config.git",
-                "reference": "9d9c616668ebaa59b7fb2db2277724ec92f1a80b"
+                "reference": "78bf73b9826d80753d1c6f9d76cd40cd0fc336ab"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/config/zipball/9d9c616668ebaa59b7fb2db2277724ec92f1a80b",
-                "reference": "9d9c616668ebaa59b7fb2db2277724ec92f1a80b",
+                "url": "https://api.github.com/repos/symfony/config/zipball/78bf73b9826d80753d1c6f9d76cd40cd0fc336ab",
+                "reference": "78bf73b9826d80753d1c6f9d76cd40cd0fc336ab",
                 "shasum": ""
             },
             "require": {
@@ -1850,7 +1850,7 @@
             ],
             "description": "Symfony Config Component",
             "homepage": "https://symfony.com",
-            "time": "2017-10-02T06:49:52+00:00"
+            "time": "2017-10-04T18:58:07+00:00"
         },
         {
             "name": "symfony/console",

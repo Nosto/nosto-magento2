@@ -18,7 +18,7 @@ pipeline {
       steps {
         sh "composer config repositories.0 composer https://repo.magento.com"
         sh "composer config http-basic.repo.magento.com $REPO_USR $REPO_PSW"
-        sh "composer install"
+        sh "composer install --no-progress"
       }
     }
 
@@ -74,7 +74,7 @@ pipeline {
           sh 'ls -lah /var/www/html/community-edition/'
           sh 'cd /var/www/html/community-edition'
           sh 'composer remove nosto/module-nostotagging'
-          sh "composer install --no-dev nosto/module-nostotagging#dev-develop"
+          sh "composer install --no-progress nosto/module-nostotagging#dev-develop"
         }
       }
     }
