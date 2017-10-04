@@ -5,7 +5,7 @@
   "version": "2.3.7",
   "require-dev": {
     "php": ">=5.5.0",
-    "etsy/phan": "0.8.0",
+    "phan/phan": "0.8.*",
     "phpmd/phpmd": "^2.5",
     "sebastian/phpcpd": "*",
     "phpdocumentor/reflection-docblock": "3.0.0",

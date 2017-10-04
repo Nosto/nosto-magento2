@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "ef53cf5015633fd774aef8979483a045",
+    "content-hash": "c5bb4a44d8d633d3db436ea35080f292",
     "packages": [
         {
             "name": "nosto/php-sdk",
@@ -572,61 +572,6 @@
             "time": "2017-02-14T19:40:03+00:00"
         },
         {
-            "name": "etsy/phan",
-            "version": "0.8.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/phan/phan.git",
-                "reference": "685bb56bf88a1485bb76a3e3cc2469357d1bd8e4"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/phan/phan/zipball/685bb56bf88a1485bb76a3e3cc2469357d1bd8e4",
-                "reference": "685bb56bf88a1485bb76a3e3cc2469357d1bd8e4",
-                "shasum": ""
-            },
-            "require": {
-                "ext-ast": "*",
-                "php": "~7.0.0",
-                "symfony/console": "~2.3|~3.0"
-            },
-            "require-dev": {
-                "phpdocumentor/phpdocumentor": "^2.9.0",
-                "phpunit/phpunit": "^5.7.2",
-                "squizlabs/php_codesniffer": "^2.7.1"
-            },
-            "bin": [
-                "phan",
-                "tocheckstyle"
-            ],
-            "type": "project",
-            "autoload": {
-                "psr-4": {
-                    "Phan\\": "src/Phan"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Rasmus Lerdorf"
-                },
-                {
-                    "name": "Andrew S. Morrison"
-                }
-            ],
-            "description": "A static analyzer for PHP",
-            "keywords": [
-                "analyzer",
-                "php",
-                "static"
-            ],
-            "abandoned": "phan/phan",
-            "time": "2017-01-24T16:41:51+00:00"
-        },
-        {
             "name": "justinrainbow/json-schema",
             "version": "5.x-dev",
             "source": {
@@ -891,6 +836,57 @@
             "time": "2017-06-19T01:22:40+00:00"
         },
         {
+            "name": "nikic/php-parser",
+            "version": "v3.1.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/nikic/PHP-Parser.git",
+                "reference": "a1e8e1a30e1352f118feff1a8481066ddc2f234a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/a1e8e1a30e1352f118feff1a8481066ddc2f234a",
+                "reference": "a1e8e1a30e1352f118feff1a8481066ddc2f234a",
+                "shasum": ""
+            },
+            "require": {
+                "ext-tokenizer": "*",
+                "php": ">=5.5"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~4.0|~5.0"
+            },
+            "bin": [
+                "bin/php-parse"
+            ],
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "3.0-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "PhpParser\\": "lib/PhpParser"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Nikita Popov"
+                }
+            ],
+            "description": "A PHP parser written in PHP",
+            "keywords": [
+                "parser",
+                "php"
+            ],
+            "time": "2017-09-02T17:10:46+00:00"
+        },
+        {
             "name": "oyejorge/less.php",
             "version": "1.7.x-dev",
             "source": {
@@ -988,6 +984,63 @@
             ],
             "description": "Official version of pdepend to be handled with Composer",
             "time": "2017-01-19T14:23:36+00:00"
+        },
+        {
+            "name": "phan/phan",
+            "version": "0.8.x-dev",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/phan/phan.git",
+                "reference": "9a559221a31526ff2f09947800cd6cc4ba592ac9"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/phan/phan/zipball/9a559221a31526ff2f09947800cd6cc4ba592ac9",
+                "reference": "9a559221a31526ff2f09947800cd6cc4ba592ac9",
+                "shasum": ""
+            },
+            "require": {
+                "ext-ast": "^0.1.4",
+                "nikic/php-parser": "~3.1.1",
+                "php": "~7.0.0 || ~7.1.0 || ~7.2.0",
+                "symfony/console": "~2.3|~3.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^6.3.0"
+            },
+            "bin": [
+                "phan",
+                "phan_client",
+                "tocheckstyle"
+            ],
+            "type": "project",
+            "autoload": {
+                "psr-4": {
+                    "Phan\\": "src/Phan"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Rasmus Lerdorf"
+                },
+                {
+                    "name": "Andrew S. Morrison"
+                },
+                {
+                    "name": "Tyson Andre"
+                }
+            ],
+            "description": "A static analyzer for PHP",
+            "keywords": [
+                "analyzer",
+                "php",
+                "static"
+            ],
+            "time": "2017-09-24T20:02:32+00:00"
         },
         {
             "name": "phing/phing",
