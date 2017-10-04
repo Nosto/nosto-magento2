@@ -64,6 +64,8 @@ pipeline {
     stage('Test') {
       steps {
         script {
+          sh 'pwd'
+          sh '/var/www/html'
           dir('/var/www/html/community-edition') {
             sh "composer install nosto/nosto-magento#dev-develop"
           }
