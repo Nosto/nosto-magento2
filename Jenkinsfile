@@ -74,7 +74,7 @@ pipeline {
           sh 'ls -lah /var/www/html/community-edition/'
           sh 'cd /var/www/html/community-edition'
           sh 'composer remove nosto/module-nostotagging'
-          sh "composer install nosto/module-nostotagging#dev-develop"
+          sh "composer install --no-dev nosto/module-nostotagging#dev-develop"
         }
       }
     }
