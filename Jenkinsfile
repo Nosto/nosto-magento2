@@ -65,7 +65,9 @@ pipeline {
       steps {
         script {
           sh 'pwd'
-          sh '/var/www/html'
+          sh 'whoami'
+          sh 'groups'
+          sh 'ls -lah /var/www/html'
           dir('/var/www/html/community-edition') {
             sh "composer install nosto/nosto-magento#dev-develop"
           }
