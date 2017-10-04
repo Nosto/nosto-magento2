@@ -47,7 +47,6 @@ return [
         'Model',
         'Helper',
         'Observer',
-        '.phan/stubs',
         'vendor/vlucas',
         'vendor/nosto/php-sdk',
         'vendor/phpseclib',
