@@ -18,7 +18,6 @@ pipeline {
       steps {
         sh "composer config repositories.0 composer https://repo.magento.com"
         sh "composer config http-basic.repo.magento.com $REPO_USR $REPO_PSW"
-        sh "composer config --list --global"
         sh "composer install"
       }
     }
