@@ -64,6 +64,7 @@ pipeline {
     stage('Test') {
       steps {
         script {
+          sh 'export'
           sh 'echo $BRANCH_NAME'
           sh 'pwd'
           sh 'whoami'
