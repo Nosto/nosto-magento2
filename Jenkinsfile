@@ -77,6 +77,10 @@ pipeline {
           //sh 'composer remove nosto/module-nostotagging'
           sh 'composer config repositories.local path $WORKSPACE'
           sh 'pwd'
+          dir('/var/www/html/community-edition') {
+            sh 'pwd'
+            sh 'ls -lah bin/'
+          }
           sh 'ls -lah bin/'
           sh 'composer require --no-progress nosto/module-nostotagging:@dev'
           sh 'bin/magento setup:upgrade'
