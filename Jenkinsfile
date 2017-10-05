@@ -58,6 +58,14 @@ pipeline {
     }
   }
 
+  stage('Mage') {
+    steps {
+      script {
+        sh '/var/www/html/community-edition/bin/magento setup:di:compile'
+      }
+    }
+  }
+
   post {
     always {
       checkstyle pattern: 'chk*.xml', unstableTotalAll:'0'
