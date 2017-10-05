@@ -56,14 +56,6 @@ pipeline {
         archiveArtifacts "${version}.zip"
       }
     }
-
-    stage('Mage') {
-      steps {
-        script {
-          sh '/var/www/html/community-edition/bin/magento setup:di:compile'
-        }
-      }
-    }
   }
 
   post {
