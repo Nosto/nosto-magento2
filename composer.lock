@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "0f10ed1455538b12959a90e3619bb809",
+    "content-hash": "8aeb6eeade4d96a73303822ba00ba2d0",
     "packages": [
         {
             "name": "nosto/php-sdk",
@@ -865,6 +865,53 @@
             "description": "N/A"
         },
         {
+            "name": "magento/module-bundle",
+            "version": "100.2.0",
+            "dist": {
+                "type": "zip",
+                "url": "https://repo.magento.com/archives/magento/module-bundle/magento-module-bundle-100.2.0.0.zip",
+                "reference": null,
+                "shasum": "21414ea21169b9144a51acc41528c25c33715fe9"
+            },
+            "require": {
+                "magento/framework": "101.0.*",
+                "magento/module-backend": "100.2.*",
+                "magento/module-catalog": "102.0.*",
+                "magento/module-catalog-inventory": "100.2.*",
+                "magento/module-catalog-rule": "101.0.*",
+                "magento/module-checkout": "100.2.*",
+                "magento/module-config": "101.0.*",
+                "magento/module-customer": "101.0.*",
+                "magento/module-eav": "101.0.*",
+                "magento/module-gift-message": "100.2.*",
+                "magento/module-media-storage": "100.2.*",
+                "magento/module-quote": "101.0.*",
+                "magento/module-sales": "101.0.*",
+                "magento/module-store": "100.2.*",
+                "magento/module-tax": "100.2.*",
+                "magento/module-ui": "101.0.*",
+                "php": "7.0.2|7.0.4|~7.0.6|~7.1.0"
+            },
+            "suggest": {
+                "magento/module-bundle-sample-data": "Sample Data version:100.2.*",
+                "magento/module-webapi": "100.2.*"
+            },
+            "type": "magento2-module",
+            "autoload": {
+                "files": [
+                    "registration.php"
+                ],
+                "psr-4": {
+                    "Magento\\Bundle\\": ""
+                }
+            },
+            "license": [
+                "OSL-3.0",
+                "AFL-3.0"
+            ],
+            "description": "N/A"
+        },
+        {
             "name": "magento/module-catalog",
             "version": "102.0.0",
             "dist": {
@@ -1215,6 +1262,52 @@
                 ],
                 "psr-4": {
                     "Magento\\Config\\": ""
+                }
+            },
+            "license": [
+                "OSL-3.0",
+                "AFL-3.0"
+            ],
+            "description": "N/A"
+        },
+        {
+            "name": "magento/module-configurable-product",
+            "version": "100.2.0",
+            "dist": {
+                "type": "zip",
+                "url": "https://repo.magento.com/archives/magento/module-configurable-product/magento-module-configurable-product-100.2.0.0.zip",
+                "reference": null,
+                "shasum": "adee8afa5fdb60a8fa4145d5501a594a901d29f2"
+            },
+            "require": {
+                "magento/framework": "101.0.*",
+                "magento/module-backend": "100.2.*",
+                "magento/module-catalog": "102.0.*",
+                "magento/module-catalog-inventory": "100.2.*",
+                "magento/module-checkout": "100.2.*",
+                "magento/module-customer": "101.0.*",
+                "magento/module-eav": "101.0.*",
+                "magento/module-media-storage": "100.2.*",
+                "magento/module-msrp": "100.2.*",
+                "magento/module-quote": "101.0.*",
+                "magento/module-store": "100.2.*",
+                "magento/module-ui": "101.0.*",
+                "php": "7.0.2|7.0.4|~7.0.6|~7.1.0"
+            },
+            "suggest": {
+                "magento/module-configurable-sample-data": "Sample Data version:100.2.*",
+                "magento/module-product-links-sample-data": "Sample Data version:100.2.*",
+                "magento/module-product-video": "100.2.*",
+                "magento/module-sales": "101.0.*",
+                "magento/module-webapi": "100.2.*"
+            },
+            "type": "magento2-module",
+            "autoload": {
+                "files": [
+                    "registration.php"
+                ],
+                "psr-4": {
+                    "Magento\\ConfigurableProduct\\": ""
                 }
             },
             "license": [
@@ -2201,6 +2294,38 @@
                 ],
                 "psr-4": {
                     "Magento\\Sales\\": ""
+                }
+            },
+            "license": [
+                "OSL-3.0",
+                "AFL-3.0"
+            ],
+            "description": "N/A"
+        },
+        {
+            "name": "magento/module-sales-inventory",
+            "version": "100.2.0",
+            "dist": {
+                "type": "zip",
+                "url": "https://repo.magento.com/archives/magento/module-sales-inventory/magento-module-sales-inventory-100.2.0.0.zip",
+                "reference": null,
+                "shasum": "8837c4d181b9c4527c3b136de2bda5b654dc02ed"
+            },
+            "require": {
+                "magento/framework": "101.0.*",
+                "magento/module-catalog": "102.0.*",
+                "magento/module-catalog-inventory": "100.2.*",
+                "magento/module-sales": "101.0.*",
+                "magento/module-store": "100.2.*",
+                "php": "7.0.2|7.0.4|~7.0.6|~7.1.0"
+            },
+            "type": "magento2-module",
+            "autoload": {
+                "files": [
+                    "registration.php"
+                ],
+                "psr-4": {
+                    "Magento\\SalesInventory\\": ""
                 }
             },
             "license": [
