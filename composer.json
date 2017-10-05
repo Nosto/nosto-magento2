@@ -31,10 +31,6 @@
       "url": "https://repo.magento.com/"
     },
     {
-      "type": "vcs",
-      "url": "git@github.com:Nosto/nosto-php-sdk.git"
-    },
-    {
       "type": "package",
       "package": {
         "name": "magento/marketplace-tools",
