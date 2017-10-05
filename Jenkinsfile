@@ -25,7 +25,7 @@ pipeline {
     stage('Code Sniffer') {
       steps {
         catchError {
-          sh "./vendor/bin/phpcs --standard=ruleset.xml --report=checkstyle --report-file=phpcs.xml || true"
+          sh "./vendor/bin/phpcs --standard=ruleset.xml --report=checkstyle --report-file=chkphpcs.xml || true"
         }
       }
     }
@@ -41,7 +41,7 @@ pipeline {
     stage('Phan Analysis') {
       steps {
         catchError {
-          sh "./vendor/bin/phan --config-file=phan.php --output-mode=checkstyle --output=phan.xml || true"
+          sh "./vendor/bin/phan --config-file=phan.php --output-mode=checkstyle --output=chkphan.xml || true"
         }
       }
     }
@@ -60,7 +60,7 @@ pipeline {
 
   post {
     always {
-      checkstyle pattern: '*.xml', unstableTotalAll:'0'
+      checkstyle pattern: 'chk*.xml', unstableTotalAll:'0'
       pmd pattern: 'phpmd.xml', unstableTotalAll:'0'
       deleteDir()
     }
