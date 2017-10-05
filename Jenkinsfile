@@ -27,7 +27,6 @@ pipeline {
         catchError {
           sh "./vendor/bin/phpcs --standard=ruleset.xml --report=checkstyle --report-file=phpcs.xml || true"
         }
-        //checkstyle pattern: 'phpcs.xml', unstableTotalAll:'0'
       }
     }
 
@@ -36,7 +35,6 @@ pipeline {
         catchError {
           sh "./vendor/bin/phpmd . xml codesize,naming,unusedcode,controversial,design --exclude vendor,var,build,tests --reportfile phpmd.xml || true"
         }
-        pmd pattern: 'phpmd.xml', unstableTotalAll:'0'
       }
     }
 
@@ -45,8 +43,6 @@ pipeline {
         catchError {
           sh "./vendor/bin/phan --config-file=phan.php --output-mode=checkstyle --output=phan.xml || true"
         }
-        sh 'ls -lah'
-        checkstyle pattern: 'phan.xml', unstableTotalAll:'0'
       }
     }
 
@@ -64,6 +60,8 @@ pipeline {
 
   post {
     always {
+      checkstyle pattern: '*.xml', unstableTotalAll:'0'
+      pmd pattern: 'phpmd.xml', unstableTotalAll:'0'
       deleteDir()
     }
   }
