@@ -76,7 +76,7 @@ pipeline {
           sh 'ls -lah /var/www/html/community-edition/'
           sh 'cd /var/www/html/community-edition'
           sh 'composer remove nosto/module-nostotagging'
-          sh 'composer config repositories.local path "../xx/*/*"'
+          sh 'composer config repositories.local path $WORKSPACE'
           sh 'composer require --no-progress nosto/module-nostotagging:@dev'
         }
       }
