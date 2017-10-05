@@ -56,6 +56,14 @@ pipeline {
         archiveArtifacts "${version}.zip"
       }
     }
+
+    stage('Mage') {
+      steps {
+        script {
+          sh 'ls -lah /var/www/html/community-edition/var/generation/'
+        }
+      }
+    }
   }
 
   post {
