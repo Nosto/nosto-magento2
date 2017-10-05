@@ -13,7 +13,15 @@
     "magento-ecg/coding-standard": "2.*",
     "magento/marketplace-eqp": "1.*",
     "magento/marketplace-tools": "dev-master",
-    "magento/framework": "*"
+    "magento/framework": "*",
+    "magento/module-catalog": "*",
+    "magento/module-catalog-import-export": "*",
+    "magento/module-catalog-inventory": "*",
+    "magento/module-catalog-rule": "*",
+    "magento/module-catalog-rule-configurable": "*",
+    "magento/module-catalog-search": "*",
+    "magento/module-catalog-url-rewrite": "*",
+    "magento/module-catalog-widget": "*"
   },
   "suggest": {
     "magento/product-community-edition": "2.*"
