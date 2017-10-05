@@ -60,35 +60,6 @@ pipeline {
         archiveArtifacts "${version}.zip"
       }
     }
-
-    stage('Test') {
-      steps {
-        script {
-          sh 'export'
-          sh 'echo $BRANCH_NAME'
-          sh 'pwd'
-          sh 'whoami'
-          sh 'groups'
-          sh 'groups plugins'
-          sh 'groups www-data'
-          sh 'ls -lah /var/www/html'
-          sh 'ls -lah /var/www/html/community-edition/'
-          sh 'cd /var/www/html/community-edition'
-          //sh 'composer remove nosto/module-nostotagging'
-          sh 'composer config repositories.local path $WORKSPACE'
-          sh 'pwd'
-          dir('/var/www/html/community-edition') {
-            sh 'pwd'
-            sh 'ls -lah bin/'
-          }
-          sh 'ls -lah bin/'
-          sh 'composer require --no-progress nosto/module-nostotagging:@dev'
-          sh 'bin/magento setup:upgrade'
-          sh 'bin/magento setup:di:compile'
-        }
-      }
-    }
-
   }
 
   post {
