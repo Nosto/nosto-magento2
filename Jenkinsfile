@@ -60,9 +60,7 @@ pipeline {
     stage('Mage') {
       steps {
         script {
-          sh 'ls -lah /var/www/html/community-edition/'
-          sh 'ls -lah /var/www/html/community-edition/var'
-          sh 'ls -lah /var/www/html/community-edition/var/generation/'
+          sh 'ls -lah /var/www/html/community-edition/generated/'
         }
       }
     }
