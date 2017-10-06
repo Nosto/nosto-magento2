@@ -1,6 +1,9 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
 ### 2.3.7
+* Fix the issue that current currency tagging is missing
+
+### 2.3.7
 * Enable sku tagging by default
 
 ### 2.3.6
