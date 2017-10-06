@@ -1,6 +1,6 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
-### 2.3.7
+### 2.3.8
 * Fix the issue that current currency tagging is missing
 
 ### 2.3.7
