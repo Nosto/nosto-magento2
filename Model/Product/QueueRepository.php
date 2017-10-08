@@ -156,7 +156,7 @@ class QueueRepository implements ProductQueueRepositoryInterface
             $productQueue = $this->getByProductId($id);
             if ($productQueue instanceof ProductQueueSearchResultsInterface) {
                 foreach ($productQueue->getItems() as $entry) {
-                    $this->delete($entry);
+                    $this->delete($entry); // @codingStandardsIgnoreLine
                 }
             }
         }

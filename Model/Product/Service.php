@@ -121,13 +121,6 @@ class Service
         $this->nostoQueueFactory = $nostoQueueFactory;
         $this->storeManager = $storeManager;
         $this->productFactory = $productFactory;
-
-        HttpRequest::$responseTimeout = self::$responseTimeOut;
-        HttpRequest::buildUserAgent(
-            NostoHelperData::PLATFORM_NAME,
-            $nostoHelperData->getPlatformVersion(),
-            $nostoHelperData->getModuleVersion()
-        );
     }
 
     /**
@@ -211,7 +204,7 @@ class Service
                 $queue = $this->nostoQueueFactory->create();
                 $queue->setProductId($productIdForQueue);
                 $queue->setCreatedAt(DateTime::gmtDate());
-                $this->nostoQueueRepository->save($queue);
+                $this->nostoQueueRepository->save($queue); // @codingStandardsIgnoreLine
             }
 
             $this->logger->info(
@@ -232,6 +225,13 @@ class Service
      */
     public function flushQueue()
     {
+        HttpRequest::$responseTimeout = self::$responseTimeOut;
+        HttpRequest::buildUserAgent(
+            NostoHelperData::PLATFORM_NAME,
+            $this->nostoHelperData->getPlatformVersion(),
+            $this->nostoHelperData->getModuleVersion()
+        );
+
         $queueEntries = $this->nostoQueueRepository->getFirstPage(self::$batchSize);
         $remaining = $queueEntries->getTotalCount();
         //keep the $maxBatches, as a safe fuse to prevent unexpected infinite loop

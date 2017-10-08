@@ -94,7 +94,7 @@ class Price extends AbstractHelper
      * @suppress PhanTypeMismatchArgument
      * @suppress PhanDeprecatedFunction
      */
-    public function getProductPrice(
+    public function getProductPrice( // @codingStandardsIgnoreLine
         Product $product,
         $finalPrice = false,
         $inclTax = true
@@ -121,7 +121,7 @@ class Price extends AbstractHelper
                                 try {
                                     $skuId = reset($skuIds);
                                     /** @noinspection PhpDeprecationInspection */
-                                    $sku = $this->productFactory->create()->load(
+                                    $sku = $this->productFactory->create()->load( // @codingStandardsIgnoreLine
                                         $skuId
                                     );
                                     $listPrice += $this->getProductPriceInclTax(
