@@ -180,7 +180,6 @@ class QueueRepository implements ProductQueueRepositoryInterface
         return $searchResult;
     }
 
-
     /**
      * @inheritdoc
      */

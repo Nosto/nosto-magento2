@@ -39,7 +39,7 @@ namespace Nosto\Tagging\Model\Product;
 use Magento\Framework\Api\Search\SearchResult;
 use Nosto\Tagging\Api\Data\ProductQueueSearchResultsInterface;
 
-class QueueSearchResults extends SearchResult implements ProductQueueSearchResultsInterface
+class QueueSearchResults extends SearchResult implements ProductQueueSearchResultsInterface // @codingStandardsIgnoreLine
 {
 
 }
