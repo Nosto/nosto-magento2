@@ -182,7 +182,7 @@ class Data extends AbstractHelper
     /**
      * Returns the value of the selected image version option from the configuration table
      *
-     * @param StoreInterface $store the store model or null.
+     * @param StoreInterface|null $store the store model or null.
      * @return string the configuration value
      */
     public function getProductImageVersion(StoreInterface $store = null)
@@ -193,7 +193,7 @@ class Data extends AbstractHelper
     /**
      * Returns the value of the selected brand attribute from the configuration table
      *
-     * @param StoreInterface $store the store model or null.
+     * @param StoreInterface|null $store the store model or null.
      * @return string the configuration value
      */
     public function getBrandAttribute(StoreInterface $store = null)
@@ -204,7 +204,7 @@ class Data extends AbstractHelper
     /**
      * Returns the value of the selected margin attribute from the configuration table
      *
-     * @param StoreInterface $store the store model or null.
+     * @param StoreInterface|null $store the store model or null.
      * @return string the configuration value
      */
     public function getMarginAttribute(StoreInterface $store = null)
@@ -215,7 +215,7 @@ class Data extends AbstractHelper
     /**
      * Returns the value of the selected GTIN attribute from the configuration table
      *
-     * @param StoreInterface $store the store model or null.
+     * @param StoreInterface|null $store the store model or null.
      * @return string the configuration value
      */
     public function getGtinAttribute(StoreInterface $store = null)
@@ -226,7 +226,7 @@ class Data extends AbstractHelper
     /**
      * Returns if variation data tagging is enabled from the configuration table
      *
-     * @param StoreInterface $store the store model or null.
+     * @param StoreInterface|null $store the store model or null.
      * @return bool the configuration value
      */
     public function isVariationTaggingEnabled(StoreInterface $store = null)
@@ -237,7 +237,7 @@ class Data extends AbstractHelper
     /**
      * Returns if alt. image data tagging is enabled from the configuration table
      *
-     * @param StoreInterface $store the store model or null.
+     * @param StoreInterface|null $store the store model or null.
      * @return bool the configuration value
      */
     public function isAltimgTaggingEnabled(StoreInterface $store = null)
@@ -248,7 +248,7 @@ class Data extends AbstractHelper
     /**
      * Returns if rating and review data tagging is enabled from the configuration table
      *
-     * @param StoreInterface $store the store model or null.
+     * @param StoreInterface|null $store the store model or null.
      * @return bool the configuration value
      */
     public function isRatingTaggingEnabled(StoreInterface $store = null)
@@ -259,7 +259,7 @@ class Data extends AbstractHelper
     /**
      * Returns if inventory data tagging is enabled from the configuration table
      *
-     * @param StoreInterface $store the store model or null.
+     * @param StoreInterface|null $store the store model or null.
      * @return bool the configuration value
      */
     public function isInventoryTaggingEnabled(StoreInterface $store = null)
@@ -270,7 +270,7 @@ class Data extends AbstractHelper
     /**
      * Returns true if full reindex is enable
      *
-     * @param StoreInterface $store the store model or null.
+     * @param StoreInterface|null $store the store model or null.
      * @return bool the configuration value
      */
     public function isFullReindexEnabled(StoreInterface $store = null)
@@ -281,7 +281,7 @@ class Data extends AbstractHelper
     /**
      * Returns if real time product updates are enabled from the configuration table
      *
-     * @param StoreInterface $store the store model or null.
+     * @param StoreInterface|null $store the store model or null.
      * @return bool the configuration value
      */
     public function isProductUpdatesEnabled(StoreInterface $store = null)
@@ -292,7 +292,7 @@ class Data extends AbstractHelper
     /**
      * Returns if low stock indication should be tagged
      *
-     * @param StoreInterface $store the store model or null.
+     * @param StoreInterface|null $store the store model or null.
      * @return bool the configuration value
      */
     public function isLowStockIndicationEnabled(StoreInterface $store = null)
@@ -302,7 +302,7 @@ class Data extends AbstractHelper
 
     /**
      * @param string $path
-     * @param StoreInterface|Store $store
+     * @param StoreInterface|Store|null $store
      * @return mixed|null
      */
     public function getStoreConfig($path, StoreInterface $store = null)
