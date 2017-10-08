@@ -57,14 +57,15 @@ pipeline {
       }
     }
 
-    stage('Mage') {
+    stage('Setup') {
       steps {
         script {
-          sh 'ls -lah /var/www/html/community-edition/generated/'
-          sh 'ls -lah /var/www/html/community-edition/generated/Nosto'
+          sh "rm -rf *"
+          sh "composer create-project magento/community-edition ."
         }
       }
     }
+
   }
 
   post {
