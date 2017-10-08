@@ -39,6 +39,7 @@ namespace Nosto\Tagging\Model\Product;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\ProductFactory;
 use Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable as ConfigurableProduct;
+use Magento\Framework\Stdlib\DateTime\DateTime;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManager;
 use Nosto\Object\Signup\Account;
@@ -209,7 +210,7 @@ class Service
             foreach ($productIdsForQueue as $productIdForQueue) {
                 $queue = $this->nostoQueueFactory->create();
                 $queue->setProductId($productIdForQueue);
-                $queue->setCreatedAt(new \DateTime('now'));
+                $queue->setCreatedAt(DateTime::gmtDate());
                 $this->nostoQueueRepository->save($queue);
             }
 

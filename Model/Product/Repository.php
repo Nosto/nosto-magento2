@@ -44,6 +44,7 @@ use Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable as
 use Magento\Framework\Api\FilterBuilder;
 use Magento\Framework\Api\Search\FilterGroupBuilder;
 use Magento\Framework\Api\SearchCriteriaBuilder;
+use Magento\Framework\Stdlib\DateTime\DateTime;
 use Nosto\Tagging\Helper\Data;
 
 /**
@@ -115,7 +116,7 @@ class Repository
      */
     public function getWithActivePricingSchedule()
     {
-        $today = new \DateTime("now");
+        $today = DateTime::gmtDate();
         $filterEndDateGreater = $this->filterBuilder
             ->setField('special_to_date')
             ->setValue($today->format('Y-m-d ' . '00:00:00'))
