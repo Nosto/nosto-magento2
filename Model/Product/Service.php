@@ -159,7 +159,7 @@ class Service
     public function addToQueueByIds(array $ids)
     {
         $productSearchResults = $this->nostoProductRepository->getByIds($ids);
-        $existingProductIds = array();
+        $existingProductIds = [];
         if ($productSearchResults->getTotalCount() > 0) {
             $existingProducts = $productSearchResults->getItems();
             $this->addToQueue($existingProducts);
@@ -271,7 +271,7 @@ class Service
      *
      * @param array $productIds
      */
-    protected function process(array $productIds)
+    public function process(array $productIds)
     {
         $uniqueProductIds = array_unique($productIds);
         $storesWithNosto = $this->nostoHelperAccount->getStoresWithNosto();
@@ -300,7 +300,7 @@ class Service
      * @param Store $store
      * @param Account $nostoAccount
      */
-    protected function processForAccount(array $uniqueProductIds, Store $store, Account $nostoAccount)
+    public function processForAccount(array $uniqueProductIds, Store $store, Account $nostoAccount)
     {
         $productSearch = $this->nostoProductRepository->getByIds($uniqueProductIds);
 
@@ -312,7 +312,7 @@ class Service
             )
         );
         $productsStillExist = $productSearch->getItems();
-        $productIdsStillExist = array();
+        $productIdsStillExist = [];
 
         if (!empty($productsStillExist)) {
             $op = new UpsertProduct($nostoAccount);
@@ -365,7 +365,7 @@ class Service
      * @param Store $store
      * @param Account $nostoAccount
      */
-    protected function processDelete(array $uniqueProductIds, Store $store, Account $nostoAccount)
+    public function processDelete(array $uniqueProductIds, Store $store, Account $nostoAccount)
     {
         $this->logger->info(
             sprintf(
@@ -412,7 +412,7 @@ class Service
      *
      * @return bool
      */
-    protected function productUpdatesActive()
+    public function productUpdatesActive()
     {
         if ($this->productUpdatesActive === null) {
             // Loop through stores and check that at least one store has product

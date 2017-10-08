@@ -48,11 +48,11 @@ use Nosto\Tagging\Model\Product\Service as NostoProductService;
 
 abstract class Base implements ObserverInterface
 {
-    protected $moduleManager;
-    protected $productService;
-    protected $productRepository;
-    protected $dataHelper;
-    protected $indexer;
+    public $moduleManager;
+    public $productService;
+    public $productRepository;
+    public $dataHelper;
+    public $indexer;
 
     /**
      * Constructor.
@@ -105,7 +105,7 @@ abstract class Base implements ObserverInterface
      * @param Observer $observer
      * @return mixed
      */
-    protected function extractProduct(Observer $observer)
+    public function extractProduct(Observer $observer)
     {
         /** @noinspection PhpUndefinedMethodInspection */
         return $observer->getProduct();

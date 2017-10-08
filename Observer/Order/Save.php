@@ -152,7 +152,7 @@ class Save implements ObserverInterface
                 if (!$this->indexer->isScheduled() && $this->nostoHelperData->isInventoryTaggingEnabled()) {
                     $items = $nostoOrder->getPurchasedItems();
                     if ($items) {
-                        $productIds = array();
+                        $productIds = [];
                         foreach ($items as $item) {
                             $productIds[] = $item->getProductId();
                         }
