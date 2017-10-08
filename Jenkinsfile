@@ -60,8 +60,7 @@ pipeline {
     stage('Setup') {
       steps {
         script {
-          sh "rm -rf *"
-          sh "composer create-project magento/community-edition ."
+          sh "composer create-project magento/community-edition"
         }
       }
     }
