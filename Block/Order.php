@@ -54,7 +54,7 @@ use Nosto\Tagging\Model\Order\Builder as NostoOrderBuilder;
 class Order extends Success
 {
     use TaggingTrait {
-        TaggingTrait::__construct as taggingConstruct;
+        TaggingTrait::__construct as taggingConstruct; // @codingStandardsIgnoreLine
     }
 
     private $nostoOrderBuilder;

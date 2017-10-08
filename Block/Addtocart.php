@@ -50,7 +50,7 @@ use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 class Addtocart extends Template
 {
     use TaggingTrait {
-        TaggingTrait::__construct as taggingConstruct;
+        TaggingTrait::__construct as taggingConstruct; // @codingStandardsIgnoreLine
     }
 
     private $urlEncoder;

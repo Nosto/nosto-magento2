@@ -314,7 +314,7 @@ class Service
         $productsStillExist = $productSearch->getItems();
         $productIdsStillExist = array();
 
-        if (count($productsStillExist) > 0) {
+        if (!empty($productsStillExist)) {
             $op = new UpsertProduct($nostoAccount);
 
             /* @var Product $product */
@@ -323,7 +323,6 @@ class Service
                 $nostoProduct = $this->nostoProductBuilder->build(
                     $product,
                     $store
-
                 );
                 $op->addProduct($nostoProduct);
             }
@@ -354,7 +353,7 @@ class Service
         }
 
         $leftProducts = array_diff($uniqueProductIds, $productIdsStillExist);
-        if (count($leftProducts) > 0) {
+        if (!empty($leftProducts)) {
             $this->processDelete($leftProducts, $store, $nostoAccount);
         }
     }

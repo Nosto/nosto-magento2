@@ -62,7 +62,7 @@ use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
 class Product extends View
 {
     use TaggingTrait {
-        TaggingTrait::__construct as taggingConstruct;
+        TaggingTrait::__construct as taggingConstruct; // @codingStandardsIgnoreLine
     }
 
     private $nostoProductBuilder;

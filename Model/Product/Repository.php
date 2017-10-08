@@ -147,7 +147,6 @@ class Repository
     public function resolveParentProductIds(Product $product)
     {
         if ($this->getParentIdsFromCache($product)) {
-
             return $this->getParentIdsFromCache($product);
         }
         $parentProductIds = null;
@@ -170,7 +169,6 @@ class Repository
     private function getParentIdsFromCache(Product $product)
     {
         if (isset($this->parentProductIdCache[$product->getId()])) {
-
             return $this->parentProductIdCache[$product->getId()];
         }
 
