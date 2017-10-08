@@ -61,6 +61,7 @@ pipeline {
       steps {
         script {
           sh 'ls -lah /var/www/html/community-edition/generated/'
+          sh 'ls -lah /var/www/html/community-edition/generated/Nosto'
         }
       }
     }
