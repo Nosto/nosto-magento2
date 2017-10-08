@@ -47,6 +47,7 @@ return [
         'Model',
         'Helper',
         'Observer',
+        'Logger',
         'vendor/vlucas',
         'vendor/nosto/php-sdk',
         'vendor/phpseclib',
