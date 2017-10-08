@@ -60,7 +60,9 @@ pipeline {
     stage('Setup') {
       steps {
         script {
-          sh "composer create-project magento/community-edition"
+          sh "composer create-project magento/community-edition magento"
+          sh "cd magento && composer config --unset minimum-stability"
+          sh "cd magento && composer require --update-no-dev nosto/module-nostotagging:@stable"
         }
       }
     }
