@@ -52,6 +52,7 @@ return [
         'vendor/nosto/php-sdk',
         'vendor/phpseclib',
         'vendor/magento',
+        'vendor/monolog',
         'vendor/psr',
         'magento/generated'
     ],
