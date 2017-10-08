@@ -40,6 +40,11 @@ pipeline {
 
     stage('Phan Analysis') {
       steps {
+        sh "composer create-project magento/community-edition magento"
+        sh "cd magento && composer config --unset minimum-stability"
+        sh "cd magento && composer require --update-no-dev nosto/module-nostotagging:@stable"
+        sh "cd magento && bin/magento module:enable --all"
+        sh "cd magento && bin/magento setup:di:compile"
         catchError {
           sh "./vendor/bin/phan --config-file=phan.php --output-mode=checkstyle --output=chkphan.xml || true"
         }
@@ -56,20 +61,6 @@ pipeline {
         archiveArtifacts "${version}.zip"
       }
     }
-
-    stage('Setup') {
-      steps {
-        script {
-          sh "composer create-project magento/community-edition magento"
-          sh "cd magento && composer config --unset minimum-stability"
-          sh "cd magento && composer require --update-no-dev nosto/module-nostotagging:@stable"
-          sh "cd magento && bin/magento module:enable --all"
-          sh "cd magento && bin/magento setup:di:compile"
-          sh "cd magento && find generated -type f"
-        }
-      }
-    }
-
   }
 
   post {
