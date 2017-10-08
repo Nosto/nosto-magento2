@@ -39,6 +39,7 @@ namespace Nosto\Tagging\Model\Product;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\Api\SearchCriteriaInterface;
 use Magento\Framework\Exception\NoSuchEntityException;
+use Magento\Framework\Phrase;
 use Nosto\Tagging\Api\Data\ProductQueueInterface;
 use Nosto\Tagging\Api\Data\ProductQueueSearchResultsInterface;
 use Nosto\Tagging\Api\ProductQueueRepositoryInterface;
@@ -104,7 +105,7 @@ class QueueRepository implements ProductQueueRepositoryInterface
         $productQueue = $this->queueFactory->create();
         $productQueue->getResource()->load($this->queueFactory->create(), $id);
         if (!$productQueue->getId()) {
-            throw new NoSuchEntityException(__('Unable to find ProductQueue with ID "%1"', $id));
+            throw new NoSuchEntityException(new Phrase('Unable to find ProductQueue with ID "%1"', $id));
         }
 
         return $productQueue;

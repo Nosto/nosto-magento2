@@ -40,6 +40,7 @@ use Magento\Backend\Block\Template as BlockTemplate;
 use Magento\Backend\Block\Template\Context as BlockContext;
 use Magento\Backend\Model\Auth\Session;
 use Magento\Framework\Exception\NotFoundException;
+use Magento\Framework\Phrase;
 use Magento\Store\Model\Store;
 use Nosto\Helper\IframeHelper;
 use Nosto\Nosto;
@@ -153,7 +154,7 @@ class Iframe extends BlockTemplate
         } elseif (($this->nostoHelperScope->getStore())) {
             $store = $this->nostoHelperScope->getStore();
         } else {
-            throw new NotFoundException(__('Store not found.'));
+            throw new NotFoundException(new Phrase('Store not found.'));
         }
 
         return $store;
