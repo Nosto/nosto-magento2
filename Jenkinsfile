@@ -64,9 +64,9 @@ pipeline {
           sh "cd magento && composer config --unset minimum-stability"
           sh "cd magento && composer require --update-no-dev nosto/module-nostotagging:@stable"
           sh "cd magento && bin/magento module:enable --all"
+          sh "cd magento && bin/magento setup:di:compile"
           sh "cd magento && bin/magento deploy:mode:set production"
           sh "cd magento && bin/magento setup:upgrade"
-          sh "cd magento && bin/magento setup:di:compile"
         }
       }
     }
