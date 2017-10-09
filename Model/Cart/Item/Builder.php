@@ -72,7 +72,7 @@ class Builder
         $cartItem = new LineItem();
         $cartItem->setPriceCurrencyCode($currencyCode);
         $cartItem->setProductId($this->buildItemId($item));
-        $cartItem->setQuantity($item->getQty());
+        $cartItem->setQuantity((int) $item->getQty());
         switch ($item->getProductType()) {
             case Simple::getType():
             case Virtual::getType():
