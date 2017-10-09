@@ -73,7 +73,7 @@ class Knockout extends Template
      * Get relevant path to template
      *
      * @return string
-     * @suppress PhanParamSignatureMismatch
+     * @suppress PhanTypeMismatchReturn
      */
     public function getTemplate()
     {
@@ -102,7 +102,7 @@ class Knockout extends Template
      * Retrieve serialized JS layout configuration ready to use in template
      *
      * @return string
-     * @suppress PhanParamSignatureMismatch
+     * @suppress PhanTypeMismatchReturn
      */
     public function getJsLayout()
     {
