@@ -105,7 +105,7 @@ class QueueRepository implements ProductQueueRepositoryInterface
         $productQueue = $this->queueFactory->create();
         $productQueue->getResource()->load($this->queueFactory->create(), $id);
         if (!$productQueue->getId()) {
-            throw new NoSuchEntityException(new Phrase('Unable to find ProductQueue with ID "%1"', array($id)));
+            throw new NoSuchEntityException(new Phrase('Unable to find ProductQueue with ID "%1"', [$id]));
         }
 
         return $productQueue;

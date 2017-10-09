@@ -179,9 +179,8 @@ class Price extends AbstractHelper
                     $products = $productType->getUsedProducts($product);
                     $skus = [];
                     $finalPrices = [];
-                    /** @var Product $sku */
                     foreach ($products as $sku) {
-                        if (!$sku->isDisabled()) {
+                        if ($sku instanceof Product && !$sku->isDisabled()) {
                             $finalPrices[$sku->getId()] = $this->getProductPrice(
                                 $sku,
                                 true,

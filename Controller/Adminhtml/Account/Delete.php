@@ -38,6 +38,8 @@ namespace Nosto\Tagging\Controller\Adminhtml\Account;
 
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\Controller\Result\Json;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Phrase;
 use Nosto\Helper\IframeHelper;
 use Nosto\Nosto;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
@@ -69,8 +71,7 @@ class Delete extends Base
         NostoCurrentUserBuilder $nostoCurrentUserBuilder,
         NostoHelperScope $nostoHelperScope,
         Json $result
-    )
-    {
+    ) {
         parent::__construct($context);
 
         $this->nostoIframeMetaBuilder = $nostoIframeMetaBuilder;
@@ -89,7 +90,7 @@ class Delete extends Base
         $storeId = $this->_request->getParam('store');
         $store = $this->nostoHelperScope->getStore($storeId);
         if ($store === null) {
-            throw new \Exception("No account found");
+            throw new LocalizedException(new Phrase("No account found"));
         } else {
             $account = $this->nostoHelperAccount->findAccount($store);
 
