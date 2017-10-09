@@ -90,7 +90,7 @@ class Delete extends Base
         $store = $this->nostoHelperScope->getStore($storeId);
         $account = $store !== null ? $this->nostoHelperAccount->findAccount($store) : null;
 
-        if ($store !== null && $account !== null) {
+        if ($account !== null) {
             $currentUser = $this->nostoCurrentUserBuilder->build();
             if ($this->nostoHelperAccount->deleteAccount($account, $store, $currentUser)) {
                 $response['success'] = true;
