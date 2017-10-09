@@ -283,13 +283,13 @@ class Service
                 if (!$nostoAccount instanceof Account) {
                     continue;
                 }
-                $this->storeManager->setCurrentStore($store->getId());
+                $this->storeManager->setCurrentStore((string) $store->getId());
                 try {
                     $this->processForAccount($uniqueProductIds, $store, $nostoAccount);
                 } catch (\Exception $e) {
                     $this->logger->exception($e);
                 }
-                $this->storeManager->setCurrentStore($originalStore->getId());
+                $this->storeManager->setCurrentStore((string) $originalStore->getId());
             }
         }
     }
