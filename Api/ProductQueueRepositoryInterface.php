@@ -62,7 +62,6 @@ interface ProductQueueRepositoryInterface
      * Delete productQueue
      *
      * @param ProductQueueInterface $productQueue
-     * @return bool
      */
     public function delete(ProductQueueInterface $productQueue);
 
