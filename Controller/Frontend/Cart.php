@@ -39,19 +39,19 @@ namespace Nosto\Tagging\Controller\Frontend;
 use Magento\Checkout\Model\Session;
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
-use Magento\Quote\Api\Data\CartInterface;
+use Magento\Framework\EntityManager\EntityManager;
 use Magento\Framework\Module\Manager as ModuleManager;
+use Magento\Quote\Api\Data\CartInterface;
 use Magento\Quote\Model\Quote;
 use Magento\Quote\Model\QuoteFactory;
 use Magento\Quote\Model\ResourceModel\Quote as ResourceQuote;
-use Nosto\Tagging\Api\Data\CustomerInterface;
-use Nosto\Tagging\Helper\Url as NostoHelperUrl;
-use Nosto\Tagging\Helper\Scope as NostoHelperScope;
-use Nosto\Tagging\Helper\Data as NostoHelperData;
-use Nosto\Tagging\Model\CustomerFactory as NostoCustomerFactory;
-use Nosto\Tagging\Model\Customer as NostoCustomer;
 use Nosto\NostoException;
+use Nosto\Tagging\Api\Data\CustomerInterface;
+use Nosto\Tagging\Helper\Data as NostoHelperData;
+use Nosto\Tagging\Helper\Scope as NostoHelperScope;
+use Nosto\Tagging\Helper\Url as NostoHelperUrl;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
+use Nosto\Tagging\Model\CustomerFactory as NostoCustomerFactory;
 
 /*
  * Controller class for handling cart restoration
@@ -72,6 +72,10 @@ class Cart extends Action
     private $nostoUrlHelper;
     private $nostoScopeHelper;
     private $nostoCustomerFactory;
+    /**
+     * @var EntityManager
+     */
+    private $entityManager;
 
     /**
      * Cart constructor.
@@ -80,10 +84,11 @@ class Cart extends Action
      * @param Session $checkoutSession
      * @param QuoteFactory $quoteFactory
      * @param ResourceQuote $quoteResource
-     * @param NostoLogger $logger
-     * @param NostoHelperUrl $nostoUrlHelper
-     * @param NostoHelperScope $nostoScopeHelper
-     * @param NostoCustomerFactory $nostoCustomerFactory
+     * @param EntityManager $entityManager
+     * @internal param NostoLogger $logger
+     * @internal param NostoHelperUrl $nostoUrlHelper
+     * @internal param NostoHelperScope $nostoScopeHelper
+     * @internal param NostoCustomerFactory $nostoCustomerFactory
      */
     public function __construct(
         Context $context,
@@ -91,6 +96,7 @@ class Cart extends Action
         Session $checkoutSession,
         QuoteFactory $quoteFactory,
         ResourceQuote $quoteResource,
+        EntityManager $entityManager,
         NostoLogger $logger,
         NostoHelperUrl $nostoUrlHelper,
         NostoHelperScope $nostoScopeHelper,
@@ -106,6 +112,7 @@ class Cart extends Action
         $this->nostoUrlHelper = $nostoUrlHelper;
         $this->nostoScopeHelper = $nostoScopeHelper;
         $this->nostoCustomerFactory = $nostoCustomerFactory;
+        $this->entityManager = $entityManager;
     }
 
     public function execute()
@@ -136,7 +143,7 @@ class Cart extends Action
             }
         }
 
-        return $this->_redirect($redirectUrl);
+        return$this->_redirect($redirectUrl);
     }
 
     /**
@@ -148,16 +155,14 @@ class Cart extends Action
      */
     private function resolveQuote($restoreCartHash)
     {
-        $customerQuery = $this->nostoCustomerFactory
-            ->create()
-            ->getCollection()
-            ->addFieldToFilter(CustomerInterface::RESTORE_CART_HASH, $restoreCartHash)
-            ->setPageSize(1)
-            ->setCurPage(1);
+        $customer = $this->nostoCustomerFactory->create();
+        $customer = $this->entityManager->load(
+            $customer,
+            $restoreCartHash,
+            CustomerInterface::RESTORE_CART_HASH
+        );
 
-        /** @var NostoCustomer $nostoCustomer */
-        $nostoCustomer = $customerQuery->getFirstItem(); // @codingStandardsIgnoreLine
-        if ($nostoCustomer == null || !$nostoCustomer->hasData() || $nostoCustomer->getQuoteId() === null) {
+        if ($customer == null || !$customer->hasData()) {
             throw new NostoException(
                 sprintf(
                     'No nosto customer found for hash %s',
@@ -166,16 +171,23 @@ class Cart extends Action
             );
         }
 
-        $quoteId = $nostoCustomer->getQuoteId();
+        if ($customer->getQuoteId() === null) {
+            throw new NostoException(
+                sprintf(
+                    'Found customer without quote for hash %s',
+                    $restoreCartHash
+                )
+            );
+        }
 
-        /** @var  $quoteCollection */
-        $quoteCollection = $this->quoteFactory->create()->getCollection();
-        $quoteCollection->addFieldToFilter(CartInterface::KEY_ENTITY_ID, $quoteId)
-            ->setPageSize(1)
-            ->setCurPage(1);
+        $quoteId = $customer->getQuoteId();
+        $quote = $this->quoteFactory->create();
+        $quote = $this->entityManager->load(
+            $quote,
+            (string) $quoteId,
+            CartInterface::KEY_ENTITY_ID
+        );
 
-        /** @var Quote $quote */
-        $quote = $quoteCollection->getFirstItem(); // @codingStandardsIgnoreLine
         if ($quote == null || !$quote->hasData()) {
             throw new NostoException(
                 sprintf(
