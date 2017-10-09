@@ -86,7 +86,6 @@ class Variation extends Template
     public function hasMultipleCurrencies()
     {
         $store = $this->nostoHelperScope->getStore(true);
-        /** @noinspection PhpParamsInspection */
-        return count($this->nostoHelperCurrency->getCurrencyCount($store)) > 1;
+        return $this->nostoHelperCurrency->getCurrencyCount($store) > 1;
     }
 }

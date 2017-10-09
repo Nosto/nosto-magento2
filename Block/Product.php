@@ -146,7 +146,7 @@ class Product extends View
     /**
      * Returns the Nosto category DTO.
      *
-     * @return string the current category as a slash-delimited string
+     * @return string|null the current category as a slash-delimited string
      */
     public function getNostoCategory()
     {
