@@ -92,7 +92,6 @@ class Builder
 
             $lang = substr($this->localeResolver->getLocale(), 0, 2);
             $metaData->setLanguageIsoCode($lang);
-            /** @noinspection PhpUndefinedMethodInspection */
             $lang = substr($store->getConfig('general/locale/code'), 0, 2);
             $metaData->setLanguageIsoCodeShop($lang);
 

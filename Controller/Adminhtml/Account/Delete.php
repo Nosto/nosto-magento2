@@ -69,7 +69,8 @@ class Delete extends Base
         NostoCurrentUserBuilder $nostoCurrentUserBuilder,
         NostoHelperScope $nostoHelperScope,
         Json $result
-    ) {
+    )
+    {
         parent::__construct($context);
 
         $this->nostoIframeMetaBuilder = $nostoIframeMetaBuilder;
@@ -81,43 +82,44 @@ class Delete extends Base
 
     /**
      * @return Json
+     * @throws \Exception
      */
     public function execute()
     {
-        $response = ['success' => false];
-
         $storeId = $this->_request->getParam('store');
         $store = $this->nostoHelperScope->getStore($storeId);
-        $account = $store !== null ? $this->nostoHelperAccount->findAccount($store) : null;
+        if ($store === null) {
+            throw new \Exception("No account found");
+        } else {
+            $account = $this->nostoHelperAccount->findAccount($store);
 
-        if ($account !== null) {
-            $currentUser = $this->nostoCurrentUserBuilder->build();
-            if ($this->nostoHelperAccount->deleteAccount($account, $store, $currentUser)) {
-                $response['success'] = true;
-                $response['redirect_url'] = IframeHelper::getUrl(
-                    $this->nostoIframeMetaBuilder->build($store),
-                    null, // we don't have an account anymore
-                    $this->nostoCurrentUserBuilder->build(),
-                    [
-                        'message_type' => Nosto::TYPE_SUCCESS,
-                        'message_code' => Nosto::CODE_ACCOUNT_DELETE,
-                    ]
-                );
+            if ($account !== null) {
+                $currentUser = $this->nostoCurrentUserBuilder->build();
+                if ($this->nostoHelperAccount->deleteAccount($account, $store, $currentUser)) {
+                    $response = ['success' => true];
+                    $response['redirect_url'] = IframeHelper::getUrl(
+                        $this->nostoIframeMetaBuilder->build($store),
+                        null, // we don't have an account anymore
+                        $this->nostoCurrentUserBuilder->build(),
+                        [
+                            'message_type' => Nosto::TYPE_SUCCESS,
+                            'message_code' => Nosto::CODE_ACCOUNT_DELETE,
+                        ]
+                    );
+                    return $this->result->setData($response);
+                }
             }
-        }
 
-        if (!$response['success']) {
             $response['redirect_url'] = IframeHelper::getUrl(
                 $this->nostoIframeMetaBuilder->build($store),
-                $account,
+                null,
                 $this->nostoCurrentUserBuilder->build(),
                 [
                     'message_type' => Nosto::TYPE_ERROR,
                     'message_code' => Nosto::CODE_ACCOUNT_DELETE,
                 ]
             );
+            return $this->result->setData($response);
         }
-
-        return $this->result->setData($response);
     }
 }
