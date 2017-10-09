@@ -136,7 +136,7 @@ class Cart extends Action
             }
         }
 
-        $this->_redirect($redirectUrl);
+        return $this->_redirect($redirectUrl);
     }
 
     /**
