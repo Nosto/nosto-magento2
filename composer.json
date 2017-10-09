@@ -25,7 +25,8 @@
     "magento/module-search": "100.2.0",
     "magento/module-catalog-search": "100.2.0",
     "magento/module-quote": "101.0.0",
-    "magento/module-review": "100.2.0"
+    "magento/module-review": "100.2.0",
+    "magento/zendframework1": "*"
   },
   "suggest": {
     "magento/product-community-edition": "2.*"
