@@ -48,7 +48,7 @@ class Gtin extends Selector
 {
     /**
      * @param Collection $collection
-     * @suppress PhanParamSignatureMismatch
+     * @suppress PhanTypeMismatchArgument
      */
     public function filterCollection(Collection $collection)
     {
