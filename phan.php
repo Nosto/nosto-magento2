@@ -53,6 +53,7 @@ return [
         'vendor/phpseclib',
         'vendor/magento',
         'vendor/monolog',
+        'vendor/zendframework',
         'vendor/psr',
         'magento/generated'
     ],
