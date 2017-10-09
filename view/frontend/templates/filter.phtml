@@ -51,7 +51,7 @@
 <?php $priceRange = $block->getNostoPriceRange() ?>
 <?php if (!empty($priceRange)): ?>
     <span class="nosto_price_from" style="display:none"><?php echo $block->escapeHtml(__($priceRange[0])); ?></span>
-    <span class="nosto_price_from" style="display:none"><?php echo $block->escapeHtml(__($priceRange[1])); ?></span>
+    <span class="nosto_price_to" style="display:none"><?php echo $block->escapeHtml(__($priceRange[1])); ?></span>
 <?php endif; ?>
 
 <?php $categories = $block->getNostoCategoryFilters() ?>
