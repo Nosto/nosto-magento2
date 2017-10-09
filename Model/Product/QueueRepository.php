@@ -38,6 +38,7 @@ namespace Nosto\Tagging\Model\Product;
 
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\Api\SearchCriteriaInterface;
+use Magento\Framework\EntityManager\EntityManager;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Phrase;
 use Nosto\Tagging\Api\Data\ProductQueueInterface;
@@ -54,6 +55,7 @@ class QueueRepository implements ProductQueueRepositoryInterface
     private $queueCollectionFactory;
     private $queueSearchResultsFactory;
     private $searchCriteriaBuilder;
+    private $entityManager;
 
     /**
      * QueueRepository constructor.
@@ -63,13 +65,15 @@ class QueueRepository implements ProductQueueRepositoryInterface
      * @param QueueCollectionFactory $queueCollectionFactory
      * @param QueueSearchResultsFactory $queueSearchResultsFactory
      * @param SearchCriteriaBuilder $searchCriteriaBuilder
+     * @param EntityManager $entityManager
      */
     public function __construct(
         QueueResource $queueResource,
         QueueFactory $queueFactory,
         QueueCollectionFactory $queueCollectionFactory,
         QueueSearchResultsFactory $queueSearchResultsFactory,
-        SearchCriteriaBuilder $searchCriteriaBuilder
+        SearchCriteriaBuilder $searchCriteriaBuilder,
+        EntityManager $entityManager
     ) {
 
         $this->queueResource = $queueResource;
@@ -77,6 +81,7 @@ class QueueRepository implements ProductQueueRepositoryInterface
         $this->queueCollectionFactory = $queueCollectionFactory;
         $this->queueSearchResultsFactory = $queueSearchResultsFactory;
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;
+        $this->entityManager = $entityManager;
     }
 
     /**
@@ -103,7 +108,7 @@ class QueueRepository implements ProductQueueRepositoryInterface
     {
         /* @var $productQueue Queue */
         $productQueue = $this->queueFactory->create();
-        $productQueue->getResource()->load($this->queueFactory->create(), $id);
+        $productQueue = $this->entityManager->load($productQueue, $id);
         if (!$productQueue->getId()) {
             throw new NoSuchEntityException(new Phrase('Unable to find ProductQueue with ID "%1"', [$id]));
         }
@@ -118,7 +123,7 @@ class QueueRepository implements ProductQueueRepositoryInterface
     {
         /* @var $productQueue Queue */
         $productQueue = $this->queueFactory->create();
-        $productQueue->getResource()->load(
+        $productQueue = $this->entityManager->load(
             $productQueue,
             $productId,
             ProductQueueInterface::PRODUCT_ID
@@ -144,8 +149,7 @@ class QueueRepository implements ProductQueueRepositoryInterface
      */
     public function delete(ProductQueueInterface $productQueue)
     {
-        /** @noinspection PhpParamsInspection */
-        $this->queueResource->delete($productQueue);
+        $this->entityManager->delete($productQueue);
     }
 
     /**
@@ -168,7 +172,6 @@ class QueueRepository implements ProductQueueRepositoryInterface
      */
     public function getList(SearchCriteriaInterface $searchCriteria)
     {
-        /* @var QuoteCollection $collection */
         $collection = $this->queueFactory->create()->getCollection();
         /** @noinspection PhpParamsInspection */
         $this->addFiltersToCollection($searchCriteria, $collection);
