@@ -46,6 +46,10 @@ use Magento\Catalog\Model\ResourceModel\Product\Attribute\Collection;
  */
 class Gtin extends Selector
 {
+    /**
+     * @param Collection $collection
+     * @suppress PhanParamSignatureMismatch
+     */
     public function filterCollection(Collection $collection)
     {
         /** @noinspection PhpParamsInspection */
