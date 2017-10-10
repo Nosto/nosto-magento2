@@ -144,6 +144,7 @@ class Repository
      *
      * @param Product $product
      * @return string[]|null
+     * @suppress PhanTypeMismatchReturn
      */
     public function resolveParentProductIds(Product $product)
     {
