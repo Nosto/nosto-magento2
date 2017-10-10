@@ -37,6 +37,7 @@
 namespace Nosto\Tagging\Model\Cart\Restore;
 
 use Magento\Framework\Encryption\EncryptorInterface;
+use Magento\Framework\EntityManager\EntityManager;
 use Magento\Quote\Model\Quote;
 use Magento\Store\Model\Store;
 use Magento\Framework\Stdlib\CookieManagerInterface;
@@ -56,6 +57,7 @@ class Builder
     private $nostoCustomerFactory;
     private $urlHelper;
     private $nostoCustomerCollection;
+    private $entityManager;
 
     /**
      * Builder constructor.
@@ -64,6 +66,7 @@ class Builder
      * @param EncryptorInterface $encryptor
      * @param NostoCustomerFactory $nostoCustomerFactory
      * @param NostoCustomerCollection $nostoCustomerCollection
+     * @param EntityManager $entityManager
      * @param NostoHelperUrl $urlHelper
      * @param DateTime $date
      */
@@ -73,6 +76,7 @@ class Builder
         EncryptorInterface $encryptor,
         NostoCustomerFactory $nostoCustomerFactory,
         NostoCustomerCollection $nostoCustomerCollection,
+        EntityManager $entityManager,
         NostoHelperUrl $urlHelper,
         DateTime $date
     ) {
@@ -83,6 +87,7 @@ class Builder
         $this->nostoCustomerFactory = $nostoCustomerFactory;
         $this->urlHelper = $urlHelper;
         $this->nostoCustomerCollection = $nostoCustomerCollection;
+        $this->entityManager = $entityManager;
     }
 
     /**
@@ -139,8 +144,7 @@ class Builder
             $nostoCustomer->setRestoreCartHash($this->generateRestoreCartHash());
         }
         try {
-            /** @noinspection PhpDeprecationInspection */
-            $nostoCustomer->save();
+            $this->entityManager->save($nostoCustomer);
 
             return $nostoCustomer;
         } catch (\Exception $e) {
