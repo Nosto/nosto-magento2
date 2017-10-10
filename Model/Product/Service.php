@@ -155,6 +155,7 @@ class Service
         $productSearchResults = $this->nostoProductRepository->getByIds($ids);
         $existingProductIds = [];
         if ($productSearchResults->getTotalCount() > 0) {
+            /** @var Product[] $existingProducts */
             $existingProducts = $productSearchResults->getItems();
             $this->addToQueue($existingProducts);
             foreach ($existingProducts as $product) {

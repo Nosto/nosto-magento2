@@ -124,8 +124,8 @@ class Repository
             ->create();
         $filterEndDateNotSet = $this->filterBuilder
             ->setField('special_to_date')
-            ->setValue(['null' => true])
-            ->setConditionType('gt')
+            ->setValue('null')
+            ->setConditionType('eq')
             ->create();
 
         $filterGroup = $this->filterGroupBuilder->setFilters([$filterEndDateGreater, $filterEndDateNotSet])->create();
