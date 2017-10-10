@@ -45,6 +45,7 @@ use Nosto\Tagging\Model\Customer as NostoCustomer;
 use Nosto\Tagging\Model\CustomerFactory as NostoCustomerFactory;
 use Nosto\Tagging\Helper\Url as NostoHelperUrl;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
+use Nosto\Tagging\Model\ResourceModel\Customer\Collection as NostoCustomerCollection;
 
 class Builder
 {
@@ -54,6 +55,7 @@ class Builder
     private $encryptor;
     private $nostoCustomerFactory;
     private $urlHelper;
+    private $nostoCustomerCollection;
 
     /**
      * Builder constructor.
@@ -61,6 +63,7 @@ class Builder
      * @param CookieManagerInterface $cookieManager
      * @param EncryptorInterface $encryptor
      * @param NostoCustomerFactory $nostoCustomerFactory
+     * @param NostoCustomerCollection $nostoCustomerCollection
      * @param NostoHelperUrl $urlHelper
      * @param DateTime $date
      */
@@ -69,6 +72,7 @@ class Builder
         CookieManagerInterface $cookieManager,
         EncryptorInterface $encryptor,
         NostoCustomerFactory $nostoCustomerFactory,
+        NostoCustomerCollection $nostoCustomerCollection,
         NostoHelperUrl $urlHelper,
         DateTime $date
     ) {
@@ -78,6 +82,7 @@ class Builder
         $this->date = $date;
         $this->nostoCustomerFactory = $nostoCustomerFactory;
         $this->urlHelper = $urlHelper;
+        $this->nostoCustomerCollection = $nostoCustomerCollection;
     }
 
     /**
@@ -110,17 +115,14 @@ class Builder
         }
 
         $quoteId = $quote->getId();
-        /** @noinspection PhpUndefinedMethodInspection */
-        $customerQuery = $this->nostoCustomerFactory
-            ->create()
-            ->getCollection()
+        /** @var NostoCustomer $nostoCustomer */
+        $nostoCustomer = $this->nostoCustomerCollection
             ->addFieldToFilter(NostoCustomer::QUOTE_ID, $quoteId)
             ->addFieldToFilter(NostoCustomer::NOSTO_ID, $nostoCustomerId)
             ->setPageSize(1)
-            ->setCurPage(1);
+            ->setCurPage(1)
+            ->getFirstItem(); // @codingStandardsIgnoreLine
 
-        /** @var NostoCustomer $nostoCustomer */
-        $nostoCustomer = $customerQuery->getFirstItem(); // @codingStandardsIgnoreLine
         if ($nostoCustomer->hasData(NostoCustomer::CUSTOMER_ID)) {
             if ($nostoCustomer->getRestoreCartHash() === null) {
                 $nostoCustomer->setRestoreCartHash($this->generateRestoreCartHash());
