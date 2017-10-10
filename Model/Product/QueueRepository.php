@@ -121,13 +121,13 @@ class QueueRepository implements ProductQueueRepositoryInterface
      */
     public function getOneByProductId($productId)
     {
-        /* @var $productQueue Queue */
-        $productQueue = $this->queueFactory->create();
-        $productQueue = $this->entityManager->load(
-            $productQueue,
-            $productId,
-            ProductQueueInterface::PRODUCT_ID
-        );
+        /** @var QueueCollection $collection */
+        $collection = $this->queueCollectionFactory->create();
+        /** @var Queue $customer */
+        $productQueue = $collection->addFieldToFilter(
+            ProductQueueInterface::PRODUCT_ID,
+            $productId
+        )->setPageSize(1)->setCurPage(1)->getFirstItem();
 
         return $productQueue;
     }
@@ -172,7 +172,8 @@ class QueueRepository implements ProductQueueRepositoryInterface
      */
     public function getList(SearchCriteriaInterface $searchCriteria)
     {
-        $collection = $this->queueFactory->create()->getCollection();
+        /** @var QueueCollection $collection */
+        $collection = $this->queueCollectionFactory->create();
         /** @noinspection PhpParamsInspection */
         $this->addFiltersToCollection($searchCriteria, $collection);
         $collection->load();
@@ -189,8 +190,8 @@ class QueueRepository implements ProductQueueRepositoryInterface
      */
     public function getFirstPage($pageSize)
     {
-        /* @var QuoteCollection $collection */
-        $collection = $this->queueFactory->create()->getCollection();
+        /** @var QueueCollection $collection */
+        $collection = $this->queueCollectionFactory->create();
         $collection->setPageSize($pageSize);
         $collection->setCurPage(1);
         $collection->load();
