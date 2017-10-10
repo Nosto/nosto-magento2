@@ -106,11 +106,16 @@ class QueueRepository implements ProductQueueRepositoryInterface
      */
     public function getById($id)
     {
-        /* @var $productQueue Queue */
-        $productQueue = $this->queueFactory->create();
-        $productQueue = $this->entityManager->load($productQueue, $id);
+        /** @var QueueCollection $collection */
+        $collection = $this->queueCollectionFactory->create();
+        /** @var Queue $productQueue */
+        $productQueue = $collection->addFieldToFilter(
+            ProductQueueInterface::ID,
+            $id
+        )->setPageSize(1)->setCurPage(1)->getFirstItem();
+
         if (!$productQueue->getId()) {
-            throw new NoSuchEntityException(new Phrase('Unable to find ProductQueue with ID "%1"', [$id]));
+            throw new NoSuchEntityException(new Phrase('Unable to find queue for id. "%1"', [$id]));
         }
 
         return $productQueue;
@@ -123,11 +128,15 @@ class QueueRepository implements ProductQueueRepositoryInterface
     {
         /** @var QueueCollection $collection */
         $collection = $this->queueCollectionFactory->create();
-        /** @var Queue $customer */
+        /** @var Queue $productQueue */
         $productQueue = $collection->addFieldToFilter(
             ProductQueueInterface::PRODUCT_ID,
             $productId
         )->setPageSize(1)->setCurPage(1)->getFirstItem();
+
+        if (!$productQueue->getId()) {
+            throw new NoSuchEntityException(new Phrase('Unable to find queue for product "%1"', [$productId]));
+        }
 
         return $productQueue;
     }

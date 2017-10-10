@@ -54,6 +54,7 @@ class Grouped
      *
      * @param Item $item the ordered item
      * @return string|null the name of the product
+     * @suppress PhanTypeMismatchReturn
      */
     public static function buildItemName(Item $item)
     {
