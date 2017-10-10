@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "f42247e5db635453001f78893c2b7562",
+    "content-hash": "3cd82bf9c9faa25bb3923530f25ec1e0",
     "packages": [
         {
             "name": "nosto/php-sdk",
@@ -639,16 +639,16 @@
         },
         {
             "name": "magento-ecg/coding-standard",
-            "version": "2.1",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/magento-ecg/coding-standard.git",
-                "reference": "a9db08df5ed6f6a4ca8398a01cdcf2d947b62c71"
+                "reference": "7ead7cecf35e3dc583a7a35b4257ba85317b4b26"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/magento-ecg/coding-standard/zipball/a9db08df5ed6f6a4ca8398a01cdcf2d947b62c71",
-                "reference": "a9db08df5ed6f6a4ca8398a01cdcf2d947b62c71",
+                "url": "https://api.github.com/repos/magento-ecg/coding-standard/zipball/7ead7cecf35e3dc583a7a35b4257ba85317b4b26",
+                "reference": "7ead7cecf35e3dc583a7a35b4257ba85317b4b26",
                 "shasum": ""
             },
             "require": {
@@ -668,7 +668,7 @@
             ],
             "description": "A set of PHP_CodeSniffer rules and sniffs.",
             "homepage": "https://github.com/magento-ecg/coding-standard",
-            "time": "2017-05-18T19:12:29+00:00"
+            "time": "2017-08-08T21:48:13+00:00"
         },
         {
             "name": "magento/framework",
@@ -2979,7 +2979,7 @@
                 "ZF1",
                 "framework"
             ],
-            "time": "2017-06-21T14:56:23+00:00"
+            "time": "2017-06-21 14:56:23"
         },
         {
             "name": "monolog/monolog",
@@ -4135,12 +4135,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/console.git",
-                "reference": "f81549d2c5fdee8d711c9ab3c7e7362353ea5853"
+                "reference": "b173e0db73ae8af2b7ea4c4ccc2814df054dbfb4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/console/zipball/f81549d2c5fdee8d711c9ab3c7e7362353ea5853",
-                "reference": "f81549d2c5fdee8d711c9ab3c7e7362353ea5853",
+                "url": "https://api.github.com/repos/symfony/console/zipball/b173e0db73ae8af2b7ea4c4ccc2814df054dbfb4",
+                "reference": "b173e0db73ae8af2b7ea4c4ccc2814df054dbfb4",
                 "shasum": ""
             },
             "require": {
@@ -4188,7 +4188,7 @@
             ],
             "description": "Symfony Console Component",
             "homepage": "https://symfony.com",
-            "time": "2017-10-01 21:00:16"
+            "time": "2017-10-10T07:42:03+00:00"
         },
         {
             "name": "symfony/debug",
@@ -4315,7 +4315,7 @@
             ],
             "description": "Symfony DependencyInjection Component",
             "homepage": "https://symfony.com",
-            "time": "2017-10-06T15:17:51+00:00"
+            "time": "2017-10-06 15:17:51"
         },
         {
             "name": "symfony/filesystem",
@@ -4576,7 +4576,7 @@
             ],
             "description": "Symfony Yaml Component",
             "homepage": "https://symfony.com",
-            "time": "2017-10-06T12:26:09+00:00"
+            "time": "2017-10-06 12:26:09"
         },
         {
             "name": "tedivm/jshrink",
