@@ -111,7 +111,7 @@ class QueueRepository implements ProductQueueRepositoryInterface
         /** @var Queue $productQueue */
         $productQueue = $collection->addFieldToFilter(
             ProductQueueInterface::ID,
-            $id
+            (string) $id
         )->setPageSize(1)->setCurPage(1)->getFirstItem();
 
         if (!$productQueue->getId()) {
@@ -131,7 +131,7 @@ class QueueRepository implements ProductQueueRepositoryInterface
         /** @var Queue $productQueue */
         $productQueue = $collection->addFieldToFilter(
             ProductQueueInterface::PRODUCT_ID,
-            $productId
+            (string) $productId
         )->setPageSize(1)->setCurPage(1)->getFirstItem();
 
         if (!$productQueue->getId()) {
