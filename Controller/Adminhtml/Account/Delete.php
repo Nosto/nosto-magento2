@@ -97,7 +97,7 @@ class Delete extends Base
             if ($account !== null) {
                 $currentUser = $this->nostoCurrentUserBuilder->build();
                 if ($this->nostoHelperAccount->deleteAccount($account, $store, $currentUser)) {
-                    $response = ['success' => true];
+                    $response = [];
                     $response['redirect_url'] = IframeHelper::getUrl(
                         $this->nostoIframeMetaBuilder->build($store),
                         null, // we don't have an account anymore
@@ -111,6 +111,7 @@ class Delete extends Base
                 }
             }
 
+            $response = [];
             $response['redirect_url'] = IframeHelper::getUrl(
                 $this->nostoIframeMetaBuilder->build($store),
                 null,
