@@ -10,7 +10,6 @@ pipeline {
   stages {
     stage('Prepare environment') {
       steps {
-        sh 'printenv'
         checkout scm
       }
     }
@@ -39,22 +38,13 @@ pipeline {
       }
     }
 
-    stage('Package') {
-      steps {
-        script {
-          version = sh(returnStdout: true, script: 'git rev-parse --short HEAD').trim()
-          sh "composer archive --format=zip --file=${version}"
-          sh "composer validate-archive -- ${version}.zip"
-        }
-        archiveArtifacts "${version}.zip"
-      }
-    }
+
 
     stage('Phan Analysis') {
       steps {
         sh "composer create-project magento/community-edition magento"
         sh "cd magento && composer config --unset minimum-stability"
-        sh "cd magento && composer require dev-${CHANGE_BRANCH}"
+        sh "cd magento && composer require --update-no-dev nosto/module-nostotagging:dev-${CHANGE_BRANCH}"
         sh "cd magento && bin/magento module:enable --all"
         sh "cd magento && bin/magento setup:di:compile"
         catchError {
