@@ -40,6 +40,7 @@ use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\Api\SearchCriteriaInterface;
 use Magento\Framework\EntityManager\EntityManager;
 use Magento\Framework\Exception\NoSuchEntityException;
+use Magento\Framework\Model\AbstractModel;
 use Magento\Framework\Phrase;
 use Nosto\Tagging\Api\Data\ProductQueueInterface;
 use Nosto\Tagging\Api\Data\ProductQueueSearchResultsInterface;
@@ -96,6 +97,7 @@ class QueueRepository implements ProductQueueRepositoryInterface
             return $existing;
         }
         /** @noinspection PhpParamsInspection */
+        /** @var AbstractModel $productQueue */
         $queue = $this->queueResource->save($productQueue);
 
         return $queue;
