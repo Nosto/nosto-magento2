@@ -37,6 +37,7 @@
 namespace Nosto\Tagging\Model\Product;
 
 use DateTime;
+use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\ProductFactory;
 use Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable as ConfigurableProduct;
@@ -137,7 +138,7 @@ class Service
     /**
      * Adds products to queue by id
      *
-     * @param Product[] array of product objects
+     * @param ProductInterface[] array of product objects
      */
     public function update(array $products)
     {
@@ -174,7 +175,7 @@ class Service
     /**
      * Adds products to queue
      *
-     * @param Product[] $products
+     * @param ProductInterface[] $products
      */
     public function addToQueue(array $products)
     {
