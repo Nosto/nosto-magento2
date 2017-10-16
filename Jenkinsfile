@@ -38,8 +38,6 @@ pipeline {
       }
     }
 
-
-
     stage('Phan Analysis') {
       steps {
         sh "composer create-project magento/community-edition magento"
@@ -50,6 +48,17 @@ pipeline {
         catchError {
           sh "./vendor/bin/phan --config-file=phan.php --output-mode=checkstyle --output=chkphan.xml || true"
         }
+      }
+    }
+
+    stage('Package') {
+      steps {
+        script {
+          version = sh(returnStdout: true, script: 'git rev-parse --short HEAD').trim()
+          sh "composer archive --format=zip --file=${version}"
+          sh "composer validate-archive -- ${version}.zip"
+        }
+        archiveArtifacts "${version}.zip"
       }
     }
   }
