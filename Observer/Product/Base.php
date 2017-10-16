@@ -83,7 +83,6 @@ abstract class Base implements ObserverInterface
      *
      * @param Observer $observer
      * @return void
-     * @suppress PhanDeprecatedFunction
      */
     public function execute(Observer $observer)
     {
@@ -91,7 +90,6 @@ abstract class Base implements ObserverInterface
             && !$this->indexer->isScheduled()
         ) {
             /* @var \Magento\Catalog\Model\Product $product */
-            /** @noinspection PhpUndefinedMethodInspection */
             $product = $this->extractProduct($observer);
 
             if ($product instanceof Product && $product->getId()) {

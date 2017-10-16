@@ -40,6 +40,8 @@ use Magento\Catalog\Model\Product\Visibility as ProductVisibility;
 use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductCollectionFactory;
 use Magento\Framework\App\Action\Context;
 use Magento\Store\Model\Store;
+use Nosto\Object\AbstractCollection;
+use Nosto\Object\Product\ProductCollection;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Model\Product\Collection as NostoProductCollection;
@@ -84,11 +86,10 @@ class Product extends Base
     }
 
     /**
-     * @suppress PhanParamSignatureMismatch
      * @param Store $store
      * @param int $limit
      * @param int $offset
-     * @return \Nosto\Object\AbstractCollection|\Nosto\Object\Product\ProductCollection
+     * @return AbstractCollection|ProductCollection
      */
     public function buildExportCollection(Store $store, $limit = 100, $offset = 0)
     {
@@ -96,10 +97,9 @@ class Product extends Base
     }
 
     /**
-     * @suppress PhanParamSignatureMismatch
      * @param Store $store
      * @param $id
-     * @return \Nosto\Object\AbstractCollection|\Nosto\Object\Product\ProductCollection
+     * @return AbstractCollection|ProductCollection
      */
     public function buildSingleExportCollection(Store $store, $id)
     {
