@@ -1,30 +1,31 @@
-FROM ubuntu:14.04
+FROM        ubuntu:14.04
 
-ENV LANGUAGE en_US.UTF-8
-ENV LANG en_US.UTF-8
-ENV TERM xterm
-ENV MYSQL_ENV_MYSQL_DATABASE magento2
-ENV MYSQL_ENV_MYSQL_USER root
-ENV MYSQL_ENV_MYSQL_ROOT root
-ENV MAGENTO_ADMIN_USER admin
-ENV MAGENTO_ADMIN_PASSWORD Admin12345
-ENV COMPOSER_ALLOW_SUPERUSER 1
-ENV DEBIAN_FRONTEND noninteractive
-
-# Satis credentials for repo.magento.com to download the community edtition
-ARG         repouser=569521a9babbeda71b5cb25ce40168a3
-ARG         repopass=ef77d5e321fec542f3102e2059f3d192
+ENV         LANGUAGE en_US.UTF-8
+ENV         LANG en_US.UTF-8
+ENV         TERM xterm
+RUN         export LC_ALL=en_US.UTF-8
 
 # Environment variables to force the extension to connect to a specified instance
 ENV         NOSTO_SERVER_URL staging.nosto.com
-ENV         NOSTO_API_BASE_URL https://staging.nosto.com/api
+ENV         NOSTO_API_BASE_URL https://staging-api.nosto.com
 ENV         NOSTO_OAUTH_BASE_URL https://staging.nosto.com/oauth
 ENV         NOSTO_WEB_HOOK_BASE_URL https://staging.nosto.com
 ENV         NOSTO_IFRAME_ORIGIN_REGEXP .*
 
 MAINTAINER  Nosto "platforms@nosto.com"
 
-RUN         export LC_ALL=en_US.UTF-8
+ENV         MYSQL_ENV_MYSQL_DATABASE magento2
+ENV         MYSQL_ENV_MYSQL_USER root
+ENV         MYSQL_ENV_MYSQL_ROOT root
+ENV         MAGENTO_ADMIN_USER admin
+ENV         MAGENTO_ADMIN_PASSWORD Admin12345
+ENV         COMPOSER_ALLOW_SUPERUSER 1
+ENV         DEBIAN_FRONTEND noninteractive
+
+# Satis credentials for repo.magento.com to download the community edtition
+ARG         repouser=569521a9babbeda71b5cb25ce40168a3
+ARG         repopass=ef77d5e321fec542f3102e2059f3d192
+
 # Install all core dependencies required for setting up Apache and PHP atleast
 RUN         apt-get update && \
             apt-get -y install unzip && \
@@ -76,9 +77,9 @@ RUN        apt-get update && \
            a2enmod rewrite && phpenmod ast soap && \
            a2dissite 000-default.conf
 
-RUN php -r "readfile('https://getcomposer.org/installer');" > composer-setup.php && \
-    php composer-setup.php --install-dir=/usr/local/bin --filename=composer && \
-    php -r "unlink('composer-setup.php');"
+RUN        php -r "readfile('https://getcomposer.org/installer');" > composer-setup.php && \
+           php composer-setup.php --install-dir=/usr/local/bin --filename=composer && \
+           php -r "unlink('composer-setup.php');"
 
 RUN        service mysql start && \
            mysql -e "GRANT ALL ON *.* TO 'root'@'localhost' IDENTIFIED BY 'root'" && \
