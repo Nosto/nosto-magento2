@@ -10,6 +10,7 @@ pipeline {
   stages {
     stage('Prepare environment') {
       steps {
+        echo env
         checkout scm
       }
     }
