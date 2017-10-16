@@ -10,7 +10,7 @@ pipeline {
   stages {
     stage('Prepare environment') {
       steps {
-        echo env
+        sh 'printenv'
         checkout scm
       }
     }
