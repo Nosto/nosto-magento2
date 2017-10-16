@@ -91,7 +91,7 @@ class Service
      * @param ConfigurableProduct $configurableProduct
      * @param NostoHelperAccount\Proxy $nostoHelperAccount
      * @param NostoHelperData\Proxy $nostoHelperData
-     * @param NostoProductRepository\Proxy $nostoProductRepository
+     * @param NostoProductRepository $nostoProductRepository
      * @param QueueRepository $nostoQueueRepository
      * @param QueueFactory $nostoQueueFactory
      * @param StoreManager $storeManager
@@ -104,7 +104,7 @@ class Service
         ConfigurableProduct $configurableProduct,
         NostoHelperAccount\Proxy $nostoHelperAccount,
         NostoHelperData\Proxy $nostoHelperData,
-        NostoProductRepository\Proxy $nostoProductRepository,
+        NostoProductRepository $nostoProductRepository,
         QueueRepository $nostoQueueRepository,
         QueueFactory $nostoQueueFactory,
         StoreManager $storeManager,
