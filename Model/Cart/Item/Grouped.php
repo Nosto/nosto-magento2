@@ -65,7 +65,7 @@ class Grouped
             $parent = $objectManager->get(Product::class)->load($config['product_id']); // @codingStandardsIgnoreLine
             $parentName = $parent->getName();
             if (!empty($parentName)) {
-                $name = $parentName . ' - ' . $name;
+                return $parentName . ' - ' . $name;
             }
         }
 
