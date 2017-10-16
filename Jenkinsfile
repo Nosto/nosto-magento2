@@ -54,7 +54,7 @@ pipeline {
       steps {
         sh "composer create-project magento/community-edition magento"
         sh "cd magento && composer config --unset minimum-stability"
-        sh "cd magento && composer require dev-${BRANCH_NAME}"
+        sh "cd magento && composer require dev-${CHANGE_BRANCH}"
         sh "cd magento && bin/magento module:enable --all"
         sh "cd magento && bin/magento setup:di:compile"
         catchError {
