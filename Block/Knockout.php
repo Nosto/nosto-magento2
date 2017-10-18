@@ -102,7 +102,6 @@ class Knockout extends Template
      * Retrieve serialized JS layout configuration ready to use in template
      *
      * @return string
-     * @suppress PhanTypeMismatchReturn
      */
     public function getJsLayout()
     {

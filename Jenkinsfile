@@ -42,6 +42,7 @@ pipeline {
       steps {
         sh "composer create-project magento/community-edition magento"
         sh "cd magento && composer config minimum-stability dev"
+        sh "cd magento && composer config prefer-stable true"
         sh "cd magento && composer require --update-no-dev nosto/module-nostotagging:dev-${CHANGE_BRANCH}"
         sh "cd magento && bin/magento module:enable --all"
         sh "cd magento && bin/magento setup:di:compile"
