@@ -189,6 +189,9 @@ class Service
             );
             $productIdsForQueue = [];
             foreach ($products as $product) {
+                if (!$product instanceof Product) {
+                    continue;
+                }
                 $parentProductIds = $this->nostoProductRepository->resolveParentProductIds($product);
                 if (!empty($parentProductIds)) {
                     foreach ($parentProductIds as $parentProductId) {
