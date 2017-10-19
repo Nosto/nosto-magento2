@@ -40,19 +40,14 @@ pipeline {
 
     stage('Phan Analysis') {
       steps {
-
         sh "composer create-project magento/community-edition magento"
         sh "cd magento && composer config minimum-stability dev"
         sh "cd magento && composer config prefer-stable true"
         script {
-          echo "cd magento && composer require --update-no-dev nosto/module-nostotagging:dev-${env.GIT_BRANCH}"
-          echo "cd magento && composer require --update-no-dev nosto/module-nostotagging:dev-${env.BRANCH_NAME}#${env.GIT_COMMIT.substring(0, 7)}"
-          if (env.GIT_BRANCH == 'master' || env.GIT_BRANCH == 'develop') {
-            sh "cd magento && composer require --update-no-dev nosto/module-nostotagging:dev-${env.BRANCH_NAME}"
-          } else {
-            echo "env.CHANGE_BRANCH:" + env.CHANGE_BRANCH
-            echo "cd magento && composer require --update-no-dev nosto/module-nostotagging:dev-${CHANGE_BRANCH}#${env.GIT_COMMIT.substring(0, 7)}"
+          try {
             sh "cd magento && composer require --update-no-dev nosto/module-nostotagging:dev-${CHANGE_BRANCH}#${env.GIT_COMMIT.substring(0, 7)}"
+          } catch (MissingPropertyException e) {
+            sh "cd magento && composer require --update-no-dev nosto/module-nostotagging:dev-${env.GIT_BRANCH}#${env.GIT_COMMIT.substring(0, 7)}"
           }
         }
         sh "cd magento && bin/magento module:enable --all"
