@@ -42,6 +42,7 @@ use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Phrase;
 use Nosto\Helper\IframeHelper;
 use Nosto\Nosto;
+use Nosto\Tagging\Helper\Cache as NostoHelperCache;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Model\Meta\Account\Iframe\Builder as NostoIframeMetaBuilder;
@@ -55,6 +56,7 @@ class Delete extends Base
     private $nostoCurrentUserBuilder;
     private $nostoIframeMetaBuilder;
     private $nostoHelperScope;
+    private $nostoHelperCache;
 
     /**
      * @param Context $context
@@ -62,6 +64,7 @@ class Delete extends Base
      * @param NostoIframeMetaBuilder $nostoIframeMetaBuilder
      * @param NostoCurrentUserBuilder $nostoCurrentUserBuilder
      * @param NostoHelperScope $nostoHelperScope
+     * @param NostoHelperCache $nostoHelperCache
      * @param Json $result
      */
     public function __construct(
@@ -70,6 +73,7 @@ class Delete extends Base
         NostoIframeMetaBuilder $nostoIframeMetaBuilder,
         NostoCurrentUserBuilder $nostoCurrentUserBuilder,
         NostoHelperScope $nostoHelperScope,
+        NostoHelperCache $nostoHelperCache,
         Json $result
     ) {
         parent::__construct($context);
@@ -79,6 +83,7 @@ class Delete extends Base
         $this->result = $result;
         $this->nostoCurrentUserBuilder = $nostoCurrentUserBuilder;
         $this->nostoHelperScope = $nostoHelperScope;
+        $this->nostoHelperCache = $nostoHelperCache;
     }
 
     /**
@@ -97,6 +102,10 @@ class Delete extends Base
             if ($account !== null) {
                 $currentUser = $this->nostoCurrentUserBuilder->build();
                 if ($this->nostoHelperAccount->deleteAccount($account, $store, $currentUser)) {
+                    //Invalidate the cache
+                    $this->nostoHelperCache->invalidatePageCache();
+                    $this->nostoHelperCache->invalidateLayoutCache();
+
                     $response = [];
                     $response['redirect_url'] = IframeHelper::getUrl(
                         $this->nostoIframeMetaBuilder->build($store),
