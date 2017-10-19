@@ -50,7 +50,8 @@ pipeline {
           if (env.GIT_BRANCH == 'master' || env.GIT_BRANCH == 'develop') {
             sh "cd magento && composer require --update-no-dev nosto/module-nostotagging:dev-${env.BRANCH_NAME}"
           } else {
-            "cd magento && composer require --update-no-dev nosto/module-nostotagging:dev-${CHANGE_BRANCH}#${env.GIT_COMMIT.substring(0, 7)}"
+            echo "env.CHANGE_BRANCH:" + env.CHANGE_BRANCH
+            echo "cd magento && composer require --update-no-dev nosto/module-nostotagging:dev-${CHANGE_BRANCH}#${env.GIT_COMMIT.substring(0, 7)}"
             sh "cd magento && composer require --update-no-dev nosto/module-nostotagging:dev-${CHANGE_BRANCH}#${env.GIT_COMMIT.substring(0, 7)}"
           }
         }
