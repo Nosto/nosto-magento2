@@ -40,13 +40,14 @@ pipeline {
 
     stage('Phan Analysis') {
       steps {
+        env
         sh "composer create-project magento/community-edition magento"
         sh "cd magento && composer config minimum-stability dev"
         sh "cd magento && composer config prefer-stable true"
         script {
           echo "cd magento && composer require --update-no-dev nosto/module-nostotagging:dev-${env.GIT_BRANCH}"
           echo "cd magento && composer require --update-no-dev nosto/module-nostotagging:dev-${env.BRANCH_NAME}#${env.GIT_COMMIT}"
-          if (env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'develop') {
+          if (env.GIT_BRANCH == 'master' || env.GIT_BRANCH == 'develop') {
             sh "cd magento && composer require --update-no-dev nosto/module-nostotagging:dev-${env.BRANCH_NAME}"
           } else {
             echo "cd magento && composer require --update-no-dev nosto/module-nostotagging:dev-${CHANGE_BRANCH}"
