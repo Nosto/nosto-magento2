@@ -45,7 +45,6 @@ pipeline {
         sh "cd magento && composer config minimum-stability dev"
         sh "cd magento && composer config prefer-stable true"
         script {
-          echo env.dump()
           echo "cd magento && composer require --update-no-dev nosto/module-nostotagging:dev-${env.GIT_BRANCH}"
           echo "cd magento && composer require --update-no-dev nosto/module-nostotagging:dev-${env.BRANCH_NAME}#${env.GIT_COMMIT.substring(0, 7)}"
           if (env.GIT_BRANCH == 'master' || env.GIT_BRANCH == 'develop') {
