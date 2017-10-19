@@ -51,7 +51,7 @@ class Review extends Base
     /**
      * @inheritdoc
      */
-    protected function extractProduct(Observer $observer)
+    public function extractProduct(Observer $observer)
     {
         /* @var ReviewModel $review */
         /** @noinspection PhpUndefinedMethodInspection */

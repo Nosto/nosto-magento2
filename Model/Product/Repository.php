@@ -44,6 +44,7 @@ use Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable as
 use Magento\Framework\Api\FilterBuilder;
 use Magento\Framework\Api\Search\FilterGroupBuilder;
 use Magento\Framework\Api\SearchCriteriaBuilder;
+use Magento\Framework\Stdlib\DateTime\DateTime;
 use Nosto\Tagging\Helper\Data;
 
 /**
@@ -115,7 +116,7 @@ class Repository
      */
     public function getWithActivePricingSchedule()
     {
-        $today = new \DateTime("now");
+        $today = DateTime::gmtDate();
         $filterEndDateGreater = $this->filterBuilder
             ->setField('special_to_date')
             ->setValue($today->format('Y-m-d ' . '00:00:00'))
@@ -123,8 +124,8 @@ class Repository
             ->create();
         $filterEndDateNotSet = $this->filterBuilder
             ->setField('special_to_date')
-            ->setValue(['null' => true])
-            ->setConditionType('gt')
+            ->setValue('null')
+            ->setConditionType('eq')
             ->create();
 
         $filterGroup = $this->filterGroupBuilder->setFilters([$filterEndDateGreater, $filterEndDateNotSet])->create();
@@ -143,11 +144,11 @@ class Repository
      *
      * @param Product $product
      * @return string[]|null
+     * @suppress PhanTypeMismatchReturn
      */
     public function resolveParentProductIds(Product $product)
     {
         if ($this->getParentIdsFromCache($product)) {
-
             return $this->getParentIdsFromCache($product);
         }
         $parentProductIds = null;
@@ -170,7 +171,6 @@ class Repository
     private function getParentIdsFromCache(Product $product)
     {
         if (isset($this->parentProductIdCache[$product->getId()])) {
-
             return $this->parentProductIdCache[$product->getId()];
         }
 

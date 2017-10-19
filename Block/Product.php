@@ -62,7 +62,7 @@ use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
 class Product extends View
 {
     use TaggingTrait {
-        TaggingTrait::__construct as taggingConstruct;
+        TaggingTrait::__construct as taggingConstruct; // @codingStandardsIgnoreLine
     }
 
     private $nostoProductBuilder;
@@ -146,7 +146,7 @@ class Product extends View
     /**
      * Returns the Nosto category DTO.
      *
-     * @return string the current category as a slash-delimited string
+     * @return string|null the current category as a slash-delimited string
      */
     public function getNostoCategory()
     {

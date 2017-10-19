@@ -39,7 +39,7 @@ use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 class Variation extends Template
 {
     use TaggingTrait {
-        TaggingTrait::__construct as taggingConstruct;
+        TaggingTrait::__construct as taggingConstruct; // @codingStandardsIgnoreLine
     }
 
     private $nostoHelperCurrency;
@@ -86,7 +86,6 @@ class Variation extends Template
     public function hasMultipleCurrencies()
     {
         $store = $this->nostoHelperScope->getStore(true);
-        /** @noinspection PhpParamsInspection */
         return $this->nostoHelperCurrency->getCurrencyCount($store) > 1;
     }
 }

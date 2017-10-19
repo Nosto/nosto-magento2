@@ -38,7 +38,10 @@ namespace Nosto\Tagging\Model\Product;
 
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\Api\SearchCriteriaInterface;
+use Magento\Framework\EntityManager\EntityManager;
 use Magento\Framework\Exception\NoSuchEntityException;
+use Magento\Framework\Model\AbstractModel;
+use Magento\Framework\Phrase;
 use Nosto\Tagging\Api\Data\ProductQueueInterface;
 use Nosto\Tagging\Api\Data\ProductQueueSearchResultsInterface;
 use Nosto\Tagging\Api\ProductQueueRepositoryInterface;
@@ -53,6 +56,7 @@ class QueueRepository implements ProductQueueRepositoryInterface
     private $queueCollectionFactory;
     private $queueSearchResultsFactory;
     private $searchCriteriaBuilder;
+    private $entityManager;
 
     /**
      * QueueRepository constructor.
@@ -62,13 +66,15 @@ class QueueRepository implements ProductQueueRepositoryInterface
      * @param QueueCollectionFactory $queueCollectionFactory
      * @param QueueSearchResultsFactory $queueSearchResultsFactory
      * @param SearchCriteriaBuilder $searchCriteriaBuilder
+     * @param EntityManager $entityManager
      */
     public function __construct(
         QueueResource $queueResource,
         QueueFactory $queueFactory,
         QueueCollectionFactory $queueCollectionFactory,
         QueueSearchResultsFactory $queueSearchResultsFactory,
-        SearchCriteriaBuilder $searchCriteriaBuilder
+        SearchCriteriaBuilder $searchCriteriaBuilder,
+        EntityManager $entityManager
     ) {
 
         $this->queueResource = $queueResource;
@@ -76,6 +82,7 @@ class QueueRepository implements ProductQueueRepositoryInterface
         $this->queueCollectionFactory = $queueCollectionFactory;
         $this->queueSearchResultsFactory = $queueSearchResultsFactory;
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;
+        $this->entityManager = $entityManager;
     }
 
     /**
@@ -90,6 +97,7 @@ class QueueRepository implements ProductQueueRepositoryInterface
             return $existing;
         }
         /** @noinspection PhpParamsInspection */
+        /** @var AbstractModel $productQueue */
         $queue = $this->queueResource->save($productQueue);
 
         return $queue;
@@ -100,11 +108,16 @@ class QueueRepository implements ProductQueueRepositoryInterface
      */
     public function getById($id)
     {
-        /* @var $productQueue Queue */
-        $productQueue = $this->queueFactory->create();
-        $productQueue->getResource()->load($this->queueFactory->create(), $id);
+        /** @var QueueCollection $collection */
+        $collection = $this->queueCollectionFactory->create();
+        /** @var Queue $productQueue */
+        $productQueue = $collection->addFieldToFilter(
+            ProductQueueInterface::ID,
+            (string) $id
+        )->setPageSize(1)->setCurPage(1)->getFirstItem();
+
         if (!$productQueue->getId()) {
-            throw new NoSuchEntityException(__('Unable to find ProductQueue with ID "%1"', $id));
+            throw new NoSuchEntityException(new Phrase('Unable to find queue for id. "%1"', [$id]));
         }
 
         return $productQueue;
@@ -115,13 +128,17 @@ class QueueRepository implements ProductQueueRepositoryInterface
      */
     public function getOneByProductId($productId)
     {
-        /* @var $productQueue Queue */
-        $productQueue = $this->queueFactory->create();
-        $productQueue->getResource()->load(
-            $productQueue,
-            $productId,
-            ProductQueueInterface::PRODUCT_ID
-        );
+        /** @var QueueCollection $collection */
+        $collection = $this->queueCollectionFactory->create();
+        /** @var Queue $productQueue */
+        $productQueue = $collection->addFieldToFilter(
+            ProductQueueInterface::PRODUCT_ID,
+            (string) $productId
+        )->setPageSize(1)->setCurPage(1)->getFirstItem();
+
+        if (!$productQueue->getId()) {
+            throw new NoSuchEntityException(new Phrase('Unable to find queue for product "%1"', [$productId]));
+        }
 
         return $productQueue;
     }
@@ -143,8 +160,7 @@ class QueueRepository implements ProductQueueRepositoryInterface
      */
     public function delete(ProductQueueInterface $productQueue)
     {
-        /** @noinspection PhpParamsInspection */
-        $this->queueResource->delete($productQueue);
+        $this->entityManager->delete($productQueue);
     }
 
     /**
@@ -156,7 +172,7 @@ class QueueRepository implements ProductQueueRepositoryInterface
             $productQueue = $this->getByProductId($id);
             if ($productQueue instanceof ProductQueueSearchResultsInterface) {
                 foreach ($productQueue->getItems() as $entry) {
-                    $this->delete($entry);
+                    $this->delete($entry); // @codingStandardsIgnoreLine
                 }
             }
         }
@@ -167,8 +183,8 @@ class QueueRepository implements ProductQueueRepositoryInterface
      */
     public function getList(SearchCriteriaInterface $searchCriteria)
     {
-        /* @var QuoteCollection $collection */
-        $collection = $this->queueFactory->create()->getCollection();
+        /** @var QueueCollection $collection */
+        $collection = $this->queueCollectionFactory->create();
         /** @noinspection PhpParamsInspection */
         $this->addFiltersToCollection($searchCriteria, $collection);
         $collection->load();
@@ -180,14 +196,13 @@ class QueueRepository implements ProductQueueRepositoryInterface
         return $searchResult;
     }
 
-
     /**
      * @inheritdoc
      */
     public function getFirstPage($pageSize)
     {
-        /* @var QuoteCollection $collection */
-        $collection = $this->queueFactory->create()->getCollection();
+        /** @var QueueCollection $collection */
+        $collection = $this->queueCollectionFactory->create();
         $collection->setPageSize($pageSize);
         $collection->setCurPage(1);
         $collection->load();

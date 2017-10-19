@@ -48,11 +48,11 @@ use Nosto\Tagging\Model\Product\Service as NostoProductService;
 
 abstract class Base implements ObserverInterface
 {
-    protected $moduleManager;
-    protected $productService;
-    protected $productRepository;
-    protected $dataHelper;
-    protected $indexer;
+    public $moduleManager;
+    public $productService;
+    public $productRepository;
+    public $dataHelper;
+    public $indexer;
 
     /**
      * Constructor.
@@ -83,7 +83,6 @@ abstract class Base implements ObserverInterface
      *
      * @param Observer $observer
      * @return void
-     * @suppress PhanDeprecatedFunction
      */
     public function execute(Observer $observer)
     {
@@ -91,7 +90,6 @@ abstract class Base implements ObserverInterface
             && !$this->indexer->isScheduled()
         ) {
             /* @var \Magento\Catalog\Model\Product $product */
-            /** @noinspection PhpUndefinedMethodInspection */
             $product = $this->extractProduct($observer);
 
             if ($product instanceof Product && $product->getId()) {
@@ -105,7 +103,7 @@ abstract class Base implements ObserverInterface
      * @param Observer $observer
      * @return mixed
      */
-    protected function extractProduct(Observer $observer)
+    public function extractProduct(Observer $observer)
     {
         /** @noinspection PhpUndefinedMethodInspection */
         return $observer->getProduct();

@@ -47,7 +47,7 @@ use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 class PageType extends Template
 {
     use TaggingTrait {
-        TaggingTrait::__construct as taggingConstruct;
+        TaggingTrait::__construct as taggingConstruct; // @codingStandardsIgnoreLine
     }
 
     /**

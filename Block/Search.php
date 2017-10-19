@@ -52,7 +52,7 @@ use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 class Search extends Result
 {
     use TaggingTrait {
-        TaggingTrait::__construct as taggingConstruct;
+        TaggingTrait::__construct as taggingConstruct; // @codingStandardsIgnoreLine
     }
 
     /**

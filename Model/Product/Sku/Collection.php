@@ -86,10 +86,9 @@ class Collection
         $skuCollection = new SkuCollection();
         if ($product->getTypeId() === ConfigurableType::TYPE_CODE) {
             $attributes = $this->configurableType->getConfigurableAttributes($product);
-            /** @var Product $product */
             $usedProducts = $this->configurableType->getUsedProducts($product);
             foreach ($usedProducts as $product) {
-                if (!$product->isDisabled()) {
+                if ($product instanceof Product && !$product->isDisabled()) {
                     try {
                         $sku = $this->nostoSkuBuilder->build($product, $store, $attributes);
                         $skuCollection->append($sku);

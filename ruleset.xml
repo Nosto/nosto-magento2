@@ -38,7 +38,6 @@
 <ruleset name="Magento">
     <file>./Api</file>
     <file>./Block</file>
-    <file>./Console</file>
     <file>./Controller</file>
     <file>./CustomerData</file>
     <file>./Helper</file>
