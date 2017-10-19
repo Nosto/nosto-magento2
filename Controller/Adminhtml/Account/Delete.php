@@ -107,6 +107,7 @@ class Delete extends Base
                     $this->nostoHelperCache->invalidateLayoutCache();
 
                     $response = [];
+                    $response['success'] = true;
                     $response['redirect_url'] = IframeHelper::getUrl(
                         $this->nostoIframeMetaBuilder->build($store),
                         null, // we don't have an account anymore
