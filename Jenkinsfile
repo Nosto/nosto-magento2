@@ -46,10 +46,10 @@ pipeline {
         script {
           echo "cd magento && composer require --update-no-dev nosto/module-nostotagging:dev-${env.BRANCH_NAME}"
           echo "cd magento && composer require --update-no-dev nosto/module-nostotagging:dev-${env.BRANCH_NAME}#${scm}"
-          echo "cd magento && composer require --update-no-dev nosto/module-nostotagging:dev-${CHANGE_BRANCH}"
           if (env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'develop') {
             sh "cd magento && composer require --update-no-dev nosto/module-nostotagging:dev-${env.BRANCH_NAME}"
           } else {
+            echo "cd magento && composer require --update-no-dev nosto/module-nostotagging:dev-${CHANGE_BRANCH}"
             sh "cd magento && composer require --update-no-dev nosto/module-nostotagging:dev-${CHANGE_BRANCH}"
           }
         }
