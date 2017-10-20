@@ -43,7 +43,13 @@ pipeline {
         sh "composer create-project magento/community-edition magento"
         sh "cd magento && composer config minimum-stability dev"
         sh "cd magento && composer config prefer-stable true"
-        sh "cd magento && composer require --update-no-dev nosto/module-nostotagging:dev-${CHANGE_BRANCH}"
+        script {
+          try {
+            sh "cd magento && composer require --update-no-dev nosto/module-nostotagging:dev-${CHANGE_BRANCH}#${env.GIT_COMMIT.substring(0, 7)}"
+          } catch (MissingPropertyException e) {
+            sh "cd magento && composer require --update-no-dev nosto/module-nostotagging:dev-${env.GIT_BRANCH}#${env.GIT_COMMIT.substring(0, 7)}"
+          }
+        }
         sh "cd magento && bin/magento module:enable --all"
         sh "cd magento && bin/magento setup:di:compile"
         catchError {
