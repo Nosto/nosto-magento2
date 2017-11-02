@@ -1,5 +1,8 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 2.3.9
+* Fix the issue that database debug log is enabled after nosto is installed 
+
 ### 2.3.8
 * Fix the issue that current currency tagging is missing
 
