@@ -44,6 +44,7 @@ use Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable as
 use Magento\Framework\Api\FilterBuilder;
 use Magento\Framework\Api\Search\FilterGroupBuilder;
 use Magento\Framework\Api\SearchCriteriaBuilder;
+use Magento\ConfigurableProduct\Model\Product\Type\Configurable as ConfigurableType;
 use Nosto\Tagging\Helper\Data;
 
 /**
@@ -61,6 +62,7 @@ class Repository
     private $configurableProduct;
     private $filterGroupBuilder;
     private $filterBuilder;
+    private $configurableType;
 
     /**
      * Constructor to instantiating the reindex command. This constructor uses proxy classes for
@@ -75,6 +77,7 @@ class Repository
      * @param ConfigurableProduct $configurableProduct
      * @param FilterBuilder $filterBuilder
      * @param FilterGroupBuilder $filterGroupBuilder
+     * @param ConfigurableType $configurableType
      */
     public function __construct(
         ProductRepository\Proxy $productRepository,
@@ -82,7 +85,8 @@ class Repository
         Data $nostoDataHelper,
         ConfigurableProduct $configurableProduct,
         FilterBuilder $filterBuilder,
-        FilterGroupBuilder $filterGroupBuilder
+        FilterGroupBuilder $filterGroupBuilder,
+        ConfigurableType $configurableType
     ) {
         $this->productRepository = $productRepository;
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;
@@ -90,6 +94,7 @@ class Repository
         $this->configurableProduct = $configurableProduct;
         $this->filterGroupBuilder = $filterGroupBuilder;
         $this->filterBuilder = $filterBuilder;
+        $this->configurableType = $configurableType;
     }
 
     /**
@@ -160,6 +165,28 @@ class Repository
 
         return $parentProductIds;
     }
+
+    /**
+     * Gets the variations / SKUs of configurable product
+     *
+     * @param Product $product
+    * @return array
+     */
+    public function getSkus(Product $product)
+    {
+        $skuIds = $this->configurableType->getChildrenIds($product->getId());
+        $products = [];
+        foreach ($skuIds as $batch=>$skus) {
+            if (is_array($skus)) {
+                foreach ($skus as $skuId) {
+                    // We need to load these one by one in order to get correct stock / availability info
+                    $products[] = $this->productRepository->getById($skuId);
+                }
+            }
+        }
+
+        return $products;
+   }
 
     /**
      * Get parent ids from cache. Return null if the cache is not available
