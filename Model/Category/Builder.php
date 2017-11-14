@@ -84,7 +84,7 @@ class Builder
 
     /**
      * @param Category $category
-     * @return string
+     * @return string|null
      */
     public function build(Category $category)
     {

@@ -41,7 +41,7 @@ use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 class Stub extends Template
 {
     use TaggingTrait {
-        TaggingTrait::__construct as taggingConstruct;
+        TaggingTrait::__construct as taggingConstruct; // @codingStandardsIgnoreLine
     }
 
     /**

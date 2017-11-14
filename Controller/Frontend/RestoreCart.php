@@ -41,6 +41,6 @@ namespace Nosto\Tagging\Controller\Frontend;
  *
  * @deprecated
  */
-class RestoreCart extends Cart
+class RestoreCart extends Cart // @codingStandardsIgnoreLine
 {
 }

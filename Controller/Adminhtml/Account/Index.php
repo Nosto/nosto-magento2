@@ -39,6 +39,7 @@ namespace Nosto\Tagging\Controller\Adminhtml\Account;
 use Magento\Backend\App\Action\Context;
 use Magento\Backend\Model\View\Result\Page;
 use Magento\Framework\Controller\Result\Redirect;
+use Magento\Framework\Phrase;
 use Magento\Framework\View\Result\PageFactory;
 use Magento\Store\Api\Data\StoreInterface;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
@@ -86,7 +87,7 @@ class Index extends Base
         $result = $this->resultPageFactory->create();
         if ($result instanceof Page) {
             $result->setActiveMenu(self::ADMIN_RESOURCE);
-            $result->getConfig()->getTitle()->prepend(__('Nosto - Account Settings'));
+            $result->getConfig()->getTitle()->prepend(new Phrase('Nosto - Account Settings'));
         }
 
         return $result;

@@ -94,7 +94,7 @@ class Collection
             /** @var Product $product */
             $usedProducts = $this->nostoProductRepository->getSkus($product, true);
             foreach ($usedProducts as $product) {
-                if (!$product->isDisabled()) {
+                if ($product instanceof Product && !$product->isDisabled()) {
                     try {
                         $sku = $this->nostoSkuBuilder->build($product, $store, $attributes);
                         $skuCollection->append($sku);
