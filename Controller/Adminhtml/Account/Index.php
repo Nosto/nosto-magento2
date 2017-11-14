@@ -41,7 +41,6 @@ use Magento\Backend\Model\View\Result\Page;
 use Magento\Framework\Controller\Result\Redirect;
 use Magento\Framework\Phrase;
 use Magento\Framework\View\Result\PageFactory;
-use Magento\Store\Api\Data\StoreInterface;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 
 class Index extends Base
@@ -71,7 +70,9 @@ class Index extends Base
      */
     public function execute()
     {
-        if (!$this->getSelectedStore()) {
+        $store = $this->nostoHelperScope->getSelectedStore($this->getRequest());
+
+        if (!($store && $store->getId())) {
             // If we are not under a store view, then redirect to the first
             // found one. Nosto is configured per store.
             foreach ($this->nostoHelperScope->getWebsites() as $website) {
@@ -91,25 +92,5 @@ class Index extends Base
         }
 
         return $result;
-    }
-
-    /**
-     * Returns the currently selected store.
-     * If it is single store setup, then just return the default store.
-     * If it is a multi store setup, the expect a store id to passed in the
-     * request params and return that store as the current one.
-     *
-     * @return StoreInterface|null the store or null if not found.
-     */
-    private function getSelectedStore()
-    {
-        $store = null;
-        if ($this->nostoHelperScope->isSingleStoreMode()) {
-            $store = $this->nostoHelperScope->getStore(true);
-        } elseif (($storeId = $this->nostoHelperScope->getStore()->getId())) {
-            $store = $this->nostoHelperScope->getStore($storeId);
-        }
-
-        return $store;
     }
 }
