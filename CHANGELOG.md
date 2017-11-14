@@ -1,5 +1,8 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 2.3.10
+* Fix the issue with sku availability being always in stock
+
 ### 2.3.9
 * Remove debug logging for database queries 
 

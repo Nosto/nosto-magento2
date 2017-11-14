@@ -44,6 +44,7 @@ use Nosto\Object\Product\SkuCollection;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Price as NostoPriceHelper;
 use Nosto\Tagging\Model\Product\Sku\Builder as NostoSkuBuilder;
+use Nosto\Tagging\Model\Product\Repository as NostoProductRepository;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 
 class Collection
@@ -53,6 +54,7 @@ class Collection
     private $nostoHelperData;
     private $nostoPriceHelper;
     private $nostoSkuBuilder;
+    private $nostoProductRepository;
 
     /**
      * Builder constructor.
@@ -61,19 +63,22 @@ class Collection
      * @param NostoHelperData $nostoHelperData
      * @param NostoPriceHelper $priceHelper
      * @param Builder $nostoSkuBuilder
+     * @param NostoProductRepository $nostoProductRepository
      */
     public function __construct(
         NostoLogger $logger,
         ConfigurableType $configurableType,
         NostoHelperData $nostoHelperData,
         NostoPriceHelper $priceHelper,
-        NostoSkuBuilder $nostoSkuBuilder
+        NostoSkuBuilder $nostoSkuBuilder,
+        NostoProductRepository $nostoProductRepository
     ) {
         $this->configurableType = $configurableType;
         $this->logger = $logger;
         $this->nostoHelperData = $nostoHelperData;
         $this->nostoPriceHelper = $priceHelper;
         $this->nostoSkuBuilder = $nostoSkuBuilder;
+        $this->nostoProductRepository = $nostoProductRepository;
     }
 
     /**
@@ -86,9 +91,10 @@ class Collection
         $skuCollection = new SkuCollection();
         if ($product->getTypeId() === ConfigurableType::TYPE_CODE) {
             $attributes = $this->configurableType->getConfigurableAttributes($product);
-            $usedProducts = $this->configurableType->getUsedProducts($product);
+            $usedProducts = $this->nostoProductRepository->getSkus($product, true);
+            /** @var Product $product */
             foreach ($usedProducts as $product) {
-                if ($product instanceof Product && !$product->isDisabled()) {
+                if (!$product->isDisabled()) {
                     try {
                         $sku = $this->nostoSkuBuilder->build($product, $store, $attributes);
                         $skuCollection->append($sku);
