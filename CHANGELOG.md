@@ -1,5 +1,10 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 2.4.0
+* Add CI definitions
+* Fix doc blocks & coding standard issues
+* Clear age cache and layout cache after Nosto account is installed, reconnected or removed
+
 ### 2.3.10
 * Fix the issue with sku availability being always in stock
 
