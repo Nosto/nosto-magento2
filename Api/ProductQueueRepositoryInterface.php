@@ -82,7 +82,7 @@ interface ProductQueueRepositoryInterface
      * Returns single entry by product id
      *
      * @param int $id
-     * @return ProductQueueInterface
+     * @return ProductQueueInterface|null
      */
     public function getOneByProductId($id);
 

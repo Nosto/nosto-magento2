@@ -137,7 +137,7 @@ class QueueRepository implements ProductQueueRepositoryInterface
         )->setPageSize(1)->setCurPage(1)->getFirstItem();
 
         if (!$productQueue->getId()) {
-            throw new NoSuchEntityException(new Phrase('Unable to find queue for product "%1"', [$productId]));
+            return null;
         }
 
         return $productQueue;
