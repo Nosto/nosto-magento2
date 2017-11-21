@@ -97,7 +97,6 @@ interface CustomerInterface
      *
      * @param int $customerId
      * @return self
-     * @suppress PhanParamSignatureMismatch
      */
     public function setCustomerId($customerId);
 
@@ -105,7 +104,6 @@ interface CustomerInterface
      * Set quote id
      *
      * @param int $quoteId
-     * @suppress PhanParamSignatureMismatch
      */
     public function setQuoteId($quoteId);
 
@@ -114,7 +112,6 @@ interface CustomerInterface
      *
      * @param string $nostoId
      * @return self
-     * @suppress PhanParamSignatureMismatch
      */
     public function setNostoId($nostoId);
 

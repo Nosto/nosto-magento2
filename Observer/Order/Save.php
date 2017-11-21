@@ -98,12 +98,6 @@ class Save implements ObserverInterface
         $this->nostoOrderBuilder = $orderBuilder;
         $this->customerFactory = $customerFactory;
         $this->indexer = $indexerRegistry->get(Indexer::INDEXER_ID);
-
-        HttpRequest::buildUserAgent(
-            'Magento',
-            $nostoHelperData->getPlatformVersion(),
-            $nostoHelperData->getModuleVersion()
-        );
         $this->nostoHelperScope = $nostoHelperScope;
     }
 
@@ -118,6 +112,12 @@ class Save implements ObserverInterface
     public function execute(Observer $observer)
     {
         if ($this->moduleManager->isEnabled(NostoHelperData::MODULE_NAME)) {
+            HttpRequest::buildUserAgent(
+                'Magento',
+                $this->nostoHelperData->getPlatformVersion(),
+                $this->nostoHelperData->getModuleVersion()
+            );
+
             /* @var Order $order */
             /** @noinspection PhpUndefinedMethodInspection */
             $order = $observer->getOrder();
@@ -152,7 +152,7 @@ class Save implements ObserverInterface
                 if (!$this->indexer->isScheduled() && $this->nostoHelperData->isInventoryTaggingEnabled()) {
                     $items = $nostoOrder->getPurchasedItems();
                     if ($items) {
-                        $productIds = array();
+                        $productIds = [];
                         foreach ($items as $item) {
                             $productIds[] = $item->getProductId();
                         }

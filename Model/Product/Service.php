@@ -36,6 +36,8 @@
 
 namespace Nosto\Tagging\Model\Product;
 
+use DateTime;
+use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\ProductFactory;
 use Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable as ConfigurableProduct;
@@ -89,7 +91,7 @@ class Service
      * @param ConfigurableProduct $configurableProduct
      * @param NostoHelperAccount\Proxy $nostoHelperAccount
      * @param NostoHelperData\Proxy $nostoHelperData
-     * @param NostoProductRepository\Proxy $nostoProductRepository
+     * @param NostoProductRepository $nostoProductRepository
      * @param QueueRepository $nostoQueueRepository
      * @param QueueFactory $nostoQueueFactory
      * @param StoreManager $storeManager
@@ -102,7 +104,7 @@ class Service
         ConfigurableProduct $configurableProduct,
         NostoHelperAccount\Proxy $nostoHelperAccount,
         NostoHelperData\Proxy $nostoHelperData,
-        NostoProductRepository\Proxy $nostoProductRepository,
+        NostoProductRepository $nostoProductRepository,
         QueueRepository $nostoQueueRepository,
         QueueFactory $nostoQueueFactory,
         StoreManager $storeManager,
@@ -120,13 +122,6 @@ class Service
         $this->nostoQueueFactory = $nostoQueueFactory;
         $this->storeManager = $storeManager;
         $this->productFactory = $productFactory;
-
-        HttpRequest::$responseTimeout = self::$responseTimeOut;
-        HttpRequest::buildUserAgent(
-            NostoHelperData::PLATFORM_NAME,
-            $nostoHelperData->getPlatformVersion(),
-            $nostoHelperData->getModuleVersion()
-        );
     }
 
     /**
@@ -143,7 +138,7 @@ class Service
     /**
      * Adds products to queue by id
      *
-     * @param Product[] array of product objects
+     * @param ProductInterface[] array of product objects
      */
     public function update(array $products)
     {
@@ -159,8 +154,9 @@ class Service
     public function addToQueueByIds(array $ids)
     {
         $productSearchResults = $this->nostoProductRepository->getByIds($ids);
-        $existingProductIds = array();
+        $existingProductIds = [];
         if ($productSearchResults->getTotalCount() > 0) {
+            /** @var Product[] $existingProducts */
             $existingProducts = $productSearchResults->getItems();
             $this->addToQueue($existingProducts);
             foreach ($existingProducts as $product) {
@@ -179,7 +175,7 @@ class Service
     /**
      * Adds products to queue
      *
-     * @param Product[] $products
+     * @param ProductInterface[] $products
      */
     public function addToQueue(array $products)
     {
@@ -193,6 +189,9 @@ class Service
             );
             $productIdsForQueue = [];
             foreach ($products as $product) {
+                if (!$product instanceof Product) {
+                    continue;
+                }
                 $parentProductIds = $this->nostoProductRepository->resolveParentProductIds($product);
                 if (!empty($parentProductIds)) {
                     foreach ($parentProductIds as $parentProductId) {
@@ -209,8 +208,8 @@ class Service
             foreach ($productIdsForQueue as $productIdForQueue) {
                 $queue = $this->nostoQueueFactory->create();
                 $queue->setProductId($productIdForQueue);
-                $queue->setCreatedAt(new \DateTime('now'));
-                $this->nostoQueueRepository->save($queue);
+                $queue->setCreatedAt(new DateTime());
+                $this->nostoQueueRepository->save($queue); // @codingStandardsIgnoreLine
             }
 
             $this->logger->info(
@@ -231,6 +230,13 @@ class Service
      */
     public function flushQueue()
     {
+        HttpRequest::$responseTimeout = self::$responseTimeOut;
+        HttpRequest::buildUserAgent(
+            NostoHelperData::PLATFORM_NAME,
+            $this->nostoHelperData->getPlatformVersion(),
+            $this->nostoHelperData->getModuleVersion()
+        );
+
         $queueEntries = $this->nostoQueueRepository->getFirstPage(self::$batchSize);
         $remaining = $queueEntries->getTotalCount();
         //keep the $maxBatches, as a safe fuse to prevent unexpected infinite loop
@@ -271,7 +277,7 @@ class Service
      *
      * @param array $productIds
      */
-    protected function process(array $productIds)
+    public function process(array $productIds)
     {
         $uniqueProductIds = array_unique($productIds);
         $storesWithNosto = $this->nostoHelperAccount->getStoresWithNosto();
@@ -282,13 +288,13 @@ class Service
                 if (!$nostoAccount instanceof Account) {
                     continue;
                 }
-                $this->storeManager->setCurrentStore($store);
+                $this->storeManager->setCurrentStore((string) $store->getId());
                 try {
                     $this->processForAccount($uniqueProductIds, $store, $nostoAccount);
                 } catch (\Exception $e) {
                     $this->logger->exception($e);
                 }
-                $this->storeManager->setCurrentStore($originalStore);
+                $this->storeManager->setCurrentStore((string) $originalStore->getId());
             }
         }
     }
@@ -300,7 +306,7 @@ class Service
      * @param Store $store
      * @param Account $nostoAccount
      */
-    protected function processForAccount(array $uniqueProductIds, Store $store, Account $nostoAccount)
+    public function processForAccount(array $uniqueProductIds, Store $store, Account $nostoAccount)
     {
         $productSearch = $this->nostoProductRepository->getByIds($uniqueProductIds);
 
@@ -312,9 +318,9 @@ class Service
             )
         );
         $productsStillExist = $productSearch->getItems();
-        $productIdsStillExist = array();
+        $productIdsStillExist = [];
 
-        if (count($productsStillExist) > 0) {
+        if (!empty($productsStillExist)) {
             $op = new UpsertProduct($nostoAccount);
 
             /* @var Product $product */
@@ -323,7 +329,6 @@ class Service
                 $nostoProduct = $this->nostoProductBuilder->build(
                     $product,
                     $store
-
                 );
                 $op->addProduct($nostoProduct);
             }
@@ -354,7 +359,7 @@ class Service
         }
 
         $leftProducts = array_diff($uniqueProductIds, $productIdsStillExist);
-        if (count($leftProducts) > 0) {
+        if (!empty($leftProducts)) {
             $this->processDelete($leftProducts, $store, $nostoAccount);
         }
     }
@@ -366,7 +371,7 @@ class Service
      * @param Store $store
      * @param Account $nostoAccount
      */
-    protected function processDelete(array $uniqueProductIds, Store $store, Account $nostoAccount)
+    public function processDelete(array $uniqueProductIds, Store $store, Account $nostoAccount)
     {
         $this->logger->info(
             sprintf(
@@ -413,7 +418,7 @@ class Service
      *
      * @return bool
      */
-    protected function productUpdatesActive()
+    public function productUpdatesActive()
     {
         if ($this->productUpdatesActive === null) {
             // Loop through stores and check that at least one store has product

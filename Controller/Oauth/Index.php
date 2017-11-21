@@ -43,6 +43,7 @@ use Magento\Framework\App\Action\Context;
 use Magento\Framework\App\Response\Http;
 use Nosto\Mixins\OauthTrait;
 use Nosto\OAuth;
+use Nosto\Tagging\Helper\Cache as NostoHelperCache;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Model\Meta\Oauth\Builder as NostoOauthBuilder;
@@ -57,6 +58,7 @@ class Index extends Action
     private $nostoHelperAccount;
     private $oauthMetaBuilder;
     private $nostoHelperScope;
+    private $nostoHelperCache;
 
     /**
      * @param Context $context
@@ -64,6 +66,7 @@ class Index extends Action
      * @param NostoHelperScope $nostoHelperScope
      * @param UrlInterface $urlBuilder
      * @param NostoHelperAccount $nostoHelperAccount
+     * @param NostoHelperCache $nostoHelperCache
      * @param NostoOauthBuilder $oauthMetaBuilder
      */
     public function __construct(
@@ -72,6 +75,7 @@ class Index extends Action
         NostoHelperScope $nostoHelperScope,
         UrlInterface $urlBuilder,
         NostoHelperAccount $nostoHelperAccount,
+        NostoHelperCache $nostoHelperCache,
         NostoOauthBuilder $oauthMetaBuilder
     ) {
         parent::__construct($context);
@@ -81,6 +85,7 @@ class Index extends Action
         $this->nostoHelperAccount = $nostoHelperAccount;
         $this->oauthMetaBuilder = $oauthMetaBuilder;
         $this->nostoHelperScope = $nostoHelperScope;
+        $this->nostoHelperCache = $nostoHelperCache;
     }
 
     /**
@@ -117,10 +122,18 @@ class Index extends Action
      */
     public function save(AccountInterface $account)
     {
-        return $this->nostoHelperAccount->saveAccount(
+        $success =  $this->nostoHelperAccount->saveAccount(
             $account,
             $this->nostoHelperScope->getStore()
         );
+
+        //Invalidate cache after reconnected nosto account
+        if ($success) {
+            $this->nostoHelperCache->invalidatePageCache();
+            $this->nostoHelperCache->invalidateLayoutCache();
+        }
+
+        return $success;
     }
 
     /**

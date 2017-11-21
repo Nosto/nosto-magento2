@@ -62,13 +62,11 @@ interface ProductQueueRepositoryInterface
      * Delete productQueue
      *
      * @param ProductQueueInterface $productQueue
-     * @return bool
      */
     public function delete(ProductQueueInterface $productQueue);
 
     /**
      * @param array $ids
-     * @return bool
      */
     public function deleteByProductIds(array $ids);
 

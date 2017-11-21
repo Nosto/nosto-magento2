@@ -125,7 +125,7 @@ class Iframe extends BlockTemplate
             $this->backendAuthSession->setData('nosto_message', null);
         }
 
-        $store = $this->getSelectedStore();
+        $store = $this->nostoHelperScope->getSelectedStore($this->getRequest());
         $account = $this->nostoHelperAccount->findAccount($store);
         return IframeHelper::getUrl(
             $this->nostoIframeMetaBuilder->build($store),
@@ -136,30 +136,6 @@ class Iframe extends BlockTemplate
     }
 
     /**
-     * Returns the currently selected store.
-     * Nosto can only be configured on a store basis, and if we cannot find a
-     * store, an exception is thrown.
-     *
-     * @return Store the store.
-     * @throws NotFoundException store not found.
-     */
-    public function getSelectedStore()
-    {
-        $store = null;
-        if ($this->nostoHelperScope->isSingleStoreMode()) {
-            $store = $this->nostoHelperScope->getStore(true);
-        } elseif (($storeId = $this->_request->getParam('store'))) {
-            $store = $this->nostoHelperScope->getStore($storeId);
-        } elseif (($this->nostoHelperScope->getStore())) {
-            $store = $this->nostoHelperScope->getStore();
-        } else {
-            throw new NotFoundException(__('Store not found.'));
-        }
-
-        return $store;
-    }
-
-    /**
      * Returns the config for the Nosto iframe JS component.
      * This config can be converted into JSON in the view file.
      *
@@ -167,10 +143,9 @@ class Iframe extends BlockTemplate
      */
     public function getIframeConfig()
     {
-        $get = [
-            'store' => $this->getSelectedStore()->getId(),
-            'isAjax' => true
-        ];
+        $store = $this->nostoHelperScope->getSelectedStore($this->getRequest());
+        $get = ['store' => $store->getId(), 'isAjax' => true];
+
         return [
             'iframe_handler' => [
                 'origin' => $this->getIframeOrigin(),
