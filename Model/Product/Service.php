@@ -230,7 +230,6 @@ class Service
      */
     public function flushQueue()
     {
-        HttpRequest::$responseTimeout = self::$responseTimeOut;
         HttpRequest::buildUserAgent(
             NostoHelperData::PLATFORM_NAME,
             $this->nostoHelperData->getPlatformVersion(),
@@ -322,7 +321,7 @@ class Service
 
         if (!empty($productsStillExist)) {
             $op = new UpsertProduct($nostoAccount);
-
+            $op->setResponseTimeout(self::$responseTimeOut);
             /* @var Product $product */
             foreach ($productsStillExist as $product) {
                 $productIdsStillExist[] = $product->getId();

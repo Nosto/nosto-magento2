@@ -9,6 +9,7 @@
             </images>
             <flags>
                 <variation_tagging>1</variation_tagging>
+                <use_custom_fields>0</use_custom_fields>
                 <altimg_tagging>1</altimg_tagging>
                 <rating_tagging>1</rating_tagging>
                 <inventory_tagging>0</inventory_tagging>
