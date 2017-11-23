@@ -44,7 +44,7 @@ use Magento\Framework\Event\ManagerInterface;
 use Magento\Store\Model\Store;
 use Magento\Framework\Phrase;
 use Nosto\NostoException;
-use Nosto\Object\Product\Sku;
+use Nosto\Object\Product\Sku as NostoSku;
 use Nosto\Tagging\Helper\Currency as CurrencyHelper;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Price as NostoPriceHelper;
@@ -87,11 +87,11 @@ class Builder
      * @param Product $product
      * @param Store $store
      * @param ConfigurableAttribute[] $attributes
-     * @return Sku
+     * @return NostoSku
      */
     public function build(Product $product, Store $store, $attributes)
     {
-        $nostoSku = new Sku();
+        $nostoSku = new NostoSku();
 
         try {
             $nostoSku->setId($product->getId());
@@ -160,15 +160,14 @@ class Builder
         return $product->getMediaConfig()->getMediaUrl($image);
     }
 
-
     /**
      * Tag the custom attributes
      *
      * @param Product $product
-     * @param NostoProduct $nostoProduct
+     * @param NostoSku $nostoSku
      * @param Store $store
      */
-    protected function loadCustomFieldsFromConfigurableAttributes(Product $product, Sku $nostoSku, Store $store)
+    protected function loadCustomFieldsFromConfigurableAttributes(Product $product, NostoSku $nostoSku, Store $store)
     {
         if (!$this->nostoDataHelper->isCustomFieldsEnabled($store)) {
             return;
