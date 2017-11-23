@@ -181,7 +181,7 @@ class Builder
                 if ($attribute->getIsUserDefined()) {
                     $attributeCode = $attribute->getAttributeCode();
                     //if data is null, do not try to get the value
-                    //because the label could be "No" event the value is null
+                    //because the label could be "No" even the value is null
                     if ($product->getData($attributeCode) !== null) {
                         $attributeValue = $this->getAttributeValue($product, $attributeCode);
                         if (is_scalar($attributeValue) && $attributeValue !== '' && $attributeValue !== false) {
