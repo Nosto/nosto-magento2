@@ -38,7 +38,6 @@ namespace Nosto\Tagging\Model\Product;
 
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\Api\SearchCriteriaInterface;
-use Magento\Framework\EntityManager\EntityManager;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Model\AbstractModel;
 use Magento\Framework\Phrase;
@@ -48,6 +47,7 @@ use Nosto\Tagging\Api\ProductQueueRepositoryInterface;
 use Nosto\Tagging\Model\ResourceModel\Product\Queue as QueueResource;
 use Nosto\Tagging\Model\ResourceModel\Product\Queue\Collection as QueueCollection;
 use Nosto\Tagging\Model\ResourceModel\Product\Queue\CollectionFactory as QueueCollectionFactory;
+use Nosto\Tagging\Logger\Logger as NostoLogger;
 
 class QueueRepository implements ProductQueueRepositoryInterface
 {
@@ -56,7 +56,7 @@ class QueueRepository implements ProductQueueRepositoryInterface
     private $queueCollectionFactory;
     private $queueSearchResultsFactory;
     private $searchCriteriaBuilder;
-    private $entityManager;
+    private $logger;
 
     /**
      * QueueRepository constructor.
@@ -66,7 +66,7 @@ class QueueRepository implements ProductQueueRepositoryInterface
      * @param QueueCollectionFactory $queueCollectionFactory
      * @param QueueSearchResultsFactory $queueSearchResultsFactory
      * @param SearchCriteriaBuilder $searchCriteriaBuilder
-     * @param EntityManager $entityManager
+     * @param NostoLogger $logger
      */
     public function __construct(
         QueueResource $queueResource,
@@ -74,7 +74,7 @@ class QueueRepository implements ProductQueueRepositoryInterface
         QueueCollectionFactory $queueCollectionFactory,
         QueueSearchResultsFactory $queueSearchResultsFactory,
         SearchCriteriaBuilder $searchCriteriaBuilder,
-        EntityManager $entityManager
+        NostoLogger $logger
     ) {
 
         $this->queueResource = $queueResource;
@@ -82,7 +82,7 @@ class QueueRepository implements ProductQueueRepositoryInterface
         $this->queueCollectionFactory = $queueCollectionFactory;
         $this->queueSearchResultsFactory = $queueSearchResultsFactory;
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;
-        $this->entityManager = $entityManager;
+        $this->logger = $logger;
     }
 
     /**
@@ -160,7 +160,11 @@ class QueueRepository implements ProductQueueRepositoryInterface
      */
     public function delete(ProductQueueInterface $productQueue)
     {
-        $this->entityManager->delete($productQueue);
+        try {
+            $this->queueResource->delete($productQueue);
+        } catch (\Exception $e) {
+            $this->logger->exception($e);
+        }
     }
 
     /**

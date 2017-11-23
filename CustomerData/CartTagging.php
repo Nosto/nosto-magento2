@@ -44,8 +44,8 @@ use Magento\Quote\Model\Quote;
 use Nosto\Object\Cart\LineItem;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Model\Cart\Builder as NostoCartBuilder;
-use Nosto\Tagging\Model\Customer as NostoCustomer;
-use Nosto\Tagging\Model\CustomerFactory as NostoCustomerFactory;
+use Nosto\Tagging\Model\Customer\Customer as NostoCustomer;
+use Nosto\Tagging\Model\Customer\CustomerFactory as NostoCustomerFactory;
 use Nosto\Tagging\Model\Cart\Restore\Builder as NostoRestoreCartUrlBuilder;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 

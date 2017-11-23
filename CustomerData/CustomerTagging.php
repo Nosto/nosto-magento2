@@ -39,7 +39,7 @@ namespace Nosto\Tagging\CustomerData;
 use Magento\Customer\CustomerData\SectionSourceInterface;
 use Magento\Customer\Helper\Session\CurrentCustomer;
 use Magento\Framework\Stdlib\CookieManagerInterface;
-use Nosto\Tagging\Model\Customer as NostoCustomer;
+use Nosto\Tagging\Model\Customer\Customer as NostoCustomer;
 
 class CustomerTagging extends HashedTagging implements SectionSourceInterface
 {

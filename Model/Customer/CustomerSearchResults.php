@@ -34,22 +34,12 @@
  *
  */
 
-namespace Nosto\Tagging\Model\ResourceModel\Customer;
+namespace Nosto\Tagging\Model\Customer;
 
-use Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection;
+use Magento\Framework\Api\Search\SearchResult;
+use Nosto\Tagging\Api\Data\CustomerSearchResultInterface;
 
-class Collection extends AbstractCollection
+class CustomerSearchResults extends SearchResult implements CustomerSearchResultInterface // @codingStandardsIgnoreLine
 {
-    /**
-     * Define resource model
-     *
-     * @return void
-     */
-    public function _construct()
-    {
-        $this->_init(
-            'Nosto\Tagging\Model\Customer\Customer',
-            'Nosto\Tagging\Model\ResourceModel\Customer'
-        );
-    }
+
 }

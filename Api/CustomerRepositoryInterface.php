@@ -34,22 +34,45 @@
  *
  */
 
-namespace Nosto\Tagging\Model\ResourceModel\Customer;
+namespace Nosto\Tagging\Api;
 
-use Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection;
+use Magento\Framework\Api\SearchCriteriaInterface;
+use Nosto\Tagging\Api\Data\CustomerInterface;
+use Nosto\Tagging\Api\Data\CustomerSearchResultInterface;
 
-class Collection extends AbstractCollection
+interface CustomerRepositoryInterface
 {
     /**
-     * Define resource model
+     * Save Queue entry
      *
-     * @return void
+     * @param CustomerInterface $customer
+     * @return CustomerInterface
      */
-    public function _construct()
-    {
-        $this->_init(
-            'Nosto\Tagging\Model\Customer\Customer',
-            'Nosto\Tagging\Model\ResourceModel\Customer'
-        );
-    }
+    public function save(CustomerInterface $customer);
+
+    /**
+     * Get customer entry by id
+     *
+     * @param int $id
+     * @return CustomerInterface
+     */
+    public function getById($id);
+
+    /**
+     * Get list of productQueues
+     *
+     * @param SearchCriteriaInterface $searchCriteria
+     * @return CustomerSearchResultInterface
+     */
+    public function search(SearchCriteriaInterface $searchCriteria);
+
+    /**
+     * Get customer entry by nosto id and quote id. If multiple entries
+     * are found first one will be returned.
+     *
+     * @param string $nostoId
+     * @param int $quoteId
+     * @return CustomerInterface|null
+     */
+    public function getOneByNostoIdAndQuoteId($nostoId, $quoteId);
 }
