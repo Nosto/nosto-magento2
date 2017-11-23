@@ -36,33 +36,24 @@
 
 namespace Nosto\Tagging\Api;
 
-use Nosto\Tagging\Api\Data\CustomerInterface;
+use Magento\Framework\Data\SearchResultInterface;
+use Magento\Framework\Api\SearchCriteriaInterface;
 
-interface CustomerRepositoryInterface extends BaseRepositoryInterface
+
+interface BaseRepositoryInterface
 {
     /**
-     * Save Queue entry
+     * Get search result
      *
-     * @param CustomerInterface $customer
-     * @return CustomerInterface
+     * @param SearchCriteriaInterface $searchCriteria
+     * @return SearchResultInterface
      */
-    public function save(CustomerInterface $customer);
+    public function search(SearchCriteriaInterface $searchCriteria);
 
     /**
-     * Get customer entry by id
+     * Returns the primary key of an object the repository is handling
      *
-     * @param int $id
-     * @return CustomerInterface
+     * @return string
      */
-    public function getById($id);
-
-    /**
-     * Get customer entry by nosto id and quote id. If multiple entries
-     * are found first one will be returned.
-     *
-     * @param string $nostoId
-     * @param int $quoteId
-     * @return CustomerInterface|null
-     */
-    public function getOneByNostoIdAndQuoteId($nostoId, $quoteId);
+    public function getIdentityKey();
 }

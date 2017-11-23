@@ -36,23 +36,16 @@
 
 namespace Nosto\Tagging\Model\Customer;
 
-use Magento\Framework\Api\SearchCriteriaInterface;
-
 use Magento\Framework\Api\SearchCriteriaBuilder;
-use Magento\Framework\Exception\NoSuchEntityException;
-use Magento\Framework\Model\AbstractModel;
-use Magento\Framework\Phrase;
 use Nosto\Tagging\Api\CustomerRepositoryInterface;
 use Nosto\Tagging\Api\Data\CustomerInterface;
+use Nosto\Tagging\Model\AbstractBaseRepository;
+use Nosto\Tagging\Model\RepositoryTrait;
 use Nosto\Tagging\Model\ResourceModel\Customer as CustomerResource;
 use Nosto\Tagging\Model\ResourceModel\Customer\CollectionFactory as CustomerCollectionFactory;
-use Nosto\Tagging\Model\ResourceModel\Customer\Collection as CustomerCollection;
 
-class Repository implements CustomerRepositoryInterface
+class Repository extends AbstractBaseRepository implements CustomerRepositoryInterface
 {
-    private $customerResource;
-    private $customerCollectionFactory;
-    private $customerSearchResultsFactory;
     private $searchCriteriaBuilder;
 
     /**
@@ -70,9 +63,12 @@ class Repository implements CustomerRepositoryInterface
         SearchCriteriaBuilder $searchCriteriaBuilder
     ) {
 
-        $this->customerResource = $customerResource;
-        $this->customerCollectionFactory = $customerCollectionFactory;
-        $this->customerSearchResultsFactory= $customerSearchResultsFactory;
+        parent::__construct(
+            $customerResource,
+            $customerCollectionFactory,
+            $customerSearchResultsFactory
+        );
+
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;
     }
 
@@ -81,29 +77,14 @@ class Repository implements CustomerRepositoryInterface
      */
     public function save(CustomerInterface $customer)
     {
-        $this->customerResource->save($customer);
+        $this->objectResource->save($customer);
 
         return $customer;
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function getById($id)
+    public function getIdentityKey()
     {
-        /** @var CustomerCollection $collection */
-        $collection = $this->customerCollectionFactory->create();
-        /** @var CustomerInterface $customer */
-        $customer = $collection->addFieldToFilter(
-            CustomerInterface::CUSTOMER_ID,
-            (string) $id
-        )->setPageSize(1)->setCurPage(1)->getFirstItem();
-
-        if (!$customer->getCustomerId()) {
-            throw new NoSuchEntityException(new Phrase('Unable to find customer for id. "%1"', [$id]));
-        }
-
-        return $customer;
+        return CustomerInterface::CUSTOMER_ID;
     }
 
     /**
@@ -125,41 +106,5 @@ class Repository implements CustomerRepositoryInterface
         }
 
         return null;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function search(SearchCriteriaInterface $searchCriteria)
-    {
-        /** @var CustomerCollection $collection */
-        $collection = $this->customerCollectionFactory->create();
-        /** @noinspection PhpParamsInspection */
-        $this->addFiltersToCollection($searchCriteria, $collection);
-        $collection->load();
-        $searchResult = $this->customerSearchResultsFactory->create();
-        $searchResult->setSearchCriteria($searchCriteria);
-        $searchResult->setItems($collection->getItems());
-        $searchResult->setTotalCount($collection->getSize());
-
-        return $searchResult;
-    }
-
-    /**
-     * Adds filters to the collection
-     *
-     * @param SearchCriteriaInterface $searchCriteria
-     * @param CustomerCollection $collection
-     */
-    private function addFiltersToCollection(SearchCriteriaInterface $searchCriteria, CustomerCollection $collection)
-    {
-        foreach ($searchCriteria->getFilterGroups() as $filterGroup) {
-            $fields = $conditions = [];
-            foreach ($filterGroup->getFilters() as $filter) {
-                $fields[] = $filter->getField();
-                $conditions[] = [$filter->getConditionType() => $filter->getValue()];
-            }
-            $collection->addFieldToFilter($fields, $conditions);
-        }
     }
 }
