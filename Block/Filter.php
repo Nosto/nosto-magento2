@@ -36,17 +36,13 @@
 
 namespace Nosto\Tagging\Block;
 
-use Magento\Catalog\Api\CategoryRepositoryInterface;
 use Magento\Catalog\Model\Layer\Resolver as LayerResolver;
-use Magento\CatalogSearch\Model\Layer\Filter\Category as CategoryFilter;
-use Magento\CatalogSearch\Model\Layer\Filter\Price;
-use Magento\Catalog\Model\Category as CategoryModel;
-use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\View\Element\Template\Context;
 use Magento\LayeredNavigation\Block\Navigation\State;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
-use Nosto\Tagging\Model\Category\Builder as NostoCategoryBuilder;
+use Nosto\Tagging\Model\Filter as NostoFilter;
+use Nosto\Tagging\Model\Filter\Builder as NostoFilterBuilder;
 
 class Filter extends State
 {
@@ -56,6 +52,7 @@ class Filter extends State
 
     private $categoryBuilder;
     private $categoryRepository;
+    private $nostoFilterBuilder;
 
     /**
      * Filter constructor.
@@ -63,8 +60,7 @@ class Filter extends State
      * @param LayerResolver $layerResolver
      * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoHelperScope $nostoHelperScope
-     * @param NostoCategoryBuilder $categoryBuilder
-     * @param CategoryRepositoryInterface $categoryRepository
+     * @param NostoFilterBuilder $nostoFilterBuilder
      * @param array $data
      */
     public function __construct(
@@ -72,23 +68,21 @@ class Filter extends State
         LayerResolver $layerResolver,
         NostoHelperAccount $nostoHelperAccount,
         NostoHelperScope $nostoHelperScope,
-        NostoCategoryBuilder $categoryBuilder,
-        CategoryRepositoryInterface $categoryRepository,
+        NostoFilterBuilder $nostoFilterBuilder,
         array $data = []
     ) {
         parent::__construct($context, $layerResolver, $data);
 
         $this->taggingConstruct($nostoHelperAccount, $nostoHelperScope);
-        $this->categoryBuilder = $categoryBuilder;
-        $this->categoryRepository = $categoryRepository;
+        $this->nostoFilterBuilder = $nostoFilterBuilder;
     }
 
     /**
      * Returns the current active filters
      *
-     * @return array
+     * @return NostoFilter
      */
-    public function getNostoFilters()
+    public function getNostoFilter()
     {
         $filters = $this->getActiveFilters();
 
@@ -96,72 +90,6 @@ class Filter extends State
             return null;
         }
 
-        $validFilters = array();
-
-        /** @var \Magento\Catalog\Model\Layer\Filter\Item $filter */
-        foreach ($filters as $filter) {
-            $model = $filter->getFilter();
-            if ($model instanceof Price || $model instanceof CategoryFilter) {
-                continue;
-            }
-
-            $filter->getValueString();
-            $validFilters[] = $filter;
-        }
-
-        return $validFilters;
-    }
-
-    public function getNostoPriceRange()
-    {
-        $filters = $this->getActiveFilters();
-        if (!$filters) {
-            return null;
-        }
-
-        /** @var \Magento\Catalog\Model\Layer\Filter\Item $filter */
-        foreach ($filters as $filter) {
-            $model = $filter->getFilter();
-            if ($model instanceof Price) {
-                $data = $filter->getData();
-                if ($data && array_key_exists('value', $data)) {
-                    $value = $data['value'];
-                    if (is_array($value) && array_key_exists(1, $value) && array_key_exists(0, $value)) {
-                        return $value;
-                    }
-                }
-            }
-        }
-
-        return null;
-    }
-
-    public function getNostoCategoryFilters()
-    {
-        $filters = $this->getActiveFilters();
-        if (!$filters) {
-            return null;
-        }
-
-        $categories = array();
-        /** @var \Magento\Catalog\Model\Layer\Filter\Item $filter */
-        foreach ($filters as $filter) {
-            $model = $filter->getFilter();
-            if ($model instanceof CategoryFilter) {
-                $categoryId = $filter->getValueString();
-                if ($categoryId) {
-                    try {
-                        $category = $this->categoryRepository->get((int)$categoryId);
-                        if ($category instanceof CategoryModel) {
-                            $categories[] = $this->categoryBuilder->build($category);
-                        }
-                    } catch (NoSuchEntityException $noSuchEntityException) {
-                        continue;
-                    }
-                }
-            }
-        }
-
-        return $categories;
+        return $this->nostoFilterBuilder->build($filters);
     }
 }

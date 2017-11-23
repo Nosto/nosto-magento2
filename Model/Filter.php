@@ -34,33 +34,59 @@
  *
  */
 
-/**
- * Template for filter tagging
- *
- * @see Nosto\Tagging\Block\Filter
- */
-?>
-<!-- Nosto filter tagging -->
-<?php $filter = $block->getNostoFilter() ?>
-<?php if ($filter): ?>
-    <?php $filters = $filter->getCustomFieldsFilter() ?>
-    <?php if (!empty($filters)): ?>
-        <?php foreach ($filters as $key => $value): ?>
-          <div class="nosto_custom_field" style="display:none"><?php echo $block->escapeHtml($key); ?> : <?php /* @escapeNotVerified */ echo $block->stripTags($value) ?></div>
-        <?php endforeach; ?>
-    <?php endif; ?>
+namespace Nosto\Tagging\Model;
 
-    <?php $priceRange = $filter->getPriceRangeFilter() ?>
-    <?php if ($priceRange && array_key_exists(\Nosto\Tagging\Model\Filter\Builder::NOSTO_PRICE_FROM, $priceRange)): ?>
-        <span class="nosto_price_from" style="display:none"><?php echo $block->escapeHtml($priceRange[\Nosto\Tagging\Model\Filter\Builder::NOSTO_PRICE_FROM]); ?></span>
-    <?php endif; ?>
-    <?php if ($priceRange && array_key_exists(\Nosto\Tagging\Model\Filter\Builder::NOSTO_PRICE_TO, $priceRange)): ?>
-        <span class="nosto_price_to" style="display:none"><?php echo $block->escapeHtml($priceRange[\Nosto\Tagging\Model\Filter\Builder::NOSTO_PRICE_TO]); ?></span>
-    <?php endif; ?>
-    <?php $categories = $filter->getCategoriesFilter() ?>
-    <?php if (!empty($categories)): ?>
-        <?php foreach ($categories as $category): ?>
-            <div class="nosto_category" style="display:none"><?php echo $block->escapeHtml($category); ?></div>
-        <?php endforeach; ?>
-    <?php endif; ?>
-<?php endif; ?>
+class Filter
+{
+    protected $customFieldsFilter = array();
+    protected $priceRangeFilter = array();
+    protected $categoriesFilter = array();
+
+    /**
+     * @return array
+     */
+    public function getCustomFieldsFilter()
+    {
+        return $this->customFieldsFilter;
+    }
+
+    /**
+     * @param array $customFieldsFilter
+     */
+    public function setCustomFieldsFilter($customFieldsFilter)
+    {
+        $this->customFieldsFilter = $customFieldsFilter;
+    }
+
+    /**
+     * @return array
+     */
+    public function getPriceRangeFilter()
+    {
+        return $this->priceRangeFilter;
+    }
+
+    /**
+     * @param array $priceRangeFilter
+     */
+    public function setPriceRangeFilter($priceRangeFilter)
+    {
+        $this->priceRangeFilter = $priceRangeFilter;
+    }
+
+    /**
+     * @return array
+     */
+    public function getCategoriesFilter()
+    {
+        return $this->categoriesFilter;
+    }
+
+    /**
+     * @param array $categoriesFilter
+     */
+    public function setCategoriesFilter($categoriesFilter)
+    {
+        $this->categoriesFilter = $categoriesFilter;
+    }
+}

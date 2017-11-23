@@ -66,6 +66,27 @@ class Currency extends AbstractHelper
     }
 
     /**
+     * If the store uses multiple currencies the prices are converted from current
+     * currency into base currency. Otherwise the given price is returned.
+     *
+     * @param float $price The price of a product in current current currency
+     * @param Store $store
+     * @return float
+     */
+    public function convertToBaseCurrency($price, Store $store)
+    {
+        $basePrice = $price;
+        $currentCurrency = $store->getCurrentCurrency();
+
+        $baseCurrency = $store->getBaseCurrency();
+        if ($currentCurrency->getCode() !== $baseCurrency->getCode()) {
+            $basePrice = $currentCurrency->convert($price, $baseCurrency);
+        }
+
+        return $basePrice;
+    }
+
+    /**
      * Returns the currency that must be used in tagging
      *
      * @param Store $store
