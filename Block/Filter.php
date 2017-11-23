@@ -37,10 +37,10 @@
 namespace Nosto\Tagging\Block;
 
 use Magento\Catalog\Api\CategoryRepositoryInterface;
-use Magento\Catalog\Model\Category as CategoryModel;
 use Magento\Catalog\Model\Layer\Resolver as LayerResolver;
-use Magento\CatalogSearch\Model\Layer\Filter\Category;
+use Magento\CatalogSearch\Model\Layer\Filter\Category as CategoryFilter;
 use Magento\CatalogSearch\Model\Layer\Filter\Price;
+use Magento\Catalog\Model\Category as CategoryModel;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\View\Element\Template\Context;
 use Magento\LayeredNavigation\Block\Navigation\State;
@@ -101,10 +101,11 @@ class Filter extends State
         /** @var \Magento\Catalog\Model\Layer\Filter\Item $filter */
         foreach ($filters as $filter) {
             $model = $filter->getFilter();
-            if ($model instanceof Price || $model instanceof Category) {
+            if ($model instanceof Price || $model instanceof CategoryFilter) {
                 continue;
             }
 
+            $filter->getValueString();
             $validFilters[] = $filter;
         }
 
@@ -146,7 +147,7 @@ class Filter extends State
         /** @var \Magento\Catalog\Model\Layer\Filter\Item $filter */
         foreach ($filters as $filter) {
             $model = $filter->getFilter();
-            if ($model instanceof Category) {
+            if ($model instanceof CategoryFilter) {
                 $categoryId = $filter->getValueString();
                 if ($categoryId) {
                     try {

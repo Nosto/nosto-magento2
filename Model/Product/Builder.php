@@ -37,12 +37,15 @@
 namespace Nosto\Tagging\Model\Product;
 
 use Magento\Catalog\Api\CategoryRepositoryInterface;
+use Magento\ConfigurableProduct\Model\Product\Type\Configurable;
+use Magento\Eav\Api\AttributeSetRepositoryInterface;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\Product\Gallery\ReadHandler as GalleryReadHandler;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\Phrase;
 use Magento\Review\Model\ReviewFactory;
 use Magento\Store\Model\Store;
+use Magento\Eav\Model\Entity\Attribute\AbstractAttribute;
 use Nosto\NostoException;
 use Nosto\Tagging\Helper\Currency as CurrencyHelper;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
@@ -52,11 +55,14 @@ use Nosto\Tagging\Model\Category\Builder as NostoCategoryBuilder;
 use Nosto\Tagging\Model\Product\Sku\Collection as NostoSkuCollection;
 use Nosto\Tagging\Model\Product\Url\Builder as NostoUrlBuilder;
 use Nosto\Tagging\Model\Product\Tags\LowStock as LowStockHelper;
+use Nosto\Object\Product\Product as NostoProduct;
 use Nosto\Types\Product\ProductInterface;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 
 class Builder
 {
+    const ATTRIBUTE_VALUE_ANY = '--ANY--';
+
     const CUSTOMIZED_TAGS = ['tag1', 'tag2', 'tag3'];
     const NOSTO_SCOPE_TAGGING = 'tagging';
     const NOSTO_SCOPE_API = 'api';
@@ -66,6 +72,8 @@ class Builder
     private $nostoCategoryBuilder;
     private $nostoStockHelper;
     private $categoryRepository;
+    /** @var  AttributeSetRepositoryInterface $attributeSetRepository*/
+    private $attributeSetRepository;
     private $galleryReadHandler;
     private $eventManager;
     private $logger;
@@ -82,6 +90,7 @@ class Builder
      * @param NostoStockHelper $stockHelper
      * @param NostoSkuCollection $skuCollection
      * @param CategoryRepositoryInterface $categoryRepository
+     * @param AttributeSetRepositoryInterface $attributeSetRepository
      * @param NostoLogger $logger
      * @param ManagerInterface $eventManager
      * @param ReviewFactory $reviewFactory
@@ -97,6 +106,7 @@ class Builder
         NostoStockHelper $stockHelper,
         NostoSkuCollection $skuCollection,
         CategoryRepositoryInterface $categoryRepository,
+        AttributeSetRepositoryInterface $attributeSetRepository,
         NostoLogger $logger,
         ManagerInterface $eventManager,
         ReviewFactory $reviewFactory,
@@ -109,6 +119,7 @@ class Builder
         $this->nostoPriceHelper = $priceHelper;
         $this->nostoCategoryBuilder = $categoryBuilder;
         $this->categoryRepository = $categoryRepository;
+        $this->attributeSetRepository = $attributeSetRepository;
         $this->logger = $logger;
         $this->eventManager = $eventManager;
         $this->nostoStockHelper = $stockHelper;
@@ -124,14 +135,14 @@ class Builder
      * @param Product $product
      * @param Store $store
      * @param string $nostoScope
-     * @return \Nosto\Object\Product\Product
+     * @return NostoProduct
      */
     public function build(
         Product $product,
         Store $store,
         $nostoScope = self::NOSTO_SCOPE_API
     ) {
-        $nostoProduct = new \Nosto\Object\Product\Product();
+        $nostoProduct = new NostoProduct();
 
         try {
             $nostoProduct->setUrl($this->urlBuilder->getUrlInStore($product, $store));
@@ -212,6 +223,8 @@ class Builder
                 $nostoProduct->setTag1($tags);
             }
 
+            $this->amendCustomFields($product, $nostoProduct, $store);
+
             //update customized tag1, Tag2 and Tag3
             $this->amendAttributeTags($product, $nostoProduct, $store);
         } catch (NostoException $e) {
@@ -230,10 +243,10 @@ class Builder
      * and are present in product
      *
      * @param Product $product the magento product model.
-     * @param \Nosto\Object\Product\Product $nostoProduct nosto product object
+     * @param NostoProduct $nostoProduct nosto product object
      * @param Store $store the store model.
      */
-    private function amendAttributeTags(Product $product, \Nosto\Object\Product\Product $nostoProduct, Store $store)
+    private function amendAttributeTags(Product $product, NostoProduct $nostoProduct, Store $store)
     {
         foreach (self::CUSTOMIZED_TAGS as $tag) {
             $attributes = $this->nostoDataHelper->getTagAttributes($tag, $store);
@@ -384,6 +397,41 @@ class Builder
     }
 
     /**
+     * Tag the custom attributes
+     *
+     * @param Product $product
+     * @param NostoProduct $nostoProduct
+     * @param Store $store
+     */
+    protected function amendCustomFields(Product $product, NostoProduct $nostoProduct, Store $store)
+    {
+        if (!$this->nostoDataHelper->isCustomFieldsEnabled($store)) {
+            return;
+        }
+
+        $attributes = $product->getTypeInstance()->getSetAttributes($product);
+        /** @var AbstractAttribute $attribute*/
+        foreach ($attributes as $attribute) {
+            try {
+                //tag user defined attributes only
+                if ($attribute->getIsUserDefined()) {
+                    $attributeCode = $attribute->getAttributeCode();
+                    //if data is null, do not try to get the value
+                    //because the label could be "No" event the value is null
+                    if ($product->getData($attributeCode) !== null) {
+                        $attributeValue = $this->getAttributeValue($product, $attributeCode);
+                        if (is_scalar($attributeValue) && $attributeValue !== '' && $attributeValue !== false) {
+                            $nostoProduct->addCustomField($attributeCode, $attributeValue);
+                        }
+                    }
+                }
+            } catch (\Exception $e) {
+                $this->logger->exception($e);
+            }
+        }
+    }
+
+    /**
      * Resolves "textual" product attribute value
      *
      * @param Product $product
@@ -418,11 +466,11 @@ class Builder
      * Builds a product with required info for deletion
      *
      * @param int $productId
-     * @return \Nosto\Object\Product\Product
+     * @return NostoProduct
      */
     public function buildForDeletion($productId)
     {
-        $nostoProduct = new \Nosto\Object\Product\Product();
+        $nostoProduct = new NostoProduct();
         $nostoProduct->setProductId((string)$productId);
         $nostoProduct->setAvailability(ProductInterface::DISCONTINUED);
 

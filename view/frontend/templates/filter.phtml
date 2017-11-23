@@ -44,7 +44,7 @@
 <?php $filters = $block->getNostoFilters() ?>
 <?php if (!empty($filters)): ?>
     <?php foreach ($filters as $filter): ?>
-      <div class="nosto_custom_field" style="display:none"><?php echo $block->escapeHtml(__($filter->getName())); ?> : <?php /* @escapeNotVerified */ echo $block->stripTags($filter->getLabel()) ?></div>
+      <div class="nosto_custom_field" style="display:none"><?php echo $block->escapeHtml(__($filter->getFilter()->getAttributeModel()->getAttributeCode())); ?> : <?php /* @escapeNotVerified */ echo $block->stripTags($filter->getLabel()) ?></div>
     <?php endforeach; ?>
 <?php endif; ?>
 
