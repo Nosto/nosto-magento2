@@ -65,13 +65,15 @@ class Repository extends AbstractBaseRepository implements CustomerRepositoryInt
 
         parent::__construct(
             $customerResource,
-            $customerCollectionFactory,
-            $customerSearchResultsFactory
+            $customerCollectionFactory->create(),
+            $customerSearchResultsFactory->create()
         );
 
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;
     }
 
+
+    /**
     /**
      * @inheritdoc
      */
@@ -107,4 +109,11 @@ class Repository extends AbstractBaseRepository implements CustomerRepositoryInt
 
         return null;
     }
+
+    public function getById($id)
+    {
+        // TODO: Implement getById() method.
+    }
+
+
 }

@@ -39,6 +39,8 @@ namespace Nosto\Tagging\Model;
 use Magento\Framework\Api\SearchCriteriaInterface;
 use Magento\Framework\App\ResourceConnection\SourceProviderInterface;
 use Magento\Framework\Model\ResourceModel\Db\AbstractDb;
+use Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection;
+use Magento\Framework\Data\SearchResultInterface;
 
 /**
  * Class AbstractBaseRepository
@@ -48,25 +50,24 @@ abstract class AbstractBaseRepository
 {
 
     protected $objectResource;
-    protected $objectCollectionFactory;
-    protected $objectSearchResultsFactory;
+    protected $objectCollection;
+    protected $objectSearchResults;
 
     /**
      * AbstractBaseRepository constructor.
      * @param AbstractDb $objectResource
-     * @param $objectCollectionFactory
-     * @param $objectSearchResultsFactory
+     * @param AbstractCollection $objectCollection
+     * @param SearchResultInterface $objectSearchResults
      */
     protected function __construct(
         AbstractDb $objectResource,
-        $objectCollectionFactory,
-        $objectSearchResultsFactory
+        AbstractCollection $objectCollection,
+        SearchResultInterface $objectSearchResults
     )
     {
-        // ToDo - add some type safety for factories?
         $this->objectResource = $objectResource;
-        $this->objectCollectionFactory = $objectCollectionFactory;
-        $this->objectSearchResultsFactory = $objectSearchResultsFactory;
+        $this->objectCollection = $objectCollection;
+        $this->objectSearchResults = $objectSearchResults;
     }
 
     /**
@@ -74,17 +75,14 @@ abstract class AbstractBaseRepository
      */
     public function search(SearchCriteriaInterface $searchCriteria)
     {
-        /** @var CustomerCollection $collection */
-        $collection = $this->objectCollectionFactory->create();
         /** @noinspection PhpParamsInspection */
-        $this->addFiltersToCollection($searchCriteria, $collection);
-        $collection->load();
-        $searchResult = $this->objectSearchResultsFactory->create();
-        $searchResult->setSearchCriteria($searchCriteria);
-        $searchResult->setItems($collection->getItems());
-        $searchResult->setTotalCount($collection->getSize());
+        $this->addFiltersToCollection($searchCriteria, $this->objectCollection);
+        $this->objectCollection->load();
+        $this->objectSearchResults->setSearchCriteria($searchCriteria);
+        $this->objectSearchResults->setItems($this->objectCollection->getItems());
+        $this->objectSearchResults->setTotalCount($this->objectCollection->getSize());
 
-        return $searchResult;
+        return $this->objectSearchResults;
     }
 
     /**
@@ -100,25 +98,5 @@ abstract class AbstractBaseRepository
             }
             $collection->addFieldToFilter($fields, $conditions);
         }
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getById($id)
-    {
-        /** @var CustomerCollection $collection */
-        $collection = $this->objectCollectionFactory->create();
-        /** @var CustomerInterface $customer */
-        $object = $collection->addFieldToFilter(
-            $this->getIdentityKey(),
-            (string) $id
-        )->setPageSize(1)->setCurPage(1)->getFirstItem();
-
-        if (empty($object)) {
-            throw new NoSuchEntityException(new Phrase('Unable to find entry for id. "%1"', [$id]));
-        }
-
-        return $object;
     }
 }

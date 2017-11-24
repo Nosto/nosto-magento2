@@ -63,7 +63,7 @@ class Indexer implements IndexerActionInterface, MviewActionInterface
                 ->setPageSize(self::HARD_LIMIT_FOR_PRODUCTS)
                 ->setCurrentPage(1)
                 ->create();
-            $products = $this->productRepository->search($searchCriteria);
+            $products = $this->productRepository->getList($searchCriteria);
             $this->productService->update($products->getItems());
         } else {
             $this->logger->info('Skip full reindex since full reindex is disabled.');

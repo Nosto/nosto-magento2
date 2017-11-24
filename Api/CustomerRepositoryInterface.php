@@ -44,17 +44,10 @@ interface CustomerRepositoryInterface extends BaseRepositoryInterface
      * Save Queue entry
      *
      * @param CustomerInterface $customer
+     *
      * @return CustomerInterface
      */
     public function save(CustomerInterface $customer);
-
-    /**
-     * Get customer entry by id
-     *
-     * @param int $id
-     * @return CustomerInterface
-     */
-    public function getById($id);
 
     /**
      * Get customer entry by nosto id and quote id. If multiple entries
@@ -62,7 +55,16 @@ interface CustomerRepositoryInterface extends BaseRepositoryInterface
      *
      * @param string $nostoId
      * @param int $quoteId
+     *
      * @return CustomerInterface|null
      */
     public function getOneByNostoIdAndQuoteId($nostoId, $quoteId);
+
+    /**
+     * Get customer entry by id
+     * @param int $id
+     *
+     * @return CustomerInterface|null
+     */
+    public function getById($id);
 }

@@ -36,7 +36,6 @@
 
 namespace Nosto\Tagging\Api;
 
-use Magento\Framework\Api\SearchCriteriaInterface;
 use Nosto\Tagging\Api\Data\ProductQueueInterface;
 use Nosto\Tagging\Api\Data\ProductQueueSearchResultsInterface;
 

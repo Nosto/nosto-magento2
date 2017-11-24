@@ -74,13 +74,10 @@ class QueueRepository extends AbstractBaseRepository implements ProductQueueRepo
     ) {
         parent::__construct(
             $queueResource,
-            $queueCollectionFactory,
-            $queueSearchResultsFactory
+            $queueCollectionFactory->create(),
+            $queueSearchResultsFactory->create()
         );
-        $this->objectResource = $queueResource;
         $this->objectFactory = $queueFactory;
-        $this->objectCollectionFactory = $queueCollectionFactory;
-        $this->objectSearchResultsFactory = $queueSearchResultsFactory;
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;
         $this->logger = $logger;
     }
@@ -113,10 +110,8 @@ class QueueRepository extends AbstractBaseRepository implements ProductQueueRepo
      */
     public function getOneByProductId($productId)
     {
-        /** @var QueueCollection $collection */
-        $collection = $this->objectCollectionFactory->create();
         /** @var Queue $productQueue */
-        $productQueue = $collection->addFieldToFilter(
+        $productQueue = $this->objectCollection->addFieldToFilter(
             ProductQueueInterface::PRODUCT_ID,
             (string) $productId
         )->setPageSize(1)->setCurPage(1)->getFirstItem();
@@ -172,16 +167,13 @@ class QueueRepository extends AbstractBaseRepository implements ProductQueueRepo
      */
     public function getFirstPage($pageSize)
     {
-        /** @var QueueCollection $collection */
-        $collection = $this->objectCollectionFactory->create();
-        $collection->setPageSize($pageSize);
-        $collection->setCurPage(1);
-        $collection->load();
-        $searchResult = $this->objectSearchResultsFactory->create();
-        $searchResult->setItems($collection->getItems());
-        $searchResult->setTotalCount($collection->getSize());
+        $this->objectCollection->setPageSize($pageSize);
+        $this->objectCollection->setCurPage(1);
+        $this->objectCollection->load();
+        $this->objectSearchResults->setItems($this->objectCollection->getItems());
+        $this->objectSearchResults->setTotalCount($this->objectCollection->getSize());
 
-        return $searchResult;
+        return $this->objectSearchResults;
     }
 
     /**
@@ -189,12 +181,10 @@ class QueueRepository extends AbstractBaseRepository implements ProductQueueRepo
      */
     public function getAll()
     {
-        $collection = $this->objectCollectionFactory->create();
-        $collection->load();
-        $searchResult = $this->objectSearchResultsFactory->create();
-        $searchResult->setItems($collection->getItems());
-        $searchResult->setTotalCount($collection->getSize());
+        $this->objectCollection->load();
+        $this->objectSearchResults->setItems($this->objectCollection->getItems());
+        $this->objectSearchResults->setTotalCount($this->objectCollection->getSize());
 
-        return $searchResult;
+        return $this->objectSearchResults;
     }
 }
