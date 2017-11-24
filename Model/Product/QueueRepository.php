@@ -73,10 +73,11 @@ class QueueRepository extends AbstractBaseRepository implements ProductQueueRepo
         NostoLogger $logger
     ) {
         parent::__construct(
-            $queueResource,
-            $queueCollectionFactory->create(),
-            $queueSearchResultsFactory->create()
+            $queueResource
         );
+
+        $this->setObjectCollectionFactory($queueCollectionFactory);
+        $this->setObjectSearchResultsFactory($queueSearchResultsFactory);
         $this->objectFactory = $queueFactory;
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;
         $this->logger = $logger;
@@ -95,7 +96,7 @@ class QueueRepository extends AbstractBaseRepository implements ProductQueueRepo
         }
         /** @noinspection PhpParamsInspection */
         /** @var AbstractModel $productQueue */
-        $queue = $this->objectResource->save($productQueue);
+        $queue = $this->getObjectResource()->save($productQueue);
 
         return $queue;
     }
@@ -110,8 +111,10 @@ class QueueRepository extends AbstractBaseRepository implements ProductQueueRepo
      */
     public function getOneByProductId($productId)
     {
+        /* @var QueueCollection $collection */
+        $collection = $this->getObjectCollectionFactory()->create();
         /** @var Queue $productQueue */
-        $productQueue = $this->objectCollection->addFieldToFilter(
+        $productQueue = $collection->addFieldToFilter(
             ProductQueueInterface::PRODUCT_ID,
             (string) $productId
         )->setPageSize(1)->setCurPage(1)->getFirstItem();
@@ -141,7 +144,7 @@ class QueueRepository extends AbstractBaseRepository implements ProductQueueRepo
     public function delete(ProductQueueInterface $productQueue)
     {
         try {
-            $this->objectResource->delete($productQueue);
+            $this->getObjectResource()->delete($productQueue);
         } catch (\Exception $e) {
             $this->logger->exception($e);
         }
@@ -167,13 +170,17 @@ class QueueRepository extends AbstractBaseRepository implements ProductQueueRepo
      */
     public function getFirstPage($pageSize)
     {
-        $this->objectCollection->setPageSize($pageSize);
-        $this->objectCollection->setCurPage(1);
-        $this->objectCollection->load();
-        $this->objectSearchResults->setItems($this->objectCollection->getItems());
-        $this->objectSearchResults->setTotalCount($this->objectCollection->getSize());
+        /* @var QueueCollection $collection */
+        $collection = $this->getObjectCollectionFactory()->create();
+        $collection->setPageSize($pageSize);
+        $collection->setCurPage(1);
+        $collection->load();
+        /* @var ProductQueueSearchResultsInterface $searchResults */
+        $searchResults = $this->getObjectSearchResultsFactory()->create();
+        $searchResults->setItems($collection->getItems());
+        $searchResults->setTotalCount($collection->getSize());
 
-        return $this->objectSearchResults;
+        return $searchResults;
     }
 
     /**
@@ -181,10 +188,14 @@ class QueueRepository extends AbstractBaseRepository implements ProductQueueRepo
      */
     public function getAll()
     {
-        $this->objectCollection->load();
-        $this->objectSearchResults->setItems($this->objectCollection->getItems());
-        $this->objectSearchResults->setTotalCount($this->objectCollection->getSize());
+        /* @var QueueCollection $collection */
+        $collection = $this->getObjectCollectionFactory()->create();
+        $collection->load();
+        /* @var ProductQueueSearchResultsInterface $searchResults */
+        $searchResults = $this->getObjectSearchResultsFactory()->create();
+        $searchResults->setItems($this->objectCollection->getItems());
+        $searchResults->setTotalCount($this->objectCollection->getSize());
 
-        return $this->objectSearchResults;
+        return $searchResults;
     }
 }

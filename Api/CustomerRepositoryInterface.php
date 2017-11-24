@@ -59,12 +59,4 @@ interface CustomerRepositoryInterface extends BaseRepositoryInterface
      * @return CustomerInterface|null
      */
     public function getOneByNostoIdAndQuoteId($nostoId, $quoteId);
-
-    /**
-     * Get customer entry by id
-     * @param int $id
-     *
-     * @return CustomerInterface|null
-     */
-    public function getById($id);
 }

@@ -41,48 +41,102 @@ use Magento\Framework\App\ResourceConnection\SourceProviderInterface;
 use Magento\Framework\Model\ResourceModel\Db\AbstractDb;
 use Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection;
 use Magento\Framework\Data\SearchResultInterface;
+use Nosto\NostoException;
 
 /**
  * Class AbstractBaseRepository
+ *
+ * Note - if M2 Factories some day implement an interface we can move
+ * the injected factories into the constructor
+ *
  * @package Nosto\Tagging\Model
  */
 abstract class AbstractBaseRepository
 {
 
-    protected $objectResource;
-    protected $objectCollection;
-    protected $objectSearchResults;
+    private $objectResource;
+    private $objectCollectionFactory;
+    private $objectSearchResultsFactory;
 
     /**
      * AbstractBaseRepository constructor.
      * @param AbstractDb $objectResource
-     * @param AbstractCollection $objectCollection
-     * @param SearchResultInterface $objectSearchResults
      */
     protected function __construct(
-        AbstractDb $objectResource,
-        AbstractCollection $objectCollection,
-        SearchResultInterface $objectSearchResults
+        AbstractDb $objectResource
     )
     {
         $this->objectResource = $objectResource;
-        $this->objectCollection = $objectCollection;
-        $this->objectSearchResults = $objectSearchResults;
     }
+
+    /**
+     * @return AbstractDb
+     */
+    public function getObjectResource()
+    {
+        return $this->objectResource;
+    }
+
+    /**
+     * @return object (Factory)
+     */
+    public function getObjectCollectionFactory()
+    {
+        return $this->objectCollectionFactory;
+    }
+
+    /**
+     * @param object $objectCollectionFactory Factory object
+     *
+     * @throws NostoException in case of invalid argument
+     */
+    public function setObjectCollectionFactory($objectCollectionFactory)
+    {
+        if (!$this->isFactory($objectCollectionFactory)) {
+            throw new NostoException('Invalid argument in setObjectCollectionFactory, expected Factory');
+        }
+        $this->objectCollectionFactory = $objectCollectionFactory;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getObjectSearchResultsFactory()
+    {
+        return $this->objectSearchResultsFactory;
+    }
+
+    /**
+     *
+     * @param object $objectSearchResultsFactory Factory object
+     *
+     * @throws NostoException
+     */
+    public function setObjectSearchResultsFactory($objectSearchResultsFactory)
+    {
+        if (!$this->isFactory($objectSearchResultsFactory)) {
+            throw new NostoException('Invalid argument in setObjectSearchResultsFactory, expected Factory');
+        }
+        $this->objectSearchResultsFactory = $objectSearchResultsFactory;
+    }
+
 
     /**
      * @inheritdoc
      */
     public function search(SearchCriteriaInterface $searchCriteria)
     {
-        /** @noinspection PhpParamsInspection */
-        $this->addFiltersToCollection($searchCriteria, $this->objectCollection);
-        $this->objectCollection->load();
-        $this->objectSearchResults->setSearchCriteria($searchCriteria);
-        $this->objectSearchResults->setItems($this->objectCollection->getItems());
-        $this->objectSearchResults->setTotalCount($this->objectCollection->getSize());
+        /* @var AbstractCollection $collection */
+        $collection = $this->objectCollectionFactory->create();
+        $this->addFiltersToCollection($searchCriteria, $collection);
+        $collection->load();
+        /* @var SearchResultInterface $searchResults */
+        $searchResults = $this->objectSearchResultsFactory->create();
+        $searchResults->setSearchCriteria($searchCriteria);
+        $searchResults->setItems($collection->getItems());
+        $searchResults->setTotalCount($collection->getSize());
 
-        return $this->objectSearchResults;
+        return $searchResults;
     }
 
     /**
@@ -98,5 +152,22 @@ abstract class AbstractBaseRepository
             }
             $collection->addFieldToFilter($fields, $conditions);
         }
+    }
+
+    /**
+     * Validates that given parameter / object is a factory
+     *
+     * @param mixed $param
+     *
+     * @return bool
+     */
+    private function isFactory($param)
+    {
+        if(is_object($param) && method_exists($param, 'create')) {
+
+            return true;
+        }
+
+        return false;
     }
 }

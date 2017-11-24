@@ -64,11 +64,11 @@ class Repository extends AbstractBaseRepository implements CustomerRepositoryInt
     ) {
 
         parent::__construct(
-            $customerResource,
-            $customerCollectionFactory->create(),
-            $customerSearchResultsFactory->create()
+            $customerResource
         );
 
+        $this->setObjectSearchResultsFactory($customerSearchResultsFactory);
+        $this->setObjectCollectionFactory($customerCollectionFactory);
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;
     }
 
@@ -79,7 +79,7 @@ class Repository extends AbstractBaseRepository implements CustomerRepositoryInt
      */
     public function save(CustomerInterface $customer)
     {
-        $this->objectResource->save($customer);
+        $this->getObjectResource()->save($customer);
 
         return $customer;
     }
@@ -109,11 +109,5 @@ class Repository extends AbstractBaseRepository implements CustomerRepositoryInt
 
         return null;
     }
-
-    public function getById($id)
-    {
-        // TODO: Implement getById() method.
-    }
-
 
 }
