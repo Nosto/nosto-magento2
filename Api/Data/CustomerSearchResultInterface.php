@@ -41,14 +41,14 @@ use Magento\Framework\Data\SearchResultInterface;
 interface CustomerSearchResultInterface extends SearchResultInterface
 {
     /**
-     * Get attributes list.
+     * Get items from search results
      *
      * @return CustomerInterface[]
      */
     public function getItems();
 
     /**
-     * Set attributes list.
+     * Set items to the search results
      *
      * @param CustomerInterface[] $items
      * @return $this
