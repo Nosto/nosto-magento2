@@ -154,7 +154,9 @@ class Save implements ObserverInterface
                     if ($items) {
                         $productIds = [];
                         foreach ($items as $item) {
-                            $productIds[] = $item->getProductId();
+                            if ($item->getProductId() !== '-1') {
+                                $productIds[] = $item->getProductId();
+                            }
                         }
 
                         $this->indexer->reindexList($productIds);
