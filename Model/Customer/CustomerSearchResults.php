@@ -34,24 +34,12 @@
  *
  */
 
-namespace Nosto\Tagging\Api\Data;
+namespace Nosto\Tagging\Model\Customer;
 
-use Magento\Framework\Data\SearchResultInterface;
+use Magento\Framework\Api\Search\SearchResult;
+use Nosto\Tagging\Api\Data\CustomerSearchResultInterface;
 
-interface ProductQueueSearchResultsInterface extends SearchResultInterface
+class CustomerSearchResults extends SearchResult implements CustomerSearchResultInterface // @codingStandardsIgnoreLine
 {
-    /**
-     * Get items from search results
-     *
-     * @return ProductQueueInterface[]
-     */
-    public function getItems();
 
-    /**
-     * Set items for search results
-     *
-     * @param ProductQueueInterface[] $items
-     * @return $this
-     */
-    public function setItems(array $items);
 }

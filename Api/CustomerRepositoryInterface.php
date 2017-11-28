@@ -34,24 +34,29 @@
  *
  */
 
-namespace Nosto\Tagging\Api\Data;
+namespace Nosto\Tagging\Api;
 
-use Magento\Framework\Data\SearchResultInterface;
+use Nosto\Tagging\Api\Data\CustomerInterface;
 
-interface ProductQueueSearchResultsInterface extends SearchResultInterface
+interface CustomerRepositoryInterface extends BaseRepositoryInterface
 {
     /**
-     * Get items from search results
+     * Save Queue entry
      *
-     * @return ProductQueueInterface[]
+     * @param CustomerInterface $customer
+     *
+     * @return CustomerInterface
      */
-    public function getItems();
+    public function save(CustomerInterface $customer);
 
     /**
-     * Set items for search results
+     * Get customer entry by nosto id and quote id. If multiple entries
+     * are found first one will be returned.
      *
-     * @param ProductQueueInterface[] $items
-     * @return $this
+     * @param string $nostoId
+     * @param int $quoteId
+     *
+     * @return CustomerInterface|null
      */
-    public function setItems(array $items);
+    public function getOneByNostoIdAndQuoteId($nostoId, $quoteId);
 }
