@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "fae2b14fcc5be46f958814849b268be4",
-    "content-hash": "286ec427b7c1b27f25d290ed0b8fd436",
+    "hash": "62db28cbb5f774f92ab83160defa9cbf",
+    "content-hash": "479f7ab82e3024c00cc0051fba8f0a18",
     "packages": [
         {
             "name": "nosto/php-sdk",
@@ -3052,6 +3052,57 @@
             "time": "2017-06-19 01:22:40"
         },
         {
+            "name": "nikic/php-parser",
+            "version": "v3.1.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/nikic/PHP-Parser.git",
+                "reference": "08131e7ff29de6bb9f12275c7d35df71f25f4d89"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/08131e7ff29de6bb9f12275c7d35df71f25f4d89",
+                "reference": "08131e7ff29de6bb9f12275c7d35df71f25f4d89",
+                "shasum": ""
+            },
+            "require": {
+                "ext-tokenizer": "*",
+                "php": ">=5.5"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~4.0|~5.0"
+            },
+            "bin": [
+                "bin/php-parse"
+            ],
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "3.0-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "PhpParser\\": "lib/PhpParser"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Nikita Popov"
+                }
+            ],
+            "description": "A PHP parser written in PHP",
+            "keywords": [
+                "parser",
+                "php"
+            ],
+            "time": "2017-11-04 11:48:34"
+        },
+        {
             "name": "oyejorge/less.php",
             "version": "1.7.x-dev",
             "source": {
@@ -3152,30 +3203,30 @@
         },
         {
             "name": "phan/phan",
-            "version": "0.8.3",
+            "version": "0.8.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phan/phan.git",
-                "reference": "5f12a3cfbae585618f5b02992c8810c7679457d0"
+                "reference": "9a559221a31526ff2f09947800cd6cc4ba592ac9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phan/phan/zipball/5f12a3cfbae585618f5b02992c8810c7679457d0",
-                "reference": "5f12a3cfbae585618f5b02992c8810c7679457d0",
+                "url": "https://api.github.com/repos/phan/phan/zipball/9a559221a31526ff2f09947800cd6cc4ba592ac9",
+                "reference": "9a559221a31526ff2f09947800cd6cc4ba592ac9",
                 "shasum": ""
             },
             "require": {
-                "ext-ast": "*",
-                "php": "~7.0.0",
+                "ext-ast": "^0.1.4",
+                "nikic/php-parser": "~3.1.1",
+                "php": "~7.0.0 || ~7.1.0 || ~7.2.0",
                 "symfony/console": "~2.3|~3.0"
             },
             "require-dev": {
-                "phpdocumentor/phpdocumentor": "^2.9.0",
-                "phpunit/phpunit": "^5.7.2",
-                "squizlabs/php_codesniffer": "^2.7.1"
+                "phpunit/phpunit": "^6.3.0"
             },
             "bin": [
                 "phan",
+                "phan_client",
                 "tocheckstyle"
             ],
             "type": "project",
@@ -3194,6 +3245,9 @@
                 },
                 {
                     "name": "Andrew S. Morrison"
+                },
+                {
+                    "name": "Tyson Andre"
                 }
             ],
             "description": "A static analyzer for PHP",
@@ -3202,7 +3256,7 @@
                 "php",
                 "static"
             ],
-            "time": "2017-01-26 19:47:24"
+            "time": "2017-09-24 20:02:32"
         },
         {
             "name": "phing/phing",
