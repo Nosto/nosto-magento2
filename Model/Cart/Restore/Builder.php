@@ -37,7 +37,6 @@
 namespace Nosto\Tagging\Model\Cart\Restore;
 
 use Magento\Framework\Encryption\EncryptorInterface;
-use Magento\Framework\Exception\AlreadyExistsException;
 use Magento\Quote\Model\Quote;
 use Magento\Store\Model\Store;
 use Magento\Framework\Stdlib\CookieManagerInterface;
@@ -141,8 +140,6 @@ class Builder
         try {
             $nostoCustomer = $this->nostoCustomerRepository->save($nostoCustomer);
 
-            return $nostoCustomer;
-        } catch (AlreadyExistsException $e) {
             return $nostoCustomer;
         } catch (\Exception $e) {
             $this->logger->exception($e);
