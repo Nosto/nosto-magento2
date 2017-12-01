@@ -38,91 +38,15 @@ namespace Nosto\Tagging\Model;
 
 use Magento\Framework\Api\SearchCriteriaInterface;
 use Magento\Framework\App\ResourceConnection\SourceProviderInterface;
-use Magento\Framework\Model\ResourceModel\Db\AbstractDb;
 use Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection;
 use Magento\Framework\Data\SearchResultInterface;
-use Nosto\NostoException;
 
-/**
- * Class AbstractBaseRepository
- *
- * Note - if M2 Factories some day implement an interface we can move
- * the injected factories into the constructor
- *
- * @package Nosto\Tagging\Model
- */
-abstract class AbstractBaseRepository
+trait RepositoryTrait
 {
-
-    private $objectResource;
-    private $objectCollectionFactory;
-    private $objectSearchResultsFactory;
-
-    /**
-     * AbstractBaseRepository constructor.
-     * @param AbstractDb $objectResource
-     */
-    protected function __construct(
-        AbstractDb $objectResource
-    ) {
-    
-        $this->objectResource = $objectResource;
-    }
-
-    /**
-     * @return AbstractDb
-     */
-    public function getObjectResource()
-    {
-        return $this->objectResource;
-    }
-
-    /**
-     * @return object (Factory)
-     */
-    public function getObjectCollectionFactory()
-    {
-        return $this->objectCollectionFactory;
-    }
-
-    /**
-     * @param object $objectCollectionFactory Factory object
-     *
-     * @throws NostoException in case of invalid argument
-     */
-    public function setObjectCollectionFactory($objectCollectionFactory)
-    {
-        if (!$this->isFactory($objectCollectionFactory)) {
-            throw new NostoException('Invalid argument in setObjectCollectionFactory, expected Factory');
-        }
-        $this->objectCollectionFactory = $objectCollectionFactory;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getObjectSearchResultsFactory()
-    {
-        return $this->objectSearchResultsFactory;
-    }
-
-    /**
-     *
-     * @param object $objectSearchResultsFactory Factory object
-     *
-     * @throws NostoException
-     */
-    public function setObjectSearchResultsFactory($objectSearchResultsFactory)
-    {
-        if (!$this->isFactory($objectSearchResultsFactory)) {
-            throw new NostoException('Invalid argument in setObjectSearchResultsFactory, expected Factory');
-        }
-        $this->objectSearchResultsFactory = $objectSearchResultsFactory;
-    }
-
-
     /**
      * @inheritdoc
+     *
+     * @suppress PhanUndeclaredProperty
      */
     public function search(SearchCriteriaInterface $searchCriteria)
     {
@@ -142,8 +66,10 @@ abstract class AbstractBaseRepository
     /**
      * @inheritdoc
      */
-    private function addFiltersToCollection(SearchCriteriaInterface $searchCriteria, SourceProviderInterface $collection)
-    {
+    private function addFiltersToCollection(
+        SearchCriteriaInterface $searchCriteria,
+        SourceProviderInterface $collection
+    ) {
         foreach ($searchCriteria->getFilterGroups() as $filterGroup) {
             $fields = $conditions = [];
             foreach ($filterGroup->getFilters() as $filter) {
@@ -152,21 +78,5 @@ abstract class AbstractBaseRepository
             }
             $collection->addFieldToFilter($fields, $conditions);
         }
-    }
-
-    /**
-     * Validates that given parameter / object is a factory
-     *
-     * @param mixed $param
-     *
-     * @return bool
-     */
-    private function isFactory($param)
-    {
-        if (is_object($param) && method_exists($param, 'create')) {
-            return true;
-        }
-
-        return false;
     }
 }

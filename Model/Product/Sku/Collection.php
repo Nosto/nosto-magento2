@@ -92,7 +92,7 @@ class Collection
         if ($product->getTypeId() === ConfigurableType::TYPE_CODE) {
             $attributes = $this->configurableType->getConfigurableAttributes($product);
             /** @var Product $product */
-            $usedProducts = $this->nostoProductRepository->getSkus($product, true);
+            $usedProducts = $this->nostoProductRepository->getSkus($product);
             foreach ($usedProducts as $product) {
                 if ($product instanceof Product && !$product->isDisabled()) {
                     try {

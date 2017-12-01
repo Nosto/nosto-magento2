@@ -39,14 +39,18 @@ namespace Nosto\Tagging\Model\Customer;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Nosto\Tagging\Api\CustomerRepositoryInterface;
 use Nosto\Tagging\Api\Data\CustomerInterface;
-use Nosto\Tagging\Model\AbstractBaseRepository;
 use Nosto\Tagging\Model\RepositoryTrait;
 use Nosto\Tagging\Model\ResourceModel\Customer as CustomerResource;
 use Nosto\Tagging\Model\ResourceModel\Customer\CollectionFactory as CustomerCollectionFactory;
 
-class Repository extends AbstractBaseRepository implements CustomerRepositoryInterface
+class Repository implements CustomerRepositoryInterface
 {
+    use RepositoryTrait;
+
     private $searchCriteriaBuilder;
+    private $objectCollectionFactory;
+    private $objectSearchResultsFactory;
+    private $objectResource;
 
     /**
      * Customer repository constructor
@@ -62,40 +66,76 @@ class Repository extends AbstractBaseRepository implements CustomerRepositoryInt
         CustomerSearchResultsFactory $customerSearchResultsFactory,
         SearchCriteriaBuilder $searchCriteriaBuilder
     ) {
-
-        parent::__construct(
-            $customerResource
-        );
-
-        $this->setObjectSearchResultsFactory($customerSearchResultsFactory);
-        $this->setObjectCollectionFactory($customerCollectionFactory);
+        $this->objectSearchResultsFactory = $customerSearchResultsFactory;
+        $this->objectCollectionFactory = $customerCollectionFactory;
+        $this->objectResource = $customerResource;
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;
     }
 
-
     /**
-     * @inheritdoc
+     * Save Queue entry
+     *
+     * @param CustomerInterface $customer
+     *
+     * @return CustomerInterface
+     * @throws \Exception
+     * @throws \Magento\Framework\Exception\AlreadyExistsException
+     *
+     * @suppress PhanTypeMismatchArgument
      */
     public function save(CustomerInterface $customer)
     {
-        $this->getObjectResource()->save($customer);
+        $this->objectResource->save($customer);
 
         return $customer;
     }
 
+    /**
+     * @return string
+     */
     public function getIdentityKey()
     {
         return CustomerInterface::CUSTOMER_ID;
     }
 
     /**
-     * @inheritdoc
+     * Get customer entry by nosto id and quote id. If multiple entries
+     * are found first one will be returned.
+     *
+     * @param string $nostoId
+     * @param int $quoteId
+     *
+     * @return CustomerInterface|null
      */
     public function getOneByNostoIdAndQuoteId($nostoId, $quoteId)
     {
         $searchCriteria = $this->searchCriteriaBuilder
             ->addFilter(CustomerInterface::NOSTO_ID, $nostoId, 'eq')
             ->addFilter(CustomerInterface::QUOTE_ID, $quoteId, 'eq')
+            ->setPageSize(1)
+            ->setCurrentPage(1)
+            ->create();
+
+        $items = $this->search($searchCriteria)->getItems();
+        foreach ($items as $customer) {
+            return $customer;
+        }
+
+        return null;
+    }
+
+    /**
+     * Get customer entry by restore cart hash. If multiple entries
+     * are found first one will be returned.
+     *
+     * @param string $hash
+     *
+     * @return CustomerInterface|null
+     */
+    public function getOneByRestoreCartHash($hash)
+    {
+        $searchCriteria = $this->searchCriteriaBuilder
+            ->addFilter(CustomerInterface::RESTORE_CART_HASH, $hash, 'eq')
             ->setPageSize(1)
             ->setCurrentPage(1)
             ->create();

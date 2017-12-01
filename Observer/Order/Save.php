@@ -51,6 +51,7 @@ use Nosto\Tagging\Model\Customer\Customer as NostoCustomer;
 use Nosto\Tagging\Model\Customer\CustomerFactory;
 use Nosto\Tagging\Model\Indexer\Product\Indexer;
 use Nosto\Tagging\Model\Order\Builder as NostoOrderBuilder;
+use Nosto\Object\Order\Order as NostoOrder;
 
 /**
  * Class Save
@@ -147,21 +148,29 @@ class Save implements ObserverInterface
                         )
                     );
                 }
+                $this->handleInventoryLevelUpdate($nostoOrder);
+            }
+        }
+    }
 
-                //update inventory level
-                if (!$this->indexer->isScheduled() && $this->nostoHelperData->isInventoryTaggingEnabled()) {
-                    $items = $nostoOrder->getPurchasedItems();
-                    if ($items) {
-                        $productIds = [];
-                        foreach ($items as $item) {
-                            if ($item->getProductId() !== '-1') {
-                                $productIds[] = $item->getProductId();
-                            }
-                        }
-
-                        $this->indexer->reindexList($productIds);
+    /**
+     * Handles the inventory level update to Nosto
+     *
+     * @param NostoOrder $nostoOrder
+     */
+    private function handleInventoryLevelUpdate(NostoOrder $nostoOrder)
+    {
+        //update inventory level
+        if (!$this->indexer->isScheduled() && $this->nostoHelperData->isInventoryTaggingEnabled()) {
+            $items = $nostoOrder->getPurchasedItems();
+            if ($items) {
+                $productIds = [];
+                foreach ($items as $item) {
+                    if ($item->getProductId() !== '-1') {
+                        $productIds[] = $item->getProductId();
                     }
                 }
+                $this->indexer->reindexList($productIds);
             }
         }
     }
