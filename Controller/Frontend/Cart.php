@@ -40,19 +40,16 @@ use Magento\Checkout\Model\Session;
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\Module\Manager as ModuleManager;
-use Magento\Quote\Api\Data\CartInterface;
 use Magento\Quote\Model\Quote;
 use Magento\Quote\Model\QuoteFactory;
 use Magento\Quote\Model\ResourceModel\Quote as ResourceQuote;
 use Nosto\NostoException;
-use Nosto\Tagging\Api\Data\CustomerInterface;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Helper\Url as NostoHelperUrl;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
-use Nosto\Tagging\Model\Customer\Customer;
-use Nosto\Tagging\Model\Customer\CustomerFactory as NostoCustomerFactory;
-use Nosto\Tagging\Model\ResourceModel\Customer\Collection as NostoCustomerCollection;
+use Nosto\Tagging\Model\Customer\Repository as NostoCustomerRepository;
+use Magento\Quote\Api\CartRepositoryInterface;
 
 /*
  * Controller class for handling cart restoration
@@ -72,8 +69,8 @@ class Cart extends Action
     private $logger;
     private $nostoUrlHelper;
     private $nostoScopeHelper;
-    private $nostoCustomerFactory;
-    private $nostoCustomerCollection;
+    private $nostoCustomerRepository;
+    private $quoteRepository;
 
     /**
      * Cart constructor.
@@ -85,12 +82,8 @@ class Cart extends Action
      * @param NostoLogger $logger
      * @param NostoHelperUrl $nostoUrlHelper
      * @param NostoHelperScope $nostoScopeHelper
-     * @param NostoCustomerFactory $nostoCustomerFactory
-     * @param NostoCustomerCollection $nostoCustomerCollection
-     * @internal param NostoLogger $logger
-     * @internal param NostoHelperUrl $nostoUrlHelper
-     * @internal param NostoHelperScope $nostoScopeHelper
-     * @internal param NostoCustomerFactory $nostoCustomerFactory
+     * @param NostoCustomerRepository $nostoCustomerRepository
+     * @param CartRepositoryInterface $quoteRepository
      */
     public function __construct(
         Context $context,
@@ -101,8 +94,8 @@ class Cart extends Action
         NostoLogger $logger,
         NostoHelperUrl $nostoUrlHelper,
         NostoHelperScope $nostoScopeHelper,
-        NostoCustomerFactory $nostoCustomerFactory,
-        NostoCustomerCollection $nostoCustomerCollection
+        NostoCustomerRepository $nostoCustomerRepository,
+        CartRepositoryInterface $quoteRepository
     ) {
         parent::__construct($context);
         $this->context = $context;
@@ -113,8 +106,8 @@ class Cart extends Action
         $this->logger = $logger;
         $this->nostoUrlHelper = $nostoUrlHelper;
         $this->nostoScopeHelper = $nostoScopeHelper;
-        $this->nostoCustomerFactory = $nostoCustomerFactory;
-        $this->nostoCustomerCollection = $nostoCustomerCollection;
+        $this->nostoCustomerRepository = $nostoCustomerRepository;
+        $this->quoteRepository = $quoteRepository;
     }
 
     public function execute()
@@ -157,12 +150,7 @@ class Cart extends Action
      */
     private function resolveQuote($restoreCartHash)
     {
-        /** @var Customer $customer */
-        $customer = $this->nostoCustomerCollection->addFieldToFilter(
-            CustomerInterface::RESTORE_CART_HASH,
-            $restoreCartHash
-        )->setPageSize(1)->setCurPage(1)->getFirstItem();
-
+        $customer = $this->nostoCustomerRepository->getOneByRestoreCartHash($restoreCartHash);
         if ($customer == null || !$customer->hasData()) {
             throw new NostoException(
                 sprintf(
@@ -181,18 +169,12 @@ class Cart extends Action
             );
         }
 
-        $quoteId = $customer->getQuoteId();
-        /** @var Quote $quote */
-        $quote = $this->nostoCustomerCollection->addFieldToFilter(
-            CartInterface::KEY_ENTITY_ID,
-            $quoteId
-        )->setPageSize(1)->setCurPage(1)->getFirstItem();
-
+        $quote = $this->quoteRepository->get($customer->getQuoteId());
         if ($quote == null || !$quote->hasData()) {
             throw new NostoException(
                 sprintf(
                     'No quote found for id %d',
-                    $quoteId
+                    $customer->getQuoteId()
                 )
             );
         }

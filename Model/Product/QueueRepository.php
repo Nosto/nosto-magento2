@@ -111,19 +111,10 @@ class QueueRepository extends AbstractBaseRepository implements ProductQueueRepo
      */
     public function getOneByProductId($productId)
     {
-        /* @var QueueCollection $collection */
-        $collection = $this->getObjectCollectionFactory()->create();
-        /** @var Queue $productQueue */
-        $productQueue = $collection->addFieldToFilter(
-            ProductQueueInterface::PRODUCT_ID,
-            (string) $productId
-        )->setPageSize(1)->setCurPage(1)->getFirstItem();
-
-        if (!$productQueue->getId()) {
-            return null;
+        $results = $this->getByProductId($productId);
+        foreach ($results->getItems() as $item) {
+            return $item;
         }
-
-        return $productQueue;
     }
 
     /**

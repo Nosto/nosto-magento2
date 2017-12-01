@@ -42,6 +42,7 @@ use Magento\Framework\Model\ResourceModel\Db\AbstractDb;
 use Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection;
 use Magento\Framework\Data\SearchResultInterface;
 use Nosto\NostoException;
+use Nosto\Tagging\Api\BaseRepositoryInterface;
 
 /**
  * Class AbstractBaseRepository
@@ -51,7 +52,7 @@ use Nosto\NostoException;
  *
  * @package Nosto\Tagging\Model
  */
-abstract class AbstractBaseRepository
+abstract class AbstractBaseRepository implements BaseRepositoryInterface
 {
 
     private $objectResource;
@@ -62,7 +63,7 @@ abstract class AbstractBaseRepository
      * AbstractBaseRepository constructor.
      * @param AbstractDb $objectResource
      */
-    protected function __construct(
+    public function __construct(
         AbstractDb $objectResource
     ) {
     
@@ -120,7 +121,6 @@ abstract class AbstractBaseRepository
         $this->objectSearchResultsFactory = $objectSearchResultsFactory;
     }
 
-
     /**
      * @inheritdoc
      */
@@ -142,8 +142,10 @@ abstract class AbstractBaseRepository
     /**
      * @inheritdoc
      */
-    private function addFiltersToCollection(SearchCriteriaInterface $searchCriteria, SourceProviderInterface $collection)
-    {
+    private function addFiltersToCollection(
+        SearchCriteriaInterface $searchCriteria,
+        SourceProviderInterface $collection
+    ) {
         foreach ($searchCriteria->getFilterGroups() as $filterGroup) {
             $fields = $conditions = [];
             foreach ($filterGroup->getFilters() as $filter) {

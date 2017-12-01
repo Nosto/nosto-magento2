@@ -62,16 +62,15 @@ class Repository extends AbstractBaseRepository implements CustomerRepositoryInt
         CustomerSearchResultsFactory $customerSearchResultsFactory,
         SearchCriteriaBuilder $searchCriteriaBuilder
     ) {
-
+        // @codingStandardsIgnoreStart
         parent::__construct(
             $customerResource
         );
-
         $this->setObjectSearchResultsFactory($customerSearchResultsFactory);
         $this->setObjectCollectionFactory($customerCollectionFactory);
+        // @codingStandardsIgnoreEnd
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;
     }
-
 
     /**
      * @inheritdoc
@@ -96,6 +95,25 @@ class Repository extends AbstractBaseRepository implements CustomerRepositoryInt
         $searchCriteria = $this->searchCriteriaBuilder
             ->addFilter(CustomerInterface::NOSTO_ID, $nostoId, 'eq')
             ->addFilter(CustomerInterface::QUOTE_ID, $quoteId, 'eq')
+            ->setPageSize(1)
+            ->setCurrentPage(1)
+            ->create();
+
+        $items = $this->search($searchCriteria)->getItems();
+        foreach ($items as $customer) {
+            return $customer;
+        }
+
+        return null;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getOneByRestoreCartHash($hash)
+    {
+        $searchCriteria = $this->searchCriteriaBuilder
+            ->addFilter(CustomerInterface::RESTORE_CART_HASH, $hash, 'eq')
             ->setPageSize(1)
             ->setCurrentPage(1)
             ->create();

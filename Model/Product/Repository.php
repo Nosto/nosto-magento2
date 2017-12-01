@@ -120,7 +120,7 @@ class Repository
      */
     public function getWithActivePricingSchedule()
     {
-        $today = new \DateTime('now');
+        $today = new \DateTime('now'); // @codingStandardsIgnoreLine
         $filterEndDateGreater = $this->filterBuilder
             ->setField('special_to_date')
             ->setValue($today->format('Y-m-d ' . '00:00:00'))
