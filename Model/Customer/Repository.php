@@ -39,14 +39,18 @@ namespace Nosto\Tagging\Model\Customer;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Nosto\Tagging\Api\CustomerRepositoryInterface;
 use Nosto\Tagging\Api\Data\CustomerInterface;
-use Nosto\Tagging\Model\AbstractBaseRepository;
 use Nosto\Tagging\Model\RepositoryTrait;
 use Nosto\Tagging\Model\ResourceModel\Customer as CustomerResource;
 use Nosto\Tagging\Model\ResourceModel\Customer\CollectionFactory as CustomerCollectionFactory;
 
-class Repository extends AbstractBaseRepository implements CustomerRepositoryInterface
+class Repository implements CustomerRepositoryInterface
 {
+    use RepositoryTrait;
+
     private $searchCriteriaBuilder;
+    private $objectCollectionFactory;
+    private $objectSearchResultsFactory;
+    private $objectResource;
 
     /**
      * Customer repository constructor
@@ -62,13 +66,9 @@ class Repository extends AbstractBaseRepository implements CustomerRepositoryInt
         CustomerSearchResultsFactory $customerSearchResultsFactory,
         SearchCriteriaBuilder $searchCriteriaBuilder
     ) {
-        // @codingStandardsIgnoreStart
-        parent::__construct(
-            $customerResource
-        );
-        $this->setObjectSearchResultsFactory($customerSearchResultsFactory);
-        $this->setObjectCollectionFactory($customerCollectionFactory);
-        // @codingStandardsIgnoreEnd
+        $this->objectSearchResultsFactory = $customerSearchResultsFactory;
+        $this->objectCollectionFactory = $customerCollectionFactory;
+        $this->objectResource = $customerResource;
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;
     }
 
@@ -77,7 +77,7 @@ class Repository extends AbstractBaseRepository implements CustomerRepositoryInt
      */
     public function save(CustomerInterface $customer)
     {
-        $this->getObjectResource()->save($customer);
+        $this->objectResource->save($customer);
 
         return $customer;
     }

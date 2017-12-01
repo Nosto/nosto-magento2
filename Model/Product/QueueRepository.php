@@ -41,18 +41,22 @@ use Magento\Framework\Model\AbstractModel;
 use Nosto\Tagging\Api\Data\ProductQueueInterface;
 use Nosto\Tagging\Api\Data\ProductQueueSearchResultsInterface;
 use Nosto\Tagging\Api\ProductQueueRepositoryInterface;
-use Nosto\Tagging\Model\AbstractBaseRepository;
 use Nosto\Tagging\Model\RepositoryTrait;
 use Nosto\Tagging\Model\ResourceModel\Product\Queue as QueueResource;
 use Nosto\Tagging\Model\ResourceModel\Product\Queue\Collection as QueueCollection;
 use Nosto\Tagging\Model\ResourceModel\Product\Queue\CollectionFactory as QueueCollectionFactory;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 
-class QueueRepository extends AbstractBaseRepository implements ProductQueueRepositoryInterface
+class QueueRepository implements ProductQueueRepositoryInterface
 {
-    private $objectFactory;
+    use RepositoryTrait;
+
     private $searchCriteriaBuilder;
     private $logger;
+    private $objectFactory;
+    private $objectCollectionFactory;
+    private $objectSearchResultsFactory;
+    private $objectResource;
 
     /**
      * QueueRepository constructor.
@@ -72,12 +76,9 @@ class QueueRepository extends AbstractBaseRepository implements ProductQueueRepo
         SearchCriteriaBuilder $searchCriteriaBuilder,
         NostoLogger $logger
     ) {
-        parent::__construct(
-            $queueResource
-        );
-
-        $this->setObjectCollectionFactory($queueCollectionFactory);
-        $this->setObjectSearchResultsFactory($queueSearchResultsFactory);
+        $this->objectResource = $queueResource;
+        $this->objectCollectionFactory = $queueCollectionFactory;
+        $this->objectSearchResultsFactory = $queueSearchResultsFactory;
         $this->objectFactory = $queueFactory;
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;
         $this->logger = $logger;
@@ -96,7 +97,7 @@ class QueueRepository extends AbstractBaseRepository implements ProductQueueRepo
         }
         /** @noinspection PhpParamsInspection */
         /** @var AbstractModel $productQueue */
-        $queue = $this->getObjectResource()->save($productQueue);
+        $queue = $this->objectResource->save($productQueue);
 
         return $queue;
     }
@@ -115,6 +116,8 @@ class QueueRepository extends AbstractBaseRepository implements ProductQueueRepo
         foreach ($results->getItems() as $item) {
             return $item;
         }
+
+        return null;
     }
 
     /**
@@ -135,7 +138,7 @@ class QueueRepository extends AbstractBaseRepository implements ProductQueueRepo
     public function delete(ProductQueueInterface $productQueue)
     {
         try {
-            $this->getObjectResource()->delete($productQueue);
+            $this->objectResource->delete($productQueue);
         } catch (\Exception $e) {
             $this->logger->exception($e);
         }
@@ -162,12 +165,12 @@ class QueueRepository extends AbstractBaseRepository implements ProductQueueRepo
     public function getFirstPage($pageSize)
     {
         /* @var QueueCollection $collection */
-        $collection = $this->getObjectCollectionFactory()->create();
+        $collection = $this->objectCollectionFactory->create();
         $collection->setPageSize($pageSize);
         $collection->setCurPage(1);
         $collection->load();
         /* @var ProductQueueSearchResultsInterface $searchResults */
-        $searchResults = $this->getObjectSearchResultsFactory()->create();
+        $searchResults = $this->objectSearchResultsFactory->create();
         $searchResults->setItems($collection->getItems());
         $searchResults->setTotalCount($collection->getSize());
 
@@ -180,10 +183,10 @@ class QueueRepository extends AbstractBaseRepository implements ProductQueueRepo
     public function getAll()
     {
         /* @var QueueCollection $collection */
-        $collection = $this->getObjectCollectionFactory()->create();
+        $collection = $this->objectCollectionFactory->create();
         $collection->load();
         /* @var ProductQueueSearchResultsInterface $searchResults */
-        $searchResults = $this->getObjectSearchResultsFactory()->create();
+        $searchResults = $this->objectSearchResultsFactory->create();
         $searchResults->setItems($this->objectCollection->getItems());
         $searchResults->setTotalCount($this->objectCollection->getSize());
 
