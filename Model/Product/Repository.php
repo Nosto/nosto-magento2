@@ -170,13 +170,13 @@ class Repository
      * Gets the variations / SKUs of configurable product
      *
      * @param Product $product
-    * @return array
+     * @return array
      */
     public function getSkus(Product $product)
     {
         $skuIds = $this->configurableType->getChildrenIds($product->getId());
         $products = [];
-        foreach ($skuIds as $batch=>$skus) {
+        foreach ($skuIds as $batch => $skus) {
             if (is_array($skus)) {
                 foreach ($skus as $skuId) {
                     // We need to load these one by one in order to get correct stock / availability info
@@ -186,7 +186,7 @@ class Repository
         }
 
         return $products;
-   }
+    }
 
     /**
      * Get parent ids from cache. Return null if the cache is not available

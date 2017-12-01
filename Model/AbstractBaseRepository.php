@@ -64,8 +64,8 @@ abstract class AbstractBaseRepository
      */
     protected function __construct(
         AbstractDb $objectResource
-    )
-    {
+    ) {
+    
         $this->objectResource = $objectResource;
     }
 
@@ -163,8 +163,7 @@ abstract class AbstractBaseRepository
      */
     private function isFactory($param)
     {
-        if(is_object($param) && method_exists($param, 'create')) {
-
+        if (is_object($param) && method_exists($param, 'create')) {
             return true;
         }
 

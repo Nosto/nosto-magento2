@@ -102,11 +102,9 @@ class Repository extends AbstractBaseRepository implements CustomerRepositoryInt
 
         $items = $this->search($searchCriteria)->getItems();
         foreach ($items as $customer) {
-
             return $customer;
         }
 
         return null;
     }
-
 }

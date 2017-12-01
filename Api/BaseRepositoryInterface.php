@@ -39,7 +39,6 @@ namespace Nosto\Tagging\Api;
 use Magento\Framework\Data\SearchResultInterface;
 use Magento\Framework\Api\SearchCriteriaInterface;
 
-
 interface BaseRepositoryInterface
 {
     /**
@@ -56,5 +55,4 @@ interface BaseRepositoryInterface
      * @return string
      */
     public function getIdentityKey();
-
 }

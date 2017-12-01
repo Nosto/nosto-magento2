@@ -49,7 +49,6 @@ use Nosto\Tagging\Helper\Url as NostoHelperUrl;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Customer\Repository as NostoCustomerRepository;
 
-
 class Builder
 {
     private $logger;
@@ -114,7 +113,6 @@ class Builder
         $nostoCustomerId = $this->cookieManager->getCookie(NostoCustomer::COOKIE_NAME);
 
         if ($quote === null || $quote->getId() === null || empty($nostoCustomerId)) {
-
             return null;
         }
 
@@ -145,7 +143,6 @@ class Builder
 
             return $nostoCustomer;
         } catch (AlreadyExistsException $e) {
-
             return $nostoCustomer;
         } catch (\Exception $e) {
             $this->logger->exception($e);
