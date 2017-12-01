@@ -73,7 +73,16 @@ class Repository implements CustomerRepositoryInterface
     }
 
     /**
-     * @inheritdoc
+     * Save Queue entry
+     *
+     * @param CustomerInterface $customer
+     *
+     * @return CustomerInterface
+     * @throws \Exception
+     * @throws \Magento\Framework\Exception\AlreadyExistsException
+     * 
+     * @suppress PhanTypeMismatchArgument
+     *
      */
     public function save(CustomerInterface $customer)
     {
@@ -82,13 +91,22 @@ class Repository implements CustomerRepositoryInterface
         return $customer;
     }
 
+    /**
+     * @return string
+     */
     public function getIdentityKey()
     {
         return CustomerInterface::CUSTOMER_ID;
     }
 
     /**
-     * @inheritdoc
+     * Get customer entry by nosto id and quote id. If multiple entries
+     * are found first one will be returned.
+     *
+     * @param string $nostoId
+     * @param int $quoteId
+     *
+     * @return CustomerInterface|null
      */
     public function getOneByNostoIdAndQuoteId($nostoId, $quoteId)
     {
@@ -108,7 +126,12 @@ class Repository implements CustomerRepositoryInterface
     }
 
     /**
-     * @inheritdoc
+     * Get customer entry by restore cart hash. If multiple entries
+     * are found first one will be returned.
+     *
+     * @param string $hash
+     *
+     * @return CustomerInterface|null
      */
     public function getOneByRestoreCartHash($hash)
     {

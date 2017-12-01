@@ -45,6 +45,8 @@ trait RepositoryTrait
 {
     /**
      * @inheritdoc
+     *
+     * @suppress PhanUndeclaredProperty
      */
     public function search(SearchCriteriaInterface $searchCriteria)
     {

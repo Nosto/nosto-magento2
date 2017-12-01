@@ -85,7 +85,12 @@ class QueueRepository implements ProductQueueRepositoryInterface
     }
 
     /**
-     * @inheritdoc
+     * Save Queue entry
+     *
+     * @param ProductQueueInterface $productQueue
+     * @return ProductQueueInterface
+     * @throws \Exception
+     * @suppress PhanTypeMismatchArgument
      */
     public function save(ProductQueueInterface $productQueue)
     {
@@ -102,13 +107,19 @@ class QueueRepository implements ProductQueueRepositoryInterface
         return $queue;
     }
 
+    /**
+     * @return string
+     */
     public function getIdentityKey()
     {
         return ProductQueueInterface::ID;
     }
 
     /**
-     * @inheritdoc
+     * Returns single entry by product id
+     *
+     * @param int $productId
+     * @return ProductQueueInterface|null
      */
     public function getOneByProductId($productId)
     {
@@ -121,7 +132,10 @@ class QueueRepository implements ProductQueueRepositoryInterface
     }
 
     /**
-     * @inheritdoc
+     * Returns all entries by product ids
+     *
+     * @param int $productId
+     * @return ProductQueueSearchResultsInterface
      */
     public function getByProductId($productId)
     {
@@ -133,7 +147,11 @@ class QueueRepository implements ProductQueueRepositoryInterface
     }
 
     /**
-     * @inheritdoc
+     * Delete productQueue
+     *
+     * @param ProductQueueInterface $productQueue
+     *
+     * @suppress PhanTypeMismatchArgument
      */
     public function delete(ProductQueueInterface $productQueue)
     {
@@ -145,7 +163,7 @@ class QueueRepository implements ProductQueueRepositoryInterface
     }
 
     /**
-     * @inheritdoc
+     * @param array $ids
      */
     public function deleteByProductIds(array $ids)
     {
@@ -160,7 +178,11 @@ class QueueRepository implements ProductQueueRepositoryInterface
     }
 
     /**
-     * @inheritdoc
+     * Get list of productQueues
+     *
+     * @param int $pageSize
+     *
+     * @return ProductQueueSearchResultsInterface
      */
     public function getFirstPage($pageSize)
     {
@@ -178,7 +200,9 @@ class QueueRepository implements ProductQueueRepositoryInterface
     }
 
     /**
-     * @inheritdoc
+     * Returns all entries in product queue
+     *
+     * @return ProductQueueSearchResultsInterface
      */
     public function getAll()
     {
@@ -187,8 +211,8 @@ class QueueRepository implements ProductQueueRepositoryInterface
         $collection->load();
         /* @var ProductQueueSearchResultsInterface $searchResults */
         $searchResults = $this->objectSearchResultsFactory->create();
-        $searchResults->setItems($this->objectCollection->getItems());
-        $searchResults->setTotalCount($this->objectCollection->getSize());
+        $searchResults->setItems($collection->getItems());
+        $searchResults->setTotalCount($collection->getSize());
 
         return $searchResults;
     }

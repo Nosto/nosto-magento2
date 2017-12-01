@@ -64,18 +64,18 @@ interface ProductQueueRepositoryInterface extends BaseRepositoryInterface
     /**
      * Returns all entries by product ids
      *
-     * @param int $id
+     * @param int $productId
      * @return ProductQueueSearchResultsInterface
      */
-    public function getByProductId($id);
+    public function getByProductId($productId);
 
     /**
      * Returns single entry by product id
      *
-     * @param int $id
+     * @param int $productId
      * @return ProductQueueInterface|null
      */
-    public function getOneByProductId($id);
+    public function getOneByProductId($productId);
 
     /**
      * Get list of productQueues

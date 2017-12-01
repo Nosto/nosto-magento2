@@ -121,7 +121,7 @@ class Builder
         );
 
         if ($nostoCustomer instanceof CustomerInterface
-            && $nostoCustomer->hasData(NostoCustomer::CUSTOMER_ID)
+            && $nostoCustomer->getCustomerId()
         ) {
             if ($nostoCustomer->getRestoreCartHash() === null) {
                 $nostoCustomer->setRestoreCartHash($this->generateRestoreCartHash());

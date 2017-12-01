@@ -105,7 +105,7 @@ class Knockout extends Template
      */
     public function getJsLayout()
     {
-        $jsLayout = null;
+        $jsLayout = '';
         if ($this->nostoEnabled()) {
             $jsLayout = parent::getJsLayout();
         }

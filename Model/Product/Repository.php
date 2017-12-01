@@ -117,6 +117,7 @@ class Repository
      * Gets products that have scheduled pricing active
      *
      * @return ProductSearchResultsInterface
+     * @suppress PhanTypeMismatchArgument
      */
     public function getWithActivePricingSchedule()
     {

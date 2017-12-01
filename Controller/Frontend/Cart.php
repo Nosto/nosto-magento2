@@ -42,7 +42,6 @@ use Magento\Framework\App\Action\Context;
 use Magento\Framework\Module\Manager as ModuleManager;
 use Magento\Quote\Model\Quote;
 use Magento\Quote\Model\QuoteFactory;
-use Magento\Quote\Model\ResourceModel\Quote as ResourceQuote;
 use Nosto\NostoException;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
@@ -65,7 +64,6 @@ class Cart extends Action
     private $moduleManager;
     private $checkoutSession;
     private $quoteFactory;
-    private $quoteResource;
     private $logger;
     private $nostoUrlHelper;
     private $nostoScopeHelper;
@@ -78,7 +76,6 @@ class Cart extends Action
      * @param ModuleManager $moduleManager
      * @param Session $checkoutSession
      * @param QuoteFactory $quoteFactory
-     * @param ResourceQuote $quoteResource
      * @param NostoLogger $logger
      * @param NostoHelperUrl $nostoUrlHelper
      * @param NostoHelperScope $nostoScopeHelper
@@ -90,7 +87,6 @@ class Cart extends Action
         ModuleManager $moduleManager,
         Session $checkoutSession,
         QuoteFactory $quoteFactory,
-        ResourceQuote $quoteResource,
         NostoLogger $logger,
         NostoHelperUrl $nostoUrlHelper,
         NostoHelperScope $nostoScopeHelper,
@@ -102,7 +98,6 @@ class Cart extends Action
         $this->moduleManager = $moduleManager;
         $this->checkoutSession = $checkoutSession;
         $this->quoteFactory = $quoteFactory;
-        $this->quoteResource = $quoteResource;
         $this->logger = $logger;
         $this->nostoUrlHelper = $nostoUrlHelper;
         $this->nostoScopeHelper = $nostoScopeHelper;
@@ -147,11 +142,12 @@ class Cart extends Action
      * @param $restoreCartHash
      * @return Quote|null
      * @throws NostoException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     private function resolveQuote($restoreCartHash)
     {
         $customer = $this->nostoCustomerRepository->getOneByRestoreCartHash($restoreCartHash);
-        if ($customer == null || !$customer->hasData()) {
+        if ($customer == null || !$customer->getCustomerId()) {
             throw new NostoException(
                 sprintf(
                     'No nosto customer found for hash %s',
@@ -170,7 +166,7 @@ class Cart extends Action
         }
 
         $quote = $this->quoteRepository->get($customer->getQuoteId());
-        if ($quote == null || !$quote->hasData()) {
+        if ($quote == null || !$quote->getId()) {
             throw new NostoException(
                 sprintf(
                     'No quote found for id %d',
@@ -181,8 +177,9 @@ class Cart extends Action
         // Note - we reactivate the cart if it's not active.
         // This would happen for example when the cart was bought.
         if (!$quote->getIsActive()) {
-            $quote->setIsActive(1);
-            $this->quoteResource->save($quote);
+            $quote->setIsActive(true);
+
+            $this->quoteRepository->save($quote);
         }
 
         return $quote;
