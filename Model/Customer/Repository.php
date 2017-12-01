@@ -80,9 +80,8 @@ class Repository implements CustomerRepositoryInterface
      * @return CustomerInterface
      * @throws \Exception
      * @throws \Magento\Framework\Exception\AlreadyExistsException
-     * 
-     * @suppress PhanTypeMismatchArgument
      *
+     * @suppress PhanTypeMismatchArgument
      */
     public function save(CustomerInterface $customer)
     {
