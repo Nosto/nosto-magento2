@@ -198,7 +198,6 @@ class Repository
     private function getParentIdsFromCache(Product $product)
     {
         if (isset($this->parentProductIdCache[$product->getId()])) {
-
             return $this->parentProductIdCache[$product->getId()];
         }
 
