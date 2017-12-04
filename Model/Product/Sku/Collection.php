@@ -91,7 +91,7 @@ class Collection
         $skuCollection = new SkuCollection();
         if ($product->getTypeId() === ConfigurableType::TYPE_CODE) {
             $attributes = $this->configurableType->getConfigurableAttributes($product);
-            $usedProducts = $this->nostoProductRepository->getSkus($product, true);
+            $usedProducts = $this->nostoProductRepository->getSkus($product);
             /** @var Product $product */
             foreach ($usedProducts as $product) {
                 if (!$product->isDisabled()) {

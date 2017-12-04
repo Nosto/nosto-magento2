@@ -80,6 +80,8 @@ class Cache extends AbstractHelper
 
     /**
      * Invalidate full page cache
+     *
+     * @suppress PhanDeprecatedFunction
      */
     public function invalidatePageCache()
     {

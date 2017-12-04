@@ -45,7 +45,6 @@ use Magento\Framework\Api\FilterBuilder;
 use Magento\Framework\Api\Search\FilterGroupBuilder;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable as ConfigurableType;
-use Magento\Framework\Stdlib\DateTime\DateTime;
 use Nosto\Tagging\Helper\Data;
 
 /**
@@ -118,10 +117,11 @@ class Repository
      * Gets products that have scheduled pricing active
      *
      * @return ProductSearchResultsInterface
+     * @suppress PhanTypeMismatchArgument
      */
     public function getWithActivePricingSchedule()
     {
-        $today = DateTime::gmtDate();
+        $today = new \DateTime('now'); // @codingStandardsIgnoreLine
         $filterEndDateGreater = $this->filterBuilder
             ->setField('special_to_date')
             ->setValue($today->format('Y-m-d ' . '00:00:00'))
@@ -129,7 +129,7 @@ class Repository
             ->create();
         $filterEndDateNotSet = $this->filterBuilder
             ->setField('special_to_date')
-            ->setValue('null')
+            ->setValue(['null' => true])
             ->setConditionType('eq')
             ->create();
 
@@ -171,13 +171,13 @@ class Repository
      * Gets the variations / SKUs of configurable product
      *
      * @param Product $product
-    * @return array
+     * @return array
      */
     public function getSkus(Product $product)
     {
         $skuIds = $this->configurableType->getChildrenIds($product->getId());
         $products = [];
-        foreach ($skuIds as $batch=>$skus) {
+        foreach ($skuIds as $batch => $skus) {
             if (is_array($skus)) {
                 foreach ($skus as $skuId) {
                     // We need to load these one by one in order to get correct stock / availability info
@@ -187,7 +187,7 @@ class Repository
         }
 
         return $products;
-   }
+    }
 
     /**
      * Get parent ids from cache. Return null if the cache is not available

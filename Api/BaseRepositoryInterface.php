@@ -34,24 +34,18 @@
  *
  */
 
-namespace Nosto\Tagging\Api\Data;
+namespace Nosto\Tagging\Api;
 
 use Magento\Framework\Data\SearchResultInterface;
+use Magento\Framework\Api\SearchCriteriaInterface;
 
-interface ProductQueueSearchResultsInterface extends SearchResultInterface
+interface BaseRepositoryInterface
 {
     /**
-     * Get items from search results
+     * Get search result
      *
-     * @return ProductQueueInterface[]
+     * @param SearchCriteriaInterface $searchCriteria
+     * @return SearchResultInterface
      */
-    public function getItems();
-
-    /**
-     * Set items for search results
-     *
-     * @param ProductQueueInterface[] $items
-     * @return $this
-     */
-    public function setItems(array $items);
+    public function search(SearchCriteriaInterface $searchCriteria);
 }

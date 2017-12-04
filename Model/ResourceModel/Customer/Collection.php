@@ -48,7 +48,7 @@ class Collection extends AbstractCollection
     public function _construct()
     {
         $this->_init(
-            'Nosto\Tagging\Model\Customer',
+            'Nosto\Tagging\Model\Customer\Customer',
             'Nosto\Tagging\Model\ResourceModel\Customer'
         );
     }
