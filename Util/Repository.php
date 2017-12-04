@@ -38,6 +38,7 @@ namespace Nosto\Tagging\Util;
 
 use Magento\Framework\Api\SearchCriteriaInterface;
 use Magento\Framework\App\ResourceConnection\SourceProviderInterface;
+use Magento\Framework\Data\AbstractSearchResult;
 use Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection;
 use Magento\Framework\Data\SearchResultInterface;
 
@@ -68,14 +69,14 @@ class Repository
      *
      * @param AbstractCollection $collection
      * @param SearchCriteriaInterface $searchCriteria
-     * @param SearchResultInterface $searchResults
+     * @param AbstractSearchResult $searchResults
      *
      * @return SearchResultInterface
      */
     public static function search(
         AbstractCollection $collection,
         SearchCriteriaInterface $searchCriteria,
-        SearchResultInterface $searchResults
+        AbstractSearchResult $searchResults
     ) {
         self::addFiltersToCollection($searchCriteria, $collection);
         $collection->load();
