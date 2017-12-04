@@ -44,6 +44,7 @@ use Magento\Framework\App\Helper\Context;
 use Magento\Framework\UrlInterface;
 use Magento\Store\Model\Store;
 use Nosto\Request\Http\HttpRequest;
+use Nosto\Tagging\Helper\Data as NostoDataHelper;
 
 /**
  * Url helper class for common URL related tasks.
@@ -126,6 +127,7 @@ class Url extends AbstractHelper
     private $categoryCollectionFactory;
     private $productVisibility;
     private $urlBuilder;
+    private $nostoDataHelper;
 
     /** @noinspection PhpUndefinedClassInspection */
     /**
@@ -136,6 +138,7 @@ class Url extends AbstractHelper
      * @param CategoryCollectionFactory $categoryCollectionFactory auto generated category collection factory.
      * @param Visibility $productVisibility product visibility.
      * @param \Magento\Framework\Url $urlBuilder frontend URL builder.
+     * @param Data $nostoDataHelper
      */
     public function __construct(
         Context $context,
@@ -144,7 +147,8 @@ class Url extends AbstractHelper
         /** @noinspection PhpUndefinedClassInspection */
         CategoryCollectionFactory $categoryCollectionFactory,
         Visibility $productVisibility,
-        \Magento\Framework\Url $urlBuilder
+        \Magento\Framework\Url $urlBuilder,
+        NostoDataHelper $nostoDataHelper
     ) {
         parent::__construct($context);
 
@@ -152,6 +156,7 @@ class Url extends AbstractHelper
         $this->categoryCollectionFactory = $categoryCollectionFactory;
         $this->productVisibility = $productVisibility;
         $this->urlBuilder = $urlBuilder;
+        $this->nostoDataHelper = $nostoDataHelper;
     }
 
     /**
@@ -180,7 +185,7 @@ class Url extends AbstractHelper
             $url = $product->getUrlInStore(
                 [
                     self::MAGENTO_URL_OPTION_NOSID => true,
-                    self::MAGENTO_URL_OPTION_SCOPE_TO_URL => true,
+                    self::MAGENTO_URL_OPTION_SCOPE_TO_URL => $this->nostoDataHelper->getStoreCodeToUrl($store),
                     self::MAGENTO_URL_OPTION_SCOPE => $store->getCode(),
                 ]
             );
@@ -213,6 +218,7 @@ class Url extends AbstractHelper
      * @param Store $store the store to get the url for.
      * @return string the url.
      *
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function getPreviewUrlCategory(Store $store)
     {
@@ -266,7 +272,7 @@ class Url extends AbstractHelper
             self::MAGENTO_PATH_SEARCH_RESULT,
             [
                 self::MAGENTO_URL_OPTION_NOSID => true,
-                self::MAGENTO_URL_OPTION_SCOPE_TO_URL => true,
+                self::MAGENTO_URL_OPTION_SCOPE_TO_URL => $this->nostoDataHelper->getStoreCodeToUrl($store),
                 self::MAGENTO_URL_OPTION_SCOPE => $store->getCode(),
             ]
         );
@@ -287,7 +293,7 @@ class Url extends AbstractHelper
             self::MAGENTO_PATH_CART,
             [
                 self::MAGENTO_URL_OPTION_NOSID => true,
-                self::MAGENTO_URL_OPTION_SCOPE_TO_URL => true,
+                self::MAGENTO_URL_OPTION_SCOPE_TO_URL => $this->nostoDataHelper->getStoreCodeToUrl($store),
                 self::MAGENTO_URL_OPTION_SCOPE => $store->getCode(),
             ]
         );
@@ -307,7 +313,7 @@ class Url extends AbstractHelper
             '',
             [
                 self::MAGENTO_URL_OPTION_NOSID => true,
-                self::MAGENTO_URL_OPTION_SCOPE_TO_URL => true,
+                self::MAGENTO_URL_OPTION_SCOPE_TO_URL => $this->nostoDataHelper->getStoreCodeToUrl($store),
                 self::MAGENTO_URL_OPTION_SCOPE => $store->getCode(),
             ]
         );
@@ -327,7 +333,7 @@ class Url extends AbstractHelper
         $zendHttp = \Zend_Uri_Http::fromString($currentUrl);
         $urlParameters = $zendHttp->getQueryAsArray();
 
-        $defaultParams = self::getUrlOptionsWithNoSid($store);
+        $defaultParams = $this->getUrlOptionsWithNoSid($store);
         $url = $store->getUrl(
             self::MAGENTO_PATH_CART,
             $defaultParams
@@ -351,10 +357,10 @@ class Url extends AbstractHelper
      *
      * @return array
      */
-    public static function getUrlOptionsWithNoSid(Store $store)
+    public function getUrlOptionsWithNoSid(Store $store)
     {
         $params = [
-            self::MAGENTO_URL_OPTION_SCOPE_TO_URL => true,
+            self::MAGENTO_URL_OPTION_SCOPE_TO_URL => $this->nostoDataHelper->getStoreCodeToUrl($store),
             self::MAGENTO_URL_OPTION_NOSID => true,
             self::MAGENTO_URL_OPTION_LINK_TYPE => self::$urlType,
             self::MAGENTO_URL_OPTION_SCOPE => $store->getCode(),
