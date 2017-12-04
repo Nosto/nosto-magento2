@@ -34,39 +34,22 @@
  *
  */
 
-namespace Nosto\Tagging\Model;
+namespace Nosto\Tagging\Util;
 
 use Magento\Framework\Api\SearchCriteriaInterface;
 use Magento\Framework\App\ResourceConnection\SourceProviderInterface;
 use Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection;
 use Magento\Framework\Data\SearchResultInterface;
 
-trait RepositoryTrait
+class Repository
 {
     /**
-     * @inheritdoc
+     * Adds filters to given collection
      *
-     * @suppress PhanUndeclaredProperty
+     * @param SearchCriteriaInterface $searchCriteria
+     * @param SourceProviderInterface $collection
      */
-    public function search(SearchCriteriaInterface $searchCriteria)
-    {
-        /* @var AbstractCollection $collection */
-        $collection = $this->objectCollectionFactory->create();
-        $this->addFiltersToCollection($searchCriteria, $collection);
-        $collection->load();
-        /* @var SearchResultInterface $searchResults */
-        $searchResults = $this->objectSearchResultsFactory->create();
-        $searchResults->setSearchCriteria($searchCriteria);
-        $searchResults->setItems($collection->getItems());
-        $searchResults->setTotalCount($collection->getSize());
-
-        return $searchResults;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    private function addFiltersToCollection(
+    public static function addFiltersToCollection(
         SearchCriteriaInterface $searchCriteria,
         SourceProviderInterface $collection
     ) {
@@ -78,5 +61,28 @@ trait RepositoryTrait
             }
             $collection->addFieldToFilter($fields, $conditions);
         }
+    }
+
+    /**
+     * Performs search
+     *
+     * @param AbstractCollection $collection
+     * @param SearchCriteriaInterface $searchCriteria
+     * @param SearchResultInterface $searchResults
+     *
+     * @return SearchResultInterface
+     */
+    public static function search(
+        AbstractCollection $collection,
+        SearchCriteriaInterface $searchCriteria,
+        SearchResultInterface $searchResults
+    ) {
+        self::addFiltersToCollection($searchCriteria, $collection);
+        $collection->load();
+        $searchResults->setSearchCriteria($searchCriteria);
+        $searchResults->setItems($collection->getItems());
+        $searchResults->setTotalCount($collection->getSize());
+
+        return $searchResults;
     }
 }

@@ -48,11 +48,4 @@ interface BaseRepositoryInterface
      * @return SearchResultInterface
      */
     public function search(SearchCriteriaInterface $searchCriteria);
-
-    /**
-     * Returns the primary key / identity attribute of an object the repository is handling
-     *
-     * @return string
-     */
-    public function getIdentityKey();
 }

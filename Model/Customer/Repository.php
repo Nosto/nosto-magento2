@@ -37,20 +37,25 @@
 namespace Nosto\Tagging\Model\Customer;
 
 use Magento\Framework\Api\SearchCriteriaBuilder;
+use Magento\Framework\Api\SearchCriteriaInterface;
 use Nosto\Tagging\Api\CustomerRepositoryInterface;
 use Nosto\Tagging\Api\Data\CustomerInterface;
 use Nosto\Tagging\Model\RepositoryTrait;
 use Nosto\Tagging\Model\ResourceModel\Customer as CustomerResource;
 use Nosto\Tagging\Model\ResourceModel\Customer\CollectionFactory as CustomerCollectionFactory;
+use Nosto\Tagging\Util\Repository as RepositoryUtil;
+use Nosto\Tagging\Model\Customer\CustomerSearchResults;
 
+/**
+ * Class Repository
+ * @package Nosto\Tagging\Model\Customer
+ */
 class Repository implements CustomerRepositoryInterface
 {
-    use RepositoryTrait;
-
     private $searchCriteriaBuilder;
-    private $objectCollectionFactory;
-    private $objectSearchResultsFactory;
-    private $objectResource;
+    private $customerCollectionFactory;
+    private $customerSearchResultsFactory;
+    private $customerResource;
 
     /**
      * Customer repository constructor
@@ -66,9 +71,9 @@ class Repository implements CustomerRepositoryInterface
         CustomerSearchResultsFactory $customerSearchResultsFactory,
         SearchCriteriaBuilder $searchCriteriaBuilder
     ) {
-        $this->objectSearchResultsFactory = $customerSearchResultsFactory;
-        $this->objectCollectionFactory = $customerCollectionFactory;
-        $this->objectResource = $customerResource;
+        $this->customerSearchResultsFactory = $customerSearchResultsFactory;
+        $this->customerCollectionFactory = $customerCollectionFactory;
+        $this->customerResource = $customerResource;
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;
     }
 
@@ -85,17 +90,9 @@ class Repository implements CustomerRepositoryInterface
      */
     public function save(CustomerInterface $customer)
     {
-        $this->objectResource->save($customer);
+        $this->customerResource->save($customer);
 
         return $customer;
-    }
-
-    /**
-     * @return string
-     */
-    public function getIdentityKey()
-    {
-        return CustomerInterface::CUSTOMER_ID;
     }
 
     /**
@@ -146,5 +143,22 @@ class Repository implements CustomerRepositoryInterface
         }
 
         return null;
+    }
+
+    /**
+     * @param SearchCriteriaInterface $searchCriteria
+     *
+     * @return CustomerSearchResults
+     */
+    public function search(SearchCriteriaInterface $searchCriteria)
+    {
+        $collection = $this->customerCollectionFactory->create();
+        $searchResults = $this->customerSearchResultsFactory->create();
+
+        return RepositoryUtil::search(
+            $collection,
+            $searchCriteria,
+            $searchResults
+        );
     }
 }

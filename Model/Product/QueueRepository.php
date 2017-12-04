@@ -37,6 +37,7 @@
 namespace Nosto\Tagging\Model\Product;
 
 use Magento\Framework\Api\SearchCriteriaBuilder;
+use Magento\Framework\Api\SearchCriteriaInterface;
 use Magento\Framework\Model\AbstractModel;
 use Nosto\Tagging\Api\Data\ProductQueueInterface;
 use Nosto\Tagging\Api\Data\ProductQueueSearchResultsInterface;
@@ -46,17 +47,17 @@ use Nosto\Tagging\Model\ResourceModel\Product\Queue as QueueResource;
 use Nosto\Tagging\Model\ResourceModel\Product\Queue\Collection as QueueCollection;
 use Nosto\Tagging\Model\ResourceModel\Product\Queue\CollectionFactory as QueueCollectionFactory;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
+use Nosto\Tagging\Util\Repository as RepositoryUtil;
+use Nosto\Tagging\Model\Product\QueueSearchResults;
 
 class QueueRepository implements ProductQueueRepositoryInterface
 {
-    use RepositoryTrait;
-
     private $searchCriteriaBuilder;
     private $logger;
-    private $objectFactory;
-    private $objectCollectionFactory;
-    private $objectSearchResultsFactory;
-    private $objectResource;
+    private $queueFactory;
+    private $queueCollectionFactory;
+    private $queueSearchResultsFactory;
+    private $queueResource;
 
     /**
      * QueueRepository constructor.
@@ -76,10 +77,10 @@ class QueueRepository implements ProductQueueRepositoryInterface
         SearchCriteriaBuilder $searchCriteriaBuilder,
         NostoLogger $logger
     ) {
-        $this->objectResource = $queueResource;
-        $this->objectCollectionFactory = $queueCollectionFactory;
-        $this->objectSearchResultsFactory = $queueSearchResultsFactory;
-        $this->objectFactory = $queueFactory;
+        $this->queueResource = $queueResource;
+        $this->queueCollectionFactory = $queueCollectionFactory;
+        $this->queueSearchResultsFactory = $queueSearchResultsFactory;
+        $this->queueFactory = $queueFactory;
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;
         $this->logger = $logger;
     }
@@ -102,17 +103,9 @@ class QueueRepository implements ProductQueueRepositoryInterface
         }
         /** @noinspection PhpParamsInspection */
         /** @var AbstractModel $productQueue */
-        $queue = $this->objectResource->save($productQueue);
+        $queue = $this->queueResource->save($productQueue);
 
         return $queue;
-    }
-
-    /**
-     * @return string
-     */
-    public function getIdentityKey()
-    {
-        return ProductQueueInterface::ID;
     }
 
     /**
@@ -135,7 +128,8 @@ class QueueRepository implements ProductQueueRepositoryInterface
      * Returns all entries by product ids
      *
      * @param int $productId
-     * @return ProductQueueSearchResultsInterface
+     *
+     * @return QueueSearchResults
      */
     public function getByProductId($productId)
     {
@@ -156,7 +150,7 @@ class QueueRepository implements ProductQueueRepositoryInterface
     public function delete(ProductQueueInterface $productQueue)
     {
         try {
-            $this->objectResource->delete($productQueue);
+            $this->queueResource->delete($productQueue);
         } catch (\Exception $e) {
             $this->logger->exception($e);
         }
@@ -182,17 +176,17 @@ class QueueRepository implements ProductQueueRepositoryInterface
      *
      * @param int $pageSize
      *
-     * @return ProductQueueSearchResultsInterface
+     * @return QueueSearchResults
      */
     public function getFirstPage($pageSize)
     {
         /* @var QueueCollection $collection */
-        $collection = $this->objectCollectionFactory->create();
+        $collection = $this->queueCollectionFactory->create();
         $collection->setPageSize($pageSize);
         $collection->setCurPage(1);
         $collection->load();
         /* @var ProductQueueSearchResultsInterface $searchResults */
-        $searchResults = $this->objectSearchResultsFactory->create();
+        $searchResults = $this->queueSearchResultsFactory->create();
         $searchResults->setItems($collection->getItems());
         $searchResults->setTotalCount($collection->getSize());
 
@@ -202,18 +196,33 @@ class QueueRepository implements ProductQueueRepositoryInterface
     /**
      * Returns all entries in product queue
      *
-     * @return ProductQueueSearchResultsInterface
+     * @return QueueSearchResults
      */
     public function getAll()
     {
-        /* @var QueueCollection $collection */
-        $collection = $this->objectCollectionFactory->create();
+        $collection = $this->queueCollectionFactory->create();
         $collection->load();
-        /* @var ProductQueueSearchResultsInterface $searchResults */
-        $searchResults = $this->objectSearchResultsFactory->create();
+        $searchResults = $this->queueSearchResultsFactory->create();
         $searchResults->setItems($collection->getItems());
         $searchResults->setTotalCount($collection->getSize());
 
         return $searchResults;
+    }
+
+    /**
+     * @param SearchCriteriaInterface $searchCriteria
+     *
+     * @return QueueSearchResults
+     */
+    public function search(SearchCriteriaInterface $searchCriteria)
+    {
+        $collection = $this->queueCollectionFactory->create();
+        $searchResults = $this->queueSearchResultsFactory->create();
+
+        return RepositoryUtil::search(
+            $collection,
+            $searchCriteria,
+            $searchResults
+        );
     }
 }
