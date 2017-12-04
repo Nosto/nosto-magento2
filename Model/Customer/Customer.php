@@ -34,7 +34,7 @@
  *
  */
 
-namespace Nosto\Tagging\Model;
+namespace Nosto\Tagging\Model\Customer;
 
 use Magento\Framework\Model\AbstractModel;
 use Nosto\Tagging\Api\Data\CustomerInterface;

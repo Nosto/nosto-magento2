@@ -78,6 +78,7 @@ class Collection
      * @param Store $store
      * @param $id
      * @return OrderCollection
+     * @throws NostoException
      */
     public function buildSingle(Store $store, $id)
     {
@@ -91,6 +92,7 @@ class Collection
      * @param int $limit
      * @param int $offset
      * @return OrderCollection
+     * @throws NostoException
      */
     public function buildMany(Store $store, $limit = 100, $offset = 0)
     {

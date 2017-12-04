@@ -1,5 +1,13 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 2.4.0
+* Add CI definitions
+* Fix doc blocks & coding standard issues
+* Clear page cache and layout cache after Nosto account is installed, reconnected or removed
+* Introduce repository for Nosto Customer
+* Fix infinite redirect loop on Nosto admin page
+* Rename price helper methods to avoid confusion whether the taxes are included or not
+
 ### 2.3.10
 * Fix the issue with sku availability being always in stock
 

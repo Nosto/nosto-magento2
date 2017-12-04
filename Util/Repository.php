@@ -34,24 +34,55 @@
  *
  */
 
-namespace Nosto\Tagging\Api\Data;
+namespace Nosto\Tagging\Util;
 
-use Magento\Framework\Data\SearchResultInterface;
+use Magento\Framework\Api\SearchCriteriaInterface;
+use Magento\Framework\App\ResourceConnection\SourceProviderInterface;
+use Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection;
+use Magento\Framework\Api\Search\SearchResult;
 
-interface ProductQueueSearchResultsInterface extends SearchResultInterface
+class Repository
 {
     /**
-     * Get items from search results
+     * Adds filters to given collection
      *
-     * @return ProductQueueInterface[]
+     * @param SearchCriteriaInterface $searchCriteria
+     * @param SourceProviderInterface $collection
      */
-    public function getItems();
+    public static function addFiltersToCollection(
+        SearchCriteriaInterface $searchCriteria,
+        SourceProviderInterface $collection
+    ) {
+        foreach ($searchCriteria->getFilterGroups() as $filterGroup) {
+            $fields = $conditions = [];
+            foreach ($filterGroup->getFilters() as $filter) {
+                $fields[] = $filter->getField();
+                $conditions[] = [$filter->getConditionType() => $filter->getValue()];
+            }
+            $collection->addFieldToFilter($fields, $conditions);
+        }
+    }
 
     /**
-     * Set items for search results
+     * Performs search
      *
-     * @param ProductQueueInterface[] $items
-     * @return $this
+     * @param AbstractCollection $collection
+     * @param SearchCriteriaInterface $searchCriteria
+     * @param SearchResult $searchResults
+     *
+     * @return SearchResult
      */
-    public function setItems(array $items);
+    public static function search(
+        AbstractCollection $collection,
+        SearchCriteriaInterface $searchCriteria,
+        SearchResult $searchResults
+    ) {
+        self::addFiltersToCollection($searchCriteria, $collection);
+        $collection->load();
+        $searchResults->setSearchCriteria($searchCriteria);
+        $searchResults->setItems($collection->getItems());
+        $searchResults->setTotalCount($collection->getSize());
+
+        return $searchResults;
+    }
 }
