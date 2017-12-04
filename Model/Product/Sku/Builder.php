@@ -97,14 +97,14 @@ class Builder
             $nostoSku->setAvailability($product->isAvailable() ? 'InStock' : 'OutOfStock');
             $nostoSku->setImageUrl($this->buildImageUrl($product, $store));
             $price = $this->nostoCurrencyHelper->convertToTaggingPrice(
-                $this->nostoPriceHelper->getProductFinalPriceInclTax(
+                $this->nostoPriceHelper->getProductFinalDisplayPrice(
                     $product
                 ),
                 $store
             );
             $nostoSku->setPrice($price);
             $listPrice = $this->nostoCurrencyHelper->convertToTaggingPrice(
-                $this->nostoPriceHelper->getProductPriceInclTax(
+                $this->nostoPriceHelper->getProductDisplayPrice(
                     $product
                 ),
                 $store

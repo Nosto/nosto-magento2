@@ -42,6 +42,7 @@ use Nosto\Helper\IframeHelper;
 use Nosto\Nosto;
 use Nosto\NostoException;
 use Nosto\Operation\AccountSignup;
+use Nosto\Tagging\Helper\Cache as NostoHelperCache;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Currency as NostoCurrencyHelper;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
@@ -65,6 +66,7 @@ class Create extends Base
     private $nostoSignupBuilder;
     private $logger;
     private $nostoHelperScope;
+    private $nostoHelperCache;
 
     /**
      * @param Context $context
@@ -78,6 +80,7 @@ class Create extends Base
      * @param NostoLogger $logger
      * @param NostoRatesService $nostoRatesService
      * @param NostoCurrencyHelper $nostoCurrencyHelper
+     * @param NostoHelperCache $nostoHelperCache
      * @SuppressWarnings(PHPMD.ExcessiveParameterList)
      */
     public function __construct(
@@ -91,7 +94,8 @@ class Create extends Base
         Json $result,
         NostoLogger $logger,
         NostoRatesService $nostoRatesService,
-        NostoCurrencyHelper $nostoCurrencyHelper
+        NostoCurrencyHelper $nostoCurrencyHelper,
+        NostoHelperCache $nostoHelperCache
     ) {
         parent::__construct($context);
 
@@ -105,6 +109,7 @@ class Create extends Base
         $this->nostoRatesService = $nostoRatesService;
         $this->nostoCurrencyHelper = $nostoCurrencyHelper;
         $this->nostoHelperScope = $nostoHelperScope;
+        $this->nostoHelperCache = $nostoHelperCache;
     }
 
     /**
@@ -165,6 +170,10 @@ class Create extends Base
                             $this->logger->exception($e);
                         }
                     }
+
+                    //invalidate page cache and layout cache
+                    $this->nostoHelperCache->invalidatePageCache();
+                    $this->nostoHelperCache->invalidateLayoutCache();
                 }
             } catch (NostoException $e) {
                 $this->logger->exception($e);

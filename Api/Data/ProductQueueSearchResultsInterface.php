@@ -41,14 +41,14 @@ use Magento\Framework\Data\SearchResultInterface;
 interface ProductQueueSearchResultsInterface extends SearchResultInterface
 {
     /**
-     * Get attributes list.
+     * Get items from search results
      *
      * @return ProductQueueInterface[]
      */
     public function getItems();
 
     /**
-     * Set attributes list.
+     * Set items for search results
      *
      * @param ProductQueueInterface[] $items
      * @return $this

@@ -148,7 +148,7 @@ class Builder
                 }
                 $nostoItem->loadSpecialItemData(
                     $this->buildDiscountRuleDescription($order),
-                    $discount,
+                    $discount === null ? 0 : $discount,
                     $order->getOrderCurrencyCode()
                 );
                 $nostoOrder->addPurchasedItems($nostoItem);
@@ -162,7 +162,7 @@ class Builder
                 }
                 $nostoItem->loadSpecialItemData(
                     'Shipping and handling',
-                    $shippingInclTax,
+                    $shippingInclTax === null ? 0 : $shippingInclTax,
                     $order->getOrderCurrencyCode()
                 );
                 $nostoOrder->addPurchasedItems($nostoItem);

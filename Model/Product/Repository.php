@@ -117,10 +117,11 @@ class Repository
      * Gets products that have scheduled pricing active
      *
      * @return ProductSearchResultsInterface
+     * @suppress PhanTypeMismatchArgument
      */
     public function getWithActivePricingSchedule()
     {
-        $today = new \DateTime("now");
+        $today = new \DateTime('now'); // @codingStandardsIgnoreLine
         $filterEndDateGreater = $this->filterBuilder
             ->setField('special_to_date')
             ->setValue($today->format('Y-m-d ' . '00:00:00'))
@@ -129,7 +130,7 @@ class Repository
         $filterEndDateNotSet = $this->filterBuilder
             ->setField('special_to_date')
             ->setValue(['null' => true])
-            ->setConditionType('gt')
+            ->setConditionType('eq')
             ->create();
 
         $filterGroup = $this->filterGroupBuilder->setFilters([$filterEndDateGreater, $filterEndDateNotSet])->create();
@@ -148,11 +149,11 @@ class Repository
      *
      * @param Product $product
      * @return string[]|null
+     * @suppress PhanTypeMismatchReturn
      */
     public function resolveParentProductIds(Product $product)
     {
         if ($this->getParentIdsFromCache($product)) {
-
             return $this->getParentIdsFromCache($product);
         }
         $parentProductIds = null;
@@ -170,13 +171,13 @@ class Repository
      * Gets the variations / SKUs of configurable product
      *
      * @param Product $product
-    * @return array
+     * @return array
      */
     public function getSkus(Product $product)
     {
         $skuIds = $this->configurableType->getChildrenIds($product->getId());
         $products = [];
-        foreach ($skuIds as $batch=>$skus) {
+        foreach ($skuIds as $batch => $skus) {
             if (is_array($skus)) {
                 foreach ($skus as $skuId) {
                     // We need to load these one by one in order to get correct stock / availability info
@@ -186,7 +187,7 @@ class Repository
         }
 
         return $products;
-   }
+    }
 
     /**
      * Get parent ids from cache. Return null if the cache is not available
@@ -197,7 +198,6 @@ class Repository
     private function getParentIdsFromCache(Product $product)
     {
         if (isset($this->parentProductIdCache[$product->getId()])) {
-
             return $this->parentProductIdCache[$product->getId()];
         }
 

@@ -46,6 +46,11 @@ use Magento\Catalog\Model\ResourceModel\Product\Attribute\Collection;
  */
 class Brand extends Selector
 {
+
+    /**
+     * @param Collection $collection
+     * @suppress PhanTypeMismatchArgument
+     */
     public function filterCollection(Collection $collection)
     {
         /** @noinspection PhpParamsInspection */

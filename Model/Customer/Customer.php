@@ -34,7 +34,7 @@
  *
  */
 
-namespace Nosto\Tagging\Model;
+namespace Nosto\Tagging\Model\Customer;
 
 use Magento\Framework\Model\AbstractModel;
 use Nosto\Tagging\Api\Data\CustomerInterface;
@@ -88,7 +88,6 @@ class Customer extends AbstractModel implements CustomerInterface
 
     /**
      * @inheritdoc
-     * @suppress PhanParamSignatureMismatch
      */
     public function setCustomerId($customerId)
     {
@@ -97,7 +96,6 @@ class Customer extends AbstractModel implements CustomerInterface
 
     /**
      * @inheritdoc
-     * @suppress PhanParamSignatureMismatch
      */
     public function setQuoteId($quoteId)
     {
@@ -106,7 +104,6 @@ class Customer extends AbstractModel implements CustomerInterface
 
     /**
      * @inheritdoc
-     * @suppress PhanParamSignatureMismatch
      */
     public function setNostoId($nostoId)
     {

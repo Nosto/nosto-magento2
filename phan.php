@@ -47,12 +47,16 @@ return [
         'Model',
         'Helper',
         'Observer',
-        '.phan/stubs',
+        'Logger',
+        'Util',
         'vendor/vlucas',
         'vendor/nosto/php-sdk',
         'vendor/phpseclib',
         'vendor/magento',
-        'vendor/psr'
+        'vendor/monolog',
+        'vendor/zendframework',
+        'vendor/psr',
+        'magento/generated'
     ],
     'exclude_file_list' => [
         'vendor/magento/zendframework1/library/Zend/Validate/Hostname/Biz.php',
@@ -62,7 +66,7 @@ return [
     ],
     "exclude_analysis_directory_list" => [
         'vendor/',
-        '.phan/stubs'
+        'magento/'
     ],
     'suppress_issue_types' => [
         'PhanParamSignatureMismatch',

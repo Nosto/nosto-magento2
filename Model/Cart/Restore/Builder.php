@@ -41,10 +41,12 @@ use Magento\Quote\Model\Quote;
 use Magento\Store\Model\Store;
 use Magento\Framework\Stdlib\CookieManagerInterface;
 use Magento\Framework\Stdlib\DateTime\DateTime;
-use Nosto\Tagging\Model\Customer as NostoCustomer;
-use Nosto\Tagging\Model\CustomerFactory as NostoCustomerFactory;
+use Nosto\Tagging\Api\Data\CustomerInterface;
+use Nosto\Tagging\Model\Customer\Customer as NostoCustomer;
+use Nosto\Tagging\Model\Customer\CustomerFactory as NostoCustomerFactory;
 use Nosto\Tagging\Helper\Url as NostoHelperUrl;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
+use Nosto\Tagging\Model\Customer\Repository as NostoCustomerRepository;
 
 class Builder
 {
@@ -54,6 +56,7 @@ class Builder
     private $encryptor;
     private $nostoCustomerFactory;
     private $urlHelper;
+    private $nostoCustomerRepository;
 
     /**
      * Builder constructor.
@@ -61,6 +64,7 @@ class Builder
      * @param CookieManagerInterface $cookieManager
      * @param EncryptorInterface $encryptor
      * @param NostoCustomerFactory $nostoCustomerFactory
+     * @param NostoCustomerRepository $nostoCustomerRepository
      * @param NostoHelperUrl $urlHelper
      * @param DateTime $date
      */
@@ -69,6 +73,7 @@ class Builder
         CookieManagerInterface $cookieManager,
         EncryptorInterface $encryptor,
         NostoCustomerFactory $nostoCustomerFactory,
+        NostoCustomerRepository $nostoCustomerRepository,
         NostoHelperUrl $urlHelper,
         DateTime $date
     ) {
@@ -78,6 +83,7 @@ class Builder
         $this->date = $date;
         $this->nostoCustomerFactory = $nostoCustomerFactory;
         $this->urlHelper = $urlHelper;
+        $this->nostoCustomerRepository = $nostoCustomerRepository;
     }
 
     /**
@@ -109,19 +115,14 @@ class Builder
             return null;
         }
 
-        $quoteId = $quote->getId();
-        /** @noinspection PhpUndefinedMethodInspection */
-        $customerQuery = $this->nostoCustomerFactory
-            ->create()
-            ->getCollection()
-            ->addFieldToFilter(NostoCustomer::QUOTE_ID, $quoteId)
-            ->addFieldToFilter(NostoCustomer::NOSTO_ID, $nostoCustomerId)
-            ->setPageSize(1)
-            ->setCurPage(1);
+        $nostoCustomer = $this->nostoCustomerRepository->getOneByNostoIdAndQuoteId(
+            $nostoCustomerId,
+            $quote->getId()
+        );
 
-        /** @var NostoCustomer $nostoCustomer */
-        $nostoCustomer = $customerQuery->getFirstItem(); // @codingStandardsIgnoreLine
-        if ($nostoCustomer->hasData(NostoCustomer::CUSTOMER_ID)) {
+        if ($nostoCustomer instanceof CustomerInterface
+            && $nostoCustomer->getCustomerId()
+        ) {
             if ($nostoCustomer->getRestoreCartHash() === null) {
                 $nostoCustomer->setRestoreCartHash($this->generateRestoreCartHash());
             }
@@ -130,15 +131,14 @@ class Builder
             /** @noinspection PhpUndefinedMethodInspection */
             $nostoCustomer = $this->nostoCustomerFactory->create();
             /** @noinspection PhpUndefinedMethodInspection */
-            $nostoCustomer->setQuoteId($quoteId);
+            $nostoCustomer->setQuoteId($quote->getId());
             /** @noinspection PhpUndefinedMethodInspection */
             $nostoCustomer->setNostoId($nostoCustomerId);
             $nostoCustomer->setCreatedAt(self::getNow());
             $nostoCustomer->setRestoreCartHash($this->generateRestoreCartHash());
         }
         try {
-            /** @noinspection PhpDeprecationInspection */
-            $nostoCustomer->save();
+            $nostoCustomer = $this->nostoCustomerRepository->save($nostoCustomer);
 
             return $nostoCustomer;
         } catch (\Exception $e) {

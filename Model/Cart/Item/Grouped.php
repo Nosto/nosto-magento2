@@ -53,7 +53,7 @@ class Grouped
      * their name.
      *
      * @param Item $item the ordered item
-     * @return string the name of the product
+     * @return string|null the name of the product
      */
     public static function buildItemName(Item $item)
     {
@@ -65,7 +65,7 @@ class Grouped
             $parent = $objectManager->get(Product::class)->load($config['product_id']); // @codingStandardsIgnoreLine
             $parentName = $parent->getName();
             if (!empty($parentName)) {
-                $name = $parentName . ' - ' . $name;
+                return $parentName . ' - ' . $name;
             }
         }
 

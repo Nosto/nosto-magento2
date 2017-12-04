@@ -85,6 +85,7 @@ class Collection
      * @param Store $store
      * @param $id
      * @return ProductCollection
+     * @throws NostoException
      */
     public function buildSingle(Store $store, $id)
     {
@@ -98,6 +99,7 @@ class Collection
      * @param int $limit
      * @param int $offset
      * @return ProductCollection
+     * @throws NostoException
      */
     public function buildMany(Store $store, $limit = 100, $offset = 0)
     {
@@ -108,6 +110,12 @@ class Collection
         return $this->build($store, $collection);
     }
 
+    /**
+     * @param Store $store
+     * @param $collection
+     * @return ProductCollection
+     * @throws NostoException
+     */
     private function build(Store $store, $collection)
     {
         /** @var \Magento\Catalog\Model\ResourceModel\Product\Collection $collection */

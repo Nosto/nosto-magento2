@@ -139,14 +139,14 @@ class Builder
             $nostoProduct->setName($product->getName());
             $nostoProduct->setImageUrl($this->buildImageUrl($product, $store));
             $price = $this->nostoCurrencyHelper->convertToTaggingPrice(
-                $this->nostoPriceHelper->getProductFinalPriceInclTax(
+                $this->nostoPriceHelper->getProductFinalDisplayPrice(
                     $product
                 ),
                 $store
             );
             $nostoProduct->setPrice($price);
             $listPrice = $this->nostoCurrencyHelper->convertToTaggingPrice(
-                $this->nostoPriceHelper->getProductPriceInclTax(
+                $this->nostoPriceHelper->getProductDisplayPrice(
                     $product
                 ),
                 $store

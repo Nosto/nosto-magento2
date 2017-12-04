@@ -51,7 +51,7 @@ use Nosto\Tagging\Model\Category\Builder as NostoCategoryBuilder;
 class Category extends Template
 {
     use TaggingTrait {
-        TaggingTrait::__construct as taggingConstruct;
+        TaggingTrait::__construct as taggingConstruct; // @codingStandardsIgnoreLine
     }
 
     private $registry;

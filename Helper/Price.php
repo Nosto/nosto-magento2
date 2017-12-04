@@ -77,7 +77,7 @@ class Price extends AbstractHelper
      * @param Product $product the product model.
      * @return float
      */
-    public function getProductPriceInclTax(Product $product)
+    public function getProductDisplayPrice(Product $product)
     {
         $price = $this->getProductPrice($product, false, true);
 
@@ -94,7 +94,7 @@ class Price extends AbstractHelper
      * @suppress PhanTypeMismatchArgument
      * @suppress PhanDeprecatedFunction
      */
-    public function getProductPrice(
+    public function getProductPrice( // @codingStandardsIgnoreLine
         Product $product,
         $finalPrice = false,
         $inclTax = true
@@ -121,10 +121,10 @@ class Price extends AbstractHelper
                                 try {
                                     $skuId = reset($skuIds);
                                     /** @noinspection PhpDeprecationInspection */
-                                    $sku = $this->productFactory->create()->load(
+                                    $sku = $this->productFactory->create()->load( // @codingStandardsIgnoreLine
                                         $skuId
                                     );
-                                    $listPrice += $this->getProductPriceInclTax(
+                                    $listPrice += $this->getProductDisplayPrice(
                                         $sku
                                     );
                                 } catch (\Exception $e) {
@@ -179,9 +179,8 @@ class Price extends AbstractHelper
                     $products = $productType->getUsedProducts($product);
                     $skus = [];
                     $finalPrices = [];
-                    /** @var Product $sku */
                     foreach ($products as $sku) {
-                        if (!$sku->isDisabled()) {
+                        if ($sku instanceof Product && !$sku->isDisabled()) {
                             $finalPrices[$sku->getId()] = $this->getProductPrice(
                                 $sku,
                                 true,
@@ -195,9 +194,9 @@ class Price extends AbstractHelper
                     if (!empty($keys[0]) && !empty($skus[$keys[0]])) {
                         $simpleProduct = $skus[$keys[0]];
                         if ($finalPrice) {
-                            $price = $this->getProductFinalPriceInclTax($simpleProduct);
+                            $price = $this->getProductFinalDisplayPrice($simpleProduct);
                         } else {
-                            $price = $this->getProductPriceInclTax($simpleProduct);
+                            $price = $this->getProductDisplayPrice($simpleProduct);
                         }
                     }
                 }
@@ -220,7 +219,7 @@ class Price extends AbstractHelper
      * @param Product $product the product model.
      * @return float
      */
-    public function getProductFinalPriceInclTax(Product $product)
+    public function getProductFinalDisplayPrice(Product $product)
     {
         $price = $this->getProductPrice($product, true, true);
 

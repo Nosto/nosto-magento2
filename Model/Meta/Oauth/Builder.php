@@ -73,7 +73,7 @@ class Builder
 
     /**
      * @param Store $store
-     * @param Account $account
+     * @param Account|null $account
      * @return OAuth
      */
     public function build(Store $store, Account $account = null)

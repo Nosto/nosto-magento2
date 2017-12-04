@@ -34,35 +34,12 @@
  *
  */
 
-namespace Nosto\Tagging\Observer\Product;
+namespace Nosto\Tagging\Model\Customer;
 
-use Magento\Framework\Event\Observer;
-use Magento\Review\Model\Review as ReviewModel;
+use Magento\Framework\Api\Search\SearchResult;
+use Nosto\Tagging\Api\Data\CustomerSearchResultInterface;
 
-/**
- * Product update model for Reviews and Ratings
- *
- * @category Nosto
- * @package  Nosto_Tagging
- * @author   Nosto Solutions Ltd <magento@nosto.com>
- */
-class Review extends Base
+class CustomerSearchResults extends SearchResult implements CustomerSearchResultInterface // @codingStandardsIgnoreLine
 {
-    /**
-     * @inheritdoc
-     */
-    public function extractProduct(Observer $observer)
-    {
-        /* @var ReviewModel $review */
-        /** @noinspection PhpUndefinedMethodInspection */
-        $review = $observer->getObject();
-        $product = null;
-        if ($this->dataHelper->isRatingTaggingEnabled()
-            && $review instanceof ReviewModel
-        ) {
-            $product = $this->productRepository->getById($review->getEntityPkValue());
-        }
 
-        return $product;
-    }
 }

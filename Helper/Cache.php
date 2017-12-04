@@ -34,35 +34,69 @@
  *
  */
 
-namespace Nosto\Tagging\Observer\Product;
+namespace Nosto\Tagging\Helper;
 
-use Magento\Framework\Event\Observer;
-use Magento\Review\Model\Review as ReviewModel;
+use Magento\Framework\App\Cache\StateInterface;
+use Magento\Framework\App\Cache\TypeListInterface;
+use Magento\Framework\App\Helper\AbstractHelper;
+use Magento\Framework\App\Helper\Context;
+use Magento\PageCache\Model\Cache\Type;
+use Magento\PageCache\Model\Config;
 
 /**
- * Product update model for Reviews and Ratings
- *
- * @category Nosto
- * @package  Nosto_Tagging
- * @author   Nosto Solutions Ltd <magento@nosto.com>
+ * Cache helper class for cache related tasks.
  */
-class Review extends Base
+class Cache extends AbstractHelper
 {
-    /**
-     * @inheritdoc
-     */
-    public function extractProduct(Observer $observer)
-    {
-        /* @var ReviewModel $review */
-        /** @noinspection PhpUndefinedMethodInspection */
-        $review = $observer->getObject();
-        $product = null;
-        if ($this->dataHelper->isRatingTaggingEnabled()
-            && $review instanceof ReviewModel
-        ) {
-            $product = $this->productRepository->getById($review->getEntityPkValue());
-        }
+    const CACHE_ID_LAYOUT = 'layout';
 
-        return $product;
+    /** @var Config $config */
+    private $config;
+
+    /** @var TypeListInterface $typeList */
+    private $typeList;
+
+    private $cacheState;
+
+    /**
+     * Constructor.
+     *
+     * @param Context $context the context.
+     * @param Config $config
+     * @param TypeListInterface $typeList
+     * @param StateInterface $cacheState
+     */
+    public function __construct(
+        Context $context,
+        Config $config,
+        TypeListInterface $typeList,
+        StateInterface $cacheState
+    ) {
+        parent::__construct($context);
+        $this->config = $config;
+        $this->typeList = $typeList;
+        $this->cacheState = $cacheState;
+    }
+
+    /**
+     * Invalidate full page cache
+     *
+     * @suppress PhanDeprecatedFunction
+     */
+    public function invalidatePageCache()
+    {
+        if ($this->config->isEnabled()) {
+            $this->typeList->invalidate(Type::TYPE_IDENTIFIER);
+        }
+    }
+
+    /**
+     * Invalidate layout cache
+     */
+    public function invalidateLayoutCache()
+    {
+        if ($this->cacheState->isEnabled(self::CACHE_ID_LAYOUT)) {
+            $this->typeList->invalidate(self::CACHE_ID_LAYOUT);
+        }
     }
 }

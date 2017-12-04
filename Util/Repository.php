@@ -34,35 +34,55 @@
  *
  */
 
-namespace Nosto\Tagging\Observer\Product;
+namespace Nosto\Tagging\Util;
 
-use Magento\Framework\Event\Observer;
-use Magento\Review\Model\Review as ReviewModel;
+use Magento\Framework\Api\SearchCriteriaInterface;
+use Magento\Framework\App\ResourceConnection\SourceProviderInterface;
+use Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection;
+use Magento\Framework\Api\Search\SearchResult;
 
-/**
- * Product update model for Reviews and Ratings
- *
- * @category Nosto
- * @package  Nosto_Tagging
- * @author   Nosto Solutions Ltd <magento@nosto.com>
- */
-class Review extends Base
+class Repository
 {
     /**
-     * @inheritdoc
+     * Adds filters to given collection
+     *
+     * @param SearchCriteriaInterface $searchCriteria
+     * @param SourceProviderInterface $collection
      */
-    public function extractProduct(Observer $observer)
-    {
-        /* @var ReviewModel $review */
-        /** @noinspection PhpUndefinedMethodInspection */
-        $review = $observer->getObject();
-        $product = null;
-        if ($this->dataHelper->isRatingTaggingEnabled()
-            && $review instanceof ReviewModel
-        ) {
-            $product = $this->productRepository->getById($review->getEntityPkValue());
+    public static function addFiltersToCollection(
+        SearchCriteriaInterface $searchCriteria,
+        SourceProviderInterface $collection
+    ) {
+        foreach ($searchCriteria->getFilterGroups() as $filterGroup) {
+            $fields = $conditions = [];
+            foreach ($filterGroup->getFilters() as $filter) {
+                $fields[] = $filter->getField();
+                $conditions[] = [$filter->getConditionType() => $filter->getValue()];
+            }
+            $collection->addFieldToFilter($fields, $conditions);
         }
+    }
 
-        return $product;
+    /**
+     * Performs search
+     *
+     * @param AbstractCollection $collection
+     * @param SearchCriteriaInterface $searchCriteria
+     * @param SearchResult $searchResults
+     *
+     * @return SearchResult
+     */
+    public static function search(
+        AbstractCollection $collection,
+        SearchCriteriaInterface $searchCriteria,
+        SearchResult $searchResults
+    ) {
+        self::addFiltersToCollection($searchCriteria, $collection);
+        $collection->load();
+        $searchResults->setSearchCriteria($searchCriteria);
+        $searchResults->setItems($collection->getItems());
+        $searchResults->setTotalCount($collection->getSize());
+
+        return $searchResults;
     }
 }

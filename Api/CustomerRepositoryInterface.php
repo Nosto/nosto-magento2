@@ -34,35 +34,39 @@
  *
  */
 
-namespace Nosto\Tagging\Observer\Product;
+namespace Nosto\Tagging\Api;
 
-use Magento\Framework\Event\Observer;
-use Magento\Review\Model\Review as ReviewModel;
+use Nosto\Tagging\Api\Data\CustomerInterface;
 
-/**
- * Product update model for Reviews and Ratings
- *
- * @category Nosto
- * @package  Nosto_Tagging
- * @author   Nosto Solutions Ltd <magento@nosto.com>
- */
-class Review extends Base
+interface CustomerRepositoryInterface extends BaseRepositoryInterface
 {
     /**
-     * @inheritdoc
+     * Save Queue entry
+     *
+     * @param CustomerInterface $customer
+     *
+     * @return CustomerInterface
      */
-    public function extractProduct(Observer $observer)
-    {
-        /* @var ReviewModel $review */
-        /** @noinspection PhpUndefinedMethodInspection */
-        $review = $observer->getObject();
-        $product = null;
-        if ($this->dataHelper->isRatingTaggingEnabled()
-            && $review instanceof ReviewModel
-        ) {
-            $product = $this->productRepository->getById($review->getEntityPkValue());
-        }
+    public function save(CustomerInterface $customer);
 
-        return $product;
-    }
+    /**
+     * Get customer entry by nosto id and quote id. If multiple entries
+     * are found first one will be returned.
+     *
+     * @param string $nostoId
+     * @param int $quoteId
+     *
+     * @return CustomerInterface|null
+     */
+    public function getOneByNostoIdAndQuoteId($nostoId, $quoteId);
+
+    /**
+     * Get customer entry by restore cart hash. If multiple entries
+     * are found first one will be returned.
+     *
+     * @param string $hash
+     *
+     * @return CustomerInterface|null
+     */
+    public function getOneByRestoreCartHash($hash);
 }

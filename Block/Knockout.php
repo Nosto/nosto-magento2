@@ -69,6 +69,12 @@ class Knockout extends Template
         $this->nostoHelperScope = $nostoHelperScope;
     }
 
+    /**
+     * Get relevant path to template
+     *
+     * @return string
+     * @suppress PhanTypeMismatchReturn
+     */
     public function getTemplate()
     {
         $template = null;
@@ -92,9 +98,14 @@ class Knockout extends Template
         return $enabled;
     }
 
+    /**
+     * Retrieve serialized JS layout configuration ready to use in template
+     *
+     * @return string
+     */
     public function getJsLayout()
     {
-        $jsLayout = null;
+        $jsLayout = '';
         if ($this->nostoEnabled()) {
             $jsLayout = parent::getJsLayout();
         }

@@ -36,11 +36,10 @@
 
 namespace Nosto\Tagging\Api;
 
-use Magento\Framework\Api\SearchCriteriaInterface;
 use Nosto\Tagging\Api\Data\ProductQueueInterface;
 use Nosto\Tagging\Api\Data\ProductQueueSearchResultsInterface;
 
-interface ProductQueueRepositoryInterface
+interface ProductQueueRepositoryInterface extends BaseRepositoryInterface
 {
     /**
      * Save Queue entry
@@ -51,50 +50,32 @@ interface ProductQueueRepositoryInterface
     public function save(ProductQueueInterface $productQueue);
 
     /**
-     * Get info about queue entry by product id
-     *
-     * @param int $id
-     * @return ProductQueueInterface
-     */
-    public function getById($id);
-
-    /**
      * Delete productQueue
      *
      * @param ProductQueueInterface $productQueue
-     * @return bool
      */
     public function delete(ProductQueueInterface $productQueue);
 
     /**
      * @param array $ids
-     * @return bool
      */
     public function deleteByProductIds(array $ids);
 
     /**
      * Returns all entries by product ids
      *
-     * @param int $id
+     * @param int $productId
      * @return ProductQueueSearchResultsInterface
      */
-    public function getByProductId($id);
+    public function getByProductId($productId);
 
     /**
      * Returns single entry by product id
      *
-     * @param int $id
-     * @return ProductQueueInterface
+     * @param int $productId
+     * @return ProductQueueInterface|null
      */
-    public function getOneByProductId($id);
-
-    /**
-     * Get list of productQueues
-     *
-     * @param SearchCriteriaInterface $searchCriteria
-     * @return ProductQueueSearchResultsInterface
-     */
-    public function getList(SearchCriteriaInterface $searchCriteria);
+    public function getOneByProductId($productId);
 
     /**
      * Get list of productQueues

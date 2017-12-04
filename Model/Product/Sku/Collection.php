@@ -92,9 +92,9 @@ class Collection
         if ($product->getTypeId() === ConfigurableType::TYPE_CODE) {
             $attributes = $this->configurableType->getConfigurableAttributes($product);
             /** @var Product $product */
-            $usedProducts = $this->nostoProductRepository->getSkus($product, true);
+            $usedProducts = $this->nostoProductRepository->getSkus($product);
             foreach ($usedProducts as $product) {
-                if (!$product->isDisabled()) {
+                if ($product instanceof Product && !$product->isDisabled()) {
                     try {
                         $sku = $this->nostoSkuBuilder->build($product, $store, $attributes);
                         $skuCollection->append($sku);
