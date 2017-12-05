@@ -18,7 +18,6 @@
                 <product_updates>1</product_updates>
                 <full_reindex>1</full_reindex>
                 <low_stock_indication>0</low_stock_indication>
-                <store_code_to_url>1</store_code_to_url>
             </flags>
         </nosto>
     </default>
