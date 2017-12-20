@@ -372,7 +372,6 @@ class Url extends AbstractHelper
         return $params;
     }
 
-
     /**
      * Gets the absolute URL to the Nosto configuration page
      *
@@ -380,7 +379,7 @@ class Url extends AbstractHelper
      *
      * @return string the url.
      */
-    public function getAdminNostoConfiguratioUrl(Store $store)
+    public function getAdminNostoConfigurationUrl(Store $store)
     {
         $params = array(
             self::MAGENTO_URL_OPTION_STORE_ID => $store->getStoreId()

@@ -70,6 +70,6 @@ class Config extends BlockTemplate
     {
         $store = $this->nostoHelperScope->getSelectedStore($this->getRequest());
 
-        return $this->urlHelper->getAdminNostoConfiguratioUrl($store);
+        return $this->urlHelper->getAdminNostoConfigurationUrl($store);
     }
 }
