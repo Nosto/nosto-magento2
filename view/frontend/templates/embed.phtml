@@ -53,6 +53,6 @@
 ?>
 <?php if ($this->getServerAddress() && $this->getAccountName()) : ?>
     <script type="text/javascript"
-            src="//<?php echo $this->getServerAddress() ?>/include/<?php echo $this->getAccountName(); ?>"
+            src="<?php echo '/' . '/' . $this->getServerAddress() ?>/include/<?php echo $this->getAccountName(); ?>"
             async></script>
 <?php endif; ?>
