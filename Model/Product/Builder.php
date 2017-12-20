@@ -403,7 +403,7 @@ class Builder
      * @param NostoProduct $nostoProduct
      * @param Store $store
      */
-    protected function amendCustomFields(Product $product, NostoProduct $nostoProduct, Store $store)
+    private function amendCustomFields(Product $product, NostoProduct $nostoProduct, Store $store)
     {
         if (!$this->nostoDataHelper->isCustomFieldsEnabled($store)) {
             return;

@@ -167,7 +167,7 @@ class Builder
      * @param NostoSku $nostoSku
      * @param Store $store
      */
-    protected function loadCustomFieldsFromConfigurableAttributes(Product $product, NostoSku $nostoSku, Store $store)
+    private function loadCustomFieldsFromConfigurableAttributes(Product $product, NostoSku $nostoSku, Store $store)
     {
         if (!$this->nostoDataHelper->isCustomFieldsEnabled($store)) {
             return;
