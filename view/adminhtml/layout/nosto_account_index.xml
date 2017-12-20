@@ -41,6 +41,8 @@
     <body>
         <referenceContainer name="page.main.actions">
             <block class="Magento\Backend\Block\Store\Switcher" name="store_switcher"/>
+            <block class="Nosto\Tagging\Block\Adminhtml\Account\Config" name="nosto.account.config"
+                   template="config.phtml"/>
         </referenceContainer>
         <referenceContainer name="content">
             <block class="Nosto\Tagging\Block\Adminhtml\Account\Iframe" name="nosto.account.iframe"
