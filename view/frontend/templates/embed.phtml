@@ -51,8 +51,8 @@
 
 /** @var \Nosto\Tagging\Block\Embed $this */
 ?>
-<?php if ($this->getServerAddress() && $this->getAccountName()) : ?>
+<?php if ($this->getNostoScriptUrl()) : ?>
     <script type="text/javascript"
-            src="//<?php echo $this->getServerAddress() ?>/include/<?php echo $this->getAccountName(); ?>"
+            src="<?php echo $this->getNostoScriptUrl(); ?>"
             async></script>
 <?php endif; ?>
