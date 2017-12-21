@@ -81,6 +81,15 @@ class Embed extends Template
         $this->nostoHelperData = $nostoHelperData;
     }
 
+    public function getNostoScriptUrl()
+    {
+        if ($this->getServerAddress() && $this->getAccountName()) {
+            return  '//' . $this->getServerAddress() . '/include/' . $this->getAccountName();
+        } else {
+            return null;
+        }
+    }
+
     /**
      * Returns the account name for the current store.
      *
