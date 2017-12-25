@@ -40,7 +40,9 @@ use DateTime;
 use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\ProductFactory;
+use Magento\CatalogInventory\Api\StockRegistryInterface;
 use Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable as ConfigurableProduct;
+use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManager;
 use Nosto\Object\Signup\Account;
@@ -73,6 +75,8 @@ class Service
     private $configurableProduct;
     private $nostoProductRepository;
     private $nostoQueueFactory;
+    private $scopeConfig;
+    private $stockRegistry;
     private $storeManager;
     private $productFactory;
     private $nostoQueueRepository;
@@ -107,6 +111,8 @@ class Service
         NostoProductRepository $nostoProductRepository,
         QueueRepository $nostoQueueRepository,
         QueueFactory $nostoQueueFactory,
+        ScopeConfigInterface $scopeConfig,
+        StockRegistryInterface $stockRegistry,
         StoreManager $storeManager,
         ProductFactory $productFactory
     ) {
@@ -120,6 +126,8 @@ class Service
         $this->nostoProductRepository = $nostoProductRepository;
         $this->nostoQueueRepository = $nostoQueueRepository;
         $this->nostoQueueFactory = $nostoQueueFactory;
+        $this->scopeConfig = $scopeConfig;
+        $this->stockRegistry = $stockRegistry;
         $this->storeManager = $storeManager;
         $this->productFactory = $productFactory;
     }
@@ -319,6 +327,20 @@ class Service
         $productsStillExist = $productSearch->getItems();
         $productIdsStillExist = [];
 
+        $showOutOfStock = $this->scopeConfig->isSetFlag(
+            \Magento\CatalogInventory\Model\Configuration::XML_PATH_SHOW_OUT_OF_STOCK
+        );
+        if (!$showOutOfStock) {
+            foreach ($productsStillExist as $i => $product) {
+                $stockItem = $this->stockRegistry->getStockItem($product->getId());
+                if (!$stockItem->getIsInStock() || !$product->isSalable()) {
+                    // don't update out of stock - to be deleted
+                    unset($productsStillExist[$i]);
+                }
+            }
+        }
+
+
         if (!empty($productsStillExist)) {
             $op = new UpsertProduct($nostoAccount);
             $op->setResponseTimeout(self::$responseTimeOut);
@@ -338,7 +360,7 @@ class Service
                 $this->logger->info(
                     sprintf(
                         'Sent %d products to for store %s (%d)',
-                        $productSearch->getTotalCount(),
+                        count($productsStillExist),
                         $this->storeManager->getStore()->getName(),
                         $store->getId()
                     )
@@ -348,7 +370,7 @@ class Service
                     sprintf(
                         'Failed to send %d products for store %s (%d)' .
                         ' Error was %s',
-                        $productSearch->getTotalCount(),
+                        count($productsStillExist),
                         $store->getName(),
                         $store->getId(),
                         $e->getMessage()
