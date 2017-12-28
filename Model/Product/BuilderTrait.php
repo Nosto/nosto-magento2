@@ -36,89 +36,28 @@
 
 namespace Nosto\Tagging\Model\Product;
 
-use Magento\Catalog\Api\CategoryRepositoryInterface;
-use Magento\ConfigurableProduct\Model\Product\Type\Configurable;
-use Magento\Eav\Api\AttributeSetRepositoryInterface;
 use Magento\Catalog\Model\Product;
-use Magento\Catalog\Model\Product\Gallery\ReadHandler as GalleryReadHandler;
-use Magento\Framework\Event\ManagerInterface;
-use Magento\Framework\Phrase;
-use Magento\Review\Model\ReviewFactory;
-use Magento\Store\Model\Store;
 use Magento\Eav\Model\Entity\Attribute\AbstractAttribute;
-use Nosto\NostoException;
-use Nosto\Tagging\Helper\Currency as CurrencyHelper;
+use Magento\Framework\Phrase;
+use Magento\Store\Model\Store;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
-use Nosto\Tagging\Helper\Price as NostoPriceHelper;
-use Nosto\Tagging\Helper\Stock as NostoStockHelper;
-use Nosto\Tagging\Model\Category\Builder as NostoCategoryBuilder;
-use Nosto\Tagging\Model\Product\Sku\Collection as NostoSkuCollection;
-use Nosto\Tagging\Model\Product\Url\Builder as NostoUrlBuilder;
-use Nosto\Tagging\Model\Product\Tags\LowStock as LowStockHelper;
-use Nosto\Object\Product\Product as NostoProduct;
-use Nosto\Types\Product\ProductInterface;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 
 trait BuilderTrait
 {
     private $nostoDataHelper;
-    private $nostoPriceHelper;
-    private $nostoCategoryBuilder;
-    private $nostoStockHelper;
-    private $categoryRepository;
-    /** @var  AttributeSetRepositoryInterface $attributeSetRepository*/
-    private $attributeSetRepository;
-    private $galleryReadHandler;
-    private $eventManager;
     private $logger;
-    private $reviewFactory;
-    private $urlBuilder;
-    private $skuCollection;
-    private $nostoCurrencyHelper;
-    private $lowStockHelper;
 
     /**
      * @param NostoHelperData $nostoHelperData
-     * @param NostoPriceHelper $priceHelper
-     * @param NostoCategoryBuilder $categoryBuilder
-     * @param NostoStockHelper $stockHelper
-     * @param NostoSkuCollection $skuCollection
-     * @param CategoryRepositoryInterface $categoryRepository
-     * @param AttributeSetRepositoryInterface $attributeSetRepository
      * @param NostoLogger $logger
-     * @param ManagerInterface $eventManager
-     * @param ReviewFactory $reviewFactory
-     * @param GalleryReadHandler $galleryReadHandler
-     * @param NostoUrlBuilder $urlBuilder
-     * @param CurrencyHelper $nostoCurrencyHelper
-     * @param LowStockHelper $lowStockHelper
      */
     public function __construct(
         NostoHelperData $nostoHelperData,
-        NostoPriceHelper $priceHelper,
-        NostoCategoryBuilder $categoryBuilder,
-        NostoStockHelper $stockHelper,
-        NostoSkuCollection $skuCollection,
-        CategoryRepositoryInterface $categoryRepository,
-        AttributeSetRepositoryInterface $attributeSetRepository,
-        NostoLogger $logger,
-        ManagerInterface $eventManager,
-        ReviewFactory $reviewFactory,
-        GalleryReadHandler $galleryReadHandler,
-        NostoUrlBuilder $urlBuilder,
-        CurrencyHelper $nostoCurrencyHelper,
-        LowStockHelper $lowStockHelper
+        NostoLogger $logger
     ) {
         $this->nostoDataHelper = $nostoHelperData;
-        $this->nostoPriceHelper = $priceHelper;
-        $this->nostoCategoryBuilder = $categoryBuilder;
-        $this->categoryRepository = $categoryRepository;
-        $this->attributeSetRepository = $attributeSetRepository;
         $this->logger = $logger;
-        $this->eventManager = $eventManager;
-        $this->nostoStockHelper = $stockHelper;
-        $this->reviewFactory = $reviewFactory;
-        $this->galleryReadHandler = $galleryReadHandler;
     }
 
     /**
@@ -126,6 +65,7 @@ trait BuilderTrait
      *
      * @param Product $product
      * @param Store $store
+     * @return array|null
      */
     public function buildCustomFields(Product $product, Store $store)
     {
@@ -133,10 +73,10 @@ trait BuilderTrait
             return null;
         }
 
-        $attributes = [];
+        $customFields = [];
 
         $attributes = $product->getTypeInstance()->getSetAttributes($product);
-        /** @var AbstractAttribute $attribute*/
+        /** @var AbstractAttribute $attribute */
         foreach ($attributes as $attribute) {
             try {
                 //tag user defined attributes only
@@ -147,7 +87,7 @@ trait BuilderTrait
                     if ($product->getData($attributeCode) !== null) {
                         $attributeValue = $this->getAttributeValue($product, $attributeCode);
                         if (is_scalar($attributeValue) && $attributeValue !== '' && $attributeValue !== false) {
-                            $attributes[$attributeCode] = $attributeValue;
+                            $customFields[$attributeCode] = $attributeValue;
                         }
                     }
                 }
@@ -156,7 +96,7 @@ trait BuilderTrait
             }
         }
 
-        return $attributes;
+        return $customFields;
     }
 
     /**

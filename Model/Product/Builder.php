@@ -37,27 +37,24 @@
 namespace Nosto\Tagging\Model\Product;
 
 use Magento\Catalog\Api\CategoryRepositoryInterface;
-use Magento\ConfigurableProduct\Model\Product\Type\Configurable;
-use Magento\Eav\Api\AttributeSetRepositoryInterface;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\Product\Gallery\ReadHandler as GalleryReadHandler;
+use Magento\Eav\Api\AttributeSetRepositoryInterface;
 use Magento\Framework\Event\ManagerInterface;
-use Magento\Framework\Phrase;
 use Magento\Review\Model\ReviewFactory;
 use Magento\Store\Model\Store;
-use Magento\Eav\Model\Entity\Attribute\AbstractAttribute;
 use Nosto\NostoException;
+use Nosto\Object\Product\Product as NostoProduct;
 use Nosto\Tagging\Helper\Currency as CurrencyHelper;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Price as NostoPriceHelper;
 use Nosto\Tagging\Helper\Stock as NostoStockHelper;
+use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Category\Builder as NostoCategoryBuilder;
 use Nosto\Tagging\Model\Product\Sku\Collection as NostoSkuCollection;
-use Nosto\Tagging\Model\Product\Url\Builder as NostoUrlBuilder;
 use Nosto\Tagging\Model\Product\Tags\LowStock as LowStockHelper;
-use Nosto\Object\Product\Product as NostoProduct;
+use Nosto\Tagging\Model\Product\Url\Builder as NostoUrlBuilder;
 use Nosto\Types\Product\ProductInterface;
-use Nosto\Tagging\Logger\Logger as NostoLogger;
 
 class Builder
 {
@@ -74,7 +71,7 @@ class Builder
     private $nostoCategoryBuilder;
     private $nostoStockHelper;
     private $categoryRepository;
-    /** @var  AttributeSetRepositoryInterface $attributeSetRepository*/
+    /** @var AttributeSetRepositoryInterface $attributeSetRepository */
     private $attributeSetRepository;
     private $galleryReadHandler;
     private $eventManager;
@@ -131,6 +128,7 @@ class Builder
         $this->skuCollection = $skuCollection;
         $this->nostoCurrencyHelper = $nostoCurrencyHelper;
         $this->lowStockHelper = $lowStockHelper;
+        $this->builderTraitConstruct($nostoHelperData, $logger);
     }
 
     /**

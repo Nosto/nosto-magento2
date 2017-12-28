@@ -39,10 +39,8 @@ namespace Nosto\Tagging\Model\Product\Sku;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\Product\Gallery\ReadHandler as GalleryReadHandler;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable\Attribute as ConfigurableAttribute;
-use Magento\Eav\Model\Entity\Attribute\AbstractAttribute;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Store\Model\Store;
-use Magento\Framework\Phrase;
 use Nosto\NostoException;
 use Nosto\Object\Product\Sku as NostoSku;
 use Nosto\Tagging\Helper\Currency as CurrencyHelper;
@@ -85,6 +83,7 @@ class Builder
         $this->eventManager = $eventManager;
         $this->galleryReadHandler = $galleryReadHandler;
         $this->nostoCurrencyHelper = $nostoCurrencyHelper;
+        $this->builderTraitConstruct($nostoHelperData, $logger);
     }
 
     /**
