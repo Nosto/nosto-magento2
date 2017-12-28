@@ -65,8 +65,6 @@ class Builder
         BuilderTrait::__construct as builderTraitConstruct; // @codingStandardsIgnoreLine
     }
 
-    const ATTRIBUTE_VALUE_ANY = '--ANY--';
-
     const CUSTOMIZED_TAGS = ['tag1', 'tag2', 'tag3'];
     const NOSTO_SCOPE_TAGGING = 'tagging';
     const NOSTO_SCOPE_API = 'api';
