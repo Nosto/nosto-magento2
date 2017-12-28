@@ -45,8 +45,8 @@ use Nosto\Tagging\Logger\Logger as NostoLogger;
 
 trait BuilderTrait
 {
-    private $nostoDataHelper;
-    private $logger;
+    private $nostoDataHelperTrait;
+    private $loggerTrait;
 
     /**
      * @param NostoHelperData $nostoHelperData
@@ -56,8 +56,8 @@ trait BuilderTrait
         NostoHelperData $nostoHelperData,
         NostoLogger $logger
     ) {
-        $this->nostoDataHelper = $nostoHelperData;
-        $this->logger = $logger;
+        $this->nostoDataHelperTrait = $nostoHelperData;
+        $this->loggerTrait = $logger;
     }
 
     /**
@@ -69,7 +69,7 @@ trait BuilderTrait
      */
     public function buildCustomFields(Product $product, Store $store)
     {
-        if (!$this->nostoDataHelper->isCustomFieldsEnabled($store)) {
+        if (!$this->nostoDataHelperTrait->isCustomFieldsEnabled($store)) {
             return null;
         }
 
@@ -92,7 +92,7 @@ trait BuilderTrait
                     }
                 }
             } catch (\Exception $e) {
-                $this->logger->exception($e);
+                $this->loggerTrait->exception($e);
             }
         }
 
@@ -106,7 +106,7 @@ trait BuilderTrait
      */
     public function buildImageUrl(Product $product, Store $store)
     {
-        $primary = $this->nostoDataHelper->getProductImageVersion($store);
+        $primary = $this->nostoDataHelperTrait->getProductImageVersion($store);
         $secondary = 'image'; // The "base" image.
         $media = $product->getMediaAttributeValues();
         $image = (isset($media[$primary])
@@ -147,7 +147,7 @@ trait BuilderTrait
                 }
             }
         } catch (\Exception $e) {
-            $this->logger->exception($e);
+            $this->loggerTrait->exception($e);
         }
 
         return $value;
