@@ -61,6 +61,10 @@ use Nosto\Tagging\Logger\Logger as NostoLogger;
 
 class Builder
 {
+    use BuilderTrait {
+        BuilderTrait::__construct as builderTraitConstruct; // @codingStandardsIgnoreLine
+    }
+
     const ATTRIBUTE_VALUE_ANY = '--ANY--';
 
     const CUSTOMIZED_TAGS = ['tag1', 'tag2', 'tag3'];
@@ -223,7 +227,7 @@ class Builder
                 $nostoProduct->setTag1($tags);
             }
 
-            $this->amendCustomFields($product, $nostoProduct, $store);
+            $nostoProduct->setCustomFields($this->buildCustomFields($product, $store));
 
             //update customized tag1, Tag2 and Tag3
             $this->amendAttributeTags($product, $nostoProduct, $store);
@@ -334,28 +338,6 @@ class Builder
     }
 
     /**
-     * @param Product $product
-     * @param Store $store
-     * @return string|null
-     */
-    public function buildImageUrl(Product $product, Store $store)
-    {
-        $primary = $this->nostoDataHelper->getProductImageVersion($store);
-        $secondary = 'image'; // The "base" image.
-        $media = $product->getMediaAttributeValues();
-        $image = (isset($media[$primary])
-            ? $media[$primary]
-            : (isset($media[$secondary]) ? $media[$secondary] : null)
-        );
-
-        if (empty($image)) {
-            return null;
-        }
-
-        return $product->getMediaConfig()->getMediaUrl($image);
-    }
-
-    /**
      * Adds the alternative image urls
      *
      * @param Product $product the product model.
@@ -394,72 +376,6 @@ class Builder
         }
 
         return $tags;
-    }
-
-    /**
-     * Tag the custom attributes
-     *
-     * @param Product $product
-     * @param NostoProduct $nostoProduct
-     * @param Store $store
-     */
-    private function amendCustomFields(Product $product, NostoProduct $nostoProduct, Store $store)
-    {
-        if (!$this->nostoDataHelper->isCustomFieldsEnabled($store)) {
-            return;
-        }
-
-        $attributes = $product->getTypeInstance()->getSetAttributes($product);
-        /** @var AbstractAttribute $attribute*/
-        foreach ($attributes as $attribute) {
-            try {
-                //tag user defined attributes only
-                if ($attribute->getIsUserDefined()) {
-                    $attributeCode = $attribute->getAttributeCode();
-                    //if data is null, do not try to get the value
-                    //because the label could be "No" even the value is null
-                    if ($product->getData($attributeCode) !== null) {
-                        $attributeValue = $this->getAttributeValue($product, $attributeCode);
-                        if (is_scalar($attributeValue) && $attributeValue !== '' && $attributeValue !== false) {
-                            $nostoProduct->addCustomField($attributeCode, $attributeValue);
-                        }
-                    }
-                }
-            } catch (\Exception $e) {
-                $this->logger->exception($e);
-            }
-        }
-    }
-
-    /**
-     * Resolves "textual" product attribute value
-     *
-     * @param Product $product
-     * @param $attribute
-     * @return bool|float|int|null|string
-     */
-    private function getAttributeValue(Product $product, $attribute)
-    {
-        $value = null;
-        try {
-            $attributes = $product->getAttributes();
-            if (isset($attributes[$attribute])) {
-                $attributeObject = $attributes[$attribute];
-                $frontend = $attributeObject->getFrontend();
-                $frontendValue = $frontend->getValue($product);
-                if (is_array($frontendValue)) {
-                    $value = implode(",", $frontendValue);
-                } elseif (is_scalar($frontendValue)) {
-                    $value = $frontendValue;
-                } elseif ($frontendValue instanceof Phrase) {
-                    $value = (string)$frontendValue;
-                }
-            }
-        } catch (\Exception $e) {
-            $this->logger->exception($e);
-        }
-
-        return $value;
     }
 
     /**

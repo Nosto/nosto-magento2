@@ -49,9 +49,13 @@ use Nosto\Tagging\Helper\Currency as CurrencyHelper;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Price as NostoPriceHelper;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
+use Nosto\Tagging\Model\Product\BuilderTrait;
 
 class Builder
 {
+    use BuilderTrait {
+        BuilderTrait::__construct as builderTraitConstruct; // @codingStandardsIgnoreLine
+    }
     private $nostoDataHelper;
     private $nostoPriceHelper;
     private $galleryReadHandler;
@@ -127,7 +131,7 @@ class Builder
                     }
                 }
                 //load user defined attributes from attribute set
-                $this->loadCustomFieldsFromConfigurableAttributes($product, $nostoSku, $store);
+                $nostoSku->setCustomFields($this->buildCustomFields($product, $store));
             }
         } catch (NostoException $e) {
             $this->logger->exception($e);
@@ -136,93 +140,5 @@ class Builder
         $this->eventManager->dispatch('nosto_sku_load_after', ['sku' => $nostoSku, 'magentoProduct' => $product]);
 
         return $nostoSku;
-    }
-
-    /**
-     * @param Product $product
-     * @param Store $store
-     * @return string|null
-     */
-    public function buildImageUrl(Product $product, Store $store)
-    {
-        $primary = $this->nostoDataHelper->getProductImageVersion($store);
-        $secondary = 'image'; // The "base" image.
-        $media = $product->getMediaAttributeValues();
-        $image = (isset($media[$primary])
-            ? $media[$primary]
-            : (isset($media[$secondary]) ? $media[$secondary] : null)
-        );
-
-        if (empty($image)) {
-            return null;
-        }
-
-        return $product->getMediaConfig()->getMediaUrl($image);
-    }
-
-    /**
-     * Tag the custom attributes
-     *
-     * @param Product $product
-     * @param NostoSku $nostoSku
-     * @param Store $store
-     */
-    private function loadCustomFieldsFromConfigurableAttributes(Product $product, NostoSku $nostoSku, Store $store)
-    {
-        if (!$this->nostoDataHelper->isCustomFieldsEnabled($store)) {
-            return;
-        }
-
-        $attributes = $product->getTypeInstance()->getSetAttributes($product);
-        /** @var AbstractAttribute $attribute*/
-        foreach ($attributes as $attribute) {
-            try {
-                //tag user defined attributes only
-                if ($attribute->getIsUserDefined()) {
-                    $attributeCode = $attribute->getAttributeCode();
-                    //if data is null, do not try to get the value
-                    //because the label could be "No" even the value is null
-                    if ($product->getData($attributeCode) !== null) {
-                        $attributeValue = $this->getAttributeValue($product, $attributeCode);
-                        if (is_scalar($attributeValue) && $attributeValue !== '' && $attributeValue !== false) {
-                            $nostoSku->addCustomField($attributeCode, $attributeValue);
-                        }
-                    }
-                }
-            } catch (\Exception $e) {
-                $this->logger->exception($e);
-            }
-        }
-    }
-
-    /**
-     * Resolves "textual" product attribute value
-     *
-     * @param Product $product
-     * @param $attribute
-     * @return bool|float|int|null|string
-     */
-    private function getAttributeValue(Product $product, $attribute)
-    {
-        $value = null;
-        try {
-            $attributes = $product->getAttributes();
-            if (isset($attributes[$attribute])) {
-                $attributeObject = $attributes[$attribute];
-                $frontend = $attributeObject->getFrontend();
-                $frontendValue = $frontend->getValue($product);
-                if (is_array($frontendValue)) {
-                    $value = implode(",", $frontendValue);
-                } elseif (is_scalar($frontendValue)) {
-                    $value = $frontendValue;
-                } elseif ($frontendValue instanceof Phrase) {
-                    $value = (string)$frontendValue;
-                }
-            }
-        } catch (\Exception $e) {
-            $this->logger->exception($e);
-        }
-
-        return $value;
     }
 }
