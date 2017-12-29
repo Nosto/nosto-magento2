@@ -73,6 +73,7 @@ class Builder
         $cartItem->setPriceCurrencyCode($currencyCode);
         $cartItem->setProductId($this->buildItemId($item));
         $cartItem->setQuantity((int) $item->getQty());
+        $cartItem->setSkuId($this->buildSkuId($item));
         switch ($item->getProductType()) {
             case Simple::getType():
             case Virtual::getType():
@@ -123,5 +124,31 @@ class Builder
         }
 
         return (string)$item->getProduct()->getId();
+    }
+
+    /**
+     * Returns the sku id. If it is a configurable product,
+     * try to get the child item because the child item is the simple product
+     *
+     * @param Item $item the sales item model.
+     * @return string|null sku id
+     */
+    public function buildSkuId(Item $item)
+    {
+        if ($item->getProductType() === Configurable::getType()) {
+            $children = $item->getChildren();
+            //An item with bundle product and group product may have more than 1 child.
+            //But configurable product item should have max 1 child item.
+            //Here we check the size of children, return only if the size is 1
+            if (count($children) == 1
+                && array_key_exists(0, $children)
+            ) {
+                if ($children[0]->getProduct()) {
+                    return (string)$children[0]->getProduct()->getId();
+                }
+            }
+        }
+
+        return null;
     }
 }
