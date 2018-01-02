@@ -51,6 +51,7 @@
     <!-- ko foreach: {data: cartTagging().items, afterRender: sendTagging } -->
     <div class="line_item">
         <span class="product_id" data-bind="text: $data.product_id"></span>
+        <span class="sku_id" data-bind="text: $data.sku_id"></span>
         <span class="quantity" data-bind="text: $data.quantity"></span>
         <span class="name" data-bind="text: $data.name"></span>
         <span class="unit_price" data-bind="text: $data.unit_price"></span>
