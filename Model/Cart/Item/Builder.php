@@ -41,6 +41,7 @@ use Magento\Catalog\Model\Product\Type;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\ObjectManagerInterface;
 use Magento\Quote\Model\Quote\Item;
+use Magento\Catalog\Model\Product;
 use Nosto\Object\Cart\LineItem;
 
 class Builder
@@ -143,7 +144,9 @@ class Builder
             if (count($children) == 1
                 && array_key_exists(0, $children)
             ) {
-                if ($children[0]->getProduct()) {
+                if ($children[0] instanceof Item
+                    && $children[0]->getProduct() instanceof Product
+                ) {
                     return (string)$children[0]->getProduct()->getId();
                 }
             }

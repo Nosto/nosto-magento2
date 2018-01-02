@@ -163,7 +163,9 @@ class Builder
             if (count($children) == 1
                 && array_key_exists(0, $children)
             ) {
-                if ($children[0]->getProductId()) {
+                if ($children[0] instanceof Item
+                    && $children[0]->getProductId()
+                ) {
                     return (string)$children[0]->getProductId();
                 }
             }
