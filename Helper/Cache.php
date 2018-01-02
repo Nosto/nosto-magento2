@@ -41,7 +41,6 @@ use Magento\Framework\App\Cache\TypeListInterface;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 use Magento\PageCache\Model\Cache\Type;
-use Magento\PageCache\Model\Config;
 
 /**
  * Cache helper class for cache related tasks.
@@ -49,9 +48,6 @@ use Magento\PageCache\Model\Config;
 class Cache extends AbstractHelper
 {
     const CACHE_ID_LAYOUT = 'layout';
-
-    /** @var Config $config */
-    private $config;
 
     /** @var TypeListInterface $typeList */
     private $typeList;
@@ -62,30 +58,25 @@ class Cache extends AbstractHelper
      * Constructor.
      *
      * @param Context $context the context.
-     * @param Config $config
      * @param TypeListInterface $typeList
      * @param StateInterface $cacheState
      */
     public function __construct(
         Context $context,
-        Config $config,
         TypeListInterface $typeList,
         StateInterface $cacheState
     ) {
         parent::__construct($context);
-        $this->config = $config;
         $this->typeList = $typeList;
         $this->cacheState = $cacheState;
     }
 
     /**
      * Invalidate full page cache
-     *
-     * @suppress PhanDeprecatedFunction
      */
     public function invalidatePageCache()
     {
-        if ($this->config->isEnabled()) {
+        if ($this->cacheState->isEnabled(Type::TYPE_IDENTIFIER)) {
             $this->typeList->invalidate(Type::TYPE_IDENTIFIER);
         }
     }
