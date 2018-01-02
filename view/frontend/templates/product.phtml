@@ -97,6 +97,13 @@ $category = $this->getNostoCategory();
         <?php if ($product->getRatingValue()): ?>
             <span class="rating_value"><?php echo $this->escapeHtml($product->getRatingValue()); ?></span>
         <?php endif; ?>
+        <?php if ($product->getCustomFields() && is_array($product->getCustomFields())) : ?>
+            <span class="custom_fields">
+                <?php foreach ($product->getCustomFields() as $key=>$val) : ?>
+                    <span class="<?php echo $this->escapeHtml($key); ?>"><?php echo $this->escapeHtml($val); ?></span>
+                <?php endforeach; ?>
+            </span>
+        <?php endif; ?>
         <?php if ($product->getSkus() instanceof \Nosto\Object\Product\SkuCollection) : ?>
             <?php /* @var \Nosto\Object\Product\Sku $sku */ ?>
             <?php foreach ($product->getSkus() as $sku) : ?>

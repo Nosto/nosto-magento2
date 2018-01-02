@@ -39,6 +39,8 @@ namespace Nosto\Tagging\Helper;
 use Magento\Catalog\Model\Product\Visibility;
 use Magento\Catalog\Model\ResourceModel\Category\CollectionFactory as CategoryCollectionFactory;
 use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductCollectionFactory;
+use Magento\Backend\Helper\Data as BackendDataHelper;
+use Magento\Framework\Url as UrlBuilder;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 use Magento\Framework\UrlInterface;
@@ -51,6 +53,9 @@ use Nosto\Tagging\Helper\Data as NostoDataHelper;
  */
 class Url extends AbstractHelper
 {
+    const URL_PATH_NOSTO_CONFIG = 'adminhtml/system_config/edit/section/nosto/';
+    const MAGENTO_URL_OPTION_STORE_ID = 'store';
+
     const MAGENTO_PATH_SEARCH_RESULT = 'catalogsearch/result';
     /**
      * Path to Magento's cart controller
@@ -128,6 +133,7 @@ class Url extends AbstractHelper
     private $productVisibility;
     private $urlBuilder;
     private $nostoDataHelper;
+    private $backendDataHelper;
 
     /** @noinspection PhpUndefinedClassInspection */
     /**
@@ -137,8 +143,9 @@ class Url extends AbstractHelper
      * @param ProductCollectionFactory $productCollectionFactory auto generated product collection factory.
      * @param CategoryCollectionFactory $categoryCollectionFactory auto generated category collection factory.
      * @param Visibility $productVisibility product visibility.
-     * @param \Magento\Framework\Url $urlBuilder frontend URL builder.
+     * @param UrlBuilder $urlBuilder frontend URL builder.
      * @param Data $nostoDataHelper
+     * @param BackendDataHelper $backendDataHelper
      */
     public function __construct(
         Context $context,
@@ -147,8 +154,9 @@ class Url extends AbstractHelper
         /** @noinspection PhpUndefinedClassInspection */
         CategoryCollectionFactory $categoryCollectionFactory,
         Visibility $productVisibility,
-        \Magento\Framework\Url $urlBuilder,
-        NostoDataHelper $nostoDataHelper
+        NostoDataHelper $nostoDataHelper,
+        UrlBuilder $urlBuilder,
+        BackendDataHelper $backendDataHelper
     ) {
         parent::__construct($context);
 
@@ -157,6 +165,7 @@ class Url extends AbstractHelper
         $this->productVisibility = $productVisibility;
         $this->urlBuilder = $urlBuilder;
         $this->nostoDataHelper = $nostoDataHelper;
+        $this->backendDataHelper = $backendDataHelper;
     }
 
     /**
@@ -367,5 +376,20 @@ class Url extends AbstractHelper
         ];
 
         return $params;
+    }
+
+    /**
+     * Gets the absolute URL to the Nosto configuration page
+     *
+     * @param Store $store the store to get the url for.
+     *
+     * @return string the url.
+     */
+    public function getAdminNostoConfigurationUrl(Store $store)
+    {
+        $params = [self::MAGENTO_URL_OPTION_STORE_ID => $store->getStoreId()];
+        $url = $this->backendDataHelper->getUrl(self::URL_PATH_NOSTO_CONFIG, $params);
+
+        return $url;
     }
 }

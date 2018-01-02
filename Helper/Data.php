@@ -83,6 +83,11 @@ class Data extends AbstractHelper
     const XML_PATH_VARIATION_TAGGING = 'nosto/flags/variation_tagging';
 
     /**
+     * Path to store config for custom fields
+     */
+    const XML_PATH_USE_CUSTOM_FIELDS = 'nosto/flags/use_custom_fields';
+
+    /**
      * Path to the configuration object that stores the preference to tag alt. image data
      */
     const XML_PATH_ALTIMG_TAGGING = 'nosto/flags/altimg_tagging';
@@ -237,6 +242,17 @@ class Data extends AbstractHelper
     public function isVariationTaggingEnabled(StoreInterface $store = null)
     {
         return (bool)$this->getStoreConfig(self::XML_PATH_VARIATION_TAGGING, $store);
+    }
+
+    /**
+     * Returns on/off setting for custom fields
+     *
+     * @param Store|null $store the store model or null.
+     * @return boolean
+     */
+    public function isCustomFieldsEnabled(StoreInterface $store = null)
+    {
+        return (bool)$this->getStoreConfig(self::XML_PATH_USE_CUSTOM_FIELDS, $store);
     }
 
     /**

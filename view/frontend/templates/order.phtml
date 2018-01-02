@@ -90,6 +90,9 @@ $order = $this->getNostoOrder();
             <?php foreach ($order->getPurchasedItems() as $item) : ?>
                 <div class="line_item">
                     <span class="product_id"><?php echo (int)$item->getProductId(); ?></span>
+                    <?php if ($item->getSkuId()) : ?>
+                        <span class="sku_id"><?php echo (int)$item->getSkuId(); ?></span>
+                    <?php endif; ?>
                     <span class="quantity"><?php echo (int)$item->getQuantity(); ?></span>
                     <span class="name"><?php echo $this->escapeHtml($item->getName()); ?></span>
                     <span class="unit_price"><?php echo $this->formatNostoPrice($item->getUnitPrice()); ?></span>

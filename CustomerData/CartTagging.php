@@ -118,6 +118,7 @@ class CartTagging extends HashedTagging implements SectionSourceInterface
             $addedCount++;
             $data["items"][] = [
                 'product_id' => $item->getProductId(),
+                'sku_id' => $item->getSkuId(),
                 'quantity' => $item->getQuantity(),
                 'name' => $item->getName(),
                 'unit_price' => $item->getUnitPrice(),
