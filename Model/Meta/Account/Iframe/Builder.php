@@ -89,12 +89,10 @@ class Builder
 
         try {
             $metaData->setUniqueId($this->nostoHelperData->getInstallationId());
-
             $lang = substr($this->localeResolver->getLocale(), 0, 2);
             $metaData->setLanguageIsoCode($lang);
             $lang = substr($store->getConfig('general/locale/code'), 0, 2);
             $metaData->setLanguageIsoCodeShop($lang);
-
             $metaData->setEmail($this->backendAuthSession->getUser()->getEmail());
             $metaData->setPlatform('magento');
             $metaData->setShopName($store->getName());

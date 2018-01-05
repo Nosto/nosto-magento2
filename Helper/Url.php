@@ -245,10 +245,14 @@ class Url extends AbstractHelper
         foreach ($collection->getItems() as $category) {
             /** @var \Magento\Catalog\Model\Category $category */
             $url = $category->getUrl();
-            $url = $this->replaceQueryParamsInUrl(
-                ['___store' => $store->getCode()],
-                $url
-            );
+            if ($this->nostoDataHelper->getStoreCodeToUrl($store)) {
+                $url = $this->replaceQueryParamsInUrl(
+                    ['___store' => $store->getCode()],
+                    $url
+                );
+
+            }
+
             return $this->addNostoDebugParamToUrl($url);
         }
 
