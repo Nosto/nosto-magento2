@@ -241,7 +241,6 @@ class Url extends AbstractHelper
         $collection->setCurPage(1);
         $collection->setPageSize(1);
         $collection->load();
-
         foreach ($collection->getItems() as $category) {
             /** @var \Magento\Catalog\Model\Category $category */
             $url = $category->getUrl();
@@ -250,9 +249,8 @@ class Url extends AbstractHelper
                     ['___store' => $store->getCode()],
                     $url
                 );
-
             }
-
+            
             return $this->addNostoDebugParamToUrl($url);
         }
 
