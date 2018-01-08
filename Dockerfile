@@ -87,10 +87,12 @@ RUN        service mysql start && \
            cd /var/www/html && \
            composer config --global repositories.0 composer https://repo.magento.com && \
            composer config --global http-basic.repo.magento.com $repouser $repopass && \
-           composer create-project magento/community-edition 2.2.0 && \
-           cd community-edition && \
-           composer update && \
-           composer config --unset minimum-stability && \
+           composer create-project magento/community-edition
+
+RUN        cd community-edition && \
+           composer update
+
+RUN        composer config --unset minimum-stability && \
            composer config repositories.0 composer https://repo.magento.com && \
            composer config http-basic.repo.magento.com $repouser $repopass && \
            chmod +x bin/magento && \
