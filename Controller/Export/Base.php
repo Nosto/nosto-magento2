@@ -129,7 +129,7 @@ abstract class Base extends Action
         $store = $this->nostoHelperScope->getStore(true);
         $account = $this->nostoHelperAccount->findAccount($store);
         if ($account !== null) {
-            $cipherText = ExportHelper::export($account, $collection);
+            $cipherText = (new ExportHelper())->export($account, $collection);
             if ($result instanceof Raw) {
                 $result->setContents($cipherText);
             }

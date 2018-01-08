@@ -36,7 +36,7 @@
   ],
   "minimum-stability": "dev",
   "require": {
-    "nosto/php-sdk": "dev-bugfix/remove-static-abstract-function"
+    "nosto/php-sdk": "dev-bugfix/remove-static-abstract-function#ddb9f11"
   },
   "repositories": [
     {
