@@ -183,7 +183,7 @@ class Builder
      */
     private function generateRestoreCartUrl($hash, Store $store)
     {
-        $params = NostoHelperUrl::getUrlOptionsWithNoSid($store);
+        $params = $this->urlHelper->getUrlOptionsWithNoSid($store);
         $params['h'] = $hash;
         $url = $store->getUrl(NostoHelperUrl::NOSTO_PATH_RESTORE_CART, $params);
 

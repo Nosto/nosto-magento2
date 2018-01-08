@@ -44,6 +44,7 @@ use Magento\Framework\Url;
 use Magento\Store\Model\Store;
 use Magento\UrlRewrite\Model\UrlFinderInterface;
 use Magento\UrlRewrite\Service\V1\Data\UrlRewrite;
+use Nosto\Tagging\Helper\Data as NostoDataHelper;
 
 /**
  * Url builder class cannibalised from the Magento core. When trying to get the URL of a product
@@ -65,6 +66,7 @@ class Builder extends DataObject
     private $filter;
     private $urlFinder;
     private $urlFactory;
+    private $nostoDataHelper;
 
     /**
      * @param Url $urlFactory
@@ -76,6 +78,7 @@ class Builder extends DataObject
         Url $urlFactory,
         FilterManager $filter,
         UrlFinderInterface $urlFinder,
+        NostoDataHelper $nostoDataHelper,
         array $data = []
     ) {
         parent::__construct($data);
@@ -83,6 +86,7 @@ class Builder extends DataObject
         $this->filter = $filter;
         $this->urlFinder = $urlFinder;
         $this->urlFactory = $urlFactory;
+        $this->nostoDataHelper = $nostoDataHelper;
     }
 
     public function getUrlInStore(Product $product, Store $store)
@@ -101,8 +105,8 @@ class Builder extends DataObject
         }
 
         $routeParams['_nosid'] = true;          // Remove the session identifier from the URL
-        $routeParams['_scope'] = $store->getId();      // Specify the store identifier for the URL
-        $routeParams['_scope_to_url'] = true;   // Add the store's scope to the URL
+        $routeParams['_scope'] = $store->getCode();      // Specify the store identifier for the URL
+        $routeParams['_scope_to_url'] = $this->nostoDataHelper->getStoreCodeToUrl($store);
         $routeParams['_direct'] = $requestPath; // Set the product's slug as the URL
         $routeParams['_query'] = [];            // Reset the cached URL instance GET query params
 

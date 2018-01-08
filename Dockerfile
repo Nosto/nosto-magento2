@@ -113,7 +113,6 @@ RUN        service mysql start && \
               --admin-password    "Admin12345" \
               --backend-frontname "admin" && \
            bin/magento deploy:mode:set --skip-compilation production && \
-           bin/magento sampledata:deploy && \
            bin/magento setup:upgrade && \
            bin/magento setup:di:compile && \
            service mysql stop && \

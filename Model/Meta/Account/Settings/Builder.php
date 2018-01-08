@@ -45,6 +45,7 @@ use Nosto\Request\Http\HttpRequest;
 use Nosto\Tagging\Helper\Currency as NostoHelperCurrency;
 use Nosto\Tagging\Model\Meta\Account\Settings\Currencies\Builder as NostoCurrenciesBuilder;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
+use Nosto\Tagging\Helper\Data as NostoDataHelper;
 
 class Builder
 {
@@ -52,23 +53,27 @@ class Builder
     private $eventManager;
     private $nostoCurrenciesBuilder;
     private $nostoHelperCurrency;
+    private $nostoDataHelper;
 
     /**
      * @param NostoLogger $logger
      * @param ManagerInterface $eventManager
      * @param NostoHelperCurrency $nostoHelperCurrency
      * @param NostoCurrenciesBuilder $nostoCurrenciesBuilder
+     * @param NostoDataHelper $nostoDataHelper
      */
     public function __construct(
         NostoLogger $logger,
         ManagerInterface $eventManager,
         NostoHelperCurrency $nostoHelperCurrency,
-        NostoCurrenciesBuilder $nostoCurrenciesBuilder
+        NostoCurrenciesBuilder $nostoCurrenciesBuilder,
+        NostoDataHelper $nostoDataHelper
     ) {
         $this->logger = $logger;
         $this->eventManager = $eventManager;
         $this->nostoCurrenciesBuilder = $nostoCurrenciesBuilder;
         $this->nostoHelperCurrency = $nostoHelperCurrency;
+        $this->nostoDataHelper = $nostoDataHelper;
     }
 
     /**
@@ -81,7 +86,7 @@ class Builder
 
         try {
             $settings->setTitle(self::buildTitle($store));
-            $settings->setFrontPageUrl(self::buildURL($store));
+            $settings->setFrontPageUrl($this->buildURL($store));
             $settings->setCurrencyCode($store->getBaseCurrencyCode());
             $settings->setLanguageCode(substr($store->getConfig('general/locale/code'), 0, 2));
             $settings->setUseCurrencyExchangeRates(count($store->getAvailableCurrencyCodes(true)) > 1);
@@ -105,13 +110,18 @@ class Builder
      * @param Store $store the store for which to build the front-page URL
      * @return string the absolute front-page URL of the store
      */
-    private static function buildURL(Store $store)
+    private function buildURL(Store $store)
     {
-        return HttpRequest::replaceQueryParamInUrl(
-            '___store',
-            $store->getCode(),
-            $store->getBaseUrl(UrlInterface::URL_TYPE_WEB)
-        );
+        $url = $store->getBaseUrl(UrlInterface::URL_TYPE_WEB);
+        if ($this->nostoDataHelper->getStoreCodeToUrl($store)) {
+            $url = HttpRequest::replaceQueryParamInUrl(
+                '___store',
+                $store->getCode(),
+                $url
+            );
+        }
+
+        return $url;
     }
 
     /**

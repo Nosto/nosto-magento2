@@ -7,6 +7,9 @@
             <images>
                 <version>image</version>
             </images>
+            <url>
+                <store_code_to_url>1</store_code_to_url>
+            </url>
             <flags>
                 <variation_tagging>1</variation_tagging>
                 <use_custom_fields>1</use_custom_fields>

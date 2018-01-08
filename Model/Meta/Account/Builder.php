@@ -48,6 +48,7 @@ use Nosto\Tagging\Helper\Currency as NostoHelperCurrency;
 use Nosto\Tagging\Model\Meta\Account\Billing\Builder as NostoBillingBuilder;
 use Nosto\Tagging\Model\Meta\Account\Settings\Currencies\Builder as NostoCurrenciesBuilder;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
+use Nosto\Tagging\Helper\Data as NostoDataHelper;
 
 class Builder
 {
@@ -60,6 +61,7 @@ class Builder
     private $eventManager;
     private $nostoHelperCurrency;
     private $nostoCurrenciesBuilder;
+    private $nostoDataHelper;
 
     /**
      * @param NostoHelperData $nostoHelperData
@@ -77,7 +79,8 @@ class Builder
         NostoCurrenciesBuilder $nostoCurrenciesBuilder,
         ResolverInterface $localeResolver,
         NostoLogger $logger,
-        ManagerInterface $eventManager
+        ManagerInterface $eventManager,
+        NostoDataHelper $nostoDataHelper
     ) {
         $this->nostoHelperData = $nostoHelperData;
         $this->accountBillingMetaBuilder = $nostoAccountBillingMetaBuilder;
@@ -86,6 +89,7 @@ class Builder
         $this->eventManager = $eventManager;
         $this->nostoHelperCurrency = $nostoHelperCurrency;
         $this->nostoCurrenciesBuilder = $nostoCurrenciesBuilder;
+        $this->nostoDataHelper = $nostoDataHelper;
     }
 
     /**
@@ -110,14 +114,15 @@ class Builder
                 )
             );
             $metaData->setName(substr(sha1((string)rand()), 0, 8));
-            $metaData->setFrontPageUrl(
-                HttpRequest::replaceQueryParamInUrl(
+            $url = $store->getBaseUrl(UrlInterface::URL_TYPE_WEB);
+            if ($this->nostoDataHelper->getStoreCodeToUrl($store)) {
+                $url = HttpRequest::replaceQueryParamInUrl(
                     '___store',
                     $store->getCode(),
-                    $store->getBaseUrl(UrlInterface::URL_TYPE_WEB)
-                )
-            );
-
+                    $url
+                );
+            }
+            $metaData->setFrontPageUrl($url);
             $metaData->setCurrencies($this->nostoCurrenciesBuilder->build($store));
             $metaData->setCurrencyCode($this->nostoHelperCurrency->getTaggingCurrency($store)->getCode());
             $lang = substr($store->getConfig('general/locale/code'), 0, 2);

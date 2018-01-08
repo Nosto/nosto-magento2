@@ -118,6 +118,11 @@ class Data extends AbstractHelper
     const XML_PATH_LOW_STOCK_INDICATION = 'nosto/flags/low_stock_indication';
 
     /**
+     * Path to the configuration object that stores the preference for adding store code to URL
+     */
+    const XML_PATH_STORE_CODE_TO_URL = 'nosto/url/store_code_to_url';
+
+    /**
      * Path to the configuration object for customized tags
      */
     const XML_PATH_TAG = 'nosto/attributes/';
@@ -392,5 +397,16 @@ class Data extends AbstractHelper
         }
 
         return explode(',', $attributesConfig);
+    }
+
+    /**
+     * Returns the value if store codes should be added to Nosto URLs
+     *
+     * @param StoreInterface|null $store the store model or null.
+     * @return boolean the configuration value
+     */
+    public function getStoreCodeToUrl(StoreInterface $store = null)
+    {
+        return (bool)$this->getStoreConfig(self::XML_PATH_STORE_CODE_TO_URL, $store);
     }
 }
