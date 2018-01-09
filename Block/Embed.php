@@ -83,8 +83,8 @@ class Embed extends Template
 
     public function getNostoScriptUrl()
     {
-        if ($this->getServerAddress() && $this->getAccountName()) {
-            return  '//' . $this->getServerAddress() . '/include/' . $this->getAccountName();
+        if (Nosto::getServerUrl() && $this->getAccountName()) {
+            return  '//' . Nosto::getServerUrl() . '/include/' . $this->getAccountName();
         } else {
             return null;
         }
@@ -100,17 +100,5 @@ class Embed extends Template
         $store = $this->nostoHelperScope->getStore(true);
         $account = $this->nostoHelperAccount->findAccount($store);
         return $account !== null ? $account->getName() : '';
-    }
-
-    /**
-     * Returns the Nosto server address.
-     * This is taken from the local environment if it is set, or else it
-     * defaults to "connect.nosto.com".
-     *
-     * @return string the url.
-     */
-    public function getServerAddress()
-    {
-        return Nosto::getEnvVariable('NOSTO_SERVER_URL', self::DEFAULT_SERVER_ADDRESS);
     }
 }

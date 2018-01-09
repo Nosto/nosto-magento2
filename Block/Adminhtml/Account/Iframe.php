@@ -148,7 +148,7 @@ class Iframe extends BlockTemplate
 
         return [
             'iframe_handler' => [
-                'origin' => $this->getIframeOrigin(),
+                'origin' => Nosto::getIframeOriginRegex(),
                 'xhrParams' => [
                     'form_key' => $this->formKey->getFormKey()
                 ],
@@ -160,20 +160,5 @@ class Iframe extends BlockTemplate
                 ]
             ]
         ];
-    }
-
-    /**
-     * Returns the valid origin url regexp from where the iframe should accept
-     * postMessage calls.
-     * This is configurable to support different origins based on $_ENV.
-     *
-     * @return string the origin url regexp.
-     */
-    public function getIframeOrigin()
-    {
-        return Nosto::getEnvVariable(
-            'NOSTO_IFRAME_ORIGIN_REGEXP',
-            self::DEFAULT_IFRAME_ORIGIN_REGEXP
-        );
     }
 }
