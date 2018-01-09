@@ -1,5 +1,12 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 2.5.0
+* Add setting for hiding store codes from URLs
+* Add a button links to the nosto configuration page
+* Add sku id in the cart and order tagging
+* Add custom fields tagging to product
+* Fix the issue that order and product importing to nosto did not work in php strict mode
+
 ### 2.4.0
 * Add CI definitions
 * Fix doc blocks & coding standard issues
