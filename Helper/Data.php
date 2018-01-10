@@ -83,6 +83,11 @@ class Data extends AbstractHelper
     const XML_PATH_VARIATION_TAGGING = 'nosto/flags/variation_tagging';
 
     /**
+     * Path to store config for custom fields
+     */
+    const XML_PATH_USE_CUSTOM_FIELDS = 'nosto/flags/use_custom_fields';
+
+    /**
      * Path to the configuration object that stores the preference to tag alt. image data
      */
     const XML_PATH_ALTIMG_TAGGING = 'nosto/flags/altimg_tagging';
@@ -111,6 +116,11 @@ class Data extends AbstractHelper
      * Path to the configuration object that stores the preference for low stock tagging
      */
     const XML_PATH_LOW_STOCK_INDICATION = 'nosto/flags/low_stock_indication';
+
+    /**
+     * Path to the configuration object that stores the preference for adding store code to URL
+     */
+    const XML_PATH_STORE_CODE_TO_URL = 'nosto/url/store_code_to_url';
 
     /**
      * Path to the configuration object for customized tags
@@ -232,6 +242,17 @@ class Data extends AbstractHelper
     public function isVariationTaggingEnabled(StoreInterface $store = null)
     {
         return (bool)$this->getStoreConfig(self::XML_PATH_VARIATION_TAGGING, $store);
+    }
+
+    /**
+     * Returns on/off setting for custom fields
+     *
+     * @param Store|null $store the store model or null.
+     * @return boolean
+     */
+    public function isCustomFieldsEnabled(StoreInterface $store = null)
+    {
+        return (bool)$this->getStoreConfig(self::XML_PATH_USE_CUSTOM_FIELDS, $store);
     }
 
     /**
@@ -376,5 +397,16 @@ class Data extends AbstractHelper
         }
 
         return explode(',', $attributesConfig);
+    }
+
+    /**
+     * Returns the value if store codes should be added to Nosto URLs
+     *
+     * @param StoreInterface|null $store the store model or null.
+     * @return boolean the configuration value
+     */
+    public function getStoreCodeToUrl(StoreInterface $store = null)
+    {
+        return (bool)$this->getStoreConfig(self::XML_PATH_STORE_CODE_TO_URL, $store);
     }
 }

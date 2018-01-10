@@ -34,25 +34,42 @@
  *
  */
 
-/**
- *     ______     ___     ____  _____  ___   _________   ________ ______  _____ _________
- *    |_   _ `. .'   `.  |_   \|_   _.'   `.|  _   _  | |_   __  |_   _ `|_   _|  _   _  |
- *      | | `. /  .-.  \   |   \ | |/  .-.  |_/ | | \_|   | |_ \_| | | `. \| | |_/ | | \_|
- *      | |  | | |   | |   | |\ \| || |   | |   | |       |  _| _  | |  | || |     | |
- *     _| |_.' \  `-'  /  _| |_\   |\  `-'  /  _| |_     _| |__/ |_| |_.' _| |_   _| |_
- *    |______.' `.___.'  |_____|\____`.___.'  |_____|   |________|______.|_____| |_____|
- *
- * Nosto sends information over both the API and the broswer tagging. Values for the tagging is generated
- * via the Nosto corresponding objects. In order to customize the values in the markup below, you will need
- * to override the core parts of the extension. Failure to do so will result in broken and incorrect
- * recommendations.
- * Please see a reference guide such as https://github.com/Nosto/nosto-magento2/wiki
- */
+namespace Nosto\Tagging\Block\Adminhtml\Account;
 
-/** @var \Nosto\Tagging\Block\Embed $this */
-?>
-<?php if ($this->getNostoScriptUrl()) : ?>
-    <script type="text/javascript"
-            src="<?php echo $this->getNostoScriptUrl(); ?>"
-            async></script>
-<?php endif; ?>
+use Magento\Backend\Block\Template as BlockTemplate;
+use Magento\Backend\Block\Template\Context as BlockContext;
+use Nosto\Tagging\Helper\Url as NostoHelperUrl;
+use Nosto\Tagging\Helper\Scope as NostoHelperScope;
+
+class Config extends BlockTemplate
+{
+    private $urlHelper;
+    private $nostoHelperScope;
+
+    /**
+     * Constructor.
+     *
+     * @param BlockContext $context the context.
+     * @param NostoHelperUrl $urlHelper
+     * @param NostoHelperScope $nostoHelperScope
+     * @param array $data
+     */
+    public function __construct(
+        BlockContext $context,
+        NostoHelperUrl $urlHelper,
+        NostoHelperScope $nostoHelperScope,
+        array $data = []
+    ) {
+        parent::__construct($context, $data);
+
+        $this->urlHelper = $urlHelper;
+        $this->nostoHelperScope = $nostoHelperScope;
+    }
+
+    public function getConfigurationUrl()
+    {
+        $store = $this->nostoHelperScope->getSelectedStore($this->getRequest());
+
+        return $this->urlHelper->getAdminNostoConfigurationUrl($store);
+    }
+}

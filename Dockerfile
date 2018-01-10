@@ -89,6 +89,7 @@ RUN        service mysql start && \
            composer config --global http-basic.repo.magento.com $repouser $repopass && \
            composer create-project magento/community-edition && \
            cd community-edition && \
+           composer update && \
            composer config --unset minimum-stability && \
            composer config repositories.0 composer https://repo.magento.com && \
            composer config http-basic.repo.magento.com $repouser $repopass && \
@@ -112,7 +113,6 @@ RUN        service mysql start && \
               --admin-password    "Admin12345" \
               --backend-frontname "admin" && \
            bin/magento deploy:mode:set --skip-compilation production && \
-           bin/magento sampledata:deploy && \
            bin/magento setup:upgrade && \
            bin/magento setup:di:compile && \
            service mysql stop && \

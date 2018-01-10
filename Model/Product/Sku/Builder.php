@@ -42,14 +42,18 @@ use Magento\ConfigurableProduct\Model\Product\Type\Configurable\Attribute as Con
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Store\Model\Store;
 use Nosto\NostoException;
-use Nosto\Object\Product\Sku;
+use Nosto\Object\Product\Sku as NostoSku;
 use Nosto\Tagging\Helper\Currency as CurrencyHelper;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Price as NostoPriceHelper;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
+use Nosto\Tagging\Model\Product\BuilderTrait;
 
 class Builder
 {
+    use BuilderTrait {
+        BuilderTrait::__construct as builderTraitConstruct; // @codingStandardsIgnoreLine
+    }
     private $nostoDataHelper;
     private $nostoPriceHelper;
     private $galleryReadHandler;
@@ -79,17 +83,18 @@ class Builder
         $this->eventManager = $eventManager;
         $this->galleryReadHandler = $galleryReadHandler;
         $this->nostoCurrencyHelper = $nostoCurrencyHelper;
+        $this->builderTraitConstruct($nostoHelperData, $logger);
     }
 
     /**
      * @param Product $product
      * @param Store $store
      * @param ConfigurableAttribute[] $attributes
-     * @return Sku
+     * @return NostoSku
      */
     public function build(Product $product, Store $store, $attributes)
     {
-        $nostoSku = new Sku();
+        $nostoSku = new NostoSku();
 
         try {
             $nostoSku->setId($product->getId());
@@ -115,13 +120,17 @@ class Builder
                 $nostoSku->setGtin($product->getData($gtinAttribute));
             }
 
-            foreach ($attributes as $attribute) {
-                try {
-                    $code = $attribute->getProductAttribute()->getAttributeCode();
-                    $nostoSku->addCustomField($code, $product->getAttributeText($code));
-                } catch (NostoException $e) {
-                    $this->logger->exception($e);
+            if ($this->nostoDataHelper->isCustomFieldsEnabled()) {
+                foreach ($attributes as $attribute) {
+                    try {
+                        $code = $attribute->getProductAttribute()->getAttributeCode();
+                        $nostoSku->addCustomField($code, $product->getAttributeText($code));
+                    } catch (NostoException $e) {
+                        $this->logger->exception($e);
+                    }
                 }
+                //load user defined attributes from attribute set
+                $nostoSku->setCustomFields($this->buildCustomFields($product, $store));
             }
         } catch (NostoException $e) {
             $this->logger->exception($e);
@@ -130,27 +139,5 @@ class Builder
         $this->eventManager->dispatch('nosto_sku_load_after', ['sku' => $nostoSku, 'magentoProduct' => $product]);
 
         return $nostoSku;
-    }
-
-    /**
-     * @param Product $product
-     * @param Store $store
-     * @return string|null
-     */
-    public function buildImageUrl(Product $product, Store $store)
-    {
-        $primary = $this->nostoDataHelper->getProductImageVersion($store);
-        $secondary = 'image'; // The "base" image.
-        $media = $product->getMediaAttributeValues();
-        $image = (isset($media[$primary])
-            ? $media[$primary]
-            : (isset($media[$secondary]) ? $media[$secondary] : null)
-        );
-
-        if (empty($image)) {
-            return null;
-        }
-
-        return $product->getMediaConfig()->getMediaUrl($image);
     }
 }

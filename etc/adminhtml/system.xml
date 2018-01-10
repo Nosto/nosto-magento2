@@ -55,7 +55,18 @@
                     <source_model>Nosto\Tagging\Model\Config\Source\Image</source_model>
                 </field>
             </group>
-            <group id="optional" translate="label" type="text" sortOrder="20" showInDefault="1"
+            <group id="url" translate="label" type="text" sortOrder="20" showInDefault="1"
+                   showInWebsite="1" showInStore="1">
+                <label>URL options</label>
+                <field id="store_code_to_url" translate="label comment" type="select" sortOrder="80"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Add Store Code to Nosto Urls</label>
+                    <comment><![CDATA[Set this to no if you have configured different URLs or domains for each store or if you are only using single store view.]]>
+                    </comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+            </group>
+            <group id="optional" translate="label" type="text" sortOrder="30" showInDefault="1"
                    showInWebsite="1" showInStore="1">
                 <label>Other Options</label>
                 <field id="brand" translate="label comment" type="select" sortOrder="10"
@@ -98,6 +109,13 @@
                     <comment><![CDATA[Enable tagging variation data for use in recommendations.
                         <strong style="color:red">Warning!</strong> Enabling variation data
                         tagging may minutely impact performance.]]>
+                    </comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="use_custom_fields" translate="label comment" type="select" sortOrder="10"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enable custom fields</label>
+                    <comment>Send attributes from product attribute set to Nosto as custom fields
                     </comment>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>

@@ -45,6 +45,7 @@ use Nosto\OAuth;
 use Nosto\Object\Signup\Account;
 use Nosto\Request\Api\Token;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
+use Nosto\Tagging\Helper\Data as NostoHelperData;
 
 class Builder
 {
@@ -52,6 +53,7 @@ class Builder
     private $urlBuilder;
     private $logger;
     private $eventManager;
+    private $nostoHelperData;
 
     /**
      * @param ResolverInterface $localeResolver
@@ -63,12 +65,14 @@ class Builder
         ResolverInterface $localeResolver,
         Url $urlBuilder,
         NostoLogger $logger,
-        ManagerInterface $eventManager
+        ManagerInterface $eventManager,
+        NostoHelperData $nostoHelperData
     ) {
         $this->localeResolver = $localeResolver;
         $this->urlBuilder = $urlBuilder;
         $this->logger = $logger;
         $this->eventManager = $eventManager;
+        $this->nostoHelperData = $nostoHelperData;
     }
 
     /**
@@ -86,7 +90,7 @@ class Builder
                 'nosto/oauth',
                 [
                     '_nosid' => true,
-                    '_scope_to_url' => true,
+                    '_scope_to_url' => $this->nostoHelperData->getStoreCodeToUrl($store),
                     '_scope' => $store->getCode(),
                 ]
             );
