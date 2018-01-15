@@ -46,6 +46,10 @@ ENV         COMPOSER_ALLOW_SUPERUSER 1
 ARG         repouser=569521a9babbeda71b5cb25ce40168a3
 ARG         repopass=ef77d5e321fec542f3102e2059f3d192
 
+RUN         groupadd -r plugins -g 113 && \
+            useradd -ms /bin/bash -u 113 -r -g plugins plugins && \
+            usermod -a -G www-data plugins
+
 # Install all core dependencies required for setting up Apache and PHP atleast
 RUN         apt-get -y -q install unzip wget libfreetype6-dev libjpeg-dev \
             libmcrypt-dev libreadline-dev libpng-dev libicu-dev default-mysql-client \
