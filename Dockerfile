@@ -23,8 +23,8 @@ RUN apt-get update && \
 
 ENV         LANGUAGE en_US.UTF-8
 ENV         LANG en_US.UTF-8
+ENV         LC_ALL en_US.UTF-8
 ENV         TERM xterm
-RUN         export LC_ALL=en_US.UTF-8
 
 # Environment variables to force the extension to connect to a specified instance
 ENV         NOSTO_SERVER_URL staging.nosto.com
