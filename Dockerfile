@@ -2,6 +2,8 @@ FROM debian:stretch-slim
 
 MAINTAINER  Nosto "platforms@nosto.com"
 
+ENV        DEBIAN_FRONTEND noninteractive
+
 # Do not install suggested dependencies
 RUN echo -n "APT::Install-Recommends \"false\";\nAPT::Install-Suggests \"false\";" \
             | tee /etc/apt/apt.conf
@@ -39,7 +41,6 @@ ENV         MYSQL_ENV_MYSQL_ROOT root
 ENV         MAGENTO_ADMIN_USER admin
 ENV         MAGENTO_ADMIN_PASSWORD Admin12345
 ENV         COMPOSER_ALLOW_SUPERUSER 1
-ENV         DEBIAN_FRONTEND noninteractive
 
 # Satis credentials for repo.magento.com to download the community edtition
 ARG         repouser=569521a9babbeda71b5cb25ce40168a3
