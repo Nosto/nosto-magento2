@@ -113,7 +113,15 @@ class Add implements ObserverInterface
         try {
             if ($this->moduleManager->isEnabled(NostoHelperData::MODULE_NAME)) {
                 if (!$this->nostoHelperData->isSendAddToCartEventEnabled()) {
-                     return;
+                    return;
+                }
+
+                $nostoAccount = $this->nostoHelperAccount->findAccount(
+                    $this->nostoHelperScope->getStore()
+                );
+
+                if (!$nostoAccount || !$nostoAccount->isConnectedToNosto()) {
+                    return;
                 }
 
                 HttpRequest::buildUserAgent(
@@ -154,13 +162,8 @@ class Add implements ObserverInterface
                     $this->logger->info('Cannot find quote from the event.');
                 }
 
-                $nostoAccount = $this->nostoHelperAccount->findAccount(
-                    $this->nostoHelperScope->getStore()
-                );
-                if ($nostoAccount !== null) {
-                    $cartOperation = new CartOperation($nostoAccount);
-                    $cartOperation->updateCart($cartUpdate, $nostoCustomerId, $nostoAccount->getName());
-                }
+                $cartOperation = new CartOperation($nostoAccount);
+                $cartOperation->updateCart($cartUpdate, $nostoCustomerId, $nostoAccount->getName());
             }
         } catch (\Exception $e) {
             $this->logger->exception($e);
