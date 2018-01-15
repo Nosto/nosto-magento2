@@ -10,6 +10,15 @@ RUN echo "deb http://cloudfront.debian.net/debian stretch main \
             \ndeb http://cloudfront.debian.net/debian-security stretch/updates main" \
             | tee /etc/apt/sources.list
 
+# Setup locale
+RUN apt-get update && \
+            apt-get -y -q upgrade && \
+            apt-get -y -q install apt-utils locales && \
+            sed -i 's/^# *\(en_US.UTF-8\)/\1/' /etc/locale.gen && \
+            ln -s /etc/locale.alias /usr/share/locale/locale.alias && \
+            locale-gen && \
+            apt-get -y -q clean
+
 ENV         LANGUAGE en_US.UTF-8
 ENV         LANG en_US.UTF-8
 ENV         TERM xterm
