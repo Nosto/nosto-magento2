@@ -4,6 +4,12 @@ FROM debian:stretch-slim
 RUN echo -n "APT::Install-Recommends \"false\";\nAPT::Install-Suggests \"false\";" \
             | tee /etc/apt/apt.conf
 
+# Use Debian Mirrors via CloudFront
+RUN echo "deb http://cloudfront.debian.net/debian stretch main \
+            \ndeb http://cloudfront.debian.net/debian stretch-updates main \
+            \ndeb http://cloudfront.debian.net/debian-security stretch/updates main" \
+            | tee /etc/apt/sources.list
+
 ENV         LANGUAGE en_US.UTF-8
 ENV         LANG en_US.UTF-8
 ENV         TERM xterm
