@@ -68,7 +68,7 @@ RUN         php -r "readfile('https://getcomposer.org/installer');" > composer-s
             php -r "unlink('composer-setup.php');"
 
 RUN        service mysql start && \
-           mysql -e "GRANT ALL ON *.* TO 'root'@'localhost' IDENTIFIED BY 'root'" && \
+           mysql -e "SET PASSWORD FOR 'root'@'localhost' = PASSWORD('root');" && \
            mysql -h localhost -uroot -proot -e "CREATE SCHEMA IF NOT EXISTS magento2" && \
            cd /var/www/html && \
            composer config --global repositories.0 composer https://repo.magento.com && \
