@@ -47,59 +47,25 @@ ARG         repouser=569521a9babbeda71b5cb25ce40168a3
 ARG         repopass=ef77d5e321fec542f3102e2059f3d192
 
 # Install all core dependencies required for setting up Apache and PHP atleast
-RUN         apt-get update && \
-            apt-get -y install unzip && \
-            apt-get -y install wget && \
-            apt-get -y install libfreetype6-dev && \
-            apt-get -y install libjpeg-dev && \
-            apt-get -y install libmcrypt-dev && \
-            apt-get -y install libreadline-dev && \
-            apt-get -y install libpng-dev && \
-            apt-get -y install libicu-dev && \
-            apt-get -y install mysql-client && \
-            apt-get -y install libmcrypt-dev && \
-            apt-get -y install libxml2-dev && \
-            apt-get -y install libxslt1-dev && \
-            apt-get -y install vim && \
-            apt-get -y install nano && \
-            apt-get -y install git && \
-            apt-get -y install nano && \
-            apt-get -y install tree && \
-            apt-get -y install curl && \
-            apt-get -y install software-properties-common && \
-            apt-get -y install language-pack-en-base && \
-            apt-get -y install supervisor
-
-# Add the custom PHP repository to install the PHP modules. In order to use the
-# command to add a repo, the package software-properties-common must be already
-# installed
-RUN        add-apt-repository ppa:ondrej/php
+RUN         apt-get -y -q install unzip wget libfreetype6-dev libjpeg-dev \
+            libmcrypt-dev libreadline-dev libpng-dev libicu-dev default-mysql-client \
+            libmcrypt-dev libxml2-dev libxslt1-dev vim nano git tree curl \
+            supervisor ca-certificates && \
+            apt-get -y clean
 
 # Install Apache, MySQL and all the required development and prod PHP modules
-RUN        apt-get update && \
-           apt-get -y install apache2 && \
-           apt-get -y install php7.0 && \
-           apt-get -y install mysql-client-core-5.6 && \
-           apt-get -y install mysql-server-core-5.6 && \
-           apt-get -y install mysql-server-5.6 && \
-           apt-get -y install php7.0-dev && \
-           apt-get -y install php7.0-gd && \
-           apt-get -y install php7.0-mcrypt && \
-           apt-get -y install php7.0-intl && \
-           apt-get -y install php7.0-xsl && \
-           apt-get -y install php7.0-zip && \
-           apt-get -y install php7.0-bcmath && \
-           apt-get -y install php7.0-curl && \
-           apt-get -y install php7.0-mbstring && \
-           apt-get -y install php7.0-mysql && \
-           apt-get -y install php-ast && \
-           apt-get -y install php7.0-soap && \
-           a2enmod rewrite && phpenmod ast soap && \
-           a2dissite 000-default.conf
+RUN         apt-get -y -q install apache2 php7.0 default-mysql-client-core \
+            default-mysql-server-core default-mysql-server php7.0-dev php7.0-gd \
+            php7.0-mcrypt php7.0-intl php7.0-xsl php7.0-zip php7.0-bcmath \
+            php7.0-curl php7.0-mbstring php7.0-mysql php-ast php7.0-soap && \
+            apt-get -y clean
 
-RUN        php -r "readfile('https://getcomposer.org/installer');" > composer-setup.php && \
-           php composer-setup.php --install-dir=/usr/local/bin --filename=composer && \
-           php -r "unlink('composer-setup.php');"
+RUN         a2enmod rewrite && phpenmod ast soap && \
+            a2dissite 000-default.conf
+
+RUN         php -r "readfile('https://getcomposer.org/installer');" > composer-setup.php && \
+            php composer-setup.php --install-dir=/usr/local/bin --filename=composer && \
+            php -r "unlink('composer-setup.php');"
 
 RUN        service mysql start && \
            mysql -e "GRANT ALL ON *.* TO 'root'@'localhost' IDENTIFIED BY 'root'" && \
