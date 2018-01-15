@@ -141,7 +141,7 @@ class Add implements ObserverInterface
                     $quoteItem,
                     $store->getCurrentCurrencyCode() ?: $store->getDefaultCurrencyCode()
                 );
-                $cartUpdate->setAddedItems(array($addedItem));
+                $cartUpdate->setAddedItems([$addedItem]);
 
                 $quote = $quoteItem->getQuote();
                 if ($quote instanceof \Magento\Quote\Model\Quote) {
