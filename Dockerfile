@@ -64,6 +64,12 @@ RUN         apt-get -y -q install apache2 php7.0 default-mysql-client-core \
             php7.0-curl php7.0-mbstring php7.0-mysql php-ast php7.0-soap && \
             apt-get -y clean
 
+# Upgrade ast extension
+RUN         apt-get -y -q install build-essential php-pear && \
+            pecl install ast && \
+            apt-get purge -y build-essential && \
+            apt-get -y clean
+
 RUN         a2enmod rewrite && phpenmod ast soap && \
             a2dissite 000-default.conf
 
