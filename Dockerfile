@@ -1,4 +1,4 @@
-FROM ubuntu:14.04
+FROM debian:stretch-slim
 
 ENV         LANGUAGE en_US.UTF-8
 ENV         LANG en_US.UTF-8
