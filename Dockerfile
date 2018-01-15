@@ -1,5 +1,7 @@
 FROM debian:stretch-slim
 
+MAINTAINER  Nosto "platforms@nosto.com"
+
 # Do not install suggested dependencies
 RUN echo -n "APT::Install-Recommends \"false\";\nAPT::Install-Suggests \"false\";" \
             | tee /etc/apt/apt.conf
@@ -30,8 +32,6 @@ ENV         NOSTO_API_BASE_URL https://staging-api.nosto.com
 ENV         NOSTO_OAUTH_BASE_URL https://staging.nosto.com/oauth
 ENV         NOSTO_WEB_HOOK_BASE_URL https://staging.nosto.com
 ENV         NOSTO_IFRAME_ORIGIN_REGEXP .*
-
-MAINTAINER  Nosto "platforms@nosto.com"
 
 ENV         MYSQL_ENV_MYSQL_DATABASE magento2
 ENV         MYSQL_ENV_MYSQL_USER root
