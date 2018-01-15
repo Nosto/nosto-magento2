@@ -1,5 +1,9 @@
 FROM debian:stretch-slim
 
+# Do not install suggested dependencies
+RUN echo -n "APT::Install-Recommends \"false\";\nAPT::Install-Suggests \"false\";" \
+            | tee /etc/apt/apt.conf
+
 ENV         LANGUAGE en_US.UTF-8
 ENV         LANG en_US.UTF-8
 ENV         TERM xterm
