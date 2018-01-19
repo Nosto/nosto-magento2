@@ -1,5 +1,8 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 2.6.0
+* Add support for sending cart updates to nosto when product is added to the shopping cart
+
 ### 2.5.0
 * Add setting for hiding store codes from URLs
 * Add a button links to the nosto configuration page
@@ -19,7 +22,7 @@ All notable changes to this project will be documented in this file. This projec
 * Fix the issue with sku availability being always in stock
 
 ### 2.3.9
-* Remove debug logging for database queries 
+* Remove debug logging for database queries
 
 ### 2.3.8
 * Fix the issue that current currency tagging is missing
@@ -33,18 +36,18 @@ All notable changes to this project will be documented in this file. This projec
 
 ### 2.3.5
 * Fix indexer bugs
- 
+
 ### 2.3.4
 * Fix tracking issue of adding sku to cart
 
 ### 2.3.3
-* Fix exception handling bug 
+* Fix exception handling bug
 
 ### 2.3.2
-* Fix Nosto customer saving 
+* Fix Nosto customer saving
 
 ### 2.3.1
-* Define arguments for custom logger 
+* Define arguments for custom logger
 * Handle non-existent categories in product category builder
 * Move the second recommendation slot under the search results on search results page
 
@@ -56,7 +59,7 @@ Improvements
 * Report Nosto exception to New Relic if available
 * Send more contact details to Nosto during the order confirmation
 * Omit inventory level and margin determination when product model is used for tagging
- 
+
 ### 2.2.3
 Bug fixes
 * Ignore disabled variations from price calculation and SKU tagging
@@ -69,7 +72,7 @@ Bug fixes
 Bug fixes
 * Fix the price handling for configurable products with no SKUs
 * Fix product observer to fetch the parent configurable product
-* Check if product is scheduled / staged before calling Nosto API 
+* Check if product is scheduled / staged before calling Nosto API
 
 ### 2.2.0
 Improvements
@@ -96,14 +99,14 @@ Improvements
 Bug fixes
 * Set area code outside constructor in product sync command
 * Remove multi-currency check from product template
-* Check Nosto account before rendering the javascript stub 
+* Check Nosto account before rendering the javascript stub
 * Add null checks item builders
 
 ### 2.0.1
 * Fix the multi-currency variation issue when only single currency is used
 
 ### 2.0.0
-* Add possibility to use following attributes in Nosto 
+* Add possibility to use following attributes in Nosto
   * GTIN
   * brand
   * inventory level
@@ -121,7 +124,7 @@ Bug fixes
 * Implement support for "Add to cart" button for recommendations
 * Update account settings over the API to Nosto
 * Fix product price issue with special prices
-* Fix product price to obey tax rules 
+* Fix product price to obey tax rules
 * Fix product URL sent via API to Nosto
 * Fix list price issue configurable products
 * Update to the latest Nosto PHP SDK
@@ -137,14 +140,14 @@ Bug fixes
 ### 1.2.0-RC1
 * Bump to SDK version 2.5.2
 * Make compatible with MEQP
-    
+
 ### 1.1.1
 * Fix the errors when running Magento compiler
 * Change the block definition of referenceContainer to referenceBlock
-    
+
 ### 1.1.0
 * Use Knockout.js for dynamic cart and customer tagging in order to handle full page cache correctly
-    
+
 ### 1.0.1
 * Add "js stub" for Nosto script
 * Fix issue with orders when Nosto module is installed but Nosto account is not connected
@@ -154,22 +157,22 @@ Bug fixes
 
 ### 1.0.0-RC4
 * Remove variation tagging
-    
+
 ### 1.0.0-RC3
 * Fix store resolving issue(#18)
-    
+
 ### 1.0.0-RC2
 * Fix javascript include issue (#16)
 * Fix multi store issue (#15)
 
 ### 1.0.0-RC
 * Rename the package to nosto/module-nostotagging
-    
+
 ### 0.2.0
 * Dispatch event after Nosto product is loaded
 * Improve exception handling
 * Fix acl issues
-        
+
 ### 0.1.1
 * Fix the composer files to autoload Nosto PHP SDK correctly
 
