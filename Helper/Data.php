@@ -113,6 +113,11 @@ class Data extends AbstractHelper
     const XML_PATH_PRODUCT_UPDATES = 'nosto/flags/product_updates';
 
     /**
+     * Path to store config for send add to cart event to nosto
+     */
+    const XML_PATH_SEND_ADD_TO_CART_EVENT = 'nosto/flags/send_add_to_cart_event';
+
+    /**
      * Path to the configuration object that stores the preference for low stock tagging
      */
     const XML_PATH_LOW_STOCK_INDICATION = 'nosto/flags/low_stock_indication';
@@ -308,6 +313,17 @@ class Data extends AbstractHelper
     public function isProductUpdatesEnabled(StoreInterface $store = null)
     {
         return (bool)$this->getStoreConfig(self::XML_PATH_PRODUCT_UPDATES, $store);
+    }
+
+    /**
+     * Returns if real time cart updates are enabled from the configuration table
+     *
+     * @param StoreInterface|null $store the store model or null.
+     * @return bool the configuration value
+     */
+    public function isSendAddToCartEventEnabled(StoreInterface $store = null)
+    {
+        return (bool)$this->getStoreConfig(self::XML_PATH_SEND_ADD_TO_CART_EVENT, $store);
     }
 
     /**

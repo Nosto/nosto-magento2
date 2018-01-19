@@ -19,6 +19,7 @@
                 <product_updates>1</product_updates>
                 <full_reindex>1</full_reindex>
                 <low_stock_indication>0</low_stock_indication>
+                <send_add_to_cart_event>0</send_add_to_cart_event>
             </flags>
         </nosto>
     </default>
