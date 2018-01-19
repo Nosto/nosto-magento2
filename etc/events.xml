@@ -46,4 +46,7 @@
     <event name="review_delete_after">
         <observer name="nosto_review_delete_after" instance="Nosto\Tagging\Observer\Product\Review"/>
     </event>
+    <event name="checkout_cart_product_add_after">
+        <observer name="nosto_checkout_cart_product_add_after" instance="Nosto\Tagging\Observer\Cart\Add"/>
+    </event>
 </config>
