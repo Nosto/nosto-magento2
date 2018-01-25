@@ -44,6 +44,7 @@ use Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable as
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManager;
 use Nosto\Object\Signup\Account;
+use Nosto\Operation\DeleteProduct;
 use Nosto\Operation\UpsertProduct;
 use Nosto\Request\Http\HttpRequest;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
@@ -375,21 +376,15 @@ class Service
     {
         $this->logger->info(
             sprintf(
-                'Updating total of %d unique products for store %s',
+                'Deleting / discontinuing total of %d unique products for store %s',
                 count($uniqueProductIds),
                 $store->getName()
             )
         );
-        $op = new UpsertProduct($nostoAccount);
-
-        foreach ($uniqueProductIds as $productId) {
-            $nostoProduct = $this->nostoProductBuilder->buildForDeletion($productId);
-            $op->addProduct($nostoProduct);
-            $this->logger->info('product to be deleted: ' . $productId);
-        }
-
+        $op = new DeleteProduct($nostoAccount);
+        $op->setProductIds($uniqueProductIds);
         try {
-            $op->upsert();
+            $op->delete();
             $this->logger->info(
                 sprintf(
                     'Sent %d products to for deletion %s (%d)',
@@ -401,7 +396,7 @@ class Service
         } catch (\Exception $e) {
             $this->logger->error(
                 sprintf(
-                    'Failed to send %d products for store %s (%d)' .
+                    'Failed to delete %d products for store %s (%d)' .
                     ' Error was %s',
                     count($uniqueProductIds),
                     $store->getName(),
