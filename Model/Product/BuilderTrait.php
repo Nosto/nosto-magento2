@@ -79,8 +79,10 @@ trait BuilderTrait
         /** @var AbstractAttribute $attribute */
         foreach ($attributes as $attribute) {
             try {
-                //tag user defined attributes only
-                if ($attribute->getIsUserDefined()) {
+                //tag user defined attributes that are visible or filterable
+                if ($attribute->getIsUserDefined()
+                    && ($attribute->getIsVisibleOnFront() || $attribute->getIsFilterable())
+                ) {
                     $attributeCode = $attribute->getAttributeCode();
                     //if data is null, do not try to get the value
                     //because the label could be "No" even the value is null
