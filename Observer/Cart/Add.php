@@ -166,7 +166,7 @@ class Add implements ObserverInterface
                             $metadata
                         );
                     } else {
-                        $this->logger->info('Head sent already. Cannot set the cookie to trigger cart popup.');
+                        $this->logger->info('Headers sent already. Cannot set the cookie to trigger cart popup.');
                     }
                 } else {
                     //use the message way
