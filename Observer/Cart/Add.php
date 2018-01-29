@@ -69,7 +69,7 @@ class Add implements ObserverInterface
     private $nostoCartItemBuilder;
     private $nostoCartBuilder;
     private $cookieMetadataFactory;
-    const COOKIE_NAME = 'nosto.showAddToCartPopup';
+    const COOKIE_NAME = 'nosto.itemsAddedToCart';
 
     /** @noinspection PhpUndefinedClassInspection */
     /**
@@ -159,6 +159,8 @@ class Add implements ObserverInterface
                         $metadata = $this->cookieMetadataFactory
                             ->createPublicCookieMetadata()
                             ->setDuration(60)
+                            ->setSecure(false)
+                            ->setHttpOnly(false)
                             ->setPath('/');
                         $this->cookieManager->setPublicCookie(
                             self::COOKIE_NAME,
@@ -166,7 +168,7 @@ class Add implements ObserverInterface
                             $metadata
                         );
                     } else {
-                        $this->logger->info('Headers sent already. Cannot set the cookie to trigger cart popup.');
+                        $this->logger->info('Headers sent already. Cannot set the cookie.');
                     }
                 } else {
                     //use the message way
