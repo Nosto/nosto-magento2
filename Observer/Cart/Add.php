@@ -153,24 +153,24 @@ class Add implements ObserverInterface
                 );
                 $cartUpdate->setAddedItems([$addedItem]);
 
-                if (!$this->nostoHelperData->isSendAddToCartEventEnabled()) {
-                    if (!headers_sent()) {
-                        //use the cookie way
-                        $metadata = $this->cookieMetadataFactory
-                            ->createPublicCookieMetadata()
-                            ->setDuration(60)
-                            ->setSecure(false)
-                            ->setHttpOnly(false)
-                            ->setPath('/');
-                        $this->cookieManager->setPublicCookie(
-                            self::COOKIE_NAME,
-                            SerializationHelper::serialize($cartUpdate),
-                            $metadata
-                        );
-                    } else {
-                        $this->logger->info('Headers sent already. Cannot set the cookie.');
-                    }
+                if (!headers_sent()) {
+                    //use the cookie way
+                    $metadata = $this->cookieMetadataFactory
+                        ->createPublicCookieMetadata()
+                        ->setDuration(60)
+                        ->setSecure(false)
+                        ->setHttpOnly(false)
+                        ->setPath('/');
+                    $this->cookieManager->setPublicCookie(
+                        self::COOKIE_NAME,
+                        SerializationHelper::serialize($cartUpdate),
+                        $metadata
+                    );
                 } else {
+                    $this->logger->info('Headers sent already. Cannot set the cookie.');
+                }
+
+                if ($this->nostoHelperData->isSendAddToCartEventEnabled()) {
                     //use the message way
                     $quote = $quoteItem->getQuote();
                     if ($quote instanceof \Magento\Quote\Model\Quote) {
