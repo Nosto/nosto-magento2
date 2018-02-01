@@ -47,6 +47,7 @@ use Magento\Bundle\Model\Product\Type as BundleType;
 use Magento\Catalog\Model\ProductFactory;
 use Magento\CatalogRule\Model\ResourceModel\RuleFactory;
 use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
+use Nosto\Tagging\Model\Product\Repository as NostoProductRepository;
 
 /**
  * Price helper used for product price related tasks.
@@ -57,6 +58,7 @@ class Price extends AbstractHelper
     private $productFactory;
     private $priceRuleFactory;
     private $localeDate;
+    private $nostoProductRepository;
 
     /**
      * Constructor.
@@ -66,19 +68,23 @@ class Price extends AbstractHelper
      * @param ProductFactory $productFactory
      * @param RuleFactory $ruleFactory
      * @param TimezoneInterface $localeDate
+     * @param NostoProductRepository $nostoProductRepository
      */
     public function __construct(
         Context $context,
         CatalogHelper $catalogHelper,
         ProductFactory $productFactory,
         RuleFactory $ruleFactory,
-        TimezoneInterface $localeDate
+        TimezoneInterface $localeDate,
+        NostoProductRepository $nostoProductRepository
     ) {
         parent::__construct($context);
         $this->catalogHelper = $catalogHelper;
         $this->productFactory = $productFactory;
         $this->priceRuleFactory = $ruleFactory;
         $this->localeDate = $localeDate;
+        $this->nostoProductRepository = $nostoProductRepository;
+
     }
 
     /**
@@ -186,11 +192,14 @@ class Price extends AbstractHelper
                 $productType = $product->getTypeInstance();
                 $price = null;
                 if ($productType instanceof ConfigurableType) {
-                    $products = $productType->getUsedProducts($product);
+                    $products = $this->nostoProductRepository->getSkus($product);
                     $skus = [];
                     $finalPrices = [];
                     foreach ($products as $sku) {
-                        if ($sku instanceof Product && !$sku->isDisabled()) {
+                        if ($sku instanceof Product
+                            && !$sku->isDisabled()
+                            && $sku->isAvailable()
+                        ) {
                             $finalPrices[$sku->getId()] = $this->getProductPrice(
                                 $sku,
                                 true,
