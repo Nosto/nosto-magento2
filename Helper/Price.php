@@ -45,6 +45,8 @@ use Magento\GroupedProduct\Model\Product\Type\Grouped as GroupedType;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable as ConfigurableType;
 use Magento\Bundle\Model\Product\Type as BundleType;
 use Magento\Catalog\Model\ProductFactory;
+use Magento\CatalogRule\Model\ResourceModel\RuleFactory;
+use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
 
 /**
  * Price helper used for product price related tasks.
@@ -53,6 +55,8 @@ class Price extends AbstractHelper
 {
     private $catalogHelper;
     private $productFactory;
+    private $priceRuleFactory;
+    private $localeDate;
 
     /**
      * Constructor.
@@ -60,15 +64,21 @@ class Price extends AbstractHelper
      * @param Context $context the context.
      * @param CatalogHelper $catalogHelper the catalog helper.
      * @param ProductFactory $productFactory
+     * @param RuleFactory $ruleFactory
+     * @param TimezoneInterface $localeDate
      */
     public function __construct(
         Context $context,
         CatalogHelper $catalogHelper,
-        ProductFactory $productFactory
+        ProductFactory $productFactory,
+        RuleFactory $ruleFactory,
+        TimezoneInterface $localeDate
     ) {
         parent::__construct($context);
         $this->catalogHelper = $catalogHelper;
         $this->productFactory = $productFactory;
+        $this->priceRuleFactory = $ruleFactory;
+        $this->localeDate = $localeDate;
     }
 
     /**
@@ -203,7 +213,21 @@ class Price extends AbstractHelper
                 break;
 
             default:
-                $price = $finalPrice ? $product->getFinalPrice() : $product->getPrice();
+                $date = $this->localeDate->scopeDate();
+                $wid = $product->getStore()->getWebsiteId();
+                $gid = 0;
+                $pid = $product->getId();
+                if ($finalPrice) {
+                    $currentProductPrice = $product->getFinalPrice();
+                    try {
+                        $currentRulePrice = $this->priceRuleFactory->create()->getRulePrice($date, $wid, $gid, $pid);
+                    } catch (\Exception $e) {
+                        $currentRulePrice = $product->getFinalPrice();
+                    }
+                    $price = min([$currentProductPrice, $currentRulePrice, $product->getPrice()]);
+                } else {
+                    $price = $product->getPrice();
+                }
                 if ($inclTax) {
                     $price = $this->catalogHelper->getTaxPrice($product, $price, true);
                 }
