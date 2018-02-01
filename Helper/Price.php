@@ -84,7 +84,6 @@ class Price extends AbstractHelper
         $this->priceRuleFactory = $ruleFactory;
         $this->localeDate = $localeDate;
         $this->nostoProductRepository = $nostoProductRepository;
-
     }
 
     /**
