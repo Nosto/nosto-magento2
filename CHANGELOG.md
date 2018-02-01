@@ -1,5 +1,8 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 2.6.1
+* Improve add to cart popup trigger
+
 ### 2.6.0
 * Add support for sending cart updates to nosto when product is added to the shopping cart
 
