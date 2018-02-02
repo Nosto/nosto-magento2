@@ -2,6 +2,8 @@ All notable changes to this project will be documented in this file. This projec
 
 ### 2.6.1
 * Improve add to cart popup trigger
+* Add support for removing / discontinuing products in Nosto
+* Apply catalog price rules for product API calls
 
 ### 2.6.0
 * Add support for sending cart updates to nosto when product is added to the shopping cart
