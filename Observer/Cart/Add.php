@@ -40,7 +40,9 @@ use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Module\Manager as ModuleManager;
 use Magento\Framework\Stdlib\CookieManagerInterface;
+use Magento\Framework\Stdlib\Cookie\CookieMetadataFactory;
 use Magento\Quote\Model\Quote\Item;
+use Nosto\Helper\SerializationHelper;
 use Nosto\Object\Event\Cart\Update;
 use Nosto\Operation\CartOperation;
 use Nosto\Request\Http\HttpRequest;
@@ -66,6 +68,8 @@ class Add implements ObserverInterface
     private $cookieManager;
     private $nostoCartItemBuilder;
     private $nostoCartBuilder;
+    private $cookieMetadataFactory;
+    const COOKIE_NAME = 'nosto.itemsAddedToCart';
 
     /** @noinspection PhpUndefinedClassInspection */
     /**
@@ -88,7 +92,8 @@ class Add implements ObserverInterface
         ModuleManager $moduleManager,
         CookieManagerInterface $cookieManager,
         NostoCartItemBuilder $nostoCartItemBuilder,
-        NostoCartBuilder $nostoCartBuilder
+        NostoCartBuilder $nostoCartBuilder,
+        CookieMetadataFactory $cookieMetadataFactory
     ) {
         $this->nostoHelperData = $nostoHelperData;
         $this->nostoHelperAccount = $nostoHelperAccount;
@@ -98,6 +103,7 @@ class Add implements ObserverInterface
         $this->cookieManager = $cookieManager;
         $this->nostoCartItemBuilder = $nostoCartItemBuilder;
         $this->nostoCartBuilder = $nostoCartBuilder;
+        $this->cookieMetadataFactory = $cookieMetadataFactory;
     }
 
     /**
@@ -112,10 +118,6 @@ class Add implements ObserverInterface
     {
         try {
             if ($this->moduleManager->isEnabled(NostoHelperData::MODULE_NAME)) {
-                if (!$this->nostoHelperData->isSendAddToCartEventEnabled()) {
-                    return;
-                }
-
                 $nostoAccount = $this->nostoHelperAccount->findAccount(
                     $this->nostoHelperScope->getStore()
                 );
@@ -151,19 +153,39 @@ class Add implements ObserverInterface
                 );
                 $cartUpdate->setAddedItems([$addedItem]);
 
-                $quote = $quoteItem->getQuote();
-                if ($quote instanceof \Magento\Quote\Model\Quote) {
-                    $nostoCart = $this->nostoCartBuilder->build(
-                        $quote,
-                        $store
+                if (!headers_sent()) {
+                    //use the cookie way
+                    $metadata = $this->cookieMetadataFactory
+                        ->createPublicCookieMetadata()
+                        ->setDuration(60)
+                        ->setSecure(false)
+                        ->setHttpOnly(false)
+                        ->setPath('/');
+                    $this->cookieManager->setPublicCookie(
+                        self::COOKIE_NAME,
+                        SerializationHelper::serialize($cartUpdate),
+                        $metadata
                     );
-                    $cartUpdate->setCart($nostoCart);
                 } else {
-                    $this->logger->info('Cannot find quote from the event.');
+                    $this->logger->info('Headers sent already. Cannot set the cookie.');
                 }
 
-                $cartOperation = new CartOperation($nostoAccount);
-                $cartOperation->updateCart($cartUpdate, $nostoCustomerId, $nostoAccount->getName());
+                if ($this->nostoHelperData->isSendAddToCartEventEnabled()) {
+                    //use the message way
+                    $quote = $quoteItem->getQuote();
+                    if ($quote instanceof \Magento\Quote\Model\Quote) {
+                        $nostoCart = $this->nostoCartBuilder->build(
+                            $quote,
+                            $store
+                        );
+                        $cartUpdate->setCart($nostoCart);
+                    } else {
+                        $this->logger->info('Cannot find quote from the event.');
+                    }
+
+                    $cartOperation = new CartOperation($nostoAccount);
+                    $cartOperation->updateCart($cartUpdate, $nostoCustomerId, $nostoAccount->getName());
+                }
             }
         } catch (\Exception $e) {
             $this->logger->exception($e);
