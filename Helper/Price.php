@@ -39,6 +39,7 @@ namespace Nosto\Tagging\Helper;
 use Magento\Bundle\Model\Product\Price as BundlePrice;
 use Magento\Catalog\Helper\Data as CatalogHelper;
 use Magento\Catalog\Model\Product;
+use Magento\Customer\Model\GroupManagement;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 use Magento\GroupedProduct\Model\Product\Type\Grouped as GroupedType;
@@ -223,16 +224,20 @@ class Price extends AbstractHelper
             default:
                 $date = $this->localeDate->scopeDate();
                 $wid = $product->getStore()->getWebsiteId();
-                $gid = 0;
+                $gid = GroupManagement::NOT_LOGGED_IN_ID;
                 $pid = $product->getId();
                 if ($finalPrice) {
                     $currentProductPrice = $product->getFinalPrice();
+                    $pricesToCompare = [(float)$currentProductPrice, (float)$product->getPrice()];
                     try {
                         $currentRulePrice = $this->priceRuleFactory->create()->getRulePrice($date, $wid, $gid, $pid);
                     } catch (\Exception $e) {
                         $currentRulePrice = $product->getFinalPrice();
                     }
-                    $price = min([$currentProductPrice, $currentRulePrice, $product->getPrice()]);
+                    if (is_numeric($currentRulePrice)) {
+                        $pricesToCompare[] = $currentRulePrice;
+                    }
+                    $price = min($pricesToCompare);
                 } else {
                     $price = $product->getPrice();
                 }
