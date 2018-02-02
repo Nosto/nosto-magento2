@@ -39,12 +39,16 @@ namespace Nosto\Tagging\Helper;
 use Magento\Bundle\Model\Product\Price as BundlePrice;
 use Magento\Catalog\Helper\Data as CatalogHelper;
 use Magento\Catalog\Model\Product;
+use Magento\Customer\Model\GroupManagement;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 use Magento\GroupedProduct\Model\Product\Type\Grouped as GroupedType;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable as ConfigurableType;
 use Magento\Bundle\Model\Product\Type as BundleType;
 use Magento\Catalog\Model\ProductFactory;
+use Magento\CatalogRule\Model\ResourceModel\RuleFactory;
+use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
+use Nosto\Tagging\Model\Product\Repository as NostoProductRepository;
 
 /**
  * Price helper used for product price related tasks.
@@ -53,6 +57,9 @@ class Price extends AbstractHelper
 {
     private $catalogHelper;
     private $productFactory;
+    private $priceRuleFactory;
+    private $localeDate;
+    private $nostoProductRepository;
 
     /**
      * Constructor.
@@ -60,15 +67,24 @@ class Price extends AbstractHelper
      * @param Context $context the context.
      * @param CatalogHelper $catalogHelper the catalog helper.
      * @param ProductFactory $productFactory
+     * @param RuleFactory $ruleFactory
+     * @param TimezoneInterface $localeDate
+     * @param NostoProductRepository $nostoProductRepository
      */
     public function __construct(
         Context $context,
         CatalogHelper $catalogHelper,
-        ProductFactory $productFactory
+        ProductFactory $productFactory,
+        RuleFactory $ruleFactory,
+        TimezoneInterface $localeDate,
+        NostoProductRepository $nostoProductRepository
     ) {
         parent::__construct($context);
         $this->catalogHelper = $catalogHelper;
         $this->productFactory = $productFactory;
+        $this->priceRuleFactory = $ruleFactory;
+        $this->localeDate = $localeDate;
+        $this->nostoProductRepository = $nostoProductRepository;
     }
 
     /**
@@ -176,11 +192,14 @@ class Price extends AbstractHelper
                 $productType = $product->getTypeInstance();
                 $price = null;
                 if ($productType instanceof ConfigurableType) {
-                    $products = $productType->getUsedProducts($product);
+                    $products = $this->nostoProductRepository->getSkus($product);
                     $skus = [];
                     $finalPrices = [];
                     foreach ($products as $sku) {
-                        if ($sku instanceof Product && !$sku->isDisabled()) {
+                        if ($sku instanceof Product
+                            && !$sku->isDisabled()
+                            && $sku->isAvailable()
+                        ) {
                             $finalPrices[$sku->getId()] = $this->getProductPrice(
                                 $sku,
                                 true,
@@ -203,7 +222,25 @@ class Price extends AbstractHelper
                 break;
 
             default:
-                $price = $finalPrice ? $product->getFinalPrice() : $product->getPrice();
+                $date = $this->localeDate->scopeDate();
+                $wid = $product->getStore()->getWebsiteId();
+                $gid = GroupManagement::NOT_LOGGED_IN_ID;
+                $pid = $product->getId();
+                if ($finalPrice) {
+                    $currentProductPrice = $product->getFinalPrice();
+                    $pricesToCompare = [(float)$currentProductPrice, (float)$product->getPrice()];
+                    try {
+                        $currentRulePrice = $this->priceRuleFactory->create()->getRulePrice($date, $wid, $gid, $pid);
+                    } catch (\Exception $e) {
+                        $currentRulePrice = $product->getFinalPrice();
+                    }
+                    if (is_numeric($currentRulePrice)) {
+                        $pricesToCompare[] = $currentRulePrice;
+                    }
+                    $price = min($pricesToCompare);
+                } else {
+                    $price = $product->getPrice();
+                }
                 if ($inclTax) {
                     $price = $this->catalogHelper->getTaxPrice($product, $price, true);
                 }
