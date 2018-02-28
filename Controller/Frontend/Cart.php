@@ -41,7 +41,6 @@ use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\Module\Manager as ModuleManager;
 use Magento\Quote\Model\Quote;
-use Magento\Quote\Model\QuoteFactory;
 use Nosto\NostoException;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
@@ -63,7 +62,6 @@ class Cart extends Action
     private $context;
     private $moduleManager;
     private $checkoutSession;
-    private $quoteFactory;
     private $logger;
     private $nostoUrlHelper;
     private $nostoScopeHelper;
@@ -75,7 +73,6 @@ class Cart extends Action
      * @param Context $context
      * @param ModuleManager $moduleManager
      * @param Session $checkoutSession
-     * @param QuoteFactory $quoteFactory
      * @param NostoLogger $logger
      * @param NostoHelperUrl $nostoUrlHelper
      * @param NostoHelperScope $nostoScopeHelper
@@ -86,7 +83,6 @@ class Cart extends Action
         Context $context,
         ModuleManager $moduleManager,
         Session $checkoutSession,
-        QuoteFactory $quoteFactory,
         NostoLogger $logger,
         NostoHelperUrl $nostoUrlHelper,
         NostoHelperScope $nostoScopeHelper,
@@ -97,7 +93,6 @@ class Cart extends Action
         $this->context = $context;
         $this->moduleManager = $moduleManager;
         $this->checkoutSession = $checkoutSession;
-        $this->quoteFactory = $quoteFactory;
         $this->logger = $logger;
         $this->nostoUrlHelper = $nostoUrlHelper;
         $this->nostoScopeHelper = $nostoScopeHelper;
