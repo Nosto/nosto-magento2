@@ -56,7 +56,6 @@ use Nosto\Tagging\Model\Product\Repository as NostoProductRepository;
 class Price extends AbstractHelper
 {
     private $catalogHelper;
-    private $productFactory;
     private $priceRuleFactory;
     private $localeDate;
     private $nostoProductRepository;
@@ -66,7 +65,6 @@ class Price extends AbstractHelper
      *
      * @param Context $context the context.
      * @param CatalogHelper $catalogHelper the catalog helper.
-     * @param ProductFactory $productFactory
      * @param RuleFactory $ruleFactory
      * @param TimezoneInterface $localeDate
      * @param NostoProductRepository $nostoProductRepository
@@ -74,14 +72,12 @@ class Price extends AbstractHelper
     public function __construct(
         Context $context,
         CatalogHelper $catalogHelper,
-        ProductFactory $productFactory,
         RuleFactory $ruleFactory,
         TimezoneInterface $localeDate,
         NostoProductRepository $nostoProductRepository
     ) {
         parent::__construct($context);
         $this->catalogHelper = $catalogHelper;
-        $this->productFactory = $productFactory;
         $this->priceRuleFactory = $ruleFactory;
         $this->localeDate = $localeDate;
         $this->nostoProductRepository = $nostoProductRepository;
@@ -135,11 +131,8 @@ class Price extends AbstractHelper
                         foreach ($childProducts as $skuIds) {
                             if (is_array($skuIds)) {
                                 try {
-                                    $skuId = reset($skuIds);
-                                    /** @noinspection PhpDeprecationInspection */
-                                    $sku = $this->productFactory->create()->load( // @codingStandardsIgnoreLine
-                                        $skuId
-                                    );
+                                    $sku = $this->nostoProductRepository->getByIds($skuIds)->getItems();
+                                    $sku = reset($sku);
                                     $listPrice += $this->getProductDisplayPrice(
                                         $sku
                                     );
