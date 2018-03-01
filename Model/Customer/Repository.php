@@ -122,6 +122,31 @@ class Repository implements CustomerRepositoryInterface
     }
 
     /**
+     * Get customer entry by field name and quote id. If multiple entries
+     * are found first one will be returned.
+     *
+     * @param string $nostoId
+     * @param int $quoteId
+     *
+     * @return CustomerInterface|null
+     */
+    public function getOneByQuoteId($field, $quoteId)
+    {
+        $searchCriteria = $this->searchCriteriaBuilder
+            ->addFilter($field, $quoteId, 'eq')
+            ->setPageSize(1)
+            ->setCurrentPage(1)
+            ->create();
+
+        $items = $this->search($searchCriteria)->getItems();
+        foreach ($items as $customer) {
+            return $customer;
+        }
+
+        return null;
+    }
+
+    /**
      * Get customer entry by restore cart hash. If multiple entries
      * are found first one will be returned.
      *
