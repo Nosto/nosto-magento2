@@ -46,7 +46,7 @@ use Magento\Framework\UrlInterface;
 use Magento\Store\Model\Store;
 use Nosto\Request\Http\HttpRequest;
 use Nosto\Tagging\Helper\Data as NostoDataHelper;
-use Nosto\Tagging\Model\Product\Collection as ProductCollection;
+use Nosto\Tagging\Model\Product\Repository as ProductRepository;
 
 /**
  * Url helper class for common URL related tasks.
@@ -128,19 +128,19 @@ class Url extends AbstractHelper
      */
     public static $urlType = UrlInterface::URL_TYPE_LINK;
 
-    private $productCollection;
     private $categoryCollectionFactory;
     private $productVisibility;
     private $urlBuilder;
     private $nostoDataHelper;
     private $backendDataHelper;
+    private $productRepository;
 
     /** @noinspection PhpUndefinedClassInspection */
     /**
      * Constructor.
      *
      * @param Context $context the context.
-     * @param ProductCollection $productCollection
+     * @param ProductRepository $productRepository
      * @param CategoryCollectionFactory $categoryCollectionFactory auto generated category collection factory.
      * @param Visibility $productVisibility product visibility.
      * @param UrlBuilder $urlBuilder frontend URL builder.
@@ -149,8 +149,7 @@ class Url extends AbstractHelper
      */
     public function __construct(
         Context $context,
-        /** @noinspection PhpUndefinedClassInspection */
-        ProductCollection $productCollection,
+        ProductRepository $productRepository,
         /** @noinspection PhpUndefinedClassInspection */
         CategoryCollectionFactory $categoryCollectionFactory,
         Visibility $productVisibility,
@@ -160,7 +159,7 @@ class Url extends AbstractHelper
     ) {
         parent::__construct($context);
 
-        $this->productCollection = $productCollection;
+        $this->productRepository = $productRepository;
         $this->categoryCollectionFactory = $categoryCollectionFactory;
         $this->productVisibility = $productVisibility;
         $this->urlBuilder = $urlBuilder;
@@ -178,26 +177,15 @@ class Url extends AbstractHelper
      */
     public function getPreviewUrlProduct(Store $store)
     {
-        /** @var \Magento\Catalog\Model\ResourceModel\Product\Collection $collection */
-        $collection = $this->productCollection->getCollection($store);
-        $collection->setCurPage(1);
-        $collection->setPageSize(1);
-        $collection->load();
-
-        $url = '';
-        foreach ($collection->getItems() as $product) {
-            /** @var \Magento\Catalog\Model\Product $product */
-            $url = $product->getUrlInStore(
-                [
-                    self::MAGENTO_URL_OPTION_NOSID => true,
-                    self::MAGENTO_URL_OPTION_SCOPE_TO_URL => $this->nostoDataHelper->getStoreCodeToUrl($store),
-                    self::MAGENTO_URL_OPTION_SCOPE => $store->getCode(),
-                ]
-            );
-            $url = $this->addNostoDebugParamToUrl($url);
-        }
-
-        return $url;
+        $product = $this->productRepository->getRandomSingleActiveProduct($store);
+        $url = $product->getUrlInStore(
+            [
+                self::MAGENTO_URL_OPTION_NOSID => true,
+                self::MAGENTO_URL_OPTION_SCOPE_TO_URL => $this->nostoDataHelper->getStoreCodeToUrl($store),
+                self::MAGENTO_URL_OPTION_SCOPE => $store->getCode(),
+            ]
+        );
+        return $this->addNostoDebugParamToUrl($url);
     }
 
     /**
