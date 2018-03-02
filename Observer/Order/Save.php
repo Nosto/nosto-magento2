@@ -130,7 +130,7 @@ class Save implements ObserverInterface
                 $quoteId = $order->getQuoteId();
                 /** @var NostoCustomer $nostoCustomer */
                 $nostoCustomer = $this->customerRepository
-                    ->getOneByQuoteId(NostoCustomer::QUOTE_ID, $quoteId);
+                    ->getOneByQuoteId($quoteId);
                 if ($nostoCustomer instanceof NostoCustomer === false) {
                     return;
                 }
