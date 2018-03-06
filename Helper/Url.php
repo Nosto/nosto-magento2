@@ -38,7 +38,6 @@ namespace Nosto\Tagging\Helper;
 
 use Magento\Catalog\Model\Product\Visibility;
 use Magento\Catalog\Model\ResourceModel\Category\CollectionFactory as CategoryCollectionFactory;
-use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductCollectionFactory;
 use Magento\Backend\Helper\Data as BackendDataHelper;
 use Magento\Framework\Url as UrlBuilder;
 use Magento\Framework\App\Helper\AbstractHelper;
@@ -47,6 +46,7 @@ use Magento\Framework\UrlInterface;
 use Magento\Store\Model\Store;
 use Nosto\Request\Http\HttpRequest;
 use Nosto\Tagging\Helper\Data as NostoDataHelper;
+use Nosto\Tagging\Model\Product\Repository as ProductRepository;
 
 /**
  * Url helper class for common URL related tasks.
@@ -128,19 +128,19 @@ class Url extends AbstractHelper
      */
     public static $urlType = UrlInterface::URL_TYPE_LINK;
 
-    private $productCollectionFactory;
     private $categoryCollectionFactory;
     private $productVisibility;
     private $urlBuilder;
     private $nostoDataHelper;
     private $backendDataHelper;
+    private $productRepository;
 
     /** @noinspection PhpUndefinedClassInspection */
     /**
      * Constructor.
      *
      * @param Context $context the context.
-     * @param ProductCollectionFactory $productCollectionFactory auto generated product collection factory.
+     * @param ProductRepository $productRepository
      * @param CategoryCollectionFactory $categoryCollectionFactory auto generated category collection factory.
      * @param Visibility $productVisibility product visibility.
      * @param UrlBuilder $urlBuilder frontend URL builder.
@@ -149,8 +149,7 @@ class Url extends AbstractHelper
      */
     public function __construct(
         Context $context,
-        /** @noinspection PhpUndefinedClassInspection */
-        ProductCollectionFactory $productCollectionFactory,
+        ProductRepository $productRepository,
         /** @noinspection PhpUndefinedClassInspection */
         CategoryCollectionFactory $categoryCollectionFactory,
         Visibility $productVisibility,
@@ -160,7 +159,7 @@ class Url extends AbstractHelper
     ) {
         parent::__construct($context);
 
-        $this->productCollectionFactory = $productCollectionFactory;
+        $this->productRepository = $productRepository;
         $this->categoryCollectionFactory = $categoryCollectionFactory;
         $this->productVisibility = $productVisibility;
         $this->urlBuilder = $urlBuilder;
@@ -178,30 +177,15 @@ class Url extends AbstractHelper
      */
     public function getPreviewUrlProduct(Store $store)
     {
-        /** @var \Magento\Catalog\Model\ResourceModel\Product\Collection $collection */
-        /** @noinspection PhpUndefinedMethodInspection */
-        $collection = $this->productCollectionFactory->create();
-        $collection->addStoreFilter($store->getId());
-        $collection->setVisibility($this->productVisibility->getVisibleInSiteIds());
-        $collection->addAttributeToFilter('status', ['eq' => '1']);
-        $collection->setCurPage(1);
-        $collection->setPageSize(1);
-        $collection->load();
-
-        $url = '';
-        foreach ($collection->getItems() as $product) {
-            /** @var \Magento\Catalog\Model\Product $product */
-            $url = $product->getUrlInStore(
-                [
-                    self::MAGENTO_URL_OPTION_NOSID => true,
-                    self::MAGENTO_URL_OPTION_SCOPE_TO_URL => $this->nostoDataHelper->getStoreCodeToUrl($store),
-                    self::MAGENTO_URL_OPTION_SCOPE => $store->getCode(),
-                ]
-            );
-            $url = $this->addNostoDebugParamToUrl($url);
-        }
-
-        return $url;
+        $product = $this->productRepository->getRandomSingleActiveProduct($store);
+        $url = $product->getUrlInStore(
+            [
+                self::MAGENTO_URL_OPTION_NOSID => true,
+                self::MAGENTO_URL_OPTION_SCOPE_TO_URL => $this->nostoDataHelper->getStoreCodeToUrl($store),
+                self::MAGENTO_URL_OPTION_SCOPE => $store->getCode(),
+            ]
+        );
+        return $this->addNostoDebugParamToUrl($url);
     }
 
     /**

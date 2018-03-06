@@ -48,7 +48,7 @@ use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Customer\Customer as NostoCustomer;
-use Nosto\Tagging\Model\Customer\CustomerFactory;
+use Nosto\Tagging\Model\Customer\Repository as CustomerRepository;
 use Nosto\Tagging\Model\Indexer\Product\Indexer;
 use Nosto\Tagging\Model\Order\Builder as NostoOrderBuilder;
 use Nosto\Object\Order\Order as NostoOrder;
@@ -64,7 +64,7 @@ class Save implements ObserverInterface
     private $logger;
     private $nostoOrderBuilder;
     private $moduleManager;
-    private $customerFactory;
+    private $customerRepository;
     private $nostoHelperScope;
     private $indexer;
 
@@ -77,7 +77,7 @@ class Save implements ObserverInterface
      * @param NostoHelperScope $nostoHelperScope
      * @param NostoLogger $logger
      * @param ModuleManager $moduleManager
-     * @param CustomerFactory $customerFactory
+     * @param CustomerRepository $customerRepository
      * @param NostoOrderBuilder $orderBuilder
      * @param IndexerRegistry $indexerRegistry
      */
@@ -88,7 +88,7 @@ class Save implements ObserverInterface
         NostoLogger $logger,
         ModuleManager $moduleManager,
         /** @noinspection PhpUndefinedClassInspection */
-        CustomerFactory $customerFactory,
+        CustomerRepository $customerRepository,
         NostoOrderBuilder $orderBuilder,
         IndexerRegistry $indexerRegistry
     ) {
@@ -97,7 +97,7 @@ class Save implements ObserverInterface
         $this->logger = $logger;
         $this->moduleManager = $moduleManager;
         $this->nostoOrderBuilder = $orderBuilder;
-        $this->customerFactory = $customerFactory;
+        $this->customerRepository = $customerRepository;
         $this->indexer = $indexerRegistry->get(Indexer::INDEXER_ID);
         $this->nostoHelperScope = $nostoHelperScope;
     }
@@ -129,11 +129,11 @@ class Save implements ObserverInterface
             if ($nostoAccount !== null) {
                 $quoteId = $order->getQuoteId();
                 /** @var NostoCustomer $nostoCustomer */
-                /** @noinspection PhpDeprecationInspection */
-                $nostoCustomer = $this->customerFactory
-                    ->create()
-                    ->load($quoteId, NostoCustomer::QUOTE_ID);
-
+                $nostoCustomer = $this->customerRepository
+                    ->getOneByQuoteId($quoteId);
+                if ($nostoCustomer instanceof NostoCustomer === false) {
+                    return;
+                }
                 $orderService = new OrderConfirm($nostoAccount);
                 try {
                     $orderService->send($nostoOrder, $nostoCustomer->getNostoId());
