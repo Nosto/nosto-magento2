@@ -331,7 +331,11 @@ class Service
                     $product,
                     $store
                 );
-                $op->addProduct($nostoProduct);
+                if ($nostoProduct) {
+                    $op->addProduct($nostoProduct);
+                } else {
+                    continue;
+                }
             }
 
             try {

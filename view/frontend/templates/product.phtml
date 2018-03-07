@@ -49,11 +49,14 @@
  * Please see a reference guide such as https://github.com/Nosto/nosto-magento2/wiki
  */
 
+?>
+
+<?php
 /** @var \Nosto\Tagging\Block\Product $this */
 $product = $this->getNostoProduct();
 $category = $this->getNostoCategory();
+if ($product instanceof Nosto\Object\Product\Product) {
 ?>
-
     <!-- Nosto Product Tagging -->
     <div class="nosto_product" style="display:none">
         <span class="url"><?php echo $this->escapeUrl($product->getUrl()); ?></span>
@@ -130,7 +133,10 @@ $category = $this->getNostoCategory();
             <span class="alternate_image_url"><?php echo $this->escapeHtml($alternateImageUrl); ?></span>
         <?php endforeach; ?>
     </div>
-<?php if ($category) : ?>
-    <div class="nosto_category"
-         style="display:none"><?php echo $this->escapeHtml($category); ?></div>
-<?php endif; ?>
+    <?php if ($category) : ?>
+        <div class="nosto_category"
+             style="display:none"><?php echo $this->escapeHtml($category); ?></div>
+    <?php endif; ?>
+<?php } ?>
+
+
