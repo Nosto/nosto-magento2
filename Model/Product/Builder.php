@@ -55,6 +55,7 @@ use Nosto\Tagging\Model\Product\Sku\Collection as NostoSkuCollection;
 use Nosto\Tagging\Model\Product\Tags\LowStock as LowStockHelper;
 use Nosto\Tagging\Model\Product\Url\Builder as NostoUrlBuilder;
 use Nosto\Types\Product\ProductInterface;
+use Nosto\Object\ModelFilter as ModelFilter;
 
 class Builder
 {
@@ -135,7 +136,7 @@ class Builder
      * @param Product $product
      * @param Store $store
      * @param string $nostoScope
-     * @return NostoProduct
+     * @return NostoProduct|null
      */
     public function build(
         Product $product,
@@ -143,7 +144,15 @@ class Builder
         $nostoScope = self::NOSTO_SCOPE_API
     ) {
         $nostoProduct = new NostoProduct();
+        $modelFilter = new ModelFilter();
 
+        $this->eventManager->dispatch(
+            'nosto_product_load_before',
+            ['product' => $nostoProduct, 'magentoProduct' => $product, 'modelFilter' => $modelFilter]
+        );
+        if (!$modelFilter->isValid()) {
+            return null;
+        }
         try {
             $nostoProduct->setUrl($this->urlBuilder->getUrlInStore($product, $store));
             $nostoProduct->setProductId((string)$product->getId());
@@ -232,9 +241,12 @@ class Builder
         }
         $this->eventManager->dispatch(
             'nosto_product_load_after',
-            ['product' => $nostoProduct, 'magentoProduct' => $product]
+            ['product' => $nostoProduct, 'magentoProduct' => $product, 'modelFilter' => $modelFilter]
         );
 
+        if (!$modelFilter->isValid()) {
+            return null;
+        }
         return $nostoProduct;
     }
 

@@ -45,6 +45,7 @@ use Nosto\Object\Product\ProductCollection;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
+use Nosto\Types\Product\ProductInterface;
 
 class Collection
 {
@@ -128,13 +129,14 @@ class Collection
         }
         foreach ($items as $product) {
             /** @var \Magento\Catalog\Model\Product $product */
-            $products->append(
-                $this->nostoProductBuilder->build(
-                    $product,
-                    $store,
-                    NostoProductBuilder::NOSTO_SCOPE_API
-                )
+            $nostoProduct = $this->nostoProductBuilder->build(
+                $product,
+                $store,
+                NostoProductBuilder::NOSTO_SCOPE_API
             );
+            if ($nostoProduct instanceof ProductInterface) {
+                $products->append($nostoProduct);
+            }
         }
         return $products;
     }
