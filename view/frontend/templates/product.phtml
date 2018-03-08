@@ -55,7 +55,7 @@
 /** @var \Nosto\Tagging\Block\Product $this */
 $product = $this->getNostoProduct();
 $category = $this->getNostoCategory();
-if ($product instanceof Nosto\Object\Product\Product) {
+if ($product instanceof \Nosto\Types\Product\ProductInterface) {
 ?>
     <!-- Nosto Product Tagging -->
     <div class="nosto_product" style="display:none">
@@ -133,10 +133,10 @@ if ($product instanceof Nosto\Object\Product\Product) {
             <span class="alternate_image_url"><?php echo $this->escapeHtml($alternateImageUrl); ?></span>
         <?php endforeach; ?>
     </div>
-    <?php if ($category) : ?>
-        <div class="nosto_category"
-             style="display:none"><?php echo $this->escapeHtml($category); ?></div>
-    <?php endif; ?>
 <?php } ?>
+<?php if ($category) : ?>
+    <div class="nosto_category"
+         style="display:none"><?php echo $this->escapeHtml($category); ?></div>
+<?php endif; ?>
 
 

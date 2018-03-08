@@ -331,7 +331,7 @@ class Service
                     $product,
                     $store
                 );
-                if ($nostoProduct) {
+                if ($nostoProduct instanceof ProductInterface === false) {
                     $op->addProduct($nostoProduct);
                 } else {
                     continue;

@@ -45,6 +45,7 @@ use Nosto\Object\Product\ProductCollection;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
+use Nosto\Types\Product\ProductInterface;
 
 class Collection
 {
@@ -133,7 +134,7 @@ class Collection
                 $store,
                 NostoProductBuilder::NOSTO_SCOPE_API
             );
-            if ($nostoProduct) {
+            if ($nostoProduct instanceof ProductInterface) {
                 $products->append($nostoProduct);
             }
         }
