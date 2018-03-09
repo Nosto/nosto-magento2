@@ -39,8 +39,7 @@
       xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
     <body>
         <referenceContainer name="content">
-            <block class="Nosto\Tagging\Block\PageType" name="nosto.page.type.order" after="-"
-                   template="Nosto_Tagging::pagetype.phtml">
+            <block class="Nosto\Tagging\Block\PageType" name="nosto.page.type.order" after="-">
                 <arguments>
                     <argument name="page_type" xsi:type="string">order</argument>
                 </arguments>

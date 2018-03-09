@@ -40,8 +40,7 @@
     <body>
         <!-- Adds 2 content placeholders; 1 before and 1 after the search result -->
         <referenceContainer name="content">
-            <block class="Nosto\Tagging\Block\PageType" name="nosto.page.type.search" after="-"
-                   template="Nosto_Tagging::pagetype.phtml">
+            <block class="Nosto\Tagging\Block\PageType" name="nosto.page.type.search" after="-">
                 <arguments>
                     <argument name="page_type" xsi:type="string">search</argument>
                 </arguments>

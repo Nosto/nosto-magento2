@@ -40,6 +40,7 @@ use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Element\Template\Context;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
+use Nosto\Object\MarkupableString;
 
 /**
  * Page type block used for outputting page-type on the different pages.
@@ -80,8 +81,15 @@ class PageType extends Template
      *
      * @return string
      */
-    public function getPageTypeName()
+    protected function getPageTypeName()
     {
         return $this->getData('page_type') ? $this->getData('page_type') : self::DEFAULT_TYPE;
+    }
+
+    public function getAbstractObject()
+    {
+        return new MarkupableString(
+            $this->getPageTypeName(),'nosto_page_type'
+        );
     }
 }
