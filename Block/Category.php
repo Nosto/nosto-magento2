@@ -42,6 +42,7 @@ use Magento\Framework\View\Element\Template\Context;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Model\Category\Builder as NostoCategoryBuilder;
+use Nosto\Object\MarkupableString;
 
 /**
  * Category block used for outputting meta-data on the stores category pages.
@@ -87,9 +88,25 @@ class Category extends Template
      *
      * @return string the current category as a slash delimited string
      */
-    public function getNostoCategory()
+    protected function getNostoCategory()
     {
         $category = $this->registry->registry('current_category');
-        return $this->categoryBuilder->build($category);
+        if($category){
+            return $this->categoryBuilder->build($category);
+        }
+        return null;
     }
+
+    /**
+     * Returns the HTML to render categories
+     *
+     * @return MarkupableString
+     */
+    public function getAbstractObject()
+    {
+        return new MarkupableString(
+            $this->getNostoCategory(),'nosto_category'
+        );
+    }
+
 }

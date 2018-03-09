@@ -47,8 +47,7 @@
             </block>
             <block class="Nosto\Tagging\Block\Product" name="nosto.product" after="-"/>
 
-            <block class="Nosto\Tagging\Block\Category" name="nosto.category" after="-"
-                   template="Nosto_Tagging::category.phtml"/>
+            <block class="Nosto\Tagging\Block\Category" name="nosto.category" after="-"/>
 
             <block class="Nosto\Tagging\Block\Element" name="nosto.page.product1" after="-"
                    template="Nosto_Tagging::element.phtml">
