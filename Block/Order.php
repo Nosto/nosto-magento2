@@ -94,7 +94,7 @@ class Order extends Success
      *
      * @return \Nosto\Object\Order\Order the order meta data model.
      */
-    public function getNostoOrder()
+    public function getAbstractObject()
     {
         /** @var \Magento\Sales\Model\Order $order */
         return $this->nostoOrderBuilder->build($this->checkoutSession->getLastRealOrder());

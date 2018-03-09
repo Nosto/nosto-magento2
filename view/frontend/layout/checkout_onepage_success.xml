@@ -44,8 +44,7 @@
                     <argument name="page_type" xsi:type="string">order</argument>
                 </arguments>
             </block>
-            <block class="Nosto\Tagging\Block\Order" name="nosto.order" cacheable="false" after="-"
-                   template="Nosto_Tagging::order.phtml"/>
+            <block class="Nosto\Tagging\Block\Order" name="nosto.order" cacheable="false" after="-"/>
             <block class="Nosto\Tagging\Block\Element" name="nosto.page.orderconfirmation1"
                    after="nosto.order" template="Nosto_Tagging::element.phtml">
                 <arguments>
