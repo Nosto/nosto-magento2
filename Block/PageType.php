@@ -81,7 +81,7 @@ class PageType extends Template
      *
      * @return string
      */
-    protected function getPageTypeName()
+    private function getPageTypeName()
     {
         return $this->getData('page_type') ? $this->getData('page_type') : self::DEFAULT_TYPE;
     }
@@ -89,7 +89,8 @@ class PageType extends Template
     public function getAbstractObject()
     {
         return new MarkupableString(
-            $this->getPageTypeName(),'nosto_page_type'
+            $this->getPageTypeName(),
+            'nosto_page_type'
         );
     }
 }

@@ -69,7 +69,7 @@ trait TaggingTrait
     {
         if ($this->nostoHelperAccount->nostoInstalledAndEnabled($this->nostoHelperScope->getStore())) {
             /** @noinspection PhpUndefinedMethodInspection */
-            if($this->getAbstractObject() instanceof AbstractObject) {
+            if ($this->getAbstractObject() instanceof AbstractObject) {
                 return $this->getAbstractObject()->toHtml();
             } else {
                 return parent::_toHtml();

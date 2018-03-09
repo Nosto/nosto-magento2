@@ -86,12 +86,12 @@ class Category extends Template
     /**
      * Returns the current category as a slash delimited string
      *
-     * @return string the current category as a slash delimited string
+     * @return string|null the current category as a slash delimited string
      */
-    protected function getNostoCategory()
+    private function getNostoCategory()
     {
         $category = $this->registry->registry('current_category');
-        if($category){
+        if ($category) {
             return $this->categoryBuilder->build($category);
         }
         return null;
@@ -108,5 +108,4 @@ class Category extends Template
             $this->getNostoCategory(),'nosto_category'
         );
     }
-
 }
