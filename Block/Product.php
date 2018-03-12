@@ -133,7 +133,7 @@ class Product extends View
      *
      * @return \Nosto\Object\Product\Product the product meta data model.
      */
-    public function getNostoProduct()
+    public function getAbstractObject()
     {
         $store = $this->nostoHelperScope->getStore();
         return $this->nostoProductBuilder->build(

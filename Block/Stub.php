@@ -60,4 +60,13 @@ class Stub extends Template
         parent::__construct($context, $data);
         $this->taggingConstruct($nostoHelperAccount, $nostoHelperScope);
     }
+
+    /**
+     *
+     * @return null
+     */
+    public function getAbstractObject()
+    {
+        return null;
+    }
 }

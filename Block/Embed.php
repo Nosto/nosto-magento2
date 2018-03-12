@@ -101,4 +101,13 @@ class Embed extends Template
         $account = $this->nostoHelperAccount->findAccount($store);
         return $account !== null ? $account->getName() : '';
     }
+
+    /**
+     *
+     * @return null
+     */
+    public function getAbstractObject()
+    {
+        return null;
+    }
 }

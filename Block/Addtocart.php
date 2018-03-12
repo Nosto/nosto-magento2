@@ -105,4 +105,13 @@ class Addtocart extends Template
 
         return $this->_urlBuilder->getUrl('checkout/cart/add', $routeParams);
     }
+
+    /**
+     *
+     * @return null
+     */
+    public function getAbstractObject()
+    {
+        return null;
+    }
 }
