@@ -105,7 +105,8 @@ class Category extends Template
     public function getAbstractObject()
     {
         return new MarkupableString(
-            $this->getNostoCategory(),'nosto_category'
+            $this->getNostoCategory(),
+            'nosto_category'
         );
     }
 }

@@ -82,4 +82,13 @@ class Element extends Template
     {
         return $this->getData('nostoId');
     }
+
+    /**
+     *
+     * @return null
+     */
+    public function getAbstractObject()
+    {
+        return null;
+    }
 }
