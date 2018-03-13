@@ -54,6 +54,8 @@ use Nosto\Tagging\Logger\Logger as NostoLogger;
 
 class Builder
 {
+    const ORDER_NUMBER_PREFIX = 'M2_';
+
     private $logger;
     /** @noinspection PhpUndefinedClassInspection */
     private $salesRuleFactory;
@@ -98,7 +100,7 @@ class Builder
     {
         $nostoOrder = new \Nosto\Object\Order\Order();
         try {
-            $nostoOrder->setOrderNumber($order->getId());
+            $nostoOrder->setOrderNumber(self::ORDER_NUMBER_PREFIX . $order->getId());
             $nostoOrder->setExternalOrderRef($order->getRealOrderId());
             $orderCreated = $order->getCreatedAt();
             if (is_string($orderCreated)) {
