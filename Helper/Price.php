@@ -151,7 +151,7 @@ class Price extends AbstractHelper
                             $sorted = array_values($minPrices);
                             $listPrice = !empty($sorted[0]) ? $sorted[0] : null;
                         } else {
-                            $listPrice = array_sum($minPrices);
+                            $listPrice = array_sum($requiredMinPrices);
                         }
 
                         $price = $listPrice;
