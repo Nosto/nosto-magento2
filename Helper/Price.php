@@ -133,8 +133,7 @@ class Price extends AbstractHelper
                             foreach ($options as $option) {
                                 $selectionMinPrice = null;
                                 /* @var Product $selection */
-                                foreach ($option->getSelections() as $selection)
-                                {
+                                foreach ($option->getSelections() as $selection) {
                                     $selectionPrice
                                         = $this->getProductDisplayPrice($selection);
                                     if ($selectionMinPrice == null
