@@ -147,9 +147,7 @@ class Price extends AbstractHelper
                         }
                         // If all products are optional use the price for the cheapest option
                         if ($allOptional) {
-                            asort($minPrices);
-                            $sorted = array_values($minPrices);
-                            $listPrice = !empty($sorted[0]) ? $sorted[0] : null;
+                            $listPrice = min($minPrices);
                         } else {
                             $listPrice = array_sum($requiredMinPrices);
                         }
