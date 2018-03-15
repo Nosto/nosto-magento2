@@ -80,12 +80,10 @@ RUN         php -r "readfile('https://getcomposer.org/installer');" > composer-s
 RUN        service mysql start && \
            mysql -e "SET PASSWORD FOR 'root'@'localhost' = PASSWORD('root');" && \
            mysql -h localhost -uroot -proot -e "CREATE SCHEMA IF NOT EXISTS magento2" && \
-
            cd /var/www/html && \
            composer config --global repositories.0 composer https://repo.magento.com && \
            composer config --global http-basic.repo.magento.com $repouser $repopass && \
            composer create-project magento/community-edition && \
-
            cd community-edition && \
            composer update && \
            composer config --unset minimum-stability && \
@@ -137,4 +135,5 @@ USER       plugins
 EXPOSE     443 80
 COPY       default.conf     /etc/apache2/sites-enabled
 COPY       supervisord.conf /etc/supervisord.conf
-ENTRYPOINT ["supervisord", "-c", "/etc/supervisord.conf"]
+COPY       entrypoint.sh /
+ENTRYPOINT ["/entrypoint.sh"]
