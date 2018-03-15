@@ -135,4 +135,5 @@ USER       plugins
 EXPOSE     443 80
 COPY       default.conf     /etc/apache2/sites-enabled
 COPY       supervisord.conf /etc/supervisord.conf
-ENTRYPOINT ["supervisord", "-c", "/etc/supervisord.conf"]
+COPY       entrypoint.sh /
+ENTRYPOINT ["/entrypoint.sh"]
