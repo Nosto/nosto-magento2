@@ -123,25 +123,40 @@ class Price extends AbstractHelper
                             $inclTax
                         );
                     } else {
+                        $price = null;
                         $productType = $product->getTypeInstance();
-                        $childProducts = $productType->getChildrenIds(
-                            $product->getId()
-                        );
-                        $listPrice = 0;
-                        foreach ($childProducts as $skuIds) {
-                            if (is_array($skuIds)) {
-                                try {
-                                    $sku = $this->nostoProductRepository->getByIds($skuIds)->getItems();
-                                    $sku = reset($sku);
-                                    $listPrice += $this->getProductDisplayPrice(
-                                        $sku
-                                    );
-                                } catch (\Exception $e) {
-                                    $this->_logger->error($e->__toString());
+                        if ($productType instanceof BundleType) {
+                            $options = $productType->getOptions($product);
+                            $allOptional = true;
+                            $minPrices = [];
+                            $requiredMinPrices = [];
+                            foreach ($options as $option) {
+                                $selectionMinPrice = null;
+                                /* @var Product $selection */
+                                foreach ($option->getSelections() as $selection) {
+                                    $selectionPrice
+                                        = $this->getProductDisplayPrice($selection);
+                                    if ($selectionMinPrice == null
+                                        || $selectionPrice < $selectionMinPrice
+                                    ) {
+                                        $selectionMinPrice = $selectionPrice;
+                                    }
+                                }
+                                $minPrices[] = $selectionMinPrice;
+                                if ($option->getRequired()) {
+                                    $allOptional = false;
+                                    $requiredMinPrices[] = $selectionMinPrice;
                                 }
                             }
+                            // If all products are optional use the price for the cheapest option
+                            if ($allOptional) {
+                                $listPrice = min($minPrices);
+                            } else {
+                                $listPrice = array_sum($requiredMinPrices);
+                            }
+
+                            $price = $listPrice;
                         }
-                        $price = $listPrice;
                     }
                 } else {
                     $price = null;
