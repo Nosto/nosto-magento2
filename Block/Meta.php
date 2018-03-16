@@ -106,4 +106,13 @@ class Meta extends Template
         $store = $this->nostoHelperScope->getStore(true);
         return substr($store->getConfig('general/locale/code'), 0, 2);
     }
+
+    /**
+     *
+     * @return null
+     */
+    public function getAbstractObject()
+    {
+        return null;
+    }
 }

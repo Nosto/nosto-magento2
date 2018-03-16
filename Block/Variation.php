@@ -32,6 +32,7 @@ use Magento\Framework\View\Element\Template\Context;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Currency as NostoHelperCurrency;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
+use Nosto\Object\MarkupableString;
 
 /**
  * Page type block used for outputting the variation identifier on the different pages.
@@ -87,5 +88,20 @@ class Variation extends Template
     {
         $store = $this->nostoHelperScope->getStore(true);
         return $this->nostoHelperCurrency->getCurrencyCount($store) > 1;
+    }
+
+    /**
+     * Returns the HTML to render variation blocks
+     *
+     * @return MarkupableString
+     */
+    public function getAbstractObject()
+    {
+        if ($this->hasMultipleCurrencies()) {
+            return new MarkupableString(
+                $this->getVariationId(),
+                'nosto_variation'
+            );
+        }
     }
 }

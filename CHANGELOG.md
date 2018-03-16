@@ -1,5 +1,18 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 2.7.0
+Improvements
+* Prefix order numbers to avoid collision with already used order numbers when migrating from Magento 1 to Magento 2
+* Add possibility to exclude products from Nosto index
+* Improve the add to cart popup trigger
+
+Bug fixes
+* Fix the list price for bundled products when all selections are optional
+
+Refactoring 
+* Use repositories instead of factories where applicable
+* Render Nosto tagging programmatically without templates
+
 ### 2.6.1
 * Improve add to cart popup trigger
 * Add support for removing / discontinuing products in Nosto

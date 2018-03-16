@@ -46,6 +46,8 @@ use Magento\Framework\Api\Search\FilterGroupBuilder;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable as ConfigurableType;
 use Nosto\Tagging\Helper\Data;
+use Magento\Catalog\Model\Product\Visibility as ProductVisibility;
+use Magento\Store\Model\Store;
 
 /**
  * Repository wrapper class for fetching products
@@ -63,6 +65,7 @@ class Repository
     private $filterGroupBuilder;
     private $filterBuilder;
     private $configurableType;
+    private $productVisibility;
 
     /**
      * Constructor to instantiating the reindex command. This constructor uses proxy classes for
@@ -78,6 +81,7 @@ class Repository
      * @param FilterBuilder $filterBuilder
      * @param FilterGroupBuilder $filterGroupBuilder
      * @param ConfigurableType $configurableType
+     * @param ProductVisibility $productVisibility
      */
     public function __construct(
         ProductRepository\Proxy $productRepository,
@@ -86,7 +90,8 @@ class Repository
         ConfigurableProduct $configurableProduct,
         FilterBuilder $filterBuilder,
         FilterGroupBuilder $filterGroupBuilder,
-        ConfigurableType $configurableType
+        ConfigurableType $configurableType,
+        ProductVisibility $productVisibility
     ) {
         $this->productRepository = $productRepository;
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;
@@ -95,6 +100,7 @@ class Repository
         $this->filterGroupBuilder = $filterGroupBuilder;
         $this->filterBuilder = $filterBuilder;
         $this->configurableType = $configurableType;
+        $this->productVisibility = $productVisibility;
     }
 
     /**
@@ -142,6 +148,42 @@ class Repository
         $products = $this->productRepository->getList($searchCriteria);
 
         return $products;
+    }
+
+    /**
+     * Gets a product that is active in a given Store
+     *
+     * @param Store $store
+     * @return Product
+     * @suppress PhanTypeMismatchArgument
+     *
+     */
+    public function getRandomSingleActiveProduct(Store $store)
+    {
+        $filterStatus = $this->filterBuilder
+            ->setField('status')
+            ->setValue(1)
+            ->setConditionType('eq')
+            ->create();
+
+        $filterStore = $this->filterBuilder
+            ->setField('store')
+            ->setValue($store->getId())
+            ->setConditionType('eq')
+            ->create();
+
+        $filterGroup = $this->filterGroupBuilder->setFilters([$filterStatus, $filterStore])->create();
+        $searchCriteria = $this->searchCriteriaBuilder
+            ->setFilterGroups([$filterGroup])
+            ->setCurrentPage(1)
+            ->setPageSize(1)
+            ->create();
+
+        $product = $this->productRepository->getList($searchCriteria)->setTotalCount(1);
+
+        foreach ($product->getItems() as $item) {
+            return $item;
+        }
     }
 
     /**

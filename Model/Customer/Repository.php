@@ -45,6 +45,7 @@ use Nosto\Tagging\Model\ResourceModel\Customer as CustomerResource;
 use Nosto\Tagging\Model\ResourceModel\Customer\CollectionFactory as CustomerCollectionFactory;
 use Nosto\Tagging\Util\Repository as RepositoryUtil;
 use Nosto\Tagging\Model\Customer\CustomerSearchResults;
+use Nosto\Tagging\Model\Customer\Customer as NostoCustomer;
 
 /**
  * Class Repository
@@ -109,6 +110,30 @@ class Repository implements CustomerRepositoryInterface
         $searchCriteria = $this->searchCriteriaBuilder
             ->addFilter(CustomerInterface::NOSTO_ID, $nostoId, 'eq')
             ->addFilter(CustomerInterface::QUOTE_ID, $quoteId, 'eq')
+            ->setPageSize(1)
+            ->setCurrentPage(1)
+            ->create();
+
+        $items = $this->search($searchCriteria)->getItems();
+        foreach ($items as $customer) {
+            return $customer;
+        }
+
+        return null;
+    }
+
+    /**
+     * Get customer entry by field name and quote id. If multiple entries
+     * are found first one will be returned.
+     *
+     * @param int $quoteId
+     *
+     * @return CustomerInterface|null
+     */
+    public function getOneByQuoteId($quoteId)
+    {
+        $searchCriteria = $this->searchCriteriaBuilder
+            ->addFilter(NostoCustomer::QUOTE_ID, $quoteId, 'eq')
             ->setPageSize(1)
             ->setCurrentPage(1)
             ->create();

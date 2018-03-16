@@ -45,7 +45,6 @@ use Nosto\Object\Cart\LineItem;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Model\Cart\Builder as NostoCartBuilder;
 use Nosto\Tagging\Model\Customer\Customer as NostoCustomer;
-use Nosto\Tagging\Model\Customer\CustomerFactory as NostoCustomerFactory;
 use Nosto\Tagging\Model\Cart\Restore\Builder as NostoRestoreCartUrlBuilder;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 
@@ -59,7 +58,6 @@ class CartTagging extends HashedTagging implements SectionSourceInterface
     private $nostoScopeHelper;
     private $nostoCartBuilder;
     private $nostoRestoreCartUrlBuilder;
-    private $nostoCustomerFactory;
 
     /** @noinspection PhpUndefinedClassInspection */
     /**
@@ -69,7 +67,6 @@ class CartTagging extends HashedTagging implements SectionSourceInterface
      * @param DateTime $date
      * @param NostoCartBuilder $nostoCartBuilder
      * @param NostoHelperScope $nostoScopeHelper
-     * @param NostoCustomerFactory $nostoCustomerFactory
      * @param NostoRestoreCartUrlBuilder $nostoRestoreCartUrlBuilder
      */
     public function __construct(
@@ -80,7 +77,6 @@ class CartTagging extends HashedTagging implements SectionSourceInterface
         NostoCartBuilder $nostoCartBuilder,
         NostoHelperScope $nostoScopeHelper,
         /** @noinspection PhpUndefinedClassInspection */
-        NostoCustomerFactory $nostoCustomerFactory,
         NostoRestoreCartUrlBuilder $nostoRestoreCartUrlBuilder
     ) {
         $this->cartHelper = $cartHelper;
@@ -88,7 +84,6 @@ class CartTagging extends HashedTagging implements SectionSourceInterface
         $this->date = $date;
         $this->cookieManager = $cookieManager;
         $this->nostoScopeHelper = $nostoScopeHelper;
-        $this->nostoCustomerFactory = $nostoCustomerFactory;
         $this->nostoCartBuilder = $nostoCartBuilder;
         $this->nostoRestoreCartUrlBuilder = $nostoRestoreCartUrlBuilder;
     }

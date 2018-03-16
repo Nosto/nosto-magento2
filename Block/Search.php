@@ -43,6 +43,7 @@ use Magento\Framework\View\Element\Template\Context;
 use Magento\Search\Model\QueryFactory;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
+use Nosto\Object\MarkupableString;
 
 /**
  * Search block used for outputting meta-data on the stores search pages.
@@ -87,5 +88,18 @@ class Search extends Result
     public function getNostoSearchTerm()
     {
         return $this->catalogSearchData->getEscapedQueryText();
+    }
+
+    /**
+     * Returns the HTML to render search blocks
+     *
+     * @return MarkupableString
+     */
+    public function getAbstractObject()
+    {
+        return new MarkupableString(
+            $this->getNostoSearchTerm(),
+            'nosto_search_term'
+        );
     }
 }

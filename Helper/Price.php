@@ -56,7 +56,6 @@ use Nosto\Tagging\Model\Product\Repository as NostoProductRepository;
 class Price extends AbstractHelper
 {
     private $catalogHelper;
-    private $productFactory;
     private $priceRuleFactory;
     private $localeDate;
     private $nostoProductRepository;
@@ -66,7 +65,6 @@ class Price extends AbstractHelper
      *
      * @param Context $context the context.
      * @param CatalogHelper $catalogHelper the catalog helper.
-     * @param ProductFactory $productFactory
      * @param RuleFactory $ruleFactory
      * @param TimezoneInterface $localeDate
      * @param NostoProductRepository $nostoProductRepository
@@ -74,14 +72,12 @@ class Price extends AbstractHelper
     public function __construct(
         Context $context,
         CatalogHelper $catalogHelper,
-        ProductFactory $productFactory,
         RuleFactory $ruleFactory,
         TimezoneInterface $localeDate,
         NostoProductRepository $nostoProductRepository
     ) {
         parent::__construct($context);
         $this->catalogHelper = $catalogHelper;
-        $this->productFactory = $productFactory;
         $this->priceRuleFactory = $ruleFactory;
         $this->localeDate = $localeDate;
         $this->nostoProductRepository = $nostoProductRepository;
@@ -127,28 +123,40 @@ class Price extends AbstractHelper
                             $inclTax
                         );
                     } else {
+                        $price = null;
                         $productType = $product->getTypeInstance();
-                        $childProducts = $productType->getChildrenIds(
-                            $product->getId()
-                        );
-                        $listPrice = 0;
-                        foreach ($childProducts as $skuIds) {
-                            if (is_array($skuIds)) {
-                                try {
-                                    $skuId = reset($skuIds);
-                                    /** @noinspection PhpDeprecationInspection */
-                                    $sku = $this->productFactory->create()->load( // @codingStandardsIgnoreLine
-                                        $skuId
-                                    );
-                                    $listPrice += $this->getProductDisplayPrice(
-                                        $sku
-                                    );
-                                } catch (\Exception $e) {
-                                    $this->_logger->error($e->__toString());
+                        if ($productType instanceof BundleType) {
+                            $options = $productType->getOptions($product);
+                            $allOptional = true;
+                            $minPrices = [];
+                            $requiredMinPrices = [];
+                            foreach ($options as $option) {
+                                $selectionMinPrice = null;
+                                /* @var Product $selection */
+                                foreach ($option->getSelections() as $selection) {
+                                    $selectionPrice
+                                        = $this->getProductDisplayPrice($selection);
+                                    if ($selectionMinPrice == null
+                                        || $selectionPrice < $selectionMinPrice
+                                    ) {
+                                        $selectionMinPrice = $selectionPrice;
+                                    }
+                                }
+                                $minPrices[] = $selectionMinPrice;
+                                if ($option->getRequired()) {
+                                    $allOptional = false;
+                                    $requiredMinPrices[] = $selectionMinPrice;
                                 }
                             }
+                            // If all products are optional use the price for the cheapest option
+                            if ($allOptional) {
+                                $listPrice = min($minPrices);
+                            } else {
+                                $listPrice = array_sum($requiredMinPrices);
+                            }
+
+                            $price = $listPrice;
                         }
-                        $price = $listPrice;
                     }
                 } else {
                     $price = null;
