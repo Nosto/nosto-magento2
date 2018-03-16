@@ -2,8 +2,8 @@ All notable changes to this project will be documented in this file. This projec
 
 ### 2.7.0
 Improvements
-* Prefix order numbers to avoid collision with order numbers when migrating from Magento 1 to Magento 2
-* Add possibility to exclude products from Nosto index enhancement
+* Prefix order numbers to avoid collision with already used order numbers when migrating from Magento 1 to Magento 2
+* Add possibility to exclude products from Nosto index
 * Improve the add to cart popup trigger
 
 Bug fixes
