@@ -42,6 +42,7 @@ use Magento\Framework\Controller\Result\Raw;
 use Magento\Framework\Controller\ResultFactory;
 use Magento\Store\Model\Store;
 use Nosto\Helper\ExportHelper;
+use Nosto\Helper\SerializationHelper;
 use Nosto\Object\AbstractCollection;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
@@ -125,6 +126,9 @@ abstract class Base extends Action
      */
     public function export(AbstractCollection $collection)
     {
+        header('content-type: application/json');
+        die(SerializationHelper::serialize($collection));
+
         $result = $this->resultFactory->create(ResultFactory::TYPE_RAW);
         $store = $this->nostoHelperScope->getStore(true);
         $account = $this->nostoHelperAccount->findAccount($store);

@@ -50,6 +50,7 @@ use Nosto\Object\Order\Buyer;
 use Nosto\Object\Order\OrderStatus;
 use Nosto\Tagging\Helper\Price as NostoPriceHelper;
 use Nosto\Tagging\Model\Order\Item\Builder as NostoOrderItemBuilder;
+use Nosto\Tagging\Model\Order\Buyer\Builder as NostoBuyerBuilder;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 
 class Builder
@@ -63,6 +64,7 @@ class Builder
     private $objectManager;
     private $nostoOrderItemBuilder;
     private $eventManager;
+    private $buyerBuilder;
 
     /** @noinspection PhpUndefinedClassInspection */
     /**
@@ -72,6 +74,7 @@ class Builder
      * @param NostoOrderItemBuilder $nostoOrderItemBuilder
      * @param ObjectManagerInterface $objectManager
      * @param ManagerInterface $eventManager
+     * @param NostoBuyerBuilder $buyerBuilder
      */
     public function __construct(
         NostoLogger $logger,
@@ -80,7 +83,8 @@ class Builder
         NostoPriceHelper $priceHelper,
         NostoOrderItemBuilder $nostoOrderItemBuilder,
         ObjectManagerInterface $objectManager,
-        ManagerInterface $eventManager
+        ManagerInterface $eventManager,
+        NostoBuyerBuilder $buyerBuilder
     ) {
         $this->logger = $logger;
         $this->salesRuleFactory = $salesRuleFactory;
@@ -88,6 +92,7 @@ class Builder
         $this->nostoOrderItemBuilder = $nostoOrderItemBuilder;
         $this->objectManager = $objectManager;
         $this->eventManager = $eventManager;
+        $this->buyerBuilder = $buyerBuilder;
     }
 
     /**
@@ -120,17 +125,10 @@ class Builder
                 }
                 $nostoOrder->setOrderStatus($nostoStatus);
             }
-            $nostoBuyer = new Buyer();
-            $nostoBuyer->setFirstName($order->getCustomerFirstname());
-            $nostoBuyer->setLastName($order->getCustomerLastname());
-            $nostoBuyer->setEmail($order->getCustomerEmail());
-            $address = $order->getBillingAddress();
-            if ($address instanceof OrderAddressInterface) {
-                $nostoBuyer->setPhone($address->getTelephone());
-                $nostoBuyer->setPostcode($address->getPostcode());
-                $nostoBuyer->setCountry($address->getCountryId());
+            $nostoBuyer = $this->buyerBuilder->fromOrder($order);
+            if ($nostoBuyer instanceof Buyer) {
+                $nostoOrder->setCustomer($nostoBuyer);
             }
-            $nostoOrder->setCustomer($nostoBuyer);
 
             // Add each ordered item as a line item
             /** @var Item $item */
