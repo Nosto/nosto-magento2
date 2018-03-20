@@ -24,7 +24,7 @@
     "magento/module-bundle": "100.2.0",
     "magento/module-search": "100.2.0",
     "magento/module-catalog-search": "100.2.0",
-    "magento/module-quote": "101.0.0",ZZZ
+    "magento/module-quote": "101.0.0",
     "magento/module-review": "100.2.0",
     "magento/zendframework1": "*"
   },
