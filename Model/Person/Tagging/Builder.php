@@ -80,7 +80,7 @@ class Builder extends PersonBuilder
      * Builds person from the current session / logged in user
      *
      * @param CurrentCustomer $currentCustomer
-     * @return AbstractPerson
+     * @return AbstractPerson|null
      */
     public function fromSession(CurrentCustomer $currentCustomer)
     {
