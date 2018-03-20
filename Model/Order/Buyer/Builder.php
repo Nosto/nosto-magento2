@@ -97,14 +97,21 @@ class Builder extends PersonBuilder
             $countryId =  null;
         }
 
-        $buyer = $this->build(
-            $order->getCustomerFirstname(),
-            $order->getCustomerLastname(),
-            $order->getCustomerEmail(),
-            $telephone,
-            $postcode,
-            $countryId
-        );
+        if ($order->getCustomerFirstname()
+            && $order->getCustomerLastname()
+            && $order->getCustomerEmail()
+        ) {
+            $buyer = $this->build(
+                $order->getCustomerFirstname(),
+                $order->getCustomerLastname(),
+                $order->getCustomerEmail(),
+                $telephone,
+                $postcode,
+                $countryId
+            );
+        } else {
+            $buyer = null;
+        }
 
         return $buyer;
     }
