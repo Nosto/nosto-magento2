@@ -34,10 +34,11 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Order\Buyer;
+namespace Nosto\Tagging\Model\Person\Tagging;
 
-use Magento\Sales\Model\Order;
-use Nosto\Object\Order\Buyer;
+use Magento\Customer\Helper\Session\CurrentCustomer;
+use Nosto\Object\AbstractPerson;
+use Nosto\Object\User;
 use Nosto\Tagging\Model\Person\Builder as PersonBuilder;
 
 /**
@@ -53,7 +54,7 @@ class Builder extends PersonBuilder
      * @param $phone
      * @param $postCode
      * @param $country
-     * @return Buyer
+     * @return User
      */
     public function buildObject(
         $firstName,
@@ -64,46 +65,37 @@ class Builder extends PersonBuilder
         $country
     )
     {
-        $buyer = new Buyer();
-        $buyer->setFirstName($firstName);
-        $buyer->setLastName($lastName);
-        $buyer->setEmail($email);
-        $buyer->setPhone($phone);
-        $buyer->setPostCode($postCode);
-        $buyer->setCountry($country);
+        $user = new User();
+        $user->setFirstName($firstName);
+        $user->setLastName($lastName);
+        $user->setEmail($email);
+        $user->setPhone($phone);
+        $user->setPostCode($postCode);
+        $user->setCountry($country);
 
-        return $buyer;
+        return $user;
     }
 
     /**
-     * Builds buyer from the order
+     * Builds person from the current session / logged in user
      *
-     * @param Order $order
-     * @return \Nosto\Types\PersonInterface
+     * @param CurrentCustomer $currentCustomer
+     * @return AbstractPerson
      */
-    public function fromOrder(Order $order)
+    public function fromSession(CurrentCustomer $currentCustomer)
     {
+        try {
+            $customer = $currentCustomer->getCustomer();
+            $person = $this->build(
+                $customer->getFirstname(),
+                $currentCustomer->getCustomer()->getLastname(),
+                $currentCustomer->getCustomer()->getEmail()
+            );
 
-        $address = $order->getBillingAddress();
-        if ($address instanceof OrderAddressInterface) {
-            $telephone = $address->getTelephone() ? $address->getTelephone() : null;
-            $postcode = $address->getPostcode() ? $address->getPostcode() : null;
-            $countryId = $address->getCountryId() ? $address->getCountryId() : null;
-        } else {
-            $telephone = null;
-            $postcode  = null;
-            $countryId =  null;
+            return $person;
+        } catch (\Exception $e) {
+
+            return null;
         }
-
-        $buyer = $this->build(
-            $order->getCustomerFirstname(),
-            $order->getCustomerLastname(),
-            $order->getCustomerEmail(),
-            $telephone,
-            $postcode,
-            $countryId
-        );
-
-        return $buyer;
     }
 }

@@ -9,10 +9,9 @@
 namespace Nosto\Tagging\Model\Person;
 
 
+use Nosto\Object\AbstractPerson;
 use Nosto\Object\ModelFilter;
-use Nosto\Object\Order\Buyer;
 use Nosto\Tagging\Model\Email\Repository as NostoEmailRepository;
-use Nosto\Types\PersonInterface;
 use Magento\Framework\Event\ManagerInterface as EventManager;
 
 
@@ -40,26 +39,45 @@ abstract class Builder
      * @param string $firstName
      * @param string $lastName
      * @param string $email
-     * @param string $phone
-     * @param string $postCode
-     * @param string $country
+     * @param string|null $phone
+     * @param string|null $postCode
+     * @param string|null $country
      *
-     * @return PersonInterface
+     * @return AbstractPerson
      */
     public function build(
         $firstName,
         $lastName,
         $email,
-        $phone,
-        $postCode,
-        $country
+        $phone = null,
+        $postCode = null,
+        $country = null
     ) {
         $modelFilter = new ModelFilter();
-        $this->eventManager->dispatch('nosto_person_load_before', ['modelFilter' => $modelFilter]);
+        $this->eventManager->dispatch('nosto_person_load_before',
+            [
+                'modelFilter' => $modelFilter,
+                'fields' => [
+                    'firstName' => $firstName,
+                    'lastLane' => $lastName,
+                    'email' => $email,
+                    'phone' => $phone,
+                    'postCode' => $postCode,
+                    'country' => $country
+                ]
+            ]
+        );
         if (!$modelFilter->isValid()) {
+
             return null;
         }
-        $person = $this->buildObject($firstName, $lastName, $email, $phone, $postCode, $country);
+        $person = $this->buildObject($firstName,
+            $lastName,
+            $email,
+            $phone,
+            $postCode,
+            $country
+        );
         $person->setMarketingPermission(
             $this->emailRepository->isOptedIn($person->getEmail())
         );
@@ -67,6 +85,10 @@ abstract class Builder
             'modelFilter' => $modelFilter,
             'person' => $person
         ]);
+        if (!$modelFilter->isValid()) {
+
+            return null;
+        }
 
         return $person;
     }
@@ -78,7 +100,7 @@ abstract class Builder
      * @param $phone
      * @param $postCode
      * @param $country
-     * @return PersonInterface|Buyer
+     * @return AbstractPerson
      */
     abstract public function buildObject(
         $firstName,
