@@ -83,14 +83,12 @@ class Repository
     {
         $subscriber = $this->getNewsletterOptInForEmail($email);
         if (!$subscriber || empty($subscriber)) {
-
             return false;
         }
 
         if (isset($subscriber['subscriber_status'])
             && $subscriber['subscriber_status'] == Subscriber::STATUS_SUBSCRIBED
         ) {
-
             return true;
         }
 

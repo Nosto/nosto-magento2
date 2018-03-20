@@ -8,12 +8,10 @@
 
 namespace Nosto\Tagging\Model\Person;
 
-
 use Nosto\Object\AbstractPerson;
 use Nosto\Object\ModelFilter;
 use Nosto\Tagging\Model\Email\Repository as NostoEmailRepository;
 use Magento\Framework\Event\ManagerInterface as EventManager;
-
 
 abstract class Builder
 {
@@ -29,8 +27,8 @@ abstract class Builder
     public function __construct(
         NostoEmailRepository $emailRepository,
         EventManager $eventManager
-    )
-    {
+    ) {
+    
         $this->emailRepository = $emailRepository;
         $this->eventManager = $eventManager;
     }
@@ -54,7 +52,8 @@ abstract class Builder
         $country = null
     ) {
         $modelFilter = new ModelFilter();
-        $this->eventManager->dispatch('nosto_person_load_before',
+        $this->eventManager->dispatch(
+            'nosto_person_load_before',
             [
                 'modelFilter' => $modelFilter,
                 'fields' => [
@@ -68,10 +67,10 @@ abstract class Builder
             ]
         );
         if (!$modelFilter->isValid()) {
-
             return null;
         }
-        $person = $this->buildObject($firstName,
+        $person = $this->buildObject(
+            $firstName,
             $lastName,
             $email,
             $phone,
@@ -86,7 +85,6 @@ abstract class Builder
             'person' => $person
         ]);
         if (!$modelFilter->isValid()) {
-
             return null;
         }
 

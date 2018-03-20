@@ -63,8 +63,8 @@ class Builder extends PersonBuilder
         $phone,
         $postCode,
         $country
-    )
-    {
+    ) {
+    
         $user = new User();
         $user->setFirstName($firstName);
         $user->setLastName($lastName);
@@ -94,7 +94,6 @@ class Builder extends PersonBuilder
 
             return $person;
         } catch (\Exception $e) {
-
             return null;
         }
     }

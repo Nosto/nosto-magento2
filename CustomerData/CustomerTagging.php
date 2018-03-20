@@ -82,7 +82,9 @@ class CustomerTagging extends HashedTagging implements SectionSourceInterface
                 'email' => $customer->getEmail(),
                 'hcid' => $this->generateVisitorChecksum($nostoCustomerId),
                 'marketing_permission' => $customer->getMarketingPermission(),
-                'customer_reference' => $this->generateVisitorChecksum($this->currentCustomer->getCustomerId() . $customer->getEmail())
+                'customer_reference' => $this->generateVisitorChecksum(
+                    $this->currentCustomer->getCustomerId() . $customer->getEmail()
+                )
             ];
         }
 
