@@ -83,30 +83,25 @@ class Builder extends PersonBuilder
 
         $address = $order->getBillingAddress();
         if ($address instanceof OrderAddressInterface) {
-            $telephone = $address->getTelephone() ? $address->getTelephone() : null;
-            $postcode = $address->getPostcode() ? $address->getPostcode() : null;
-            $countryId = $address->getCountryId() ? $address->getCountryId() : null;
+            $telephone = $address->getTelephone() ? (string)$address->getTelephone() : null;
+            $postcode = $address->getPostcode() ? (string)$address->getPostcode() : null;
+            $countryId = $address->getCountryId() ? (string)$address->getCountryId() : null;
         } else {
             $telephone = null;
             $postcode  = null;
             $countryId =  null;
         }
-
-        if ($order->getCustomerFirstname()
-            && $order->getCustomerLastname()
-            && $order->getCustomerEmail()
-        ) {
-            $buyer = $this->build(
-                $order->getCustomerFirstname(),
-                $order->getCustomerLastname(),
-                $order->getCustomerEmail(),
-                $telephone,
-                $postcode,
-                $countryId
-            );
-        } else {
-            $buyer = null;
-        }
+        $customerFirstname = $order->getCustomerFirstname() ? (string)$order->getCustomerFirstname() : "";
+        $customerLastname = $order->getCustomerLastname() ? (string)$order->getCustomerLastname() : "";
+        $customerEmail = $order->getCustomerEmail() ? (string)$order->getCustomerEmail(): "";
+        $buyer = $this->build(
+            $customerFirstname,
+            $customerLastname,
+            $customerEmail,
+            $telephone,
+            $postcode,
+            $countryId
+        );
 
         return $buyer;
     }
