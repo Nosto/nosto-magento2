@@ -98,9 +98,9 @@ class Builder extends PersonBuilder
             $customerFirstname,
             $customerLastname,
             $customerEmail,
-            $telephone,
-            $postcode,
-            $countryId
+            "test",
+            "test",
+            "FI"
         );
 
         return $buyer;
