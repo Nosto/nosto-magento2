@@ -85,11 +85,11 @@ class Builder extends PersonBuilder
         $telephone = 'test';
         $postcode  = 'test';
         $countryId =  'test';
-//        if ($address instanceof OrderAddressInterface) {
-//            $telephone = $address->getTelephone() ? (string)$address->getTelephone() : null;
-//            $postcode = $address->getPostcode() ? (string)$address->getPostcode() : null;
-//            $countryId = $address->getCountryId() ? (string)$address->getCountryId() : null;
-//        }
+        if ($address instanceof OrderAddressInterface) {
+            $telephone = $address->getTelephone() ? (string)$address->getTelephone() : null;
+            $postcode = $address->getPostcode() ? (string)$address->getPostcode() : null;
+            $countryId = $address->getCountryId() ? (string)$address->getCountryId() : null;
+        }
         $customerFirstname = $order->getCustomerFirstname() ? (string)$order->getCustomerFirstname() : "";
         $customerLastname = $order->getCustomerLastname() ? (string)$order->getCustomerLastname() : "";
         $customerEmail = $order->getCustomerEmail() ? (string)$order->getCustomerEmail(): "";
