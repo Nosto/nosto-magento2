@@ -123,17 +123,17 @@ abstract class Builder
      * @param $firstName
      * @param $lastName
      * @param $email
-     * @param $phone
-     * @param $postCode
-     * @param $country
+     * @param $phone|null
+     * @param $postCode|null
+     * @param $country|null
      * @return AbstractPerson
      */
     abstract public function buildObject(
         $firstName,
         $lastName,
         $email,
-        $phone,
-        $postCode,
-        $country
+        $phone = null,
+        $postCode = null,
+        $country = null
     );
 }

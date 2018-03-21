@@ -49,21 +49,16 @@ use Nosto\Tagging\Model\Person\Builder as PersonBuilder;
 class Builder extends PersonBuilder
 {
     /**
-     * @param $firstName
-     * @param $lastName
-     * @param $email
-     * @param $phone
-     * @param $postCode
-     * @param $country
+     * @inheritdoc
      * @return Buyer
      */
     public function buildObject(
         $firstName,
         $lastName,
         $email,
-        $phone,
-        $postCode,
-        $country
+        $phone = null,
+        $postCode = null,
+        $country = null
     ) {
     
         $buyer = new Buyer();
