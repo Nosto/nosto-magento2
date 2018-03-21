@@ -65,9 +65,9 @@ abstract class Builder
      * @param string $firstName
      * @param string $lastName
      * @param string $email
-     * @param ?string $phone
-     * @param ?string $postCode
-     * @param ?string $country
+     * @param string|null $phone
+     * @param string|null $postCode
+     * @param string|null $country
      *
      * @return AbstractPerson|null
      */

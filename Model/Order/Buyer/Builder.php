@@ -82,14 +82,13 @@ class Builder extends PersonBuilder
     {
 
         $address = $order->getBillingAddress();
+        $telephone = null;
+        $postcode  = null;
+        $countryId =  null;
         if ($address instanceof OrderAddressInterface) {
             $telephone = $address->getTelephone() ? (string)$address->getTelephone() : null;
             $postcode = $address->getPostcode() ? (string)$address->getPostcode() : null;
             $countryId = $address->getCountryId() ? (string)$address->getCountryId() : null;
-        } else {
-            $telephone = null;
-            $postcode  = null;
-            $countryId =  null;
         }
         $customerFirstname = $order->getCustomerFirstname() ? (string)$order->getCustomerFirstname() : "";
         $customerLastname = $order->getCustomerLastname() ? (string)$order->getCustomerLastname() : "";
