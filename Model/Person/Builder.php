@@ -120,12 +120,13 @@ abstract class Builder
     }
 
     /**
-     * @param $firstName
-     * @param $lastName
-     * @param $email
-     * @param $phone|null
-     * @param $postCode|null
-     * @param $country|null
+     * @param string $firstName
+     * @param string $lastName
+     * @param string $email
+     * @param string|null $phone
+     * @param string|null $postCode
+     * @param string|null $country
+     *
      * @return AbstractPerson
      */
     abstract public function buildObject(
