@@ -77,14 +77,14 @@ class Builder extends PersonBuilder
      *
      * @param Order $order
      * @return AbstractPerson|null
+     * @suppress PhanTypeMismatchArgument
      */
     public function fromOrder(Order $order)
     {
-
         $address = $order->getBillingAddress();
-        $telephone = 'test';
-        $postcode  = 'test';
-        $countryId =  'test';
+        $telephone = null;
+        $postcode  = null;
+        $countryId =  null;
         if ($address instanceof OrderAddressInterface) {
             $telephone = $address->getTelephone() ? (string)$address->getTelephone() : null;
             $postcode = $address->getPostcode() ? (string)$address->getPostcode() : null;
