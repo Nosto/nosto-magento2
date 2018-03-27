@@ -1,5 +1,8 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### not released
+* Add marketing permission for customer tagging and for buyer 
+
 ### 2.7.0
 Improvements
 * Prefix order numbers to avoid collision with already used order numbers when migrating from Magento 1 to Magento 2
