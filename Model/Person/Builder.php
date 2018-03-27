@@ -52,6 +52,11 @@ abstract class Builder
      */
     private $eventManager;
 
+    /**
+     * Builder constructor.
+     * @param NostoEmailRepository $emailRepository
+     * @param EventManager $eventManager
+     */
     public function __construct(
         NostoEmailRepository $emailRepository,
         EventManager $eventManager
