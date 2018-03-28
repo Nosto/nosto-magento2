@@ -184,6 +184,7 @@ class Repository
         foreach ($product->getItems() as $item) {
             return $item;
         }
+        return null;
     }
 
     /**
