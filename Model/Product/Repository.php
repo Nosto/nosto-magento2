@@ -154,7 +154,7 @@ class Repository
      * Gets a product that is active in a given Store
      *
      * @param Store $store
-     * @return Product
+     * @return Product|null
      * @suppress PhanTypeMismatchArgument
      *
      */
@@ -184,6 +184,7 @@ class Repository
         foreach ($product->getItems() as $item) {
             return $item;
         }
+        return null;
     }
 
     /**
