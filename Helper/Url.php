@@ -36,6 +36,7 @@
 
 namespace Nosto\Tagging\Helper;
 
+use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\Product\Visibility;
 use Magento\Catalog\Model\ResourceModel\Category\CollectionFactory as CategoryCollectionFactory;
 use Magento\Backend\Helper\Data as BackendDataHelper;
@@ -173,19 +174,24 @@ class Url extends AbstractHelper
      * The preview url includes "nostodebug=true" parameter.
      *
      * @param Store $store the store to get the url for.
-     * @return string the url.
+     * @return string|null the url.
+     * @suppress PhanTypeMismatchReturn
      */
     public function getPreviewUrlProduct(Store $store)
     {
         $product = $this->productRepository->getRandomSingleActiveProduct($store);
-        $url = $product->getUrlInStore(
-            [
-                self::MAGENTO_URL_OPTION_NOSID => true,
-                self::MAGENTO_URL_OPTION_SCOPE_TO_URL => $this->nostoDataHelper->getStoreCodeToUrl($store),
-                self::MAGENTO_URL_OPTION_SCOPE => $store->getCode(),
-            ]
-        );
-        return $this->addNostoDebugParamToUrl($url);
+        $url = null;
+        if ($product instanceof Product) {
+            $url = $product->getUrlInStore(
+                [
+                    self::MAGENTO_URL_OPTION_NOSID => true,
+                    self::MAGENTO_URL_OPTION_SCOPE_TO_URL => $this->nostoDataHelper->getStoreCodeToUrl($store),
+                    self::MAGENTO_URL_OPTION_SCOPE => $store->getCode(),
+                ]
+            );
+            $url = $this->addNostoDebugParamToUrl($url);
+        }
+        return $url;
     }
 
     /**

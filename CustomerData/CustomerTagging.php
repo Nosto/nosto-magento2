@@ -40,24 +40,29 @@ use Magento\Customer\CustomerData\SectionSourceInterface;
 use Magento\Customer\Helper\Session\CurrentCustomer;
 use Magento\Framework\Stdlib\CookieManagerInterface;
 use Nosto\Tagging\Model\Customer\Customer as NostoCustomer;
+use Nosto\Tagging\Model\Person\Tagging\Builder as NostoPersonBuilder;
 
 class CustomerTagging extends HashedTagging implements SectionSourceInterface
 {
     private $currentCustomer;
     private $cookieManager;
+    private $personBuilder;
 
     /**
      * Constructor
      *
      * @param CurrentCustomer $currentCustomer
      * @param CookieManagerInterface $cookieManager
+     * @param NostoPersonBuilder $personBuilder
      */
     public function __construct(
         CurrentCustomer $currentCustomer,
-        CookieManagerInterface $cookieManager
+        CookieManagerInterface $cookieManager,
+        NostoPersonBuilder $personBuilder
     ) {
         $this->currentCustomer = $currentCustomer;
         $this->cookieManager = $cookieManager;
+        $this->personBuilder = $personBuilder;
     }
 
     /**
@@ -69,14 +74,17 @@ class CustomerTagging extends HashedTagging implements SectionSourceInterface
         if ($this->currentCustomer instanceof CurrentCustomer
             && $this->currentCustomer->getCustomerId()
         ) {
-            $customer = $this->currentCustomer->getCustomer();
+            $customer = $this->personBuilder->fromSession($this->currentCustomer);
             $nostoCustomerId = $this->cookieManager->getCookie(NostoCustomer::COOKIE_NAME);
             $data = [
-                'first_name' => $customer->getFirstname(),
-                'last_name' => $customer->getLastname(),
+                'first_name' => $customer->getFirstName(),
+                'last_name' => $customer->getLastName(),
                 'email' => $customer->getEmail(),
                 'hcid' => $this->generateVisitorChecksum($nostoCustomerId),
-                'customer_reference' => $this->generateVisitorChecksum($customer->getId() . $customer->getEmail())
+                'marketing_permission' => $customer->getMarketingPermission(),
+                'customer_reference' => $this->generateVisitorChecksum(
+                    $this->currentCustomer->getCustomerId() . $customer->getEmail()
+                )
             ];
         }
 

@@ -1,5 +1,9 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 2.8.0
+* Add marketing permission for customer tagging and for buyer (GDPR compatibility) 
+* Fix the Nosto account installation screen if no products are attached in a store view
+
 ### 2.7.0
 Improvements
 * Prefix order numbers to avoid collision with already used order numbers when migrating from Magento 1 to Magento 2
