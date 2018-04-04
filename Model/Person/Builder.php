@@ -40,6 +40,7 @@ use Nosto\Object\AbstractPerson;
 use Nosto\Object\ModelFilter;
 use Nosto\Tagging\Model\Email\Repository as NostoEmailRepository;
 use Magento\Framework\Event\ManagerInterface as EventManager;
+use Nosto\Tagging\Helper\Data as NostoHelperData;
 
 abstract class Builder
 {
@@ -51,6 +52,10 @@ abstract class Builder
      * @var EventManager
      */
     private $eventManager;
+    /**
+     * @var NostoHelperData
+     */
+    private $nostoHelperData;
 
     /**
      * Builder constructor.
@@ -59,11 +64,13 @@ abstract class Builder
      */
     public function __construct(
         NostoEmailRepository $emailRepository,
-        EventManager $eventManager
+        EventManager $eventManager,
+        NostoHelperData $nostoHelperData
     ) {
     
         $this->emailRepository = $emailRepository;
         $this->eventManager = $eventManager;
+        $this->nostoHelperData = $nostoHelperData;
     }
 
     /**
@@ -84,6 +91,9 @@ abstract class Builder
         $postCode = null,
         $country = null
     ) {
+        if (!$this->nostoHelperData->isSendCustomerDataToNostoEnabled()) {
+            return null;
+        }
         $modelFilter = new ModelFilter();
         $this->eventManager->dispatch(
             'nosto_person_load_before',
