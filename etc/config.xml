@@ -20,6 +20,7 @@
                 <full_reindex>1</full_reindex>
                 <low_stock_indication>0</low_stock_indication>
                 <send_add_to_cart_event>0</send_add_to_cart_event>
+                <send_customer_data>1</send_customer_data>
             </flags>
         </nosto>
     </default>

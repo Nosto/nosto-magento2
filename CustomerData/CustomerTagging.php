@@ -75,6 +75,9 @@ class CustomerTagging extends HashedTagging implements SectionSourceInterface
             && $this->currentCustomer->getCustomerId()
         ) {
             $customer = $this->personBuilder->fromSession($this->currentCustomer);
+            if ($customer === null) {
+                return [];
+            }
             $nostoCustomerId = $this->cookieManager->getCookie(NostoCustomer::COOKIE_NAME);
             $data = [
                 'first_name' => $customer->getFirstName(),
