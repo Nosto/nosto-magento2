@@ -1,5 +1,8 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 2.9.0
+* Add advanced setting to disable sending customer data to Nosto servers
+
 ### 2.8.0
 * Add marketing permission for customer tagging and for buyer (GDPR compatibility) 
 * Fix the Nosto account installation screen if no products are attached in a store view
