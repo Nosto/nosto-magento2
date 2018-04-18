@@ -48,6 +48,7 @@ use Magento\Store\Model\Store;
 use Nosto\Request\Http\HttpRequest;
 use Nosto\Tagging\Helper\Data as NostoDataHelper;
 use Nosto\Tagging\Model\Product\Repository as ProductRepository;
+use Nosto\Tagging\Model\Product\Url\Builder as NostoUrlBuilder;
 
 /**
  * Url helper class for common URL related tasks.
@@ -135,6 +136,7 @@ class Url extends AbstractHelper
     private $nostoDataHelper;
     private $backendDataHelper;
     private $productRepository;
+    private $nostoUrlBuilder;
 
     /** @noinspection PhpUndefinedClassInspection */
     /**
@@ -147,6 +149,7 @@ class Url extends AbstractHelper
      * @param UrlBuilder $urlBuilder frontend URL builder.
      * @param Data $nostoDataHelper
      * @param BackendDataHelper $backendDataHelper
+     * @param NostoUrlBuilder $nostoUrlBuilder
      */
     public function __construct(
         Context $context,
@@ -156,7 +159,8 @@ class Url extends AbstractHelper
         Visibility $productVisibility,
         NostoDataHelper $nostoDataHelper,
         UrlBuilder $urlBuilder,
-        BackendDataHelper $backendDataHelper
+        BackendDataHelper $backendDataHelper,
+        NostoUrlBuilder $nostoUrlBuilder
     ) {
         parent::__construct($context);
 
@@ -166,6 +170,7 @@ class Url extends AbstractHelper
         $this->urlBuilder = $urlBuilder;
         $this->nostoDataHelper = $nostoDataHelper;
         $this->backendDataHelper = $backendDataHelper;
+        $this->nostoUrlBuilder = $nostoUrlBuilder;
     }
 
     /**
@@ -182,15 +187,10 @@ class Url extends AbstractHelper
         $product = $this->productRepository->getRandomSingleActiveProduct();
         $url = null;
         if ($product instanceof Product) {
-            $url = $product->getUrlInStore(
-                [
-                    self::MAGENTO_URL_OPTION_NOSID => true,
-                    self::MAGENTO_URL_OPTION_SCOPE_TO_URL => $this->nostoDataHelper->getStoreCodeToUrl($store),
-                    self::MAGENTO_URL_OPTION_SCOPE => $store->getCode(),
-                ]
-            );
+            $url = $this->nostoUrlBuilder->getUrlInStore($product, $store);
             $url = $this->addNostoDebugParamToUrl($url);
         }
+
         return $url;
     }
 
