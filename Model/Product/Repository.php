@@ -153,12 +153,11 @@ class Repository
     /**
      * Gets a product that is active in a given Store
      *
-     * @param Store $store
      * @return Product|null
      * @suppress PhanTypeMismatchArgument
      *
      */
-    public function getRandomSingleActiveProduct(Store $store)
+    public function getRandomSingleActiveProduct()
     {
         $filterStatus = $this->filterBuilder
             ->setField('status')

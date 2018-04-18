@@ -179,7 +179,7 @@ class Url extends AbstractHelper
      */
     public function getPreviewUrlProduct(Store $store)
     {
-        $product = $this->productRepository->getRandomSingleActiveProduct($store);
+        $product = $this->productRepository->getRandomSingleActiveProduct();
         $url = null;
         if ($product instanceof Product) {
             $url = $product->getUrlInStore(
