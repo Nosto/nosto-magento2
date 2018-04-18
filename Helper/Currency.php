@@ -38,30 +38,62 @@ namespace Nosto\Tagging\Helper;
 
 use Magento\Directory\Model\Currency as MagentoCurrency;
 use Magento\Framework\App\Helper\AbstractHelper;
+use Magento\Framework\App\Helper\Context;
 use Magento\Store\Model\Store;
+use Nosto\Tagging\Helper\Data as NostoHelperData;
 
 /**
  * Currency helper used for currency related tasks.
  */
 class Currency extends AbstractHelper
 {
+    private $nostoHelperData;
+
+    /**
+     * Constructor.
+     *
+     * @param Context $context the context.
+     * @param NostoHelperData $nostoHelperData
+     */
+    public function __construct(
+        Context $context,
+        NostoHelperData $nostoHelperData
+    ) {
+        parent::__construct($context);
+
+        $this->nostoHelperData = $nostoHelperData;
+    }
+
     /**
      * If the store uses multiple currencies the prices are converted from base
      * currency into given currency. Otherwise the given price is returned.
      *
-     * @param float $basePrice The price of a product in base currency
+     * @param float $basePrice The price of a product in base currency or in current currency
      * @param Store $store
+     * @param MagentoCurrency $currentCurrency
      * @return float
+     * @throws \Exception
      */
-    public function convertToTaggingPrice($basePrice, Store $store)
+    public function convertToTaggingPrice($basePrice, Store $store, MagentoCurrency $currentCurrency)
     {
         $taggingPrice = $basePrice;
         $taggingCurrency = $this->getTaggingCurrency($store);
-        $baseCurrency = $store->getBaseCurrency();
-        if ($taggingCurrency->getCode() !== $baseCurrency->getCode()) {
-            $taggingPrice = $baseCurrency->convert($basePrice, $taggingCurrency);
+        $isMultiCurrencyDisabled
+            = $this->nostoHelperData->isMultiCurrencyDisabled($store);
+        if (!$isMultiCurrencyDisabled) {
+            $baseCurrency = $store->getBaseCurrency();
+            if ($taggingCurrency->getCode() !== $baseCurrency->getCode()) {
+                $taggingPrice = $baseCurrency->convert($basePrice,
+                    $taggingCurrency);
+            }
+        } elseif ($taggingCurrency->getCurrencyCode() != $currentCurrency->getCurrencyCode()) {
+            try {
+                $taggingPrice = $currentCurrency->convert($basePrice, $taggingCurrency);
+            } catch (\Exception $e) {
+                // Log exception
+            }
         }
-
+        
         return $taggingPrice;
     }
 
@@ -75,7 +107,9 @@ class Currency extends AbstractHelper
     {
         $currencyCount = $this->getCurrencyCount($store);
         $taggingCurrency = $store->getBaseCurrency();
-        if ($currencyCount == 1) {
+        // If the store only has one currency or multi-currency is disabled
+        // we use the default display currency for tagging
+        if ($currencyCount == 1 && !$this->nostoHelperData->isMultiCurrencyExchangeRatesEnabled($store)) {
             $taggingCurrency = $store->getDefaultCurrency();
         }
 

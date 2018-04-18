@@ -138,6 +138,17 @@ class Data extends AbstractHelper
     const XML_PATH_TAG = 'nosto/attributes/';
 
     /**
+     * Path to the configuration object for multi currency
+     */
+    const XML_PATH_MULTI_CURRENCY = 'nosto/multicurrency/method';
+
+    /**
+     * Values of the multi currency settings
+     */
+    const SETTING_VALUE_MC_EXCHANGE_RATE = 'exchangerates';
+    const SETTING_VALUE_MC_DISABLED = 'disabled';
+
+    /**
      * Name of the module
      */
     const MODULE_NAME = 'Nosto_Tagging';
@@ -351,6 +362,32 @@ class Data extends AbstractHelper
     public function isLowStockIndicationEnabled(StoreInterface $store = null)
     {
         return (bool)$this->getStoreConfig(self::XML_PATH_LOW_STOCK_INDICATION, $store);
+    }
+
+    /**
+     * Returns if multi currency is disabled
+     *
+     * @param StoreInterface|null $store the store model or null.
+     * @return bool the configuration value
+     */
+    public function isMultiCurrencyDisabled(StoreInterface $store = null)
+    {
+        if ($this->getStoreConfig(self::XML_PATH_MULTI_CURRENCY, $store) == self::SETTING_VALUE_MC_DISABLED) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Returns if multi currency is enabled
+     *
+     * @param StoreInterface|null $store the store model or null.
+     * @return bool the configuration value
+     */
+    public function isMultiCurrencyExchangeRatesEnabled(StoreInterface $store = null)
+    {
+        return !$this->isMultiCurrencyDisabled($store);
     }
 
     /**

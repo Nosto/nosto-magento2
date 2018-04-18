@@ -43,6 +43,7 @@ use Nosto\Operation\SyncRates;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Model\Rates\Builder as NostoExchangeRatesBuilder;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
+use Nosto\Tagging\Helper\Data as NostoHelperData;
 
 class Service
 {
@@ -50,23 +51,27 @@ class Service
     private $eventManager;
     private $nostoExchangeRatesBuilder;
     private $nostoHelperAccount;
+    private $nostoHelperData;
 
     /**
      * @param NostoLogger $logger
      * @param ManagerInterface $eventManager
      * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoExchangeRatesBuilder $nostoExchangeRatesBuilder
+     * @param NostoHelperData $nostoHelperData
      */
     public function __construct(
         NostoLogger $logger,
         ManagerInterface $eventManager,
         NostoHelperAccount $nostoHelperAccount,
-        NostoExchangeRatesBuilder $nostoExchangeRatesBuilder
+        NostoExchangeRatesBuilder $nostoExchangeRatesBuilder,
+        NostoHelperData $nostoHelperData
     ) {
         $this->logger = $logger;
         $this->eventManager = $eventManager;
         $this->nostoExchangeRatesBuilder = $nostoExchangeRatesBuilder;
         $this->nostoHelperAccount = $nostoHelperAccount;
+        $this->nostoHelperData = $nostoHelperData;
     }
 
     /**
@@ -79,6 +84,12 @@ class Service
     public function update(Store $store)
     {
         if ($account = $this->nostoHelperAccount->findAccount($store)) {
+            if (!$this->nostoHelperData->isMultiCurrencyExchangeRatesEnabled($store)) {
+                $this->logger->debug('Skipping update; multi-currency is disabled for ' .
+                    $store->getName());
+
+                return false;
+            }
             $rates = $this->nostoExchangeRatesBuilder->build($store);
             if (empty($rates->getRates())) {
                 $this->logger->debug('Skipping update; no multi-currency configured for ' .
