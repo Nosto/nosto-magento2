@@ -104,9 +104,7 @@ class Variation extends Template
     {
         $store = $this->nostoHelperScope->getStore(true);
 
-        if ($this->hasMultipleCurrencies()
-            && !$this->nostoHelperData->isMultiCurrencyDisabled($store)
-        ) {
+        if ($this->nostoHelperData->isMultiCurrencyExchangeRatesEnabled($store)) {
             return new MarkupableString(
                 $this->getVariationId(),
                 'nosto_variation'

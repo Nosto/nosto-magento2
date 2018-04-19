@@ -55,7 +55,8 @@ class MultiCurrency implements ArrayInterface
     public function toOptionArray()
     {
         return [
-            ['value' => Data::SETTING_VALUE_MC_EXCHANGE_RATE, 'label' => __('Exchange rate')],
+            ['value' => Data::SETTING_VALUE_MC_EXCHANGE_RATE, 'label' => __('Exchange rates')],
+            ['value' => Data::SETTING_VALUE_MC_SINGLE, 'label' => __('Single currency')],
             ['value' => Data::SETTING_VALUE_MC_DISABLED, 'label' => __('Disabled')]
         ];
     }

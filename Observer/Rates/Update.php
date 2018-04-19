@@ -89,11 +89,11 @@ class Update implements ObserverInterface
             return;
         }
 
-        $this->logger->info('Updating settings to Nosto for all store views');
+        $this->logger->debug('Updating settings to Nosto for all store views');
         foreach ($this->nostoHelperScope->getStores(false) as $store) {
-            $this->logger->info('Updating settings for ' . $store->getName());
+            $this->logger->debug('Updating settings for ' . $store->getName());
             if ($this->nostoRatesService->update($store)) {
-                $this->logger->info('Successfully updated the settings for the store view');
+                $this->logger->debug('Successfully updated the settings for the store view');
             } else {
                 $this->logger->warning('Unable to update the settings for the store view');
             }

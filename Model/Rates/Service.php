@@ -85,15 +85,21 @@ class Service
     {
         if ($account = $this->nostoHelperAccount->findAccount($store)) {
             if (!$this->nostoHelperData->isMultiCurrencyExchangeRatesEnabled($store)) {
-                $this->logger->debug('Skipping update; multi-currency is disabled for ' .
-                    $store->getName());
+                $this->logger->debug(
+                    sprintf('Skipping update; multi-currency is disabled for %s',
+                        $store->getName()
+                    )
+                );
 
-                return false;
+                return true;
             }
             $rates = $this->nostoExchangeRatesBuilder->build($store);
             if (empty($rates->getRates())) {
-                $this->logger->debug('Skipping update; no multi-currency configured for ' .
-                    $store->getName());
+                $this->logger->debug(
+                    sprintf('Skipping update; no rates found for %s',
+                        $store->getName()
+                    )
+                );
 
                 return false;
             }
@@ -116,6 +122,6 @@ class Service
             );
         }
 
-        return false;
+        return true;
     }
 }

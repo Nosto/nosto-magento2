@@ -209,13 +209,13 @@
                     <source_model>Nosto\Tagging\Model\Config\Source\Tags</source_model>
                 </field>
             </group>
-            <group id="multicurrency" translate="label" type="text" sortOrder="10" showInDefault="1"
+            <group id="multicurrency" translate="label" type="text" sortOrder="40" showInDefault="1"
                    showInWebsite="1" showInStore="1">
-                <label>Multi currency</label>
+                <label>Currency setup</label>
                 <field id="method" translate="label comment" type="select" sortOrder="10"
                        showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Multi currency method</label>
-                    <comment>Set this to exchange rates if your store uses Magento's exchange rates.
+                    <label>Multi currency setup</label>
+                    <comment>Set this to "Exchange rates" if your store uses Magento's exchange rates. If the store view uses only one currency set this to "Single currency". If you have a custom pricing handling set this to "Disabled" and Nosto will not try to do any currency conversions.
                     </comment>
                     <source_model>Nosto\Tagging\Model\Config\Source\MultiCurrency</source_model>
                 </field>

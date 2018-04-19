@@ -146,6 +146,7 @@ class Data extends AbstractHelper
      * Values of the multi currency settings
      */
     const SETTING_VALUE_MC_EXCHANGE_RATE = 'exchangerates';
+    const SETTING_VALUE_MC_SINGLE = 'single';
     const SETTING_VALUE_MC_DISABLED = 'disabled';
 
     /**
@@ -372,11 +373,8 @@ class Data extends AbstractHelper
      */
     public function isMultiCurrencyDisabled(StoreInterface $store = null)
     {
-        if ($this->getStoreConfig(self::XML_PATH_MULTI_CURRENCY, $store) == self::SETTING_VALUE_MC_DISABLED) {
-            return true;
-        }
-
-        return false;
+        $storeConfig = $this->getStoreConfig(self::XML_PATH_MULTI_CURRENCY, $store);
+        return (bool)($storeConfig == self::SETTING_VALUE_MC_DISABLED);
     }
 
     /**
@@ -387,8 +385,9 @@ class Data extends AbstractHelper
      */
     public function isMultiCurrencyExchangeRatesEnabled(StoreInterface $store = null)
     {
-        return !$this->isMultiCurrencyDisabled($store);
-    }
+        $storeConfig = $this->getStoreConfig(self::XML_PATH_MULTI_CURRENCY, $store);
+        return (bool)($storeConfig == self::SETTING_VALUE_MC_EXCHANGE_RATE);
+}
 
     /**
      * @param string $path

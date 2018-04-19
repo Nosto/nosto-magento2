@@ -71,6 +71,7 @@ class Builder
      * @param ResolverInterface $localeResolver
      * @param NostoLogger $logger
      * @param ManagerInterface $eventManager
+     * @param NostoDataHelper $nostoDataHelper
      */
     public function __construct(
         NostoHelperData $nostoHelperData,
@@ -130,7 +131,7 @@ class Builder
             $lang = substr($this->localeResolver->getLocale(), 0, 2);
             $metaData->setOwnerLanguageCode($lang);
             $metaData->setOwner($accountOwner);
-            if ($this->nostoHelperCurrency->getCurrencyCount($store) > 1) {
+            if ($this->nostoHelperData->isMultiCurrencyExchangeRatesEnabled($store)) {
                 $metaData->setDefaultVariantId(
                     $this->nostoHelperCurrency->getTaggingCurrency($store)
                         ->getCode()

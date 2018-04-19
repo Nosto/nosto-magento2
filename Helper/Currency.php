@@ -68,32 +68,29 @@ class Currency extends AbstractHelper
      * If the store uses multiple currencies the prices are converted from base
      * currency into given currency. Otherwise the given price is returned.
      *
-     * @param float $basePrice The price of a product in base currency or in current currency
+     * @param float $basePrice The price of a product in base currency
      * @param Store $store
-     * @param MagentoCurrency $currentCurrency
      * @return float
      * @throws \Exception
      */
-    public function convertToTaggingPrice($basePrice, Store $store, MagentoCurrency $currentCurrency)
+    public function convertToTaggingPrice($basePrice, Store $store)
     {
+        // If multi currency is disabled or exchange rates are used
+        // we don't do any processing / conversions for the price
+        if($this->nostoHelperData->isMultiCurrencyDisabled($store)
+            || $this->nostoHelperData->isMultiCurrencyExchangeRatesEnabled($store)
+        ) {
+            return $basePrice;
+        }
+
         $taggingPrice = $basePrice;
         $taggingCurrency = $this->getTaggingCurrency($store);
-        $isMultiCurrencyDisabled
-            = $this->nostoHelperData->isMultiCurrencyDisabled($store);
-        if (!$isMultiCurrencyDisabled) {
-            $baseCurrency = $store->getBaseCurrency();
-            if ($taggingCurrency->getCode() !== $baseCurrency->getCode()) {
-                $taggingPrice = $baseCurrency->convert($basePrice,
-                    $taggingCurrency);
-            }
-        } elseif ($taggingCurrency->getCurrencyCode() != $currentCurrency->getCurrencyCode()) {
-            try {
-                $taggingPrice = $currentCurrency->convert($basePrice, $taggingCurrency);
-            } catch (\Exception $e) {
-                // Log exception
-            }
+        $baseCurrency = $store->getBaseCurrency();
+
+        if ($taggingCurrency->getCurrencyCode() !== $baseCurrency->getCurrencyCode()) {
+            $taggingPrice = $baseCurrency->convert($basePrice, $taggingCurrency);
         }
-        
+
         return $taggingPrice;
     }
 
@@ -105,11 +102,13 @@ class Currency extends AbstractHelper
      */
     public function getTaggingCurrency(Store $store)
     {
-        $currencyCount = $this->getCurrencyCount($store);
-        $taggingCurrency = $store->getBaseCurrency();
-        // If the store only has one currency or multi-currency is disabled
-        // we use the default display currency for tagging
-        if ($currencyCount == 1 && !$this->nostoHelperData->isMultiCurrencyExchangeRatesEnabled($store)) {
+        // If multi currency is disabled or exhange rates are used
+        // we always use the base currency for tagging
+        if ($this->nostoHelperData->isMultiCurrencyExchangeRatesEnabled($store)
+            || $this->nostoHelperData->isMultiCurrencyDisabled($store)
+        ) {
+            $taggingCurrency = $store->getBaseCurrency();
+        } else {
             $taggingCurrency = $store->getDefaultCurrency();
         }
 
