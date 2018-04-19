@@ -153,12 +153,11 @@ class Repository
     /**
      * Gets a product that is active in a given Store
      *
-     * @param Store $store
      * @return Product|null
      * @suppress PhanTypeMismatchArgument
      *
      */
-    public function getRandomSingleActiveProduct(Store $store)
+    public function getRandomSingleActiveProduct()
     {
         $filterStatus = $this->filterBuilder
             ->setField('status')
@@ -166,13 +165,13 @@ class Repository
             ->setConditionType('eq')
             ->create();
 
-        $filterStore = $this->filterBuilder
-            ->setField('store')
-            ->setValue($store->getId())
-            ->setConditionType('eq')
+        $filterVisible = $this->filterBuilder
+            ->setField('visibility')
+            ->setValue($this->productVisibility->getVisibleInSiteIds())
+            ->setConditionType('in')
             ->create();
 
-        $filterGroup = $this->filterGroupBuilder->setFilters([$filterStatus, $filterStore])->create();
+        $filterGroup = $this->filterGroupBuilder->setFilters([$filterStatus, $filterVisible])->create();
         $searchCriteria = $this->searchCriteriaBuilder
             ->setFilterGroups([$filterGroup])
             ->setCurrentPage(1)
