@@ -126,11 +126,6 @@ abstract class Base extends Action
      */
     public function export(AbstractCollection $collection)
     {
-
-        // ToDo - remove me
-        header('content-type: application/json');
-        die(SerializationHelper::serialize($collection));
-
         $result = $this->resultFactory->create(ResultFactory::TYPE_RAW);
         $store = $this->nostoHelperScope->getStore(true);
         $account = $this->nostoHelperAccount->findAccount($store);
