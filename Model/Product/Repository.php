@@ -165,13 +165,13 @@ class Repository
             ->setConditionType('eq')
             ->create();
 
-        $filterVisbile = $this->filterBuilder
+        $filterVisible = $this->filterBuilder
             ->setField('visibility')
             ->setValue($this->productVisibility->getVisibleInSiteIds())
             ->setConditionType('in')
             ->create();
 
-        $filterGroup = $this->filterGroupBuilder->setFilters([$filterStatus, $filterVisbile])->create();
+        $filterGroup = $this->filterGroupBuilder->setFilters([$filterStatus, $filterVisible])->create();
         $searchCriteria = $this->searchCriteriaBuilder
             ->setFilterGroups([$filterGroup])
             ->setCurrentPage(1)
