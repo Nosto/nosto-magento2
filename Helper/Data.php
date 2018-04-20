@@ -526,6 +526,12 @@ class Data extends AbstractHelper
         return (bool)$this->getStoreConfig(self::XML_PATH_STORE_CODE_TO_URL, $store);
     }
 
+    /**
+     * Clears Magento cache for given type (config, layout, block_html, etc.)
+     * @see http://devdocs.magento.com/guides/v2.2/config-guide/cli/config-cli-subcommands-cache.html
+     *
+     * @param string $type give "all" to clear all
+     */
     public function clearMagentoCache($type)
     {
         $types = $this->cacheManager->getAvailableTypes();
