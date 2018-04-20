@@ -127,4 +127,33 @@ class Currency extends AbstractHelper
 
         return count($currencies);
     }
+
+    /**
+     * Returns the info if exchange rates are used
+     *
+     * @param Store $store
+     * @return int
+     */
+    public function exchangeRatesInUse(Store $store)
+    {
+        if ($this->nostoHelperData->isMultiCurrencyExchangeRatesEnabled($store)) {
+
+            return true;
+        }
+        $method = $this->nostoHelperData->getMultiCurrencyMethod($store);
+        // Determine the value for MC setting if it's undefined
+        if ($method == Data::SETTING_VALUE_MC_UNDEFINED) {
+            if ($this->getCurrencyCount($store) > 1) {
+                $this->nostoHelperData->saveMultiCurrencyMethod(Data::SETTING_VALUE_MC_EXCHANGE_RATE, $store);
+                $this->nostoHelperData->clearMagentoCache('config');
+
+                return true;
+            } elseif ($this->getCurrencyCount($store) == 1) {
+                $this->nostoHelperData->saveMultiCurrencyMethod(Data::SETTING_VALUE_MC_SINGLE, $store);
+                $this->nostoHelperData->clearMagentoCache('config');
+            }
+        }
+
+        return false;
+    }
 }

@@ -89,8 +89,8 @@ class Builder
             $settings->setFrontPageUrl($this->buildURL($store));
             $settings->setCurrencyCode($this->nostoHelperCurrency->getTaggingCurrency($store)->getCode());
             $settings->setLanguageCode(substr($store->getConfig('general/locale/code'), 0, 2));
-            $settings->setUseCurrencyExchangeRates($this->nostoDataHelper->isMultiCurrencyExchangeRatesEnabled($store));
-            if ($this->nostoDataHelper->isMultiCurrencyExchangeRatesEnabled($store)) {
+            $settings->setUseCurrencyExchangeRates($this->nostoHelperCurrency->exchangeRatesInUse($store));
+            if ($this->nostoHelperCurrency->exchangeRatesInUse($store)) {
                 $settings->setDefaultVariantId($this->nostoHelperCurrency->getTaggingCurrency($store)->getCode());
             }
             $settings->setCurrencies($this->nostoCurrenciesBuilder->build($store));

@@ -131,7 +131,7 @@ class Builder
             $lang = substr($this->localeResolver->getLocale(), 0, 2);
             $metaData->setOwnerLanguageCode($lang);
             $metaData->setOwner($accountOwner);
-            if ($this->nostoHelperData->isMultiCurrencyExchangeRatesEnabled($store)) {
+            if ($this->nostoHelperCurrency->exchangeRatesInUse($store)) {
                 $metaData->setDefaultVariantId(
                     $this->nostoHelperCurrency->getTaggingCurrency($store)
                         ->getCode()

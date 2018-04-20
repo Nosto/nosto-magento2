@@ -178,7 +178,7 @@ class Builder
                 )->getCode()
             );
 
-            if ($this->nostoDataHelper->isMultiCurrencyExchangeRatesEnabled($store)) {
+            if ($this->nostoCurrencyHelper->exchangeRatesInUse($store)) {
                 $nostoProduct->setVariationId(
                     $this->nostoCurrencyHelper->getTaggingCurrency(
                         $store

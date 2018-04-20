@@ -45,7 +45,6 @@ class Variation extends Template
     }
 
     private $nostoHelperCurrency;
-    private $nostoHelperData;
 
     /**
      * Constructor.
@@ -54,7 +53,6 @@ class Variation extends Template
      * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoHelperScope $nostoHelperScope
      * @param NostoHelperCurrency $nostoHelperCurrency
-     * @param NostoHelperData $nostoHelperData
      * @param array $data
      */
     public function __construct(
@@ -62,14 +60,12 @@ class Variation extends Template
         NostoHelperAccount $nostoHelperAccount,
         NostoHelperScope $nostoHelperScope,
         NostoHelperCurrency $nostoHelperCurrency,
-        NostoHelperData $nostoHelperData,
         array $data = []
     ) {
         parent::__construct($context, $data);
 
         $this->taggingConstruct($nostoHelperAccount, $nostoHelperScope);
         $this->nostoHelperCurrency = $nostoHelperCurrency;
-        $this->nostoHelperData = $nostoHelperData;
     }
 
     /**
@@ -104,7 +100,7 @@ class Variation extends Template
     {
         $store = $this->nostoHelperScope->getStore(true);
 
-        if ($this->nostoHelperData->isMultiCurrencyExchangeRatesEnabled($store)) {
+        if ($this->nostoHelperCurrency->exchangeRatesInUse($store)) {
             return new MarkupableString(
                 $this->getVariationId(),
                 'nosto_variation'
