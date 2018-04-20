@@ -77,7 +77,7 @@ class Currency extends AbstractHelper
     {
         // If multi currency is disabled or exchange rates are used
         // we don't do any processing / conversions for the price
-        if($this->nostoHelperData->isMultiCurrencyDisabled($store)
+        if ($this->nostoHelperData->isMultiCurrencyDisabled($store)
             || $this->nostoHelperData->isMultiCurrencyExchangeRatesEnabled($store)
         ) {
             return $basePrice;

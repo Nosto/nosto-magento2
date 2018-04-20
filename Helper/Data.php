@@ -387,7 +387,7 @@ class Data extends AbstractHelper
     {
         $storeConfig = $this->getStoreConfig(self::XML_PATH_MULTI_CURRENCY, $store);
         return (bool)($storeConfig == self::SETTING_VALUE_MC_EXCHANGE_RATE);
-}
+    }
 
     /**
      * @param string $path

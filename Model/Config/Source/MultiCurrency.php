@@ -47,7 +47,7 @@ use Nosto\Tagging\Helper\Data;
  */
 class MultiCurrency implements ArrayInterface
 {
-   /**
+    /**
      * Options getter
      *
      * @return array

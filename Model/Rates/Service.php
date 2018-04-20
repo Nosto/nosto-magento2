@@ -86,7 +86,8 @@ class Service
         if ($account = $this->nostoHelperAccount->findAccount($store)) {
             if (!$this->nostoHelperData->isMultiCurrencyExchangeRatesEnabled($store)) {
                 $this->logger->debug(
-                    sprintf('Skipping update; multi-currency is disabled for %s',
+                    sprintf(
+                        'Skipping update; multi-currency is disabled for %s',
                         $store->getName()
                     )
                 );
@@ -96,7 +97,8 @@ class Service
             $rates = $this->nostoExchangeRatesBuilder->build($store);
             if (empty($rates->getRates())) {
                 $this->logger->debug(
-                    sprintf('Skipping update; no rates found for %s',
+                    sprintf(
+                        'Skipping update; no rates found for %s',
                         $store->getName()
                     )
                 );
