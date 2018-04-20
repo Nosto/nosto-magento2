@@ -37,6 +37,7 @@
 namespace Nosto\Tagging\Model\Config\Source;
 
 use Magento\Framework\Option\ArrayInterface;
+use Magento\Framework\Phrase;
 use Nosto\Tagging\Helper\Data;
 
 /**
@@ -55,9 +56,9 @@ class MultiCurrency implements ArrayInterface
     public function toOptionArray()
     {
         return [
-            ['value' => Data::SETTING_VALUE_MC_EXCHANGE_RATE, 'label' => __('Exchange rates')],
-            ['value' => Data::SETTING_VALUE_MC_SINGLE, 'label' => __('Single currency')],
-            ['value' => Data::SETTING_VALUE_MC_DISABLED, 'label' => __('Disabled')]
+            ['value' => Data::SETTING_VALUE_MC_EXCHANGE_RATE, 'label' => new Phrase('Exchange rates')],
+            ['value' => Data::SETTING_VALUE_MC_SINGLE, 'label' => new Phrase('Single currency')],
+            ['value' => Data::SETTING_VALUE_MC_DISABLED, 'label' => new Phrase('Disabled')]
         ];
     }
 }
