@@ -132,12 +132,11 @@ class Currency extends AbstractHelper
      * Returns the info if exchange rates are used
      *
      * @param Store $store
-     * @return int
+     * @return boolean
      */
     public function exchangeRatesInUse(Store $store)
     {
         if ($this->nostoHelperData->isMultiCurrencyExchangeRatesEnabled($store)) {
-
             return true;
         }
         $method = $this->nostoHelperData->getMultiCurrencyMethod($store);
@@ -146,14 +145,12 @@ class Currency extends AbstractHelper
             if ($this->getCurrencyCount($store) > 1) {
                 $this->nostoHelperData->saveMultiCurrencyMethod(Data::SETTING_VALUE_MC_EXCHANGE_RATE, $store);
                 $this->nostoHelperData->clearMagentoCache('config');
-
                 return true;
             } elseif ($this->getCurrencyCount($store) == 1) {
                 $this->nostoHelperData->saveMultiCurrencyMethod(Data::SETTING_VALUE_MC_SINGLE, $store);
                 $this->nostoHelperData->clearMagentoCache('config');
             }
         }
-
         return false;
     }
 }
