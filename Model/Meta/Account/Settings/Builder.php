@@ -87,10 +87,10 @@ class Builder
         try {
             $settings->setTitle(self::buildTitle($store));
             $settings->setFrontPageUrl($this->buildURL($store));
-            $settings->setCurrencyCode($store->getBaseCurrencyCode());
+            $settings->setCurrencyCode($this->nostoHelperCurrency->getTaggingCurrency($store)->getCode());
             $settings->setLanguageCode(substr($store->getConfig('general/locale/code'), 0, 2));
-            $settings->setUseCurrencyExchangeRates(count($store->getAvailableCurrencyCodes(true)) > 1);
-            if ($this->nostoHelperCurrency->getCurrencyCount($store) > 1) {
+            $settings->setUseCurrencyExchangeRates($this->nostoHelperCurrency->exchangeRatesInUse($store));
+            if ($this->nostoHelperCurrency->exchangeRatesInUse($store)) {
                 $settings->setDefaultVariantId($this->nostoHelperCurrency->getTaggingCurrency($store)->getCode());
             }
             $settings->setCurrencies($this->nostoCurrenciesBuilder->build($store));

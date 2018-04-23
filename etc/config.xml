@@ -22,6 +22,9 @@
                 <send_add_to_cart_event>0</send_add_to_cart_event>
                 <send_customer_data>1</send_customer_data>
             </flags>
+            <multicurrency>
+                <method>undefined</method>
+            </multicurrency>
         </nosto>
     </default>
 </config>

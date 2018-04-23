@@ -36,10 +36,12 @@
 
 namespace Nosto\Tagging\Helper;
 
+use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\Config\Storage\WriterInterface;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 use Magento\Framework\App\ProductMetadataInterface;
+use Magento\Framework\App\Cache\Manager as CacheManager;
 use Magento\Framework\AppInterface;
 use Magento\Framework\Module\ModuleListInterface;
 use Magento\Store\Api\Data\StoreInterface;
@@ -138,6 +140,19 @@ class Data extends AbstractHelper
     const XML_PATH_TAG = 'nosto/attributes/';
 
     /**
+     * Path to the configuration object for multi currency
+     */
+    const XML_PATH_MULTI_CURRENCY = 'nosto/multicurrency/method';
+
+    /**
+     * Values of the multi currency settings
+     */
+    const SETTING_VALUE_MC_EXCHANGE_RATE = 'exchangerates';
+    const SETTING_VALUE_MC_SINGLE = 'single';
+    const SETTING_VALUE_MC_DISABLED = 'disabled';
+    const SETTING_VALUE_MC_UNDEFINED = 'undefined';
+
+    /**
      * Name of the module
      */
     const MODULE_NAME = 'Nosto_Tagging';
@@ -151,6 +166,7 @@ class Data extends AbstractHelper
     private $configWriter;
     private $productMetaData;
     private $nostoHelperScope;
+    private $cacheManager;
 
     /**
      * Constructor.
@@ -160,13 +176,15 @@ class Data extends AbstractHelper
      * @param ModuleListInterface $moduleListing
      * @param WriterInterface $configWriter
      * @param ProductMetadataInterface $productMetadataInterface
+     * @param CacheManager $cacheManager
      */
     public function __construct(
         Context $context,
         NostoHelperScope $nostoHelperScope,
         ModuleListInterface $moduleListing,
         WriterInterface $configWriter,
-        ProductMetadataInterface $productMetadataInterface
+        ProductMetadataInterface $productMetadataInterface,
+        CacheManager $cacheManager
     ) {
         parent::__construct($context);
 
@@ -174,6 +192,7 @@ class Data extends AbstractHelper
         $this->configWriter = $configWriter;
         $this->productMetaData = $productMetadataInterface;
         $this->nostoHelperScope = $nostoHelperScope;
+        $this->cacheManager = $cacheManager;
     }
 
     /**
@@ -354,6 +373,53 @@ class Data extends AbstractHelper
     }
 
     /**
+     * Returns if multi currency is disabled
+     *
+     * @param StoreInterface|null $store the store model or null.
+     * @return bool the configuration value
+     */
+    public function isMultiCurrencyDisabled(StoreInterface $store = null)
+    {
+        $storeConfig = $this->getMultiCurrencyMethod($store);
+        return (bool)($storeConfig == self::SETTING_VALUE_MC_DISABLED);
+    }
+
+    /**
+     * Returns if multi currency is enabled
+     *
+     * @param StoreInterface|null $store the store model or null.
+     * @return bool the configuration value
+     */
+    public function isMultiCurrencyExchangeRatesEnabled(StoreInterface $store = null)
+    {
+        $storeConfig = $this->getMultiCurrencyMethod($store);
+        return (bool)($storeConfig == self::SETTING_VALUE_MC_EXCHANGE_RATE);
+    }
+
+    /**
+     * Returns the multi currency setup value / multi currency method
+     *
+     * @param StoreInterface|null $store the store model or null.
+     * @return string the configuration value
+     */
+    public function getMultiCurrencyMethod(StoreInterface $store = null)
+    {
+        return $this->getStoreConfig(self::XML_PATH_MULTI_CURRENCY, $store);
+    }
+
+    /**
+     * Saves the multi currency setup value / multi currency method
+     *
+     * @param string $value the value of the multi currency setting.
+     * @param StoreInterface|null $store the store model or null.
+     * @return string the configuration value
+     */
+    public function saveMultiCurrencyMethod($value, StoreInterface $store = null)
+    {
+        return $this->saveStoreConfig(self::XML_PATH_MULTI_CURRENCY, $value, $store);
+    }
+
+    /**
      * @param string $path
      * @param StoreInterface|Store|null $store
      * @return mixed|null
@@ -364,6 +430,24 @@ class Data extends AbstractHelper
             $store = $this->nostoHelperScope->getStore(true);
         }
         return $store->getConfig($path);
+    }
+
+    /**
+     * @param string $path
+     * @param mixed $value
+     * @param StoreInterface|Store|null $store
+     * @return mixed|null
+     */
+    public function saveStoreConfig($path, $value, StoreInterface $store = null)
+    {
+        $scope = ScopeConfigInterface::SCOPE_TYPE_DEFAULT;
+        $storeId = 0;
+        if ($store !== null) {
+            $scope = 'stores'; // No const found for this one in M2.2.2
+            $storeId = $store->getStoreId(); // No const found for this one in M2.2.2
+        }
+
+        $this->configWriter->save($path, $value, $scope, $storeId);
     }
 
     /**
@@ -440,5 +524,25 @@ class Data extends AbstractHelper
     public function getStoreCodeToUrl(StoreInterface $store = null)
     {
         return (bool)$this->getStoreConfig(self::XML_PATH_STORE_CODE_TO_URL, $store);
+    }
+
+    /**
+     * Clears Magento cache for given type (config, layout, block_html, etc.)
+     * @see http://devdocs.magento.com/guides/v2.2/config-guide/cli/config-cli-subcommands-cache.html
+     *
+     * @param string $type give "all" to clear all
+     */
+    public function clearMagentoCache($type)
+    {
+        $types = $this->cacheManager->getAvailableTypes();
+        $clearTypes = [];
+        if ($type === 'all') {
+            $clearTypes = $types;
+        } elseif (in_array($type, $types)) {
+            $clearTypes[] = $type;
+        }
+        if (!empty($clearTypes)) {
+            $this->cacheManager->clean($clearTypes);
+        }
     }
 }
