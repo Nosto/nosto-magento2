@@ -1,5 +1,9 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 2.10.0
+* Add possibility to disable Nosto's multi currency features
+* Fix Nosto iframe loading bug
+
 ### 2.9.0
 * Add advanced setting to disable sending customer data to Nosto servers
 
