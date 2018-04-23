@@ -91,6 +91,7 @@ class Builder
      * @param Store $store
      * @param ConfigurableAttribute[] $attributes
      * @return NostoSku
+     * @throws \Exception
      */
     public function build(Product $product, Store $store, $attributes)
     {
@@ -132,7 +133,7 @@ class Builder
                 //load user defined attributes from attribute set
                 $nostoSku->setCustomFields($this->buildCustomFields($product, $store));
             }
-        } catch (NostoException $e) {
+        } catch (\Exception $e) {
             $this->logger->exception($e);
         }
 

@@ -43,6 +43,7 @@ use Nosto\Operation\SyncRates;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Model\Rates\Builder as NostoExchangeRatesBuilder;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
+use Nosto\Tagging\Helper\Currency as NostoHelperCurrency;
 
 class Service
 {
@@ -50,23 +51,27 @@ class Service
     private $eventManager;
     private $nostoExchangeRatesBuilder;
     private $nostoHelperAccount;
+    private $nostoHelperCurrency;
 
     /**
      * @param NostoLogger $logger
      * @param ManagerInterface $eventManager
      * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoExchangeRatesBuilder $nostoExchangeRatesBuilder
+     * @param NostoHelperCurrency $nostoHelperCurrency
      */
     public function __construct(
         NostoLogger $logger,
         ManagerInterface $eventManager,
         NostoHelperAccount $nostoHelperAccount,
-        NostoExchangeRatesBuilder $nostoExchangeRatesBuilder
+        NostoExchangeRatesBuilder $nostoExchangeRatesBuilder,
+        NostoHelperCurrency $nostoHelperCurrency
     ) {
         $this->logger = $logger;
         $this->eventManager = $eventManager;
         $this->nostoExchangeRatesBuilder = $nostoExchangeRatesBuilder;
         $this->nostoHelperAccount = $nostoHelperAccount;
+        $this->nostoHelperCurrency = $nostoHelperCurrency;
     }
 
     /**
@@ -79,10 +84,24 @@ class Service
     public function update(Store $store)
     {
         if ($account = $this->nostoHelperAccount->findAccount($store)) {
+            if (!$this->nostoHelperCurrency->exchangeRatesInUse($store)) {
+                $this->logger->debug(
+                    sprintf(
+                        'Skipping update; multi-currency is disabled for %s',
+                        $store->getName()
+                    )
+                );
+
+                return true;
+            }
             $rates = $this->nostoExchangeRatesBuilder->build($store);
             if (empty($rates->getRates())) {
-                $this->logger->debug('Skipping update; no multi-currency configured for ' .
-                    $store->getName());
+                $this->logger->debug(
+                    sprintf(
+                        'Skipping update; no rates found for %s',
+                        $store->getName()
+                    )
+                );
 
                 return false;
             }
@@ -105,6 +124,6 @@ class Service
             );
         }
 
-        return false;
+        return true;
     }
 }
