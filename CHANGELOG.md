@@ -1,5 +1,8 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 2.10.1
+* Fix issue with product service not handling model filter when Nosto product builder returns null
+
 ### 2.10.0
 * Add possibility to disable Nosto's multi currency features
 * Fix Nosto iframe loading bug

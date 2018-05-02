@@ -53,6 +53,7 @@ use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
 use Nosto\Tagging\Model\Product\Repository as NostoProductRepository;
+use Nosto\Types\Product\ProductInterface as NostoProductInterface;
 
 /**
  * Service class for updating products to Nosto
@@ -331,7 +332,7 @@ class Service
                     $product,
                     $store
                 );
-                if ($nostoProduct instanceof ProductInterface === false) {
+                if ($nostoProduct instanceof NostoProductInterface) {
                     $op->addProduct($nostoProduct);
                 } else {
                     continue;
