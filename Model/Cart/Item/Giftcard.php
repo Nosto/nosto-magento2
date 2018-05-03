@@ -36,12 +36,8 @@
 
 namespace Nosto\Tagging\Model\Cart\Item;
 
-use Magento\GiftCard\Model\Catalog\Product\Type\Giftcard as GiftCardType;
+use Nosto\Tagging\Model\Item\Giftcard as GiftcardItem;
 
-class Giftcard extends Simple
+class Giftcard extends GiftcardItem
 {
-    public static function getType()
-    {
-        return GiftCardType::TYPE_GIFTCARD;
-    }
 }

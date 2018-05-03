@@ -61,7 +61,6 @@ class Builder
     /** @noinspection PhpUndefinedClassInspection */
     private $salesRuleFactory;
     private $nostoPriceHelper;
-    private $objectManager;
     private $nostoOrderItemBuilder;
     private $eventManager;
     private $buyerBuilder;
@@ -72,7 +71,6 @@ class Builder
      * @param SalesRuleFactory $salesRuleFactory
      * @param NostoPriceHelper $priceHelper
      * @param NostoOrderItemBuilder $nostoOrderItemBuilder
-     * @param ObjectManagerInterface $objectManager
      * @param ManagerInterface $eventManager
      * @param NostoBuyerBuilder $buyerBuilder
      */
@@ -82,7 +80,6 @@ class Builder
         SalesRuleFactory $salesRuleFactory,
         NostoPriceHelper $priceHelper,
         NostoOrderItemBuilder $nostoOrderItemBuilder,
-        ObjectManagerInterface $objectManager,
         ManagerInterface $eventManager,
         NostoBuyerBuilder $buyerBuilder
     ) {
@@ -90,7 +87,6 @@ class Builder
         $this->salesRuleFactory = $salesRuleFactory;
         $this->nostoPriceHelper = $priceHelper;
         $this->nostoOrderItemBuilder = $nostoOrderItemBuilder;
-        $this->objectManager = $objectManager;
         $this->eventManager = $eventManager;
         $this->buyerBuilder = $buyerBuilder;
     }

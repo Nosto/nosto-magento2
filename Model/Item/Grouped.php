@@ -34,11 +34,19 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Order\Item;
+namespace Nosto\Tagging\Model\Item;
 
-use Nosto\Tagging\Model\Item\Virtual as VirtualItem;
+use Magento\GroupedProduct\Model\Product\Type\Grouped as Type;
 
-class Virtual extends VirtualItem
+class Grouped
 {
+    /**
+     * Returns the product type for grouped item
+     *
+     * @return string
+     */
+    public static function getType()
+    {
+        return Type::TYPE_CODE;
+    }
 }
-

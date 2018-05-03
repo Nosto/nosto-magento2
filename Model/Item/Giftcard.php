@@ -34,11 +34,19 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Order\Item;
+namespace Nosto\Tagging\Model\Item;
 
-use Nosto\Tagging\Model\Item\Virtual as VirtualItem;
-
-class Virtual extends VirtualItem
+class Giftcard
 {
-}
+    const GIFTCARD_TYPE = 'giftcard';
 
+    /**
+     * Returns the product type for gift card item
+     *
+     * @return string
+     */
+    public static function getType()
+    {
+        return self::GIFTCARD_TYPE;
+    }
+}

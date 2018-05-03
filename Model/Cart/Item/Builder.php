@@ -39,27 +39,22 @@ namespace Nosto\Tagging\Model\Cart\Item;
 use Exception;
 use Magento\Catalog\Model\Product\Type;
 use Magento\Framework\Event\ManagerInterface;
-use Magento\Framework\ObjectManagerInterface;
 use Magento\Quote\Model\Quote\Item;
 use Magento\Catalog\Model\Product;
 use Nosto\Object\Cart\LineItem;
 
 class Builder
 {
-    private $objectManager;
     private $eventManager;
 
     /**
      * Constructor.
      *
-     * @param ObjectManagerInterface $objectManager
      * @param ManagerInterface $eventManager
      */
     public function __construct(
-        ObjectManagerInterface $objectManager,
         ManagerInterface $eventManager
     ) {
-        $this->objectManager = $objectManager;
         $this->eventManager = $eventManager;
     }
 
@@ -67,6 +62,7 @@ class Builder
      * @param Item $item
      * @param $currencyCode
      * @return LineItem
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function build(Item $item, $currencyCode)
     {
@@ -75,7 +71,14 @@ class Builder
         $cartItem->setProductId($this->buildItemId($item));
         $cartItem->setQuantity((int) $item->getQty());
         $cartItem->setSkuId($this->buildSkuId($item));
-        switch ($item->getProductType()) {
+        $productType = $item->getProductType();
+        // Set default name - this will be overwritten below if matching
+        // product type is defined
+        $cartItem->setName(sprintf(
+            'Not defined - unknown product type: %s',
+            $productType
+        ));
+        switch ($productType) {
             case Simple::getType():
             case Virtual::getType():
             case Downloadable::getType():

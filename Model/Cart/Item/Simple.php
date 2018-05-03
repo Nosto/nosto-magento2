@@ -36,23 +36,19 @@
 
 namespace Nosto\Tagging\Model\Cart\Item;
 
-use Magento\Catalog\Model\Product\Type;
 use Magento\Catalog\Model\ResourceModel\Eav\Attribute;
 use Magento\Framework\App\ObjectManager;
 use Magento\Quote\Model\Quote\Item;
+use Nosto\Tagging\Model\Item\Simple as SimpleItem;
 
-class Simple
+class Simple extends SimpleItem
 {
-    public static function getType()
-    {
-        return Type::TYPE_SIMPLE;
-    }
-
     /**
      * Returns the name of the product. Simple products will have their own name
      *
      * @param Item $item the ordered item
      * @return string the name of the product
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public static function buildItemName(Item $item)
     {

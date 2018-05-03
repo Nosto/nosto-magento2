@@ -36,12 +36,8 @@
 
 namespace Nosto\Tagging\Model\Cart\Item;
 
-use Magento\Catalog\Model\Product\Type;
+use Nosto\Tagging\Model\Item\Virtual as VirtualItem;
 
-class Virtual extends Simple
+class Virtual extends VirtualItem
 {
-    public static function getType()
-    {
-        return Type::TYPE_VIRTUAL;
-    }
 }

@@ -34,11 +34,19 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Order\Item;
+namespace Nosto\Tagging\Model\Item;
 
-use Nosto\Tagging\Model\Item\Virtual as VirtualItem;
+use Magento\Downloadable\Model\Product\Type;
 
-class Virtual extends VirtualItem
+class Downloadable
 {
+    /**
+     * Returns the product type for downloadable item
+     *
+     * @return string
+     */
+    public static function getType()
+    {
+        return Type::TYPE_DOWNLOADABLE;
+    }
 }
-

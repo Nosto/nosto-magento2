@@ -36,16 +36,11 @@
 
 namespace Nosto\Tagging\Model\Cart\Item;
 
-use Magento\ConfigurableProduct\Model\Product\Type\Configurable as Type;
+use Nosto\Tagging\Model\Item\Configurable as ConfigurableItem;
 use Magento\Quote\Model\Quote\Item;
 
-class Configurable
+class Configurable extends ConfigurableItem
 {
-    public static function getType()
-    {
-        return Type::TYPE_CODE;
-    }
-
     /**
      * Returns the name of the product. Configurable products will have their chosen options
      * added to their name.

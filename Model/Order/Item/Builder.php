@@ -39,32 +39,29 @@ namespace Nosto\Tagging\Model\Order\Item;
 use Exception;
 use Magento\Catalog\Model\Product\Type;
 use Magento\Framework\Event\ManagerInterface;
-use Magento\Framework\ObjectManagerInterface;
 use Magento\Sales\Model\Order\Item;
 use Nosto\Object\Cart\LineItem;
+use Magento\Framework\Exception\LocalizedException;
 
 class Builder
 {
-    private $objectManager;
     private $eventManager;
 
     /**
      * Constructor.
      *
-     * @param ObjectManagerInterface $objectManager
      * @param ManagerInterface $eventManager
      */
     public function __construct(
-        ObjectManagerInterface $objectManager,
         ManagerInterface $eventManager
     ) {
-        $this->objectManager = $objectManager;
         $this->eventManager = $eventManager;
     }
 
     /**
      * @param Item $item
      * @return LineItem
+     * @throws LocalizedException
      */
     public function build(Item $item)
     {
