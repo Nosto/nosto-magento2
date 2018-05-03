@@ -45,4 +45,3 @@ class Giftcard extends Simple
         return GiftCardType::TYPE_GIFTCARD;
     }
 }
-
