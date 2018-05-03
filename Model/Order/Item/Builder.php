@@ -74,8 +74,18 @@ class Builder
         $nostoItem->setProductId($this->buildItemProductId($item));
         $nostoItem->setQuantity((int)$item->getQtyOrdered());
         $nostoItem->setSkuId($this->buildSkuId($item));
-        switch ($item->getProductType()) {
+        $productType = $item->getProductType();
+        // Set default name - this will be overwritten below if matching
+        // product type is defined
+        $nostoItem->setName(sprintf(
+            'Not defined - unknown product type: %s',
+            $productType
+        ));
+        switch ($productType) {
             case Simple::getType():
+            case Virtual::getType():
+            case Downloadable::getType():
+            case Giftcard::getType():
                 $nostoItem->setName(Simple::buildItemName($item));
                 break;
             case Configurable::getType():

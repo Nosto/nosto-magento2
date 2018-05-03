@@ -79,6 +79,7 @@ class Builder
             case Simple::getType():
             case Virtual::getType():
             case Downloadable::getType():
+            case Giftcard::getType():
                 $cartItem->setName(Simple::buildItemName($item));
                 break;
             case Configurable::getType():
