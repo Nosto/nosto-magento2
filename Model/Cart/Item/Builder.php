@@ -42,6 +42,9 @@ use Magento\Framework\Event\ManagerInterface;
 use Magento\Quote\Model\Quote\Item;
 use Magento\Catalog\Model\Product;
 use Nosto\Object\Cart\LineItem;
+use Nosto\Tagging\Model\Item\Downloadable;
+use Nosto\Tagging\Model\Item\Giftcard;
+use Nosto\Tagging\Model\Item\Virtual;
 
 class Builder
 {

@@ -42,6 +42,9 @@ use Magento\Framework\Event\ManagerInterface;
 use Magento\Sales\Model\Order\Item;
 use Nosto\Object\Cart\LineItem;
 use Magento\Framework\Exception\LocalizedException;
+use Nosto\Tagging\Model\Item\Downloadable;
+use Nosto\Tagging\Model\Item\Giftcard;
+use Nosto\Tagging\Model\Item\Virtual;
 
 class Builder
 {
