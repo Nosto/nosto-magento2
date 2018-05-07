@@ -34,12 +34,17 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Cart\Item;
+namespace Nosto\Tagging\Model\Item;
 
 use Magento\Downloadable\Model\Product\Type;
 
-class Downloadable extends Simple
+class Downloadable
 {
+    /**
+     * Returns the product type for downloadable item
+     *
+     * @return string
+     */
     public static function getType()
     {
         return Type::TYPE_DOWNLOADABLE;

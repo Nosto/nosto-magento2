@@ -38,16 +38,11 @@ namespace Nosto\Tagging\Model\Cart\Item;
 
 use Magento\Catalog\Model\Product;
 use Magento\Framework\App\ObjectManager;
-use Magento\GroupedProduct\Model\Product\Type\Grouped as Type;
 use Magento\Quote\Model\Quote\Item;
+use Nosto\Tagging\Model\Item\Grouped as GroupedItem;
 
-class Grouped
+class Grouped extends GroupedItem
 {
-    public static function getType()
-    {
-        return Type::TYPE_CODE;
-    }
-
     /**
      * Returns the name of the product. Grouped products will have their parent's name prepended to
      * their name.

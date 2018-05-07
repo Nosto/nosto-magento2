@@ -36,16 +36,11 @@
 
 namespace Nosto\Tagging\Model\Cart\Item;
 
-use Magento\Catalog\Model\Product\Type;
 use Magento\Quote\Model\Quote\Item;
+use Nosto\Tagging\Model\Item\Bundle as BundledItem;
 
-class Bundle
+class Bundle extends BundledItem
 {
-    public static function getType()
-    {
-        return Type::TYPE_BUNDLE;
-    }
-
     /**
      * Returns the name of the product. Bundle products will have their chosen child product names
      * added.

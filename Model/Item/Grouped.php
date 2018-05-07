@@ -34,49 +34,19 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Cart\Item;
+namespace Nosto\Tagging\Model\Item;
 
-use Magento\Catalog\Model\ResourceModel\Eav\Attribute;
-use Magento\Framework\App\ObjectManager;
-use Magento\Quote\Model\Quote\Item;
-use Nosto\Tagging\Model\Item\Simple as SimpleItem;
+use Magento\GroupedProduct\Model\Product\Type\Grouped as Type;
 
-class Simple extends SimpleItem
+class Grouped
 {
     /**
-     * Returns the name of the product. Simple products will have their own name
+     * Returns the product type for grouped item
      *
-     * @param Item $item the ordered item
-     * @return string the name of the product
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @return string
      */
-    public static function buildItemName(Item $item)
+    public static function getType()
     {
-        $name = $item->getName();
-        $optNames = [];
-        $type = $item->getProduct()->getTypeInstance();
-        $parentIds = $type->getParentIdsByChild($item->getItemId());
-        $objectManager = ObjectManager::getInstance();
-        // If the product has a configurable parent, we assume we should tag
-        // the parent. If there are many parent IDs, we are safer to tag the
-        // products own name alone.
-        if (count($parentIds) === 1) {
-            $attributes = $item->getBuyRequest()->getData('super_attribute');
-            if (is_array($attributes)) {
-                foreach ($attributes as $id => $value) {
-                    /** @var Attribute $attribute */
-                    $attribute = $objectManager->get(Attribute::class)->load($id); // @codingStandardsIgnoreLine
-                    $label = $attribute->getSource()->getOptionText($value);
-                    if (!empty($label)) {
-                        $optNames[] = $label;
-                    }
-                }
-            }
-        }
-
-        if (!empty($optNames)) {
-            $name .= ' (' . implode(', ', $optNames) . ')';
-        }
-        return $name;
+        return Type::TYPE_CODE;
     }
 }
