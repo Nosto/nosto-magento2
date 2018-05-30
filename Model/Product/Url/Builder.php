@@ -92,8 +92,7 @@ class Builder extends DataObject
     public function getUrlInStore(Product $product, Store $store)
     {
         $routeParams = [];
-        $requestPath = '';
-
+        $routePath = '';
         $filterData = [
             UrlRewrite::ENTITY_ID => $product->getId(),
             UrlRewrite::ENTITY_TYPE => ProductUrlRewriteGenerator::ENTITY_TYPE,
@@ -101,15 +100,18 @@ class Builder extends DataObject
         ];
         $rewrite = $this->urlFinder->findOneByData($filterData);
         if ($rewrite) {
-            $requestPath = $rewrite->getRequestPath();
+            $routeParams['_direct'] = $rewrite->getRequestPath();
+        } else { // If the rewrite is not found fallback to the "ugly version" of the URL
+            $routePath = 'catalog/product/view';
+            $routeParams['id'] = $product->getId();
+            $routeParams['s'] = $product->getUrlKey();
         }
-
         $routeParams['_nosid'] = true;          // Remove the session identifier from the URL
         $routeParams['_scope'] = $store->getCode();      // Specify the store identifier for the URL
         $routeParams['_scope_to_url'] = $this->nostoDataHelper->getStoreCodeToUrl($store);
-        $routeParams['_direct'] = $requestPath; // Set the product's slug as the URL
         $routeParams['_query'] = [];            // Reset the cached URL instance GET query params
 
-        return $this->urlFactory->setScope($store->getId())->getUrl('', $routeParams);
+        return $this->urlFactory->setScope($store->getId())
+            ->getUrl($routePath, $routeParams);
     }
 }
