@@ -111,9 +111,7 @@ class Builder extends DataObject
         $routeParams['_scope_to_url'] = $this->nostoDataHelper->getStoreCodeToUrl($store);
         $routeParams['_query'] = [];            // Reset the cached URL instance GET query params
 
-        $url = $this->urlFactory->setScope($store->getId())
+        return $this->urlFactory->setScope($store->getId())
             ->getUrl($routePath, $routeParams);
-
-        return $url;
     }
 }
