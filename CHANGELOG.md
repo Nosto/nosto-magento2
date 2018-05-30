@@ -1,5 +1,8 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 2.10.2
+* Add fallback for product URL builder in case the rewrites are missing
+
 ### 2.10.1
 * Fix issue with product service not handling model filter when Nosto product builder returns null
 
