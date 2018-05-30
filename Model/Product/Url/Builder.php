@@ -92,7 +92,7 @@ class Builder extends DataObject
     public function getUrlInStore(Product $product, Store $store)
     {
         $routeParams = [];
-        $routePath = null;
+        $routePath = '';
         $filterData = [
             UrlRewrite::ENTITY_ID => $product->getId(),
             UrlRewrite::ENTITY_TYPE => ProductUrlRewriteGenerator::ENTITY_TYPE,
