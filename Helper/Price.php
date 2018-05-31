@@ -49,6 +49,7 @@ use Magento\Catalog\Model\ProductFactory;
 use Magento\CatalogRule\Model\ResourceModel\RuleFactory;
 use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
 use Nosto\Tagging\Model\Product\Repository as NostoProductRepository;
+use Magento\Tax\Helper\Data as TaxHelper;
 
 /**
  * Price helper used for product price related tasks.
@@ -59,6 +60,7 @@ class Price extends AbstractHelper
     private $priceRuleFactory;
     private $localeDate;
     private $nostoProductRepository;
+    private $taxHelper;
 
     /**
      * Constructor.
@@ -74,13 +76,15 @@ class Price extends AbstractHelper
         CatalogHelper $catalogHelper,
         RuleFactory $ruleFactory,
         TimezoneInterface $localeDate,
-        NostoProductRepository $nostoProductRepository
+        NostoProductRepository $nostoProductRepository,
+        TaxHelper $taxHelper
     ) {
         parent::__construct($context);
         $this->catalogHelper = $catalogHelper;
         $this->priceRuleFactory = $ruleFactory;
         $this->localeDate = $localeDate;
         $this->nostoProductRepository = $nostoProductRepository;
+        $this->taxHelper = $taxHelper;
     }
 
     /**
@@ -91,7 +95,8 @@ class Price extends AbstractHelper
      */
     public function getProductDisplayPrice(Product $product)
     {
-        $price = $this->getProductPrice($product, false, true);
+        $incTax = $this->taxHelper->displayPriceIncludingTax();
+        $price = $this->getProductPrice($product, false, $incTax);
 
         return $price;
     }
@@ -249,6 +254,7 @@ class Price extends AbstractHelper
                 } else {
                     $price = $product->getPrice();
                 }
+
                 if ($inclTax) {
                     $price = $this->catalogHelper->getTaxPrice($product, $price, true);
                 }
@@ -266,7 +272,8 @@ class Price extends AbstractHelper
      */
     public function getProductFinalDisplayPrice(Product $product)
     {
-        $price = $this->getProductPrice($product, true, true);
+        $incTax = $this->taxHelper->displayPriceIncludingTax();
+        $price = $this->getProductPrice($product, true, $incTax);
 
         return $price;
     }
