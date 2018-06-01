@@ -221,7 +221,10 @@ class Price extends AbstractHelper
                             && $sku->isAvailable()
                         ) {
                             $finalPrices[$sku->getId()] = $this->getProductPrice(
-                                $sku, $store, $inclTax, true
+                                $sku,
+                                $store,
+                                $inclTax,
+                                true
                             );
                             $skus[$sku->getId()] = $sku;
                         }
