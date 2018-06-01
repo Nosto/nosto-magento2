@@ -297,7 +297,7 @@ class Price extends AbstractHelper
     }
 
     /**
-     * Tells is taxes should be added to the prices.
+     * Tells if taxes should be added to the prices.
      * We need this method due to the bugs in Magento's store emulation that
      * are not setting the tax display settings correctly for the API calls.
      *
@@ -309,7 +309,7 @@ class Price extends AbstractHelper
      */
     private function includeTaxes(Store $store)
     {
-        if ($this->taxHelper->getPriceDisplayType($store) == TaxConfig::DISPLAY_TYPE_INCLUDING_TAX) {
+        if ($this->taxHelper->getPriceDisplayType($store) === TaxConfig::DISPLAY_TYPE_INCLUDING_TAX) {
             return true;
         }
 
