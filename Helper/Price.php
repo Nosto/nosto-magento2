@@ -98,10 +98,11 @@ class Price extends AbstractHelper
      */
     public function getProductDisplayPrice(Product $product, Store $store)
     {
-        return $this->getProductPrice($product,
-            false,
+        return $this->getProductPrice(
+            $product,
+            $store,
             $this->includeTaxes($store),
-            $store
+            false
         );
     }
 
@@ -109,18 +110,18 @@ class Price extends AbstractHelper
      * Get unit/final price for a product model.
      *
      * @param Product $product the product model.
-     * @param bool $finalPrice if final price.
-     * @param bool $inclTax if tax is to be included.
      * @param Store $store
+     * @param bool $inclTax if tax is to be included.
+     * @param bool $finalPrice if final price.
      * @return float
      * @suppress PhanTypeMismatchArgument
      * @suppress PhanDeprecatedFunction
      */
     public function getProductPrice( // @codingStandardsIgnoreLine
         Product $product,
-        $finalPrice = false,
+        Store $store,
         $inclTax = true,
-        Store $store
+        $finalPrice = false
     ) {
         switch ($product->getTypeId()) {
             // Get the bundle product "from" price.
@@ -220,10 +221,7 @@ class Price extends AbstractHelper
                             && $sku->isAvailable()
                         ) {
                             $finalPrices[$sku->getId()] = $this->getProductPrice(
-                                $sku,
-                                true,
-                                $inclTax,
-                                $store
+                                $sku, $store, $inclTax, true
                             );
                             $skus[$sku->getId()] = $sku;
                         }
@@ -262,7 +260,8 @@ class Price extends AbstractHelper
                     $price = $product->getPrice();
                 }
                 if ($inclTax) {
-                    $price = $this->catalogHelper->getTaxPrice($product,
+                    $price = $this->catalogHelper->getTaxPrice(
+                        $product,
                         $price,
                         true,
                         null,
@@ -286,10 +285,11 @@ class Price extends AbstractHelper
      */
     public function getProductFinalDisplayPrice(Product $product, Store $store)
     {
-        return $this->getProductPrice($product,
-            true,
+        return $this->getProductPrice(
+            $product,
+            $store,
             $this->includeTaxes($store),
-            $store
+            true
         );
     }
 
