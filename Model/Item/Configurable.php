@@ -34,14 +34,19 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Cart\Item;
+namespace Nosto\Tagging\Model\Item;
 
-use Magento\Catalog\Model\Product\Type;
+use Magento\ConfigurableProduct\Model\Product\Type\Configurable as Type;
 
-class Virtual extends Simple
+class Configurable
 {
+    /**
+     * Returns the product type for configurable item
+     *
+     * @return string
+     */
     public static function getType()
     {
-        return Type::TYPE_VIRTUAL;
+        return Type::TYPE_CODE;
     }
 }

@@ -39,32 +39,32 @@ namespace Nosto\Tagging\Model\Order\Item;
 use Exception;
 use Magento\Catalog\Model\Product\Type;
 use Magento\Framework\Event\ManagerInterface;
-use Magento\Framework\ObjectManagerInterface;
 use Magento\Sales\Model\Order\Item;
 use Nosto\Object\Cart\LineItem;
+use Magento\Framework\Exception\LocalizedException;
+use Nosto\Tagging\Model\Item\Downloadable;
+use Nosto\Tagging\Model\Item\Giftcard;
+use Nosto\Tagging\Model\Item\Virtual;
 
 class Builder
 {
-    private $objectManager;
     private $eventManager;
 
     /**
      * Constructor.
      *
-     * @param ObjectManagerInterface $objectManager
      * @param ManagerInterface $eventManager
      */
     public function __construct(
-        ObjectManagerInterface $objectManager,
         ManagerInterface $eventManager
     ) {
-        $this->objectManager = $objectManager;
         $this->eventManager = $eventManager;
     }
 
     /**
      * @param Item $item
      * @return LineItem
+     * @throws LocalizedException
      */
     public function build(Item $item)
     {
@@ -74,8 +74,18 @@ class Builder
         $nostoItem->setProductId($this->buildItemProductId($item));
         $nostoItem->setQuantity((int)$item->getQtyOrdered());
         $nostoItem->setSkuId($this->buildSkuId($item));
-        switch ($item->getProductType()) {
+        $productType = $item->getProductType();
+        // Set default name - this will be overwritten below if matching
+        // product type is defined
+        $nostoItem->setName(sprintf(
+            'Not defined - unknown product type: %s',
+            $productType
+        ));
+        switch ($productType) {
             case Simple::getType():
+            case Virtual::getType():
+            case Downloadable::getType():
+            case Giftcard::getType():
                 $nostoItem->setName(Simple::buildItemName($item));
                 break;
             case Configurable::getType():
