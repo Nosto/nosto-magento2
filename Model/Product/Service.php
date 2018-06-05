@@ -41,6 +41,7 @@ use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\ProductFactory;
 use Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable as ConfigurableProduct;
+use Magento\Store\Model\App\Emulation;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManager;
 use Nosto\Object\Signup\Account;
@@ -54,6 +55,8 @@ use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
 use Nosto\Tagging\Model\Product\Repository as NostoProductRepository;
 use Nosto\Types\Product\ProductInterface as NostoProductInterface;
+use Magento\Framework\App\State;
+use Magento\Tax\Helper\Data as TaxHelper;
 
 /**
  * Service class for updating products to Nosto
@@ -78,6 +81,7 @@ class Service
     private $storeManager;
     private $productFactory;
     private $nostoQueueRepository;
+    private $storeEmulator;
 
     public $processed = [];
 
@@ -98,6 +102,7 @@ class Service
      * @param QueueFactory $nostoQueueFactory
      * @param StoreManager $storeManager
      * @param ProductFactory $productFactory
+     * @param Emulation $emulation
      */
     public function __construct(
         NostoLogger $logger,
@@ -110,7 +115,8 @@ class Service
         QueueRepository $nostoQueueRepository,
         QueueFactory $nostoQueueFactory,
         StoreManager $storeManager,
-        ProductFactory $productFactory
+        ProductFactory $productFactory,
+        Emulation $emulation
     ) {
 
         $this->logger = $logger;
@@ -124,6 +130,7 @@ class Service
         $this->nostoQueueFactory = $nostoQueueFactory;
         $this->storeManager = $storeManager;
         $this->productFactory = $productFactory;
+        $this->storeEmulator = $emulation;
     }
 
     /**
@@ -282,20 +289,19 @@ class Service
     {
         $uniqueProductIds = array_unique($productIds);
         $storesWithNosto = $this->nostoHelperAccount->getStoresWithNosto();
-        $originalStore = $this->storeManager->getStore();
         foreach ($storesWithNosto as $store) {
             if ($this->nostoHelperData->isProductUpdatesEnabled($store)) {
                 $nostoAccount = $this->nostoHelperAccount->findAccount($store);
                 if (!$nostoAccount instanceof Account) {
                     continue;
                 }
-                $this->storeManager->setCurrentStore((string) $store->getId());
+                $this->storeEmulator->startEnvironmentEmulation($store->getId());
                 try {
                     $this->processForAccount($uniqueProductIds, $store, $nostoAccount);
                 } catch (\Exception $e) {
                     $this->logger->exception($e);
                 }
-                $this->storeManager->setCurrentStore((string) $originalStore->getId());
+                $this->storeEmulator->stopEnvironmentEmulation();
             }
         }
     }

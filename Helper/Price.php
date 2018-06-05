@@ -45,10 +45,12 @@ use Magento\Framework\App\Helper\Context;
 use Magento\GroupedProduct\Model\Product\Type\Grouped as GroupedType;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable as ConfigurableType;
 use Magento\Bundle\Model\Product\Type as BundleType;
-use Magento\Catalog\Model\ProductFactory;
 use Magento\CatalogRule\Model\ResourceModel\RuleFactory;
 use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
+use Magento\Store\Model\Store;
 use Nosto\Tagging\Model\Product\Repository as NostoProductRepository;
+use Magento\Tax\Helper\Data as TaxHelper;
+use Magento\Tax\Model\Config as TaxConfig;
 
 /**
  * Price helper used for product price related tasks.
@@ -59,6 +61,7 @@ class Price extends AbstractHelper
     private $priceRuleFactory;
     private $localeDate;
     private $nostoProductRepository;
+    private $taxHelper;
 
     /**
      * Constructor.
@@ -68,48 +71,57 @@ class Price extends AbstractHelper
      * @param RuleFactory $ruleFactory
      * @param TimezoneInterface $localeDate
      * @param NostoProductRepository $nostoProductRepository
+     * @param TaxHelper $taxHelper
      */
     public function __construct(
         Context $context,
         CatalogHelper $catalogHelper,
         RuleFactory $ruleFactory,
         TimezoneInterface $localeDate,
-        NostoProductRepository $nostoProductRepository
+        NostoProductRepository $nostoProductRepository,
+        TaxHelper $taxHelper
     ) {
         parent::__construct($context);
         $this->catalogHelper = $catalogHelper;
         $this->priceRuleFactory = $ruleFactory;
         $this->localeDate = $localeDate;
         $this->nostoProductRepository = $nostoProductRepository;
+        $this->taxHelper = $taxHelper;
     }
 
     /**
      * Gets the unit price for a product model including taxes.
      *
      * @param Product $product the product model.
+     * @param Store $store
      * @return float
      */
-    public function getProductDisplayPrice(Product $product)
+    public function getProductDisplayPrice(Product $product, Store $store)
     {
-        $price = $this->getProductPrice($product, false, true);
-
-        return $price;
+        return $this->getProductPrice(
+            $product,
+            $store,
+            $this->includeTaxes($store),
+            false
+        );
     }
 
     /**
      * Get unit/final price for a product model.
      *
      * @param Product $product the product model.
-     * @param bool $finalPrice if final price.
+     * @param Store $store
      * @param bool $inclTax if tax is to be included.
+     * @param bool $finalPrice if final price.
      * @return float
      * @suppress PhanTypeMismatchArgument
      * @suppress PhanDeprecatedFunction
      */
     public function getProductPrice( // @codingStandardsIgnoreLine
         Product $product,
-        $finalPrice = false,
-        $inclTax = true
+        Store $store,
+        $inclTax = true,
+        $finalPrice = false
     ) {
         switch ($product->getTypeId()) {
             // Get the bundle product "from" price.
@@ -135,7 +147,7 @@ class Price extends AbstractHelper
                                 /* @var Product $selection */
                                 foreach ($option->getSelections() as $selection) {
                                     $selectionPrice
-                                        = $this->getProductDisplayPrice($selection);
+                                        = $this->getProductDisplayPrice($selection, $store);
                                     if ($selectionMinPrice == null
                                         || $selectionPrice < $selectionMinPrice
                                     ) {
@@ -210,7 +222,8 @@ class Price extends AbstractHelper
                         ) {
                             $finalPrices[$sku->getId()] = $this->getProductPrice(
                                 $sku,
-                                true,
+                                $store,
+                                $inclTax,
                                 true
                             );
                             $skus[$sku->getId()] = $sku;
@@ -221,9 +234,9 @@ class Price extends AbstractHelper
                     if (!empty($keys[0]) && !empty($skus[$keys[0]])) {
                         $simpleProduct = $skus[$keys[0]];
                         if ($finalPrice) {
-                            $price = $this->getProductFinalDisplayPrice($simpleProduct);
+                            $price = $this->getProductFinalDisplayPrice($simpleProduct, $store);
                         } else {
-                            $price = $this->getProductDisplayPrice($simpleProduct);
+                            $price = $this->getProductDisplayPrice($simpleProduct, $store);
                         }
                     }
                 }
@@ -250,7 +263,15 @@ class Price extends AbstractHelper
                     $price = $product->getPrice();
                 }
                 if ($inclTax) {
-                    $price = $this->catalogHelper->getTaxPrice($product, $price, true);
+                    $price = $this->catalogHelper->getTaxPrice(
+                        $product,
+                        $price,
+                        true,
+                        null,
+                        null,
+                        null,
+                        $store
+                    );
                 }
                 break;
         }
@@ -262,12 +283,36 @@ class Price extends AbstractHelper
      * Get the final price for a product model including taxes.
      *
      * @param Product $product the product model.
+     * @param Store $store
      * @return float
      */
-    public function getProductFinalDisplayPrice(Product $product)
+    public function getProductFinalDisplayPrice(Product $product, Store $store)
     {
-        $price = $this->getProductPrice($product, true, true);
+        return $this->getProductPrice(
+            $product,
+            $store,
+            $this->includeTaxes($store),
+            true
+        );
+    }
 
-        return $price;
+    /**
+     * Tells if taxes should be added to the prices.
+     * We need this method due to the bugs in Magento's store emulation that
+     * are not setting the tax display settings correctly for the API calls.
+     *
+     * If the store is configured to show prices with and without taxes we will
+     * use the price without taxes.
+     *
+     * @param Store $store
+     * @return bool
+     */
+    private function includeTaxes(Store $store)
+    {
+        if ($this->taxHelper->getPriceDisplayType($store) === TaxConfig::DISPLAY_TYPE_INCLUDING_TAX) {
+            return true;
+        }
+
+        return false;
     }
 }

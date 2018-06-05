@@ -104,14 +104,16 @@ class Builder
             $nostoSku->setImageUrl($this->buildImageUrl($product, $store));
             $price = $this->nostoCurrencyHelper->convertToTaggingPrice(
                 $this->nostoPriceHelper->getProductFinalDisplayPrice(
-                    $product
+                    $product,
+                    $store
                 ),
                 $store
             );
             $nostoSku->setPrice($price);
             $listPrice = $this->nostoCurrencyHelper->convertToTaggingPrice(
                 $this->nostoPriceHelper->getProductDisplayPrice(
-                    $product
+                    $product,
+                    $store
                 ),
                 $store
             );
