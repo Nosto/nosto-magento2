@@ -58,7 +58,6 @@ class Indexer implements IndexerActionInterface, MviewActionInterface
     {
         if ($this->dataHelper->isFullReindexEnabled()) {
             $pageNumber = 0;
-            $totalItems = 0;
             do {
                 $pageNumber++;
 
@@ -69,9 +68,7 @@ class Indexer implements IndexerActionInterface, MviewActionInterface
                     ->create();
                 $products = $this->productRepository->getList($searchCriteria);
                 $this->productService->update($products->getItems());
-                $totalItems = $products->getTotalCount();
-            } while (($pageNumber * self::BATCH_SIZE) <= $totalItems);
-
+            } while (($pageNumber * self::BATCH_SIZE) <= $products->getTotalCount());
         } else {
             $this->logger->info('Skip full reindex since full reindex is disabled.');
         }
