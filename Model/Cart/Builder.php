@@ -50,7 +50,6 @@ class Builder
 {
     private $nostoCartItemBuilder;
     private $logger;
-    private $objectManager;
     private $eventManager;
 
     /**
@@ -58,16 +57,13 @@ class Builder
      *
      * @param NostoCartItemBuilder $nostoCartItemBuilder
      * @param NostoLogger $logger
-     * @param ObjectManagerInterface $objectManager
      * @param ManagerInterface $eventManager
      */
     public function __construct(
         NostoCartItemBuilder $nostoCartItemBuilder,
         NostoLogger $logger,
-        ObjectManagerInterface $objectManager,
         ManagerInterface $eventManager
     ) {
-        $this->objectManager = $objectManager;
         $this->nostoCartItemBuilder = $nostoCartItemBuilder;
         $this->logger = $logger;
         $this->eventManager = $eventManager;
@@ -91,7 +87,7 @@ class Builder
                     );
                     $nostoCart->addItem($cartItem);
                 }
-            } catch (NostoException $e) {
+            } catch (\Exception $e) {
                 $this->logger->exception($e);
             }
         }

@@ -160,14 +160,16 @@ class Builder
             $nostoProduct->setImageUrl($this->buildImageUrl($product, $store));
             $price = $this->nostoCurrencyHelper->convertToTaggingPrice(
                 $this->nostoPriceHelper->getProductFinalDisplayPrice(
-                    $product
+                    $product,
+                    $store
                 ),
                 $store
             );
             $nostoProduct->setPrice($price);
             $listPrice = $this->nostoCurrencyHelper->convertToTaggingPrice(
                 $this->nostoPriceHelper->getProductDisplayPrice(
-                    $product
+                    $product,
+                    $store
                 ),
                 $store
             );
