@@ -21,7 +21,7 @@ use Nosto\Tagging\Model\Product\Service as ProductService;
  */
 class Indexer implements IndexerActionInterface, MviewActionInterface
 {
-    const HARD_LIMIT_FOR_PRODUCTS = 10000000;
+    const BATCH_SIZE = 1000;
     const INDEXER_ID = 'nosto_product_sync';
 
     private $productService;
@@ -57,14 +57,21 @@ class Indexer implements IndexerActionInterface, MviewActionInterface
     public function executeFull()
     {
         if ($this->dataHelper->isFullReindexEnabled()) {
-            // Fetch all enabled products
-            $searchCriteria = $this->searchCriteriaBuilder
-                ->addFilter('status', Status::STATUS_ENABLED, 'eq')
-                ->setPageSize(self::HARD_LIMIT_FOR_PRODUCTS)
-                ->setCurrentPage(1)
-                ->create();
-            $products = $this->productRepository->getList($searchCriteria);
-            $this->productService->update($products->getItems());
+            $pageNumber = 0;
+            $totalItems = 0;
+            do {
+                $pageNumber++;
+
+                $searchCriteria = $this->searchCriteriaBuilder
+                    ->addFilter('status', Status::STATUS_ENABLED, 'eq')
+                    ->setPageSize(self::BATCH_SIZE)
+                    ->setCurrentPage($pageNumber)
+                    ->create();
+                $products = $this->productRepository->getList($searchCriteria);
+                $this->productService->update($products->getItems());
+                $totalItems = $products->getTotalCount();
+            } while (($pageNumber * self::BATCH_SIZE) <= $totalItems);
+
         } else {
             $this->logger->info('Skip full reindex since full reindex is disabled.');
         }
