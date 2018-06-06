@@ -9,6 +9,7 @@ namespace Nosto\Tagging\Model\Indexer\Product;
 use Magento\Catalog\Model\Product\Attribute\Source\Status;
 use Magento\Catalog\Model\ProductRepository;
 use Magento\Framework\Api\SearchCriteriaBuilder;
+use Magento\Framework\Api\SearchResultsInterface;
 use Magento\Framework\Indexer\ActionInterface as IndexerActionInterface;
 use Magento\Framework\Mview\ActionInterface as MviewActionInterface;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
@@ -60,14 +61,15 @@ class Indexer implements IndexerActionInterface, MviewActionInterface
             $pageNumber = 0;
             do {
                 $pageNumber++;
-
                 $searchCriteria = $this->searchCriteriaBuilder
                     ->addFilter('status', Status::STATUS_ENABLED, 'eq')
                     ->setPageSize(self::BATCH_SIZE)
                     ->setCurrentPage($pageNumber)
                     ->create();
                 $products = $this->productRepository->getList($searchCriteria);
-                $this->productService->update($products->getItems());
+                if ($products instanceof SearchResultsInterface) {
+                    $this->productService->update($products->getItems());
+                }
             } while (($pageNumber * self::BATCH_SIZE) <= $products->getTotalCount());
         } else {
             $this->logger->info('Skip full reindex since full reindex is disabled.');
