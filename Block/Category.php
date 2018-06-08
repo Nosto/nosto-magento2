@@ -39,10 +39,8 @@ namespace Nosto\Tagging\Block;
 use Magento\Framework\Registry;
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Element\Template\Context;
-use Nosto\Tagging\Helper\Account as NostoHelperAccount;
-use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Model\Category\Builder as NostoCategoryBuilder;
-use Nosto\Object\MarkupableString;
+use Nosto\Object\Category as NostoCategory;
 
 /**
  * Category block used for outputting meta-data on the stores category pages.
@@ -51,11 +49,14 @@ use Nosto\Object\MarkupableString;
  */
 class Category extends Template
 {
-    use TaggingTrait {
-        TaggingTrait::__construct as taggingConstruct; // @codingStandardsIgnoreLine
-    }
-
+    /**
+     * @var Registry
+     */
     private $registry;
+
+    /**
+     * @var NostoCategoryBuilder
+     */
     private $categoryBuilder;
 
     /**
@@ -64,21 +65,16 @@ class Category extends Template
      * @param Context $context
      * @param Registry $registry
      * @param NostoCategoryBuilder $categoryBuilder
-     * @param NostoHelperAccount $nostoHelperAccount
-     * @param NostoHelperScope $nostoHelperScope
      * @param array $data
      */
     public function __construct(
         Context $context,
         Registry $registry,
         NostoCategoryBuilder $categoryBuilder,
-        NostoHelperAccount $nostoHelperAccount,
-        NostoHelperScope $nostoHelperScope,
         array $data = []
     ) {
         parent::__construct($context, $data);
 
-        $this->taggingConstruct($nostoHelperAccount, $nostoHelperScope);
         $this->registry = $registry;
         $this->categoryBuilder = $categoryBuilder;
     }
@@ -100,13 +96,12 @@ class Category extends Template
     /**
      * Returns the HTML to render categories
      *
-     * @return MarkupableString
+     * @return string
      */
-    public function getAbstractObject()
+    public function toHtml()
     {
-        return new MarkupableString(
-            $this->getNostoCategory(),
-            'nosto_category'
-        );
+        return (new NostoCategory(
+            $this->getNostoCategory()
+        ))->toHtml();
     }
 }
