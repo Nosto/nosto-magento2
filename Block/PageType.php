@@ -64,6 +64,7 @@ class PageType extends Template
      * Returns the HTML to render PageTypes
      *
      * @return string
+     * @suppress PhanUndeclaredClassMethod
      */
     public function toHtml()
     {

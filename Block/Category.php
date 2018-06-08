@@ -97,6 +97,7 @@ class Category extends Template
      * Returns the HTML to render categories
      *
      * @return string
+     * @suppress PhanUndeclaredClassMethod
      */
     public function toHtml()
     {
