@@ -9,13 +9,8 @@ RUN echo -n "APT::Install-Recommends \"false\";\nAPT::Install-Suggests \"false\"
             | tee /etc/apt/apt.conf
 
 # Enable access to metadata and packages using https
-RUN apt-get -y -q install apt-transport-https
-
-# Use Debian Mirrors via CloudFront
-RUN echo "deb http://cloudfront.debian.net/debian stretch main \
-            \ndeb http://cloudfront.debian.net/debian stretch-updates main \
-            \ndeb http://cloudfront.debian.net/debian-security stretch/updates main" \
-            | tee /etc/apt/sources.list
+RUN apt-get update && \
+            apt-get -y -q install apt-transport-https
 
 # Setup locale
 RUN apt-get update && \
