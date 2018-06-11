@@ -45,20 +45,32 @@ use Nosto\Object\Cart\LineItem;
 use Nosto\Tagging\Model\Item\Downloadable;
 use Nosto\Tagging\Model\Item\Giftcard;
 use Nosto\Tagging\Model\Item\Virtual;
+use Magento\Catalog\Model\ProductRepository;
 
 class Builder
 {
+    /**
+     * @var ManagerInterface $eventManager
+     */
     private $eventManager;
 
     /**
-     * Constructor.
+     * @var ProductRepository $productRepository
+     */
+    private $productRepository;
+
+    /**
+     * Builder constructor.
      *
      * @param ManagerInterface $eventManager
+     * @param ProductRepository $productRepository
      */
     public function __construct(
-        ManagerInterface $eventManager
+        ManagerInterface $eventManager,
+        ProductRepository $productRepository
     ) {
         $this->eventManager = $eventManager;
+        $this->productRepository = $productRepository;
     }
 
     /**
@@ -95,7 +107,7 @@ class Builder
                 $cartItem->setName(Bundle::buildItemName($item));
                 break;
             case Grouped::getType():
-                $cartItem->setName(Grouped::buildItemName($item));
+                $cartItem->setName((new Grouped($this->productRepository))->buildItemName($item));
                 break;
         }
         try {
