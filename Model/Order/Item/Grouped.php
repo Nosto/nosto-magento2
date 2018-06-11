@@ -37,12 +37,26 @@
 namespace Nosto\Tagging\Model\Order\Item;
 
 use Magento\Catalog\Model\Product;
-use Magento\Framework\App\ObjectManager;
 use Nosto\Tagging\Model\Item\Grouped as GroupedItem;
 use Magento\Sales\Model\Order\Item;
+use Magento\Catalog\Model\ProductRepository;
 
 class Grouped extends GroupedItem
 {
+    /**
+     * @var ProductRepository
+     */
+    private $productRepository;
+
+    /**
+     * Grouped constructor.
+     * @param ProductRepository $productRepository
+     */
+    public function __construct(ProductRepository $productRepository)
+    {
+        $this->productRepository = $productRepository;
+    }
+
     /**
      * Returns the name of the product. Grouped products will have their parent's name prepended to
      * their name.
@@ -50,21 +64,31 @@ class Grouped extends GroupedItem
      * @param Item $item the ordered item
      * @return string|null the name of the product
      * @suppress PhanTypeMismatchReturn
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
-    public static function buildItemName(Item $item)
+    public function buildItemName(Item $item)
     {
         $name = $item->getName();
         $config = $item->getProductOptionByCode('super_product_config');
-        $objectManager = ObjectManager::getInstance();
-        if (isset($config['product_id'])) {
-            /** @var Product $parent */
-            $parent = $objectManager->get(Product::class)->load($config['product_id']); // @codingStandardsIgnoreLine
-            $parentName = $parent->getName();
-            if (!empty($parentName)) {
-                $name = $parentName . ' - ' . $name;
+        $itemParent = $this->getGroupedItemParent($config['product_id']);
+        if ($itemParent instanceof Product) {
+            $itemParentName = $itemParent->getName();
+            if ($itemParentName !== null) {
+                $name = $itemParentName . ' - ' . $name;
             }
         }
-
         return $name;
+    }
+
+    /**
+     * Query the product id and returns the Product Object
+     *
+     * @param $productId
+     * @return \Magento\Catalog\Api\Data\ProductInterface|mixed
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
+    private function getGroupedItemParent($productId)
+    {
+        return $this->productRepository->getById($productId);
     }
 }
