@@ -132,6 +132,7 @@ class Product extends View
      * Returns the Nosto product DTO.
      *
      * @return \Nosto\Object\Product\Product the product meta data model.
+     * @throws \Exception
      */
     public function getAbstractObject()
     {

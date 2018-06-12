@@ -107,6 +107,7 @@ class Iframe extends BlockTemplate
      * where a new Nosto account can be created.
      *
      * @return string the iframe url or empty string if it cannot be created.
+     * @throws NotFoundException
      */
     public function getIframeUrl()
     {
@@ -140,6 +141,7 @@ class Iframe extends BlockTemplate
      * This config can be converted into JSON in the view file.
      *
      * @return array the config.
+     * @throws NotFoundException
      */
     public function getIframeConfig()
     {

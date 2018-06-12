@@ -95,6 +95,7 @@ class Price extends AbstractHelper
      * @param Product $product the product model.
      * @param Store $store
      * @return float
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function getProductDisplayPrice(Product $product, Store $store)
     {
@@ -116,6 +117,7 @@ class Price extends AbstractHelper
      * @return float
      * @suppress PhanTypeMismatchArgument
      * @suppress PhanDeprecatedFunction
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function getProductPrice( // @codingStandardsIgnoreLine
         Product $product,
@@ -285,6 +287,7 @@ class Price extends AbstractHelper
      * @param Product $product the product model.
      * @param Store $store
      * @return float
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function getProductFinalDisplayPrice(Product $product, Store $store)
     {

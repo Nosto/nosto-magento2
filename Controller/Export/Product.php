@@ -85,6 +85,7 @@ class Product extends Base
      * @param int $limit
      * @param int $offset
      * @return AbstractCollection|ProductCollection
+     * @throws \Nosto\NostoException
      */
     public function buildExportCollection(Store $store, $limit = 100, $offset = 0)
     {
@@ -95,6 +96,7 @@ class Product extends Base
      * @param Store $store
      * @param $id
      * @return AbstractCollection|ProductCollection
+     * @throws \Nosto\NostoException
      */
     public function buildSingleExportCollection(Store $store, $id)
     {

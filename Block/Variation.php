@@ -94,7 +94,7 @@ class Variation extends Template
     /**
      * Returns the HTML to render variation blocks
      *
-     * @return MarkupableString
+     * @return MarkupableString|string
      */
     public function getAbstractObject()
     {
@@ -106,5 +106,6 @@ class Variation extends Template
                 'nosto_variation'
             );
         }
+        return '';
     }
 }

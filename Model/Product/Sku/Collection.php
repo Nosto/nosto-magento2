@@ -85,6 +85,7 @@ class Collection
      * @param Product $product
      * @param Store $store
      * @return SkuCollection
+     * @throws \Exception
      */
     public function build(Product $product, Store $store)
     {

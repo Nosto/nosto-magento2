@@ -276,7 +276,7 @@ class Data extends AbstractHelper
     /**
      * Returns on/off setting for custom fields
      *
-     * @param Store|null $store the store model or null.
+     * @param StoreInterface|null $store the store model or null.
      * @return boolean
      */
     public function isCustomFieldsEnabled(StoreInterface $store = null)
@@ -412,7 +412,7 @@ class Data extends AbstractHelper
      *
      * @param string $value the value of the multi currency setting.
      * @param StoreInterface|null $store the store model or null.
-     * @return string the configuration value
+     * @return string|null the configuration value
      */
     public function saveMultiCurrencyMethod($value, StoreInterface $store = null)
     {
@@ -436,7 +436,7 @@ class Data extends AbstractHelper
      * @param string $path
      * @param mixed $value
      * @param StoreInterface|Store|null $store
-     * @return mixed|null
+     * @return string|null
      */
     public function saveStoreConfig($path, $value, StoreInterface $store = null)
     {
@@ -460,9 +460,8 @@ class Data extends AbstractHelper
         $nostoModule = $this->moduleListing->getOne('Nosto_Tagging');
         if (!empty($nostoModule['setup_version'])) {
             return $nostoModule['setup_version'];
-        } else {
-            return 'unknown';
         }
+        return 'unknown';
     }
 
     /**

@@ -137,6 +137,7 @@ class Service
      * Updates products to Nosto via API
      *
      * @param array $ids array of product ids
+     * @throws \Exception
      */
     public function updateByIds(array $ids)
     {
@@ -148,6 +149,7 @@ class Service
      * Adds products to queue by id
      *
      * @param ProductInterface[] array of product objects
+     * @throws \Exception
      */
     public function update(array $products)
     {
@@ -159,6 +161,7 @@ class Service
      * Adds products to queue by id
      *
      * @param array $ids
+     * @throws \Exception
      */
     public function addToQueueByIds(array $ids)
     {
@@ -185,6 +188,7 @@ class Service
      * Adds products to queue
      *
      * @param ProductInterface[] $products
+     * @throws \Exception
      */
     public function addToQueue(array $products)
     {
@@ -312,6 +316,7 @@ class Service
      * @param array $uniqueProductIds
      * @param Store $store
      * @param Account $nostoAccount
+     * @throws \Exception
      */
     public function processForAccount(array $uniqueProductIds, Store $store, Account $nostoAccount)
     {

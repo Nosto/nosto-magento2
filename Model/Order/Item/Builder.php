@@ -76,7 +76,6 @@ class Builder
     /**
      * @param Item $item
      * @return LineItem
-     * @throws LocalizedException
      */
     public function build(Item $item)
     {

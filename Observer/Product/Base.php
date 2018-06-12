@@ -83,6 +83,7 @@ abstract class Base implements ObserverInterface
      *
      * @param Observer $observer
      * @return void
+     * @throws \Exception
      */
     public function execute(Observer $observer)
     {

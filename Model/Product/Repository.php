@@ -214,6 +214,7 @@ class Repository
      *
      * @param Product $product
      * @return array
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function getSkus(Product $product)
     {

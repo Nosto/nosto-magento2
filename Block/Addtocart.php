@@ -64,6 +64,7 @@ class Addtocart extends Template
      * @param EncoderInterface $urlEncoder
      * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoHelperScope $nostoHelperScope
+     * @param NostoHelperData $nostoHelperData
      * @param array $data
      */
     public function __construct(

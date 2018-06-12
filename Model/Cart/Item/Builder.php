@@ -77,7 +77,6 @@ class Builder
      * @param Item $item
      * @param $currencyCode
      * @return LineItem
-     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function build(Item $item, $currencyCode)
     {

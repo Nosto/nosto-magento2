@@ -83,6 +83,7 @@ class Add implements ObserverInterface
      * @param CookieManagerInterface $cookieManager
      * @param NostoCartItemBuilder $nostoCartItemBuilder
      * @param NostoCartBuilder $nostoCartBuilder
+     * @param CookieMetadataFactory $cookieMetadataFactory
      */
     public function __construct(
         NostoHelperData $nostoHelperData,

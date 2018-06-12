@@ -137,6 +137,7 @@ class Builder
      * @param Store $store
      * @param string $nostoScope
      * @return NostoProduct|null
+     * @throws \Exception
      */
     public function build(
         Product $product,

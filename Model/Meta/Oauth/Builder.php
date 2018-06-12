@@ -60,6 +60,7 @@ class Builder
      * @param Url $urlBuilder
      * @param NostoLogger $logger
      * @param ManagerInterface $eventManager
+     * @param NostoHelperData $nostoHelperData
      */
     public function __construct(
         ResolverInterface $localeResolver,

@@ -137,7 +137,6 @@ class Cart extends Action
      * @param $restoreCartHash
      * @return Quote|null
      * @throws NostoException
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     private function resolveQuote($restoreCartHash)
     {

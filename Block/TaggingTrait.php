@@ -64,6 +64,7 @@ trait TaggingTrait
      *
      * @return string the markup or an empty string (if an account doesn't exist)
      * @suppress PhanTraitParentReference
+     * @throws \Nosto\NostoException
      */
     public function _toHtml()
     {

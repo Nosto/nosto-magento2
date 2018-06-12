@@ -72,6 +72,7 @@ class Builder extends DataObject
      * @param Url $urlFactory
      * @param FilterManager $filter
      * @param UrlFinderInterface $urlFinder
+     * @param NostoDataHelper $nostoDataHelper
      * @param array $data
      */
     public function __construct(
