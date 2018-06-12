@@ -48,18 +48,50 @@ define(['catalogAddToCart', 'nostojs', 'jquery'], function (addToCart, nostojs, 
         Recobuy.addSkuToCart(productData, element);
     };
 
-    //Product object must have fields productId and skuId productId: 123, skuId: 321
+    // Products must be and array of objects [{'productId': '123', 'skuId': '321'}, {...}]
+    Recobuy.addMultipleProductsToCart = function (products, element) {
+        var productArray = [];
+        products.forEach(function (product) {
+            productArray.push(product.productId);
+        });
+        var skus = [];
+        products.forEach(function (sku) {
+            skus.push(sku.skuId);
+        });
+        var productData = {
+            "productId" : productArray,
+            "related_product" : skus
+        };
+        Recobuy.addSkuToCart(productData, element);
+    };
+
+    // Product object must have fields productId and skuId {'productId': '123', 'skuId': '321'}
     Recobuy.addSkuToCart = function (product, element) {
         if (typeof element === 'object') {
             var slotId = this.resolveContextSlotId(element);
             if (slotId) {
                 nostojs(function (api) {
-                    api.recommendedProductAddedToCart(product.productId, slotId);
+                    if (product.hasOwnProperty('related_product') && product.productId.constructor === Array) {
+                        product.productId.forEach(function (singleProductId) {
+                            api.recommendedProductAddedToCart(singleProductId, slotId);
+                        });
+                    } else {
+                        api.recommendedProductAddedToCart(product.productId, slotId);
+                    }
                 });
             }
         }
-
-        form.find('input[name="product"]').val(product.skuId);
+        if (product.hasOwnProperty('related_product')) {
+            form.find('input[name="product"]').val(product.related_product.pop());
+            // Add array of related products
+            var relatedProductsField = document.createElement("input");
+            relatedProductsField.setAttribute("type", "hidden");
+            relatedProductsField.setAttribute("name", 'related_product');
+            relatedProductsField.setAttribute("value", product.related_product);
+            form.append(relatedProductsField);
+        } else {
+            form.find('input[name="product"]').val(product.skuId);
+        }
         form.find('input[name="qty"]').val(1);
         helper.ajaxSubmit(form);
     };
