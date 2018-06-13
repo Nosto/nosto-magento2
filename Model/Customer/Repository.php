@@ -91,6 +91,7 @@ class Repository implements CustomerRepositoryInterface
      */
     public function save(CustomerInterface $customer)
     {
+        /** @noinspection PhpParamsInspection */
         $this->customerResource->save($customer);
 
         return $customer;

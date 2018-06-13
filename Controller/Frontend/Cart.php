@@ -40,7 +40,6 @@ use Magento\Checkout\Model\Session;
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\Module\Manager as ModuleManager;
-use Magento\Quote\Model\Quote;
 use Nosto\NostoException;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
@@ -66,7 +65,7 @@ class Cart extends Action
     private $nostoUrlHelper;
     private $nostoScopeHelper;
     private $nostoCustomerRepository;
-    private $quoteRepository;
+    private $cartRepository;
 
     /**
      * Cart constructor.
@@ -77,7 +76,7 @@ class Cart extends Action
      * @param NostoHelperUrl $nostoUrlHelper
      * @param NostoHelperScope $nostoScopeHelper
      * @param NostoCustomerRepository $nostoCustomerRepository
-     * @param CartRepositoryInterface $quoteRepository
+     * @param CartRepositoryInterface $cartRepository
      */
     public function __construct(
         Context $context,
@@ -87,7 +86,7 @@ class Cart extends Action
         NostoHelperUrl $nostoUrlHelper,
         NostoHelperScope $nostoScopeHelper,
         NostoCustomerRepository $nostoCustomerRepository,
-        CartRepositoryInterface $quoteRepository
+        CartRepositoryInterface $cartRepository
     ) {
         parent::__construct($context);
         $this->context = $context;
@@ -97,7 +96,7 @@ class Cart extends Action
         $this->nostoUrlHelper = $nostoUrlHelper;
         $this->nostoScopeHelper = $nostoScopeHelper;
         $this->nostoCustomerRepository = $nostoCustomerRepository;
-        $this->quoteRepository = $quoteRepository;
+        $this->cartRepository = $cartRepository;
     }
 
     public function execute()
@@ -135,8 +134,9 @@ class Cart extends Action
      * Resolves the cart (quote) by the given hash
      *
      * @param $restoreCartHash
-     * @return Quote|null
+     * @return \Magento\Quote\Api\Data\CartInterface|null
      * @throws NostoException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     private function resolveQuote($restoreCartHash)
     {
@@ -159,7 +159,7 @@ class Cart extends Action
             );
         }
 
-        $quote = $this->quoteRepository->get($customer->getQuoteId());
+        $quote = $this->cartRepository->get($customer->getQuoteId());
         if ($quote == null || !$quote->getId()) {
             throw new NostoException(
                 sprintf(
@@ -173,7 +173,7 @@ class Cart extends Action
         if (!$quote->getIsActive()) {
             $quote->setIsActive(true);
 
-            $this->quoteRepository->save($quote);
+            $this->cartRepository->save($quote);
         }
 
         return $quote;

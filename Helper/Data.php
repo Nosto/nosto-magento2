@@ -436,7 +436,6 @@ class Data extends AbstractHelper
      * @param string $path
      * @param mixed $value
      * @param StoreInterface|Store|null $store
-     * @return string|null
      */
     public function saveStoreConfig($path, $value, StoreInterface $store = null)
     {

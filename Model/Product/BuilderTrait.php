@@ -78,6 +78,7 @@ trait BuilderTrait
         $attributes = $product->getTypeInstance()->getSetAttributes($product);
         /** @var AbstractAttribute $attribute */
         foreach ($attributes as $attribute) {
+            /** @var \Magento\Catalog\Model\ResourceModel\Eav\Attribute\Interceptor $attribute */
             try {
                 //tag user defined attributes that are visible or filterable
                 if ($attribute->getIsUserDefined()

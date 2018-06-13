@@ -82,6 +82,7 @@ class Builder
     /**
      * @param Store $store
      * @return Iframe
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function build(Store $store)
     {

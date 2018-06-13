@@ -71,6 +71,7 @@ abstract class Selector implements ArrayInterface
      * Returns all available product attributes
      *
      * @return array
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function toOptionArray()
     {

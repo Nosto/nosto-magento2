@@ -63,6 +63,7 @@ class Grouped extends GroupedItem
      *
      * @param Item $item the ordered item
      * @return string|null the name of the product
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function buildItemName(Item $item)
     {
@@ -83,6 +84,7 @@ class Grouped extends GroupedItem
      *
      * @param $productId
      * @return \Magento\Catalog\Api\Data\ProductInterface|mixed
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     private function getGroupedItemParent($productId)
     {

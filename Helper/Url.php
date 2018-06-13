@@ -217,6 +217,7 @@ class Url extends AbstractHelper
      * @param Store $store the store to get the url for.
      * @return string the url.
      *
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function getPreviewUrlCategory(Store $store)
     {

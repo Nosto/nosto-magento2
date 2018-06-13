@@ -181,6 +181,7 @@ class Repository
         $product = $this->productRepository->getList($searchCriteria)->setTotalCount(1);
 
         foreach ($product->getItems() as $item) {
+            /** @var \Magento\Catalog\Model\Product $item */
             return $item;
         }
         return null;
