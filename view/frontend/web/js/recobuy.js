@@ -49,20 +49,27 @@ define(['catalogAddToCart', 'nostojs', 'jquery'], function (addToCart, nostojs, 
     };
 
     // Products must be and array of objects [{'productId': '123', 'skuId': '321'}, {...}]
+    // skuId is optional for simple products.
     Recobuy.addMultipleProductsToCart = function (products, element) {
-        var productArray = [];
-        products.forEach(function (product) {
-            productArray.push(product.productId);
-        });
-        var skus = [];
-        products.forEach(function (sku) {
-            skus.push(sku.skuId);
-        });
-        var productData = {
-            "productId" : productArray,
-            "related_product" : skus
-        };
-        Recobuy.addSkuToCart(productData, element);
+        if (products.constructor === Array) {
+            var productArray = [];
+            var skus = [];
+            products.forEach(function (productObj) {
+                if (productObj.skuId){
+                    skus.push(productObj.skuId);
+                } else {
+                    skus.push(productObj.productId);
+                }
+                if (productObj.productId) {
+                    productArray.push(productObj.productId);
+                }
+            });
+            var productData = {
+                "productId" : productArray,
+                "related_product" : skus
+            };
+            Recobuy.addSkuToCart(productData, element);
+        }
     };
 
     // Product object must have fields productId and skuId {'productId': '123', 'skuId': '321'}
