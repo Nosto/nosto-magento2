@@ -126,7 +126,7 @@ class Builder
             if ($nostoCustomer->getRestoreCartHash() === null) {
                 $nostoCustomer->setRestoreCartHash($this->generateRestoreCartHash());
             }
-            $nostoCustomer->setUpdatedAt(self::getNow());
+            $nostoCustomer->setUpdatedAt($this->getNow());
         } else {
             /** @noinspection PhpUndefinedMethodInspection */
             $nostoCustomer = $this->nostoCustomerFactory->create();
@@ -134,7 +134,7 @@ class Builder
             $nostoCustomer->setQuoteId($quote->getId());
             /** @noinspection PhpUndefinedMethodInspection */
             $nostoCustomer->setNostoId($nostoCustomerId);
-            $nostoCustomer->setCreatedAt(self::getNow());
+            $nostoCustomer->setCreatedAt($this->getNow());
             $nostoCustomer->setRestoreCartHash($this->generateRestoreCartHash());
         }
         try {
