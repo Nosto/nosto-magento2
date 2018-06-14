@@ -264,6 +264,7 @@ class Service
 
             $productIds = [];
             foreach ($queueEntries->getItems() as $queueEntry) {
+                /** @var \Nosto\Tagging\Model\Product\Queue $queueEntry */
                 $productIds[] = $queueEntry->getProductId();
             }
             try {
@@ -299,6 +300,7 @@ class Service
                 if (!$nostoAccount instanceof Account) {
                     continue;
                 }
+                /** @var \Magento\Store\Model\Store\Interceptor $store */
                 $this->storeEmulator->startEnvironmentEmulation($store->getId());
                 try {
                     $this->processForAccount($uniqueProductIds, $store, $nostoAccount);

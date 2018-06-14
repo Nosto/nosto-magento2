@@ -141,6 +141,7 @@ class Repository implements CustomerRepositoryInterface
 
         $items = $this->search($searchCriteria)->getItems();
         foreach ($items as $customer) {
+            /** @var CustomerInterface $customer */
             return $customer;
         }
 
