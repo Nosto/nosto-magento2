@@ -156,7 +156,7 @@ class Builder
      */
     private function generateRestoreCartHash()
     {
-        $hash = $this->encryptor->getHash(uniqid('nostocartrestore'));
+        $hash = $this->encryptor->getHash(uniqid('nostocartrestore', true));
         if (strlen($hash) > NostoCustomer::NOSTO_TAGGING_RESTORE_CART_ATTRIBUTE_LENGTH) {
             $hash = substr($hash, 0, NostoCustomer::NOSTO_TAGGING_RESTORE_CART_ATTRIBUTE_LENGTH);
         }
