@@ -101,7 +101,7 @@ class Builder
      */
     public function build(Store $store, $accountOwner, $signupDetails)
     {
-        $metaData = new Signup(Builder::PLATFORM_NAME, Builder::API_TOKEN, null);
+        $metaData = new Signup(self::PLATFORM_NAME, self::API_TOKEN, null);
 
         try {
             $metaData->setTitle(
