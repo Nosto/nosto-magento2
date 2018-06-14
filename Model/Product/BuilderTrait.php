@@ -142,7 +142,7 @@ trait BuilderTrait
                 $frontend = $attributeObject->getFrontend();
                 $frontendValue = $frontend->getValue($product);
                 if (is_array($frontendValue)) {
-                    $value = implode(",", $frontendValue);
+                    $value = implode(',', $frontendValue);
                 } elseif (is_scalar($frontendValue)) {
                     $value = $frontendValue;
                 } elseif ($frontendValue instanceof Phrase) {

@@ -96,8 +96,8 @@ class CartTagging extends HashedTagging implements SectionSourceInterface
         $nostoCustomerId = $this->cookieManager->getCookie(NostoCustomer::COOKIE_NAME);
         $data = [
             'hcid' => parent::generateVisitorChecksum($nostoCustomerId),
-            "items" => [],
-            "itemCount" => 0,
+            'items' => [],
+            'itemCount' => 0,
             'restore_cart_url' => ''
         ];
         $cart = $this->cartHelper->getCart();
@@ -106,12 +106,12 @@ class CartTagging extends HashedTagging implements SectionSourceInterface
             $this->nostoScopeHelper->getStore()
         );
         $itemCount = $cart->getItemsCount();
-        $data["itemCount"] = $itemCount;
+        $data['itemCount'] = $itemCount;
         $addedCount = 0;
         /* @var LineItem $item */
         foreach ($nostoCart->getItems() as $item) {
             $addedCount++;
-            $data["items"][] = [
+            $data['items'][] = [
                 'product_id' => $item->getProductId(),
                 'sku_id' => $item->getSkuId(),
                 'quantity' => $item->getQuantity(),
@@ -123,7 +123,7 @@ class CartTagging extends HashedTagging implements SectionSourceInterface
             ];
         }
 
-        if ($data["itemCount"] > 0) {
+        if ($data['itemCount'] > 0) {
             $store = $this->nostoScopeHelper->getStore();
             try {
                 $data['restore_cart_url'] = $this->nostoRestoreCartUrlBuilder

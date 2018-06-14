@@ -64,7 +64,7 @@ return [
         'vendor/magento/zendframework1/library/Zend/Validate/Hostname/Com.php',
         'vendor/magento/zendframework1/library/Zend/Validate/Hostname/Jp.php',
     ],
-    "exclude_analysis_directory_list" => [
+    'exclude_analysis_directory_list' => [
         'vendor/',
         'magento/'
     ],

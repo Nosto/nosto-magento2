@@ -140,8 +140,8 @@ class Save implements ObserverInterface
                 } catch (\Exception $e) {
                     $this->logger->error(
                         sprintf(
-                            "Failed to save order with quote #%s for customer #%s.
-                        Message was: %s",
+                            'Failed to save order with quote #%s for customer #%s.
+                        Message was: %s',
                             $quoteId,
                             $nostoCustomer->getNostoId(),
                             $e->getMessage()

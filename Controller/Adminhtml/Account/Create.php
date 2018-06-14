@@ -143,7 +143,7 @@ class Create extends Base
                         $accountOwner->setLastName(null);
                         $accountOwner->setEmail($emailAddress);
                     } else {
-                        throw new NostoException("Invalid email address " . $emailAddress);
+                        throw new NostoException('Invalid email address ' . $emailAddress);
                     }
                 }
 

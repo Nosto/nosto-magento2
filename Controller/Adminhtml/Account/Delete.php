@@ -95,7 +95,7 @@ class Delete extends Base
         $storeId = $this->_request->getParam('store');
         $store = $this->nostoHelperScope->getStore($storeId);
         if ($store === null) {
-            throw new LocalizedException(new Phrase("No account found"));
+            throw new LocalizedException(new Phrase('No account found'));
         } else {
             $account = $this->nostoHelperAccount->findAccount($store);
 
