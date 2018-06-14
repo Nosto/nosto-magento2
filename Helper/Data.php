@@ -381,7 +381,7 @@ class Data extends AbstractHelper
     public function isMultiCurrencyDisabled(StoreInterface $store = null)
     {
         $storeConfig = $this->getMultiCurrencyMethod($store);
-        return (bool)($storeConfig === self::SETTING_VALUE_MC_DISABLED);
+        return ($storeConfig === self::SETTING_VALUE_MC_DISABLED);
     }
 
     /**
@@ -393,7 +393,7 @@ class Data extends AbstractHelper
     public function isMultiCurrencyExchangeRatesEnabled(StoreInterface $store = null)
     {
         $storeConfig = $this->getMultiCurrencyMethod($store);
-        return (bool)($storeConfig === self::SETTING_VALUE_MC_EXCHANGE_RATE);
+        return ($storeConfig === self::SETTING_VALUE_MC_EXCHANGE_RATE);
     }
 
     /**

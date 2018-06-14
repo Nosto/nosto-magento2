@@ -252,6 +252,7 @@ class Price extends AbstractHelper
                 $pid = $product->getId();
                 if ($finalPrice) {
                     $currentProductPrice = $product->getFinalPrice();
+                    /** @noinspection UnnecessaryCastingInspection */
                     $pricesToCompare = [(float)$currentProductPrice, (float)$product->getPrice()];
                     try {
                         $currentRulePrice = $this->priceRuleFactory->create()->getRulePrice($date, $wid, $gid, $pid);
