@@ -27,7 +27,7 @@
 
 namespace Nosto\Tagging\Block;
 
-use Magento\Framework\View\Element\Template as Template;
+use Magento\Framework\View\Element\Template;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 

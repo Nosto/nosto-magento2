@@ -55,7 +55,7 @@ use Nosto\Tagging\Model\Product\Sku\Collection as NostoSkuCollection;
 use Nosto\Tagging\Model\Product\Tags\LowStock as LowStockHelper;
 use Nosto\Tagging\Model\Product\Url\Builder as NostoUrlBuilder;
 use Nosto\Types\Product\ProductInterface;
-use Nosto\Object\ModelFilter as ModelFilter;
+use Nosto\Object\ModelFilter;
 
 class Builder
 {

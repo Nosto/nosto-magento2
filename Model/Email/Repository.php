@@ -37,7 +37,7 @@
 namespace Nosto\Tagging\Model\Email;
 
 use Magento\Newsletter\Model\ResourceModel\Subscriber as SubscriberResource;
-use Magento\Newsletter\Model\Subscriber as Subscriber;
+use Magento\Newsletter\Model\Subscriber;
 
 /**
  * Repository wrapper / helper class for fetching marketing permission related items
