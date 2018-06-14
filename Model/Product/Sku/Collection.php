@@ -94,10 +94,11 @@ class Collection
             $attributes = $this->configurableType->getConfigurableAttributes($product);
             $usedProducts = $this->nostoProductRepository->getSkus($product);
             /** @var Product $product */
-            foreach ($usedProducts as $product) {
-                if (!$product->isDisabled()) {
+            foreach ($usedProducts as $usedProduct) {
+                /** @var Product $usedProduct */
+                if (!$usedProduct->isDisabled()) {
                     try {
-                        $sku = $this->nostoSkuBuilder->build($product, $store, $attributes);
+                        $sku = $this->nostoSkuBuilder->build($usedProduct, $store, $attributes);
                         $skuCollection->append($sku);
                     } catch (NostoException $e) {
                         $this->logger->exception($e);
