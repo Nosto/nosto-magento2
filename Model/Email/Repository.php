@@ -87,7 +87,7 @@ class Repository
         }
 
         if (isset($subscriber['subscriber_status'])
-            && $subscriber['subscriber_status'] == Subscriber::STATUS_SUBSCRIBED
+            && $subscriber['subscriber_status'] === Subscriber::STATUS_SUBSCRIBED
         ) {
             return true;
         }

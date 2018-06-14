@@ -194,7 +194,7 @@ class Builder
                     $appliedRules[$ruleId] = $rule->getName();
                 }
             }
-            if (count($appliedRules) == 0) {
+            if (count($appliedRules) === 0) {
                 $appliedRules[] = 'unknown rule';
             }
             $discountTxt = sprintf(

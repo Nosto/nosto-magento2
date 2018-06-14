@@ -192,7 +192,7 @@ class Builder
             $nostoProduct->setAvailability($this->buildAvailability($product));
             $nostoProduct->setCategories($this->nostoCategoryBuilder->buildCategories($product));
             $nostoProduct->setAlternateImageUrls($this->buildAlternativeImages($product));
-            if ($nostoScope == self::NOSTO_SCOPE_API
+            if ($nostoScope === self::NOSTO_SCOPE_API
                 && $this->nostoDataHelper->isInventoryTaggingEnabled($store)
             ) {
                 $nostoProduct->setInventoryLevel($this->nostoStockHelper->getQty($product));
@@ -222,7 +222,7 @@ class Builder
                 $nostoProduct->setBrand($this->getAttributeValue($product, $brandAttribute));
             }
             $marginAttribute = $this->nostoDataHelper->getMarginAttribute($store);
-            if ($nostoScope == self::NOSTO_SCOPE_API
+            if ($nostoScope === self::NOSTO_SCOPE_API
                 && $product->hasData($marginAttribute)
             ) {
                 $nostoProduct->setSupplierCost($this->getAttributeValue($product, $marginAttribute));

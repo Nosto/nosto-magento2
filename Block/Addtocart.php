@@ -99,7 +99,7 @@ class Addtocart extends Template
 
         $request = $this->getRequest();
         if ($request instanceof Http) {
-            if ($request->getRouteName() == 'checkout' && $request->getControllerName() == 'cart') {
+            if ($request->getRouteName() === 'checkout' && $request->getControllerName() === 'cart') {
                 $routeParams['in_cart'] = 1;
             }
         }

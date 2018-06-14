@@ -160,7 +160,7 @@ class Builder
             //An item with bundle product and group product may have more than 1 child.
             //But configurable product item should have max 1 child item.
             //Here we check the size of children, return only if the size is 1
-            if (count($children) == 1
+            if (count($children) === 1
                 && array_key_exists(0, $children)
             ) {
                 if ($children[0] instanceof Item
