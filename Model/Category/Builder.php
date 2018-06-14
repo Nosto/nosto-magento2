@@ -74,7 +74,7 @@ class Builder
         $categories = [];
         foreach ($product->getCategoryCollection() as $category) {
             $categoryString = $this->build($category);
-            if (!empty($categoryString)) {
+            if ($categoryString !== null) {
                 $categories[] = $categoryString;
             }
         }

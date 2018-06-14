@@ -67,7 +67,7 @@ class Builder
 
         try {
             $country = $store->getConfig('general/country/default');
-            if (!empty($country)) {
+            if ($country !== null) {
                 $metaData->setCountry($country);
             }
         } catch (NostoException $e) {

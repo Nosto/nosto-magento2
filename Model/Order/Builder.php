@@ -184,7 +184,7 @@ class Builder
             foreach ($order->getAllVisibleItems() as $item) {
                 /* @var Item $item */
                 $itemAppliedRules = $item->getAppliedRuleIds();
-                if (empty($itemAppliedRules)) {
+                if ($itemAppliedRules === null) {
                     continue;
                 }
                 $ruleIds = explode(',', $item->getAppliedRuleIds());

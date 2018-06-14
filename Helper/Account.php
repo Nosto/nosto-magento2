@@ -207,7 +207,7 @@ class Account extends AbstractHelper
         /** @noinspection PhpUndefinedMethodInspection */
         $accountName = $store->getConfig(self::XML_PATH_ACCOUNT);
 
-        if (!empty($accountName)) {
+        if ($accountName !== null) {
             $account = new NostoSignupAccount($accountName);
             /** @noinspection PhpUndefinedMethodInspection */
             $tokens = json_decode(

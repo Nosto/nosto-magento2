@@ -111,7 +111,7 @@ class Builder
         // Handle the Nosto customer & quote mapping
         $nostoCustomerId = $this->cookieManager->getCookie(NostoCustomer::COOKIE_NAME);
 
-        if ($quote === null || $quote->getId() === null || empty($nostoCustomerId)) {
+        if ($quote === null || $quote->getId() === null || $nostoCustomerId === null) {
             return null;
         }
 
