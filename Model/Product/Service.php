@@ -354,11 +354,15 @@ class Service
 
             try {
                 $op->upsert();
+                $storeName = 'Could not get Store Name';
+                if ($this->storeManager->getStore()) {
+                    $storeName = $this->storeManager->getStore()->getName();
+                }
                 $this->logger->info(
                     sprintf(
                         'Sent %d products to for store %s (%d)',
                         $productSearch->getTotalCount(),
-                        $this->storeManager->getStore()->getName(),
+                        $storeName,
                         $store->getId()
                     )
                 );
@@ -403,11 +407,15 @@ class Service
         $op->setProductIds($uniqueProductIds);
         try {
             $op->delete();
+            $storeName = 'Could not get Store Name';
+            if ($this->storeManager->getStore()) {
+                $storeName = $this->storeManager->getStore()->getName();
+            }
             $this->logger->info(
                 sprintf(
                     'Sent %d products to for deletion %s (%d)',
                     count($uniqueProductIds),
-                    $this->storeManager->getStore()->getName(),
+                    $storeName,
                     $store->getId()
                 )
             );

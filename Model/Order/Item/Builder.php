@@ -153,14 +153,15 @@ class Builder
         $parent = $item->getProductOptionByCode('super_product_config');
         if (isset($parent['product_id'])) {
             return $parent['product_id'];
-        } elseif ($item->getProductType() === Type::TYPE_SIMPLE) {
+        }
+        if ($item->getProductType() === Type::TYPE_SIMPLE && $item->getProduct() !== null) {
             $type = $item->getProduct()->getTypeInstance();
             $parentIds = $type->getParentIdsByChild($item->getProductId());
             $attributes = $item->getBuyRequest()->getData('super_attribute');
             // If the product has a configurable parent, we assume we should tag
             // the parent. If there are many parent IDs, we are safer to tag the
             // products own ID.
-            if (count($parentIds) === 1 && !empty($attributes)) {
+            if (!empty($attributes) && count($parentIds) === 1) {
                 return $parentIds[0];
             }
         }

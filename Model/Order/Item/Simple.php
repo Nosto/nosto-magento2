@@ -54,8 +54,12 @@ class Simple extends SimpleItem
     {
         $name = $item->getName();
         $optNames = [];
-        $type = $item->getProduct()->getTypeInstance();
-        $parentIds = $type->getParentIdsByChild($item->getProductId());
+        if ($item->getProduct()) {
+            $type = $item->getProduct()->getTypeInstance();
+            $parentIds = $type->getParentIdsByChild($item->getProductId());
+        } else {
+            $parentIds = 0;
+        }
         $objectManager = ObjectManager::getInstance();
         // If the product has a configurable parent, we assume we should tag
         // the parent. If there are many parent IDs, we are safer to tag the

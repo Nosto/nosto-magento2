@@ -110,23 +110,26 @@ class Cart extends Action
         if ($this->moduleManager->isEnabled(NostoHelperData::MODULE_NAME)) {
             if (!$this->checkoutSession->getQuoteId()) {
                 $restoreCartHash = $this->getRequest()->getParam(self::HASH_PARAM);
-                if (!$restoreCartHash) {
-                    throw new NostoException('No hash provided for restore cart');
-                } else {
-                    try {
+                try {
+                    if ($restoreCartHash) {
                         $quote = $this->resolveQuote($restoreCartHash);
-                        $this->checkoutSession->setQuoteId($quote->getId());
-                        $redirectUrl = $this->nostoUrlHelper->getUrlCart($store, $currentUrl);
-                    } catch (\Exception $e) {
-                        $this->logger->exception($e);
-                        $this->messageManager->addErrorMessage('Sorry, we could not find your cart');
+                        if ($quote !== null) {
+                            $this->checkoutSession->setQuoteId($quote->getId());
+                            $redirectUrl = $this->nostoUrlHelper->getUrlCart($store, $currentUrl);
+                        } else {
+                            throw new NostoException('Could not resolve quote for the given restore cart hash');
+                        }
+                    } else {
+                        throw new NostoException('No hash provided for restore cart');
                     }
+                } catch (\Exception $e) {
+                    $this->logger->exception($e);
+                    $this->messageManager->addErrorMessage('Sorry, we could not find your cart');
                 }
             } else {
                 $redirectUrl = $this->nostoUrlHelper->getUrlCart($store, $currentUrl);
             }
         }
-
         return $this->_redirect($redirectUrl);
     }
 

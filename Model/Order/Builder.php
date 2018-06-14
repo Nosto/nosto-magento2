@@ -37,6 +37,7 @@
 namespace Nosto\Tagging\Model\Order;
 
 use Exception;
+use Nosto\NostoException;
 use Magento\Catalog\Model\Product;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\Phrase;
@@ -108,7 +109,11 @@ class Builder
                     $nostoOrder->setCreatedAt($orderCreatedDate);
                 }
             }
-            $nostoOrder->setPaymentProvider($order->getPayment()->getMethod());
+            if ($order->getPayment()) {
+                $nostoOrder->setPaymentProvider($order->getPayment()->getMethod());
+            } else {
+                throw new NostoException('Order has no payment associated');
+            }
             if ($order->getStatus()) {
                 $nostoStatus = new OrderStatus();
                 $nostoStatus->setCode($order->getStatus());
