@@ -381,8 +381,6 @@ class Url extends AbstractHelper
     public function getAdminNostoConfigurationUrl(Store $store)
     {
         $params = [self::MAGENTO_URL_OPTION_STORE_ID => $store->getStoreId()];
-        $url = $this->backendDataHelper->getUrl(self::URL_PATH_NOSTO_CONFIG, $params);
-
-        return $url;
+        return $this->backendDataHelper->getUrl(self::URL_PATH_NOSTO_CONFIG, $params);
     }
 }

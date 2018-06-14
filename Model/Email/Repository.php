@@ -68,9 +68,7 @@ class Repository
      */
     public function getNewsletterOptInForEmail($email)
     {
-        $subscription = $this->subscriber->loadByEmail($email);
-
-        return $subscription;
+        return $this->subscriber->loadByEmail($email);
     }
 
     /**

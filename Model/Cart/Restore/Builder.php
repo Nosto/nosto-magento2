@@ -179,14 +179,12 @@ class Builder
      *
      * @param string $hash
      * @param Store $store
-     * @return string
+     * @return string the restore cart URL
      */
     private function generateRestoreCartUrl($hash, Store $store)
     {
         $params = $this->urlHelper->getUrlOptionsWithNoSid($store);
         $params['h'] = $hash;
-        $url = $store->getUrl(NostoHelperUrl::NOSTO_PATH_RESTORE_CART, $params);
-
-        return $url;
+        return $store->getUrl(NostoHelperUrl::NOSTO_PATH_RESTORE_CART, $params);
     }
 }

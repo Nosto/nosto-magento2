@@ -114,9 +114,7 @@ class Repository
         $searchCriteria = $this->searchCriteriaBuilder
             ->addFilter('entity_id', $ids, 'in')
             ->create();
-        $products = $this->productRepository->getList($searchCriteria);
-
-        return $products;
+        return $this->productRepository->getList($searchCriteria);
     }
 
     /**
@@ -145,9 +143,7 @@ class Repository
             ->setFilterGroups([$filterGroup])
             ->addFilter('special_from_date', $today->format('Y-m-d') . ' 00:00:00', 'gte')
             ->create();
-        $products = $this->productRepository->getList($searchCriteria);
-
-        return $products;
+        return $this->productRepository->getList($searchCriteria);
     }
 
     /**
