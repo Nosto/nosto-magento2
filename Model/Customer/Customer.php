@@ -38,6 +38,7 @@ namespace Nosto\Tagging\Model\Customer;
 
 use Magento\Framework\Model\AbstractModel;
 use Nosto\Tagging\Api\Data\CustomerInterface;
+use Nosto\Tagging\Model\ResourceModel\Customer as NostoCustomer;
 
 class Customer extends AbstractModel implements CustomerInterface
 {
@@ -133,7 +134,7 @@ class Customer extends AbstractModel implements CustomerInterface
      */
     public function _construct()
     {
-        $this->_init('Nosto\Tagging\Model\ResourceModel\Customer');
+        $this->_init(NostoCustomer::class);
     }
 
     /**
