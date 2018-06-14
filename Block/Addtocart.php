@@ -90,20 +90,18 @@ class Addtocart extends Template
     public function getSubmitUrl()
     {
         $continueUrl = $this->urlEncoder->encode($this->_urlBuilder->getCurrentUrl());
-
         $activeStore = $this->nostoHelperScope->getStore(true);
         $routeParams = [ActionInterface::PARAM_NAME_URL_ENCODED => $continueUrl];
         $routeParams['_secure'] = $this->getRequest()->isSecure();
         $routeParams['_scope'] = $activeStore->getCode();
         $routeParams['_scope_to_url'] = $this->nostoHelperData->getStoreCodeToUrl($activeStore);
-
         $request = $this->getRequest();
-        if ($request instanceof Http) {
-            if ($request->getRouteName() === 'checkout' && $request->getControllerName() === 'cart') {
-                $routeParams['in_cart'] = 1;
-            }
+        if ($request instanceof Http
+            && $request->getRouteName() === 'checkout'
+            && $request->getControllerName() === 'cart'
+        ) {
+            $routeParams['in_cart'] = 1;
         }
-
         return $this->_urlBuilder->getUrl('checkout/cart/add', $routeParams);
     }
 

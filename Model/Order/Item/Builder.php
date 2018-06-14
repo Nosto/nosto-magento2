@@ -173,7 +173,6 @@ class Builder
      *
      * @param Item $item the sales item model.
      * @return string|null sku id
-     * @suppress PhanUndeclaredMethod
      */
     public function buildSkuId(Item $item)
     {
@@ -182,14 +181,12 @@ class Builder
             //An item with bundle product and group product may have more than 1 child.
             //But configurable product item should have max 1 child item.
             //Here we check the size of children, return only if the size is 1
-            if (count($children) === 1
-                && array_key_exists(0, $children)
+            /** @var Item[] $children */
+            if (array_key_exists(0, $children) && $children[0] instanceof Item
+                && count($children) === 1
+                && $children[0]->getProductId()
             ) {
-                if ($children[0] instanceof Item
-                    && $children[0]->getProductId()
-                ) {
-                    return (string)$children[0]->getProductId();
-                }
+                return (string)$children[0]->getProductId();
             }
         }
 

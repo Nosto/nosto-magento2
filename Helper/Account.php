@@ -186,14 +186,8 @@ class Account extends AbstractHelper
      */
     public function nostoInstalledAndEnabled(Store $store)
     {
-        $enabled = false;
-        if ($this->moduleManager->isEnabled(NostoHelper::MODULE_NAME)) {
-            if ($this->findAccount($store)) {
-                $enabled = true;
-            }
-        }
-
-        return $enabled;
+        return $this->moduleManager->isEnabled(NostoHelper::MODULE_NAME)
+            && $this->findAccount($store);
     }
 
     /**
