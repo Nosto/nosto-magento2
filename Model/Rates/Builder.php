@@ -97,7 +97,7 @@ class Builder
                 ));
                 $exchangeRates->addRate($code, new ExchangeRate($code, $rate));
             }
-        } catch (NostoException $e) {
+        } catch (\Exception $e) {
             $this->logger->exception($e);
         }
 

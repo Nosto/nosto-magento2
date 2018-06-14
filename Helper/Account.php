@@ -169,7 +169,7 @@ class Account extends AbstractHelper
             // Notify Nosto that the account was deleted.
             $service = new UninstallAccount($account);
             $service->delete($currentUser);
-        } catch (NostoException $e) {
+        } catch (\Exception $e) {
             $this->logger->error($e->__toString());
         }
 

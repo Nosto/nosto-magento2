@@ -77,7 +77,7 @@ class Builder
                 $metaData->setLastName($user->getLastName());
                 $metaData->setEmail($user->getEmail());
             }
-        } catch (NostoException $e) {
+        } catch (\Exception $e) {
             $this->logger->exception($e);
         }
 

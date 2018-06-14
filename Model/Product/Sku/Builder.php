@@ -128,7 +128,7 @@ class Builder
                     try {
                         $code = $attribute->getProductAttribute()->getAttributeCode();
                         $nostoSku->addCustomField($code, $product->getAttributeText($code));
-                    } catch (NostoException $e) {
+                    } catch (\Exception $e) {
                         $this->logger->exception($e);
                     }
                 }

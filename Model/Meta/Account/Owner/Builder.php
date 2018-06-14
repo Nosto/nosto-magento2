@@ -77,7 +77,7 @@ class Builder
                 $owner->setLastName($user->getLastName());
                 $owner->setEmail($user->getEmail());
             }
-        } catch (NostoException $e) {
+        } catch (\Exception $e) {
             $this->logger->exception($e);
         }
 

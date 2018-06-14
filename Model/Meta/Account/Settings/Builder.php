@@ -94,7 +94,7 @@ class Builder
                 $settings->setDefaultVariantId($this->nostoHelperCurrency->getTaggingCurrency($store)->getCode());
             }
             $settings->setCurrencies($this->nostoCurrenciesBuilder->build($store));
-        } catch (NostoException $e) {
+        } catch (\Exception $e) {
             $this->logger->exception($e);
         }
 

@@ -142,7 +142,7 @@ class Builder
             $metaData->setBillingDetails($billing);
 
             $metaData->setDetails($signupDetails);
-        } catch (NostoException $e) {
+        } catch (\Exception $e) {
             $this->logger->exception($e);
         }
 

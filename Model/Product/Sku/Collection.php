@@ -100,7 +100,7 @@ class Collection
                     try {
                         $sku = $this->nostoSkuBuilder->build($usedProduct, $store, $attributes);
                         $skuCollection->append($sku);
-                    } catch (NostoException $e) {
+                    } catch (\Exception $e) {
                         $this->logger->exception($e);
                     }
                 }

@@ -70,7 +70,7 @@ class Builder
             if ($country !== null) {
                 $metaData->setCountry($country);
             }
-        } catch (NostoException $e) {
+        } catch (\Exception $e) {
             $this->logger->exception($e);
         }
 

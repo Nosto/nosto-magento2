@@ -103,7 +103,7 @@ class Builder
             if ($account !== null) {
                 $metaData->setAccount($account);
             }
-        } catch (NostoException $e) {
+        } catch (\Exception $e) {
             $this->logger->exception($e);
         }
 

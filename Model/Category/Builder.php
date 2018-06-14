@@ -106,7 +106,7 @@ class Builder
                 }
             }
             $nostoCategory = count($data) ? '/' . implode('/', $data) : '';
-        } catch (NostoException $e) {
+        } catch (\Exception $e) {
             $this->logger->exception($e);
         }
         if (empty($nostoCategory)) {
