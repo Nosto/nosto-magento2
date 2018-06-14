@@ -69,15 +69,12 @@ trait TaggingTrait
     public function _toHtml()
     {
         if ($this->nostoHelperAccount->nostoInstalledAndEnabled($this->nostoHelperScope->getStore())) {
-            /** @noinspection PhpUndefinedMethodInspection */
             if ($this->getAbstractObject() instanceof AbstractObject) {
                 return $this->getAbstractObject()->toHtml();
-            } else {
-                return parent::_toHtml();
             }
-        } else {
-            return '';
+            return parent::_toHtml();
         }
+        return '';
     }
 
     /**

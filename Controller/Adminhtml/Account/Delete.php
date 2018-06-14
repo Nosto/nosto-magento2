@@ -96,42 +96,41 @@ class Delete extends Base
         $store = $this->nostoHelperScope->getStore($storeId);
         if ($store === null) {
             throw new LocalizedException(new Phrase('No account found'));
-        } else {
-            $account = $this->nostoHelperAccount->findAccount($store);
-
-            if ($account !== null) {
-                $currentUser = $this->nostoCurrentUserBuilder->build();
-                if ($this->nostoHelperAccount->deleteAccount($account, $store, $currentUser)) {
-                    //Invalidate the cache
-                    $this->nostoHelperCache->invalidatePageCache();
-                    $this->nostoHelperCache->invalidateLayoutCache();
-
-                    $response = [];
-                    $response['success'] = true;
-                    $response['redirect_url'] = IframeHelper::getUrl(
-                        $this->nostoIframeMetaBuilder->build($store),
-                        null, // we don't have an account anymore
-                        $this->nostoCurrentUserBuilder->build(),
-                        [
-                            'message_type' => Nosto::TYPE_SUCCESS,
-                            'message_code' => Nosto::CODE_ACCOUNT_DELETE,
-                        ]
-                    );
-                    return $this->result->setData($response);
-                }
-            }
-
-            $response = [];
-            $response['redirect_url'] = IframeHelper::getUrl(
-                $this->nostoIframeMetaBuilder->build($store),
-                null,
-                $this->nostoCurrentUserBuilder->build(),
-                [
-                    'message_type' => Nosto::TYPE_ERROR,
-                    'message_code' => Nosto::CODE_ACCOUNT_DELETE,
-                ]
-            );
-            return $this->result->setData($response);
         }
+
+        $account = $this->nostoHelperAccount->findAccount($store);
+        if ($account !== null) {
+            $currentUser = $this->nostoCurrentUserBuilder->build();
+            if ($this->nostoHelperAccount->deleteAccount($account, $store, $currentUser)) {
+                //Invalidate the cache
+                $this->nostoHelperCache->invalidatePageCache();
+                $this->nostoHelperCache->invalidateLayoutCache();
+
+                $response = [];
+                $response['success'] = true;
+                $response['redirect_url'] = IframeHelper::getUrl(
+                    $this->nostoIframeMetaBuilder->build($store),
+                    null, // we don't have an account anymore
+                    $this->nostoCurrentUserBuilder->build(),
+                    [
+                        'message_type' => Nosto::TYPE_SUCCESS,
+                        'message_code' => Nosto::CODE_ACCOUNT_DELETE,
+                    ]
+                );
+                return $this->result->setData($response);
+            }
+        }
+
+        $response = [];
+        $response['redirect_url'] = IframeHelper::getUrl(
+            $this->nostoIframeMetaBuilder->build($store),
+            null,
+            $this->nostoCurrentUserBuilder->build(),
+            [
+                'message_type' => Nosto::TYPE_ERROR,
+                'message_code' => Nosto::CODE_ACCOUNT_DELETE,
+            ]
+        );
+        return $this->result->setData($response);
     }
 }

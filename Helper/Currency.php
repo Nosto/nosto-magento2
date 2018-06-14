@@ -146,7 +146,8 @@ class Currency extends AbstractHelper
                 $this->nostoHelperData->saveMultiCurrencyMethod(Data::SETTING_VALUE_MC_EXCHANGE_RATE, $store);
                 $this->nostoHelperData->clearMagentoCache('config');
                 return true;
-            } elseif ($this->getCurrencyCount($store) === 1) {
+            }
+            if ($this->getCurrencyCount($store) === 1) {
                 $this->nostoHelperData->saveMultiCurrencyMethod(Data::SETTING_VALUE_MC_SINGLE, $store);
                 $this->nostoHelperData->clearMagentoCache('config');
             }

@@ -90,11 +90,10 @@ abstract class Base extends Action
         $id = $this->getRequest()->getParam(self::ID, false);
         if (!empty($id)) {
             return $this->export($this->buildSingleExportCollection($store, $id));
-        } else {
-            $pageSize = (int)$this->getRequest()->getParam(self::LIMIT, 100);
-            $currentOffset = (int)$this->getRequest()->getParam(self::OFFSET, 0);
-            return $this->export($this->buildExportCollection($store, $pageSize, $currentOffset));
         }
+        $pageSize = (int)$this->getRequest()->getParam(self::LIMIT, 100);
+        $currentOffset = (int)$this->getRequest()->getParam(self::OFFSET, 0);
+        return $this->export($this->buildExportCollection($store, $pageSize, $currentOffset));
     }
 
     /**

@@ -319,9 +319,8 @@ class Builder
         if ($product->getRatingSummary()->getReviewsCount() > 0) {
             /** @noinspection PhpUndefinedMethodInspection */
             return round($product->getRatingSummary()->getRatingSummary() / 20, 1);
-        } else {
-            return null;
         }
+        return null;
     }
 
     /**
@@ -343,9 +342,8 @@ class Builder
         if ($product->getRatingSummary()->getReviewsCount() > 0) {
             /** @noinspection PhpUndefinedMethodInspection */
             return $product->getRatingSummary()->getReviewsCount();
-        } else {
-            return null;
         }
+        return null;
     }
 
     /**

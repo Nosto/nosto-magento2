@@ -314,10 +314,6 @@ class Price extends AbstractHelper
      */
     private function includeTaxes(Store $store)
     {
-        if ($this->taxHelper->getPriceDisplayType($store) === TaxConfig::DISPLAY_TYPE_INCLUDING_TAX) {
-            return true;
-        }
-
-        return false;
+        return ($this->taxHelper->getPriceDisplayType($store) === TaxConfig::DISPLAY_TYPE_INCLUDING_TAX);
     }
 }

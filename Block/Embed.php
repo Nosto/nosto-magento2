@@ -85,9 +85,8 @@ class Embed extends Template
     {
         if (Nosto::getServerUrl() && $this->getAccountName()) {
             return  '//' . Nosto::getServerUrl() . '/include/' . $this->getAccountName();
-        } else {
-            return null;
         }
+        return null;
     }
 
     /**

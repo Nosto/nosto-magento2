@@ -131,7 +131,8 @@ class Builder
         $parentItem = $item->getOptionByCode('product_type');
         if ($parentItem !== null) {
             return $parentItem->getProduct()->getSku();
-        } elseif ($item->getProductType() === Type::TYPE_SIMPLE) {
+        }
+        if ($item->getProductType() === Type::TYPE_SIMPLE) {
             $type = $item->getProduct()->getTypeInstance();
             $parentIds = $type->getParentIdsByChild($item->getItemId());
             $attributes = $item->getBuyRequest()->getData('super_attribute');
@@ -142,7 +143,6 @@ class Builder
                 return $parentIds[0];
             }
         }
-
         return (string)$item->getProduct()->getId();
     }
 

@@ -91,9 +91,9 @@ class Proxy extends Base
         if (($storeId = (int)$this->_request->getParam('store')) !== 0) {
             return $this->resultRedirectFactory->create()
                 ->setPath('*/*/index', ['store' => $storeId]);
-        } else {
-            return $this->resultRedirectFactory->create()
-                ->setPath('*/*/index', []);
         }
+
+        return $this->resultRedirectFactory->create()
+            ->setPath('*/*/index', []);
     }
 }
