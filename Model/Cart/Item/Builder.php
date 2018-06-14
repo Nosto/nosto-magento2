@@ -139,7 +139,7 @@ class Builder
             // If the product has a configurable parent, we assume we should tag
             // the parent. If there are many parent IDs, we are safer to tag the
             // products own ID.
-            if (count($parentIds) === 1 && !empty($attributes)) {
+            if (!empty($attributes) && count($parentIds) === 1) {
                 return $parentIds[0];
             }
         }

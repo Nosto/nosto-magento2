@@ -357,7 +357,7 @@ class Builder
         $images = [];
         $this->galleryReadHandler->execute($product);
         foreach ($product->getMediaGalleryImages() as $image) {
-            if (isset($image['url']) && (isset($image['disabled']) && $image['disabled'] !== '1')) {
+            if ($image['disabled'] !== '1' && isset($image['url'], $image['disabled'])) {
                 $images[] = $image['url'];
             }
         }
