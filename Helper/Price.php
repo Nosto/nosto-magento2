@@ -225,7 +225,7 @@ class Price extends AbstractHelper
                                     $inclTax,
                                     true
                                 );
-                            } else {
+                            } elseif (empty($finalPrices)) {
                                 $outOfStockFinalPrices[$sku->getId()] = $this->getProductPrice(
                                     $sku,
                                     $store,
