@@ -1,5 +1,8 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 2.10.4
+* Fix issue that send null prices when configurable product has no available SKU
+
 ### 2.10.3
 * Fix Nosto product prices to obey the tax display setting
 * Fix product indexer database issue with large catalogs
