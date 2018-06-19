@@ -37,7 +37,6 @@
 
 namespace Nosto\Tagging\Cron;
 
-use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Model\Product\Service as NostoProductService;
 use Nosto\Tagging\Model\Product\Repository as NostoProductRepository;
@@ -54,21 +53,18 @@ class Prices
     protected $logger;
     private $nostoProductService;
     private $nostoProductRepository;
-    private $nostoHelperScope;
     private $nostoHelperData;
 
     /**
      * Prices constructor.
      *
      * @param LoggerInterface $logger
-     * @param NostoHelperScope $nostoHelperScope
      * @param NostoProductService $nostoProductService
      * @param NostoProductRepository $nostoProductRepository
      * @param NostoHelperData $nostoHelperData
      */
     public function __construct(
         LoggerInterface $logger,
-        NostoHelperScope $nostoHelperScope,
         NostoProductService $nostoProductService,
         NostoProductRepository $nostoProductRepository,
         NostoHelperData $nostoHelperData
@@ -76,7 +72,6 @@ class Prices
         $this->logger = $logger;
         $this->nostoProductService = $nostoProductService;
         $this->nostoProductRepository = $nostoProductRepository;
-        $this->nostoHelperScope = $nostoHelperScope;
         $this->nostoHelperData = $nostoHelperData;
     }
 

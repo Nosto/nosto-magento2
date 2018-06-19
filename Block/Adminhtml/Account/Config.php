@@ -40,7 +40,6 @@ use Magento\Backend\Block\Template as BlockTemplate;
 use Magento\Backend\Block\Template\Context as BlockContext;
 use Nosto\Tagging\Helper\Url as NostoHelperUrl;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
-use Nosto\Tagging\Logger\Logger as NostoLogger;
 
 class Config extends BlockTemplate
 {
@@ -55,20 +54,18 @@ class Config extends BlockTemplate
      * @param NostoHelperUrl $urlHelper
      * @param NostoHelperScope $nostoHelperScope
      * @param array $data
-     * @param NostoLogger $logger
      */
     public function __construct(
         BlockContext $context,
         NostoHelperUrl $urlHelper,
         NostoHelperScope $nostoHelperScope,
-        NostoLogger $logger,
         array $data = []
     ) {
         parent::__construct($context, $data);
 
         $this->urlHelper = $urlHelper;
         $this->nostoHelperScope = $nostoHelperScope;
-        $this->logger = $logger;
+        $this->logger = $context->getLogger();
     }
 
     /**
@@ -82,7 +79,7 @@ class Config extends BlockTemplate
             $store = $this->nostoHelperScope->getSelectedStore($this->getRequest());
             return $this->urlHelper->getAdminNostoConfigurationUrl($store);
         } catch (\Exception $e) {
-            $this->logger->exception($e);
+            $this->logger->error($e->getMessage());
         }
         return '';
     }

@@ -47,7 +47,6 @@ use Magento\SalesRule\Model\RuleFactory as SalesRuleFactory;
 use Nosto\Object\Cart\LineItem;
 use Nosto\Object\Order\Buyer;
 use Nosto\Object\Order\OrderStatus;
-use Nosto\Tagging\Helper\Price as NostoPriceHelper;
 use Nosto\Tagging\Model\Order\Item\Builder as NostoOrderItemBuilder;
 use Nosto\Tagging\Model\Order\Buyer\Builder as NostoBuyerBuilder;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
@@ -59,7 +58,6 @@ class Builder
     private $logger;
     /** @noinspection PhpUndefinedClassInspection */
     private $salesRuleFactory;
-    private $nostoPriceHelper;
     private $nostoOrderItemBuilder;
     private $eventManager;
     private $buyerBuilder;
@@ -68,7 +66,6 @@ class Builder
     /**
      * @param NostoLogger $logger
      * @param SalesRuleFactory $salesRuleFactory
-     * @param NostoPriceHelper $priceHelper
      * @param NostoOrderItemBuilder $nostoOrderItemBuilder
      * @param ManagerInterface $eventManager
      * @param NostoBuyerBuilder $buyerBuilder
@@ -77,14 +74,12 @@ class Builder
         NostoLogger $logger,
         /** @noinspection PhpUndefinedClassInspection */
         SalesRuleFactory $salesRuleFactory,
-        NostoPriceHelper $priceHelper,
         NostoOrderItemBuilder $nostoOrderItemBuilder,
         ManagerInterface $eventManager,
         NostoBuyerBuilder $buyerBuilder
     ) {
         $this->logger = $logger;
         $this->salesRuleFactory = $salesRuleFactory;
-        $this->nostoPriceHelper = $priceHelper;
         $this->nostoOrderItemBuilder = $nostoOrderItemBuilder;
         $this->eventManager = $eventManager;
         $this->buyerBuilder = $buyerBuilder;

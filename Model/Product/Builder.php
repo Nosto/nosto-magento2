@@ -43,7 +43,6 @@ use Magento\Eav\Api\AttributeSetRepositoryInterface;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Review\Model\ReviewFactory;
 use Magento\Store\Model\Store;
-use Nosto\NostoException;
 use Nosto\Object\Product\Product as NostoProduct;
 use Nosto\Tagging\Helper\Currency as CurrencyHelper;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
@@ -71,9 +70,6 @@ class Builder
     private $nostoPriceHelper;
     private $nostoCategoryBuilder;
     private $nostoStockHelper;
-    private $categoryRepository;
-    /** @var AttributeSetRepositoryInterface $attributeSetRepository */
-    private $attributeSetRepository;
     private $galleryReadHandler;
     private $eventManager;
     private $logger;
@@ -89,8 +85,6 @@ class Builder
      * @param NostoCategoryBuilder $categoryBuilder
      * @param NostoStockHelper $stockHelper
      * @param NostoSkuCollection $skuCollection
-     * @param CategoryRepositoryInterface $categoryRepository
-     * @param AttributeSetRepositoryInterface $attributeSetRepository
      * @param NostoLogger $logger
      * @param ManagerInterface $eventManager
      * @param ReviewFactory $reviewFactory
@@ -105,8 +99,6 @@ class Builder
         NostoCategoryBuilder $categoryBuilder,
         NostoStockHelper $stockHelper,
         NostoSkuCollection $skuCollection,
-        CategoryRepositoryInterface $categoryRepository,
-        AttributeSetRepositoryInterface $attributeSetRepository,
         NostoLogger $logger,
         ManagerInterface $eventManager,
         ReviewFactory $reviewFactory,
@@ -118,8 +110,6 @@ class Builder
         $this->nostoDataHelper = $nostoHelperData;
         $this->nostoPriceHelper = $priceHelper;
         $this->nostoCategoryBuilder = $categoryBuilder;
-        $this->categoryRepository = $categoryRepository;
-        $this->attributeSetRepository = $attributeSetRepository;
         $this->logger = $logger;
         $this->eventManager = $eventManager;
         $this->nostoStockHelper = $stockHelper;

@@ -62,29 +62,23 @@ use Nosto\Tagging\Helper\Data as NostoDataHelper;
  */
 class Builder extends DataObject
 {
-    private $data;
-    private $filter;
     private $urlFinder;
     private $urlFactory;
     private $nostoDataHelper;
 
     /**
      * @param Url $urlFactory
-     * @param FilterManager $filter
      * @param UrlFinderInterface $urlFinder
      * @param NostoDataHelper $nostoDataHelper
      * @param array $data
      */
     public function __construct(
         Url $urlFactory,
-        FilterManager $filter,
         UrlFinderInterface $urlFinder,
         NostoDataHelper $nostoDataHelper,
         array $data = []
     ) {
         parent::__construct($data);
-        $this->data = $data;
-        $this->filter = $filter;
         $this->urlFinder = $urlFinder;
         $this->urlFactory = $urlFactory;
         $this->nostoDataHelper = $nostoDataHelper;

@@ -39,10 +39,7 @@ namespace Nosto\Tagging\Model\Product\Sku;
 use Magento\Catalog\Model\Product;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable as ConfigurableType;
 use Magento\Store\Model\Store;
-use Nosto\NostoException;
 use Nosto\Object\Product\SkuCollection;
-use Nosto\Tagging\Helper\Data as NostoHelperData;
-use Nosto\Tagging\Helper\Price as NostoPriceHelper;
 use Nosto\Tagging\Model\Product\Sku\Builder as NostoSkuBuilder;
 use Nosto\Tagging\Model\Product\Repository as NostoProductRepository;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
@@ -51,8 +48,6 @@ class Collection
 {
     private $configurableType;
     private $logger;
-    private $nostoHelperData;
-    private $nostoPriceHelper;
     private $nostoSkuBuilder;
     private $nostoProductRepository;
 
@@ -60,23 +55,17 @@ class Collection
      * Builder constructor.
      * @param NostoLogger $logger
      * @param ConfigurableType $configurableType
-     * @param NostoHelperData $nostoHelperData
-     * @param NostoPriceHelper $priceHelper
      * @param Builder $nostoSkuBuilder
      * @param NostoProductRepository $nostoProductRepository
      */
     public function __construct(
         NostoLogger $logger,
         ConfigurableType $configurableType,
-        NostoHelperData $nostoHelperData,
-        NostoPriceHelper $priceHelper,
         NostoSkuBuilder $nostoSkuBuilder,
         NostoProductRepository $nostoProductRepository
     ) {
         $this->configurableType = $configurableType;
         $this->logger = $logger;
-        $this->nostoHelperData = $nostoHelperData;
-        $this->nostoPriceHelper = $priceHelper;
         $this->nostoSkuBuilder = $nostoSkuBuilder;
         $this->nostoProductRepository = $nostoProductRepository;
     }

@@ -75,7 +75,6 @@ class Account extends AbstractHelper
     private $config;
     private $moduleManager;
     private $logger;
-    private $nostoHelperData;
     private $nostoHelperScope;
 
     /**
@@ -83,13 +82,11 @@ class Account extends AbstractHelper
      *
      * @param Context $context the context.
      * @param WriterInterface $appConfig the app config writer.
-     * @param Data $nostoHelperData
      * @param Scope $nostoHelperScope
      */
     public function __construct(
         Context $context,
         WriterInterface $appConfig,
-        NostoHelperData $nostoHelperData,
         NostoHelperScope $nostoHelperScope
     ) {
         parent::__construct($context);
@@ -97,7 +94,6 @@ class Account extends AbstractHelper
         $this->config = $appConfig;
         $this->moduleManager = $context->getModuleManager();
         $this->logger = $context->getLogger();
-        $this->nostoHelperData = $nostoHelperData;
         $this->nostoHelperScope = $nostoHelperScope;
     }
 

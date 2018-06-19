@@ -49,7 +49,6 @@ use Magento\Framework\Url\EncoderInterface as UrlEncoder;
 use Nosto\Helper\DateHelper;
 use Nosto\Helper\PriceHelper;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
-use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Model\Category\Builder as NostoCategoryBuilder;
 use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
@@ -67,7 +66,6 @@ class Product extends View
 
     private $nostoProductBuilder;
     private $categoryBuilder;
-    private $nostoHelperData;
 
     /**
      * Constructor.
@@ -84,7 +82,6 @@ class Product extends View
      * @param PriceCurrencyInterface $priceCurrency the price currency.
      * @param NostoProductBuilder $nostoProductBuilder the product meta model builder.
      * @param NostoCategoryBuilder $categoryBuilder the category meta model builder.
-     * @param NostoHelperData $nostoHelperData the data helper.
      * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoHelperScope $nostoHelperScope
      * @param array $data optional data.
@@ -103,7 +100,6 @@ class Product extends View
         PriceCurrencyInterface $priceCurrency,
         NostoProductBuilder $nostoProductBuilder,
         NostoCategoryBuilder $categoryBuilder,
-        NostoHelperData $nostoHelperData,
         NostoHelperAccount $nostoHelperAccount,
         NostoHelperScope $nostoHelperScope,
         array $data = []
@@ -125,7 +121,6 @@ class Product extends View
         $this->taggingConstruct($nostoHelperAccount, $nostoHelperScope);
         $this->nostoProductBuilder = $nostoProductBuilder;
         $this->categoryBuilder = $categoryBuilder;
-        $this->nostoHelperData = $nostoHelperData;
     }
 
     /**
