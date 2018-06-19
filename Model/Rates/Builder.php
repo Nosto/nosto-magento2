@@ -82,7 +82,7 @@ class Builder
             $baseCurrencyCode = $store->getBaseCurrencyCode();
 
             /** @var Currency $currencyModel */
-            $currencyModel = $currency = $this->currencyFactory->create();
+            $currencyModel = $this->currencyFactory->create();
             $rates = $currencyModel->getCurrencyRates($baseCurrencyCode, $currencyCodes);
             foreach ($rates as $code => $rate) {
                 if ($baseCurrencyCode === $code) {

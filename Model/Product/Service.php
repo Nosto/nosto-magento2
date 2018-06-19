@@ -68,7 +68,7 @@ class Service
 
     public static $batchSize = 50;
     public static $responseTimeOut = 500;
-    private $productUpdatesActive = null;
+    private $productUpdatesActive;
 
     private $nostoProductBuilder;
     private $logger;

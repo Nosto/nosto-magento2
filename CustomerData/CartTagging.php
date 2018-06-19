@@ -54,7 +54,7 @@ class CartTagging extends HashedTagging implements SectionSourceInterface
     private $cookieManager;
     private $logger;
     private $date;
-    private $quote = null;
+    private $quote;
     private $nostoScopeHelper;
     private $nostoCartBuilder;
     private $nostoRestoreCartUrlBuilder;
