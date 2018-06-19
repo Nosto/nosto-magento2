@@ -50,6 +50,7 @@ class Review extends Base
 {
     /**
      * @inheritdoc
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function extractProduct(Observer $observer)
     {

@@ -46,28 +46,40 @@ use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
 use Nosto\Types\Product\ProductInterface;
+use Nosto\Tagging\Logger\Logger as NostoLogger;
 
 class Collection
 {
-
     private $productCollectionFactory;
     private $productVisibility;
     private $nostoHelperAccount;
     private $nostoProductBuilder;
     private $nostoHelperScope;
+    private $logger;
 
+    /**
+     * Collection constructor.
+     * @param ProductCollectionFactory $productCollectionFactory
+     * @param ProductVisibility $productVisibility
+     * @param NostoHelperScope $nostoHelperScope
+     * @param NostoHelperAccount $nostoHelperAccount
+     * @param Builder $nostoProductBuilder
+     * @param NostoLogger $logger
+     */
     public function __construct(
         ProductCollectionFactory $productCollectionFactory,
         ProductVisibility $productVisibility,
         NostoHelperScope $nostoHelperScope,
         NostoHelperAccount $nostoHelperAccount,
-        NostoProductBuilder $nostoProductBuilder
+        NostoProductBuilder $nostoProductBuilder,
+        NostoLogger $logger
     ) {
         $this->productCollectionFactory = $productCollectionFactory;
         $this->productVisibility = $productVisibility;
         $this->nostoHelperAccount = $nostoHelperAccount;
         $this->nostoProductBuilder = $nostoProductBuilder;
         $this->nostoHelperScope = $nostoHelperScope;
+        $this->logger = $logger;
     }
 
     public function getCollection(Store $store)
@@ -129,13 +141,17 @@ class Collection
         }
         foreach ($items as $product) {
             /** @var \Magento\Catalog\Model\Product $product */
-            $nostoProduct = $this->nostoProductBuilder->build(
-                $product,
-                $store,
-                NostoProductBuilder::NOSTO_SCOPE_API
-            );
-            if ($nostoProduct instanceof ProductInterface) {
-                $products->append($nostoProduct);
+            try {
+                $nostoProduct = $this->nostoProductBuilder->build(
+                    $product,
+                    $store,
+                    NostoProductBuilder::NOSTO_SCOPE_API
+                );
+                if ($nostoProduct instanceof ProductInterface) {
+                    $products->append($nostoProduct);
+                }
+            } catch (\Exception $e) {
+                $this->logger->exception($e);
             }
         }
         return $products;

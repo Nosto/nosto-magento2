@@ -244,18 +244,26 @@ class Account extends AbstractHelper
         $ssoToken = $account->getApiToken(Token::API_SSO);
         if ($ssoToken instanceof Token) {
             if (!$account->getApiToken(Token::API_EXCHANGE_RATES)) {
-                $ratesToken = new Token(
-                    Token::API_EXCHANGE_RATES,
-                    $ssoToken->getValue()
-                );
-                $tokens[] = $ratesToken;
+                try {
+                    $ratesToken = new Token(
+                        Token::API_EXCHANGE_RATES,
+                        $ssoToken->getValue()
+                    );
+                    $tokens[] = $ratesToken;
+                } catch (NostoException $e) {
+                    $this->logger->error($e->getMessage());
+                }
             }
             if (!$account->getApiToken(Token::API_SETTINGS)) {
-                $settingsToken = new Token(
-                    Token::API_SETTINGS,
-                    $ssoToken->getValue()
-                );
-                $tokens[] = $settingsToken;
+                try {
+                    $settingsToken = new Token(
+                        Token::API_SETTINGS,
+                        $ssoToken->getValue()
+                    );
+                    $tokens[] = $settingsToken;
+                } catch (NostoException $e) {
+                    $this->logger->error($e->getMessage());
+                }
             }
         }
 
