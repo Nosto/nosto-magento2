@@ -48,6 +48,7 @@ use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Price as NostoPriceHelper;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Product\BuilderTrait;
+use Nosto\Types\Product\ProductInterface;
 
 class Builder
 {
@@ -100,7 +101,7 @@ class Builder
         try {
             $nostoSku->setId($product->getId());
             $nostoSku->setName($product->getName());
-            $nostoSku->setAvailability($product->isAvailable() ? 'InStock' : 'OutOfStock');
+            $nostoSku->setAvailability($this->buildSkuAvailability($product));
             $nostoSku->setImageUrl($this->buildImageUrl($product, $store));
             $price = $this->nostoCurrencyHelper->convertToTaggingPrice(
                 $this->nostoPriceHelper->getProductFinalDisplayPrice(
@@ -142,5 +143,23 @@ class Builder
         $this->eventManager->dispatch('nosto_sku_load_after', ['sku' => $nostoSku, 'magentoProduct' => $product]);
 
         return $nostoSku;
+    }
+
+    /**
+     * Generates the availability for the SKU
+     *
+     * @param Product $product
+     * @return string
+     */
+    private function buildSkuAvailability(Product $product)
+    {
+        $availability = ProductInterface::OUT_OF_STOCK;
+        if (!$product->isVisibleInSiteVisibility()) {
+            $availability = ProductInterface::INVISIBLE;
+        } elseif ($product->isAvailable()) {
+            $availability = ProductInterface::IN_STOCK;
+        }
+
+        return $availability;
     }
 }

@@ -1,5 +1,8 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 2.10.5
+* Fix product availability check for non visible products in the website 
+
 ### 2.10.4
 * Fix issue that send null prices when configurable product has no available SKU
 
