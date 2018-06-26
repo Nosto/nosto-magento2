@@ -42,7 +42,6 @@ use Magento\Framework\UrlInterface;
 use Magento\Store\Model\Store;
 use Nosto\Object\Signup\Signup;
 use Nosto\Request\Http\HttpRequest;
-use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Currency as NostoHelperCurrency;
 use Nosto\Tagging\Model\Meta\Account\Billing\Builder as NostoBillingBuilder;
 use Nosto\Tagging\Model\Meta\Account\Settings\Currencies\Builder as NostoCurrenciesBuilder;

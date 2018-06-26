@@ -39,7 +39,6 @@ namespace Nosto\Tagging\Model\Product\Url;
 use Magento\Catalog\Model\Product;
 use Magento\CatalogUrlRewrite\Model\ProductUrlRewriteGenerator;
 use Magento\Framework\DataObject;
-use Magento\Framework\Filter\FilterManager;
 use Magento\Framework\Url;
 use Magento\Store\Model\Store;
 use Magento\UrlRewrite\Model\UrlFinderInterface;

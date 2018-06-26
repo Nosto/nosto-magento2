@@ -40,7 +40,6 @@ use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\Locale\ResolverInterface;
 use Magento\Framework\Url;
 use Magento\Store\Model\Store;
-use Nosto\NostoException;
 use Nosto\OAuth;
 use Nosto\Object\Signup\Account;
 use Nosto\Request\Api\Token;

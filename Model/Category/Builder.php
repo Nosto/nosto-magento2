@@ -41,7 +41,6 @@ use Magento\Catalog\Model\Category;
 use Magento\Catalog\Model\Product;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\Exception\NoSuchEntityException;
-use Nosto\NostoException;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 
 class Builder

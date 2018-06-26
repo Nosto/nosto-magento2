@@ -44,7 +44,8 @@ use Nosto\Tagging\Model\RepositoryTrait;
 use Nosto\Tagging\Model\ResourceModel\Customer as CustomerResource;
 use Nosto\Tagging\Model\ResourceModel\Customer\CollectionFactory as CustomerCollectionFactory;
 use Nosto\Tagging\Util\Repository as RepositoryUtil;
-use Nosto\Tagging\Model\Customer\CustomerSearchResults;
+use /** @noinspection PhpUnusedAliasInspection */
+    Nosto\Tagging\Model\Customer\CustomerSearchResults;
 use Nosto\Tagging\Model\Customer\Customer as NostoCustomer;
 
 /**

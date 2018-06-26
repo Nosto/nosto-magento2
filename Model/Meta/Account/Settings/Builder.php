@@ -39,7 +39,6 @@ namespace Nosto\Tagging\Model\Meta\Account\Settings;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\UrlInterface;
 use Magento\Store\Model\Store;
-use Nosto\NostoException;
 use Nosto\Object\Settings;
 use Nosto\Request\Http\HttpRequest;
 use Nosto\Tagging\Helper\Currency as NostoHelperCurrency;

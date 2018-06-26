@@ -37,7 +37,6 @@
 namespace Nosto\Tagging\Model\Meta\Account\Settings;
 
 use Exception;
-use Magento\Framework\Event\ManagerInterface;
 use Magento\Store\Model\Store;
 use Nosto\Operation\UpdateSettings;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;

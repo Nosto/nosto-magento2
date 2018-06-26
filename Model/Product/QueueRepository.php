@@ -48,7 +48,8 @@ use Nosto\Tagging\Model\ResourceModel\Product\Queue\Collection as QueueCollectio
 use Nosto\Tagging\Model\ResourceModel\Product\Queue\CollectionFactory as QueueCollectionFactory;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Util\Repository as RepositoryUtil;
-use Nosto\Tagging\Model\Product\QueueSearchResults;
+use /** @noinspection PhpUnusedAliasInspection */
+    Nosto\Tagging\Model\Product\QueueSearchResults;
 
 class QueueRepository implements ProductQueueRepositoryInterface
 {
@@ -75,7 +76,6 @@ class QueueRepository implements ProductQueueRepositoryInterface
         NostoLogger $logger
     ) {
         $this->queueResource = $queueResource;
-        /** @var \Magento\Reports\Model\ResourceModel\Quote\CollectionFactoryInterface queueCollectionFactory */
         $this->queueCollectionFactory = $queueCollectionFactory;
         $this->queueSearchResultsFactory = $queueSearchResultsFactory;
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;

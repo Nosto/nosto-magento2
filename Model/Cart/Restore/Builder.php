@@ -81,7 +81,6 @@ class Builder
         $this->cookieManager = $cookieManager;
         $this->encryptor = $encryptor;
         $this->date = $date;
-        /** @var \Magento\Customer\Model\CustomerFactory $nostoCustomerFactory */
         $this->nostoCustomerFactory = $nostoCustomerFactory;
         $this->urlHelper = $urlHelper;
         $this->nostoCustomerRepository = $nostoCustomerRepository;
@@ -129,6 +128,7 @@ class Builder
             $nostoCustomer->setUpdatedAt($this->getNow());
         } else {
             /** @var \Nosto\Tagging\Model\Customer\Customer $nostoCustomer*/
+            /** @noinspection PhpUndefinedMethodInspection */
             $nostoCustomer = $this->nostoCustomerFactory->create();
             $nostoCustomer->setQuoteId($quote->getId());
             $nostoCustomer->setNostoId($nostoCustomerId);
