@@ -57,7 +57,7 @@ class PageType extends Template
      */
     private function getPageTypeName()
     {
-        return $this->getData('page_type') ? $this->getData('page_type') : self::DEFAULT_TYPE;
+        return $this->getData('page_type') ?: self::DEFAULT_TYPE;
     }
 
     /**
