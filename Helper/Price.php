@@ -213,25 +213,34 @@ class Price extends AbstractHelper
             // We will use the SKU that has the lowest final price
             case ConfigurableType::TYPE_CODE:
                 $productType = $product->getTypeInstance();
-                $price = null;
+                $price = 0.0;
                 if ($productType instanceof ConfigurableType) {
                     $products = $this->nostoProductRepository->getSkus($product);
                     $skus = [];
                     $finalPrices = [];
+                    $outOfStockFinalPrices = [];
                     foreach ($products as $sku) {
-                        if ($sku instanceof Product
-                            && !$sku->isDisabled()
-                            && $sku->isAvailable()
-                        ) {
-                            $finalPrices[$sku->getId()] = $this->getProductPrice(
-                                $sku,
-                                $store,
-                                $inclTax,
-                                true
-                            );
+                        if ($sku instanceof Product) {
+                            if (!$sku->isDisabled() && $sku->isAvailable()) {
+                                $finalPrices[$sku->getId()] = $this->getProductPrice(
+                                    $sku,
+                                    $store,
+                                    $inclTax,
+                                    true
+                                );
+                            } elseif (empty($finalPrices)) {
+                                $outOfStockFinalPrices[$sku->getId()] = $this->getProductPrice(
+                                    $sku,
+                                    $store,
+                                    $inclTax,
+                                    true
+                                );
+                            }
                             $skus[$sku->getId()] = $sku;
                         }
                     }
+                    // If none of the SKU's are available, use the unavailable ones
+                    $finalPrices = empty($finalPrices) ? $outOfStockFinalPrices : $finalPrices;
                     asort($finalPrices, SORT_NUMERIC);
                     $keys = array_keys($finalPrices);
                     if (!empty($keys[0]) && !empty($skus[$keys[0]])) {
