@@ -192,7 +192,7 @@ class Service
      */
     public function addToQueue(array $products)
     {
-        if ($this->productUpdatesActive()) {
+        if ($this->checkProductUpdatesActive()) {
             $productCount = count($products);
             $this->logger->info(
                 sprintf(
@@ -439,7 +439,7 @@ class Service
      *
      * @return bool
      */
-    public function productUpdatesActive()
+    public function checkProductUpdatesActive()
     {
         if ($this->productUpdatesActive === null) {
             // Loop through stores and check that at least one store has product
