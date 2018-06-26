@@ -54,7 +54,6 @@ class QueueRepository implements ProductQueueRepositoryInterface
 {
     private $searchCriteriaBuilder;
     private $logger;
-    private $queueFactory;
     private $queueCollectionFactory;
     private $queueSearchResultsFactory;
     private $queueResource;
@@ -63,7 +62,6 @@ class QueueRepository implements ProductQueueRepositoryInterface
      * QueueRepository constructor.
      *
      * @param QueueResource $queueResource
-     * @param QueueFactory $queueFactory
      * @param QueueCollectionFactory $queueCollectionFactory
      * @param QueueSearchResultsFactory $queueSearchResultsFactory
      * @param SearchCriteriaBuilder $searchCriteriaBuilder
@@ -71,7 +69,6 @@ class QueueRepository implements ProductQueueRepositoryInterface
      */
     public function __construct(
         QueueResource $queueResource,
-        QueueFactory $queueFactory,
         QueueCollectionFactory $queueCollectionFactory,
         QueueSearchResultsFactory $queueSearchResultsFactory,
         SearchCriteriaBuilder $searchCriteriaBuilder,
@@ -80,7 +77,6 @@ class QueueRepository implements ProductQueueRepositoryInterface
         $this->queueResource = $queueResource;
         $this->queueCollectionFactory = $queueCollectionFactory;
         $this->queueSearchResultsFactory = $queueSearchResultsFactory;
-        $this->queueFactory = $queueFactory;
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;
         $this->logger = $logger;
     }

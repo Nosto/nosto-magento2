@@ -40,7 +40,6 @@ use DateTime;
 use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\ProductFactory;
-use Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable as ConfigurableProduct;
 use Magento\Store\Model\App\Emulation;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManager;
@@ -50,13 +49,10 @@ use Nosto\Operation\UpsertProduct;
 use Nosto\Request\Http\HttpRequest;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
-use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
 use Nosto\Tagging\Model\Product\Repository as NostoProductRepository;
 use Nosto\Types\Product\ProductInterface as NostoProductInterface;
-use Magento\Framework\App\State;
-use Magento\Tax\Helper\Data as TaxHelper;
 
 /**
  * Service class for updating products to Nosto
@@ -72,10 +68,8 @@ class Service
 
     private $nostoProductBuilder;
     private $logger;
-    private $nostoHelperScope;
     private $nostoHelperAccount;
     private $nostoHelperData;
-    private $configurableProduct;
     private $nostoProductRepository;
     private $nostoQueueFactory;
     private $storeManager;
@@ -92,9 +86,7 @@ class Service
      * Not using the proxy classes will lead to a "Area code not set" exception being thrown in the
      * compile phase.
      * @param NostoLogger $logger
-     * @param NostoHelperScope\Proxy $nostoHelperScope
      * @param Builder $nostoProductBuilder
-     * @param ConfigurableProduct $configurableProduct
      * @param NostoHelperAccount\Proxy $nostoHelperAccount
      * @param NostoHelperData\Proxy $nostoHelperData
      * @param NostoProductRepository $nostoProductRepository
@@ -106,9 +98,7 @@ class Service
      */
     public function __construct(
         NostoLogger $logger,
-        NostoHelperScope\Proxy $nostoHelperScope,
         NostoProductBuilder $nostoProductBuilder,
-        ConfigurableProduct $configurableProduct,
         NostoHelperAccount\Proxy $nostoHelperAccount,
         NostoHelperData\Proxy $nostoHelperData,
         NostoProductRepository $nostoProductRepository,
@@ -120,9 +110,7 @@ class Service
     ) {
 
         $this->logger = $logger;
-        $this->nostoHelperScope = $nostoHelperScope;
         $this->nostoProductBuilder = $nostoProductBuilder;
-        $this->configurableProduct = $configurableProduct;
         $this->nostoHelperAccount = $nostoHelperAccount;
         $this->nostoHelperData = $nostoHelperData;
         $this->nostoProductRepository = $nostoProductRepository;

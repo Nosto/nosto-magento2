@@ -37,7 +37,6 @@
 namespace Nosto\Tagging\Helper;
 
 use Magento\Catalog\Model\Product;
-use Magento\Catalog\Model\Product\Visibility;
 use Magento\Catalog\Model\ResourceModel\Category\CollectionFactory as CategoryCollectionFactory;
 use Magento\Backend\Helper\Data as BackendDataHelper;
 use Magento\Framework\Url as UrlBuilder;
@@ -131,7 +130,6 @@ class Url extends AbstractHelper
     public static $urlType = UrlInterface::URL_TYPE_LINK;
 
     private $categoryCollectionFactory;
-    private $productVisibility;
     private $urlBuilder;
     private $nostoDataHelper;
     private $backendDataHelper;
@@ -145,7 +143,6 @@ class Url extends AbstractHelper
      * @param Context $context the context.
      * @param ProductRepository $productRepository
      * @param CategoryCollectionFactory $categoryCollectionFactory auto generated category collection factory.
-     * @param Visibility $productVisibility product visibility.
      * @param UrlBuilder $urlBuilder frontend URL builder.
      * @param Data $nostoDataHelper
      * @param BackendDataHelper $backendDataHelper
@@ -156,7 +153,6 @@ class Url extends AbstractHelper
         ProductRepository $productRepository,
         /** @noinspection PhpUndefinedClassInspection */
         CategoryCollectionFactory $categoryCollectionFactory,
-        Visibility $productVisibility,
         NostoDataHelper $nostoDataHelper,
         UrlBuilder $urlBuilder,
         BackendDataHelper $backendDataHelper,
@@ -166,7 +162,6 @@ class Url extends AbstractHelper
 
         $this->productRepository = $productRepository;
         $this->categoryCollectionFactory = $categoryCollectionFactory;
-        $this->productVisibility = $productVisibility;
         $this->urlBuilder = $urlBuilder;
         $this->nostoDataHelper = $nostoDataHelper;
         $this->backendDataHelper = $backendDataHelper;

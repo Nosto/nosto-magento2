@@ -45,9 +45,7 @@ use Magento\Framework\Api\FilterBuilder;
 use Magento\Framework\Api\Search\FilterGroupBuilder;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable as ConfigurableType;
-use Nosto\Tagging\Helper\Data;
 use Magento\Catalog\Model\Product\Visibility as ProductVisibility;
-use Magento\Store\Model\Store;
 
 /**
  * Repository wrapper class for fetching products
@@ -58,7 +56,6 @@ class Repository
 {
     private $parentProductIdCache = [];
 
-    private $nostoDataHelper;
     private $productRepository;
     private $searchCriteriaBuilder;
     private $configurableProduct;
@@ -76,7 +73,6 @@ class Repository
      *
      * @param ProductRepository\Proxy $productRepository
      * @param SearchCriteriaBuilder $searchCriteriaBuilder
-     * @param Data $nostoDataHelper
      * @param ConfigurableProduct $configurableProduct
      * @param FilterBuilder $filterBuilder
      * @param FilterGroupBuilder $filterGroupBuilder
@@ -86,7 +82,6 @@ class Repository
     public function __construct(
         ProductRepository\Proxy $productRepository,
         SearchCriteriaBuilder $searchCriteriaBuilder,
-        Data $nostoDataHelper,
         ConfigurableProduct $configurableProduct,
         FilterBuilder $filterBuilder,
         FilterGroupBuilder $filterGroupBuilder,
@@ -95,7 +90,6 @@ class Repository
     ) {
         $this->productRepository = $productRepository;
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;
-        $this->nostoDataHelper = $nostoDataHelper;
         $this->configurableProduct = $configurableProduct;
         $this->filterGroupBuilder = $filterGroupBuilder;
         $this->filterBuilder = $filterBuilder;

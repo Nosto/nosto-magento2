@@ -37,7 +37,6 @@
 namespace Nosto\Tagging\Model\Rates;
 
 use Exception;
-use Magento\Framework\Event\ManagerInterface;
 use Magento\Store\Model\Store;
 use Nosto\Operation\SyncRates;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
@@ -48,27 +47,23 @@ use Nosto\Tagging\Helper\Currency as NostoHelperCurrency;
 class Service
 {
     private $logger;
-    private $eventManager;
     private $nostoExchangeRatesBuilder;
     private $nostoHelperAccount;
     private $nostoHelperCurrency;
 
     /**
      * @param NostoLogger $logger
-     * @param ManagerInterface $eventManager
      * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoExchangeRatesBuilder $nostoExchangeRatesBuilder
      * @param NostoHelperCurrency $nostoHelperCurrency
      */
     public function __construct(
         NostoLogger $logger,
-        ManagerInterface $eventManager,
         NostoHelperAccount $nostoHelperAccount,
         NostoExchangeRatesBuilder $nostoExchangeRatesBuilder,
         NostoHelperCurrency $nostoHelperCurrency
     ) {
         $this->logger = $logger;
-        $this->eventManager = $eventManager;
         $this->nostoExchangeRatesBuilder = $nostoExchangeRatesBuilder;
         $this->nostoHelperAccount = $nostoHelperAccount;
         $this->nostoHelperCurrency = $nostoHelperCurrency;

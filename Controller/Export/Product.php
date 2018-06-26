@@ -36,7 +36,6 @@
 
 namespace Nosto\Tagging\Controller\Export;
 
-use Magento\Catalog\Model\Product\Visibility as ProductVisibility;
 use Magento\Framework\App\Action\Context;
 use Magento\Store\Model\Store;
 use Nosto\Object\AbstractCollection;
@@ -54,14 +53,12 @@ use Nosto\Tagging\Model\Product\Collection as NostoProductCollection;
  */
 class Product extends Base
 {
-    private $productVisibility;
     private $nostoProductCollection;
 
     /**
      * Constructor.
      *
      * @param Context $context
-     * @param ProductVisibility $productVisibility
      * @param NostoHelperScope $nostoHelperScope
      * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoProductCollection $nostoProductCollection
@@ -69,14 +66,12 @@ class Product extends Base
     public function __construct(
         Context $context,
         /** @noinspection PhpUndefinedClassInspection */
-        ProductVisibility $productVisibility,
         NostoHelperScope $nostoHelperScope,
         NostoHelperAccount $nostoHelperAccount,
         NostoProductCollection $nostoProductCollection
     ) {
         parent::__construct($context, $nostoHelperScope, $nostoHelperAccount);
 
-        $this->productVisibility = $productVisibility;
         $this->nostoProductCollection = $nostoProductCollection;
     }
 
