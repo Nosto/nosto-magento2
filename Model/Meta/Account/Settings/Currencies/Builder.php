@@ -84,14 +84,18 @@ class Builder
             $localeCode = $storeLocale ?: $this->localeResolver->getLocale();
             $localeData = (new DataBundle())->get($localeCode);
             $defaultSet = $localeData['NumberElements']['default'] ?: 'latn';
+
+            /** @noinspection NestedTernaryOperatorInspection */
             $priceFormat = $localeData['NumberElements'][$defaultSet]['patterns']['currencyFormat']
                 ?: ($localeData['NumberElements']['latn']['patterns']['currencyFormat']
                     ?: explode(';', $localeData['NumberPatterns'][1])[0]);
 
+            /** @noinspection NestedTernaryOperatorInspection */
             $decimalSymbol = $localeData['NumberElements'][$defaultSet]['symbols']['decimal']
                 ?: ($localeData['NumberElements']['latn']['symbols']['decimal']
                     ?: $localeData['NumberElements'][0]);
 
+            /** @noinspection NestedTernaryOperatorInspection */
             $groupSymbol = $localeData['NumberElements'][$defaultSet]['symbols']['group']
                 ?: ($localeData['NumberElements']['latn']['symbols']['group']
                     ?: $localeData['NumberElements'][1]);

@@ -112,10 +112,12 @@ trait BuilderTrait
         $primary = $this->nostoDataHelperTrait->getProductImageVersion($store);
         $secondary = 'image'; // The "base" image.
         $media = $product->getMediaAttributeValues();
-        $image = (isset($media[$primary])
-            ? $media[$primary]
-            : (isset($media[$secondary]) ? $media[$secondary] : null)
-        );
+
+        if (isset($media[$primary])) {
+            $image = $media[$primary];
+        } elseif (isset($media[$secondary])) {
+            $image = $media[$secondary];
+        }
 
         if (empty($image)) {
             return null;
