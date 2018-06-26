@@ -155,6 +155,7 @@ class Url extends AbstractHelper
         CategoryCollectionFactory $categoryCollectionFactory,
         NostoDataHelper $nostoDataHelper,
         UrlBuilder $urlBuilder,
+        /** @noinspection PhpDeprecationInspection */
         BackendDataHelper $backendDataHelper,
         NostoUrlBuilder $nostoUrlBuilder
     ) {

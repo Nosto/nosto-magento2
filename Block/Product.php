@@ -37,11 +37,13 @@
 namespace Nosto\Tagging\Block;
 
 use Magento\Catalog\Api\ProductRepositoryInterface;
-use Magento\Catalog\Block\Product\Context;
+use /** @noinspection PhpDeprecationInspection */
+    Magento\Catalog\Block\Product\Context;
 use Magento\Catalog\Block\Product\View;
 use Magento\Catalog\Model\ProductTypes\ConfigInterface;
 use Magento\Customer\Model\Session;
-use Magento\Framework\Json\EncoderInterface as JsonEncoder;
+use /** @noinspection PhpDeprecationInspection */
+    Magento\Framework\Json\EncoderInterface as JsonEncoder;
 use Magento\Framework\Locale\FormatInterface;
 use Magento\Framework\Pricing\PriceCurrencyInterface;
 use Magento\Framework\Stdlib\StringUtils;
@@ -88,8 +90,10 @@ class Product extends View
      * @SuppressWarnings(PHPMD.ExcessiveParameterList)
      */
     public function __construct(
+        /** @noinspection PhpDeprecationInspection */
         Context $context,
         UrlEncoder $urlEncoder,
+        /** @noinspection PhpDeprecationInspection */
         JsonEncoder $jsonEncoder,
         StringUtils $string,
         \Magento\Catalog\Helper\Product $productHelper,
