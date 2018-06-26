@@ -75,6 +75,7 @@ class QueueRepository implements ProductQueueRepositoryInterface
         NostoLogger $logger
     ) {
         $this->queueResource = $queueResource;
+        /** @var \Magento\Reports\Model\ResourceModel\Quote\CollectionFactoryInterface queueCollectionFactory */
         $this->queueCollectionFactory = $queueCollectionFactory;
         $this->queueSearchResultsFactory = $queueSearchResultsFactory;
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;

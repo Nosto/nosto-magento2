@@ -81,6 +81,7 @@ class Builder
         $this->cookieManager = $cookieManager;
         $this->encryptor = $encryptor;
         $this->date = $date;
+        /** @var \Magento\Customer\Model\CustomerFactory $nostoCustomerFactory */
         $this->nostoCustomerFactory = $nostoCustomerFactory;
         $this->urlHelper = $urlHelper;
         $this->nostoCustomerRepository = $nostoCustomerRepository;
@@ -114,7 +115,6 @@ class Builder
         if ($quote === null || $nostoCustomerId === null || $quote->getId() === null) {
             return null;
         }
-
         $nostoCustomer = $this->nostoCustomerRepository->getOneByNostoIdAndQuoteId(
             $nostoCustomerId,
             $quote->getId()
@@ -128,11 +128,9 @@ class Builder
             }
             $nostoCustomer->setUpdatedAt($this->getNow());
         } else {
-            /** @noinspection PhpUndefinedMethodInspection */
+            /** @var \Nosto\Tagging\Model\Customer\Customer $nostoCustomer*/
             $nostoCustomer = $this->nostoCustomerFactory->create();
-            /** @noinspection PhpUndefinedMethodInspection */
             $nostoCustomer->setQuoteId($quote->getId());
-            /** @noinspection PhpUndefinedMethodInspection */
             $nostoCustomer->setNostoId($nostoCustomerId);
             $nostoCustomer->setCreatedAt($this->getNow());
             $nostoCustomer->setRestoreCartHash($this->generateRestoreCartHash());

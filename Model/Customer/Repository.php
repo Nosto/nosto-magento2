@@ -179,7 +179,9 @@ class Repository implements CustomerRepositoryInterface
      */
     public function search(SearchCriteriaInterface $searchCriteria)
     {
+        /** @noinspection PhpUndefinedMethodInspection */
         $collection = $this->customerCollectionFactory->create();
+        /** @noinspection PhpUndefinedMethodInspection */
         $searchResults = $this->customerSearchResultsFactory->create();
 
         return RepositoryUtil::search(
