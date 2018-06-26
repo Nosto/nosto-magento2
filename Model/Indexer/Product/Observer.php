@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpUnusedParameterInspection */
 /**
  * Copyright (c) 2017, Nosto Solutions Ltd
  * All rights reserved.
