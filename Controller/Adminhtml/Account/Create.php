@@ -119,7 +119,6 @@ class Create extends Base
      * @suppress PhanTypeMismatchArgument
      * @SuppressWarnings(PHPMD.CyclomaticComplexity
      * @throws \Zend_Validate_Exception
-     * @throws \Zend_Validate_Exception
      */
     public function execute()
     {
