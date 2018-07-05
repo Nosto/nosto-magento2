@@ -17,7 +17,7 @@ RUN apt-get update && \
             apt-get -y -q upgrade && \
             apt-get -y -q install apt-utils locales && \
             sed -i 's/^# *\(en_US.UTF-8\)/\1/' /etc/locale.gen && \
-            ln -s /etc/locale.alias /usr/share/locale/locale.alias && \
+            ln -sf /etc/locale.alias /usr/share/locale/locale.alias && \
             locale-gen && \
             apt-get -y -q clean
 
