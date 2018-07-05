@@ -59,7 +59,7 @@ class Update implements ObserverInterface
     private $emailRepository;
 
     /**
-     * Save constructor.
+     * Update constructor.
      * @param NostoHelperData $nostoHelperData
      * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoHelperScope $nostoHelperScope
@@ -104,11 +104,11 @@ class Update implements ObserverInterface
         if ($nostoAccount !== null) {
             $operation = new \Nosto\Operation\MarketingPermission($nostoAccount);
             try {
-                $operation->update($customer->getEmail(),
+                $operation->update(
+                    $customer->getEmail(),
                     $this->emailRepository->isOptedIn($customer->getEmail())
                 );
-            }
-            catch (\Exception $e) {
+            } catch (\Exception $e) {
                 $this->logger->error(
                     sprintf(
                         "Failed to update customer marketing permission.
