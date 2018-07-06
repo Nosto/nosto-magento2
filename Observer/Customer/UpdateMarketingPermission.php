@@ -44,6 +44,8 @@ use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Magento\Newsletter\Model\Subscriber;
+use Nosto\Operation\MarketingPermission;
+use Magento\Store\Api\WebsiteRepositoryInterface;
 
 /**
  * Class UpdateMarketingPermission
@@ -56,6 +58,7 @@ class UpdateMarketingPermission implements ObserverInterface
     private $logger;
     private $moduleManager;
     private $nostoHelperScope;
+    private $websiteRepository;
 
     /**
      * UpdateMarketingPermission constructor.
@@ -65,19 +68,22 @@ class UpdateMarketingPermission implements ObserverInterface
      * @param NostoHelperScope $nostoHelperScope
      * @param NostoLogger $logger
      * @param ModuleManager $moduleManager
+     * @param WebsiteRepositoryInterface $websiteRepository
      */
     public function __construct(
         NostoHelperData $nostoHelperData,
         NostoHelperAccount $nostoHelperAccount,
         NostoHelperScope $nostoHelperScope,
         NostoLogger $logger,
-        ModuleManager $moduleManager
+        ModuleManager $moduleManager,
+        WebsiteRepositoryInterface $websiteRepository
     ) {
         $this->nostoHelperData = $nostoHelperData;
         $this->nostoHelperAccount = $nostoHelperAccount;
         $this->nostoHelperScope = $nostoHelperScope;
         $this->logger = $logger;
         $this->moduleManager = $moduleManager;
+        $this->websiteRepository = $websiteRepository;
     }
 
     /**
@@ -92,16 +98,22 @@ class UpdateMarketingPermission implements ObserverInterface
         /** @noinspection PhpUndefinedMethodInspection */
         /** @var \Magento\Newsletter\Model\Subscriber $subscriber */
         $subscriber = $observer->getEvent()->getSubscriber();
-        if (!$subscriber instanceof \Magento\Newsletter\Model\Subscriber
+        $currentStore = $this->nostoHelperScope->getStore();
+        $stores = $currentStore->getWebsite()->getStores();
+        if (!$subscriber instanceof Subscriber
             || !$this->moduleManager->isEnabled(NostoHelperData::MODULE_NAME)
+            || $stores === []
         ) {
             return;
         }
-        $nostoAccount = $this->nostoHelperAccount->findAccount(
-            $this->nostoHelperScope->getStore()
-        );
-        if ($nostoAccount !== null) {
-            $operation = new \Nosto\Operation\MarketingPermission($nostoAccount);
+        foreach ($stores as $store) {
+            $nostoAccount = $this->nostoHelperAccount->findAccount(
+                $store
+            );
+            if ($nostoAccount === null) {
+                continue;
+            }
+            $operation = new MarketingPermission($nostoAccount);
             $isSubscribed = $subscriber->getSubscriberStatus() === Subscriber::STATUS_SUBSCRIBED ? true : false;
             try {
                 $operation->update(
@@ -112,7 +124,7 @@ class UpdateMarketingPermission implements ObserverInterface
                 $this->logger->error(
                     sprintf(
                         "Failed to update customer marketing permission.
-                            Message was: %s",
+                        Message was: %s",
                         $e->getMessage()
                     )
                 );
