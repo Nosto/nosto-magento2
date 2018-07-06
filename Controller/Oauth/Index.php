@@ -125,16 +125,24 @@ class Index extends Action
      * @param AccountInterface $account the account to save
      * @return boolean a boolean value indicating whether the account was saved
      * @throws NostoException
+     * @suppress PhanTypeMismatchArgument
      */
     public function save(AccountInterface $account)
     {
         $stores = $this->storeRepository->getList();
+        /** @var \Magento\Store\Model\Store $store */
         foreach ($stores as $store) {
             $existingAccount = $this->nostoHelperAccount->findAccount($store);
             if ($existingAccount !== null
                 && $existingAccount->getName() === $account->getName()
             ) {
-                throw new NostoException('Unable to use the same Nosto Account for more than one store view.');
+                throw new NostoException(
+                    sprintf(
+                        'This account is already being used by "%s". 
+                                Please create a new account for each store view',
+                        $store->getName()
+                    )
+                );
             }
         }
 
