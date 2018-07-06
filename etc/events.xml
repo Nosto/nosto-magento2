@@ -49,7 +49,7 @@
     <event name="checkout_cart_product_add_after">
         <observer name="nosto_checkout_cart_product_add_after" instance="Nosto\Tagging\Observer\Cart\Add"/>
     </event>
-    <event name="customer_save_after">
-        <observer name="nosto_customer_save_after" instance="Nosto\Tagging\Observer\Customer\Update"/>
+    <event name="newsletter_subscriber_save_commit_after">
+        <observer name="nosto_newsletter_subscriber_save_after" instance="Nosto\Tagging\Observer\Customer\UpdateMarketingPermission"/>
     </event>
 </config>

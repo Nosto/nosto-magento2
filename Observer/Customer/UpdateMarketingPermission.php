@@ -43,48 +43,44 @@ use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
-use Nosto\Tagging\Model\Email\Repository as NostoEmailRepository;
 
 /**
- * Class Update
- * @package Nosto\Tagging\Observer
+ * Class UpdateMarketingPermission
+ * @package Nosto\Tagging\Observer\Customer
  */
-class Update implements ObserverInterface
+class UpdateMarketingPermission implements ObserverInterface
 {
     private $nostoHelperData;
     private $nostoHelperAccount;
     private $logger;
     private $moduleManager;
     private $nostoHelperScope;
-    private $emailRepository;
 
     /**
-     * Update constructor.
+     * UpdateMarketingPermission constructor.
+     *
      * @param NostoHelperData $nostoHelperData
      * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoHelperScope $nostoHelperScope
      * @param NostoLogger $logger
      * @param ModuleManager $moduleManager
-     * @param NostoEmailRepository $emailRepository
      */
     public function __construct(
         NostoHelperData $nostoHelperData,
         NostoHelperAccount $nostoHelperAccount,
         NostoHelperScope $nostoHelperScope,
         NostoLogger $logger,
-        ModuleManager $moduleManager,
-        NostoEmailRepository $emailRepository
+        ModuleManager $moduleManager
     ) {
         $this->nostoHelperData = $nostoHelperData;
         $this->nostoHelperAccount = $nostoHelperAccount;
+        $this->nostoHelperScope = $nostoHelperScope;
         $this->logger = $logger;
         $this->moduleManager = $moduleManager;
-        $this->nostoHelperScope = $nostoHelperScope;
-        $this->emailRepository = $emailRepository;
     }
 
     /**
-     * Event handler for the "customer_save_after" event.
+     * Event handler for the "newsletter_subscriber_save_commit_after" event.
      * Sends a customer update API call to Nosto.
      *
      * @param Observer $observer
@@ -92,8 +88,10 @@ class Update implements ObserverInterface
      */
     public function execute(Observer $observer)
     {
-        $customer = $observer->getData('customer');
-        if (!$customer instanceof \Magento\Customer\Model\Customer
+        /** @noinspection PhpUndefinedMethodInspection */
+        /** @var \Magento\Newsletter\Model\Subscriber $subscriber */
+        $subscriber = $observer->getEvent()->getSubscriber();
+        if (!$subscriber instanceof \Magento\Newsletter\Model\Subscriber
             || !$this->moduleManager->isEnabled(NostoHelperData::MODULE_NAME)
         ) {
             return;
@@ -103,10 +101,11 @@ class Update implements ObserverInterface
         );
         if ($nostoAccount !== null) {
             $operation = new \Nosto\Operation\MarketingPermission($nostoAccount);
+            $isSubscribed = $subscriber->getSubscriberStatus() === 1 ? true : false;
             try {
                 $operation->update(
-                    $customer->getEmail(),
-                    $this->emailRepository->isOptedIn($customer->getEmail())
+                    $subscriber->getSubscriberEmail(),
+                    $isSubscribed
                 );
             } catch (\Exception $e) {
                 $this->logger->error(
