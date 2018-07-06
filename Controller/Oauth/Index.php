@@ -50,6 +50,7 @@ use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Model\Meta\Oauth\Builder as NostoOauthBuilder;
 use Nosto\Types\Signup\AccountInterface;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
+use Nosto\NostoException;
 
 class Index extends Action
 {
@@ -123,6 +124,7 @@ class Index extends Action
      *
      * @param AccountInterface $account the account to save
      * @return boolean a boolean value indicating whether the account was saved
+     * @throws NostoException
      */
     public function save(AccountInterface $account)
     {
@@ -132,7 +134,7 @@ class Index extends Action
             if ($existingAccount !== null
                 && $existingAccount->getName() === $account->getName()
             ) {
-                return false;
+                throw new NostoException('Unable to use the same Nosto Account for more than one store view.');
             }
         }
 
