@@ -43,6 +43,7 @@ use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
+use Magento\Newsletter\Model\Subscriber;
 
 /**
  * Class UpdateMarketingPermission
@@ -101,7 +102,7 @@ class UpdateMarketingPermission implements ObserverInterface
         );
         if ($nostoAccount !== null) {
             $operation = new \Nosto\Operation\MarketingPermission($nostoAccount);
-            $isSubscribed = $subscriber->getSubscriberStatus() === 1 ? true : false;
+            $isSubscribed = $subscriber->getSubscriberStatus() === Subscriber::STATUS_SUBSCRIBED ? true : false;
             try {
                 $operation->update(
                     $subscriber->getSubscriberEmail(),
