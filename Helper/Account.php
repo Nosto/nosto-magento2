@@ -49,7 +49,6 @@ use Nosto\Request\Api\Token;
 use Nosto\Tagging\Helper\Data as NostoHelper;
 use Nosto\Types\Signup\AccountInterface;
 use Nosto\Object\Signup\Account as NostoSignupAccount;
-use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 
 /**
@@ -75,7 +74,6 @@ class Account extends AbstractHelper
     private $config;
     private $moduleManager;
     private $logger;
-    private $nostoHelperData;
     private $nostoHelperScope;
 
     /**
@@ -83,13 +81,11 @@ class Account extends AbstractHelper
      *
      * @param Context $context the context.
      * @param WriterInterface $appConfig the app config writer.
-     * @param Data $nostoHelperData
      * @param Scope $nostoHelperScope
      */
     public function __construct(
         Context $context,
         WriterInterface $appConfig,
-        NostoHelperData $nostoHelperData,
         NostoHelperScope $nostoHelperScope
     ) {
         parent::__construct($context);
@@ -97,7 +93,6 @@ class Account extends AbstractHelper
         $this->config = $appConfig;
         $this->moduleManager = $context->getModuleManager();
         $this->logger = $context->getLogger();
-        $this->nostoHelperData = $nostoHelperData;
         $this->nostoHelperScope = $nostoHelperScope;
     }
 
@@ -169,7 +164,7 @@ class Account extends AbstractHelper
             // Notify Nosto that the account was deleted.
             $service = new UninstallAccount($account);
             $service->delete($currentUser);
-        } catch (NostoException $e) {
+        } catch (\Exception $e) {
             $this->logger->error($e->__toString());
         }
 
@@ -186,14 +181,8 @@ class Account extends AbstractHelper
      */
     public function nostoInstalledAndEnabled(Store $store)
     {
-        $enabled = false;
-        if ($this->moduleManager->isEnabled(NostoHelper::MODULE_NAME)) {
-            if ($this->findAccount($store)) {
-                $enabled = true;
-            }
-        }
-
-        return $enabled;
+        return $this->moduleManager->isEnabled(NostoHelper::MODULE_NAME)
+            && $this->findAccount($store);
     }
 
     /**
@@ -207,7 +196,7 @@ class Account extends AbstractHelper
         /** @noinspection PhpUndefinedMethodInspection */
         $accountName = $store->getConfig(self::XML_PATH_ACCOUNT);
 
-        if (!empty($accountName)) {
+        if ($accountName !== null) {
             $account = new NostoSignupAccount($accountName);
             /** @noinspection PhpUndefinedMethodInspection */
             $tokens = json_decode(
@@ -250,18 +239,26 @@ class Account extends AbstractHelper
         $ssoToken = $account->getApiToken(Token::API_SSO);
         if ($ssoToken instanceof Token) {
             if (!$account->getApiToken(Token::API_EXCHANGE_RATES)) {
-                $ratesToken = new Token(
-                    Token::API_EXCHANGE_RATES,
-                    $ssoToken->getValue()
-                );
-                $tokens[] = $ratesToken;
+                try {
+                    $ratesToken = new Token(
+                        Token::API_EXCHANGE_RATES,
+                        $ssoToken->getValue()
+                    );
+                    $tokens[] = $ratesToken;
+                } catch (NostoException $e) {
+                    $this->logger->error($e->getMessage());
+                }
             }
             if (!$account->getApiToken(Token::API_SETTINGS)) {
-                $settingsToken = new Token(
-                    Token::API_SETTINGS,
-                    $ssoToken->getValue()
-                );
-                $tokens[] = $settingsToken;
+                try {
+                    $settingsToken = new Token(
+                        Token::API_SETTINGS,
+                        $ssoToken->getValue()
+                    );
+                    $tokens[] = $settingsToken;
+                } catch (NostoException $e) {
+                    $this->logger->error($e->getMessage());
+                }
             }
         }
 

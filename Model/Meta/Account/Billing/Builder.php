@@ -38,7 +38,6 @@ namespace Nosto\Tagging\Model\Meta\Account\Billing;
 
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Store\Model\Store;
-use Nosto\NostoException;
 use Nosto\Object\Signup\Billing;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 
@@ -67,10 +66,10 @@ class Builder
 
         try {
             $country = $store->getConfig('general/country/default');
-            if (!empty($country)) {
+            if ($country !== null) {
                 $metaData->setCountry($country);
             }
-        } catch (NostoException $e) {
+        } catch (\Exception $e) {
             $this->logger->exception($e);
         }
 

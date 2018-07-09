@@ -114,8 +114,11 @@ class Create extends Base
 
     /**
      * @return Json
+     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws \Zend_Validate_Exception
      * @suppress PhanTypeMismatchArgument
      * @SuppressWarnings(PHPMD.CyclomaticComplexity
+     * @throws \Zend_Validate_Exception
      */
     public function execute()
     {
@@ -139,7 +142,7 @@ class Create extends Base
                         $accountOwner->setLastName(null);
                         $accountOwner->setEmail($emailAddress);
                     } else {
-                        throw new NostoException("Invalid email address " . $emailAddress);
+                        throw new NostoException('Invalid email address ' . $emailAddress);
                     }
                 }
 

@@ -36,14 +36,11 @@
 
 namespace Nosto\Tagging\Model\Product;
 
-use Magento\Catalog\Api\CategoryRepositoryInterface;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\Product\Gallery\ReadHandler as GalleryReadHandler;
-use Magento\Eav\Api\AttributeSetRepositoryInterface;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Review\Model\ReviewFactory;
 use Magento\Store\Model\Store;
-use Nosto\NostoException;
 use Nosto\Object\Product\Product as NostoProduct;
 use Nosto\Tagging\Helper\Currency as CurrencyHelper;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
@@ -55,7 +52,7 @@ use Nosto\Tagging\Model\Product\Sku\Collection as NostoSkuCollection;
 use Nosto\Tagging\Model\Product\Tags\LowStock as LowStockHelper;
 use Nosto\Tagging\Model\Product\Url\Builder as NostoUrlBuilder;
 use Nosto\Types\Product\ProductInterface;
-use Nosto\Object\ModelFilter as ModelFilter;
+use Nosto\Object\ModelFilter;
 
 class Builder
 {
@@ -71,9 +68,6 @@ class Builder
     private $nostoPriceHelper;
     private $nostoCategoryBuilder;
     private $nostoStockHelper;
-    private $categoryRepository;
-    /** @var AttributeSetRepositoryInterface $attributeSetRepository */
-    private $attributeSetRepository;
     private $galleryReadHandler;
     private $eventManager;
     private $logger;
@@ -89,8 +83,6 @@ class Builder
      * @param NostoCategoryBuilder $categoryBuilder
      * @param NostoStockHelper $stockHelper
      * @param NostoSkuCollection $skuCollection
-     * @param CategoryRepositoryInterface $categoryRepository
-     * @param AttributeSetRepositoryInterface $attributeSetRepository
      * @param NostoLogger $logger
      * @param ManagerInterface $eventManager
      * @param ReviewFactory $reviewFactory
@@ -105,8 +97,6 @@ class Builder
         NostoCategoryBuilder $categoryBuilder,
         NostoStockHelper $stockHelper,
         NostoSkuCollection $skuCollection,
-        CategoryRepositoryInterface $categoryRepository,
-        AttributeSetRepositoryInterface $attributeSetRepository,
         NostoLogger $logger,
         ManagerInterface $eventManager,
         ReviewFactory $reviewFactory,
@@ -118,8 +108,6 @@ class Builder
         $this->nostoDataHelper = $nostoHelperData;
         $this->nostoPriceHelper = $priceHelper;
         $this->nostoCategoryBuilder = $categoryBuilder;
-        $this->categoryRepository = $categoryRepository;
-        $this->attributeSetRepository = $attributeSetRepository;
         $this->logger = $logger;
         $this->eventManager = $eventManager;
         $this->nostoStockHelper = $stockHelper;
@@ -137,6 +125,7 @@ class Builder
      * @param Store $store
      * @param string $nostoScope
      * @return NostoProduct|null
+     * @throws \Exception
      */
     public function build(
         Product $product,
@@ -191,7 +180,7 @@ class Builder
             $nostoProduct->setAvailability($this->buildAvailability($product));
             $nostoProduct->setCategories($this->nostoCategoryBuilder->buildCategories($product));
             $nostoProduct->setAlternateImageUrls($this->buildAlternativeImages($product));
-            if ($nostoScope == self::NOSTO_SCOPE_API
+            if ($nostoScope === self::NOSTO_SCOPE_API
                 && $this->nostoDataHelper->isInventoryTaggingEnabled($store)
             ) {
                 $nostoProduct->setInventoryLevel($this->nostoStockHelper->getQty($product));
@@ -221,7 +210,7 @@ class Builder
                 $nostoProduct->setBrand($this->getAttributeValue($product, $brandAttribute));
             }
             $marginAttribute = $this->nostoDataHelper->getMarginAttribute($store);
-            if ($nostoScope == self::NOSTO_SCOPE_API
+            if ($nostoScope === self::NOSTO_SCOPE_API
                 && $product->hasData($marginAttribute)
             ) {
                 $nostoProduct->setSupplierCost($this->getAttributeValue($product, $marginAttribute));
@@ -238,7 +227,7 @@ class Builder
 
             //update customized tag1, Tag2 and Tag3
             $this->amendAttributeTags($product, $nostoProduct, $store);
-        } catch (NostoException $e) {
+        } catch (\Exception $e) {
             $this->logger->exception($e);
         }
         $this->eventManager->dispatch(
@@ -320,9 +309,8 @@ class Builder
         if ($product->getRatingSummary()->getReviewsCount() > 0) {
             /** @noinspection PhpUndefinedMethodInspection */
             return round($product->getRatingSummary()->getRatingSummary() / 20, 1);
-        } else {
-            return null;
         }
+        return null;
     }
 
     /**
@@ -344,9 +332,8 @@ class Builder
         if ($product->getRatingSummary()->getReviewsCount() > 0) {
             /** @noinspection PhpUndefinedMethodInspection */
             return $product->getRatingSummary()->getReviewsCount();
-        } else {
-            return null;
         }
+        return null;
     }
 
     /**
@@ -360,7 +347,7 @@ class Builder
         $images = [];
         $this->galleryReadHandler->execute($product);
         foreach ($product->getMediaGalleryImages() as $image) {
-            if (isset($image['url']) && (isset($image['disabled']) && $image['disabled'] !== '1')) {
+            if ($image['disabled'] !== '1' && isset($image['url'], $image['disabled'])) {
                 $images[] = $image['url'];
             }
         }

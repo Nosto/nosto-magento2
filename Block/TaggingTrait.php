@@ -64,19 +64,17 @@ trait TaggingTrait
      *
      * @return string the markup or an empty string (if an account doesn't exist)
      * @suppress PhanTraitParentReference
+     * @throws \Nosto\NostoException
      */
     public function _toHtml()
     {
         if ($this->nostoHelperAccount->nostoInstalledAndEnabled($this->nostoHelperScope->getStore())) {
-            /** @noinspection PhpUndefinedMethodInspection */
             if ($this->getAbstractObject() instanceof AbstractObject) {
                 return $this->getAbstractObject()->toHtml();
-            } else {
-                return parent::_toHtml();
             }
-        } else {
-            return '';
+            return parent::_toHtml();
         }
+        return '';
     }
 
     /**

@@ -37,6 +37,7 @@
 namespace Nosto\Tagging\Model\Order;
 
 use Exception;
+use Nosto\NostoException;
 use Magento\Catalog\Model\Product;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\Phrase;
@@ -46,7 +47,6 @@ use Magento\SalesRule\Model\RuleFactory as SalesRuleFactory;
 use Nosto\Object\Cart\LineItem;
 use Nosto\Object\Order\Buyer;
 use Nosto\Object\Order\OrderStatus;
-use Nosto\Tagging\Helper\Price as NostoPriceHelper;
 use Nosto\Tagging\Model\Order\Item\Builder as NostoOrderItemBuilder;
 use Nosto\Tagging\Model\Order\Buyer\Builder as NostoBuyerBuilder;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
@@ -58,7 +58,6 @@ class Builder
     private $logger;
     /** @noinspection PhpUndefinedClassInspection */
     private $salesRuleFactory;
-    private $nostoPriceHelper;
     private $nostoOrderItemBuilder;
     private $eventManager;
     private $buyerBuilder;
@@ -67,7 +66,6 @@ class Builder
     /**
      * @param NostoLogger $logger
      * @param SalesRuleFactory $salesRuleFactory
-     * @param NostoPriceHelper $priceHelper
      * @param NostoOrderItemBuilder $nostoOrderItemBuilder
      * @param ManagerInterface $eventManager
      * @param NostoBuyerBuilder $buyerBuilder
@@ -76,14 +74,12 @@ class Builder
         NostoLogger $logger,
         /** @noinspection PhpUndefinedClassInspection */
         SalesRuleFactory $salesRuleFactory,
-        NostoPriceHelper $priceHelper,
         NostoOrderItemBuilder $nostoOrderItemBuilder,
         ManagerInterface $eventManager,
         NostoBuyerBuilder $buyerBuilder
     ) {
         $this->logger = $logger;
         $this->salesRuleFactory = $salesRuleFactory;
-        $this->nostoPriceHelper = $priceHelper;
         $this->nostoOrderItemBuilder = $nostoOrderItemBuilder;
         $this->eventManager = $eventManager;
         $this->buyerBuilder = $buyerBuilder;
@@ -108,7 +104,11 @@ class Builder
                     $nostoOrder->setCreatedAt($orderCreatedDate);
                 }
             }
-            $nostoOrder->setPaymentProvider($order->getPayment()->getMethod());
+            if ($order->getPayment()) {
+                $nostoOrder->setPaymentProvider($order->getPayment()->getMethod());
+            } else {
+                throw new NostoException('Order has no payment associated');
+            }
             if ($order->getStatus()) {
                 $nostoStatus = new OrderStatus();
                 $nostoStatus->setCode($order->getStatus());
@@ -184,7 +184,7 @@ class Builder
             foreach ($order->getAllVisibleItems() as $item) {
                 /* @var Item $item */
                 $itemAppliedRules = $item->getAppliedRuleIds();
-                if (empty($itemAppliedRules)) {
+                if ($itemAppliedRules === null) {
                     continue;
                 }
                 $ruleIds = explode(',', $item->getAppliedRuleIds());
@@ -194,7 +194,7 @@ class Builder
                     $appliedRules[$ruleId] = $rule->getName();
                 }
             }
-            if (count($appliedRules) == 0) {
+            if (count($appliedRules) === 0) {
                 $appliedRules[] = 'unknown rule';
             }
             $discountTxt = sprintf(

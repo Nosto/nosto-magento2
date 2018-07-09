@@ -79,6 +79,7 @@ class Order extends Base
      * @param int $limit
      * @param int $offset
      * @return \Nosto\Object\AbstractCollection|\Nosto\Object\Order\OrderCollection
+     * @throws \Nosto\NostoException
      */
     public function buildExportCollection(Store $store, $limit = 100, $offset = 0)
     {
@@ -90,6 +91,7 @@ class Order extends Base
      * @param Store $store
      * @param int $id
      * @return \Nosto\Object\AbstractCollection|\Nosto\Object\Order\OrderCollection
+     * @throws \Nosto\NostoException
      */
     public function buildSingleExportCollection(Store $store, $id)
     {

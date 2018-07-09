@@ -67,6 +67,8 @@ class Index extends Base
 
     /**
      * @return Page | Redirect
+     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws \Magento\Framework\Exception\NotFoundException
      */
     public function execute()
     {

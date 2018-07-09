@@ -48,13 +48,13 @@ use Nosto\Tagging\Model\ResourceModel\Product\Queue\Collection as QueueCollectio
 use Nosto\Tagging\Model\ResourceModel\Product\Queue\CollectionFactory as QueueCollectionFactory;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Util\Repository as RepositoryUtil;
-use Nosto\Tagging\Model\Product\QueueSearchResults;
+use /** @noinspection PhpUnusedAliasInspection */
+    Nosto\Tagging\Model\Product\QueueSearchResults;
 
 class QueueRepository implements ProductQueueRepositoryInterface
 {
     private $searchCriteriaBuilder;
     private $logger;
-    private $queueFactory;
     private $queueCollectionFactory;
     private $queueSearchResultsFactory;
     private $queueResource;
@@ -63,7 +63,6 @@ class QueueRepository implements ProductQueueRepositoryInterface
      * QueueRepository constructor.
      *
      * @param QueueResource $queueResource
-     * @param QueueFactory $queueFactory
      * @param QueueCollectionFactory $queueCollectionFactory
      * @param QueueSearchResultsFactory $queueSearchResultsFactory
      * @param SearchCriteriaBuilder $searchCriteriaBuilder
@@ -71,7 +70,6 @@ class QueueRepository implements ProductQueueRepositoryInterface
      */
     public function __construct(
         QueueResource $queueResource,
-        QueueFactory $queueFactory,
         QueueCollectionFactory $queueCollectionFactory,
         QueueSearchResultsFactory $queueSearchResultsFactory,
         SearchCriteriaBuilder $searchCriteriaBuilder,
@@ -80,7 +78,6 @@ class QueueRepository implements ProductQueueRepositoryInterface
         $this->queueResource = $queueResource;
         $this->queueCollectionFactory = $queueCollectionFactory;
         $this->queueSearchResultsFactory = $queueSearchResultsFactory;
-        $this->queueFactory = $queueFactory;
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;
         $this->logger = $logger;
     }
@@ -89,7 +86,7 @@ class QueueRepository implements ProductQueueRepositoryInterface
      * Save Queue entry
      *
      * @param ProductQueueInterface $productQueue
-     * @return ProductQueueInterface
+     * @return ProductQueueInterface|QueueResource
      * @throws \Exception
      * @suppress PhanTypeMismatchArgument
      */
@@ -103,9 +100,7 @@ class QueueRepository implements ProductQueueRepositoryInterface
         }
         /** @noinspection PhpParamsInspection */
         /** @var AbstractModel $productQueue */
-        $queue = $this->queueResource->save($productQueue);
-
-        return $queue;
+        return $this->queueResource->save($productQueue);
     }
 
     /**
@@ -150,6 +145,7 @@ class QueueRepository implements ProductQueueRepositoryInterface
     public function delete(ProductQueueInterface $productQueue)
     {
         try {
+            /** @noinspection PhpParamsInspection */
             $this->queueResource->delete($productQueue);
         } catch (\Exception $e) {
             $this->logger->exception($e);
@@ -185,7 +181,7 @@ class QueueRepository implements ProductQueueRepositoryInterface
         $collection->setPageSize($pageSize);
         $collection->setCurPage(1);
         $collection->load();
-        /* @var ProductQueueSearchResultsInterface $searchResults */
+        /* @var QueueSearchResults $searchResults */
         $searchResults = $this->queueSearchResultsFactory->create();
         $searchResults->setItems($collection->getItems());
         $searchResults->setTotalCount($collection->getSize());
@@ -212,7 +208,7 @@ class QueueRepository implements ProductQueueRepositoryInterface
     /**
      * @param SearchCriteriaInterface $searchCriteria
      *
-     * @return QueueSearchResults
+     * @return \Magento\Framework\Api\Search\SearchResult
      */
     public function search(SearchCriteriaInterface $searchCriteria)
     {

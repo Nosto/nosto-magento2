@@ -110,6 +110,7 @@ class Scope extends AbstractHelper
      * If it is a multi store setup, the expect a store id to passed in the
      * request params and return that store as the current one.
      *
+     * @param RequestInterface $request
      * @return Store the store or null if not found.
      * @throws NotFoundException
      */

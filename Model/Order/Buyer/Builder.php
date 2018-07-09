@@ -90,9 +90,9 @@ class Builder extends PersonBuilder
             $postcode = $address->getPostcode() ? (string)$address->getPostcode() : null;
             $countryId = $address->getCountryId() ? (string)$address->getCountryId() : null;
         }
-        $customerFirstname = $order->getCustomerFirstname() ? (string)$order->getCustomerFirstname() : "";
-        $customerLastname = $order->getCustomerLastname() ? (string)$order->getCustomerLastname() : "";
-        $customerEmail = $order->getCustomerEmail() ? (string)$order->getCustomerEmail(): "";
+        $customerFirstname = $order->getCustomerFirstname() ? (string)$order->getCustomerFirstname() : '';
+        $customerLastname = $order->getCustomerLastname() ? (string)$order->getCustomerLastname() : '';
+        $customerEmail = $order->getCustomerEmail() ? (string)$order->getCustomerEmail(): '';
         $buyer = $this->build(
             $customerFirstname,
             $customerLastname,

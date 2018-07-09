@@ -44,7 +44,8 @@ use Nosto\Tagging\Model\RepositoryTrait;
 use Nosto\Tagging\Model\ResourceModel\Customer as CustomerResource;
 use Nosto\Tagging\Model\ResourceModel\Customer\CollectionFactory as CustomerCollectionFactory;
 use Nosto\Tagging\Util\Repository as RepositoryUtil;
-use Nosto\Tagging\Model\Customer\CustomerSearchResults;
+use /** @noinspection PhpUnusedAliasInspection */
+    Nosto\Tagging\Model\Customer\CustomerSearchResults;
 use Nosto\Tagging\Model\Customer\Customer as NostoCustomer;
 
 /**
@@ -91,6 +92,7 @@ class Repository implements CustomerRepositoryInterface
      */
     public function save(CustomerInterface $customer)
     {
+        /** @noinspection PhpParamsInspection */
         $this->customerResource->save($customer);
 
         return $customer;
@@ -140,6 +142,7 @@ class Repository implements CustomerRepositoryInterface
 
         $items = $this->search($searchCriteria)->getItems();
         foreach ($items as $customer) {
+            /** @var CustomerInterface $customer */
             return $customer;
         }
 
@@ -177,7 +180,9 @@ class Repository implements CustomerRepositoryInterface
      */
     public function search(SearchCriteriaInterface $searchCriteria)
     {
+        /** @noinspection PhpUndefinedMethodInspection */
         $collection = $this->customerCollectionFactory->create();
+        /** @noinspection PhpUndefinedMethodInspection */
         $searchResults = $this->customerSearchResultsFactory->create();
 
         return RepositoryUtil::search(

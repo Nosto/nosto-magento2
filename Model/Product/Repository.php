@@ -45,9 +45,7 @@ use Magento\Framework\Api\FilterBuilder;
 use Magento\Framework\Api\Search\FilterGroupBuilder;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable as ConfigurableType;
-use Nosto\Tagging\Helper\Data;
 use Magento\Catalog\Model\Product\Visibility as ProductVisibility;
-use Magento\Store\Model\Store;
 
 /**
  * Repository wrapper class for fetching products
@@ -58,7 +56,6 @@ class Repository
 {
     private $parentProductIdCache = [];
 
-    private $nostoDataHelper;
     private $productRepository;
     private $searchCriteriaBuilder;
     private $configurableProduct;
@@ -76,7 +73,6 @@ class Repository
      *
      * @param ProductRepository\Proxy $productRepository
      * @param SearchCriteriaBuilder $searchCriteriaBuilder
-     * @param Data $nostoDataHelper
      * @param ConfigurableProduct $configurableProduct
      * @param FilterBuilder $filterBuilder
      * @param FilterGroupBuilder $filterGroupBuilder
@@ -86,7 +82,6 @@ class Repository
     public function __construct(
         ProductRepository\Proxy $productRepository,
         SearchCriteriaBuilder $searchCriteriaBuilder,
-        Data $nostoDataHelper,
         ConfigurableProduct $configurableProduct,
         FilterBuilder $filterBuilder,
         FilterGroupBuilder $filterGroupBuilder,
@@ -95,7 +90,6 @@ class Repository
     ) {
         $this->productRepository = $productRepository;
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;
-        $this->nostoDataHelper = $nostoDataHelper;
         $this->configurableProduct = $configurableProduct;
         $this->filterGroupBuilder = $filterGroupBuilder;
         $this->filterBuilder = $filterBuilder;
@@ -114,9 +108,7 @@ class Repository
         $searchCriteria = $this->searchCriteriaBuilder
             ->addFilter('entity_id', $ids, 'in')
             ->create();
-        $products = $this->productRepository->getList($searchCriteria);
-
-        return $products;
+        return $this->productRepository->getList($searchCriteria);
     }
 
     /**
@@ -145,9 +137,7 @@ class Repository
             ->setFilterGroups([$filterGroup])
             ->addFilter('special_from_date', $today->format('Y-m-d') . ' 00:00:00', 'gte')
             ->create();
-        $products = $this->productRepository->getList($searchCriteria);
-
-        return $products;
+        return $this->productRepository->getList($searchCriteria);
     }
 
     /**
@@ -181,6 +171,7 @@ class Repository
         $product = $this->productRepository->getList($searchCriteria)->setTotalCount(1);
 
         foreach ($product->getItems() as $item) {
+            /** @var \Magento\Catalog\Model\Product $item */
             return $item;
         }
         return null;
@@ -214,6 +205,7 @@ class Repository
      *
      * @param Product $product
      * @return array
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function getSkus(Product $product)
     {

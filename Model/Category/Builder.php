@@ -41,7 +41,6 @@ use Magento\Catalog\Model\Category;
 use Magento\Catalog\Model\Product;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\Exception\NoSuchEntityException;
-use Nosto\NostoException;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 
 class Builder
@@ -74,7 +73,7 @@ class Builder
         $categories = [];
         foreach ($product->getCategoryCollection() as $category) {
             $categoryString = $this->build($category);
-            if (!empty($categoryString)) {
+            if ($categoryString !== null) {
                 $categories[] = $categoryString;
             }
         }
@@ -106,7 +105,7 @@ class Builder
                 }
             }
             $nostoCategory = count($data) ? '/' . implode('/', $data) : '';
-        } catch (NostoException $e) {
+        } catch (\Exception $e) {
             $this->logger->exception($e);
         }
         if (empty($nostoCategory)) {

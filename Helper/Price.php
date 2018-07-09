@@ -95,6 +95,7 @@ class Price extends AbstractHelper
      * @param Product $product the product model.
      * @param Store $store
      * @return float
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function getProductDisplayPrice(Product $product, Store $store)
     {
@@ -116,6 +117,7 @@ class Price extends AbstractHelper
      * @return float
      * @suppress PhanTypeMismatchArgument
      * @suppress PhanDeprecatedFunction
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function getProductPrice( // @codingStandardsIgnoreLine
         Product $product,
@@ -126,129 +128,17 @@ class Price extends AbstractHelper
         switch ($product->getTypeId()) {
             // Get the bundle product "from" price.
             case BundleType::TYPE_CODE:
-                $priceModel = $product->getPriceModel();
-                if ($priceModel instanceof BundlePrice) {
-                    if ($finalPrice) {
-                        $price = $priceModel->getTotalPrices(
-                            $product,
-                            'min',
-                            $inclTax
-                        );
-                    } else {
-                        $price = null;
-                        $productType = $product->getTypeInstance();
-                        if ($productType instanceof BundleType) {
-                            $options = $productType->getOptions($product);
-                            $allOptional = true;
-                            $minPrices = [];
-                            $requiredMinPrices = [];
-                            foreach ($options as $option) {
-                                $selectionMinPrice = null;
-                                /* @var Product $selection */
-                                foreach ($option->getSelections() as $selection) {
-                                    $selectionPrice
-                                        = $this->getProductDisplayPrice($selection, $store);
-                                    if ($selectionMinPrice == null
-                                        || $selectionPrice < $selectionMinPrice
-                                    ) {
-                                        $selectionMinPrice = $selectionPrice;
-                                    }
-                                }
-                                $minPrices[] = $selectionMinPrice;
-                                if ($option->getRequired()) {
-                                    $allOptional = false;
-                                    $requiredMinPrices[] = $selectionMinPrice;
-                                }
-                            }
-                            // If all products are optional use the price for the cheapest option
-                            if ($allOptional) {
-                                $listPrice = min($minPrices);
-                            } else {
-                                $listPrice = array_sum($requiredMinPrices);
-                            }
-
-                            $price = $listPrice;
-                        }
-                    }
-                } else {
-                    $price = null;
-                }
+                $price = $this->getBundleProductPrice($product, $finalPrice, $inclTax, $store);
                 break;
 
             // Get the grouped product "minimal" price.
             case GroupedType::TYPE_CODE:
-                $typeInstance = $product->getTypeInstance();
-                if ($typeInstance instanceof GroupedType) {
-                    $associatedProducts = $typeInstance
-                        ->setStoreFilter($product->getStore(), $product)
-                        ->getAssociatedProducts($product);
-                    $cheapestAssociatedProduct = null;
-                    $minimalPrice = 0;
-                    foreach ($associatedProducts as $associatedProduct) {
-                        /** @var Product $associatedProduct */
-                        $tmpPrice = $finalPrice
-                            ? $associatedProduct->getFinalPrice()
-                            : $associatedProduct->getPrice();
-                        if ($minimalPrice === 0 || $minimalPrice > $tmpPrice) {
-                            $minimalPrice = $tmpPrice;
-                            $cheapestAssociatedProduct = $associatedProduct;
-                        }
-                    }
-                    $price = $minimalPrice;
-                    if ($inclTax && $cheapestAssociatedProduct !== null) {
-                        $price = $this->catalogHelper->getTaxPrice(
-                            $cheapestAssociatedProduct,
-                            $price,
-                            true
-                        );
-                    }
-                } else {
-                    $price = null;
-                }
+                $price = $this->getGroupedProductPrice($product, $finalPrice, $inclTax);
                 break;
 
             // We will use the SKU that has the lowest final price
             case ConfigurableType::TYPE_CODE:
-                $productType = $product->getTypeInstance();
-                $price = 0.0;
-                if ($productType instanceof ConfigurableType) {
-                    $products = $this->nostoProductRepository->getSkus($product);
-                    $skus = [];
-                    $finalPrices = [];
-                    $outOfStockFinalPrices = [];
-                    foreach ($products as $sku) {
-                        if ($sku instanceof Product) {
-                            if (!$sku->isDisabled() && $sku->isAvailable()) {
-                                $finalPrices[$sku->getId()] = $this->getProductPrice(
-                                    $sku,
-                                    $store,
-                                    $inclTax,
-                                    true
-                                );
-                            } elseif (empty($finalPrices)) {
-                                $outOfStockFinalPrices[$sku->getId()] = $this->getProductPrice(
-                                    $sku,
-                                    $store,
-                                    $inclTax,
-                                    true
-                                );
-                            }
-                            $skus[$sku->getId()] = $sku;
-                        }
-                    }
-                    // If none of the SKU's are available, use the unavailable ones
-                    $finalPrices = empty($finalPrices) ? $outOfStockFinalPrices : $finalPrices;
-                    asort($finalPrices, SORT_NUMERIC);
-                    $keys = array_keys($finalPrices);
-                    if (!empty($keys[0]) && !empty($skus[$keys[0]])) {
-                        $simpleProduct = $skus[$keys[0]];
-                        if ($finalPrice) {
-                            $price = $this->getProductFinalDisplayPrice($simpleProduct, $store);
-                        } else {
-                            $price = $this->getProductDisplayPrice($simpleProduct, $store);
-                        }
-                    }
-                }
+                $price = $this->getConfigurableProductPrice($product, $finalPrice, $inclTax, $store);
                 break;
 
             default:
@@ -258,6 +148,7 @@ class Price extends AbstractHelper
                 $pid = $product->getId();
                 if ($finalPrice) {
                     $currentProductPrice = $product->getFinalPrice();
+                    /** @noinspection UnnecessaryCastingInspection */
                     $pricesToCompare = [(float)$currentProductPrice, (float)$product->getPrice()];
                     try {
                         $currentRulePrice = $this->priceRuleFactory->create()->getRulePrice($date, $wid, $gid, $pid);
@@ -294,6 +185,7 @@ class Price extends AbstractHelper
      * @param Product $product the product model.
      * @param Store $store
      * @return float
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function getProductFinalDisplayPrice(Product $product, Store $store)
     {
@@ -318,10 +210,158 @@ class Price extends AbstractHelper
      */
     private function includeTaxes(Store $store)
     {
-        if ($this->taxHelper->getPriceDisplayType($store) === TaxConfig::DISPLAY_TYPE_INCLUDING_TAX) {
-            return true;
-        }
+        return ($this->taxHelper->getPriceDisplayType($store) === TaxConfig::DISPLAY_TYPE_INCLUDING_TAX);
+    }
 
-        return false;
+    /**
+     * Calculates the price for Product of type Bundle
+     *
+     * @param Product $product
+     * @param $finalPrice
+     * @param $inclTax
+     * @param Store $store
+     * @return array|float|int|mixed
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    private function getBundleProductPrice(Product $product, $finalPrice, $inclTax, Store $store)
+    {
+        $priceModel = $product->getPriceModel();
+        $price = 0.0;
+        if (!$priceModel instanceof BundlePrice) {
+            return $price;
+        }
+        $productType = $product->getTypeInstance();
+        if ($finalPrice) {
+            $price = $priceModel->getTotalPrices(
+                $product,
+                'min',
+                $inclTax
+            );
+        } elseif ($productType instanceof BundleType) {
+            $options = $productType->getOptions($product);
+            $allOptional = true;
+            $minPrices = [];
+            $requiredMinPrices = [];
+            /** @var \Magento\Bundle\Model\Option $option */
+            foreach ($options as $option) {
+                $selectionMinPrice = null;
+                foreach ($option->getSelections() as $selection) {
+                    /** @var Product $selection */
+                    $selectionPrice
+                        = $this->getProductDisplayPrice($selection, $store);
+                    if ($selectionMinPrice === null
+                        || $selectionPrice < $selectionMinPrice
+                    ) {
+                        $selectionMinPrice = $selectionPrice;
+                    }
+                }
+                $minPrices[] = $selectionMinPrice;
+                if ($option->getRequired()) {
+                    $allOptional = false;
+                    $requiredMinPrices[] = $selectionMinPrice;
+                }
+            }
+            // If all products are optional use the price for the cheapest option
+            $price = $allOptional ? min($minPrices) : array_sum($requiredMinPrices);
+        }
+        return $price;
+    }
+
+    /**
+     * Calculates the price for Product of type Grouped
+     *
+     * @param Product $product
+     * @param $finalPrice
+     * @param $inclTax
+     * @return float
+     */
+    private function getGroupedProductPrice(Product $product, $finalPrice, $inclTax)
+    {
+        $price = 0.0;
+        $typeInstance = $product->getTypeInstance();
+        if (!$typeInstance instanceof GroupedType) {
+            return $price;
+        }
+        $associatedProducts = $typeInstance
+            ->setStoreFilter($product->getStore(), $product)
+            ->getAssociatedProducts($product);
+        $cheapestAssociatedProduct = null;
+        $minimalPrice = 0.0;
+        foreach ($associatedProducts as $associatedProduct) {
+            /** @var Product $associatedProduct */
+            $tmpPrice = $finalPrice
+                ? $associatedProduct->getFinalPrice()
+                : $associatedProduct->getPrice();
+            if ($minimalPrice === 0.0 || $minimalPrice > $tmpPrice) {
+                $minimalPrice = $tmpPrice;
+                $cheapestAssociatedProduct = $associatedProduct;
+            }
+        }
+        $price = $minimalPrice;
+        if ($inclTax && $cheapestAssociatedProduct !== null) {
+            $price = $this->catalogHelper->getTaxPrice(
+                $cheapestAssociatedProduct,
+                $price,
+                true
+            );
+        }
+        return $price;
+    }
+
+    /**
+     * Calculates the price for Product of type Configurable
+     *
+     * @param Product $product
+     * @param $finalPrice
+     * @param $inclTax
+     * @param Store $store
+     * @return float
+     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
+    private function getConfigurableProductPrice(Product $product, $finalPrice, $inclTax, Store $store)
+    {
+        $price = 0.0;
+        if (!$product->getTypeInstance() instanceof ConfigurableType) {
+            return $price;
+        }
+        $products = $this->nostoProductRepository->getSkus($product);
+        $skus = [];
+        $finalPrices = [];
+        $outOfStockFinalPrices = [];
+        foreach ($products as $sku) {
+            if (!$sku instanceof Product) {
+                continue;
+            }
+            if (!$sku->isDisabled() && $sku->isAvailable()) {
+                $finalPrices[$sku->getId()] = $this->getProductPrice(
+                    $sku,
+                    $store,
+                    $inclTax,
+                    true
+                );
+            } elseif (empty($finalPrices)) {
+                $outOfStockFinalPrices[$sku->getId()] = $this->getProductPrice(
+                    $sku,
+                    $store,
+                    $inclTax,
+                    true
+                );
+            }
+            $skus[$sku->getId()] = $sku;
+        }
+        // If none of the SKU's are available, use the unavailable ones
+        $finalPrices = empty($finalPrices) ? $outOfStockFinalPrices : $finalPrices;
+        asort($finalPrices, SORT_NUMERIC);
+        $keys = array_keys($finalPrices);
+        if (!empty($keys[0]) && !empty($skus[$keys[0]])) {
+            $simpleProduct = $skus[$keys[0]];
+            if ($finalPrice) {
+                $price = $this->getProductFinalDisplayPrice($simpleProduct, $store);
+            } else {
+                $price = $this->getProductDisplayPrice($simpleProduct, $store);
+            }
+        }
+        return $price;
     }
 }

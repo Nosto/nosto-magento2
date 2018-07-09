@@ -40,13 +40,11 @@ use Magento\Backend\Block\Template as BlockTemplate;
 use Magento\Backend\Block\Template\Context as BlockContext;
 use Magento\Backend\Model\Auth\Session;
 use Magento\Framework\Exception\NotFoundException;
-use Magento\Store\Model\Store;
 use Nosto\Helper\IframeHelper;
 use Nosto\Nosto;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Model\Meta\Account\Iframe\Builder as NostoIframeMetaBuilder;
-use Nosto\Tagging\Model\Meta\Account\Sso\Builder as NostoSsoBuilder;
 use Nosto\Tagging\Model\User\Builder as NostoCurrentUserBuilder;
 
 /**
@@ -62,7 +60,6 @@ class Iframe extends BlockTemplate
     const DEFAULT_IFRAME_ORIGIN_REGEXP = '(https:\/\/(.*)\.hub\.nosto\.com)|(https:\/\/my\.nosto\.com)';
     private $nostoHelperAccount;
     private $backendAuthSession;
-    private $nostoSsoBuilder;
     private $nostoIframeMetaBuilder;
     private $nostoCurrentUserBuilder;
     private $nostoHelperScope;
@@ -73,7 +70,6 @@ class Iframe extends BlockTemplate
      * @param BlockContext $context the context.
      * @param NostoHelperAccount $nostoHelperAccount the account helper.
      * @param Session $backendAuthSession
-     * @param NostoSsoBuilder $nostoSsoBuilder
      * @param NostoIframeMetaBuilder $iframeMetaBuilder
      * @param NostoCurrentUserBuilder $nostoCurrentUserBuilder
      * @param NostoHelperScope $nostoHelperScope
@@ -83,7 +79,6 @@ class Iframe extends BlockTemplate
         BlockContext $context,
         NostoHelperAccount $nostoHelperAccount,
         Session $backendAuthSession,
-        NostoSsoBuilder $nostoSsoBuilder,
         NostoIframeMetaBuilder $iframeMetaBuilder,
         NostoCurrentUserBuilder $nostoCurrentUserBuilder,
         NostoHelperScope $nostoHelperScope,
@@ -93,7 +88,6 @@ class Iframe extends BlockTemplate
 
         $this->nostoHelperAccount = $nostoHelperAccount;
         $this->backendAuthSession = $backendAuthSession;
-        $this->nostoSsoBuilder = $nostoSsoBuilder;
         $this->nostoIframeMetaBuilder = $iframeMetaBuilder;
         $this->nostoCurrentUserBuilder = $nostoCurrentUserBuilder;
         $this->nostoHelperScope = $nostoHelperScope;
@@ -107,6 +101,8 @@ class Iframe extends BlockTemplate
      * where a new Nosto account can be created.
      *
      * @return string the iframe url or empty string if it cannot be created.
+     * @throws NotFoundException
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function getIframeUrl()
     {
@@ -140,6 +136,7 @@ class Iframe extends BlockTemplate
      * This config can be converted into JSON in the view file.
      *
      * @return array the config.
+     * @throws NotFoundException
      */
     public function getIframeConfig()
     {

@@ -103,7 +103,7 @@ class Index extends Action
      */
     public function execute()
     {
-        self::connect();
+        $this->connect();
     }
 
     /**

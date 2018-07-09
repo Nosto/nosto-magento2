@@ -40,10 +40,8 @@ use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\Locale\ResolverInterface;
 use Magento\Framework\UrlInterface;
 use Magento\Store\Model\Store;
-use Nosto\NostoException;
 use Nosto\Object\Signup\Signup;
 use Nosto\Request\Http\HttpRequest;
-use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Currency as NostoHelperCurrency;
 use Nosto\Tagging\Model\Meta\Account\Billing\Builder as NostoBillingBuilder;
 use Nosto\Tagging\Model\Meta\Account\Settings\Currencies\Builder as NostoCurrenciesBuilder;
@@ -54,7 +52,6 @@ class Builder
 {
     const API_TOKEN = 'YBDKYwSqTCzSsU8Bwbg4im2pkHMcgTy9cCX7vevjJwON1UISJIwXOLMM0a8nZY7h';
     const PLATFORM_NAME = 'magento';
-    private $nostoHelperData;
     private $accountBillingMetaBuilder;
     private $localeResolver;
     private $logger;
@@ -64,7 +61,6 @@ class Builder
     private $nostoDataHelper;
 
     /**
-     * @param NostoHelperData $nostoHelperData
      * @param NostoHelperCurrency $nostoHelperCurrency
      * @param NostoBillingBuilder $nostoAccountBillingMetaBuilder
      * @param NostoCurrenciesBuilder $nostoCurrenciesBuilder
@@ -74,7 +70,6 @@ class Builder
      * @param NostoDataHelper $nostoDataHelper
      */
     public function __construct(
-        NostoHelperData $nostoHelperData,
         NostoHelperCurrency $nostoHelperCurrency,
         NostoBillingBuilder $nostoAccountBillingMetaBuilder,
         NostoCurrenciesBuilder $nostoCurrenciesBuilder,
@@ -83,7 +78,6 @@ class Builder
         ManagerInterface $eventManager,
         NostoDataHelper $nostoDataHelper
     ) {
-        $this->nostoHelperData = $nostoHelperData;
         $this->accountBillingMetaBuilder = $nostoAccountBillingMetaBuilder;
         $this->localeResolver = $localeResolver;
         $this->logger = $logger;
@@ -101,7 +95,7 @@ class Builder
      */
     public function build(Store $store, $accountOwner, $signupDetails)
     {
-        $metaData = new Signup(Builder::PLATFORM_NAME, Builder::API_TOKEN, null);
+        $metaData = new Signup(self::PLATFORM_NAME, self::API_TOKEN, null);
 
         try {
             $metaData->setTitle(
@@ -142,7 +136,7 @@ class Builder
             $metaData->setBillingDetails($billing);
 
             $metaData->setDetails($signupDetails);
-        } catch (NostoException $e) {
+        } catch (\Exception $e) {
             $this->logger->exception($e);
         }
 

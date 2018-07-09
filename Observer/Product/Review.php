@@ -50,6 +50,7 @@ class Review extends Base
 {
     /**
      * @inheritdoc
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function extractProduct(Observer $observer)
     {
@@ -57,8 +58,8 @@ class Review extends Base
         /** @noinspection PhpUndefinedMethodInspection */
         $review = $observer->getObject();
         $product = null;
-        if ($this->dataHelper->isRatingTaggingEnabled()
-            && $review instanceof ReviewModel
+        if ($review instanceof ReviewModel
+            && $this->dataHelper->isRatingTaggingEnabled()
         ) {
             $product = $this->productRepository->getById($review->getEntityPkValue());
         }

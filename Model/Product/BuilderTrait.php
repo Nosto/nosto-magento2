@@ -78,6 +78,7 @@ trait BuilderTrait
         $attributes = $product->getTypeInstance()->getSetAttributes($product);
         /** @var AbstractAttribute $attribute */
         foreach ($attributes as $attribute) {
+            /** @var \Magento\Catalog\Model\ResourceModel\Eav\Attribute\Interceptor $attribute */
             try {
                 //tag user defined attributes that are visible or filterable
                 if ($attribute->getIsUserDefined()
@@ -111,10 +112,12 @@ trait BuilderTrait
         $primary = $this->nostoDataHelperTrait->getProductImageVersion($store);
         $secondary = 'image'; // The "base" image.
         $media = $product->getMediaAttributeValues();
-        $image = (isset($media[$primary])
-            ? $media[$primary]
-            : (isset($media[$secondary]) ? $media[$secondary] : null)
-        );
+
+        if (isset($media[$primary])) {
+            $image = $media[$primary];
+        } elseif (isset($media[$secondary])) {
+            $image = $media[$secondary];
+        }
 
         if (empty($image)) {
             return null;
@@ -141,7 +144,7 @@ trait BuilderTrait
                 $frontend = $attributeObject->getFrontend();
                 $frontendValue = $frontend->getValue($product);
                 if (is_array($frontendValue)) {
-                    $value = implode(",", $frontendValue);
+                    $value = implode(',', $frontendValue);
                 } elseif (is_scalar($frontendValue)) {
                     $value = $frontendValue;
                 } elseif ($frontendValue instanceof Phrase) {

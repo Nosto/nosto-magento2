@@ -63,8 +63,8 @@ class Grouped extends GroupedItem
      *
      * @param Item $item the ordered item
      * @return string|null the name of the product
-     * @suppress PhanTypeMismatchReturn
      * @throws \Magento\Framework\Exception\NoSuchEntityException
+     * @suppress PhanTypeMismatchReturn
      */
     public function buildItemName(Item $item)
     {

@@ -37,11 +37,9 @@
 namespace Nosto\Tagging\Model\Product\Sku;
 
 use Magento\Catalog\Model\Product;
-use Magento\Catalog\Model\Product\Gallery\ReadHandler as GalleryReadHandler;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable\Attribute as ConfigurableAttribute;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Store\Model\Store;
-use Nosto\NostoException;
 use Nosto\Object\Product\Sku as NostoSku;
 use Nosto\Tagging\Helper\Currency as CurrencyHelper;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
@@ -57,7 +55,6 @@ class Builder
     }
     private $nostoDataHelper;
     private $nostoPriceHelper;
-    private $galleryReadHandler;
     private $eventManager;
     private $logger;
     private $nostoCurrencyHelper;
@@ -67,7 +64,6 @@ class Builder
      * @param NostoPriceHelper $priceHelper
      * @param NostoLogger $logger
      * @param ManagerInterface $eventManager
-     * @param GalleryReadHandler $galleryReadHandler
      * @param CurrencyHelper $nostoCurrencyHelper
      */
     public function __construct(
@@ -75,14 +71,12 @@ class Builder
         NostoPriceHelper $priceHelper,
         NostoLogger $logger,
         ManagerInterface $eventManager,
-        GalleryReadHandler $galleryReadHandler,
         CurrencyHelper $nostoCurrencyHelper
     ) {
         $this->nostoDataHelper = $nostoHelperData;
         $this->nostoPriceHelper = $priceHelper;
         $this->logger = $logger;
         $this->eventManager = $eventManager;
-        $this->galleryReadHandler = $galleryReadHandler;
         $this->nostoCurrencyHelper = $nostoCurrencyHelper;
         $this->builderTraitConstruct($nostoHelperData, $logger);
     }
@@ -129,7 +123,7 @@ class Builder
                     try {
                         $code = $attribute->getProductAttribute()->getAttributeCode();
                         $nostoSku->addCustomField($code, $product->getAttributeText($code));
-                    } catch (NostoException $e) {
+                    } catch (\Exception $e) {
                         $this->logger->exception($e);
                     }
                 }

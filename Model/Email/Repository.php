@@ -37,7 +37,7 @@
 namespace Nosto\Tagging\Model\Email;
 
 use Magento\Newsletter\Model\ResourceModel\Subscriber as SubscriberResource;
-use Magento\Newsletter\Model\Subscriber as Subscriber;
+use Magento\Newsletter\Model\Subscriber;
 
 /**
  * Repository wrapper / helper class for fetching marketing permission related items
@@ -68,9 +68,7 @@ class Repository
      */
     public function getNewsletterOptInForEmail($email)
     {
-        $subscription = $this->subscriber->loadByEmail($email);
-
-        return $subscription;
+        return $this->subscriber->loadByEmail($email);
     }
 
     /**
@@ -87,7 +85,7 @@ class Repository
         }
 
         if (isset($subscriber['subscriber_status'])
-            && $subscriber['subscriber_status'] == Subscriber::STATUS_SUBSCRIBED
+            && $subscriber['subscriber_status'] === Subscriber::STATUS_SUBSCRIBED
         ) {
             return true;
         }

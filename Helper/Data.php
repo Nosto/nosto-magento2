@@ -276,7 +276,7 @@ class Data extends AbstractHelper
     /**
      * Returns on/off setting for custom fields
      *
-     * @param Store|null $store the store model or null.
+     * @param StoreInterface|null $store the store model or null.
      * @return boolean
      */
     public function isCustomFieldsEnabled(StoreInterface $store = null)
@@ -381,7 +381,7 @@ class Data extends AbstractHelper
     public function isMultiCurrencyDisabled(StoreInterface $store = null)
     {
         $storeConfig = $this->getMultiCurrencyMethod($store);
-        return (bool)($storeConfig == self::SETTING_VALUE_MC_DISABLED);
+        return ($storeConfig === self::SETTING_VALUE_MC_DISABLED);
     }
 
     /**
@@ -393,7 +393,7 @@ class Data extends AbstractHelper
     public function isMultiCurrencyExchangeRatesEnabled(StoreInterface $store = null)
     {
         $storeConfig = $this->getMultiCurrencyMethod($store);
-        return (bool)($storeConfig == self::SETTING_VALUE_MC_EXCHANGE_RATE);
+        return ($storeConfig === self::SETTING_VALUE_MC_EXCHANGE_RATE);
     }
 
     /**
@@ -412,7 +412,7 @@ class Data extends AbstractHelper
      *
      * @param string $value the value of the multi currency setting.
      * @param StoreInterface|null $store the store model or null.
-     * @return string the configuration value
+     * @return string|null the configuration value
      */
     public function saveMultiCurrencyMethod($value, StoreInterface $store = null)
     {
@@ -436,7 +436,6 @@ class Data extends AbstractHelper
      * @param string $path
      * @param mixed $value
      * @param StoreInterface|Store|null $store
-     * @return mixed|null
      */
     public function saveStoreConfig($path, $value, StoreInterface $store = null)
     {
@@ -460,9 +459,8 @@ class Data extends AbstractHelper
         $nostoModule = $this->moduleListing->getOne('Nosto_Tagging');
         if (!empty($nostoModule['setup_version'])) {
             return $nostoModule['setup_version'];
-        } else {
-            return 'unknown';
         }
+        return 'unknown';
     }
 
     /**
@@ -508,6 +506,7 @@ class Data extends AbstractHelper
     public function getTagAttributes($tagId, StoreInterface $store = null)
     {
         $attributesConfig = $this->getStoreConfig(self::XML_PATH_TAG . $tagId, $store);
+        /** @noinspection TypeUnsafeComparisonInspection */
         if ($attributesConfig == null) {
             return null;
         }
@@ -538,7 +537,7 @@ class Data extends AbstractHelper
         $clearTypes = [];
         if ($type === 'all') {
             $clearTypes = $types;
-        } elseif (in_array($type, $types)) {
+        } elseif (in_array($type, $types, false)) {
             $clearTypes[] = $type;
         }
         if (!empty($clearTypes)) {
