@@ -33,13 +33,16 @@
  *
  */
 
-define(['catalogAddToCart', 'nostojs', 'jquery'], function (addToCart, nostojs, $) {
+define([
+    'nostojs',
+    'jquery',
+    'catalogAddToCart'
+], function (nostojs, $) {
+    'use strict';
 
     //noinspection SpellCheckingInspection
-    var form = $('#nosto_addtocart_form');
-    var helper = new addToCart();
-
-    Recobuy = {};
+    var form = $('#nosto_addtocart_form').catalogAddToCart({});
+    var Recobuy = {};
     Recobuy.addProductToCart = function (productId, element) {
         var productData = {
             "productId" : productId,
@@ -61,7 +64,7 @@ define(['catalogAddToCart', 'nostojs', 'jquery'], function (addToCart, nostojs, 
 
         form.find('input[name="product"]').val(product.skuId);
         form.find('input[name="qty"]').val(1);
-        helper.ajaxSubmit(form);
+        form.catalogAddToCart('ajaxSubmit', form);
     };
     
     Recobuy.resolveContextSlotId = function (element) {
