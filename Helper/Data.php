@@ -65,6 +65,11 @@ class Data extends AbstractHelper
     const XML_PATH_IMAGE_VERSION = 'nosto/images/version';
 
     /**
+     * Path to store config for removing "pub/" directory from image URLs
+     */
+    const XML_PATH_IMAGE_REMOVE_PUB_FROM_URL = 'nosto/images/remove_pub_directory';
+
+    /**
      * Path to the configuration object that store's the brand attribute
      */
     const XML_PATH_BRAND_ATTRIBUTE = 'nosto/optional/brand';
@@ -227,6 +232,19 @@ class Data extends AbstractHelper
     public function getProductImageVersion(StoreInterface $store = null)
     {
         return $this->getStoreConfig(self::XML_PATH_IMAGE_VERSION, $store);
+    }
+
+    /**
+     * Returns boolean if "pub/" directory should be removed from product image
+     * URLs. This is needed because M2 CLI doesn't know if the docroot is pointing to
+     * "pub/" directory or Magento root.
+     *
+     * @param StoreInterface|null $store the store model or null.
+     * @return boolean
+     */
+    public function getRemovePubDirectoryFromProductImageUrl(StoreInterface $store = null)
+    {
+        return $this->getStoreConfig(self::XML_PATH_IMAGE_REMOVE_PUB_FROM_URL, $store);
     }
 
     /**

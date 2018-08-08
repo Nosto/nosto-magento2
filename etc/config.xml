@@ -6,6 +6,7 @@
         <nosto>
             <images>
                 <version>image</version>
+                <remove_pub_directory>0</remove_pub_directory>
             </images>
             <url>
                 <store_code_to_url>1</store_code_to_url>
