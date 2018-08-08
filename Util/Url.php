@@ -40,7 +40,7 @@ class Url
 {
     /**
      * Remove the first occurence of a path from URL
-     *
+     * Note that you need to give the path with trailing and leading slash, "/mypath/"
      * @param string $path
      * @param string $url
      * @return mixed
@@ -49,7 +49,7 @@ class Url
     {
         $pos = strpos($url, $path);
         if ($pos !== false) {
-            return substr_replace($url, '', $pos, strlen($path));
+            return substr_replace($url, '/', $pos, strlen($path));
         }
         return $url;
     }
@@ -63,6 +63,6 @@ class Url
      */
     public static function removePubFromUrl($url)
     {
-        return self::removePathFromUrl($url, 'pub/');
+        return self::removePathFromUrl($url, '/pub/');
     }
 }
