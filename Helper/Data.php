@@ -65,7 +65,7 @@ class Data extends AbstractHelper
     const XML_PATH_IMAGE_VERSION = 'nosto/images/version';
 
     /**
-     * Path to store config product image version setting.
+     * Path to store config for removing "pub/" directory from image URLs
      */
     const XML_PATH_IMAGE_REMOVE_PUB_FROM_URL = 'nosto/images/remove_pub_directory';
 
