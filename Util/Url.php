@@ -39,23 +39,7 @@ namespace Nosto\Tagging\Util;
 class Url
 {
     /**
-     * Remove the first occurence of a path from URL
-     * Note that you need to give the path with trailing and leading slash, "/mypath/"
-     * @param string $path
-     * @param string $url
-     * @return mixed
-     */
-    public static function removePathFromUrl($url, $path)
-    {
-        $pos = strpos($url, $path);
-        if ($pos !== false) {
-            return substr_replace($url, '/', $pos, strlen($path));
-        }
-        return $url;
-    }
-
-    /**
-     * Remove the first "pub/" from a URL
+     * Remove the first "/pub/" from a URL
      *
      * @param string $path
      * @param string $url
@@ -63,6 +47,12 @@ class Url
      */
     public static function removePubFromUrl($url)
     {
-        return self::removePathFromUrl($url, '/pub/');
+        $path = '/pub/';
+        $pos = strpos($url, $path);
+        if ($pos !== false) {
+            return substr_replace($url, '/', $pos, strlen($path));
+        }
+
+        return $url;
     }
 }
