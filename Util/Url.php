@@ -41,7 +41,6 @@ class Url
     /**
      * Remove the first "/pub/" from a URL
      *
-     * @param string $path
      * @param string $url
      * @return mixed
      */
