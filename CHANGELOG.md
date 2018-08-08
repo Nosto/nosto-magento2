@@ -1,5 +1,10 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 2.11.0
+* Add possibility to remove “/pub/” directory from product image URLs
+* Add possibility to define quantity for Nosto’s add to cart
+* Obey the alternative image tagging feature flag
+
 ### 2.10.6
 * Fix add to cart (Recobuy) javascript errors when Magento 2 is configured to minimize, merge or bundle javascript files  
 
