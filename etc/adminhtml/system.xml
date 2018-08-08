@@ -54,6 +54,13 @@
                     </comment>
                     <source_model>Nosto\Tagging\Model\Config\Source\Image</source_model>
                 </field>
+                <field id="remove_pub_directory" translate="label comment" type="select" sortOrder="20"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Remove "pub/" from product image URLs</label>
+                    <comment><![CDATA[Set this to yes if you have configured the docroot to point to "pub/" directory.]]>
+                    </comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
             </group>
             <group id="url" translate="label" type="text" sortOrder="20" showInDefault="1"
                    showInWebsite="1" showInStore="1">

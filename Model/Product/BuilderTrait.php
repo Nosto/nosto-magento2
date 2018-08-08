@@ -42,6 +42,7 @@ use Magento\Framework\Phrase;
 use Magento\Store\Model\Store;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
+use Nosto\Tagging\Util\Url as UrlUtil;
 
 trait BuilderTrait
 {
@@ -123,7 +124,10 @@ trait BuilderTrait
             return null;
         }
 
-        return $product->getMediaConfig()->getMediaUrl($image);
+        return $this->finalizeImageUrl(
+            $product->getMediaConfig()->getMediaUrl($image),
+            $store
+        );
     }
 
 
@@ -156,5 +160,21 @@ trait BuilderTrait
         }
 
         return $value;
+    }
+
+    /**
+     * Finalizes product image urls, stips off "pub/" directory if applicable
+     *
+     * @param string $url
+     * @param Store $store
+     * @return string
+     */
+    public function finalizeImageUrl($url, Store $store)
+    {
+        if ($this->nostoDataHelperTrait->getRemovePubDirectoryFromProductImageUrl($store)) {
+            return UrlUtil::removePubFromUrl($url);
+        }
+
+        return $url;
     }
 }

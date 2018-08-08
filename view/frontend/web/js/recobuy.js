@@ -43,12 +43,13 @@ define([
     //noinspection SpellCheckingInspection
     var form = $('#nosto_addtocart_form').catalogAddToCart({});
     var Recobuy = {};
-    Recobuy.addProductToCart = function (productId, element) {
+    Recobuy.addProductToCart = function (productId, element, quantity) {
+        quantity = quantity || 1;
         var productData = {
             "productId" : productId,
             'skuId' : productId
         };
-        Recobuy.addSkuToCart(productData, element);
+        Recobuy.addSkuToCart(productData, element, quantity);
     };
 
     // Products must be and array of objects [{'productId': '123', 'skuId': '321'}, {...}]
@@ -71,13 +72,14 @@ define([
                 "productId" : productArray,
                 "related_product" : skus
             };
-            Recobuy.addSkuToCart(productData, element);
+            Recobuy.addSkuToCart(productData, element, 1);
         }
     };
 
     // Product object must have fields productId and skuId {'productId': '123', 'skuId': '321'}
-    Recobuy.addSkuToCart = function (product, element) {
-        if (typeof element === 'object') {
+    Recobuy.addSkuToCart = function (product, element, quantity) {
+        quantity = quantity || 1;
+        if (typeof element === 'object' && element) {
             var slotId = this.resolveContextSlotId(element);
             if (slotId) {
                 nostojs(function (api) {
@@ -102,7 +104,7 @@ define([
         } else {
             form.find('input[name="product"]').val(product.skuId);
         }
-        form.find('input[name="qty"]').val(1);
+        form.find('input[name="qty"]').val(quantity);
         form.catalogAddToCart('ajaxSubmit', form);
     };
     

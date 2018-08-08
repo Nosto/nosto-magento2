@@ -179,8 +179,7 @@ class Builder
 
             $nostoProduct->setAvailability($this->buildAvailability($product));
             $nostoProduct->setCategories($this->nostoCategoryBuilder->buildCategories($product));
-            $nostoProduct->setAlternateImageUrls($this->buildAlternativeImages($product));
-            if ($nostoScope === self::NOSTO_SCOPE_API
+            if ($nostoScope == self::NOSTO_SCOPE_API
                 && $this->nostoDataHelper->isInventoryTaggingEnabled($store)
             ) {
                 $nostoProduct->setInventoryLevel($this->nostoStockHelper->getQty($product));
@@ -190,7 +189,7 @@ class Builder
                 $nostoProduct->setReviewCount($this->buildReviewCount($product, $store));
             }
             if ($this->nostoDataHelper->isAltimgTaggingEnabled($store)) {
-                $nostoProduct->setAlternateImageUrls($this->buildAlternativeImages($product));
+                $nostoProduct->setAlternateImageUrls($this->buildAlternativeImages($product, $store));
             }
             if ($this->nostoDataHelper->isVariationTaggingEnabled($store)) {
                 $nostoProduct->setSkus($this->skuCollection->build($product, $store));
@@ -340,15 +339,16 @@ class Builder
      * Adds the alternative image urls
      *
      * @param Product $product the product model.
+     * @param Store $store
      * @return array
      */
-    public function buildAlternativeImages(Product $product)
+    public function buildAlternativeImages(Product $product, Store $store)
     {
         $images = [];
         $this->galleryReadHandler->execute($product);
         foreach ($product->getMediaGalleryImages() as $image) {
-            if ($image['disabled'] !== '1' && isset($image['url'], $image['disabled'])) {
-                $images[] = $image['url'];
+            if (isset($image['url']) && (isset($image['disabled']) && $image['disabled'] !== '1')) {
+                $images[] = $this->finalizeImageUrl($image['url'], $store);
             }
         }
 
