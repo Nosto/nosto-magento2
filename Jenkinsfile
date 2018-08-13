@@ -43,6 +43,21 @@ pipeline {
       }
     }
 
+    stage('PhpStorm Inspections') {
+      agent { docker { image 'nosto/phpstorm:2018.2-eap' } }
+      steps {
+        catchError {
+          sh "ls -lah "
+          sh "ls -lah ../"
+          sh "ls -lah ../.."
+          sh "composer require shopsys/phpstorm-inspect"
+          sh "ls -lah vendor/bin"
+          sh "/home/plugins/PhpStorm-182.3684.37/bin/inspect.sh || true" /* Initializes the IDE and the user preferences directory */
+          sh "./vendor/bin/phpstorm-inspect /home/plugins/PhpStorm-182.3684.37/bin/inspect.sh ~/.PhpStorm2018.2/system . .idea/inspectionProfiles/Project_Default.xml . text"
+        }
+      }
+    }
+
     stage('Phan Analysis') {
       agent { dockerfile true }
       steps {
@@ -60,16 +75,6 @@ pipeline {
         sh "cd magento && bin/magento setup:di:compile"
         catchError {
           sh "./vendor/bin/phan --config-file=phan.php --output-mode=checkstyle --output=chkphan.xml || true"
-        }
-      }
-    }
-
-    stage('PhpStorm Inspections') {
-      agent { docker { image 'nosto/phpstorm:2018.2-eap' } }
-      steps {
-        catchError {
-          sh "/home/plugins/PhpStorm-182.3684.37/bin/inspect.sh || true" /* Initializes the IDE and the user preferences directory */
-          sh "./vendor/bin/phpstorm-inspect /home/plugins/PhpStorm-182.3684.37/bin/inspect.sh ~/.PhpStorm2018.2/system . .idea/inspectionProfiles/Project_Default.xml ./app checkstyle > chkintellij.xml"
         }
       }
     }
