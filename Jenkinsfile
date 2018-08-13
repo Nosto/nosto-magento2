@@ -2,19 +2,22 @@
 
 pipeline {
 
-  agent { dockerfile true }
+  agent none
+
   environment {
     REPO = credentials('magento')
   }
 
   stages {
     stage('Prepare environment') {
+      agent { dockerfile true }
       steps {
         checkout scm
       }
     }
 
     stage('Update Dependencies') {
+      agent { dockerfile true }
       steps {
         sh "composer config repositories.0 composer https://repo.magento.com"
         sh "composer config http-basic.repo.magento.com $REPO_USR $REPO_PSW"
@@ -23,6 +26,7 @@ pipeline {
     }
 
     stage('Code Sniffer') {
+      agent { dockerfile true }
       steps {
         catchError {
           sh "./vendor/bin/phpcs --standard=ruleset.xml --report=checkstyle --report-file=chkphpcs.xml || true"
@@ -31,6 +35,7 @@ pipeline {
     }
 
     stage('Mess Detection') {
+      agent { dockerfile true }
       steps {
         catchError {
           sh "./vendor/bin/phpmd . xml codesize,naming,unusedcode,controversial,design --exclude vendor,var,build,tests --reportfile phpmd.xml || true"
@@ -39,6 +44,7 @@ pipeline {
     }
 
     stage('Phan Analysis') {
+      agent { dockerfile true }
       steps {
         sh "composer create-project magento/community-edition magento"
         sh "cd magento && composer config minimum-stability dev"
@@ -58,7 +64,18 @@ pipeline {
       }
     }
 
+    stage('PhpStorm Inspections') {
+      agent { docker { image 'nosto/phpstorm:2018.2-eap' } }
+      steps {
+        catchError {
+          sh "/home/plugins/PhpStorm-182.3684.37/bin/inspect.sh || true" /* Initializes the IDE and the user preferences directory */
+          sh "./vendor/bin/phpstorm-inspect /home/plugins/PhpStorm-182.3684.37/bin/inspect.sh ~/.PhpStorm2018.2/system . .idea/inspectionProfiles/Project_Default.xml ./app checkstyle > chkintellij.xml"
+        }
+      }
+    }
+
     stage('Package') {
+      agent { dockerfile true }
       steps {
         script {
           version = sh(returnStdout: true, script: 'git rev-parse --short HEAD').trim()
@@ -72,9 +89,11 @@ pipeline {
 
   post {
     always {
-      checkstyle pattern: 'chk*.xml', unstableTotalAll:'0'
-      pmd pattern: 'phpmd.xml', unstableTotalAll:'0'
-      deleteDir()
+       node('master') {
+        checkstyle pattern: 'chk*.xml', unstableTotalAll:'0'
+        pmd pattern: 'phpmd.xml', unstableTotalAll:'0'
+        deleteDir()
+      }
     }
   }
 }
