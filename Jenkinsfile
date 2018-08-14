@@ -44,21 +44,15 @@ pipeline {
     }
 
     stage('PhpStorm Inspections') {
-      agent { docker { image 'supercid/phpstorminspections:latest' } }
+      agent { docker { image 'supercid/phpstorm:182.3911.19' } }
       steps {
-        sh "ls -lah"
-        sh "ls -lah /home/plugins"
-        sh "composer require shopsys/phpstorm-inspect"
-        sh "ls -lah vendor/bin"
-        script {
-          try {
-            sh "/home/plugins/PhpStorm-*/bin/inspect.sh || true" /* Initializes the IDE and the user preferences directory */
-            sh "ls -lah /home/plugins/PhpStorm-*/bin"
-          } catch (Exception e) {
-            sh "curl -H 'Content-Type: application/json' --data ''{'build': true}'' -X POST https://registry.hub.docker.com/u/supercid/phpstorminspections/trigger/1b0eeeb8-c13a-4c87-81f8-2b0ac69f18ed/"
-          } finally {
-            sh "./vendor/bin/phpstorm-inspect /home/plugins/PhpStorm-*/bin/inspect.sh ~/.PhpStorm20*/system . .idea/inspectionProfiles/Project_Default.xml . text"
-          }
+        catchError {
+          sh "ls -lah"
+          sh "ls -lah /home/plugins"
+          sh "ls -lah vendor/bin"
+          sh "/home/plugins/PhpStorm-*/bin/inspect.sh || true" /* Initializes the IDE and the user preferences directory */
+          sh "ls -lah /home/plugins/PhpStorm-*/bin"
+          sh "./vendor/bin/phpstorm-inspect /home/plugins/PhpStorm-*/bin/inspect.sh ~/.PhpStorm20*/system . .idea/inspectionProfiles/Project_Default.xml . text"
         }
       }
     }
