@@ -44,7 +44,7 @@ pipeline {
     }
 
     stage('PhpStorm Inspections') {
-      agent { docker { image 'supercid/phpstorm:182.3911.19' } }
+      agent { docker { image 'supercid/phpstorm:2017.3' } }
       steps {
         catchError {
           sh "ls -lah"
@@ -52,7 +52,7 @@ pipeline {
           sh "ls -lah vendor/bin"
           sh "/home/plugins/PhpStorm-*/bin/inspect.sh || true" /* Initializes the IDE and the user preferences directory */
           sh "ls -lah /home/plugins/PhpStorm-*/bin"
-          sh "./vendor/bin/phpstorm-inspect /home/plugins/PhpStorm-*/bin/inspect.sh ~/.PhpStorm20*/system . .idea/inspectionProfiles/Project_Default.xml . text"
+          sh "./vendor/bin/phpstorm-inspect /home/plugins/PhpStorm-*/bin/inspect.sh ~/.PhpStorm20*/system . .idea/inspectionProfiles/Project_Default.xml . "
         }
       }
     }
