@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "da3d9cefbbaddd6cc7a10e08462d1d3e",
+    "content-hash": "127f1da0be7fbbb0b74613c6b2335fff",
     "packages": [
         {
             "name": "nosto/php-sdk",
@@ -59,12 +59,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpseclib/phpseclib.git",
-                "reference": "6b275cdcd51f37d284c54a8931ef2ee6a18be825"
+                "reference": "49e0b860de4120a3bb4141a45be22949f2ef2eff"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpseclib/phpseclib/zipball/6b275cdcd51f37d284c54a8931ef2ee6a18be825",
-                "reference": "6b275cdcd51f37d284c54a8931ef2ee6a18be825",
+                "url": "https://api.github.com/repos/phpseclib/phpseclib/zipball/49e0b860de4120a3bb4141a45be22949f2ef2eff",
+                "reference": "49e0b860de4120a3bb4141a45be22949f2ef2eff",
                 "shasum": ""
             },
             "require": {
@@ -143,7 +143,7 @@
                 "x.509",
                 "x509"
             ],
-            "time": "2018-05-27T16:33:37+00:00"
+            "time": "2018-07-16T05:56:57+00:00"
         },
         {
             "name": "vlucas/phpdotenv",
@@ -197,6 +197,68 @@
         }
     ],
     "packages-dev": [
+        {
+            "name": "arvenil/ninja-mutex",
+            "version": "0.4.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/arvenil/ninja-mutex.git",
+                "reference": "b5be60f8798bdaa07b0bcf9d0a5bc431c3a2de7b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/arvenil/ninja-mutex/zipball/b5be60f8798bdaa07b0bcf9d0a5bc431c3a2de7b",
+                "reference": "b5be60f8798bdaa07b0bcf9d0a5bc431c3a2de7b",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "require-dev": {
+                "codeclimate/php-test-reporter": "v0.1.2",
+                "ext-memcache": "*",
+                "ext-memcached": "*",
+                "ext-pdo_mysql": "*",
+                "mikey179/vfsstream": "v1.4.0",
+                "predis/predis": "v1.0.0",
+                "scrutinizer/ocular": "1.1.1"
+            },
+            "suggest": {
+                "ext-memcache": "Create mutex using memcache extension",
+                "ext-memcached": "Create mutex using memcached extension",
+                "ext-pdo_mysql": "Create mutex using MySql",
+                "predis/predis": "Create mutex using Predis (client library for Redis)"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "NinjaMutex": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Kamil Dziedzic",
+                    "email": "arvenil@klecza.pl"
+                }
+            ],
+            "description": "Simple to use mutex implementation that can use flock, memcache, memcached, mysql or redis for locking",
+            "homepage": "https://github.com/arvenil/ninja-mutex",
+            "keywords": [
+                "flock",
+                "lock",
+                "locking",
+                "memcache",
+                "memcached",
+                "mutex",
+                "mysql",
+                "redis"
+            ],
+            "time": "2014-10-01T01:23:11+00:00"
+        },
         {
             "name": "colinmollenhour/credis",
             "version": "1.10.0",
@@ -280,12 +342,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/composer/ca-bundle.git",
-                "reference": "d2c0a83b7533d6912e8d516756ebd34f893e9169"
+                "reference": "46afded9720f40b9dc63542af4e3e43a1177acb0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/composer/ca-bundle/zipball/d2c0a83b7533d6912e8d516756ebd34f893e9169",
-                "reference": "d2c0a83b7533d6912e8d516756ebd34f893e9169",
+                "url": "https://api.github.com/repos/composer/ca-bundle/zipball/46afded9720f40b9dc63542af4e3e43a1177acb0",
+                "reference": "46afded9720f40b9dc63542af4e3e43a1177acb0",
                 "shasum": ""
             },
             "require": {
@@ -328,7 +390,7 @@
                 "ssl",
                 "tls"
             ],
-            "time": "2018-03-29T19:57:20+00:00"
+            "time": "2018-08-08T08:57:40+00:00"
         },
         {
             "name": "composer/composer",
@@ -4031,6 +4093,55 @@
             "time": "2015-10-13T18:44:15+00:00"
         },
         {
+            "name": "shopsys/phpstorm-inspect",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/shopsys/phpstorm-inspect.git",
+                "reference": "977357cffefb0e8527fa5b41b445c1e009482e34"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/shopsys/phpstorm-inspect/zipball/977357cffefb0e8527fa5b41b445c1e009482e34",
+                "reference": "977357cffefb0e8527fa5b41b445c1e009482e34",
+                "shasum": ""
+            },
+            "require": {
+                "arvenil/ninja-mutex": "0.4.1",
+                "php": ">=5.4",
+                "symfony/filesystem": "@stable"
+            },
+            "require-dev": {
+                "shopsys/coding-standards": "3.0.0"
+            },
+            "bin": [
+                "bin/phpstorm-inspect"
+            ],
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "ShopSys\\": "src/ShopSys"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Shopsys",
+                    "homepage": "https://www.shopsys.com/"
+                }
+            ],
+            "description": "Package for running PhpStorm's inspections from CLI and displaying results",
+            "keywords": [
+                "code quality",
+                "inspection",
+                "phpstorm"
+            ],
+            "time": "2018-02-28T13:16:36+00:00"
+        },
+        {
             "name": "squizlabs/php_codesniffer",
             "version": "2.6.2",
             "source": {
@@ -4114,12 +4225,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/config.git",
-                "reference": "1fffdeb349ff36a25184e5564c25289b1dbfc402"
+                "reference": "7b08223b7f6abd859651c56bcabf900d1627d085"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/config/zipball/1fffdeb349ff36a25184e5564c25289b1dbfc402",
-                "reference": "1fffdeb349ff36a25184e5564c25289b1dbfc402",
+                "url": "https://api.github.com/repos/symfony/config/zipball/7b08223b7f6abd859651c56bcabf900d1627d085",
+                "reference": "7b08223b7f6abd859651c56bcabf900d1627d085",
                 "shasum": ""
             },
             "require": {
@@ -4170,7 +4281,7 @@
             ],
             "description": "Symfony Config Component",
             "homepage": "https://symfony.com",
-            "time": "2018-06-19T14:02:58+00:00"
+            "time": "2018-07-26T11:19:56+00:00"
         },
         {
             "name": "symfony/console",
@@ -4178,12 +4289,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/console.git",
-                "reference": "d96cc7cdc575c7702c4853dad2ab7e29c8aadb5f"
+                "reference": "0c1fcbb9afb5cff992c982ff99c0434f0146dcfc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/console/zipball/d96cc7cdc575c7702c4853dad2ab7e29c8aadb5f",
-                "reference": "d96cc7cdc575c7702c4853dad2ab7e29c8aadb5f",
+                "url": "https://api.github.com/repos/symfony/console/zipball/0c1fcbb9afb5cff992c982ff99c0434f0146dcfc",
+                "reference": "0c1fcbb9afb5cff992c982ff99c0434f0146dcfc",
                 "shasum": ""
             },
             "require": {
@@ -4231,7 +4342,7 @@
             ],
             "description": "Symfony Console Component",
             "homepage": "https://symfony.com",
-            "time": "2018-07-04T15:34:47+00:00"
+            "time": "2018-07-26T11:13:39+00:00"
         },
         {
             "name": "symfony/debug",
@@ -4366,12 +4477,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/filesystem.git",
-                "reference": "8a721a5f2553c6c3482b1c5b22ed60fe94dd63ed"
+                "reference": "285ce5005cb01a0aeaa5b0cf590bd0cc40bb631c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/filesystem/zipball/8a721a5f2553c6c3482b1c5b22ed60fe94dd63ed",
-                "reference": "8a721a5f2553c6c3482b1c5b22ed60fe94dd63ed",
+                "url": "https://api.github.com/repos/symfony/filesystem/zipball/285ce5005cb01a0aeaa5b0cf590bd0cc40bb631c",
+                "reference": "285ce5005cb01a0aeaa5b0cf590bd0cc40bb631c",
                 "shasum": ""
             },
             "require": {
@@ -4408,7 +4519,7 @@
             ],
             "description": "Symfony Filesystem Component",
             "homepage": "https://symfony.com",
-            "time": "2018-06-21T11:10:19+00:00"
+            "time": "2018-08-10T07:29:05+00:00"
         },
         {
             "name": "symfony/finder",
@@ -4416,12 +4527,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/finder.git",
-                "reference": "3a8c3de91d2b2c68cd2d665cf9d00f7ef9eaa394"
+                "reference": "8a84fcb207451df0013b2c74cbbf1b62d47b999a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/finder/zipball/3a8c3de91d2b2c68cd2d665cf9d00f7ef9eaa394",
-                "reference": "3a8c3de91d2b2c68cd2d665cf9d00f7ef9eaa394",
+                "url": "https://api.github.com/repos/symfony/finder/zipball/8a84fcb207451df0013b2c74cbbf1b62d47b999a",
+                "reference": "8a84fcb207451df0013b2c74cbbf1b62d47b999a",
                 "shasum": ""
             },
             "require": {
@@ -4457,7 +4568,7 @@
             ],
             "description": "Symfony Finder Component",
             "homepage": "https://symfony.com",
-            "time": "2018-06-19T20:52:10+00:00"
+            "time": "2018-07-26T11:19:56+00:00"
         },
         {
             "name": "symfony/polyfill-ctype",
@@ -4582,12 +4693,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/process.git",
-                "reference": "542d88b350c42750fdc14e73860ee96dd423e95d"
+                "reference": "4be278e19064c3492095de50c9e375caae569ae1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/process/zipball/542d88b350c42750fdc14e73860ee96dd423e95d",
-                "reference": "542d88b350c42750fdc14e73860ee96dd423e95d",
+                "url": "https://api.github.com/repos/symfony/process/zipball/4be278e19064c3492095de50c9e375caae569ae1",
+                "reference": "4be278e19064c3492095de50c9e375caae569ae1",
                 "shasum": ""
             },
             "require": {
@@ -4623,7 +4734,7 @@
             ],
             "description": "Symfony Process Component",
             "homepage": "https://symfony.com",
-            "time": "2018-05-27T07:40:52+00:00"
+            "time": "2018-08-03T09:45:57+00:00"
         },
         {
             "name": "symfony/yaml",
@@ -4978,12 +5089,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zend-diactoros.git",
-                "reference": "87928a54be69b5ac26b35c2d1a906a8ddc3edecf"
+                "reference": "3e4edb822c942f37ade0d09579cfbab11e2fee87"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/zendframework/zend-diactoros/zipball/87928a54be69b5ac26b35c2d1a906a8ddc3edecf",
-                "reference": "87928a54be69b5ac26b35c2d1a906a8ddc3edecf",
+                "url": "https://api.github.com/repos/zendframework/zend-diactoros/zipball/3e4edb822c942f37ade0d09579cfbab11e2fee87",
+                "reference": "3e4edb822c942f37ade0d09579cfbab11e2fee87",
                 "shasum": ""
             },
             "require": {
@@ -4996,7 +5107,7 @@
             "require-dev": {
                 "ext-dom": "*",
                 "ext-libxml": "*",
-                "phpunit/phpunit": "^5.7.16 || ^6.0.8",
+                "phpunit/phpunit": "^5.7.16 || ^6.0.8 || ^7.2.7",
                 "zendframework/zend-coding-standard": "~1.0"
             },
             "type": "library",
@@ -5033,7 +5144,7 @@
                 "psr",
                 "psr-7"
             ],
-            "time": "2018-06-27T19:14:53+00:00"
+            "time": "2018-08-10T14:16:32+00:00"
         },
         {
             "name": "zendframework/zend-escaper",
@@ -5281,12 +5392,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zend-http.git",
-                "reference": "8c77280a45d26c4de447b367f8a41f3289700de4"
+                "reference": "4c9bc31d14941fcfc5827e87ec7364f8e4f77b3f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/zendframework/zend-http/zipball/8c77280a45d26c4de447b367f8a41f3289700de4",
-                "reference": "8c77280a45d26c4de447b367f8a41f3289700de4",
+                "url": "https://api.github.com/repos/zendframework/zend-http/zipball/4c9bc31d14941fcfc5827e87ec7364f8e4f77b3f",
+                "reference": "4c9bc31d14941fcfc5827e87ec7364f8e4f77b3f",
                 "shasum": ""
             },
             "require": {
@@ -5328,7 +5439,7 @@
                 "zend",
                 "zf"
             ],
-            "time": "2018-04-26T21:06:41+00:00"
+            "time": "2018-08-13T18:49:07+00:00"
         },
         {
             "name": "zendframework/zend-hydrator",
@@ -5919,7 +6030,8 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
-        "magento/marketplace-tools": 20
+        "magento/marketplace-tools": 20,
+        "shopsys/phpstorm-inspect": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,
