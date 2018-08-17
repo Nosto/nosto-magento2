@@ -1,5 +1,13 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### Not released
+* Update marketing permission to Nosto in real-time when newsletter subscription is changed
+* Support adding multiple products to cart from Nosto recommendations
+* Improve performance for generating tagging (@hostep)
+* Fix the issue with product building when no custom fields are found (@hostep)
+* Improve error handling for Nosto dashboard in store admin area
+* Code style fixes & refactoring
+
 ### 2.11.0
 * Add possibility to remove “/pub/” directory from product image URLs
 * Add possibility to define quantity for Nosto’s add to cart
