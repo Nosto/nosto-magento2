@@ -66,15 +66,15 @@ trait BuilderTrait
      *
      * @param Product $product
      * @param Store $store
-     * @return array|null
+     * @return array
      */
     public function buildCustomFields(Product $product, Store $store)
     {
-        if (!$this->nostoDataHelperTrait->isCustomFieldsEnabled($store)) {
-            return null;
-        }
-
         $customFields = [];
+
+        if (!$this->nostoDataHelperTrait->isCustomFieldsEnabled($store)) {
+            return $customFields;
+        }
 
         $attributes = $product->getTypeInstance()->getSetAttributes($product);
         /** @var AbstractAttribute $attribute */
