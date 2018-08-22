@@ -37,15 +37,17 @@
 namespace Nosto\Tagging\Console\Command;
 
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Input\InputDefinition;
+use Symfony\Component\Console\Question\Question;
 use Magento\Framework\Module\ModuleListInterface;
 use Nosto\Tagging\Helper\Account as NostoAccountHelper;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Object\Signup\Account as NostoSignupAccount;
 use Nosto\Request\Api\Token;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 class NostoConfigConnectCommand extends Command
 {
@@ -56,6 +58,9 @@ class NostoConfigConnectCommand extends Command
      */
     private $accountHelper;
 
+    /**
+     * @var NostoHelperScope
+     */
     private $nostoHelperScope;
 
     /**
@@ -106,10 +111,9 @@ class NostoConfigConnectCommand extends Command
             )->addOption(
                 Token::API_EMAIL,
                 null,
-                InputOption::VALUE_OPTIONAL,
+                InputOption::VALUE_REQUIRED,
                 'Rates Token'
-            )
-        ;
+            );
         parent::configure();
     }
 
@@ -118,36 +122,77 @@ class NostoConfigConnectCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $accountId = $input->getOption(self::NOSTO_ACCOUNT_ID);
+        $io = new SymfonyStyle($input, $output);
+        $accountId = $input->getOption(self::NOSTO_ACCOUNT_ID) ?:
+            $io->ask('Enter Nosto Account Id: ');
 
+        $tokens = $this->getTokensFromInput($input, $io);
+        if ($this->updateNostoTokens($tokens, $accountId, $io)) {
+            $io->success('Tokens Sucessfully Configured');
+        } else {
+            $io->error('Could not update complete operation');
+        }
+    }
+
+    /**
+     * @param array $tokens
+     * @param $accountId
+     * @return bool
+     */
+    private function updateNostoTokens(array $tokens, $accountId, SymfonyStyle $io)
+    {
         $stores = $this->nostoHelperScope->getStores();
         foreach ($stores as $store) {
             $storeAccountId = $store->getConfig(NostoAccountHelper::XML_PATH_ACCOUNT);
             if ($storeAccountId === $accountId) {
                 $account = $this->accountHelper->findAccount($store);
-                $this->rewriteTokens($input, $account, $store);
-
+                $account->setTokens($tokens);
+                return $this->accountHelper->saveAccount($account, $store);
             } else {
-                $output->writeln('<info>Account not installed, cannot reconnect.<info>');
+                $io->warning('Could not find account. Check your input.');
+                return false;
             }
         }
-        $output->writeln('<info>Tokens Sucessfully Configured<info>');
     }
 
-    private function rewriteTokens(InputInterface $input, NostoSignupAccount $account, $store)
+    /**
+     * Check if required arguments passed by command line are present,
+     * if not, will ask for the remaining parameters.
+     * Returns Token[]
+     *
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @return array
+     * @throws \Nosto\NostoException
+     */
+    private function getTokensFromInput(InputInterface $input, SymfonyStyle $io)
     {
-        $tokens = [
-            new Token(Token::API_SSO, $input->getOption(Token::API_SSO)),
-            new Token(Token::API_PRODUCTS, $input->getOption(Token::API_PRODUCTS)),
-            new Token(Token::API_SETTINGS, $input->getOption(Token::API_SETTINGS)),
-            new Token(Token::API_EXCHANGE_RATES, $input->getOption(Token::API_EXCHANGE_RATES))
-        ];
-        /* Email token is an optional argument */
-        $emailToken = $input->getOption(Token::API_EMAIL);
+        $tokens = array();
+
+        $ssoToken = $input->getOption(Token::API_SSO) ?:
+            $io->ask('Enter SSO Token: ');
+        $tokens[] = new Token(Token::API_SSO, $ssoToken);
+
+        $productsToken = $input->getOption(Token::API_PRODUCTS) ?:
+            $io->ask('Enter Products Token: ');
+        $tokens[] = new Token(Token::API_PRODUCTS, $productsToken);
+
+        $ratesToken = $input->getOption(Token::API_EXCHANGE_RATES) ?:
+            $io->ask('Enter Exchange Rates Token: ');
+        $tokens[] = new Token(Token::API_EXCHANGE_RATES, $ratesToken);
+
+        $settingsToken = $input->getOption(Token::API_SETTINGS) ?:
+            $io->ask('Enter Settings Token: ');
+        $tokens[] = new Token(Token::API_SETTINGS, $settingsToken);
+
+        $emailToken = $input->getOption(Token::API_EMAIL) ?:
+            $io->ask(
+                'Enter Email Token (Optional): ',
+                false
+            );
         if ($emailToken) {
             $tokens[] = new Token(Token::API_EMAIL, $emailToken);
         }
-        $account->setTokens($tokens);
-        return $this->accountHelper->saveAccount($account, $store);
+        return $tokens;
     }
 }
