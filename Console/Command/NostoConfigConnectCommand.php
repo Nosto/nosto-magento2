@@ -55,8 +55,6 @@ class NostoConfigConnectCommand extends Command
     const NOSTO_ACCOUNT_ID = 'account-id';
     const TOKEN_SUFFIX = '_token';
     const SCOPE_CODE = 'scope-code';
-    const OVERRIDE = 'override';
-    const NO_EMAIL = 'no-email';
 
     /*
      * @var NostoAccountHelper
@@ -69,9 +67,9 @@ class NostoConfigConnectCommand extends Command
     private $nostoHelperScope;
 
     /**
-     * @var bool used to check the override flag
+     * @var bool
      */
-    private $overrideOption = false;
+    private $isInteractive = true;
 
     /**
      * NostoConfigConnectCommand constructor.
@@ -128,16 +126,6 @@ class NostoConfigConnectCommand extends Command
                 null,
                 InputOption::VALUE_REQUIRED,
                 'Store view code'
-            )->addOption(
-                self::OVERRIDE,
-                'o',
-                InputOption::VALUE_NONE,
-                'Override tokens without asking for confirmation'
-            )->addOption(
-                self::NO_EMAIL,
-                null,
-                InputOption::VALUE_NONE,
-                'Run script without asking for email token'
             );
         parent::configure();
     }
@@ -147,8 +135,8 @@ class NostoConfigConnectCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $this->isInteractive = !$input->getOption('no-interaction');
         $io = new SymfonyStyle($input, $output);
-        $this->overrideOption = $input->getOption(self::OVERRIDE) ?: false;
         $accountId = $input->getOption(self::NOSTO_ACCOUNT_ID) ?:
             $io->ask('Enter Nosto Account Id: ');
         $scopeCode = $input->getOption(self::SCOPE_CODE) ?:
@@ -177,13 +165,13 @@ class NostoConfigConnectCommand extends Command
         $storeAccountId = $store->getConfig(NostoAccountHelper::XML_PATH_ACCOUNT);
         $account = $this->accountHelper->findAccount($store);
         if ($account && $storeAccountId === $accountId) {
-            // Check for the override flag, if not present, ask.
-            $this->overrideOption = $this->overrideOption ?:
-                $io->confirm(
-                    'Nosto account found for this store view. Override tokens?',
+           $confirmOverride = $this->isInteractive ?
+                $confirmOverride = $io->confirm(
+                    'Local Nosto account found for this store view. Override tokens?',
                     false
-                );
-            if ($this->overrideOption) {
+                ):
+               true;
+            if ($confirmOverride) {
                 $account->setTokens($tokens);
                 return $this->accountHelper->saveAccount($account, $store);
             }
@@ -239,8 +227,7 @@ class NostoConfigConnectCommand extends Command
         $tokens[] = new Token(Token::API_SETTINGS, $settingsToken);
 
         $emailToken = $input->getOption(Token::API_EMAIL . self::TOKEN_SUFFIX);
-        $noEmailFlag = $input->getOption(self::NO_EMAIL);
-        if (!$emailToken && !$noEmailFlag) {
+        if (!$emailToken && $this->isInteractive) {
             $emailToken = $io->ask(
                 'Enter Email Token (Optional): ',
                 false
