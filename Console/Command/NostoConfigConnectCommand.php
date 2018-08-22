@@ -135,7 +135,7 @@ class NostoConfigConnectCommand extends Command
                 'Override tokens without asking'
             )->addOption(
                 self::NO_EMAIL,
-                '-e',
+                null,
                 InputOption::VALUE_NONE,
                 'Store View Code'
             );
@@ -238,11 +238,14 @@ class NostoConfigConnectCommand extends Command
             $io->ask('Enter Settings Token: ');
         $tokens[] = new Token(Token::API_SETTINGS, $settingsToken);
 
-        $emailToken = $input->getOption(Token::API_EMAIL . self::TOKEN_SUFFIX) ?:
-            $io->ask(
+        $emailToken = $input->getOption(Token::API_EMAIL . self::TOKEN_SUFFIX);
+        $noEmailFlag = $input->getOption(self::NO_EMAIL);
+        if (!$emailToken && !$noEmailFlag) {
+            $emailToken = $io->ask(
                 'Enter Email Token (Optional): ',
                 false
             );
+        }
         if ($emailToken) {
             $tokens[] = new Token(Token::API_EMAIL, $emailToken);
         }
