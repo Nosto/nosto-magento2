@@ -97,12 +97,12 @@ class NostoConfigConnectCommand extends Command
                 self::NOSTO_ACCOUNT_ID,
                 null,
                 InputOption::VALUE_REQUIRED,
-                'Account ID to be reconnected'
+                'Nosto Account ID to be reconnected (Should exist already)'
             )->addOption(
                 Token::API_SSO . self::TOKEN_SUFFIX,
                 null,
                 InputOption::VALUE_REQUIRED,
-                'SSO Token'
+                'SSO token'
             )->addOption(
                 Token::API_PRODUCTS . self::TOKEN_SUFFIX,
                 null,
@@ -112,32 +112,32 @@ class NostoConfigConnectCommand extends Command
                 Token::API_SETTINGS . self::TOKEN_SUFFIX,
                 null,
                 InputOption::VALUE_REQUIRED,
-                'Setting Token'
+                'Settings token'
             )->addOption(
                 Token::API_EXCHANGE_RATES . self::TOKEN_SUFFIX,
                 null,
                 InputOption::VALUE_REQUIRED,
-                'Rates Token'
+                'API exchange rates token'
             )->addOption(
                 Token::API_EMAIL . self::TOKEN_SUFFIX,
                 null,
                 InputOption::VALUE_REQUIRED,
-                'Rates Token'
+                'Email token'
             )->addOption(
                 self::SCOPE_CODE,
                 null,
                 InputOption::VALUE_REQUIRED,
-                'Store View Code'
+                'Store view code'
             )->addOption(
                 self::OVERRIDE,
                 'o',
                 InputOption::VALUE_NONE,
-                'Override tokens without asking'
+                'Override tokens without asking for confirmation'
             )->addOption(
                 self::NO_EMAIL,
                 null,
                 InputOption::VALUE_NONE,
-                'Store View Code'
+                'Run script without asking for email token'
             );
         parent::configure();
     }
