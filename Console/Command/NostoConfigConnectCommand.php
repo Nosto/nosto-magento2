@@ -41,20 +41,24 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputDefinition;
+use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Console\Question\Question;
+use Magento\Store\Api\Data\StoreInterface;
 use Magento\Framework\Module\ModuleListInterface;
 use Nosto\Tagging\Helper\Account as NostoAccountHelper;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Object\Signup\Account as NostoSignupAccount;
 use Nosto\Request\Api\Token;
-use Symfony\Component\Console\Style\SymfonyStyle;
 
 class NostoConfigConnectCommand extends Command
 {
     const NOSTO_ACCOUNT_ID = 'account-id';
     const TOKEN_SUFFIX = '_token';
+    const SCOPE_CODE = 'scope-code';
+    const OVERRIDE = 'override';
+    const NO_EMAIL = 'no-email';
 
-    /**
+    /*
      * @var NostoAccountHelper
      */
     private $accountHelper;
@@ -63,6 +67,11 @@ class NostoConfigConnectCommand extends Command
      * @var NostoHelperScope
      */
     private $nostoHelperScope;
+
+    /**
+     * @var bool used to check the override flag
+     */
+    private $overrideOption = false;
 
     /**
      * NostoConfigConnectCommand constructor.
@@ -114,6 +123,21 @@ class NostoConfigConnectCommand extends Command
                 null,
                 InputOption::VALUE_REQUIRED,
                 'Rates Token'
+            )->addOption(
+                self::SCOPE_CODE,
+                null,
+                InputOption::VALUE_REQUIRED,
+                'Store View Code'
+            )->addOption(
+                self::OVERRIDE,
+                'o',
+                InputOption::VALUE_NONE,
+                'Override tokens without asking'
+            )->addOption(
+                self::NO_EMAIL,
+                '-e',
+                InputOption::VALUE_NONE,
+                'Store View Code'
             );
         parent::configure();
     }
@@ -124,11 +148,14 @@ class NostoConfigConnectCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $io = new SymfonyStyle($input, $output);
+        $this->overrideOption = $input->getOption(self::OVERRIDE) ?: false;
         $accountId = $input->getOption(self::NOSTO_ACCOUNT_ID) ?:
             $io->ask('Enter Nosto Account Id: ');
+        $scopeCode = $input->getOption(self::SCOPE_CODE) ?:
+            $io->ask('Enter Store Scope Code');
 
         $tokens = $this->getTokensFromInput($input, $io);
-        if ($this->updateNostoTokens($tokens, $accountId, $io)) {
+        if ($this->updateNostoTokens($tokens, $accountId, $io, $scopeCode)) {
             $io->success('Tokens Sucessfully Configured');
         } else {
             $io->error('Could not update complete operation');
@@ -140,18 +167,44 @@ class NostoConfigConnectCommand extends Command
      * @param $accountId
      * @return bool
      */
-    private function updateNostoTokens(array $tokens, $accountId, SymfonyStyle $io)
+    private function updateNostoTokens(array $tokens, $accountId, SymfonyStyle $io, $scopeCode)
+    {
+        $store = $this->getStoreByCode($scopeCode);
+        if(!$store){
+            $io->error('Store not found. Check your input.');
+            return false;
+        }
+        $storeAccountId = $store->getConfig(NostoAccountHelper::XML_PATH_ACCOUNT);
+        $account = $this->accountHelper->findAccount($store);
+        if ($account && $storeAccountId === $accountId) {
+            // Check for the override flag, if not present, ask.
+            $this->overrideOption = $this->overrideOption ?:
+                $io->confirm(
+                    'Nosto account found for this store view. Override tokens?',
+                    false
+                );
+            if ($this->overrideOption) {
+                $account->setTokens($tokens);
+                return $this->accountHelper->saveAccount($account, $store);
+            }
+        } else {
+            $io->note('Local account not found, creating a new one...');
+            $account = new NostoSignupAccount($accountId);
+            $account->setTokens($tokens);
+            return $this->accountHelper->saveAccount($account, $store);
+        }
+    }
+
+    /**
+     * @param $scopeCode the storeview code
+     * @return \Magento\Store\Model\Store|null
+     */
+    private function getStoreByCode($scopeCode)
     {
         $stores = $this->nostoHelperScope->getStores();
         foreach ($stores as $store) {
-            $storeAccountId = $store->getConfig(NostoAccountHelper::XML_PATH_ACCOUNT);
-            if ($storeAccountId === $accountId) {
-                $account = $this->accountHelper->findAccount($store);
-                $account->setTokens($tokens);
-                return $this->accountHelper->saveAccount($account, $store);
-            } else {
-                $io->warning('Could not find account. Check your input.');
-                return false;
+            if ($store->getCode() === $scopeCode) {
+                return $store;
             }
         }
     }
@@ -159,11 +212,10 @@ class NostoConfigConnectCommand extends Command
     /**
      * Check if required arguments passed by command line are present,
      * if not, will ask for the remaining parameters.
-     * Returns Token[]
      *
      * @param InputInterface $input
      * @param OutputInterface $output
-     * @return array
+     * @return array of Token objects
      * @throws \Nosto\NostoException
      */
     private function getTokensFromInput(InputInterface $input, SymfonyStyle $io)
