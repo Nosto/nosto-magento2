@@ -52,6 +52,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 class NostoConfigConnectCommand extends Command
 {
     const NOSTO_ACCOUNT_ID = 'account-id';
+    const TOKEN_SUFFIX = '_token';
 
     /**
      * @var NostoAccountHelper
@@ -89,27 +90,27 @@ class NostoConfigConnectCommand extends Command
                 InputOption::VALUE_REQUIRED,
                 'Account ID to be reconnected'
             )->addOption(
-                Token::API_SSO,
+                Token::API_SSO . self::TOKEN_SUFFIX,
                 null,
                 InputOption::VALUE_REQUIRED,
                 'SSO Token'
             )->addOption(
-                Token::API_PRODUCTS,
+                Token::API_PRODUCTS . self::TOKEN_SUFFIX,
                 null,
                 InputOption::VALUE_REQUIRED,
                 'Products Token'
             )->addOption(
-                Token::API_SETTINGS,
+                Token::API_SETTINGS . self::TOKEN_SUFFIX,
                 null,
                 InputOption::VALUE_REQUIRED,
                 'Setting Token'
             )->addOption(
-                Token::API_EXCHANGE_RATES,
+                Token::API_EXCHANGE_RATES . self::TOKEN_SUFFIX,
                 null,
                 InputOption::VALUE_REQUIRED,
                 'Rates Token'
             )->addOption(
-                Token::API_EMAIL,
+                Token::API_EMAIL . self::TOKEN_SUFFIX,
                 null,
                 InputOption::VALUE_REQUIRED,
                 'Rates Token'
@@ -169,23 +170,23 @@ class NostoConfigConnectCommand extends Command
     {
         $tokens = array();
 
-        $ssoToken = $input->getOption(Token::API_SSO) ?:
+        $ssoToken = $input->getOption(Token::API_SSO . self::TOKEN_SUFFIX) ?:
             $io->ask('Enter SSO Token: ');
         $tokens[] = new Token(Token::API_SSO, $ssoToken);
 
-        $productsToken = $input->getOption(Token::API_PRODUCTS) ?:
+        $productsToken = $input->getOption(Token::API_PRODUCTS . self::TOKEN_SUFFIX) ?:
             $io->ask('Enter Products Token: ');
         $tokens[] = new Token(Token::API_PRODUCTS, $productsToken);
 
-        $ratesToken = $input->getOption(Token::API_EXCHANGE_RATES) ?:
+        $ratesToken = $input->getOption(Token::API_EXCHANGE_RATES . self::TOKEN_SUFFIX) ?:
             $io->ask('Enter Exchange Rates Token: ');
         $tokens[] = new Token(Token::API_EXCHANGE_RATES, $ratesToken);
 
-        $settingsToken = $input->getOption(Token::API_SETTINGS) ?:
+        $settingsToken = $input->getOption(Token::API_SETTINGS . self::TOKEN_SUFFIX) ?:
             $io->ask('Enter Settings Token: ');
         $tokens[] = new Token(Token::API_SETTINGS, $settingsToken);
 
-        $emailToken = $input->getOption(Token::API_EMAIL) ?:
+        $emailToken = $input->getOption(Token::API_EMAIL . self::TOKEN_SUFFIX) ?:
             $io->ask(
                 'Enter Email Token (Optional): ',
                 false
