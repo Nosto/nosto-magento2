@@ -158,7 +158,7 @@ class NostoConfigConnectCommand extends Command
         if ($this->updateNostoTokens($tokens, $accountId, $io, $scopeCode)) {
             $io->success('Tokens Sucessfully Configured');
         } else {
-            $io->error('Could not update complete operation');
+            $io->error('Could not complete operation');
         }
     }
 
