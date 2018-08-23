@@ -53,7 +53,7 @@
     <type name="Magento\Framework\Console\CommandList">
         <arguments>
             <argument name="commands" xsi:type="array">
-                <item name="nosto_config_connect_command" xsi:type="object">Nosto\Tagging\Console\Command\NostoConfigConnectCommand</item>
+                <item name="nosto_account_connect_command" xsi:type="object">Nosto\Tagging\Console\Command\NostoAccountConnectCommand</item>
             </argument>
         </arguments>
     </type>

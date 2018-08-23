@@ -46,7 +46,7 @@ use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Object\Signup\Account as NostoSignupAccount;
 use Nosto\Request\Api\Token;
 
-class NostoConfigConnectCommand extends Command
+class NostoAccountConnectCommand extends Command
 {
     const NOSTO_ACCOUNT_ID = 'account-id';
     const TOKEN_SUFFIX = '_token';
@@ -86,7 +86,7 @@ class NostoConfigConnectCommand extends Command
      */
     protected function configure()
     {
-        $this->setName('nosto:config:connect')
+        $this->setName('nosto:account:connect')
             ->setDescription('Reconnect Nosto Account Via CLI')
             ->addOption(
                 self::NOSTO_ACCOUNT_ID,
