@@ -177,7 +177,7 @@ class NostoAccountConnectCommand extends Command
                 return $this->accountHelper->saveAccount($account, $store);
             }
         } else {
-            $io->note('Local account not found, creating a new one...');
+            $io->note('Local account not found. Saving local account...');
             $account = new NostoSignupAccount($accountId);
             $account->setTokens($tokens);
             return $this->accountHelper->saveAccount($account, $store);
