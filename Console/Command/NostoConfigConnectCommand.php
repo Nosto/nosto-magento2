@@ -70,6 +70,7 @@ class NostoConfigConnectCommand extends Command
     /**
      * NostoConfigConnectCommand constructor.
      * @param NostoAccountHelper $accountHelper
+     * @param NostoHelperScope $nostoHelperScope
      */
     public function __construct(
         NostoAccountHelper $accountHelper,
@@ -147,6 +148,9 @@ class NostoConfigConnectCommand extends Command
     }
 
     /**
+     * Set or override tokens for the given account id.
+     * If a local account is not found, will create a new one.
+     *
      * @param array $tokens
      * @param $accountId
      * @return bool
@@ -161,6 +165,7 @@ class NostoConfigConnectCommand extends Command
         $storeAccountId = $store->getConfig(NostoAccountHelper::XML_PATH_ACCOUNT);
         $account = $this->accountHelper->findAccount($store);
         if ($account && $storeAccountId === $accountId) {
+           // If the script is non-interactive, do not ask for confirmation
            $confirmOverride = $this->isInteractive ?
                 $confirmOverride = $io->confirm(
                     'Local Nosto account found for this store view. Override tokens?',
