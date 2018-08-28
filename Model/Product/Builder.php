@@ -271,7 +271,7 @@ class Builder
      */
     private function getAttributesFromAllTags(Store $store)
     {
-        $attributes = array();
+        $attributes = [];
         foreach (self::CUSTOMIZED_TAGS as $tag) {
             $attributes = $this->nostoDataHelper->getTagAttributes($tag, $store);
             if (!$attributes) {
