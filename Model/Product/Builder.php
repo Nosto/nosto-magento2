@@ -222,7 +222,7 @@ class Builder
                 $nostoProduct->setTag1($tags);
             }
 
-            $nostoProduct->setCustomFields($this->buildCustomFields($product, $store));
+            $nostoProduct->setCustomFields($this->amendAttributesCustomFields($product, $store));
 
             //update customized tag1, Tag2 and Tag3
             $this->amendAttributeTags($product, $nostoProduct, $store);
@@ -238,6 +238,50 @@ class Builder
             return null;
         }
         return $nostoProduct;
+    }
+
+    /**
+     * Adds selected attributes to all tags also in the custom fields section
+     *
+     * @param Product $product
+     * @param Store $store
+     * @return array
+     */
+    private function amendAttributesCustomFields(Product $product, Store $store)
+    {
+        $customFields = $this->buildCustomFields($product, $store);
+        $attributes = $this->getAttributesFromAllTags($store);
+        foreach ($product->getAttributes() as $key => $productAttribute) {
+            if (in_array($key, $attributes, false)) {
+                $attributeValue = $this->getAttributeValue($product, $key);
+                if (empty($attributeValue)) {
+                    continue;
+                }
+                $customFields[$key] = $attributeValue;
+            }
+        }
+        return $customFields;
+    }
+
+    /**
+     * Returns unique selected attributes from all tags
+     *
+     * @param Store $store
+     * @return array
+     */
+    private function getAttributesFromAllTags(Store $store)
+    {
+        $attributes = array();
+        foreach (self::CUSTOMIZED_TAGS as $tag) {
+            $attributes = $this->nostoDataHelper->getTagAttributes($tag, $store);
+            if (!$attributes) {
+                continue;
+            }
+            foreach ($attributes as $productAttribute) {
+                $attributes[] = $productAttribute;
+            }
+        }
+        return array_unique($attributes);
     }
 
     /**
