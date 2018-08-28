@@ -222,7 +222,7 @@ class Builder
                 $nostoProduct->setTag1($tags);
             }
 
-            $nostoProduct->setCustomFields($this->amendAttributesCustomFields($product, $store));
+            $nostoProduct->setCustomFields($this->getAmendedAttributesCustomFields($product, $store));
 
             //update customized tag1, Tag2 and Tag3
             $this->amendAttributeTags($product, $nostoProduct, $store);
@@ -247,14 +247,14 @@ class Builder
      * @param Store $store
      * @return array
      */
-    private function amendAttributesCustomFields(Product $product, Store $store)
+    private function getAmendedAttributesCustomFields(Product $product, Store $store)
     {
         $customFields = $this->buildCustomFields($product, $store);
         $attributes = $this->getAttributesFromAllTags($store);
         foreach ($product->getAttributes() as $key => $productAttribute) {
             if (in_array($key, $attributes, false)) {
                 $attributeValue = $this->getAttributeValue($product, $key);
-                if (empty($attributeValue)) {
+                if ($attributeValue === null || $attributeValue === '') {
                     continue;
                 }
                 $customFields[$key] = $attributeValue;
