@@ -62,7 +62,6 @@ class ImageUrl extends Template
      * Constructor.
      *
      * @param Context $context
-     * @param Registry $registry
      * @param NostoHelperScope $nostoHelperScope
      * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoLogger $logger
@@ -99,10 +98,10 @@ class ImageUrl extends Template
         if (!$urlTemplate) {
             $this->logger->error('url_template parameter is missing or it does not have NOSTO_ACCOUNT_PLACEHOLDER');
             return '';
-        } elseif (!stripos($urlTemplate, self::NOSTO_ACCOUNT_PLACEHOLDER)) {
+        } elseif (stripos($urlTemplate, self::NOSTO_ACCOUNT_PLACEHOLDER) === false) {
             $this->logger->error('NOSTO_ACCOUNT_PLACEHOLDER (@NOSTO_ACCOUNT@) is missing from url template');
             return '';
-        } elseif (!stripos($urlTemplate, self::EMAIL_PLACEHOLDER)) {
+        } elseif (stripos($urlTemplate, self::EMAIL_PLACEHOLDER) === false) {
             $this->logger->error('EMAIL_PLACEHOLDER (@EMAIL@) is missing from url template');
             return '';
         }

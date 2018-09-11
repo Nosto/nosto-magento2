@@ -55,7 +55,6 @@ class Visible extends Template
      * Constructor.
      *
      * @param Context $context
-     * @param Registry $registry
      * @param NostoHelperScope $nostoHelperScope
      * @param NostoHelperAccount $nostoHelperAccount
      * @param array $data
@@ -69,7 +68,6 @@ class Visible extends Template
         parent::__construct($context, $data);
         $this->nostoHelperScope = $nostoHelperScope;
         $this->nostoHelperAccount = $nostoHelperAccount;
-
     }
 
     /**
