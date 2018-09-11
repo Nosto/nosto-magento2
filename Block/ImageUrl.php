@@ -51,12 +51,11 @@ class ImageUrl extends Template
     const NOSTO_ACCOUNT_PLACEHOLDER = '@NOSTO_ACCOUNT@';
     const EMAIL_PLACEHOLDER = '@EMAIL@';
     const URL_TEMPLATE = 'url_template';
+    const CUSTOMER_EMAIL = 'customer_email';
 
     private $nostoHelperScope;
     private $nostoHelperAccount;
     private $logger;
-    const ORDER = 'order';
-    const CUSTOMER_EMAIL = 'customer_email';
 
     /**
      * Constructor.
@@ -106,17 +105,14 @@ class ImageUrl extends Template
             return '';
         }
 
-        $order = $this->getData(self::ORDER);
-        if (!$order) {
-            $this->logger->error('order parameter is missing');
-            return '';
-        } elseif (!$order->getData(self::CUSTOMER_EMAIL)) {
-            $this->logger->error('customer_email is missing');
+        $customerEmail = $this->getData(self::CUSTOMER_EMAIL);
+        if (!$customerEmail) {
+            $this->logger->error('customer_email parameter is missing');
             return '';
         }
 
         $src = str_replace(self::NOSTO_ACCOUNT_PLACEHOLDER, $account->getName(), $urlTemplate);
-        $src = str_replace(self::EMAIL_PLACEHOLDER, $order->getData(self::CUSTOMER_EMAIL), $src);
+        $src = str_replace(self::EMAIL_PLACEHOLDER, $customerEmail, $src);
         return $src;
     }
 }
