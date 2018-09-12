@@ -41,17 +41,13 @@ use Magento\Framework\View\Element\Template\Context;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
+use Nosto\Object\Email\ImageUrl as NostoImageUrl;
 
 /**
  * ImageUrl block used for getting the image url
  */
 class ImageUrl extends Template
 {
-    const NOSTO_ACCOUNT_PLACEHOLDER = '@NOSTO_ACCOUNT@';
-    const EMAIL_PLACEHOLDER = '@EMAIL@';
-    const URL_TEMPLATE = 'url_template';
-    const CUSTOMER_EMAIL = 'customer_email';
-
     private $nostoHelperScope;
     private $nostoHelperAccount;
     private $logger;
@@ -92,26 +88,12 @@ class ImageUrl extends Template
             return '';
         }
 
-        $urlTemplate = $this->getData(self::URL_TEMPLATE);
-        if (!$urlTemplate) {
-            $this->logger->error('url_template parameter is missing or it does not have NOSTO_ACCOUNT_PLACEHOLDER');
-            return '';
-        } elseif (stripos($urlTemplate, self::NOSTO_ACCOUNT_PLACEHOLDER) === false) {
-            $this->logger->error('NOSTO_ACCOUNT_PLACEHOLDER (@NOSTO_ACCOUNT@) is missing from url template');
-            return '';
-        } elseif (stripos($urlTemplate, self::EMAIL_PLACEHOLDER) === false) {
-            $this->logger->error('EMAIL_PLACEHOLDER (@EMAIL@) is missing from url template');
-            return '';
-        }
+        $urlTemplate = $this->getData(NostoImageUrl::URL_TEMPLATE);
+        $customerEmail = $this->getData(NostoImageUrl::CUSTOMER_EMAIL);
+        $recommendation = $this->getData(NostoImageUrl::RECOMMENDATION);
 
-        $customerEmail = $this->getData(self::CUSTOMER_EMAIL);
-        if (!$customerEmail) {
-            $this->logger->error('customer_email parameter is missing');
-            return '';
-        }
+        $url = new NostoImageUrl($urlTemplate, $account->getName(), $customerEmail, $recommendation);
 
-        $src = str_replace(self::NOSTO_ACCOUNT_PLACEHOLDER, $account->getName(), $urlTemplate);
-        $src = str_replace(self::EMAIL_PLACEHOLDER, $customerEmail, $src);
-        return $src;
+        return $url->format();
     }
 }
