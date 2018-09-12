@@ -38,10 +38,10 @@ namespace Nosto\Tagging\Block\Email;
 
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Element\Template\Context;
-use Nosto\Tagging\Helper\Scope as NostoHelperScope;
-use Nosto\Tagging\Helper\Account as NostoHelperAccount;
-use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Object\Email\ImageUrl as NostoImageUrl;
+use Nosto\Tagging\Helper\Account as NostoHelperAccount;
+use Nosto\Tagging\Helper\Scope as NostoHelperScope;
+use Nosto\Tagging\Logger\Logger as NostoLogger;
 
 /**
  * ImageUrl block used for getting the image url
@@ -89,8 +89,8 @@ class ImageUrl extends Template
         }
 
         $urlTemplate = $this->getData(NostoImageUrl::URL_TEMPLATE);
-        $customerEmail = $this->getData(NostoImageUrl::CUSTOMER_EMAIL);
-        $recommendation = $this->getData(NostoImageUrl::RECOMMENDATION);
+        $customerEmail = urlencode($this->getData(NostoImageUrl::CUSTOMER_EMAIL));
+        $recommendation = urlencode($this->getData(NostoImageUrl::RECOMMENDATION));
 
         $url = new NostoImageUrl($urlTemplate, $account->getName(), $customerEmail, $recommendation);
 
