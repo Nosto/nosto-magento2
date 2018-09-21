@@ -1,6 +1,6 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
-### Not released
+### 2.12.0 - Beta
 * Update marketing permission to Nosto in real-time when newsletter subscription is changed
 * Support adding multiple products to cart from Nosto recommendations
 * Improve performance for generating tagging (@hostep)
