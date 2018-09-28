@@ -3,6 +3,7 @@ All notable changes to this project will be documented in this file. This projec
 ### 2.12.0 - Beta
 * Update marketing permission to Nosto in real-time when newsletter subscription is changed
 * Support adding multiple products to cart from Nosto recommendations
+* Introduce a cli command for connecting Nosto account via command line
 * Improve performance for generating tagging (@hostep)
 * Fix the issue with product building when no custom fields are found (@hostep)
 * Improve error handling for Nosto dashboard in store admin area
