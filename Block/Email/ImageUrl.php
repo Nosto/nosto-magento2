@@ -90,9 +90,9 @@ class ImageUrl extends Template
 
         $urlTemplate = $this->getData(NostoImageUrl::URL_TEMPLATE);
         $customerEmail = urlencode($this->getData(NostoImageUrl::CUSTOMER_EMAIL));
-        $recommendation = urlencode($this->getData(NostoImageUrl::RECOMMENDATION));
+        $campaignId = urlencode($this->getData(NostoImageUrl::CAMPAIGN_ID));
 
-        $url = new NostoImageUrl($urlTemplate, $account->getName(), $customerEmail, $recommendation);
+        $url = new NostoImageUrl($urlTemplate, $account->getName(), $customerEmail, $campaignId);
 
         return $url->format();
     }
