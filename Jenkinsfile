@@ -43,6 +43,7 @@ pipeline {
         sh "composer create-project magento/community-edition magento"
         sh "cd magento && composer config minimum-stability dev"
         sh "cd magento && composer config prefer-stable true"
+        sh "cd magento && composer config repositories.2 git https://github.com/${env.CHANGE_FORK}/nosto-magento2"
         script {
           try {
             sh "cd magento && composer require --update-no-dev nosto/module-nostotagging:dev-${CHANGE_BRANCH}#${env.GIT_COMMIT.substring(0, 7)}"
