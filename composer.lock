@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "2ad0d9f4c4a06a06016bab8fbdcd3c3d",
+    "content-hash": "20ead0bb7547f4847ba014f1492c4db6",
     "packages": [
         {
             "name": "nosto/php-sdk",
-            "version": "dev-feature/email-widget-support",
+            "version": "3.7.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Nosto/nosto-php-sdk.git",
-                "reference": "91545b794b356d9c85c31856707c4bdf977c9853"
+                "reference": "2a3be134464d406f8a2881c72ada04438775fb7a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Nosto/nosto-php-sdk/zipball/91545b794b356d9c85c31856707c4bdf977c9853",
-                "reference": "91545b794b356d9c85c31856707c4bdf977c9853",
+                "url": "https://api.github.com/repos/Nosto/nosto-php-sdk/zipball/2a3be134464d406f8a2881c72ada04438775fb7a",
+                "reference": "2a3be134464d406f8a2881c72ada04438775fb7a",
                 "shasum": ""
             },
             "require": {
@@ -51,7 +51,7 @@
                 "BSD-3-Clause"
             ],
             "description": "PHP SDK for developing Nosto modules for e-commerce platforms",
-            "time": "2018-09-12T09:56:15+00:00"
+            "time": "2018-10-01T10:46:22+00:00"
         },
         {
             "name": "phpseclib/phpseclib",
@@ -59,12 +59,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpseclib/phpseclib.git",
-                "reference": "f381b1feb1f41db9934556f95c696cc7b7780729"
+                "reference": "32ce6a0d3e2338d90dee57639bb2b5084d398fb3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpseclib/phpseclib/zipball/f381b1feb1f41db9934556f95c696cc7b7780729",
-                "reference": "f381b1feb1f41db9934556f95c696cc7b7780729",
+                "url": "https://api.github.com/repos/phpseclib/phpseclib/zipball/32ce6a0d3e2338d90dee57639bb2b5084d398fb3",
+                "reference": "32ce6a0d3e2338d90dee57639bb2b5084d398fb3",
                 "shasum": ""
             },
             "require": {
@@ -143,7 +143,7 @@
                 "x.509",
                 "x509"
             ],
-            "time": "2018-09-08T19:42:17+00:00"
+            "time": "2018-09-17T05:27:42+00:00"
         },
         {
             "name": "vlucas/phpdotenv",
@@ -336,12 +336,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/composer/composer.git",
-                "reference": "71c8735e115909f3e049060a359afbf9535e0008"
+                "reference": "af677553cce0967bf7c364d64a9a169152c33fcd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/composer/composer/zipball/71c8735e115909f3e049060a359afbf9535e0008",
-                "reference": "71c8735e115909f3e049060a359afbf9535e0008",
+                "url": "https://api.github.com/repos/composer/composer/zipball/af677553cce0967bf7c364d64a9a169152c33fcd",
+                "reference": "af677553cce0967bf7c364d64a9a169152c33fcd",
                 "shasum": ""
             },
             "require": {
@@ -408,7 +408,7 @@
                 "dependency",
                 "package"
             ],
-            "time": "2018-09-10T12:24:41+00:00"
+            "time": "2018-09-13T07:28:04+00:00"
         },
         {
             "name": "composer/semver",
@@ -4178,12 +4178,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/console.git",
-                "reference": "b6c275e7dcb523a304f9c5ce4e4c636955a7c716"
+                "reference": "aca0dcc0c75496e17e2aa0303bb9c8e6d79ed789"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/console/zipball/b6c275e7dcb523a304f9c5ce4e4c636955a7c716",
-                "reference": "b6c275e7dcb523a304f9c5ce4e4c636955a7c716",
+                "url": "https://api.github.com/repos/symfony/console/zipball/aca0dcc0c75496e17e2aa0303bb9c8e6d79ed789",
+                "reference": "aca0dcc0c75496e17e2aa0303bb9c8e6d79ed789",
                 "shasum": ""
             },
             "require": {
@@ -4231,7 +4231,7 @@
             ],
             "description": "Symfony Console Component",
             "homepage": "https://symfony.com",
-            "time": "2018-09-11T16:38:57+00:00"
+            "time": "2018-09-30T03:33:07+00:00"
         },
         {
             "name": "symfony/debug",
@@ -4366,12 +4366,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/filesystem.git",
-                "reference": "68bc3e48dcdc144f8595e1374861ff3b348b0042"
+                "reference": "f89ab242d915d188fca95ee3291c72c5a094a195"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/filesystem/zipball/68bc3e48dcdc144f8595e1374861ff3b348b0042",
-                "reference": "68bc3e48dcdc144f8595e1374861ff3b348b0042",
+                "url": "https://api.github.com/repos/symfony/filesystem/zipball/f89ab242d915d188fca95ee3291c72c5a094a195",
+                "reference": "f89ab242d915d188fca95ee3291c72c5a094a195",
                 "shasum": ""
             },
             "require": {
@@ -4408,7 +4408,7 @@
             ],
             "description": "Symfony Filesystem Component",
             "homepage": "https://symfony.com",
-            "time": "2018-09-08T13:15:14+00:00"
+            "time": "2018-09-30T03:32:28+00:00"
         },
         {
             "name": "symfony/finder",
@@ -4416,12 +4416,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/finder.git",
-                "reference": "7d3bd180970e61a14ad2408484acbc8397cb8583"
+                "reference": "e8db87d755e14271e920e31ba834a4ae99483232"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/finder/zipball/7d3bd180970e61a14ad2408484acbc8397cb8583",
-                "reference": "7d3bd180970e61a14ad2408484acbc8397cb8583",
+                "url": "https://api.github.com/repos/symfony/finder/zipball/e8db87d755e14271e920e31ba834a4ae99483232",
+                "reference": "e8db87d755e14271e920e31ba834a4ae99483232",
                 "shasum": ""
             },
             "require": {
@@ -4457,7 +4457,7 @@
             ],
             "description": "Symfony Finder Component",
             "homepage": "https://symfony.com",
-            "time": "2018-09-02T17:11:59+00:00"
+            "time": "2018-09-21T12:47:54+00:00"
         },
         {
             "name": "symfony/polyfill-ctype",
@@ -4523,12 +4523,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/polyfill-mbstring.git",
-                "reference": "d0cd638f4634c16d8df4508e847f14e9e43168b8"
+                "reference": "c79c051f5b3a46be09205c73b80b346e4153e494"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/polyfill-mbstring/zipball/d0cd638f4634c16d8df4508e847f14e9e43168b8",
-                "reference": "d0cd638f4634c16d8df4508e847f14e9e43168b8",
+                "url": "https://api.github.com/repos/symfony/polyfill-mbstring/zipball/c79c051f5b3a46be09205c73b80b346e4153e494",
+                "reference": "c79c051f5b3a46be09205c73b80b346e4153e494",
                 "shasum": ""
             },
             "require": {
@@ -4574,7 +4574,7 @@
                 "portable",
                 "shim"
             ],
-            "time": "2018-08-06T14:22:27+00:00"
+            "time": "2018-09-21T13:07:52+00:00"
         },
         {
             "name": "symfony/process",
@@ -4682,16 +4682,16 @@
         },
         {
             "name": "tedivm/jshrink",
-            "version": "v1.3.0",
+            "version": "v1.3.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/tedious/JShrink.git",
-                "reference": "68ce379b213741e86f02bf6053b0d26b9f833448"
+                "reference": "21254058dc3ce6aba6bef458cff4bfa25cf8b198"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tedious/JShrink/zipball/68ce379b213741e86f02bf6053b0d26b9f833448",
-                "reference": "68ce379b213741e86f02bf6053b0d26b9f833448",
+                "url": "https://api.github.com/repos/tedious/JShrink/zipball/21254058dc3ce6aba6bef458cff4bfa25cf8b198",
+                "reference": "21254058dc3ce6aba6bef458cff4bfa25cf8b198",
                 "shasum": ""
             },
             "require": {
@@ -4724,7 +4724,7 @@
                 "javascript",
                 "minifier"
             ],
-            "time": "2017-12-08T00:59:56+00:00"
+            "time": "2018-09-16T00:02:51+00:00"
         },
         {
             "name": "theseer/fdomdocument",
@@ -4974,16 +4974,16 @@
         },
         {
             "name": "zendframework/zend-diactoros",
-            "version": "dev-develop",
+            "version": "dev-release-1.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zend-diactoros.git",
-                "reference": "75f022669f8af477801eab163a222d6093820f43"
+                "reference": "1dc4959014d3e7304bd87c58bcf96cf3fc63ac00"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/zendframework/zend-diactoros/zipball/75f022669f8af477801eab163a222d6093820f43",
-                "reference": "75f022669f8af477801eab163a222d6093820f43",
+                "url": "https://api.github.com/repos/zendframework/zend-diactoros/zipball/1dc4959014d3e7304bd87c58bcf96cf3fc63ac00",
+                "reference": "1dc4959014d3e7304bd87c58bcf96cf3fc63ac00",
                 "shasum": ""
             },
             "require": {
@@ -5003,9 +5003,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.8.x-dev",
-                    "dev-develop": "1.9.x-dev",
-                    "dev-release-2.0": "2.0.x-dev"
+                    "dev-release-1.8": "1.8.x-dev"
                 }
             },
             "autoload": {
@@ -5034,7 +5032,7 @@
                 "psr",
                 "psr-7"
             ],
-            "time": "2018-09-05T19:36:17+00:00"
+            "time": "2018-09-27T19:45:25+00:00"
         },
         {
             "name": "zendframework/zend-escaper",
@@ -5920,7 +5918,6 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
-        "nosto/php-sdk": 20,
         "magento/marketplace-tools": 20
     },
     "prefer-stable": false,
