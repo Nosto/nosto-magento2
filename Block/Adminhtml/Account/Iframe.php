@@ -40,12 +40,14 @@ use Magento\Backend\Block\Template as BlockTemplate;
 use Magento\Backend\Block\Template\Context as BlockContext;
 use Magento\Backend\Model\Auth\Session;
 use Magento\Framework\Exception\NotFoundException;
-use Nosto\Helper\IframeHelper;
+use Magento\Store\Model\Store;
+use Nosto\Mixins\IframeTrait;
 use Nosto\Nosto;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Model\Meta\Account\Iframe\Builder as NostoIframeMetaBuilder;
 use Nosto\Tagging\Model\User\Builder as NostoCurrentUserBuilder;
+use Nosto\Tagging\Logger\Logger as NostoLogger;
 
 /**
  * Iframe block for displaying the Nosto account management iframe.
@@ -54,6 +56,9 @@ use Nosto\Tagging\Model\User\Builder as NostoCurrentUserBuilder;
  */
 class Iframe extends BlockTemplate
 {
+    use IframeTrait;
+    const IFRAME_VERSION = 1;
+
     /**
      * Default iframe origin regexp for validating window.postMessage() calls.
      */
@@ -63,6 +68,7 @@ class Iframe extends BlockTemplate
     private $nostoIframeMetaBuilder;
     private $nostoCurrentUserBuilder;
     private $nostoHelperScope;
+    private $logger;
 
     /**
      * Constructor.
@@ -82,6 +88,7 @@ class Iframe extends BlockTemplate
         NostoIframeMetaBuilder $iframeMetaBuilder,
         NostoCurrentUserBuilder $nostoCurrentUserBuilder,
         NostoHelperScope $nostoHelperScope,
+        NostoLogger $logger,
         array $data = []
     ) {
         parent::__construct($context, $data);
@@ -91,6 +98,7 @@ class Iframe extends BlockTemplate
         $this->nostoIframeMetaBuilder = $iframeMetaBuilder;
         $this->nostoCurrentUserBuilder = $nostoCurrentUserBuilder;
         $this->nostoHelperScope = $nostoHelperScope;
+        $this->logger = $logger;
     }
 
     /**
@@ -107,6 +115,8 @@ class Iframe extends BlockTemplate
     public function getIframeUrl()
     {
         $params = [];
+        $params['v'] = self::IFRAME_VERSION;
+
         // Pass any error/success messages we might have to the iframe.
         // These can be available when getting redirect back from the OAuth
         // front controller after connecting a Nosto account to a store.
@@ -121,14 +131,9 @@ class Iframe extends BlockTemplate
             $this->backendAuthSession->setData('nosto_message', null);
         }
 
-        $store = $this->nostoHelperScope->getSelectedStore($this->getRequest());
-        $account = $this->nostoHelperAccount->findAccount($store);
-        return IframeHelper::getUrl(
-            $this->nostoIframeMetaBuilder->build($store),
-            $account,
-            $this->nostoCurrentUserBuilder->build(),
-            $params
-        );
+        $url = $this->buildURL($params);
+
+        return $url;
     }
 
     /**
@@ -142,7 +147,6 @@ class Iframe extends BlockTemplate
     {
         $store = $this->nostoHelperScope->getSelectedStore($this->getRequest());
         $get = ['store' => $store->getId(), 'isAjax' => true];
-
         return [
             'iframe_handler' => [
                 'origin' => Nosto::getIframeOriginRegex(),
@@ -157,5 +161,43 @@ class Iframe extends BlockTemplate
                 ]
             ]
         ];
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getIframe()
+    {
+        try {
+            $store = $this->nostoHelperScope->getSelectedStore($this->getRequest());
+            return $this->nostoIframeMetaBuilder->build($store);
+        } catch (\Exception $e) {
+            $this->logger->exception($e);
+        }
+
+        return null;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getUser()
+    {
+        return $this->nostoCurrentUserBuilder->build();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getAccount()
+    {
+        try {
+            $store = $this->nostoHelperScope->getSelectedStore($this->getRequest());
+            return $this->nostoHelperAccount->findAccount($store);
+        } catch (\Exception $e) {
+            $this->logger->exception($e);
+        }
+
+        return null;
     }
 }

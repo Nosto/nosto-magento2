@@ -12,6 +12,9 @@ All notable changes to this project will be documented in this file. This projec
 * Improve error handling for Nosto dashboard in store admin area
 * Code style fixes & refactoring
 
+### 2.11.1
+* Use IframeTrait for URL building in order to make the possible errors more visible
+
 ### 2.11.0
 * Add possibility to remove “/pub/” directory from product image URLs
 * Add possibility to define quantity for Nosto’s add to cart
