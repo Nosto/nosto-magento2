@@ -27,10 +27,10 @@ ENV         LC_ALL en_US.UTF-8
 ENV         TERM xterm
 
 # Environment variables to force the extension to connect to a specified instance
-ENV         NOSTO_SERVER_URL staging.nosto.com
-ENV         NOSTO_API_BASE_URL https://staging-api.nosto.com
-ENV         NOSTO_OAUTH_BASE_URL https://staging.nosto.com/oauth
-ENV         NOSTO_WEB_HOOK_BASE_URL https://staging.nosto.com
+ENV         NOSTO_SERVER_URL connect.staging.nosto.com
+ENV         NOSTO_API_BASE_URL https://api.staging.nosto.com
+ENV         NOSTO_OAUTH_BASE_URL https://my.staging.nosto.com/oauth
+ENV         NOSTO_WEB_HOOK_BASE_URL https://my.staging.nosto.com
 ENV         NOSTO_IFRAME_ORIGIN_REGEXP .*
 
 ENV         MYSQL_ENV_MYSQL_DATABASE magento2
