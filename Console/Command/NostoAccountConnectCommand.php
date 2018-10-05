@@ -119,6 +119,11 @@ class NostoAccountConnectCommand extends Command
                 InputOption::VALUE_REQUIRED,
                 'Email token'
             )->addOption(
+                Token::API_GRAPHQL. self::TOKEN_SUFFIX,
+                null,
+                InputOption::VALUE_REQUIRED,
+                'Apps Token'
+            )->addOption(
                 self::SCOPE_CODE,
                 null,
                 InputOption::VALUE_REQUIRED,
@@ -236,6 +241,16 @@ class NostoAccountConnectCommand extends Command
         }
         if ($emailToken) {
             $tokens[] = new Token(Token::API_EMAIL, $emailToken);
+        }
+        $appsToken = $input->getOption(Token::API_GRAPHQL . self::TOKEN_SUFFIX);
+        if (!$appsToken && $this->isInteractive) {
+            $appsToken = $io->ask(
+                'Enter Apps Token (Optional): ',
+                false
+            );
+        }
+        if ($appsToken) {
+            $tokens[] = new Token(Token::API_GRAPHQL, $appsToken);
         }
         return $tokens;
     }
