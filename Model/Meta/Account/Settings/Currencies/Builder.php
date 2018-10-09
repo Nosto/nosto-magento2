@@ -51,7 +51,7 @@ class Builder
     private $currencyFactory;
     private $localeResolver;
     /* List of zero decimal currencies in compliance with ISO-4217 */
-    private static $zeroDecimalCurrencyCodes = array(
+    const ZERO_DECIMAL_CURRENCIES = [
         'XOF',
         'BIF',
         'XAF',
@@ -68,8 +68,8 @@ class Builder
         'UYI',
         'VUV',
         'VND',
-        'XPF',
-    );
+        'XPF'
+    ];
 
     /**
      * @param NostoLogger $logger
@@ -161,12 +161,7 @@ class Builder
      */
     private function isZeroDecimalCurrency($currencyCode)
     {
-        foreach (self::$zeroDecimalCurrencyCodes as $zeroDecimalCurrency) {
-            if ($zeroDecimalCurrency === $currencyCode) {
-                return true;
-            }
-        }
-        return false;
+        return in_array($currencyCode, self::ZERO_DECIMAL_CURRENCIES);
     }
     /**
      * Returns true if symbol position is before the amount, false otherwise.
