@@ -50,6 +50,26 @@ class Builder
     private $eventManager;
     private $currencyFactory;
     private $localeResolver;
+    /* List of zero decimal currencies in compliance with ISO-4217 */
+    private static $zeroDecimalCurrencyCodes = array(
+        'XOF',
+        'BIF',
+        'XAF',
+        'CLP',
+        'KMF',
+        'DJF',
+        'GNF',
+        'ISK',
+        'JPY',
+        'KRW',
+        'PYG',
+        'RWF',
+        'UGX',
+        'UYI',
+        'VUV',
+        'VND',
+        'XPF',
+    );
 
     /**
      * @param NostoLogger $logger
@@ -77,10 +97,8 @@ class Builder
     public function build(Store $store)
     {
         $currencies = [];
-
         try {
             $storeLocale = $store->getConfig('general/locale/code');
-
             $localeCode = $storeLocale ?: $this->localeResolver->getLocale();
             $localeData = (new DataBundle())->get($localeCode);
             $defaultSet = $localeData['NumberElements']['default'] ?: 'latn';
@@ -93,13 +111,14 @@ class Builder
             $currencyCodes = $store->getAvailableCurrencyCodes(true);
             if (is_array($currencyCodes) && !empty($currencyCodes)) {
                 foreach ($currencyCodes as $currencyCode) {
-                    $currency = $this->currencyFactory->create()->load($currencyCode);
+                    $finalPrecision = $this->isZeroDecimalCurrency($currencyCode) ? 0 : $precision;
+                    $currency = $this->currencyFactory->create()->load($currencyCode); // @codingStandardsIgnoreLine
                     $currencies[$currency->getCode()] = new Format(
                         $this->isSymbolBeforeAmount($localeData, $defaultSet),
                         $currency->getCurrencySymbol(),
                         $decimalSymbol,
                         $groupSymbol,
-                        $precision
+                        $finalPrecision
                     );
                 }
             }
@@ -133,6 +152,22 @@ class Builder
         return $precision;
     }
 
+    /**
+     * Returns true if currency is defined to have no decimal part
+     * according to ISO-4217
+     *
+     * @param $currencyCode
+     * @return bool
+     */
+    private function isZeroDecimalCurrency($currencyCode)
+    {
+        foreach (self::$zeroDecimalCurrencyCodes as $zeroDecimalCurrency) {
+            if ($zeroDecimalCurrency === $currencyCode) {
+                return true;
+            }
+        }
+        return false;
+    }
     /**
      * Returns true if symbol position is before the amount, false otherwise.
      *
