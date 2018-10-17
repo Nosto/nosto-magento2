@@ -228,6 +228,9 @@
                 </field>
                 <field id="price_variation" translate="label comment" type="select" sortOrder="10"
                        showInDefault="1" showInWebsite="1" showInStore="1">
+                    <depends>
+                        <field id="method">disabled</field>
+                    </depends>
                     <label>Price Variation</label>
                     <comment><![CDATA[Enable price variation to support group price and catalog price rules.
                         <strong style="color:red">Warning!</strong> It cannot be enabled if multi-currency is enabled.]]>
