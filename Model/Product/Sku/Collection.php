@@ -46,6 +46,7 @@ use Nosto\Tagging\Helper\Price as NostoPriceHelper;
 use Nosto\Tagging\Model\Product\Sku\Builder as NostoSkuBuilder;
 use Nosto\Tagging\Model\Product\Repository as NostoProductRepository;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
+use Nosto\Types\Product\SkuInterface;
 
 class Collection
 {
@@ -97,7 +98,9 @@ class Collection
                 if (!$product->isDisabled()) {
                     try {
                         $sku = $this->nostoSkuBuilder->build($product, $store, $attributes);
-                        $skuCollection->append($sku);
+                        if ($sku instanceof SkuInterface) {
+                            $skuCollection->append($sku);
+                        }
                     } catch (NostoException $e) {
                         $this->logger->exception($e);
                     }

@@ -188,7 +188,7 @@ class Builder
                 );
             }
 
-            $nostoProduct->setAvailability($this->buildAvailability($product));
+            $nostoProduct->setAvailability($this->buildAvailability($product, $store));
             $nostoProduct->setCategories($this->nostoCategoryBuilder->buildCategories($product));
             if ($nostoScope == self::NOSTO_SCOPE_API
                 && $this->nostoDataHelper->isInventoryTaggingEnabled($store)
@@ -286,12 +286,16 @@ class Builder
      * Generates the availability for the product
      *
      * @param Product $product
+     * @param Store $store
      * @return string
      */
-    private function buildAvailability(Product $product)
+    private function buildAvailability(Product $product, Store $store)
     {
         $availability = ProductInterface::OUT_OF_STOCK;
-        if (!$product->isVisibleInSiteVisibility()) {
+        if (
+            !$product->isVisibleInSiteVisibility()
+            || !$this->isAvailabeInStore($product, $store)
+        ) {
             $availability = ProductInterface::INVISIBLE;
         } elseif ($product->isAvailable()) {
             $availability = ProductInterface::IN_STOCK;
