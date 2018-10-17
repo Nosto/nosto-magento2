@@ -135,6 +135,11 @@ class Data extends AbstractHelper
     const XML_PATH_LOW_STOCK_INDICATION = 'nosto/flags/low_stock_indication';
 
     /**
+     * Path to the configuration object for pricing variations
+     */
+    const XML_PATH_PRICING_VARIATION = 'nosto/flags/pricing_variation';
+
+    /**
      * Path to the configuration object that stores the preference for adding store code to URL
      */
     const XML_PATH_STORE_CODE_TO_URL = 'nosto/url/store_code_to_url';
@@ -388,6 +393,17 @@ class Data extends AbstractHelper
     public function isLowStockIndicationEnabled(StoreInterface $store = null)
     {
         return (bool)$this->getStoreConfig(self::XML_PATH_LOW_STOCK_INDICATION, $store);
+    }
+
+    /**
+     * Returns if pricing variation is enabled
+     *
+     * @param StoreInterface|null $store the store model or null.
+     * @return bool the configuration value
+     */
+    public function isPricingVariationEnabled(StoreInterface $store = null)
+    {
+        return (bool)$this->getStoreConfig(self::XML_PATH_PRICING_VARIATION, $store);
     }
 
     /**

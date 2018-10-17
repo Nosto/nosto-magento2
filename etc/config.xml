@@ -25,6 +25,7 @@
             </flags>
             <multicurrency>
                 <method>undefined</method>
+                <price_variation>0</price_variation>
             </multicurrency>
         </nosto>
     </default>
