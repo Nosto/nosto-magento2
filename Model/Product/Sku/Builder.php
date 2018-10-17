@@ -91,13 +91,16 @@ class Builder
      * @param Product $product
      * @param Store $store
      * @param ConfigurableAttribute[] $attributes
-     * @return NostoSku
+     * @return NostoSku|null
      * @throws \Exception
      */
     public function build(Product $product, Store $store, $attributes)
     {
+        if (!$this->isAvailabeInStore($product, $store)) {
+            return null;
+        }
+        
         $nostoSku = new NostoSku();
-
         try {
             $nostoSku->setId($product->getId());
             $nostoSku->setName($product->getName());

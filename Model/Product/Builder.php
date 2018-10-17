@@ -143,6 +143,10 @@ class Builder
         Store $store,
         $nostoScope = self::NOSTO_SCOPE_API
     ) {
+        if (!$this->isAvailabeInStore($product, $store)) {
+            return null;
+        }
+
         $nostoProduct = new NostoProduct();
         $modelFilter = new ModelFilter();
 
