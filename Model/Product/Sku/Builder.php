@@ -99,7 +99,7 @@ class Builder
         if (!$this->isAvailabeInStore($product, $store)) {
             return null;
         }
-        
+
         $nostoSku = new NostoSku();
         try {
             $nostoSku->setId($product->getId());

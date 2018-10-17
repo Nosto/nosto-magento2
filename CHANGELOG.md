@@ -1,5 +1,8 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 2.11.2
+* Ensure that the product is available in given store scope before building Nosto product object
+
 ### 2.11.1
 * Use IframeTrait for URL building in order to make the possible errors more visible
 
