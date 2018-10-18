@@ -325,8 +325,7 @@ class Builder
     private function buildAvailability(Product $product, Store $store)
     {
         $availability = ProductInterface::OUT_OF_STOCK;
-        if (
-            !$product->isVisibleInSiteVisibility()
+        if (!$product->isVisibleInSiteVisibility()
             || !$this->isAvailabeInStore($product, $store)
         ) {
             $availability = ProductInterface::INVISIBLE;

@@ -15,6 +15,9 @@ All notable changes to this project will be documented in this file. This projec
 * Improve error handling for Nosto dashboard in store admin area
 * Code style fixes & refactoring
 
+### 2.11.3
+* Fix check causing all SKU’s to have invisible availability
+
 ### 2.11.2
 * Ensure that the product is available in given store scope before building Nosto product object
 

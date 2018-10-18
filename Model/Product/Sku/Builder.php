@@ -150,13 +150,6 @@ class Builder
      */
     private function buildSkuAvailability(Product $product)
     {
-        $availability = ProductInterface::OUT_OF_STOCK;
-        if (!$product->isVisibleInSiteVisibility()) {
-            $availability = ProductInterface::INVISIBLE;
-        } elseif ($product->isAvailable()) {
-            $availability = ProductInterface::IN_STOCK;
-        }
-
-        return $availability;
+        return $product->isAvailable() ? ProductInterface::IN_STOCK : ProductInterface::OUT_OF_STOCK;
     }
 }
