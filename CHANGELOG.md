@@ -1,5 +1,8 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 2.13.1 - Beta
+* Merge fixes from 2.11.2
+
 ### 2.13.0 - Beta
 * Support using same nosto email widget snippet for multiple nosto accounts
 
@@ -11,6 +14,9 @@ All notable changes to this project will be documented in this file. This projec
 * Fix the issue with product building when no custom fields are found (@hostep)
 * Improve error handling for Nosto dashboard in store admin area
 * Code style fixes & refactoring
+
+### 2.11.2
+* Ensure that the product is available in given store scope before building Nosto product object
 
 ### 2.11.1
 * Use IframeTrait for URL building in order to make the possible errors more visible

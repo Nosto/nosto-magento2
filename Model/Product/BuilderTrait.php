@@ -177,4 +177,14 @@ trait BuilderTrait
 
         return $url;
     }
+
+    /**
+     * @param Product $product
+     * @param Store $store
+     * @return bool
+     */
+    public function isAvailabeInStore(Product $product, Store $store)
+    {
+        return in_array($store->getId(), $product->getStoreIds());
+    }
 }
