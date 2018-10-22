@@ -1,5 +1,8 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 2.11.4
+* Improve the stock status check for Nosto prouducts and SKUs
+
 ### 2.11.3
 * Fix check causing all SKU’s to have invisible availability
 
