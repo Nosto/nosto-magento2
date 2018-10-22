@@ -33,6 +33,9 @@ use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Currency as NostoHelperCurrency;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Object\MarkupableString;
+use Nosto\Tagging\Helper\Data as NostoHelperData;
+use Magento\Customer\Model\Session as CustomerSession;
+use Magento\Customer\Api\GroupRepositoryInterface as GroupRepository;
 
 /**
  * Page type block used for outputting the variation identifier on the different pages.
@@ -44,14 +47,18 @@ class Variation extends Template
     }
 
     private $nostoHelperCurrency;
+    private $nostoHelperData;
 
     /**
-     * Constructor.
+     * Variation block constructor.
      *
      * @param Context $context
      * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoHelperScope $nostoHelperScope
      * @param NostoHelperCurrency $nostoHelperCurrency
+     * @param NostoHelperData $nostoHelperData
+     * @param CustomerSession $customerSession
+     * @param GroupRepository $groupRepository
      * @param array $data
      */
     public function __construct(
@@ -59,12 +66,18 @@ class Variation extends Template
         NostoHelperAccount $nostoHelperAccount,
         NostoHelperScope $nostoHelperScope,
         NostoHelperCurrency $nostoHelperCurrency,
+        NostoHelperData $nostoHelperData,
+        CustomerSession $customerSession,
+        GroupRepository $groupRepository,
         array $data = []
     ) {
         parent::__construct($context, $data);
 
         $this->taggingConstruct($nostoHelperAccount, $nostoHelperScope);
         $this->nostoHelperCurrency = $nostoHelperCurrency;
+        $this->nostoHelperData = $nostoHelperData;
+        $this->customerSession = $customerSession;
+        $this->groupRepository = $groupRepository;
     }
 
     /**
@@ -75,6 +88,12 @@ class Variation extends Template
     public function getVariationId()
     {
         $store = $this->nostoHelperScope->getStore(true);
+        if ($this->nostoHelperData->isMultiCurrencyDisabled($store)
+            && $this->nostoHelperData->isPricingVariationEnabled($store)
+        ) {
+            return $this->getGroupCode();
+        }
+
         return $store->getCurrentCurrencyCode();
     }
 
@@ -99,12 +118,43 @@ class Variation extends Template
     {
         $store = $this->nostoHelperScope->getStore(true);
 
-        if ($this->nostoHelperCurrency->exchangeRatesInUse($store)) {
+        if ($this->nostoHelperCurrency->exchangeRatesInUse($store)
+            || $this->nostoHelperData->isPricingVariationEnabled($store)
+        ) {
             return new MarkupableString(
                 $this->getVariationId(),
                 'nosto_variation'
             );
         }
         return '';
+    }
+
+    /**
+     * @return string
+     */
+    private function getCustomerGroupId()
+    {
+        if ($this->customerSession->isLoggedIn()
+            && $this->customerSession->getCustomer()
+        ) {
+            return $this->customerSession->getCustomer()->getGroupId();
+        }
+        return null;
+    }
+
+    /**
+     * @return null|string
+     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
+    private function getGroupCode()
+    {
+        $customerGroupId = $this->getCustomerGroupId();
+        if ($customerGroupId) {
+            $group = $this->groupRepository->getById($customerGroupId);
+            return $group->getCode();
+        }
+        // @TODO: Check how to get default customer group here
+        return $this->groupRepository->getById(0)->getCode();
     }
 }
