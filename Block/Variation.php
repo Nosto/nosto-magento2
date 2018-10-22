@@ -36,6 +36,7 @@ use Nosto\Object\MarkupableString;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Magento\Customer\Model\Session as CustomerSession;
 use Magento\Customer\Api\GroupRepositoryInterface as GroupRepository;
+use Magento\Customer\Model\GroupManagement;
 
 /**
  * Page type block used for outputting the variation identifier on the different pages.
@@ -143,7 +144,7 @@ class Variation extends Template
     }
 
     /**
-     * @return null|string
+     * @return string
      * @throws \Magento\Framework\Exception\LocalizedException
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
@@ -154,7 +155,6 @@ class Variation extends Template
             $group = $this->groupRepository->getById($customerGroupId);
             return $group->getCode();
         }
-        // @TODO: Check how to get default customer group here
-        return $this->groupRepository->getById(0)->getCode();
+        return $this->groupRepository->getById(GroupManagement::NOT_LOGGED_IN_ID)->getCode();
     }
 }
