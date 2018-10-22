@@ -38,6 +38,7 @@ namespace Nosto\Tagging\Model\Product\Sku;
 
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\Product\Gallery\ReadHandler as GalleryReadHandler;
+use Magento\CatalogInventory\Model\Stock\StockItemRepository;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable\Attribute as ConfigurableAttribute;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Store\Model\Store;
@@ -76,7 +77,8 @@ class Builder
         NostoLogger $logger,
         ManagerInterface $eventManager,
         GalleryReadHandler $galleryReadHandler,
-        CurrencyHelper $nostoCurrencyHelper
+        CurrencyHelper $nostoCurrencyHelper,
+        StockItemRepository $stockItemRepository
     ) {
         $this->nostoDataHelper = $nostoHelperData;
         $this->nostoPriceHelper = $priceHelper;
@@ -84,7 +86,11 @@ class Builder
         $this->eventManager = $eventManager;
         $this->galleryReadHandler = $galleryReadHandler;
         $this->nostoCurrencyHelper = $nostoCurrencyHelper;
-        $this->builderTraitConstruct($nostoHelperData, $logger);
+        $this->builderTraitConstruct(
+            $nostoHelperData,
+            $stockItemRepository,
+            $logger
+        );
     }
 
     /**
@@ -156,6 +162,12 @@ class Builder
      */
     private function buildSkuAvailability(Product $product)
     {
-        return $product->isAvailable() ? ProductInterface::IN_STOCK : ProductInterface::OUT_OF_STOCK;
+        if ($product->isAvailable()
+            && $this->isInStock($product)
+        ) {
+            return ProductInterface::IN_STOCK;
+        }
+
+        return ProductInterface::OUT_OF_STOCK;
     }
 }
