@@ -226,7 +226,7 @@
                     </comment>
                     <source_model>Nosto\Tagging\Model\Config\Source\MultiCurrency</source_model>
                 </field>
-                <field id="price_variation" translate="label comment" type="select" sortOrder="10"
+                <field id="pricing_variation" translate="label comment" type="select" sortOrder="11"
                        showInDefault="1" showInWebsite="1" showInStore="1">
                     <depends>
                         <field id="method">disabled</field>

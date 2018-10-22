@@ -137,7 +137,7 @@ class Data extends AbstractHelper
     /**
      * Path to the configuration object for pricing variations
      */
-    const XML_PATH_PRICING_VARIATION = 'nosto/flags/pricing_variation';
+    const XML_PATH_PRICING_VARIATION = 'nosto/multicurrency/pricing_variation';
 
     /**
      * Path to the configuration object that stores the preference for adding store code to URL
