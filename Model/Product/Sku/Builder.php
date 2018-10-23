@@ -38,7 +38,7 @@ namespace Nosto\Tagging\Model\Product\Sku;
 
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\Product\Gallery\ReadHandler as GalleryReadHandler;
-use Magento\CatalogInventory\Model\Stock\StockItemRepository;
+use Magento\CatalogInventory\Api\StockRegistryInterface;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable\Attribute as ConfigurableAttribute;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Store\Model\Store;
@@ -78,7 +78,7 @@ class Builder
         ManagerInterface $eventManager,
         GalleryReadHandler $galleryReadHandler,
         CurrencyHelper $nostoCurrencyHelper,
-        StockItemRepository $stockItemRepository
+        StockRegistryInterface $stockRegistry
     ) {
         $this->nostoDataHelper = $nostoHelperData;
         $this->nostoPriceHelper = $priceHelper;
@@ -88,7 +88,7 @@ class Builder
         $this->nostoCurrencyHelper = $nostoCurrencyHelper;
         $this->builderTraitConstruct(
             $nostoHelperData,
-            $stockItemRepository,
+            $stockRegistry,
             $logger
         );
     }
@@ -110,7 +110,7 @@ class Builder
         try {
             $nostoSku->setId($product->getId());
             $nostoSku->setName($product->getName());
-            $nostoSku->setAvailability($this->buildSkuAvailability($product));
+            $nostoSku->setAvailability($this->buildSkuAvailability($product, $store));
             $nostoSku->setImageUrl($this->buildImageUrl($product, $store));
             $price = $this->nostoCurrencyHelper->convertToTaggingPrice(
                 $this->nostoPriceHelper->getProductFinalDisplayPrice(
@@ -158,12 +158,13 @@ class Builder
      * Generates the availability for the SKU
      *
      * @param Product $product
+     * @param Store $store
      * @return string
      */
-    private function buildSkuAvailability(Product $product)
+    private function buildSkuAvailability(Product $product, Store $store)
     {
         if ($product->isAvailable()
-            && $this->isInStock($product)
+            && $this->isInStock($product, $store)
         ) {
             return ProductInterface::IN_STOCK;
         }

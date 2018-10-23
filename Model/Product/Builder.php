@@ -39,12 +39,13 @@ namespace Nosto\Tagging\Model\Product;
 use Magento\Catalog\Api\CategoryRepositoryInterface;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\Product\Gallery\ReadHandler as GalleryReadHandler;
-use Magento\CatalogInventory\Model\Stock\StockItemRepository;
+use Magento\CatalogInventory\Api\StockRegistryInterface;
 use Magento\Eav\Api\AttributeSetRepositoryInterface;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Review\Model\ReviewFactory;
 use Magento\Store\Model\Store;
 use Nosto\NostoException;
+use Nosto\Object\ModelFilter as ModelFilter;
 use Nosto\Object\Product\Product as NostoProduct;
 use Nosto\Tagging\Helper\Currency as CurrencyHelper;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
@@ -56,7 +57,6 @@ use Nosto\Tagging\Model\Product\Sku\Collection as NostoSkuCollection;
 use Nosto\Tagging\Model\Product\Tags\LowStock as LowStockHelper;
 use Nosto\Tagging\Model\Product\Url\Builder as NostoUrlBuilder;
 use Nosto\Types\Product\ProductInterface;
-use Nosto\Object\ModelFilter as ModelFilter;
 
 class Builder
 {
@@ -115,7 +115,7 @@ class Builder
         NostoUrlBuilder $urlBuilder,
         CurrencyHelper $nostoCurrencyHelper,
         LowStockHelper $lowStockHelper,
-        StockItemRepository $stockItemRepository
+        StockRegistryInterface $stockRegistry
     ) {
         $this->nostoDataHelper = $nostoHelperData;
         $this->nostoPriceHelper = $priceHelper;
@@ -133,7 +133,7 @@ class Builder
         $this->lowStockHelper = $lowStockHelper;
         $this->builderTraitConstruct(
             $nostoHelperData,
-            $stockItemRepository,
+            $stockRegistry,
             $logger
         );
     }
@@ -303,7 +303,7 @@ class Builder
         ) {
             $availability = ProductInterface::INVISIBLE;
         } elseif ($product->isAvailable()
-            && $this->isInStock($product)
+            && $this->isInStock($product, $store)
         ) {
             $availability = ProductInterface::IN_STOCK;
         }

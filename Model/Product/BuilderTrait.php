@@ -37,8 +37,7 @@
 namespace Nosto\Tagging\Model\Product;
 
 use Magento\Catalog\Model\Product;
-use Magento\CatalogInventory\Model\Quote\Item\QuantityValidator\Initializer\StockItem;
-use Magento\CatalogInventory\Model\Stock\StockItemRepository;
+use Magento\CatalogInventory\Api\StockRegistryInterface;
 use Magento\Eav\Model\Entity\Attribute\AbstractAttribute;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Phrase;
@@ -51,7 +50,7 @@ trait BuilderTrait
 {
     private $nostoDataHelperTrait;
     private $loggerTrait;
-    private $stockItemRepository;
+    private $stockRegistry;
 
     /**
      * @param NostoHelperData $nostoHelperData
@@ -59,11 +58,11 @@ trait BuilderTrait
      */
     public function __construct(
         NostoHelperData $nostoHelperData,
-        StockItemRepository $stockItemRepository,
+        StockRegistryInterface $stockRegistry,
         NostoLogger $logger
     ) {
         $this->nostoDataHelperTrait = $nostoHelperData;
-        $this->stockItemRepository = $stockItemRepository;
+        $this->stockRegistry = $stockRegistry;
         $this->loggerTrait = $logger;
     }
 
@@ -198,11 +197,15 @@ trait BuilderTrait
      * @param Store $store
      * @return bool
      */
-    public function isInStock(Product $product)
+    public function isInStock(Product $product, Store $store)
     {
         try {
-            $stockItem = $this->stockItemRepository->get($product->getId());
-            return $stockItem->getIsInStock();
+            $productId = $product->getId();
+            $stockItem = $this->stockRegistry->getStockItem(
+                $productId,
+                $store->getWebsiteId()
+            );
+            return (bool)$stockItem->getIsInStock();
         } catch (NoSuchEntityException $e) {
             $this->loggerTrait->exception($e);
             return false;
