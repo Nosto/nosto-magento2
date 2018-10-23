@@ -39,11 +39,13 @@ namespace Nosto\Tagging\Model\Product;
 use Magento\Catalog\Api\CategoryRepositoryInterface;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\Product\Gallery\ReadHandler as GalleryReadHandler;
+use Magento\CatalogInventory\Api\StockRegistryInterface;
 use Magento\Eav\Api\AttributeSetRepositoryInterface;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Review\Model\ReviewFactory;
 use Magento\Store\Model\Store;
 use Nosto\NostoException;
+use Nosto\Object\ModelFilter as ModelFilter;
 use Nosto\Object\Product\Product as NostoProduct;
 use Nosto\Tagging\Helper\Currency as CurrencyHelper;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
@@ -55,7 +57,6 @@ use Nosto\Tagging\Model\Product\Sku\Collection as NostoSkuCollection;
 use Nosto\Tagging\Model\Product\Tags\LowStock as LowStockHelper;
 use Nosto\Tagging\Model\Product\Url\Builder as NostoUrlBuilder;
 use Nosto\Types\Product\ProductInterface;
-use Nosto\Object\ModelFilter as ModelFilter;
 
 class Builder
 {
@@ -113,7 +114,8 @@ class Builder
         GalleryReadHandler $galleryReadHandler,
         NostoUrlBuilder $urlBuilder,
         CurrencyHelper $nostoCurrencyHelper,
-        LowStockHelper $lowStockHelper
+        LowStockHelper $lowStockHelper,
+        StockRegistryInterface $stockRegistry
     ) {
         $this->nostoDataHelper = $nostoHelperData;
         $this->nostoPriceHelper = $priceHelper;
@@ -129,7 +131,11 @@ class Builder
         $this->skuCollection = $skuCollection;
         $this->nostoCurrencyHelper = $nostoCurrencyHelper;
         $this->lowStockHelper = $lowStockHelper;
-        $this->builderTraitConstruct($nostoHelperData, $logger);
+        $this->builderTraitConstruct(
+            $nostoHelperData,
+            $stockRegistry,
+            $logger
+        );
     }
 
     /**
@@ -296,7 +302,9 @@ class Builder
             || !$this->isAvailabeInStore($product, $store)
         ) {
             $availability = ProductInterface::INVISIBLE;
-        } elseif ($product->isAvailable()) {
+        } elseif ($product->isAvailable()
+            && $this->isInStock($product, $store)
+        ) {
             $availability = ProductInterface::IN_STOCK;
         }
 
