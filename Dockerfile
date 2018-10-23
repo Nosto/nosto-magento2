@@ -64,7 +64,7 @@ RUN         apt-get -y -q install apache2 php7.0 default-mysql-client-core \
 
 # Upgrade ast extension
 RUN         apt-get -y -q install build-essential php-pear && \
-            pecl install ast && \
+            pecl install ast-0.1.6 && \
             apt-get purge -y build-essential && \
             apt-get -y clean
 

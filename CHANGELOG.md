@@ -1,5 +1,8 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 2.13.4 - Beta
+* Merge fixes from 2.11.3 & 2.11.4
+
 ### 2.13.1 - Beta
 * Merge fixes from 2.11.2
 
@@ -14,6 +17,9 @@ All notable changes to this project will be documented in this file. This projec
 * Fix the issue with product building when no custom fields are found (@hostep)
 * Improve error handling for Nosto dashboard in store admin area
 * Code style fixes & refactoring
+
+### 2.11.4
+* Improve the stock status check for Nosto prouducts and SKUs
 
 ### 2.11.3
 * Fix check causing all SKU’s to have invisible availability
