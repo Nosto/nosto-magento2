@@ -200,9 +200,8 @@ trait BuilderTrait
     public function isInStock(Product $product, Store $store)
     {
         try {
-            $productId = $product->getId();
             $stockItem = $this->stockRegistry->getStockItem(
-                $productId,
+                $product->getId(),
                 $store->getWebsiteId()
             );
             return (bool)$stockItem->getIsInStock();
