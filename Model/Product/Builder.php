@@ -264,6 +264,9 @@ class Builder
     {
         $customFields = $this->buildCustomFields($product, $store);
         $attributes = $this->getAttributesFromAllTags($store);
+        if (!$attributes) {
+            return $customFields;
+        }
         foreach ($product->getAttributes() as $key => $productAttribute) {
             if (in_array($key, $attributes, false)) {
                 $attributeValue = $this->getAttributeValue($product, $key);
@@ -294,7 +297,11 @@ class Builder
                 $attributes[] = $productAttribute;
             }
         }
-        return array_unique($attributes);
+        if ($attributes) {
+            return array_unique($attributes);
+        }
+        return [];
+
     }
 
     /**
