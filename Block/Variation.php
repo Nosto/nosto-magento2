@@ -47,6 +47,7 @@ class Variation extends Template
 
     private $nostoHelperCurrency;
     private $nostoHelperData;
+    private $nostoHelperCustomer;
 
     /**
      * Variation block constructor.

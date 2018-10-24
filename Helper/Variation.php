@@ -38,6 +38,7 @@ namespace Nosto\Tagging\Helper;
 
 use Magento\Customer\Api\GroupRepositoryInterface as GroupRepository;
 use Magento\Framework\App\Helper\AbstractHelper;
+use Magento\Customer\Model\GroupManagement;
 use Magento\Customer\Model\Data\Group;
 use Magento\Store\Model\Store;
 

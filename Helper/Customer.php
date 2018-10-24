@@ -47,6 +47,10 @@ use Magento\Customer\Model\GroupManagement;
  */
 class Customer extends AbstractHelper
 {
+
+    private $customerSession;
+    private $groupRepository;
+
     /**
      * Customer constructor.
      *
@@ -77,7 +81,7 @@ class Customer extends AbstractHelper
     }
 
     /**
-     * @return string
+     * @return int|null
      */
     public function getGroupId()
     {
