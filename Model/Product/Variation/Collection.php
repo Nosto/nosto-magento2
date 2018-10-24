@@ -79,7 +79,7 @@ class Collection
     {
         $collection = new VariationCollection();
         $groups = $this->customerGroupManager->getLoggedInGroups();
-        // Create variation & add it to the collection
+        /** @var \Magento\Customer\Model\Data\Group $group */
         foreach ($groups as $group) {
             $collection->append(
                 $this->variationBuilder->build(
