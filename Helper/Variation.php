@@ -63,16 +63,38 @@ class Variation extends AbstractHelper
 
     /**
      * @param Store $store
-     * @return null|string
+     * @return \Magento\Customer\Api\Data\GroupInterface|null
+     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
+    public function getDefaultVariation(Store $store)
+    {
+        $defaultGroup = $this->groupRepository->getById(self::DEFAULT_CUSTOMER_GROUP_ID);
+        if ($defaultGroup instanceof Group) {
+            return $defaultGroup;
+        }
+        return null;
+    }
+
+    /**
+     * @param Store $store
+     * @return int|null
      * @throws \Magento\Framework\Exception\LocalizedException
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function getDefaultVariationId(Store $store)
     {
-        $defaultGroup = $this->groupRepository->getById(self::DEFAULT_CUSTOMER_GROUP_ID);
-        if ($defaultGroup instanceof Group) {
-            return strtoupper($defaultGroup->getCode());
-        }
-        return null;
+        return $this->getDefaultVariation($store)->getId();
+    }
+
+    /**
+     * @param Store $store
+     * @return string
+     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
+    public function getDefaultVariationCode(Store $store)
+    {
+        return strtoupper($this->getDefaultVariation($store)->getCode());
     }
 }

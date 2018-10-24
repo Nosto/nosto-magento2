@@ -60,6 +60,7 @@ use Nosto\Object\ModelFilter;
 use Nosto\Object\Product\Variation;
 use Nosto\Object\Product\VariationCollection;
 use Nosto\Tagging\Model\Product\Variation\Collection as PriceVariationCollection;
+use Nosto\Tagging\Helper\Variation as NostoVariationHelper;
 
 class Builder
 {
@@ -84,6 +85,9 @@ class Builder
     private $nostoCurrencyHelper;
     private $lowStockHelper;
     private $priceVariationCollection;
+    private $nostoVariationHelper;
+    private $categoryRepository;
+    private $attributeSetRepository;
 
     /**
      * Builder constructor.
@@ -104,6 +108,7 @@ class Builder
      * @param LowStockHelper $lowStockHelper
      * @param StockRegistryInterface $stockRegistry
      * @param PriceVariationCollection $priceVariationCollection
+     * @param NostoVariationHelper $nostoVariationHelper
      */
     public function __construct(
         NostoHelperData $nostoHelperData,
@@ -121,7 +126,8 @@ class Builder
         CurrencyHelper $nostoCurrencyHelper,
         LowStockHelper $lowStockHelper,
         StockRegistryInterface $stockRegistry,
-        PriceVariationCollection $priceVariationCollection
+        PriceVariationCollection $priceVariationCollection,
+        NostoVariationHelper $nostoVariationHelper
     ) {
         $this->nostoDataHelper = $nostoHelperData;
         $this->nostoPriceHelper = $priceHelper;
@@ -143,6 +149,7 @@ class Builder
             $logger
         );
         $this->priceVariationCollection = $priceVariationCollection;
+        $this->nostoVariationHelper = $nostoVariationHelper;
     }
 
     /**
@@ -199,6 +206,12 @@ class Builder
                     $this->nostoCurrencyHelper->getTaggingCurrency(
                         $store
                     )->getCode()
+                );
+            } elseif ($this->nostoDataHelper->isPricingVariationEnabled($store)) {
+                $nostoProduct->setVariationId(
+                    $this->nostoVariationHelper->getDefaultVariationCode(
+                        $store
+                    )
                 );
             }
 
@@ -322,7 +335,6 @@ class Builder
             return array_unique($attributes);
         }
         return [];
-
     }
 
     /**

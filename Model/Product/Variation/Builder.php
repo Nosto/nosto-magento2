@@ -101,7 +101,6 @@ class Builder
             $variation->setListPrice($price);
             $variation->setPrice($price);
             $variation->setPriceCurrencyCode($nostoProduct->getPriceCurrencyCode());
-
         } catch (\Exception $e) {
             $this->logger->exception($e);
         }
