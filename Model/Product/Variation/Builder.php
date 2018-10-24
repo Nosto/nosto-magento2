@@ -56,10 +56,13 @@ class Builder
     private $priceFactory;
 
     /**
+     * Builder constructor.
+     *
      * @param NostoPriceHelper $priceHelper
      * @param NostoLogger $logger
      * @param ManagerInterface $eventManager
      * @param CurrencyHelper $nostoCurrencyHelper
+     * @param PriceFactory $priceFactory
      */
     public function __construct(
         NostoPriceHelper $priceHelper,
@@ -130,7 +133,6 @@ class Builder
                 && array_key_exists('cust_group', $price)
                 && $price['cust_group'] === $group->getId()
             ) {
-                /** @var \Magento\Catalog\Api\Data\ProductTierPriceInterface $tierPrice */
                 $tierPrice = $this->priceFactory->create();
                 $tierPrice->setValue($price['price'])
                     ->setQty($price['price_qty'])
