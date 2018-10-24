@@ -78,10 +78,9 @@ class Collection
     public function build(Product $product, NostoProduct $nostoProduct, Store $store)
     {
         $collection = new VariationCollection();
-        $groups = $this->getAllCustomerGroups();
+        $groups = $this->customerGroupManager->getLoggedInGroups();
         // Create variation & add it to the collection
         foreach ($groups as $group) {
-
             $collection->append(
                 $this->variationBuilder->build(
                     $product,
@@ -90,25 +89,7 @@ class Collection
                     $group
                 )
             );
-
         }
         return $collection;
     }
-
-    /**
-     * Return an array with all customer groups objects
-     *
-     * @return \Magento\Customer\Model\Data\Group[]
-     * @throws \Magento\Framework\Exception\LocalizedException
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
-     */
-    public function getAllCustomerGroups()
-    {
-        return array_merge(
-            [$this->customerGroupManager->getNotLoggedInGroup()],
-            $this->customerGroupManager->getLoggedInGroups()
-        );
-
-    }
-
 }
