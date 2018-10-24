@@ -38,19 +38,13 @@ namespace Nosto\Tagging\Model\Product\Variation;
 
 use Magento\Catalog\Model\Product;
 use Magento\Framework\Event\ManagerInterface;
-//use Magento\ProductAlert\Model\PriceFactory;
 use Magento\Store\Model\Store;
 use Nosto\Object\Product\Variation;
 use Nosto\Tagging\Helper\Currency as CurrencyHelper;
 use Nosto\Tagging\Helper\Price as NostoPriceHelper;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
-use Magento\Catalog\Api\Data\ProductTierPriceInterfaceFactory as PriceFactory;
-
-// TODO: double check these dependencies
-use Magento\Customer\Model\Session as CustomerSession;
-use Magento\Customer\Api\GroupRepositoryInterface as GroupRepository;
-use Magento\Customer\Model\GroupManagement;
 use Magento\Customer\Model\Data\Group;
+use Magento\Catalog\Api\Data\ProductTierPriceInterfaceFactory as PriceFactory;
 use Nosto\Object\Product\Product as NostoProduct;
 
 class Builder
@@ -97,7 +91,7 @@ class Builder
     ) {
         $variation = new Variation();
         try {
-            $price = $this->getVariationPrice($product, $nostoProduct, $store, $group);
+            $price = $this->getVariationPrice($product, $group);
 
             $variation->setVariationId($group->getCode());
             $variation->setAvailability($nostoProduct->getAvailability());
@@ -121,16 +115,11 @@ class Builder
 
     /**
      * @param Product $product
-     * @param NostoProduct $nostoProduct
-     * @param Store $store
      * @param Group $group
+     * @return float|mixed
      */
-    private function getVariationPrice(
-        Product $product,
-        NostoProduct $nostoProduct,
-        Store $store,
-        Group $group
-    ) {
+    private function getVariationPrice(Product $product, Group $group)
+    {
         $attributes = $product->getAttributes($group->getId());
         $productPrices = $product->getData('tier_price');
         if (!$productPrices) {
@@ -149,6 +138,6 @@ class Builder
                 return $tierPrice->getValue();
             }
         }
-        return $product->getData('final_price'); // @TODO: LOG EXCEPTION HERE
+        return $product->getData('final_price');
     }
 }
