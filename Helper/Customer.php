@@ -38,7 +38,7 @@ namespace Nosto\Tagging\Helper;
 
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Customer\Api\GroupRepositoryInterface as GroupRepository;
-use Magento\Customer\Model\Session as CustomerSession;
+use Magento\Customer\Model\Session\Proxy as CustomerSession;
 use Magento\Customer\Model\GroupManagement;
 
 /**
