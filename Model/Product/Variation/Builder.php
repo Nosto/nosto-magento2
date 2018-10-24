@@ -122,7 +122,6 @@ class Builder
      */
     private function getVariationPrice(Product $product, Group $group)
     {
-        $attributes = $product->getAttributes($group->getId());
         $productPrices = $product->getData('tier_price');
         if (!$productPrices) {
             return $product->getData('final_price');
