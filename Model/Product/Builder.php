@@ -266,8 +266,8 @@ class Builder
             $this->amendAttributeTags($product, $nostoProduct, $store);
 
             // When using customer group price variations, set the variations
-            if ($this->nostoDataHelper->isPricingVariationEnabled()
-                && $this->nostoDataHelper->isMultiCurrencyDisabled()
+            if ($this->nostoDataHelper->isPricingVariationEnabled($store)
+                && $this->nostoDataHelper->isMultiCurrencyDisabled($store)
             ) {
                 $nostoProduct->setVariations(
                     $this->priceVariationCollection->build($product, $nostoProduct, $store)

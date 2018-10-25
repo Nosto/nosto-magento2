@@ -94,12 +94,28 @@ class Builder
     ) {
         $variation = new Variation();
         try {
-            $price = $this->getVariationPrice($product, $group);
 
             $variation->setVariationId($group->getCode());
             $variation->setAvailability($nostoProduct->getAvailability());
-            $variation->setListPrice($price);
+
+            $listPrice = $this->nostoCurrencyHelper->convertToTaggingPrice(
+                $this->nostoPriceHelper->getProductFinalDisplayPrice(
+                    $product,
+                    $store
+                ),
+                $store
+            );
+            $product->setPrice($this->getVariationPrice($product, $group));
+            $price = $this->nostoCurrencyHelper->convertToTaggingPrice(
+                $this->nostoPriceHelper->getProductDisplayPrice(
+                    $product,
+                    $store
+                ),
+                $store
+            );
+
             $variation->setPrice($price);
+            $variation->setListPrice($listPrice);
             $variation->setPriceCurrencyCode($nostoProduct->getPriceCurrencyCode());
         } catch (\Exception $e) {
             $this->logger->exception($e);
