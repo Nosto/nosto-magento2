@@ -44,6 +44,7 @@ use Nosto\Tagging\Model\Product\Sku\Builder as NostoSkuBuilder;
 use Nosto\Tagging\Model\Product\Repository as NostoProductRepository;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Types\Product\SkuInterface;
+use Nosto\NostoException;
 
 class Collection
 {
