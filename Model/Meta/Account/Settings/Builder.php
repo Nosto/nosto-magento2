@@ -98,7 +98,7 @@ class Builder
             if ($this->nostoHelperCurrency->exchangeRatesInUse($store)) {
                 $settings->setDefaultVariantId($this->nostoHelperCurrency->getTaggingCurrency($store)->getCode());
             } elseif ($this->nostoDataHelper->isPricingVariationEnabled()) {
-                $settings->setDefaultVariantId($this->nostoVariationHelper->getDefaultVariationCode());
+                $settings->setDefaultVariantId($this->nostoVariationHelper->getDefaultVariationCode($store));
             }
             $settings->setCurrencies($this->nostoCurrenciesBuilder->build($store));
         } catch (\Exception $e) {
