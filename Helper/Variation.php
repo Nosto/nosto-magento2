@@ -40,7 +40,6 @@ use Magento\Customer\Api\GroupRepositoryInterface as GroupRepository;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Customer\Model\GroupManagement;
 use Magento\Customer\Model\Data\Group;
-use Magento\Store\Model\Store;
 
 /**
  * Variation helper
@@ -62,12 +61,11 @@ class Variation extends AbstractHelper
     }
 
     /**
-     * @param Store $store
      * @return \Magento\Customer\Api\Data\GroupInterface|null
      * @throws \Magento\Framework\Exception\LocalizedException
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
-    public function getDefaultVariation(Store $store)
+    public function getDefaultVariation()
     {
         $defaultGroup = $this->groupRepository->getById(self::DEFAULT_CUSTOMER_GROUP_ID);
         if ($defaultGroup instanceof Group) {
@@ -77,24 +75,12 @@ class Variation extends AbstractHelper
     }
 
     /**
-     * @param Store $store
-     * @return int|null
-     * @throws \Magento\Framework\Exception\LocalizedException
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
-     */
-    public function getDefaultVariationId(Store $store)
-    {
-        return $this->getDefaultVariation($store)->getId();
-    }
-
-    /**
-     * @param Store $store
      * @return string
      * @throws \Magento\Framework\Exception\LocalizedException
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
-    public function getDefaultVariationCode(Store $store)
+    public function getDefaultVariationCode()
     {
-        return strtoupper($this->getDefaultVariation($store)->getCode());
+        return strtoupper($this->getDefaultVariation()->getCode());
     }
 }
