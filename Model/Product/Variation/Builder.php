@@ -94,7 +94,6 @@ class Builder
     ) {
         $variation = new Variation();
         try {
-
             $variation->setVariationId($group->getCode());
             $variation->setAvailability($nostoProduct->getAvailability());
 

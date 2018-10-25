@@ -62,12 +62,11 @@ class Variation extends AbstractHelper
     }
 
     /**
-     * @param Store $store
      * @return \Magento\Customer\Api\Data\GroupInterface|null
      * @throws \Magento\Framework\Exception\LocalizedException
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
-    public function getDefaultVariation(Store $store)
+    public function getDefaultVariation()
     {
         $defaultGroup = $this->groupRepository->getById(self::DEFAULT_CUSTOMER_GROUP_ID);
         if ($defaultGroup instanceof Group) {
@@ -77,7 +76,6 @@ class Variation extends AbstractHelper
     }
 
     /**
-     * @param Store $store
      * @return int|null
      * @throws \Magento\Framework\Exception\LocalizedException
      * @throws \Magento\Framework\Exception\NoSuchEntityException
@@ -88,13 +86,12 @@ class Variation extends AbstractHelper
     }
 
     /**
-     * @param Store $store
      * @return string
      * @throws \Magento\Framework\Exception\LocalizedException
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
-    public function getDefaultVariationCode(Store $store)
+    public function getDefaultVariationCode()
     {
-        return strtoupper($this->getDefaultVariation($store)->getCode());
+        return strtoupper($this->getDefaultVariation()->getCode());
     }
 }
