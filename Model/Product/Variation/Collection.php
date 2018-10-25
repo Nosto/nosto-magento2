@@ -74,13 +74,14 @@ class Collection
      * @param Product $product
      * @param Store $store
      * @return VariationCollection
+     * @suppress PhanTypeMismatchArgument
      */
     public function build(Product $product, NostoProduct $nostoProduct, Store $store)
     {
         $collection = new VariationCollection();
-        /** @var \Magento\Customer\Model\Data\Group[] $groups */
         $groups = $this->customerGroupManager->getLoggedInGroups();
         foreach ($groups as $group) {
+            /** @var \Magento\Customer\Model\Data\Group $group */
             $collection->append(
                 $this->variationBuilder->build(
                     $product,
