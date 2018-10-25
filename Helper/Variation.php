@@ -80,9 +80,9 @@ class Variation extends AbstractHelper
      * @throws \Magento\Framework\Exception\LocalizedException
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
-    public function getDefaultVariationId(Store $store)
+    public function getDefaultVariationId()
     {
-        return $this->getDefaultVariation($store)->getId();
+        return $this->getDefaultVariation()->getId();
     }
 
     /**

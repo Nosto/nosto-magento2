@@ -78,8 +78,8 @@ class Collection
     public function build(Product $product, NostoProduct $nostoProduct, Store $store)
     {
         $collection = new VariationCollection();
+        /** @var \Magento\Customer\Model\Data\Group[] $groups */
         $groups = $this->customerGroupManager->getLoggedInGroups();
-        /** @var \Magento\Customer\Model\Data\Group $group */
         foreach ($groups as $group) {
             $collection->append(
                 $this->variationBuilder->build(

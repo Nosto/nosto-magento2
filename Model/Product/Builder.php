@@ -209,9 +209,7 @@ class Builder
                 );
             } elseif ($this->nostoDataHelper->isPricingVariationEnabled($store)) {
                 $nostoProduct->setVariationId(
-                    $this->nostoVariationHelper->getDefaultVariationCode(
-                        $store
-                    )
+                    $this->nostoVariationHelper->getDefaultVariationCode()
                 );
             }
 
