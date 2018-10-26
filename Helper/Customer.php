@@ -77,7 +77,7 @@ class Customer extends AbstractHelper
             $group = $this->groupRepository->getById($customerGroupId);
             return $group->getCode();
         }
-        return $this->groupRepository->getById(GroupManagement::NOT_LOGGED_IN_ID)->getCode();
+        return $this->groupRepository->getById(Variation::DEFAULT_CUSTOMER_GROUP_ID)->getCode();
     }
 
     /**
