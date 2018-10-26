@@ -133,26 +133,19 @@ class Builder
     /**
      * @param Product $product
      * @param Group $group
-     * @return float|mixed
+     * @return float
      */
     private function getVariationPrice(Product $product, Group $group)
     {
-        $productPrices = $product->getData('tier_price');
+        $productPrices = $product->getTierPrices();
         if (!$productPrices) {
-            return $product->getData('final_price');
+            return $product->getFinalPrice();
         }
         foreach ($productPrices as $price) {
-            if ($group->getId()
-                && array_key_exists('cust_group', $price)
-                && $price['cust_group'] === $group->getId()
-            ) {
-                $tierPrice = $this->priceFactory->create();
-                $tierPrice->setValue($price['price'])
-                    ->setQty($price['price_qty'])
-                    ->setCustomerGroupId($group->getId());
-                return $tierPrice->getValue();
+            if ($price->getCustomerGroupId() === $group->getId()) {
+                return $price->getValue();
             }
         }
-        return $product->getData('final_price');
+        return $product->getFinalPrice();
     }
 }
