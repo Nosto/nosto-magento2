@@ -92,6 +92,6 @@ class Variation extends AbstractHelper
      */
     public function getDefaultVariationCode()
     {
-        return strtoupper($this->getDefaultVariation()->getCode());
+        return $this->getDefaultVariation() ? $this->getDefaultVariation()->getCode() : null ;
     }
 }
