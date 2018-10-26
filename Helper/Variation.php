@@ -86,7 +86,7 @@ class Variation extends AbstractHelper
     }
 
     /**
-     * @return string
+     * @return string|null
      * @throws \Magento\Framework\Exception\LocalizedException
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
