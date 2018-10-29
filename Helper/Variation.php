@@ -66,7 +66,7 @@ class Variation extends AbstractHelper
      * @throws \Magento\Framework\Exception\LocalizedException
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
-    public function getDefaultVariation()
+    private function getDefaultGroupVariation()
     {
         $defaultGroup = $this->groupRepository->getById(self::DEFAULT_CUSTOMER_GROUP_ID);
         if ($defaultGroup instanceof Group) {
@@ -82,7 +82,7 @@ class Variation extends AbstractHelper
      */
     public function getDefaultVariationId()
     {
-        return $this->getDefaultVariation() ? $this->getDefaultVariation()->getId() : null;
+        return $this->getDefaultGroupVariation() ? $this->getDefaultGroupVariation()->getId() : null;
     }
 
     /**
@@ -92,6 +92,6 @@ class Variation extends AbstractHelper
      */
     public function getDefaultVariationCode()
     {
-        return $this->getDefaultVariation() ? $this->getDefaultVariation()->getCode() : null;
+        return $this->getDefaultGroupVariation() ? $this->getDefaultGroupVariation()->getCode() : null;
     }
 }
