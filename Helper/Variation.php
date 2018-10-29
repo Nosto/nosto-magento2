@@ -82,7 +82,7 @@ class Variation extends AbstractHelper
      */
     public function getDefaultVariationId()
     {
-        return $this->getDefaultVariation() ? $this->getDefaultVariation()->getId() : null ;
+        return $this->getDefaultVariation() ? $this->getDefaultVariation()->getId() : null;
     }
 
     /**
@@ -92,6 +92,6 @@ class Variation extends AbstractHelper
      */
     public function getDefaultVariationCode()
     {
-        return $this->getDefaultVariation() ? $this->getDefaultVariation()->getCode() : null ;
+        return $this->getDefaultVariation() ? $this->getDefaultVariation()->getCode() : null;
     }
 }
