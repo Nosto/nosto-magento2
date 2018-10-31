@@ -1,5 +1,8 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 2.14.0 - Beta
+* Add customer group pricing variation support
+
 ### 2.13.4 - Beta
 * Merge fixes from 2.11.3 & 2.11.4
 
