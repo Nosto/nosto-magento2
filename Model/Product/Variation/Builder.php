@@ -186,7 +186,7 @@ class Builder
                 continue;
             }
             $skuPrice = $this->ruleResourceModel->getRulePrice(
-                new \DateTime('now'), //$this->localeDate->scopeDate();
+                $this->localeDate->scopeDate(),
                 $store->getWebsiteId(),
                 $group->getId(),
                 $sku->getId()
