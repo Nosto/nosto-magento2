@@ -61,7 +61,7 @@ class Builder
     private $nostoCurrencyHelper;
     private $priceFactory;
     private $ruleResourceModel;
-    private $mageDatetime;
+    private $nostoProductRepository;
     private $localeDate;
 
     /**
