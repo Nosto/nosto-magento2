@@ -36,6 +36,7 @@
 
 namespace Nosto\Tagging\Model\Product\Variation;
 
+use Magento\Catalog\Helper\Catalog;
 use Magento\Catalog\Model\Product;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Store\Model\Store;
@@ -46,6 +47,11 @@ use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Magento\Customer\Model\Data\Group;
 use Magento\Catalog\Api\Data\ProductTierPriceInterfaceFactory as PriceFactory;
 use Nosto\Object\Product\Product as NostoProduct;
+use Magento\CatalogRule\Model\ResourceModel\Rule as RuleResourceModel;
+use Nosto\Tagging\Model\Product\Repository as NostoProductRepository;
+use Magento\ConfigurableProduct\Model\Product\Type\Configurable as ConfigurableType;
+use Magento\Catalog\Model\Product as MageProduct;
+use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
 
 class Builder
 {
@@ -54,6 +60,9 @@ class Builder
     private $logger;
     private $nostoCurrencyHelper;
     private $priceFactory;
+    private $ruleResourceModel;
+    private $mageDatetime;
+    private $localeDate;
 
     /**
      * Builder constructor.
@@ -69,13 +78,19 @@ class Builder
         NostoLogger $logger,
         ManagerInterface $eventManager,
         CurrencyHelper $nostoCurrencyHelper,
-        PriceFactory $priceFactory
+        PriceFactory $priceFactory,
+        RuleResourceModel $ruleResourceModel,
+        NostoProductRepository $nostoProductRepository,
+        TimezoneInterface $localeDate
     ) {
         $this->nostoPriceHelper = $priceHelper;
         $this->logger = $logger;
         $this->eventManager = $eventManager;
         $this->nostoCurrencyHelper = $nostoCurrencyHelper;
         $this->priceFactory = $priceFactory;
+        $this->ruleResourceModel = $ruleResourceModel;
+        $this->nostoProductRepository = $nostoProductRepository;
+        $this->localeDate = $localeDate;
     }
 
     /**
@@ -96,24 +111,14 @@ class Builder
         try {
             $variation->setVariationId($group->getCode());
             $variation->setAvailability($nostoProduct->getAvailability());
-
+            $variation->setPrice($this->getLowestVariationPrice($product, $group, $store));
             $listPrice = $this->nostoCurrencyHelper->convertToTaggingPrice(
-                $this->nostoPriceHelper->getProductFinalDisplayPrice(
-                    $product,
-                    $store
-                ),
-                $store
-            );
-            $product->setPrice($this->getVariationPrice($product, $group));
-            $price = $this->nostoCurrencyHelper->convertToTaggingPrice(
                 $this->nostoPriceHelper->getProductDisplayPrice(
                     $product,
                     $store
                 ),
                 $store
             );
-
-            $variation->setPrice($price);
             $variation->setListPrice($listPrice);
             $variation->setPriceCurrencyCode($nostoProduct->getPriceCurrencyCode());
         } catch (\Exception $e) {
@@ -135,17 +140,78 @@ class Builder
      * @param Group $group
      * @return float
      */
-    private function getVariationPrice(Product $product, Group $group)
+    private function getLowestVariationPrice(Product $product, Group $group, Store $store)
     {
-        $productPrices = $product->getTierPrices();
-        if (!$productPrices) {
-            return $product->getFinalPrice();
+        // If product is configurable, the parent has no customer group price. Get SKU with lowest price
+        if ($product->getTypeInstance() instanceof ConfigurableType) {
+            $product = $this->getMinPriceSku($product, $group, $store);
         }
-        foreach ($productPrices as $price) {
-            if ($price->getCustomerGroupId() === $group->getId()) {
+        // Only returns the SKU price if it's lower than final price
+        // Merchant can have a fixed customer group price that is higher than the product
+        // price with a catalog price discount rule applied.
+        // This is normal Magento 2 behaviour
+        foreach ($product->getTierPrices() as $price) {
+            if ($price->getCustomerGroupId() === $group->getId()
+                && $price->getValue() < $product->getFinalPrice()
+            ) {
                 return $price->getValue();
             }
         }
+        // If no tier prices, there's no customer group pricing for this product
+        // or it's higher than final price with catalog price rule discount
         return $product->getFinalPrice();
     }
+
+    /**
+     * Returns the SKU|Product object with the lowest price.
+     *
+     * @param MageProduct $product
+     * @param Group $group
+     * @param Store $store
+     * @return MageProduct
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
+    public function getMinPriceSku(Product $product, Group $group, Store $store)
+    {
+        $minPriceSku = array();
+        if (!$product->getTypeInstance() instanceof ConfigurableType) {
+            return $product;
+        }
+        $skus = $this->nostoProductRepository->getSkus($product);
+        if (empty($skus)) {
+            return $product;
+        }
+        foreach ($skus as $sku) {
+            if (!$sku instanceof MageProduct) {
+                continue;
+            }
+            $skuPrice = $this->ruleResourceModel->getRulePrice(
+                new \DateTime('now'), //$this->localeDate->scopeDate();
+                $store->getWebsiteId(),
+                $group->getId(),
+                $sku->getId()
+            );
+            // If the SKU has customer group pricing for the not-logged-in group
+            // and if this price is lower, use that price.
+            foreach ($sku->getTierPrices() as $tierPrice) {
+                if ((int)$tierPrice->getCustomerGroupId() === $group->getId()) {
+                    $skuTierPrice = $tierPrice->getValue();
+                }
+            }
+            // If has a customer group pricing for not_logged_in group,
+            // check if it's lower than regular SKU price
+            $skuPrice = (isset($skuTierPrice) && $skuTierPrice < $skuPrice)
+                    ? $skuTierPrice
+                    : $skuPrice;
+            if (empty($minPriceSku)) { // First loop run
+                $minPriceSku['sku'] = $sku;
+                $minPriceSku['price'] = $skuPrice;
+            } elseif ($skuPrice < $minPriceSku['price']) {
+                $minPriceSku['sku'] = $sku;
+                $minPriceSku['price'] = $skuPrice;
+            }
+        }
+        return $minPriceSku['sku'];
+    }
+
 }
