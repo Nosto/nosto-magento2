@@ -66,12 +66,14 @@ class Builder
 
     /**
      * Builder constructor.
-     *
      * @param NostoPriceHelper $priceHelper
      * @param NostoLogger $logger
      * @param ManagerInterface $eventManager
      * @param CurrencyHelper $nostoCurrencyHelper
      * @param PriceFactory $priceFactory
+     * @param RuleResourceModel $ruleResourceModel
+     * @param NostoProductRepository $nostoProductRepository
+     * @param TimezoneInterface $localeDate
      */
     public function __construct(
         NostoPriceHelper $priceHelper,
@@ -173,7 +175,7 @@ class Builder
      */
     public function getMinPriceSku(Product $product, Group $group, Store $store)
     {
-        $minPriceSku = array();
+        $minPriceSku = [];
         if (!$product->getTypeInstance() instanceof ConfigurableType) {
             return $product;
         }
@@ -213,5 +215,4 @@ class Builder
         }
         return $minPriceSku['sku'];
     }
-
 }
