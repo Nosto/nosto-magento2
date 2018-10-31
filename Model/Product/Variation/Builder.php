@@ -193,14 +193,12 @@ class Builder
                 $group->getId(),
                 $sku->getId()
             );
-            // If the SKU has customer group pricing for the not-logged-in group
-            // and if this price is lower, use that price.
             foreach ($sku->getTierPrices() as $tierPrice) {
                 if ((int)$tierPrice->getCustomerGroupId() === $group->getId()) {
                     $skuTierPrice = $tierPrice->getValue();
                 }
             }
-            // If has a customer group pricing for not_logged_in group,
+            // If has a customer group pricing for current group,
             // check if it's lower than regular SKU price
             $skuPrice = (isset($skuTierPrice) && $skuTierPrice < $skuPrice)
                     ? $skuTierPrice
