@@ -150,6 +150,11 @@ class Price extends AbstractHelper
                     $currentProductPrice = $product->getFinalPrice();
                     /** @noinspection UnnecessaryCastingInspection */
                     $pricesToCompare = [(float)$currentProductPrice, (float)$product->getPrice()];
+                    foreach ($product->getTierPrices() as $tierPrice) {
+                        if ((int)$tierPrice->getCustomerGroupId() === $gid) {
+                            $pricesToCompare[] = $tierPrice->getValue();
+                        }
+                    }
                     try {
                         $currentRulePrice = $this->priceRuleFactory->create()->getRulePrice($date, $wid, $gid, $pid);
                     } catch (\Exception $e) {
