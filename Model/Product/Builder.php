@@ -45,7 +45,6 @@ use Magento\Framework\Event\ManagerInterface;
 use Magento\Review\Model\ReviewFactory;
 use Magento\Store\Model\Store;
 use Nosto\NostoException;
-use Nosto\Object\ModelFilter as ModelFilter;
 use Nosto\Object\Product\Product as NostoProduct;
 use Nosto\Tagging\Helper\Currency as CurrencyHelper;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
@@ -57,6 +56,11 @@ use Nosto\Tagging\Model\Product\Sku\Collection as NostoSkuCollection;
 use Nosto\Tagging\Model\Product\Tags\LowStock as LowStockHelper;
 use Nosto\Tagging\Model\Product\Url\Builder as NostoUrlBuilder;
 use Nosto\Types\Product\ProductInterface;
+use Nosto\Object\ModelFilter;
+use Nosto\Object\Product\Variation;
+use Nosto\Object\Product\VariationCollection;
+use Nosto\Tagging\Model\Product\Variation\Collection as PriceVariationCollection;
+use Nosto\Tagging\Helper\Variation as NostoVariationHelper;
 
 class Builder
 {
@@ -80,13 +84,21 @@ class Builder
     private $skuCollection;
     private $nostoCurrencyHelper;
     private $lowStockHelper;
+    private $priceVariationCollection;
+    private $nostoVariationHelper;
+    private $categoryRepository;
+    private $attributeSetRepository;
 
     /**
+     * Builder constructor.
+     *
      * @param NostoHelperData $nostoHelperData
      * @param NostoPriceHelper $priceHelper
      * @param NostoCategoryBuilder $categoryBuilder
      * @param NostoStockHelper $stockHelper
      * @param NostoSkuCollection $skuCollection
+     * @param CategoryRepositoryInterface $categoryRepository
+     * @param AttributeSetRepositoryInterface $attributeSetRepository
      * @param NostoLogger $logger
      * @param ManagerInterface $eventManager
      * @param ReviewFactory $reviewFactory
@@ -94,6 +106,9 @@ class Builder
      * @param NostoUrlBuilder $urlBuilder
      * @param CurrencyHelper $nostoCurrencyHelper
      * @param LowStockHelper $lowStockHelper
+     * @param StockRegistryInterface $stockRegistry
+     * @param PriceVariationCollection $priceVariationCollection
+     * @param NostoVariationHelper $nostoVariationHelper
      */
     public function __construct(
         NostoHelperData $nostoHelperData,
@@ -110,7 +125,9 @@ class Builder
         NostoUrlBuilder $urlBuilder,
         CurrencyHelper $nostoCurrencyHelper,
         LowStockHelper $lowStockHelper,
-        StockRegistryInterface $stockRegistry
+        StockRegistryInterface $stockRegistry,
+        PriceVariationCollection $priceVariationCollection,
+        NostoVariationHelper $nostoVariationHelper
     ) {
         $this->nostoDataHelper = $nostoHelperData;
         $this->nostoPriceHelper = $priceHelper;
@@ -131,6 +148,8 @@ class Builder
             $stockRegistry,
             $logger
         );
+        $this->priceVariationCollection = $priceVariationCollection;
+        $this->nostoVariationHelper = $nostoVariationHelper;
     }
 
     /**
@@ -188,6 +207,10 @@ class Builder
                         $store
                     )->getCode()
                 );
+            } elseif ($this->nostoDataHelper->isPricingVariationEnabled($store)) {
+                $nostoProduct->setVariationId(
+                    $this->nostoVariationHelper->getDefaultVariationCode()
+                );
             }
 
             $nostoProduct->setAvailability($this->buildAvailability($product, $store));
@@ -239,6 +262,15 @@ class Builder
 
             //update customized tag1, Tag2 and Tag3
             $this->amendAttributeTags($product, $nostoProduct, $store);
+
+            // When using customer group price variations, set the variations
+            if ($this->nostoDataHelper->isPricingVariationEnabled($store)
+                && $this->nostoDataHelper->isMultiCurrencyDisabled($store)
+            ) {
+                $nostoProduct->setVariations(
+                    $this->priceVariationCollection->build($product, $nostoProduct, $store)
+                );
+            }
         } catch (\Exception $e) {
             $this->logger->exception($e);
         }
@@ -264,6 +296,9 @@ class Builder
     {
         $customFields = $this->buildCustomFields($product, $store);
         $attributes = $this->getAttributesFromAllTags($store);
+        if (!$attributes) {
+            return $customFields;
+        }
         foreach ($product->getAttributes() as $key => $productAttribute) {
             if (in_array($key, $attributes, false)) {
                 $attributeValue = $this->getAttributeValue($product, $key);
@@ -294,7 +329,10 @@ class Builder
                 $attributes[] = $productAttribute;
             }
         }
-        return array_unique($attributes);
+        if ($attributes) {
+            return array_unique($attributes);
+        }
+        return [];
     }
 
     /**

@@ -214,6 +214,7 @@ class Builder
      * @param $localeData
      * @param $defaultSet
      * @return mixed
+     * @suppress PhanTypeArraySuspicious
      */
     private function buildPriceFormatWithSymbol($localeData, $defaultSet)
     {
@@ -229,6 +230,7 @@ class Builder
      * @param $localeData
      * @param $defaultSet
      * @return mixed
+     * @suppress PhanTypeArraySuspicious
      */
     private function buildDecimalSymbol($localeData, $defaultSet)
     {
@@ -244,6 +246,7 @@ class Builder
      * @param $localeData
      * @param $defaultSet
      * @return mixed
+     * @suppress PhanTypeArraySuspicious
      */
     private function buildGroupSymbol($localeData, $defaultSet)
     {
