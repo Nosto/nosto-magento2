@@ -197,9 +197,11 @@ class Builder
                 if ((int)$tierPrice->getCustomerGroupId() === $group->getId()) {
                     $skuTierPrice = $tierPrice->getValue();
                 }
+                break;
             }
             // If has a customer group pricing for current group,
             // check if it's lower than regular SKU price
+            /* @suppress UndeclaredVariable */
             $skuPrice = (isset($skuTierPrice) && $skuTierPrice < $skuPrice)
                     ? $skuTierPrice
                     : $skuPrice;

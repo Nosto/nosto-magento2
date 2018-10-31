@@ -153,6 +153,7 @@ class Price extends AbstractHelper
                     foreach ($product->getTierPrices() as $tierPrice) {
                         if ((int)$tierPrice->getCustomerGroupId() === $gid) {
                             $pricesToCompare[] = $tierPrice->getValue();
+                            break;
                         }
                     }
                     try {
