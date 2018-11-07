@@ -1,5 +1,8 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 2.11.5
+* Fix bundled product throwing exceptions when option has no selections 
+
 ### 2.11.4
 * Improve the stock status check for Nosto prouducts and SKUs
 
