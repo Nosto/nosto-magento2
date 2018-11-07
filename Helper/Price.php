@@ -142,10 +142,15 @@ class Price extends AbstractHelper
                             $allOptional = true;
                             $minPrices = [];
                             $requiredMinPrices = [];
+                            /** @var \Magento\Bundle\Model\Option $option */
                             foreach ($options as $option) {
                                 $selectionMinPrice = null;
+                                $optionSelections = $option->getSelections();
+                                if ($optionSelections === null) {
+                                    continue;
+                                }
                                 /* @var Product $selection */
-                                foreach ($option->getSelections() as $selection) {
+                                foreach ($optionSelections as $selection) {
                                     $selectionPrice
                                         = $this->getProductDisplayPrice($selection, $store);
                                     if ($selectionMinPrice == null
