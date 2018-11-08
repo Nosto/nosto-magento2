@@ -138,7 +138,7 @@
                     <label>Enable Ratings &amp; Reviews</label>
                     <comment>Enable tagging rating and review data for use in recommendations.
                     </comment>
-                    <source_model>>Nosto\Tagging\Model\Config\Source\Ratings</source_model>
+                    <source_model>Nosto\Tagging\Model\Config\Source\Ratings</source_model>
                     <!--<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>-->
 
                 </field>
