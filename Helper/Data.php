@@ -155,6 +155,13 @@ class Data extends AbstractHelper
     const XML_PATH_MULTI_CURRENCY = 'nosto/multicurrency/method';
 
     /**
+     * Values for ratings settings
+     */
+    const SETTING_VALUE_YOTPO_RATINGS = '2';
+    const SETTING_VALUE_MAGENTO_RATINGS = '1';
+    const SETTING_VALUE_NO_RATINGS = '0';
+
+    /**
      * Values of the multi currency settings
      */
     const SETTING_VALUE_MC_EXCHANGE_RATE = 'exchangerates';
@@ -299,7 +306,7 @@ class Data extends AbstractHelper
     /**
      * Returns on/off setting for custom fields
      *
-     * @param StoreInterface|null $store the store model or null.
+     * @param Store|null $store the store model or null.
      * @return boolean
      */
     public function isCustomFieldsEnabled(StoreInterface $store = null)
@@ -540,7 +547,6 @@ class Data extends AbstractHelper
     public function getTagAttributes($tagId, StoreInterface $store = null)
     {
         $attributesConfig = $this->getStoreConfig(self::XML_PATH_TAG . $tagId, $store);
-        /** @noinspection TypeUnsafeComparisonInspection */
         if ($attributesConfig == null) {
             return null;
         }
@@ -571,11 +577,24 @@ class Data extends AbstractHelper
         $clearTypes = [];
         if ($type === 'all') {
             $clearTypes = $types;
-        } elseif (in_array($type, $types, false)) {
+        } elseif (in_array($type, $types)) {
             $clearTypes[] = $type;
         }
         if (!empty($clearTypes)) {
             $this->cacheManager->clean($clearTypes);
         }
     }
+
+
+    /**
+     * Returns if pricing variation is enabled
+     *
+     * @param StoreInterface|null $store the store model or null.
+     * @return bool the configuration value
+     */
+//    public function isYotpoRatingsEnabled(StoreInterface $store = null)
+//    {
+//        return (bool)$this->getStoreConfig(self::XML_PATH_RATING_TAGGING, $store);
+//    }
+
 }
