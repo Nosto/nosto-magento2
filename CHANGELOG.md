@@ -21,6 +21,9 @@ All notable changes to this project will be documented in this file. This projec
 * Improve error handling for Nosto dashboard in store admin area
 * Code style fixes & refactoring
 
+### 2.11.5
+* Fix bundled product throwing exceptions when option has no selections 
+
 ### 2.11.4
 * Improve the stock status check for Nosto prouducts and SKUs
 
