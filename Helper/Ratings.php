@@ -57,13 +57,6 @@ class Ratings extends AbstractHelper
     private $logger;
     private $reviewFactory;
 
-    //To be removed
-    private $_config;
-    private $_model;
-    private $_helper;
-    protected $_storeManager;
-
-
     /**
      * Constructor.
      *
@@ -79,27 +72,13 @@ class Ratings extends AbstractHelper
         \Magento\Framework\Module\Manager $moduleManager,
         NostoHelperData $nostoHelperData,
         ReviewFactory $reviewFactory,
-        NostoLogger $logger,
-
-
-        //To be removed
-        \Yotpo\Yotpo\Block\Config $config,
-        \Yotpo\Yotpo\Model\Richsnippet $model,
-        \Yotpo\Yotpo\Helper\ApiClient $helper,
-        \Magento\Store\Model\StoreManagerInterface $storeManager
-
+        NostoLogger $logger
     ) {
         parent::__construct($context);
         $this->moduleManager = $moduleManager;
         $this->nostoDataHelper = $nostoHelperData;
         $this->logger = $logger;
         $this->reviewFactory = $reviewFactory;
-
-        $this->_config = $config;
-        $this->_model = $model;
-        $this->_helper = $helper;
-        $this->_logger = $logger;
-        $this->_storeManager = $storeManager;
     }
 
     /**
@@ -130,8 +109,6 @@ class Ratings extends AbstractHelper
      */
     private function getRatingsFromProviders(Product $product, Store $store){
 
-//        $this->getRichSnippet();
-//        return;
 
         if($this->nostoDataHelper->isRatingTaggingEnabled($store)){
 
@@ -229,53 +206,6 @@ class Ratings extends AbstractHelper
         } else {
             return null;
         }
-    }
-
-
-
-
-    //To be removed
-    public function getRichSnippet() {
-        try {
-
-            $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
-            $product = $objectManager->get('Magento\Framework\Registry')->registry('current_product');//get current product
-            $productId = $product->getId();
-            $storeId = $this->_storeManager->getStore()->getId();
-
-            $snippet = $this->_model->getSnippetByProductIdAndStoreId($productId, $storeId);
-
-
-            if (($snippet == null) || (!$snippet->isValid())) {
-                //no snippet for product or snippet isn't valid anymore. get valid snippet code from yotpo api
-                $res = $this->_helper->createApiGet("products/" . ($this->_config->getAppKey()) . "/richsnippet/" . $productId, 2);
-
-                if ($res["code"] != 200) {
-                    //product not found or feature disabled.
-                    return "";
-                }
-                $body = $res["body"];
-                $averageScore = $body->response->rich_snippet->reviews_average;
-                $reviewsCount = $body->response->rich_snippet->reviews_count;
-                $ttl = $body->response->rich_snippet->ttl;
-                if ($snippet == null) {
-                    $snippet = $this->_model;
-                    $snippet->setProductId($productId);
-                    $snippet->setStoreId($storeId);
-                }
-                $snippet->setAverageScore($averageScore);
-                $snippet->setReviewsCount($reviewsCount);
-                $snippet->setExpirationTime(date('Y-m-d H:i:s', time() + $ttl));
-                $snippet->save();
-                return array("average_score" => $averageScore, "reviews_count" => $reviewsCount);
-            }
-            return array("average_score" => $snippet->getAverageScore(), "reviews_count" => $snippet->getReviewsCount());
-        } catch (\Exception $e) {
-            $this->_logger->addDebug('error: ' . $e);
-        }
-        return array();
-        return true;
-
     }
 
 }

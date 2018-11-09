@@ -227,10 +227,6 @@ class Builder
             ) {
                 $nostoProduct->setInventoryLevel($this->nostoStockHelper->getQty($product));
             }
-//            if ($this->nostoDataHelper->isRatingTaggingEnabled($store)) {
-//                $nostoProduct->setRatingValue($this->buildRatingValue($product, $store));
-//                $nostoProduct->setReviewCount($this->buildReviewCount($product, $store));
-//            }
             if ($rating != null) {
                 $nostoProduct->setRatingValue($rating->getRating());
                 $nostoProduct->setReviewCount($rating->getReviewCount());
