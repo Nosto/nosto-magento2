@@ -1,5 +1,8 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 2.11.6
+* Add batching for scheduled indexer
+ 
 ### 2.11.5
 * Fix bundled product throwing exceptions when option has no selections 
 
