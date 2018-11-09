@@ -333,7 +333,24 @@ class Data extends AbstractHelper
      */
     public function isRatingTaggingEnabled(StoreInterface $store = null)
     {
-        return (bool)$this->getStoreConfig(self::XML_PATH_RATING_TAGGING, $store);
+
+        $providerCode = $this->getStoreConfig(self::XML_PATH_RATING_TAGGING, $store);
+
+        if ((int)$providerCode === 0) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Returns the provider used for ratings and reviews
+     *
+     * @param StoreInterface|null $store
+     * @return mixed|null
+     */
+    public function getRatingTaggingProvider(StoreInterface $store = null){
+        return $this->getStoreConfig(self::XML_PATH_RATING_TAGGING, $store);
     }
 
     /**

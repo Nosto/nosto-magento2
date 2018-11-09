@@ -61,6 +61,7 @@ use Nosto\Object\Product\Variation;
 use Nosto\Object\Product\VariationCollection;
 use Nosto\Tagging\Model\Product\Variation\Collection as PriceVariationCollection;
 use Nosto\Tagging\Helper\Variation as NostoVariationHelper;
+use Nosto\Tagging\Helper\Ratings as NostoRating;
 
 class Builder
 {
@@ -88,6 +89,7 @@ class Builder
     private $nostoVariationHelper;
     private $categoryRepository;
     private $attributeSetRepository;
+    private $nostoRatingHelper;
 
     /**
      * Builder constructor.
@@ -127,7 +129,8 @@ class Builder
         LowStockHelper $lowStockHelper,
         StockRegistryInterface $stockRegistry,
         PriceVariationCollection $priceVariationCollection,
-        NostoVariationHelper $nostoVariationHelper
+        NostoVariationHelper $nostoVariationHelper,
+        NostoRating $nostoRatingHelper
     ) {
         $this->nostoDataHelper = $nostoHelperData;
         $this->nostoPriceHelper = $priceHelper;
@@ -150,6 +153,7 @@ class Builder
         );
         $this->priceVariationCollection = $priceVariationCollection;
         $this->nostoVariationHelper = $nostoVariationHelper;
+        $this->nostoRatingHelper = $nostoRatingHelper;
     }
 
     /**
@@ -164,6 +168,9 @@ class Builder
         Store $store,
         $nostoScope = self::NOSTO_SCOPE_API
     ) {
+
+        $rating = $this->nostoRatingHelper->getRatings($product, $store);
+
         $nostoProduct = new NostoProduct();
         $modelFilter = new ModelFilter();
 
@@ -220,9 +227,13 @@ class Builder
             ) {
                 $nostoProduct->setInventoryLevel($this->nostoStockHelper->getQty($product));
             }
-            if ($this->nostoDataHelper->isRatingTaggingEnabled($store)) {
-                $nostoProduct->setRatingValue($this->buildRatingValue($product, $store));
-                $nostoProduct->setReviewCount($this->buildReviewCount($product, $store));
+//            if ($this->nostoDataHelper->isRatingTaggingEnabled($store)) {
+//                $nostoProduct->setRatingValue($this->buildRatingValue($product, $store));
+//                $nostoProduct->setReviewCount($this->buildReviewCount($product, $store));
+//            }
+            if ($rating != null) {
+                $nostoProduct->setRatingValue($rating->getRating());
+                $nostoProduct->setReviewCount($rating->getReviewCount());
             }
             if ($this->nostoDataHelper->isAltimgTaggingEnabled($store)) {
                 $nostoProduct->setAlternateImageUrls($this->buildAlternativeImages($product, $store));
