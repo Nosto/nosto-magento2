@@ -101,6 +101,9 @@ class Indexer implements IndexerActionInterface, MviewActionInterface
      */
     public function execute($ids)
     {
-        $this->productService->updateByIds($ids);
+        $splitted = array_chunk(array_unique($ids), self::BATCH_SIZE);
+        foreach ($splitted as $batch) {
+            $this->productService->updateByIds($batch);
+        }
     }
 }
