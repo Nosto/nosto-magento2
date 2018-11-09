@@ -58,14 +58,12 @@ class Ratings extends AbstractHelper
     private $reviewFactory;
 
     /**
-     * Constructor.
-     *
-     * @param Context $context the context.
-     * @param CatalogHelper $catalogHelper the catalog helper.
-     * @param RuleFactory $ruleFactory
-     * @param TimezoneInterface $localeDate
-     * @param NostoProductRepository $nostoProductRepository
-     * @param TaxHelper $taxHelper
+     * Ratings constructor.
+     * @param Context $context
+     * @param \Magento\Framework\Module\Manager $moduleManager
+     * @param Data $nostoHelperData
+     * @param ReviewFactory $reviewFactory
+     * @param NostoLogger $logger
      */
     public function __construct(
         Context $context,
