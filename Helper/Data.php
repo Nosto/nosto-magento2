@@ -306,7 +306,7 @@ class Data extends AbstractHelper
     /**
      * Returns on/off setting for custom fields
      *
-     * @param Store|null $store the store model or null.
+     * @param StoreInterface|null $store the store model or null.
      * @return boolean
      */
     public function isCustomFieldsEnabled(StoreInterface $store = null)
@@ -547,6 +547,7 @@ class Data extends AbstractHelper
     public function getTagAttributes($tagId, StoreInterface $store = null)
     {
         $attributesConfig = $this->getStoreConfig(self::XML_PATH_TAG . $tagId, $store);
+        /** @noinspection TypeUnsafeComparisonInspection */
         if ($attributesConfig == null) {
             return null;
         }
@@ -577,7 +578,7 @@ class Data extends AbstractHelper
         $clearTypes = [];
         if ($type === 'all') {
             $clearTypes = $types;
-        } elseif (in_array($type, $types)) {
+        } elseif (in_array($type, $types, false)) {
             $clearTypes[] = $type;
         }
         if (!empty($clearTypes)) {
