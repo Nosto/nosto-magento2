@@ -34,39 +34,25 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Product;
+namespace Nosto\Tagging\Helper;
 
-class Ratings
+class RatingsFactory
 {
-    /** @var int */
-    private $reviewCount;
-    /** @var float */
-    private $rating;
-
-    public function getReviewCount()
-    {
-        return $this->reviewCount;
-    }
+    /**
+     * @var \Magento\Framework\ObjectManagerInterface
+     */
+    private $objectManager;
 
     /**
-     * @param int $reviewCount
+     * @param \Magento\Framework\ObjectManagerInterface $objectManager
      */
-    public function setReviewCount($reviewCount)
+    public function __construct(\Magento\Framework\ObjectManagerInterface $objectManager)
     {
-        $this->reviewCount = (int)$reviewCount;
+        $this->objectManager = $objectManager;
     }
-    /**
-     * @inheritdoc
-     */
-    public function getRating()
+
+    public function create()
     {
-        return $this->rating;
-    }
-    /**
-     * @param float $rating
-     */
-    public function setRating($rating)
-    {
-        $this->rating = (float)$rating;
+        return $this->objectManager->create('Yotpo\Yotpo\Helper\RichSnippets');
     }
 }

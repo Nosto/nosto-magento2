@@ -349,7 +349,8 @@ class Data extends AbstractHelper
      * @param StoreInterface|null $store
      * @return mixed|null
      */
-    public function getRatingTaggingProvider(StoreInterface $store = null){
+    public function getRatingTaggingProvider(StoreInterface $store = null)
+    {
         return $this->getStoreConfig(self::XML_PATH_RATING_TAGGING, $store);
     }
 
@@ -602,17 +603,4 @@ class Data extends AbstractHelper
             $this->cacheManager->clean($clearTypes);
         }
     }
-
-
-    /**
-     * Returns if pricing variation is enabled
-     *
-     * @param StoreInterface|null $store the store model or null.
-     * @return bool the configuration value
-     */
-//    public function isYotpoRatingsEnabled(StoreInterface $store = null)
-//    {
-//        return (bool)$this->getStoreConfig(self::XML_PATH_RATING_TAGGING, $store);
-//    }
-
 }

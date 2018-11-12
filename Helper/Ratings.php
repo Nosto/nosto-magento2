@@ -44,6 +44,7 @@ use Magento\Store\Model\Store;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Magento\Review\Model\ReviewFactory;
 use Nosto\Tagging\Model\Product\Ratings as ProductRatings;
+use Magento\Framework\App\ObjectManager;
 
 /**
  * Price helper used for product price related tasks.
@@ -51,11 +52,11 @@ use Nosto\Tagging\Model\Product\Ratings as ProductRatings;
 class Ratings extends AbstractHelper
 {
 
-
-    protected $moduleManager;
-    protected $nostoDataHelper;
+    private $moduleManager;
+    private $nostoDataHelper;
     private $logger;
     private $reviewFactory;
+    private $ratingsFactory;
 
     /**
      * Ratings constructor.
@@ -70,13 +71,15 @@ class Ratings extends AbstractHelper
         \Magento\Framework\Module\Manager $moduleManager,
         NostoHelperData $nostoHelperData,
         ReviewFactory $reviewFactory,
-        NostoLogger $logger
+        NostoLogger $logger,
+        RatingsFactory $ratingsFactory
     ) {
         parent::__construct($context);
         $this->moduleManager = $moduleManager;
         $this->nostoDataHelper = $nostoHelperData;
         $this->logger = $logger;
         $this->reviewFactory = $reviewFactory;
+        $this->ratingsFactory = $ratingsFactory;
     }
 
     /**
@@ -86,16 +89,17 @@ class Ratings extends AbstractHelper
      * @param Store $store
      * @return ProductRatings|null
      */
-    public function getRatings(Product $product, Store $store){
+    public function getRatings(Product $product, Store $store)
+    {
         $ratings = $this->getRatingsFromProviders($product, $store);
-
-        if($ratings == null){
+        if ($ratings == null) {
             return null;
         }
 
-        $productRatings = new ProductRatings($ratings["reviews_count"], $ratings["average_score"]);
+        $productRatings = new ProductRatings();
+        $productRatings->setReviewCount($ratings["reviews_count"]);
+        $productRatings->setRating($ratings["average_score"]);
         return $productRatings;
-
     }
 
     /**
@@ -105,30 +109,24 @@ class Ratings extends AbstractHelper
      * @param Store $store
      * @return array|null
      */
-    private function getRatingsFromProviders(Product $product, Store $store){
+    private function getRatingsFromProviders(Product $product, Store $store)
+    {
 
-
-        if($this->nostoDataHelper->isRatingTaggingEnabled($store)){
-
+        if ($this->nostoDataHelper->isRatingTaggingEnabled($store)) {
             $provider = $this->nostoDataHelper->getRatingTaggingProvider($store);
 
-            if($provider === NostoHelperData::SETTING_VALUE_YOTPO_RATINGS) {
-
-                if (!$this->moduleManager->isEnabled("Yotpo_Yotpo")){
+            if ($provider === NostoHelperData::SETTING_VALUE_YOTPO_RATINGS) {
+                if (!$this->moduleManager->isEnabled("Yotpo_Yotpo")) {
                     return null;
                 }
 
-                $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
                 try {
-                    /** @var \Yotpo\Yotpo\Helper\RichSnippets $YotpoHelper */
-                    $YotpoHelper = $objectManager->get('Yotpo\Yotpo\Helper\RichSnippets');
+                    $ratings = $this->ratingsFactory->create()->getRichSnippet();
                 } catch (\Exception $e) {
                     $this->logger->exception($e);
                 }
 
-                $ratings = $YotpoHelper->getRichSnippet();
-
-                if($ratings == ""){
+                if ($ratings == "") {
                     return null;
                 }
 
@@ -136,27 +134,16 @@ class Ratings extends AbstractHelper
                     "average_score" => $ratings["average_score"],
                     "reviews_count" => $ratings["reviews_count"]
                 ];
-
-            }
-
-            else if( $provider === NostoHelperData::SETTING_VALUE_MAGENTO_RATINGS){
+            } elseif ($provider === NostoHelperData::SETTING_VALUE_MAGENTO_RATINGS) {
                 return [
                     "average_score" => $this->buildRatingValue($product, $store),
                     "reviews_count" => $this->buildReviewCount($product, $store)
                 ];
             }
-
-        }
-        else {
+        } else {
             return null;
         }
-
-
-
-
     }
-
-
 
     /**
      * Helper method to fetch and return the normalised rating value for a product. The rating is
@@ -205,5 +192,4 @@ class Ratings extends AbstractHelper
             return null;
         }
     }
-
 }
