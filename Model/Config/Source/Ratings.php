@@ -39,6 +39,8 @@ namespace Nosto\Tagging\Model\Config\Source;
 use Magento\Framework\Option\ArrayInterface;
 use Magento\Framework\Phrase;
 use Nosto\Tagging\Helper\Data;
+use Magento\Framework\Module\Manager;
+use Nosto\Tagging\Helper\RatingsFactory;
 
 /**
  * Option array class to generate a list of selectable options that allows the merchant to choose
@@ -48,6 +50,22 @@ use Nosto\Tagging\Helper\Data;
  */
 class Ratings implements ArrayInterface
 {
+    private $moduleManager;
+    private $ratingsFactory;
+
+    /**
+     * Ratings constructor.
+     * @param Manager $moduleManager
+     */
+    public function __construct(
+        Manager $moduleManager,
+        RatingsFactory $ratingsFactory
+    )
+    {
+        $this->moduleManager = $moduleManager;
+        $this->ratingsFactory = $ratingsFactory;
+    }
+
     /**
      * Options getter
      *
@@ -55,10 +73,23 @@ class Ratings implements ArrayInterface
      */
     public function toOptionArray()
     {
+        if (
+            $this->moduleManager->isEnabled("Yotpo_Yotpo") &&
+            class_exists('Yotpo\Yotpo\Helper\RichSnippets') &&
+            method_exists($this->ratingsFactory->create(), 'getRichSnippet')
+
+        ) {
+            return [
+                ['value' => Data::SETTING_VALUE_YOTPO_RATINGS, 'label' => new Phrase('Yotpo Ratings')],
+                ['value' => Data::SETTING_VALUE_MAGENTO_RATINGS, 'label' => new Phrase('Magento Ratings')],
+                ['value' => Data::SETTING_VALUE_NO_RATINGS, 'label' => new Phrase('No Ratings')]
+            ];
+        }
+
         return [
-            ['value' => Data::SETTING_VALUE_YOTPO_RATINGS, 'label' => new Phrase('Yotpo Ratings')],
             ['value' => Data::SETTING_VALUE_MAGENTO_RATINGS, 'label' => new Phrase('Magento Ratings')],
             ['value' => Data::SETTING_VALUE_NO_RATINGS, 'label' => new Phrase('No Ratings')]
         ];
+
     }
 }

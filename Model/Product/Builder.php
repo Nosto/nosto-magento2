@@ -227,7 +227,7 @@ class Builder
             ) {
                 $nostoProduct->setInventoryLevel($this->nostoStockHelper->getQty($product));
             }
-            if ($rating != null) {
+            if ($rating !== null) {
                 $nostoProduct->setRatingValue($rating->getRating());
                 $nostoProduct->setReviewCount($rating->getReviewCount());
             }

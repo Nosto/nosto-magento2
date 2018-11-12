@@ -45,12 +45,15 @@ use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Magento\Review\Model\ReviewFactory;
 use Nosto\Tagging\Model\Product\Ratings as ProductRatings;
 use Magento\Framework\App\ObjectManager;
+use Magento\Framework\Module\Manager;
 
 /**
  * Price helper used for product price related tasks.
  */
 class Ratings extends AbstractHelper
 {
+    const REVIEW_COUNT= 'reviews_count';
+    const AVERAGE_SCORE = 'average_score';
 
     private $moduleManager;
     private $nostoDataHelper;
@@ -61,14 +64,15 @@ class Ratings extends AbstractHelper
     /**
      * Ratings constructor.
      * @param Context $context
-     * @param \Magento\Framework\Module\Manager $moduleManager
+     * @param Manager $moduleManager
      * @param Data $nostoHelperData
      * @param ReviewFactory $reviewFactory
      * @param NostoLogger $logger
+     * @param RatingsFactory $ratingsFactory
      */
     public function __construct(
         Context $context,
-        \Magento\Framework\Module\Manager $moduleManager,
+        Manager $moduleManager,
         NostoHelperData $nostoHelperData,
         ReviewFactory $reviewFactory,
         NostoLogger $logger,
@@ -92,13 +96,13 @@ class Ratings extends AbstractHelper
     public function getRatings(Product $product, Store $store)
     {
         $ratings = $this->getRatingsFromProviders($product, $store);
-        if ($ratings == null) {
+        if ($ratings === null) {
             return null;
         }
 
         $productRatings = new ProductRatings();
-        $productRatings->setReviewCount($ratings["reviews_count"]);
-        $productRatings->setRating($ratings["average_score"]);
+        $productRatings->setReviewCount($ratings[self::REVIEW_COUNT]);
+        $productRatings->setRating($ratings[self::AVERAGE_SCORE]);
         return $productRatings;
     }
 
@@ -131,13 +135,13 @@ class Ratings extends AbstractHelper
                 }
 
                 return [
-                    "average_score" => $ratings["average_score"],
-                    "reviews_count" => $ratings["reviews_count"]
+                    self::AVERAGE_SCORE => $ratings[self::AVERAGE_SCORE],
+                    self::REVIEW_COUNT => $ratings[self::REVIEW_COUNT]
                 ];
             } elseif ($provider === NostoHelperData::SETTING_VALUE_MAGENTO_RATINGS) {
                 return [
-                    "average_score" => $this->buildRatingValue($product, $store),
-                    "reviews_count" => $this->buildReviewCount($product, $store)
+                    self::AVERAGE_SCORE => $this->buildRatingValue($product, $store),
+                    self::REVIEW_COUNT => $this->buildReviewCount($product, $store)
                 ];
             }
         } else {

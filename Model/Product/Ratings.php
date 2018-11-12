@@ -40,6 +40,7 @@ class Ratings
 {
     /** @var int */
     private $reviewCount;
+
     /** @var float */
     private $rating;
 
