@@ -41,6 +41,7 @@ use Magento\Framework\Phrase;
 use Nosto\Tagging\Helper\Data;
 use Magento\Framework\Module\Manager;
 use Nosto\Tagging\Helper\RatingsFactory;
+use Nosto\Tagging\Helper\Ratings as NostoRatingsHelper;
 
 /**
  * Option array class to generate a list of selectable options that allows the merchant to choose
@@ -52,18 +53,17 @@ class Ratings implements ArrayInterface
 {
     private $moduleManager;
     private $ratingsFactory;
+    private $nostoRatingsHelper;
 
     /**
      * Ratings constructor.
      * @param Manager $moduleManager
      */
     public function __construct(
-        Manager $moduleManager,
-        RatingsFactory $ratingsFactory
+        NostoRatingsHelper $nostoRatingsHelper
     )
     {
-        $this->moduleManager = $moduleManager;
-        $this->ratingsFactory = $ratingsFactory;
+        $this->nostoRatingsHelper = $nostoRatingsHelper;
     }
 
     /**
@@ -73,23 +73,16 @@ class Ratings implements ArrayInterface
      */
     public function toOptionArray()
     {
-        if (
-            $this->moduleManager->isEnabled("Yotpo_Yotpo") &&
-            class_exists('Yotpo\Yotpo\Helper\RichSnippets') &&
-            method_exists($this->ratingsFactory->create(), 'getRichSnippet')
-
-        ) {
-            return [
-                ['value' => Data::SETTING_VALUE_YOTPO_RATINGS, 'label' => new Phrase('Yotpo Ratings')],
-                ['value' => Data::SETTING_VALUE_MAGENTO_RATINGS, 'label' => new Phrase('Magento Ratings')],
-                ['value' => Data::SETTING_VALUE_NO_RATINGS, 'label' => new Phrase('No Ratings')]
-            ];
-        }
-
-        return [
+        $options = [
             ['value' => Data::SETTING_VALUE_MAGENTO_RATINGS, 'label' => new Phrase('Magento Ratings')],
             ['value' => Data::SETTING_VALUE_NO_RATINGS, 'label' => new Phrase('No Ratings')]
         ];
 
+        if ($this->nostoRatingsHelper->canUseYotpo()) {
+            $yotpo =  ['value' => Data::SETTING_VALUE_YOTPO_RATINGS, 'label' => new Phrase('Yotpo Ratings')];
+            array_push($options, $yotpo);
+        }
+
+        return $options;
     }
 }

@@ -115,7 +115,6 @@ class Ratings extends AbstractHelper
      */
     private function getRatingsFromProviders(Product $product, Store $store)
     {
-
         if ($this->nostoDataHelper->isRatingTaggingEnabled($store)) {
             $provider = $this->nostoDataHelper->getRatingTaggingProvider($store);
 
@@ -128,9 +127,6 @@ class Ratings extends AbstractHelper
                     $ratings = $this->ratingsFactory->create()->getRichSnippet();
                 } catch (\Exception $e) {
                     $this->logger->exception($e);
-                }
-
-                if ($ratings == "") {
                     return null;
                 }
 
@@ -195,5 +191,23 @@ class Ratings extends AbstractHelper
         } else {
             return null;
         }
+    }
+
+    /**
+     * Check if Yopto module is enabled and has getRichSnippet method
+     *
+     * @return bool
+     */
+    public function canUseYotpo()
+    {
+        if (
+            $this->moduleManager->isEnabled("Yotpo_Yotpo") &&
+            class_exists('Yotpo\Yotpo\Helper\RichSnippets') &&
+            method_exists($this->ratingsFactory->create(), 'getRichSnippet')
+        ) {
+            return true;
+        }
+
+        return false;
     }
 }
