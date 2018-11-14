@@ -51,13 +51,11 @@ use Nosto\Tagging\Helper\Ratings as NostoRatingsHelper;
  */
 class Ratings implements ArrayInterface
 {
-    private $moduleManager;
-    private $ratingsFactory;
     private $nostoRatingsHelper;
 
     /**
      * Ratings constructor.
-     * @param Manager $moduleManager
+     * @param NostoRatingsHelper $nostoRatingsHelper
      */
     public function __construct(
         NostoRatingsHelper $nostoRatingsHelper
