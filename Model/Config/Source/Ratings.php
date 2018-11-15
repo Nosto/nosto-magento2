@@ -39,8 +39,6 @@ namespace Nosto\Tagging\Model\Config\Source;
 use Magento\Framework\Option\ArrayInterface;
 use Magento\Framework\Phrase;
 use Nosto\Tagging\Helper\Data;
-use Magento\Framework\Module\Manager;
-use Nosto\Tagging\Helper\RatingsFactory;
 use Nosto\Tagging\Helper\Ratings as NostoRatingsHelper;
 
 /**

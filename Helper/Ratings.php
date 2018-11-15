@@ -119,7 +119,7 @@ class Ratings extends AbstractHelper
             $provider = $this->nostoDataHelper->getRatingTaggingProvider($store);
 
             if ($provider === NostoHelperData::SETTING_VALUE_YOTPO_RATINGS) {
-                if (!$this->moduleManager->isEnabled("Yotpo_Yotpo")) {
+                if (!$this->canUseYotpo()) {
                     return null;
                 }
 
