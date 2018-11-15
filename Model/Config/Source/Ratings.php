@@ -43,7 +43,7 @@ use Nosto\Tagging\Helper\Ratings as NostoRatingsHelper;
 
 /**
  * Option array class to generate a list of selectable options that allows the merchant to choose
- * any image attribute for his image tag.
+ * the provider for the ratings and reviews.
  *
  * @package Nosto\Tagging\Model\Config\Source
  */
@@ -55,9 +55,7 @@ class Ratings implements ArrayInterface
      * Ratings constructor.
      * @param NostoRatingsHelper $nostoRatingsHelper
      */
-    public function __construct(
-        NostoRatingsHelper $nostoRatingsHelper
-    )
+    public function __construct(NostoRatingsHelper $nostoRatingsHelper)
     {
         $this->nostoRatingsHelper = $nostoRatingsHelper;
     }
@@ -76,7 +74,7 @@ class Ratings implements ArrayInterface
 
         if ($this->nostoRatingsHelper->canUseYotpo()) {
             $yotpo =  ['value' => Data::SETTING_VALUE_YOTPO_RATINGS, 'label' => new Phrase('Yotpo Ratings')];
-            array_push($options, $yotpo);
+            $options[]= $yotpo;
         }
 
         return $options;

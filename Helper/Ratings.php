@@ -44,11 +44,10 @@ use Magento\Store\Model\Store;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Magento\Review\Model\ReviewFactory;
 use Nosto\Tagging\Model\Product\Ratings as ProductRatings;
-use Magento\Framework\App\ObjectManager;
 use Magento\Framework\Module\Manager;
 
 /**
- * Price helper used for product price related tasks.
+ * Rating helper used for product rating related tasks.
  */
 class Ratings extends AbstractHelper
 {
@@ -65,7 +64,7 @@ class Ratings extends AbstractHelper
      * Ratings constructor.
      * @param Context $context
      * @param Manager $moduleManager
-     * @param Data $nostoHelperData
+     * @param NostoHelperData $nostoHelperData
      * @param ReviewFactory $reviewFactory
      * @param NostoLogger $logger
      * @param RatingsFactory $ratingsFactory
@@ -134,15 +133,17 @@ class Ratings extends AbstractHelper
                     self::AVERAGE_SCORE => $ratings[self::AVERAGE_SCORE],
                     self::REVIEW_COUNT => $ratings[self::REVIEW_COUNT]
                 ];
-            } elseif ($provider === NostoHelperData::SETTING_VALUE_MAGENTO_RATINGS) {
+            }
+
+            if ($provider === NostoHelperData::SETTING_VALUE_MAGENTO_RATINGS) {
                 return [
                     self::AVERAGE_SCORE => $this->buildRatingValue($product, $store),
                     self::REVIEW_COUNT => $this->buildReviewCount($product, $store)
                 ];
             }
-        } else {
-            return null;
         }
+
+        return null;
     }
 
     /**
@@ -164,9 +165,9 @@ class Ratings extends AbstractHelper
         if ($product->getRatingSummary()->getReviewsCount() > 0) {
             /** @noinspection PhpUndefinedMethodInspection */
             return round($product->getRatingSummary()->getRatingSummary() / 20, 1);
-        } else {
-            return null;
         }
+
+        return null;
     }
 
     /**
@@ -188,9 +189,9 @@ class Ratings extends AbstractHelper
         if ($product->getRatingSummary()->getReviewsCount() > 0) {
             /** @noinspection PhpUndefinedMethodInspection */
             return $product->getRatingSummary()->getReviewsCount();
-        } else {
-            return null;
         }
+
+        return null;
     }
 
     /**
