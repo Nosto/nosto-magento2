@@ -166,8 +166,6 @@ class Builder
         $nostoScope = self::NOSTO_SCOPE_API
     ) {
 
-        $rating = $this->nostoRatingHelper->getRatings($product, $store);
-
         $nostoProduct = new NostoProduct();
         $modelFilter = new ModelFilter();
 
@@ -224,6 +222,7 @@ class Builder
             ) {
                 $nostoProduct->setInventoryLevel($this->nostoStockHelper->getQty($product));
             }
+            $rating = $this->nostoRatingHelper->getRatings($product, $store);
             if ($rating !== null) {
                 $nostoProduct->setRatingValue($rating->getRating());
                 $nostoProduct->setReviewCount($rating->getReviewCount());
@@ -391,52 +390,6 @@ class Builder
         }
 
         return $availability;
-    }
-
-    /**
-     * Helper method to fetch and return the normalised rating value for a product. The rating is
-     * normalised to a 0-5 value.
-     *
-     * @param Product $product the product whose rating value to fetch
-     * @param Store $store the store scope in which to fetch the rating
-     * @return float|null the normalized rating value of the product
-     */
-    private function buildRatingValue(Product $product, Store $store)
-    {
-        /** @noinspection PhpUndefinedMethodInspection */
-        if (!$product->getRatingSummary()) {
-            $this->reviewFactory->create()->getEntitySummary($product, $store->getId());
-        }
-
-        /** @noinspection PhpUndefinedMethodInspection */
-        if ($product->getRatingSummary()->getReviewsCount() > 0) {
-            /** @noinspection PhpUndefinedMethodInspection */
-            return round($product->getRatingSummary()->getRatingSummary() / 20, 1);
-        }
-        return null;
-    }
-
-    /**
-     * Helper method to fetch and return the total review count for a product. The review counts are
-     * returned as is.
-     *
-     * @param Product $product the product whose rating value to fetch
-     * @param Store $store the store scope in which to fetch the rating
-     * @return int|null the normalized rating value of the product
-     */
-    private function buildReviewCount(Product $product, Store $store)
-    {
-        /** @noinspection PhpUndefinedMethodInspection */
-        if (!$product->getRatingSummary()) {
-            $this->reviewFactory->create()->getEntitySummary($product, $store->getId());
-        }
-
-        /** @noinspection PhpUndefinedMethodInspection */
-        if ($product->getRatingSummary()->getReviewsCount() > 0) {
-            /** @noinspection PhpUndefinedMethodInspection */
-            return $product->getRatingSummary()->getReviewsCount();
-        }
-        return null;
     }
 
     /**

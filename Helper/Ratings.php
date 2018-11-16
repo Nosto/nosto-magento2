@@ -45,6 +45,7 @@ use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Magento\Review\Model\ReviewFactory;
 use Nosto\Tagging\Model\Product\Ratings as ProductRatings;
 use Magento\Framework\Module\Manager;
+use Nosto\Tagging\Helper\RatingsFactory;
 
 /**
  * Rating helper used for product rating related tasks.
@@ -58,6 +59,7 @@ class Ratings extends AbstractHelper
     private $nostoDataHelper;
     private $logger;
     private $reviewFactory;
+    /** @var RatingsFactory $ratingsFactory */
     private $ratingsFactory;
 
     /**
@@ -68,6 +70,8 @@ class Ratings extends AbstractHelper
      * @param ReviewFactory $reviewFactory
      * @param NostoLogger $logger
      * @param RatingsFactory $ratingsFactory
+     *
+     * @suppress PhanUndeclaredTypeParameter
      */
     public function __construct(
         Context $context,
@@ -111,6 +115,8 @@ class Ratings extends AbstractHelper
      * @param Product $product
      * @param Store $store
      * @return array|null
+     *
+     * @suppress PhanUndeclaredClassMethod
      */
     private function getRatingsFromProviders(Product $product, Store $store)
     {
@@ -123,6 +129,7 @@ class Ratings extends AbstractHelper
                 }
 
                 try {
+                    /** @noinspection PhpUndefinedMethodInspection */
                     $ratings = $this->ratingsFactory->create()->getRichSnippet();
                 } catch (\Exception $e) {
                     $this->logger->exception($e);
@@ -201,8 +208,7 @@ class Ratings extends AbstractHelper
      */
     public function canUseYotpo()
     {
-        if (
-            $this->moduleManager->isEnabled("Yotpo_Yotpo") &&
+        if ($this->moduleManager->isEnabled("Yotpo_Yotpo") &&
             class_exists('Yotpo\Yotpo\Helper\RichSnippets') &&
             method_exists($this->ratingsFactory->create(), 'getRichSnippet')
         ) {

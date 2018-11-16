@@ -56,7 +56,6 @@ class RatingsFactory
 
     /**
      * @return RichSnippets
-     *
      */
     public function create()
     {

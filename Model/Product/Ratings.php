@@ -44,6 +44,9 @@ class Ratings
     /** @var float */
     private $rating;
 
+    /**
+     * @return int $reviewCount
+     */
     public function getReviewCount()
     {
         return $this->reviewCount;
@@ -56,6 +59,7 @@ class Ratings
     {
         $this->reviewCount = (int)$reviewCount;
     }
+
     /**
      * @inheritdoc
      */
@@ -63,6 +67,7 @@ class Ratings
     {
         return $this->rating;
     }
+
     /**
      * @param float $rating
      */
