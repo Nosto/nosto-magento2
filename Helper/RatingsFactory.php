@@ -59,6 +59,6 @@ class RatingsFactory
      */
     public function create()
     {
-        return $this->objectManager->create('Yotpo\Yotpo\Helper\RichSnippets');
+        return $this->objectManager->create('Yotpo\Yotpo\Helper\RichSnippets'); // @codingStandardsIgnoreLine
     }
 }
