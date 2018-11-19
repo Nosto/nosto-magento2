@@ -44,7 +44,6 @@ use Magento\Eav\Api\AttributeSetRepositoryInterface;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Review\Model\ReviewFactory;
 use Magento\Store\Model\Store;
-use Nosto\NostoException;
 use Nosto\Object\Product\Product as NostoProduct;
 use Nosto\Tagging\Helper\Currency as CurrencyHelper;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
@@ -57,10 +56,9 @@ use Nosto\Tagging\Model\Product\Tags\LowStock as LowStockHelper;
 use Nosto\Tagging\Model\Product\Url\Builder as NostoUrlBuilder;
 use Nosto\Types\Product\ProductInterface;
 use Nosto\Object\ModelFilter;
-use Nosto\Object\Product\Variation;
-use Nosto\Object\Product\VariationCollection;
 use Nosto\Tagging\Model\Product\Variation\Collection as PriceVariationCollection;
 use Nosto\Tagging\Helper\Variation as NostoVariationHelper;
+use Nosto\Tagging\Helper\Ratings as NostoRating;
 
 class Builder
 {
@@ -88,6 +86,7 @@ class Builder
     private $nostoVariationHelper;
     private $categoryRepository;
     private $attributeSetRepository;
+    private $nostoRatingHelper;
 
     /**
      * Builder constructor.
@@ -127,7 +126,8 @@ class Builder
         LowStockHelper $lowStockHelper,
         StockRegistryInterface $stockRegistry,
         PriceVariationCollection $priceVariationCollection,
-        NostoVariationHelper $nostoVariationHelper
+        NostoVariationHelper $nostoVariationHelper,
+        NostoRating $nostoRatingHelper
     ) {
         $this->nostoDataHelper = $nostoHelperData;
         $this->nostoPriceHelper = $priceHelper;
@@ -150,6 +150,7 @@ class Builder
         );
         $this->priceVariationCollection = $priceVariationCollection;
         $this->nostoVariationHelper = $nostoVariationHelper;
+        $this->nostoRatingHelper = $nostoRatingHelper;
     }
 
     /**
@@ -164,6 +165,7 @@ class Builder
         Store $store,
         $nostoScope = self::NOSTO_SCOPE_API
     ) {
+
         $nostoProduct = new NostoProduct();
         $modelFilter = new ModelFilter();
 
@@ -220,9 +222,10 @@ class Builder
             ) {
                 $nostoProduct->setInventoryLevel($this->nostoStockHelper->getQty($product));
             }
-            if ($this->nostoDataHelper->isRatingTaggingEnabled($store)) {
-                $nostoProduct->setRatingValue($this->buildRatingValue($product, $store));
-                $nostoProduct->setReviewCount($this->buildReviewCount($product, $store));
+            $rating = $this->nostoRatingHelper->getRatings($product, $store);
+            if ($rating !== null) {
+                $nostoProduct->setRatingValue($rating->getRating());
+                $nostoProduct->setReviewCount($rating->getReviewCount());
             }
             if ($this->nostoDataHelper->isAltimgTaggingEnabled($store)) {
                 $nostoProduct->setAlternateImageUrls($this->buildAlternativeImages($product, $store));
@@ -387,52 +390,6 @@ class Builder
         }
 
         return $availability;
-    }
-
-    /**
-     * Helper method to fetch and return the normalised rating value for a product. The rating is
-     * normalised to a 0-5 value.
-     *
-     * @param Product $product the product whose rating value to fetch
-     * @param Store $store the store scope in which to fetch the rating
-     * @return float|null the normalized rating value of the product
-     */
-    private function buildRatingValue(Product $product, Store $store)
-    {
-        /** @noinspection PhpUndefinedMethodInspection */
-        if (!$product->getRatingSummary()) {
-            $this->reviewFactory->create()->getEntitySummary($product, $store->getId());
-        }
-
-        /** @noinspection PhpUndefinedMethodInspection */
-        if ($product->getRatingSummary()->getReviewsCount() > 0) {
-            /** @noinspection PhpUndefinedMethodInspection */
-            return round($product->getRatingSummary()->getRatingSummary() / 20, 1);
-        }
-        return null;
-    }
-
-    /**
-     * Helper method to fetch and return the total review count for a product. The review counts are
-     * returned as is.
-     *
-     * @param Product $product the product whose rating value to fetch
-     * @param Store $store the store scope in which to fetch the rating
-     * @return int|null the normalized rating value of the product
-     */
-    private function buildReviewCount(Product $product, Store $store)
-    {
-        /** @noinspection PhpUndefinedMethodInspection */
-        if (!$product->getRatingSummary()) {
-            $this->reviewFactory->create()->getEntitySummary($product, $store->getId());
-        }
-
-        /** @noinspection PhpUndefinedMethodInspection */
-        if ($product->getRatingSummary()->getReviewsCount() > 0) {
-            /** @noinspection PhpUndefinedMethodInspection */
-            return $product->getRatingSummary()->getReviewsCount();
-        }
-        return null;
     }
 
     /**

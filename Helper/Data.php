@@ -155,6 +155,13 @@ class Data extends AbstractHelper
     const XML_PATH_MULTI_CURRENCY = 'nosto/multicurrency/method';
 
     /**
+     * Values for ratings settings
+     */
+    const SETTING_VALUE_YOTPO_RATINGS = '2';
+    const SETTING_VALUE_MAGENTO_RATINGS = '1';
+    const SETTING_VALUE_NO_RATINGS = '0';
+
+    /**
      * Values of the multi currency settings
      */
     const SETTING_VALUE_MC_EXCHANGE_RATE = 'exchangerates';
@@ -326,7 +333,25 @@ class Data extends AbstractHelper
      */
     public function isRatingTaggingEnabled(StoreInterface $store = null)
     {
-        return (bool)$this->getStoreConfig(self::XML_PATH_RATING_TAGGING, $store);
+
+        $providerCode = $this->getStoreConfig(self::XML_PATH_RATING_TAGGING, $store);
+
+        if ((int)$providerCode === 0) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Returns the provider used for ratings and reviews
+     *
+     * @param StoreInterface|null $store
+     * @return mixed|null
+     */
+    public function getRatingTaggingProvider(StoreInterface $store = null)
+    {
+        return $this->getStoreConfig(self::XML_PATH_RATING_TAGGING, $store);
     }
 
     /**
