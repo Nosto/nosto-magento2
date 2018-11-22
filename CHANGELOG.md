@@ -1,5 +1,8 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 2.15.1 - Beta
+* Fixed bug during product registry
+
 ### 2.15.0 - Beta
 * Add Yotpo reviews feature
 
