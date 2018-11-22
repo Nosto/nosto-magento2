@@ -55,6 +55,7 @@ class Ratings extends AbstractHelper
 {
     const REVIEW_COUNT= 'reviews_count';
     const AVERAGE_SCORE = 'average_score';
+    const CURRENT_PRODUCT = 'current_product';
 
     private $moduleManager;
     private $nostoDataHelper;
@@ -132,25 +133,23 @@ class Ratings extends AbstractHelper
                     return null;
                 }
 
-                $activeProduct = $this->registry->registry('current_product');
+                $activeProduct = $this->registry->registry(self::CURRENT_PRODUCT);
 
                 try {
                     if ($activeProduct !== null) {
-                        $this->registry->unregister('current_product');
-                        $this->registry->register('current_product', $product);
-                    } else  {
-                        $this->registry->register('current_product', $product);
+                        $this->registry->unregister(self::CURRENT_PRODUCT);
+                        $this->registry->register(self::CURRENT_PRODUCT, $product);
+                    } else {
+                        $this->registry->register(self::CURRENT_PRODUCT, $product);
                     }
 
                     /** @noinspection PhpUndefinedMethodInspection */
                     $ratings = $this->ratingsFactory->create()->getRichSnippet();
                 } catch (\Exception $e) {
-                    $this->registry->register('current_product', $activeProduct);
+                    $this->registry->register(self::CURRENT_PRODUCT, $activeProduct);
                     $this->logger->exception($e);
                     return null;
                 }
-
-                $this->registry->register('current_product', $activeProduct);
 
                 return [
                     self::AVERAGE_SCORE => $ratings[self::AVERAGE_SCORE],
