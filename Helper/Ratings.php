@@ -102,8 +102,6 @@ class Ratings extends AbstractHelper
      */
     public function getRatings(Product $product, Store $store)
     {
-
-
         $ratings = $this->getRatingsFromProviders($product, $store);
         if ($ratings === null) {
             return null;
@@ -137,7 +135,6 @@ class Ratings extends AbstractHelper
                 $activeProduct = $this->registry->registry('current_product');
 
                 try {
-
                     if ($activeProduct !== null) {
                         $this->registry->unregister('current_product');
                         $this->registry->register('current_product', $product);
