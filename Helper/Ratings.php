@@ -39,6 +39,7 @@ namespace Nosto\Tagging\Helper;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 use Magento\Catalog\Model\Product;
+use Magento\Framework\Registry;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Magento\Store\Model\Store;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
@@ -61,6 +62,7 @@ class Ratings extends AbstractHelper
     private $reviewFactory;
     /** @var RatingsFactory $ratingsFactory */
     private $ratingsFactory;
+    private $registry;
 
     /**
      * Ratings constructor.
@@ -79,7 +81,8 @@ class Ratings extends AbstractHelper
         NostoHelperData $nostoHelperData,
         ReviewFactory $reviewFactory,
         NostoLogger $logger,
-        RatingsFactory $ratingsFactory
+        RatingsFactory $ratingsFactory,
+        Registry $registry
     ) {
         parent::__construct($context);
         $this->moduleManager = $moduleManager;
@@ -87,6 +90,7 @@ class Ratings extends AbstractHelper
         $this->logger = $logger;
         $this->reviewFactory = $reviewFactory;
         $this->ratingsFactory = $ratingsFactory;
+        $this->registry = $registry;
     }
 
     /**
@@ -98,6 +102,8 @@ class Ratings extends AbstractHelper
      */
     public function getRatings(Product $product, Store $store)
     {
+
+
         $ratings = $this->getRatingsFromProviders($product, $store);
         if ($ratings === null) {
             return null;
@@ -128,13 +134,26 @@ class Ratings extends AbstractHelper
                     return null;
                 }
 
+                $activeProduct = $this->registry->registry('current_product');
+
                 try {
+
+                    if ($activeProduct !== null) {
+                        $this->registry->unregister('current_product');
+                        $this->registry->register('current_product', $product);
+                    } else  {
+                        $this->registry->register('current_product', $product);
+                    }
+
                     /** @noinspection PhpUndefinedMethodInspection */
                     $ratings = $this->ratingsFactory->create()->getRichSnippet();
                 } catch (\Exception $e) {
+                    $this->registry->register('current_product', $activeProduct);
                     $this->logger->exception($e);
                     return null;
                 }
+
+                $this->registry->register('current_product', $activeProduct);
 
                 return [
                     self::AVERAGE_SCORE => $ratings[self::AVERAGE_SCORE],
