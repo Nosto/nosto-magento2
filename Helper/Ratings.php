@@ -147,7 +147,7 @@ class Ratings extends AbstractHelper
 
                 $this->resetRegistryProduct();
 
-                if ($ratings === null) {
+                if (!empty($ratings)) {
                     return null;
                 }
 
