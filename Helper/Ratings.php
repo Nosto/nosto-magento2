@@ -64,6 +64,7 @@ class Ratings extends AbstractHelper
     /** @var RatingsFactory $ratingsFactory */
     private $ratingsFactory;
     private $registry;
+    private $originalProduct;
 
     /**
      * Ratings constructor.
@@ -133,21 +134,20 @@ class Ratings extends AbstractHelper
                     return null;
                 }
 
-                $activeProduct = $this->registry->registry(self::CURRENT_PRODUCT);
-
                 try {
-                    if ($activeProduct !== null) {
-                        $this->registry->unregister(self::CURRENT_PRODUCT);
-                        $this->registry->register(self::CURRENT_PRODUCT, $product);
-                    } else {
-                        $this->registry->register(self::CURRENT_PRODUCT, $product);
-                    }
+                    $this->setRegistryProduct($product);
 
                     /** @noinspection PhpUndefinedMethodInspection */
                     $ratings = $this->ratingsFactory->create()->getRichSnippet();
                 } catch (\Exception $e) {
-                    $this->registry->register(self::CURRENT_PRODUCT, $activeProduct);
+                    $this->resetRegistryProduct();
                     $this->logger->exception($e);
+                    return null;
+                }
+
+                $this->resetRegistryProduct();
+
+                if ($ratings === null) {
                     return null;
                 }
 
@@ -231,5 +231,30 @@ class Ratings extends AbstractHelper
         }
 
         return false;
+    }
+
+    /**
+     * Sets product to Magento registry
+     *
+     * @param Product $product
+     */
+    private function setRegistryProduct(Product $product)
+    {
+        $this->originalProduct = $this->registry->registry(self::CURRENT_PRODUCT);
+        if ($this->originalProduct !== null) {
+            $this->registry->unregister(self::CURRENT_PRODUCT);
+            $this->registry->register(self::CURRENT_PRODUCT, $product);
+        } else {
+            $this->registry->register(self::CURRENT_PRODUCT, $product);
+        }
+    }
+
+    /**
+     * Resets the product to Magento registry
+     */
+    private function resetRegistryProduct()
+    {
+        $this->registry->unregister(self::CURRENT_PRODUCT);
+        $this->registry->register(self::CURRENT_PRODUCT, $this->originalProduct);
     }
 }
