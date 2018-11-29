@@ -22,7 +22,7 @@ use Nosto\Tagging\Model\Product\Service as ProductService;
  */
 class Indexer implements IndexerActionInterface, MviewActionInterface
 {
-    const BATCH_SIZE = 1000;
+    const BATCH_SIZE = 100;
     const INDEXER_ID = 'nosto_product_sync';
 
     private $productService;
