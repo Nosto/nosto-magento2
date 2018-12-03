@@ -62,7 +62,7 @@ use Nosto\Types\Product\ProductInterface as NostoProductInterface;
 class Service
 {
 
-    public static $batchSize = 50;
+    public static $batchSize = 100;
     public static $responseTimeOut = 500;
     private $productUpdatesActive;
 
@@ -182,7 +182,7 @@ class Service
     {
         if ($this->checkProductUpdatesActive()) {
             $productCount = count($products);
-            $this->logger->info(
+            $this->logger->logWithMemoryConsumption(
                 sprintf(
                     'Adding %d products to Nosto queue',
                     $productCount
@@ -222,6 +222,8 @@ class Service
         } else {
             $this->logger->debug('Product API updates are disabled for all store views');
         }
+        unset($parentProductIds);
+        unset($products);
     }
 
     /**
@@ -243,10 +245,11 @@ class Service
         $maxBatches = $remaining / self::$batchSize;
 
         while ($remaining > 0 && $maxBatches > 0) {
-            $this->logger->info(
+            $this->logger->logWithMemoryConsumption(
                 sprintf(
-                    'Flushing %d products from Nosto queue',
-                    $remaining
+                    '%d products remain in Nosto queue - batch size is %d',
+                    $remaining,
+                    self::$batchSize
                 )
             );
 
@@ -267,7 +270,7 @@ class Service
             //prepare for next loop
             $queueEntries = $this->nostoQueueRepository->getFirstPage(self::$batchSize);
             $remaining = $queueEntries->getTotalCount();
-
+            unset($productIds);
             //It is a safe fuse, to prevent unexpected infinite loop
             $maxBatches--;
         }
@@ -312,7 +315,7 @@ class Service
     {
         $productSearch = $this->nostoProductRepository->getByIds($uniqueProductIds);
 
-        $this->logger->info(
+        $this->logger->logWithMemoryConsumption(
             sprintf(
                 'Updating total of %d unique products for store %s',
                 $productSearch->getTotalCount(),
@@ -323,8 +326,11 @@ class Service
         $productIdsStillExist = [];
 
         if (!empty($productsStillExist)) {
+
+            $this->logger->logWithMemoryConsumption('Before Upsert creation');
             $op = new UpsertProduct($nostoAccount);
             $op->setResponseTimeout(self::$responseTimeOut);
+            $this->logger->logWithMemoryConsumption('After Upsert creation');
 
             /* @var Product $product */
             foreach ($productsStillExist as $product) {
@@ -335,10 +341,19 @@ class Service
                 );
                 if ($nostoProduct instanceof NostoProductInterface) {
                     $op->addProduct($nostoProduct);
+//                    $this->logger->logWithMemoryConsumption(
+//                        sprintf(
+//                            ' > After added product %d',
+//                            $nostoProduct->getProductId()
+//                        )
+//                    );
+
                 } else {
                     continue;
                 }
             }
+
+            $this->logger->logWithMemoryConsumption('After Upsert population');
 
             try {
                 $op->upsert();
@@ -346,7 +361,7 @@ class Service
                 if ($this->storeManager->getStore()) {
                     $storeName = $this->storeManager->getStore()->getName();
                 }
-                $this->logger->info(
+                $this->logger->logWithMemoryConsumption(
                     sprintf(
                         'Sent %d products to for store %s (%d)',
                         $productSearch->getTotalCount(),
@@ -367,12 +382,18 @@ class Service
                 );
                 $this->logger->exception($e);
             }
+            $op->clear();
         }
+
+        $this->logger->logWithMemoryConsumption('After Upsert sent');
 
         $leftProducts = array_diff($uniqueProductIds, $productIdsStillExist);
         if (!empty($leftProducts)) {
             $this->processDelete($leftProducts, $store, $nostoAccount);
         }
+        unset($leftProducts);
+        unset($uniqueProductIds);
+        unset($productSearch);
     }
 
     /**

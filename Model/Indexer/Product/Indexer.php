@@ -15,6 +15,7 @@ use Magento\Framework\Mview\ActionInterface as MviewActionInterface;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Product\Service as ProductService;
+use Magento\Catalog\Model\Product\Visibility;
 
 /**
  * An indexer for Nosto product sync
@@ -58,18 +59,29 @@ class Indexer implements IndexerActionInterface, MviewActionInterface
      */
     public function executeFull()
     {
+        $batchSize = 0;
         if ($this->dataHelper->isFullReindexEnabled()) {
             $pageNumber = 0;
             do {
                 $pageNumber++;
                 $searchCriteria = $this->searchCriteriaBuilder
                     ->addFilter('status', Status::STATUS_ENABLED, 'eq')
+                    ->addFilter('visibility', Visibility::VISIBILITY_NOT_VISIBLE, 'neq')
                     ->setPageSize(self::BATCH_SIZE)
                     ->setCurrentPage($pageNumber)
                     ->create();
                 $products = $this->productRepository->getList($searchCriteria);
                 if ($products instanceof SearchResultsInterface) {
-                    $this->productService->update($products->getItems());
+                    $productItems = $products->getItems();
+                    $batchSize += count($productItems);
+                    $this->logger->logWithMemoryConsumption(
+                        sprintf(
+                            'Indexing %d / %d products',
+                            $batchSize,
+                            $products->getTotalCount()
+                        )
+                    );
+                    $this->productService->update($productItems);
                 }
             } while (($pageNumber * self::BATCH_SIZE) <= $products->getTotalCount());
         } else {
@@ -101,6 +113,7 @@ class Indexer implements IndexerActionInterface, MviewActionInterface
      */
     public function execute($ids)
     {
+        $this->logger->logWithMemoryConsumption(sprintf('Got %d ids from CL', count($ids)));
         $splitted = array_chunk(array_unique($ids), self::BATCH_SIZE);
         foreach ($splitted as $batch) {
             $this->productService->updateByIds($batch);

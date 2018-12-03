@@ -41,10 +41,33 @@ use Nosto\Tagging\Helper\NewRelic;
 
 class Logger extends MonologLogger
 {
+    /**
+     * Logs and exception and sends it to New relic if available
+     * @param \Exception $exception
+     * @return bool
+     */
     public function exception(\Exception $exception)
     {
         NewRelic::reportException($exception);
 
         return parent::error($exception->__toString());
+    }
+
+    /**
+     * Logs a message along with the memory consumption
+     *
+     * @param $message
+     * @return bool
+     */
+    public function logWithMemoryConsumption($message)
+    {
+        return parent::addInfo(
+            sprintf(
+                '%s [mem usage: %sM / %s]',
+                $message,
+                round(memory_get_usage(true)/1048576,2),
+                ini_get('memory_limit')
+            )
+        );
     }
 }
