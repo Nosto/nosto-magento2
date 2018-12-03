@@ -50,17 +50,7 @@ use Magento\Framework\App\Config\Storage\WriterInterface;
 
 class NostoAccountRemoveCommand extends Command
 {
-    /**
-     * Path to store config nosto account name.
-     */
-    const XML_PATH_ACCOUNT = 'nosto_tagging/settings/account';
 
-    /**
-     * Path to store config nosto account tokens.
-     */
-    const XML_PATH_TOKENS = 'nosto_tagging/settings/tokens';
-    const NOSTO_ACCOUNT_ID = 'account-id';
-    const TOKEN_SUFFIX = '_token';
     const SCOPE_CODE = 'scope-code';
 
     /*
@@ -108,12 +98,7 @@ class NostoAccountRemoveCommand extends Command
     {
         $this->setName('nosto:account:remove')
             ->setDescription('Remove Nosto Account Via CLI')
-            ->addOption(
-                self::NOSTO_ACCOUNT_ID,
-                null,
-                InputOption::VALUE_REQUIRED,
-                'Nosto Account ID to be removed (Should exist already)'
-            )->addOption(
+           ->addOption(
                 self::SCOPE_CODE,
                 null,
                 InputOption::VALUE_REQUIRED,
@@ -129,12 +114,10 @@ class NostoAccountRemoveCommand extends Command
     {
         $this->isInteractive = !$input->getOption('no-interaction');
         $io = new SymfonyStyle($input, $output);
-        $accountId = $input->getOption(self::NOSTO_ACCOUNT_ID) ?:
-            $io->ask('Enter Nosto Account Id: ');
         $scopeCode = $input->getOption(self::SCOPE_CODE) ?:
             $io->ask('Enter Store Scope Code');
 
-        if ($this->removeNostoAccount($io, $accountId, $scopeCode)) {
+        if ($this->removeNostoAccount($io, $scopeCode)) {
             $io->success('Nosto account removed successfully');
         } else {
             $io->error('Could not complete operation');
@@ -145,32 +128,27 @@ class NostoAccountRemoveCommand extends Command
      * Removes the local installation for the specific store
      *
      * @param SymfonyStyle $io
-     * @param $accountId
      * @param $scopeCode
      * @return bool
      */
-    private function removeNostoAccount(SymfonyStyle $io, $accountId, $scopeCode)
+    private function removeNostoAccount(SymfonyStyle $io, $scopeCode)
     {
         $store = $this->getStoreByCode($scopeCode);
         if(!$store){
             $io->error('Store not found. Check your input.');
             return false;
         }
-        $storeAccountId = $store->getConfig(NostoAccountHelper::XML_PATH_ACCOUNT);
-        $account = $this->nostoAccountHelper->findAccount($store);
-        if ($account && $storeAccountId === $accountId) {
-            // If the script is non-interactive, do not ask for confirmation
-            $confirmOverride = $this->isInteractive ?
-                $confirmOverride = $io->confirm(
-                    'Local Nosto account found for this store view. Remove account?',
-                    false
-                ):
-                true;
-            if ($confirmOverride) {
-                return $this->deleteAccount($store);
-            }
+        // If the script is non-interactive, do not ask for confirmation
+        $confirmOverride = $this->isInteractive ?
+            $confirmOverride = $io->confirm(
+                'Local Nosto account found for this store view. Remove account?',
+                false
+            ):
+            true;
+        if ($confirmOverride) {
+            return $this->deleteAccount($store);
         } else {
-            $io->error('Account not found or not connected with specific store. Check your input.');
+            $io->error('Removal was cancelled');
             return false;
         }
     }
@@ -199,12 +177,12 @@ class NostoAccountRemoveCommand extends Command
         }
 
         $this->config->delete(
-            self::XML_PATH_ACCOUNT,
+            NostoAccountHelper::XML_PATH_ACCOUNT,
             ScopeInterface::SCOPE_STORES,
             $store->getId()
         );
         $this->config->delete(
-            self::XML_PATH_TOKENS,
+            NostoAccountHelper::XML_PATH_TOKENS,
             ScopeInterface::SCOPE_STORES,
             $store->getId()
         );
