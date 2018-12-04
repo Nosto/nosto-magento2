@@ -43,10 +43,10 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Nosto\Tagging\Helper\Account as NostoAccountHelper;
 use Nosto\Tagging\Helper\Scope as NostoScopeHelper;
-use Nosto\Object\Signup\Account as NostoSignupAccount;
 use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\Store;
 use Magento\Framework\App\Config\Storage\WriterInterface;
+use Magento\Framework\App\Cache\TypeListInterface;
 
 class NostoAccountRemoveCommand extends Command
 {
@@ -74,6 +74,11 @@ class NostoAccountRemoveCommand extends Command
     private $config;
 
     /**
+     * @var TypeListInterface
+     */
+    private $cacheTypeList;
+
+    /**
      * NostoAccountRemoveCommand constructor.
      * @param NostoAccountHelper $nostoAccountHelper
      * @param NostoScopeHelper $nostoScopeHelper
@@ -82,17 +87,19 @@ class NostoAccountRemoveCommand extends Command
     public function __construct(
         NostoAccountHelper $nostoAccountHelper,
         NostoScopeHelper $nostoScopeHelper,
-        WriterInterface $appConfig
+        WriterInterface $appConfig,
+        TypeListInterface $cacheTypeList
     )
     {
         $this->nostoAccountHelper = $nostoAccountHelper;
         $this->nostoScopeHelper  = $nostoScopeHelper;
         $this->config = $appConfig;
+        $this->cacheTypeList =$cacheTypeList;
         parent::__construct();
     }
 
     /**
-     * {@inheritdoc}
+     * Configure the command and the arguments
      */
     public function configure()
     {
@@ -134,8 +141,12 @@ class NostoAccountRemoveCommand extends Command
     private function removeNostoAccount(SymfonyStyle $io, $scopeCode)
     {
         $store = $this->getStoreByCode($scopeCode);
-        if(!$store){
+        if (!$store) {
             $io->error('Store not found. Check your input.');
+            return false;
+        }
+        if (!$this->nostoAccountHelper->nostoInstalledAndEnabled($store)) {
+            $io->error('Store is not connected with any Nosto account.');
             return false;
         }
         // If the script is non-interactive, do not ask for confirmation
@@ -146,7 +157,9 @@ class NostoAccountRemoveCommand extends Command
             ):
             true;
         if ($confirmOverride) {
-            return $this->deleteAccount($store);
+            $this->deleteAccount($store);
+            $this->cacheTypeList->cleanType('config');
+            return true;
         } else {
             $io->error('Removal was cancelled');
             return false;
@@ -165,13 +178,15 @@ class NostoAccountRemoveCommand extends Command
                 return $store;
             }
         }
+        return null;
     }
 
     /**
      * @param Store $store
      * @return bool
      */
-    private function deleteAccount(Store $store) {
+    private function deleteAccount(Store $store)
+    {
         if ((int)$store->getId() < 1) {
             return false;
         }
