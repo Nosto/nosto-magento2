@@ -222,8 +222,6 @@ class Service
         } else {
             $this->logger->debug('Product API updates are disabled for all store views');
         }
-        unset($parentProductIds);
-        unset($products);
     }
 
     /**
@@ -270,7 +268,6 @@ class Service
             //prepare for next loop
             $queueEntries = $this->nostoQueueRepository->getFirstPage(self::$batchSize);
             $remaining = $queueEntries->getTotalCount();
-            unset($productIds);
             //It is a safe fuse, to prevent unexpected infinite loop
             $maxBatches--;
         }
@@ -382,7 +379,6 @@ class Service
                 );
                 $this->logger->exception($e);
             }
-            $op->clear();
         }
 
         $this->logger->logWithMemoryConsumption('After Upsert sent');
@@ -391,9 +387,6 @@ class Service
         if (!empty($leftProducts)) {
             $this->processDelete($leftProducts, $store, $nostoAccount);
         }
-        unset($leftProducts);
-        unset($uniqueProductIds);
-        unset($productSearch);
     }
 
     /**

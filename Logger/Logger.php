@@ -63,10 +63,11 @@ class Logger extends MonologLogger
     {
         return parent::addInfo(
             sprintf(
-                '%s [mem usage: %sM / %s]',
+                '%s [mem usage: %sM / %s] [realmem: %sM]',
                 $message,
-                round(memory_get_usage(true)/1048576,2),
-                ini_get('memory_limit')
+                round(memory_get_usage(false)/1048576,2),
+                ini_get('memory_limit'),
+                round(memory_get_usage(true)/1048576,2)
             )
         );
     }
