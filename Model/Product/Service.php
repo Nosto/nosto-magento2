@@ -338,13 +338,6 @@ class Service
                 );
                 if ($nostoProduct instanceof NostoProductInterface) {
                     $op->addProduct($nostoProduct);
-//                    $this->logger->logWithMemoryConsumption(
-//                        sprintf(
-//                            ' > After added product %d',
-//                            $nostoProduct->getProductId()
-//                        )
-//                    );
-
                 } else {
                     continue;
                 }
@@ -353,7 +346,7 @@ class Service
             $this->logger->logWithMemoryConsumption('After Upsert population');
 
             try {
-                $op->upsert();
+//                $op->upsert();
                 $storeName = 'Could not get Store Name';
                 if ($this->storeManager->getStore()) {
                     $storeName = $this->storeManager->getStore()->getName();
