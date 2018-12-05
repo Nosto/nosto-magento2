@@ -38,6 +38,7 @@ namespace Nosto\Tagging\Model\Category;
 
 use Magento\Catalog\Api\CategoryRepositoryInterface;
 use Magento\Catalog\Model\Category;
+use Magento\Store\Model\Store;
 use Magento\Catalog\Model\Product;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\Exception\NoSuchEntityException;
@@ -67,13 +68,14 @@ class Builder
 
     /**
      * @param Product $product
+     * @param Store $store
      * @return array
      */
-    public function buildCategories(Product $product)
+    public function buildCategories(Product $product, Store $store)
     {
         $categories = [];
         foreach ($product->getCategoryCollection() as $category) {
-            $categoryString = $this->build($category);
+            $categoryString = $this->build($category, $store);
             if (!empty($categoryString)) {
                 $categories[] = $categoryString;
             }
@@ -84,17 +86,19 @@ class Builder
 
     /**
      * @param Category $category
-     * @return string|null
+     * @param Store $store
+     * @return null|string
      */
-    public function build(Category $category)
+    public function build(Category $category, Store $store)
     {
         $nostoCategory = '';
         try {
             $data = [];
             $path = $category->getPath();
+            $storeId = $store->getId();
             foreach (explode('/', $path) as $categoryId) {
                 try {
-                    $category = $this->categoryRepository->get($categoryId);
+                    $category = $this->categoryRepository->get($categoryId, $storeId);
                 } catch (NoSuchEntityException $noSuchEntityException) {
                     continue;
                 }
