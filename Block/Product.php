@@ -151,7 +151,8 @@ class Product extends View
     public function getNostoCategory()
     {
         $category = $this->_coreRegistry->registry('current_category');
-        return $category !== null ? $this->categoryBuilder->build($category) : null;
+        $store = $this->nostoHelperScope->getStore();
+        return $category !== null ? $this->categoryBuilder->build($category, $store) : null;
     }
 
     /**

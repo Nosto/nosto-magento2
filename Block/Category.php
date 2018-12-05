@@ -91,8 +91,9 @@ class Category extends Template
     private function getNostoCategory()
     {
         $category = $this->registry->registry('current_category');
+        $store = $this->nostoHelperScope->getStore();
         if ($category) {
-            return $this->categoryBuilder->build($category);
+            return $this->categoryBuilder->build($category, $store);
         }
         return null;
     }

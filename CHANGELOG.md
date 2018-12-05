@@ -1,5 +1,8 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 2.11.7
+* Fix wrong category translation
+
 ### 2.11.6
 * Add batching for scheduled indexer
  
