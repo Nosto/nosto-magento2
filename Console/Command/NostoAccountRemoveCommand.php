@@ -54,8 +54,8 @@ class NostoAccountRemoveCommand extends Command
     const SCOPE_CODE = 'scope-code';
 
     /*
-    * @var NostoAccountHelper
-    */
+     * @var NostoAccountHelper
+     */
     private $nostoAccountHelper;
 
     /**
@@ -89,12 +89,11 @@ class NostoAccountRemoveCommand extends Command
         NostoScopeHelper $nostoScopeHelper,
         WriterInterface $appConfig,
         TypeListInterface $cacheTypeList
-    )
-    {
+    ) {
         $this->nostoAccountHelper = $nostoAccountHelper;
         $this->nostoScopeHelper  = $nostoScopeHelper;
         $this->config = $appConfig;
-        $this->cacheTypeList =$cacheTypeList;
+        $this->cacheTypeList = $cacheTypeList;
         parent::__construct();
     }
 
@@ -105,7 +104,7 @@ class NostoAccountRemoveCommand extends Command
     {
         $this->setName('nosto:account:remove')
             ->setDescription('Remove Nosto Account Via CLI')
-           ->addOption(
+            ->addOption(
                 self::SCOPE_CODE,
                 null,
                 InputOption::VALUE_REQUIRED,
@@ -140,7 +139,7 @@ class NostoAccountRemoveCommand extends Command
      */
     private function removeNostoAccount(SymfonyStyle $io, $scopeCode)
     {
-        $store = $this->getStoreByCode($scopeCode);
+        $store = $this->nostoScopeHelper->getStoreByCode($scopeCode);
         if (!$store) {
             $io->error('Store not found. Check your input.');
             return false;
@@ -164,21 +163,6 @@ class NostoAccountRemoveCommand extends Command
             $io->error('Removal was cancelled');
             return false;
         }
-    }
-
-    /**
-     * @param $scopeCode the storeview code
-     * @return \Magento\Store\Model\Store
-     */
-    private function getStoreByCode($scopeCode)
-    {
-        $stores = $this->nostoScopeHelper->getStores();
-        foreach ($stores as $store) {
-            if ($store->getCode() === $scopeCode) {
-                return $store;
-            }
-        }
-        return null;
     }
 
     /**

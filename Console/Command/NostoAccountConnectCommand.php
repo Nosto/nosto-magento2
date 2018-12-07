@@ -162,7 +162,7 @@ class NostoAccountConnectCommand extends Command
      */
     private function updateNostoTokens(array $tokens, $accountId, SymfonyStyle $io, $scopeCode)
     {
-        $store = $this->getStoreByCode($scopeCode);
+        $store = $this->nostoHelperScope->getStoreByCode($scopeCode);
         if(!$store){
             $io->error('Store not found. Check your input.');
             return false;
@@ -186,20 +186,6 @@ class NostoAccountConnectCommand extends Command
             $account = new NostoSignupAccount($accountId);
             $account->setTokens($tokens);
             return $this->accountHelper->saveAccount($account, $store);
-        }
-    }
-
-    /**
-     * @param $scopeCode the storeview code
-     * @return \Magento\Store\Model\Store|null
-     */
-    private function getStoreByCode($scopeCode)
-    {
-        $stores = $this->nostoHelperScope->getStores();
-        foreach ($stores as $store) {
-            if ($store->getCode() === $scopeCode) {
-                return $store;
-            }
         }
     }
 
