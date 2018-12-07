@@ -1,5 +1,8 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 2.15.2 - Beta
+* Merge fixed from 2.11.7
+
 ### 2.15.1 - Beta
 * Set product into Magento registry before fetching Yotpo reviews
 
