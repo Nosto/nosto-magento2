@@ -46,7 +46,7 @@ use Nosto\Tagging\Helper\Scope as NostoScopeHelper;
 use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\Store;
 use Magento\Framework\App\Config\Storage\WriterInterface;
-use Magento\Framework\App\Cache\TypeListInterface;
+use Nosto\Tagging\Helper\Cache as NostoHelperCache;
 
 class NostoAccountRemoveCommand extends Command
 {
@@ -74,26 +74,27 @@ class NostoAccountRemoveCommand extends Command
     private $config;
 
     /**
-     * @var TypeListInterface
+     * @var NostoHelperCache
      */
-    private $cacheTypeList;
+    private $nostoHelperCache;
 
     /**
      * NostoAccountRemoveCommand constructor.
      * @param NostoAccountHelper $nostoAccountHelper
      * @param NostoScopeHelper $nostoScopeHelper
      * @param WriterInterface $appConfig
+     * @param NostoHelperCache $nostoHelperCache
      */
     public function __construct(
         NostoAccountHelper $nostoAccountHelper,
         NostoScopeHelper $nostoScopeHelper,
         WriterInterface $appConfig,
-        TypeListInterface $cacheTypeList
+        NostoHelperCache $nostoHelperCache
     ) {
         $this->nostoAccountHelper = $nostoAccountHelper;
         $this->nostoScopeHelper  = $nostoScopeHelper;
         $this->config = $appConfig;
-        $this->cacheTypeList = $cacheTypeList;
+        $this->nostoHelperCache = $nostoHelperCache;
         parent::__construct();
     }
 
@@ -157,10 +158,7 @@ class NostoAccountRemoveCommand extends Command
             true;
         if ($confirmOverride) {
             $this->deleteAccount($store);
-            $types = array('config','layout','block_html','collections','reflection','db_ddl','eav','config_integration','config_integration_api','full_page','translate','config_webservice');
-            foreach ($types as $type) {
-                $this->cacheTypeList->cleanType($type);
-            }
+            $this->nostoHelperCache->flushCache();
             return true;
         } else {
             $io->error('Removal was cancelled');
