@@ -157,7 +157,10 @@ class NostoAccountRemoveCommand extends Command
             true;
         if ($confirmOverride) {
             $this->deleteAccount($store);
-            $this->cacheTypeList->cleanType('config');
+            $types = array('config','layout','block_html','collections','reflection','db_ddl','eav','config_integration','config_integration_api','full_page','translate','config_webservice');
+            foreach ($types as $type) {
+                $this->cacheTypeList->cleanType($type);
+            }
             return true;
         } else {
             $io->error('Removal was cancelled');

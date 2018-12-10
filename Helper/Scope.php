@@ -84,6 +84,8 @@ class Scope extends AbstractHelper
     }
 
     /**
+     * Return the store by store code
+     *
      * @param $scopeCode
      * @return mixed
      */
@@ -95,6 +97,7 @@ class Scope extends AbstractHelper
                 return $store;
             }
         }
+        return null;
     }
 
     /**
