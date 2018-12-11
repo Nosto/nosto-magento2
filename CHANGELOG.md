@@ -1,5 +1,8 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 2.15.2 - Beta
+* Merge fixed from 2.11.7
+
 ### 2.15.1 - Beta
 * Set product into Magento registry before fetching Yotpo reviews
 
@@ -29,6 +32,9 @@ All notable changes to this project will be documented in this file. This projec
 * Fix the issue with product building when no custom fields are found (@hostep)
 * Improve error handling for Nosto dashboard in store admin area
 * Code style fixes & refactoring
+
+### 2.11.7
+* Fix wrong category translation
 
 ### 2.11.6
 * Add batching for scheduled indexer
