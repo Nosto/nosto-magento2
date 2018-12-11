@@ -121,8 +121,10 @@ class NostoAccountRemoveCommand extends Command
     {
         $this->isInteractive = !$input->getOption('no-interaction');
         $io = new SymfonyStyle($input, $output);
-        $scopeCode = $input->getOption(self::SCOPE_CODE) ?:
-            $io->ask('Enter Store Scope Code');
+        $scopeCode = $input->getOption(self::SCOPE_CODE);
+        if (!$scopeCode) {
+            $scopeCode = $io->ask('Enter Store Scope Code');
+        }
 
         if ($this->removeNostoAccount($io, $scopeCode)) {
             $io->success('Nosto account removed successfully');
@@ -146,16 +148,19 @@ class NostoAccountRemoveCommand extends Command
             return false;
         }
         if (!$this->nostoAccountHelper->nostoInstalledAndEnabled($store)) {
-            $io->error('Store is not connected with any Nosto account.');
+            $io->warning('Store is not connected with any Nosto account.');
             return false;
         }
         // If the script is non-interactive, do not ask for confirmation
-        $confirmOverride = $this->isInteractive ?
+        if ($this->isInteractive) {
             $confirmOverride = $io->confirm(
                 'Local Nosto account found for this store view. Remove account?',
                 false
-            ):
-            true;
+            );
+        } else {
+            $confirmOverride = true;
+        }
+
         if ($confirmOverride) {
             $this->deleteAccount($store);
             $this->nostoHelperCache->flushCache();

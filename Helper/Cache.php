@@ -114,7 +114,7 @@ class Cache extends AbstractHelper
             $caches = $this->typeList->getTypes();
             foreach ($caches as $cache) {
                 $id = $cache->getId();
-                $this->cacheTypeList->cleanType($id);
+                $this->typeList->cleanType($id);
             }
 
             foreach ($this->cacheFrontendPool as $cacheFrontend) {
@@ -122,7 +122,6 @@ class Cache extends AbstractHelper
             }
         } catch (\Exception $e) {
             $this->logger->exception($e);
-            return null;
         }
     }
 }
