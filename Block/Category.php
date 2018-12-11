@@ -40,6 +40,7 @@ use Magento\Framework\Registry;
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Element\Template\Context;
 use Nosto\Tagging\Model\Category\Builder as NostoCategoryBuilder;
+use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Object\Category as NostoCategory;
 
 /**
@@ -60,6 +61,11 @@ class Category extends Template
     private $categoryBuilder;
 
     /**
+     * @var NostoHelperScope
+     */
+    private $nostoHelperScope;
+
+    /**
      * Constructor.
      *
      * @param Context $context
@@ -71,12 +77,14 @@ class Category extends Template
         Context $context,
         Registry $registry,
         NostoCategoryBuilder $categoryBuilder,
+        NostoHelperScope $nostoHelperScope,
         array $data = []
     ) {
         parent::__construct($context, $data);
 
         $this->registry = $registry;
         $this->categoryBuilder = $categoryBuilder;
+        $this->nostoHelperScope = $nostoHelperScope;
     }
 
     /**
@@ -87,8 +95,9 @@ class Category extends Template
     private function getNostoCategory()
     {
         $category = $this->registry->registry('current_category');
+        $store = $this->nostoHelperScope->getStore();
         if ($category) {
-            return $this->categoryBuilder->build($category);
+            return $this->categoryBuilder->build($category, $store);
         }
         return null;
     }
