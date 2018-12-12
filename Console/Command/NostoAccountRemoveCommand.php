@@ -162,9 +162,9 @@ class NostoAccountRemoveCommand extends Command
         }
 
         if ($confirmOverride) {
-            $this->deleteAccount($store);
+            $deleted = $this->deleteAccount($store);
             $this->nostoHelperCache->flushCache();
-            return true;
+            return $deleted;
         } else {
             $io->error('Removal was cancelled');
             return false;
