@@ -41,6 +41,8 @@ use Magento\Framework\App\Cache\TypeListInterface;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 use Magento\PageCache\Model\Cache\Type;
+use Magento\Framework\App\Cache\Frontend\Pool;
+use Nosto\Tagging\Logger\Logger as NostoLogger;
 
 /**
  * Cache helper class for cache related tasks.
@@ -54,21 +56,32 @@ class Cache extends AbstractHelper
 
     private $cacheState;
 
+    /** @var NostoLogger */
+    private $logger;
+
+    /** @var Pool */
+    private $cacheFrontendPool;
+
     /**
-     * Constructor.
-     *
-     * @param Context $context the context.
+     * Cache constructor.
+     * @param Context $context
      * @param TypeListInterface $typeList
      * @param StateInterface $cacheState
+     * @param Pool $cacheFrontendPool
+     * @param NostoLogger $logger
      */
     public function __construct(
         Context $context,
         TypeListInterface $typeList,
-        StateInterface $cacheState
+        StateInterface $cacheState,
+        Pool $cacheFrontendPool,
+        NostoLogger $logger
     ) {
         parent::__construct($context);
         $this->typeList = $typeList;
         $this->cacheState = $cacheState;
+        $this->logger = $logger;
+        $this->cacheFrontendPool = $cacheFrontendPool;
     }
 
     /**
@@ -88,6 +101,27 @@ class Cache extends AbstractHelper
     {
         if ($this->cacheState->isEnabled(self::CACHE_ID_LAYOUT)) {
             $this->typeList->invalidate(self::CACHE_ID_LAYOUT);
+        }
+    }
+
+    /**
+     * Flush all cache types
+     * @return null
+     */
+    public function flushCache()
+    {
+        try {
+            $caches = $this->typeList->getTypes();
+            foreach ($caches as $cache) {
+                $id = $cache->getId();
+                $this->typeList->cleanType($id);
+            }
+
+            foreach ($this->cacheFrontendPool as $cacheFrontend) {
+                $cacheFrontend->getBackend()->clean();
+            }
+        } catch (\Exception $e) {
+            $this->logger->exception($e);
         }
     }
 }

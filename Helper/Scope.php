@@ -84,6 +84,23 @@ class Scope extends AbstractHelper
     }
 
     /**
+     * Return the store by store code
+     *
+     * @param $scopeCode
+     * @return mixed
+     */
+    public function getStoreByCode($scopeCode)
+    {
+        $stores = $this->getStores();
+        foreach ($stores as $store) {
+            if ($store->getCode() === $scopeCode) {
+                return $store;
+            }
+        }
+        return null;
+    }
+
+    /**
      * @return bool
      */
     public function isSingleStoreMode()
