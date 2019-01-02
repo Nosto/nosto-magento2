@@ -245,7 +245,12 @@ class Price extends AbstractHelper
             /** @var \Magento\Bundle\Model\Option $option */
             foreach ($options as $option) {
                 $selectionMinPrice = null;
-                foreach ($option->getSelections() as $selection) {
+                $optionSelections = $option->getSelections();
+                if ($optionSelections === null) {
+                    continue;
+                }
+                /* @var Product $selection */
+                foreach ($optionSelections as $selection) {
                     /** @var Product $selection */
                     $selectionPrice
                         = $this->getProductDisplayPrice($selection, $store);

@@ -37,6 +37,7 @@
 namespace Nosto\Tagging\Model\Product\Sku;
 
 use Magento\Catalog\Model\Product;
+use Magento\CatalogInventory\Api\StockRegistryInterface;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable\Attribute as ConfigurableAttribute;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Store\Model\Store;
@@ -71,31 +72,39 @@ class Builder
         NostoPriceHelper $priceHelper,
         NostoLogger $logger,
         ManagerInterface $eventManager,
-        CurrencyHelper $nostoCurrencyHelper
+        CurrencyHelper $nostoCurrencyHelper,
+        StockRegistryInterface $stockRegistry
     ) {
         $this->nostoDataHelper = $nostoHelperData;
         $this->nostoPriceHelper = $priceHelper;
         $this->logger = $logger;
         $this->eventManager = $eventManager;
         $this->nostoCurrencyHelper = $nostoCurrencyHelper;
-        $this->builderTraitConstruct($nostoHelperData, $logger);
+        $this->builderTraitConstruct(
+            $nostoHelperData,
+            $stockRegistry,
+            $logger
+        );
     }
 
     /**
      * @param Product $product
      * @param Store $store
      * @param ConfigurableAttribute[] $attributes
-     * @return NostoSku
+     * @return NostoSku|null
      * @throws \Exception
      */
     public function build(Product $product, Store $store, $attributes)
     {
-        $nostoSku = new NostoSku();
+        if (!$this->isAvailabeInStore($product, $store)) {
+            return null;
+        }
 
+        $nostoSku = new NostoSku();
         try {
             $nostoSku->setId($product->getId());
             $nostoSku->setName($product->getName());
-            $nostoSku->setAvailability($this->buildSkuAvailability($product));
+            $nostoSku->setAvailability($this->buildSkuAvailability($product, $store));
             $nostoSku->setImageUrl($this->buildImageUrl($product, $store));
             $price = $this->nostoCurrencyHelper->convertToTaggingPrice(
                 $this->nostoPriceHelper->getProductFinalDisplayPrice(
@@ -143,17 +152,17 @@ class Builder
      * Generates the availability for the SKU
      *
      * @param Product $product
+     * @param Store $store
      * @return string
      */
-    private function buildSkuAvailability(Product $product)
+    private function buildSkuAvailability(Product $product, Store $store)
     {
-        $availability = ProductInterface::OUT_OF_STOCK;
-        if (!$product->isVisibleInSiteVisibility()) {
-            $availability = ProductInterface::INVISIBLE;
-        } elseif ($product->isAvailable()) {
-            $availability = ProductInterface::IN_STOCK;
+        if ($product->isAvailable()
+            && $this->isInStock($product, $store)
+        ) {
+            return ProductInterface::IN_STOCK;
         }
 
-        return $availability;
+        return ProductInterface::OUT_OF_STOCK;
     }
 }

@@ -8,6 +8,27 @@ All notable changes to this project will be documented in this file. This projec
 * Improve error handling for Nosto dashboard in store admin area
 * Code style fixes & refactoring
 
+### 2.11.7
+* Fix wrong category translation
+
+### 2.11.6
+* Add batching for scheduled indexer
+ 
+### 2.11.5
+* Fix bundled product throwing exceptions when option has no selections 
+
+### 2.11.4
+* Improve the stock status check for Nosto prouducts and SKUs
+
+### 2.11.3
+* Fix check causing all SKU’s to have invisible availability
+
+### 2.11.2
+* Ensure that the product is available in given store scope before building Nosto product object
+
+### 2.11.1
+* Use IframeTrait for URL building in order to make the possible errors more visible
+
 ### 2.11.0
 * Add possibility to remove “/pub/” directory from product image URLs
 * Add possibility to define quantity for Nosto’s add to cart

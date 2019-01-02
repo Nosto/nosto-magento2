@@ -208,7 +208,7 @@ class Account extends AbstractHelper
                     try {
                         $account->addApiToken(new Token($name, $value));
                     } catch (Exception $e) {
-                        $this->_logger->error($e->__toString());
+                        $this->logger->error($e->__toString());
                     }
                 }
             }

@@ -41,6 +41,10 @@ use Magento\Catalog\Model\Product\Gallery\ReadHandler as GalleryReadHandler;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Review\Model\ReviewFactory;
 use Magento\Store\Model\Store;
+use Magento\CatalogInventory\Api\StockRegistryInterface;
+use Magento\Eav\Api\AttributeSetRepositoryInterface;
+use Nosto\NostoException;
+use Nosto\Object\ModelFilter;
 use Nosto\Object\Product\Product as NostoProduct;
 use Nosto\Tagging\Helper\Currency as CurrencyHelper;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
@@ -52,7 +56,6 @@ use Nosto\Tagging\Model\Product\Sku\Collection as NostoSkuCollection;
 use Nosto\Tagging\Model\Product\Tags\LowStock as LowStockHelper;
 use Nosto\Tagging\Model\Product\Url\Builder as NostoUrlBuilder;
 use Nosto\Types\Product\ProductInterface;
-use Nosto\Object\ModelFilter;
 
 class Builder
 {
@@ -103,7 +106,8 @@ class Builder
         GalleryReadHandler $galleryReadHandler,
         NostoUrlBuilder $urlBuilder,
         CurrencyHelper $nostoCurrencyHelper,
-        LowStockHelper $lowStockHelper
+        LowStockHelper $lowStockHelper,
+        StockRegistryInterface $stockRegistry
     ) {
         $this->nostoDataHelper = $nostoHelperData;
         $this->nostoPriceHelper = $priceHelper;
@@ -117,7 +121,11 @@ class Builder
         $this->skuCollection = $skuCollection;
         $this->nostoCurrencyHelper = $nostoCurrencyHelper;
         $this->lowStockHelper = $lowStockHelper;
-        $this->builderTraitConstruct($nostoHelperData, $logger);
+        $this->builderTraitConstruct(
+            $nostoHelperData,
+            $stockRegistry,
+            $logger
+        );
     }
 
     /**
@@ -177,8 +185,8 @@ class Builder
                 );
             }
 
-            $nostoProduct->setAvailability($this->buildAvailability($product));
-            $nostoProduct->setCategories($this->nostoCategoryBuilder->buildCategories($product));
+            $nostoProduct->setAvailability($this->buildAvailability($product, $store));
+            $nostoProduct->setCategories($this->nostoCategoryBuilder->buildCategories($product, $store));
             if ($nostoScope == self::NOSTO_SCOPE_API
                 && $this->nostoDataHelper->isInventoryTaggingEnabled($store)
             ) {
@@ -319,14 +327,19 @@ class Builder
      * Generates the availability for the product
      *
      * @param Product $product
+     * @param Store $store
      * @return string
      */
-    private function buildAvailability(Product $product)
+    private function buildAvailability(Product $product, Store $store)
     {
         $availability = ProductInterface::OUT_OF_STOCK;
-        if (!$product->isVisibleInSiteVisibility()) {
+        if (!$product->isVisibleInSiteVisibility()
+            || !$this->isAvailabeInStore($product, $store)
+        ) {
             $availability = ProductInterface::INVISIBLE;
-        } elseif ($product->isAvailable()) {
+        } elseif ($product->isAvailable()
+            && $this->isInStock($product, $store)
+        ) {
             $availability = ProductInterface::IN_STOCK;
         }
 

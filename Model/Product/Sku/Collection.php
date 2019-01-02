@@ -43,6 +43,7 @@ use Nosto\Object\Product\SkuCollection;
 use Nosto\Tagging\Model\Product\Sku\Builder as NostoSkuBuilder;
 use Nosto\Tagging\Model\Product\Repository as NostoProductRepository;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
+use Nosto\Types\Product\SkuInterface;
 
 class Collection
 {
@@ -88,8 +89,10 @@ class Collection
                 if (!$usedProduct->isDisabled()) {
                     try {
                         $sku = $this->nostoSkuBuilder->build($usedProduct, $store, $attributes);
-                        $skuCollection->append($sku);
-                    } catch (\Exception $e) {
+                        if ($sku instanceof SkuInterface) {
+                            $skuCollection->append($sku);
+                        }
+                    } catch (NostoException $e) {
                         $this->logger->exception($e);
                     }
                 }
