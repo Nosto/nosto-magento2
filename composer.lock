@@ -1,29 +1,29 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2e54199c0505fb0632026fa300ac2f97",
+    "content-hash": "eca34b74f60bf05279c83131bf12a266",
     "packages": [
         {
             "name": "nosto/php-sdk",
-            "version": "3.3.1",
+            "version": "3.8.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Nosto/nosto-php-sdk.git",
-                "reference": "f0aa9aee4eeb99527360e0a21e5358474a6b9718"
+                "reference": "2f65fa2839b9ce41359b953b3e769a80ae38fbe3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Nosto/nosto-php-sdk/zipball/f0aa9aee4eeb99527360e0a21e5358474a6b9718",
-                "reference": "f0aa9aee4eeb99527360e0a21e5358474a6b9718",
+                "url": "https://api.github.com/repos/Nosto/nosto-php-sdk/zipball/2f65fa2839b9ce41359b953b3e769a80ae38fbe3",
+                "reference": "2f65fa2839b9ce41359b953b3e769a80ae38fbe3",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.4.0",
                 "phpseclib/phpseclib": "2.0.*",
-                "vlucas/phpdotenv": "2.4.0"
+                "vlucas/phpdotenv": ">=2.4.0 <=2.6"
             },
             "require-dev": {
                 "codeception/base": "2.2.9",
@@ -51,7 +51,7 @@
                 "BSD-3-Clause"
             ],
             "description": "PHP SDK for developing Nosto modules for e-commerce platforms",
-            "time": "2018-03-14T14:14:49+00:00"
+            "time": "2019-01-04T12:14:31+00:00"
         },
         {
             "name": "phpseclib/phpseclib",
@@ -747,7 +747,8 @@
                 "url": "https://github.com/magento/marketplace-tools",
                 "reference": "origin/master"
             },
-            "type": "library"
+            "type": "library",
+            "time": "2017-04-06T01:16:20+00:00"
         },
         {
             "name": "magento/module-authorization",
@@ -4974,16 +4975,16 @@
         },
         {
             "name": "zendframework/zend-diactoros",
-            "version": "dev-develop",
+            "version": "dev-release-1.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zend-diactoros.git",
-                "reference": "26efe2451bc3c282cddfb8acfb182c9a38966fd1"
+                "reference": "1dc4959014d3e7304bd87c58bcf96cf3fc63ac00"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/zendframework/zend-diactoros/zipball/26efe2451bc3c282cddfb8acfb182c9a38966fd1",
-                "reference": "26efe2451bc3c282cddfb8acfb182c9a38966fd1",
+                "url": "https://api.github.com/repos/zendframework/zend-diactoros/zipball/1dc4959014d3e7304bd87c58bcf96cf3fc63ac00",
+                "reference": "1dc4959014d3e7304bd87c58bcf96cf3fc63ac00",
                 "shasum": ""
             },
             "require": {
@@ -4996,18 +4997,27 @@
             "require-dev": {
                 "ext-dom": "*",
                 "ext-libxml": "*",
-                "phpunit/phpunit": "^5.7.16 || ^6.0.8",
+                "php-http/psr7-integration-tests": "dev-master",
+                "phpunit/phpunit": "^5.7.16 || ^6.0.8 || ^7.2.7",
                 "zendframework/zend-coding-standard": "~1.0"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.7.x-dev",
-                    "dev-develop": "1.8.x-dev",
-                    "dev-release-2.0": "2.0.x-dev"
+                    "dev-release-1.8": "1.8.x-dev"
                 }
             },
             "autoload": {
+                "files": [
+                    "src/functions/create_uploaded_file.php",
+                    "src/functions/marshal_headers_from_sapi.php",
+                    "src/functions/marshal_method_from_sapi.php",
+                    "src/functions/marshal_protocol_version_from_sapi.php",
+                    "src/functions/marshal_uri_from_sapi.php",
+                    "src/functions/normalize_server.php",
+                    "src/functions/normalize_uploaded_files.php",
+                    "src/functions/parse_cookie_header.php"
+                ],
                 "psr-4": {
                     "Zend\\Diactoros\\": "src/"
                 }
@@ -5023,7 +5033,7 @@
                 "psr",
                 "psr-7"
             ],
-            "time": "2018-05-29T18:52:59+00:00"
+            "time": "2018-09-27T19:45:25+00:00"
         },
         {
             "name": "zendframework/zend-escaper",
@@ -5126,16 +5136,16 @@
         },
         {
             "name": "zendframework/zend-filter",
-            "version": "dev-develop",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zend-filter.git",
-                "reference": "55826928e35f2c62e4c1e05be8d4df65e3b2a4b2"
+                "reference": "135670d33804113070c4f243e961250b248e9e04"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/zendframework/zend-filter/zipball/55826928e35f2c62e4c1e05be8d4df65e3b2a4b2",
-                "reference": "55826928e35f2c62e4c1e05be8d4df65e3b2a4b2",
+                "url": "https://api.github.com/repos/zendframework/zend-filter/zipball/135670d33804113070c4f243e961250b248e9e04",
+                "reference": "135670d33804113070c4f243e961250b248e9e04",
                 "shasum": ""
             },
             "require": {
@@ -5148,12 +5158,14 @@
             "require-dev": {
                 "pear/archive_tar": "^1.4.3",
                 "phpunit/phpunit": "^5.7.23 || ^6.4.3",
+                "psr/http-factory": "^1.0",
                 "zendframework/zend-coding-standard": "~1.0.0",
                 "zendframework/zend-crypt": "^3.2.1",
                 "zendframework/zend-servicemanager": "^2.7.8 || ^3.3",
                 "zendframework/zend-uri": "^2.6"
             },
             "suggest": {
+                "psr/http-factory-implementation": "psr/http-factory-implementation, for creating file upload instances when consuming PSR-7 in file upload filters",
                 "zendframework/zend-crypt": "Zend\\Crypt component, for encryption filters",
                 "zendframework/zend-i18n": "Zend\\I18n component for filters depending on i18n functionality",
                 "zendframework/zend-servicemanager": "Zend\\ServiceManager component, for using the filter chain functionality",
@@ -5162,8 +5174,8 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.8.x-dev",
-                    "dev-develop": "2.9.x-dev"
+                    "dev-master": "2.9.x-dev",
+                    "dev-develop": "2.10.x-dev"
                 },
                 "zf": {
                     "component": "Zend\\Filter",
@@ -5185,25 +5197,25 @@
                 "filter",
                 "zf"
             ],
-            "time": "2018-04-11T16:21:25+00:00"
+            "time": "2018-12-20T16:07:07+00:00"
         },
         {
             "name": "zendframework/zend-form",
-            "version": "dev-develop",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zend-form.git",
-                "reference": "183a0acc452fa489ab21169ba2ed2ce0191a394b"
+                "reference": "d50b0f58de31f87e54204aabe1ceb1150b68b922"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/zendframework/zend-form/zipball/183a0acc452fa489ab21169ba2ed2ce0191a394b",
-                "reference": "183a0acc452fa489ab21169ba2ed2ce0191a394b",
+                "url": "https://api.github.com/repos/zendframework/zend-form/zipball/d50b0f58de31f87e54204aabe1ceb1150b68b922",
+                "reference": "d50b0f58de31f87e54204aabe1ceb1150b68b922",
                 "shasum": ""
             },
             "require": {
                 "php": "^5.6 || ^7.0",
-                "zendframework/zend-hydrator": "^1.1 || ^2.1",
+                "zendframework/zend-hydrator": "^1.1 || ^2.1 || ^3.0",
                 "zendframework/zend-inputfilter": "^2.8",
                 "zendframework/zend-stdlib": "^2.7 || ^3.0"
             },
@@ -5237,8 +5249,8 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.12.x-dev",
-                    "dev-develop": "2.13.x-dev"
+                    "dev-master": "2.13.x-dev",
+                    "dev-develop": "2.14.x-dev"
                 },
                 "zf": {
                     "component": "Zend\\Form",
@@ -5263,7 +5275,7 @@
                 "form",
                 "zf"
             ],
-            "time": "2018-05-16T18:50:34+00:00"
+            "time": "2018-12-11T22:52:21+00:00"
         },
         {
             "name": "zendframework/zend-http",
@@ -5836,16 +5848,16 @@
         },
         {
             "name": "zendframework/zend-validator",
-            "version": "dev-develop",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zend-validator.git",
-                "reference": "a64ea16734ce1eaf6697ba154dc9ed765f3e055f"
+                "reference": "f4aca224f97704051a1146ac4f02c1455a72f46e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/zendframework/zend-validator/zipball/a64ea16734ce1eaf6697ba154dc9ed765f3e055f",
-                "reference": "a64ea16734ce1eaf6697ba154dc9ed765f3e055f",
+                "url": "https://api.github.com/repos/zendframework/zend-validator/zipball/f4aca224f97704051a1146ac4f02c1455a72f46e",
+                "reference": "f4aca224f97704051a1146ac4f02c1455a72f46e",
                 "shasum": ""
             },
             "require": {
@@ -5855,6 +5867,7 @@
             },
             "require-dev": {
                 "phpunit/phpunit": "^6.0.8 || ^5.7.15",
+                "psr/http-message": "^1.0",
                 "zendframework/zend-cache": "^2.6.1",
                 "zendframework/zend-coding-standard": "~1.0.0",
                 "zendframework/zend-config": "^2.6",
@@ -5868,6 +5881,7 @@
                 "zendframework/zend-uri": "^2.5"
             },
             "suggest": {
+                "psr/http-message": "psr/http-message, required when validating PSR-7 UploadedFileInterface instances via the Upload and UploadFile validators",
                 "zendframework/zend-db": "Zend\\Db component, required by the (No)RecordExists validator",
                 "zendframework/zend-filter": "Zend\\Filter component, required by the Digits validator",
                 "zendframework/zend-i18n": "Zend\\I18n component to allow translation of validation error messages",
@@ -5880,8 +5894,8 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.10.x-dev",
-                    "dev-develop": "2.11.x-dev"
+                    "dev-master": "2.11.x-dev",
+                    "dev-develop": "2.12.x-dev"
                 },
                 "zf": {
                     "component": "Zend\\Validator",
@@ -5903,7 +5917,7 @@
                 "validator",
                 "zf2"
             ],
-            "time": "2018-02-01T17:07:06+00:00"
+            "time": "2018-12-13T21:24:19+00:00"
         }
     ],
     "aliases": [],
