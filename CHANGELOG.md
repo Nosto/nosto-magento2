@@ -1,5 +1,8 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 2.11.8
+* Fix an issue that could prevent the extension to be installed in Magento 2.3
+
 ### 2.11.7
 * Fix wrong category translation
 
