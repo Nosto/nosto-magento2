@@ -10,16 +10,16 @@ RUN echo -n "APT::Install-Recommends \"false\";\nAPT::Install-Suggests \"false\"
 
 # Enable access to metadata and packages using https
 RUN apt-get update && \
-            apt-get -y -q install apt-transport-https
+            apt-get -y -qq install apt-transport-https
 
 # Setup locale
 RUN apt-get update && \
-            apt-get -y -q upgrade && \
-            apt-get -y -q install apt-utils locales && \
+            apt-get -y -qq upgrade && \
+            apt-get -y -qq install apt-utils locales && \
             sed -i 's/^# *\(en_US.UTF-8\)/\1/' /etc/locale.gen && \
             ln -sf /etc/locale.alias /usr/share/locale/locale.alias && \
             locale-gen && \
-            apt-get -y -q clean
+            apt-get -y -qq clean
 
 ENV         LANGUAGE en_US.UTF-8
 ENV         LANG en_US.UTF-8
@@ -48,27 +48,33 @@ RUN         groupadd -r plugins -g 113 && \
             useradd -ms /bin/bash -u 113 -r -g plugins plugins && \
             usermod -a -G www-data plugins
 
-# Install all core dependencies required for setting up Apache and PHP atleast
-RUN         apt-get -y -q install unzip wget libfreetype6-dev libjpeg-dev \
+# Add php-7.1 Source List
+RUN         apt-get -y -qq install lsb-release ca-certificates wget
+RUN         wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg
+RUN         sh -c 'echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/php.list'
+RUN         apt-get -y -qq update
+
+# Install all core dependencies required for setting up Apache and PHP at least
+RUN         apt-get -y -qq install unzip wget libfreetype6-dev libjpeg-dev \
             libmcrypt-dev libreadline-dev libpng-dev libicu-dev default-mysql-client \
             libmcrypt-dev libxml2-dev libxslt1-dev vim nano git tree curl \
             supervisor ca-certificates && \
-            apt-get -y clean
+            apt-get -y -qq clean
 
 # Install Apache, MySQL and all the required development and prod PHP modules
-RUN         apt-get -y -q install apache2 php7.0 default-mysql-client-core \
-            default-mysql-server-core default-mysql-server php7.0-dev php7.0-gd \
-            php7.0-mcrypt php7.0-intl php7.0-xsl php7.0-zip php7.0-bcmath \
-            php7.0-curl php7.0-mbstring php7.0-mysql php-ast php7.0-soap && \
+RUN         apt-get -y -qq install apache2 php7.1 php7.1-common default-mysql-client-core \
+            default-mysql-server-core default-mysql-server php7.1-dev \
+            php7.1-mcrypt php7.1-xsl php7.1-zip php7.1-bcmath php7.1-intl php7.1-gd \
+            php7.1-curl php7.1-mbstring php7.1-mysql php7.1-soap php-xml php7.1-xml && \
             apt-get -y clean
 
 # Upgrade ast extension
-RUN         apt-get -y -q install build-essential php-pear && \
+RUN         apt-get -y -qq install build-essential php-pear && \
             pecl install ast-0.1.6 && \
             apt-get purge -y build-essential && \
             apt-get -y clean
 
-RUN         a2enmod rewrite && phpenmod ast soap && \
+RUN         a2enmod rewrite && phpenmod soap && \
             a2dissite 000-default.conf
 
 RUN         php -r "readfile('https://getcomposer.org/installer');" > composer-setup.php && \
