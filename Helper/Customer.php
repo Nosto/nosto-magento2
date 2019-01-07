@@ -47,7 +47,6 @@ use Magento\Customer\Model\GroupManagement;
  */
 class Customer extends AbstractHelper
 {
-
     private $customerSession;
     private $groupRepository;
 

@@ -119,7 +119,7 @@ class Price extends AbstractHelper
      * @suppress PhanDeprecatedFunction
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    public function getProductPrice( // @codingStandardsIgnoreLine
+    public function getProductPrice(// @codingStandardsIgnoreLine
         Product $product,
         Store $store,
         $inclTax = true,

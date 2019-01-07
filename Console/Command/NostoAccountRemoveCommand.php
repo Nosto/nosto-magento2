@@ -50,7 +50,6 @@ use Nosto\Tagging\Helper\Cache as NostoHelperCache;
 
 class NostoAccountRemoveCommand extends Command
 {
-
     const SCOPE_CODE = 'scope-code';
 
     /*
@@ -196,5 +195,4 @@ class NostoAccountRemoveCommand extends Command
 
         return true;
     }
-
 }

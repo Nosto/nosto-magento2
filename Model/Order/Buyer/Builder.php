@@ -60,7 +60,6 @@ class Builder extends PersonBuilder
         $postCode = null,
         $country = null
     ) {
-    
         $buyer = new Buyer();
         $buyer->setFirstName($firstName);
         $buyer->setLastName($lastName);

@@ -68,7 +68,6 @@ abstract class Builder
         EventManager $eventManager,
         NostoHelperData $nostoHelperData
     ) {
-    
         $this->emailRepository = $emailRepository;
         $this->eventManager = $eventManager;
         $this->nostoHelperData = $nostoHelperData;

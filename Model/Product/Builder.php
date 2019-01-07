@@ -165,7 +165,6 @@ class Builder
         Store $store,
         $nostoScope = self::NOSTO_SCOPE_API
     ) {
-
         $nostoProduct = new NostoProduct();
         $modelFilter = new ModelFilter();
 

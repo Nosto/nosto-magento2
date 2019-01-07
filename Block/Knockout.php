@@ -63,7 +63,6 @@ class Knockout extends Template
         NostoHelperScope $nostoHelperScope,
         array $data = []
     ) {
-
         parent::__construct($context, $data);
         $this->nostoHelperAccount = $nostoHelperAccount;
         $this->nostoHelperScope = $nostoHelperScope;

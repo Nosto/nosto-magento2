@@ -163,15 +163,15 @@ class NostoAccountConnectCommand extends Command
     private function updateNostoTokens(array $tokens, $accountId, SymfonyStyle $io, $scopeCode)
     {
         $store = $this->nostoHelperScope->getStoreByCode($scopeCode);
-        if(!$store){
+        if (!$store) {
             $io->error('Store not found. Check your input.');
             return false;
         }
         $storeAccountId = $store->getConfig(NostoAccountHelper::XML_PATH_ACCOUNT);
         $account = $this->accountHelper->findAccount($store);
         if ($account && $storeAccountId === $accountId) {
-           // If the script is non-interactive, do not ask for confirmation
-           $confirmOverride = $this->isInteractive ?
+            // If the script is non-interactive, do not ask for confirmation
+            $confirmOverride = $this->isInteractive ?
                 $confirmOverride = $io->confirm(
                     'Local Nosto account found for this store view. Override tokens?',
                     false
