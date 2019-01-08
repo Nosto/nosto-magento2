@@ -68,11 +68,14 @@ RUN         apt-get -y -qq install apache2 php7.1 php7.1-common default-mysql-cl
             php7.1-curl php7.1-mbstring php7.1-mysql php7.1-soap php-xml php7.1-xml && \
             apt-get -y clean
 
-# Upgrade ast extension
+# Upgrade AST extension
 RUN         apt-get -y -qq install build-essential php-pear && \
             pecl install ast-0.1.6 && \
             apt-get purge -y build-essential && \
             apt-get -y clean
+
+# Enable AST extension
+RUN         echo "extension=ast.so" >> /etc/php/7.1/cli/php.ini
 
 RUN         a2enmod rewrite && phpenmod soap && \
             a2dissite 000-default.conf
