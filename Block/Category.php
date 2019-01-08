@@ -106,12 +106,11 @@ class Category extends Template
      * Returns the HTML to render categories
      *
      * @return string
-     * @suppress PhanUndeclaredClassMethod
      */
     public function toHtml()
     {
-        return (new NostoCategory(
-            $this->getNostoCategory()
-        ))->toHtml();
+        $category = new NostoCategory();
+        $category->setCategoryString($this->getNostoCategory());
+        return $category->toHtml();
     }
 }
