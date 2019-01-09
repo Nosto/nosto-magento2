@@ -11,7 +11,7 @@ All notable changes to this project will be documented in this file. This projec
 * Set product into Magento registry before fetching Yotpo reviews
 * Add Yotpo reviews feature
 * Add customer group pricing variation support
-* Support using same nosto email widget snippet for multiple nosto accounts
+* Support using same nosto email widget snippet for multiple Nosto accounts
 
 ### 2.11.8
 * Fix an issue that could prevent the extension to be installed in Magento 2.3
