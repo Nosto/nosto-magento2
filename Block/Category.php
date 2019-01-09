@@ -118,7 +118,7 @@ class Category extends Template
     /**
      * Returns the HTML to render categories
      *
-     * @return string
+     * @return NostoCategory
      */
     public function getAbstractObject()
     {
