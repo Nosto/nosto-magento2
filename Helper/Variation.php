@@ -41,6 +41,9 @@ use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Customer\Model\GroupManagement;
 use Magento\Customer\Model\Data\Group;
 use Magento\Store\Model\Store;
+use Magento\Customer\Api\Data\GroupInterface;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Exception\NoSuchEntityException;
 
 /**
  * Variation helper
@@ -62,9 +65,9 @@ class Variation extends AbstractHelper
     }
 
     /**
-     * @return \Magento\Customer\Api\Data\GroupInterface|null
-     * @throws \Magento\Framework\Exception\LocalizedException
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     * @return GroupInterface|null
+     * @throws LocalizedException
+     * @throws NoSuchEntityException
      */
     private function getDefaultGroupVariation()
     {
@@ -77,8 +80,8 @@ class Variation extends AbstractHelper
 
     /**
      * @return int|null
-     * @throws \Magento\Framework\Exception\LocalizedException
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     * @throws LocalizedException
+     * @throws NoSuchEntityException
      */
     public function getDefaultVariationId()
     {
@@ -87,8 +90,8 @@ class Variation extends AbstractHelper
 
     /**
      * @return string|null
-     * @throws \Magento\Framework\Exception\LocalizedException
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     * @throws LocalizedException
+     * @throws NoSuchEntityException
      */
     public function getDefaultVariationCode()
     {
