@@ -50,6 +50,7 @@ use Nosto\Object\Order\OrderStatus;
 use Nosto\Tagging\Model\Order\Item\Builder as NostoOrderItemBuilder;
 use Nosto\Tagging\Model\Order\Buyer\Builder as NostoBuyerBuilder;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
+use Magento\Sales\Model\Order\Payment;
 
 class Builder
 {
@@ -104,7 +105,7 @@ class Builder
                     $nostoOrder->setCreatedAt($orderCreatedDate);
                 }
             }
-            if ($order->getPayment()) {
+            if ($order->getPayment() instanceof Payment) {
                 $nostoOrder->setPaymentProvider($order->getPayment()->getMethod());
             } else {
                 throw new NostoException('Order has no payment associated');
