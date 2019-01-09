@@ -42,6 +42,7 @@ use Magento\Framework\View\Element\Template\Context;
 use Nosto\Tagging\Model\Category\Builder as NostoCategoryBuilder;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Object\Category as NostoCategory;
+use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 
 /**
  * Category block used for outputting meta-data on the stores category pages.
@@ -50,6 +51,10 @@ use Nosto\Object\Category as NostoCategory;
  */
 class Category extends Template
 {
+    use TaggingTrait {
+        TaggingTrait::__construct as taggingConstruct; // @codingStandardsIgnoreLine
+    }
+
     /**
      * @var Registry
      */
@@ -66,10 +71,16 @@ class Category extends Template
     private $nostoHelperScope;
 
     /**
+     * @var NostoHelperAccount
+     */
+    private $nostoHelperAccount;
+
+    /**
      * Constructor.
      *
      * @param Context $context
      * @param Registry $registry
+     * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoCategoryBuilder $categoryBuilder
      * @param array $data
      */
@@ -78,6 +89,7 @@ class Category extends Template
         Registry $registry,
         NostoCategoryBuilder $categoryBuilder,
         NostoHelperScope $nostoHelperScope,
+        NostoHelperAccount $nostoHelperAccount,
         array $data = []
     ) {
         parent::__construct($context, $data);
@@ -85,6 +97,7 @@ class Category extends Template
         $this->registry = $registry;
         $this->categoryBuilder = $categoryBuilder;
         $this->nostoHelperScope = $nostoHelperScope;
+        $this->nostoHelperAccount = $nostoHelperAccount;
     }
 
     /**
@@ -107,10 +120,10 @@ class Category extends Template
      *
      * @return string
      */
-    public function toHtml()
+    public function getAbstractObject()
     {
         $category = new NostoCategory();
         $category->setCategoryString($this->getNostoCategory());
-        return $category->toHtml();
+        return $category;
     }
 }
