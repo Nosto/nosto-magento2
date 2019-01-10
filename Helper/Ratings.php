@@ -157,7 +157,8 @@ class Ratings extends AbstractHelper
                 ];
             }
 
-            if ($provider === NostoHelperData::SETTING_VALUE_MAGENTO_RATINGS) {
+            if ($provider === NostoHelperData::SETTING_VALUE_MAGENTO_RATINGS &&
+                $this->canUseMagentoRatingsAndReviews()) {
                 return [
                     self::AVERAGE_SCORE => $this->buildRatingValue($product, $store),
                     self::REVIEW_COUNT => $this->buildReviewCount($product, $store)
@@ -223,7 +224,7 @@ class Ratings extends AbstractHelper
      */
     public function canUseYotpo()
     {
-        if ($this->moduleManager->isEnabled("Yotpo_Yotpo") &&
+        if ($this->moduleManager->isEnabled('Yotpo_Yotpo') &&
             class_exists('Yotpo\Yotpo\Helper\RichSnippets') &&
             method_exists($this->ratingsFactory->create(), 'getRichSnippet')
         ) {
@@ -231,6 +232,16 @@ class Ratings extends AbstractHelper
         }
 
         return false;
+    }
+
+    /**
+     * Check if the Review module is enabled, review tables are present
+     *
+     * @return bool
+     */
+    public function canUseMagentoRatingsAndReviews()
+    {
+        return $this->moduleManager->isEnabled('Magento_Review');
     }
 
     /**
