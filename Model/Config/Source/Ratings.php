@@ -77,8 +77,8 @@ class Ratings implements ArrayInterface
         }
 
         if ($this->nostoRatingsHelper->canUseMagentoRatingsAndReviews()) {
-            $magentoRatings = ['value' => Data::SETTING_VALUE_MAGENTO_RATINGS, 'label' => new Phrase('Magento Ratings')];
-            $options[] = $magentoRatings;
+            $mageRatings = ['value' => Data::SETTING_VALUE_MAGENTO_RATINGS, 'label' => new Phrase('Magento Ratings')];
+            $options[] = $mageRatings;
         }
 
         return $options;
