@@ -157,11 +157,8 @@ class Ratings extends AbstractHelper
                 ];
             }
 
-            if ($provider === NostoHelperData::SETTING_VALUE_MAGENTO_RATINGS) {
-                if (!$this->canUseMagentoRatingsAndReviews()) {
-                    return null;
-                }
-
+            if ($provider === NostoHelperData::SETTING_VALUE_MAGENTO_RATINGS &&
+                $this->canUseMagentoRatingsAndReviews()) {
                 return [
                     self::AVERAGE_SCORE => $this->buildRatingValue($product, $store),
                     self::REVIEW_COUNT => $this->buildReviewCount($product, $store)
@@ -244,11 +241,7 @@ class Ratings extends AbstractHelper
      */
     public function canUseMagentoRatingsAndReviews()
     {
-        if ($this->moduleManager->isEnabled('Magento_Review')) {
-            return true;
-        }
-
-        return false;
+        return $this->moduleManager->isEnabled('Magento_Review');
     }
 
     /**
