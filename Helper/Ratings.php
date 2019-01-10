@@ -126,7 +126,7 @@ class Ratings extends AbstractHelper
      */
     private function getRatingsFromProviders(Product $product, Store $store)
     {
-        if ($this->nostoDataHelper->isRatingTaggingEnabled($store)) {
+        if ($this->nostoDataHelper->isRatingTaggingEnabled($store) && $this->isReviewModuleEnabled()) {
             $provider = $this->nostoDataHelper->getRatingTaggingProvider($store);
 
             if ($provider === NostoHelperData::SETTING_VALUE_YOTPO_RATINGS) {
@@ -227,6 +227,20 @@ class Ratings extends AbstractHelper
             class_exists('Yotpo\Yotpo\Helper\RichSnippets') &&
             method_exists($this->ratingsFactory->create(), 'getRichSnippet')
         ) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Check if the Review module is enabled, review tables are present
+     *
+     * @return bool
+     */
+    public function isReviewModuleEnabled()
+    {
+        if ($this->moduleManager->isEnabled("Magento_Review")) {
             return true;
         }
 
