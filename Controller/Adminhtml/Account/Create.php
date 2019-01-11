@@ -53,7 +53,6 @@ use Nosto\Tagging\Model\Meta\Account\Owner\Builder as NostoOwnerBuilder;
 use Nosto\Tagging\Model\Rates\Service as NostoRatesService;
 use Nosto\Tagging\Model\User\Builder as NostoCurrentUserBuilder;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
-use Magento\Framework\Exception\LocalizedException;
 
 class Create extends Base
 {
