@@ -44,8 +44,6 @@ use Magento\Framework\Exception\NotFoundException;
 use Magento\Framework\Phrase;
 use Magento\Framework\View\Result\PageFactory;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
-use Magento\Framework\Exception\LocalizedException;
-use Magento\Framework\Exception\NotFoundException;
 
 class Index extends Base
 {

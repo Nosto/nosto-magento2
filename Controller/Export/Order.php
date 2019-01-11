@@ -44,9 +44,6 @@ use Nosto\Object\Order\OrderCollection;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Model\Order\Collection as NostoOrderCollection;
-use Nosto\Object\AbstractCollection;
-use Nosto\Object\Order\OrderCollection;
-use Nosto\NostoException;
 
 /**
  * Order export controller used to export order history to Nosto in order to
