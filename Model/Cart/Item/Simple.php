@@ -38,6 +38,7 @@ namespace Nosto\Tagging\Model\Cart\Item;
 
 use Magento\Catalog\Model\ResourceModel\Eav\Attribute;
 use Magento\Framework\App\ObjectManager;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Quote\Model\Quote\Item;
 use Nosto\Tagging\Model\Item\Simple as SimpleItem;
 
@@ -48,7 +49,7 @@ class Simple extends SimpleItem
      *
      * @param Item $item the ordered item
      * @return string the name of the product
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws LocalizedException
      */
     public static function buildItemName(Item $item)
     {

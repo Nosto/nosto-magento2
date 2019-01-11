@@ -41,6 +41,7 @@ use Magento\Catalog\Model\ResourceModel\Eav\Attribute;
 use Magento\Catalog\Model\ResourceModel\Product\Attribute\Collection;
 use Magento\Catalog\Model\ResourceModel\Product\Attribute\CollectionFactory as AttributeCollectionFactory;
 use Magento\Eav\Model\Config;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Option\ArrayInterface;
 
 /**
@@ -71,7 +72,7 @@ abstract class Selector implements ArrayInterface
      * Returns all available product attributes
      *
      * @return array
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws LocalizedException
      */
     public function toOptionArray()
     {

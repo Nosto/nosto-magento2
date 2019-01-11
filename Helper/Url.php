@@ -39,6 +39,7 @@ namespace Nosto\Tagging\Helper;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\ResourceModel\Category\CollectionFactory as CategoryCollectionFactory;
 use Magento\Backend\Helper\Data as BackendDataHelper;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Url as UrlBuilder;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
@@ -213,7 +214,7 @@ class Url extends AbstractHelper
      * @param Store $store the store to get the url for.
      * @return string the url.
      *
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws LocalizedException
      */
     public function getPreviewUrlCategory(Store $store)
     {

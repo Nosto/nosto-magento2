@@ -39,6 +39,7 @@ namespace Nosto\Tagging\Model\Cart\Item;
 use Exception;
 use Magento\Catalog\Model\Product\Type;
 use Magento\Framework\Event\ManagerInterface;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Quote\Model\Quote\Item;
 use Magento\Catalog\Model\Product;
 use Nosto\Object\Cart\LineItem;
@@ -77,7 +78,7 @@ class Builder
      * @param Item $item
      * @param $currencyCode
      * @return LineItem
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws LocalizedException
      */
     public function build(Item $item, $currencyCode)
     {

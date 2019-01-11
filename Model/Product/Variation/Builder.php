@@ -171,7 +171,6 @@ class Builder
      * @param Group $group
      * @param Store $store
      * @return MageProduct
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function getMinPriceSku(Product $product, Group $group, Store $store)
     {
