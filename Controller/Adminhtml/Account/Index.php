@@ -42,6 +42,8 @@ use Magento\Framework\Controller\Result\Redirect;
 use Magento\Framework\Phrase;
 use Magento\Framework\View\Result\PageFactory;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Exception\NotFoundException;
 
 class Index extends Base
 {
@@ -67,8 +69,8 @@ class Index extends Base
 
     /**
      * @return Page | Redirect
-     * @throws \Magento\Framework\Exception\LocalizedException
-     * @throws \Magento\Framework\Exception\NotFoundException
+     * @throws LocalizedException
+     * @throws NotFoundException
      */
     public function execute()
     {

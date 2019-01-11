@@ -45,6 +45,7 @@ use Nosto\Tagging\Helper\Account as NostoAccountHelper;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Object\Signup\Account as NostoSignupAccount;
 use Nosto\Request\Api\Token;
+use Nosto\NostoException;
 
 class NostoAccountConnectCommand extends Command
 {
@@ -196,7 +197,7 @@ class NostoAccountConnectCommand extends Command
      * @param InputInterface $input
      * @param OutputInterface $output
      * @return array of Token objects
-     * @throws \Nosto\NostoException
+     * @throws NostoException
      */
     private function getTokensFromInput(InputInterface $input, SymfonyStyle $io)
     {

@@ -52,6 +52,7 @@ use Nosto\Tagging\Model\Meta\Account\Owner\Builder as NostoOwnerBuilder;
 use Nosto\Tagging\Model\Rates\Service as NostoRatesService;
 use Nosto\Tagging\Model\User\Builder as NostoCurrentUserBuilder;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
+use Magento\Framework\Exception\LocalizedException;
 
 class Create extends Base
 {
@@ -114,7 +115,7 @@ class Create extends Base
 
     /**
      * @return Json
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws LocalizedException
      * @throws \Zend_Validate_Exception
      * @suppress PhanTypeMismatchArgument
      * @SuppressWarnings(PHPMD.CyclomaticComplexity
