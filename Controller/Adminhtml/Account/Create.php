@@ -38,6 +38,7 @@ namespace Nosto\Tagging\Controller\Adminhtml\Account;
 
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\Controller\Result\Json;
+use Magento\Framework\Exception\LocalizedException;
 use Nosto\Helper\IframeHelper;
 use Nosto\Nosto;
 use Nosto\NostoException;

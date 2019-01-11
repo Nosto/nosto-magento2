@@ -38,6 +38,9 @@ namespace Nosto\Tagging\Controller\Export;
 
 use Magento\Framework\App\Action\Context;
 use Magento\Store\Model\Store;
+use Nosto\NostoException;
+use Nosto\Object\AbstractCollection;
+use Nosto\Object\Order\OrderCollection;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Model\Order\Collection as NostoOrderCollection;

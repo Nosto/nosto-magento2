@@ -37,6 +37,7 @@
 namespace Nosto\Tagging\Block;
 
 use Nosto\AbstractObject;
+use Nosto\NostoException;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 
@@ -64,7 +65,7 @@ trait TaggingTrait
      *
      * @return string the markup or an empty string (if an account doesn't exist)
      * @suppress PhanTraitParentReference
-     * @throws \Nosto\NostoException
+     * @throws NostoException
      */
     public function _toHtml()
     {

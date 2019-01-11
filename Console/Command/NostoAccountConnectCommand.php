@@ -195,9 +195,8 @@ class NostoAccountConnectCommand extends Command
      * if not, will ask for the remaining parameters.
      *
      * @param InputInterface $input
-     * @param OutputInterface $output
-     * @return array of Token objects
-     * @throws NostoException
+     * @param SymfonyStyle $io
+     * @return Token[]
      */
     private function getTokensFromInput(InputInterface $input, SymfonyStyle $io)
     {
