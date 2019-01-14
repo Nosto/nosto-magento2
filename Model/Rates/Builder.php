@@ -40,7 +40,6 @@ use Magento\Directory\Model\Currency;
 use Magento\Directory\Model\CurrencyFactory;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Store\Model\Store;
-use Nosto\NostoException;
 use Nosto\Object\ExchangeRate;
 use Nosto\Object\ExchangeRateCollection;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
@@ -82,7 +81,7 @@ class Builder
             $baseCurrencyCode = $store->getBaseCurrencyCode();
 
             /** @var Currency $currencyModel */
-            $currencyModel = $currency = $this->currencyFactory->create();
+            $currencyModel = $this->currencyFactory->create();
             $rates = $currencyModel->getCurrencyRates($baseCurrencyCode, $currencyCodes);
             foreach ($rates as $code => $rate) {
                 if ($baseCurrencyCode === $code) {
@@ -97,7 +96,7 @@ class Builder
                 ));
                 $exchangeRates->addRate($code, new ExchangeRate($code, $rate));
             }
-        } catch (NostoException $e) {
+        } catch (\Exception $e) {
             $this->logger->exception($e);
         }
 

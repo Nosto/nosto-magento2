@@ -37,6 +37,7 @@
 namespace Nosto\Tagging\Observer\Product;
 
 use Magento\Framework\Event\Observer;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Review\Model\Review as ReviewModel;
 
 /**
@@ -50,6 +51,7 @@ class Review extends Base
 {
     /**
      * @inheritdoc
+     * @throws NoSuchEntityException
      */
     public function extractProduct(Observer $observer)
     {
@@ -57,8 +59,8 @@ class Review extends Base
         /** @noinspection PhpUndefinedMethodInspection */
         $review = $observer->getObject();
         $product = null;
-        if ($this->dataHelper->isRatingTaggingEnabled()
-            && $review instanceof ReviewModel
+        if ($review instanceof ReviewModel
+            && $this->dataHelper->isRatingTaggingEnabled()
         ) {
             $product = $this->productRepository->getById($review->getEntityPkValue());
         }

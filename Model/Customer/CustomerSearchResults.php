@@ -41,5 +41,4 @@ use Nosto\Tagging\Api\Data\CustomerSearchResultInterface;
 
 class CustomerSearchResults extends SearchResult implements CustomerSearchResultInterface // @codingStandardsIgnoreLine
 {
-
 }

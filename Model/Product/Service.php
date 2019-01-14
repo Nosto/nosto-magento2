@@ -40,7 +40,6 @@ use DateTime;
 use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\ProductFactory;
-use Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable as ConfigurableProduct;
 use Magento\Store\Model\App\Emulation;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManager;
@@ -50,13 +49,10 @@ use Nosto\Operation\UpsertProduct;
 use Nosto\Request\Http\HttpRequest;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
-use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
 use Nosto\Tagging\Model\Product\Repository as NostoProductRepository;
 use Nosto\Types\Product\ProductInterface as NostoProductInterface;
-use Magento\Framework\App\State;
-use Magento\Tax\Helper\Data as TaxHelper;
 
 /**
  * Service class for updating products to Nosto
@@ -65,17 +61,14 @@ use Magento\Tax\Helper\Data as TaxHelper;
  */
 class Service
 {
-
     public static $batchSize = 50;
     public static $responseTimeOut = 500;
-    private $productUpdatesActive = null;
+    private $productUpdatesActive;
 
     private $nostoProductBuilder;
     private $logger;
-    private $nostoHelperScope;
     private $nostoHelperAccount;
     private $nostoHelperData;
-    private $configurableProduct;
     private $nostoProductRepository;
     private $nostoQueueFactory;
     private $storeManager;
@@ -92,9 +85,7 @@ class Service
      * Not using the proxy classes will lead to a "Area code not set" exception being thrown in the
      * compile phase.
      * @param NostoLogger $logger
-     * @param NostoHelperScope\Proxy $nostoHelperScope
      * @param Builder $nostoProductBuilder
-     * @param ConfigurableProduct $configurableProduct
      * @param NostoHelperAccount\Proxy $nostoHelperAccount
      * @param NostoHelperData\Proxy $nostoHelperData
      * @param NostoProductRepository $nostoProductRepository
@@ -106,9 +97,7 @@ class Service
      */
     public function __construct(
         NostoLogger $logger,
-        NostoHelperScope\Proxy $nostoHelperScope,
         NostoProductBuilder $nostoProductBuilder,
-        ConfigurableProduct $configurableProduct,
         NostoHelperAccount\Proxy $nostoHelperAccount,
         NostoHelperData\Proxy $nostoHelperData,
         NostoProductRepository $nostoProductRepository,
@@ -118,11 +107,8 @@ class Service
         ProductFactory $productFactory,
         Emulation $emulation
     ) {
-
         $this->logger = $logger;
-        $this->nostoHelperScope = $nostoHelperScope;
         $this->nostoProductBuilder = $nostoProductBuilder;
-        $this->configurableProduct = $configurableProduct;
         $this->nostoHelperAccount = $nostoHelperAccount;
         $this->nostoHelperData = $nostoHelperData;
         $this->nostoProductRepository = $nostoProductRepository;
@@ -137,6 +123,7 @@ class Service
      * Updates products to Nosto via API
      *
      * @param array $ids array of product ids
+     * @throws \Exception
      */
     public function updateByIds(array $ids)
     {
@@ -148,6 +135,7 @@ class Service
      * Adds products to queue by id
      *
      * @param ProductInterface[] array of product objects
+     * @throws \Exception
      */
     public function update(array $products)
     {
@@ -159,6 +147,7 @@ class Service
      * Adds products to queue by id
      *
      * @param array $ids
+     * @throws \Exception
      */
     public function addToQueueByIds(array $ids)
     {
@@ -185,10 +174,11 @@ class Service
      * Adds products to queue
      *
      * @param ProductInterface[] $products
+     * @throws \Exception
      */
     public function addToQueue(array $products)
     {
-        if ($this->productUpdatesActive()) {
+        if ($this->checkProductUpdatesActive()) {
             $productCount = count($products);
             $this->logger->info(
                 sprintf(
@@ -260,6 +250,7 @@ class Service
 
             $productIds = [];
             foreach ($queueEntries->getItems() as $queueEntry) {
+                /** @var \Nosto\Tagging\Model\Product\Queue $queueEntry */
                 $productIds[] = $queueEntry->getProductId();
             }
             try {
@@ -295,6 +286,7 @@ class Service
                 if (!$nostoAccount instanceof Account) {
                     continue;
                 }
+                /** @var \Magento\Store\Model\Store\Interceptor $store */
                 $this->storeEmulator->startEnvironmentEmulation($store->getId());
                 try {
                     $this->processForAccount($uniqueProductIds, $store, $nostoAccount);
@@ -312,6 +304,7 @@ class Service
      * @param array $uniqueProductIds
      * @param Store $store
      * @param Account $nostoAccount
+     * @throws \Exception
      */
     public function processForAccount(array $uniqueProductIds, Store $store, Account $nostoAccount)
     {
@@ -347,11 +340,15 @@ class Service
 
             try {
                 $op->upsert();
+                $storeName = 'Could not get Store Name';
+                if ($this->storeManager->getStore()) {
+                    $storeName = $this->storeManager->getStore()->getName();
+                }
                 $this->logger->info(
                     sprintf(
                         'Sent %d products to for store %s (%d)',
                         $productSearch->getTotalCount(),
-                        $this->storeManager->getStore()->getName(),
+                        $storeName,
                         $store->getId()
                     )
                 );
@@ -396,11 +393,15 @@ class Service
         $op->setProductIds($uniqueProductIds);
         try {
             $op->delete();
+            $storeName = 'Could not get Store Name';
+            if ($this->storeManager->getStore()) {
+                $storeName = $this->storeManager->getStore()->getName();
+            }
             $this->logger->info(
                 sprintf(
                     'Sent %d products to for deletion %s (%d)',
                     count($uniqueProductIds),
-                    $this->storeManager->getStore()->getName(),
+                    $storeName,
                     $store->getId()
                 )
             );
@@ -424,7 +425,7 @@ class Service
      *
      * @return bool
      */
-    public function productUpdatesActive()
+    public function checkProductUpdatesActive()
     {
         if ($this->productUpdatesActive === null) {
             // Loop through stores and check that at least one store has product

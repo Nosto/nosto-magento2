@@ -37,6 +37,7 @@
 namespace Nosto\Tagging\Block;
 
 use Nosto\AbstractObject;
+use Nosto\NostoException;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 
@@ -64,19 +65,18 @@ trait TaggingTrait
      *
      * @return string the markup or an empty string (if an account doesn't exist)
      * @suppress PhanTraitParentReference
+     * @throws NostoException
      */
     public function _toHtml()
     {
         if ($this->nostoHelperAccount->nostoInstalledAndEnabled($this->nostoHelperScope->getStore())) {
-            /** @noinspection PhpUndefinedMethodInspection */
-            if ($this->getAbstractObject() instanceof AbstractObject) {
-                return $this->getAbstractObject()->toHtml();
-            } else {
-                return parent::_toHtml();
+            $abstractObject = $this->getAbstractObject();
+            if ($abstractObject instanceof AbstractObject) {
+                return $abstractObject->toHtml();
             }
-        } else {
-            return '';
+            return parent::_toHtml();
         }
+        return '';
     }
 
     /**

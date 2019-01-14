@@ -38,6 +38,7 @@ namespace Nosto\Tagging\Controller\Adminhtml\Account;
 
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\Controller\Result\Json;
+use Magento\Framework\Exception\LocalizedException;
 use Nosto\Helper\IframeHelper;
 use Nosto\Nosto;
 use Nosto\NostoException;
@@ -114,8 +115,11 @@ class Create extends Base
 
     /**
      * @return Json
+     * @throws LocalizedException
+     * @throws \Zend_Validate_Exception
      * @suppress PhanTypeMismatchArgument
      * @SuppressWarnings(PHPMD.CyclomaticComplexity
+     * @throws \Zend_Validate_Exception
      */
     public function execute()
     {
@@ -139,7 +143,7 @@ class Create extends Base
                         $accountOwner->setLastName(null);
                         $accountOwner->setEmail($emailAddress);
                     } else {
-                        throw new NostoException("Invalid email address " . $emailAddress);
+                        throw new NostoException('Invalid email address ' . $emailAddress);
                     }
                 }
 

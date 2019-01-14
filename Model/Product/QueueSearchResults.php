@@ -41,5 +41,4 @@ use Nosto\Tagging\Api\Data\ProductQueueSearchResultsInterface;
 
 class QueueSearchResults extends SearchResult implements ProductQueueSearchResultsInterface // @codingStandardsIgnoreLine
 {
-
 }

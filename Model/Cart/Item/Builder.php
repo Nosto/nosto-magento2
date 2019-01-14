@@ -39,33 +39,46 @@ namespace Nosto\Tagging\Model\Cart\Item;
 use Exception;
 use Magento\Catalog\Model\Product\Type;
 use Magento\Framework\Event\ManagerInterface;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Quote\Model\Quote\Item;
 use Magento\Catalog\Model\Product;
 use Nosto\Object\Cart\LineItem;
 use Nosto\Tagging\Model\Item\Downloadable;
 use Nosto\Tagging\Model\Item\Giftcard;
 use Nosto\Tagging\Model\Item\Virtual;
+use Magento\Catalog\Model\ProductRepository;
 
 class Builder
 {
+    /**
+     * @var ManagerInterface $eventManager
+     */
     private $eventManager;
 
     /**
-     * Constructor.
+     * @var ProductRepository $productRepository
+     */
+    private $productRepository;
+
+    /**
+     * Builder constructor.
      *
      * @param ManagerInterface $eventManager
+     * @param ProductRepository $productRepository
      */
     public function __construct(
-        ManagerInterface $eventManager
+        ManagerInterface $eventManager,
+        ProductRepository $productRepository
     ) {
         $this->eventManager = $eventManager;
+        $this->productRepository = $productRepository;
     }
 
     /**
      * @param Item $item
      * @param $currencyCode
      * @return LineItem
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws LocalizedException
      */
     public function build(Item $item, $currencyCode)
     {
@@ -95,7 +108,7 @@ class Builder
                 $cartItem->setName(Bundle::buildItemName($item));
                 break;
             case Grouped::getType():
-                $cartItem->setName(Grouped::buildItemName($item));
+                $cartItem->setName((new Grouped($this->productRepository))->buildItemName($item));
                 break;
         }
         try {
@@ -119,18 +132,18 @@ class Builder
         $parentItem = $item->getOptionByCode('product_type');
         if ($parentItem !== null) {
             return $parentItem->getProduct()->getSku();
-        } elseif ($item->getProductType() === Type::TYPE_SIMPLE) {
+        }
+        if ($item->getProductType() === Type::TYPE_SIMPLE) {
             $type = $item->getProduct()->getTypeInstance();
             $parentIds = $type->getParentIdsByChild($item->getItemId());
             $attributes = $item->getBuyRequest()->getData('super_attribute');
             // If the product has a configurable parent, we assume we should tag
             // the parent. If there are many parent IDs, we are safer to tag the
             // products own ID.
-            if (count($parentIds) === 1 && !empty($attributes)) {
+            if (!empty($attributes) && count($parentIds) === 1) {
                 return $parentIds[0];
             }
         }
-
         return (string)$item->getProduct()->getId();
     }
 
@@ -148,14 +161,12 @@ class Builder
             //An item with bundle product and group product may have more than 1 child.
             //But configurable product item should have max 1 child item.
             //Here we check the size of children, return only if the size is 1
-            if (count($children) == 1
-                && array_key_exists(0, $children)
+            if (array_key_exists(0, $children)
+                && count($children) === 1
+                && $children[0] instanceof Item
+                && $children[0]->getProduct() instanceof Product
             ) {
-                if ($children[0] instanceof Item
-                    && $children[0]->getProduct() instanceof Product
-                ) {
-                    return (string)$children[0]->getProduct()->getId();
-                }
+                return (string)$children[0]->getProduct()->getId();
             }
         }
 

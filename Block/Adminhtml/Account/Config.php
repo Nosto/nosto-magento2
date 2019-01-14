@@ -45,6 +45,7 @@ class Config extends BlockTemplate
 {
     private $urlHelper;
     private $nostoHelperScope;
+    private $logger;
 
     /**
      * Constructor.
@@ -64,12 +65,22 @@ class Config extends BlockTemplate
 
         $this->urlHelper = $urlHelper;
         $this->nostoHelperScope = $nostoHelperScope;
+        $this->logger = $context->getLogger();
     }
 
+    /**
+     * Get the admin url. Used in the template file
+     *
+     * @return string
+     */
     public function getConfigurationUrl()
     {
-        $store = $this->nostoHelperScope->getSelectedStore($this->getRequest());
-
-        return $this->urlHelper->getAdminNostoConfigurationUrl($store);
+        try {
+            $store = $this->nostoHelperScope->getSelectedStore($this->getRequest());
+            return $this->urlHelper->getAdminNostoConfigurationUrl($store);
+        } catch (\Exception $e) {
+            $this->logger->error($e->getMessage());
+        }
+        return '';
     }
 }

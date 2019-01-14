@@ -48,6 +48,7 @@ abstract class Core
 {
     public function createCustomerTable(SchemaSetupInterface $setup)
     {
+        /** @noinspection PhpUnhandledExceptionInspection */
         $table = $setup->getConnection()
             ->newTable($setup->getTable(Customer::TABLE_NAME))
             ->addColumn(
@@ -105,12 +106,13 @@ abstract class Core
                 ['type' => AdapterInterface::INDEX_TYPE_UNIQUE]
             )
             ->setComment('Nosto customer and order mapping');
-
+        /** @noinspection PhpUnhandledExceptionInspection */
         $setup->getConnection()->createTable($table);
     }
 
     public function createProductQueueTable(SchemaSetupInterface $setup)
     {
+        /** @noinspection PhpUnhandledExceptionInspection */
         $table = $setup->getConnection()
             ->newTable($setup->getTable(ProductQueue::TABLE_NAME))
             ->addColumn(
@@ -151,7 +153,7 @@ abstract class Core
                 [ProductQueueInterface::PRODUCT_ID],
                 ['type' => AdapterInterface::INDEX_TYPE_UNIQUE]
             );
-
+        /** @noinspection PhpUnhandledExceptionInspection */
         $setup->getConnection()->createTable($table);
     }
 }

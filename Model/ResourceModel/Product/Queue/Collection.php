@@ -37,6 +37,8 @@
 namespace Nosto\Tagging\Model\ResourceModel\Product\Queue;
 
 use Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection;
+use Nosto\Tagging\Model\Product\Queue;
+use Nosto\Tagging\Model\ResourceModel\Product\Queue as ResourceModelQueue;
 
 class Collection extends AbstractCollection
 {
@@ -48,8 +50,8 @@ class Collection extends AbstractCollection
     public function _construct()
     {
         $this->_init(
-            'Nosto\Tagging\Model\Product\Queue',
-            'Nosto\Tagging\Model\ResourceModel\Product\Queue'
+            Queue::class,
+            ResourceModelQueue::class
         );
     }
 }

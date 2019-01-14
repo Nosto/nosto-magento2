@@ -37,7 +37,6 @@
 namespace Nosto\Tagging\Model\Product\Sku;
 
 use Magento\Catalog\Model\Product;
-use Magento\Catalog\Model\Product\Gallery\ReadHandler as GalleryReadHandler;
 use Magento\CatalogInventory\Api\StockRegistryInterface;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable\Attribute as ConfigurableAttribute;
 use Magento\Framework\Event\ManagerInterface;
@@ -58,7 +57,6 @@ class Builder
     }
     private $nostoDataHelper;
     private $nostoPriceHelper;
-    private $galleryReadHandler;
     private $eventManager;
     private $logger;
     private $nostoCurrencyHelper;
@@ -68,7 +66,6 @@ class Builder
      * @param NostoPriceHelper $priceHelper
      * @param NostoLogger $logger
      * @param ManagerInterface $eventManager
-     * @param GalleryReadHandler $galleryReadHandler
      * @param CurrencyHelper $nostoCurrencyHelper
      */
     public function __construct(
@@ -76,7 +73,6 @@ class Builder
         NostoPriceHelper $priceHelper,
         NostoLogger $logger,
         ManagerInterface $eventManager,
-        GalleryReadHandler $galleryReadHandler,
         CurrencyHelper $nostoCurrencyHelper,
         StockRegistryInterface $stockRegistry
     ) {
@@ -84,7 +80,6 @@ class Builder
         $this->nostoPriceHelper = $priceHelper;
         $this->logger = $logger;
         $this->eventManager = $eventManager;
-        $this->galleryReadHandler = $galleryReadHandler;
         $this->nostoCurrencyHelper = $nostoCurrencyHelper;
         $this->builderTraitConstruct(
             $nostoHelperData,

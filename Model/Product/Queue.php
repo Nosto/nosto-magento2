@@ -38,6 +38,7 @@ namespace Nosto\Tagging\Model\Product;
 
 use Magento\Framework\Model\AbstractModel;
 use Nosto\Tagging\Api\Data\ProductQueueInterface;
+use Nosto\Tagging\Model\ResourceModel\Product\Queue as NostoQueue;
 
 class Queue extends AbstractModel implements ProductQueueInterface
 {
@@ -97,6 +98,6 @@ class Queue extends AbstractModel implements ProductQueueInterface
      */
     public function _construct()
     {
-        $this->_init('Nosto\Tagging\Model\ResourceModel\Product\Queue');
+        $this->_init(NostoQueue::class);
     }
 }

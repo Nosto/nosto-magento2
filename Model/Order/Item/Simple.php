@@ -36,6 +36,7 @@
 
 namespace Nosto\Tagging\Model\Order\Item;
 
+use Magento\Framework\Exception\LocalizedException;
 use Nosto\Tagging\Model\Item\Simple as SimpleItem;
 use Magento\Catalog\Model\ResourceModel\Eav\Attribute;
 use Magento\Framework\App\ObjectManager;
@@ -48,14 +49,18 @@ class Simple extends SimpleItem
      *
      * @param Item $item the ordered item
      * @return string the name of the product
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws LocalizedException
      */
     public static function buildItemName(Item $item)
     {
         $name = $item->getName();
         $optNames = [];
-        $type = $item->getProduct()->getTypeInstance();
-        $parentIds = $type->getParentIdsByChild($item->getProductId());
+        if ($item->getProduct()) {
+            $type = $item->getProduct()->getTypeInstance();
+            $parentIds = $type->getParentIdsByChild($item->getProductId());
+        } else {
+            $parentIds = 0;
+        }
         $objectManager = ObjectManager::getInstance();
         // If the product has a configurable parent, we assume we should tag
         // the parent. If there are many parent IDs, we are safer to tag the

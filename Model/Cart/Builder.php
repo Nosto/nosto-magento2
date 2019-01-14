@@ -38,10 +38,8 @@ namespace Nosto\Tagging\Model\Cart;
 
 use Magento\Catalog\Model\Product;
 use Magento\Framework\Event\ManagerInterface;
-use Magento\Framework\ObjectManagerInterface;
 use Magento\Quote\Model\Quote;
 use Magento\Store\Model\Store;
-use Nosto\NostoException;
 use Nosto\Object\Cart\Cart;
 use Nosto\Tagging\Model\Cart\Item\Builder as NostoCartItemBuilder;
 use Nosto\Tagging\Logger\Logger as NostoLogger;

@@ -71,13 +71,15 @@ define([
      * @param {Object} event
      */
     var receiveMessage = function (event) {
+        // If the message does not start with '[Nosto]', then it is not for us.
+        if (('' + event.data).substr(0, 7) !== '[Nosto]') {
+            return;
+        }
+
         // Check the origin to prevent cross-site scripting.
         var originRegexp = new RegExp(settings.origin);
         if (!originRegexp.test(event.origin)) {
-            return;
-        }
-        // If the message does not start with '[Nosto]', then it is not for us.
-        if (('' + event.data).substr(0, 7) !== '[Nosto]') {
+            console.warn('Requested URL does not matches iframe origin');
             return;
         }
 

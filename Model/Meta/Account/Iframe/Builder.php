@@ -38,6 +38,7 @@ namespace Nosto\Tagging\Model\Meta\Account\Iframe;
 
 use Magento\Backend\Model\Auth\Session;
 use Magento\Framework\Event\ManagerInterface;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Locale\ResolverInterface;
 use Magento\Store\Model\Store;
 use Nosto\NostoException;
@@ -82,6 +83,7 @@ class Builder
     /**
      * @param Store $store
      * @return Iframe
+     * @throws LocalizedException
      */
     public function build(Store $store)
     {
@@ -93,7 +95,11 @@ class Builder
             $metaData->setLanguageIsoCode($lang);
             $lang = substr($store->getConfig('general/locale/code'), 0, 2);
             $metaData->setLanguageIsoCodeShop($lang);
-            $metaData->setEmail($this->backendAuthSession->getUser()->getEmail());
+            if ($this->backendAuthSession->getUser()) {
+                $metaData->setEmail($this->backendAuthSession->getUser()->getEmail());
+            } else {
+                throw new NostoException('Could not get user from Backend Auth Session');
+            }
             $metaData->setPlatform('magento');
             $metaData->setShopName($store->getName());
             $metaData->setUniqueId($this->nostoHelperData->getInstallationId());

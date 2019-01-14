@@ -104,17 +104,16 @@ class Builder
     /**
      * @param Quote $quote
      *
-     * @return NostoCustomer|null
+     * @return CustomerInterface|null
      */
     private function updateNostoId(Quote $quote)
     {
         // Handle the Nosto customer & quote mapping
         $nostoCustomerId = $this->cookieManager->getCookie(NostoCustomer::COOKIE_NAME);
 
-        if ($quote === null || $quote->getId() === null || empty($nostoCustomerId)) {
+        if ($quote === null || $nostoCustomerId === null || $quote->getId() === null) {
             return null;
         }
-
         $nostoCustomer = $this->nostoCustomerRepository->getOneByNostoIdAndQuoteId(
             $nostoCustomerId,
             $quote->getId()
@@ -126,15 +125,14 @@ class Builder
             if ($nostoCustomer->getRestoreCartHash() === null) {
                 $nostoCustomer->setRestoreCartHash($this->generateRestoreCartHash());
             }
-            $nostoCustomer->setUpdatedAt(self::getNow());
+            $nostoCustomer->setUpdatedAt($this->getNow());
         } else {
+            /** @var \Nosto\Tagging\Model\Customer\Customer $nostoCustomer*/
             /** @noinspection PhpUndefinedMethodInspection */
             $nostoCustomer = $this->nostoCustomerFactory->create();
-            /** @noinspection PhpUndefinedMethodInspection */
             $nostoCustomer->setQuoteId($quote->getId());
-            /** @noinspection PhpUndefinedMethodInspection */
             $nostoCustomer->setNostoId($nostoCustomerId);
-            $nostoCustomer->setCreatedAt(self::getNow());
+            $nostoCustomer->setCreatedAt($this->getNow());
             $nostoCustomer->setRestoreCartHash($this->generateRestoreCartHash());
         }
         try {
@@ -156,7 +154,7 @@ class Builder
      */
     private function generateRestoreCartHash()
     {
-        $hash = $this->encryptor->getHash(uniqid('nostocartrestore'));
+        $hash = $this->encryptor->getHash(uniqid('nostocartrestore', true));
         if (strlen($hash) > NostoCustomer::NOSTO_TAGGING_RESTORE_CART_ATTRIBUTE_LENGTH) {
             $hash = substr($hash, 0, NostoCustomer::NOSTO_TAGGING_RESTORE_CART_ATTRIBUTE_LENGTH);
         }
@@ -179,14 +177,12 @@ class Builder
      *
      * @param string $hash
      * @param Store $store
-     * @return string
+     * @return string the restore cart URL
      */
     private function generateRestoreCartUrl($hash, Store $store)
     {
         $params = $this->urlHelper->getUrlOptionsWithNoSid($store);
         $params['h'] = $hash;
-        $url = $store->getUrl(NostoHelperUrl::NOSTO_PATH_RESTORE_CART, $params);
-
-        return $url;
+        return $store->getUrl(NostoHelperUrl::NOSTO_PATH_RESTORE_CART, $params);
     }
 }

@@ -54,6 +54,7 @@ class Indexer implements IndexerActionInterface, MviewActionInterface
 
     /**
      * @inheritdoc
+     * @throws \Exception
      */
     public function executeFull()
     {
@@ -78,6 +79,7 @@ class Indexer implements IndexerActionInterface, MviewActionInterface
 
     /**
      * @inheritdoc
+     * @throws \Exception
      */
     public function executeList(array $ids)
     {
@@ -86,6 +88,7 @@ class Indexer implements IndexerActionInterface, MviewActionInterface
 
     /**
      * @inheritdoc
+     * @throws \Exception
      */
     public function executeRow($id)
     {
@@ -94,6 +97,7 @@ class Indexer implements IndexerActionInterface, MviewActionInterface
 
     /**
      * @inheritdoc
+     * @throws \Exception
      */
     public function execute($ids)
     {

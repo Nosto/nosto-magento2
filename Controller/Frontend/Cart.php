@@ -40,7 +40,6 @@ use Magento\Checkout\Model\Session;
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\Module\Manager as ModuleManager;
-use Magento\Quote\Model\Quote;
 use Nosto\NostoException;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
@@ -48,6 +47,8 @@ use Nosto\Tagging\Helper\Url as NostoHelperUrl;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Customer\Repository as NostoCustomerRepository;
 use Magento\Quote\Api\CartRepositoryInterface;
+use Magento\Quote\Api\Data\CartInterface;
+use Magento\Framework\Exception\NoSuchEntityException;
 
 /*
  * Controller class for handling cart restoration
@@ -66,7 +67,7 @@ class Cart extends Action
     private $nostoUrlHelper;
     private $nostoScopeHelper;
     private $nostoCustomerRepository;
-    private $quoteRepository;
+    private $cartRepository;
 
     /**
      * Cart constructor.
@@ -77,7 +78,7 @@ class Cart extends Action
      * @param NostoHelperUrl $nostoUrlHelper
      * @param NostoHelperScope $nostoScopeHelper
      * @param NostoCustomerRepository $nostoCustomerRepository
-     * @param CartRepositoryInterface $quoteRepository
+     * @param CartRepositoryInterface $cartRepository
      */
     public function __construct(
         Context $context,
@@ -87,7 +88,7 @@ class Cart extends Action
         NostoHelperUrl $nostoUrlHelper,
         NostoHelperScope $nostoScopeHelper,
         NostoCustomerRepository $nostoCustomerRepository,
-        CartRepositoryInterface $quoteRepository
+        CartRepositoryInterface $cartRepository
     ) {
         parent::__construct($context);
         $this->context = $context;
@@ -97,7 +98,7 @@ class Cart extends Action
         $this->nostoUrlHelper = $nostoUrlHelper;
         $this->nostoScopeHelper = $nostoScopeHelper;
         $this->nostoCustomerRepository = $nostoCustomerRepository;
-        $this->quoteRepository = $quoteRepository;
+        $this->cartRepository = $cartRepository;
     }
 
     public function execute()
@@ -111,23 +112,26 @@ class Cart extends Action
         if ($this->moduleManager->isEnabled(NostoHelperData::MODULE_NAME)) {
             if (!$this->checkoutSession->getQuoteId()) {
                 $restoreCartHash = $this->getRequest()->getParam(self::HASH_PARAM);
-                if (!$restoreCartHash) {
-                    throw new NostoException('No hash provided for restore cart');
-                } else {
-                    try {
+                try {
+                    if ($restoreCartHash) {
                         $quote = $this->resolveQuote($restoreCartHash);
-                        $this->checkoutSession->setQuoteId($quote->getId());
-                        $redirectUrl = $this->nostoUrlHelper->getUrlCart($store, $currentUrl);
-                    } catch (\Exception $e) {
-                        $this->logger->exception($e);
-                        $this->messageManager->addErrorMessage('Sorry, we could not find your cart');
+                        if ($quote !== null) {
+                            $this->checkoutSession->setQuoteId($quote->getId());
+                            $redirectUrl = $this->nostoUrlHelper->getUrlCart($store, $currentUrl);
+                        } else {
+                            throw new NostoException('Could not resolve quote for the given restore cart hash');
+                        }
+                    } else {
+                        throw new NostoException('No hash provided for restore cart');
                     }
+                } catch (\Exception $e) {
+                    $this->logger->exception($e);
+                    $this->messageManager->addErrorMessage('Sorry, we could not find your cart');
                 }
             } else {
                 $redirectUrl = $this->nostoUrlHelper->getUrlCart($store, $currentUrl);
             }
         }
-
         return $this->_redirect($redirectUrl);
     }
 
@@ -135,14 +139,14 @@ class Cart extends Action
      * Resolves the cart (quote) by the given hash
      *
      * @param $restoreCartHash
-     * @return Quote|null
+     * @return CartInterface|null
      * @throws NostoException
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     * @throws NoSuchEntityException
      */
     private function resolveQuote($restoreCartHash)
     {
         $customer = $this->nostoCustomerRepository->getOneByRestoreCartHash($restoreCartHash);
-        if ($customer == null || !$customer->getCustomerId()) {
+        if ($customer === null || !$customer->getCustomerId()) {
             throw new NostoException(
                 sprintf(
                     'No nosto customer found for hash %s',
@@ -160,8 +164,8 @@ class Cart extends Action
             );
         }
 
-        $quote = $this->quoteRepository->get($customer->getQuoteId());
-        if ($quote == null || !$quote->getId()) {
+        $quote = $this->cartRepository->get($customer->getQuoteId());
+        if ($quote === null || !$quote->getId()) {
             throw new NostoException(
                 sprintf(
                     'No quote found for id %d',
@@ -174,7 +178,7 @@ class Cart extends Action
         if (!$quote->getIsActive()) {
             $quote->setIsActive(true);
 
-            $this->quoteRepository->save($quote);
+            $this->cartRepository->save($quote);
         }
 
         return $quote;

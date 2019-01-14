@@ -63,8 +63,7 @@ class LowStock
     {
         if ($product->getTypeId() === Type::TYPE_SIMPLE) {
             return $this->stockItem->verifyNotification($product->getId());
-        } else {
-            return false;
         }
+        return false;
     }
 }

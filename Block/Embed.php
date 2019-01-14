@@ -40,7 +40,6 @@ use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Element\Template\Context;
 use Nosto\Nosto;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
-use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 
 /**
@@ -53,7 +52,6 @@ class Embed extends Template
         TaggingTrait::__construct as taggingConstruct; // @codingStandardsIgnoreLine
     }
 
-    private $nostoHelperData;
     /**
      * The default Nosto server address to use if none is configured.
      */
@@ -64,30 +62,26 @@ class Embed extends Template
      *
      * @param Context $context the context.
      * @param NostoHelperAccount $nostoHelperAccount the account helper.
-     * @param NostoHelperData $nostoHelperData the data helper.
      * @param NostoHelperScope $nostoHelperScope
      * @param array $data optional data.
      */
     public function __construct(
         Context $context,
         NostoHelperAccount $nostoHelperAccount,
-        NostoHelperData $nostoHelperData,
         NostoHelperScope $nostoHelperScope,
         array $data = []
     ) {
         parent::__construct($context, $data);
 
         $this->taggingConstruct($nostoHelperAccount, $nostoHelperScope);
-        $this->nostoHelperData = $nostoHelperData;
     }
 
     public function getNostoScriptUrl()
     {
         if (Nosto::getServerUrl() && $this->getAccountName()) {
             return  '//' . Nosto::getServerUrl() . '/include/' . $this->getAccountName();
-        } else {
-            return null;
         }
+        return null;
     }
 
     /**

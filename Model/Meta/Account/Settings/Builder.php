@@ -39,13 +39,13 @@ namespace Nosto\Tagging\Model\Meta\Account\Settings;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\UrlInterface;
 use Magento\Store\Model\Store;
-use Nosto\NostoException;
 use Nosto\Object\Settings;
 use Nosto\Request\Http\HttpRequest;
 use Nosto\Tagging\Helper\Currency as NostoHelperCurrency;
 use Nosto\Tagging\Model\Meta\Account\Settings\Currencies\Builder as NostoCurrenciesBuilder;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Helper\Data as NostoDataHelper;
+use Nosto\Tagging\Helper\Variation as NostoVariationHelper;
 
 class Builder
 {
@@ -54,26 +54,31 @@ class Builder
     private $nostoCurrenciesBuilder;
     private $nostoHelperCurrency;
     private $nostoDataHelper;
+    private $nostoVariationHelper;
 
     /**
+     * Builder constructor.
      * @param NostoLogger $logger
      * @param ManagerInterface $eventManager
      * @param NostoHelperCurrency $nostoHelperCurrency
      * @param NostoCurrenciesBuilder $nostoCurrenciesBuilder
      * @param NostoDataHelper $nostoDataHelper
+     * @param NostoVariationHelper $nostoVariationHelper
      */
     public function __construct(
         NostoLogger $logger,
         ManagerInterface $eventManager,
         NostoHelperCurrency $nostoHelperCurrency,
         NostoCurrenciesBuilder $nostoCurrenciesBuilder,
-        NostoDataHelper $nostoDataHelper
+        NostoDataHelper $nostoDataHelper,
+        NostoVariationHelper $nostoVariationHelper
     ) {
         $this->logger = $logger;
         $this->eventManager = $eventManager;
         $this->nostoCurrenciesBuilder = $nostoCurrenciesBuilder;
         $this->nostoHelperCurrency = $nostoHelperCurrency;
         $this->nostoDataHelper = $nostoDataHelper;
+        $this->nostoVariationHelper = $nostoVariationHelper;
     }
 
     /**
@@ -92,9 +97,11 @@ class Builder
             $settings->setUseCurrencyExchangeRates($this->nostoHelperCurrency->exchangeRatesInUse($store));
             if ($this->nostoHelperCurrency->exchangeRatesInUse($store)) {
                 $settings->setDefaultVariantId($this->nostoHelperCurrency->getTaggingCurrency($store)->getCode());
+            } elseif ($this->nostoDataHelper->isPricingVariationEnabled($store)) {
+                $settings->setDefaultVariantId($this->nostoVariationHelper->getDefaultVariationCode());
             }
             $settings->setCurrencies($this->nostoCurrenciesBuilder->build($store));
-        } catch (NostoException $e) {
+        } catch (\Exception $e) {
             $this->logger->exception($e);
         }
 

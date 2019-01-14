@@ -37,10 +37,10 @@
 namespace Nosto\Tagging\Block;
 
 use Magento\Framework\View\Element\Template;
-use Magento\Framework\View\Element\Template\Context;
+use Nosto\Object\PageType as NostoPageType;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
-use Nosto\Object\MarkupableString;
+use Magento\Framework\View\Element\Template\Context;
 
 /**
  * Page type block used for outputting page-type on the different pages.
@@ -71,7 +71,6 @@ class PageType extends Template
         array $data = []
     ) {
         parent::__construct($context, $data);
-
         $this->taggingConstruct($nostoHelperAccount, $nostoHelperScope);
     }
 
@@ -83,14 +82,18 @@ class PageType extends Template
      */
     private function getPageTypeName()
     {
-        return $this->getData('page_type') ? $this->getData('page_type') : self::DEFAULT_TYPE;
+        return $this->getData('page_type') ?: self::DEFAULT_TYPE;
     }
 
+    /**
+     * Returns the HTML to render PageTypes
+     *
+     * @return string
+     */
     public function getAbstractObject()
     {
-        return new MarkupableString(
-            $this->getPageTypeName(),
-            'nosto_page_type'
-        );
+        return (new NostoPageType(
+            $this->getPageTypeName()
+        ));
     }
 }

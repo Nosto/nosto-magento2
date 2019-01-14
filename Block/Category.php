@@ -39,10 +39,10 @@ namespace Nosto\Tagging\Block;
 use Magento\Framework\Registry;
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Element\Template\Context;
-use Nosto\Tagging\Helper\Account as NostoHelperAccount;
-use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Model\Category\Builder as NostoCategoryBuilder;
-use Nosto\Object\MarkupableString;
+use Nosto\Tagging\Helper\Scope as NostoHelperScope;
+use Nosto\Object\Category as NostoCategory;
+use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 
 /**
  * Category block used for outputting meta-data on the stores category pages.
@@ -55,32 +55,49 @@ class Category extends Template
         TaggingTrait::__construct as taggingConstruct; // @codingStandardsIgnoreLine
     }
 
+    /**
+     * @var Registry
+     */
     private $registry;
+
+    /**
+     * @var NostoCategoryBuilder
+     */
     private $categoryBuilder;
+
+    /**
+     * @var NostoHelperScope
+     */
+    private $nostoHelperScope;
+
+    /**
+     * @var NostoHelperAccount
+     */
+    private $nostoHelperAccount;
 
     /**
      * Constructor.
      *
      * @param Context $context
      * @param Registry $registry
-     * @param NostoCategoryBuilder $categoryBuilder
      * @param NostoHelperAccount $nostoHelperAccount
-     * @param NostoHelperScope $nostoHelperScope
+     * @param NostoCategoryBuilder $categoryBuilder
      * @param array $data
      */
     public function __construct(
         Context $context,
         Registry $registry,
         NostoCategoryBuilder $categoryBuilder,
-        NostoHelperAccount $nostoHelperAccount,
         NostoHelperScope $nostoHelperScope,
+        NostoHelperAccount $nostoHelperAccount,
         array $data = []
     ) {
         parent::__construct($context, $data);
 
-        $this->taggingConstruct($nostoHelperAccount, $nostoHelperScope);
         $this->registry = $registry;
         $this->categoryBuilder = $categoryBuilder;
+        $this->nostoHelperScope = $nostoHelperScope;
+        $this->nostoHelperAccount = $nostoHelperAccount;
     }
 
     /**
@@ -101,13 +118,12 @@ class Category extends Template
     /**
      * Returns the HTML to render categories
      *
-     * @return MarkupableString
+     * @return NostoCategory
      */
     public function getAbstractObject()
     {
-        return new MarkupableString(
-            $this->getNostoCategory(),
-            'nosto_category'
-        );
+        $category = new NostoCategory();
+        $category->setCategoryString($this->getNostoCategory());
+        return $category;
     }
 }

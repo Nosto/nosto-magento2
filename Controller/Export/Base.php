@@ -42,7 +42,6 @@ use Magento\Framework\Controller\Result\Raw;
 use Magento\Framework\Controller\ResultFactory;
 use Magento\Store\Model\Store;
 use Nosto\Helper\ExportHelper;
-use Nosto\Helper\SerializationHelper;
 use Nosto\Object\AbstractCollection;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
@@ -90,11 +89,10 @@ abstract class Base extends Action
         $id = $this->getRequest()->getParam(self::ID, false);
         if (!empty($id)) {
             return $this->export($this->buildSingleExportCollection($store, $id));
-        } else {
-            $pageSize = (int)$this->getRequest()->getParam(self::LIMIT, 100);
-            $currentOffset = (int)$this->getRequest()->getParam(self::OFFSET, 0);
-            return $this->export($this->buildExportCollection($store, $pageSize, $currentOffset));
         }
+        $pageSize = (int)$this->getRequest()->getParam(self::LIMIT, 100);
+        $currentOffset = (int)$this->getRequest()->getParam(self::OFFSET, 0);
+        return $this->export($this->buildExportCollection($store, $pageSize, $currentOffset));
     }
 
     /**

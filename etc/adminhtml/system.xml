@@ -138,8 +138,9 @@
                     <label>Enable Ratings &amp; Reviews</label>
                     <comment>Enable tagging rating and review data for use in recommendations.
                     </comment>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <source_model>Nosto\Tagging\Model\Config\Source\Ratings</source_model>
                 </field>
+
                 <field id="inventory_tagging" translate="label comment" type="select" sortOrder="40"
                        showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Enable Inventory Levels</label>
@@ -226,8 +227,18 @@
                     </comment>
                     <source_model>Nosto\Tagging\Model\Config\Source\MultiCurrency</source_model>
                 </field>
+                <field id="pricing_variation" translate="label comment" type="select" sortOrder="11"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <depends>
+                        <field id="method">disabled</field>
+                    </depends>
+                    <label>Price Variation</label>
+                    <comment><![CDATA[Enable price variation to support group price and catalog price rules.
+                        <strong style="color:red">Warning!</strong> It cannot be enabled if multi-currency is enabled.]]>
+                    </comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
             </group>
-
         </section>
     </system>
 </config>

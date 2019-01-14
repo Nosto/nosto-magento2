@@ -42,7 +42,6 @@ use Magento\Store\Model\Store;
 use Magento\Catalog\Model\Product;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\Exception\NoSuchEntityException;
-use Nosto\NostoException;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 
 class Builder
@@ -110,7 +109,7 @@ class Builder
                 }
             }
             $nostoCategory = count($data) ? '/' . implode('/', $data) : '';
-        } catch (NostoException $e) {
+        } catch (\Exception $e) {
             $this->logger->exception($e);
         }
         if (empty($nostoCategory)) {

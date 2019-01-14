@@ -1,5 +1,20 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 3.0.0
+**New features**
+* Add support for using customer group pricing in Nosto recommendations
+* Introduce a cli command for connecting Nosto account via command line
+* Support using Yotpo ratings and reviews in Nosto recommendations
+* Support using same nosto email widget snippet for multiple Nosto accounts
+* Update marketing permission to Nosto in real-time when newsletter subscription is changed
+* Support adding multiple products to cart from Nosto recommendations
+
+**Fixes & improvements**
+* Improve performance for generating tagging (@hostep)
+* Fix the issue with product building when no custom fields are found (@hostep)
+* Improve error handling for Nosto dashboard in store admin area
+* Code style fixes & refactoring
+
 ### 2.11.8
 * Fix an issue that could prevent the extension to be installed in Magento 2.3
 

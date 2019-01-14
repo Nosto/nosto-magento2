@@ -84,6 +84,23 @@ class Scope extends AbstractHelper
     }
 
     /**
+     * Return the store by store code
+     *
+     * @param $scopeCode
+     * @return mixed
+     */
+    public function getStoreByCode($scopeCode)
+    {
+        $stores = $this->getStores();
+        foreach ($stores as $store) {
+            if ($store->getCode() === $scopeCode) {
+                return $store;
+            }
+        }
+        return null;
+    }
+
+    /**
      * @return bool
      */
     public function isSingleStoreMode()
@@ -110,6 +127,7 @@ class Scope extends AbstractHelper
      * If it is a multi store setup, the expect a store id to passed in the
      * request params and return that store as the current one.
      *
+     * @param RequestInterface $request
      * @return Store the store or null if not found.
      * @throws NotFoundException
      */

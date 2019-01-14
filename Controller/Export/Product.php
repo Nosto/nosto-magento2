@@ -36,9 +36,9 @@
 
 namespace Nosto\Tagging\Controller\Export;
 
-use Magento\Catalog\Model\Product\Visibility as ProductVisibility;
 use Magento\Framework\App\Action\Context;
 use Magento\Store\Model\Store;
+use Nosto\NostoException;
 use Nosto\Object\AbstractCollection;
 use Nosto\Object\Product\ProductCollection;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
@@ -54,14 +54,12 @@ use Nosto\Tagging\Model\Product\Collection as NostoProductCollection;
  */
 class Product extends Base
 {
-    private $productVisibility;
     private $nostoProductCollection;
 
     /**
      * Constructor.
      *
      * @param Context $context
-     * @param ProductVisibility $productVisibility
      * @param NostoHelperScope $nostoHelperScope
      * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoProductCollection $nostoProductCollection
@@ -69,14 +67,12 @@ class Product extends Base
     public function __construct(
         Context $context,
         /** @noinspection PhpUndefinedClassInspection */
-        ProductVisibility $productVisibility,
         NostoHelperScope $nostoHelperScope,
         NostoHelperAccount $nostoHelperAccount,
         NostoProductCollection $nostoProductCollection
     ) {
         parent::__construct($context, $nostoHelperScope, $nostoHelperAccount);
 
-        $this->productVisibility = $productVisibility;
         $this->nostoProductCollection = $nostoProductCollection;
     }
 
@@ -85,6 +81,7 @@ class Product extends Base
      * @param int $limit
      * @param int $offset
      * @return AbstractCollection|ProductCollection
+     * @throws NostoException
      */
     public function buildExportCollection(Store $store, $limit = 100, $offset = 0)
     {
@@ -95,6 +92,7 @@ class Product extends Base
      * @param Store $store
      * @param $id
      * @return AbstractCollection|ProductCollection
+     * @throws NostoException
      */
     public function buildSingleExportCollection(Store $store, $id)
     {

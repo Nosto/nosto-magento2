@@ -45,20 +45,32 @@ use Magento\Framework\Exception\LocalizedException;
 use Nosto\Tagging\Model\Item\Downloadable;
 use Nosto\Tagging\Model\Item\Giftcard;
 use Nosto\Tagging\Model\Item\Virtual;
+use Magento\Catalog\Model\ProductRepository;
 
 class Builder
 {
+    /**
+     * @var ManagerInterface $eventManager
+     */
     private $eventManager;
 
     /**
-     * Constructor.
+     * @var ProductRepository $productRepository
+     */
+    private $productRepository;
+
+    /**
+     * Builder constructor.
      *
      * @param ManagerInterface $eventManager
+     * @param ProductRepository $productRepository
      */
     public function __construct(
-        ManagerInterface $eventManager
+        ManagerInterface $eventManager,
+        ProductRepository $productRepository
     ) {
         $this->eventManager = $eventManager;
+        $this->productRepository = $productRepository;
     }
 
     /**
@@ -95,7 +107,7 @@ class Builder
                 $nostoItem->setName(Bundle::buildItemName($item));
                 break;
             case Grouped::getType():
-                $nostoItem->setName(Grouped::buildItemName($item));
+                $nostoItem->setName((new Grouped($this->productRepository))->buildItemName($item));
                 break;
         }
         try {
@@ -141,14 +153,15 @@ class Builder
         $parent = $item->getProductOptionByCode('super_product_config');
         if (isset($parent['product_id'])) {
             return $parent['product_id'];
-        } elseif ($item->getProductType() === Type::TYPE_SIMPLE) {
+        }
+        if ($item->getProductType() === Type::TYPE_SIMPLE && $item->getProduct() !== null) {
             $type = $item->getProduct()->getTypeInstance();
             $parentIds = $type->getParentIdsByChild($item->getProductId());
             $attributes = $item->getBuyRequest()->getData('super_attribute');
             // If the product has a configurable parent, we assume we should tag
             // the parent. If there are many parent IDs, we are safer to tag the
             // products own ID.
-            if (count($parentIds) === 1 && !empty($attributes)) {
+            if (!empty($attributes) && count($parentIds) === 1) {
                 return $parentIds[0];
             }
         }
@@ -161,7 +174,6 @@ class Builder
      *
      * @param Item $item the sales item model.
      * @return string|null sku id
-     * @suppress PhanUndeclaredMethod
      */
     public function buildSkuId(Item $item)
     {
@@ -170,14 +182,13 @@ class Builder
             //An item with bundle product and group product may have more than 1 child.
             //But configurable product item should have max 1 child item.
             //Here we check the size of children, return only if the size is 1
-            if (count($children) == 1
-                && array_key_exists(0, $children)
+            /** @var Item[] $children */
+            if (array_key_exists(0, $children)
+                && $children[0] instanceof Item
+                && count($children) === 1
+                && $children[0]->getProductId()
             ) {
-                if ($children[0] instanceof Item
-                    && $children[0]->getProductId()
-                ) {
-                    return (string)$children[0]->getProductId();
-                }
+                return (string)$children[0]->getProductId();
             }
         }
 

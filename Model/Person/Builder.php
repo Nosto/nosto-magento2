@@ -61,13 +61,13 @@ abstract class Builder
      * Builder constructor.
      * @param NostoEmailRepository $emailRepository
      * @param EventManager $eventManager
+     * @param NostoHelperData $nostoHelperData
      */
     public function __construct(
         NostoEmailRepository $emailRepository,
         EventManager $eventManager,
         NostoHelperData $nostoHelperData
     ) {
-    
         $this->emailRepository = $emailRepository;
         $this->eventManager = $eventManager;
         $this->nostoHelperData = $nostoHelperData;

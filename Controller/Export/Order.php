@@ -38,6 +38,9 @@ namespace Nosto\Tagging\Controller\Export;
 
 use Magento\Framework\App\Action\Context;
 use Magento\Store\Model\Store;
+use Nosto\NostoException;
+use Nosto\Object\AbstractCollection;
+use Nosto\Object\Order\OrderCollection;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Model\Order\Collection as NostoOrderCollection;
@@ -78,7 +81,8 @@ class Order extends Base
      * @param Store $store
      * @param int $limit
      * @param int $offset
-     * @return \Nosto\Object\AbstractCollection|\Nosto\Object\Order\OrderCollection
+     * @return AbstractCollection|OrderCollection
+     * @throws NostoException
      */
     public function buildExportCollection(Store $store, $limit = 100, $offset = 0)
     {
@@ -89,7 +93,8 @@ class Order extends Base
      * @suppress PhanParamSignatureMismatch
      * @param Store $store
      * @param int $id
-     * @return \Nosto\Object\AbstractCollection|\Nosto\Object\Order\OrderCollection
+     * @return AbstractCollection|OrderCollection
+     * @throws NostoException
      */
     public function buildSingleExportCollection(Store $store, $id)
     {

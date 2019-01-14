@@ -41,6 +41,7 @@ use Magento\Backend\Model\UrlInterface;
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\App\Response\Http;
+use Magento\Store\Model\StoreRepository;
 use Nosto\Mixins\OauthTrait;
 use Nosto\OAuth;
 use Nosto\Tagging\Helper\Cache as NostoHelperCache;
@@ -49,6 +50,7 @@ use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Model\Meta\Oauth\Builder as NostoOauthBuilder;
 use Nosto\Types\Signup\AccountInterface;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
+use Nosto\NostoException;
 
 class Index extends Action
 {
@@ -59,6 +61,7 @@ class Index extends Action
     private $oauthMetaBuilder;
     private $nostoHelperScope;
     private $nostoHelperCache;
+    private $storeRepository;
 
     /**
      * @param Context $context
@@ -76,7 +79,8 @@ class Index extends Action
         UrlInterface $urlBuilder,
         NostoHelperAccount $nostoHelperAccount,
         NostoHelperCache $nostoHelperCache,
-        NostoOauthBuilder $oauthMetaBuilder
+        NostoOauthBuilder $oauthMetaBuilder,
+        StoreRepository $storeRepository
     ) {
         parent::__construct($context);
 
@@ -86,6 +90,7 @@ class Index extends Action
         $this->oauthMetaBuilder = $oauthMetaBuilder;
         $this->nostoHelperScope = $nostoHelperScope;
         $this->nostoHelperCache = $nostoHelperCache;
+        $this->storeRepository = $storeRepository;
     }
 
     /**
@@ -98,7 +103,7 @@ class Index extends Action
      */
     public function execute()
     {
-        self::connect();
+        $this->connect();
     }
 
     /**
@@ -119,15 +124,34 @@ class Index extends Action
      *
      * @param AccountInterface $account the account to save
      * @return boolean a boolean value indicating whether the account was saved
+     * @throws NostoException
+     * @suppress PhanTypeMismatchArgument
      */
     public function save(AccountInterface $account)
     {
+        $stores = $this->storeRepository->getList();
+        /** @var \Magento\Store\Model\Store $store */
+        foreach ($stores as $store) {
+            $existingAccount = $this->nostoHelperAccount->findAccount($store);
+            if ($existingAccount !== null
+                && $existingAccount->getName() === $account->getName()
+            ) {
+                throw new NostoException(
+                    sprintf(
+                        'This account is already being used by "%s". 
+                                Please create a new account for each store view',
+                        $store->getName()
+                    )
+                );
+            }
+        }
+
         $success =  $this->nostoHelperAccount->saveAccount(
             $account,
             $this->nostoHelperScope->getStore()
         );
 
-        //Invalidate cache after reconnected nosto account
+        // Invalidate cache after reconnected nosto account
         if ($success) {
             $this->nostoHelperCache->invalidatePageCache();
             $this->nostoHelperCache->invalidateLayoutCache();

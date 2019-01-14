@@ -135,6 +135,11 @@ class Data extends AbstractHelper
     const XML_PATH_LOW_STOCK_INDICATION = 'nosto/flags/low_stock_indication';
 
     /**
+     * Path to the configuration object for pricing variations
+     */
+    const XML_PATH_PRICING_VARIATION = 'nosto/multicurrency/pricing_variation';
+
+    /**
      * Path to the configuration object that stores the preference for adding store code to URL
      */
     const XML_PATH_STORE_CODE_TO_URL = 'nosto/url/store_code_to_url';
@@ -148,6 +153,13 @@ class Data extends AbstractHelper
      * Path to the configuration object for multi currency
      */
     const XML_PATH_MULTI_CURRENCY = 'nosto/multicurrency/method';
+
+    /**
+     * Values for ratings settings
+     */
+    const SETTING_VALUE_YOTPO_RATINGS = '2';
+    const SETTING_VALUE_MAGENTO_RATINGS = '1';
+    const SETTING_VALUE_NO_RATINGS = '0';
 
     /**
      * Values of the multi currency settings
@@ -294,7 +306,7 @@ class Data extends AbstractHelper
     /**
      * Returns on/off setting for custom fields
      *
-     * @param Store|null $store the store model or null.
+     * @param StoreInterface|null $store the store model or null.
      * @return boolean
      */
     public function isCustomFieldsEnabled(StoreInterface $store = null)
@@ -321,7 +333,24 @@ class Data extends AbstractHelper
      */
     public function isRatingTaggingEnabled(StoreInterface $store = null)
     {
-        return (bool)$this->getStoreConfig(self::XML_PATH_RATING_TAGGING, $store);
+        $providerCode = $this->getStoreConfig(self::XML_PATH_RATING_TAGGING, $store);
+
+        if ((int)$providerCode === 0) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Returns the provider used for ratings and reviews
+     *
+     * @param StoreInterface|null $store
+     * @return mixed|null
+     */
+    public function getRatingTaggingProvider(StoreInterface $store = null)
+    {
+        return $this->getStoreConfig(self::XML_PATH_RATING_TAGGING, $store);
     }
 
     /**
@@ -391,6 +420,17 @@ class Data extends AbstractHelper
     }
 
     /**
+     * Returns if pricing variation is enabled
+     *
+     * @param StoreInterface|null $store the store model or null.
+     * @return bool the configuration value
+     */
+    public function isPricingVariationEnabled(StoreInterface $store = null)
+    {
+        return (bool)$this->getStoreConfig(self::XML_PATH_PRICING_VARIATION, $store);
+    }
+
+    /**
      * Returns if multi currency is disabled
      *
      * @param StoreInterface|null $store the store model or null.
@@ -399,7 +439,7 @@ class Data extends AbstractHelper
     public function isMultiCurrencyDisabled(StoreInterface $store = null)
     {
         $storeConfig = $this->getMultiCurrencyMethod($store);
-        return (bool)($storeConfig == self::SETTING_VALUE_MC_DISABLED);
+        return ($storeConfig === self::SETTING_VALUE_MC_DISABLED);
     }
 
     /**
@@ -411,7 +451,7 @@ class Data extends AbstractHelper
     public function isMultiCurrencyExchangeRatesEnabled(StoreInterface $store = null)
     {
         $storeConfig = $this->getMultiCurrencyMethod($store);
-        return (bool)($storeConfig == self::SETTING_VALUE_MC_EXCHANGE_RATE);
+        return ($storeConfig === self::SETTING_VALUE_MC_EXCHANGE_RATE);
     }
 
     /**
@@ -430,7 +470,7 @@ class Data extends AbstractHelper
      *
      * @param string $value the value of the multi currency setting.
      * @param StoreInterface|null $store the store model or null.
-     * @return string the configuration value
+     * @return string|null the configuration value
      */
     public function saveMultiCurrencyMethod($value, StoreInterface $store = null)
     {
@@ -454,7 +494,6 @@ class Data extends AbstractHelper
      * @param string $path
      * @param mixed $value
      * @param StoreInterface|Store|null $store
-     * @return mixed|null
      */
     public function saveStoreConfig($path, $value, StoreInterface $store = null)
     {
@@ -478,9 +517,8 @@ class Data extends AbstractHelper
         $nostoModule = $this->moduleListing->getOne('Nosto_Tagging');
         if (!empty($nostoModule['setup_version'])) {
             return $nostoModule['setup_version'];
-        } else {
-            return 'unknown';
         }
+        return 'unknown';
     }
 
     /**
@@ -526,6 +564,7 @@ class Data extends AbstractHelper
     public function getTagAttributes($tagId, StoreInterface $store = null)
     {
         $attributesConfig = $this->getStoreConfig(self::XML_PATH_TAG . $tagId, $store);
+        /** @noinspection TypeUnsafeComparisonInspection */
         if ($attributesConfig == null) {
             return null;
         }
@@ -556,7 +595,7 @@ class Data extends AbstractHelper
         $clearTypes = [];
         if ($type === 'all') {
             $clearTypes = $types;
-        } elseif (in_array($type, $types)) {
+        } elseif (in_array($type, $types, false)) {
             $clearTypes[] = $type;
         }
         if (!empty($clearTypes)) {

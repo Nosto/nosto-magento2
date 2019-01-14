@@ -49,7 +49,7 @@ class InstallSchema extends Core implements InstallSchemaInterface
      * @param ModuleContextInterface $context
      * @return void
      */
-    public function install( // @codingStandardsIgnoreLine
+    public function install(// @codingStandardsIgnoreLine
         SchemaSetupInterface $setup,
         ModuleContextInterface $context
     ) {

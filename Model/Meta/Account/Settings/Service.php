@@ -37,7 +37,6 @@
 namespace Nosto\Tagging\Model\Meta\Account\Settings;
 
 use Exception;
-use Magento\Framework\Event\ManagerInterface;
 use Magento\Store\Model\Store;
 use Nosto\Operation\UpdateSettings;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
@@ -47,24 +46,20 @@ use Nosto\Tagging\Logger\Logger as NostoLogger;
 class Service
 {
     private $logger;
-    private $eventManager;
     private $nostoHelperAccount;
     private $nostoSettingsBuilder;
 
     /**
      * @param NostoLogger $logger
-     * @param ManagerInterface $eventManager
      * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoSettingsBuilder $nostoSettingsBuilder
      */
     public function __construct(
         NostoLogger $logger,
-        ManagerInterface $eventManager,
         NostoHelperAccount $nostoHelperAccount,
         NostoSettingsBuilder $nostoSettingsBuilder
     ) {
         $this->logger = $logger;
-        $this->eventManager = $eventManager;
         $this->nostoHelperAccount = $nostoHelperAccount;
         $this->nostoSettingsBuilder = $nostoSettingsBuilder;
     }
