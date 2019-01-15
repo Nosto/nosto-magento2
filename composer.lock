@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "84f59ac6652957ebc8ce52c637b454c8",
+    "content-hash": "9d41a313b1f16f9f3b9201252ef7c3c9",
     "packages": [
         {
             "name": "nosto/php-sdk",
-            "version": "3.8.3",
+            "version": "3.9.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Nosto/nosto-php-sdk.git",
-                "reference": "2f65fa2839b9ce41359b953b3e769a80ae38fbe3"
+                "reference": "9645624e55c57bdb4a52b364a4edd76f6105937b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Nosto/nosto-php-sdk/zipball/2f65fa2839b9ce41359b953b3e769a80ae38fbe3",
-                "reference": "2f65fa2839b9ce41359b953b3e769a80ae38fbe3",
+                "url": "https://api.github.com/repos/Nosto/nosto-php-sdk/zipball/9645624e55c57bdb4a52b364a4edd76f6105937b",
+                "reference": "9645624e55c57bdb4a52b364a4edd76f6105937b",
                 "shasum": ""
             },
             "require": {
@@ -29,7 +29,7 @@
                 "codeception/base": "2.2.9",
                 "codeception/c3": "^2.0",
                 "codeception/specify": "^0.4.6",
-                "etsy/phan": "0.8.0",
+                "phan/phan": "^1.2",
                 "phing/phing": "2.*",
                 "phpmd/phpmd": "^2.6",
                 "sebastian/phpcpd": "^3.0",
@@ -51,7 +51,7 @@
                 "BSD-3-Clause"
             ],
             "description": "PHP SDK for developing Nosto modules for e-commerce platforms",
-            "time": "2019-01-04T12:14:31+00:00"
+            "time": "2019-01-14T11:25:41+00:00"
         },
         {
             "name": "phpseclib/phpseclib",
