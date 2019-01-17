@@ -342,11 +342,10 @@ class Service
                     continue;
                 }
             }
-
             $this->logger->logWithMemoryConsumption('After Upsert population');
 
             try {
-//                $op->upsert();
+                $op->upsert();
                 $storeName = 'Could not get Store Name';
                 if ($this->storeManager->getStore()) {
                     $storeName = $this->storeManager->getStore()->getName();

@@ -16,7 +16,7 @@ use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Product\Service as ProductService;
 use Magento\Catalog\Model\Product\Visibility;
-
+use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductCollectionFactory;
 /**
  * An indexer for Nosto product sync
  *
@@ -31,6 +31,7 @@ class Indexer implements IndexerActionInterface, MviewActionInterface
     private $searchCriteriaBuilder;
     private $dataHelper;
     private $logger;
+    private $productCollectionFactory;
 
     /**
      * @param ProductService $productService
@@ -44,13 +45,15 @@ class Indexer implements IndexerActionInterface, MviewActionInterface
         ProductRepository $productRepository,
         SearchCriteriaBuilder $searchCriteriaBuilder,
         NostoHelperData $dataHelper,
-        NostoLogger $logger
+        NostoLogger $logger,
+        ProductCollectionFactory $productCollectionFactory
     ) {
         $this->productService = $productService;
         $this->productRepository = $productRepository;
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;
         $this->dataHelper = $dataHelper;
         $this->logger = $logger;
+        $this->productCollectionFactory = $productCollectionFactory;
     }
 
     /**
@@ -59,34 +62,61 @@ class Indexer implements IndexerActionInterface, MviewActionInterface
      */
     public function executeFull()
     {
-        $batchSize = 0;
         if ($this->dataHelper->isFullReindexEnabled()) {
-            $pageNumber = 0;
-            do {
-                $pageNumber++;
-                $searchCriteria = $this->searchCriteriaBuilder
-                    ->addFilter('status', Status::STATUS_ENABLED, 'eq')
-                    ->addFilter('visibility', Visibility::VISIBILITY_NOT_VISIBLE, 'neq')
-                    ->setPageSize(self::BATCH_SIZE)
-                    ->setCurrentPage($pageNumber)
-                    ->create();
-                $products = $this->productRepository->getList($searchCriteria);
-                if ($products instanceof SearchResultsInterface) {
-                    $productItems = $products->getItems();
-                    $batchSize += count($productItems);
-                    $this->logger->logWithMemoryConsumption(
-                        sprintf(
-                            'Indexing %d / %d products',
-                            $batchSize,
-                            $products->getTotalCount()
-                        )
-                    );
-                    $this->productService->update($productItems);
-                }
-            } while (($pageNumber * self::BATCH_SIZE) <= $products->getTotalCount());
+            $productCollection = $this->getProductCollection();
+            $productCollection->getLastPageNumber();
+            // We need to get a collection here
+            // then iterate and get the last page, so we can clear
+            // and yield each product object without storing in memory
+            $products = $this->getIterator();
+                $this->logger->logWithMemoryConsumption(
+                    sprintf('Indexing from executeFull')
+                );
+                // One by one, maybe yield in batches later on
+                // The goal here is check if the memory is deallocated
+                $this->productService->update([$products]);
+
         } else {
             $this->logger->info('Skip full reindex since full reindex is disabled.');
         }
+    }
+
+    public function getIterator()
+    {
+        $productCollection = $this->getProductCollection();
+        $productCollection->setPageSize(self::BATCH_SIZE);
+        $lastPage = $productCollection->getLastPageNumber();
+        $batchSize = 0;
+        $pageNumber = 0;
+        do {
+            $productCollection->clear();
+            $productCollection->setCurPage($pageNumber);
+            $productCollection->addAttributeToSelect('*')
+                ->addAttributeToFilter(
+                    [
+                        ['attribute'=>'status','eq'=> Status::STATUS_ENABLED],
+                        ['attribute'=>'visibility','neq'=> Visibility::VISIBILITY_NOT_VISIBLE]
+                    ]
+                );
+
+            foreach ($productCollection->getItems() as $key => $value) {
+                yield $key => $value;
+            }
+            $pageNumber++;
+        } while ($pageNumber <= $lastPage);
+    }
+
+
+    public function getProductCollection()
+    {
+        $collection = $this->productCollectionFactory->create();
+        return $collection;
+    }
+
+    public function loadProduct($id)
+    {
+        $product = $this->product->create()->load($id);
+        return $product;
     }
 
     /**
