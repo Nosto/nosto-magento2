@@ -39,13 +39,13 @@ namespace Nosto\Tagging\Model\Product;
 use Magento\Catalog\Api\Data\ProductSearchResultsInterface;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\Product\Type;
+use Magento\Catalog\Model\Product\Visibility as ProductVisibility;
 use Magento\Catalog\Model\ProductRepository;
+use Magento\ConfigurableProduct\Model\Product\Type\Configurable as ConfigurableType;
 use Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable as ConfigurableProduct;
 use Magento\Framework\Api\FilterBuilder;
 use Magento\Framework\Api\Search\FilterGroupBuilder;
 use Magento\Framework\Api\SearchCriteriaBuilder;
-use Magento\ConfigurableProduct\Model\Product\Type\Configurable as ConfigurableType;
-use Magento\Catalog\Model\Product\Visibility as ProductVisibility;
 
 /**
  * Repository wrapper class for fetching products
@@ -201,6 +201,32 @@ class Repository
     }
 
     /**
+     * Gets the parent products for simple product using product ID
+     *
+     * @param $productId
+     * @param $typeId
+     * @return string[]|null
+     * @suppress PhanTypeMismatchReturn
+     */
+    public function resolveParentProductIdsByProductId($productId, $typeId)
+    {
+        $cachedProduct = $this->getParentIdsFromCacheByProductId($productId);
+        if ($cachedProduct) {
+            return $cachedProduct;
+        }
+
+        $parentProductIds = null;
+        if ($typeId === Type::TYPE_SIMPLE) {
+            $parentProductIds = $this->configurableProduct->getParentIdsByChild(
+                $productId
+            );
+        }
+        $this->saveParentIdsToCacheByProductId($productId, $parentProductIds);
+
+        return $parentProductIds;
+    }
+
+    /**
      * Gets the variations / SKUs of configurable product
      *
      * @param Product $product
@@ -239,6 +265,17 @@ class Repository
     }
 
     /**
+     * Get parent ids from cache. Return null if the cache is not available
+     *
+     * @param $productId
+     * @return string[]|null
+     */
+    private function getParentIdsFromCacheByProductId($productId)
+    {
+        return $this->parentProductIdCache[$productId] ?? null;
+    }
+
+    /**
      * Saves the parents product ids to internal cache to avoid redundant
      * database queries
      *
@@ -248,5 +285,17 @@ class Repository
     private function saveParentIdsToCache(Product $product, $parentProductIds)
     {
         $this->parentProductIdCache[$product->getId()] = $parentProductIds;
+    }
+
+    /**
+     * Saves the parents product ids to internal cache to avoid redundant
+     * database queries
+     *
+     * @param Product $product
+     * @param string[] $parentProductIds
+     */
+    private function saveParentIdsToCacheByProductId($productId, $parentProductIds)
+    {
+        $this->parentProductIdCache[$productId] = $parentProductIds;
     }
 }

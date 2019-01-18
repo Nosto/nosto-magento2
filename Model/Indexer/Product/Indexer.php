@@ -70,6 +70,11 @@ class Indexer implements IndexerActionInterface, MviewActionInterface
      */
     public function getProductsIterator()
     {
+        /**
+         * This generator is returning the full catalog
+         * you may use $productCollection->getSize() to
+         * check how big is the full array.
+         */
         $productCollection = $this->getProductCollection();
         $productCollection->setPageSize(self::BATCH_SIZE);
         $lastPage = $productCollection->getLastPageNumber();
@@ -85,7 +90,10 @@ class Indexer implements IndexerActionInterface, MviewActionInterface
                     ]
                 );
             // Probably we should query only the product id.
-            yield from $productCollection->getItems();
+            foreach ($productCollection->getItems() as $product) {
+                $productTypeId = $product->getTypeId();
+                yield $productTypeId => $product->getId();
+            }
             $pageNumber++;
         } while ($pageNumber <= $lastPage);
     }

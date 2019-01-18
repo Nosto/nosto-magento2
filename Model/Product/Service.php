@@ -189,27 +189,26 @@ class Service
                 )
             );
             $productIdsForQueue = [];
-            // @TODO: Remove this check
+            // @TODO: Remove this check, get the fist element directly
             if ($products[0] instanceof \Generator) {
                 $products = $products[0];
             }
-            foreach ($products as $product) {
-                if (!$product instanceof Product) {
-                    continue;
-                }
-                $parentProductIds = $this->nostoProductRepository->resolveParentProductIds($product);
+            foreach ($products as $typeId => $product) {
+                // Check why this getParentIds return such a big array
+                $parentProductIds = $this->nostoProductRepository->resolveParentProductIdsByProductId($product, $typeId);
                 if (!empty($parentProductIds)) {
-                    foreach ($parentProductIds as $parentProductId) {
+                    foreach ($parentProductIds as $parentProductId) { // Maybe simplify with array_merge?
                         $productIdsForQueue[] = $parentProductId;
                     }
                 } else {
-                    $productIdsForQueue[] = $product->getId();
+                    $productIdsForQueue[] = $product;
                 }
             }
 
             // Remove duplicates
             $productIdsForQueue = array_unique($productIdsForQueue);
 
+            // Add to nosto queue (using object manager)
             foreach ($productIdsForQueue as $productIdForQueue) {
                 $queue = $this->nostoQueueFactory->create();
                 $queue->setProductId($productIdForQueue);
