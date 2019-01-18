@@ -189,6 +189,10 @@ class Service
                 )
             );
             $productIdsForQueue = [];
+            // @TODO: Remove this check
+            if ($products[0] instanceof \Generator) {
+                $products = $products[0];
+            }
             foreach ($products as $product) {
                 if (!$product instanceof Product) {
                     continue;
@@ -203,7 +207,7 @@ class Service
                 }
             }
 
-            //remove duplicate
+            // Remove duplicates
             $productIdsForQueue = array_unique($productIdsForQueue);
 
             foreach ($productIdsForQueue as $productIdForQueue) {
