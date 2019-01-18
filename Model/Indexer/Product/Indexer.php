@@ -54,48 +54,35 @@ class Indexer implements IndexerActionInterface, MviewActionInterface
     public function executeFull()
     {
         if ($this->dataHelper->isFullReindexEnabled()) {
-            $products = $this->getProductsIterator();
-            $this->logger->logWithMemoryConsumption(
-                sprintf('Indexing from executeFull')
-            );
-            $this->productService->update([$products]);
+            $productCollection = $this->getProductCollection();
+            $productCollection->setPageSize(self::BATCH_SIZE);
+            $lastPage = $productCollection->getLastPageNumber();
+            $pageNumber = 0;
+            do {
+                $productCollection->clear();
+                $productCollection->setCurPage($pageNumber);
+                $productCollection->addAttributeToSelect('id')
+                    ->addAttributeToFilter(
+                        [
+                            ['attribute'=>'status','eq'=> Status::STATUS_ENABLED],
+                            ['attribute'=>'visibility','neq'=> Visibility::VISIBILITY_NOT_VISIBLE]
+                        ]
+                    );
+                $products = [];
+                // Probably we should query only the product id.
+                foreach ($productCollection->getItems() as $product) {
+                    $products[$product->getId()] = $product->getTypeId();
+                }
+
+                $this->logger->logWithMemoryConsumption(
+                    sprintf('Indexing from executeFull')
+                );
+                $this->productService->update($products);
+                $pageNumber++;
+            } while ($pageNumber <= $lastPage);
         } else {
             $this->logger->info('Skip full reindex since full reindex is disabled.');
         }
-    }
-
-    /**
-     *
-     * @return \Generator
-     */
-    public function getProductsIterator()
-    {
-        /**
-         * This generator is returning the full catalog
-         * you may use $productCollection->getSize() to
-         * check how big is the full array.
-         */
-        $productCollection = $this->getProductCollection();
-        $productCollection->setPageSize(self::BATCH_SIZE);
-        $lastPage = $productCollection->getLastPageNumber();
-        $pageNumber = 0;
-        do {
-            $productCollection->clear();
-            $productCollection->setCurPage($pageNumber);
-            $productCollection->addAttributeToSelect('id')
-                ->addAttributeToFilter(
-                    [
-                        ['attribute'=>'status','eq'=> Status::STATUS_ENABLED],
-                        ['attribute'=>'visibility','neq'=> Visibility::VISIBILITY_NOT_VISIBLE]
-                    ]
-                );
-            // Probably we should query only the product id.
-            foreach ($productCollection->getItems() as $product) {
-                $productTypeId = $product->getTypeId();
-                yield $productTypeId => $product->getId();
-            }
-            $pageNumber++;
-        } while ($pageNumber <= $lastPage);
     }
 
     /**

@@ -189,12 +189,7 @@ class Service
                 )
             );
             $productIdsForQueue = [];
-            // @TODO: Remove this check, get the fist element directly
-            if ($products[0] instanceof \Generator) {
-                $products = $products[0];
-            }
-            foreach ($products as $typeId => $product) {
-                // Check why this getParentIds return such a big array
+            foreach ($products as $product => $typeId) {
                 $parentProductIds = $this->nostoProductRepository->resolveParentProductIdsByProductId($product, $typeId);
                 if (!empty($parentProductIds)) {
                     foreach ($parentProductIds as $parentProductId) { // Maybe simplify with array_merge?
