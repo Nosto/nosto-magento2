@@ -1,5 +1,9 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 3.0.2
+* Bump Nosto SDK version to fix the double encoded Oauth redirect URL
+* Remove redundant module manager dependency from rating helper
+
 ### 3.0.1
 * Bump Nosto SDK version to support HTTP 2 
 
