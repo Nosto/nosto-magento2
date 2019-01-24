@@ -45,8 +45,6 @@ use Magento\Store\Model\Store;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Magento\Review\Model\ReviewFactory;
 use Nosto\Tagging\Model\Product\Ratings as ProductRatings;
-use Magento\Framework\Module\Manager;
-use Nosto\Tagging\Helper\RatingsFactory;
 
 /**
  * Rating helper used for product rating related tasks.
@@ -69,17 +67,16 @@ class Ratings extends AbstractHelper
     /**
      * Ratings constructor.
      * @param Context $context
-     * @param Manager $moduleManager
      * @param NostoHelperData $nostoHelperData
      * @param ReviewFactory $reviewFactory
      * @param NostoLogger $logger
      * @param RatingsFactory $ratingsFactory
+     * @param Registry $registry
      *
      * @suppress PhanUndeclaredTypeParameter
      */
     public function __construct(
         Context $context,
-        Manager $moduleManager,
         NostoHelperData $nostoHelperData,
         ReviewFactory $reviewFactory,
         NostoLogger $logger,
@@ -87,7 +84,7 @@ class Ratings extends AbstractHelper
         Registry $registry
     ) {
         parent::__construct($context);
-        $this->moduleManager = $moduleManager;
+        $this->moduleManager = $context->getModuleManager();
         $this->nostoDataHelper = $nostoHelperData;
         $this->logger = $logger;
         $this->reviewFactory = $reviewFactory;
