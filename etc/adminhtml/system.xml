@@ -239,10 +239,10 @@
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
             </group>
-            <group id="sso_token" translate="label" type="text" sortOrder="60" showInDefault="1"
-                   showInWebsite="1" showInStore="1">
+            <group id="nosto_account_info" translate="label" type="text" sortOrder="60" showInDefault="0"
+                   showInWebsite="0" showInStore="1">
                 <label>Account Details and Tokens</label>
-                <field id="sso_token_field" translate="label comment" type="text" sortOrder="20"
+                <field id="nosto_account_info_fields" translate="label comment" type="text" sortOrder="20"
                        showInDefault="1" showInWebsite="1" showInStore="1">
                     <frontend_model>Nosto\Tagging\Block\Adminhtml\Form\Field\Tokens</frontend_model>
                 </field>

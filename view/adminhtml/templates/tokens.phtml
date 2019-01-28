@@ -20,34 +20,33 @@
     }
 </style>
 <fieldset>
-    <table>
-        <tr>
-            <td class="token-title">
-                Account ID
-            </td>
-            <td class="token-container">
-                <?php echo $this->getAccountDetails()->getName() ?>
-            </td>
-        </tr>
+    <?php if($this->getAccountDetails() == null) : ?>
+        <div>
+            <?php echo new \Magento\Framework\Phrase('There is no account connected') ?>
+        </div>
+    <?php else: ?>
+        <table>
+            <tr>
+                <td class="token-title">
+                    Account ID
+                </td>
+                <td class="token-container">
+                    <?php echo $this->getAccountDetails()->getName(); ?>
+                </td>
+            </tr>
 
-        <?php foreach ($this->getAccountDetails()->getTokens() as $token) {
-            echo '<tr>
-            <td class="token-title">
-                '. $token->getName().' Token
-            </td>
-            <td class="token-container">
-                '. $token->getValue().'
-            </td>
-        </tr>';
-        }
-        ?>
-    </table>
+        <?php foreach($this->getAccountDetails()->getTokens() as $token): ?>
+            <tr>
+                <td class="token-title">
+                    <?php echo $token->getName() ?> Token
+                </td>
+                <td class="token-container">
+                    <?php echo $token->getValue() ?>
+                </td>
+            </tr>
+        <?php endforeach; ?>
 
-<!--    <div>-->
-<!--        <ul>-->
-<!--            <li>-->
-<!--                SSO TOKEN: TOKEN-->
-<!--            </li>-->
-<!--        </ul>-->
-<!--    </div>-->
+        </table>
+    <?php endif; ?>
+
 </fieldset>

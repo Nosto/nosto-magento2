@@ -13,14 +13,19 @@ use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Magento\Framework\Data\Form\Element\AbstractElement;
 use Magento\Config\Block\System\Config\Form\Field;
 use Magento\Backend\Block\Template\Context;
+use Magento\Store\Model\StoreManagerInterface;
+use Magento\Framework\App\Request\Http;
 
 class Tokens extends Field
 {
-    /** @var NostoHelperAccount  */
+    /** @var NostoHelperAccount $nostoHelperAccount */
     public $nostoHelperAccount;
 
-    /** @var NostoHelperScope  */
+    /** @var NostoHelperScope $nostoHelperScope */
     public $nostoHelperScope;
+
+    /** @var Http $request */
+    public $request;
 
     /**
      * Tokens constructor.
@@ -28,13 +33,22 @@ class Tokens extends Field
      * @param array $data
      * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoHelperScope $nostoHelperScope
+     * @param StoreManagerInterface $storeManager
+     * @param Http $request
      */
-    public function __construct(Context $context, array $data = [], NostoHelperAccount $nostoHelperAccount, NostoHelperScope $nostoHelperScope)
-    {
+    public function __construct(
+        Context $context,
+        array $data = [],
+        NostoHelperAccount $nostoHelperAccount,
+        NostoHelperScope $nostoHelperScope,
+        StoreManagerInterface $storeManager,
+        Http $request
+    ) {
         parent::__construct($context, $data, $nostoHelperAccount, $nostoHelperScope);
         $this->setTemplate('tokens.phtml');
         $this->nostoHelperAccount = $nostoHelperAccount;
         $this->nostoHelperScope = $nostoHelperScope;
+        $this->request = $request;
     }
 
     /**
@@ -44,7 +58,8 @@ class Tokens extends Field
      */
     public function getAccountDetails()
     {
-        $store = $this->nostoHelperScope->getStore();
+        $id = (int) $this->request->getParam('store');
+        $store = $this->nostoHelperScope->getStore($id);
         $account = $this->nostoHelperAccount->findAccount($store);
         return $account;
     }
