@@ -64,10 +64,10 @@ class Tokens extends Field
      */
     public function __construct(
         Context $context,
-        array $data = [],
         Http $request,
         NostoHelperScope $nostoHelperScope,
-        NostoHelperAccount $nostoHelperAccount
+        NostoHelperAccount $nostoHelperAccount,
+        array $data = []
     ) {
         parent::__construct($context, $data);
         $this->nostoHelperAccount = $nostoHelperAccount;
@@ -75,6 +75,7 @@ class Tokens extends Field
         $this->request = $request;
     }
 
+    //@codingStandardsIgnoreStart
     /**
      * Get the Nosto account details
      *
@@ -91,8 +92,6 @@ class Tokens extends Field
     /**
      * @param AbstractElement $element
      *
-     * @suppress ProtectedClassMember
-     * @suppress UnusedFunctionParameter
      * @return string
      */
     protected function _getElementHtml(AbstractElement $element)
@@ -109,4 +108,5 @@ class Tokens extends Field
         $this->setTemplate('tokens.phtml');
         return $this;
     }
+    //@codingStandardsIgnoreEnd
 }
