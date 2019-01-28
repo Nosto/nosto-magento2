@@ -54,7 +54,7 @@
         text-transform: capitalize;
     }
 </style>
-<fieldset>
+<fieldset width="100%">
     <?php if($this->getAccountDetails() == null) : ?>
         <div>
             <?php echo __('There is no account connected') ?>
@@ -65,8 +65,10 @@
                 <td class="token-title">
                     <?php echo __('Account ID'); ?>
                 </td>
-                <td class="token-container">
-                    <?php echo $this->getAccountDetails()->getName(); ?>
+                <td class="token-container" style="padding: 2.2rem 1.5rem 1rem 1.5rem;">
+                    <input type="text" readonly
+                        value = "<?php echo $this->getAccountDetails()->getName(); ?>"
+                    />
                 </td>
             </tr>
 
@@ -75,8 +77,13 @@
                 <td class="token-title">
                     <?php echo $token->getName() ?> Token
                 </td>
-                <td class="token-container">
-                    <?php echo $token->getValue() ?>
+                <td class="token-container" style="padding: 2.2rem 1.5rem 1rem 1.5rem;">
+
+                    <input type="text" readonly style="width:100%; word-wrap:break-word;"
+                        value="<?php echo $token->getValue() ?>"
+                    />
+
+
                 </td>
             </tr>
         <?php endforeach; ?>

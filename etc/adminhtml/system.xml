@@ -243,7 +243,7 @@
                    showInWebsite="0" showInStore="1">
                 <label>Account Details and Tokens</label>
                 <field id="nosto_account_info_fields" translate="label comment" type="text" sortOrder="20"
-                       showInDefault="1" showInWebsite="1" showInStore="1">
+                       showInDefault="0" showInWebsite="0" showInStore="1">
                     <frontend_model>Nosto\Tagging\Block\Adminhtml\Form\Field\Tokens</frontend_model>
                 </field>
             </group>
