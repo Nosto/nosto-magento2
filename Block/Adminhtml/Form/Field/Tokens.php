@@ -13,7 +13,6 @@ use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Magento\Framework\Data\Form\Element\AbstractElement;
 use Magento\Config\Block\System\Config\Form\Field;
 use Magento\Backend\Block\Template\Context;
-use Magento\Store\Model\StoreManagerInterface;
 use Magento\Framework\App\Request\Http;
 
 class Tokens extends Field
@@ -41,10 +40,9 @@ class Tokens extends Field
         array $data = [],
         NostoHelperAccount $nostoHelperAccount,
         NostoHelperScope $nostoHelperScope,
-        StoreManagerInterface $storeManager,
         Http $request
     ) {
-        parent::__construct($context, $data, $nostoHelperAccount, $nostoHelperScope);
+        parent::__construct($context, $data);
         $this->setTemplate('tokens.phtml');
         $this->nostoHelperAccount = $nostoHelperAccount;
         $this->nostoHelperScope = $nostoHelperScope;
