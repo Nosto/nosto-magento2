@@ -144,7 +144,13 @@ class Builder
                 return $parentIds[0];
             }
         }
-        return (string)$item->getProduct()->getId();
+
+        $product = $item->getProduct();
+        $productId = $product ? (string)$product->getId() : '';
+        if (trim($productId) === '') {
+            return LineItem::PSEUDO_PRODUCT_ID;
+        }
+        return $productId;
     }
 
     /**
