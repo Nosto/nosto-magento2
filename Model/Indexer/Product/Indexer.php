@@ -8,8 +8,8 @@ namespace Nosto\Tagging\Model\Indexer\Product;
 
 use Magento\Catalog\Model\Product\Attribute\Source\Status;
 use Magento\Catalog\Model\Product\Visibility;
-use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductCollectionFactory;
 use Magento\Catalog\Model\ResourceModel\Product\Collection as ProductCollection;
+use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductCollectionFactory;
 use Magento\Framework\Indexer\ActionInterface as IndexerActionInterface;
 use Magento\Framework\Mview\ActionInterface as MviewActionInterface;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
@@ -46,7 +46,6 @@ class Indexer implements IndexerActionInterface, MviewActionInterface
         $this->logger = $logger;
         $this->productCollectionFactory = $productCollectionFactory;
     }
-
     /**
      * @inheritdoc
      * @throws \Exception
@@ -57,9 +56,8 @@ class Indexer implements IndexerActionInterface, MviewActionInterface
             $productCollection = $this->getProductCollection();
             $productCollection->setPageSize(self::BATCH_SIZE);
             $lastPage = $productCollection->getLastPageNumber();
-            $pageNumber = 0;
+            $pageNumber = 1;
             do {
-                $productCollection->clear();
                 $productCollection->setCurPage($pageNumber);
                 $productCollection->addAttributeToSelect('id')
                     ->addAttributeToFilter(
@@ -73,7 +71,7 @@ class Indexer implements IndexerActionInterface, MviewActionInterface
                 foreach ($productCollection->getItems() as $product) {
                     $products[$product->getId()] = $product->getTypeId();
                 }
-
+                $productCollection->clear();
                 $this->logger->logWithMemoryConsumption(
                     sprintf('Indexing from executeFull')
                 );

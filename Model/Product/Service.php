@@ -62,7 +62,7 @@ use Nosto\Types\Product\ProductInterface as NostoProductInterface;
 class Service
 {
 
-    public static $batchSize = 50;
+    public static $batchSize = 500;
     public static $responseTimeOut = 500;
     private $productUpdatesActive;
 
@@ -214,7 +214,7 @@ class Service
             $this->logger->info(
                 sprintf(
                     'Added %d products to Nosto queue',
-                    $productCount
+                    count($productIdsForQueue)
                 )
             );
         } else {
@@ -321,11 +321,8 @@ class Service
         $productIdsStillExist = [];
 
         if (!empty($productsStillExist)) {
-
-            $this->logger->logWithMemoryConsumption('Before Upsert creation');
             $op = new UpsertProduct($nostoAccount);
             $op->setResponseTimeout(self::$responseTimeOut);
-            $this->logger->logWithMemoryConsumption('After Upsert creation');
 
             /* @var Product $product */
             foreach ($productsStillExist as $product) {
