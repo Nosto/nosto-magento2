@@ -186,6 +186,9 @@ class QueueRepository implements ProductQueueRepositoryInterface
         $searchResults->setItems($collection->getItems());
         $searchResults->setTotalCount($collection->getSize());
 
+        // Set collection to be mem dealloc
+        $collection->clear();
+
         return $searchResults;
     }
 

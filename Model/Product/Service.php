@@ -62,7 +62,7 @@ use Nosto\Types\Product\ProductInterface as NostoProductInterface;
 class Service
 {
 
-    public static $batchSize = 500;
+    public static $batchSize = 50;
     public static $responseTimeOut = 500;
     private $productUpdatesActive;
 

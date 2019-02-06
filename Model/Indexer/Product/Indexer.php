@@ -75,9 +75,12 @@ class Indexer implements IndexerActionInterface, MviewActionInterface
                 $this->logger->logWithMemoryConsumption(
                     sprintf('Indexing from executeFull')
                 );
-                $this->productService->update($products);
+                // Fill queue and only then flush (there's a batching there as well)
+                $this->productService->addToQueue($products);
+//                $this->productService->update($products);
                 $pageNumber++;
             } while ($pageNumber <= $lastPage);
+            $this->productService->flushQueue();
         } else {
             $this->logger->info('Skip full reindex since full reindex is disabled.');
         }
