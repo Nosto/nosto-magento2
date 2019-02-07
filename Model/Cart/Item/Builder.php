@@ -37,16 +37,16 @@
 namespace Nosto\Tagging\Model\Cart\Item;
 
 use Exception;
+use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\Product\Type;
+use Magento\Catalog\Model\ProductRepository;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Quote\Model\Quote\Item;
-use Magento\Catalog\Model\Product;
 use Nosto\Object\Cart\LineItem;
 use Nosto\Tagging\Model\Item\Downloadable;
 use Nosto\Tagging\Model\Item\Giftcard;
 use Nosto\Tagging\Model\Item\Virtual;
-use Magento\Catalog\Model\ProductRepository;
 
 class Builder
 {
@@ -144,13 +144,11 @@ class Builder
                 return $parentIds[0];
             }
         }
-
         $product = $item->getProduct();
-        $productId = $product ? (string)$product->getId() : '';
-        if (trim($productId) === '') {
-            return LineItem::PSEUDO_PRODUCT_ID;
+        if ($product instanceof Product) {
+            return $product->getId();
         }
-        return $productId;
+        return LineItem::PSEUDO_PRODUCT_ID;
     }
 
     /**

@@ -165,8 +165,8 @@ class Builder
                 return $parentIds[0];
             }
         }
-        $productId = (string)$item->getProductId();
-        if (trim($productId) === '') {
+        $productId = $item->getProductId();
+        if (!$productId) {
             return LineItem::PSEUDO_PRODUCT_ID;
         }
         return $productId;
