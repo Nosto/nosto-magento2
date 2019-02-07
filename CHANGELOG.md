@@ -1,5 +1,8 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 3.0.3
+* Fix error that may happen when order and cart items has no parent product associated
+
 ### 3.0.2
 * Bump Nosto SDK version to fix the double encoded Oauth redirect URL
 * Remove redundant module manager dependency from rating helper
