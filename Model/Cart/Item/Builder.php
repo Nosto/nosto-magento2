@@ -146,7 +146,7 @@ class Builder
         }
         $product = $item->getProduct();
         if ($product instanceof Product) {
-            return $product->getId();
+            return (string)$product->getId();
         }
         return LineItem::PSEUDO_PRODUCT_ID;
     }

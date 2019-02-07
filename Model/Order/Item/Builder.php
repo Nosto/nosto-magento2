@@ -169,7 +169,7 @@ class Builder
         if (!$productId) {
             return LineItem::PSEUDO_PRODUCT_ID;
         }
-        return $productId;
+        return (string)$productId;
     }
 
     /**
