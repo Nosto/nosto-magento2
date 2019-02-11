@@ -97,9 +97,11 @@ class Search extends Result
      */
     public function getAbstractObject()
     {
-        return new MarkupableString(
+        $markupableString = new MarkupableString(
             $this->getNostoSearchTerm(),
             'nosto_search_term'
         );
+        $markupableString->disableAutoEncodeAll();
+        return $markupableString;
     }
 }
