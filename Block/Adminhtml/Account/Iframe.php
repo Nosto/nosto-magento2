@@ -109,8 +109,6 @@ class Iframe extends BlockTemplate
      * where a new Nosto account can be created.
      *
      * @return string the iframe url or empty string if it cannot be created.
-     * @throws NotFoundException
-     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function getIframeUrl()
     {

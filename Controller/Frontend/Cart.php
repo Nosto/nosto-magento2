@@ -47,6 +47,8 @@ use Nosto\Tagging\Helper\Url as NostoHelperUrl;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Customer\Repository as NostoCustomerRepository;
 use Magento\Quote\Api\CartRepositoryInterface;
+use Magento\Quote\Api\Data\CartInterface;
+use Magento\Framework\Exception\NoSuchEntityException;
 
 /*
  * Controller class for handling cart restoration
@@ -137,9 +139,9 @@ class Cart extends Action
      * Resolves the cart (quote) by the given hash
      *
      * @param $restoreCartHash
-     * @return \Magento\Quote\Api\Data\CartInterface|null
+     * @return CartInterface|null
      * @throws NostoException
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     * @throws NoSuchEntityException
      */
     private function resolveQuote($restoreCartHash)
     {

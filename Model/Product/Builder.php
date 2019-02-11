@@ -165,7 +165,6 @@ class Builder
         Store $store,
         $nostoScope = self::NOSTO_SCOPE_API
     ) {
-
         $nostoProduct = new NostoProduct();
         $modelFilter = new ModelFilter();
 
@@ -216,7 +215,7 @@ class Builder
             }
 
             $nostoProduct->setAvailability($this->buildAvailability($product, $store));
-            $nostoProduct->setCategories($this->nostoCategoryBuilder->buildCategories($product));
+            $nostoProduct->setCategories($this->nostoCategoryBuilder->buildCategories($product, $store));
             if ($nostoScope == self::NOSTO_SCOPE_API
                 && $this->nostoDataHelper->isInventoryTaggingEnabled($store)
             ) {

@@ -42,6 +42,8 @@ use Magento\Catalog\Model\Product;
 use Magento\Customer\Model\GroupManagement;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\GroupedProduct\Model\Product\Type\Grouped as GroupedType;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable as ConfigurableType;
 use Magento\Bundle\Model\Product\Type as BundleType;
@@ -95,7 +97,7 @@ class Price extends AbstractHelper
      * @param Product $product the product model.
      * @param Store $store
      * @return float
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws LocalizedException
      */
     public function getProductDisplayPrice(Product $product, Store $store)
     {
@@ -117,9 +119,9 @@ class Price extends AbstractHelper
      * @return float
      * @suppress PhanTypeMismatchArgument
      * @suppress PhanDeprecatedFunction
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws LocalizedException
      */
-    public function getProductPrice( // @codingStandardsIgnoreLine
+    public function getProductPrice(// @codingStandardsIgnoreLine
         Product $product,
         Store $store,
         $inclTax = true,
@@ -191,7 +193,7 @@ class Price extends AbstractHelper
      * @param Product $product the product model.
      * @param Store $store
      * @return float
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws LocalizedException
      */
     public function getProductFinalDisplayPrice(Product $product, Store $store)
     {
@@ -227,7 +229,7 @@ class Price extends AbstractHelper
      * @param $inclTax
      * @param Store $store
      * @return array|float|int|mixed
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws LocalizedException
      */
     private function getBundleProductPrice(Product $product, $finalPrice, $inclTax, Store $store)
     {
@@ -326,8 +328,8 @@ class Price extends AbstractHelper
      * @param $inclTax
      * @param Store $store
      * @return float
-     * @throws \Magento\Framework\Exception\LocalizedException
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     * @throws LocalizedException
+     * @throws NoSuchEntityException
      */
     private function getConfigurableProductPrice(Product $product, $finalPrice, $inclTax, Store $store)
     {

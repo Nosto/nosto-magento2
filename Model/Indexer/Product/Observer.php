@@ -109,7 +109,7 @@ class Observer
      * @param $storeId
      * @return mixed
      */
-    public function aroundUpdateAttributes( // @codingStandardsIgnoreLine
+    public function aroundUpdateAttributes(// @codingStandardsIgnoreLine
         Action $subject,
         Closure $closure,
         array $productIds,
@@ -132,7 +132,7 @@ class Observer
      * @param $type
      * @return mixed
      */
-    public function aroundUpdateWebsites( // @codingStandardsIgnoreLine
+    public function aroundUpdateWebsites(// @codingStandardsIgnoreLine
         Action $subject,
         Closure $closure,
         array $productIds,

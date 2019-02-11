@@ -2,9 +2,9 @@
   "name": "nosto/module-nostotagging",
   "description": "Increase your conversion rate and average order value by delivering your customers personalized product recommendations throughout their shopping journey.",
   "type": "magento2-module",
-  "version": "2.15.1-beta",
+  "version": "3.0.3",
   "require-dev": {
-    "php": ">=5.5.0",
+    "php": ">=7.1.0",
     "phan/phan": "0.8.8",
     "phpmd/phpmd": "^2.5",
     "sebastian/phpcpd": "*",
@@ -36,7 +36,7 @@
   ],
   "minimum-stability": "dev",
   "require": {
-    "nosto/php-sdk": "3.7.1"
+    "nosto/php-sdk": "3.9.1"
   },
   "repositories": [
     {
@@ -65,7 +65,7 @@
     ]
   },
   "archive": {
-    "exclude": ["Jenkinsfile", "Dockerfile", ".DS_STORE", ".idea", ".phan", ".docker", "ruleset.xml", "phan.*", ".gitignore", "build.xml"]
+    "exclude": ["Jenkinsfile", "Dockerfile", ".DS_STORE", ".idea", ".phan", ".docker", "ruleset.xml", "phan.*", ".gitignore", "build.xml", ".github", "supervisord.conf", "entrypoint.sh"]
   },
   "scripts": {
     "validate-archive": [

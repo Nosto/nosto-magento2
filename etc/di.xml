@@ -54,6 +54,7 @@
         <arguments>
             <argument name="commands" xsi:type="array">
                 <item name="nosto_account_connect_command" xsi:type="object">Nosto\Tagging\Console\Command\NostoAccountConnectCommand</item>
+                <item name="nosto_account_remove_command" xsi:type="object">Nosto\Tagging\Console\Command\NostoAccountRemoveCommand</item>
             </argument>
         </arguments>
     </type>

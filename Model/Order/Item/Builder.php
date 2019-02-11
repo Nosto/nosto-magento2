@@ -165,7 +165,11 @@ class Builder
                 return $parentIds[0];
             }
         }
-        return (string)$item->getProductId();
+        $productId = $item->getProductId();
+        if (!$productId) {
+            return LineItem::PSEUDO_PRODUCT_ID;
+        }
+        return (string)$productId;
     }
 
     /**
@@ -183,7 +187,8 @@ class Builder
             //But configurable product item should have max 1 child item.
             //Here we check the size of children, return only if the size is 1
             /** @var Item[] $children */
-            if (array_key_exists(0, $children) && $children[0] instanceof Item
+            if (array_key_exists(0, $children)
+                && $children[0] instanceof Item
                 && count($children) === 1
                 && $children[0]->getProductId()
             ) {

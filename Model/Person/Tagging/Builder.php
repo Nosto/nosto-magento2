@@ -58,7 +58,6 @@ class Builder extends PersonBuilder
         $postCode = null,
         $country = null
     ) {
-    
         $user = new User();
         $user->setFirstName($firstName);
         $user->setLastName($lastName);

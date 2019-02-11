@@ -40,6 +40,8 @@ use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Customer\Api\GroupRepositoryInterface as GroupRepository;
 use Magento\Customer\Model\Session\Proxy as CustomerSession;
 use Magento\Customer\Model\GroupManagement;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Exception\NoSuchEntityException;
 
 /**
  * Customer helper
@@ -47,7 +49,6 @@ use Magento\Customer\Model\GroupManagement;
  */
 class Customer extends AbstractHelper
 {
-
     private $customerSession;
     private $groupRepository;
 
@@ -67,8 +68,8 @@ class Customer extends AbstractHelper
 
     /**
      * @return string
-     * @throws \Magento\Framework\Exception\LocalizedException
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     * @throws LocalizedException
+     * @throws NoSuchEntityException
      */
     public function getGroupCode()
     {

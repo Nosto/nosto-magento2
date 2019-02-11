@@ -45,6 +45,7 @@ use Nosto\Tagging\Helper\Account as NostoAccountHelper;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Object\Signup\Account as NostoSignupAccount;
 use Nosto\Request\Api\Token;
+use Nosto\NostoException;
 
 class NostoAccountConnectCommand extends Command
 {
@@ -162,16 +163,16 @@ class NostoAccountConnectCommand extends Command
      */
     private function updateNostoTokens(array $tokens, $accountId, SymfonyStyle $io, $scopeCode)
     {
-        $store = $this->getStoreByCode($scopeCode);
-        if(!$store){
+        $store = $this->nostoHelperScope->getStoreByCode($scopeCode);
+        if (!$store) {
             $io->error('Store not found. Check your input.');
             return false;
         }
         $storeAccountId = $store->getConfig(NostoAccountHelper::XML_PATH_ACCOUNT);
         $account = $this->accountHelper->findAccount($store);
         if ($account && $storeAccountId === $accountId) {
-           // If the script is non-interactive, do not ask for confirmation
-           $confirmOverride = $this->isInteractive ?
+            // If the script is non-interactive, do not ask for confirmation
+            $confirmOverride = $this->isInteractive ?
                 $confirmOverride = $io->confirm(
                     'Local Nosto account found for this store view. Override tokens?',
                     false
@@ -190,27 +191,12 @@ class NostoAccountConnectCommand extends Command
     }
 
     /**
-     * @param $scopeCode the storeview code
-     * @return \Magento\Store\Model\Store|null
-     */
-    private function getStoreByCode($scopeCode)
-    {
-        $stores = $this->nostoHelperScope->getStores();
-        foreach ($stores as $store) {
-            if ($store->getCode() === $scopeCode) {
-                return $store;
-            }
-        }
-    }
-
-    /**
      * Check if required arguments passed by command line are present,
      * if not, will ask for the remaining parameters.
      *
      * @param InputInterface $input
-     * @param OutputInterface $output
-     * @return array of Token objects
-     * @throws \Nosto\NostoException
+     * @param SymfonyStyle $io
+     * @return Token[]
      */
     private function getTokensFromInput(InputInterface $input, SymfonyStyle $io)
     {

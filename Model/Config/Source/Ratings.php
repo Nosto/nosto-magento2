@@ -68,13 +68,17 @@ class Ratings implements ArrayInterface
     public function toOptionArray()
     {
         $options = [
-            ['value' => Data::SETTING_VALUE_MAGENTO_RATINGS, 'label' => new Phrase('Magento Ratings')],
             ['value' => Data::SETTING_VALUE_NO_RATINGS, 'label' => new Phrase('No Ratings')]
         ];
 
         if ($this->nostoRatingsHelper->canUseYotpo()) {
             $yotpo =  ['value' => Data::SETTING_VALUE_YOTPO_RATINGS, 'label' => new Phrase('Yotpo Ratings')];
             $options[]= $yotpo;
+        }
+
+        if ($this->nostoRatingsHelper->canUseMagentoRatingsAndReviews()) {
+            $mageRatings = ['value' => Data::SETTING_VALUE_MAGENTO_RATINGS, 'label' => new Phrase('Magento Ratings')];
+            $options[] = $mageRatings;
         }
 
         return $options;

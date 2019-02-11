@@ -38,16 +38,41 @@ namespace Nosto\Tagging\Block;
 
 use Magento\Framework\View\Element\Template;
 use Nosto\Object\PageType as NostoPageType;
+use Nosto\Tagging\Helper\Account as NostoHelperAccount;
+use Nosto\Tagging\Helper\Scope as NostoHelperScope;
+use Magento\Framework\View\Element\Template\Context;
 
 /**
  * Page type block used for outputting page-type on the different pages.
  */
 class PageType extends Template
 {
+    use TaggingTrait {
+        TaggingTrait::__construct as taggingConstruct; // @codingStandardsIgnoreLine
+    }
+
     /**
      * Default type assigned to the page if none is set in the layout xml.
      */
     const DEFAULT_TYPE = 'unknown';
+
+    /**
+     * Constructor.
+     *
+     * @param Context $context
+     * @param NostoHelperAccount $nostoHelperAccount
+     * @param NostoHelperScope $nostoHelperScope
+     * @param array $data
+     */
+    public function __construct(
+        Context $context,
+        NostoHelperAccount $nostoHelperAccount,
+        NostoHelperScope $nostoHelperScope,
+        array $data = []
+    ) {
+        parent::__construct($context, $data);
+        $this->taggingConstruct($nostoHelperAccount, $nostoHelperScope);
+    }
 
     /**
      * Return the page-type of the current page. If none is defined in the layout xml,
@@ -64,12 +89,11 @@ class PageType extends Template
      * Returns the HTML to render PageTypes
      *
      * @return string
-     * @suppress PhanUndeclaredClassMethod
      */
-    public function toHtml()
+    public function getAbstractObject()
     {
         return (new NostoPageType(
             $this->getPageTypeName()
-        ))->toHtml();
+        ));
     }
 }

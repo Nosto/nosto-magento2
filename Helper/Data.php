@@ -333,7 +333,6 @@ class Data extends AbstractHelper
      */
     public function isRatingTaggingEnabled(StoreInterface $store = null)
     {
-
         $providerCode = $this->getStoreConfig(self::XML_PATH_RATING_TAGGING, $store);
 
         if ((int)$providerCode === 0) {

@@ -45,8 +45,6 @@ use Magento\Store\Model\Store;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Magento\Review\Model\ReviewFactory;
 use Nosto\Tagging\Model\Product\Ratings as ProductRatings;
-use Magento\Framework\Module\Manager;
-use Nosto\Tagging\Helper\RatingsFactory;
 
 /**
  * Rating helper used for product rating related tasks.
@@ -69,17 +67,16 @@ class Ratings extends AbstractHelper
     /**
      * Ratings constructor.
      * @param Context $context
-     * @param Manager $moduleManager
      * @param NostoHelperData $nostoHelperData
      * @param ReviewFactory $reviewFactory
      * @param NostoLogger $logger
      * @param RatingsFactory $ratingsFactory
+     * @param Registry $registry
      *
      * @suppress PhanUndeclaredTypeParameter
      */
     public function __construct(
         Context $context,
-        Manager $moduleManager,
         NostoHelperData $nostoHelperData,
         ReviewFactory $reviewFactory,
         NostoLogger $logger,
@@ -87,7 +84,7 @@ class Ratings extends AbstractHelper
         Registry $registry
     ) {
         parent::__construct($context);
-        $this->moduleManager = $moduleManager;
+        $this->moduleManager = $context->getModuleManager();
         $this->nostoDataHelper = $nostoHelperData;
         $this->logger = $logger;
         $this->reviewFactory = $reviewFactory;
@@ -157,7 +154,8 @@ class Ratings extends AbstractHelper
                 ];
             }
 
-            if ($provider === NostoHelperData::SETTING_VALUE_MAGENTO_RATINGS) {
+            if ($provider === NostoHelperData::SETTING_VALUE_MAGENTO_RATINGS &&
+                $this->canUseMagentoRatingsAndReviews()) {
                 return [
                     self::AVERAGE_SCORE => $this->buildRatingValue($product, $store),
                     self::REVIEW_COUNT => $this->buildReviewCount($product, $store)
@@ -223,7 +221,7 @@ class Ratings extends AbstractHelper
      */
     public function canUseYotpo()
     {
-        if ($this->moduleManager->isEnabled("Yotpo_Yotpo") &&
+        if ($this->moduleManager->isEnabled('Yotpo_Yotpo') &&
             class_exists('Yotpo\Yotpo\Helper\RichSnippets') &&
             method_exists($this->ratingsFactory->create(), 'getRichSnippet')
         ) {
@@ -231,6 +229,16 @@ class Ratings extends AbstractHelper
         }
 
         return false;
+    }
+
+    /**
+     * Check if the Review module is enabled, review tables are present
+     *
+     * @return bool
+     */
+    public function canUseMagentoRatingsAndReviews()
+    {
+        return $this->moduleManager->isEnabled('Magento_Review');
     }
 
     /**

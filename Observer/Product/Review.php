@@ -37,6 +37,7 @@
 namespace Nosto\Tagging\Observer\Product;
 
 use Magento\Framework\Event\Observer;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Review\Model\Review as ReviewModel;
 
 /**
@@ -50,7 +51,7 @@ class Review extends Base
 {
     /**
      * @inheritdoc
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     * @throws NoSuchEntityException
      */
     public function extractProduct(Observer $observer)
     {

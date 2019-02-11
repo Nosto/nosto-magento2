@@ -1,34 +1,35 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
-### 2.15.1 - Beta
-* Set product into Magento registry before fetching Yotpo reviews
+### 3.0.3
+* Fix error that may happen when order and cart items has no parent product associated
 
-### 2.15.0 - Beta
-* Add Yotpo reviews feature
+### 3.0.2
+* Bump Nosto SDK version to fix the double encoded Oauth redirect URL
+* Remove redundant module manager dependency from rating helper
 
-### 2.14.1 - Beta
-* Merge fixes from 2.11.5 & 2.11.6
+### 3.0.1
+* Bump Nosto SDK version to support HTTP 2 
 
-### 2.14.0 - Beta
-* Add customer group pricing variation support
-
-### 2.13.4 - Beta
-* Merge fixes from 2.11.3 & 2.11.4
-
-### 2.13.1 - Beta
-* Merge fixes from 2.11.2
-
-### 2.13.0 - Beta
-* Support using same nosto email widget snippet for multiple nosto accounts
-
-### 2.12.0 - Beta
+### 3.0.0
+**New features**
+* Add support for using customer group pricing in Nosto recommendations
+* Introduce a cli command for connecting Nosto account via command line
+* Support using Yotpo ratings and reviews in Nosto recommendations
+* Support using same nosto email widget snippet for multiple Nosto accounts
 * Update marketing permission to Nosto in real-time when newsletter subscription is changed
 * Support adding multiple products to cart from Nosto recommendations
-* Introduce a cli command for connecting Nosto account via command line
+
+**Fixes & improvements**
 * Improve performance for generating tagging (@hostep)
 * Fix the issue with product building when no custom fields are found (@hostep)
 * Improve error handling for Nosto dashboard in store admin area
 * Code style fixes & refactoring
+
+### 2.11.8
+* Fix an issue that could prevent the extension to be installed in Magento 2.3
+
+### 2.11.7
+* Fix wrong category translation
 
 ### 2.11.6
 * Add batching for scheduled indexer

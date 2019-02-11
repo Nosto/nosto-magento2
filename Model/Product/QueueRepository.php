@@ -50,6 +50,7 @@ use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Util\Repository as RepositoryUtil;
 use /** @noinspection PhpUnusedAliasInspection */
     Nosto\Tagging\Model\Product\QueueSearchResults;
+use Magento\Framework\Api\Search\SearchResult;
 
 class QueueRepository implements ProductQueueRepositoryInterface
 {
@@ -211,7 +212,7 @@ class QueueRepository implements ProductQueueRepositoryInterface
     /**
      * @param SearchCriteriaInterface $searchCriteria
      *
-     * @return \Magento\Framework\Api\Search\SearchResult
+     * @return SearchResult
      */
     public function search(SearchCriteriaInterface $searchCriteria)
     {

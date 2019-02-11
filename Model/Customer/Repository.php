@@ -38,6 +38,7 @@ namespace Nosto\Tagging\Model\Customer;
 
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\Api\SearchCriteriaInterface;
+use Magento\Framework\Exception\AlreadyExistsException;
 use Nosto\Tagging\Api\CustomerRepositoryInterface;
 use Nosto\Tagging\Api\Data\CustomerInterface;
 use Nosto\Tagging\Model\RepositoryTrait;
@@ -86,7 +87,7 @@ class Repository implements CustomerRepositoryInterface
      *
      * @return CustomerInterface
      * @throws \Exception
-     * @throws \Magento\Framework\Exception\AlreadyExistsException
+     * @throws AlreadyExistsException
      *
      * @suppress PhanTypeMismatchArgument
      */

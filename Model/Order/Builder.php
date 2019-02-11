@@ -46,10 +46,12 @@ use Magento\Sales\Model\Order\Item;
 use Magento\SalesRule\Model\RuleFactory as SalesRuleFactory;
 use Nosto\Object\Cart\LineItem;
 use Nosto\Object\Order\Buyer;
+use Nosto\Object\Order\Order as NostoOrder;
 use Nosto\Object\Order\OrderStatus;
 use Nosto\Tagging\Model\Order\Item\Builder as NostoOrderItemBuilder;
 use Nosto\Tagging\Model\Order\Buyer\Builder as NostoBuyerBuilder;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
+use Magento\Sales\Model\Order\Payment;
 
 class Builder
 {
@@ -89,11 +91,11 @@ class Builder
      * Loads the order info from a Magento order model.
      *
      * @param Order $order the order model.
-     * @return \Nosto\Object\Order\Order
+     * @return NostoOrder
      */
     public function build(Order $order)
     {
-        $nostoOrder = new \Nosto\Object\Order\Order();
+        $nostoOrder = new NostoOrder();
         try {
             $nostoOrder->setOrderNumber(self::ORDER_NUMBER_PREFIX . $order->getId());
             $nostoOrder->setExternalOrderRef($order->getRealOrderId());
@@ -104,7 +106,7 @@ class Builder
                     $nostoOrder->setCreatedAt($orderCreatedDate);
                 }
             }
-            if ($order->getPayment()) {
+            if ($order->getPayment() instanceof Payment) {
                 $nostoOrder->setPaymentProvider($order->getPayment()->getMethod());
             } else {
                 throw new NostoException('Order has no payment associated');

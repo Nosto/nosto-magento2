@@ -40,6 +40,8 @@ use Magento\Catalog\Model\Product;
 use Magento\Quote\Model\Quote\Item;
 use Nosto\Tagging\Model\Item\Grouped as GroupedItem;
 use Magento\Catalog\Model\ProductRepository;
+use Magento\Framework\Exception\NoSuchEntityException;
+use Magento\Catalog\Api\Data\ProductInterface;
 
 class Grouped extends GroupedItem
 {
@@ -63,7 +65,7 @@ class Grouped extends GroupedItem
      *
      * @param Item $item the ordered item
      * @return string|null the name of the product
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     * @throws NoSuchEntityException
      */
     public function buildItemName(Item $item)
     {
@@ -83,8 +85,8 @@ class Grouped extends GroupedItem
      * Query the product id and returns the Product Object
      *
      * @param $productId
-     * @return \Magento\Catalog\Api\Data\ProductInterface|mixed
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     * @return ProductInterface|mixed
+     * @throws NoSuchEntityException
      */
     private function getGroupedItemParent($productId)
     {
