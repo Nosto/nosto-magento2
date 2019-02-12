@@ -99,8 +99,7 @@ class Search extends Result
     public function getAbstractObject()
     {
         $searchTerm = new SearchTerm(
-            $this->getNostoSearchTerm(),
-            'nosto_search_term'
+            $this->getNostoSearchTerm()
         );
         $searchTerm->disableAutoEncodeAll();
         return $searchTerm;
