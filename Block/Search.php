@@ -44,6 +44,7 @@ use Magento\Search\Model\QueryFactory;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Object\MarkupableString;
+use Nosto\Object\SearchTerm;
 
 /**
  * Search block used for outputting meta-data on the stores search pages.
@@ -97,11 +98,11 @@ class Search extends Result
      */
     public function getAbstractObject()
     {
-        $markupableString = new MarkupableString(
+        $searchTerm = new SearchTerm(
             $this->getNostoSearchTerm(),
             'nosto_search_term'
         );
-        $markupableString->disableAutoEncodeAll();
-        return $markupableString;
+        $searchTerm->disableAutoEncodeAll();
+        return $searchTerm;
     }
 }
