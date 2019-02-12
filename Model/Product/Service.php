@@ -120,6 +120,23 @@ class Service
     }
 
     /**
+     * Class Destructor
+     */
+    public function __destruct()
+    {
+        $this->logger = null;
+        $this->nostoProductBuilder = null;
+        $this->nostoHelperAccount = null;
+        $this->nostoHelperData = null;
+        $this->nostoProductRepository = null;
+        $this->nostoQueueRepository = null;
+        $this->nostoQueueFactory = null;
+        $this->storeManager = null;
+        $this->productFactory = null;
+        $this->storeEmulator = null;
+    }
+
+    /**
      * Updates products to Nosto via API
      *
      * @param array $ids array of product ids
@@ -178,46 +195,47 @@ class Service
      */
     public function addToQueue(array $products)
     {
-        if ($this->checkProductUpdatesActive()) {
-            $productCount = count($products);
-            $this->logger->logWithMemoryConsumption(
-                sprintf(
-                    'Adding %d products to Nosto queue',
-                    $productCount
-                )
-            );
-            $productIdsForQueue = [];
-            foreach ($products as $product => $typeId) {
-                $parentProductIds = $this->nostoProductRepository->resolveParentProductIdsByProductId($product, $typeId);
-                if (!empty($parentProductIds)) {
-                    foreach ($parentProductIds as $parentProductId) { // Maybe simplify with array_merge?
-                        $productIdsForQueue[] = $parentProductId;
-                    }
-                } else {
-                    $productIdsForQueue[] = $product;
-                }
-            }
-
-            // Remove duplicates
-            $productIdsForQueue = array_unique($productIdsForQueue);
-
-            // Add to nosto queue (using object manager)
-            foreach ($productIdsForQueue as $productIdForQueue) {
-                $queue = $this->nostoQueueFactory->create();
-                $queue->setProductId($productIdForQueue);
-                $queue->setCreatedAt(new DateTime());
-                $this->nostoQueueRepository->save($queue); // @codingStandardsIgnoreLine
-            }
-
-            $this->logger->info(
-                sprintf(
-                    'Added %d products to Nosto queue',
-                    count($productIdsForQueue)
-                )
-            );
-        } else {
+        if (!$this->checkProductUpdatesActive()) {
             $this->logger->debug('Product API updates are disabled for all store views');
+            return;
         }
+
+        $productCount = count($products);
+        $this->logger->logWithMemoryConsumption(
+            sprintf(
+                'Adding %d products to Nosto queue',
+                $productCount
+            )
+        );
+        $productIdsForQueue = [];
+        foreach ($products as $product => $typeId) {
+            $parentProductIds = $this->nostoProductRepository->resolveParentProductIdsByProductId($product, $typeId);
+            if (!empty($parentProductIds)) {
+                foreach ($parentProductIds as $parentProductId) { // Maybe simplify with array_merge?
+                    $productIdsForQueue[] = $parentProductId;
+                }
+            } else {
+                $productIdsForQueue[] = $product;
+            }
+        }
+
+        // Remove duplicates
+        $productIdsForQueue = array_unique($productIdsForQueue);
+
+        // Add to nosto queue (using object manager)
+        foreach ($productIdsForQueue as $productIdForQueue) {
+            $queue = $this->nostoQueueFactory->create();
+            $queue->setProductId($productIdForQueue);
+            $queue->setCreatedAt(new DateTime());
+            $this->nostoQueueRepository->save($queue); // @codingStandardsIgnoreLine
+        }
+
+        $this->logger->info(
+            sprintf(
+                'Added %d products to Nosto queue',
+                count($productIdsForQueue)
+            )
+        );
     }
 
     /**
@@ -252,6 +270,7 @@ class Service
                 /** @var \Nosto\Tagging\Model\Product\Queue $queueEntry */
                 $productIds[] = $queueEntry->getProductId();
             }
+            $queueEntries = null;
             try {
                 $this->process($productIds);
             } catch (\Exception $e) {
@@ -260,13 +279,15 @@ class Service
                 //Regardless of success, delete it from the queue to avoid infinite loop
                 $this->nostoQueueRepository->deleteByProductIds($productIds);
             }
-
+            unset($productIds);
             //prepare for next loop
-            $queueEntries = $this->nostoQueueRepository->getFirstPage(self::$batchSize);
+            $queueEntries = $this->nostoQueueRepository->getFirstPage(self::$batchSize); // @TODO: Remove this and unset manually from array?
             $remaining = $queueEntries->getTotalCount();
             //It is a safe fuse, to prevent unexpected infinite loop
             $maxBatches--;
         }
+        $queueEntries = null;
+        HttpRequest::destroyUserAgent();
     }
 
     /**
@@ -274,25 +295,26 @@ class Service
      *
      * @param array $productIds
      */
-    public function process(array $productIds)
+    public function process(array &$productIds)
     {
         $uniqueProductIds = array_unique($productIds);
         $storesWithNosto = $this->nostoHelperAccount->getStoresWithNosto();
         foreach ($storesWithNosto as $store) {
-            if ($this->nostoHelperData->isProductUpdatesEnabled($store)) {
-                $nostoAccount = $this->nostoHelperAccount->findAccount($store);
-                if (!$nostoAccount instanceof Account) {
-                    continue;
-                }
-                /** @var \Magento\Store\Model\Store\Interceptor $store */
-                $this->storeEmulator->startEnvironmentEmulation($store->getId());
-                try {
-                    $this->processForAccount($uniqueProductIds, $store, $nostoAccount);
-                } catch (\Exception $e) {
-                    $this->logger->exception($e);
-                }
-                $this->storeEmulator->stopEnvironmentEmulation();
+            if (!$this->nostoHelperData->isProductUpdatesEnabled($store)) {
+                return;
             }
+            $nostoAccount = $this->nostoHelperAccount->findAccount($store);
+            if (!$nostoAccount instanceof Account) {
+                continue;
+            }
+            /** @var \Magento\Store\Model\Store\Interceptor $store */
+            $this->storeEmulator->startEnvironmentEmulation($store->getId());
+            try {
+                $this->processForAccount($uniqueProductIds, $store, $nostoAccount);
+            } catch (\Exception $e) {
+                $this->logger->exception($e);
+            }
+            $this->storeEmulator->stopEnvironmentEmulation();
         }
     }
 
@@ -304,7 +326,7 @@ class Service
      * @param Account $nostoAccount
      * @throws \Exception
      */
-    public function processForAccount(array $uniqueProductIds, Store $store, Account $nostoAccount)
+    public function processForAccount(array &$uniqueProductIds, Store $store, Account $nostoAccount)
     {
         $productSearch = $this->nostoProductRepository->getByIds($uniqueProductIds);
 
@@ -317,15 +339,14 @@ class Service
         );
         $productsStillExist = $productSearch->getItems();
         $productIdsStillExist = [];
-
         if (!empty($productsStillExist)) {
             $op = new UpsertProduct($nostoAccount);
             $op->setResponseTimeout(self::$responseTimeOut);
 
             /* @var Product $product */
-            foreach ($productsStillExist as $product) {
+            foreach ($productsStillExist as $product) { // 26MB
                 $productIdsStillExist[] = $product->getId();
-                $nostoProduct = $this->nostoProductBuilder->build(
+                $nostoProduct = $this->nostoProductBuilder->build( // ~4MB
                     $product,
                     $store
                 );
@@ -364,7 +385,9 @@ class Service
                 );
                 $this->logger->exception($e);
             }
+            $op->__destruct();
         }
+        $productSearch = null;
 
         $this->logger->logWithMemoryConsumption('After Upsert sent');
 
@@ -400,7 +423,7 @@ class Service
             }
             $this->logger->info(
                 sprintf(
-                    'Sent %d products to for deletion %s (%d)',
+                    'Sent %d products for deletion %s (%d)',
                     count($uniqueProductIds),
                     $storeName,
                     $store->getId()

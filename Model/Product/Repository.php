@@ -105,6 +105,7 @@ class Repository
      */
     public function getByIds(array $ids)
     {
+        $this->productRepository->cleanCache();
         $searchCriteria = $this->searchCriteriaBuilder
             ->addFilter('entity_id', $ids, 'in')
             ->create();
@@ -116,6 +117,7 @@ class Repository
      *
      * @return ProductSearchResultsInterface
      * @suppress PhanTypeMismatchArgument
+     * @throws \Exception
      */
     public function getWithActivePricingSchedule()
     {
@@ -186,15 +188,15 @@ class Repository
      */
     public function resolveParentProductIds(Product $product)
     {
-        if ($this->getParentIdsFromCache($product)) {
-            return $this->getParentIdsFromCache($product);
-        }
+//        if ($this->getParentIdsFromCache($product)) {
+//            return $this->getParentIdsFromCache($product);
+//        }
         $parentProductIds = null;
         if ($product->getTypeId() === Type::TYPE_SIMPLE) {
             $parentProductIds = $this->configurableProduct->getParentIdsByChild(
                 $product->getId()
             );
-            $this->saveParentIdsToCache($product, $parentProductIds);
+//            $this->saveParentIdsToCache($product, $parentProductIds);
         }
 
         return $parentProductIds;
@@ -210,10 +212,10 @@ class Repository
      */
     public function resolveParentProductIdsByProductId($productId, $typeId)
     {
-        $cachedProduct = $this->getParentIdsFromCacheByProductId($productId);
-        if ($cachedProduct) {
-            return $cachedProduct;
-        }
+//        $cachedProduct = $this->getParentIdsFromCacheByProductId($productId);
+//        if ($cachedProduct) {
+//            return $cachedProduct;
+//        }
 
         $parentProductIds = null;
         if ($typeId === Type::TYPE_SIMPLE) {
@@ -221,7 +223,7 @@ class Repository
                 $productId
             );
         }
-        $this->saveParentIdsToCacheByProductId($productId, $parentProductIds);
+//        $this->saveParentIdsToCacheByProductId($productId, $parentProductIds);
 
         return $parentProductIds;
     }
@@ -231,6 +233,7 @@ class Repository
      *
      * @param Product $product
      * @return array
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function getSkus(Product $product)
     {
@@ -290,7 +293,7 @@ class Repository
      * Saves the parents product ids to internal cache to avoid redundant
      * database queries
      *
-     * @param Product $product
+     * @param $productId
      * @param string[] $parentProductIds
      */
     private function saveParentIdsToCacheByProductId($productId, $parentProductIds)

@@ -52,38 +52,42 @@ class Indexer implements IndexerActionInterface, MviewActionInterface
      */
     public function executeFull()
     {
-        if ($this->dataHelper->isFullReindexEnabled()) {
-            $productCollection = $this->getProductCollection();
-            $productCollection->setPageSize(self::BATCH_SIZE);
-            $lastPage = $productCollection->getLastPageNumber();
-            $pageNumber = 1;
-            do {
-                $productCollection->setCurPage($pageNumber);
-                $productCollection->addAttributeToSelect('id')
-                    ->addAttributeToFilter(
-                        [
-                            ['attribute'=>'status','eq'=> Status::STATUS_ENABLED],
-                            ['attribute'=>'visibility','neq'=> Visibility::VISIBILITY_NOT_VISIBLE]
-                        ]
-                    );
-                $products = [];
-                // Probably we should query only the product id.
-                foreach ($productCollection->getItems() as $product) {
-                    $products[$product->getId()] = $product->getTypeId();
-                }
-                $productCollection->clear();
-                $this->logger->logWithMemoryConsumption(
-                    sprintf('Indexing from executeFull')
-                );
-                // Fill queue and only then flush (there's a batching there as well)
-                $this->productService->addToQueue($products);
-//                $this->productService->update($products);
-                $pageNumber++;
-            } while ($pageNumber <= $lastPage);
-            $this->productService->flushQueue();
-        } else {
+        // @TODO: Truncate queue table before first execution
+        if (!$this->dataHelper->isFullReindexEnabled()) {
             $this->logger->info('Skip full reindex since full reindex is disabled.');
+            return;
         }
+
+        $productCollection = $this->getProductCollection();
+        $productCollection->setPageSize(self::BATCH_SIZE);
+        $lastPage = $productCollection->getLastPageNumber();
+        $pageNumber = 1;
+        // @TODO: Invert this loop, apparently the biggest products are the last ones
+        do {
+            $productCollection->setCurPage($pageNumber);
+            $productCollection->addAttributeToSelect('id')
+                ->addAttributeToFilter(
+                    [
+                        ['attribute'=>'status','eq'=> Status::STATUS_ENABLED],
+                        ['attribute'=>'visibility','neq'=> Visibility::VISIBILITY_NOT_VISIBLE]
+                    ]
+                );
+            $products = [];
+            foreach ($productCollection->getItems() as $product) {
+                $products[$product->getId()] = $product->getTypeId();
+            }
+            $productCollection->clear();
+            $this->logger->logWithMemoryConsumption(
+                sprintf('Indexing from executeFull, remaining pages: %d', $lastPage - $pageNumber)
+            );
+            // Fill queue and only then flush (there's a batching there as well)
+//            $this->productService->update($products);
+            $this->productService->addToQueue($products);
+            $products = null;
+            $pageNumber++;
+        } while ($pageNumber <= $lastPage);
+        $productCollection = null;
+        $this->productService->flushQueue();
     }
 
     /**
