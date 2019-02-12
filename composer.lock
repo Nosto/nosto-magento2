@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d8bdcc1b2d925d1278e9a5eabdb381b4",
+    "content-hash": "6bcdf1aff28bb7f3013dd021b7571a19",
     "packages": [
         {
             "name": "nosto/php-sdk",
-            "version": "3.9.2",
+            "version": "dev-feature/add-html-encoding",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Nosto/nosto-php-sdk.git",
-                "reference": "489ada0cc6d69a14fbe27e2d3edb514f0908f9e2"
+                "reference": "32e94bbd7c2a07712153f441e59cbe3ff1d015e9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Nosto/nosto-php-sdk/zipball/489ada0cc6d69a14fbe27e2d3edb514f0908f9e2",
-                "reference": "489ada0cc6d69a14fbe27e2d3edb514f0908f9e2",
+                "url": "https://api.github.com/repos/Nosto/nosto-php-sdk/zipball/32e94bbd7c2a07712153f441e59cbe3ff1d015e9",
+                "reference": "32e94bbd7c2a07712153f441e59cbe3ff1d015e9",
                 "shasum": ""
             },
             "require": {
@@ -51,7 +51,7 @@
                 "BSD-3-Clause"
             ],
             "description": "PHP SDK for developing Nosto modules for e-commerce platforms",
-            "time": "2019-02-05T12:36:41+00:00"
+            "time": "2019-02-12T13:42:48+00:00"
         },
         {
             "name": "phpseclib/phpseclib",
@@ -5924,6 +5924,7 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
+        "nosto/php-sdk": 20,
         "magento/marketplace-tools": 20
     },
     "prefer-stable": false,
