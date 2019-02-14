@@ -83,11 +83,11 @@ class Indexer implements IndexerActionInterface, MviewActionInterface
             // Fill queue and only then flush (there's a batching there as well)
 //            $this->productService->update($products);
             $this->productService->addToQueue($products);
+            $this->productService->flushQueue();
             $products = null;
             $pageNumber++;
         } while ($pageNumber <= $lastPage);
         $productCollection = null;
-        $this->productService->flushQueue();
     }
 
     /**

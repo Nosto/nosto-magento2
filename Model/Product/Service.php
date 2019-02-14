@@ -287,7 +287,6 @@ class Service
             $maxBatches--;
         }
         $queueEntries = null;
-        HttpRequest::destroyUserAgent();
     }
 
     /**
@@ -295,7 +294,7 @@ class Service
      *
      * @param array $productIds
      */
-    public function process(array &$productIds)
+    public function process(array $productIds)
     {
         $uniqueProductIds = array_unique($productIds);
         $storesWithNosto = $this->nostoHelperAccount->getStoresWithNosto();
@@ -326,27 +325,30 @@ class Service
      * @param Account $nostoAccount
      * @throws \Exception
      */
-    public function processForAccount(array &$uniqueProductIds, Store $store, Account $nostoAccount)
+    public function processForAccount(array $uniqueProductIds, Store $store, Account $nostoAccount)
     {
         $productSearch = $this->nostoProductRepository->getByIds($uniqueProductIds);
+        // Force copy so we can prune this object
+        $totalProductCount = $productSearch->getTotalCount();
 
         $this->logger->logWithMemoryConsumption(
             sprintf(
                 'Updating total of %d unique products for store %s',
-                $productSearch->getTotalCount(),
+                $totalProductCount,
                 $store->getName()
             )
         );
         $productsStillExist = $productSearch->getItems();
+        $productSearch = null;
         $productIdsStillExist = [];
         if (!empty($productsStillExist)) {
             $op = new UpsertProduct($nostoAccount);
             $op->setResponseTimeout(self::$responseTimeOut);
 
             /* @var Product $product */
-            foreach ($productsStillExist as $product) { // 26MB
+            foreach ($productsStillExist as $product) {
                 $productIdsStillExist[] = $product->getId();
-                $nostoProduct = $this->nostoProductBuilder->build( // ~4MB
+                $nostoProduct = $this->nostoProductBuilder->build(
                     $product,
                     $store
                 );
@@ -367,7 +369,7 @@ class Service
                 $this->logger->logWithMemoryConsumption(
                     sprintf(
                         'Sent %d products to for store %s (%d)',
-                        $productSearch->getTotalCount(),
+                        $totalProductCount,
                         $storeName,
                         $store->getId()
                     )
@@ -377,7 +379,7 @@ class Service
                     sprintf(
                         'Failed to send %d products for store %s (%d)' .
                         ' Error was %s',
-                        $productSearch->getTotalCount(),
+                        $totalProductCount,
                         $store->getName(),
                         $store->getId(),
                         $e->getMessage()
@@ -385,9 +387,17 @@ class Service
                 );
                 $this->logger->exception($e);
             }
+            $op->clearCollection();
             $op->__destruct();
         }
-        $productSearch = null;
+
+        // Magento internally cache those queries
+        // Enforce cleaning of this as much as possible
+        foreach ($productsStillExist as $product) {
+            $product->clearInstance();
+            $product->cleanModelCache();
+            $product->cleanCache();
+        }
 
         $this->logger->logWithMemoryConsumption('After Upsert sent');
 
@@ -442,6 +452,7 @@ class Service
             );
             $this->logger->exception($e);
         }
+        unset($op);
     }
 
     /**
