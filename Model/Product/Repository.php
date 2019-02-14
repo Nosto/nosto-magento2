@@ -188,15 +188,15 @@ class Repository
      */
     public function resolveParentProductIds(Product $product)
     {
-//        if ($this->getParentIdsFromCache($product)) {
-//            return $this->getParentIdsFromCache($product);
-//        }
+        if ($this->getParentIdsFromCache($product)) {
+            return $this->getParentIdsFromCache($product);
+        }
         $parentProductIds = null;
         if ($product->getTypeId() === Type::TYPE_SIMPLE) {
             $parentProductIds = $this->configurableProduct->getParentIdsByChild(
                 $product->getId()
             );
-//            $this->saveParentIdsToCache($product, $parentProductIds);
+            $this->saveParentIdsToCache($product, $parentProductIds);
         }
 
         return $parentProductIds;
@@ -212,10 +212,10 @@ class Repository
      */
     public function resolveParentProductIdsByProductId($productId, $typeId)
     {
-//        $cachedProduct = $this->getParentIdsFromCacheByProductId($productId);
-//        if ($cachedProduct) {
-//            return $cachedProduct;
-//        }
+        $cachedProduct = $this->getParentIdsFromCacheByProductId($productId);
+        if ($cachedProduct) {
+            return $cachedProduct;
+        }
 
         $parentProductIds = null;
         if ($typeId === Type::TYPE_SIMPLE) {
@@ -223,7 +223,7 @@ class Repository
                 $productId
             );
         }
-//        $this->saveParentIdsToCacheByProductId($productId, $parentProductIds);
+        $this->saveParentIdsToCacheByProductId($productId, $parentProductIds);
 
         return $parentProductIds;
     }
