@@ -40,6 +40,7 @@ use DateTime;
 use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\ProductFactory;
+use Magento\Framework\App\CacheInterface;
 use Magento\Store\Model\App\Emulation;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManager;
@@ -52,6 +53,7 @@ use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
 use Nosto\Tagging\Model\Product\Repository as NostoProductRepository;
+use Nosto\Tagging\Util\Memory;
 use Nosto\Types\Product\ProductInterface as NostoProductInterface;
 
 /**
@@ -61,7 +63,7 @@ use Nosto\Types\Product\ProductInterface as NostoProductInterface;
  */
 class Service
 {
-    public static $batchSize = 50;
+    public static $batchSize = 100;
     public static $responseTimeOut = 500;
     private $productUpdatesActive;
 
@@ -75,6 +77,7 @@ class Service
     private $productFactory;
     private $nostoQueueRepository;
     private $storeEmulator;
+    private $cacheManager;
 
     public $processed = [];
 
@@ -94,6 +97,7 @@ class Service
      * @param StoreManager $storeManager
      * @param ProductFactory $productFactory
      * @param Emulation $emulation
+     * @param CacheInterface $cacheManager
      */
     public function __construct(
         NostoLogger $logger,
@@ -105,7 +109,8 @@ class Service
         QueueFactory $nostoQueueFactory,
         StoreManager $storeManager,
         ProductFactory $productFactory,
-        Emulation $emulation
+        Emulation $emulation,
+        CacheInterface $cacheManager
     ) {
         $this->logger = $logger;
         $this->nostoProductBuilder = $nostoProductBuilder;
@@ -117,6 +122,7 @@ class Service
         $this->storeManager = $storeManager;
         $this->productFactory = $productFactory;
         $this->storeEmulator = $emulation;
+        $this->cacheManager = $cacheManager;
     }
 
     /**
@@ -327,17 +333,25 @@ class Service
      */
     public function processForAccount(array $uniqueProductIds, Store $store, Account $nostoAccount)
     {
-        $productSearch = $this->nostoProductRepository->getByIds($uniqueProductIds);
-        // Force copy so we can prune this object
-        $totalProductCount = $productSearch->getTotalCount();
+        $batchStartMem = Memory::getConsumption(false);
 
-        $this->logger->logWithMemoryConsumption(
-            sprintf(
-                'Updating total of %d unique products for store %s',
-                $totalProductCount,
-                $store->getName()
+        $this->logger->logWithMemoryConsumption(sprintf(
+                '--- Starting batch for %s (%s)---',
+                $store->getName(),
+                $nostoAccount->getName()
             )
         );
+
+        $productSearch = $this->nostoProductRepository->getByIds($uniqueProductIds);
+        $totalProductCount = $productSearch->getTotalCount();
+
+//        $this->logger->logWithMemoryConsumption(
+//            sprintf(
+//                'Updating total of %d unique products for store %s',
+//                $totalProductCount,
+//                $store->getName()
+//            )
+//        );
         $productsStillExist = $productSearch->getItems();
         $productSearch = null;
         $productIdsStillExist = [];
@@ -352,28 +366,30 @@ class Service
                     $product,
                     $store
                 );
-                if ($nostoProduct instanceof NostoProductInterface) {
-                    $op->addProduct($nostoProduct);
-                } else {
-                    continue;
-                }
-            }
-            $this->logger->logWithMemoryConsumption('After Upsert population');
+//                if ($nostoProduct instanceof NostoProductInterface) {
+//                    $op->addProduct($nostoProduct);
+//                } else {
+//                    continue;
+//                }
 
+                $product->clearInstance();
+                $product->cleanModelCache();
+                $product->cleanCache();
+            }
             try {
-                $op->upsert();
+//                $op->upsert();
                 $storeName = 'Could not get Store Name';
                 if ($this->storeManager->getStore()) {
                     $storeName = $this->storeManager->getStore()->getName();
                 }
-                $this->logger->logWithMemoryConsumption(
-                    sprintf(
-                        'Sent %d products to for store %s (%d)',
-                        $totalProductCount,
-                        $storeName,
-                        $store->getId()
-                    )
-                );
+//                $this->logger->logWithMemoryConsumption(
+//                    sprintf(
+//                        'Sent %d products to for store %s (%d)',
+//                        $totalProductCount,
+//                        $storeName,
+//                        $store->getId()
+//                    )
+//                );
             } catch (\Exception $e) {
                 $this->logger->error(
                     sprintf(
@@ -387,24 +403,30 @@ class Service
                 );
                 $this->logger->exception($e);
             }
-            $op->clearCollection();
-            $op->__destruct();
+//            $op->clearCollection();
+//            $op->__destruct();
         }
+//        $this->logger->logWithMemoryConsumption('After Upsert sent');
 
         // Magento internally cache those queries
         // Enforce cleaning of this as much as possible
-        foreach ($productsStillExist as $product) {
-            $product->clearInstance();
-            $product->cleanModelCache();
-            $product->cleanCache();
-        }
+//        foreach ($productsStillExist as $product) {
+//            $product->clearInstance();
+//            $product->cleanModelCache();
+//            $product->cleanCache();
+//        }
 
-        $this->logger->logWithMemoryConsumption('After Upsert sent');
+//        $leftProducts = array_diff($uniqueProductIds, $productIdsStillExist);
+//        if (!empty($leftProducts)) {
+//            $this->processDelete($leftProducts, $store, $nostoAccount);
+//        }
 
-        $leftProducts = array_diff($uniqueProductIds, $productIdsStillExist);
-        if (!empty($leftProducts)) {
-            $this->processDelete($leftProducts, $store, $nostoAccount);
-        }
+        $batchEndMem = Memory::getConsumption(false);
+        $this->logger->logWithMemoryConsumption(sprintf(
+                ' >>> end batch - memory increase %d kb',
+                round(($batchEndMem-$batchStartMem) / Memory::MB_DIVIDER,2)
+            )
+        );
     }
 
     /**

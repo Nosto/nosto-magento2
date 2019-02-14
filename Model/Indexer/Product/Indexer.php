@@ -21,8 +21,8 @@ use Nosto\Tagging\Model\Product\Service as ProductService;
  */
 class Indexer implements IndexerActionInterface, MviewActionInterface
 {
-    public const BATCH_SIZE = 1000;
-    public const INDEXER_ID = 'nosto_product_sync';
+    const BATCH_SIZE = 1000;
+    const INDEXER_ID = 'nosto_product_sync';
 
     private $productService;
     private $dataHelper;
@@ -61,6 +61,7 @@ class Indexer implements IndexerActionInterface, MviewActionInterface
         $productCollection = $this->getProductCollection();
         $productCollection->setPageSize(self::BATCH_SIZE);
         $lastPage = $productCollection->getLastPageNumber();
+        $lastPage = 3;
         $pageNumber = 1;
         // @TODO: Invert this loop, apparently the biggest products are the last ones
         do {

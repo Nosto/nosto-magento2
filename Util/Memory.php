@@ -34,42 +34,51 @@
  *
  */
 
-namespace Nosto\Tagging\Logger;
+namespace Nosto\Tagging\Util;
 
-use Monolog\Logger as MonologLogger;
-use Nosto\Tagging\Helper\NewRelic;
-use Nosto\Tagging\Util\Memory;
-
-class Logger extends MonologLogger
+class Memory
 {
-    /**
-     * Logs and exception and sends it to New relic if available
-     * @param \Exception $exception
-     * @return bool
-     */
-    public function exception(\Exception $exception)
-    {
-        NewRelic::reportException($exception);
+    const MB_DIVIDER = 1048576;
 
-        return parent::error($exception->__toString());
+    /**
+     * Returns the runtime memory limit
+     *
+     * @return string
+     */
+    public static function getTotalMemoryLimit()
+    {
+        return ini_get('memory_limit');
     }
 
     /**
-     * Logs a message along with the memory consumption
+     * Returns the runtime memory consumption for the whole PHP
      *
-     * @param $message
-     * @return bool
+     * @param bool $mb (if true the memory consumption is returned in megabytes)
+     * @return string
      */
-    public function logWithMemoryConsumption($message)
+    public static function getRealConsumption($mb = true)
     {
-        return parent::addInfo(
-            sprintf(
-                '%s [mem usage: %sM / %s] [realmem: %sM]',
-                $message,
-                Memory::getConsumption(),
-                Memory::getTotalMemoryLimit(),
-                Memory::getRealConsumption()
-            )
-        );
+        $mem = memory_get_usage(true);
+        if ($mb === true) {
+            $mem = round($mem/self::MB_DIVIDER,2);
+        }
+
+        return $mem;
+    }
+
+    /**
+     * Returns the runtime memory consumption for the current PHP script
+     *
+     * @param bool $mb (if true the memory consumption is returned in megabytes)
+     * @return string
+     */
+    public static function getConsumption($mb = true)
+    {
+        $mem = memory_get_usage(false);
+        if ($mb === true) {
+            $mem = round($mem/self::MB_DIVIDER,2);
+        }
+
+        return $mem;
     }
 }
