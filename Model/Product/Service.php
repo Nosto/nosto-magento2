@@ -368,10 +368,6 @@ class Service
                 } else {
                     continue;
                 }
-
-                $product->clearInstance();
-                $product->cleanModelCache();
-                $product->cleanCache();
             }
             try {
                 $op->upsert();
