@@ -225,4 +225,29 @@ class QueueRepository implements ProductQueueRepositoryInterface
             $searchResults
         );
     }
+
+    /**
+     * Returns if nosto_queue has rows
+     *
+     * @return bool
+     */
+    public function isQueuePopulated()
+    {
+        $collection = $this->queueCollectionFactory->create();
+        return (bool)$collection->count();
+    }
+    /**
+     * Truncate productQueue table
+     */
+    public function truncate()
+    {
+        try {
+            /** @var \Magento\Framework\DB\Adapter\AdapterInterface $connection */
+            $connection = $this->queueResource->getConnection();
+            $tableName = $this->queueResource->getMainTable();
+            $connection->truncateTable($tableName);
+        } catch (\Exception $e) {
+            $this->logger->exception($e);
+        }
+    }
 }

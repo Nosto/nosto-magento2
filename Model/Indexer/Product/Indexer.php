@@ -15,6 +15,7 @@ use Magento\Framework\Mview\ActionInterface as MviewActionInterface;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Product\Service as ProductService;
+use Nosto\Tagging\Model\Product\QueueRepository as NostoQueueRepository;
 
 /**
  * An indexer for Nosto product sync
@@ -28,23 +29,27 @@ class Indexer implements IndexerActionInterface, MviewActionInterface
     private $dataHelper;
     private $logger;
     private $productCollectionFactory;
+    private $nostoQueueRepository;
 
     /**
      * @param ProductService $productService
      * @param NostoHelperData $dataHelper
      * @param NostoLogger $logger
      * @param ProductCollectionFactory $productCollectionFactory
+     * @param NostoQueueRepository $nostoQueueRepository
      */
     public function __construct(
         ProductService $productService,
         NostoHelperData $dataHelper,
         NostoLogger $logger,
-        ProductCollectionFactory $productCollectionFactory
+        ProductCollectionFactory $productCollectionFactory,
+        NostoQueueRepository $nostoQueueRepository
     ) {
         $this->productService = $productService;
         $this->dataHelper = $dataHelper;
         $this->logger = $logger;
         $this->productCollectionFactory = $productCollectionFactory;
+        $this->nostoQueueRepository = $nostoQueueRepository;
     }
     /**
      * @inheritdoc
@@ -52,12 +57,14 @@ class Indexer implements IndexerActionInterface, MviewActionInterface
      */
     public function executeFull()
     {
-        // @TODO: Truncate queue table before first execution
         if (!$this->dataHelper->isFullReindexEnabled()) {
             $this->logger->info('Skip full reindex since full reindex is disabled.');
             return;
         }
-
+        // Truncate queue table before first execution if they have leftover products
+        if ($this->nostoQueueRepository->isQueuePopulated()) {
+            $this->nostoQueueRepository->truncate();
+        }
         $productCollection = $this->getProductCollection();
         $productCollection->setPageSize(self::BATCH_SIZE);
         $lastPage = $productCollection->getLastPageNumber();
