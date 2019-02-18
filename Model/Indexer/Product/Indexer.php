@@ -61,9 +61,7 @@ class Indexer implements IndexerActionInterface, MviewActionInterface
         $productCollection = $this->getProductCollection();
         $productCollection->setPageSize(self::BATCH_SIZE);
         $lastPage = $productCollection->getLastPageNumber();
-        $lastPage = 3;
         $pageNumber = 1;
-        // @TODO: Invert this loop, apparently the biggest products are the last ones
         do {
             $productCollection->setCurPage($pageNumber);
             $productCollection->addAttributeToSelect('id')
@@ -81,10 +79,8 @@ class Indexer implements IndexerActionInterface, MviewActionInterface
             $this->logger->logWithMemoryConsumption(
                 sprintf('Indexing from executeFull, remaining pages: %d', $lastPage - $pageNumber)
             );
-            // Fill queue and only then flush (there's a batching there as well)
-//            $this->productService->update($products);
-            $this->productService->addToQueue($products);
-            $this->productService->flushQueue();
+            $this->productService->update($products);
+            $this->productService->processed = [];
             $products = null;
             $pageNumber++;
         } while ($pageNumber <= $lastPage);
