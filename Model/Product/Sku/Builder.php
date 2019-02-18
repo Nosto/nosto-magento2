@@ -88,6 +88,15 @@ class Builder
         );
     }
 
+    public function __destruct()
+    {
+        $this->nostoDataHelper->__destruct();
+        $this->nostoPriceHelper->__destruct();
+        $this->eventManager = null;
+        $this->logger = null;
+        $this->nostoCurrencyHelper->__destruct();
+    }
+
     /**
      * @param Product $product
      * @param Store $store

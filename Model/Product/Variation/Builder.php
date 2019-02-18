@@ -96,6 +96,21 @@ class Builder
     }
 
     /**
+     * Variation Builder Destructor
+     */
+    public function __destruct()
+    {
+        $this->nostoPriceHelper->__destruct();
+        $this->eventManager = null;
+        $this->logger = null;
+        $this->nostoCurrencyHelper->__destruct();
+        $this->priceFactory = null;
+        $this->ruleResourceModel = null;
+        $this->nostoProductRepository->__destruct();
+        $this->localeDate = null;
+    }
+
+    /**
      * @param Product $product
      * @param NostoProduct $
      * @param $nostoProduct

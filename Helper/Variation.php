@@ -65,6 +65,14 @@ class Variation extends AbstractHelper
     }
 
     /**
+     * Variation Helper Destructor
+     */
+    public function __destruct()
+    {
+        $this->groupRepository = null;
+    }
+    
+    /**
      * @return GroupInterface|null
      * @throws LocalizedException
      * @throws NoSuchEntityException

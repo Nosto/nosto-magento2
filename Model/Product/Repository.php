@@ -98,6 +98,20 @@ class Repository
     }
 
     /**
+     * Product Repository Destructor
+     */
+    public function __destruct()
+    {
+        $this->parentProductIdCache = [];
+        $this->productRepository = null;
+        $this->searchCriteriaBuilder = null;
+        $this->configurableProduct = null;
+        $this->filterGroupBuilder = null;
+        $this->filterBuilder = null;
+        $this->configurableType = null;
+        $this->productVisibility = null;
+    }
+    /**
      * Gets products by product ids
      *
      * @param array $ids

@@ -54,6 +54,14 @@ class LowStock
     }
 
     /**
+     * LowStock Model Destructor
+     */
+    public function __destruct()
+    {
+        $this->stockItem = null;
+    }
+
+    /**
      * Builds a custom tag to denote a low-stock for simple product
      *
      * @param Product $product

@@ -45,6 +45,14 @@ class Ratings
     private $rating;
 
     /**
+     * Product Ratings Destructor
+     */
+    public function __destruct()
+    {
+        $this->reviewCount = null;
+        $this->rating = null;
+    }
+    /**
      * @return int $reviewCount
      */
     public function getReviewCount()
