@@ -155,30 +155,6 @@ class Builder
     }
 
     /**
-     * Product Builder Destructor
-     */
-    public function __destruct()
-    {
-        $this->nostoDataHelper->__destruct();
-        $this->nostoPriceHelper->__destruct();
-        $this->nostoCategoryBuilder->__destruct();
-        $this->nostoStockHelper->__destruct();
-        $this->galleryReadHandler = null;
-        $this->eventManager = null;
-        $this->logger = null;
-        $this->reviewFactory = null;
-        $this->urlBuilder->__destruct();
-        $this->skuCollection->__destruct();
-        $this->nostoCurrencyHelper->__destruct();
-        $this->lowStockHelper->__destruct();
-        $this->priceVariationCollection->__destruct();
-        $this->nostoVariationHelper->__destruct();
-        $this->categoryRepository = null;
-        $this->attributeSetRepository = null;
-        $this->nostoRatingHelper->__destruct();
-    }
-
-    /**
      * @param Product $product
      * @param Store $store
      * @param string $nostoScope

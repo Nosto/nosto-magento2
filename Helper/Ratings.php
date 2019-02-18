@@ -93,20 +93,6 @@ class Ratings extends AbstractHelper
     }
 
     /**
-     * Ratings Helper Destructor
-     */
-    public function __destruct()
-    {
-        $this->moduleManager = null;
-        $this->nostoDataHelper->__destruct();
-        $this->logger = null;
-        $this->reviewFactory = null;
-        $this->ratingsFactory = null;
-        $this->registry->__destruct();
-        $this->originalProduct = null;
-    }
-
-    /**
      * Get ratings
      *
      * @param Product $product

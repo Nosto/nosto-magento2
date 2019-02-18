@@ -213,18 +213,6 @@ class Data extends AbstractHelper
     }
 
     /**
-     * Data Helper Destructor
-     */
-    public function __destruct()
-    {
-        $this->moduleListing = null;
-        $this->configWriter = null;
-        $this->productMetaData = null;
-        $this->nostoHelperScope = null;
-        $this->cacheManager = null;
-    }
-
-    /**
      * Returns a unique ID that identifies this Magento installation.
      * This ID is sent to the Nosto account config iframe and used to link all
      * Nosto accounts used on this installation.

@@ -83,16 +83,6 @@ class Builder extends DataObject
         $this->nostoDataHelper = $nostoDataHelper;
     }
 
-    /**
-     * Url Builder Destructor
-     */
-    public function __destruct()
-    {
-        $this->urlFinder = null;
-        $this->urlFactory = null;
-        $this->nostoDataHelper->__destruct();
-    }
-
     public function getUrlInStore(Product $product, Store $store)
     {
         $routeParams = [];

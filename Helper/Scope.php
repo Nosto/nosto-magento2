@@ -63,14 +63,6 @@ class Scope extends AbstractHelper
     }
 
     /**
-     * Scope Helper Destructor
-     */
-    public function __destruct()
-    {
-        $this->storeManager = null;
-    }
-
-    /**
      * @param null|string|bool|int|\Magento\Store\Api\Data\StoreInterface $storeId
      * @return \Magento\Store\Model\Store
      */

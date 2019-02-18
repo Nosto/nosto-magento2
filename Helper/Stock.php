@@ -73,15 +73,6 @@ class Stock extends AbstractHelper
     }
 
     /**
-     * Stock Helper Destructor
-     */
-    public function __destruct()
-    {
-        $this->productFactory = null;
-        $this->stockItem = null;
-    }
-
-    /**
      * Calculates the total qty in stock. If the product is configurable the
      * the sum of associated products will be calculated.
      *

@@ -65,14 +65,6 @@ class Currency extends AbstractHelper
     }
 
     /**
-     * Currency Helper Destructor
-     */
-    public function __destruct()
-    {
-        $this->nostoHelperData->__destruct();
-    }
-
-    /**
      * If the store uses multiple currencies the prices are converted from base
      * currency into given currency. Otherwise the given price is returned.
      *

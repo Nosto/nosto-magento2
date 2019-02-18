@@ -73,16 +73,6 @@ class Collection
     }
 
     /**
-     * Sku Collection Destructor
-     */
-    public function __destruct()
-    {
-        $this->configurableType = null;
-        $this->logger = null;
-        $this->nostoSkuBuilder->__destruct();
-        $this->nostoProductRepository->__destruct();
-    }
-    /**
      * @param Product $product
      * @param Store $store
      * @return SkuCollection

@@ -66,15 +66,6 @@ class Builder
     }
 
     /**
-     * Category Builder Destructor
-     */
-    public function __destruct()
-    {
-        $this->logger = null;
-        $this->categoryRepository = null;
-        $this->eventManager = null;
-    }
-    /**
      * @param Product $product
      * @param Store $store
      * @return array

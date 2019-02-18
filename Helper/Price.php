@@ -92,18 +92,6 @@ class Price extends AbstractHelper
     }
 
     /**
-     * Price helper destructor
-     */
-    public function __destruct()
-    {
-        $this->catalogHelper = null;
-        $this->priceRuleFactory = null;
-        $this->localeDate = null;
-        $this->nostoProductRepository->__destruct();
-        $this->taxHelper = null;
-    }
-
-    /**
      * Gets the unit price for a product model including taxes.
      *
      * @param Product $product the product model.

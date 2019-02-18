@@ -71,17 +71,6 @@ class Collection
     }
 
     /**
-     * Product Variation Collection Destructor
-     */
-    public function __destruct()
-    {
-        $this->nostoVariationBuilder->__destruct();
-        $this->customerGroupManager = null;
-        $this->groupRepository = null;
-        $this->variationBuilder->__destruct();
-    }
-
-    /**
      * @param Product $product
      * @param Store $store
      * @return VariationCollection
