@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6bcdf1aff28bb7f3013dd021b7571a19",
+    "content-hash": "acf0cb5892a9b86da27088cd87a490de",
     "packages": [
         {
             "name": "nosto/php-sdk",
-            "version": "dev-feature/add-html-encoding",
+            "version": "3.10.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Nosto/nosto-php-sdk.git",
-                "reference": "32e94bbd7c2a07712153f441e59cbe3ff1d015e9"
+                "reference": "65dc7435d6036c6efc0add591bf3adbb60a4a3c4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Nosto/nosto-php-sdk/zipball/32e94bbd7c2a07712153f441e59cbe3ff1d015e9",
-                "reference": "32e94bbd7c2a07712153f441e59cbe3ff1d015e9",
+                "url": "https://api.github.com/repos/Nosto/nosto-php-sdk/zipball/65dc7435d6036c6efc0add591bf3adbb60a4a3c4",
+                "reference": "65dc7435d6036c6efc0add591bf3adbb60a4a3c4",
                 "shasum": ""
             },
             "require": {
@@ -51,7 +51,7 @@
                 "BSD-3-Clause"
             ],
             "description": "PHP SDK for developing Nosto modules for e-commerce platforms",
-            "time": "2019-02-12T13:42:48+00:00"
+            "time": "2019-02-19T13:16:14+00:00"
         },
         {
             "name": "phpseclib/phpseclib",
@@ -395,12 +395,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/composer/composer.git",
-                "reference": "d788c67547708248e843d2feabeb16b20b35a618"
+                "reference": "69745745b39bf6b24c8f88dc18b44980ee042e28"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/composer/composer/zipball/d788c67547708248e843d2feabeb16b20b35a618",
-                "reference": "d788c67547708248e843d2feabeb16b20b35a618",
+                "url": "https://api.github.com/repos/composer/composer/zipball/69745745b39bf6b24c8f88dc18b44980ee042e28",
+                "reference": "69745745b39bf6b24c8f88dc18b44980ee042e28",
                 "shasum": ""
             },
             "require": {
@@ -467,7 +467,7 @@
                 "dependency",
                 "package"
             ],
-            "time": "2019-02-11T09:52:53+00:00"
+            "time": "2019-02-16T16:56:20+00:00"
         },
         {
             "name": "composer/semver",
@@ -3675,12 +3675,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/php-timer.git",
-                "reference": "4893d49525d2617cf6fae6a9b1c168030e4a22ea"
+                "reference": "95a6897c75ecd816e8990aa5e9c671d76eea9ba7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/php-timer/zipball/4893d49525d2617cf6fae6a9b1c168030e4a22ea",
-                "reference": "4893d49525d2617cf6fae6a9b1c168030e4a22ea",
+                "url": "https://api.github.com/repos/sebastianbergmann/php-timer/zipball/95a6897c75ecd816e8990aa5e9c671d76eea9ba7",
+                "reference": "95a6897c75ecd816e8990aa5e9c671d76eea9ba7",
                 "shasum": ""
             },
             "require": {
@@ -3716,7 +3716,7 @@
             "keywords": [
                 "timer"
             ],
-            "time": "2019-02-08T13:52:14+00:00"
+            "time": "2019-02-11T12:49:33+00:00"
         },
         {
             "name": "psr/container",
@@ -4174,12 +4174,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/config.git",
-                "reference": "e8f2ea3e9ab1e7bf27793b47d03e49aca6c8e2ca"
+                "reference": "b8f4eaed0131c05a18c595b7d9026d88e93508ae"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/config/zipball/e8f2ea3e9ab1e7bf27793b47d03e49aca6c8e2ca",
-                "reference": "e8f2ea3e9ab1e7bf27793b47d03e49aca6c8e2ca",
+                "url": "https://api.github.com/repos/symfony/config/zipball/b8f4eaed0131c05a18c595b7d9026d88e93508ae",
+                "reference": "b8f4eaed0131c05a18c595b7d9026d88e93508ae",
                 "shasum": ""
             },
             "require": {
@@ -4229,7 +4229,7 @@
             ],
             "description": "Symfony Config Component",
             "homepage": "https://symfony.com",
-            "time": "2019-01-30T11:44:59+00:00"
+            "time": "2019-02-17T09:56:33+00:00"
         },
         {
             "name": "symfony/console",
@@ -5924,7 +5924,6 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
-        "nosto/php-sdk": 20,
         "magento/marketplace-tools": 20
     },
     "prefer-stable": false,
