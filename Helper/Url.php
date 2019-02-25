@@ -49,6 +49,8 @@ use Nosto\Request\Http\HttpRequest;
 use Nosto\Tagging\Helper\Data as NostoDataHelper;
 use Nosto\Tagging\Model\Product\Repository as ProductRepository;
 use Nosto\Tagging\Model\Product\Url\Builder as NostoUrlBuilder;
+use Magento\Framework\ObjectManagerInterface;
+use Nosto\Helper\UrlHelper;
 
 /**
  * Url helper class for common URL related tasks.
@@ -136,6 +138,7 @@ class Url extends AbstractHelper
     private $backendDataHelper;
     private $productRepository;
     private $nostoUrlBuilder;
+    private $objectManager;
 
     /** @noinspection PhpUndefinedClassInspection */
     /**
@@ -158,7 +161,8 @@ class Url extends AbstractHelper
         UrlBuilder $urlBuilder,
         /** @noinspection PhpDeprecationInspection */
         BackendDataHelper $backendDataHelper,
-        NostoUrlBuilder $nostoUrlBuilder
+        NostoUrlBuilder $nostoUrlBuilder,
+        ObjectManagerInterface $objectManager
     ) {
         parent::__construct($context);
 
@@ -168,6 +172,7 @@ class Url extends AbstractHelper
         $this->nostoDataHelper = $nostoDataHelper;
         $this->backendDataHelper = $backendDataHelper;
         $this->nostoUrlBuilder = $nostoUrlBuilder;
+        $this->objectManager = $objectManager;
     }
 
     /**
@@ -276,6 +281,18 @@ class Url extends AbstractHelper
         );
         $url = $this->replaceQueryParamsInUrl(['q' => 'nosto'], $url);
         return $this->addNostoDebugParamToUrl($url);
+    }
+
+    /**
+     * Returns the store domain
+     *
+     * @return string
+     */
+    public function getActiveDomain()
+    {
+        $storeManager = $this->objectManager->get('\Magento\Store\Model\StoreManagerInterface');
+        $url =  $storeManager->getStore()->getBaseUrl();
+        return UrlHelper::parseUrl($url);
     }
 
     /**
