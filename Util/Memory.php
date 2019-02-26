@@ -60,7 +60,7 @@ class Memory
     {
         $mem = memory_get_usage(true);
         if ($mb === true) {
-            $mem = round($mem/self::MB_DIVIDER,2);
+            $mem = round($mem/self::MB_DIVIDER, 2);
         }
 
         return $mem;
@@ -76,9 +76,25 @@ class Memory
     {
         $mem = memory_get_usage(false);
         if ($mb === true) {
-            $mem = round($mem/self::MB_DIVIDER,2);
+            $mem = round($mem/self::MB_DIVIDER, 2);
         }
 
         return $mem;
+    }
+
+    /**
+     * @return float The percentage of used memory by the script
+     */
+    public static function getPercentageUsedMem()
+    {
+        $memLimit = self::getTotalMemoryLimit();
+        // ini_get returns a string as it is defined in the php.ini file
+        // It is possible to use M or G to define the amount of memory
+        if (strpos($memLimit, 'G')) {
+            $memLimit = (int)$memLimit * 1024; // Cast to remove 'G' and 'GB'
+        } else { // Else we assume it is in Megabytes
+            $memLimit = (int)$memLimit;
+        }
+        return (float)(self::getConsumption() / $memLimit) * 100;
     }
 }

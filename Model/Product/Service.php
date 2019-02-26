@@ -419,7 +419,6 @@ class Service
         if (!empty($leftProducts)) {
             $this->processDelete($leftProducts, $store, $nostoAccount);
         }
-        return true;
     }
 
     /**

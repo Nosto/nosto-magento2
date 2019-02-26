@@ -14,8 +14,9 @@ use Magento\Framework\Indexer\ActionInterface as IndexerActionInterface;
 use Magento\Framework\Mview\ActionInterface as MviewActionInterface;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
-use Nosto\Tagging\Model\Product\Service as ProductService;
 use Nosto\Tagging\Model\Product\QueueRepository as NostoQueueRepository;
+use Nosto\Tagging\Model\Product\Service as ProductService;
+use Nosto\Tagging\Util\Memory;
 
 /**
  * An indexer for Nosto product sync
@@ -70,6 +71,14 @@ class Indexer implements IndexerActionInterface, MviewActionInterface
         $lastPage = $productCollection->getLastPageNumber();
         $pageNumber = 1;
         do {
+            // Stop indexing if total memory used by the script
+            // is over 50% of the total available for PHP
+            if (Memory::getPercentageUsedMem() > 50) {
+                $this->logger->logWithMemoryConsumption(
+                    'Total memory used by indexer is over 50%, exiting gracefully...'
+                );
+                return;
+            }
             $productCollection->setCurPage($pageNumber);
             $productCollection->addAttributeToSelect('id')
                 ->addAttributeToFilter(
