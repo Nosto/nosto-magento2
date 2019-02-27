@@ -53,7 +53,7 @@ use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
 use Nosto\Tagging\Model\Product\Repository as NostoProductRepository;
-use Nosto\Tagging\Util\Memory;
+use Nosto\Util\Memory;
 use Nosto\Types\Product\ProductInterface as NostoProductInterface;
 
 /**
@@ -123,23 +123,6 @@ class Service
         $this->productFactory = $productFactory;
         $this->storeEmulator = $emulation;
         $this->cacheManager = $cacheManager;
-    }
-
-    /**
-     * Class Destructor
-     */
-    public function __destruct()
-    {
-        $this->logger = null;
-        $this->nostoProductBuilder = null;
-        $this->nostoHelperAccount = null;
-        $this->nostoHelperData = null;
-        $this->nostoProductRepository = null;
-        $this->nostoQueueRepository = null;
-        $this->nostoQueueFactory = null;
-        $this->storeManager = null;
-        $this->productFactory = null;
-        $this->storeEmulator = null;
     }
 
     /**
@@ -217,7 +200,7 @@ class Service
         foreach ($products as $product => $typeId) {
             $parentProductIds = $this->nostoProductRepository->resolveParentProductIdsByProductId($product, $typeId);
             if (!empty($parentProductIds)) {
-                foreach ($parentProductIds as $parentProductId) { // Maybe simplify with array_merge?
+                foreach ($parentProductIds as $parentProductId) {
                     $productIdsForQueue[] = $parentProductId;
                 }
             } else {
@@ -397,7 +380,6 @@ class Service
                 $this->logger->exception($e);
             }
             $op->clearCollection();
-            $op->__destruct();
         }
         $this->logger->logWithMemoryConsumption('After Upsert sent');
 

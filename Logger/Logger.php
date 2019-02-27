@@ -38,7 +38,7 @@ namespace Nosto\Tagging\Logger;
 
 use Monolog\Logger as MonologLogger;
 use Nosto\Tagging\Helper\NewRelic;
-use Nosto\Tagging\Util\Memory;
+use Nosto\Util\Memory;
 
 class Logger extends MonologLogger
 {

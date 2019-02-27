@@ -16,7 +16,7 @@ use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Product\QueueRepository as NostoQueueRepository;
 use Nosto\Tagging\Model\Product\Service as ProductService;
-use Nosto\Tagging\Util\Memory;
+use Nosto\Util\Memory;
 
 /**
  * An indexer for Nosto product sync
