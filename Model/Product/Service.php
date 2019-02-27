@@ -54,6 +54,7 @@ use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
 use Nosto\Tagging\Model\Product\Repository as NostoProductRepository;
 use Nosto\Util\Memory;
 use Nosto\Types\Product\ProductInterface as NostoProductInterface;
+use Nosto\Exception\OutOfMemoryException;
 
 /**
  * Service class for updating products to Nosto
@@ -255,6 +256,8 @@ class Service
             }
             try {
                 $this->process($productIds);
+            } catch (OutOfMemoryException $e) {
+                throw $e;
             } catch (\Exception $e) {
                 $this->logger->exception($e);
             } finally {
@@ -290,6 +293,8 @@ class Service
             $this->storeEmulator->startEnvironmentEmulation($store->getId());
             try {
                 $this->processForAccount($uniqueProductIds, $store, $nostoAccount);
+            } catch (OutOfMemoryException $e) {
+                throw $e;
             } catch (\Exception $e) {
                 $this->logger->exception($e);
             } finally {
@@ -331,6 +336,13 @@ class Service
         $productsStillExist = $productSearch->getItems();
         $productIdsStillExist = [];
         if (!empty($productsStillExist)) {
+            // Stop indexing if total memory used by the script
+            // is over 50% of the total available for PHP
+            if (Memory::getPercentageUsedMem() > 50) {
+                $msg = 'Total memory used by indexer is over 50%';
+                $this->logger->logWithMemoryConsumption($msg);
+                throw new OutOfMemoryException($msg); // This also invalidates the indexer status
+            }
             $op = new UpsertProduct($nostoAccount);
             $op->setResponseTimeout(self::$responseTimeOut);
             /* @var Product $product */

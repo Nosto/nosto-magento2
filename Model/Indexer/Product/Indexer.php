@@ -16,7 +16,7 @@ use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Product\QueueRepository as NostoQueueRepository;
 use Nosto\Tagging\Model\Product\Service as ProductService;
-use Nosto\Util\Memory;
+use Nosto\Exception\OutOfMemoryException;
 
 /**
  * An indexer for Nosto product sync
@@ -52,6 +52,7 @@ class Indexer implements IndexerActionInterface, MviewActionInterface
         $this->productCollectionFactory = $productCollectionFactory;
         $this->nostoQueueRepository = $nostoQueueRepository;
     }
+
     /**
      * @inheritdoc
      * @throws \Exception
@@ -71,14 +72,6 @@ class Indexer implements IndexerActionInterface, MviewActionInterface
         $lastPage = $productCollection->getLastPageNumber();
         $pageNumber = 1;
         do {
-            // Stop indexing if total memory used by the script
-            // is over 50% of the total available for PHP
-            if (Memory::getPercentageUsedMem() > 50) {
-                $this->logger->logWithMemoryConsumption(
-                    'Total memory used by indexer is over 50%, exiting gracefully...'
-                );
-                return;
-            }
             $productCollection->setCurPage($pageNumber);
             $productCollection->addAttributeToSelect('id')
                 ->addAttributeToFilter(
@@ -95,7 +88,11 @@ class Indexer implements IndexerActionInterface, MviewActionInterface
             $this->logger->logWithMemoryConsumption(
                 sprintf('Indexing from executeFull, remaining pages: %d', $lastPage - $pageNumber)
             );
-            $this->productService->update($products);
+            try {
+                $this->productService->update($products);
+            } catch (OutOfMemoryException $e) {
+                throw $e;
+            }
             $this->productService->processed = [];
             $products = null;
             $pageNumber++;
