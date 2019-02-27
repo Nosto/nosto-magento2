@@ -40,7 +40,6 @@ use DateTime;
 use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\ProductFactory;
-use Magento\Framework\App\CacheInterface;
 use Magento\Store\Model\App\Emulation;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManager;
@@ -65,8 +64,8 @@ class Service
 {
     public static $batchSize = 100;
     public static $responseTimeOut = 500;
-    private $productUpdatesActive;
 
+    private $productUpdatesActive;
     private $nostoProductBuilder;
     private $logger;
     private $nostoHelperAccount;
@@ -77,8 +76,6 @@ class Service
     private $productFactory;
     private $nostoQueueRepository;
     private $storeEmulator;
-    private $cacheManager;
-
     public $processed = [];
 
     /**
@@ -97,7 +94,6 @@ class Service
      * @param StoreManager $storeManager
      * @param ProductFactory $productFactory
      * @param Emulation $emulation
-     * @param CacheInterface $cacheManager
      */
     public function __construct(
         NostoLogger $logger,
@@ -109,8 +105,7 @@ class Service
         QueueFactory $nostoQueueFactory,
         StoreManager $storeManager,
         ProductFactory $productFactory,
-        Emulation $emulation,
-        CacheInterface $cacheManager
+        Emulation $emulation
     ) {
         $this->logger = $logger;
         $this->nostoProductBuilder = $nostoProductBuilder;
@@ -122,7 +117,6 @@ class Service
         $this->storeManager = $storeManager;
         $this->productFactory = $productFactory;
         $this->storeEmulator = $emulation;
-        $this->cacheManager = $cacheManager;
     }
 
     /**
