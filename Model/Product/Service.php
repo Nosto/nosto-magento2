@@ -314,7 +314,7 @@ class Service
      * @param Account $nostoAccount
      * @throws \Exception
      * @throws MemoryOutOfBoundsException
-     * @suppress PhanUndeclaredClassMethod
+     * @suppress PhanUndeclaredMethod
      */
     public function processForAccount(array $uniqueProductIds, Store $store, Account $nostoAccount)
     {
@@ -394,11 +394,14 @@ class Service
         }
         $this->logger->logWithMemoryConsumption('After Upsert sent');
 
-        // Magento internally cache those queries
-        // Enforce cleaning of this as much as possible
-        foreach ($productsStillExist as $product) {
-            /* @var Product $product */
-            $product->clearInstance();
+        try {
+            // Magento internally cache those queries
+            // Enforce cleaning of this as much as possible
+            foreach ($productsStillExist as $product) {
+                $product->clearInstance();
+            }
+        } catch (\Exception $e) {
+            $this->logger->exception($e);
         }
         $productSearch->setItems([]);
 
