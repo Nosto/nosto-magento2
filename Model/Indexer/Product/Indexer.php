@@ -16,7 +16,7 @@ use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Product\QueueRepository as NostoQueueRepository;
 use Nosto\Tagging\Model\Product\Service as ProductService;
-use Nosto\Exception\OutOfMemoryException;
+use Nosto\Exception\MemoryOutOfBoundsException;
 
 /**
  * An indexer for Nosto product sync
@@ -90,7 +90,7 @@ class Indexer implements IndexerActionInterface, MviewActionInterface
             );
             try {
                 $this->productService->update($products);
-            } catch (OutOfMemoryException $e) {
+            } catch (MemoryOutOfBoundsException $e) {
                 throw $e;
             }
             $this->productService->processed = [];

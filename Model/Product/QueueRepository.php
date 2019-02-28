@@ -236,6 +236,7 @@ class QueueRepository implements ProductQueueRepositoryInterface
         $collection = $this->queueCollectionFactory->create();
         return (bool)$collection->count();
     }
+
     /**
      * Truncate productQueue table
      */
