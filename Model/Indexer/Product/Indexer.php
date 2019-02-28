@@ -76,10 +76,10 @@ class Indexer implements IndexerActionInterface, MviewActionInterface
             $productCollection->addAttributeToSelect('id')
                 ->addAttributeToFilter(
                     'status',
-                        ['eq'=> Status::STATUS_ENABLED]
+                    ['eq'=> Status::STATUS_ENABLED]
                 )->addAttributeToFilter(
                     'visibility',
-                        ['neq'=> Visibility::VISIBILITY_NOT_VISIBLE]
+                    ['neq'=> Visibility::VISIBILITY_NOT_VISIBLE]
                 );
             $products = [];
             foreach ($productCollection->getItems() as $product) {
