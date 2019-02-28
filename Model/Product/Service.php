@@ -392,6 +392,7 @@ class Service
         // Magento internally cache those queries
         // Enforce cleaning of this as much as possible
         foreach ($productsStillExist as $product) {
+            /* @var $product \Magento\Catalog\Model\Product */
             $product->clearInstance();
         }
         $productSearch->setItems([]);

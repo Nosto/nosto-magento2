@@ -234,7 +234,7 @@ class QueueRepository implements ProductQueueRepositoryInterface
     public function isQueuePopulated()
     {
         $collection = $this->queueCollectionFactory->create();
-        return (bool)$collection->count();
+        return $collection->getSize() > 0;
     }
 
     /**

@@ -216,16 +216,14 @@ class Repository
         if ($cachedProduct) {
             return $cachedProduct;
         }
-
-        $parentProductIds = null;
         if ($typeId === Type::TYPE_SIMPLE) {
             $parentProductIds = $this->configurableProduct->getParentIdsByChild(
                 $productId
             );
+            $this->saveParentIdsToCacheByProductId($productId, $parentProductIds);
+            return $parentProductIds;
         }
-        $this->saveParentIdsToCacheByProductId($productId, $parentProductIds);
-
-        return $parentProductIds;
+        return null;
     }
 
     /**
