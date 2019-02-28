@@ -1,7 +1,7 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
 ### 3.0.4
-* Fix error that did not add tag1 and tag 2 to custom fields
+* Fix issue populating custom fields from Nosto product tags
 
 ### 3.0.3
 * Fix error that may happen when order and cart items has no parent product associated
