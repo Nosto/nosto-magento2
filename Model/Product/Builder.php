@@ -371,8 +371,7 @@ class Builder
                             $nostoProduct->addTag3(sprintf('%s:%s', $productAttribute, $attributeValue));
                             break;
                         default:
-                            throw new NostoException('Method add'.$tag.' is not defined.' );
-                            break;
+                            throw new NostoException('Method add'.$tag.' is not defined.');
                     }
                 } catch (\Exception $e) {
                     $this->logger->exception($e);
