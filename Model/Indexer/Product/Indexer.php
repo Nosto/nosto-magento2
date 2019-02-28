@@ -75,10 +75,11 @@ class Indexer implements IndexerActionInterface, MviewActionInterface
             $productCollection->setCurPage($pageNumber);
             $productCollection->addAttributeToSelect('id')
                 ->addAttributeToFilter(
-                    [
-                        ['attribute'=>'status','eq'=> Status::STATUS_ENABLED],
-                        ['attribute'=>'visibility','neq'=> Visibility::VISIBILITY_NOT_VISIBLE]
-                    ]
+                    'status',
+                        ['eq'=> Status::STATUS_ENABLED]
+                )->addAttributeToFilter(
+                    'visibility',
+                        ['neq'=> Visibility::VISIBILITY_NOT_VISIBLE]
                 );
             $products = [];
             foreach ($productCollection->getItems() as $product) {
