@@ -136,6 +136,7 @@ class Service
      * Adds products to queue by id
      *
      * @param ProductInterface[] array of product objects
+     * @throws MemoryOutOfBoundsException
      * @throws \Exception
      */
     public function update(array $products)
@@ -226,6 +227,7 @@ class Service
      * Updates all products in queue to Nosto
      *
      * @return void
+     * @throws MemoryOutOfBoundsException
      */
     public function flushQueue()
     {
@@ -276,6 +278,7 @@ class Service
      * Updates products to Nosto by given product ids and store
      *
      * @param array $productIds
+     * @throws MemoryOutOfBoundsException
      */
     public function process(array $productIds)
     {
@@ -310,6 +313,8 @@ class Service
      * @param Store $store
      * @param Account $nostoAccount
      * @throws \Exception
+     * @throws MemoryOutOfBoundsException
+     * @suppress PhanUndeclaredClassMethod
      */
     public function processForAccount(array $uniqueProductIds, Store $store, Account $nostoAccount)
     {
@@ -392,7 +397,7 @@ class Service
         // Magento internally cache those queries
         // Enforce cleaning of this as much as possible
         foreach ($productsStillExist as $product) {
-            /* @var $product \Magento\Catalog\Model\Product */
+            /* @var Product $product */
             $product->clearInstance();
         }
         $productSearch->setItems([]);
