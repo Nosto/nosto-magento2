@@ -17,6 +17,7 @@ use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Product\QueueRepository as NostoQueueRepository;
 use Nosto\Tagging\Model\Product\Service as ProductService;
 use Nosto\Exception\MemoryOutOfBoundsException;
+use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 
 /**
  * An indexer for Nosto product sync
@@ -31,6 +32,7 @@ class Indexer implements IndexerActionInterface, MviewActionInterface
     private $logger;
     private $productCollectionFactory;
     private $nostoQueueRepository;
+    private $nostoHelperAccount;
 
     /**
      * @param ProductService $productService
@@ -38,19 +40,22 @@ class Indexer implements IndexerActionInterface, MviewActionInterface
      * @param NostoLogger $logger
      * @param ProductCollectionFactory $productCollectionFactory
      * @param NostoQueueRepository $nostoQueueRepository
+     * @param NostoHelperAccount\Proxy $nostoHelperAccount
      */
     public function __construct(
         ProductService $productService,
         NostoHelperData $dataHelper,
         NostoLogger $logger,
         ProductCollectionFactory $productCollectionFactory,
-        NostoQueueRepository $nostoQueueRepository
+        NostoQueueRepository $nostoQueueRepository,
+        NostoHelperAccount\Proxy $nostoHelperAccount
     ) {
         $this->productService = $productService;
         $this->dataHelper = $dataHelper;
         $this->logger = $logger;
         $this->productCollectionFactory = $productCollectionFactory;
         $this->nostoQueueRepository = $nostoQueueRepository;
+        $this->nostoHelperAccount = $nostoHelperAccount;
     }
 
     /**
@@ -59,8 +64,12 @@ class Indexer implements IndexerActionInterface, MviewActionInterface
      */
     public function executeFull()
     {
-        if (!$this->dataHelper->isFullReindexEnabled()) {
-            $this->logger->info('Skip full reindex since full reindex is disabled.');
+        if (!$this->dataHelper->isFullReindexEnabled()
+            || empty($this->nostoHelperAccount->getStoresWithNosto())
+        ) {
+            $this->logger->info(
+                'Skip full reindex since full reindex is disabled or Nosto account is not connected.'
+            );
             return;
         }
         // Truncate queue table before first execution if they have leftover products
@@ -125,6 +134,12 @@ class Indexer implements IndexerActionInterface, MviewActionInterface
      */
     public function execute($ids)
     {
+        if (empty($this->nostoHelperAccount->getStoresWithNosto())) {
+            $this->logger->info(
+                'Nosto account is not connected. Skipping reindex.'
+            );
+            return;
+        }
         $this->logger->logWithMemoryConsumption(sprintf('Got %d ids from CL', count($ids)));
         $splitted = array_chunk(array_unique($ids), self::BATCH_SIZE);
         foreach ($splitted as $batch) {
