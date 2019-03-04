@@ -18,6 +18,8 @@ use Nosto\Tagging\Model\Product\QueueRepository as NostoQueueRepository;
 use Nosto\Tagging\Model\Product\Service as ProductService;
 use Nosto\Exception\MemoryOutOfBoundsException;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
+use Magento\Framework\Phrase;
+use Magento\Framework\Exception\LocalizedException;
 
 /**
  * An indexer for Nosto product sync
@@ -101,7 +103,7 @@ class Indexer implements IndexerActionInterface, MviewActionInterface
             try {
                 $this->productService->update($products);
             } catch (MemoryOutOfBoundsException $e) {
-                throw $e;
+                throw new LocalizedException(new Phrase($e->getMessage()));
             }
             $this->productService->processed = [];
             $products = null;
