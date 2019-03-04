@@ -435,7 +435,6 @@ class Data extends AbstractHelper
         return $this->getStoreConfig(self::XML_PATH_INDEXER_MEMORY, $store);
     }
 
-
     /**
      * Returns if pricing variation is enabled
      *
