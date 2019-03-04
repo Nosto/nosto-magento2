@@ -342,9 +342,10 @@ class Service
         $productIdsStillExist = [];
         if (!empty($productsStillExist)) {
             // Stop indexing if total memory used by the script
-            // is over 50% of the total available for PHP
-            if (Memory::getPercentageUsedMem() > 50) {
-                $msg = 'Total memory used by indexer is over 50%';
+            // is over the allowed amount configured for the total available for PHP
+            $percAllowedMem = $this->nostoHelperData->getIndexerMemory($store);
+            if (Memory::getPercentageUsedMem() > $percAllowedMem) {
+                $msg = sprintf('Total memory used by indexer is over %d%%', $percAllowedMem);
                 $this->logger->logWithMemoryConsumption($msg);
                 throw new MemoryOutOfBoundsException($msg); // This also invalidates the indexer status
             }
