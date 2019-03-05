@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "dfb281926bc833bef5236c5c256b2a1d",
+    "content-hash": "424d68bdc10e74b87ba4f69c068679c0",
     "packages": [
         {
             "name": "nosto/php-sdk",
-            "version": "3.10.1",
+            "version": "3.11.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Nosto/nosto-php-sdk.git",
-                "reference": "3b5bd711ec1288071a02483b0ead4b6eb70b4ecb"
+                "reference": "e193335c1b2d8cca05eae9ddf1efccb44e56ca8e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Nosto/nosto-php-sdk/zipball/3b5bd711ec1288071a02483b0ead4b6eb70b4ecb",
-                "reference": "3b5bd711ec1288071a02483b0ead4b6eb70b4ecb",
+                "url": "https://api.github.com/repos/Nosto/nosto-php-sdk/zipball/e193335c1b2d8cca05eae9ddf1efccb44e56ca8e",
+                "reference": "e193335c1b2d8cca05eae9ddf1efccb44e56ca8e",
                 "shasum": ""
             },
             "require": {
@@ -51,7 +51,7 @@
                 "BSD-3-Clause"
             ],
             "description": "PHP SDK for developing Nosto modules for e-commerce platforms",
-            "time": "2019-03-05T12:47:12+00:00"
+            "time": "2019-03-05T14:36:39+00:00"
         },
         {
             "name": "phpseclib/phpseclib",
@@ -853,7 +853,8 @@
                 "url": "https://github.com/magento/marketplace-tools",
                 "reference": "origin/master"
             },
-            "type": "library"
+            "type": "library",
+            "time": "2017-04-06T01:16:20+00:00"
         },
         {
             "name": "magento/module-authorization",
