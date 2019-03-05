@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "65c074d7997427bd9aaa1750e607637e",
+    "content-hash": "dfb281926bc833bef5236c5c256b2a1d",
     "packages": [
         {
             "name": "nosto/php-sdk",
-            "version": "dev-hotfix/3.10.1",
+            "version": "3.10.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Nosto/nosto-php-sdk.git",
-                "reference": "bbbfee24edd577c48c03664009d6bf4f35b48e64"
+                "reference": "3b5bd711ec1288071a02483b0ead4b6eb70b4ecb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Nosto/nosto-php-sdk/zipball/bbbfee24edd577c48c03664009d6bf4f35b48e64",
-                "reference": "bbbfee24edd577c48c03664009d6bf4f35b48e64",
+                "url": "https://api.github.com/repos/Nosto/nosto-php-sdk/zipball/3b5bd711ec1288071a02483b0ead4b6eb70b4ecb",
+                "reference": "3b5bd711ec1288071a02483b0ead4b6eb70b4ecb",
                 "shasum": ""
             },
             "require": {
@@ -51,7 +51,7 @@
                 "BSD-3-Clause"
             ],
             "description": "PHP SDK for developing Nosto modules for e-commerce platforms",
-            "time": "2019-02-25T09:46:34+00:00"
+            "time": "2019-03-05T12:47:12+00:00"
         },
         {
             "name": "phpseclib/phpseclib",
@@ -59,12 +59,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpseclib/phpseclib.git",
-                "reference": "926e43af9d12cbd2510889ca370dd2c5d1e26726"
+                "reference": "ed975a270d7c5dca9d9be73f3b66beca0407eded"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpseclib/phpseclib/zipball/926e43af9d12cbd2510889ca370dd2c5d1e26726",
-                "reference": "926e43af9d12cbd2510889ca370dd2c5d1e26726",
+                "url": "https://api.github.com/repos/phpseclib/phpseclib/zipball/ed975a270d7c5dca9d9be73f3b66beca0407eded",
+                "reference": "ed975a270d7c5dca9d9be73f3b66beca0407eded",
                 "shasum": ""
             },
             "require": {
@@ -143,7 +143,7 @@
                 "x.509",
                 "x509"
             ],
-            "time": "2019-02-25T03:36:40+00:00"
+            "time": "2019-03-04T14:15:45+00:00"
         },
         {
             "name": "symfony/polyfill-ctype",
@@ -395,12 +395,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/composer/composer.git",
-                "reference": "60f198c17d99728b0c1adb5b17e581fe274e34e8"
+                "reference": "522ea033a3c6e72d72954f7cd019a3b75e28f391"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/composer/composer/zipball/60f198c17d99728b0c1adb5b17e581fe274e34e8",
-                "reference": "60f198c17d99728b0c1adb5b17e581fe274e34e8",
+                "url": "https://api.github.com/repos/composer/composer/zipball/522ea033a3c6e72d72954f7cd019a3b75e28f391",
+                "reference": "522ea033a3c6e72d72954f7cd019a3b75e28f391",
                 "shasum": ""
             },
             "require": {
@@ -467,7 +467,7 @@
                 "dependency",
                 "package"
             ],
-            "time": "2019-02-21T13:06:41+00:00"
+            "time": "2019-03-04T16:26:35+00:00"
         },
         {
             "name": "composer/semver",
@@ -853,8 +853,7 @@
                 "url": "https://github.com/magento/marketplace-tools",
                 "reference": "origin/master"
             },
-            "type": "library",
-            "time": "2017-04-06T01:16:20+00:00"
+            "type": "library"
         },
         {
             "name": "magento/module-authorization",
@@ -4425,12 +4424,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/filesystem.git",
-                "reference": "13f7596671e3bf6cb293ee20e72083740382077c"
+                "reference": "fc2eed9862f01faa64ee93aa2655467b184bfe4f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/filesystem/zipball/13f7596671e3bf6cb293ee20e72083740382077c",
-                "reference": "13f7596671e3bf6cb293ee20e72083740382077c",
+                "url": "https://api.github.com/repos/symfony/filesystem/zipball/fc2eed9862f01faa64ee93aa2655467b184bfe4f",
+                "reference": "fc2eed9862f01faa64ee93aa2655467b184bfe4f",
                 "shasum": ""
             },
             "require": {
@@ -4467,7 +4466,7 @@
             ],
             "description": "Symfony Filesystem Component",
             "homepage": "https://symfony.com",
-            "time": "2019-02-07T18:43:24+00:00"
+            "time": "2019-03-04T09:20:13+00:00"
         },
         {
             "name": "symfony/finder",
@@ -5806,12 +5805,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zend-uri.git",
-                "reference": "998ea438cc66efaa298c9527ff06895e56187737"
+                "reference": "b511ac0047a5b90ffa4903f8f3d66c326eab8ae0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/zendframework/zend-uri/zipball/998ea438cc66efaa298c9527ff06895e56187737",
-                "reference": "998ea438cc66efaa298c9527ff06895e56187737",
+                "url": "https://api.github.com/repos/zendframework/zend-uri/zipball/b511ac0047a5b90ffa4903f8f3d66c326eab8ae0",
+                "reference": "b511ac0047a5b90ffa4903f8f3d66c326eab8ae0",
                 "shasum": ""
             },
             "require": {
@@ -5826,8 +5825,8 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.6.x-dev",
-                    "dev-develop": "2.7.x-dev"
+                    "dev-master": "2.7.x-dev",
+                    "dev-develop": "2.8.x-dev"
                 }
             },
             "autoload": {
@@ -5845,7 +5844,7 @@
                 "uri",
                 "zf"
             ],
-            "time": "2018-04-30T13:42:19+00:00"
+            "time": "2019-02-28T20:01:10+00:00"
         },
         {
             "name": "zendframework/zend-validator",
@@ -5924,7 +5923,6 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
-        "nosto/php-sdk": 20,
         "magento/marketplace-tools": 20
     },
     "prefer-stable": false,
