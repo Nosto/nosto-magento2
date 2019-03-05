@@ -286,7 +286,7 @@ class Url extends AbstractHelper
      */
     public function getActiveDomain(Store $store)
     {
-        return UrlHelper::parseUrl($store->getBaseUrl());
+        return UrlHelper::parseDomain($store->getBaseUrl());
     }
 
     /**
