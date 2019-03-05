@@ -325,7 +325,7 @@ class Service
         $productIdsStillExist = [];
 
         if (!empty($productsStillExist)) {
-            $op = new UpsertProduct($nostoAccount, $this->nostoHelperUrl->getActiveDomain());
+            $op = new UpsertProduct($nostoAccount, $this->nostoHelperUrl->getActiveDomain($store));
             $op->setResponseTimeout(self::$responseTimeOut);
 
             /* @var Product $product */

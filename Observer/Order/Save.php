@@ -52,6 +52,7 @@ use Nosto\Tagging\Model\Customer\Repository as CustomerRepository;
 use Nosto\Tagging\Model\Indexer\Product\Indexer;
 use Nosto\Tagging\Model\Order\Builder as NostoOrderBuilder;
 use Nosto\Object\Order\Order as NostoOrder;
+use Nosto\Tagging\Helper\Url as NostoHelperUrl;
 
 /**
  * Class Save
@@ -67,6 +68,7 @@ class Save implements ObserverInterface
     private $customerRepository;
     private $nostoHelperScope;
     private $indexer;
+    private $nostoHelperUrl;
 
     /** @noinspection PhpUndefinedClassInspection */
     /**
@@ -90,7 +92,8 @@ class Save implements ObserverInterface
         /** @noinspection PhpUndefinedClassInspection */
         CustomerRepository $customerRepository,
         NostoOrderBuilder $orderBuilder,
-        IndexerRegistry $indexerRegistry
+        IndexerRegistry $indexerRegistry,
+        NostoHelperUrl $nostoHelperUrl
     ) {
         $this->nostoHelperData = $nostoHelperData;
         $this->nostoHelperAccount = $nostoHelperAccount;
@@ -100,6 +103,7 @@ class Save implements ObserverInterface
         $this->customerRepository = $customerRepository;
         $this->indexer = $indexerRegistry->get(Indexer::INDEXER_ID);
         $this->nostoHelperScope = $nostoHelperScope;
+        $this->nostoHelperUrl = $nostoHelperUrl;
     }
 
     /**
@@ -134,7 +138,8 @@ class Save implements ObserverInterface
                 if ($nostoCustomer instanceof NostoCustomer === false) {
                     return;
                 }
-                $orderService = new OrderConfirm($nostoAccount);
+                $store = $order->getStore();
+                $orderService = new OrderConfirm($nostoAccount, $this->nostoHelperUrl->getActiveDomain($store));
                 try {
                     $orderService->send($nostoOrder, $nostoCustomer->getNostoId());
                 } catch (\Exception $e) {

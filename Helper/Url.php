@@ -49,7 +49,6 @@ use Nosto\Request\Http\HttpRequest;
 use Nosto\Tagging\Helper\Data as NostoDataHelper;
 use Nosto\Tagging\Model\Product\Repository as ProductRepository;
 use Nosto\Tagging\Model\Product\Url\Builder as NostoUrlBuilder;
-use Magento\Framework\ObjectManagerInterface;
 use Nosto\Helper\UrlHelper;
 
 /**
@@ -138,7 +137,6 @@ class Url extends AbstractHelper
     private $backendDataHelper;
     private $productRepository;
     private $nostoUrlBuilder;
-    private $objectManager;
 
     /** @noinspection PhpUndefinedClassInspection */
     /**
@@ -161,8 +159,7 @@ class Url extends AbstractHelper
         UrlBuilder $urlBuilder,
         /** @noinspection PhpDeprecationInspection */
         BackendDataHelper $backendDataHelper,
-        NostoUrlBuilder $nostoUrlBuilder,
-        ObjectManagerInterface $objectManager
+        NostoUrlBuilder $nostoUrlBuilder
     ) {
         parent::__construct($context);
 
@@ -172,7 +169,6 @@ class Url extends AbstractHelper
         $this->nostoDataHelper = $nostoDataHelper;
         $this->backendDataHelper = $backendDataHelper;
         $this->nostoUrlBuilder = $nostoUrlBuilder;
-        $this->objectManager = $objectManager;
     }
 
     /**
@@ -288,10 +284,9 @@ class Url extends AbstractHelper
      *
      * @return string
      */
-    public function getActiveDomain()
+    public function getActiveDomain(Store $store)
     {
-        $storeManager = $this->objectManager->get('\Magento\Store\Model\StoreManagerInterface');
-        $url =  $storeManager->getStore()->getBaseUrl();
+        $url =  $store->getBaseUrl();
         return UrlHelper::parseUrl($url);
     }
 
