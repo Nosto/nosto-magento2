@@ -82,6 +82,7 @@ class Save implements ObserverInterface
      * @param CustomerRepository $customerRepository
      * @param NostoOrderBuilder $orderBuilder
      * @param IndexerRegistry $indexerRegistry
+     * @param NostoHelperUrl $nostoHelperUrl
      */
     public function __construct(
         NostoHelperData $nostoHelperData,

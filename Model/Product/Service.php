@@ -96,6 +96,7 @@ class Service
      * @param StoreManager $storeManager
      * @param ProductFactory $productFactory
      * @param Emulation $emulation
+     * @param NostoHelperUrl $nostoHelperUrl
      */
     public function __construct(
         NostoLogger $logger,

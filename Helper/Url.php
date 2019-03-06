@@ -50,6 +50,7 @@ use Nosto\Tagging\Helper\Data as NostoDataHelper;
 use Nosto\Tagging\Model\Product\Repository as ProductRepository;
 use Nosto\Tagging\Model\Product\Url\Builder as NostoUrlBuilder;
 use Nosto\Helper\UrlHelper;
+use Nosto\Tagging\Logger\Logger as NostoLogger;
 
 /**
  * Url helper class for common URL related tasks.
@@ -137,6 +138,7 @@ class Url extends AbstractHelper
     private $backendDataHelper;
     private $productRepository;
     private $nostoUrlBuilder;
+    private $logger;
 
     /** @noinspection PhpUndefinedClassInspection */
     /**
@@ -159,7 +161,8 @@ class Url extends AbstractHelper
         UrlBuilder $urlBuilder,
         /** @noinspection PhpDeprecationInspection */
         BackendDataHelper $backendDataHelper,
-        NostoUrlBuilder $nostoUrlBuilder
+        NostoUrlBuilder $nostoUrlBuilder,
+        NostoLogger $nostoLogger
     ) {
         parent::__construct($context);
 
@@ -169,6 +172,7 @@ class Url extends AbstractHelper
         $this->nostoDataHelper = $nostoDataHelper;
         $this->backendDataHelper = $backendDataHelper;
         $this->nostoUrlBuilder = $nostoUrlBuilder;
+        $this->logger = $nostoLogger;
     }
 
     /**
@@ -282,11 +286,18 @@ class Url extends AbstractHelper
     /**
      * Returns the store domain
      *
+     * @param Store $store
      * @return string
      */
     public function getActiveDomain(Store $store)
     {
-        return UrlHelper::parseDomain($store->getBaseUrl());
+        try {
+            return UrlHelper::parseDomain($store->getBaseUrl());
+        } catch (\Exception $e) {
+            $this->logger->exception($e);
+            return '';
+        }
+
     }
 
     /**
