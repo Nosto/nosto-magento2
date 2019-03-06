@@ -297,7 +297,6 @@ class Url extends AbstractHelper
             $this->logger->exception($e);
             return '';
         }
-
     }
 
     /**
