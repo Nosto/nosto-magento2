@@ -853,8 +853,7 @@
                 "url": "https://github.com/magento/marketplace-tools",
                 "reference": "origin/master"
             },
-            "type": "library",
-            "time": "2017-04-06T01:16:20+00:00"
+            "type": "library"
         },
         {
             "name": "magento/module-authorization",
