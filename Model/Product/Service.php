@@ -63,7 +63,7 @@ use Nosto\Exception\MemoryOutOfBoundsException;
  */
 class Service
 {
-    public static $batchSize = 100;
+    public static $batchSize = 50;
     public static $responseTimeOut = 500;
 
     private $productUpdatesActive;
