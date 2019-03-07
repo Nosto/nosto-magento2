@@ -44,6 +44,7 @@ use Magento\Eav\Api\AttributeSetRepositoryInterface;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Review\Model\ReviewFactory;
 use Magento\Store\Model\Store;
+use Nosto\NostoException;
 use Nosto\Object\Product\Product as NostoProduct;
 use Nosto\Tagging\Helper\Currency as CurrencyHelper;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
@@ -326,11 +327,11 @@ class Builder
     {
         $attributes = [];
         foreach (self::CUSTOMIZED_TAGS as $tag) {
-            $attributes = $this->nostoDataHelper->getTagAttributes($tag, $store);
-            if (!$attributes) {
+            $tagAttributes = $this->nostoDataHelper->getTagAttributes($tag, $store);
+            if (!$tagAttributes) {
                 continue;
             }
-            foreach ($attributes as $productAttribute) {
+            foreach ($tagAttributes as $productAttribute) {
                 $attributes[] = $productAttribute;
             }
         }
@@ -361,9 +362,20 @@ class Builder
                     if (empty($attributeValue)) {
                         continue;
                     }
-                    //addTag1(), addTag2() and addTag3() are called
-                    $addTagMethodName = 'add' . $tag;
-                    $nostoProduct->$addTagMethodName(sprintf('%s:%s', $productAttribute, $attributeValue));
+
+                    switch ($tag) {
+                        case 'tag1':
+                            $nostoProduct->addTag1(sprintf('%s:%s', $productAttribute, $attributeValue));
+                            break;
+                        case 'tag2':
+                            $nostoProduct->addTag2(sprintf('%s:%s', $productAttribute, $attributeValue));
+                            break;
+                        case 'tag3':
+                            $nostoProduct->addTag3(sprintf('%s:%s', $productAttribute, $attributeValue));
+                            break;
+                        default:
+                            throw new NostoException('Method add'.$tag.' is not defined.');
+                    }
                 } catch (\Exception $e) {
                     $this->logger->exception($e);
                 }
