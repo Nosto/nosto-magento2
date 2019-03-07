@@ -35,7 +35,7 @@
  */
 
 /**
- * @var $this Nosto\Tagging\Block\Adminhtml\Form\Field\SSOToken
+ * @var $this Nosto\Tagging\Block\Adminhtml\Form\Field\Tokens
  */
 ?>
 
@@ -55,7 +55,7 @@
     }
 </style>
 <fieldset width="100%">
-    <?php if($this->getAccountDetails() == null) : ?>
+    <?php if ($this->getAccountDetails() === null) : ?>
         <div>
             <?php echo __('There is no account connected') ?>
         </div>
@@ -66,24 +66,24 @@
                     <?php echo __('Account ID'); ?>
                 </td>
                 <td class="token-container" style="padding: 2.2rem 1.5rem 1rem 1.5rem;">
+                  <label>
                     <input type="text" readonly
                         value = "<?php echo $this->getAccountDetails()->getName(); ?>"
                     />
+                  </label>
                 </td>
             </tr>
-
-        <?php foreach($this->getAccountDetails()->getTokens() as $token): ?>
+        <?php foreach ($this->getAccountDetails()->getTokens() as $token): ?>
             <tr>
                 <td class="token-title">
                     <?php echo $token->getName() ?> Token
                 </td>
                 <td class="token-container" style="padding: 2.2rem 1.5rem 1rem 1.5rem;">
-
+                  <label>
                     <input type="text" readonly style="width:100%; word-wrap:break-word;"
                         value="<?php echo $token->getValue() ?>"
                     />
-
-
+                  </label>
                 </td>
             </tr>
         <?php endforeach; ?>

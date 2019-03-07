@@ -36,12 +36,13 @@
 
 namespace Nosto\Tagging\Block\Adminhtml\Form\Field;
 
-use Nosto\Tagging\Helper\Scope as NostoHelperScope;
-use Nosto\Tagging\Helper\Account as NostoHelperAccount;
-use Magento\Framework\Data\Form\Element\AbstractElement;
-use Magento\Config\Block\System\Config\Form\Field;
 use Magento\Backend\Block\Template\Context;
+use Magento\Config\Block\System\Config\Form\Field;
 use Magento\Framework\App\Request\Http;
+use Magento\Framework\Data\Form\Element\AbstractElement;
+use Nosto\Object\Signup\Account as SignupAccount;
+use Nosto\Tagging\Helper\Account as NostoHelperAccount;
+use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 
 class Tokens extends Field
 {
@@ -75,18 +76,16 @@ class Tokens extends Field
         $this->request = $request;
     }
 
-    //@codingStandardsIgnoreStart
     /**
      * Get the Nosto account details
      *
-     * @return \Nosto\Object\Signup\Account|null
+     * @return SignupAccount|null
      */
     public function getAccountDetails()
     {
         $id = (int) $this->request->getParam('store');
         $store = $this->nostoHelperScope->getStore($id);
-        $account = $this->nostoHelperAccount->findAccount($store);
-        return $account;
+        return $this->nostoHelperAccount->findAccount($store);
     }
 
     /**
@@ -108,5 +107,4 @@ class Tokens extends Field
         $this->setTemplate('tokens.phtml');
         return $this;
     }
-    //@codingStandardsIgnoreEnd
 }
