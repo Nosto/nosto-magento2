@@ -127,9 +127,10 @@ class Save implements ObserverInterface
             /* @var Order $order */
             /** @noinspection PhpUndefinedMethodInspection */
             $order = $observer->getOrder();
+            $store = $order->getStore();
             $nostoOrder = $this->nostoOrderBuilder->build($order);
             $nostoAccount = $this->nostoHelperAccount->findAccount(
-                $this->nostoHelperScope->getStore()
+                $store
             );
             if ($nostoAccount !== null) {
                 $quoteId = $order->getQuoteId();
@@ -139,7 +140,6 @@ class Save implements ObserverInterface
                 if ($nostoCustomer instanceof NostoCustomer === false) {
                     return;
                 }
-                $store = $order->getStore();
                 $orderService = new OrderConfirm($nostoAccount, $this->nostoHelperUrl->getActiveDomain($store));
                 try {
                     $orderService->send($nostoOrder, $nostoCustomer->getNostoId());
