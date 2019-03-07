@@ -53,6 +53,7 @@ use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
 use Nosto\Tagging\Model\Product\Repository as NostoProductRepository;
 use Nosto\Types\Product\ProductInterface as NostoProductInterface;
+use Nosto\Tagging\Helper\Url as NostoHelperUrl;
 
 /**
  * Service class for updating products to Nosto
@@ -75,6 +76,7 @@ class Service
     private $productFactory;
     private $nostoQueueRepository;
     private $storeEmulator;
+    private $nostoHelperUrl;
 
     public $processed = [];
 
@@ -94,6 +96,7 @@ class Service
      * @param StoreManager $storeManager
      * @param ProductFactory $productFactory
      * @param Emulation $emulation
+     * @param NostoHelperUrl $nostoHelperUrl
      */
     public function __construct(
         NostoLogger $logger,
@@ -105,7 +108,8 @@ class Service
         QueueFactory $nostoQueueFactory,
         StoreManager $storeManager,
         ProductFactory $productFactory,
-        Emulation $emulation
+        Emulation $emulation,
+        NostoHelperUrl $nostoHelperUrl
     ) {
         $this->logger = $logger;
         $this->nostoProductBuilder = $nostoProductBuilder;
@@ -117,6 +121,7 @@ class Service
         $this->storeManager = $storeManager;
         $this->productFactory = $productFactory;
         $this->storeEmulator = $emulation;
+        $this->nostoHelperUrl = $nostoHelperUrl;
     }
 
     /**
@@ -321,7 +326,7 @@ class Service
         $productIdsStillExist = [];
 
         if (!empty($productsStillExist)) {
-            $op = new UpsertProduct($nostoAccount);
+            $op = new UpsertProduct($nostoAccount, $this->nostoHelperUrl->getActiveDomain($store));
             $op->setResponseTimeout(self::$responseTimeOut);
 
             /* @var Product $product */
