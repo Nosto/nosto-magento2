@@ -85,13 +85,11 @@ class Messages implements MessageInterface
         $stores = $this->nostoHelperScope->getStores();
 
         foreach ($stores as $store) {
-
             //Check if the store is connected to Nosto
             if ($this->nostoHelperAccount->findAccount($store)
                 && $this->nostoHelperAccount->isDomainValid($store) === false) {
                     $this->storeNames[] = $store->getName();
                     $this->display = true;
-
             }
         }
 
@@ -115,7 +113,8 @@ class Messages implements MessageInterface
     /**
      * Set the value of the message
      */
-    private function buildMessage(){
+    private function buildMessage()
+    {
         $message = 'Nosto account is invalid for the stores: ';
 
         foreach ($this->storeNames as $storeName) {
@@ -125,5 +124,4 @@ class Messages implements MessageInterface
         $message .= '. Please re-login';
         $this->message = $message;
     }
-
 }
