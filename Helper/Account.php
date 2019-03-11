@@ -86,9 +86,10 @@ class Account extends AbstractHelper
     /**
      * Constructor.
      *
-     * @param Context $context the context.
-     * @param WriterInterface $appConfig the app config writer.
+     * @param Context $context
+     * @param WriterInterface $appConfig
      * @param Scope $nostoHelperScope
+     * @param Url $nostoHelperUrl
      */
     public function __construct(
         Context $context,
@@ -314,6 +315,6 @@ class Account extends AbstractHelper
     {
         $storedDomain = $store->getConfig(self::XML_PATH_DOMAIN);
         $realDomain = $this->nostoHelperUrl->getActiveDomain($store);
-        return ($realDomain == $storedDomain);
+        return ($realDomain === $storedDomain);
     }
 }

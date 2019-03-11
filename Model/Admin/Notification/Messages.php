@@ -66,8 +66,7 @@ class Messages implements MessageInterface
      */
     public function getText()
     {
-        $message = __($this->message);
-        return $message;
+        return __($this->message);
     }
 
     /**
@@ -88,11 +87,11 @@ class Messages implements MessageInterface
         foreach ($stores as $store) {
 
             //Check if the store is connected to Nosto
-            if ($this->nostoHelperAccount->findAccount($store)) {
-                if ($this->nostoHelperAccount->isDomainValid($store) === false) {
+            if ($this->nostoHelperAccount->findAccount($store)
+                && $this->nostoHelperAccount->isDomainValid($store) === false) {
                     $this->storeNames[] = $store->getName();
                     $this->display = true;
-                }
+
             }
         }
 
@@ -120,7 +119,7 @@ class Messages implements MessageInterface
         $message = 'Nosto account is invalid for the stores: ';
 
         foreach ($this->storeNames as $storeName) {
-            $message .= " * ".$storeName;
+            $message .= ' * ' .$storeName;
         }
 
         $message .= '. Please re-login';
