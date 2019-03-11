@@ -39,13 +39,13 @@ namespace Nosto\Tagging\Model\Admin\Notification;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Magento\Framework\Notification\MessageInterface;
+use Magento\Framework\Phrase;
 
 class Messages implements MessageInterface
 {
     private $nostoHelperScope;
     private $nostoHelperAccount;
     private $message;
-    private $storeNames;
     private $display;
 
     /**
@@ -62,7 +62,7 @@ class Messages implements MessageInterface
     }
 
     /**
-     * @return \Magento\Framework\Phrase|string
+     * @return Phrase|string
      */
     public function getText()
     {
@@ -74,6 +74,7 @@ class Messages implements MessageInterface
      */
     public function getIdentity()
     {
+        //@codingStandardsIgnoreLine
         return md5('Nosto_Account_Notification');
     }
 
@@ -83,18 +84,19 @@ class Messages implements MessageInterface
     public function isDisplayed()
     {
         $stores = $this->nostoHelperScope->getStores();
+        $storeNames = [];
 
         foreach ($stores as $store) {
             //Check if the store is connected to Nosto
             if ($this->nostoHelperAccount->findAccount($store)
                 && $this->nostoHelperAccount->isDomainValid($store) === false) {
-                    $this->storeNames[] = $store->getName();
+                    $storeNames[] = $store->getName();
                     $this->display = true;
             }
         }
 
         if ($this->display === true) {
-            $this->buildMessage();
+            $this->buildMessage($storeNames);
             return true;
         }
 
@@ -106,22 +108,20 @@ class Messages implements MessageInterface
      */
     public function getSeverity()
     {
-        // From here you can change notification message type.
         return MessageInterface::SEVERITY_CRITICAL;
     }
 
     /**
      * Set the value of the message
      */
-    private function buildMessage()
+    private function buildMessage($storeNames)
     {
         $message = 'Nosto account is invalid for the stores: ';
 
-        foreach ($this->storeNames as $storeName) {
+        foreach ($storeNames as $storeName) {
             $message .= ' * ' .$storeName;
         }
 
-        $message .= '. Please re-login';
-        $this->message = $message;
+        $this->message = __($message);
     }
 }
