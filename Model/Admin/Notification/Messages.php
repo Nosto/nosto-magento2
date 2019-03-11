@@ -74,7 +74,7 @@ class Messages implements MessageInterface
      */
     public function getIdentity()
     {
-        return 'Nosto_Account_Notification';
+        return md5('Nosto_Account_Notification');
     }
 
     /**
