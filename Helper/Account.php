@@ -50,6 +50,7 @@ use Nosto\Tagging\Helper\Data as NostoHelper;
 use Nosto\Types\Signup\AccountInterface;
 use Nosto\Object\Signup\Account as NostoSignupAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
+use Nosto\Tagging\Helper\Url as NostoHelperUrl;
 
 /**
  * NostoHelperAccount helper class for common tasks related to Nosto accounts.
@@ -68,6 +69,11 @@ class Account extends AbstractHelper
     const XML_PATH_TOKENS = 'nosto_tagging/settings/tokens';
 
     /**
+     * Path to store config store domain.
+     */
+    const XML_PATH_DOMAIN = 'nosto_tagging/settings/domain';
+
+    /**
      * Platform UI version
      */
     const IFRAME_VERSION = 0;
@@ -75,6 +81,7 @@ class Account extends AbstractHelper
     private $moduleManager;
     private $logger;
     private $nostoHelperScope;
+    private $nostoHelperUrl;
 
     /**
      * Constructor.
@@ -86,7 +93,8 @@ class Account extends AbstractHelper
     public function __construct(
         Context $context,
         WriterInterface $appConfig,
-        NostoHelperScope $nostoHelperScope
+        NostoHelperScope $nostoHelperScope,
+        NostoHelperUrl $nostoHelperUrl
     ) {
         parent::__construct($context);
 
@@ -94,6 +102,7 @@ class Account extends AbstractHelper
         $this->moduleManager = $context->getModuleManager();
         $this->logger = $context->getLogger();
         $this->nostoHelperScope = $nostoHelperScope;
+        $this->nostoHelperUrl = $nostoHelperUrl;
     }
 
     /**
@@ -123,6 +132,12 @@ class Account extends AbstractHelper
         $this->config->save(
             self::XML_PATH_TOKENS,
             json_encode($tokens),
+            ScopeInterface::SCOPE_STORES,
+            $store->getId()
+        );
+        $this->config->save(
+            self::XML_PATH_DOMAIN,
+            $this->nostoHelperUrl->getActiveDomain($store),
             ScopeInterface::SCOPE_STORES,
             $store->getId()
         );
@@ -156,6 +171,11 @@ class Account extends AbstractHelper
         );
         $this->config->delete(
             self::XML_PATH_TOKENS,
+            ScopeInterface::SCOPE_STORES,
+            $store->getId()
+        );
+        $this->config->delete(
+            self::XML_PATH_DOMAIN,
             ScopeInterface::SCOPE_STORES,
             $store->getId()
         );
@@ -282,5 +302,18 @@ class Account extends AbstractHelper
         }
 
         return $storesWithNosto;
+    }
+
+    /**
+     * Returns bool value that represent validity of domain
+     *
+     * @param Store $store
+     * @return bool
+     */
+    public function isDomainValid(Store $store)
+    {
+        $storedDomain = $store->getConfig(self::XML_PATH_DOMAIN);
+        $realDomain = $this->nostoHelperUrl->getActiveDomain($store);
+        return ($realDomain == $storedDomain);
     }
 }
