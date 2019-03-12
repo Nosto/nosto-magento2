@@ -96,50 +96,50 @@ class Indexer implements IndexerActionInterface, MviewActionInterface
      */
     public function executeFull()
     {
-        if (!$this->dataHelper->isFullReindexEnabled()
-            || empty($this->nostoHelperAccount->getStoresWithNosto())
+        if ($this->dataHelper->isFullReindexEnabled()
+            && !empty($this->nostoHelperAccount->getStoresWithNosto())
         ) {
+            // Truncate queue table before first execution if they have leftover products
+            if ($this->nostoQueueRepository->isQueuePopulated()) {
+                $this->nostoQueueRepository->truncate();
+            }
+            $productCollection = $this->getProductCollection();
+            $productCollection->setPageSize(self::BATCH_SIZE);
+            $lastPage = $productCollection->getLastPageNumber();
+            $pageNumber = 1;
+            do {
+                $productCollection->setCurPage($pageNumber);
+                $productCollection->addAttributeToSelect('id')
+                    ->addAttributeToFilter(
+                        'status',
+                        ['eq'=> Status::STATUS_ENABLED]
+                    )->addAttributeToFilter(
+                        'visibility',
+                        ['neq'=> Visibility::VISIBILITY_NOT_VISIBLE]
+                    );
+                $products = [];
+                foreach ($productCollection->getItems() as $product) {
+                    $products[$product->getId()] = $product->getTypeId();
+                }
+                $productCollection->clear();
+                $this->logger->logWithMemoryConsumption(
+                    sprintf('Indexing from executeFull, remaining pages: %d', $lastPage - $pageNumber)
+                );
+                try {
+                    $this->productService->update($products);
+                } catch (MemoryOutOfBoundsException $e) {
+                    throw new LocalizedException(new Phrase($e->getMessage()));
+                }
+                $this->productService->processed = [];
+                $products = null;
+                $pageNumber++;
+            } while ($pageNumber <= $lastPage);
+            $productCollection = null;
+        } else {
             $this->logger->info(
                 'Skip full reindex since full reindex is disabled or Nosto account is not connected.'
             );
-            return;
         }
-        // Truncate queue table before first execution if they have leftover products
-        if ($this->nostoQueueRepository->isQueuePopulated()) {
-            $this->nostoQueueRepository->truncate();
-        }
-        $productCollection = $this->getProductCollection();
-        $productCollection->setPageSize(self::BATCH_SIZE);
-        $lastPage = $productCollection->getLastPageNumber();
-        $pageNumber = 1;
-        do {
-            $productCollection->setCurPage($pageNumber);
-            $productCollection->addAttributeToSelect('id')
-                ->addAttributeToFilter(
-                    'status',
-                    ['eq'=> Status::STATUS_ENABLED]
-                )->addAttributeToFilter(
-                    'visibility',
-                    ['neq'=> Visibility::VISIBILITY_NOT_VISIBLE]
-                );
-            $products = [];
-            foreach ($productCollection->getItems() as $product) {
-                $products[$product->getId()] = $product->getTypeId();
-            }
-            $productCollection->clear();
-            $this->logger->logWithMemoryConsumption(
-                sprintf('Indexing from executeFull, remaining pages: %d', $lastPage - $pageNumber)
-            );
-            try {
-                $this->productService->update($products);
-            } catch (MemoryOutOfBoundsException $e) {
-                throw new LocalizedException(new Phrase($e->getMessage()));
-            }
-            $this->productService->processed = [];
-            $products = null;
-            $pageNumber++;
-        } while ($pageNumber <= $lastPage);
-        $productCollection = null;
     }
 
     /**
@@ -166,16 +166,16 @@ class Indexer implements IndexerActionInterface, MviewActionInterface
      */
     public function execute($ids)
     {
-        if (empty($this->nostoHelperAccount->getStoresWithNosto())) {
+        if (!empty($this->nostoHelperAccount->getStoresWithNosto())) {
+            $this->logger->logWithMemoryConsumption(sprintf('Got %d ids from CL', count($ids)));
+            $splitted = array_chunk(array_unique($ids), self::BATCH_SIZE);
+            foreach ($splitted as $batch) {
+                $this->productService->updateByIds($batch);
+            }
+        } else {
             $this->logger->info(
                 'Nosto account is not connected. Skipping reindex.'
             );
-            return;
-        }
-        $this->logger->logWithMemoryConsumption(sprintf('Got %d ids from CL', count($ids)));
-        $splitted = array_chunk(array_unique($ids), self::BATCH_SIZE);
-        foreach ($splitted as $batch) {
-            $this->productService->updateByIds($batch);
         }
     }
 
