@@ -137,7 +137,7 @@ class Indexer implements IndexerActionInterface, MviewActionInterface
             $productCollection = null;
         } else {
             $this->logger->info(
-                'Skip full reindex since full reindex is disabled or Nosto account is not connected.'
+                'Skip full reindex since full reindex is disabled or Nosto account is not connected into any store view'
             );
         }
     }
@@ -174,7 +174,7 @@ class Indexer implements IndexerActionInterface, MviewActionInterface
             }
         } else {
             $this->logger->info(
-                'Nosto account is not connected. Skipping reindex.'
+                'Nosto account is not connected into any store view. Nothing to index.'
             );
         }
     }
