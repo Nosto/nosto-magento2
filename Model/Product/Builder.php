@@ -109,6 +109,7 @@ class Builder
      * @param StockRegistryInterface $stockRegistry
      * @param PriceVariationCollection $priceVariationCollection
      * @param NostoVariationHelper $nostoVariationHelper
+     * @param NostoRating $nostoRatingHelper
      */
     public function __construct(
         NostoHelperData $nostoHelperData,
@@ -181,6 +182,7 @@ class Builder
             $nostoProduct->setProductId((string)$product->getId());
             $nostoProduct->setName($product->getName());
             $nostoProduct->setImageUrl($this->buildImageUrl($product, $store));
+
             $price = $this->nostoCurrencyHelper->convertToTaggingPrice(
                 $this->nostoPriceHelper->getProductFinalDisplayPrice(
                     $product,
@@ -188,6 +190,7 @@ class Builder
                 ),
                 $store
             );
+
             $nostoProduct->setPrice($price);
             $listPrice = $this->nostoCurrencyHelper->convertToTaggingPrice(
                 $this->nostoPriceHelper->getProductDisplayPrice(

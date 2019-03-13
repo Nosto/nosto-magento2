@@ -135,6 +135,11 @@ class Data extends AbstractHelper
     const XML_PATH_LOW_STOCK_INDICATION = 'nosto/flags/low_stock_indication';
 
     /**
+     * Path to the configuration object that stores the percentage of PHP available memory for indexer
+     */
+    const XML_PATH_INDEXER_MEMORY = 'nosto/flags/indexer_memory';
+
+    /**
      * Path to the configuration object for pricing variations
      */
     const XML_PATH_PRICING_VARIATION = 'nosto/multicurrency/pricing_variation';
@@ -417,6 +422,17 @@ class Data extends AbstractHelper
     public function isLowStockIndicationEnabled(StoreInterface $store = null)
     {
         return (bool)$this->getStoreConfig(self::XML_PATH_LOW_STOCK_INDICATION, $store);
+    }
+
+    /**
+     * Returns maximum percentage of PHP available memory that indexer should use
+     *
+     * @param StoreInterface|null $store the store model or null.
+     * @return bool the configuration value
+     */
+    public function getIndexerMemory(StoreInterface $store = null)
+    {
+        return $this->getStoreConfig(self::XML_PATH_INDEXER_MEMORY, $store);
     }
 
     /**

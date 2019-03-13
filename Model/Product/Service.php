@@ -52,7 +52,9 @@ use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
 use Nosto\Tagging\Model\Product\Repository as NostoProductRepository;
+use Nosto\Util\Memory;
 use Nosto\Types\Product\ProductInterface as NostoProductInterface;
+use Nosto\Exception\MemoryOutOfBoundsException;
 use Nosto\Tagging\Helper\Url as NostoHelperUrl;
 
 /**
@@ -64,8 +66,8 @@ class Service
 {
     public static $batchSize = 50;
     public static $responseTimeOut = 500;
-    private $productUpdatesActive;
 
+    private $productUpdatesActive;
     private $nostoProductBuilder;
     private $logger;
     private $nostoHelperAccount;
@@ -77,7 +79,6 @@ class Service
     private $nostoQueueRepository;
     private $storeEmulator;
     private $nostoHelperUrl;
-
     public $processed = [];
 
     /**
@@ -140,6 +141,7 @@ class Service
      * Adds products to queue by id
      *
      * @param ProductInterface[] array of product objects
+     * @throws MemoryOutOfBoundsException
      * @throws \Exception
      */
     public function update(array $products)
@@ -183,54 +185,54 @@ class Service
      */
     public function addToQueue(array $products)
     {
-        if ($this->checkProductUpdatesActive()) {
-            $productCount = count($products);
-            $this->logger->info(
-                sprintf(
-                    'Adding %d products to Nosto queue',
-                    $productCount
-                )
-            );
-            $productIdsForQueue = [];
-            foreach ($products as $product) {
-                if (!$product instanceof Product) {
-                    continue;
-                }
-                $parentProductIds = $this->nostoProductRepository->resolveParentProductIds($product);
-                if (!empty($parentProductIds)) {
-                    foreach ($parentProductIds as $parentProductId) {
-                        $productIdsForQueue[] = $parentProductId;
-                    }
-                } else {
-                    $productIdsForQueue[] = $product->getId();
-                }
-            }
-
-            //remove duplicate
-            $productIdsForQueue = array_unique($productIdsForQueue);
-
-            foreach ($productIdsForQueue as $productIdForQueue) {
-                $queue = $this->nostoQueueFactory->create();
-                $queue->setProductId($productIdForQueue);
-                $queue->setCreatedAt(new DateTime());
-                $this->nostoQueueRepository->save($queue); // @codingStandardsIgnoreLine
-            }
-
-            $this->logger->info(
-                sprintf(
-                    'Added %d products to Nosto queue',
-                    $productCount
-                )
-            );
-        } else {
+        if (!$this->checkProductUpdatesActive()) {
             $this->logger->debug('Product API updates are disabled for all store views');
+            return;
         }
+
+        $productCount = count($products);
+        $this->logger->logWithMemoryConsumption(
+            sprintf(
+                'Adding %d products to Nosto queue',
+                $productCount
+            )
+        );
+        $productIdsForQueue = [];
+        foreach ($products as $product => $typeId) {
+            $parentProductIds = $this->nostoProductRepository->resolveParentProductIdsByProductId($product, $typeId);
+            if (!empty($parentProductIds)) {
+                foreach ($parentProductIds as $parentProductId) {
+                    $productIdsForQueue[] = $parentProductId;
+                }
+            } else {
+                $productIdsForQueue[] = $product;
+            }
+        }
+
+        // Remove duplicates
+        $productIdsForQueue = array_unique($productIdsForQueue);
+
+        // Add to nosto queue (using object manager)
+        foreach ($productIdsForQueue as $productIdForQueue) {
+            $queue = $this->nostoQueueFactory->create();
+            $queue->setProductId($productIdForQueue);
+            $queue->setCreatedAt(new DateTime());
+            $this->nostoQueueRepository->save($queue); // @codingStandardsIgnoreLine
+        }
+
+        $this->logger->info(
+            sprintf(
+                'Added %d products to Nosto queue',
+                count($productIdsForQueue)
+            )
+        );
     }
 
     /**
      * Updates all products in queue to Nosto
      *
      * @return void
+     * @throws MemoryOutOfBoundsException
      */
     public function flushQueue()
     {
@@ -246,10 +248,11 @@ class Service
         $maxBatches = $remaining / self::$batchSize;
 
         while ($remaining > 0 && $maxBatches > 0) {
-            $this->logger->info(
+            $this->logger->logWithMemoryConsumption(
                 sprintf(
-                    'Flushing %d products from Nosto queue',
-                    $remaining
+                    '%d products remain in Nosto queue - batch size is %d',
+                    $remaining,
+                    self::$batchSize
                 )
             );
 
@@ -260,18 +263,18 @@ class Service
             }
             try {
                 $this->process($productIds);
+            } catch (MemoryOutOfBoundsException $e) {
+                throw $e;
             } catch (\Exception $e) {
                 $this->logger->exception($e);
             } finally {
                 //Regardless of success, delete it from the queue to avoid infinite loop
                 $this->nostoQueueRepository->deleteByProductIds($productIds);
             }
-
-            //prepare for next loop
+            // Prepare for next loop
             $queueEntries = $this->nostoQueueRepository->getFirstPage(self::$batchSize);
             $remaining = $queueEntries->getTotalCount();
-
-            //It is a safe fuse, to prevent unexpected infinite loop
+            // Safe fuse to prevent unexpected infinite loop
             $maxBatches--;
         }
     }
@@ -280,24 +283,29 @@ class Service
      * Updates products to Nosto by given product ids and store
      *
      * @param array $productIds
+     * @throws MemoryOutOfBoundsException
      */
     public function process(array $productIds)
     {
         $uniqueProductIds = array_unique($productIds);
         $storesWithNosto = $this->nostoHelperAccount->getStoresWithNosto();
         foreach ($storesWithNosto as $store) {
-            if ($this->nostoHelperData->isProductUpdatesEnabled($store)) {
-                $nostoAccount = $this->nostoHelperAccount->findAccount($store);
-                if (!$nostoAccount instanceof Account) {
-                    continue;
-                }
-                /** @var \Magento\Store\Model\Store\Interceptor $store */
-                $this->storeEmulator->startEnvironmentEmulation($store->getId());
-                try {
-                    $this->processForAccount($uniqueProductIds, $store, $nostoAccount);
-                } catch (\Exception $e) {
-                    $this->logger->exception($e);
-                }
+            if (!$this->nostoHelperData->isProductUpdatesEnabled($store)) {
+                return;
+            }
+            $nostoAccount = $this->nostoHelperAccount->findAccount($store);
+            if (!$nostoAccount instanceof Account) {
+                continue;
+            }
+            /** @var \Magento\Store\Model\Store\Interceptor $store */
+            $this->storeEmulator->startEnvironmentEmulation($store->getId());
+            try {
+                $this->processForAccount($uniqueProductIds, $store, $nostoAccount);
+            } catch (MemoryOutOfBoundsException $e) {
+                throw $e;
+            } catch (\Exception $e) {
+                $this->logger->exception($e);
+            } finally {
                 $this->storeEmulator->stopEnvironmentEmulation();
             }
         }
@@ -310,25 +318,44 @@ class Service
      * @param Store $store
      * @param Account $nostoAccount
      * @throws \Exception
+     * @throws MemoryOutOfBoundsException
+     * @suppress PhanUndeclaredMethod
      */
     public function processForAccount(array $uniqueProductIds, Store $store, Account $nostoAccount)
     {
-        $productSearch = $this->nostoProductRepository->getByIds($uniqueProductIds);
+        $batchStartMem = Memory::getConsumption(false);
 
-        $this->logger->info(
+        $this->logger->logWithMemoryConsumption(
+            sprintf(
+                '--- Starting batch for %s (%s)---',
+                $store->getName(),
+                $nostoAccount->getName()
+            )
+        );
+
+        $productSearch = $this->nostoProductRepository->getByIds($uniqueProductIds);
+        $totalProductCount = $productSearch->getTotalCount();
+
+        $this->logger->logWithMemoryConsumption(
             sprintf(
                 'Updating total of %d unique products for store %s',
-                $productSearch->getTotalCount(),
+                $totalProductCount,
                 $store->getName()
             )
         );
         $productsStillExist = $productSearch->getItems();
         $productIdsStillExist = [];
-
         if (!empty($productsStillExist)) {
+            // Stop indexing if total memory used by the script
+            // is over the allowed amount configured for the total available for PHP
+            $percAllowedMem = $this->nostoHelperData->getIndexerMemory($store);
+            if (Memory::getPercentageUsedMem() > $percAllowedMem) {
+                $msg = sprintf('Total memory used by indexer is over %d%%', $percAllowedMem);
+                $this->logger->logWithMemoryConsumption($msg);
+                throw new MemoryOutOfBoundsException($msg); // This also invalidates the indexer status
+            }
             $op = new UpsertProduct($nostoAccount, $this->nostoHelperUrl->getActiveDomain($store));
             $op->setResponseTimeout(self::$responseTimeOut);
-
             /* @var Product $product */
             foreach ($productsStillExist as $product) {
                 $productIdsStillExist[] = $product->getId();
@@ -342,17 +369,16 @@ class Service
                     continue;
                 }
             }
-
             try {
                 $op->upsert();
                 $storeName = 'Could not get Store Name';
                 if ($this->storeManager->getStore()) {
                     $storeName = $this->storeManager->getStore()->getName();
                 }
-                $this->logger->info(
+                $this->logger->logWithMemoryConsumption(
                     sprintf(
                         'Sent %d products to for store %s (%d)',
-                        $productSearch->getTotalCount(),
+                        $totalProductCount,
                         $storeName,
                         $store->getId()
                     )
@@ -362,7 +388,7 @@ class Service
                     sprintf(
                         'Failed to send %d products for store %s (%d)' .
                         ' Error was %s',
-                        $productSearch->getTotalCount(),
+                        $totalProductCount,
                         $store->getName(),
                         $store->getId(),
                         $e->getMessage()
@@ -370,8 +396,28 @@ class Service
                 );
                 $this->logger->exception($e);
             }
+            $op->clearCollection();
         }
+        $this->logger->logWithMemoryConsumption('After Upsert sent');
 
+        try {
+            // Magento internally cache those queries
+            // Enforce cleaning of this as much as possible
+            foreach ($productsStillExist as $product) {
+                $product->clearInstance();
+            }
+        } catch (\Exception $e) {
+            $this->logger->exception($e);
+        }
+        $productSearch->setItems([]);
+
+        $batchEndMem = Memory::getConsumption(false);
+        $this->logger->logWithMemoryConsumption(
+            sprintf(
+                ' >>> end batch - memory increase %d kb',
+                round(($batchEndMem - $batchStartMem) / Memory::MB_DIVIDER, 2)
+            )
+        );
         $leftProducts = array_diff($uniqueProductIds, $productIdsStillExist);
         if (!empty($leftProducts)) {
             $this->processDelete($leftProducts, $store, $nostoAccount);
@@ -404,7 +450,7 @@ class Service
             }
             $this->logger->info(
                 sprintf(
-                    'Sent %d products to for deletion %s (%d)',
+                    'Sent %d products for deletion %s (%d)',
                     count($uniqueProductIds),
                     $storeName,
                     $store->getId()
@@ -423,6 +469,7 @@ class Service
             );
             $this->logger->exception($e);
         }
+        unset($op);
     }
 
     /**
