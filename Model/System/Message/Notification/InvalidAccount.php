@@ -34,19 +34,19 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Admin\Notification;
+namespace Nosto\Tagging\Model\System\Message\Notification;
 
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Magento\Framework\Notification\MessageInterface;
 use Magento\Framework\Phrase;
 
-class Messages implements MessageInterface
+class InvalidAccount implements MessageInterface
 {
     private $nostoHelperScope;
     private $nostoHelperAccount;
     private $message;
-    private $display;
+    private $urlBuilder;
 
     /**
      * Messages constructor.
@@ -83,24 +83,14 @@ class Messages implements MessageInterface
      */
     public function isDisplayed()
     {
-        $stores = $this->nostoHelperScope->getStores();
-        $storeNames = [];
+        $invalidAccounts = $this->nostoHelperAccount->getInvalidAccounts();
 
-        foreach ($stores as $store) {
-            //Check if the store is connected to Nosto
-            if ($this->nostoHelperAccount->findAccount($store)
-                && $this->nostoHelperAccount->isDomainValid($store) === false) {
-                    $storeNames[] = $store->getName();
-                    $this->display = true;
-            }
+        if (count($invalidAccounts) === 0) {
+            return false;
         }
 
-        if ($this->display === true) {
-            $this->buildMessage($storeNames);
-            return true;
-        }
-
-        return false;
+        $this->buildMessage($invalidAccounts);
+        return true;
     }
 
     /**
@@ -113,13 +103,16 @@ class Messages implements MessageInterface
 
     /**
      * Set the value of the message
+     * @param array $storeNames
      */
-    private function buildMessage($storeNames)
+    private function buildMessage($invalidStores)
     {
-        $message = 'Nosto account is invalid for the stores: ';
+        $message = '';
 
-        foreach ($storeNames as $storeName) {
-            $message .= ' * ' .$storeName;
+        foreach ($invalidStores as $store) {
+            $message .=  'It looks like you\'ve created Nosto account (<b>' . $store['nostoAccount'] . '</b>) for <b>' .$store['storedDomain']. '</b>
+                and currently store\'s (<b>' . $store['storeName'] . '</b>) front page is <b>' . $store['currentDomain'] . '</b>. It is not possible to share Nosto accounts across multiple domains. Please reset the Nosto settings, and create a new Nosto account, or connect to an existing account.	
+                <a href=" ' . $store['resetUrl'] . ' ">Reset Nosto settings</a> </br></br>';
         }
 
         $this->message = __($message);

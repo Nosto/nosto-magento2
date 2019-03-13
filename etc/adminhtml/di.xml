@@ -38,7 +38,7 @@
 <type name="Magento\Framework\Notification\MessageList">
     <arguments>
         <argument name="messages" xsi:type="array">
-            <item name="Nosto_Notification" xsi:type="string">Nosto\Tagging\Model\Admin\Notification\Messages</item>
+            <item name="Nosto_Notification" xsi:type="string">Nosto\Tagging\Model\System\Message\Notification\InvalidAccount</item>
         </argument>
     </arguments>
 </type>

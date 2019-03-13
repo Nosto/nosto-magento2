@@ -51,6 +51,7 @@ use Nosto\Types\Signup\AccountInterface;
 use Nosto\Object\Signup\Account as NostoSignupAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Helper\Url as NostoHelperUrl;
+use Magento\Framework\UrlInterface;
 
 /**
  * NostoHelperAccount helper class for common tasks related to Nosto accounts.
@@ -82,6 +83,7 @@ class Account extends AbstractHelper
     private $logger;
     private $nostoHelperScope;
     private $nostoHelperUrl;
+    private $urlBuilder;
 
     /**
      * Constructor.
@@ -95,7 +97,8 @@ class Account extends AbstractHelper
         Context $context,
         WriterInterface $appConfig,
         NostoHelperScope $nostoHelperScope,
-        NostoHelperUrl $nostoHelperUrl
+        NostoHelperUrl $nostoHelperUrl,
+        UrlInterface $urlBuilder
     ) {
         parent::__construct($context);
 
@@ -104,6 +107,7 @@ class Account extends AbstractHelper
         $this->logger = $context->getLogger();
         $this->nostoHelperScope = $nostoHelperScope;
         $this->nostoHelperUrl = $nostoHelperUrl;
+        $this->urlBuilder = $urlBuilder;
     }
 
     /**
@@ -306,6 +310,28 @@ class Account extends AbstractHelper
     }
 
     /**
+     * Returns the stored storefront domain
+     *
+     * @param $store
+     * @return string the domain
+     */
+    public function getStoreFrontDomain($store)
+    {
+        return $store->getConfig(self::XML_PATH_DOMAIN);
+    }
+
+    /**
+     * Returns the Nosto account name for the store
+     *
+     * @param $store
+     * @return string account name
+     */
+    public function getAccountName($store)
+    {
+        return $store->getConfig(self::XML_PATH_ACCOUNT);
+    }
+
+    /**
      * Returns bool value that represent validity of domain
      *
      * @param Store $store
@@ -313,8 +339,32 @@ class Account extends AbstractHelper
      */
     public function isDomainValid(Store $store)
     {
-        $storedDomain = $store->getConfig(self::XML_PATH_DOMAIN);
+        $storedDomain = $this->getStoreFrontDomain($store);
         $realDomain = $this->nostoHelperUrl->getActiveDomain($store);
         return ($realDomain === $storedDomain);
+    }
+
+    /**
+     * Returns the list of invalid Nosto accounts
+     *
+     * @return array
+     */
+    public function getInvalidAccounts()
+    {
+        $stores = $this->getStoresWithNosto();
+        $invalidAccounts = [];
+
+        foreach ($stores as $store) {
+            if (!$this->isDomainValid($store)) {
+                $invalidAccounts[] = [
+                    'storeName' => $store->getName(),
+                    'nostoAccount' => $this->getAccountName($store),
+                    'currentDomain' => $this->nostoHelperUrl->getActiveDomain($store),
+                    'storedDomain' => $this->getStoreFrontDomain($store),
+                    'resetUrl' => $this->urlBuilder->getUrl('nosto/account/delete', ['store' => $store->getId()])
+                ];
+            }
+        }
+        return $invalidAccounts;
     }
 }
