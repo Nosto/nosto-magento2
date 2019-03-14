@@ -110,11 +110,13 @@ class InvalidAccount implements MessageInterface
         $message = '';
 
         foreach ($invalidStores as $store) {
-            $message .= 'It looks like you\'ve created Nosto account (<b>' . $store['nostoAccount'] . '</b>) for <b>' .$store['storedDomain']. '</b>';
-            $message .= 'and currently store\'s (<b>' . $store['storeName'] . '</b>) front page is <b>' . $store['currentDomain'] . '</b>.  ';
-            $message .= 'It is not possible to share Nosto accounts across multiple domains.';
-            $message .= 'Please reset the Nosto settings, and create a new Nosto account, or connect to an existing account. ';
-            $message .= '<a href=" ' . $store['resetUrl'] . ' ">Reset Nosto settings</a> </br></br>';
+            $message .= 'It looks like you\'ve created Nosto account (<b>' . $store['nostoAccount'] . '</b>) '
+                .'for <b>' .$store['storedDomain']. '</b> '
+                .'and currently store\'s (<b>' . $store['storeName'] . '</b>) front page is '
+                .'<b>' . $store['currentDomain'] . '</b>.  '
+                .'It is not possible to share Nosto accounts across multiple domains.'
+                .'Please reset the Nosto settings, and create a new Nosto account, or connect to an existing account. '
+                .'<a href=" ' . $store['resetUrl'] . ' ">Reset Nosto settings</a> </br></br>';
         }
 
         $this->message = __($message);
