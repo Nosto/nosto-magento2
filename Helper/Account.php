@@ -361,7 +361,7 @@ class Account extends AbstractHelper
                     'nostoAccount' => $this->getAccountName($store),
                     'currentDomain' => $this->nostoHelperUrl->getActiveDomain($store),
                     'storedDomain' => $this->getStoreFrontDomain($store),
-                    'resetUrl' => $this->urlBuilder->getUrl('nosto/account/delete', ['store' => $store->getId()])
+                    'resetUrl' => $this->urlBuilder->getUrl('nosto/account/index', ['store' => $store->getId()])
                 ];
             }
         }
