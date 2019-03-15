@@ -1,5 +1,15 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 3.1.0
+* Define percentage of PHP memory that indexer is allowed to use
+* Prevent indexing in case Nosto is not connected
+* Improve memory usage during indexing proccess
+* Encode HTML characters automatically 
+* Save storefront domain when creating or connecting Nosto account
+* Display warning in case of mismatching live domain with stored domain
+* Include active domain and Nosto account in API calls
+* Display Nosto tokens in store configuration
+
 ### 3.0.4
 * Fix issue populating custom fields from Nosto product tags
 

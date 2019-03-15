@@ -52,6 +52,7 @@ use Nosto\Tagging\Model\Customer\Repository as CustomerRepository;
 use Nosto\Tagging\Model\Indexer\Product\Indexer;
 use Nosto\Tagging\Model\Order\Builder as NostoOrderBuilder;
 use Nosto\Object\Order\Order as NostoOrder;
+use Nosto\Tagging\Helper\Url as NostoHelperUrl;
 
 /**
  * Class Save
@@ -67,6 +68,7 @@ class Save implements ObserverInterface
     private $customerRepository;
     private $nostoHelperScope;
     private $indexer;
+    private $nostoHelperUrl;
 
     /** @noinspection PhpUndefinedClassInspection */
     /**
@@ -80,6 +82,7 @@ class Save implements ObserverInterface
      * @param CustomerRepository $customerRepository
      * @param NostoOrderBuilder $orderBuilder
      * @param IndexerRegistry $indexerRegistry
+     * @param NostoHelperUrl $nostoHelperUrl
      */
     public function __construct(
         NostoHelperData $nostoHelperData,
@@ -90,7 +93,8 @@ class Save implements ObserverInterface
         /** @noinspection PhpUndefinedClassInspection */
         CustomerRepository $customerRepository,
         NostoOrderBuilder $orderBuilder,
-        IndexerRegistry $indexerRegistry
+        IndexerRegistry $indexerRegistry,
+        NostoHelperUrl $nostoHelperUrl
     ) {
         $this->nostoHelperData = $nostoHelperData;
         $this->nostoHelperAccount = $nostoHelperAccount;
@@ -100,6 +104,7 @@ class Save implements ObserverInterface
         $this->customerRepository = $customerRepository;
         $this->indexer = $indexerRegistry->get(Indexer::INDEXER_ID);
         $this->nostoHelperScope = $nostoHelperScope;
+        $this->nostoHelperUrl = $nostoHelperUrl;
     }
 
     /**
@@ -122,9 +127,10 @@ class Save implements ObserverInterface
             /* @var Order $order */
             /** @noinspection PhpUndefinedMethodInspection */
             $order = $observer->getOrder();
+            $store = $order->getStore();
             $nostoOrder = $this->nostoOrderBuilder->build($order);
             $nostoAccount = $this->nostoHelperAccount->findAccount(
-                $this->nostoHelperScope->getStore()
+                $store
             );
             if ($nostoAccount !== null) {
                 $quoteId = $order->getQuoteId();
@@ -134,7 +140,7 @@ class Save implements ObserverInterface
                 if ($nostoCustomer instanceof NostoCustomer === false) {
                     return;
                 }
-                $orderService = new OrderConfirm($nostoAccount);
+                $orderService = new OrderConfirm($nostoAccount, $this->nostoHelperUrl->getActiveDomain($store));
                 try {
                     $orderService->send($nostoOrder, $nostoCustomer->getNostoId());
                 } catch (\Exception $e) {

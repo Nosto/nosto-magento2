@@ -34,42 +34,27 @@
  *
  */
 
-namespace Nosto\Tagging\Logger;
+namespace Nosto\Tagging\Model\Config\Source;
 
-use Monolog\Logger as MonologLogger;
-use Nosto\Tagging\Helper\NewRelic;
-use Nosto\Util\Memory;
+use Magento\Framework\Option\ArrayInterface;
+use Magento\Framework\Phrase;
 
-class Logger extends MonologLogger
+/**
+ * @package Nosto\Tagging\Model\Config\Source
+ */
+class Memory implements ArrayInterface
 {
     /**
-     * Logs and exception and sends it to New relic if available
-     * @param \Exception $exception
-     * @return bool
-     */
-    public function exception(\Exception $exception)
-    {
-        NewRelic::reportException($exception);
-
-        return parent::error($exception->__toString());
-    }
-
-    /**
-     * Logs a message along with the memory consumption
+     * Options getter
      *
-     * @param $message
-     * @return bool
+     * @return array
      */
-    public function logWithMemoryConsumption($message)
+    public function toOptionArray()
     {
-        return parent::addInfo(
-            sprintf(
-                '%s [mem usage: %sM / %s] [realmem: %sM]',
-                $message,
-                Memory::getConsumption(),
-                Memory::getTotalMemoryLimit(),
-                Memory::getRealConsumption()
-            )
-        );
+        $options = [];
+        for ($i = 10; $i <= 100; $i += 10) {
+            $options[] = ['value' => $i, 'label' => new Phrase($i . '%')];
+        }
+        return $options;
     }
 }

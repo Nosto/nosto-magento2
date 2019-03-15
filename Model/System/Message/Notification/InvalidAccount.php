@@ -34,74 +34,92 @@
  *
  */
 
-namespace Nosto\Tagging\Block;
+namespace Nosto\Tagging\Model\System\Message\Notification;
 
-use Magento\Catalog\Model\Layer\Resolver as LayerResolver;
-use Magento\CatalogSearch\Block\Result;
-use Magento\CatalogSearch\Helper\Data;
-use Magento\Framework\View\Element\Template\Context;
-use Magento\Search\Model\QueryFactory;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
-use Nosto\Object\MarkupableString;
-use Nosto\Object\SearchTerm;
+use Magento\Framework\Notification\MessageInterface;
+use Magento\Framework\Phrase;
 
-/**
- * Search block used for outputting meta-data on the stores search pages.
- * This meta-data is sent to Nosto via JavaScript when users are browsing the
- * pages in the store.
- */
-class Search extends Result
+class InvalidAccount implements MessageInterface
 {
-    use TaggingTrait {
-        TaggingTrait::__construct as taggingConstruct; // @codingStandardsIgnoreLine
-    }
+    private $nostoHelperScope;
+    private $nostoHelperAccount;
+    private $message;
+    private $urlBuilder;
 
     /**
-     * Search constructor.
-     * @param Context $context
-     * @param LayerResolver $layerResolver
-     * @param Data $catalogSearchData
-     * @param QueryFactory $queryFactory
+     * Messages constructor.
      * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoHelperScope $nostoHelperScope
-     * @param array $data
      */
     public function __construct(
-        Context $context,
-        LayerResolver $layerResolver,
-        Data $catalogSearchData,
-        QueryFactory $queryFactory,
         NostoHelperAccount $nostoHelperAccount,
-        NostoHelperScope $nostoHelperScope,
-        array $data = []
+        NostoHelperScope $nostoHelperScope
     ) {
-        parent::__construct($context, $layerResolver, $catalogSearchData, $queryFactory, $data);
-
-        $this->taggingConstruct($nostoHelperAccount, $nostoHelperScope);
+        $this->nostoHelperScope = $nostoHelperScope;
+        $this->nostoHelperAccount = $nostoHelperAccount;
     }
 
     /**
-     * Returns the current escaped search term
-     *
-     * @return string the search term
+     * @return Phrase|string
      */
-    public function getNostoSearchTerm()
+    public function getText()
     {
-        return $this->catalogSearchData->getEscapedQueryText();
+        return __($this->message);
     }
 
     /**
-     * Returns the HTML to render search blocks
-     *
-     * @return MarkupableString
+     * @return string
      */
-    public function getAbstractObject()
+    public function getIdentity()
     {
-        $searchTerm = new SearchTerm(
-            $this->getNostoSearchTerm()
-        );
-        $searchTerm->disableAutoEncodeAll();
-        return $searchTerm;
+        //@codingStandardsIgnoreLine
+        return md5('Nosto_Account_Notification');
+    }
+
+    /**
+     * @return bool
+     */
+    public function isDisplayed()
+    {
+        $invalidAccounts = $this->nostoHelperAccount->getInvalidAccounts();
+
+        if (count($invalidAccounts) === 0) {
+            return false;
+        }
+
+        $this->buildMessage($invalidAccounts);
+        return true;
+    }
+
+    /**
+     * @return int
+     */
+    public function getSeverity()
+    {
+        return MessageInterface::SEVERITY_CRITICAL;
+    }
+
+    /**
+     * Set the value of the message
+     *
+     * @param array $invalidStores
+     */
+    private function buildMessage($invalidStores)
+    {
+        $message = '';
+
+        foreach ($invalidStores as $store) {
+            $message .= 'It looks like you\'ve created Nosto account (<b>' . $store['nostoAccount'] . '</b>) '
+                .'for <b>' .$store['storedDomain']. '</b> '
+                .'and currently store\'s (<b>' . $store['storeName'] . '</b>) front page is '
+                .'<b>' . $store['currentDomain'] . '</b>.  '
+                .'It is not possible to share Nosto accounts across multiple domains.'
+                .'Please reset the Nosto settings, and create a new Nosto account, or connect to an existing account. '
+                .'<a href=" ' . $store['resetUrl'] . ' ">Reset Nosto settings</a> </br></br>';
+        }
+
+        $this->message = __($message);
     }
 }

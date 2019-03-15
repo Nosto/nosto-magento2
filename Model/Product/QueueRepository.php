@@ -187,6 +187,9 @@ class QueueRepository implements ProductQueueRepositoryInterface
         $searchResults->setItems($collection->getItems());
         $searchResults->setTotalCount($collection->getSize());
 
+        // Set collection to be mem dealloc
+        $collection->clear();
+
         return $searchResults;
     }
 
@@ -221,5 +224,31 @@ class QueueRepository implements ProductQueueRepositoryInterface
             $searchCriteria,
             $searchResults
         );
+    }
+
+    /**
+     * Returns if nosto_queue has rows
+     *
+     * @return bool
+     */
+    public function isQueuePopulated()
+    {
+        $collection = $this->queueCollectionFactory->create();
+        return $collection->getSize() > 0;
+    }
+
+    /**
+     * Truncate productQueue table
+     */
+    public function truncate()
+    {
+        try {
+            /** @var \Magento\Framework\DB\Adapter\AdapterInterface $connection */
+            $connection = $this->queueResource->getConnection();
+            $tableName = $this->queueResource->getMainTable();
+            $connection->truncateTable($tableName);
+        } catch (\Exception $e) {
+            $this->logger->exception($e);
+        }
     }
 }

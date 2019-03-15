@@ -189,6 +189,14 @@
                     </comment>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
+                <field id="indexer_memory" translate="label comment" type="select" sortOrder="100"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Indexer Memory</label>
+                    <comment>
+                        <![CDATA[Percentage of total PHP available memory that Nosto indexer is allowed to use]]>
+                    </comment>
+                    <source_model>Nosto\Tagging\Model\Config\Source\Memory</source_model>
+                </field>
             </group>
             <group id="attributes" translate="label" type="text" sortOrder="40" showInDefault="1"
                    showInWebsite="1" showInStore="1">
@@ -237,6 +245,14 @@
                         <strong style="color:red">Warning!</strong> It cannot be enabled if multi-currency is enabled.]]>
                     </comment>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+            </group>
+            <group id="nosto_account_info" translate="label" type="text" sortOrder="60" showInDefault="0"
+                   showInWebsite="0" showInStore="1">
+                <label>Account Details and Tokens</label>
+                <field id="nosto_account_info_fields" translate="label comment" type="text" sortOrder="20"
+                       showInDefault="0" showInWebsite="0" showInStore="1">
+                    <frontend_model>Nosto\Tagging\Block\Adminhtml\Form\Field\Tokens</frontend_model>
                 </field>
             </group>
         </section>

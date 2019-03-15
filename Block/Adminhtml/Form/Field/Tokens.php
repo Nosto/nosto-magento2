@@ -34,74 +34,77 @@
  *
  */
 
-namespace Nosto\Tagging\Block;
+namespace Nosto\Tagging\Block\Adminhtml\Form\Field;
 
-use Magento\Catalog\Model\Layer\Resolver as LayerResolver;
-use Magento\CatalogSearch\Block\Result;
-use Magento\CatalogSearch\Helper\Data;
-use Magento\Framework\View\Element\Template\Context;
-use Magento\Search\Model\QueryFactory;
+use Magento\Backend\Block\Template\Context;
+use Magento\Config\Block\System\Config\Form\Field;
+use Magento\Framework\App\Request\Http;
+use Magento\Framework\Data\Form\Element\AbstractElement;
+use Nosto\Object\Signup\Account as SignupAccount;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
-use Nosto\Object\MarkupableString;
-use Nosto\Object\SearchTerm;
 
-/**
- * Search block used for outputting meta-data on the stores search pages.
- * This meta-data is sent to Nosto via JavaScript when users are browsing the
- * pages in the store.
- */
-class Search extends Result
+class Tokens extends Field
 {
-    use TaggingTrait {
-        TaggingTrait::__construct as taggingConstruct; // @codingStandardsIgnoreLine
-    }
+    /** @var NostoHelperAccount $nostoHelperAccount */
+    public $nostoHelperAccount;
+
+    /** @var NostoHelperScope $nostoHelperScope */
+    public $nostoHelperScope;
+
+    /** @var Http $request */
+    public $request;
 
     /**
-     * Search constructor.
+     * Tokens constructor.
      * @param Context $context
-     * @param LayerResolver $layerResolver
-     * @param Data $catalogSearchData
-     * @param QueryFactory $queryFactory
-     * @param NostoHelperAccount $nostoHelperAccount
-     * @param NostoHelperScope $nostoHelperScope
      * @param array $data
+     * @param Http $request
+     * @param NostoHelperScope $nostoHelperScope
+     * @param NostoHelperAccount $nostoHelperAccount
      */
     public function __construct(
         Context $context,
-        LayerResolver $layerResolver,
-        Data $catalogSearchData,
-        QueryFactory $queryFactory,
-        NostoHelperAccount $nostoHelperAccount,
+        Http $request,
         NostoHelperScope $nostoHelperScope,
+        NostoHelperAccount $nostoHelperAccount,
         array $data = []
     ) {
-        parent::__construct($context, $layerResolver, $catalogSearchData, $queryFactory, $data);
-
-        $this->taggingConstruct($nostoHelperAccount, $nostoHelperScope);
+        parent::__construct($context, $data);
+        $this->nostoHelperAccount = $nostoHelperAccount;
+        $this->nostoHelperScope = $nostoHelperScope;
+        $this->request = $request;
     }
 
     /**
-     * Returns the current escaped search term
+     * Get the Nosto account details
      *
-     * @return string the search term
+     * @return SignupAccount|null
      */
-    public function getNostoSearchTerm()
+    public function getAccountDetails()
     {
-        return $this->catalogSearchData->getEscapedQueryText();
+        $id = (int) $this->request->getParam('store');
+        $store = $this->nostoHelperScope->getStore($id);
+        return $this->nostoHelperAccount->findAccount($store);
     }
 
     /**
-     * Returns the HTML to render search blocks
+     * @param AbstractElement $element
      *
-     * @return MarkupableString
+     * @return string
      */
-    public function getAbstractObject()
+    protected function _getElementHtml(AbstractElement $element) //@codingStandardsIgnoreLine
     {
-        $searchTerm = new SearchTerm(
-            $this->getNostoSearchTerm()
-        );
-        $searchTerm->disableAutoEncodeAll();
-        return $searchTerm;
+        return $this->toHtml();
+    }
+
+    /**
+     * @return $this|Field
+     */
+    protected function _prepareLayout() //@codingStandardsIgnoreLine
+    {
+        parent::_prepareLayout();
+        $this->setTemplate('tokens.phtml');
+        return $this;
     }
 }
