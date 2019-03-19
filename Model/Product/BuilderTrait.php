@@ -153,8 +153,7 @@ trait BuilderTrait
                 $attributeObject = $attributes[$attribute];
                 $frontend = $attributeObject->getFrontend();
                 $frontendValue = $frontend->getValue($product);
-                if (
-                    is_array($frontendValue) && !empty($frontendValue)
+                if (is_array($frontendValue) && !empty($frontendValue)
                     && ArrayHelper::onlyScalarValues($frontendValue)
                 ) {
                     $value = implode(',', $frontendValue);
