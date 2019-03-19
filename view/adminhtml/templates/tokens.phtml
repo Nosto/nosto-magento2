@@ -55,7 +55,8 @@
     }
 </style>
 <fieldset width="100%">
-    <?php if ($this->getAccountDetails() === null) : ?>
+    <?php $accountDetails =  $this->getAccountDetails(); ?>
+    <?php if ($accountDetails === null) : ?>
         <div>
             <?php echo __('There is no account connected') ?>
         </div>
@@ -68,12 +69,12 @@
                 <td class="token-container" style="padding: 2.2rem 1.5rem 1rem 1.5rem;">
                   <label>
                     <input type="text" readonly
-                        value = "<?php echo $this->getAccountDetails()->getName(); ?>"
+                        value = "<?php echo $accountDetails->getName(); ?>"
                     />
                   </label>
                 </td>
             </tr>
-        <?php foreach ($this->getAccountDetails()->getTokens() as $token): ?>
+        <?php foreach ($accountDetails->getTokens() as $token): ?>
             <tr>
                 <td class="token-title">
                     <?php echo $token->getName() ?> Token
