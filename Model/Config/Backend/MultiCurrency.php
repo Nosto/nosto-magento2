@@ -67,8 +67,8 @@ class MultiCurrency extends Value
         ScopeConfigInterface $config,
         TypeListInterface $cacheTypeList,
         WriterInterface $configWriter,
-        ?AbstractResource $resource = null,
-        ?AbstractDb $resourceCollection = null,
+        AbstractResource $resource = null,
+        AbstractDb $resourceCollection = null,
         array $data = []
     ) {
         $this->configWriter = $configWriter;
