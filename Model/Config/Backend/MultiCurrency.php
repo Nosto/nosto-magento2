@@ -92,7 +92,7 @@ class MultiCurrency extends Value
         ) {
             $this->configWriter->save(
                 NostoHelperData::XML_PATH_PRICING_VARIATION,
-                0,
+                '0',
                 $scopeType,
                 $scopeId
             );
