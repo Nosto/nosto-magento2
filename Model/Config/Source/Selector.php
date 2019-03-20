@@ -94,7 +94,9 @@ abstract class Selector implements ArrayInterface
                 'thumbnail_label',
                 'required_options',
                 'tier_price',
-                'meta_title'
+                'meta_title',
+                'media_gallery',
+                'gallery'
             ]
         ]);
         $this->filterCollection($collection);

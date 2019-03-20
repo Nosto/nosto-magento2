@@ -45,6 +45,7 @@ use Magento\Store\Model\Store;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Util\Url as UrlUtil;
+use Nosto\Helper\ArrayHelper;
 
 trait BuilderTrait
 {
@@ -152,7 +153,9 @@ trait BuilderTrait
                 $attributeObject = $attributes[$attribute];
                 $frontend = $attributeObject->getFrontend();
                 $frontendValue = $frontend->getValue($product);
-                if (is_array($frontendValue) && !empty($frontendValue)) {
+                if (is_array($frontendValue) && !empty($frontendValue)
+                    && ArrayHelper::onlyScalarValues($frontendValue)
+                ) {
                     $value = implode(',', $frontendValue);
                 } elseif (is_scalar($frontendValue)) {
                     $value = $frontendValue;
