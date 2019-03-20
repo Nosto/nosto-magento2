@@ -38,18 +38,17 @@ namespace Nosto\Tagging\Model\Config\Backend;
 
 use Magento\Framework\App\Config\Value;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
-use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Magento\Framework\Model\Context;
 use Magento\Framework\Registry;
 use Magento\Framework\App\Cache\TypeListInterface;
 use Magento\Framework\Model\ResourceModel\AbstractResource;
 use Magento\Framework\Data\Collection\AbstractDb;
 use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\App\Config\Storage\WriterInterface;
 
 class MultiCurrency extends Value
 {
-    private $nostoHelperData;
-    private $nostoHelperScope;
+    private $configWriter;
 
     /**
      * MultiCurrency constructor.
@@ -57,8 +56,7 @@ class MultiCurrency extends Value
      * @param Registry $registry
      * @param ScopeConfigInterface $config
      * @param TypeListInterface $cacheTypeList
-     * @param NostoHelperData $nostoHelperData
-     * @param NostoHelperScope $nostoHelperScope
+     * @param WriterInterface $configWriter
      * @param AbstractResource|null $resource
      * @param AbstractDb|null $resourceCollection
      * @param array $data
@@ -68,32 +66,35 @@ class MultiCurrency extends Value
         Registry $registry,
         ScopeConfigInterface $config,
         TypeListInterface $cacheTypeList,
-        NostoHelperData $nostoHelperData,
-        NostoHelperScope $nostoHelperScope,
+        WriterInterface $configWriter,
         ?AbstractResource $resource = null,
         ?AbstractDb $resourceCollection = null,
-        array $data = [])
-    {
-        $this->nostoHelperData = $nostoHelperData;
-        $this->nostoHelperScope = $nostoHelperScope;
+        array $data = []
+    ) {
+        $this->configWriter = $configWriter;
         parent::__construct($context, $registry, $config, $cacheTypeList, $resource, $resourceCollection, $data);
     }
 
     /**
+     * Set Price_Variation to No if MultiCurrency is not disabled
+     *
      * @return Value
      */
     public function beforeSave()
     {
-        //ToDo Check when scope is Website
         $value = $this->getValue();
         $scopeType = $this->getScope();
         $scopeId = $this->getScopeId();
-        $scope = $this->nostoHelperScope->getStore($scopeId);
 
         if ($value == NostoHelperData::SETTING_VALUE_MC_EXCHANGE_RATE
             || $value == NostoHelperData::SETTING_VALUE_MC_SINGLE
         ) {
-           $this->nostoHelperData->disablePricingVariation($scope);
+            $this->configWriter->save(
+                NostoHelperData::XML_PATH_PRICING_VARIATION,
+                0,
+                $scopeType,
+                $scopeId
+            );
         }
 
         return parent::beforeSave();

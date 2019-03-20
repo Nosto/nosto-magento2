@@ -447,16 +447,6 @@ class Data extends AbstractHelper
     }
 
     /**
-     * Set pricing variation as disabled
-     *
-     * @param StoreInterface $store
-     */
-    public function disablePricingVariation(StoreInterface $store)
-    {
-        $this->saveStoreConfig(self::XML_PATH_PRICING_VARIATION, 0, $store);
-    }
-
-    /**
      * Returns if multi currency is disabled
      *
      * @param StoreInterface|null $store the store model or null.
