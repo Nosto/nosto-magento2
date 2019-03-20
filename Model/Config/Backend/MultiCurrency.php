@@ -80,6 +80,7 @@ class MultiCurrency extends Value
      *
      * @return Value
      */
+    //@codingStandardsIgnoreLine
     public function beforeSave()
     {
         $value = $this->getValue();
