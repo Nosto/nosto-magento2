@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "424d68bdc10e74b87ba4f69c068679c0",
+    "content-hash": "0d5258dfbe02e7684c4180c62d003888",
     "packages": [
         {
             "name": "nosto/php-sdk",
-            "version": "3.11.0",
+            "version": "3.12.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Nosto/nosto-php-sdk.git",
-                "reference": "e193335c1b2d8cca05eae9ddf1efccb44e56ca8e"
+                "reference": "8df43454b455918586e2e3b3286885b06f816455"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Nosto/nosto-php-sdk/zipball/e193335c1b2d8cca05eae9ddf1efccb44e56ca8e",
-                "reference": "e193335c1b2d8cca05eae9ddf1efccb44e56ca8e",
+                "url": "https://api.github.com/repos/Nosto/nosto-php-sdk/zipball/8df43454b455918586e2e3b3286885b06f816455",
+                "reference": "8df43454b455918586e2e3b3286885b06f816455",
                 "shasum": ""
             },
             "require": {
@@ -51,7 +51,7 @@
                 "BSD-3-Clause"
             ],
             "description": "PHP SDK for developing Nosto modules for e-commerce platforms",
-            "time": "2019-03-05T14:36:39+00:00"
+            "time": "2019-03-20T11:59:02+00:00"
         },
         {
             "name": "phpseclib/phpseclib",
@@ -59,12 +59,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpseclib/phpseclib.git",
-                "reference": "ed975a270d7c5dca9d9be73f3b66beca0407eded"
+                "reference": "11cf67cf78dc4acb18dc9149a57be4aee5036ce0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpseclib/phpseclib/zipball/ed975a270d7c5dca9d9be73f3b66beca0407eded",
-                "reference": "ed975a270d7c5dca9d9be73f3b66beca0407eded",
+                "url": "https://api.github.com/repos/phpseclib/phpseclib/zipball/11cf67cf78dc4acb18dc9149a57be4aee5036ce0",
+                "reference": "11cf67cf78dc4acb18dc9149a57be4aee5036ce0",
                 "shasum": ""
             },
             "require": {
@@ -143,7 +143,7 @@
                 "x.509",
                 "x509"
             ],
-            "time": "2019-03-04T14:15:45+00:00"
+            "time": "2019-03-10T16:53:45+00:00"
         },
         {
             "name": "symfony/polyfill-ctype",
@@ -190,7 +190,7 @@
                 },
                 {
                     "name": "Gert de Pagter",
-                    "email": "BackEndTea@gmail.com"
+                    "email": "backendtea@gmail.com"
                 }
             ],
             "description": "Symfony polyfill for ctype functions",
@@ -258,16 +258,16 @@
     "packages-dev": [
         {
             "name": "colinmollenhour/credis",
-            "version": "1.10.0",
+            "version": "1.10.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/colinmollenhour/credis.git",
-                "reference": "8ab6db707c821055f9856b8cf76d5f44beb6fd8a"
+                "reference": "c1cab895f2331a1877738b282d0d8b1ff6d4c92d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/colinmollenhour/credis/zipball/8ab6db707c821055f9856b8cf76d5f44beb6fd8a",
-                "reference": "8ab6db707c821055f9856b8cf76d5f44beb6fd8a",
+                "url": "https://api.github.com/repos/colinmollenhour/credis/zipball/c1cab895f2331a1877738b282d0d8b1ff6d4c92d",
+                "reference": "c1cab895f2331a1877738b282d0d8b1ff6d4c92d",
                 "shasum": ""
             },
             "require": {
@@ -294,7 +294,7 @@
             ],
             "description": "Credis is a lightweight interface to the Redis key-value store which wraps the phpredis library when available for better performance.",
             "homepage": "https://github.com/colinmollenhour/credis",
-            "time": "2018-05-07T14:45:04+00:00"
+            "time": "2019-03-05T16:29:14+00:00"
         },
         {
             "name": "colinmollenhour/php-redis-session-abstract",
@@ -395,12 +395,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/composer/composer.git",
-                "reference": "522ea033a3c6e72d72954f7cd019a3b75e28f391"
+                "reference": "4441be1a0536789b28bea20c3a86cbcac852a0d2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/composer/composer/zipball/522ea033a3c6e72d72954f7cd019a3b75e28f391",
-                "reference": "522ea033a3c6e72d72954f7cd019a3b75e28f391",
+                "url": "https://api.github.com/repos/composer/composer/zipball/4441be1a0536789b28bea20c3a86cbcac852a0d2",
+                "reference": "4441be1a0536789b28bea20c3a86cbcac852a0d2",
                 "shasum": ""
             },
             "require": {
@@ -460,14 +460,14 @@
                     "homepage": "http://seld.be"
                 }
             ],
-            "description": "Composer helps you declare, manage and install dependencies of PHP projects, ensuring you have the right stack everywhere.",
+            "description": "Composer helps you declare, manage and install dependencies of PHP projects. It ensures you have the right stack everywhere.",
             "homepage": "https://getcomposer.org/",
             "keywords": [
                 "autoload",
                 "dependency",
                 "package"
             ],
-            "time": "2019-03-04T16:26:35+00:00"
+            "time": "2019-03-19T17:31:12+00:00"
         },
         {
             "name": "composer/semver",
@@ -475,12 +475,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/composer/semver.git",
-                "reference": "e97856ee51b93ba42666de1f1d481d142ec62220"
+                "reference": "46d9139568ccb8d9e7cdd4539cab7347568a5e2e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/composer/semver/zipball/e97856ee51b93ba42666de1f1d481d142ec62220",
-                "reference": "e97856ee51b93ba42666de1f1d481d142ec62220",
+                "url": "https://api.github.com/repos/composer/semver/zipball/46d9139568ccb8d9e7cdd4539cab7347568a5e2e",
+                "reference": "46d9139568ccb8d9e7cdd4539cab7347568a5e2e",
                 "shasum": ""
             },
             "require": {
@@ -529,7 +529,7 @@
                 "validation",
                 "versioning"
             ],
-            "time": "2019-01-30T14:33:02+00:00"
+            "time": "2019-03-19T17:25:45+00:00"
         },
         {
             "name": "composer/spdx-licenses",
@@ -853,8 +853,7 @@
                 "url": "https://github.com/magento/marketplace-tools",
                 "reference": "origin/master"
             },
-            "type": "library",
-            "time": "2017-04-06T01:16:20+00:00"
+            "type": "library"
         },
         {
             "name": "magento/module-authorization",
@@ -5141,12 +5140,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zend-filter.git",
-                "reference": "04c844119d3c25f9d98197d1ae3c0e4d7be5955a"
+                "reference": "a162c1101e3bc5469f1104e8b1bc9596f15a4e6f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/zendframework/zend-filter/zipball/04c844119d3c25f9d98197d1ae3c0e4d7be5955a",
-                "reference": "04c844119d3c25f9d98197d1ae3c0e4d7be5955a",
+                "url": "https://api.github.com/repos/zendframework/zend-filter/zipball/a162c1101e3bc5469f1104e8b1bc9596f15a4e6f",
+                "reference": "a162c1101e3bc5469f1104e8b1bc9596f15a4e6f",
                 "shasum": ""
             },
             "require": {
@@ -5198,7 +5197,7 @@
                 "filter",
                 "zf"
             ],
-            "time": "2018-12-20T16:07:14+00:00"
+            "time": "2019-03-14T18:29:05+00:00"
         },
         {
             "name": "zendframework/zend-form",
