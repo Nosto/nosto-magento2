@@ -80,8 +80,7 @@ class MultiCurrency extends Value
      *
      * @return Value
      */
-    //@codingStandardsIgnoreLine
-    public function beforeSave()
+    public function beforeSave() //@codingStandardsIgnoreLine
     {
         $value = $this->getValue();
         $scopeType = $this->getScope();
