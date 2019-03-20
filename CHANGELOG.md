@@ -1,5 +1,11 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 3.2.0
+* Disable price variation when multicurrency is enabled
+* Skip product attributes that contains arrays with non-scalar values
+* Exclude non-scalar arrays from tags selector
+* Refactor method being called many times 
+
 ### 3.1.0
 * Define percentage of PHP memory that indexer is allowed to use
 * Prevent indexing in case Nosto is not connected
