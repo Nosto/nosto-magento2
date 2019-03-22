@@ -273,8 +273,11 @@ class Price extends AbstractHelper
                     $requiredMinPrices[] = $selectionMinPrice;
                 }
             }
+            // In case there the product has no options at all
+            $minPrice = !empty($minPrices) ? min($minPrices) : 0;
+
             // If all products are optional use the price for the cheapest option
-            $price = $allOptional ? min($minPrices) : array_sum($requiredMinPrices);
+            $price = $allOptional ? $minPrice : array_sum($requiredMinPrices);
         }
         return $price;
     }
