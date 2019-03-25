@@ -38,7 +38,7 @@ namespace Nosto\Tagging\Model\Service\Recommendation;
 
 use Nosto\Object\Signup\Account as NostoAccount;
 use Nosto\Service\FeatureAccess;
-use Nosto\Tagging\Plugin\Catalog\Model\Config;
+use Nosto\Tagging\Plugin\Catalog\Model\Config as NostoConfigModel;
 use Nosto\Operation\Recommendation\CategoryBrowsingHistory;
 use Nosto\Operation\Recommendation\CategoryTopList;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
@@ -65,7 +65,7 @@ class Category
         }
 
         switch ($type) {
-            case Config::NOSTO_PERSONALIZED_KEY:
+            case NostoConfigModel::NOSTO_PERSONALIZED_KEY:
                 $recoOperation = new CategoryBrowsingHistory($nostoAccount, $nostoCustomerId);
                 break;
             default:
