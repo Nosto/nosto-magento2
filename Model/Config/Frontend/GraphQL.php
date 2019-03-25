@@ -77,7 +77,7 @@ class GraphQL extends Field
     }
 
     /**
-     * Disable input if APPS token are not found
+     * Disable input if APPS token is not found
      *
      * @param AbstractElement $element
      * @return string
