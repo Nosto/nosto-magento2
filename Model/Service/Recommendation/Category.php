@@ -41,20 +41,28 @@ use Nosto\Service\FeatureAccess;
 use Nosto\Tagging\Plugin\Catalog\Model\Config;
 use Nosto\Operation\Recommendation\CategoryBrowsingHistory;
 use Nosto\Operation\Recommendation\CategoryTopList;
+use Nosto\Tagging\Logger\Logger as NostoLogger;
 
 class Category
 {
-   public static function getSortedProductIds(
+    private $logger;
+
+    public function __construct(NostoLogger $logger)
+    {
+        $this->logger = $logger;
+    }
+
+    public function getSortedProductIds(
        NostoAccount $nostoAccount,
        $nostoCustomerId,
        $category,
        $type
-   ) {
-       $productIds = array();
-       $featureAccess = new FeatureAccess($nostoAccount);
-       if (!$featureAccess->canUseGraphql()) {
+    ) {
+        $productIds = [];
+        $featureAccess = new FeatureAccess($nostoAccount);
+        if (!$featureAccess->canUseGraphql()) {
            return $productIds;
-       }
+        }
 
        switch ($type) {
            case Config::NOSTO_PERSONALIZED_KEY:
@@ -73,10 +81,9 @@ class Category
                }
            }
        } catch (Exception $e) {
-
+           $this->logger->exception($e);
        }
-       $recOperation->execute();
 
+       return $productIds;
    }
-
 }
