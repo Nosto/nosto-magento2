@@ -146,9 +146,11 @@ class Toolbar extends \Magento\Framework\View\Element\Template
 
             //Get ids of products to order
             $orderIds = $this->getSortedIds($store, $currentOrder);
-//            $ids = array_reverse([14, 1, 2046, 1772, 1718]);
-            $zendExpression = new \Zend_Db_Expr('FIELD(e.entity_id,' . implode(',', $orderIds) . ') DESC');
-            $this->_collection->getSelect()->order($zendExpression);
+//            $orderIds = array_reverse([356,324,436]);
+            if (!empty($orderIds)) {
+                $zendExpression = new \Zend_Db_Expr('FIELD(e.entity_id,' . implode(',', $orderIds) . ') DESC');
+                $this->_collection->getSelect()->order($zendExpression);
+            }
 
             return $this;
         }
