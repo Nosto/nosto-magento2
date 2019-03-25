@@ -41,11 +41,13 @@ use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Magento\Backend\Block\Template\Context;
 use Magento\Store\Model\StoreManagerInterface;
+use Magento\Framework\View\Element\Template;
 
 
-class Config extends \Magento\Framework\View\Element\Template
+class Config extends Template
 {
     const NOSTO_PERSONALIZED_KEY = 'nosto-personalized';
+
     const NOSTO_TOPLIST_KEY = 'nosto-toplist';
 
     private $nostoHelperData;

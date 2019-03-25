@@ -53,37 +53,37 @@ class Category
     }
 
     public function getSortedProductIds(
-       NostoAccount $nostoAccount,
-       $nostoCustomerId,
-       $category,
-       $type
+        NostoAccount $nostoAccount,
+        $nostoCustomerId,
+        $category,
+        $type
     ) {
         $productIds = [];
         $featureAccess = new FeatureAccess($nostoAccount);
         if (!$featureAccess->canUseGraphql()) {
-           return $productIds;
+            return $productIds;
         }
 
-       switch ($type) {
-           case Config::NOSTO_PERSONALIZED_KEY:
-               $recoOperation = new CategoryBrowsingHistory($nostoAccount, $nostoCustomerId);
-               break;
-           default:
-               $recoOperation = new CategoryTopList($nostoAccount, $nostoCustomerId);
-               break;
-       }
-       $recoOperation->setCategory($category);
-       try {
-           $result = $recoOperation->execute();
-           foreach ($result as $item) {
-               if ($item->getProductId()) {
-                   $productIds[] = $item->getProductId();
-               }
-           }
-       } catch (Exception $e) {
-           $this->logger->exception($e);
-       }
+        switch ($type) {
+            case Config::NOSTO_PERSONALIZED_KEY:
+                $recoOperation = new CategoryBrowsingHistory($nostoAccount, $nostoCustomerId);
+                break;
+            default:
+                $recoOperation = new CategoryTopList($nostoAccount, $nostoCustomerId);
+                break;
+        }
+        $recoOperation->setCategory($category);
+        try {
+            $result = $recoOperation->execute();
+            foreach ($result as $item) {
+                if ($item->getProductId()) {
+                    $productIds[] = $item->getProductId();
+                }
+            }
+        } catch (\Exception $e) {
+            $this->logger->exception($e);
+        }
 
-       return $productIds;
-   }
+        return $productIds;
+    }
 }
