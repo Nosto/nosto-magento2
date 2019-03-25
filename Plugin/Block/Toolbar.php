@@ -42,6 +42,12 @@ use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Magento\Backend\Block\Template\Context;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Catalog\Block\Product\ProductList\Toolbar as MagentoToolbar;
+use Magento\Store\Model\Store;
+use Magento\Framework\Registry;
+use Nosto\Tagging\Model\Category\Builder as CategoryBuilder;
+use Magento\Framework\Stdlib\CookieManagerInterface;
+use Nosto\Tagging\Model\Customer\Customer as NostoCustomer;
+use Nosto\Tagging\Model\Service\Recommendation\Category as CategoryRecommendation;
 
 class Toolbar extends \Magento\Framework\View\Element\Template
 {
@@ -52,6 +58,12 @@ class Toolbar extends \Magento\Framework\View\Element\Template
     private $nostoHelperData;
 
     private $nostoHelperAccount;
+
+    private $categoryBuilder;
+
+    private $registry;
+
+    private $cookieManager;
 
     /**
      * @var \Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection
@@ -68,11 +80,17 @@ class Toolbar extends \Magento\Framework\View\Element\Template
         NostoHelperData $nostoHelperData,
         NostoHelperAccount $nostoHelperAccount,
         StoreManagerInterface $storeManager,
+        CategoryBuilder $builder,
+        CookieManagerInterface $cookieManager,
+        Registry $registry,
         array $data = []
     ) {
         $this->nostoHelperData = $nostoHelperData;
         $this->nostoHelperAccount = $nostoHelperAccount;
+        $this->categoryBuilder = $builder;
         $this->storeManager = $storeManager;
+        $this->cookieManager = $cookieManager;
+        $this->registry = $registry;
         parent::__construct($context, $data);
     }
 
@@ -92,32 +110,44 @@ class Toolbar extends \Magento\Framework\View\Element\Template
     ) {
         $this->_collection = $collection;
         $store = $this->storeManager->getStore();
-
+        $currentOrder = $subject->getCurrentOrder();
         if (
-            $subject->getCurrentOrder() !== Config::NOSTO_PERSONALIZED_KEY
-            && $subject->getCurrentOrder() !== Config::NOSTO_TOPLIST_KEY
+            $currentOrder !== Config::NOSTO_PERSONALIZED_KEY
+            && $currentOrder !== Config::NOSTO_TOPLIST_KEY
             || !$this->nostoHelperAccount->nostoInstalledAndEnabled($store)
             || !$this->nostoHelperData->isCategorySortingEnabled($store)
         ) {
             return $this;
         } else {
             $test = 2;
-//            $limit = (int)$subject->getLimit();
-            $limit = 50;
+            $limit = (int)$subject->getLimit();
             if ($limit) {
                 $this->_collection->setPageSize($limit);
             }
             $currentPage = $subject->getCurrentPage();
             $this->_collection->setCurPage($currentPage);
 
-            $test = $this->_collection->getSelect()->__toString();
-            $ids = array_reverse([14, 1, 2046, 1772, 1718]);
-            $zendExpression = new \Zend_Db_Expr('FIELD(e.entity_id,' . implode(',', $ids) . ') DESC');
-            $this->_collection->getSelect()
-                ->order($zendExpression);
-
+            //Get ids of products to order
+            $orderIds = $this->getSortedIds($store, $currentOrder);
+//            $ids = array_reverse([14, 1, 2046, 1772, 1718]);
+            $zendExpression = new \Zend_Db_Expr('FIELD(e.entity_id,' . implode(',', $orderIds) . ') DESC');
+            $this->_collection->getSelect()->order($zendExpression);
 
             return $this;
         }
-}
+    }
+
+    private function getSortedIds(Store $store, $type)
+    {
+        $nostoAccount = $this->nostoHelperAccount->findAccount($store);
+        $category = $this->registry->registry('current_category');
+        $category = $this->categoryBuilder->build($category, $store);
+        $nostoCustomer = $this->cookieManager->getCookie(NostoCustomer::COOKIE_NAME);
+        return CategoryRecommendation::getSortedProductIds(
+            $nostoAccount,
+            $nostoCustomer,
+            $category,
+            $type
+        );
+    }
 }

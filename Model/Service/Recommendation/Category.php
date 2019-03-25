@@ -34,19 +34,49 @@
  *
  */
 
+namespace Nosto\Tagging\Model\Service\Recommendation;
+
 use Nosto\Object\Signup\Account as NostoAccount;
 use Nosto\Service\FeatureAccess;
+use Nosto\Tagging\Plugin\Catalog\Model\Config;
+use Nosto\Operation\Recommendation\CategoryBrowsingHistory;
+use Nosto\Operation\Recommendation\CategoryTopList;
 
 class Category
 {
-   public function getSortedProductIds(
-       NostoAccount $nostoAccount
+   public static function getSortedProductIds(
+       NostoAccount $nostoAccount,
+       $nostoCustomerId,
+       $category,
+       $type
    ) {
        $productIds = array();
        $featureAccess = new FeatureAccess($nostoAccount);
        if (!$featureAccess->canUseGraphql()) {
            return $productIds;
        }
+
+       switch ($type) {
+           case Config::NOSTO_PERSONALIZED_KEY:
+               $recoOperation = new CategoryBrowsingHistory($nostoAccount, $nostoCustomerId);
+               break;
+           default:
+               $recoOperation = new CategoryTopList($nostoAccount, $nostoCustomerId);
+               break;
+       }
+       $recoOperation->setCategory($category);
+       try {
+           $result = $recoOperation->execute();
+           foreach ($result as $item) {
+               if ($item->getProductId()) {
+                   $productIds[] = $item->getProductId();
+               }
+           }
+       } catch (Exception $e) {
+
+       }
+       $recOperation->execute();
+
    }
 
 }
