@@ -84,9 +84,9 @@ class GraphQL extends Field
      */
     protected function _getElementHtml(AbstractElement $element)
     {
-        $id = (int) $this->request->getParam('store');
+        $id = (int)$this->request->getParam('store');
         $store = $this->nostoHelperScope->getStore($id);
-        $nostoAccount =  $this->nostoHelperAccount->findAccount($store);
+        $nostoAccount = $this->nostoHelperAccount->findAccount($store);
         $featureAccess = new FeatureAccess($nostoAccount);
         if (!$featureAccess->canUseGraphql()) {
             $element->setReadonly(true, true);

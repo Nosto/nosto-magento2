@@ -49,8 +49,12 @@ use Magento\Framework\Stdlib\CookieManagerInterface;
 use Nosto\Tagging\Model\Customer\Customer as NostoCustomer;
 use Nosto\Tagging\Model\Service\Recommendation\Category as CategoryRecommendation;
 use Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection;
+use Magento\Framework\Data\Collection;
+use Magento\Framework\Exception\NoSuchEntityException;
+use Magento\Framework\View\Element\Template;
+use Nosto\Tagging\Logger\Logger as NostoLogger;
 
-class Toolbar extends \Magento\Framework\View\Element\Template
+class Toolbar extends Template
 {
     const SORT_ORDER_DESC = 'DESC';
 
@@ -75,6 +79,9 @@ class Toolbar extends \Magento\Framework\View\Element\Template
     /** @var CategoryRecommendation */
     private $categoryRecommendaiton;
 
+    /** @var NostoLogger */
+    private $logger;
+
     /** @var AbstractCollection */
     protected $_collection = null;
 
@@ -87,6 +94,7 @@ class Toolbar extends \Magento\Framework\View\Element\Template
      * @param CategoryBuilder $builder
      * @param CategoryRecommendation $categoryRecommendaiton
      * @param CookieManagerInterface $cookieManager
+     * @param NostoLogger $logger
      * @param Registry $registry
      * @param array $data
      */
@@ -98,6 +106,7 @@ class Toolbar extends \Magento\Framework\View\Element\Template
         CategoryBuilder $builder,
         CategoryRecommendation $categoryRecommendaiton,
         CookieManagerInterface $cookieManager,
+        NostoLogger $logger,
         Registry $registry,
         array $data = []
     ) {
@@ -107,6 +116,7 @@ class Toolbar extends \Magento\Framework\View\Element\Template
         $this->storeManager = $storeManager;
         $this->cookieManager = $cookieManager;
         $this->categoryRecommendaiton = $categoryRecommendaiton;
+        $this->logger = $logger;
         $this->registry = $registry;
         parent::__construct($context, $data);
     }
@@ -114,29 +124,23 @@ class Toolbar extends \Magento\Framework\View\Element\Template
     /**
      * Plugin - Used to modify default Sort By filters
      *
-     * @param \Magento\Catalog\Block\Product\ProductList\Toolbar $subject
-     * @param null $result
-     * @param \Magento\Framework\Data\Collection $collection
-     * @return Toolbar
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @param MagentoToolbar $subject
+     * @param Collection $collection
+     * @return $this
+     * @throws NoSuchEntityException
      */
     public function afterSetCollection(
         MagentoToolbar $subject,
-        $result,
         $collection
     ) {
         $this->_collection = $collection;
         $store = $this->storeManager->getStore();
         $currentOrder = $subject->getCurrentOrder();
-        if (
-            $currentOrder !== Config::NOSTO_PERSONALIZED_KEY
-            && $currentOrder !== Config::NOSTO_TOPLIST_KEY
-            || !$this->nostoHelperAccount->nostoInstalledAndEnabled($store)
-            || !$this->nostoHelperData->isCategorySortingEnabled($store)
+        if ($currentOrder === Config::NOSTO_PERSONALIZED_KEY
+            || $currentOrder === Config::NOSTO_TOPLIST_KEY
+            && $this->nostoHelperAccount->nostoInstalledAndEnabled($store)
+            && $this->nostoHelperData->isCategorySortingEnabled($store)
         ) {
-            return $this;
-        } else {
-            $test = 2;
             $limit = (int)$subject->getLimit();
             if ($limit) {
                 $this->_collection->setPageSize($limit);
@@ -146,9 +150,12 @@ class Toolbar extends \Magento\Framework\View\Element\Template
 
             //Get ids of products to order
             $orderIds = $this->getSortedIds($store, $currentOrder);
-//            $orderIds = array_reverse([356,324,436]);
             if (!empty($orderIds)) {
-                $zendExpression = new \Zend_Db_Expr('FIELD(e.entity_id,' . implode(',', $orderIds) . ') DESC');
+                try {
+                    $zendExpression = new \Zend_Db_Expr('FIELD(e.entity_id,' . implode(',', $orderIds) . ') DESC');
+                } catch (\Exception $e) {
+                    $this->logger->exception($e);
+                }
                 $this->_collection->getSelect()->order($zendExpression);
             }
 
@@ -156,6 +163,11 @@ class Toolbar extends \Magento\Framework\View\Element\Template
         }
     }
 
+    /**
+     * @param Store $store
+     * @param $type
+     * @return array
+     */
     private function getSortedIds(Store $store, $type)
     {
         $nostoAccount = $this->nostoHelperAccount->findAccount($store);

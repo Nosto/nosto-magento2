@@ -419,7 +419,7 @@ class Data extends AbstractHelper
     }
 
     /**
-     * Returns if category sorting is enavled
+     * Returns if category sorting is enabled
      *
      * @param StoreInterface|null $store the store model or null.
      * @return bool the configuration value

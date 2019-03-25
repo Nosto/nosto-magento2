@@ -47,11 +47,24 @@ class Category
 {
     private $logger;
 
+    /**
+     * Category constructor.
+     * @param NostoLogger $logger
+     */
     public function __construct(NostoLogger $logger)
     {
         $this->logger = $logger;
     }
 
+    /**
+     * Return array of personalized products ids
+     *
+     * @param NostoAccount $nostoAccount
+     * @param $nostoCustomerId
+     * @param $category
+     * @param $type
+     * @return array
+     */
     public function getSortedProductIds(
         NostoAccount $nostoAccount,
         $nostoCustomerId,

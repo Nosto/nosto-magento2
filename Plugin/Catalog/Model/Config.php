@@ -43,19 +43,29 @@ use Magento\Backend\Block\Template\Context;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Framework\View\Element\Template;
 
-
 class Config extends Template
 {
     const NOSTO_PERSONALIZED_KEY = 'nosto-personalized';
 
     const NOSTO_TOPLIST_KEY = 'nosto-toplist';
 
+    /** @var NostoHelperData */
     private $nostoHelperData;
 
+    /** @var NostoHelperAccount */
     private $nostoHelperAccount;
 
+    /** @var StoreManagerInterface */
     private $storeManager;
 
+    /**
+     * Config constructor.
+     * @param NostoHelperData $nostoHelperData
+     * @param NostoHelperAccount $nostoHelperAccount
+     * @param Context $context
+     * @param StoreManagerInterface $storeManager
+     * @param array $data
+     */
     public function __construct(
         NostoHelperData $nostoHelperData,
         NostoHelperAccount $nostoHelperAccount,
@@ -80,8 +90,7 @@ class Config extends Template
     public function afterGetAttributeUsedForSortByArray(MagentoConfig $catalogConfig, $options)
     {
         $store = $this->storeManager->getStore();
-        if (
-            $this->nostoHelperAccount->nostoInstalledAndEnabled($store) &&
+        if ($this->nostoHelperAccount->nostoInstalledAndEnabled($store) &&
             $this->nostoHelperData->isCategorySortingEnabled($store)
         ) {
             // new option
