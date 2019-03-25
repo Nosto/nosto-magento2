@@ -48,32 +48,47 @@ use Nosto\Tagging\Model\Category\Builder as CategoryBuilder;
 use Magento\Framework\Stdlib\CookieManagerInterface;
 use Nosto\Tagging\Model\Customer\Customer as NostoCustomer;
 use Nosto\Tagging\Model\Service\Recommendation\Category as CategoryRecommendation;
+use Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection;
 
 class Toolbar extends \Magento\Framework\View\Element\Template
 {
     const SORT_ORDER_DESC = 'DESC';
 
+    /**  @var StoreManagerInterface */
     private $storeManager;
 
+    /** @var NostoHelperData */
     private $nostoHelperData;
 
+    /** @var NostoHelperAccount */
     private $nostoHelperAccount;
 
+    /**  @var CategoryBuilder */
     private $categoryBuilder;
 
+    /** @var Registry */
     private $registry;
 
+    /** @var CookieManagerInterface */
     private $cookieManager;
 
-    /**
-     * @var \Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection
-     */
+    /** @var CategoryRecommendation */
+    private $categoryRecommendaiton;
+
+    /** @var AbstractCollection */
     protected $_collection = null;
 
     /**
-     * Constructor
-     *
-     * @param \Magento\Framework\App\ResourceConnection $resource
+     * Toolbar constructor.
+     * @param Context $context
+     * @param NostoHelperData $nostoHelperData
+     * @param NostoHelperAccount $nostoHelperAccount
+     * @param StoreManagerInterface $storeManager
+     * @param CategoryBuilder $builder
+     * @param CategoryRecommendation $categoryRecommendaiton
+     * @param CookieManagerInterface $cookieManager
+     * @param Registry $registry
+     * @param array $data
      */
     public function __construct(
         Context $context,
@@ -81,6 +96,7 @@ class Toolbar extends \Magento\Framework\View\Element\Template
         NostoHelperAccount $nostoHelperAccount,
         StoreManagerInterface $storeManager,
         CategoryBuilder $builder,
+        CategoryRecommendation $categoryRecommendaiton,
         CookieManagerInterface $cookieManager,
         Registry $registry,
         array $data = []
@@ -90,6 +106,7 @@ class Toolbar extends \Magento\Framework\View\Element\Template
         $this->categoryBuilder = $builder;
         $this->storeManager = $storeManager;
         $this->cookieManager = $cookieManager;
+        $this->categoryRecommendaiton = $categoryRecommendaiton;
         $this->registry = $registry;
         parent::__construct($context, $data);
     }
@@ -143,7 +160,7 @@ class Toolbar extends \Magento\Framework\View\Element\Template
         $category = $this->registry->registry('current_category');
         $category = $this->categoryBuilder->build($category, $store);
         $nostoCustomer = $this->cookieManager->getCookie(NostoCustomer::COOKIE_NAME);
-        return CategoryRecommendation::getSortedProductIds(
+        return $this->categoryRecommendaiton->getSortedProductIds(
             $nostoAccount,
             $nostoCustomer,
             $category,
