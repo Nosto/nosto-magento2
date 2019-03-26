@@ -82,7 +82,7 @@ class GraphQL extends Field
      * @param AbstractElement $element
      * @return string
      */
-    protected function _getElementHtml(AbstractElement $element)
+    protected function _getElementHtml(AbstractElement $element) //@codingStandardsIgnoreLine
     {
         $id = (int)$this->request->getParam('store');
         $store = $this->nostoHelperScope->getStore($id);

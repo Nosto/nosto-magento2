@@ -64,6 +64,7 @@ class Category
      * @param $category
      * @param $type
      * @return array
+     * @suppress PhanUndeclaredClassConstant
      */
     public function getSortedProductIds(
         NostoAccount $nostoAccount,
