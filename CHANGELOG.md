@@ -1,5 +1,8 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 3.2.2
+* Fix issue with missing storefront domain when upgrading modue
+
 ### 3.2.1
 * Fix issue calculating bundle product price with no options
 
