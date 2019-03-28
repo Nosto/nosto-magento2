@@ -56,7 +56,6 @@ use Nosto\Tagging\Logger\Logger as NostoLogger;
 
 class Toolbar extends Template
 {
-    const SORT_ORDER_DESC = 'DESC';
 
     /**  @var StoreManagerInterface */
     private $storeManager;
@@ -77,7 +76,7 @@ class Toolbar extends Template
     private $cookieManager;
 
     /** @var CategoryRecommendation */
-    private $categoryRecommendaiton;
+    private $categoryRecommendation;
 
     /** @var NostoLogger */
     private $logger;
@@ -92,7 +91,7 @@ class Toolbar extends Template
      * @param NostoHelperAccount $nostoHelperAccount
      * @param StoreManagerInterface $storeManager
      * @param CategoryBuilder $builder
-     * @param CategoryRecommendation $categoryRecommendaiton
+     * @param CategoryRecommendation $categoryRecommendation
      * @param CookieManagerInterface $cookieManager
      * @param NostoLogger $logger
      * @param Registry $registry
@@ -104,7 +103,7 @@ class Toolbar extends Template
         NostoHelperAccount $nostoHelperAccount,
         StoreManagerInterface $storeManager,
         CategoryBuilder $builder,
-        CategoryRecommendation $categoryRecommendaiton,
+        CategoryRecommendation $categoryRecommendation,
         CookieManagerInterface $cookieManager,
         NostoLogger $logger,
         Registry $registry,
@@ -115,7 +114,7 @@ class Toolbar extends Template
         $this->categoryBuilder = $builder;
         $this->storeManager = $storeManager;
         $this->cookieManager = $cookieManager;
-        $this->categoryRecommendaiton = $categoryRecommendaiton;
+        $this->categoryRecommendation = $categoryRecommendation;
         $this->logger = $logger;
         $this->registry = $registry;
         parent::__construct($context, $data);
@@ -136,8 +135,8 @@ class Toolbar extends Template
         $this->_collection = $collection;
         $store = $this->storeManager->getStore();
         $currentOrder = $subject->getCurrentOrder();
-        if ($currentOrder === Config::NOSTO_PERSONALIZED_KEY
-            || $currentOrder === Config::NOSTO_TOPLIST_KEY
+        if (($currentOrder === Config::NOSTO_PERSONALIZED_KEY
+            || $currentOrder === Config::NOSTO_TOPLIST_KEY)
             && $this->nostoHelperAccount->nostoInstalledAndEnabled($store)
             && $this->nostoHelperData->isCategorySortingEnabled($store)
         ) {
@@ -153,10 +152,10 @@ class Toolbar extends Template
             if (!empty($orderIds)) {
                 try {
                     $zendExpression = new \Zend_Db_Expr('FIELD(e.entity_id,' . implode(',', $orderIds) . ') DESC');
+                    $this->_collection->getSelect()->order($zendExpression);
                 } catch (\Exception $e) {
                     $this->logger->exception($e);
                 }
-                $this->_collection->getSelect()->order($zendExpression);
             }
 
             return $this;
@@ -174,7 +173,7 @@ class Toolbar extends Template
         $category = $this->registry->registry('current_category');
         $category = $this->categoryBuilder->build($category, $store);
         $nostoCustomer = $this->cookieManager->getCookie(NostoCustomer::COOKIE_NAME);
-        return $this->categoryRecommendaiton->getSortedProductIds(
+        return $this->categoryRecommendation->getSortedProductIds(
             $nostoAccount,
             $nostoCustomer,
             $category,
