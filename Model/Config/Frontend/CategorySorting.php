@@ -39,40 +39,32 @@ namespace Nosto\Tagging\Model\Config\Frontend;
 use Magento\Config\Block\System\Config\Form\Field;
 use Magento\Framework\Data\Form\Element\AbstractElement;
 use Magento\Backend\Block\Template\Context;
-use Nosto\Tagging\Helper\Account as NostoHelperAccount;
-use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Magento\Framework\App\Request\Http;
-use Nosto\Service\FeatureAccess;
+use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 
-class GraphQL extends Field
+class CategorySorting extends Field
 {
-    /** @var NostoHelperAccount $nostoHelperAccount */
-    public $nostoHelperAccount;
-
-    /** @var NostoHelperScope $nostoHelperScope */
-    public $nostoHelperScope;
+    /** @var NostoHelperAccount */
+    private $nostoHelperAccount;
 
     /** @var Http $request */
     public $request;
 
     /**
-     * GraphQL constructor.
+     * CategorySorting constructor.
      * @param Http $request
-     * @param NostoHelperScope $nostoHelperScope
      * @param NostoHelperAccount $nostoHelperAccount
      * @param Context $context
      * @param array $data
      */
     public function __construct(
         Http $request,
-        NostoHelperScope $nostoHelperScope,
         NostoHelperAccount $nostoHelperAccount,
         Context $context,
         array $data = []
     ) {
-        $this->nostoHelperAccount = $nostoHelperAccount;
-        $this->nostoHelperScope = $nostoHelperScope;
         $this->request = $request;
+        $this->nostoHelperAccount = $nostoHelperAccount;
         parent::__construct($context, $data);
     }
 
@@ -85,12 +77,11 @@ class GraphQL extends Field
     protected function _getElementHtml(AbstractElement $element) //@codingStandardsIgnoreLine
     {
         $id = (int)$this->request->getParam('store');
-        $store = $this->nostoHelperScope->getStore($id);
-        $nostoAccount = $this->nostoHelperAccount->findAccount($store);
-        $featureAccess = new FeatureAccess($nostoAccount);
-        if (!$featureAccess->canUseGraphql()) {
+        //ToDo `Use Website` makes it to be enabled again
+        if (!$this->nostoHelperAccount->canUseCategorySorting($id)) {
             $element->setReadonly(true, true);
         }
+
         return parent::_getElementHtml($element);
     }
 }

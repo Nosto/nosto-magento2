@@ -39,47 +39,41 @@ namespace Nosto\Tagging\Model\Config\Source;
 use Magento\Framework\Option\ArrayInterface;
 use Magento\Framework\Phrase;
 use Magento\Backend\Block\Template\Context;
-use Nosto\Tagging\Helper\Account as NostoHelperAccount;
-use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Magento\Framework\App\Request\Http;
-use Nosto\Service\FeatureAccess;
 use Magento\Config\Block\System\Config\Form\Field;
+use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 
 class CategorySorting extends Field implements ArrayInterface
 {
-    /** @var NostoHelperAccount $nostoHelperAccount */
-    public $nostoHelperAccount;
-
-    /** @var NostoHelperScope $nostoHelperScope */
-    public $nostoHelperScope;
+    /** @var NostoHelperAccount */
+    private $nostoHelperAccount;
 
     /** @var Http $request */
-    public $request;
+    private $request;
 
     /**
      * CategorySorting constructor.
      * @param Http $request
-     * @param NostoHelperScope $nostoHelperScope
      * @param NostoHelperAccount $nostoHelperAccount
      * @param Context $context
      * @param array $data
      */
     public function __construct(
         Http $request,
-        NostoHelperScope $nostoHelperScope,
         NostoHelperAccount $nostoHelperAccount,
         Context $context,
         array $data = []
     ) {
         $this->nostoHelperAccount = $nostoHelperAccount;
-        $this->nostoHelperScope = $nostoHelperScope;
         $this->request = $request;
         parent::__construct($context, $data);
     }
 
     public function toOptionArray()
     {
-        if ($this->categorySortingAvailable()) {
+        $id = (int)$this->request->getParam('store');
+
+        if ($this->nostoHelperAccount->canUseCategorySorting($id)) {
             $options = [
                 ['value' => '1', 'label' => new Phrase('Yes')],
                 ['value' => '0', 'label' => new Phrase('No')],
@@ -91,17 +85,5 @@ class CategorySorting extends Field implements ArrayInterface
         }
 
         return $options;
-    }
-
-    private function categorySortingAvailable()
-    {
-        $id = (int)$this->request->getParam('store');
-        $store = $this->nostoHelperScope->getStore($id);
-        $nostoAccount = $this->nostoHelperAccount->findAccount($store);
-        $featureAccess = new FeatureAccess($nostoAccount);
-        if (!$featureAccess->canUseGraphql()) {
-            return false;
-        }
-        return true;
     }
 }
