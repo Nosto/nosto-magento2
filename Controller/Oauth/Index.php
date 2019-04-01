@@ -62,7 +62,6 @@ class Index extends Action
     private $nostoHelperScope;
     private $nostoHelperCache;
     private $storeRepository;
-    private $storeManager;
 
     /**
      * @param Context $context
