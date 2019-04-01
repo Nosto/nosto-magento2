@@ -51,6 +51,7 @@ use Nosto\Tagging\Model\Meta\Oauth\Builder as NostoOauthBuilder;
 use Nosto\Types\Signup\AccountInterface;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\NostoException;
+use Magento\Store\Model\StoreManagerInterface;
 
 class Index extends Action
 {
@@ -62,6 +63,7 @@ class Index extends Action
     private $nostoHelperScope;
     private $nostoHelperCache;
     private $storeRepository;
+    private $storeManager;
 
     /**
      * @param Context $context
@@ -71,6 +73,8 @@ class Index extends Action
      * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoHelperCache $nostoHelperCache
      * @param NostoOauthBuilder $oauthMetaBuilder
+     * @param StoreRepository $storeRepository
+     * @param StoreManagerInterface $storeManager
      */
     public function __construct(
         Context $context,
@@ -80,7 +84,8 @@ class Index extends Action
         NostoHelperAccount $nostoHelperAccount,
         NostoHelperCache $nostoHelperCache,
         NostoOauthBuilder $oauthMetaBuilder,
-        StoreRepository $storeRepository
+        StoreRepository $storeRepository,
+        StoreManagerInterface $storeManager
     ) {
         parent::__construct($context);
 
@@ -91,6 +96,7 @@ class Index extends Action
         $this->nostoHelperScope = $nostoHelperScope;
         $this->nostoHelperCache = $nostoHelperCache;
         $this->storeRepository = $storeRepository;
+        $this->storeManager = $storeManager;
     }
 
     /**
@@ -130,11 +136,13 @@ class Index extends Action
     public function save(AccountInterface $account)
     {
         $stores = $this->storeRepository->getList();
+        $currentStore = $this->storeManager->getStore();
         /** @var \Magento\Store\Model\Store $store */
         foreach ($stores as $store) {
             $existingAccount = $this->nostoHelperAccount->findAccount($store);
             if ($existingAccount !== null
                 && $existingAccount->getName() === $account->getName()
+                && $currentStore->getId() !== $store->getId()
             ) {
                 throw new NostoException(
                     sprintf(
