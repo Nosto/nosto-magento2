@@ -331,7 +331,7 @@
             ],
             "description": "A Redis-based session handler with optimistic locking",
             "homepage": "https://github.com/colinmollenhour/php-redis-session-abstract",
-            "time": "2017-03-22T16:13:03+00:00"
+            "time": "2019-03-22T16:13:03+00:00"
         },
         {
             "name": "composer/ca-bundle",
@@ -665,7 +665,7 @@
             ],
             "description": "Promoting the interoperability of container objects (DIC, SL, etc.)",
             "homepage": "https://github.com/container-interop/container-interop",
-            "time": "2017-02-14T19:40:03+00:00"
+            "time": "2019-02-14T19:40:03+00:00"
         },
         {
             "name": "justinrainbow/json-schema",
@@ -764,7 +764,7 @@
             ],
             "description": "A set of PHP_CodeSniffer rules and sniffs.",
             "homepage": "https://github.com/magento-ecg/coding-standard",
-            "time": "2017-05-18T19:12:29+00:00"
+            "time": "2019-05-18T19:12:29+00:00"
         },
         {
             "name": "magento/framework",
@@ -3076,7 +3076,7 @@
                 "ZF1",
                 "framework"
             ],
-            "time": "2017-06-21T14:56:23+00:00"
+            "time": "2019-06-21T14:56:23+00:00"
         },
         {
             "name": "monolog/monolog",
@@ -3304,7 +3304,7 @@
                 "BSD-3-Clause"
             ],
             "description": "Official version of pdepend to be handled with Composer",
-            "time": "2017-12-13T13:21:38+00:00"
+            "time": "2019-12-13T13:21:38+00:00"
         },
         {
             "name": "phan/phan",
@@ -3361,7 +3361,7 @@
                 "php",
                 "static"
             ],
-            "time": "2017-09-24T20:02:32+00:00"
+            "time": "2019-09-24T20:02:32+00:00"
         },
         {
             "name": "phing/phing",
@@ -3508,7 +3508,7 @@
                 "reflection",
                 "static analysis"
             ],
-            "time": "2017-09-11T18:02:19+00:00"
+            "time": "2019-09-11T18:02:19+00:00"
         },
         {
             "name": "phpdocumentor/reflection-docblock",
@@ -3666,7 +3666,7 @@
                 "phpmd",
                 "pmd"
             ],
-            "time": "2017-01-20T14:41:10+00:00"
+            "time": "2019-01-20T14:41:10+00:00"
         },
         {
             "name": "phpunit/php-timer",
@@ -3900,7 +3900,7 @@
             ],
             "description": "FinderFacade is a convenience wrapper for Symfony's Finder component.",
             "homepage": "https://github.com/sebastianbergmann/finder-facade",
-            "time": "2017-11-18T17:31:49+00:00"
+            "time": "2019-11-18T17:31:49+00:00"
         },
         {
             "name": "sebastian/phpcpd",
@@ -4764,7 +4764,7 @@
             ],
             "description": "The classes contained within this repository extend the standard DOM to use exceptions at all occasions of errors instead of PHP warnings or notices. They also add various custom methods and shortcuts for convenience and to simplify the usage of DOM.",
             "homepage": "https://github.com/theseer/fDOMDocument",
-            "time": "2017-06-30T11:53:12+00:00"
+            "time": "2019-06-30T11:53:12+00:00"
         },
         {
             "name": "webmozart/assert",
@@ -5444,7 +5444,7 @@
                 "inputfilter",
                 "zf"
             ],
-            "time": "2017-12-04T21:24:25+00:00"
+            "time": "2019-12-04T21:24:25+00:00"
         },
         {
             "name": "zendframework/zend-loader",
