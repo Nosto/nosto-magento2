@@ -91,7 +91,7 @@ class Builder
                 [
                     '_nosid' => true,
                     '_scope_to_url' => $this->nostoHelperData->getStoreCodeToUrl($store),
-                    '_scope' => $store->getCode(),
+                    '_query' => ['___store' => $store->getCode()]
                 ]
             );
             $metaData->setClientId('magento');

@@ -71,6 +71,7 @@ class Index extends Action
      * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoHelperCache $nostoHelperCache
      * @param NostoOauthBuilder $oauthMetaBuilder
+     * @param StoreRepository $storeRepository
      */
     public function __construct(
         Context $context,
@@ -130,11 +131,13 @@ class Index extends Action
     public function save(AccountInterface $account)
     {
         $stores = $this->storeRepository->getList();
+        $currentStore = $this->nostoHelperScope->getStore();
         /** @var \Magento\Store\Model\Store $store */
         foreach ($stores as $store) {
             $existingAccount = $this->nostoHelperAccount->findAccount($store);
             if ($existingAccount !== null
                 && $existingAccount->getName() === $account->getName()
+                && $currentStore->getId() !== $store->getId()
             ) {
                 throw new NostoException(
                     sprintf(
