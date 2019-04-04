@@ -77,10 +77,9 @@ class UpgradeData implements UpgradeDataInterface
      */
     public function upgrade(ModuleDataSetupInterface $setup, ModuleContextInterface $context) // @codingStandardsIgnoreLine
     {
-        $this->insertStoreDomain();
-//        if (version_compare($context->getVersion(), '3.1.0', '>=')) {
-//            $this->insertStoreDomain();
-//        }
+        if (version_compare($context->getVersion(), '3.1.0', '>=')) {
+            $this->insertStoreDomain();
+        }
     }
 
     /**

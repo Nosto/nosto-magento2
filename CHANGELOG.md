@@ -1,5 +1,8 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 3.2.3
+* Fix issue with scope when saving the domain
+
 ### 3.2.2
 * Fix issue with missing storefront domain when upgrading modue
 
