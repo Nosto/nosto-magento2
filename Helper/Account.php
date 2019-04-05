@@ -104,7 +104,7 @@ class Account extends AbstractHelper
         $this->logger = $context->getLogger();
         $this->nostoHelperScope = $nostoHelperScope;
         $this->nostoHelperUrl = $nostoHelperUrl;
-        $this->urlBuilder = $this->_urlBuilder;
+        $this->urlBuilder = $context->getUrlBuilder();
     }
 
     /**
