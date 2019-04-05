@@ -89,12 +89,15 @@ class UpgradeData implements UpgradeDataInterface
     {
         $stores = $this->nostoHelperAccount->getStoresWithNosto();
         foreach ($stores as $store) {
-            if ($this->nostoHelperAccount->getStoreFrontDomain($store) === null) {
+            $storeFrontDomain = $this->nostoHelperAccount->getStoreFrontDomain($store);
+            if ($storeFrontDomain === null ||
+                $storeFrontDomain === ''
+            ) {
                 // @codingStandardsIgnoreLine
                 $this->config->save(
                     NostoHelperAccount::XML_PATH_DOMAIN,
                     $this->nostoHelperUrl->getActiveDomain($store),
-                    ScopeInterface::SCOPE_STORE,
+                    ScopeInterface::SCOPE_STORES,
                     $store->getId()
                 );
             }
