@@ -140,9 +140,14 @@ class Data extends AbstractHelper
     const XML_PATH_INDEXER_MEMORY = 'nosto/flags/indexer_memory';
 
     /**
-     * Path to the configuration object that stores the percentage of category sorting
+     * Path to the configuration object that stores category sorting
      */
     const XML_PATH_CATEGORY_SORTING = 'nosto/flags/category_sorting';
+
+    /**
+     * Path to the configuration object that stores category sorting default option
+     */
+    const XML_PATH_CATEGORY_SORTING_OPTION = 'nosto/flags/category_sorting_default_option';
 
     /**
      * Path to the configuration object for pricing variations
@@ -427,6 +432,17 @@ class Data extends AbstractHelper
     public function isCategorySortingEnabled(StoreInterface $store = null)
     {
         return (bool)$this->getStoreConfig(self::XML_PATH_CATEGORY_SORTING, $store);
+    }
+
+    /**
+     * Returns category sorting default option
+     *
+     * @param StoreInterface|null $store
+     * @return string|null
+     */
+    public function getCategorySortingDefaultOption(StoreInterface $store = null)
+    {
+        return $this->getStoreConfig(self::XML_PATH_CATEGORY_SORTING_OPTION, $store);
     }
 
     /**

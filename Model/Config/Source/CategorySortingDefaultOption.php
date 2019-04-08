@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2017, Nosto Solutions Ltd
+ * Copyright (c) 2019, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,58 +29,47 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <contact@nosto.com>
- * @copyright 2017 Nosto Solutions Ltd
+ * @copyright 2019 Nosto Solutions Ltd
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
 
-namespace Nosto\Tagging\Model\Config\Frontend;
+namespace Nosto\Tagging\Model\Config\Source;
 
-use Magento\Config\Block\System\Config\Form\Field;
-use Magento\Framework\Data\Form\Element\AbstractElement;
-use Magento\Backend\Block\Template\Context;
-use Magento\Framework\App\Request\Http;
-use Nosto\Tagging\Helper\Account as NostoHelperAccount;
+use Nosto\Tagging\Plugin\Catalog\Model\Config;
+use Magento\Framework\Option\ArrayInterface;
+use Magento\Framework\Phrase;
 
-class CategorySorting extends Field
+class CategorySortingDefaultOption implements ArrayInterface
 {
-    /** @var NostoHelperAccount */
-    private $nostoHelperAccount;
-
-    /** @var Http $request */
-    public $request;
+    /**
+     * @var Config
+     */
+    private $nostoSortingConfig;
 
     /**
-     * CategorySorting constructor.
-     * @param Http $request
-     * @param NostoHelperAccount $nostoHelperAccount
-     * @param Context $context
-     * @param array $data
+     * CategorySortingDefaultOption constructor.
+     * @param Config $config
      */
-    public function __construct(
-        Http $request,
-        NostoHelperAccount $nostoHelperAccount,
-        Context $context,
-        array $data = []
-    ) {
-        $this->request = $request;
-        $this->nostoHelperAccount = $nostoHelperAccount;
-        parent::__construct($context, $data);
+    public function __construct(Config $config)
+    {
+        $this->nostoSortingConfig = $config;
     }
 
     /**
-     * Disable input if APPS token is not found
-     *
-     * @param AbstractElement $element
-     * @return string
+     * @return array
      */
-    protected function _getElementHtml(AbstractElement $element) //@codingStandardsIgnoreLine
+    public function toOptionArray()
     {
-        $id = (int)$this->request->getParam('store');
-        if (!$this->nostoHelperAccount->canUseCategorySorting($id)) {
-            $element->setReadonly(true, true);
+        $test = 1;
+        $options = [
+            ['value' => Config::NONE, 'label' => new Phrase('Do not use Nosto`s options as default')]
+        ];
+
+        foreach ($this->nostoSortingConfig->nostoSortingOptions as $key => $option) {
+            $options[] = ['value' => $key, 'label' => new Phrase($option)];
         }
 
-        return parent::_getElementHtml($element);
+        return $options;
     }
 }
