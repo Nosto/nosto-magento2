@@ -32,3 +32,4 @@
 - [ ] I have updated the corresponding Jira ticket.
 - [ ] I have requested a review from at least 2 reviewers
 - [ ] I have checked the base branch of this pull request
+- [ ] I have checked my code for any possible security vulnerabilities
