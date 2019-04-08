@@ -197,6 +197,14 @@
                     </comment>
                     <source_model>Nosto\Tagging\Model\Config\Source\Memory</source_model>
                 </field>
+                <field id="tag_date_published" translate="label comment" type="select" sortOrder="100"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Add product published date to tagging</label>
+                    <comment>
+                        <![CDATA[Set this yes if you want to tag the date a product has been added to Magento's catalog]]>
+                    </comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
             </group>
             <group id="attributes" translate="label" type="text" sortOrder="40" showInDefault="1"
                    showInWebsite="1" showInStore="1">
