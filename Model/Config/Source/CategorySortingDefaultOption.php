@@ -50,6 +50,7 @@ class CategorySortingDefaultOption implements ArrayInterface
     /**
      * CategorySortingDefaultOption constructor.
      * @param Config $config
+     * @suppress PhanUndeclaredClassConstant
      */
     public function __construct(Config $config)
     {
@@ -61,7 +62,6 @@ class CategorySortingDefaultOption implements ArrayInterface
      */
     public function toOptionArray()
     {
-        $test = 1;
         $options = [
             ['value' => Config::NONE, 'label' => new Phrase('Do not use Nosto`s options as default')]
         ];
