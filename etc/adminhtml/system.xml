@@ -208,10 +208,10 @@
                 </field>
                 <field id="category_sorting_default_option" translate="label comment" type="select" sortOrder="100"
                        showInDefault="1" showInWebsite="1" showInStore="1">
-                    
-                    <!--<depends>-->
-                        <!--<field id="category_sorting">1</field>-->
-                    <!--</depends>-->
+
+                    <depends>
+                        <field id="category_sorting">1</field>
+                    </depends>
                     <label>Choose default sorting (experimental)</label>
                     <comment>
                         <![CDATA[Experimental feature.Set one of Nosto's option as default sorting option. Warning this will not be mirrored in category settings.]]>
