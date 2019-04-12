@@ -150,7 +150,6 @@ class Data extends AbstractHelper
      */
     const XML_PATH_TAG_DATE_PUBLISHED = 'nosto/flags/tag_date_published';
 
-
     /**
      * Path to the configuration object for pricing variations
      */
