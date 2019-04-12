@@ -436,17 +436,6 @@ class Data extends AbstractHelper
     }
 
     /**
-     * Returns category sorting default option
-     *
-     * @param StoreInterface|null $store
-     * @return string|null
-     */
-    public function getCategorySortingDefaultOption(StoreInterface $store = null)
-    {
-        return $this->getStoreConfig(self::XML_PATH_CATEGORY_SORTING_OPTION, $store);
-    }
-
-    /**
      * Returns if low stock indication should be tagged
      *
      * @param StoreInterface|null $store the store model or null.
