@@ -266,7 +266,7 @@ class Builder
 
             $nostoProduct->setCustomFields($this->getCustomFieldsWithAttributes($product, $store));
 
-            //update customized tag1, Tag2 and Tag3
+            // Update customised Tag1, Tag2 and Tag3
             $this->amendAttributeTags($product, $nostoProduct, $store);
 
             // When using customer group price variations, set the variations
@@ -276,6 +276,9 @@ class Builder
                 $nostoProduct->setVariations(
                     $this->priceVariationCollection->build($product, $nostoProduct, $store)
                 );
+            }
+            if ($this->nostoDataHelper->isTagDatePublishedEnabled($store)) {
+                $nostoProduct->setDatePublished($product->getCreatedAt());
             }
         } catch (\Exception $e) {
             $this->logger->exception($e);

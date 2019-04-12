@@ -140,14 +140,16 @@ class Data extends AbstractHelper
     const XML_PATH_INDEXER_MEMORY = 'nosto/flags/indexer_memory';
 
     /**
+
      * Path to the configuration object that stores category sorting
      */
     const XML_PATH_CATEGORY_SORTING = 'nosto/flags/category_sorting';
 
-    /**
-     * Path to the configuration object that stores category sorting default option
+    /*
+     * Path to the configuration object for tagging the date a product has beed added to Magento's catalog
      */
-    const XML_PATH_CATEGORY_SORTING_OPTION = 'nosto/flags/category_sorting_default_option';
+    const XML_PATH_TAG_DATE_PUBLISHED = 'nosto/flags/tag_date_published';
+
 
     /**
      * Path to the configuration object for pricing variations
@@ -465,6 +467,17 @@ class Data extends AbstractHelper
     public function getIndexerMemory(StoreInterface $store = null)
     {
         return $this->getStoreConfig(self::XML_PATH_INDEXER_MEMORY, $store);
+    }
+
+    /**
+     * Returns on/off setting for tagging product's date published
+     *
+     * @param StoreInterface|null $store the store model or null.
+     * @return bool the configuration value
+     */
+    public function isTagDatePublishedEnabled(StoreInterface $store = null)
+    {
+        return $this->getStoreConfig(self::XML_PATH_TAG_DATE_PUBLISHED, $store);
     }
 
     /**
