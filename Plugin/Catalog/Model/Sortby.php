@@ -34,8 +34,10 @@
  *
  */
 
+
 namespace Nosto\Tagging\Plugin\Catalog\Model;
 
+use Magento\Catalog\Model\Category\Attribute\Source\Sortby as MagentoSortby;
 use Nosto\Tagging\Plugin\Catalog\Model\Config as NostoConfig;
 use Magento\Catalog\Model\Category as MagentoCategory;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
@@ -43,9 +45,11 @@ use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Magento\Backend\Block\Template\Context;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Framework\View\Element\Template;
+use Magento\Framework\App\Request\Http;
 
-class Category extends Template
+class Sortby extends Template
 {
+
     /** @var NostoHelperData */
     private $nostoHelperData;
 
@@ -55,8 +59,11 @@ class Category extends Template
     /** @var StoreManagerInterface */
     private $storeManager;
 
+    /** @var Http $request */
+    private $request;
+
     /**
-     * Category constructor.
+     * Sortby constructor.
      * @param NostoHelperData $nostoHelperData
      * @param NostoHelperAccount $nostoHelperAccount
      * @param Context $context
@@ -68,33 +75,33 @@ class Category extends Template
         NostoHelperAccount $nostoHelperAccount,
         Context $context,
         StoreManagerInterface $storeManager,
+        Http $request,
         array $data = []
     ) {
         $this->nostoHelperData = $nostoHelperData;
         $this->nostoHelperAccount = $nostoHelperAccount;
         $this->storeManager = $storeManager;
+        $this->request = $request;
         parent::__construct($context, $data);
     }
 
-    /**
-     * @param MagentoCategory $category
-     * @param $default
-     * @return null|string
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
-     */
-    public function afterGetDefaultSortBy(MagentoCategory $category, $default)
+    public function afterGetAllOptions(MagentoSortby $sortBy, $options)
     {
-        $store = $this->storeManager->getStore();
-        if ($this->nostoHelperAccount->nostoInstalledAndEnabled($store) &&
+        $id = (int)$this->request->getParam('store');
+        $store = $this->storeManager->getStore($id);
+
+        if ($this->nostoHelperAccount->canUseCategorySorting($id) &&
             $this->nostoHelperData->isCategorySortingEnabled($store)
         ) {
-            $selected = $this->nostoHelperData->getCategorySortingDefaultOption($store);
-            if ($selected !== null && $selected !== '' && $selected !== NostoConfig::NONE) {
-                return $selected;
-            }
+            // new option
+            $customOption = [
+              ['label' => __('Personalized for you'), 'value' => NostoConfig::NOSTO_PERSONALIZED_KEY],
+              ['label' => __('Top products'), 'value' => NostoConfig::NOSTO_TOPLIST_KEY]
+            ];
 
+            // merge default sorting options with custom options
+            $options = array_merge($options, $customOption);
         }
-
-        return $default;
+        return $options;
     }
 }

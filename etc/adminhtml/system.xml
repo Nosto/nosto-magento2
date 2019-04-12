@@ -206,18 +206,6 @@
                     <source_model>Nosto\Tagging\Model\Config\Source\CategorySorting</source_model>
                     <frontend_model>Nosto\Tagging\Model\Config\Frontend\CategorySorting</frontend_model>
                 </field>
-                <field id="category_sorting_default_option" translate="label comment" type="select" sortOrder="100"
-                       showInDefault="1" showInWebsite="1" showInStore="1">
-
-                    <depends>
-                        <field id="category_sorting">1</field>
-                    </depends>
-                    <label>Choose default sorting (experimental)</label>
-                    <comment>
-                        <![CDATA[Experimental feature.Set one of Nosto's option as default sorting option. Warning this will not be mirrored in category settings.]]>
-                    </comment>
-                    <source_model>Nosto\Tagging\Model\Config\Source\CategorySortingDefaultOption</source_model>
-                </field>
             </group>
             <group id="attributes" translate="label" type="text" sortOrder="40" showInDefault="1"
                    showInWebsite="1" showInStore="1">

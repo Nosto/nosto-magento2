@@ -58,7 +58,7 @@
             </argument>
         </arguments>
     </type>
-    <type name="Magento\Catalog\Model\Category">
-        <plugin name="sortby_add_default_nosto_option" type="Nosto\Tagging\Plugin\Catalog\Model\Category" />
+    <type name="Magento\Catalog\Model\Category\Attribute\Source\Sortby">
+        <plugin name="sortby_add_default_nosto_option" type="Nosto\Tagging\Plugin\Catalog\Model\Sortby" />
     </type>
 </config>
