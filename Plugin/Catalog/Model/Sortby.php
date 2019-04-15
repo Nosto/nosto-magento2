@@ -38,14 +38,13 @@
 namespace Nosto\Tagging\Plugin\Catalog\Model;
 
 use Magento\Catalog\Model\Category\Attribute\Source\Sortby as MagentoSortby;
-use Nosto\Tagging\Plugin\Catalog\Model\Config as NostoConfig;
-use Magento\Catalog\Model\Category as MagentoCategory;
+use Nosto\Tagging\Helper\CategorySorting as NostoHelperSorting;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
-use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Magento\Backend\Block\Template\Context;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\App\Request\Http;
+use Magento\Framework\Exception\NoSuchEntityException;
 
 class Sortby extends Template
 {
@@ -53,8 +52,8 @@ class Sortby extends Template
     /** @var NostoHelperData */
     private $nostoHelperData;
 
-    /** @var NostoHelperAccount */
-    private $nostoHelperAccount;
+    /** @var NostoHelperSorting */
+    private $nostoHelperSorting;
 
     /** @var StoreManagerInterface */
     private $storeManager;
@@ -65,38 +64,45 @@ class Sortby extends Template
     /**
      * Sortby constructor.
      * @param NostoHelperData $nostoHelperData
-     * @param NostoHelperAccount $nostoHelperAccount
+     * @param NostoHelperSorting $nostoHelperSorting
      * @param Context $context
      * @param StoreManagerInterface $storeManager
+     * @param Http $request
      * @param array $data
      */
     public function __construct(
         NostoHelperData $nostoHelperData,
-        NostoHelperAccount $nostoHelperAccount,
+        NostoHelperSorting $nostoHelperSorting,
         Context $context,
         StoreManagerInterface $storeManager,
         Http $request,
         array $data = []
     ) {
         $this->nostoHelperData = $nostoHelperData;
-        $this->nostoHelperAccount = $nostoHelperAccount;
+        $this->nostoHelperSorting = $nostoHelperSorting;
         $this->storeManager = $storeManager;
         $this->request = $request;
         parent::__construct($context, $data);
     }
 
+    /**
+     * @param MagentoSortby $sortBy
+     * @param $options
+     * @return array
+     * @throws NoSuchEntityException
+     */
     public function afterGetAllOptions(MagentoSortby $sortBy, $options)
     {
         $id = (int)$this->request->getParam('store');
         $store = $this->storeManager->getStore($id);
 
-        if ($this->nostoHelperAccount->canUseCategorySorting($id) &&
+        if ($this->nostoHelperSorting->canUseCategorySorting($id) &&
             $this->nostoHelperData->isCategorySortingEnabled($store)
         ) {
             // new option
             $customOption = [
-              ['label' => __('Personalized for you'), 'value' => NostoConfig::NOSTO_PERSONALIZED_KEY],
-              ['label' => __('Top products'), 'value' => NostoConfig::NOSTO_TOPLIST_KEY]
+              ['label' => __('Personalized for you'), 'value' => NostoHelperSorting::NOSTO_PERSONALIZED_KEY],
+              ['label' => __('Top products'), 'value' => NostoHelperSorting::NOSTO_TOPLIST_KEY]
             ];
 
             // merge default sorting options with custom options

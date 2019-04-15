@@ -51,7 +51,6 @@ use Nosto\Types\Signup\AccountInterface;
 use Nosto\Object\Signup\Account as NostoSignupAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Helper\Url as NostoHelperUrl;
-use Nosto\Service\FeatureAccess;
 
 /**
  * NostoHelperAccount helper class for common tasks related to Nosto accounts.
@@ -364,35 +363,5 @@ class Account extends AbstractHelper
             }
         }
         return $invalidAccounts;
-    }
-
-    /**
-     * Returns if any store has APPS token
-     *
-     * @param $id
-     * @return bool
-     */
-    public function canUseCategorySorting($id)
-    {
-        $accounts = [];
-
-        if ($id === 0) {
-            $stores = $this->getStoresWithNosto();
-            foreach ($stores as $store) {
-                $accounts[] = $this->findAccount($store);
-            }
-        } else {
-            $store = $this->nostoHelperScope->getStore($id);
-            $accounts[] = $this->findAccount($store);
-        }
-
-        foreach ($accounts as $account) {
-            $featureAccess = new FeatureAccess($account);
-            if ($featureAccess->canUseGraphql()) {
-                return true;
-            }
-        }
-
-        return false;
     }
 }

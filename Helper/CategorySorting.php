@@ -34,61 +34,78 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Config\Source;
+namespace Nosto\Tagging\Helper;
 
-use Magento\Framework\Option\ArrayInterface;
-use Magento\Framework\Phrase;
-use Magento\Backend\Block\Template\Context;
-use Magento\Framework\App\Request\Http;
-use Magento\Config\Block\System\Config\Form\Field;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
-use Nosto\Tagging\Helper\CategorySorting as NostoHelperSorting;
+use Nosto\Tagging\Helper\Scope as NostoHelperScope;
+use Nosto\Service\FeatureAccess;
+use Magento\Framework\App\Helper\AbstractHelper;
 
-class CategorySorting extends Field implements ArrayInterface
+class CategorySorting extends AbstractHelper
 {
+    const NOSTO_PERSONALIZED_KEY = 'nosto-personalized';
 
-    /** @var NostoHelperSorting */
-    private $nostoHelperSorting;
+    const NOSTO_TOPLIST_KEY = 'nosto-toplist';
 
-    /** @var Http $request */
-    private $request;
+    /** @var NostoHelperScope */
+    private $nostoHelperScope;
+
+    /** @var NostoHelperAccount */
+    private $nostoHelperAccount;
 
     /**
      * CategorySorting constructor.
-     * @param Http $request
-     * @param NostoHelperSorting $nostoHelperSorting
-     * @param Context $context
-     * @param array $data
+     * @param Account $nostoHelperAccount
+     * @param Scope $nostoHelperScope
      */
     public function __construct(
-        Http $request,
-        NostoHelperSorting $nostoHelperSorting,
-        Context $context,
-        array $data = []
+        NostoHelperAccount $nostoHelperAccount,
+        NostoHelperScope $nostoHelperScope
     ) {
-        $this->nostoHelperSorting = $nostoHelperSorting;
-        $this->request = $request;
-        parent::__construct($context, $data);
+        $this->nostoHelperAccount = $nostoHelperAccount;
+        $this->nostoHelperScope = $nostoHelperScope;
     }
 
     /**
+     * Return array that contains all sorting options offered by Nosto
+     *
      * @return array
      */
-    public function toOptionArray()
+    public static function getNostoSortingOptions()
     {
-        $id = (int)$this->request->getParam('store');
+        return [
+            self::NOSTO_PERSONALIZED_KEY => __('Personalized for you'),
+            self::NOSTO_TOPLIST_KEY => __('Top products')
+        ];
+    }
 
-        if ($this->nostoHelperSorting->canUseCategorySorting($id)) {
-            $options = [
-                ['value' => '1', 'label' => new Phrase('Yes')],
-                ['value' => '0', 'label' => new Phrase('No')],
-            ];
+    /**
+     * Returns if any store has APPS token
+     *
+     * @param $id
+     * @return bool
+     */
+    public function canUseCategorySorting($id)
+    {
+        $accounts = [];
+
+        if ($id === 0) {
+            $stores = $this->nostoHelperAccount->getStoresWithNosto();
+            foreach ($stores as $store) {
+                $accounts[] = $this->nostoHelperAccount->findAccount($store);
+            }
         } else {
-            $options = [
-                ['value' => '0', 'label' => new Phrase('No (missing tokens)')]
-            ];
+            $store = $this->nostoHelperScope->getStore($id);
+            $accounts[] = $this->nostoHelperAccount->findAccount($store);
         }
 
-        return $options;
+        foreach ($accounts as $account) {
+            $featureAccess = new FeatureAccess($account);
+            if ($featureAccess->canUseGraphql()) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

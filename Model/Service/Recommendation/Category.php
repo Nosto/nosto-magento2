@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2017, Nosto Solutions Ltd
+ * Copyright (c) 2019, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,7 +29,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <contact@nosto.com>
- * @copyright 2017 Nosto Solutions Ltd
+ * @copyright 2019 Nosto Solutions Ltd
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
@@ -38,7 +38,7 @@ namespace Nosto\Tagging\Model\Service\Recommendation;
 
 use Nosto\Object\Signup\Account as NostoAccount;
 use Nosto\Service\FeatureAccess;
-use Nosto\Tagging\Plugin\Catalog\Model\Config as NostoConfigModel;
+use Nosto\Tagging\Helper\CategorySorting as NostoHelperSorting;
 use Nosto\Operation\Recommendation\CategoryBrowsingHistory;
 use Nosto\Operation\Recommendation\CategoryTopList;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
@@ -79,7 +79,7 @@ class Category
         }
 
         switch ($type) {
-            case NostoConfigModel::NOSTO_PERSONALIZED_KEY:
+            case NostoHelperSorting::NOSTO_PERSONALIZED_KEY:
                 $recoOperation = new CategoryBrowsingHistory($nostoAccount, $nostoCustomerId);
                 break;
             default:

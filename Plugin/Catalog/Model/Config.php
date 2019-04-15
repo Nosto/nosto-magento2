@@ -38,19 +38,15 @@ namespace  Nosto\Tagging\Plugin\Catalog\Model;
 
 use Magento\Catalog\Model\Config as MagentoConfig;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
+use Nosto\Tagging\Helper\CategorySorting as NostoHelperSorting;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Magento\Backend\Block\Template\Context;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Framework\View\Element\Template;
+use Magento\Framework\Exception\NoSuchEntityException;
 
 class Config extends Template
 {
-    const NOSTO_PERSONALIZED_KEY = 'nosto-personalized';
-
-    const NOSTO_TOPLIST_KEY = 'nosto-toplist';
-
-    const NONE = 'none';
-
     /** @var NostoHelperData */
     private $nostoHelperData;
 
@@ -59,11 +55,6 @@ class Config extends Template
 
     /** @var StoreManagerInterface */
     private $storeManager;
-
-    public $nostoSortingOptions = [
-        self::NOSTO_PERSONALIZED_KEY => 'Personalized for you',
-        self::NOSTO_TOPLIST_KEY => 'Top products'
-    ];
 
     /**
      * Config constructor.
@@ -93,6 +84,7 @@ class Config extends Template
      * @param $options
      * @return array
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @throws NoSuchEntityException
      */
     public function afterGetAttributeUsedForSortByArray(MagentoConfig $catalogConfig, $options)
     {
@@ -101,11 +93,10 @@ class Config extends Template
             $this->nostoHelperData->isCategorySortingEnabled($store)
         ) {
             // new option
-            $customOption[self::NOSTO_PERSONALIZED_KEY] = __('Personalized for you');
-            $customOption[self::NOSTO_TOPLIST_KEY] = __('Top products');
+            $customOptions = NostoHelperSorting::getNostoSortingOptions();
 
             // merge default sorting options with custom options
-            $options = array_merge($customOption, $options);
+            $options = array_merge($customOptions, $options);
         }
 
         return $options;
