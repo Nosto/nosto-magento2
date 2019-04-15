@@ -53,6 +53,7 @@ use Magento\Framework\Data\Collection;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\View\Element\Template;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
+use Nosto\NostoException;
 
 class Toolbar extends Template
 {
@@ -148,16 +149,17 @@ class Toolbar extends Template
             $currentPage = $subject->getCurrentPage();
             $this->_collection->setCurPage($currentPage);
 
-            //Get ids of products to order
-            $orderIds = $this->getSortedIds($store, $currentOrder);
-            if (!empty($orderIds)) {
-                try {
+            try {
+                //Get ids of products to order
+                $orderIds = $this->getSortedIds($store, $currentOrder);
+                if (!empty($orderIds)) {
                     $zendExpression = new \Zend_Db_Expr('FIELD(e.entity_id,' . implode(',', $orderIds) . ') DESC');
                     $this->_collection->getSelect()->order($zendExpression);
-                } catch (\Exception $e) {
-                    $this->logger->exception($e);
                 }
+            } catch (\Exception $e) {
+                $this->logger->exception($e);
             }
+
         }
         return $this;
     }
@@ -166,17 +168,18 @@ class Toolbar extends Template
      * @param Store $store
      * @param $type
      * @return array
+     * @throws NostoException
      */
     private function getSortedIds(Store $store, $type)
     {
         $nostoAccount = $this->nostoHelperAccount->findAccount($store);
         if ($nostoAccount === null) {
-            return [];
+            throw new NostoException('Account cannot be null');
         }
         $category = $this->registry->registry('current_category');
         $category = $this->categoryBuilder->build($category, $store);
         $nostoCustomer = $this->cookieManager->getCookie(NostoCustomer::COOKIE_NAME);
-        return $this->categoryRecommendation->getSortedProductIds(
+        return $sortedIds = $this->categoryRecommendation->getSortedProductIds(
             $nostoAccount,
             $nostoCustomer,
             $category,
