@@ -158,9 +158,8 @@ class Toolbar extends Template
                     $this->logger->exception($e);
                 }
             }
-
-            return $this;
         }
+        return $this;
     }
 
     /**
