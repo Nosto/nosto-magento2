@@ -41,11 +41,13 @@ use Magento\Framework\Data\Form\Element\AbstractElement;
 use Magento\Backend\Block\Template\Context;
 use Magento\Framework\App\Request\Http;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
+use Nosto\Tagging\Helper\CategorySorting as NostoHelperSorting;
 
 class CategorySorting extends Field
 {
-    /** @var NostoHelperAccount */
-    private $nostoHelperAccount;
+
+    /** @var NostoHelperSorting */
+    private $nostoHelperSorting;
 
     /** @var Http $request */
     public $request;
@@ -53,18 +55,18 @@ class CategorySorting extends Field
     /**
      * CategorySorting constructor.
      * @param Http $request
-     * @param NostoHelperAccount $nostoHelperAccount
+     * @param NostoHelperSorting $nostoHelperSorting
      * @param Context $context
      * @param array $data
      */
     public function __construct(
         Http $request,
-        NostoHelperAccount $nostoHelperAccount,
+        NostoHelperSorting $nostoHelperSorting,
         Context $context,
         array $data = []
     ) {
         $this->request = $request;
-        $this->nostoHelperAccount = $nostoHelperAccount;
+        $this->nostoHelperSorting = $nostoHelperSorting;
         parent::__construct($context, $data);
     }
 
@@ -77,7 +79,7 @@ class CategorySorting extends Field
     protected function _getElementHtml(AbstractElement $element) //@codingStandardsIgnoreLine
     {
         $id = (int)$this->request->getParam('store');
-        if (!$this->nostoHelperAccount->canUseCategorySorting($id)) {
+        if (!$this->nostoHelperSorting->canUseCategorySorting($id)) {
             $element->setReadonly(true, true);
         }
 
