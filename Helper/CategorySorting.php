@@ -40,6 +40,7 @@ use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Service\FeatureAccess;
 use Magento\Framework\App\Helper\AbstractHelper;
+use Magento\Framework\App\Helper\Context;
 
 class CategorySorting extends AbstractHelper
 {
@@ -57,13 +58,16 @@ class CategorySorting extends AbstractHelper
      * CategorySorting constructor.
      * @param Account $nostoHelperAccount
      * @param Scope $nostoHelperScope
+     * @param Context $context
      */
     public function __construct(
         NostoHelperAccount $nostoHelperAccount,
-        NostoHelperScope $nostoHelperScope
+        NostoHelperScope $nostoHelperScope,
+        Context $context
     ) {
         $this->nostoHelperAccount = $nostoHelperAccount;
         $this->nostoHelperScope = $nostoHelperScope;
+        parent::__construct($context);
     }
 
     /**

@@ -179,7 +179,7 @@ class Toolbar extends Template
         $category = $this->registry->registry('current_category');
         $category = $this->categoryBuilder->build($category, $store);
         $nostoCustomer = $this->cookieManager->getCookie(NostoCustomer::COOKIE_NAME);
-        return $sortedIds = $this->categoryRecommendation->getSortedProductIds(
+        return $this->categoryRecommendation->getSortedProductIds(
             $nostoAccount,
             $nostoCustomer,
             $category,

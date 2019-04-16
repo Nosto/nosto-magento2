@@ -36,15 +36,15 @@
 
 namespace Nosto\Tagging\Model\Config\Source;
 
-use Magento\Framework\Option\ArrayInterface;
 use Magento\Framework\Phrase;
 use Magento\Backend\Block\Template\Context;
 use Magento\Framework\App\Request\Http;
 use Magento\Config\Block\System\Config\Form\Field;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\CategorySorting as NostoHelperSorting;
+use Magento\Framework\Data\OptionSourceInterface;
 
-class CategorySorting extends Field implements ArrayInterface
+class CategorySorting extends Field implements OptionSourceInterface
 {
 
     /** @var NostoHelperSorting */
