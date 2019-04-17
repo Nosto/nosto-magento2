@@ -140,7 +140,6 @@ class Toolbar extends Template
             || $currentOrder === NostoHelperSorting::NOSTO_TOPLIST_KEY)
             && $this->nostoHelperAccount->nostoInstalledAndEnabled($store)
             && $this->nostoHelperData->isCategorySortingEnabled($store)
-            && $this->nostoHelperData->isCategorySortingEnabled($store)
         ) {
             $limit = (int)$subject->getLimit();
             if ($limit) {

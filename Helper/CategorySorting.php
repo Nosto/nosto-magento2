@@ -96,11 +96,17 @@ class CategorySorting extends AbstractHelper
         if ($id === 0) {
             $stores = $this->nostoHelperAccount->getStoresWithNosto();
             foreach ($stores as $store) {
-                $accounts[] = $this->nostoHelperAccount->findAccount($store);
+                $account = $this->nostoHelperAccount->findAccount($store);
+                if ($account !== null) {
+                    $accounts[] = $account;
+                }
             }
         } else {
             $store = $this->nostoHelperScope->getStore($id);
-            $accounts[] = $this->nostoHelperAccount->findAccount($store);
+            $account = $this->nostoHelperAccount->findAccount($store);
+            if ($account !== null) {
+                $accounts[] = $account;
+            }
         }
 
         foreach ($accounts as $account) {
