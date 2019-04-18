@@ -36,13 +36,101 @@
 
 namespace Nosto\Tagging\Controller\Checkout\Cart;
 
+use Magento\Catalog\Api\Data\ProductInterface;
+use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Checkout\Controller\Cart\Add as MageAdd;
+use Magento\ConfigurableProduct\Model\Product\Type\Configurable as ConfigurableType;
+use Magento\Catalog\Model\ResourceModel\Eav\Attribute as MageAttribute;
+use Magento\Store\Model\StoreManager;
 
+/**
+ * Class Add
+ * @package Nosto\Tagging\Controller\Checkout\Cart
+ */
 class Add
 {
+    /** @var ProductRepositoryInterface */
+    private $productRepository;
+
+    /** @var StoreManager */
+    private $storeManager;
+
+    /**
+     * Add constructor.
+     * @param ProductRepositoryInterface $productRepository
+     * @param StoreManager $storeManager
+     */
+    public function __construct(
+        ProductRepositoryInterface $productRepository,
+        StoreManager $storeManager
+    ) {
+        $this->productRepository = $productRepository;
+        $this->storeManager = $storeManager;
+    }
+
+    /**
+     * Method executed before magento's native add to cart controller
+     * Checks if request has product attributes and set them before
+     * returning to magento's controller
+     *
+     * @param MageAdd $add
+     * @param callable $proceed
+     * @return mixed
+     */
     public function aroundExecute(MageAdd $add, callable $proceed)
     {
-        $returnValue = $proceed();
-        return $returnValue;
+        $params = $add->getRequest()->getParams();
+        if (isset($params['super_attribute'])) {
+            return $proceed();
+        }
+        $productId = $params['product'];
+        $skuId = $add->getRequest()->getParam('sku');
+        $product = $this->initProduct($productId);
+        $parentType = false;
+        if ($product) {
+            $parentType = $product->getTypeInstance();
+        }
+
+        if ($parentType && $parentType instanceof ConfigurableType) {
+            $skuProduct = $this->initProduct($skuId);
+            $configurableAttributes = $parentType->getConfigurableAttributesAsArray($product);
+            foreach ($configurableAttributes as $configurableAttribute) {
+                $attributeCode = $configurableAttribute['attribute_code'];
+                $attribute = $skuProduct->getResource()->getAttribute($attributeCode);
+                if ($attribute instanceof MageAttribute) {
+                    $attributeId = $attribute->getId();
+                    $attributeValueId = $skuProduct->getData($attributeCode);
+                    if ($attributeId && $attributeValueId) {
+                        $attributeOptions[$attributeId] = $attributeValueId;
+                    }
+                }
+            }
+        }
+        if (!empty($attributeOptions)) {
+            $params['super_attribute'] = $attributeOptions;
+            $add->getRequest()->setParams($params);
+        }
+        return $proceed();
     }
+
+    /**
+     * Initialize product instance from request data
+     *
+     * @param $productId
+     * @return ProductInterface|bool
+     */
+    protected function initProduct($productId)
+    {
+        try {
+            $storeId = null;
+            $store = $this->storeManager->getStore();
+            if ($store) {
+                $storeId = $store->getId();
+            }
+            return $this->productRepository->getById($productId, false, $storeId);
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
+
 }
