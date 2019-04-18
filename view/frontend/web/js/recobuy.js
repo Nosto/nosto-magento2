@@ -102,7 +102,12 @@ define([
             relatedProductsField.setAttribute("value", product.related_product);
             form.append(relatedProductsField);
         } else {
-            form.find('input[name="product"]').val(product.skuId);
+            form.find('input[name="product"]').val(product.productId);
+            var productSku = document.createElement("input");
+            productSku.setAttribute("type", "hidden");
+            productSku.setAttribute("name", 'sku');
+            productSku.setAttribute("value", product.skuId);
+            form.append(productSku);
         }
         form.find('input[name="qty"]').val(quantity);
         form.catalogAddToCart('ajaxSubmit', form);
