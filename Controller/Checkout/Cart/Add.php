@@ -57,23 +57,29 @@ class Add
     /** @var StoreManager */
     private $storeManager;
 
+    /** @var ProductResourceModel */
+    private $productResourceModel;
+
     /**
      * Add constructor.
      * @param ProductRepositoryInterface $productRepository
      * @param StoreManager $storeManager
+     * @param ProductResourceModel $productResourceModel
      */
     public function __construct(
         ProductRepositoryInterface $productRepository,
-        StoreManager $storeManager
+        StoreManager $storeManager,
+        ProductResourceModel $productResourceModel
     ) {
         $this->productRepository = $productRepository;
         $this->storeManager = $storeManager;
+        $this->productResourceModel = $productResourceModel;
     }
 
     /**
      * Method executed before magento's native add to cart controller
      * Checks if request has product attributes and set them before
-     * returning to magento's controller
+     * returning to Magento's controller
      *
      * @param MageAdd $add
      * @param callable $proceed
@@ -82,36 +88,24 @@ class Add
     public function aroundExecute(MageAdd $add, callable $proceed)
     {
         $params = $add->getRequest()->getParams();
+        // Skip if request already has product attributes
         if (isset($params['super_attribute'])) {
             return $proceed();
         }
+
         $productId = $params['product'];
-        $skuId = $add->getRequest()->getParam('sku');
-        /** @var Product $product */
         $product = $this->initProduct($productId);
-        $parentType = false;
-        if ($product) {
-            $parentType = $product->getTypeInstance();
+        if (!$product) {
+            return $proceed();
         }
 
-        if ($parentType && $parentType instanceof ConfigurableType) {
+        $parentType = $product->getTypeInstance();
+        $skuId = $add->getRequest()->getParam('sku');
+        if ($parentType instanceof ConfigurableType && !empty($skuId)) {
             $skuProduct = $this->initProduct($skuId);
-            $configurableAttributes = $parentType->getConfigurableAttributesAsArray($product);
-            foreach ($configurableAttributes as $configurableAttribute) {
-                $attributeCode = $configurableAttribute['attribute_code'];
-                /** @var Product $skuProduct */
-                $skuResource = $skuProduct->getResource();
-                /** @var ProductResourceModel $skuResource */
-                $attribute = $skuResource->getAttribute($attributeCode);
-                if ($attribute instanceof MageAttribute) {
-                    $attributeId = $attribute->getId();
-                    $attributeValueId = $skuProduct->getData($attributeCode);
-                    if ($attributeId && $attributeValueId) {
-                        $attributeOptions[$attributeId] = $attributeValueId;
-                    }
-                }
-            }
+            $attributeOptions = $this->getAttributeOptions($product, $skuProduct, $parentType);
         }
+
         if (!empty($attributeOptions)) {
             $params['super_attribute'] = $attributeOptions;
             $add->getRequest()->setParams($params);
@@ -120,19 +114,46 @@ class Add
     }
 
     /**
+     * Returns an array with a list of super_attributes for a parent product and his SKU
+     *
+     * @param Product $product
+     * @param Product $skuProduct
+     * @param ConfigurableType $configurableType
+     * @return array
+     */
+    protected function getAttributeOptions(Product $product, Product $skuProduct, ConfigurableType $configurableType)
+    {
+        $configurableAttributes = $configurableType->getConfigurableAttributesAsArray($product);
+        $attributeOptions = [];
+        foreach ($configurableAttributes as $configurableAttribute) {
+            $attributeCode = $configurableAttribute['attribute_code'];
+            $skuResource = $this->productResourceModel->load($skuProduct, $skuProduct->getId());
+            $attribute = $skuResource->getAttribute($attributeCode);
+            if ($attribute instanceof MageAttribute) {
+                $attributeId = $attribute->getId();
+                $attributeValueId = $skuProduct->getData($attributeCode);
+                if ($attributeId && $attributeValueId) {
+                    $attributeOptions[$attributeId] = $attributeValueId;
+                }
+            }
+        }
+        return $attributeOptions;
+    }
+
+    /**
      * Initialize product instance from request data
      *
      * @param $productId
-     * @return ProductInterface|bool
+     * @return bool|ProductInterface|Product
      */
     protected function initProduct($productId)
     {
         try {
-            $storeId = null;
             $store = $this->storeManager->getStore();
-            if ($store) {
-                $storeId = $store->getId();
+            if (!$store) {
+                return false;
             }
+            $storeId = $store->getId();
             return $this->productRepository->getById($productId, false, $storeId);
         } catch (\Exception $e) {
             return false;
