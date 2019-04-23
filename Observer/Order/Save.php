@@ -114,6 +114,7 @@ class Save implements ObserverInterface
      * @param Observer $observer
      * @return void
      * @suppress PhanDeprecatedFunction
+     * @suppress PhanTypeMismatchArgument
      */
     public function execute(Observer $observer)
     {
@@ -138,11 +139,13 @@ class Save implements ObserverInterface
                 $nostoCustomer = $this->customerRepository
                     ->getOneByQuoteId($quoteId);
                 if ($nostoCustomer instanceof NostoCustomer === false) {
-                    return;
+                    $nostoCustomerId = null;
+                } else {
+                    $nostoCustomerId = $nostoCustomer->getNostoId();
                 }
                 $orderService = new OrderConfirm($nostoAccount, $this->nostoHelperUrl->getActiveDomain($store));
                 try {
-                    $orderService->send($nostoOrder, $nostoCustomer->getNostoId());
+                    $orderService->send($nostoOrder, $nostoCustomerId);
                 } catch (\Exception $e) {
                     $this->logger->error(
                         sprintf(
