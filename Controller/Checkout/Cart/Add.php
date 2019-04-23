@@ -121,13 +121,13 @@ class Add
      * @param ConfigurableType $configurableType
      * @return array
      */
-    protected function getAttributeOptions(Product $product, Product $skuProduct, ConfigurableType $configurableType)
+    private function getAttributeOptions(Product $product, Product $skuProduct, ConfigurableType $configurableType)
     {
         $configurableAttributes = $configurableType->getConfigurableAttributesAsArray($product);
         $attributeOptions = [];
+        $skuResource = $this->productResourceModel->load($skuProduct, $skuProduct->getId());
         foreach ($configurableAttributes as $configurableAttribute) {
             $attributeCode = $configurableAttribute['attribute_code'];
-            $skuResource = $this->productResourceModel->load($skuProduct, $skuProduct->getId());
             $attribute = $skuResource->getAttribute($attributeCode);
             if ($attribute instanceof MageAttribute) {
                 $attributeId = $attribute->getId();
@@ -146,7 +146,7 @@ class Add
      * @param $productId
      * @return bool|ProductInterface|Product
      */
-    protected function initProduct($productId)
+    private function initProduct($productId)
     {
         try {
             $store = $this->storeManager->getStore();
@@ -159,5 +159,4 @@ class Add
             return false;
         }
     }
-
 }
