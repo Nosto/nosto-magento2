@@ -37,6 +37,8 @@
 namespace Nosto\Tagging\Controller\Checkout\Cart;
 
 use Magento\Catalog\Api\Data\ProductInterface;
+use Magento\Catalog\Model\Product;
+use Magento\Catalog\Model\ResourceModel\Product as ProductResourceModel;
 use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Checkout\Controller\Cart\Add as MageAdd;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable as ConfigurableType;
@@ -85,6 +87,7 @@ class Add
         }
         $productId = $params['product'];
         $skuId = $add->getRequest()->getParam('sku');
+        /** @var Product $product */
         $product = $this->initProduct($productId);
         $parentType = false;
         if ($product) {
@@ -96,7 +99,10 @@ class Add
             $configurableAttributes = $parentType->getConfigurableAttributesAsArray($product);
             foreach ($configurableAttributes as $configurableAttribute) {
                 $attributeCode = $configurableAttribute['attribute_code'];
-                $attribute = $skuProduct->getResource()->getAttribute($attributeCode);
+                /** @var Product $skuProduct */
+                $skuResource = $skuProduct->getResource();
+                /** @var ProductResourceModel $skuResource */
+                $attribute = $skuResource->getAttribute($attributeCode);
                 if ($attribute instanceof MageAttribute) {
                     $attributeId = $attribute->getId();
                     $attributeValueId = $skuProduct->getData($attributeCode);
