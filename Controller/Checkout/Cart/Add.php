@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2017, Nosto Solutions Ltd
+ * Copyright (c) 2019, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,7 +29,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <contact@nosto.com>
- * @copyright 2017 Nosto Solutions Ltd
+ * @copyright 2019 Nosto Solutions Ltd
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
@@ -47,6 +47,9 @@ use Magento\Store\Model\StoreManager;
 
 /**
  * Class Add
+ * Implements around method to Magento's native add to cart controller.
+ * Modify the request to add a super_attribute key if it is missing.
+ *
  * @package Nosto\Tagging\Controller\Checkout\Cart
  */
 class Add
@@ -103,7 +106,9 @@ class Add
         $skuId = $add->getRequest()->getParam('sku');
         if ($parentType instanceof ConfigurableType && !empty($skuId)) {
             $skuProduct = $this->initProduct($skuId);
-            $attributeOptions = $this->getAttributeOptions($product, $skuProduct, $parentType);
+            if ($skuProduct instanceof Product) {
+                $attributeOptions = $this->getAttributeOptions($product, $skuProduct, $parentType);
+            }
         }
 
         if (!empty($attributeOptions)) {
@@ -144,19 +149,19 @@ class Add
      * Initialize product instance from request data
      *
      * @param $productId
-     * @return bool|ProductInterface|Product
+     * @return null|ProductInterface|Product
      */
     private function initProduct($productId)
     {
         try {
             $store = $this->storeManager->getStore();
             if (!$store) {
-                return false;
+                return null;
             }
             $storeId = $store->getId();
             return $this->productRepository->getById($productId, false, $storeId);
         } catch (\Exception $e) {
-            return false;
+            return null;
         }
     }
 }
