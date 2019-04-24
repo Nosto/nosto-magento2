@@ -81,6 +81,7 @@ class Simple extends SimpleItem
             } catch (\Throwable $e) {
                 // If the item name building fails, it's not crucial
                 // No need to handle the exception in any specific way
+                unset($e);
             }
         }
 

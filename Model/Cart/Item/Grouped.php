@@ -42,7 +42,6 @@ use Nosto\Tagging\Model\Item\Grouped as GroupedItem;
 use Magento\Catalog\Model\ProductRepository;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Catalog\Api\Data\ProductInterface;
-use Nosto\Tagging\Logger\Logger as NostoLogger;
 
 class Grouped extends GroupedItem
 {
@@ -55,7 +54,8 @@ class Grouped extends GroupedItem
      * Grouped constructor.
      * @param ProductRepository $productRepository
      */
-    public function __construct(ProductRepository $productRepository) {
+    public function __construct(ProductRepository $productRepository)
+    {
         $this->productRepository = $productRepository;
     }
 
@@ -81,6 +81,7 @@ class Grouped extends GroupedItem
         } catch (\Throwable $e) {
             // If the item name building fails, it's not crucial
             // No need to handle the exception in any specific way
+            unset($e);
         }
 
         return $name;
