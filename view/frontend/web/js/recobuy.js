@@ -56,23 +56,9 @@ define([
     // skuId is optional for simple products.
     Recobuy.addMultipleProductsToCart = function (products, element) {
         if (products.constructor === Array) {
-            var productArray = [];
-            var skus = [];
             products.forEach(function (productObj) {
-                if (productObj.skuId){
-                    skus.push(productObj.skuId);
-                } else {
-                    skus.push(productObj.productId);
-                }
-                if (productObj.productId) {
-                    productArray.push(productObj.productId);
-                }
+                Recobuy.addSkuToCart(productObj, element, 1);
             });
-            var productData = {
-                "productId" : productArray,
-                "related_product" : skus
-            };
-            Recobuy.addSkuToCart(productData, element, 1);
         }
     };
 
@@ -83,32 +69,18 @@ define([
             var slotId = this.resolveContextSlotId(element);
             if (slotId) {
                 nostojs(function (api) {
-                    if (product.hasOwnProperty('related_product') && product.productId.constructor === Array) {
-                        product.productId.forEach(function (singleProductId) {
-                            api.recommendedProductAddedToCart(singleProductId, slotId);
-                        });
-                    } else {
-                        api.recommendedProductAddedToCart(product.productId, slotId);
-                    }
+                    api.recommendedProductAddedToCart(product.productId, slotId);
                 });
             }
         }
-        if (product.hasOwnProperty('related_product')) {
-            form.find('input[name="product"]').val(product.related_product.pop());
-            // Add array of related products
-            var relatedProductsField = document.createElement("input");
-            relatedProductsField.setAttribute("type", "hidden");
-            relatedProductsField.setAttribute("name", 'related_product');
-            relatedProductsField.setAttribute("value", product.related_product);
-            form.append(relatedProductsField);
-        } else {
-            form.find('input[name="product"]').val(product.productId);
-            var productSku = document.createElement("input");
-            productSku.setAttribute("type", "hidden");
-            productSku.setAttribute("name", 'sku');
-            productSku.setAttribute("value", product.skuId);
-            form.append(productSku);
-        }
+
+        form.find('input[name="product"]').val(product.productId);
+        var productSku = document.createElement("input");
+        productSku.setAttribute("type", "hidden");
+        productSku.setAttribute("name", 'sku');
+        productSku.setAttribute("value", product.skuId);
+        form.append(productSku);
+
         form.find('input[name="qty"]').val(quantity);
         form.catalogAddToCart('ajaxSubmit', form);
     };
