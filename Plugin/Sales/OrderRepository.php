@@ -38,6 +38,8 @@ namespace Nosto\Tagging\Plugin\Sales;
 
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Sales\Api\OrderRepositoryInterface;
+use Magento\Sales\Api\Data\OrderInterface;
+use Magento\Sales\Model\Order;
 
 class OrderRepository
 {
@@ -57,9 +59,9 @@ class OrderRepository
     }
 
     /**
-     * @param \Magento\Sales\Api\OrderRepositoryInterface $subject
-     * @param $order
-     * @return mixed
+     * @param OrderRepositoryInterface $subject
+     * @param OrderInterface|Order $order
+     * @return OrderInterface
      */
     public function afterSave(OrderRepositoryInterface $subject, $order)
     {
