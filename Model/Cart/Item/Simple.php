@@ -67,8 +67,7 @@ class Simple extends SimpleItem
                 if (is_array($attributes)) {
                     foreach ($attributes as $id => $value) {
                         /** @var Attribute $attribute */
-                        $attribute = $objectManager->get(Attribute::class)
-                            ->load($id); // @codingStandardsIgnoreLine
+                        $attribute = $objectManager->get(Attribute::class)->load($id); // @codingStandardsIgnoreLine
                         $label = $attribute->getSource()->getOptionText($value);
                         if (!empty($label)) {
                             $optNames[] = $label;
