@@ -66,16 +66,22 @@ class Simple extends SimpleItem
         // the parent. If there are many parent IDs, we are safer to tag the
         // products own name alone.
         if (count($parentIds) === 1) {
-            $attributes = $item->getBuyRequest()->getData('super_attribute');
-            if (is_array($attributes)) {
-                foreach ($attributes as $id => $value) {
-                    /** @var Attribute $attribute */
-                    $attribute = $objectManager->get(Attribute::class)->load($id); // @codingStandardsIgnoreLine
-                    $label = $attribute->getSource()->getOptionText($value);
-                    if (!empty($label)) {
-                        $optNames[] = $label;
+            try {
+                $attributes = $item->getBuyRequest()->getData('super_attribute');
+                if (is_array($attributes)) {
+                    foreach ($attributes as $id => $value) {
+                        /** @var Attribute $attribute */
+                        $attribute = $objectManager->get(Attribute::class)->load($id); // @codingStandardsIgnoreLine
+                        $label = $attribute->getSource()->getOptionText($value);
+                        if (!empty($label)) {
+                            $optNames[] = $label;
+                        }
                     }
                 }
+            } catch (\Throwable $e) {
+                // If the item name building fails, it's not crucial
+                // No need to handle the exception in any specific way
+                unset($e);
             }
         }
 
