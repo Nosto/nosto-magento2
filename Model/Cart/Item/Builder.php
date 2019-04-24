@@ -153,7 +153,7 @@ class Builder
                 if (!empty($attributes) && count($parentIds) === 1) {
                     return $parentIds[0];
                 }
-            } catch (\Error $e) {
+            } catch (\Throwable $e) {
                 $this->logger->exception($e);
             }
         }

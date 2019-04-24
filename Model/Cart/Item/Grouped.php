@@ -42,6 +42,7 @@ use Nosto\Tagging\Model\Item\Grouped as GroupedItem;
 use Magento\Catalog\Model\ProductRepository;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Catalog\Api\Data\ProductInterface;
+use Nosto\Tagging\Logger\Logger as NostoLogger;
 
 class Grouped extends GroupedItem
 {
@@ -54,8 +55,7 @@ class Grouped extends GroupedItem
      * Grouped constructor.
      * @param ProductRepository $productRepository
      */
-    public function __construct(ProductRepository $productRepository)
-    {
+    public function __construct(ProductRepository $productRepository) {
         $this->productRepository = $productRepository;
     }
 
@@ -65,19 +65,24 @@ class Grouped extends GroupedItem
      *
      * @param Item $item the ordered item
      * @return string|null the name of the product
-     * @throws NoSuchEntityException
      */
     public function buildItemName(Item $item)
     {
         $name = $item->getName();
-        $config = $item->getBuyRequest()->getData('super_product_config');
-        $itemParent = $this->getGroupedItemParent($config['product_id']);
-        if ($itemParent instanceof Product) {
-            $itemParentName = $itemParent->getName();
-            if ($itemParentName !== null) {
-                return $itemParentName . ' - ' . $name;
+        try {
+            $config = $item->getBuyRequest()->getData('super_product_config');
+            $itemParent = $this->getGroupedItemParent($config['product_id']);
+            if ($itemParent instanceof Product) {
+                $itemParentName = $itemParent->getName();
+                if ($itemParentName !== null) {
+                    return $itemParentName . ' - ' . $name;
+                }
             }
+        } catch (\Throwable $e) {
+            // If the item name building fails, it's not crucial
+            // No need to handle the exception in any specific way
         }
+
         return $name;
     }
 
