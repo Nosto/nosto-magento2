@@ -58,4 +58,7 @@
             </argument>
         </arguments>
     </type>
+    <type name="Magento\Sales\Api\OrderRepositoryInterface">
+        <plugin name="order_repository_nosto" type="Nosto\Tagging\Plugin\Sales\OrderRepository" />
+    </type>
 </config>

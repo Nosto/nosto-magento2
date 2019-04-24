@@ -37,7 +37,7 @@
 <!--suppress XmlUnboundNsPrefix -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
-    <event name="sales_order_save_commit_after">
+    <event name="nosto_sales_save_after">
         <observer name="nosto_order_confirmation" instance="Nosto\Tagging\Observer\Order\Save"/>
     </event>
     <event name="review_save_commit_after">
