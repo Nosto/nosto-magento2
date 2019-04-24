@@ -45,4 +45,7 @@
             </argument>
         </arguments>
     </type>
+    <type name="Magento\Checkout\Controller\Cart\Add">
+        <plugin name="nostoAddToCart" type="Nosto\Tagging\Controller\Checkout\Cart\Add" sortOrder="1" />
+    </type>
 </config>
