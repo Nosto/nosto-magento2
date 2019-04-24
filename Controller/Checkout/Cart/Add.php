@@ -49,8 +49,6 @@ use Magento\Store\Model\StoreManager;
  * Class Add
  * Implements around method to Magento's native add to cart controller.
  * Modify the request to add a super_attribute key if it is missing.
- *
- * @package Nosto\Tagging\Controller\Checkout\Cart
  */
 class Add
 {
