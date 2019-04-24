@@ -69,6 +69,7 @@ class Save implements ObserverInterface
     private $nostoHelperScope;
     private $indexer;
     private $nostoHelperUrl;
+    private static $sent = [];
 
     /** @noinspection PhpUndefinedClassInspection */
     /**
@@ -127,6 +128,11 @@ class Save implements ObserverInterface
             /* @var Order $order */
             /** @noinspection PhpUndefinedMethodInspection */
             $order = $observer->getOrder();
+
+            //Check if order has been sent once
+            if (in_array($order->getId(), self::$sent)) {
+                return;
+            }
             $store = $order->getStore();
             $nostoOrder = $this->nostoOrderBuilder->build($order);
             $nostoAccount = $this->nostoHelperAccount->findAccount(
@@ -155,6 +161,7 @@ class Save implements ObserverInterface
                     );
                 }
                 $this->handleInventoryLevelUpdate($nostoOrder);
+                self::$sent[] = $order->getId();
             }
         }
     }
