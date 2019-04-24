@@ -106,13 +106,13 @@ class Add
             $skuProduct = $this->initProduct($skuId);
             if ($skuProduct instanceof Product) {
                 $attributeOptions = $this->getAttributeOptions($product, $skuProduct, $parentType);
+                if (!empty($attributeOptions)) {
+                    $params['super_attribute'] = $attributeOptions;
+                    $add->getRequest()->setParams($params);
+                }
             }
         }
 
-        if (!empty($attributeOptions)) {
-            $params['super_attribute'] = $attributeOptions;
-            $add->getRequest()->setParams($params);
-        }
         return $proceed();
     }
 
