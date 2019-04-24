@@ -69,6 +69,7 @@ class Save implements ObserverInterface
     private $nostoHelperScope;
     private $indexer;
     private $nostoHelperUrl;
+    private static $sent = [];
 
     /** @noinspection PhpUndefinedClassInspection */
     /**
@@ -114,6 +115,7 @@ class Save implements ObserverInterface
      * @param Observer $observer
      * @return void
      * @suppress PhanDeprecatedFunction
+     * @suppress PhanTypeMismatchArgument
      */
     public function execute(Observer $observer)
     {
@@ -127,6 +129,11 @@ class Save implements ObserverInterface
             /* @var Order $order */
             /** @noinspection PhpUndefinedMethodInspection */
             $order = $observer->getOrder();
+
+            //Check if order has been sent once
+            if (in_array($order->getId(), self::$sent)) {
+                return;
+            }
             $store = $order->getStore();
             $nostoOrder = $this->nostoOrderBuilder->build($order);
             $nostoAccount = $this->nostoHelperAccount->findAccount(
@@ -137,12 +144,13 @@ class Save implements ObserverInterface
                 /** @var NostoCustomer $nostoCustomer */
                 $nostoCustomer = $this->customerRepository
                     ->getOneByQuoteId($quoteId);
-                if ($nostoCustomer instanceof NostoCustomer === false) {
-                    return;
+                $nostoCustomerId = null;
+                if ($nostoCustomer instanceof NostoCustomer) {
+                    $nostoCustomerId = $nostoCustomer->getNostoId();
                 }
                 $orderService = new OrderConfirm($nostoAccount, $this->nostoHelperUrl->getActiveDomain($store));
                 try {
-                    $orderService->send($nostoOrder, $nostoCustomer->getNostoId());
+                    $orderService->send($nostoOrder, $nostoCustomerId);
                 } catch (\Exception $e) {
                     $this->logger->error(
                         sprintf(
@@ -155,6 +163,7 @@ class Save implements ObserverInterface
                     );
                 }
                 $this->handleInventoryLevelUpdate($nostoOrder);
+                self::$sent[] = $order->getId();
             }
         }
     }

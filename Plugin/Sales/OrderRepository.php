@@ -34,32 +34,38 @@
  *
  */
 
-namespace Nosto\Tagging\Helper;
+namespace Nosto\Tagging\Plugin\Sales;
 
-/**
- * New Relic wrapper utility
- */
-class NewRelic
+use Magento\Framework\Event\ManagerInterface;
+use Magento\Sales\Api\OrderRepositoryInterface;
+use Magento\Sales\Api\Data\OrderInterface;
+use Magento\Sales\Model\Order;
+
+class OrderRepository
 {
     /**
-     * Checks if New Relic extension is loaded
-     *
-     * @return bool
+     * @var ManagerInterface
      */
-    public static function newRelicAvailable()
-    {
-        return extension_loaded('newrelic');
+    private $eventManager;
+
+    /**
+     * OrderRepository constructor.
+     * @param ManagerInterface $eventManager
+     */
+    public function __construct(
+        ManagerInterface $eventManager
+    ) {
+        $this->eventManager = $eventManager;
     }
 
     /**
-     * Reports an exception to new relic
-     *
-     * @param \Throwable $throwable
+     * @param OrderRepositoryInterface $subject
+     * @param OrderInterface|Order $order
+     * @return OrderInterface
      */
-    public static function reportException(\Throwable $throwable)
+    public function afterSave(OrderRepositoryInterface $subject, OrderInterface $order)
     {
-        if (self::newRelicAvailable()) {
-            newrelic_notice_error($throwable->getMessage(), $throwable);
-        }
+        $this->eventManager->dispatch('nosto_sales_save_after', ['order' => $order]);
+        return $order;
     }
 }

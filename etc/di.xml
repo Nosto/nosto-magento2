@@ -61,4 +61,7 @@
     <type name="Magento\Catalog\Model\Category\Attribute\Source\Sortby">
         <plugin name="sortby_add_default_nosto_option" type="Nosto\Tagging\Plugin\Catalog\Model\Sortby" />
     </type>
+    <type name="Magento\Sales\Api\OrderRepositoryInterface">
+        <plugin name="order_repository_nosto" type="Nosto\Tagging\Plugin\Sales\OrderRepository" />
+    </type>
 </config>

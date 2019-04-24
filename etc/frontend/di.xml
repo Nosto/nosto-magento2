@@ -51,4 +51,7 @@
     <type name="Magento\Catalog\Block\Product\ProductList\Toolbar">
         <plugin name="sortby_extend_default_sort_filters" type="Nosto\Tagging\Plugin\Block\Toolbar" />
     </type>
+    <type name="Magento\Checkout\Controller\Cart\Add">
+        <plugin name="nostoAddToCart" type="Nosto\Tagging\Controller\Checkout\Cart\Add" sortOrder="1" />
+    </type>
 </config>
