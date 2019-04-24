@@ -63,7 +63,7 @@ class OrderRepository
      * @param OrderInterface|Order $order
      * @return OrderInterface
      */
-    public function afterSave(OrderRepositoryInterface $subject, $order)
+    public function afterSave(OrderRepositoryInterface $subject, OrderInterface $order)
     {
         $this->eventManager->dispatch('nosto_sales_save_after', ['order' => $order]);
         return $order;
