@@ -54,12 +54,12 @@ class NewRelic
     /**
      * Reports an exception to new relic
      *
-     * @param \Exception $exception
+     * @param \Throwable $throwable
      */
-    public static function reportException(\Exception $exception)
+    public static function reportException(\Throwable $throwable)
     {
         if (self::newRelicAvailable()) {
-            newrelic_notice_error($exception->getMessage(), $exception);
+            newrelic_notice_error($throwable->getMessage(), $throwable);
         }
     }
 }

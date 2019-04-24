@@ -65,19 +65,25 @@ class Grouped extends GroupedItem
      *
      * @param Item $item the ordered item
      * @return string|null the name of the product
-     * @throws NoSuchEntityException
      */
     public function buildItemName(Item $item)
     {
         $name = $item->getName();
-        $config = $item->getBuyRequest()->getData('super_product_config');
-        $itemParent = $this->getGroupedItemParent($config['product_id']);
-        if ($itemParent instanceof Product) {
-            $itemParentName = $itemParent->getName();
-            if ($itemParentName !== null) {
-                return $itemParentName . ' - ' . $name;
+        try {
+            $config = $item->getBuyRequest()->getData('super_product_config');
+            $itemParent = $this->getGroupedItemParent($config['product_id']);
+            if ($itemParent instanceof Product) {
+                $itemParentName = $itemParent->getName();
+                if ($itemParentName !== null) {
+                    return $itemParentName . ' - ' . $name;
+                }
             }
+        } catch (\Throwable $e) {
+            // If the item name building fails, it's not crucial
+            // No need to handle the exception in any specific way
+            unset($e);
         }
+
         return $name;
     }
 

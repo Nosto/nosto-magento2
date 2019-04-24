@@ -43,14 +43,13 @@ use Nosto\Util\Memory;
 class Logger extends MonologLogger
 {
     /**
-     * Logs and exception and sends it to New relic if available
-     * @param \Exception $exception
+     * Logs an exception and sends it to New relic if available
+     * @param \Throwable $exception
      * @return bool
      */
-    public function exception(\Exception $exception)
+    public function exception(\Throwable $exception)
     {
         NewRelic::reportException($exception);
-
         return parent::error($exception->__toString());
     }
 
