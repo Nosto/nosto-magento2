@@ -47,6 +47,7 @@ use Nosto\Object\Cart\LineItem;
 use Nosto\Tagging\Model\Item\Downloadable;
 use Nosto\Tagging\Model\Item\Giftcard;
 use Nosto\Tagging\Model\Item\Virtual;
+use Nosto\Tagging\Logger\Logger as NostoLogger;
 
 class Builder
 {
@@ -61,17 +62,25 @@ class Builder
     private $productRepository;
 
     /**
+     * @var NostoLogger $logger
+     */
+    private $logger;
+
+    /**
      * Builder constructor.
      *
      * @param ManagerInterface $eventManager
      * @param ProductRepository $productRepository
+     * @param NostoLogger $logger
      */
     public function __construct(
         ManagerInterface $eventManager,
-        ProductRepository $productRepository
+        ProductRepository $productRepository,
+        NostoLogger $logger
     ) {
         $this->eventManager = $eventManager;
         $this->productRepository = $productRepository;
+        $this->logger = $logger;
     }
 
     /**
@@ -134,14 +143,18 @@ class Builder
             return $parentItem->getProduct()->getSku();
         }
         if ($item->getProductType() === Type::TYPE_SIMPLE) {
-            $type = $item->getProduct()->getTypeInstance();
-            $parentIds = $type->getParentIdsByChild($item->getItemId());
-            $attributes = $item->getBuyRequest()->getData('super_attribute');
-            // If the product has a configurable parent, we assume we should tag
-            // the parent. If there are many parent IDs, we are safer to tag the
-            // products own ID.
-            if (!empty($attributes) && count($parentIds) === 1) {
-                return $parentIds[0];
+            try {
+                $type = $item->getProduct()->getTypeInstance();
+                $parentIds = $type->getParentIdsByChild($item->getItemId());
+                $attributes = $item->getBuyRequest()->getData('super_attribute');
+                // If the product has a configurable parent, we assume we should tag
+                // the parent. If there are many parent IDs, we are safer to tag the
+                // products own ID.
+                if (!empty($attributes) && count($parentIds) === 1) {
+                    return $parentIds[0];
+                }
+            } catch (\Error $e) {
+                $this->logger->exception($e);
             }
         }
         $product = $item->getProduct();

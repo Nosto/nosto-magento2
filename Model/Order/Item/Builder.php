@@ -46,6 +46,7 @@ use Nosto\Tagging\Model\Item\Downloadable;
 use Nosto\Tagging\Model\Item\Giftcard;
 use Nosto\Tagging\Model\Item\Virtual;
 use Magento\Catalog\Model\ProductRepository;
+use Nosto\Tagging\Logger\Logger as NostoLogger;
 
 class Builder
 {
@@ -60,17 +61,25 @@ class Builder
     private $productRepository;
 
     /**
+     * @var NostoLogger $logger
+     */
+    private $logger;
+
+    /**
      * Builder constructor.
      *
      * @param ManagerInterface $eventManager
      * @param ProductRepository $productRepository
+     * @param NostoLogger $logger
      */
     public function __construct(
         ManagerInterface $eventManager,
-        ProductRepository $productRepository
+        ProductRepository $productRepository,
+        NostoLogger $logger
     ) {
         $this->eventManager = $eventManager;
         $this->productRepository = $productRepository;
+        $this->logger = $logger;
     }
 
     /**
@@ -155,14 +164,18 @@ class Builder
             return $parent['product_id'];
         }
         if ($item->getProductType() === Type::TYPE_SIMPLE && $item->getProduct() !== null) {
-            $type = $item->getProduct()->getTypeInstance();
-            $parentIds = $type->getParentIdsByChild($item->getProductId());
-            $attributes = $item->getBuyRequest()->getData('super_attribute');
-            // If the product has a configurable parent, we assume we should tag
-            // the parent. If there are many parent IDs, we are safer to tag the
-            // products own ID.
-            if (!empty($attributes) && count($parentIds) === 1) {
-                return $parentIds[0];
+            try {
+                $type = $item->getProduct()->getTypeInstance();
+                $parentIds = $type->getParentIdsByChild($item->getProductId());
+                $attributes = $item->getBuyRequest()->getData('super_attribute');
+                // If the product has a configurable parent, we assume we should tag
+                // the parent. If there are many parent IDs, we are safer to tag the
+                // products own ID.
+                if (!empty($attributes) && count($parentIds) === 1) {
+                    return $parentIds[0];
+                }
+            } catch (\Error $e) {
+                $this->logger->exception($e);
             }
         }
         $productId = $item->getProductId();
