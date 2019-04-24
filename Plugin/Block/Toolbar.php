@@ -49,11 +49,12 @@ use Magento\Framework\Stdlib\CookieManagerInterface;
 use Nosto\Tagging\Model\Customer\Customer as NostoCustomer;
 use Nosto\Tagging\Model\Service\Recommendation\Category as CategoryRecommendation;
 use Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection;
-use Magento\Framework\Data\Collection;
+use Magento\CatalogSearch\Model\ResourceModel\Fulltext\Collection;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\View\Element\Template;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\NostoException;
+use Nosto\Helper\ArrayHelper as NostoHelperArray;
 
 class Toolbar extends Template
 {
@@ -81,9 +82,6 @@ class Toolbar extends Template
 
     /** @var NostoLogger */
     private $logger;
-
-    /** @var AbstractCollection */
-    protected $_collection = null;
 
     /**
      * Toolbar constructor.
@@ -125,15 +123,12 @@ class Toolbar extends Template
      * Plugin - Used to modify default Sort By filters
      *
      * @param MagentoToolbar $subject
-     * @param Collection $collection
-     * @return $this
+     * @return MagentoToolbar
      * @throws NoSuchEntityException
      */
     public function afterSetCollection(
-        MagentoToolbar $subject,
-        $collection
+        MagentoToolbar $subject
     ) {
-        $this->_collection = $collection;
         $store = $this->storeManager->getStore();
         $currentOrder = $subject->getCurrentOrder();
         if (($currentOrder === NostoHelperSorting::NOSTO_PERSONALIZED_KEY
@@ -141,26 +136,23 @@ class Toolbar extends Template
             && $this->nostoHelperAccount->nostoInstalledAndEnabled($store)
             && $this->nostoHelperData->isCategorySortingEnabled($store)
         ) {
-            $limit = (int)$subject->getLimit();
-            if ($limit) {
-                $this->_collection->setPageSize($limit);
-            }
-            $currentPage = $subject->getCurrentPage();
-            $this->_collection->setCurPage($currentPage);
 
             try {
                 //Get ids of products to order
                 $orderIds = $this->getSortedIds($store, $currentOrder);
-                if (!empty($orderIds)) {
+                if ($subject->getCollection() instanceof  Collection
+                    && !empty($orderIds)
+                    && NostoHelperArray::onlyScalarValues($orderIds)
+                ) {
                     $zendExpression = new \Zend_Db_Expr('FIELD(e.entity_id,' . implode(',', $orderIds) . ') DESC');
-                    $this->_collection->getSelect()->order($zendExpression);
+                    $subject->getCollection()->getSelect()->order($zendExpression);
                 }
             } catch (\Exception $e) {
                 $this->logger->exception($e);
             }
 
         }
-        return $this;
+        return $subject;
     }
 
     /**
