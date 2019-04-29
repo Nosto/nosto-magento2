@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2017, Nosto Solutions Ltd
+ * Copyright (c) 2019, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,7 +29,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <contact@nosto.com>
- * @copyright 2017 Nosto Solutions Ltd
+ * @copyright 2019 Nosto Solutions Ltd
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
@@ -51,7 +51,6 @@ use Nosto\Types\Signup\AccountInterface;
 use Nosto\Object\Signup\Account as NostoSignupAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Helper\Url as NostoHelperUrl;
-use Magento\Framework\UrlInterface;
 
 /**
  * NostoHelperAccount helper class for common tasks related to Nosto accounts.
@@ -86,8 +85,7 @@ class Account extends AbstractHelper
     private $urlBuilder;
 
     /**
-     * Constructor.
-     *
+     * Account constructor.
      * @param Context $context
      * @param WriterInterface $appConfig
      * @param Scope $nostoHelperScope
@@ -97,8 +95,7 @@ class Account extends AbstractHelper
         Context $context,
         WriterInterface $appConfig,
         NostoHelperScope $nostoHelperScope,
-        NostoHelperUrl $nostoHelperUrl,
-        UrlInterface $urlBuilder
+        NostoHelperUrl $nostoHelperUrl
     ) {
         parent::__construct($context);
 
@@ -107,7 +104,7 @@ class Account extends AbstractHelper
         $this->logger = $context->getLogger();
         $this->nostoHelperScope = $nostoHelperScope;
         $this->nostoHelperUrl = $nostoHelperUrl;
-        $this->urlBuilder = $urlBuilder;
+        $this->urlBuilder = $context->getUrlBuilder();
     }
 
     /**

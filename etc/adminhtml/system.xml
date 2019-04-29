@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!--
-  ~ Copyright (c) 2017, Nosto Solutions Ltd
+  ~ Copyright (c) 2019, Nosto Solutions Ltd
   ~ All rights reserved.
   ~
   ~ Redistribution and use in source and binary forms, with or without modification,
@@ -29,7 +29,7 @@
   ~ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   ~
   ~ @author Nosto Solutions Ltd <contact@nosto.com>
-  ~ @copyright 2017 Nosto Solutions Ltd
+  ~ @copyright 2019 Nosto Solutions Ltd
   ~ @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
   ~
   -->
@@ -196,6 +196,23 @@
                         <![CDATA[Percentage of total PHP available memory that Nosto indexer is allowed to use]]>
                     </comment>
                     <source_model>Nosto\Tagging\Model\Config\Source\Memory</source_model>
+                </field>
+                <field id="category_sorting" translate="label comment" type="select" sortOrder="100"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Category sorting (experimental)</label>
+                    <comment>
+                        <![CDATA[Experimental feature. Might be removed in future releases. Contact Nosto for further details.]]>
+                    </comment>
+                    <source_model>Nosto\Tagging\Model\Config\Source\CategorySorting</source_model>
+                    <frontend_model>Nosto\Tagging\Model\Config\Frontend\CategorySorting</frontend_model>
+                </field>
+                <field id="tag_date_published" translate="label comment" type="select" sortOrder="100"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Add product published date to tagging</label>
+                    <comment>
+                        <![CDATA[Set this yes if you want to tag the date a product has been added to Magento's catalog]]>
+                    </comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
             </group>
             <group id="attributes" translate="label" type="text" sortOrder="40" showInDefault="1"

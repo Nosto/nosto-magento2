@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2017, Nosto Solutions Ltd
+ * Copyright (c) 2019, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,7 +29,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <contact@nosto.com>
- * @copyright 2017 Nosto Solutions Ltd
+ * @copyright 2019 Nosto Solutions Ltd
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
@@ -266,7 +266,7 @@ class Builder
 
             $nostoProduct->setCustomFields($this->getCustomFieldsWithAttributes($product, $store));
 
-            //update customized tag1, Tag2 and Tag3
+            // Update customised Tag1, Tag2 and Tag3
             $this->amendAttributeTags($product, $nostoProduct, $store);
 
             // When using customer group price variations, set the variations
@@ -276,6 +276,9 @@ class Builder
                 $nostoProduct->setVariations(
                     $this->priceVariationCollection->build($product, $nostoProduct, $store)
                 );
+            }
+            if ($this->nostoDataHelper->isTagDatePublishedEnabled($store)) {
+                $nostoProduct->setDatePublished($product->getCreatedAt());
             }
         } catch (\Exception $e) {
             $this->logger->exception($e);
