@@ -117,7 +117,7 @@ class Builder
         } else {
             $this->eventManager->dispatch(
                 'nosto_category_string_load_after',
-                ['category' => $nostoCategory, 'magentoCategory' => $category]
+                ['categoryString' => $nostoCategory, 'magentoCategory' => $category]
             );
         }
 
