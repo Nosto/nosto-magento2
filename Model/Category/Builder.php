@@ -39,7 +39,6 @@ namespace Nosto\Tagging\Model\Category;
 use Magento\Catalog\Model\Category;
 use Magento\Store\Model\Store;
 use Magento\Framework\Event\ManagerInterface;
-use Magento\Framework\Exception\NoSuchEntityException;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Object\Category as NostoCategory;
 use Nosto\Tagging\Model\CategoryString\Builder as NostoCategoryString;
@@ -80,7 +79,7 @@ class Builder
             $nostoCategory->setImageUrl($category->getImageUrl());
             $nostoCategory->setLevel($category->getLevel());
             $nostoCategory->setUrl($category->getUrl());
-            $nostoCategory->setVisibleInMenu(self::getCategoryVisibleInMenu($category));
+            $nostoCategory->setVisibleInMenu($this->getCategoryVisibleInMenu($category));
             $nostoCategory->setCategoryString(
                 $this->nostoCategoryString->build($category, $store)
             );
