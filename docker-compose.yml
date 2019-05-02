@@ -1,0 +1,16 @@
+db:
+  image: mysql:5.7
+  hostname: m2testdb
+  environment:
+    MYSQL_DATABASE: 'db'
+    MYSQL_USER: 'user'
+    MYSQL_PASSWORD: 'password'
+    MYSQL_ROOT_PASSWORD: 'password'
+  ports:
+    - "3336:3306"
+mq:
+  image: rabbitmq:3.7
+  hostname: m2testmq
+  ports:
+    - "15672:15672"
+    - "5672:5672"
