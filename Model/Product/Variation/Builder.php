@@ -176,7 +176,7 @@ class Builder
 
         // If no tier prices, there's no customer group pricing for this product
         // or it's higher than final price with catalog price rule discount
-        $finalPrice= $this->nostoPriceHelper->getProductPrice($product, $store);
+        $finalPrice = $this->nostoPriceHelper->getProductPrice($product, $store);
 
         return $finalPrice;
     }
