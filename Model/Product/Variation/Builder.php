@@ -36,10 +36,10 @@
 
 namespace Nosto\Tagging\Model\Product\Variation;
 
-use Magento\Catalog\Helper\Catalog;
 use Magento\Catalog\Model\Product;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Store\Model\Store;
+use Nosto\Helper\PriceHelper;
 use Nosto\Object\Product\Variation;
 use Nosto\Tagging\Helper\Currency as CurrencyHelper;
 use Nosto\Tagging\Helper\Price as NostoPriceHelper;
@@ -148,11 +148,26 @@ class Builder
         if ($product->getTypeInstance() instanceof ConfigurableType) {
             $product = $this->getMinPriceSku($product, $group, $store);
         }
+
+        $rulePrice = $this->ruleResourceModel->getRulePrice(
+            $this->localeDate->scopeDate(),
+            $store->getWebsiteId(),
+            $group->getId(),
+            $product->getId()
+        );
+
+        // ToDo - we need to fetch the price separately for each group
+        if ($rulePrice) {
+            return $rulePrice;
+        }
+
+        //
         // Only returns the SKU price if it's lower than final price
         // Merchant can have a fixed customer group price that is higher than the product
         // price with a catalog price discount rule applied.
         // This is normal Magento 2 behaviour
-        foreach ($product->getTierPrices() as $price) {
+        $productTierPriceInterfaces = $product->getTierPrices();
+        foreach ($productTierPriceInterfaces as $price) {
             if ($price->getCustomerGroupId() === $group->getId()
                 && $price->getValue() < $product->getFinalPrice()
             ) {
@@ -161,7 +176,9 @@ class Builder
         }
         // If no tier prices, there's no customer group pricing for this product
         // or it's higher than final price with catalog price rule discount
-        return $product->getFinalPrice();
+        $finalPrice= $this->nostoPriceHelper->getProductPrice($product, $store);
+
+        return $finalPrice;
     }
 
     /**
