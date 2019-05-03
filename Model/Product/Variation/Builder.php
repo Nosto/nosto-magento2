@@ -203,14 +203,15 @@ class Builder
             if (!$sku instanceof MageProduct) {
                 continue;
             }
-            $skuPrice = $this->ruleResourceModel->getRulePrice(
+            $skuPrice = $sku->getPrice();
+            $skuRulePrice = $this->ruleResourceModel->getRulePrice(
                 $this->localeDate->scopeDate(),
                 $store->getWebsiteId(),
                 $group->getId(),
                 $sku->getId()
             );
             foreach ($sku->getTierPrices() as $tierPrice) {
-                if ((int)$tierPrice->getCustomerGroupId() === $group->getId()) {
+                if ((int)$tierPrice->getCustomerGroupId() === (int)$group->getId()) {
                     $skuTierPrice = $tierPrice->getValue();
                 }
                 break;
@@ -218,9 +219,14 @@ class Builder
             // If has a customer group pricing for current group,
             // check if it's lower than regular SKU price
             /* @suppress UndeclaredVariable */
-            $skuPrice = (isset($skuTierPrice) && $skuTierPrice < $skuPrice)
-                    ? $skuTierPrice
-                    : $skuPrice;
+            if (isset($skuTierPrice) && $skuRulePrice !== false) {
+                $skuPrice = min($skuPrice, $skuTierPrice, $skuRulePrice);
+            } elseif (!isset($skuTierPrice) && $skuRulePrice !== false) {
+                $skuPrice = min($skuPrice, $skuRulePrice);
+            } elseif (isset($skuTierPrice) && $skuRulePrice === false) {
+                $skuPrice = min($skuPrice, $skuTierPrice);
+            }
+
             if (empty($minPriceSku)) { // First loop run
                 $minPriceSku['sku'] = $sku;
                 $minPriceSku['price'] = $skuPrice;
