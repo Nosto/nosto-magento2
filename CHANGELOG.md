@@ -1,7 +1,7 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
 ### 3.4.1
-* Fix issue with variations prices in case catalog rules are specified
+* Fix issue with price variations in case catalog rules are specified
 
 ### 3.4.0
 * Add category personalisation for sorting products

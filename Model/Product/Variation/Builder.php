@@ -149,7 +149,6 @@ class Builder
             $product = $this->getMinPriceSku($product, $group, $store);
         }
 
-        //
         // Only returns the SKU price if it's lower than final price
         // Merchant can have a fixed customer group price that is higher than the product
         // price with a catalog price discount rule applied.
