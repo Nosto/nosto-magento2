@@ -149,18 +149,6 @@ class Builder
             $product = $this->getMinPriceSku($product, $group, $store);
         }
 
-        $rulePrice = $this->ruleResourceModel->getRulePrice(
-            $this->localeDate->scopeDate(),
-            $store->getWebsiteId(),
-            $group->getId(),
-            $product->getId()
-        );
-
-        // ToDo - we need to fetch the price separately for each group
-        if ($rulePrice) {
-            return $rulePrice;
-        }
-
         //
         // Only returns the SKU price if it's lower than final price
         // Merchant can have a fixed customer group price that is higher than the product
@@ -174,6 +162,18 @@ class Builder
                 return $price->getValue();
             }
         }
+
+        $rulePrice = $this->ruleResourceModel->getRulePrice(
+            $this->localeDate->scopeDate(),
+            $store->getWebsiteId(),
+            $group->getId(),
+            $product->getId()
+        );
+
+        if ($rulePrice) {
+            return $rulePrice;
+        }
+
         // If no tier prices, there's no customer group pricing for this product
         // or it's higher than final price with catalog price rule discount
         $finalPrice= $this->nostoPriceHelper->getProductPrice($product, $store);
