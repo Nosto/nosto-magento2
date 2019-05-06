@@ -43,6 +43,12 @@ use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Url as NostoHelperUrl;
 use Magento\Framework\App\Config\Storage\WriterInterface;
 use Magento\Store\Model\ScopeInterface;
+use Magento\Customer\Model\Customer;
+use Magento\Customer\Setup\CustomerSetupFactory;
+use Magento\Framework\Setup\Patch\DataPatchInterface;
+use Magento\Eav\Model\Entity\Attribute\SetFactory as AttributeSetFactory;
+use Nosto\Tagging\Helper\Data as NostoHelperData;
+use Magento\Framework\Exception\LocalizedException;
 
 class UpgradeData implements UpgradeDataInterface
 {
@@ -55,6 +61,12 @@ class UpgradeData implements UpgradeDataInterface
     /** @var WriterInterface */
     private $config;
 
+    /** @var CustomerSetupFactory */
+    private $customerSetupFactory;
+
+    /** @var AttributeSetFactory */
+    private $attributeSetFactory;
+
     /**
      * UpgradeData constructor.
      * @param NostoHelperAccount $nostoHelperAccount
@@ -64,11 +76,15 @@ class UpgradeData implements UpgradeDataInterface
     public function __construct(
         NostoHelperAccount $nostoHelperAccount,
         NostoHelperUrl $nostoHelperUrl,
-        WriterInterface $appConfig
+        WriterInterface $appConfig,
+        CustomerSetupFactory $customerSetupFactory,
+        AttributeSetFactory $attributeSetFactory
     ) {
         $this->nostoHelperAccount = $nostoHelperAccount;
         $this->nostoHelperUrl = $nostoHelperUrl;
         $this->config = $appConfig;
+        $this->customerSetupFactory = $customerSetupFactory;
+        $this->attributeSetFactory = $attributeSetFactory;
     }
 
     /**
@@ -79,6 +95,10 @@ class UpgradeData implements UpgradeDataInterface
     {
         if (version_compare($context->getVersion(), '3.1.0', '>=')) {
             $this->insertStoreDomain();
+        }
+
+        if (version_compare($context->getVersion(), '3.4.2', '>=')) {
+            $this->addCustomerReference($setup);;
         }
     }
 
@@ -102,5 +122,55 @@ class UpgradeData implements UpgradeDataInterface
                 );
             }
         }
+    }
+
+    /**
+     * Create a new field for Customer Reference
+     *
+     * @param ModuleDataSetupInterface $setup
+     * @throws LocalizedException
+     * @throws \Zend_Validate_Exception
+     */
+    private function addCustomerReference(ModuleDataSetupInterface $setup)
+    {
+        $customerSetup = $this->customerSetupFactory->create(['setup' => $setup]);
+
+        $customerEntity = $customerSetup->getEavConfig()->getEntityType(Customer::ENTITY);
+        $attributeSetId = $customerEntity->getDefaultAttributeSetId();
+
+        $attributeSet = $this->attributeSetFactory->create();
+        $attributeGroupId = $attributeSet->getDefaultGroupId($attributeSetId);
+
+        $customerSetup->addAttribute(
+            Customer::ENTITY,
+            NostoHelperData::NOSTO_CUSTOMER_REFERENCE_ATTRIBUTE_NAME,
+            [
+                'type' => 'varchar',
+                'label' => 'Nosto Customer Reference',
+                'input' => 'text',
+                'required' => false,
+                'sort_order' => 120,
+                'position' => 120,
+                'visible' => true,
+                'user_defined' => true,
+                'unique' => false,
+                'system' => false,
+            ]
+        );
+
+        $attribute = $customerSetup->getEavConfig()->getAttribute(
+            Customer::ENTITY,
+            NostoHelperData::NOSTO_CUSTOMER_REFERENCE_ATTRIBUTE_NAME
+        );
+
+        $attribute->addData(
+            [
+                'attribute_set_id' => $attributeSetId,
+                'attribute_group_id' => $attributeGroupId,
+                'used_in_forms' => ['adminhtml_customer', 'customer_account_edit'],
+            ]
+        );
+
+        $attribute->save();
     }
 }
