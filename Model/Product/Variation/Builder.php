@@ -36,10 +36,10 @@
 
 namespace Nosto\Tagging\Model\Product\Variation;
 
-use Magento\Catalog\Helper\Catalog;
 use Magento\Catalog\Model\Product;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Store\Model\Store;
+use Nosto\Helper\PriceHelper;
 use Nosto\Object\Product\Variation;
 use Nosto\Tagging\Helper\Currency as CurrencyHelper;
 use Nosto\Tagging\Helper\Price as NostoPriceHelper;
@@ -148,20 +148,36 @@ class Builder
         if ($product->getTypeInstance() instanceof ConfigurableType) {
             $product = $this->getMinPriceSku($product, $group, $store);
         }
+
         // Only returns the SKU price if it's lower than final price
         // Merchant can have a fixed customer group price that is higher than the product
         // price with a catalog price discount rule applied.
         // This is normal Magento 2 behaviour
-        foreach ($product->getTierPrices() as $price) {
+        $productTierPriceInterfaces = $product->getTierPrices();
+        foreach ($productTierPriceInterfaces as $price) {
             if ($price->getCustomerGroupId() === $group->getId()
                 && $price->getValue() < $product->getFinalPrice()
             ) {
                 return $price->getValue();
             }
         }
+
+        $rulePrice = $this->ruleResourceModel->getRulePrice(
+            $this->localeDate->scopeDate(),
+            $store->getWebsiteId(),
+            $group->getId(),
+            $product->getId()
+        );
+
+        if ($rulePrice) {
+            return $rulePrice;
+        }
+
         // If no tier prices, there's no customer group pricing for this product
         // or it's higher than final price with catalog price rule discount
-        return $product->getFinalPrice();
+        $finalPrice = $this->nostoPriceHelper->getProductPrice($product, $store);
+
+        return $finalPrice;
     }
 
     /**
@@ -186,14 +202,15 @@ class Builder
             if (!$sku instanceof MageProduct) {
                 continue;
             }
-            $skuPrice = $this->ruleResourceModel->getRulePrice(
+            $skuPrice = $sku->getPrice();
+            $skuRulePrice = $this->ruleResourceModel->getRulePrice(
                 $this->localeDate->scopeDate(),
                 $store->getWebsiteId(),
                 $group->getId(),
                 $sku->getId()
             );
             foreach ($sku->getTierPrices() as $tierPrice) {
-                if ((int)$tierPrice->getCustomerGroupId() === $group->getId()) {
+                if ((int)$tierPrice->getCustomerGroupId() === (int)$group->getId()) {
                     $skuTierPrice = $tierPrice->getValue();
                 }
                 break;
@@ -201,9 +218,14 @@ class Builder
             // If has a customer group pricing for current group,
             // check if it's lower than regular SKU price
             /* @suppress UndeclaredVariable */
-            $skuPrice = (isset($skuTierPrice) && $skuTierPrice < $skuPrice)
-                    ? $skuTierPrice
-                    : $skuPrice;
+            if (isset($skuTierPrice) && $skuRulePrice !== false) {
+                $skuPrice = min($skuPrice, $skuTierPrice, $skuRulePrice);
+            } elseif (!isset($skuTierPrice) && $skuRulePrice !== false) {
+                $skuPrice = min($skuPrice, $skuRulePrice);
+            } elseif (isset($skuTierPrice) && $skuRulePrice === false) {
+                $skuPrice = min($skuPrice, $skuTierPrice);
+            }
+
             if (empty($minPriceSku)) { // First loop run
                 $minPriceSku['sku'] = $sku;
                 $minPriceSku['price'] = $skuPrice;
