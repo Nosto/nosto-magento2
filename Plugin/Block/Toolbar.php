@@ -100,7 +100,6 @@ class Toolbar extends Template
         Context $context,
         NostoHelperData $nostoHelperData,
         NostoHelperAccount $nostoHelperAccount,
-        StoreManagerInterface $storeManager,
         CategoryBuilder $builder,
         CategoryRecommendation $categoryRecommendation,
         CookieManagerInterface $cookieManager,
@@ -111,7 +110,7 @@ class Toolbar extends Template
         $this->nostoHelperData = $nostoHelperData;
         $this->nostoHelperAccount = $nostoHelperAccount;
         $this->categoryBuilder = $builder;
-        $this->storeManager = $storeManager;
+        $this->storeManager = $context->getStoreManager();
         $this->cookieManager = $cookieManager;
         $this->categoryRecommendation = $categoryRecommendation;
         $this->logger = $logger;
