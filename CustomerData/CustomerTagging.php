@@ -119,11 +119,12 @@ class CustomerTagging extends HashedTagging implements SectionSourceInterface
                 $customerReference = self::generateVisitorChecksum(
                     $this->currentCustomer->getCustomerId() . $customer->getEmail()
                 );
-                $customerReference = $customer->setCustomAttribute(
+                $customer->setCustomAttribute(
                     NostoHelperData::NOSTO_CUSTOMER_REFERENCE_ATTRIBUTE_NAME,
                     $customerReference
                 );
                 $this->customerRepository->save($customer);
+                return $customerReference;
             }
             return $customerReference->getValue();
         } catch (\Exception $e) {
