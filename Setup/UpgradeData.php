@@ -98,7 +98,7 @@ class UpgradeData implements UpgradeDataInterface
         }
 
         if (version_compare($context->getVersion(), '3.4.2', '>=')) {
-            $this->addCustomerReference($setup);;
+            $this->addCustomerReference($setup);
         }
     }
 
