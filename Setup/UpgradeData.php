@@ -153,7 +153,7 @@ class UpgradeData implements UpgradeDataInterface
                 'position' => 120,
                 'visible' => true,
                 'user_defined' => true,
-                'unique' => false,
+                'unique' => true,
                 'system' => false,
             ]
         );
