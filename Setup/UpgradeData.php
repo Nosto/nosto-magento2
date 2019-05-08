@@ -97,7 +97,7 @@ class UpgradeData implements UpgradeDataInterface
             $this->insertStoreDomain();
         }
 
-        if (version_compare($context->getVersion(), '3.6.0', '>=')) {
+        if (version_compare($context->getVersion(), '3.5.0', '>=')) {
             $this->addCustomerReference($setup);
         }
     }
