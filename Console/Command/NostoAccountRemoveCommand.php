@@ -41,26 +41,31 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Nosto\Tagging\Helper\Account as NostoAccountHelper;
-use Nosto\Tagging\Helper\Scope as NostoScopeHelper;
+use Nosto\Tagging\Helper\Account as NostoHelperAccount;
+use Nosto\Tagging\Helper\Scope as NostoHelperScope;
+use Nosto\Tagging\Helper\Cache as NostoHelperCache;
 use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\Store;
 use Magento\Framework\App\Config\Storage\WriterInterface;
-use Nosto\Tagging\Helper\Cache as NostoHelperCache;
 
 class NostoAccountRemoveCommand extends Command
 {
     const SCOPE_CODE = 'scope-code';
 
     /*
-     * @var NostoAccountHelper
+     * @var NostoHelperAccount
      */
-    private $nostoAccountHelper;
+    private $nostoHelperAccount;
 
     /**
      * @var NostoHelperScope
      */
-    private $nostoScopeHelper;
+    private $nostoHelperScope;
+
+    /**
+     * @var NostoHelperCache
+     */
+    private $nostoHelperCache;
 
     /**
      * @var bool
@@ -73,27 +78,22 @@ class NostoAccountRemoveCommand extends Command
     private $config;
 
     /**
-     * @var NostoHelperCache
-     */
-    private $nostoHelperCache;
-
-    /**
      * NostoAccountRemoveCommand constructor.
-     * @param NostoAccountHelper $nostoAccountHelper
-     * @param NostoScopeHelper $nostoScopeHelper
+     * @param NostoHelperAccount $nostoHelperAccount
+     * @param NostoHelperScope $nostoHelperScope
      * @param WriterInterface $appConfig
-     * @param NostoHelperCache $nostoCacheHelper
+     * @param NostoHelperCache $nostoHelperCache
      */
     public function __construct(
-        NostoAccountHelper $nostoAccountHelper,
-        NostoScopeHelper $nostoScopeHelper,
+        NostoHelperAccount $nostoHelperAccount,
+        NostoHelperScope $nostoHelperScope,
         WriterInterface $appConfig,
-        NostoHelperCache $nostoCacheHelper
+        NostoHelperCache $nostoHelperCache
     ) {
-        $this->nostoAccountHelper = $nostoAccountHelper;
-        $this->nostoScopeHelper  = $nostoScopeHelper;
+        $this->nostoHelperAccount = $nostoHelperAccount;
+        $this->nostoHelperScope = $nostoHelperScope;
         $this->config = $appConfig;
-        $this->nostoHelperCache = $nostoCacheHelper;
+        $this->nostoHelperCache = $nostoHelperCache;
         parent::__construct();
     }
 
@@ -141,12 +141,12 @@ class NostoAccountRemoveCommand extends Command
      */
     private function removeNostoAccount(SymfonyStyle $io, $scopeCode)
     {
-        $store = $this->nostoScopeHelper->getStoreByCode($scopeCode);
+        $store = $this->nostoHelperScope->getStoreByCode($scopeCode);
         if (!$store) {
             $io->error('Store not found. Check your input.');
             return false;
         }
-        if (!$this->nostoAccountHelper->nostoInstalledAndEnabled($store)) {
+        if (!$this->nostoHelperAccount->nostoInstalledAndEnabled($store)) {
             $io->warning('Store is not connected with any Nosto account.');
             return false;
         }
@@ -181,12 +181,12 @@ class NostoAccountRemoveCommand extends Command
         }
 
         $this->config->delete(
-            NostoAccountHelper::XML_PATH_ACCOUNT,
+            NostoHelperAccount::XML_PATH_ACCOUNT,
             ScopeInterface::SCOPE_STORES,
             $store->getId()
         );
         $this->config->delete(
-            NostoAccountHelper::XML_PATH_TOKENS,
+            NostoHelperAccount::XML_PATH_TOKENS,
             ScopeInterface::SCOPE_STORES,
             $store->getId()
         );
