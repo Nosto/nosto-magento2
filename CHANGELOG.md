@@ -1,5 +1,9 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 3.4.2
+* Refactor console commands to use proxy dependencies to avoid redundant dependency injection chain reaction
+* Remove redundant injected dependencies from block classes 
+
 ### 3.4.1
 * Fix issue with price variations in case catalog rules are specified
 
