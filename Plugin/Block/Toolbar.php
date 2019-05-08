@@ -44,7 +44,7 @@ use Magento\Store\Model\StoreManagerInterface;
 use Magento\Catalog\Block\Product\ProductList\Toolbar as MagentoToolbar;
 use Magento\Store\Model\Store;
 use Magento\Framework\Registry;
-use Nosto\Tagging\Model\Category\Builder as CategoryBuilder;
+use Nosto\Tagging\Model\CategoryString\Builder as CategoryBuilder;
 use Magento\Framework\Stdlib\CookieManagerInterface;
 use Nosto\Tagging\Model\Customer\Customer as NostoCustomer;
 use Nosto\Tagging\Model\Service\Recommendation\Category as CategoryRecommendation;
@@ -100,7 +100,6 @@ class Toolbar extends Template
         Context $context,
         NostoHelperData $nostoHelperData,
         NostoHelperAccount $nostoHelperAccount,
-        StoreManagerInterface $storeManager,
         CategoryBuilder $builder,
         CategoryRecommendation $categoryRecommendation,
         CookieManagerInterface $cookieManager,
@@ -111,7 +110,7 @@ class Toolbar extends Template
         $this->nostoHelperData = $nostoHelperData;
         $this->nostoHelperAccount = $nostoHelperAccount;
         $this->categoryBuilder = $builder;
-        $this->storeManager = $storeManager;
+        $this->storeManager = $context->getStoreManager();
         $this->cookieManager = $cookieManager;
         $this->categoryRecommendation = $categoryRecommendation;
         $this->logger = $logger;
@@ -168,12 +167,12 @@ class Toolbar extends Template
             throw new NostoException('Account cannot be null');
         }
         $category = $this->registry->registry('current_category');
-        $category = $this->categoryBuilder->build($category, $store);
+        $categoryString = $this->categoryBuilder->build($category, $store);
         $nostoCustomer = $this->cookieManager->getCookie(NostoCustomer::COOKIE_NAME);
         return $this->categoryRecommendation->getSortedProductIds(
             $nostoAccount,
             $nostoCustomer,
-            $category,
+            $categoryString,
             $type
         );
     }

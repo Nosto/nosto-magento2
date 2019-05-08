@@ -66,7 +66,6 @@ class Sortby extends Template
      * @param NostoHelperData $nostoHelperData
      * @param NostoHelperSorting $nostoHelperSorting
      * @param Context $context
-     * @param StoreManagerInterface $storeManager
      * @param Http $request
      * @param array $data
      */
@@ -74,13 +73,12 @@ class Sortby extends Template
         NostoHelperData $nostoHelperData,
         NostoHelperSorting $nostoHelperSorting,
         Context $context,
-        StoreManagerInterface $storeManager,
         Http $request,
         array $data = []
     ) {
         $this->nostoHelperData = $nostoHelperData;
         $this->nostoHelperSorting = $nostoHelperSorting;
-        $this->storeManager = $storeManager;
+        $this->storeManager = $context->getStoreManager();
         $this->request = $request;
         parent::__construct($context, $data);
     }

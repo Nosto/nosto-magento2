@@ -34,35 +34,53 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Category;
+namespace Nosto\Tagging\Model\CategoryString;
 
+use Magento\Catalog\Api\CategoryRepositoryInterface;
 use Magento\Catalog\Model\Category;
 use Magento\Store\Model\Store;
+use Magento\Catalog\Model\Product;
 use Magento\Framework\Event\ManagerInterface;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
-use Nosto\Object\Category as NostoCategory;
-use Nosto\Tagging\Model\CategoryString\Builder as NostoCategoryString;
 
 class Builder
 {
     private $logger;
+    private $categoryRepository;
     private $eventManager;
-    private $nostoCategoryString;
 
     /**
-     * Builder constructor.
+     * @param CategoryRepositoryInterface $categoryRepository
      * @param NostoLogger $logger
      * @param ManagerInterface $eventManager
-     * @param NostoCategoryString $nostoCategoryString
      */
     public function __construct(
+        CategoryRepositoryInterface $categoryRepository,
         NostoLogger $logger,
-        ManagerInterface $eventManager,
-        NostoCategoryString $nostoCategoryString
+        ManagerInterface $eventManager
     ) {
-        $this->nostoCategoryString = $nostoCategoryString;
+        $this->categoryRepository = $categoryRepository;
         $this->logger = $logger;
         $this->eventManager = $eventManager;
+    }
+
+    /**
+     * @param Product $product
+     * @param Store $store
+     * @return array
+     */
+    public function buildCategories(Product $product, Store $store)
+    {
+        $categories = [];
+        foreach ($product->getCategoryCollection() as $category) {
+            $categoryString = $this->build($category, $store);
+            if (!empty($categoryString)) {
+                $categories[] = $categoryString;
+            }
+        }
+
+        return $categories;
     }
 
     /**
@@ -72,18 +90,25 @@ class Builder
      */
     public function build(Category $category, Store $store)
     {
-        $nostoCategory = new NostoCategory();
+        $nostoCategory = '';
         try {
-            $nostoCategory->setId($category->getId());
-            $nostoCategory->setParentId($category->getParentId());
-            $nostoCategory->setImageUrl($category->getImageUrl());
-            $nostoCategory->setLevel($category->getLevel());
-            $nostoCategory->setUrl($category->getUrl());
-            $nostoCategory->setVisibleInMenu($this->getCategoryVisibleInMenu($category));
-            $nostoCategory->setCategoryString(
-                $this->nostoCategoryString->build($category, $store)
-            );
-            $nostoCategory->setName($category->getName());
+            $data = [];
+            $path = $category->getPath();
+            $storeId = $store->getId();
+            foreach (explode('/', $path) as $categoryId) {
+                try {
+                    $category = $this->categoryRepository->get($categoryId, $storeId);
+                } catch (NoSuchEntityException $noSuchEntityException) {
+                    continue;
+                }
+                if ($category instanceof Category
+                    && $category->getLevel() > 1
+                    && !empty($category->getName())
+                ) {
+                    $data[] = $category->getName();
+                }
+            }
+            $nostoCategory = count($data) ? '/' . implode('/', $data) : '';
         } catch (\Exception $e) {
             $this->logger->exception($e);
         }
@@ -91,21 +116,11 @@ class Builder
             $nostoCategory = null;
         } else {
             $this->eventManager->dispatch(
-                'nosto_category_load_after',
-                ['category' => $nostoCategory, 'magentoCategory' => $category]
+                'nosto_category_string_load_after',
+                ['categoryString' => $nostoCategory, 'magentoCategory' => $category]
             );
         }
 
         return $nostoCategory;
-    }
-
-    /**
-     * @param Category $category
-     * @return bool
-     */
-    private function getCategoryVisibleInMenu(Category $category)
-    {
-        $visibleInMenu = $category->getIncludeInMenu();
-        return $visibleInMenu === "1";
     }
 }
