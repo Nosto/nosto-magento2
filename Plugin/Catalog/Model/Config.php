@@ -61,19 +61,17 @@ class Config extends Template
      * @param NostoHelperData $nostoHelperData
      * @param NostoHelperAccount $nostoHelperAccount
      * @param Context $context
-     * @param StoreManagerInterface $storeManager
      * @param array $data
      */
     public function __construct(
         NostoHelperData $nostoHelperData,
         NostoHelperAccount $nostoHelperAccount,
         Context $context,
-        StoreManagerInterface $storeManager,
         array $data = []
     ) {
         $this->nostoHelperData = $nostoHelperData;
         $this->nostoHelperAccount = $nostoHelperAccount;
-        $this->storeManager = $storeManager;
+        $this->storeManager = $context->getStoreManager();
         parent::__construct($context, $data);
     }
 
