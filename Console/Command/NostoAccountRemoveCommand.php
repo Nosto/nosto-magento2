@@ -82,18 +82,18 @@ class NostoAccountRemoveCommand extends Command
      * @param NostoAccountHelper $nostoAccountHelper
      * @param NostoScopeHelper $nostoScopeHelper
      * @param WriterInterface $appConfig
-     * @param NostoHelperCache $nostoHelperCache
+     * @param NostoHelperCache $nostoCacheHelper
      */
     public function __construct(
         NostoAccountHelper $nostoAccountHelper,
         NostoScopeHelper $nostoScopeHelper,
         WriterInterface $appConfig,
-        NostoHelperCache $nostoHelperCache
+        NostoHelperCache $nostoCacheHelper
     ) {
         $this->nostoAccountHelper = $nostoAccountHelper;
         $this->nostoScopeHelper  = $nostoScopeHelper;
         $this->config = $appConfig;
-        $this->nostoHelperCache = $nostoHelperCache;
+        $this->nostoHelperCache = $nostoCacheHelper;
         parent::__construct();
     }
 

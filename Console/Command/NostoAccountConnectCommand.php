@@ -45,7 +45,6 @@ use Nosto\Tagging\Helper\Account as NostoAccountHelper;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Object\Signup\Account as NostoSignupAccount;
 use Nosto\Request\Api\Token;
-use Nosto\NostoException;
 
 class NostoAccountConnectCommand extends Command
 {
@@ -70,14 +69,14 @@ class NostoAccountConnectCommand extends Command
 
     /**
      * NostoConfigConnectCommand constructor.
-     * @param NostoAccountHelper $accountHelper
+     * @param NostoAccountHelper $nostoAccountHelper
      * @param NostoHelperScope $nostoHelperScope
      */
     public function __construct(
-        NostoAccountHelper $accountHelper,
+        NostoAccountHelper $nostoAccountHelper,
         NostoHelperScope $nostoHelperScope
     ) {
-        $this->accountHelper = $accountHelper;
+        $this->accountHelper = $nostoAccountHelper;
         $this->nostoHelperScope = $nostoHelperScope;
         parent::__construct();
     }

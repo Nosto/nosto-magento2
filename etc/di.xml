@@ -43,15 +43,16 @@
     </type>
     <type name="Nosto\Tagging\Console\Command\NostoAccountConnectCommand">
         <arguments>
-            <argument name="accountHelper" xsi:type="object">Nosto\Tagging\Helper\Account\Proxy</argument>
+            <argument name="nostoAccountHelper" xsi:type="object">Nosto\Tagging\Helper\Account\Proxy</argument>
             <argument name="nostoHelperScope" xsi:type="object">Nosto\Tagging\Helper\Scope\Proxy</argument>
         </arguments>
     </type>
     <type name="Nosto\Tagging\Console\Command\NostoAccountRemoveCommand">
         <arguments>
-            <argument name="accountHelper" xsi:type="object">Nosto\Tagging\Helper\Account\Proxy</argument>
-            <argument name="nostoHelperScope" xsi:type="object">Nosto\Tagging\Helper\Scope\Proxy</argument>
-            <argument name="nostoHelperCache" xsi:type="object">Nosto\Tagging\Helper\Cache\Proxy</argument>
+            <argument name="nostoAccountHelper" xsi:type="object">Nosto\Tagging\Helper\Account\Proxy</argument>
+            <argument name="nostoScopeHelper" xsi:type="object">Nosto\Tagging\Helper\Scope\Proxy</argument>
+            <argument name="appConfig" xsi:type="object">Magento\Framework\App\Config\Storage\Writer\Proxy</argument>
+            <argument name="nostoCacheHelper" xsi:type="object">Nosto\Tagging\Helper\Cache\Proxy</argument>
         </arguments>
     </type>
     <type name="Nosto\Tagging\Logger\Logger">
