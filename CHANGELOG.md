@@ -1,5 +1,8 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 3.6.0
+* Add support for persistent customer reference 
+
 ### 3.5.0
 * Refactor console commands to use proxy dependencies to avoid redundant dependency injection chain reaction
 * Remove redundant injected dependencies from block classes 
