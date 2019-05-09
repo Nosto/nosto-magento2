@@ -41,9 +41,7 @@ use Magento\Customer\Helper\Session\CurrentCustomer;
 use Magento\Framework\Stdlib\CookieManagerInterface;
 use Nosto\Tagging\Model\Customer\Customer as NostoCustomer;
 use Nosto\Tagging\Model\Person\Tagging\Builder as NostoPersonBuilder;
-use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
-use Magento\Customer\Api\CustomerRepositoryInterface;
 
 class CustomerTagging extends HashedTagging implements SectionSourceInterface
 {
@@ -51,27 +49,23 @@ class CustomerTagging extends HashedTagging implements SectionSourceInterface
     private $cookieManager;
     private $personBuilder;
     private $logger;
-    private $customerRepository;
 
     /**
      * CustomerTagging constructor.
      * @param CurrentCustomer $currentCustomer
      * @param CookieManagerInterface $cookieManager
      * @param NostoPersonBuilder $personBuilder
-     * @param CustomerRepositoryInterface $customerRepository
-     * @param NostoLogger $logger
+     * @param NostoLogger $logger\
      */
     public function __construct(
         CurrentCustomer $currentCustomer,
         CookieManagerInterface $cookieManager,
         NostoPersonBuilder $personBuilder,
-        CustomerRepositoryInterface $customerRepository,
         NostoLogger $logger
     ) {
         $this->currentCustomer = $currentCustomer;
         $this->cookieManager = $cookieManager;
         $this->personBuilder = $personBuilder;
-        $this->customerRepository = $customerRepository;
         $this->logger = $logger;
     }
 
@@ -95,42 +89,13 @@ class CustomerTagging extends HashedTagging implements SectionSourceInterface
                 'email' => $customer->getEmail(),
                 'hcid' => self::generateVisitorChecksum($nostoCustomerId),
                 'marketing_permission' => $customer->getMarketingPermission(),
-                'customer_reference' => $this->getCustomerReference()
+                'customer_reference' => $customer->getCustomerReference(),
+                'customer_group' => $customer->getCustomerGroup(),
+                'gender' => $customer->getGender(),
+                'date_of_birth' => $customer->getDateOfBirth()
             ];
         }
 
         return $data;
-    }
-
-    /**
-     * @return string
-     */
-    public function getCustomerReference()
-    {
-        $customerReference = '';
-
-        try {
-            $customer = $this->currentCustomer->getCustomer();
-            $customerReference = $customer->getCustomAttribute(
-                NostoHelperData::NOSTO_CUSTOMER_REFERENCE_ATTRIBUTE_NAME
-            );
-
-            if (empty($customerReference)) {
-                $customerReference = self::generateVisitorChecksum(
-                    $this->currentCustomer->getCustomerId() . $customer->getEmail()
-                );
-                $customer->setCustomAttribute(
-                    NostoHelperData::NOSTO_CUSTOMER_REFERENCE_ATTRIBUTE_NAME,
-                    $customerReference
-                );
-                $this->customerRepository->save($customer);
-                return $customerReference;
-            }
-            return $customerReference->getValue();
-        } catch (\Exception $e) {
-            $this->logger->exception($e);
-        }
-
-        return $customerReference;
     }
 }

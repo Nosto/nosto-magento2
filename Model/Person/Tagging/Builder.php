@@ -37,9 +37,18 @@
 namespace Nosto\Tagging\Model\Person\Tagging;
 
 use Magento\Customer\Helper\Session\CurrentCustomer;
+use Magento\Framework\Event\ManagerInterface as EventManager;
 use Nosto\Object\AbstractPerson;
-use Nosto\Object\User;
+use Nosto\Object\Customer;
+use Magento\Customer\Model\Data\Customer as MagentoCustomer;
+use Nosto\Tagging\Helper\Data as NostoHelperData;
+use Nosto\Tagging\Model\Email\Repository as NostoEmailRepository;
 use Nosto\Tagging\Model\Person\Builder as PersonBuilder;
+use Magento\Customer\Api\GroupRepositoryInterface as GroupRepository;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Exception\NoSuchEntityException;
+use Nosto\Tagging\CustomerData\HashedTagging;
+use Magento\Customer\Api\CustomerRepositoryInterface;
 
 /**
  * Builder class for buyer
@@ -47,6 +56,35 @@ use Nosto\Tagging\Model\Person\Builder as PersonBuilder;
  */
 class Builder extends PersonBuilder
 {
+
+    const GENDER_MALE = 'Male';
+    const GENDER_FEMALE = 'Female';
+    const GENDER_MALE_ID = '1';
+    const GENDER_FEMALE_ID = '2';
+
+    private $groupRepository;
+    private $customerRepository;
+
+    /**
+     * Builder constructor.
+     * @param GroupRepository $groupRepository
+     * @param CustomerRepositoryInterface $customerRepository
+     * @param NostoEmailRepository $emailRepository
+     * @param EventManager $eventManager
+     * @param NostoHelperData $nostoHelperData
+     */
+    public function __construct(
+        GroupRepository $groupRepository,
+        CustomerRepositoryInterface $customerRepository,
+        NostoEmailRepository $emailRepository,
+        EventManager $eventManager,
+        NostoHelperData $nostoHelperData
+    ) {
+        $this->groupRepository = $groupRepository;
+        $this->customerRepository = $customerRepository;
+        parent::__construct($emailRepository, $eventManager, $nostoHelperData);
+    }
+
     /**
      * @inheritdoc
      */
@@ -56,17 +94,27 @@ class Builder extends PersonBuilder
         $email,
         $phone = null,
         $postCode = null,
-        $country = null
+        $country = null,
+        $customerGroup = null,
+        $dateOfBirth = null,
+        $gender = null,
+        $customerReference = null
     ) {
-        $user = new User();
-        $user->setFirstName($firstName);
-        $user->setLastName($lastName);
-        $user->setEmail($email);
-        $user->setPhone($phone);
-        $user->setPostCode($postCode);
-        $user->setCountry($country);
+        $customer = new Customer();
+        $customer->setFirstName($firstName);
+        $customer->setLastName($lastName);
+        $customer->setEmail($email);
+        $customer->setPhone($phone);
+        $customer->setPostCode($postCode);
+        $customer->setCountry($country);
+        $customer->setCustomerGroup($customerGroup);
+        $customer->setCustomerReference($customerReference);
+        $customer->setGender($gender);
+        if ($dateOfBirth !== null) {
+            $customer->setDateOfBirth(\DateTime::createFromFormat("Y-m-d", $dateOfBirth));
+        }
 
-        return $user;
+        return $customer;
     }
 
     /**
@@ -79,15 +127,89 @@ class Builder extends PersonBuilder
     {
         try {
             $customer = $currentCustomer->getCustomer();
+            $customerGroup = $this->getCustomerGroupName($customer);
+            $gender = $this->getGenderName($customer);
+            $customerReference = $this->getCustomerReference($currentCustomer);
+
             $person = $this->build(
                 $customer->getFirstname(),
-                $currentCustomer->getCustomer()->getLastname(),
-                $currentCustomer->getCustomer()->getEmail()
+                $customer->getLastname(),
+                $customer->getEmail(),
+                null,
+                null,
+                null,
+                $customerGroup,
+                $customer->getDob(),
+                $gender,
+                $customerReference
             );
 
             return $person;
         } catch (\Exception $e) {
             return null;
         }
+    }
+
+    /**
+     * @param string $groupId
+     * @return string
+     * @throws LocalizedException
+     * @throws NoSuchEntityException
+     */
+    private function getCustomerGroupName(MagentoCustomer $customer)
+    {
+        $groupId = $customer->getGroupId();
+        $group = $this->groupRepository->getById($groupId);
+        return $group->getCode();
+    }
+
+    /**
+     * @param MagentoCustomer $customer
+     * @return null|string
+     */
+    private function getGenderName(MagentoCustomer $customer)
+    {
+        $gender = $customer->getGender();
+        switch ($gender) {
+            case self::GENDER_MALE_ID:
+                return self::GENDER_MALE;
+            case self::GENDER_FEMALE_ID:
+                return self::GENDER_FEMALE;
+            default :
+                return null;
+        }
+    }
+
+    /**
+     * @param CurrentCustomer $currentCustomer
+     * @return string
+     */
+    private function getCustomerReference(CurrentCustomer $currentCustomer)
+    {
+        $customerReference = '';
+
+        try {
+            $customer = $currentCustomer->getCustomer();
+            $customerReference = $customer->getCustomAttribute(
+                NostoHelperData::NOSTO_CUSTOMER_REFERENCE_ATTRIBUTE_NAME
+            );
+
+            if (empty($customerReference)) {
+                $customerReference = HashedTagging::generateVisitorChecksum(
+                    $currentCustomer->getCustomerId() . $customer->getEmail()
+                );
+                $customer->setCustomAttribute(
+                    NostoHelperData::NOSTO_CUSTOMER_REFERENCE_ATTRIBUTE_NAME,
+                    $customerReference
+                );
+                $this->customerRepository->save($customer);
+                return $customerReference;
+            }
+            return $customerReference->getValue();
+        } catch (\Exception $e) {
+            $this->logger->exception($e);
+        }
+
+        return $customerReference;
     }
 }
