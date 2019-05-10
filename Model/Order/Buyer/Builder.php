@@ -52,7 +52,6 @@ class Builder extends PersonBuilder
      * @inheritdoc
      * @return Buyer
      */
-    // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found
     public function buildObject( // @codingStandardsIgnoreLine
         $firstName,
         $lastName,

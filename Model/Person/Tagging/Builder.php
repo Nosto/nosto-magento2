@@ -38,8 +38,6 @@ namespace Nosto\Tagging\Model\Person\Tagging;
 
 use Magento\Customer\Helper\Session\CurrentCustomer;
 use Magento\Framework\Event\ManagerInterface as EventManager;
-use Nosto\Nosto;
-use Nosto\Object\AbstractPerson;
 use Nosto\Object\Customer;
 use Magento\Customer\Api\Data\CustomerInterface;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
@@ -73,6 +71,7 @@ class Builder extends PersonBuilder
      * @param GroupRepository $groupRepository
      * @param CustomerRepositoryInterface $customerRepository
      * @param NostoEmailRepository $emailRepository
+     * @param NostoLogger $logger
      * @param EventManager $eventManager
      * @param NostoHelperData $nostoHelperData
      */
@@ -117,7 +116,7 @@ class Builder extends PersonBuilder
         $customer->setCustomerReference($customerReference);
         $customer->setGender($gender);
         if ($dateOfBirth !== null) {
-            $customer->setDateOfBirth(\DateTime::createFromFormat("Y-m-d", $dateOfBirth));
+            $customer->setDateOfBirth(\DateTime::createFromFormat('Y-m-d', $dateOfBirth));
         }
 
         return $customer;
@@ -165,6 +164,9 @@ class Builder extends PersonBuilder
     private function getCustomerGroupName(CustomerInterface $customer)
     {
         $groupId = (int)$customer->getGroupId();
+        if ($groupId === null) {
+            return '';
+        }
         $group = $this->groupRepository->getById($groupId);
         return $group->getCode();
     }
@@ -200,7 +202,7 @@ class Builder extends PersonBuilder
                 NostoHelperData::NOSTO_CUSTOMER_REFERENCE_ATTRIBUTE_NAME
             );
 
-            if (empty($customerReference)) {
+            if ($customerReference === null) {
                 $customerReference = HashedTagging::generateVisitorChecksum(
                     $currentCustomer->getCustomerId() . $customer->getEmail()
                 );
