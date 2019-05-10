@@ -148,7 +148,7 @@ class Builder extends PersonBuilder
                 $gender,
                 $customerReference
             );
-
+            /** @var $person Customer */
             return $person;
         } catch (\Exception $e) {
             return null;
@@ -157,7 +157,7 @@ class Builder extends PersonBuilder
 
     /**
      * @param CustomerInterface $customer
-     * @return string
+     * @return string|null
      * @throws LocalizedException
      * @throws NoSuchEntityException
      */
