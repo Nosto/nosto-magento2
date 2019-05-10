@@ -41,32 +41,27 @@ use Magento\Customer\Helper\Session\CurrentCustomer;
 use Magento\Framework\Stdlib\CookieManagerInterface;
 use Nosto\Tagging\Model\Customer\Customer as NostoCustomer;
 use Nosto\Tagging\Model\Person\Tagging\Builder as NostoPersonBuilder;
-use Nosto\Tagging\Logger\Logger as NostoLogger;
 
 class CustomerTagging extends HashedTagging implements SectionSourceInterface
 {
     private $currentCustomer;
     private $cookieManager;
     private $personBuilder;
-    private $logger;
 
     /**
      * CustomerTagging constructor.
      * @param CurrentCustomer $currentCustomer
      * @param CookieManagerInterface $cookieManager
      * @param NostoPersonBuilder $personBuilder
-     * @param NostoLogger $logger\
      */
     public function __construct(
         CurrentCustomer $currentCustomer,
         CookieManagerInterface $cookieManager,
-        NostoPersonBuilder $personBuilder,
-        NostoLogger $logger
+        NostoPersonBuilder $personBuilder
     ) {
         $this->currentCustomer = $currentCustomer;
         $this->cookieManager = $cookieManager;
         $this->personBuilder = $personBuilder;
-        $this->logger = $logger;
     }
 
     /**

@@ -38,9 +38,10 @@ namespace Nosto\Tagging\Model\Person\Tagging;
 
 use Magento\Customer\Helper\Session\CurrentCustomer;
 use Magento\Framework\Event\ManagerInterface as EventManager;
+use Nosto\Nosto;
 use Nosto\Object\AbstractPerson;
 use Nosto\Object\Customer;
-use Magento\Customer\Model\Data\Customer as MagentoCustomer;
+use Magento\Customer\Api\Data\CustomerInterface;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Model\Email\Repository as NostoEmailRepository;
 use Nosto\Tagging\Model\Person\Builder as PersonBuilder;
@@ -49,6 +50,7 @@ use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Nosto\Tagging\CustomerData\HashedTagging;
 use Magento\Customer\Api\CustomerRepositoryInterface;
+use Nosto\Tagging\Logger\Logger as NostoLogger;
 
 /**
  * Builder class for buyer
@@ -64,6 +66,7 @@ class Builder extends PersonBuilder
 
     private $groupRepository;
     private $customerRepository;
+    private $logger;
 
     /**
      * Builder constructor.
@@ -77,16 +80,19 @@ class Builder extends PersonBuilder
         GroupRepository $groupRepository,
         CustomerRepositoryInterface $customerRepository,
         NostoEmailRepository $emailRepository,
+        NostoLogger $logger,
         EventManager $eventManager,
         NostoHelperData $nostoHelperData
     ) {
         $this->groupRepository = $groupRepository;
         $this->customerRepository = $customerRepository;
+        $this->logger = $logger;
         parent::__construct($emailRepository, $eventManager, $nostoHelperData);
     }
 
     /**
      * @inheritdoc
+     * @return Customer
      */
     public function buildObject(
         $firstName,
@@ -121,7 +127,7 @@ class Builder extends PersonBuilder
      * Builds person from the current session / logged in user
      *
      * @param CurrentCustomer $currentCustomer
-     * @return AbstractPerson|null
+     * @return Customer|null
      */
     public function fromSession(CurrentCustomer $currentCustomer)
     {
@@ -151,23 +157,23 @@ class Builder extends PersonBuilder
     }
 
     /**
-     * @param string $groupId
+     * @param CustomerInterface $customer
      * @return string
      * @throws LocalizedException
      * @throws NoSuchEntityException
      */
-    private function getCustomerGroupName(MagentoCustomer $customer)
+    private function getCustomerGroupName(CustomerInterface $customer)
     {
-        $groupId = $customer->getGroupId();
+        $groupId = (int)$customer->getGroupId();
         $group = $this->groupRepository->getById($groupId);
         return $group->getCode();
     }
 
     /**
-     * @param MagentoCustomer $customer
+     * @param CustomerInterface $customer
      * @return null|string
      */
-    private function getGenderName(MagentoCustomer $customer)
+    private function getGenderName(CustomerInterface $customer)
     {
         $gender = $customer->getGender();
         switch ($gender) {
@@ -175,7 +181,7 @@ class Builder extends PersonBuilder
                 return self::GENDER_MALE;
             case self::GENDER_FEMALE_ID:
                 return self::GENDER_FEMALE;
-            default :
+            default:
                 return null;
         }
     }
