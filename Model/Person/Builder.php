@@ -80,6 +80,9 @@ abstract class Builder
      * @param string|null $phone
      * @param string|null $postCode
      * @param string|null $country
+     * @param string|null $dateOfBirth
+     * @param string|null $gender
+     * @param string|null $customerReference
      *
      * @return AbstractPerson|null
      */
