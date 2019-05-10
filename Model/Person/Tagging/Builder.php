@@ -165,7 +165,7 @@ class Builder extends PersonBuilder
     {
         $groupId = (int)$customer->getGroupId();
         if ($groupId === null) {
-            return '';
+            return null;
         }
         $group = $this->groupRepository->getById($groupId);
         return $group->getCode();
