@@ -2,7 +2,7 @@ All notable changes to this project will be documented in this file. This projec
 
 ### 3.6.0
 * Add support for persistent customer reference 
-* Enrich the customer tagging to contain customer_group, gender, etc.
+* Enrich the customer tagging to contain more fields
 
 ### 3.5.0
 * Refactor console commands to use proxy dependencies to avoid redundant dependency injection chain reaction
