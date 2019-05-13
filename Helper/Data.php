@@ -171,6 +171,11 @@ class Data extends AbstractHelper
     const XML_PATH_MULTI_CURRENCY = 'nosto/multicurrency/method';
 
     /**
+     * @var string Nosto customer reference attribute name
+     */
+    const NOSTO_CUSTOMER_REFERENCE_ATTRIBUTE_NAME = 'nosto_customer_reference';
+
+    /**
      * Values for ratings settings
      */
     const SETTING_VALUE_YOTPO_RATINGS = '2';

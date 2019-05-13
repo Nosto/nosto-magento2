@@ -49,8 +49,7 @@ class CustomerTagging extends HashedTagging implements SectionSourceInterface
     private $personBuilder;
 
     /**
-     * Constructor
-     *
+     * CustomerTagging constructor.
      * @param CurrentCustomer $currentCustomer
      * @param CookieManagerInterface $cookieManager
      * @param NostoPersonBuilder $personBuilder
@@ -85,9 +84,10 @@ class CustomerTagging extends HashedTagging implements SectionSourceInterface
                 'email' => $customer->getEmail(),
                 'hcid' => self::generateVisitorChecksum($nostoCustomerId),
                 'marketing_permission' => $customer->getMarketingPermission(),
-                'customer_reference' => self::generateVisitorChecksum(
-                    $this->currentCustomer->getCustomerId() . $customer->getEmail()
-                )
+                'customer_reference' => $customer->getCustomerReference(),
+                'customer_group' => $customer->getCustomerGroup(),
+                'gender' => $customer->getGender(),
+                'date_of_birth' => $customer->getDateOfBirth()
             ];
         }
 

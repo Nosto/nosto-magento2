@@ -80,6 +80,9 @@ abstract class Builder
      * @param string|null $phone
      * @param string|null $postCode
      * @param string|null $country
+     * @param string|null $dateOfBirth
+     * @param string|null $gender
+     * @param string|null $customerReference
      *
      * @return AbstractPerson|null
      */
@@ -89,7 +92,11 @@ abstract class Builder
         $email,
         $phone = null,
         $postCode = null,
-        $country = null
+        $country = null,
+        $customerGroup = null,
+        $dateOfBirth = null,
+        $gender = null,
+        $customerReference = null
     ) {
         if (!$this->nostoHelperData->isSendCustomerDataToNostoEnabled()) {
             return null;
@@ -118,7 +125,11 @@ abstract class Builder
             $email,
             $phone,
             $postCode,
-            $country
+            $country,
+            $customerGroup,
+            $dateOfBirth,
+            $gender,
+            $customerReference
         );
         $person->setMarketingPermission(
             $this->emailRepository->isOptedIn($person->getEmail())
@@ -141,6 +152,10 @@ abstract class Builder
      * @param string|null $phone
      * @param string|null $postCode
      * @param string|null $country
+     * @param string|null $customerGroup
+     * @param string|null $dateOfBirth
+     * @param string|null $gender
+     * @param string|null $customerReference
      *
      * @return AbstractPerson
      */
@@ -150,6 +165,10 @@ abstract class Builder
         $email,
         $phone = null,
         $postCode = null,
-        $country = null
+        $country = null,
+        $customerGroup = null,
+        $dateOfBirth = null,
+        $gender = null,
+        $customerReference = null
     );
 }
