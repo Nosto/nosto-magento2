@@ -30,6 +30,7 @@ namespace Nosto\Tagging\Block;
 use Magento\Framework\View\Element\Template;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
+use Nosto\Tagging\Helper\Data as NostoHelperData;
 
 /**
  * Nosto JS stub block
@@ -44,6 +45,8 @@ class Stub extends Template
         TaggingTrait::__construct as taggingConstruct; // @codingStandardsIgnoreLine
     }
 
+    private $nostoHelperData;
+
     /**
      * Stub constructor.
      * @param Template\Context $context the context.
@@ -55,10 +58,12 @@ class Stub extends Template
         Template\Context $context,
         NostoHelperAccount $nostoHelperAccount,
         NostoHelperScope $nostoHelperScope,
+        NostoHelperData $nostoHelperData,
         array $data = []
     ) {
         parent::__construct($context, $data);
         $this->taggingConstruct($nostoHelperAccount, $nostoHelperScope);
+        $this->nostoHelperData = $nostoHelperData;
     }
 
     /**
@@ -68,5 +73,17 @@ class Stub extends Template
     public function getAbstractObject()
     {
         return null;
+    }
+
+    /**
+     * If the autoload recos is disabled or not
+     *
+     * @return boolean
+     */
+    public function isRecoAutoloadDisabled()
+    {
+        return (bool) $this->nostoHelperData->isPricingVariationEnabled(
+            $this->getNostoHelperScope()->getStore(true)
+        );
     }
 }

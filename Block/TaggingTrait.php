@@ -80,6 +80,14 @@ trait TaggingTrait
     }
 
     /**
+     * @return NostoHelperScope
+     */
+    public function getNostoHelperScope()
+    {
+        return $this->nostoHelperScope;
+    }
+
+    /**
      * @return AbstractObject
      */
     abstract public function getAbstractObject();

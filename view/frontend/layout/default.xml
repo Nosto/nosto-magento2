@@ -47,7 +47,7 @@
                    template="Nosto_Tagging::embed.phtml"/>
         </referenceBlock>
         <referenceContainer name="content">
-            <block class="Nosto\Tagging\Block\Variation" name="nosto.variation" before="-"/>
+            <block class="Nosto\Tagging\Block\Variation" name="nosto.currency.variation" before="-"/>
             <block class="Nosto\Tagging\Block\Addtocart" name="nosto.page.type.addtocart" after="-"
                    template="Nosto_Tagging::addtocart.phtml">
             </block>
@@ -70,6 +70,18 @@
                         <item name="components" xsi:type="array">
                             <item name="customerTagging" xsi:type="array">
                                 <item name="component" xsi:type="string">Nosto_Tagging/js/view/customer-tagging</item>
+                            </item>
+                        </item>
+                    </argument>
+                </arguments>
+            </block>
+            <block class="Nosto\Tagging\Block\Knockout" name="nosto.price.variation" after="nosto.cart"
+                   template="Nosto_Tagging::variation.phtml">
+                <arguments>
+                    <argument name="jsLayout" xsi:type="array">
+                        <item name="components" xsi:type="array">
+                            <item name="variationTagging" xsi:type="array">
+                                <item name="component" xsi:type="string">Nosto_Tagging/js/view/variation-tagging</item>
                             </item>
                         </item>
                     </argument>

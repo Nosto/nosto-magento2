@@ -84,12 +84,6 @@ class Variation extends Template
     public function getVariationId()
     {
         $store = $this->nostoHelperScope->getStore(true);
-        if ($this->nostoHelperData->isMultiCurrencyDisabled($store)
-            && $this->nostoHelperData->isPricingVariationEnabled($store)
-        ) {
-            return $this->nostoHelperCustomer->getGroupCode();
-        }
-
         return $store->getCurrentCurrencyCode();
     }
 
@@ -114,8 +108,9 @@ class Variation extends Template
     {
         $store = $this->nostoHelperScope->getStore(true);
 
+        // The customer price group is handled by sections
         if ($this->nostoHelperCurrency->exchangeRatesInUse($store)
-            || $this->nostoHelperData->isPricingVariationEnabled($store)
+            && !$this->nostoHelperData->isPricingVariationEnabled($store)
         ) {
             return new MarkupableString(
                 $this->getVariationId(),

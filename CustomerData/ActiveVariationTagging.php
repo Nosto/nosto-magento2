@@ -34,34 +34,44 @@
  *
  */
 
-/**
- *     ______     ___     ____  _____  ___   _________   ________ ______  _____ _________
- *    |_   _ `. .'   `.  |_   \|_   _.'   `.|  _   _  | |_   __  |_   _ `|_   _|  _   _  |
- *      | | `. /  .-.  \   |   \ | |/  .-.  |_/ | | \_|   | |_ \_| | | `. \| | |_/ | | \_|
- *      | |  | | |   | |   | |\ \| || |   | |   | |       |  _| _  | |  | || |     | |
- *     _| |_.' \  `-'  /  _| |_\   |\  `-'  /  _| |_     _| |__/ |_| |_.' _| |_   _| |_
- *    |______.' `.___.'  |_____|\____`.___.'  |_____|   |________|______.|_____| |_____|
- *
- * Nosto sends information over both the API and the broswer tagging. Values for the tagging is generated
- * via the Nosto corresponding objects. In order to customize the values in the markup below, you will need
- * to override the core parts of the extension. Failure to do so will result in broken and incorrect
- * recommendations.
- * Please see a reference guide such as https://github.com/Nosto/nosto-magento2/wiki
- *
- * @var $this Nosto\Tagging\Block\Stub
- */
-?>
-<!-- Nosto Javascript Stub -->
-<script type="text/javascript">
-    (function () {
-        var name = "nostojs";
-        window[name] = window[name] || function (cb) {
-                (window[name].q = window[name].q || []).push(cb);
-            };
-        <?php if ($this->isRecoAutoloadDisabled()): ?>
-        window[name](function(api){
-            api.setAutoLoad(false);
-        });
-    })();
-    <?php endif; ?>
-</script>
+namespace Nosto\Tagging\CustomerData;
+
+use Nosto\Tagging\Helper\Data as NostoHelperData;
+use Nosto\Tagging\Helper\Customer as NostoHelperCustomer;
+use Nosto\Tagging\Helper\Scope as NostoHelperScope;
+
+use Magento\Customer\CustomerData\SectionSourceInterface;
+
+class ActiveVariationTagging implements SectionSourceInterface
+{
+    private $nostoHelperData;
+    private $nostoHelperCustomer;
+    private $nostoHelperScope;
+
+    public function __construct(
+        NostoHelperData $nostoHelperData,
+        NostoHelperCustomer $nostoHelperCustomer,
+        NostoHelperScope $nostoHelperScope
+    ) {
+        $this->nostoHelperData = $nostoHelperData;
+        $this->nostoHelperCustomer = $nostoHelperCustomer;
+        $this->nostoHelperScope = $nostoHelperScope;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getSectionData()
+    {
+        $data = [];
+        if (
+            $this->nostoHelperData->isPricingVariationEnabled(
+                $this->nostoHelperScope->getStore(true)
+            )
+        ) {
+            $data['active_variation'] = $this->nostoHelperCustomer->getGroupCode();
+        }
+
+        return $data;
+    }
+}
