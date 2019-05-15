@@ -79,9 +79,8 @@ class ActiveVariationTagging implements SectionSourceInterface
     {
         $data = [];
         if ($this->nostoHelperData->isPricingVariationEnabled(
-                $this->nostoHelperScope->getStore(true)
-            )
-        ) {
+            $this->nostoHelperScope->getStore(true)
+        )) {
             $data['active_variation'] = $this->nostoHelperCustomer->getGroupCode();
         }
 
