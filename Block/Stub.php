@@ -45,6 +45,9 @@ class Stub extends Template
         TaggingTrait::__construct as taggingConstruct; // @codingStandardsIgnoreLine
     }
 
+    /**
+     * @var NostoHelperData
+     */
     private $nostoHelperData;
 
     /**
@@ -52,6 +55,7 @@ class Stub extends Template
      * @param Template\Context $context the context.
      * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoHelperScope $nostoHelperScope
+     * @param NostoHelperData $nostoHelperData
      * @param array $data optional data.
      */
     public function __construct(
@@ -76,7 +80,9 @@ class Stub extends Template
     }
 
     /**
-     * If the autoload recos is disabled or not
+     * Returns if autoloading recommendations is disabled or not.
+     * For example if price variations are enabled there's no sense
+     * of loading recos before the variation tagging is in place.
      *
      * @return boolean
      */

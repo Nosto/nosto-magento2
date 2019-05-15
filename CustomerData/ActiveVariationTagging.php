@@ -39,15 +39,29 @@ namespace Nosto\Tagging\CustomerData;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Customer as NostoHelperCustomer;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
-
 use Magento\Customer\CustomerData\SectionSourceInterface;
 
 class ActiveVariationTagging implements SectionSourceInterface
 {
+    /**
+     * @var NostoHelperData
+     */
     private $nostoHelperData;
+    /**
+     * @var NostoHelperCustomer
+     */
     private $nostoHelperCustomer;
+    /**
+     * @var NostoHelperScope
+     */
     private $nostoHelperScope;
 
+    /**
+     * ActiveVariationTagging constructor.
+     * @param NostoHelperData $nostoHelperData
+     * @param NostoHelperCustomer $nostoHelperCustomer
+     * @param NostoHelperScope $nostoHelperScope
+     */
     public function __construct(
         NostoHelperData $nostoHelperData,
         NostoHelperCustomer $nostoHelperCustomer,

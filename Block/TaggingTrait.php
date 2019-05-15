@@ -88,6 +88,14 @@ trait TaggingTrait
     }
 
     /**
+     * @return NostoHelperAccount
+     */
+    public function getNostoHelperAccount()
+    {
+        return $this->nostoHelperAccount;
+    }
+
+    /**
      * @return AbstractObject
      */
     abstract public function getAbstractObject();
