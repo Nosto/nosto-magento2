@@ -81,6 +81,11 @@ class Collection
         $collection = new VariationCollection();
         $groups = $this->customerGroupManager->getLoggedInGroups();
         foreach ($groups as $group) {
+            // For some (broken?) Magento setups the default group / default
+            // variation is also part of the customer groups
+            if ($group->getCode() === $nostoProduct->getVariationId()) {
+                continue;
+            }
             /** @var \Magento\Customer\Model\Data\Group $group */
             $collection->append(
                 $this->variationBuilder->build(
