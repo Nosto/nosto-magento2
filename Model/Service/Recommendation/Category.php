@@ -77,7 +77,7 @@ class Category
         if (!$featureAccess->canUseGraphql()) {
             return $productIds;
         }
-        if ((string)$type === NostoHelperSorting::NOSTO_PERSONALIZED_KEY) {
+        if ($type === NostoHelperSorting::NOSTO_PERSONALIZED_KEY) {
             $recoOperation = new CategoryBrowsingHistory($nostoAccount, $nostoCustomerId);
         } else {
             $recoOperation = new CategoryTopList($nostoAccount, $nostoCustomerId);
