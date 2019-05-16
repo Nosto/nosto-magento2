@@ -48,7 +48,9 @@ define([
             this.variationTagging = customerData.get('active-variation-tagging');
         },
         reloadRecommendations: function () {
-            //noinspection JSUnresolvedVariable
+            // Remove the static variation if it exists - it should not but as a safeguard we rename the class
+            $('.nosto_variation').removeClass('nosto_variation').addClass('nosto_variation_static');
+            $('.nosto_variation_dynamic').addClass('nosto_variation');
             if (typeof nostojs === 'function') {
                 nostojs(function (api) {
                     api.loadRecommendations();

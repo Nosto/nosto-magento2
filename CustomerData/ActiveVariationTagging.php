@@ -36,10 +36,11 @@
 
 namespace Nosto\Tagging\CustomerData;
 
+use Magento\Customer\CustomerData\SectionSourceInterface;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Customer as NostoHelperCustomer;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
-use Magento\Customer\CustomerData\SectionSourceInterface;
+use Nosto\Tagging\Helper\Variation as NostoHelperVariation;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 
 class ActiveVariationTagging implements SectionSourceInterface
@@ -60,6 +61,11 @@ class ActiveVariationTagging implements SectionSourceInterface
     private $nostoHelperScope;
 
     /**
+     * @var NostoHelperVariation
+     */
+    private $nostoHelperVariation;
+
+    /**
      * @var NostoLogger
      */
     private $nostoLogger;
@@ -75,11 +81,13 @@ class ActiveVariationTagging implements SectionSourceInterface
         NostoHelperData $nostoHelperData,
         NostoHelperCustomer $nostoHelperCustomer,
         NostoHelperScope $nostoHelperScope,
+        NostoHelperVariation $nostoHelperVariation,
         NostoLogger $nostoLogger
     ) {
         $this->nostoHelperData = $nostoHelperData;
         $this->nostoHelperCustomer = $nostoHelperCustomer;
         $this->nostoHelperScope = $nostoHelperScope;
+        $this->nostoHelperVariation = $nostoHelperVariation;
         $this->nostoLogger = $nostoLogger;
     }
 
@@ -89,9 +97,12 @@ class ActiveVariationTagging implements SectionSourceInterface
     public function getSectionData()
     {
         $data = [];
-        if ($this->nostoHelperData->isPricingVariationEnabled(
-            $this->nostoHelperScope->getStore(true)
-        )) {
+        $store = $this->nostoHelperScope->getStore(true);
+        if ($this->nostoHelperData->isPricingVariationEnabled($store)
+            && !$this->nostoHelperVariation->isDefaultVariationCode(
+                $this->nostoHelperCustomer->getGroupCode()
+            )
+        ) {
             try {
                 $data['active_variation'] = $this->nostoHelperCustomer->getGroupCode();
             } catch (\Exception $e) {
