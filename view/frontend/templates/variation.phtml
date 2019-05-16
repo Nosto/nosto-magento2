@@ -47,21 +47,24 @@
  * to override the core parts of the extension. Failure to do so will result in broken and incorrect
  * recommendations.
  * Please see a reference guide such as https://github.com/Nosto/nosto-magento2/wiki
+ */
+
+/**
+ * Template for customer tagging. The actual data is populated via
+ * Magento's KnockoutJS logic.
  *
- * @var Nosto\Tagging\Block\Stub $this
+ * @see \Nosto\Tagging\CustomerData\ActiveVariationTagging
  */
 ?>
-<!-- Nosto Javascript Stub -->
-<script type="text/javascript">
-    (function () {
-        var name = "nostojs";
-        window[name] = window[name] || function (cb) {
-                (window[name].q = window[name].q || []).push(cb);
-            };
-        <?php if ($this->isRecoAutoloadDisabled()): ?>
-        window[name](function(api){
-            api.setAutoLoad(false);
-        });
-    })();
-    <?php endif; ?>
+<!-- Nosto Variation Tagging -->
+<div id="nosto_variation_tagging" style="display:none"
+     data-bind="scope: 'variationTagging'"
+     data-role="nosto-variation-tagging"
+>
+    <!-- ko if: variationTagging().active_variation -->
+    <span class="nosto_variation_dynamic" data-bind="text: variationTagging().active_variation, afterRender: reloadRecommendations"></span>
+    <!-- /ko -->
+</div>
+<script type="text/x-magento-init">
+{"[data-role=nosto-variation-tagging]": {"Magento_Ui/js/core/app": <?php /* @escapeNotVerified */ echo $block->getJsLayout();?>}}
 </script>

@@ -1,5 +1,9 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 3.6.1
+* Use sections for active variation tagging when price variations are enabled
+* Exclude base variation from variation collection
+
 ### 3.6.0
 * Add support for persistent customer reference 
 * Enrich the customer tagging to contain more fields
