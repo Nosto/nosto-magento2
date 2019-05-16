@@ -47,7 +47,7 @@ define([
             //noinspection JSUnusedGlobalSymbols
             this.variationTagging = customerData.get('active-variation-tagging');
         },
-        reloadRecommendations: function (el) {
+        reloadRecommendations: function () {
             //noinspection JSUnresolvedVariable
             if (typeof nostojs === 'function') {
                 nostojs(function (api) {

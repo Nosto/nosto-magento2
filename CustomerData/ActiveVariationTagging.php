@@ -40,6 +40,7 @@ use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Customer as NostoHelperCustomer;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Magento\Customer\CustomerData\SectionSourceInterface;
+use Nosto\Tagging\Logger\Logger as NostoLogger;
 
 class ActiveVariationTagging implements SectionSourceInterface
 {
@@ -47,14 +48,21 @@ class ActiveVariationTagging implements SectionSourceInterface
      * @var NostoHelperData
      */
     private $nostoHelperData;
+
     /**
      * @var NostoHelperCustomer
      */
     private $nostoHelperCustomer;
+
     /**
      * @var NostoHelperScope
      */
     private $nostoHelperScope;
+
+    /**
+     * @var NostoLogger
+     */
+    private $nostoLogger;
 
     /**
      * ActiveVariationTagging constructor.
@@ -65,11 +73,13 @@ class ActiveVariationTagging implements SectionSourceInterface
     public function __construct(
         NostoHelperData $nostoHelperData,
         NostoHelperCustomer $nostoHelperCustomer,
-        NostoHelperScope $nostoHelperScope
+        NostoHelperScope $nostoHelperScope,
+        NostoLogger $nostoLogger
     ) {
         $this->nostoHelperData = $nostoHelperData;
         $this->nostoHelperCustomer = $nostoHelperCustomer;
         $this->nostoHelperScope = $nostoHelperScope;
+        $this->nostoLogger = $nostoLogger;
     }
 
     /**
@@ -81,7 +91,11 @@ class ActiveVariationTagging implements SectionSourceInterface
         if ($this->nostoHelperData->isPricingVariationEnabled(
             $this->nostoHelperScope->getStore(true)
         )) {
-            $data['active_variation'] = $this->nostoHelperCustomer->getGroupCode();
+            try {
+                $data['active_variation'] = $this->nostoHelperCustomer->getGroupCode();
+            } catch (\Exception $e) {
+                $this->nostoLogger->exception($e);
+            }
         }
 
         return $data;
