@@ -34,69 +34,54 @@
  *
  */
 
-namespace Nosto\Tagging\Block;
+namespace Nosto\Tagging\Model\Config\Frontend;
 
-use Nosto\AbstractObject;
-use Nosto\NostoException;
-use Nosto\Tagging\Helper\Account as NostoHelperAccount;
-use Nosto\Tagging\Helper\Scope as NostoHelperScope;
+use Magento\Config\Block\System\Config\Form\Field;
+use Magento\Framework\Data\Form\Element\AbstractElement;
+use Magento\Backend\Block\Template\Context;
+use Magento\Framework\App\Request\Http;
+use Nosto\Tagging\Helper\CategorySorting as NostoHelperSorting;
 
-trait TaggingTrait
+class CategorySorting extends Field
 {
-    private $nostoHelperAccount;
-    private $nostoHelperScope;
+
+    /** @var NostoHelperSorting */
+    private $nostoHelperSorting;
+
+    /** @var Http $request */
+    public $request;
 
     /**
-     * TaggingTrait constructor.
-     * @param NostoHelperAccount $nostoHelperAccount
-     * @param NostoHelperScope $nostoHelperScope
+     * CategorySorting constructor.
+     * @param Http $request
+     * @param NostoHelperSorting $nostoHelperSorting
+     * @param Context $context
+     * @param array $data
      */
     public function __construct(
-        NostoHelperAccount $nostoHelperAccount,
-        NostoHelperScope $nostoHelperScope
+        Http $request,
+        NostoHelperSorting $nostoHelperSorting,
+        Context $context,
+        array $data = []
     ) {
-        $this->nostoHelperAccount = $nostoHelperAccount;
-        $this->nostoHelperScope = $nostoHelperScope;
+        $this->request = $request;
+        $this->nostoHelperSorting = $nostoHelperSorting;
+        parent::__construct($context, $data);
     }
 
     /**
-     * Overridden method that only outputs any markup if the extension is enabled and an account
-     * exists for the current store view.
+     * Disable input if APPS token is not found
      *
-     * @return string the markup or an empty string (if an account doesn't exist)
-     * @suppress PhanTraitParentReference
-     * @throws NostoException
+     * @param AbstractElement $element
+     * @return string
      */
-    public function _toHtml()
+    protected function _getElementHtml(AbstractElement $element) //@codingStandardsIgnoreLine
     {
-        if ($this->nostoHelperAccount->nostoInstalledAndEnabled($this->nostoHelperScope->getStore())) {
-            $abstractObject = $this->getAbstractObject();
-            if ($abstractObject instanceof AbstractObject) {
-                return $abstractObject->toHtml();
-            }
-            return parent::_toHtml();
+        $id = (int)$this->request->getParam('store');
+        if (!$this->nostoHelperSorting->canUseCategorySorting($id)) {
+            $element->setReadonly(true, true);
         }
-        return '';
-    }
 
-    /**
-     * @return NostoHelperScope
-     */
-    public function getNostoHelperScope()
-    {
-        return $this->nostoHelperScope;
+        return parent::_getElementHtml($element);
     }
-
-    /**
-     * @return NostoHelperAccount
-     */
-    public function getNostoHelperAccount()
-    {
-        return $this->nostoHelperAccount;
-    }
-
-    /**
-     * @return AbstractObject
-     */
-    abstract public function getAbstractObject();
 }

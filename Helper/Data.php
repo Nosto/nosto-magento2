@@ -140,6 +140,12 @@ class Data extends AbstractHelper
     const XML_PATH_INDEXER_MEMORY = 'nosto/flags/indexer_memory';
 
     /**
+
+     * Path to the configuration object that stores category sorting
+     */
+    const XML_PATH_CATEGORY_SORTING = 'nosto/flags/category_sorting';
+
+    /*
      * Path to the configuration object for tagging the date a product has beed added to Magento's catalog
      */
     const XML_PATH_TAG_DATE_PUBLISHED = 'nosto/flags/tag_date_published';
@@ -163,6 +169,11 @@ class Data extends AbstractHelper
      * Path to the configuration object for multi currency
      */
     const XML_PATH_MULTI_CURRENCY = 'nosto/multicurrency/method';
+
+    /**
+     * @var string Nosto customer reference attribute name
+     */
+    const NOSTO_CUSTOMER_REFERENCE_ATTRIBUTE_NAME = 'nosto_customer_reference';
 
     /**
      * Values for ratings settings
@@ -416,6 +427,17 @@ class Data extends AbstractHelper
     public function isSendCustomerDataToNostoEnabled(StoreInterface $store = null)
     {
         return (bool)$this->getStoreConfig(self::XML_PATH_SEND_CUSTOMER_DATA, $store);
+    }
+
+    /**
+     * Returns if category sorting is enabled
+     *
+     * @param StoreInterface|null $store the store model or null.
+     * @return bool the configuration value
+     */
+    public function isCategorySortingEnabled(StoreInterface $store = null)
+    {
+        return (bool)$this->getStoreConfig(self::XML_PATH_CATEGORY_SORTING, $store);
     }
 
     /**

@@ -42,6 +42,7 @@
     <action name="customer/account/createPost"/>
     <action name="customer/ajax/login">
         <section name="customer-tagging"/>
+        <section name="active-variation-tagging"/>
     </action>
     <action name="checkout/cart/add">
         <section name="cart-tagging"/>

@@ -34,69 +34,88 @@
  *
  */
 
-namespace Nosto\Tagging\Block;
+namespace Nosto\Tagging\Helper;
 
-use Nosto\AbstractObject;
-use Nosto\NostoException;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
+use Nosto\Service\FeatureAccess;
+use Magento\Framework\App\Helper\AbstractHelper;
+use Magento\Framework\App\Helper\Context;
 
-trait TaggingTrait
+class CategorySorting extends AbstractHelper
 {
-    private $nostoHelperAccount;
+    const NOSTO_PERSONALIZED_KEY = 'nosto-personalized';
+
+    const NOSTO_TOPLIST_KEY = 'nosto-toplist';
+
+    /** @var NostoHelperScope */
     private $nostoHelperScope;
 
+    /** @var NostoHelperAccount */
+    private $nostoHelperAccount;
+
     /**
-     * TaggingTrait constructor.
-     * @param NostoHelperAccount $nostoHelperAccount
-     * @param NostoHelperScope $nostoHelperScope
+     * CategorySorting constructor.
+     * @param Account $nostoHelperAccount
+     * @param Scope $nostoHelperScope
+     * @param Context $context
      */
     public function __construct(
         NostoHelperAccount $nostoHelperAccount,
-        NostoHelperScope $nostoHelperScope
+        NostoHelperScope $nostoHelperScope,
+        Context $context
     ) {
         $this->nostoHelperAccount = $nostoHelperAccount;
         $this->nostoHelperScope = $nostoHelperScope;
+        parent::__construct($context);
     }
 
     /**
-     * Overridden method that only outputs any markup if the extension is enabled and an account
-     * exists for the current store view.
+     * Return array that contains all sorting options offered by Nosto
      *
-     * @return string the markup or an empty string (if an account doesn't exist)
-     * @suppress PhanTraitParentReference
-     * @throws NostoException
+     * @return array
      */
-    public function _toHtml()
+    public static function getNostoSortingOptions()
     {
-        if ($this->nostoHelperAccount->nostoInstalledAndEnabled($this->nostoHelperScope->getStore())) {
-            $abstractObject = $this->getAbstractObject();
-            if ($abstractObject instanceof AbstractObject) {
-                return $abstractObject->toHtml();
+        return [
+            self::NOSTO_PERSONALIZED_KEY => __('Personalized for you'),
+            self::NOSTO_TOPLIST_KEY => __('Top products')
+        ];
+    }
+
+    /**
+     * Returns if any store has APPS token
+     *
+     * @param $id
+     * @return bool
+     */
+    public function canUseCategorySorting($id)
+    {
+        $accounts = [];
+
+        if ($id === 0) {
+            $stores = $this->nostoHelperAccount->getStoresWithNosto();
+            foreach ($stores as $store) {
+                $account = $this->nostoHelperAccount->findAccount($store);
+                if ($account !== null) {
+                    $accounts[] = $account;
+                }
             }
-            return parent::_toHtml();
+        } else {
+            $store = $this->nostoHelperScope->getStore($id);
+            $account = $this->nostoHelperAccount->findAccount($store);
+            if ($account !== null) {
+                $accounts[] = $account;
+            }
         }
-        return '';
-    }
 
-    /**
-     * @return NostoHelperScope
-     */
-    public function getNostoHelperScope()
-    {
-        return $this->nostoHelperScope;
-    }
+        foreach ($accounts as $account) {
+            $featureAccess = new FeatureAccess($account);
+            if ($featureAccess->canUseGraphql()) {
+                return true;
+            }
+        }
 
-    /**
-     * @return NostoHelperAccount
-     */
-    public function getNostoHelperAccount()
-    {
-        return $this->nostoHelperAccount;
+        return false;
     }
-
-    /**
-     * @return AbstractObject
-     */
-    abstract public function getAbstractObject();
 }

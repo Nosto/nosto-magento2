@@ -1,5 +1,29 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 3.6.1
+* Use sections for active variation tagging when price variations are enabled
+* Exclude base variation from variation collection
+
+### 3.6.0
+* Add support for persistent customer reference 
+* Enrich the customer tagging to contain more fields
+
+### 3.5.0
+* Refactor console commands to use proxy dependencies to avoid redundant dependency injection chain reaction
+* Remove redundant injected dependencies from block classes 
+* Enrich the category tagging to contain url, image, etc. 
+
+### 3.4.1
+* Fix issue with price variations in case catalog rules are specified
+
+### 3.4.0
+* Add category personalisation for sorting products
+* Fix issue with sending orders when user is not logged in
+* Fix issue with sending unmatched orders
+* Add date published to product tagging
+* Fix issue with redirect url
+* Fix issue with reconnecting same account for same scope
+
 ### 3.3.0
 * Fix an issue with configurable products that were added to cart had no link or image
 * Handle exceptions in line cart line item building and order line item building

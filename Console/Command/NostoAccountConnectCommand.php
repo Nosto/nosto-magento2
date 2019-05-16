@@ -41,11 +41,10 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Nosto\Tagging\Helper\Account as NostoAccountHelper;
+use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Object\Signup\Account as NostoSignupAccount;
 use Nosto\Request\Api\Token;
-use Nosto\NostoException;
 
 class NostoAccountConnectCommand extends Command
 {
@@ -54,9 +53,9 @@ class NostoAccountConnectCommand extends Command
     const SCOPE_CODE = 'scope-code';
 
     /*
-     * @var NostoAccountHelper
+     * @var NostoHelperAccount
      */
-    private $accountHelper;
+    private $nostoHelperAccount;
 
     /**
      * @var NostoHelperScope
@@ -70,14 +69,14 @@ class NostoAccountConnectCommand extends Command
 
     /**
      * NostoConfigConnectCommand constructor.
-     * @param NostoAccountHelper $accountHelper
+     * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoHelperScope $nostoHelperScope
      */
     public function __construct(
-        NostoAccountHelper $accountHelper,
+        NostoHelperAccount $nostoHelperAccount,
         NostoHelperScope $nostoHelperScope
     ) {
-        $this->accountHelper = $accountHelper;
+        $this->nostoHelperAccount = $nostoHelperAccount;
         $this->nostoHelperScope = $nostoHelperScope;
         parent::__construct();
     }
@@ -168,8 +167,8 @@ class NostoAccountConnectCommand extends Command
             $io->error('Store not found. Check your input.');
             return false;
         }
-        $storeAccountId = $store->getConfig(NostoAccountHelper::XML_PATH_ACCOUNT);
-        $account = $this->accountHelper->findAccount($store);
+        $storeAccountId = $store->getConfig(NostoHelperAccount::XML_PATH_ACCOUNT);
+        $account = $this->nostoHelperAccount->findAccount($store);
         if ($account && $storeAccountId === $accountId) {
             // If the script is non-interactive, do not ask for confirmation
             $confirmOverride = $this->isInteractive ?
@@ -180,13 +179,13 @@ class NostoAccountConnectCommand extends Command
                true;
             if ($confirmOverride) {
                 $account->setTokens($tokens);
-                return $this->accountHelper->saveAccount($account, $store);
+                return $this->nostoHelperAccount->saveAccount($account, $store);
             }
         } else {
             $io->note('Local account not found. Saving local account...');
             $account = new NostoSignupAccount($accountId);
             $account->setTokens($tokens);
-            return $this->accountHelper->saveAccount($account, $store);
+            return $this->nostoHelperAccount->saveAccount($account, $store);
         }
     }
 

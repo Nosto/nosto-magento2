@@ -34,69 +34,69 @@
  *
  */
 
-namespace Nosto\Tagging\Block;
+namespace  Nosto\Tagging\Plugin\Catalog\Model;
 
-use Nosto\AbstractObject;
-use Nosto\NostoException;
+use Magento\Catalog\Model\Config as MagentoConfig;
+use Nosto\Tagging\Helper\Data as NostoHelperData;
+use Nosto\Tagging\Helper\CategorySorting as NostoHelperSorting;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
-use Nosto\Tagging\Helper\Scope as NostoHelperScope;
+use Magento\Backend\Block\Template\Context;
+use Magento\Store\Model\StoreManagerInterface;
+use Magento\Framework\View\Element\Template;
+use Magento\Framework\Exception\NoSuchEntityException;
 
-trait TaggingTrait
+class Config extends Template
 {
+    /** @var NostoHelperData */
+    private $nostoHelperData;
+
+    /** @var NostoHelperAccount */
     private $nostoHelperAccount;
-    private $nostoHelperScope;
+
+    /** @var StoreManagerInterface */
+    private $storeManager;
 
     /**
-     * TaggingTrait constructor.
+     * Config constructor.
+     * @param NostoHelperData $nostoHelperData
      * @param NostoHelperAccount $nostoHelperAccount
-     * @param NostoHelperScope $nostoHelperScope
+     * @param Context $context
+     * @param array $data
      */
     public function __construct(
+        NostoHelperData $nostoHelperData,
         NostoHelperAccount $nostoHelperAccount,
-        NostoHelperScope $nostoHelperScope
+        Context $context,
+        array $data = []
     ) {
+        $this->nostoHelperData = $nostoHelperData;
         $this->nostoHelperAccount = $nostoHelperAccount;
-        $this->nostoHelperScope = $nostoHelperScope;
+        $this->storeManager = $context->getStoreManager();
+        parent::__construct($context, $data);
     }
 
     /**
-     * Overridden method that only outputs any markup if the extension is enabled and an account
-     * exists for the current store view.
+     * Add custom Sorting attribute
      *
-     * @return string the markup or an empty string (if an account doesn't exist)
-     * @suppress PhanTraitParentReference
-     * @throws NostoException
+     * @param MagentoConfig $catalogConfig
+     * @param $options
+     * @return array
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @throws NoSuchEntityException
      */
-    public function _toHtml()
+    public function afterGetAttributeUsedForSortByArray(MagentoConfig $catalogConfig, $options)
     {
-        if ($this->nostoHelperAccount->nostoInstalledAndEnabled($this->nostoHelperScope->getStore())) {
-            $abstractObject = $this->getAbstractObject();
-            if ($abstractObject instanceof AbstractObject) {
-                return $abstractObject->toHtml();
-            }
-            return parent::_toHtml();
+        $store = $this->storeManager->getStore();
+        if ($this->nostoHelperAccount->nostoInstalledAndEnabled($store) &&
+            $this->nostoHelperData->isCategorySortingEnabled($store)
+        ) {
+            // new option
+            $customOptions = NostoHelperSorting::getNostoSortingOptions();
+
+            // merge default sorting options with custom options
+            $options = array_merge($customOptions, $options);
         }
-        return '';
-    }
 
-    /**
-     * @return NostoHelperScope
-     */
-    public function getNostoHelperScope()
-    {
-        return $this->nostoHelperScope;
+        return $options;
     }
-
-    /**
-     * @return NostoHelperAccount
-     */
-    public function getNostoHelperAccount()
-    {
-        return $this->nostoHelperAccount;
-    }
-
-    /**
-     * @return AbstractObject
-     */
-    abstract public function getAbstractObject();
 }

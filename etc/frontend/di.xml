@@ -42,8 +42,15 @@
             <argument name="sectionSourceMap" xsi:type="array">
                 <item name="customer-tagging" xsi:type="string">Nosto\Tagging\CustomerData\CustomerTagging</item>
                 <item name="cart-tagging" xsi:type="string">Nosto\Tagging\CustomerData\CartTagging</item>
+                <item name="active-variation-tagging" xsi:type="string">Nosto\Tagging\CustomerData\ActiveVariationTagging</item>
             </argument>
         </arguments>
+    </type>
+    <type name="Magento\Catalog\Model\Config">
+        <plugin name="sortby_add_custom_option" type="Nosto\Tagging\Plugin\Catalog\Model\Config" />
+    </type>
+    <type name="Magento\Catalog\Block\Product\ProductList\Toolbar">
+        <plugin name="sortby_extend_default_sort_filters" type="Nosto\Tagging\Plugin\Block\Toolbar" />
     </type>
     <type name="Magento\Checkout\Controller\Cart\Add">
         <plugin name="nostoAddToCart" type="Nosto\Tagging\Controller\Checkout\Cart\Add" sortOrder="1" />

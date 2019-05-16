@@ -41,6 +41,20 @@
     <type name="Magento\Catalog\Model\ResourceModel\Product">
         <plugin name="nostoProductIndexer" type="Nosto\Tagging\Model\Indexer\Product\Observer"/>
     </type>
+    <type name="Nosto\Tagging\Console\Command\NostoAccountConnectCommand">
+        <arguments>
+            <argument name="nostoHelperAccount" xsi:type="object">Nosto\Tagging\Helper\Account\Proxy</argument>
+            <argument name="nostoHelperScope" xsi:type="object">Nosto\Tagging\Helper\Scope\Proxy</argument>
+        </arguments>
+    </type>
+    <type name="Nosto\Tagging\Console\Command\NostoAccountRemoveCommand">
+        <arguments>
+            <argument name="nostoHelperAccount" xsi:type="object">Nosto\Tagging\Helper\Account\Proxy</argument>
+            <argument name="nostoHelperScope" xsi:type="object">Nosto\Tagging\Helper\Scope\Proxy</argument>
+            <argument name="appConfig" xsi:type="object">Magento\Framework\App\Config\Storage\Writer\Proxy</argument>
+            <argument name="nostoHelperCache" xsi:type="object">Nosto\Tagging\Helper\Cache\Proxy</argument>
+        </arguments>
+    </type>
     <type name="Nosto\Tagging\Logger\Logger">
         <arguments>
             <argument name="name" xsi:type="string">nosto</argument>
@@ -57,6 +71,9 @@
                 <item name="nosto_account_remove_command" xsi:type="object">Nosto\Tagging\Console\Command\NostoAccountRemoveCommand</item>
             </argument>
         </arguments>
+    </type>
+    <type name="Magento\Catalog\Model\Category\Attribute\Source\Sortby">
+        <plugin name="sortby_add_default_nosto_option" type="Nosto\Tagging\Plugin\Catalog\Model\Sortby" />
     </type>
     <type name="Magento\Sales\Api\OrderRepositoryInterface">
         <plugin name="order_repository_nosto" type="Nosto\Tagging\Plugin\Sales\OrderRepository" />
