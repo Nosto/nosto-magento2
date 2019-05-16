@@ -86,7 +86,7 @@ class Category
         try {
             $result = $recoOperation->execute();
             foreach ($result as $item) {
-                if ($item->getProductId() && is_int($item->getProductId())) {
+                if ($item->getProductId() && is_numeric($item->getProductId())) {
                     $productIds[] = $item->getProductId();
                 }
             }
