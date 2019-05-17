@@ -77,27 +77,22 @@ class Category
         if (!$featureAccess->canUseGraphql()) {
             return $productIds;
         }
-
-        switch ($type) {
-            case NostoHelperSorting::NOSTO_PERSONALIZED_KEY:
-                $recoOperation = new CategoryBrowsingHistory($nostoAccount, $nostoCustomerId);
-                break;
-            default:
-                $recoOperation = new CategoryTopList($nostoAccount, $nostoCustomerId);
-                break;
+        if ($type === NostoHelperSorting::NOSTO_PERSONALIZED_KEY) {
+            $recoOperation = new CategoryBrowsingHistory($nostoAccount, $nostoCustomerId);
+        } else {
+            $recoOperation = new CategoryTopList($nostoAccount, $nostoCustomerId);
         }
         $recoOperation->setCategory($category);
         try {
             $result = $recoOperation->execute();
             foreach ($result as $item) {
-                if ($item->getProductId()) {
+                if ($item->getProductId() && is_numeric($item->getProductId())) {
                     $productIds[] = $item->getProductId();
                 }
             }
         } catch (\Exception $e) {
             $this->logger->exception($e);
         }
-
         return $productIds;
     }
 }
