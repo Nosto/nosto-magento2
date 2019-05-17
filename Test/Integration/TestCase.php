@@ -38,6 +38,7 @@ namespace Nosto\Tagging\Test\Integration;
 
 use Magento\Framework\ObjectManagerInterface;
 use Magento\Store\Model\ScopeInterface;
+use Nosto\Request\Api\Token;
 use Nosto\Tagging\Helper\Account;
 use PHPUnit\Framework\TestCase as PhpUnitTestCase;
 use Magento\TestFramework\Helper\Bootstrap;
@@ -48,6 +49,8 @@ use Magento\TestFramework\Helper\Bootstrap;
 */
 abstract class TestCase extends PhpUnitTestCase
 {
+    const DEFAULT_NOSTO_ACCOUNT = 'test-account';
+
     private $initialized = false;
 
     /**
@@ -58,6 +61,10 @@ abstract class TestCase extends PhpUnitTestCase
         return Bootstrap::getObjectManager();
     }
 
+    /**
+     * @param $path
+     * @param $value
+     */
     protected function setConfig($path, $value)
     {
         $this->getObjectManager()->get('Magento\Framework\App\Config\MutableScopeConfigInterface')->setValue(
@@ -68,25 +75,60 @@ abstract class TestCase extends PhpUnitTestCase
         );
     }
 
+    /**
+     * Setup a test
+     */
     public function setUp()
     {
         $this->init();
     }
 
+    /**
+     * Tear down the test
+     */
     public function tearDown()
     {
-        //ToDo - clean up
+        // ToDo - clean up
     }
 
+    /**
+     * Configures the default configurations for running tests
+     */
     private function init()
     {
         if ($this->initialized) {
             return;
         }
 
-        $this->setConfig(Account::XML_PATH_ACCOUNT, 'test-account');
+        // Setup Nosto accounts & configurations
+        $this->setNostoAccount(self::DEFAULT_NOSTO_ACCOUNT);
+        $tokens = [
+            Token::API_SSO => 'SSO+TESTTOKEN',
+            Token::API_EXCHANGE_RATES => "RATES+TESTTOKEN",
+            Token::API_SETTINGS => 'SETTING+TESTTOKEN',
+            Token::API_EMAIL => 'EMAIL+TESTTOKEN',
+            Token::API_GRAPHQL => 'APPS+TESTTOKEN'
+        ];
+        $this->setConfig(Account::XML_PATH_TOKENS, json_encode($tokens));
 
-        //ToDo - setup basic Nosto config like accounts etc.
         $this->initialized = true;
+    }
+
+    /**
+     * Sets the Nosto account for current scope
+     * @param $account
+     */
+    protected function setNostoAccount($account)
+    {
+        $this->setConfig(Account::XML_PATH_ACCOUNT, $account);
+    }
+
+    /**
+     * @param string|string[] $string
+     * @return string|string[]|null
+     */
+    public static function stripAllWhiteSpace($string)
+    {
+        return preg_replace('/\s+/', '', $string);
     }
 }
