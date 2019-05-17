@@ -1,5 +1,4 @@
-<?php
-/**
+/*
  * Copyright (c) 2019, Nosto Solutions Ltd
  * All rights reserved.
  *
@@ -34,34 +33,29 @@
  *
  */
 
-/**
- *     ______     ___     ____  _____  ___   _________   ________ ______  _____ _________
- *    |_   _ `. .'   `.  |_   \|_   _.'   `.|  _   _  | |_   __  |_   _ `|_   _|  _   _  |
- *      | | `. /  .-.  \   |   \ | |/  .-.  |_/ | | \_|   | |_ \_| | | `. \| | |_/ | | \_|
- *      | |  | | |   | |   | |\ \| || |   | |   | |       |  _| _  | |  | || |     | |
- *     _| |_.' \  `-'  /  _| |_\   |\  `-'  /  _| |_     _| |__/ |_| |_.' _| |_   _| |_
- *    |______.' `.___.'  |_____|\____`.___.'  |_____|   |________|______.|_____| |_____|
- *
- * Nosto sends information over both the API and the broswer tagging. Values for the tagging is generated
- * via the Nosto corresponding objects. In order to customize the values in the markup below, you will need
- * to override the core parts of the extension. Failure to do so will result in broken and incorrect
- * recommendations.
- * Please see a reference guide such as https://github.com/Nosto/nosto-magento2/wiki
- *
- * @var Nosto\Tagging\Block\Stub $this
- */
-?>
-<!-- Nosto Javascript Stub -->
-<script type="text/javascript">
-    (function () {
-        var name = "nostojs";
-        window[name] = window[name] || function (cb) {
-                (window[name].q = window[name].q || []).push(cb);
-            };
-        <?php if ($this->isRecoAutoloadDisabled()): ?>
-        window[name](function(api){
-            api.setAutoLoad(false);
-        });
-    })();
-    <?php endif; ?>
-</script>
+define([
+    'uiComponent',
+    'Magento_Customer/js/customer-data',
+    'nostojs',
+    'jquery'
+], function (Component, customerData, nostojs, $) {
+    'use strict';
+
+    return Component.extend({
+        initialize: function () {
+            this._super();
+            //noinspection JSUnusedGlobalSymbols
+            this.variationTagging = customerData.get('active-variation-tagging');
+        },
+        reloadRecommendations: function () {
+            // Remove the static variation if it exists - it should not but as a safeguard we rename the class
+            $('.nosto_variation').removeClass('nosto_variation').addClass('nosto_variation_static');
+            $('.nosto_variation_dynamic').addClass('nosto_variation');
+            if (typeof nostojs === 'function') {
+                nostojs(function (api) {
+                    api.loadRecommendations();
+                });
+            }
+        }
+    });
+});
