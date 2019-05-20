@@ -2,20 +2,33 @@
 
 namespace Nosto\Tagging\Test\Integration\Block;
 
+use Magento\Catalog\Api\ProductRepositoryInterface;
+use Magento\Catalog\Model\ProductRepository;
 use Nosto\Tagging\Block\Product as NostoProductBlock;
+use Nosto\Tagging\Test\_util\ProductBuilder;
 use Nosto\Tagging\Test\Integration\TestCase;
 use Magento\Catalog\Model\Product;
+use Magento\Catalog\Model\Product\Visibility;
+use Magento\Catalog\Model\Product\Attribute\Source\Status;
+use Magento\TestFramework\Helper\Bootstrap;
+use Magento\Framework\Registry;
 
 /**
+ * Tests for product tagging
+ *
  * @magentoAppArea frontend
  */
 class ProductTaggingTest extends TestCase
 {
+    const PRODUCT_REGISTRY_KEY = 'product';
     /**
-     * @var Embed
+     * @var NostoProductBlock
      */
     private $productBlock;
 
+    /**
+     * @inheritDoc
+     */
     public function setUp()
     {
         parent::setUp();
@@ -23,18 +36,20 @@ class ProductTaggingTest extends TestCase
     }
     /**
      * Test that we generate the Nosto product tagging correctly
-     * @magentoDataFixture  ./_files/product.php
+     * ToDo - the fixture here is just as an example, it's not used
+     * @magentoDataFixture fixtureLoadSimpleProduct
      */
-    public function testProductTagging()
+    public function testProductTaggingForSimpleProduct()
     {
-        $product = $this->getObjectManager()->create(Product::class);
-        $product->load(1);
-//        $this->_coreRegistry->register('product', $product);
+        /* @var ProductRepositoryInterface $productRepo */
+        $product = (new ProductBuilder($this->getObjectManager()))
+            ->defaultSimple()
+            ->build();
+        $this->setRegistry(self::PRODUCT_REGISTRY_KEY, $product);
 
         $html = self::stripAllWhiteSpace($this->productBlock->toHtml());
-        $needle = self::stripAllWhiteSpace(
-            sprintf('/include/%s" async></script>', self::DEFAULT_NOSTO_ACCOUNT)
-        );
-//        $this->assertContains($needle, $html);
+
+        $this->assertContains('<spanclass="product_id">', $html);
+        $this->assertContains('<spanclass="name">NostoSimpleProduct</span>', $html);
     }
 }

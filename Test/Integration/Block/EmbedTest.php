@@ -6,7 +6,8 @@ use Nosto\Tagging\Block\Embed;
 use Nosto\Tagging\Test\Integration\TestCase;
 
 /**
- * Class EmbedTest
+ * Tests for Nosto embed script
+ *
  * @magentoAppArea frontend
  */
 class EmbedTest extends TestCase
@@ -16,6 +17,9 @@ class EmbedTest extends TestCase
      */
     private $embedBlock;
 
+    /**
+     * @inheritDoc
+     */
     public function setUp()
     {
         parent::setUp();
