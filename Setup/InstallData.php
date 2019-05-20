@@ -36,46 +36,25 @@
 
 namespace Nosto\Tagging\Setup;
 
+use Magento\Framework\Setup\InstallDataInterface;
 use Magento\Framework\Setup\ModuleContextInterface;
 use Magento\Framework\Setup\ModuleDataSetupInterface;
-use Magento\Framework\Setup\UpgradeDataInterface;
-use Nosto\Tagging\Helper\Account as NostoHelperAccount;
-use Nosto\Tagging\Helper\Url as NostoHelperUrl;
-use Magento\Framework\App\Config\Storage\WriterInterface;
-use Magento\Store\Model\ScopeInterface;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Magento\Framework\Exception\LocalizedException;
 
-class UpgradeData implements UpgradeDataInterface
+class InstallData implements InstallDataInterface
 {
-    /** @var NostoHelperAccount */
-    private $nostoHelperAccount;
-
-    /** @var NostoHelperData */
+    /**
+     * @var NostoHelperData
+     */
     private $nostoHelperData;
 
-    /** @var NostoHelperUrl */
-    private $nostoHelperUrl;
-
-    /** @var WriterInterface */
-    private $config;
-
     /**
-     * UpgradeData constructor.
-     * @param NostoHelperAccount $nostoHelperAccount
-     * @param NostoHelperUrl $nostoHelperUrl
-     * @param WriterInterface $appConfig
+     * InstallData constructor.
      * @param NostoHelperData $nostoHelperData
      */
-    public function __construct(
-        NostoHelperAccount $nostoHelperAccount,
-        NostoHelperUrl $nostoHelperUrl,
-        WriterInterface $appConfig,
-        NostoHelperData $nostoHelperData
-    ) {
-        $this->nostoHelperAccount = $nostoHelperAccount;
-        $this->nostoHelperUrl = $nostoHelperUrl;
-        $this->config = $appConfig;
+    public function __construct(NostoHelperData $nostoHelperData)
+    {
         $this->nostoHelperData = $nostoHelperData;
     }
 
@@ -85,36 +64,10 @@ class UpgradeData implements UpgradeDataInterface
      * @throws LocalizedException
      * @throws \Zend_Validate_Exception
      */
-    public function upgrade(ModuleDataSetupInterface $setup, ModuleContextInterface $context) // @codingStandardsIgnoreLine
+    public function install(ModuleDataSetupInterface $setup, ModuleContextInterface $context)
     {
-        if (version_compare($context->getVersion(), '3.1.0', '>=')) {
-            $this->insertStoreDomain();
-        }
-
         if (version_compare($context->getVersion(), '3.5.0', '>=')) {
             $this->nostoHelperData->addCustomerReference($setup);
-        }
-    }
-
-    /**
-     * Insert store domain when missing in database
-     */
-    private function insertStoreDomain()
-    {
-        $stores = $this->nostoHelperAccount->getStoresWithNosto();
-        foreach ($stores as $store) {
-            $storeFrontDomain = $this->nostoHelperAccount->getStoreFrontDomain($store);
-            if ($storeFrontDomain === null ||
-                $storeFrontDomain === ''
-            ) {
-                // @codingStandardsIgnoreLine
-                $this->config->save(
-                    NostoHelperAccount::XML_PATH_DOMAIN,
-                    $this->nostoHelperUrl->getActiveDomain($store),
-                    ScopeInterface::SCOPE_STORES,
-                    $store->getId()
-                );
-            }
         }
     }
 }
