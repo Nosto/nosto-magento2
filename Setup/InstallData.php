@@ -64,7 +64,7 @@ class InstallData implements InstallDataInterface
      * @throws LocalizedException
      * @throws \Zend_Validate_Exception
      */
-    public function install(ModuleDataSetupInterface $setup, ModuleContextInterface $context)
+    public function install(ModuleDataSetupInterface $setup, ModuleContextInterface $context) // @codingStandardsIgnoreLine
     {
         $this->nostoHelperData->addCustomerReference($setup);
     }
