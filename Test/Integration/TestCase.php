@@ -49,6 +49,8 @@ use Magento\TestFramework\Helper\Bootstrap;
 */
 abstract class TestCase extends PhpUnitTestCase
 {
+    use FixturesTrait;
+
     const DEFAULT_NOSTO_ACCOUNT = 'test-account';
 
     private $initialized = false;
@@ -72,6 +74,18 @@ abstract class TestCase extends PhpUnitTestCase
             $value,
             ScopeInterface::SCOPE_STORE,
             'default'
+        );
+    }
+
+    /**
+     * @param $path
+     * @param $value
+     */
+    protected function setRegistry($path, $value)
+    {
+        $this->getObjectManager()->get('Magento\Framework\Registry')->register(
+            $path,
+            $value
         );
     }
 

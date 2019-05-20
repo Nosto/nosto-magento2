@@ -25,7 +25,8 @@
             <exclude>testsuite/Magento/MemoryUsageTest.php</exclude>
         </testsuite>
         <testsuite name="Nosto Integration Tests">
-            <directory>../../../vendor/nosto/module-*/Test/Integration</directory>
+            <directory suffix="Test.php">testsuite</directory>
+            <directory>../../../vendor/nosto/module-nostotagging/Test/Integration</directory>
         </testsuite>
     </testsuites>
     <!-- Code coverage filters -->
