@@ -66,8 +66,6 @@ class InstallData implements InstallDataInterface
      */
     public function install(ModuleDataSetupInterface $setup, ModuleContextInterface $context)
     {
-        if (version_compare($context->getVersion(), '3.5.0', '>=')) {
-            $this->nostoHelperData->addCustomerReference($setup);
-        }
+        $this->nostoHelperData->addCustomerReference($setup);
     }
 }
