@@ -679,7 +679,7 @@ class Data extends AbstractHelper
         $customerSetup = $this->customerSetupFactory->create(['setup' => $setup]);
 
         $customerEntity = $customerSetup->getEavConfig()->getEntityType(Customer::ENTITY);
-        $attributeSetId = $customerEntity->getDefaultAttributeSetId();
+        $attributeSetId = (int)$customerEntity->getDefaultAttributeSetId();
 
         $attributeSet = $this->attributeSetFactory->create();
         $attributeGroupId = $attributeSet->getDefaultGroupId($attributeSetId);
@@ -714,6 +714,7 @@ class Data extends AbstractHelper
             ]
         );
 
+        // @codingStandardsIgnoreLine
         $attribute->save();
     }
 }
