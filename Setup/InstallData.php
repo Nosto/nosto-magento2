@@ -39,25 +39,10 @@ namespace Nosto\Tagging\Setup;
 use Magento\Framework\Setup\InstallDataInterface;
 use Magento\Framework\Setup\ModuleContextInterface;
 use Magento\Framework\Setup\ModuleDataSetupInterface;
-use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Magento\Framework\Exception\LocalizedException;
 
-class InstallData implements InstallDataInterface
+class InstallData extends CoreData implements InstallDataInterface
 {
-    /**
-     * @var NostoHelperData
-     */
-    private $nostoHelperData;
-
-    /**
-     * InstallData constructor.
-     * @param NostoHelperData $nostoHelperData
-     */
-    public function __construct(NostoHelperData $nostoHelperData)
-    {
-        $this->nostoHelperData = $nostoHelperData;
-    }
-
     /**
      * @param ModuleDataSetupInterface $setup
      * @param ModuleContextInterface $context
@@ -66,6 +51,6 @@ class InstallData implements InstallDataInterface
      */
     public function install(ModuleDataSetupInterface $setup, ModuleContextInterface $context) // @codingStandardsIgnoreLine
     {
-        $this->nostoHelperData->addCustomerReference($setup);
+        $this->addCustomerReference($setup);
     }
 }

@@ -46,13 +46,10 @@ use Magento\Store\Model\ScopeInterface;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Magento\Framework\Exception\LocalizedException;
 
-class UpgradeData implements UpgradeDataInterface
+class UpgradeData extends CoreData implements UpgradeDataInterface
 {
     /** @var NostoHelperAccount */
     private $nostoHelperAccount;
-
-    /** @var NostoHelperData */
-    private $nostoHelperData;
 
     /** @var NostoHelperUrl */
     private $nostoHelperUrl;
@@ -64,19 +61,16 @@ class UpgradeData implements UpgradeDataInterface
      * UpgradeData constructor.
      * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoHelperUrl $nostoHelperUrl
-     * @param WriterInterface $appConfig
-     * @param NostoHelperData $nostoHelperData
+     * @param WriterInterface $appConfig]
      */
     public function __construct(
         NostoHelperAccount $nostoHelperAccount,
         NostoHelperUrl $nostoHelperUrl,
-        WriterInterface $appConfig,
-        NostoHelperData $nostoHelperData
+        WriterInterface $appConfig
     ) {
         $this->nostoHelperAccount = $nostoHelperAccount;
         $this->nostoHelperUrl = $nostoHelperUrl;
         $this->config = $appConfig;
-        $this->nostoHelperData = $nostoHelperData;
     }
 
     /**
@@ -92,7 +86,7 @@ class UpgradeData implements UpgradeDataInterface
         }
 
         if (version_compare($context->getVersion(), '3.5.0', '>=')) {
-            $this->nostoHelperData->addCustomerReference($setup);
+            $this->addCustomerReference($setup);
         }
     }
 
