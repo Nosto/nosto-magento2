@@ -42,23 +42,28 @@ use Magento\Eav\Model\Entity\Attribute\SetFactory as AttributeSetFactory;
 use Magento\Customer\Setup\CustomerSetupFactory;
 use Magento\Framework\Exception\LocalizedException;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
+use Nosto\Tagging\Logger\Logger as NostoLogger;
 
 abstract class CoreData
 {
     private $customerSetupFactory;
     private $attributeSetFactory;
+    private $logger;
 
     /**
      * CoreData constructor.
      * @param CustomerSetupFactory $customerSetupFactory
      * @param AttributeSetFactory $attributeSetFactory
+     * @param NostoLogger $logger
      */
     public function __construct(
         CustomerSetupFactory $customerSetupFactory,
-        AttributeSetFactory $attributeSetFactory
+        AttributeSetFactory $attributeSetFactory,
+        NostoLogger $logger
     ) {
         $this->customerSetupFactory = $customerSetupFactory;
         $this->attributeSetFactory = $attributeSetFactory;
+        $this->logger = $logger;
     }
 
     /**
@@ -106,7 +111,11 @@ abstract class CoreData
             ]
         );
 
-        // @codingStandardsIgnoreLine
-        $attribute->save();
+        try {
+            // @codingStandardsIgnoreLine
+            $attribute->save();
+        } catch (\Exception $e) {
+            $this->logger->exception($e);
+        }
     }
 }

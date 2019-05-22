@@ -36,8 +36,6 @@
 
 namespace Nosto\Tagging\Setup;
 
-use Magento\Customer\Setup\CustomerSetupFactory;
-use Magento\Eav\Model\Entity\Attribute\SetFactory as AttributeSetFactory;
 use Magento\Framework\Setup\InstallDataInterface;
 use Magento\Framework\Setup\ModuleContextInterface;
 use Magento\Framework\Setup\ModuleDataSetupInterface;
