@@ -44,6 +44,7 @@ use Magento\Store\Model\Store;
 use Magento\Customer\Api\Data\GroupInterface;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
+use Magento\Customer\Model\Customer;
 
 /**
  * Variation helper
@@ -96,5 +97,24 @@ class Variation extends AbstractHelper
     public function getDefaultVariationCode()
     {
         return $this->getDefaultGroupVariation() ? $this->getDefaultGroupVariation()->getCode() : null;
+    }
+
+    /**
+     * Checks if the code is the default variation
+     *
+     * @param string $code
+     * @return bool
+     */
+    public function isDefaultVariationCode($code)
+    {
+        try {
+            if ($code === $this->getDefaultVariationCode()) {
+                return true;
+            }
+        } catch (\Exception $e) {
+            return false;
+        }
+
+        return false;
     }
 }

@@ -34,69 +34,82 @@
  *
  */
 
-namespace Nosto\Tagging\Block;
+namespace Nosto\Tagging\CustomerData;
 
-use Nosto\AbstractObject;
-use Nosto\NostoException;
-use Nosto\Tagging\Helper\Account as NostoHelperAccount;
+use Magento\Customer\CustomerData\SectionSourceInterface;
+use Nosto\Tagging\Helper\Data as NostoHelperData;
+use Nosto\Tagging\Helper\Customer as NostoHelperCustomer;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
+use Nosto\Tagging\Helper\Variation as NostoHelperVariation;
+use Nosto\Tagging\Logger\Logger as NostoLogger;
 
-trait TaggingTrait
+class ActiveVariationTagging implements SectionSourceInterface
 {
-    private $nostoHelperAccount;
+    /**
+     * @var NostoHelperData
+     */
+    private $nostoHelperData;
+
+    /**
+     * @var NostoHelperCustomer
+     */
+    private $nostoHelperCustomer;
+
+    /**
+     * @var NostoHelperScope
+     */
     private $nostoHelperScope;
 
     /**
-     * TaggingTrait constructor.
-     * @param NostoHelperAccount $nostoHelperAccount
+     * @var NostoHelperVariation
+     */
+    private $nostoHelperVariation;
+
+    /**
+     * @var NostoLogger
+     */
+    private $nostoLogger;
+
+    /**
+     * ActiveVariationTagging constructor.
+     * @param NostoHelperData $nostoHelperData
+     * @param NostoHelperCustomer $nostoHelperCustomer
      * @param NostoHelperScope $nostoHelperScope
+     * @param NostoLogger $nostoLogger
      */
     public function __construct(
-        NostoHelperAccount $nostoHelperAccount,
-        NostoHelperScope $nostoHelperScope
+        NostoHelperData $nostoHelperData,
+        NostoHelperCustomer $nostoHelperCustomer,
+        NostoHelperScope $nostoHelperScope,
+        NostoHelperVariation $nostoHelperVariation,
+        NostoLogger $nostoLogger
     ) {
-        $this->nostoHelperAccount = $nostoHelperAccount;
+        $this->nostoHelperData = $nostoHelperData;
+        $this->nostoHelperCustomer = $nostoHelperCustomer;
         $this->nostoHelperScope = $nostoHelperScope;
+        $this->nostoHelperVariation = $nostoHelperVariation;
+        $this->nostoLogger = $nostoLogger;
     }
 
     /**
-     * Overridden method that only outputs any markup if the extension is enabled and an account
-     * exists for the current store view.
-     *
-     * @return string the markup or an empty string (if an account doesn't exist)
-     * @suppress PhanTraitParentReference
-     * @throws NostoException
+     * @inheritdoc
      */
-    public function _toHtml()
+    public function getSectionData()
     {
-        if ($this->nostoHelperAccount->nostoInstalledAndEnabled($this->nostoHelperScope->getStore())) {
-            $abstractObject = $this->getAbstractObject();
-            if ($abstractObject instanceof AbstractObject) {
-                return $abstractObject->toHtml();
+        $data = [];
+        $store = $this->nostoHelperScope->getStore(true);
+        if ($this->nostoHelperData->isPricingVariationEnabled($store)
+            && !$this->nostoHelperVariation->isDefaultVariationCode(
+                $this->nostoHelperCustomer->getGroupCode()
+            )
+        ) {
+            try {
+                $data['active_variation'] = $this->nostoHelperCustomer->getGroupCode();
+            } catch (\Exception $e) {
+                $this->nostoLogger->exception($e);
             }
-            return parent::_toHtml();
         }
-        return '';
-    }
 
-    /**
-     * @return NostoHelperScope
-     */
-    public function getNostoHelperScope()
-    {
-        return $this->nostoHelperScope;
+        return $data;
     }
-
-    /**
-     * @return NostoHelperAccount
-     */
-    public function getNostoHelperAccount()
-    {
-        return $this->nostoHelperAccount;
-    }
-
-    /**
-     * @return AbstractObject
-     */
-    abstract public function getAbstractObject();
 }

@@ -42,6 +42,7 @@
             <argument name="sectionSourceMap" xsi:type="array">
                 <item name="customer-tagging" xsi:type="string">Nosto\Tagging\CustomerData\CustomerTagging</item>
                 <item name="cart-tagging" xsi:type="string">Nosto\Tagging\CustomerData\CartTagging</item>
+                <item name="active-variation-tagging" xsi:type="string">Nosto\Tagging\CustomerData\ActiveVariationTagging</item>
             </argument>
         </arguments>
     </type>
