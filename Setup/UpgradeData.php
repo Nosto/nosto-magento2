@@ -63,7 +63,9 @@ class UpgradeData extends CoreData implements UpgradeDataInterface
      * UpgradeData constructor.
      * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoHelperUrl $nostoHelperUrl
-     * @param WriterInterface $appConfig]
+     * @param WriterInterface $appConfig
+     * @param CustomerSetupFactory $customerSetupFactory
+     * @param AttributeSetFactory $attributeSetFactory
      */
     public function __construct(
         NostoHelperAccount $nostoHelperAccount,
