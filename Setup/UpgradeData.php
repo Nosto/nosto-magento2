@@ -36,6 +36,8 @@
 
 namespace Nosto\Tagging\Setup;
 
+use Magento\Customer\Setup\CustomerSetupFactory;
+use Magento\Eav\Model\Entity\Attribute\SetFactory as AttributeSetFactory;
 use Magento\Framework\Setup\ModuleContextInterface;
 use Magento\Framework\Setup\ModuleDataSetupInterface;
 use Magento\Framework\Setup\UpgradeDataInterface;
@@ -66,11 +68,14 @@ class UpgradeData extends CoreData implements UpgradeDataInterface
     public function __construct(
         NostoHelperAccount $nostoHelperAccount,
         NostoHelperUrl $nostoHelperUrl,
-        WriterInterface $appConfig
+        WriterInterface $appConfig,
+        CustomerSetupFactory $customerSetupFactory,
+        AttributeSetFactory $attributeSetFactory
     ) {
         $this->nostoHelperAccount = $nostoHelperAccount;
         $this->nostoHelperUrl = $nostoHelperUrl;
         $this->config = $appConfig;
+        parent::__construct($customerSetupFactory, $attributeSetFactory);
     }
 
     /**

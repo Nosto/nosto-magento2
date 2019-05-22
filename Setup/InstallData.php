@@ -36,6 +36,8 @@
 
 namespace Nosto\Tagging\Setup;
 
+use Magento\Customer\Setup\CustomerSetupFactory;
+use Magento\Eav\Model\Entity\Attribute\SetFactory as AttributeSetFactory;
 use Magento\Framework\Setup\InstallDataInterface;
 use Magento\Framework\Setup\ModuleContextInterface;
 use Magento\Framework\Setup\ModuleDataSetupInterface;
@@ -43,6 +45,18 @@ use Magento\Framework\Exception\LocalizedException;
 
 class InstallData extends CoreData implements InstallDataInterface
 {
+    /**
+     * InstallData constructor.
+     * @param CustomerSetupFactory $customerSetupFactory
+     * @param AttributeSetFactory $attributeSetFactory
+     */
+    public function __construct(
+        CustomerSetupFactory $customerSetupFactory,
+        AttributeSetFactory $attributeSetFactory
+    ) {
+        parent::__construct($customerSetupFactory, $attributeSetFactory);
+    }
+
     /**
      * @param ModuleDataSetupInterface $setup
      * @param ModuleContextInterface $context
