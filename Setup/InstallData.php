@@ -46,18 +46,6 @@ use Magento\Framework\Exception\LocalizedException;
 class InstallData extends CoreData implements InstallDataInterface
 {
     /**
-     * InstallData constructor.
-     * @param CustomerSetupFactory $customerSetupFactory
-     * @param AttributeSetFactory $attributeSetFactory
-     */
-    public function __construct(
-        CustomerSetupFactory $customerSetupFactory,
-        AttributeSetFactory $attributeSetFactory
-    ) {
-        parent::__construct($customerSetupFactory, $attributeSetFactory);
-    }
-
-    /**
      * @param ModuleDataSetupInterface $setup
      * @param ModuleContextInterface $context
      * @throws LocalizedException
