@@ -46,7 +46,6 @@ use Nosto\Tagging\Helper\Url as NostoHelperUrl;
 use Magento\Framework\App\Config\Storage\WriterInterface;
 use Magento\Store\Model\ScopeInterface;
 use Magento\Framework\Exception\LocalizedException;
-use Nosto\Tagging\Logger\Logger as NostoLogger;
 
 class UpgradeData extends CoreData implements UpgradeDataInterface
 {
@@ -66,20 +65,18 @@ class UpgradeData extends CoreData implements UpgradeDataInterface
      * @param WriterInterface $appConfig
      * @param CustomerSetupFactory $customerSetupFactory
      * @param AttributeSetFactory $attributeSetFactory
-     * @param NostoLogger $logger
      */
     public function __construct(
         NostoHelperAccount $nostoHelperAccount,
         NostoHelperUrl $nostoHelperUrl,
         WriterInterface $appConfig,
         CustomerSetupFactory $customerSetupFactory,
-        AttributeSetFactory $attributeSetFactory,
-        NostoLogger $logger
+        AttributeSetFactory $attributeSetFactory
     ) {
         $this->nostoHelperAccount = $nostoHelperAccount;
         $this->nostoHelperUrl = $nostoHelperUrl;
         $this->config = $appConfig;
-        parent::__construct($customerSetupFactory, $attributeSetFactory, $logger);
+        parent::__construct($customerSetupFactory, $attributeSetFactory);
     }
 
     /**
