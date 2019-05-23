@@ -1,5 +1,8 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 3.7.1
+* Fix issue related to wrong marketing permission
+
 ### 3.7.0
 * Add customer reference field when installing the extension
 * Ignore non-numeric product ids in Graphql responses
