@@ -2,7 +2,7 @@ All notable changes to this project will be documented in this file. This projec
 
 ### 3.7.0
 * Add customer reference field when installing the extension
-* Category personalization ignore non-numeric product ID's
+* Ignore non-numeric product ids in Graphql responses
 
 ### 3.6.1
 * Use sections for active variation tagging when price variations are enabled
