@@ -36,6 +36,8 @@
 
 namespace Nosto\Tagging\Setup;
 
+use Magento\Customer\Setup\CustomerSetupFactory;
+use Magento\Eav\Model\Entity\Attribute\SetFactory as AttributeSetFactory;
 use Magento\Framework\Setup\ModuleContextInterface;
 use Magento\Framework\Setup\ModuleDataSetupInterface;
 use Magento\Framework\Setup\UpgradeDataInterface;
@@ -43,14 +45,9 @@ use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Url as NostoHelperUrl;
 use Magento\Framework\App\Config\Storage\WriterInterface;
 use Magento\Store\Model\ScopeInterface;
-use Magento\Customer\Model\Customer;
-use Magento\Customer\Setup\CustomerSetupFactory;
-use Magento\Framework\Setup\Patch\DataPatchInterface;
-use Magento\Eav\Model\Entity\Attribute\SetFactory as AttributeSetFactory;
-use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Magento\Framework\Exception\LocalizedException;
 
-class UpgradeData implements UpgradeDataInterface
+class UpgradeData extends CoreData implements UpgradeDataInterface
 {
     /** @var NostoHelperAccount */
     private $nostoHelperAccount;
@@ -61,17 +58,13 @@ class UpgradeData implements UpgradeDataInterface
     /** @var WriterInterface */
     private $config;
 
-    /** @var CustomerSetupFactory */
-    private $customerSetupFactory;
-
-    /** @var AttributeSetFactory */
-    private $attributeSetFactory;
-
     /**
      * UpgradeData constructor.
      * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoHelperUrl $nostoHelperUrl
      * @param WriterInterface $appConfig
+     * @param CustomerSetupFactory $customerSetupFactory
+     * @param AttributeSetFactory $attributeSetFactory
      */
     public function __construct(
         NostoHelperAccount $nostoHelperAccount,
@@ -83,13 +76,14 @@ class UpgradeData implements UpgradeDataInterface
         $this->nostoHelperAccount = $nostoHelperAccount;
         $this->nostoHelperUrl = $nostoHelperUrl;
         $this->config = $appConfig;
-        $this->customerSetupFactory = $customerSetupFactory;
-        $this->attributeSetFactory = $attributeSetFactory;
+        parent::__construct($customerSetupFactory, $attributeSetFactory);
     }
 
     /**
      * @param ModuleDataSetupInterface $setup
      * @param ModuleContextInterface $context
+     * @throws LocalizedException
+     * @throws \Zend_Validate_Exception
      */
     public function upgrade(ModuleDataSetupInterface $setup, ModuleContextInterface $context) // @codingStandardsIgnoreLine
     {
@@ -122,55 +116,5 @@ class UpgradeData implements UpgradeDataInterface
                 );
             }
         }
-    }
-
-    /**
-     * Create a new field for Customer Reference
-     *
-     * @param ModuleDataSetupInterface $setup
-     * @throws LocalizedException
-     * @throws \Zend_Validate_Exception
-     */
-    private function addCustomerReference(ModuleDataSetupInterface $setup)
-    {
-        $customerSetup = $this->customerSetupFactory->create(['setup' => $setup]);
-
-        $customerEntity = $customerSetup->getEavConfig()->getEntityType(Customer::ENTITY);
-        $attributeSetId = $customerEntity->getDefaultAttributeSetId();
-
-        $attributeSet = $this->attributeSetFactory->create();
-        $attributeGroupId = $attributeSet->getDefaultGroupId($attributeSetId);
-
-        $customerSetup->addAttribute(
-            Customer::ENTITY,
-            NostoHelperData::NOSTO_CUSTOMER_REFERENCE_ATTRIBUTE_NAME,
-            [
-                'type' => 'varchar',
-                'label' => 'Nosto Customer Reference',
-                'input' => 'text',
-                'required' => false,
-                'sort_order' => 120,
-                'position' => 120,
-                'visible' => true,
-                'user_defined' => true,
-                'unique' => true,
-                'system' => false,
-            ]
-        );
-
-        $attribute = $customerSetup->getEavConfig()->getAttribute(
-            Customer::ENTITY,
-            NostoHelperData::NOSTO_CUSTOMER_REFERENCE_ATTRIBUTE_NAME
-        );
-
-        $attribute->addData(
-            [
-                'attribute_set_id' => $attributeSetId,
-                'attribute_group_id' => $attributeGroupId,
-                'used_in_forms' => ['adminhtml_customer', 'customer_account_edit'],
-            ]
-        );
-
-        $attribute->save();
     }
 }
