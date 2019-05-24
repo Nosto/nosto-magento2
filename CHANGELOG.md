@@ -1,5 +1,8 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 3.7.2
+* Get current store from store code param when connecting existing Nosto account
+
 ### 3.7.1
 * Fix issue in setting the marketing permission in customer tagging
 
