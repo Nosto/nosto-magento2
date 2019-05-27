@@ -62,7 +62,6 @@ class Save implements ObserverInterface
     public function execute(Observer $observer)
     {
         if ($this->moduleManger->isEnabled(NostoHelperData::MODULE_NAME)) {
-
             $customer = $observer->getCustomer();
             $customerReference = $customer->getCustomAttribute(
                 NostoHelperData::NOSTO_CUSTOMER_REFERENCE_ATTRIBUTE_NAME
