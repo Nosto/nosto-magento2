@@ -2,6 +2,7 @@ All notable changes to this project will be documented in this file. This projec
 
 ### 3.7.2
 * Get current store from store code param when connecting existing Nosto account
+* Fix unclosed javascript method when Nosto autoload is enabled
 
 ### 3.7.1
 * Fix issue in setting the marketing permission in customer tagging
