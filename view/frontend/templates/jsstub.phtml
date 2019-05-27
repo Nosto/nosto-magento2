@@ -59,9 +59,9 @@
                 (window[name].q = window[name].q || []).push(cb);
             };
         <?php if ($this->isRecoAutoloadDisabled()): ?>
-        window[name](function(api){
-            api.setAutoLoad(false);
-        });
+            window[name](function(api){
+                api.setAutoLoad(false);
+            });
+        <?php endif; ?>
     })();
-    <?php endif; ?>
 </script>
