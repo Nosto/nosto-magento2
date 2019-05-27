@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2017, Nosto Solutions Ltd
+ * Copyright (c) 2019, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,7 +29,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <contact@nosto.com>
- * @copyright 2017 Nosto Solutions Ltd
+ * @copyright 2019 Nosto Solutions Ltd
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
@@ -37,67 +37,67 @@
 namespace Nosto\Tagging\Model\Order;
 
 use Exception;
+use Nosto\NostoException;
 use Magento\Catalog\Model\Product;
 use Magento\Framework\Event\ManagerInterface;
-use Magento\Framework\ObjectManagerInterface;
 use Magento\Framework\Phrase;
 use Magento\Sales\Model\Order;
 use Magento\Sales\Model\Order\Item;
 use Magento\SalesRule\Model\RuleFactory as SalesRuleFactory;
 use Nosto\Object\Cart\LineItem;
 use Nosto\Object\Order\Buyer;
+use Nosto\Object\Order\Order as NostoOrder;
 use Nosto\Object\Order\OrderStatus;
-use Nosto\Tagging\Helper\Price as NostoPriceHelper;
 use Nosto\Tagging\Model\Order\Item\Builder as NostoOrderItemBuilder;
-use Psr\Log\LoggerInterface;
+use Nosto\Tagging\Model\Order\Buyer\Builder as NostoBuyerBuilder;
+use Nosto\Tagging\Logger\Logger as NostoLogger;
+use Magento\Sales\Model\Order\Payment;
 
 class Builder
 {
+    const ORDER_NUMBER_PREFIX = 'M2_';
+
     private $logger;
     /** @noinspection PhpUndefinedClassInspection */
     private $salesRuleFactory;
-    private $nostoPriceHelper;
-    private $objectManager;
     private $nostoOrderItemBuilder;
     private $eventManager;
+    private $buyerBuilder;
 
     /** @noinspection PhpUndefinedClassInspection */
     /**
-     * @param LoggerInterface $logger
+     * @param NostoLogger $logger
      * @param SalesRuleFactory $salesRuleFactory
-     * @param NostoPriceHelper $priceHelper
      * @param NostoOrderItemBuilder $nostoOrderItemBuilder
-     * @param ObjectManagerInterface $objectManager
      * @param ManagerInterface $eventManager
+     * @param NostoBuyerBuilder $buyerBuilder
      */
     public function __construct(
-        LoggerInterface $logger,
+        NostoLogger $logger,
         /** @noinspection PhpUndefinedClassInspection */
         SalesRuleFactory $salesRuleFactory,
-        NostoPriceHelper $priceHelper,
         NostoOrderItemBuilder $nostoOrderItemBuilder,
-        ObjectManagerInterface $objectManager,
-        ManagerInterface $eventManager
+        ManagerInterface $eventManager,
+        NostoBuyerBuilder $buyerBuilder
     ) {
         $this->logger = $logger;
         $this->salesRuleFactory = $salesRuleFactory;
-        $this->nostoPriceHelper = $priceHelper;
         $this->nostoOrderItemBuilder = $nostoOrderItemBuilder;
-        $this->objectManager = $objectManager;
         $this->eventManager = $eventManager;
+        $this->buyerBuilder = $buyerBuilder;
     }
 
     /**
      * Loads the order info from a Magento order model.
      *
      * @param Order $order the order model.
-     * @return \Nosto\Object\Order\Order
+     * @return NostoOrder
      */
     public function build(Order $order)
     {
-        $nostoOrder = new \Nosto\Object\Order\Order();
+        $nostoOrder = new NostoOrder();
         try {
-            $nostoOrder->setOrderNumber($order->getId());
+            $nostoOrder->setOrderNumber(self::ORDER_NUMBER_PREFIX . $order->getId());
             $nostoOrder->setExternalOrderRef($order->getRealOrderId());
             $orderCreated = $order->getCreatedAt();
             if (is_string($orderCreated)) {
@@ -106,7 +106,11 @@ class Builder
                     $nostoOrder->setCreatedAt($orderCreatedDate);
                 }
             }
-            $nostoOrder->setPaymentProvider($order->getPayment()->getMethod());
+            if ($order->getPayment() instanceof Payment) {
+                $nostoOrder->setPaymentProvider($order->getPayment()->getMethod());
+            } else {
+                throw new NostoException('Order has no payment associated');
+            }
             if ($order->getStatus()) {
                 $nostoStatus = new OrderStatus();
                 $nostoStatus->setCode($order->getStatus());
@@ -117,11 +121,10 @@ class Builder
                 }
                 $nostoOrder->setOrderStatus($nostoStatus);
             }
-            $nostoBuyer = new Buyer();
-            $nostoBuyer->setFirstName($order->getCustomerFirstname());
-            $nostoBuyer->setLastName($order->getCustomerLastname());
-            $nostoBuyer->setEmail($order->getCustomerEmail());
-            $nostoOrder->setCustomer($nostoBuyer);
+            $nostoBuyer = $this->buyerBuilder->fromOrder($order);
+            if ($nostoBuyer instanceof Buyer) {
+                $nostoOrder->setCustomer($nostoBuyer);
+            }
 
             // Add each ordered item as a line item
             /** @var Item $item */
@@ -141,7 +144,7 @@ class Builder
                 }
                 $nostoItem->loadSpecialItemData(
                     $this->buildDiscountRuleDescription($order),
-                    $discount,
+                    $discount === null ? 0 : $discount,
                     $order->getOrderCurrencyCode()
                 );
                 $nostoOrder->addPurchasedItems($nostoItem);
@@ -155,13 +158,13 @@ class Builder
                 }
                 $nostoItem->loadSpecialItemData(
                     'Shipping and handling',
-                    $shippingInclTax,
+                    $shippingInclTax === null ? 0 : $shippingInclTax,
                     $order->getOrderCurrencyCode()
                 );
                 $nostoOrder->addPurchasedItems($nostoItem);
             }
         } catch (Exception $e) {
-            $this->logger->error($e->__toString());
+            $this->logger->exception($e);
         }
 
         $this->eventManager->dispatch('nosto_order_load_after', ['order' => $nostoOrder, 'magentoOrder' => $order]);
@@ -183,7 +186,7 @@ class Builder
             foreach ($order->getAllVisibleItems() as $item) {
                 /* @var Item $item */
                 $itemAppliedRules = $item->getAppliedRuleIds();
-                if (empty($itemAppliedRules)) {
+                if ($itemAppliedRules === null) {
                     continue;
                 }
                 $ruleIds = explode(',', $item->getAppliedRuleIds());
@@ -193,7 +196,7 @@ class Builder
                     $appliedRules[$ruleId] = $rule->getName();
                 }
             }
-            if (count($appliedRules) == 0) {
+            if (count($appliedRules) === 0) {
                 $appliedRules[] = 'unknown rule';
             }
             $discountTxt = sprintf(

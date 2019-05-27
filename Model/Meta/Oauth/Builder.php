@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2017, Nosto Solutions Ltd
+ * Copyright (c) 2019, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,7 +29,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <contact@nosto.com>
- * @copyright 2017 Nosto Solutions Ltd
+ * @copyright 2019 Nosto Solutions Ltd
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
@@ -40,11 +40,11 @@ use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\Locale\ResolverInterface;
 use Magento\Framework\Url;
 use Magento\Store\Model\Store;
-use Nosto\NostoException;
 use Nosto\OAuth;
 use Nosto\Object\Signup\Account;
 use Nosto\Request\Api\Token;
-use Psr\Log\LoggerInterface;
+use Nosto\Tagging\Logger\Logger as NostoLogger;
+use Nosto\Tagging\Helper\Data as NostoHelperData;
 
 class Builder
 {
@@ -52,28 +52,32 @@ class Builder
     private $urlBuilder;
     private $logger;
     private $eventManager;
+    private $nostoHelperData;
 
     /**
      * @param ResolverInterface $localeResolver
      * @param Url $urlBuilder
-     * @param LoggerInterface $logger
+     * @param NostoLogger $logger
      * @param ManagerInterface $eventManager
+     * @param NostoHelperData $nostoHelperData
      */
     public function __construct(
         ResolverInterface $localeResolver,
         Url $urlBuilder,
-        LoggerInterface $logger,
-        ManagerInterface $eventManager
+        NostoLogger $logger,
+        ManagerInterface $eventManager,
+        NostoHelperData $nostoHelperData
     ) {
         $this->localeResolver = $localeResolver;
         $this->urlBuilder = $urlBuilder;
         $this->logger = $logger;
         $this->eventManager = $eventManager;
+        $this->nostoHelperData = $nostoHelperData;
     }
 
     /**
      * @param Store $store
-     * @param Account $account
+     * @param Account|null $account
      * @return OAuth
      */
     public function build(Store $store, Account $account = null)
@@ -86,8 +90,8 @@ class Builder
                 'nosto/oauth',
                 [
                     '_nosid' => true,
-                    '_scope_to_url' => true,
-                    '_scope' => $store->getCode(),
+                    '_scope_to_url' => $this->nostoHelperData->getStoreCodeToUrl($store),
+                    '_query' => ['___store' => $store->getCode()]
                 ]
             );
             $metaData->setClientId('magento');
@@ -98,8 +102,8 @@ class Builder
             if ($account !== null) {
                 $metaData->setAccount($account);
             }
-        } catch (NostoException $e) {
-            $this->logger->error($e->__toString());
+        } catch (\Exception $e) {
+            $this->logger->exception($e);
         }
 
         $this->eventManager->dispatch('nosto_oauth_load_after', ['oauth' => $metaData]);

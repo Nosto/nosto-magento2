@@ -2,38 +2,47 @@
   "name": "nosto/module-nostotagging",
   "description": "Increase your conversion rate and average order value by delivering your customers personalized product recommendations throughout their shopping journey.",
   "type": "magento2-module",
-  "version": "2.2.0",
+  "version": "3.7.1",
   "require-dev": {
-    "php": ">=5.5.0",
-    "etsy/phan": "0.8.0",
+    "php": ">=7.1.0",
+    "phan/phan": "0.8.8",
     "phpmd/phpmd": "^2.5",
     "sebastian/phpcpd": "*",
     "phpdocumentor/reflection-docblock": "3.0.0",
     "phing/phing": "2.*",
-    "magento/marketplace-eqp": "1.0.4",
-    "magento-ecg/coding-standard": "*",
-    "magento/product-community-edition": "^2.1.0",
-    "magento/marketplace-tools": "dev-master"
+    "magento-ecg/coding-standard": "2.*",
+    "magento/marketplace-eqp": "1.*",
+    "magento/marketplace-tools": "dev-master",
+    "magento/framework": "*",
+    "magento/module-catalog": "*",
+    "magento/module-sales": "101.0.0",
+    "magento/module-sales-inventory": "100.2.0",
+    "magento/module-sales-rule": "101.0.0",
+    "magento/module-store": "100.2.0",
+    "magento/module-configurable-product": "100.2.0",
+    "magento/module-directory": "100.2.0",
+    "magento/module-bundle": "100.2.0",
+    "magento/module-search": "100.2.0",
+    "magento/module-catalog-search": "100.2.0",
+    "magento/module-quote": "101.0.0",
+    "magento/module-review": "100.2.0",
+    "magento/zendframework1": "*"
+  },
+  "suggest": {
+    "magento/product-community-edition": "2.*"
   },
   "license": [
     "OSL-3.0"
   ],
   "minimum-stability": "dev",
   "require": {
-    "nosto/php-sdk": "3.0.8"
+    "nosto/php-sdk": "3.14.1",
+    "php": ">=7.0.0"
   },
   "repositories": [
     {
       "type": "composer",
       "url": "https://repo.magento.com/"
-    },
-    {
-      "type": "vcs",
-      "url": "git@github.com:Nosto/nosto-php-sdk.git"
-    },
-    {
-      "type": "vcs",
-      "url": "https://github.com/magento/marketplace-eqp"
     },
     {
       "type": "package",
@@ -57,6 +66,11 @@
     ]
   },
   "archive": {
-    "exclude": ["Jenkinsfile", "Dockerfile", ".DS_STORE", ".idea", ".phan", "ruleset.xml", "phan.*", ".gitignore", "build.xml"]
+    "exclude": ["Jenkinsfile", "Dockerfile", ".DS_STORE", ".idea", ".phan", ".docker", "ruleset.xml", "phan.*", ".gitignore", "build.xml", ".github", "supervisord.conf", "entrypoint.sh"]
+  },
+  "scripts": {
+    "validate-archive": [
+      "php ./vendor/magento/marketplace-tools/validate_m2_package.php $@"
+    ]
   }
 }

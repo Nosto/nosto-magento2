@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!--
-  ~ Copyright (c) 2017, Nosto Solutions Ltd
+  ~ Copyright (c) 2019, Nosto Solutions Ltd
   ~ All rights reserved.
   ~
   ~ Redistribution and use in source and binary forms, with or without modification,
@@ -29,7 +29,7 @@
   ~ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   ~
   ~ @author Nosto Solutions Ltd <contact@nosto.com>
-  ~ @copyright 2017 Nosto Solutions Ltd
+  ~ @copyright 2019 Nosto Solutions Ltd
   ~ @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
   ~
   -->
@@ -40,14 +40,12 @@
     <body>
         <!-- Adds 2 content placeholders; 1 before and 1 after the search result -->
         <referenceContainer name="content">
-            <block class="Nosto\Tagging\Block\PageType" name="nosto.page.type.search" after="-"
-                   template="Nosto_Tagging::pagetype.phtml">
+            <block class="Nosto\Tagging\Block\PageType" name="nosto.page.type.search" after="-">
                 <arguments>
                     <argument name="page_type" xsi:type="string">search</argument>
                 </arguments>
             </block>
-            <block class="Nosto\Tagging\Block\Search" name="nosto.search" after="-"
-                   template="Nosto_Tagging::search.phtml"/>
+            <block class="Nosto\Tagging\Block\Search" name="nosto.search" after="-"/>
             <block class="Nosto\Tagging\Block\Element" name="nosto.page.search1"
                    before="search.result" template="Nosto_Tagging::element.phtml">
                 <arguments>
@@ -55,7 +53,7 @@
                 </arguments>
             </block>
             <block class="Nosto\Tagging\Block\Element" name="nosto.page.search2"
-                   after="nosto.page.search1" template="Nosto_Tagging::element.phtml">
+                   after="search.result" template="Nosto_Tagging::element.phtml">
                 <arguments>
                     <argument name="nostoId" xsi:type="string">nosto-page-search2</argument>
                 </arguments>

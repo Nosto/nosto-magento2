@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2017, Nosto Solutions Ltd
+ * Copyright (c) 2019, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,7 +29,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <contact@nosto.com>
- * @copyright 2017 Nosto Solutions Ltd
+ * @copyright 2019 Nosto Solutions Ltd
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
@@ -41,6 +41,7 @@ use Magento\Catalog\Model\ResourceModel\Eav\Attribute;
 use Magento\Catalog\Model\ResourceModel\Product\Attribute\Collection;
 use Magento\Catalog\Model\ResourceModel\Product\Attribute\CollectionFactory as AttributeCollectionFactory;
 use Magento\Eav\Model\Config;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Option\ArrayInterface;
 
 /**
@@ -71,11 +72,13 @@ abstract class Selector implements ArrayInterface
      * Returns all available product attributes
      *
      * @return array
+     * @throws LocalizedException
      */
     public function toOptionArray()
     {
         $entity = $this->eavConfig->getEntityType(Product::ENTITY);
-
+        /** @var \Magento\Catalog\Model\ResourceModel\Product\Attribute\Collection $collection */
+        /** @noinspection PhpUndefinedMethodInspection */
         $collection = $this->attributeCollectionFactory->create();
         $collection->setEntityTypeFilter($entity->getId());
         $collection->addFieldToFilter('attribute_code', [
@@ -91,7 +94,9 @@ abstract class Selector implements ArrayInterface
                 'thumbnail_label',
                 'required_options',
                 'tier_price',
-                'meta_title'
+                'meta_title',
+                'media_gallery',
+                'gallery'
             ]
         ]);
         $this->filterCollection($collection);

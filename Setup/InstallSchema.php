@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2017, Nosto Solutions Ltd
+ * Copyright (c) 2019, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,21 +29,18 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <contact@nosto.com>
- * @copyright 2017 Nosto Solutions Ltd
+ * @copyright 2019 Nosto Solutions Ltd
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
 
 namespace Nosto\Tagging\Setup;
 
-use Magento\Framework\DB\Adapter\AdapterInterface;
-use Magento\Framework\DB\Ddl\Table;
 use Magento\Framework\Setup\InstallSchemaInterface;
 use Magento\Framework\Setup\ModuleContextInterface;
 use Magento\Framework\Setup\SchemaSetupInterface;
-use Nosto\Tagging\Api\Data\CustomerInterface;
 
-class InstallSchema implements InstallSchemaInterface
+class InstallSchema extends Core implements InstallSchemaInterface
 {
     /**
      * Installs DB schema for Nosto Tagging module
@@ -52,72 +49,13 @@ class InstallSchema implements InstallSchemaInterface
      * @param ModuleContextInterface $context
      * @return void
      */
-    public function install( // @codingStandardsIgnoreLine
+    public function install(// @codingStandardsIgnoreLine
         SchemaSetupInterface $setup,
         ModuleContextInterface $context
     ) {
-
-        $installer = $setup;
-        $installer->startSetup();
-        $table = $installer->getConnection()
-            ->newTable($installer->getTable('nosto_tagging_customer'))
-            ->addColumn(
-                CustomerInterface::CUSTOMER_ID,
-                Table::TYPE_INTEGER,
-                null,
-                [
-                    'identity' => true,
-                    'nullable' => false,
-                    'primary' => true,
-                    'unsigned' => true
-                ],
-                'Customer ID'
-            )
-            ->addColumn(
-                CustomerInterface::QUOTE_ID,
-                Table::TYPE_INTEGER,
-                null,
-                ['nullable' => false, 'unsigned' => true]
-            )
-            ->addColumn(
-                CustomerInterface::NOSTO_ID,
-                Table::TYPE_TEXT,
-                255,
-                ['nullable' => false],
-                'Nosto customer ID'
-            )
-            ->addColumn(
-                CustomerInterface::CREATED_AT,
-                Table::TYPE_DATETIME,
-                null,
-                ['nullable' => false],
-                'Creation Time'
-            )
-            ->addColumn(
-                CustomerInterface::UPDATED_AT,
-                Table::TYPE_DATETIME,
-                null,
-                ['nullable' => false],
-                'Updated Time'
-            )
-            ->addColumn(
-                CustomerInterface::RESTORE_CART_HASH,
-                Table::TYPE_TEXT,
-                CustomerInterface::NOSTO_TAGGING_RESTORE_CART_ATTRIBUTE_LENGTH,
-                ['nullable' => true],
-                'Restore cart hash'
-            )
-            ->addIndex(
-                $installer->getIdxName(
-                    'nosto_tagging_customer',
-                    ['quote_id', 'nosto_id']
-                ),
-                ['quote_id', 'nosto_id'],
-                ['type' => AdapterInterface::INDEX_TYPE_UNIQUE]
-            )
-            ->setComment('Nosto customer and order mapping');
-
-        $installer->getConnection()->createTable($table);
-        $installer->endSetup();
+        $setup->startSetup();
+        $this->createCustomerTable($setup);
+        $this->createProductQueueTable($setup);
+        $setup->endSetup();
     }
 }

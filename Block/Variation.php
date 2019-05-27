@@ -21,7 +21,7 @@
  * @category  Nosto
  * @package   Nosto_Tagging
  * @author    Nosto Solutions Ltd <magento@nosto.com>
- * @copyright Copyright (c) 2013-2017 Nosto Solutions Ltd (http://www.nosto.com)
+ * @copyright Copyright (c) 2013-2019 Nosto Solutions Ltd (http://www.nosto.com)
  * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -32,6 +32,10 @@ use Magento\Framework\View\Element\Template\Context;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Currency as NostoHelperCurrency;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
+use Nosto\Tagging\Helper\Data as NostoHelperData;
+use Nosto\Tagging\Helper\Customer as NostoHelperCustomer;
+use Nosto\Tagging\Helper\Variation as NostoHelperVariation;
+use Nosto\Object\MarkupableString;
 
 /**
  * Page type block used for outputting the variation identifier on the different pages.
@@ -39,18 +43,39 @@ use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 class Variation extends Template
 {
     use TaggingTrait {
-        TaggingTrait::__construct as taggingConstruct;
+        TaggingTrait::__construct as taggingConstruct; // @codingStandardsIgnoreLine
     }
 
+    /**
+     * @var NostoHelperCurrency
+     */
     private $nostoHelperCurrency;
 
     /**
-     * Constructor.
+     * @var NostoHelperData
+     */
+    private $nostoHelperData;
+
+    /**
+     * @var NostoHelperCustomer
+     */
+    private $nostoHelperCustomer;
+
+    /**
+     * @var NostoHelperVariation
+     */
+    private $nostoHelperVariation;
+
+    /**
+     * Variation constructor.
      *
      * @param Context $context
      * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoHelperScope $nostoHelperScope
      * @param NostoHelperCurrency $nostoHelperCurrency
+     * @param NostoHelperData $nostoHelperData
+     * @param NostoHelperCustomer $nostoHelperCustomer
+     * @param NostoHelperVariation $nostoHelperVariation
      * @param array $data
      */
     public function __construct(
@@ -58,12 +83,18 @@ class Variation extends Template
         NostoHelperAccount $nostoHelperAccount,
         NostoHelperScope $nostoHelperScope,
         NostoHelperCurrency $nostoHelperCurrency,
+        NostoHelperData $nostoHelperData,
+        NostoHelperCustomer $nostoHelperCustomer,
+        NostoHelperVariation $nostoHelperVariation,
         array $data = []
     ) {
         parent::__construct($context, $data);
 
         $this->taggingConstruct($nostoHelperAccount, $nostoHelperScope);
         $this->nostoHelperCurrency = $nostoHelperCurrency;
+        $this->nostoHelperData = $nostoHelperData;
+        $this->nostoHelperCustomer = $nostoHelperCustomer;
+        $this->nostoHelperVariation = $nostoHelperVariation;
     }
 
     /**
@@ -74,6 +105,12 @@ class Variation extends Template
     public function getVariationId()
     {
         $store = $this->nostoHelperScope->getStore(true);
+        if ($this->nostoHelperData->isMultiCurrencyDisabled($store)
+            && $this->nostoHelperData->isPricingVariationEnabled($store)
+        ) {
+            return $this->nostoHelperCustomer->getGroupCode();
+        }
+
         return $store->getCurrentCurrencyCode();
     }
 
@@ -86,6 +123,34 @@ class Variation extends Template
     public function hasMultipleCurrencies()
     {
         $store = $this->nostoHelperScope->getStore(true);
-        return count($this->nostoHelperCurrency->getCurrencyCount($store)) > 1;
+        return $this->nostoHelperCurrency->getCurrencyCount($store) > 1;
+    }
+
+    /**
+     * Returns the HTML to render variation blocks
+     *
+     * @return MarkupableString|string
+     */
+    public function getAbstractObject()
+    {
+        $store = $this->nostoHelperScope->getStore(true);
+
+        // We inject the active variation tag if the exchange rates are used or
+        // if the price variations are used and the active variation is the
+        // default one
+        if ($this->nostoHelperCurrency->exchangeRatesInUse($store)
+            || ($this->nostoHelperData->isPricingVariationEnabled($store)
+                && $this->nostoHelperVariation->isDefaultVariationCode(
+                    $this->nostoHelperCustomer->getGroupCode()
+                )
+
+            )
+        ) {
+            return new MarkupableString(
+                $this->getVariationId(),
+                'nosto_variation'
+            );
+        }
+        return '';
     }
 }

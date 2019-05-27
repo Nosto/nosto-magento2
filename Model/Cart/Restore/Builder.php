@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2017, Nosto Solutions Ltd
+ * Copyright (c) 2019, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,7 +29,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <contact@nosto.com>
- * @copyright 2017 Nosto Solutions Ltd
+ * @copyright 2019 Nosto Solutions Ltd
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
@@ -41,11 +41,12 @@ use Magento\Quote\Model\Quote;
 use Magento\Store\Model\Store;
 use Magento\Framework\Stdlib\CookieManagerInterface;
 use Magento\Framework\Stdlib\DateTime\DateTime;
-use Nosto\Tagging\Model\Customer as NostoCustomer;
-use Nosto\Tagging\Model\CustomerFactory as NostoCustomerFactory;
-use Nosto\Tagging\Helper\Data as NostoHelperData;
+use Nosto\Tagging\Api\Data\CustomerInterface;
+use Nosto\Tagging\Model\Customer\Customer as NostoCustomer;
+use Nosto\Tagging\Model\Customer\CustomerFactory as NostoCustomerFactory;
 use Nosto\Tagging\Helper\Url as NostoHelperUrl;
-use Psr\Log\LoggerInterface;
+use Nosto\Tagging\Logger\Logger as NostoLogger;
+use Nosto\Tagging\Model\Customer\Repository as NostoCustomerRepository;
 
 class Builder
 {
@@ -55,21 +56,24 @@ class Builder
     private $encryptor;
     private $nostoCustomerFactory;
     private $urlHelper;
+    private $nostoCustomerRepository;
 
     /**
      * Builder constructor.
-     * @param LoggerInterface $logger
+     * @param NostoLogger $logger
      * @param CookieManagerInterface $cookieManager
      * @param EncryptorInterface $encryptor
      * @param NostoCustomerFactory $nostoCustomerFactory
+     * @param NostoCustomerRepository $nostoCustomerRepository
      * @param NostoHelperUrl $urlHelper
      * @param DateTime $date
      */
     public function __construct(
-        LoggerInterface $logger,
+        NostoLogger $logger,
         CookieManagerInterface $cookieManager,
         EncryptorInterface $encryptor,
         NostoCustomerFactory $nostoCustomerFactory,
+        NostoCustomerRepository $nostoCustomerRepository,
         NostoHelperUrl $urlHelper,
         DateTime $date
     ) {
@@ -79,6 +83,7 @@ class Builder
         $this->date = $date;
         $this->nostoCustomerFactory = $nostoCustomerFactory;
         $this->urlHelper = $urlHelper;
+        $this->nostoCustomerRepository = $nostoCustomerRepository;
     }
 
     /**
@@ -97,51 +102,45 @@ class Builder
     }
 
     /**
-     * @return NostoCustomer|null
+     * @param Quote $quote
+     *
+     * @return CustomerInterface|null
      */
     private function updateNostoId(Quote $quote)
     {
         // Handle the Nosto customer & quote mapping
         $nostoCustomerId = $this->cookieManager->getCookie(NostoCustomer::COOKIE_NAME);
 
-        if ($quote === null || $quote->getId() === null || empty($nostoCustomerId)) {
+        if ($quote === null || $nostoCustomerId === null || $quote->getId() === null) {
             return null;
         }
+        $nostoCustomer = $this->nostoCustomerRepository->getOneByNostoIdAndQuoteId(
+            $nostoCustomerId,
+            $quote->getId()
+        );
 
-        $quoteId = $quote->getId();
-        /** @noinspection PhpUndefinedMethodInspection */
-        $customerQuery = $this->nostoCustomerFactory
-            ->create()
-            ->getCollection()
-            ->addFieldToFilter(NostoCustomer::QUOTE_ID, $quoteId)
-            ->addFieldToFilter(NostoCustomer::NOSTO_ID, $nostoCustomerId)
-            ->setPageSize(1)
-            ->setCurPage(1);
-
-        /** @var NostoCustomer $nostoCustomer */
-        $nostoCustomer = $customerQuery->getFirstItem(); // @codingStandardsIgnoreLine
-        if ($nostoCustomer->hasData(NostoCustomer::CUSTOMER_ID)) {
+        if ($nostoCustomer instanceof CustomerInterface
+            && $nostoCustomer->getCustomerId()
+        ) {
             if ($nostoCustomer->getRestoreCartHash() === null) {
                 $nostoCustomer->setRestoreCartHash($this->generateRestoreCartHash());
             }
-            $nostoCustomer->setUpdatedAt(self::getNow());
+            $nostoCustomer->setUpdatedAt($this->getNow());
         } else {
+            /** @var \Nosto\Tagging\Model\Customer\Customer $nostoCustomer*/
             /** @noinspection PhpUndefinedMethodInspection */
             $nostoCustomer = $this->nostoCustomerFactory->create();
-            /** @noinspection PhpUndefinedMethodInspection */
-            $nostoCustomer->setQuoteId($quoteId);
-            /** @noinspection PhpUndefinedMethodInspection */
+            $nostoCustomer->setQuoteId($quote->getId());
             $nostoCustomer->setNostoId($nostoCustomerId);
-            $nostoCustomer->setCreatedAt(self::getNow());
+            $nostoCustomer->setCreatedAt($this->getNow());
             $nostoCustomer->setRestoreCartHash($this->generateRestoreCartHash());
         }
         try {
-            /** @noinspection PhpDeprecationInspection */
-            $nostoCustomer->save();
+            $nostoCustomer = $this->nostoCustomerRepository->save($nostoCustomer);
 
             return $nostoCustomer;
         } catch (\Exception $e) {
-            $this->logger->error($e->__toString());
+            $this->logger->exception($e);
         }
 
         return null;
@@ -155,7 +154,7 @@ class Builder
      */
     private function generateRestoreCartHash()
     {
-        $hash = $this->encryptor->getHash(uniqid('nostocartrestore'));
+        $hash = $this->encryptor->getHash(uniqid('nostocartrestore', true));
         if (strlen($hash) > NostoCustomer::NOSTO_TAGGING_RESTORE_CART_ATTRIBUTE_LENGTH) {
             $hash = substr($hash, 0, NostoCustomer::NOSTO_TAGGING_RESTORE_CART_ATTRIBUTE_LENGTH);
         }
@@ -178,14 +177,12 @@ class Builder
      *
      * @param string $hash
      * @param Store $store
-     * @return string
+     * @return string the restore cart URL
      */
     private function generateRestoreCartUrl($hash, Store $store)
     {
-        $params = NostoHelperUrl::getUrlOptionsWithNoSid($store);
+        $params = $this->urlHelper->getUrlOptionsWithNoSid($store);
         $params['h'] = $hash;
-        $url = $store->getUrl(NostoHelperUrl::NOSTO_PATH_RESTORE_CART, $params);
-
-        return $url;
+        return $store->getUrl(NostoHelperUrl::NOSTO_PATH_RESTORE_CART, $params);
     }
 }

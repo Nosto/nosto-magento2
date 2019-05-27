@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2017, Nosto Solutions Ltd
+ * Copyright (c) 2019, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,7 +29,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <contact@nosto.com>
- * @copyright 2017 Nosto Solutions Ltd
+ * @copyright 2019 Nosto Solutions Ltd
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
@@ -39,9 +39,10 @@ namespace Nosto\Tagging\Block;
 use Magento\Framework\Registry;
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Element\Template\Context;
-use Nosto\Tagging\Helper\Account as NostoHelperAccount;
-use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Model\Category\Builder as NostoCategoryBuilder;
+use Nosto\Tagging\Helper\Scope as NostoHelperScope;
+use Nosto\Object\Category as NostoCategory;
+use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 
 /**
  * Category block used for outputting meta-data on the stores category pages.
@@ -51,45 +52,78 @@ use Nosto\Tagging\Model\Category\Builder as NostoCategoryBuilder;
 class Category extends Template
 {
     use TaggingTrait {
-        TaggingTrait::__construct as taggingConstruct;
+        TaggingTrait::__construct as taggingConstruct; // @codingStandardsIgnoreLine
     }
 
+    /**
+     * @var Registry
+     */
     private $registry;
+
+    /**
+     * @var NostoCategoryBuilder
+     */
     private $categoryBuilder;
+
+    /**
+     * @var NostoHelperScope
+     */
+    private $nostoHelperScope;
+
+    /**
+     * @var NostoHelperAccount
+     */
+    private $nostoHelperAccount;
 
     /**
      * Constructor.
      *
      * @param Context $context
      * @param Registry $registry
-     * @param NostoCategoryBuilder $categoryBuilder
      * @param NostoHelperAccount $nostoHelperAccount
-     * @param NostoHelperScope $nostoHelperScope
+     * @param NostoCategoryBuilder $categoryBuilder
      * @param array $data
      */
     public function __construct(
         Context $context,
         Registry $registry,
         NostoCategoryBuilder $categoryBuilder,
-        NostoHelperAccount $nostoHelperAccount,
         NostoHelperScope $nostoHelperScope,
+        NostoHelperAccount $nostoHelperAccount,
         array $data = []
     ) {
         parent::__construct($context, $data);
 
-        $this->taggingConstruct($nostoHelperAccount, $nostoHelperScope);
         $this->registry = $registry;
         $this->categoryBuilder = $categoryBuilder;
+        $this->nostoHelperScope = $nostoHelperScope;
+        $this->nostoHelperAccount = $nostoHelperAccount;
     }
 
     /**
      * Returns the current category as a slash delimited string
      *
-     * @return string the current category as a slash delimited string
+     * @return string|null the current category as a slash delimited string
      */
-    public function getNostoCategory()
+    private function getNostoCategory()
     {
         $category = $this->registry->registry('current_category');
-        return $this->categoryBuilder->build($category);
+        $store = $this->nostoHelperScope->getStore();
+        if ($category) {
+            return $this->categoryBuilder->build($category, $store);
+        }
+        return null;
+    }
+
+    /**
+     * Returns the HTML to render categories
+     *
+     * @return NostoCategory
+     */
+    public function getAbstractObject()
+    {
+        $category = new NostoCategory();
+        $category->setCategoryString($this->getNostoCategory());
+        return $category;
     }
 }

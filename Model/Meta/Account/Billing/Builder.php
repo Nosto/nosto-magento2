@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2017, Nosto Solutions Ltd
+ * Copyright (c) 2019, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,7 +29,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <contact@nosto.com>
- * @copyright 2017 Nosto Solutions Ltd
+ * @copyright 2019 Nosto Solutions Ltd
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
@@ -38,9 +38,8 @@ namespace Nosto\Tagging\Model\Meta\Account\Billing;
 
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Store\Model\Store;
-use Nosto\NostoException;
 use Nosto\Object\Signup\Billing;
-use Psr\Log\LoggerInterface;
+use Nosto\Tagging\Logger\Logger as NostoLogger;
 
 class Builder
 {
@@ -48,10 +47,10 @@ class Builder
     private $eventManager;
 
     /**
-     * @param LoggerInterface $logger
+     * @param NostoLogger $logger
      * @param ManagerInterface $eventManager
      */
-    public function __construct(LoggerInterface $logger, ManagerInterface $eventManager)
+    public function __construct(NostoLogger $logger, ManagerInterface $eventManager)
     {
         $this->logger = $logger;
         $this->eventManager = $eventManager;
@@ -67,11 +66,11 @@ class Builder
 
         try {
             $country = $store->getConfig('general/country/default');
-            if (!empty($country)) {
+            if ($country !== null) {
                 $metaData->setCountry($country);
             }
-        } catch (NostoException $e) {
-            $this->logger->error($e->__toString());
+        } catch (\Exception $e) {
+            $this->logger->exception($e);
         }
 
         $this->eventManager->dispatch('nosto_account_billing_load_after', ['billing' => $metaData]);

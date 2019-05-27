@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!--
-  ~ Copyright (c) 2017, Nosto Solutions Ltd
+  ~ Copyright (c) 2019, Nosto Solutions Ltd
   ~ All rights reserved.
   ~
   ~ Redistribution and use in source and binary forms, with or without modification,
@@ -29,20 +29,53 @@
   ~ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   ~
   ~ @author Nosto Solutions Ltd <contact@nosto.com>
-  ~ @copyright 2017 Nosto Solutions Ltd
+  ~ @copyright 2019 Nosto Solutions Ltd
   ~ @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
   ~
   -->
 <!--suppress XmlUnboundNsPrefix -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
-    <preference for="Magento\Framework\Stdlib\CookieManagerInterface"
-                type="Magento\Framework\Stdlib\Cookie\PhpCookieManager"/>
+    <preference for="Magento\Framework\Stdlib\CookieManagerInterface" type="Magento\Framework\Stdlib\Cookie\PhpCookieManager"/>
+    <preference for="Nosto\Tagging\Api\Data\ProductQueueSearchResultsInterface" type="Nosto\Tagging\Model\Product\QueueSearchResults"/>
+    <type name="Magento\Catalog\Model\ResourceModel\Product">
+        <plugin name="nostoProductIndexer" type="Nosto\Tagging\Model\Indexer\Product\Observer"/>
+    </type>
+    <type name="Nosto\Tagging\Console\Command\NostoAccountConnectCommand">
+        <arguments>
+            <argument name="nostoHelperAccount" xsi:type="object">Nosto\Tagging\Helper\Account\Proxy</argument>
+            <argument name="nostoHelperScope" xsi:type="object">Nosto\Tagging\Helper\Scope\Proxy</argument>
+        </arguments>
+    </type>
+    <type name="Nosto\Tagging\Console\Command\NostoAccountRemoveCommand">
+        <arguments>
+            <argument name="nostoHelperAccount" xsi:type="object">Nosto\Tagging\Helper\Account\Proxy</argument>
+            <argument name="nostoHelperScope" xsi:type="object">Nosto\Tagging\Helper\Scope\Proxy</argument>
+            <argument name="appConfig" xsi:type="object">Magento\Framework\App\Config\Storage\Writer\Proxy</argument>
+            <argument name="nostoHelperCache" xsi:type="object">Nosto\Tagging\Helper\Cache\Proxy</argument>
+        </arguments>
+    </type>
+    <type name="Nosto\Tagging\Logger\Logger">
+        <arguments>
+            <argument name="name" xsi:type="string">nosto</argument>
+            <argument name="handlers" xsi:type="array">
+                <item name="system" xsi:type="object">Magento\Framework\Logger\Handler\System</item>
+                <item name="debug" xsi:type="object">Magento\Framework\Logger\Handler\Debug</item>
+            </argument>
+        </arguments>
+    </type>
     <type name="Magento\Framework\Console\CommandList">
         <arguments>
             <argument name="commands" xsi:type="array">
-                <item name="syncproducts" xsi:type="object">Nosto\Tagging\Console\Command\SyncProducts</item>
+                <item name="nosto_account_connect_command" xsi:type="object">Nosto\Tagging\Console\Command\NostoAccountConnectCommand</item>
+                <item name="nosto_account_remove_command" xsi:type="object">Nosto\Tagging\Console\Command\NostoAccountRemoveCommand</item>
             </argument>
         </arguments>
+    </type>
+    <type name="Magento\Catalog\Model\Category\Attribute\Source\Sortby">
+        <plugin name="sortby_add_default_nosto_option" type="Nosto\Tagging\Plugin\Catalog\Model\Sortby" />
+    </type>
+    <type name="Magento\Sales\Api\OrderRepositoryInterface">
+        <plugin name="order_repository_nosto" type="Nosto\Tagging\Plugin\Sales\OrderRepository" />
     </type>
 </config>

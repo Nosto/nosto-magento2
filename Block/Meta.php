@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2017, Nosto Solutions Ltd
+ * Copyright (c) 2019, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,7 +29,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <contact@nosto.com>
- * @copyright 2017 Nosto Solutions Ltd
+ * @copyright 2019 Nosto Solutions Ltd
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
@@ -49,7 +49,7 @@ use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 class Meta extends Template
 {
     use TaggingTrait {
-        TaggingTrait::__construct as taggingConstruct;
+        TaggingTrait::__construct as taggingConstruct; // @codingStandardsIgnoreLine
     }
 
     private $nostoHelperData;
@@ -105,5 +105,14 @@ class Meta extends Template
     {
         $store = $this->nostoHelperScope->getStore(true);
         return substr($store->getConfig('general/locale/code'), 0, 2);
+    }
+
+    /**
+     *
+     * @return null
+     */
+    public function getAbstractObject()
+    {
+        return null;
     }
 }

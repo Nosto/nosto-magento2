@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2017, Nosto Solutions Ltd
+ * Copyright (c) 2019, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,7 +29,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <contact@nosto.com>
- * @copyright 2017 Nosto Solutions Ltd
+ * @copyright 2019 Nosto Solutions Ltd
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
@@ -41,13 +41,16 @@ use Magento\Backend\Model\UrlInterface;
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\App\Response\Http;
+use Magento\Store\Model\StoreRepository;
 use Nosto\Mixins\OauthTrait;
 use Nosto\OAuth;
+use Nosto\Tagging\Helper\Cache as NostoHelperCache;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Model\Meta\Oauth\Builder as NostoOauthBuilder;
 use Nosto\Types\Signup\AccountInterface;
-use Psr\Log\LoggerInterface;
+use Nosto\Tagging\Logger\Logger as NostoLogger;
+use Nosto\NostoException;
 
 class Index extends Action
 {
@@ -57,22 +60,28 @@ class Index extends Action
     private $nostoHelperAccount;
     private $oauthMetaBuilder;
     private $nostoHelperScope;
+    private $nostoHelperCache;
+    private $storeRepository;
 
     /**
      * @param Context $context
-     * @param LoggerInterface $logger
+     * @param NostoLogger $logger
      * @param NostoHelperScope $nostoHelperScope
      * @param UrlInterface $urlBuilder
      * @param NostoHelperAccount $nostoHelperAccount
+     * @param NostoHelperCache $nostoHelperCache
      * @param NostoOauthBuilder $oauthMetaBuilder
+     * @param StoreRepository $storeRepository
      */
     public function __construct(
         Context $context,
-        LoggerInterface $logger,
+        NostoLogger $logger,
         NostoHelperScope $nostoHelperScope,
         UrlInterface $urlBuilder,
         NostoHelperAccount $nostoHelperAccount,
-        NostoOauthBuilder $oauthMetaBuilder
+        NostoHelperCache $nostoHelperCache,
+        NostoOauthBuilder $oauthMetaBuilder,
+        StoreRepository $storeRepository
     ) {
         parent::__construct($context);
 
@@ -81,6 +90,8 @@ class Index extends Action
         $this->nostoHelperAccount = $nostoHelperAccount;
         $this->oauthMetaBuilder = $oauthMetaBuilder;
         $this->nostoHelperScope = $nostoHelperScope;
+        $this->nostoHelperCache = $nostoHelperCache;
+        $this->storeRepository = $storeRepository;
     }
 
     /**
@@ -93,7 +104,7 @@ class Index extends Action
      */
     public function execute()
     {
-        self::connect();
+        $this->connect();
     }
 
     /**
@@ -114,13 +125,42 @@ class Index extends Action
      *
      * @param AccountInterface $account the account to save
      * @return boolean a boolean value indicating whether the account was saved
+     * @throws NostoException
+     * @suppress PhanTypeMismatchArgument
      */
     public function save(AccountInterface $account)
     {
-        return $this->nostoHelperAccount->saveAccount(
+        $stores = $this->storeRepository->getList();
+        $currentStore = $this->nostoHelperScope->getStore();
+        /** @var \Magento\Store\Model\Store $store */
+        foreach ($stores as $store) {
+            $existingAccount = $this->nostoHelperAccount->findAccount($store);
+            if ($existingAccount !== null
+                && $existingAccount->getName() === $account->getName()
+                && $currentStore->getId() !== $store->getId()
+            ) {
+                throw new NostoException(
+                    sprintf(
+                        'This account is already being used by "%s". 
+                                Please create a new account for each store view',
+                        $store->getName()
+                    )
+                );
+            }
+        }
+
+        $success =  $this->nostoHelperAccount->saveAccount(
             $account,
             $this->nostoHelperScope->getStore()
         );
+
+        // Invalidate cache after reconnected nosto account
+        if ($success) {
+            $this->nostoHelperCache->invalidatePageCache();
+            $this->nostoHelperCache->invalidateLayoutCache();
+        }
+
+        return $success;
     }
 
     /**
@@ -158,7 +198,7 @@ class Index extends Action
      */
     public function logError(Exception $e)
     {
-        $this->logger->error($e->__toString());
+        $this->logger->exception($e);
     }
 
     /**

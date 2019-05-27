@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2017, Nosto Solutions Ltd
+ * Copyright (c) 2019, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,7 +29,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <contact@nosto.com>
- * @copyright 2017 Nosto Solutions Ltd
+ * @copyright 2019 Nosto Solutions Ltd
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
@@ -42,31 +42,34 @@ use Magento\Sales\Api\Data\EntityInterface;
 use Magento\Store\Model\Store;
 use Nosto\NostoException;
 use Nosto\Object\Product\ProductCollection;
-use Nosto\Tagging\Helper\Account as NostoHelperAccount;
-use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
+use Nosto\Types\Product\ProductInterface;
+use Nosto\Tagging\Logger\Logger as NostoLogger;
 
 class Collection
 {
-
     private $productCollectionFactory;
     private $productVisibility;
-    private $nostoHelperAccount;
     private $nostoProductBuilder;
-    private $nostoHelperScope;
+    private $logger;
 
+    /**
+     * Collection constructor.
+     * @param ProductCollectionFactory $productCollectionFactory
+     * @param ProductVisibility $productVisibility
+     * @param Builder $nostoProductBuilder
+     * @param NostoLogger $logger
+     */
     public function __construct(
         ProductCollectionFactory $productCollectionFactory,
         ProductVisibility $productVisibility,
-        NostoHelperScope $nostoHelperScope,
-        NostoHelperAccount $nostoHelperAccount,
-        NostoProductBuilder $nostoProductBuilder
+        NostoProductBuilder $nostoProductBuilder,
+        NostoLogger $logger
     ) {
         $this->productCollectionFactory = $productCollectionFactory;
         $this->productVisibility = $productVisibility;
-        $this->nostoHelperAccount = $nostoHelperAccount;
         $this->nostoProductBuilder = $nostoProductBuilder;
-        $this->nostoHelperScope = $nostoHelperScope;
+        $this->logger = $logger;
     }
 
     public function getCollection(Store $store)
@@ -85,6 +88,7 @@ class Collection
      * @param Store $store
      * @param $id
      * @return ProductCollection
+     * @throws NostoException
      */
     public function buildSingle(Store $store, $id)
     {
@@ -98,6 +102,7 @@ class Collection
      * @param int $limit
      * @param int $offset
      * @return ProductCollection
+     * @throws NostoException
      */
     public function buildMany(Store $store, $limit = 100, $offset = 0)
     {
@@ -108,6 +113,12 @@ class Collection
         return $this->build($store, $collection);
     }
 
+    /**
+     * @param Store $store
+     * @param $collection
+     * @return ProductCollection
+     * @throws NostoException
+     */
     private function build(Store $store, $collection)
     {
         /** @var \Magento\Catalog\Model\ResourceModel\Product\Collection $collection */
@@ -120,7 +131,18 @@ class Collection
         }
         foreach ($items as $product) {
             /** @var \Magento\Catalog\Model\Product $product */
-            $products->append($this->nostoProductBuilder->build($product, $store));
+            try {
+                $nostoProduct = $this->nostoProductBuilder->build(
+                    $product,
+                    $store,
+                    NostoProductBuilder::NOSTO_SCOPE_API
+                );
+                if ($nostoProduct instanceof ProductInterface) {
+                    $products->append($nostoProduct);
+                }
+            } catch (\Exception $e) {
+                $this->logger->exception($e);
+            }
         }
         return $products;
     }

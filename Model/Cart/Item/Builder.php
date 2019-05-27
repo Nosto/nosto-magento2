@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2017, Nosto Solutions Ltd
+ * Copyright (c) 2019, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,7 +29,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <contact@nosto.com>
- * @copyright 2017 Nosto Solutions Ltd
+ * @copyright 2019 Nosto Solutions Ltd
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
@@ -37,51 +37,77 @@
 namespace Nosto\Tagging\Model\Cart\Item;
 
 use Exception;
+use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\Product\Type;
+use Magento\Catalog\Model\ProductRepository;
 use Magento\Framework\Event\ManagerInterface;
-use Magento\Framework\ObjectManagerInterface;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Quote\Model\Quote\Item;
 use Nosto\Object\Cart\LineItem;
-use Psr\Log\LoggerInterface;
+use Nosto\Tagging\Model\Item\Downloadable;
+use Nosto\Tagging\Model\Item\Giftcard;
+use Nosto\Tagging\Model\Item\Virtual;
+use Nosto\Tagging\Logger\Logger as NostoLogger;
 
 class Builder
 {
-    private $logger;
-    private $objectManager;
+    /**
+     * @var ManagerInterface $eventManager
+     */
     private $eventManager;
 
     /**
-     * Constructor.
+     * @var ProductRepository $productRepository
+     */
+    private $productRepository;
+
+    /**
+     * @var NostoLogger $logger
+     */
+    private $logger;
+
+    /**
+     * Builder constructor.
      *
-     * @param LoggerInterface $logger
-     * @param ObjectManagerInterface $objectManager
      * @param ManagerInterface $eventManager
+     * @param ProductRepository $productRepository
+     * @param NostoLogger $logger
      */
     public function __construct(
-        LoggerInterface $logger,
-        ObjectManagerInterface $objectManager,
-        ManagerInterface $eventManager
+        ManagerInterface $eventManager,
+        ProductRepository $productRepository,
+        NostoLogger $logger
     ) {
-        $this->objectManager = $objectManager;
-        $this->logger = $logger;
         $this->eventManager = $eventManager;
+        $this->productRepository = $productRepository;
+        $this->logger = $logger;
     }
 
     /**
      * @param Item $item
      * @param $currencyCode
      * @return LineItem
+     * @throws LocalizedException
      */
     public function build(Item $item, $currencyCode)
     {
         $cartItem = new LineItem();
         $cartItem->setPriceCurrencyCode($currencyCode);
         $cartItem->setProductId($this->buildItemId($item));
-        $cartItem->setQuantity($item->getQty());
-        switch ($item->getProductType()) {
+        $cartItem->setQuantity((int) $item->getQty());
+        $cartItem->setSkuId($this->buildSkuId($item));
+        $productType = $item->getProductType();
+        // Set default name - this will be overwritten below if matching
+        // product type is defined
+        $cartItem->setName(sprintf(
+            'Not defined - unknown product type: %s',
+            $productType
+        ));
+        switch ($productType) {
             case Simple::getType():
             case Virtual::getType():
             case Downloadable::getType():
+            case Giftcard::getType():
                 $cartItem->setName(Simple::buildItemName($item));
                 break;
             case Configurable::getType():
@@ -91,7 +117,7 @@ class Builder
                 $cartItem->setName(Bundle::buildItemName($item));
                 break;
             case Grouped::getType():
-                $cartItem->setName(Grouped::buildItemName($item));
+                $cartItem->setName((new Grouped($this->productRepository))->buildItemName($item));
                 break;
         }
         try {
@@ -115,18 +141,52 @@ class Builder
         $parentItem = $item->getOptionByCode('product_type');
         if ($parentItem !== null) {
             return $parentItem->getProduct()->getSku();
-        } elseif ($item->getProductType() === Type::TYPE_SIMPLE) {
-            $type = $item->getProduct()->getTypeInstance();
-            $parentIds = $type->getParentIdsByChild($item->getItemId());
-            $attributes = $item->getBuyRequest()->getData('super_attribute');
-            // If the product has a configurable parent, we assume we should tag
-            // the parent. If there are many parent IDs, we are safer to tag the
-            // products own ID.
-            if (count($parentIds) === 1 && !empty($attributes)) {
-                return $parentIds[0];
+        }
+        if ($item->getProductType() === Type::TYPE_SIMPLE) {
+            try {
+                $type = $item->getProduct()->getTypeInstance();
+                $parentIds = $type->getParentIdsByChild($item->getItemId());
+                $attributes = $item->getBuyRequest()->getData('super_attribute');
+                // If the product has a configurable parent, we assume we should tag
+                // the parent. If there are many parent IDs, we are safer to tag the
+                // products own ID.
+                if (!empty($attributes) && count($parentIds) === 1) {
+                    return $parentIds[0];
+                }
+            } catch (\Throwable $e) {
+                $this->logger->exception($e);
+            }
+        }
+        $product = $item->getProduct();
+        if ($product instanceof Product) {
+            return (string)$product->getId();
+        }
+        return LineItem::PSEUDO_PRODUCT_ID;
+    }
+
+    /**
+     * Returns the sku id. If it is a configurable product,
+     * try to get the child item because the child item is the simple product
+     *
+     * @param Item $item the sales item model.
+     * @return string|null sku id
+     */
+    public function buildSkuId(Item $item)
+    {
+        if ($item->getProductType() === Configurable::getType()) {
+            $children = $item->getChildren();
+            //An item with bundle product and group product may have more than 1 child.
+            //But configurable product item should have max 1 child item.
+            //Here we check the size of children, return only if the size is 1
+            if (array_key_exists(0, $children)
+                && count($children) === 1
+                && $children[0] instanceof Item
+                && $children[0]->getProduct() instanceof Product
+            ) {
+                return (string)$children[0]->getProduct()->getId();
             }
         }
 
-        return (string)$item->getProduct()->getId();
+        return null;
     }
 }

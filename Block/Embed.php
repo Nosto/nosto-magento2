@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2017, Nosto Solutions Ltd
+ * Copyright (c) 2019, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,7 +29,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <contact@nosto.com>
- * @copyright 2017 Nosto Solutions Ltd
+ * @copyright 2019 Nosto Solutions Ltd
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
@@ -40,7 +40,6 @@ use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Element\Template\Context;
 use Nosto\Nosto;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
-use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 
 /**
@@ -50,10 +49,9 @@ use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 class Embed extends Template
 {
     use TaggingTrait {
-        TaggingTrait::__construct as taggingConstruct;
+        TaggingTrait::__construct as taggingConstruct; // @codingStandardsIgnoreLine
     }
 
-    private $nostoHelperData;
     /**
      * The default Nosto server address to use if none is configured.
      */
@@ -64,21 +62,26 @@ class Embed extends Template
      *
      * @param Context $context the context.
      * @param NostoHelperAccount $nostoHelperAccount the account helper.
-     * @param NostoHelperData $nostoHelperData the data helper.
      * @param NostoHelperScope $nostoHelperScope
      * @param array $data optional data.
      */
     public function __construct(
         Context $context,
         NostoHelperAccount $nostoHelperAccount,
-        NostoHelperData $nostoHelperData,
         NostoHelperScope $nostoHelperScope,
         array $data = []
     ) {
         parent::__construct($context, $data);
 
         $this->taggingConstruct($nostoHelperAccount, $nostoHelperScope);
-        $this->nostoHelperData = $nostoHelperData;
+    }
+
+    public function getNostoScriptUrl()
+    {
+        if (Nosto::getServerUrl() && $this->getAccountName()) {
+            return  '//' . Nosto::getServerUrl() . '/include/' . $this->getAccountName();
+        }
+        return null;
     }
 
     /**
@@ -94,14 +97,11 @@ class Embed extends Template
     }
 
     /**
-     * Returns the Nosto server address.
-     * This is taken from the local environment if it is set, or else it
-     * defaults to "connect.nosto.com".
      *
-     * @return string the url.
+     * @return null
      */
-    public function getServerAddress()
+    public function getAbstractObject()
     {
-        return Nosto::getEnvVariable('NOSTO_SERVER_URL', self::DEFAULT_SERVER_ADDRESS);
+        return null;
     }
 }

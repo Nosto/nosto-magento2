@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2017, Nosto Solutions Ltd
+ * Copyright (c) 2019, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,11 +29,12 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <contact@nosto.com>
- * @copyright 2017 Nosto Solutions Ltd
+ * @copyright 2019 Nosto Solutions Ltd
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
 
+/** @noinspection PhpDeprecationInspection */
 namespace Nosto\Tagging\Block;
 
 use Magento\Catalog\Api\ProductRepositoryInterface;
@@ -49,7 +50,6 @@ use Magento\Framework\Url\EncoderInterface as UrlEncoder;
 use Nosto\Helper\DateHelper;
 use Nosto\Helper\PriceHelper;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
-use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Model\Category\Builder as NostoCategoryBuilder;
 use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
@@ -62,12 +62,11 @@ use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
 class Product extends View
 {
     use TaggingTrait {
-        TaggingTrait::__construct as taggingConstruct;
+        TaggingTrait::__construct as taggingConstruct; // @codingStandardsIgnoreLine
     }
 
     private $nostoProductBuilder;
     private $categoryBuilder;
-    private $nostoHelperData;
 
     /**
      * Constructor.
@@ -84,7 +83,6 @@ class Product extends View
      * @param PriceCurrencyInterface $priceCurrency the price currency.
      * @param NostoProductBuilder $nostoProductBuilder the product meta model builder.
      * @param NostoCategoryBuilder $categoryBuilder the category meta model builder.
-     * @param NostoHelperData $nostoHelperData the data helper.
      * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoHelperScope $nostoHelperScope
      * @param array $data optional data.
@@ -103,7 +101,6 @@ class Product extends View
         PriceCurrencyInterface $priceCurrency,
         NostoProductBuilder $nostoProductBuilder,
         NostoCategoryBuilder $categoryBuilder,
-        NostoHelperData $nostoHelperData,
         NostoHelperAccount $nostoHelperAccount,
         NostoHelperScope $nostoHelperScope,
         array $data = []
@@ -125,29 +122,34 @@ class Product extends View
         $this->taggingConstruct($nostoHelperAccount, $nostoHelperScope);
         $this->nostoProductBuilder = $nostoProductBuilder;
         $this->categoryBuilder = $categoryBuilder;
-        $this->nostoHelperData = $nostoHelperData;
     }
 
     /**
      * Returns the Nosto product DTO.
      *
      * @return \Nosto\Object\Product\Product the product meta data model.
+     * @throws \Exception
      */
-    public function getNostoProduct()
+    public function getAbstractObject()
     {
         $store = $this->nostoHelperScope->getStore();
-        return $this->nostoProductBuilder->build($this->getProduct(), $store);
+        return $this->nostoProductBuilder->build(
+            $this->getProduct(),
+            $store,
+            NostoProductBuilder::NOSTO_SCOPE_TAGGING
+        );
     }
 
     /**
      * Returns the Nosto category DTO.
      *
-     * @return string the current category as a slash-delimited string
+     * @return string|null the current category as a slash-delimited string
      */
     public function getNostoCategory()
     {
         $category = $this->_coreRegistry->registry('current_category');
-        return $category !== null ? $this->categoryBuilder->build($category) : null;
+        $store = $this->nostoHelperScope->getStore();
+        return $category !== null ? $this->categoryBuilder->build($category, $store) : null;
     }
 
     /**

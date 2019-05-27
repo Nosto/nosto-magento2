@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2017, Nosto Solutions Ltd
+ * Copyright (c) 2019, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,7 +29,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <contact@nosto.com>
- * @copyright 2017 Nosto Solutions Ltd
+ * @copyright 2019 Nosto Solutions Ltd
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
@@ -37,6 +37,7 @@
 namespace Nosto\Tagging\Observer\Product;
 
 use Magento\Framework\Event\Observer;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Review\Model\Review as ReviewModel;
 
 /**
@@ -46,17 +47,21 @@ use Magento\Review\Model\Review as ReviewModel;
  * @package  Nosto_Tagging
  * @author   Nosto Solutions Ltd <magento@nosto.com>
  */
-class Review extends Update
+class Review extends Base
 {
     /**
      * @inheritdoc
+     * @throws NoSuchEntityException
      */
-    protected function extractProduct(Observer $observer)
+    public function extractProduct(Observer $observer)
     {
         /* @var ReviewModel $review */
+        /** @noinspection PhpUndefinedMethodInspection */
         $review = $observer->getObject();
         $product = null;
-        if ($review instanceof ReviewModel) {
+        if ($review instanceof ReviewModel
+            && $this->dataHelper->isRatingTaggingEnabled()
+        ) {
             $product = $this->productRepository->getById($review->getEntityPkValue());
         }
 

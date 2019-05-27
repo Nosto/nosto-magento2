@@ -22,7 +22,7 @@
   ~ @category  Nosto
   ~ @package   Nosto_Tagging
   ~ @author    Nosto Solutions Ltd <magento@nosto.com>
-  ~ @copyright Copyright (c) 2013-2017 Nosto Solutions Ltd (http://www.nosto.com)
+  ~ @copyright Copyright (c) 2013-2019 Nosto Solutions Ltd (http://www.nosto.com)
   ~ @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
   -->
 
@@ -37,44 +37,6 @@
     <property name="srcdir" value="${project.basedir}" override="true"/>
     <!--suppress PhingDomInspection -->
     <property name="packagename" value="nosto-tagging-${version}.zip" override="true"/>
-
-    <!-- ============================================  -->
-    <!-- Target: prepare                               -->
-    <!-- ============================================  -->
-    <target name="prepare">
-        <echo msg="Cleaning up directory ./build"/>
-        <delete dir="${builddest}"/>
-        <delete dir="${buildsrc}"/>
-        <mkdir dir="${builddest}"/>
-        <mkdir dir="${buildsrc}"/>
-        <copy todir="${buildsrc}">
-            <fileset refid="sourcefiles"/>
-        </copy>
-    </target>
-
-    <fileset dir="${srcdir}" id="sourcefiles">
-        <patternset id="nostotagging.sources">
-            <include name="**"/>
-            <exclude name="*.DS_STORE"/>
-            <exclude name="**/.idea/**"/>
-            <exclude name=".git/**"/>
-            <exclude name=".phan/**"/>
-            <exclude name="phan.php"/>
-            <exclude name=".gitignore"/>
-            <exclude name="**/tests/**"/>
-            <exclude name="**/bin/**"/>
-            <exclude name="**/build/**"/>
-            <exclude name="**/build.xml"/>
-            <exclude name="**/ruleset.xml"/>
-            <exclude name="**/*codeception*"/>
-            <exclude name="**/var/**"/>
-            <exclude name="**/vendor/**"/>
-            <exclude name="**/pub/**"/>
-            <exclude name="package.json*"/>
-            <exclude name="Gruntfile.js*"/>
-            <exclude name="*.tgz"/>
-        </patternset>
-    </fileset>
 
     <target name="phpmd">
         <exec executable="./vendor/bin/phpmd" passthru="true">
@@ -107,7 +69,7 @@
         </exec>
     </target>
 
-    <target name="phpcs" depends="phpcbf">
+    <target name="phpcs">
         <exec executable="./vendor/bin/phpcs" passthru="true">
             <arg value="--colors"/>
             <arg value="--report-width=auto"/>
@@ -124,17 +86,13 @@
         </exec>
     </target>
 
-    <target name="build" depends="prepare">
+    <target name="build">
         <echo msg="Building a package"/>
-        <exec executable="zip" dir="${buildsrc}">
-            <arg value="-r"/>
-            <arg value="${packagename}"/>
-            <arg value="./"/>
+        <exec executable="composer">
+            <arg value="archive"/>
+            <arg value="--format=zip"/>
+            <arg value="--file=${version}"/>
         </exec>
-        <!--suppress PhingDomInspection -->
-        <move file="${buildsrc}/${packagename}"
-              tofile="${builddest}/${packagename}"/>
-        <echo msg="Files copied and compressed"/>
     </target>
 
     <target name="validate" depends="phpcs, phan, phpmd, phpcpd">

@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2017, Nosto Solutions Ltd
+ * Copyright (c) 2019, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,7 +29,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <contact@nosto.com>
- * @copyright 2017 Nosto Solutions Ltd
+ * @copyright 2019 Nosto Solutions Ltd
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
@@ -42,7 +42,7 @@ use Magento\Framework\Module\Manager as ModuleManager;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Model\Rates\Service as NostoRatesService;
-use Psr\Log\LoggerInterface;
+use Nosto\Tagging\Logger\Logger as NostoLogger;
 
 /**
  * Observer to update the exchange rates for each of the store views if the module is enabled and
@@ -60,13 +60,13 @@ class Update implements ObserverInterface
     /**
      * Constructor.
      *
-     * @param LoggerInterface $logger
+     * @param NostoLogger $logger
      * @param ModuleManager $moduleManager
      * @param NostoHelperScope $nostoHelperScope
      * @param NostoRatesService $nostoRatesService
      */
     public function __construct(
-        LoggerInterface $logger,
+        NostoLogger $logger,
         ModuleManager $moduleManager,
         NostoHelperScope $nostoHelperScope,
         NostoRatesService $nostoRatesService
@@ -89,11 +89,11 @@ class Update implements ObserverInterface
             return;
         }
 
-        $this->logger->info('Updating settings to Nosto for all store views');
+        $this->logger->debug('Updating settings to Nosto for all store views');
         foreach ($this->nostoHelperScope->getStores(false) as $store) {
-            $this->logger->info('Updating settings for ' . $store->getName());
+            $this->logger->debug('Updating settings for ' . $store->getName());
             if ($this->nostoRatesService->update($store)) {
-                $this->logger->info('Successfully updated the settings for the store view');
+                $this->logger->debug('Successfully updated the settings for the store view');
             } else {
                 $this->logger->warning('Unable to update the settings for the store view');
             }

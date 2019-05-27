@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2017, Nosto Solutions Ltd
+ * Copyright (c) 2019, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,7 +29,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <contact@nosto.com>
- * @copyright 2017 Nosto Solutions Ltd
+ * @copyright 2019 Nosto Solutions Ltd
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
@@ -37,22 +37,26 @@
 namespace Nosto\Tagging\Model\Product\Sku;
 
 use Magento\Catalog\Model\Product;
-use Magento\Catalog\Model\Product\Gallery\ReadHandler as GalleryReadHandler;
+use Magento\CatalogInventory\Api\StockRegistryInterface;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable\Attribute as ConfigurableAttribute;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Store\Model\Store;
 use Nosto\NostoException;
-use Nosto\Object\Product\Sku;
+use Nosto\Object\Product\Sku as NostoSku;
 use Nosto\Tagging\Helper\Currency as CurrencyHelper;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Price as NostoPriceHelper;
-use Psr\Log\LoggerInterface;
+use Nosto\Tagging\Logger\Logger as NostoLogger;
+use Nosto\Tagging\Model\Product\BuilderTrait;
+use Nosto\Types\Product\ProductInterface;
 
 class Builder
 {
+    use BuilderTrait {
+        BuilderTrait::__construct as builderTraitConstruct; // @codingStandardsIgnoreLine
+    }
     private $nostoDataHelper;
     private $nostoPriceHelper;
-    private $galleryReadHandler;
     private $eventManager;
     private $logger;
     private $nostoCurrencyHelper;
@@ -60,52 +64,61 @@ class Builder
     /**
      * @param NostoHelperData $nostoHelperData
      * @param NostoPriceHelper $priceHelper
-     * @param LoggerInterface $logger
+     * @param NostoLogger $logger
      * @param ManagerInterface $eventManager
-     * @param GalleryReadHandler $galleryReadHandler
      * @param CurrencyHelper $nostoCurrencyHelper
      */
     public function __construct(
         NostoHelperData $nostoHelperData,
         NostoPriceHelper $priceHelper,
-        LoggerInterface $logger,
+        NostoLogger $logger,
         ManagerInterface $eventManager,
-        GalleryReadHandler $galleryReadHandler,
-        CurrencyHelper $nostoCurrencyHelper
+        CurrencyHelper $nostoCurrencyHelper,
+        StockRegistryInterface $stockRegistry
     ) {
         $this->nostoDataHelper = $nostoHelperData;
         $this->nostoPriceHelper = $priceHelper;
         $this->logger = $logger;
         $this->eventManager = $eventManager;
-        $this->galleryReadHandler = $galleryReadHandler;
         $this->nostoCurrencyHelper = $nostoCurrencyHelper;
+        $this->builderTraitConstruct(
+            $nostoHelperData,
+            $stockRegistry,
+            $logger
+        );
     }
 
     /**
      * @param Product $product
      * @param Store $store
      * @param ConfigurableAttribute[] $attributes
-     * @return Sku
+     * @return NostoSku|null
+     * @throws \Exception
      */
     public function build(Product $product, Store $store, $attributes)
     {
-        $nostoSku = new Sku();
+        if (!$this->isAvailabeInStore($product, $store)) {
+            return null;
+        }
 
+        $nostoSku = new NostoSku();
         try {
             $nostoSku->setId($product->getId());
             $nostoSku->setName($product->getName());
-            $nostoSku->setAvailability($product->isAvailable() ? 'InStock' : 'OutOfStock');
+            $nostoSku->setAvailability($this->buildSkuAvailability($product, $store));
             $nostoSku->setImageUrl($this->buildImageUrl($product, $store));
             $price = $this->nostoCurrencyHelper->convertToTaggingPrice(
-                $this->nostoPriceHelper->getProductFinalPriceInclTax(
-                    $product
+                $this->nostoPriceHelper->getProductFinalDisplayPrice(
+                    $product,
+                    $store
                 ),
                 $store
             );
             $nostoSku->setPrice($price);
             $listPrice = $this->nostoCurrencyHelper->convertToTaggingPrice(
-                $this->nostoPriceHelper->getProductPriceInclTax(
-                    $product
+                $this->nostoPriceHelper->getProductDisplayPrice(
+                    $product,
+                    $store
                 ),
                 $store
             );
@@ -115,16 +128,20 @@ class Builder
                 $nostoSku->setGtin($product->getData($gtinAttribute));
             }
 
-            foreach ($attributes as $attribute) {
-                try {
-                    $code = $attribute->getProductAttribute()->getAttributeCode();
-                    $nostoSku->addCustomField($code, $product->getAttributeText($code));
-                } catch (NostoException $e) {
-                    $this->logger->error($e->__toString());
+            if ($this->nostoDataHelper->isCustomFieldsEnabled()) {
+                foreach ($attributes as $attribute) {
+                    try {
+                        $code = $attribute->getProductAttribute()->getAttributeCode();
+                        $nostoSku->addCustomField($code, $product->getAttributeText($code));
+                    } catch (NostoException $e) {
+                        $this->logger->exception($e);
+                    }
                 }
+                //load user defined attributes from attribute set
+                $nostoSku->setCustomFields($this->buildCustomFields($product, $store));
             }
-        } catch (NostoException $e) {
-            $this->logger->error($e->__toString());
+        } catch (\Exception $e) {
+            $this->logger->exception($e);
         }
 
         $this->eventManager->dispatch('nosto_sku_load_after', ['sku' => $nostoSku, 'magentoProduct' => $product]);
@@ -133,24 +150,20 @@ class Builder
     }
 
     /**
+     * Generates the availability for the SKU
+     *
      * @param Product $product
      * @param Store $store
-     * @return string|null
+     * @return string
      */
-    public function buildImageUrl(Product $product, Store $store)
+    private function buildSkuAvailability(Product $product, Store $store)
     {
-        $primary = $this->nostoDataHelper->getProductImageVersion($store);
-        $secondary = 'image'; // The "base" image.
-        $media = $product->getMediaAttributeValues();
-        $image = (isset($media[$primary])
-            ? $media[$primary]
-            : (isset($media[$secondary]) ? $media[$secondary] : null)
-        );
-
-        if (empty($image)) {
-            return null;
+        if ($product->isAvailable()
+            && $this->isInStock($product, $store)
+        ) {
+            return ProductInterface::IN_STOCK;
         }
 
-        return $product->getMediaConfig()->getMediaUrl($image);
+        return ProductInterface::OUT_OF_STOCK;
     }
 }

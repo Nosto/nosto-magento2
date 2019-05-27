@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2017, Nosto Solutions Ltd
+ * Copyright (c) 2019, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,7 +29,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <contact@nosto.com>
- * @copyright 2017 Nosto Solutions Ltd
+ * @copyright 2019 Nosto Solutions Ltd
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
@@ -37,9 +37,10 @@
 namespace Nosto\Tagging\Block;
 
 use Magento\Framework\View\Element\Template;
-use Magento\Framework\View\Element\Template\Context;
+use Nosto\Object\PageType as NostoPageType;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
+use Magento\Framework\View\Element\Template\Context;
 
 /**
  * Page type block used for outputting page-type on the different pages.
@@ -47,7 +48,7 @@ use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 class PageType extends Template
 {
     use TaggingTrait {
-        TaggingTrait::__construct as taggingConstruct;
+        TaggingTrait::__construct as taggingConstruct; // @codingStandardsIgnoreLine
     }
 
     /**
@@ -70,7 +71,6 @@ class PageType extends Template
         array $data = []
     ) {
         parent::__construct($context, $data);
-
         $this->taggingConstruct($nostoHelperAccount, $nostoHelperScope);
     }
 
@@ -80,8 +80,20 @@ class PageType extends Template
      *
      * @return string
      */
-    public function getPageTypeName()
+    private function getPageTypeName()
     {
-        return $this->getData('page_type') ? $this->getData('page_type') : self::DEFAULT_TYPE;
+        return $this->getData('page_type') ?: self::DEFAULT_TYPE;
+    }
+
+    /**
+     * Returns the HTML to render PageTypes
+     *
+     * @return string
+     */
+    public function getAbstractObject()
+    {
+        return (new NostoPageType(
+            $this->getPageTypeName()
+        ));
     }
 }

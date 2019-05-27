@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, Nosto Solutions Ltd
+ * Copyright (c) 2019, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -28,34 +28,63 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <contact@nosto.com>
- * @copyright 2017 Nosto Solutions Ltd
+ * @copyright 2019 Nosto Solutions Ltd
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
 
-define(['catalogAddToCart', 'nostojs', 'jquery'], function (addToCart, nostojs, $) {
+define([
+    'nostojs',
+    'jquery',
+    'catalogAddToCart'
+], function (nostojs, $) {
+    'use strict';
 
     //noinspection SpellCheckingInspection
-    var form = $('#nosto_addtocart_form');
-    var helper = new addToCart();
+    var form = $('#nosto_addtocart_form').catalogAddToCart({});
+    var Recobuy = {};
+    Recobuy.addProductToCart = function (productId, element, quantity) {
+        quantity = quantity || 1;
+        var productData = {
+            "productId" : productId,
+            'skuId' : productId
+        };
+        Recobuy.addSkuToCart(productData, element, quantity);
+    };
 
-    Recobuy = {};
-    Recobuy.addProductToCart = function (productId, element) {
+    // Products must be and array of objects [{'productId': '123', 'skuId': '321'}, {...}]
+    // skuId is optional for simple products.
+    Recobuy.addMultipleProductsToCart = function (products, element) {
+        if (products.constructor === Array) {
+            products.forEach(function (productObj) {
+                Recobuy.addSkuToCart(productObj, element, 1);
+            });
+        }
+    };
 
-        if (typeof element === 'object') {
+    // Product object must have fields productId and skuId {'productId': '123', 'skuId': '321'}
+    Recobuy.addSkuToCart = function (product, element, quantity) {
+        quantity = quantity || 1;
+        if (typeof element === 'object' && element) {
             var slotId = this.resolveContextSlotId(element);
             if (slotId) {
                 nostojs(function (api) {
-                    api.recommendedProductAddedToCart(productId, slotId);
+                    api.recommendedProductAddedToCart(product.productId, slotId);
                 });
             }
         }
 
-        form.find('input[name="product"]').val(productId);
-        form.find('input[name="qty"]').val(1);
-        helper.ajaxSubmit(form);
-    };
+        form.find('input[name="product"]').val(product.productId);
+        var productSku = document.createElement("input");
+        productSku.setAttribute("type", "hidden");
+        productSku.setAttribute("name", 'sku');
+        productSku.setAttribute("value", product.skuId);
+        form.append(productSku);
 
+        form.find('input[name="qty"]').val(quantity);
+        form.catalogAddToCart('ajaxSubmit', form);
+    };
+    
     Recobuy.resolveContextSlotId = function (element) {
         var m = 20;
         var n = 0;

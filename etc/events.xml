@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!--
-  ~ Copyright (c) 2017, Nosto Solutions Ltd
+  ~ Copyright (c) 2019, Nosto Solutions Ltd
   ~ All rights reserved.
   ~
   ~ Redistribution and use in source and binary forms, with or without modification,
@@ -29,7 +29,7 @@
   ~ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   ~
   ~ @author Nosto Solutions Ltd <contact@nosto.com>
-  ~ @copyright 2017 Nosto Solutions Ltd
+  ~ @copyright 2019 Nosto Solutions Ltd
   ~ @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
   ~
   -->
@@ -40,12 +40,19 @@
     <event name="sales_order_save_commit_after">
         <observer name="nosto_order_confirmation" instance="Nosto\Tagging\Observer\Order\Save"/>
     </event>
+    <event name="nosto_sales_save_after">
+        <observer name="nosto_order_confirmation" instance="Nosto\Tagging\Observer\Order\Save"/>
+    </event>
     <event name="review_save_commit_after">
-        <observer name="nosto_review_save_after"
-                  instance="Nosto\Tagging\Observer\Product\Review"/>
+        <observer name="nosto_review_save_after" instance="Nosto\Tagging\Observer\Product\Review"/>
     </event>
     <event name="review_delete_after">
-        <observer name="nosto_review_delete_after"
-                  instance="Nosto\Tagging\Observer\Product\Review"/>
+        <observer name="nosto_review_delete_after" instance="Nosto\Tagging\Observer\Product\Review"/>
+    </event>
+    <event name="checkout_cart_product_add_after">
+        <observer name="nosto_checkout_cart_product_add_after" instance="Nosto\Tagging\Observer\Cart\Add"/>
+    </event>
+    <event name="newsletter_subscriber_save_commit_after">
+        <observer name="nosto_newsletter_subscriber_save_after" instance="Nosto\Tagging\Observer\Customer\UpdateMarketingPermission"/>
     </event>
 </config>

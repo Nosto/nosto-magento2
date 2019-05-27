@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2017, Nosto Solutions Ltd
+ * Copyright (c) 2019, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,7 +29,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <contact@nosto.com>
- * @copyright 2017 Nosto Solutions Ltd
+ * @copyright 2019 Nosto Solutions Ltd
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
@@ -39,11 +39,11 @@ namespace Nosto\Tagging\Model\Product\Url;
 use Magento\Catalog\Model\Product;
 use Magento\CatalogUrlRewrite\Model\ProductUrlRewriteGenerator;
 use Magento\Framework\DataObject;
-use Magento\Framework\Filter\FilterManager;
 use Magento\Framework\Url;
 use Magento\Store\Model\Store;
 use Magento\UrlRewrite\Model\UrlFinderInterface;
 use Magento\UrlRewrite\Service\V1\Data\UrlRewrite;
+use Nosto\Tagging\Helper\Data as NostoDataHelper;
 
 /**
  * Url builder class cannibalised from the Magento core. When trying to get the URL of a product
@@ -61,35 +61,32 @@ use Magento\UrlRewrite\Service\V1\Data\UrlRewrite;
  */
 class Builder extends DataObject
 {
-    private $data;
-    private $filter;
     private $urlFinder;
     private $urlFactory;
+    private $nostoDataHelper;
 
     /**
      * @param Url $urlFactory
-     * @param FilterManager $filter
      * @param UrlFinderInterface $urlFinder
+     * @param NostoDataHelper $nostoDataHelper
      * @param array $data
      */
     public function __construct(
         Url $urlFactory,
-        FilterManager $filter,
         UrlFinderInterface $urlFinder,
+        NostoDataHelper $nostoDataHelper,
         array $data = []
     ) {
         parent::__construct($data);
-        $this->data = $data;
-        $this->filter = $filter;
         $this->urlFinder = $urlFinder;
         $this->urlFactory = $urlFactory;
+        $this->nostoDataHelper = $nostoDataHelper;
     }
 
     public function getUrlInStore(Product $product, Store $store)
     {
         $routeParams = [];
-        $requestPath = '';
-
+        $routePath = '';
         $filterData = [
             UrlRewrite::ENTITY_ID => $product->getId(),
             UrlRewrite::ENTITY_TYPE => ProductUrlRewriteGenerator::ENTITY_TYPE,
@@ -97,15 +94,18 @@ class Builder extends DataObject
         ];
         $rewrite = $this->urlFinder->findOneByData($filterData);
         if ($rewrite) {
-            $requestPath = $rewrite->getRequestPath();
+            $routeParams['_direct'] = $rewrite->getRequestPath();
+        } else { // If the rewrite is not found fallback to the "ugly version" of the URL
+            $routePath = 'catalog/product/view';
+            $routeParams['id'] = $product->getId();
+            $routeParams['s'] = $product->getUrlKey();
         }
-
         $routeParams['_nosid'] = true;          // Remove the session identifier from the URL
-        $routeParams['_scope'] = $store->getId();      // Specify the store identifier for the URL
-        $routeParams['_scope_to_url'] = true;   // Add the store's scope to the URL
-        $routeParams['_direct'] = $requestPath; // Set the product's slug as the URL
+        $routeParams['_scope'] = $store->getCode();      // Specify the store identifier for the URL
+        $routeParams['_scope_to_url'] = $this->nostoDataHelper->getStoreCodeToUrl($store);
         $routeParams['_query'] = [];            // Reset the cached URL instance GET query params
 
-        return $this->urlFactory->setScope($store->getId())->getUrl('', $routeParams);
+        return $this->urlFactory->setScope($store->getId())
+            ->getUrl($routePath, $routeParams);
     }
 }

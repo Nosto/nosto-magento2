@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!--
-  ~ Copyright (c) 2017, Nosto Solutions Ltd
+  ~ Copyright (c) 2019, Nosto Solutions Ltd
   ~ All rights reserved.
   ~
   ~ Redistribution and use in source and binary forms, with or without modification,
@@ -29,7 +29,7 @@
   ~ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   ~
   ~ @author Nosto Solutions Ltd <contact@nosto.com>
-  ~ @copyright 2017 Nosto Solutions Ltd
+  ~ @copyright 2019 Nosto Solutions Ltd
   ~ @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
   ~
   -->
@@ -41,6 +41,8 @@
     <body>
         <referenceContainer name="page.main.actions">
             <block class="Magento\Backend\Block\Store\Switcher" name="store_switcher"/>
+            <block class="Nosto\Tagging\Block\Adminhtml\Account\Config" name="nosto.account.config"
+                   template="config.phtml"/>
         </referenceContainer>
         <referenceContainer name="content">
             <block class="Nosto\Tagging\Block\Adminhtml\Account\Iframe" name="nosto.account.iframe"

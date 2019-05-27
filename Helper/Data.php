@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2017, Nosto Solutions Ltd
+ * Copyright (c) 2019, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,17 +29,19 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <contact@nosto.com>
- * @copyright 2017 Nosto Solutions Ltd
+ * @copyright 2019 Nosto Solutions Ltd
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
 
 namespace Nosto\Tagging\Helper;
 
+use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\Config\Storage\WriterInterface;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 use Magento\Framework\App\ProductMetadataInterface;
+use Magento\Framework\App\Cache\Manager as CacheManager;
 use Magento\Framework\AppInterface;
 use Magento\Framework\Module\ModuleListInterface;
 use Magento\Store\Api\Data\StoreInterface;
@@ -63,6 +65,11 @@ class Data extends AbstractHelper
     const XML_PATH_IMAGE_VERSION = 'nosto/images/version';
 
     /**
+     * Path to store config for removing "pub/" directory from image URLs
+     */
+    const XML_PATH_IMAGE_REMOVE_PUB_FROM_URL = 'nosto/images/remove_pub_directory';
+
+    /**
      * Path to the configuration object that store's the brand attribute
      */
     const XML_PATH_BRAND_ATTRIBUTE = 'nosto/optional/brand';
@@ -83,6 +90,11 @@ class Data extends AbstractHelper
     const XML_PATH_VARIATION_TAGGING = 'nosto/flags/variation_tagging';
 
     /**
+     * Path to store config for custom fields
+     */
+    const XML_PATH_USE_CUSTOM_FIELDS = 'nosto/flags/use_custom_fields';
+
+    /**
      * Path to the configuration object that stores the preference to tag alt. image data
      */
     const XML_PATH_ALTIMG_TAGGING = 'nosto/flags/altimg_tagging';
@@ -98,14 +110,85 @@ class Data extends AbstractHelper
     const XML_PATH_INVENTORY_TAGGING = 'nosto/flags/inventory_tagging';
 
     /**
+     * Path to the configuration object that stores the preference to full reindex
+     */
+    const XML_PATH_FULL_REINDEX = 'nosto/flags/full_reindex';
+
+    /**
      * Path to the configuration object that stores the preference for real time product updates
      */
     const XML_PATH_PRODUCT_UPDATES = 'nosto/flags/product_updates';
 
     /**
+     * Path to store config for send add to cart event to nosto
+     */
+    const XML_PATH_SEND_ADD_TO_CART_EVENT = 'nosto/flags/send_add_to_cart_event';
+
+    /**
+     * Path to store config for sending customer data to Nosto or not
+     */
+    const XML_PATH_SEND_CUSTOMER_DATA = 'nosto/flags/send_customer_data';
+
+    /**
+     * Path to the configuration object that stores the preference for low stock tagging
+     */
+    const XML_PATH_LOW_STOCK_INDICATION = 'nosto/flags/low_stock_indication';
+
+    /**
+     * Path to the configuration object that stores the percentage of PHP available memory for indexer
+     */
+    const XML_PATH_INDEXER_MEMORY = 'nosto/flags/indexer_memory';
+
+    /**
+
+     * Path to the configuration object that stores category sorting
+     */
+    const XML_PATH_CATEGORY_SORTING = 'nosto/flags/category_sorting';
+
+    /*
+     * Path to the configuration object for tagging the date a product has beed added to Magento's catalog
+     */
+    const XML_PATH_TAG_DATE_PUBLISHED = 'nosto/flags/tag_date_published';
+
+    /**
+     * Path to the configuration object for pricing variations
+     */
+    const XML_PATH_PRICING_VARIATION = 'nosto/multicurrency/pricing_variation';
+
+    /**
+     * Path to the configuration object that stores the preference for adding store code to URL
+     */
+    const XML_PATH_STORE_CODE_TO_URL = 'nosto/url/store_code_to_url';
+
+    /**
      * Path to the configuration object for customized tags
      */
     const XML_PATH_TAG = 'nosto/attributes/';
+
+    /**
+     * Path to the configuration object for multi currency
+     */
+    const XML_PATH_MULTI_CURRENCY = 'nosto/multicurrency/method';
+
+    /**
+     * @var string Nosto customer reference attribute name
+     */
+    const NOSTO_CUSTOMER_REFERENCE_ATTRIBUTE_NAME = 'nosto_customer_reference';
+
+    /**
+     * Values for ratings settings
+     */
+    const SETTING_VALUE_YOTPO_RATINGS = '2';
+    const SETTING_VALUE_MAGENTO_RATINGS = '1';
+    const SETTING_VALUE_NO_RATINGS = '0';
+
+    /**
+     * Values of the multi currency settings
+     */
+    const SETTING_VALUE_MC_EXCHANGE_RATE = 'exchangerates';
+    const SETTING_VALUE_MC_SINGLE = 'single';
+    const SETTING_VALUE_MC_DISABLED = 'disabled';
+    const SETTING_VALUE_MC_UNDEFINED = 'undefined';
 
     /**
      * Name of the module
@@ -121,22 +204,24 @@ class Data extends AbstractHelper
     private $configWriter;
     private $productMetaData;
     private $nostoHelperScope;
+    private $cacheManager;
 
     /**
-     * Constructor.
-     *
-     * @param Context $context the context.
-     * @param NostoHelperScope $nostoHelperScope
+     * Data constructor.
+     * @param Context $context
+     * @param Scope $nostoHelperScope
      * @param ModuleListInterface $moduleListing
      * @param WriterInterface $configWriter
      * @param ProductMetadataInterface $productMetadataInterface
+     * @param CacheManager $cacheManager
      */
     public function __construct(
         Context $context,
         NostoHelperScope $nostoHelperScope,
         ModuleListInterface $moduleListing,
         WriterInterface $configWriter,
-        ProductMetadataInterface $productMetadataInterface
+        ProductMetadataInterface $productMetadataInterface,
+        CacheManager $cacheManager
     ) {
         parent::__construct($context);
 
@@ -144,6 +229,7 @@ class Data extends AbstractHelper
         $this->configWriter = $configWriter;
         $this->productMetaData = $productMetadataInterface;
         $this->nostoHelperScope = $nostoHelperScope;
+        $this->cacheManager = $cacheManager;
     }
 
     /**
@@ -172,7 +258,7 @@ class Data extends AbstractHelper
     /**
      * Returns the value of the selected image version option from the configuration table
      *
-     * @param StoreInterface $store the store model or null.
+     * @param StoreInterface|null $store the store model or null.
      * @return string the configuration value
      */
     public function getProductImageVersion(StoreInterface $store = null)
@@ -181,9 +267,22 @@ class Data extends AbstractHelper
     }
 
     /**
+     * Returns boolean if "pub/" directory should be removed from product image
+     * URLs. This is needed because M2 CLI doesn't know if the docroot is pointing to
+     * "pub/" directory or Magento root.
+     *
+     * @param StoreInterface|null $store the store model or null.
+     * @return boolean
+     */
+    public function getRemovePubDirectoryFromProductImageUrl(StoreInterface $store = null)
+    {
+        return $this->getStoreConfig(self::XML_PATH_IMAGE_REMOVE_PUB_FROM_URL, $store);
+    }
+
+    /**
      * Returns the value of the selected brand attribute from the configuration table
      *
-     * @param StoreInterface $store the store model or null.
+     * @param StoreInterface|null $store the store model or null.
      * @return string the configuration value
      */
     public function getBrandAttribute(StoreInterface $store = null)
@@ -194,7 +293,7 @@ class Data extends AbstractHelper
     /**
      * Returns the value of the selected margin attribute from the configuration table
      *
-     * @param StoreInterface $store the store model or null.
+     * @param StoreInterface|null $store the store model or null.
      * @return string the configuration value
      */
     public function getMarginAttribute(StoreInterface $store = null)
@@ -205,7 +304,7 @@ class Data extends AbstractHelper
     /**
      * Returns the value of the selected GTIN attribute from the configuration table
      *
-     * @param StoreInterface $store the store model or null.
+     * @param StoreInterface|null $store the store model or null.
      * @return string the configuration value
      */
     public function getGtinAttribute(StoreInterface $store = null)
@@ -216,7 +315,7 @@ class Data extends AbstractHelper
     /**
      * Returns if variation data tagging is enabled from the configuration table
      *
-     * @param StoreInterface $store the store model or null.
+     * @param StoreInterface|null $store the store model or null.
      * @return bool the configuration value
      */
     public function isVariationTaggingEnabled(StoreInterface $store = null)
@@ -225,9 +324,20 @@ class Data extends AbstractHelper
     }
 
     /**
+     * Returns on/off setting for custom fields
+     *
+     * @param StoreInterface|null $store the store model or null.
+     * @return boolean
+     */
+    public function isCustomFieldsEnabled(StoreInterface $store = null)
+    {
+        return (bool)$this->getStoreConfig(self::XML_PATH_USE_CUSTOM_FIELDS, $store);
+    }
+
+    /**
      * Returns if alt. image data tagging is enabled from the configuration table
      *
-     * @param StoreInterface $store the store model or null.
+     * @param StoreInterface|null $store the store model or null.
      * @return bool the configuration value
      */
     public function isAltimgTaggingEnabled(StoreInterface $store = null)
@@ -238,18 +348,35 @@ class Data extends AbstractHelper
     /**
      * Returns if rating and review data tagging is enabled from the configuration table
      *
-     * @param StoreInterface $store the store model or null.
+     * @param StoreInterface|null $store the store model or null.
      * @return bool the configuration value
      */
     public function isRatingTaggingEnabled(StoreInterface $store = null)
     {
-        return (bool)$this->getStoreConfig(self::XML_PATH_RATING_TAGGING, $store);
+        $providerCode = $this->getStoreConfig(self::XML_PATH_RATING_TAGGING, $store);
+
+        if ((int)$providerCode === 0) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Returns the provider used for ratings and reviews
+     *
+     * @param StoreInterface|null $store
+     * @return mixed|null
+     */
+    public function getRatingTaggingProvider(StoreInterface $store = null)
+    {
+        return $this->getStoreConfig(self::XML_PATH_RATING_TAGGING, $store);
     }
 
     /**
      * Returns if inventory data tagging is enabled from the configuration table
      *
-     * @param StoreInterface $store the store model or null.
+     * @param StoreInterface|null $store the store model or null.
      * @return bool the configuration value
      */
     public function isInventoryTaggingEnabled(StoreInterface $store = null)
@@ -258,9 +385,20 @@ class Data extends AbstractHelper
     }
 
     /**
+     * Returns true if full reindex is enable
+     *
+     * @param StoreInterface|null $store the store model or null.
+     * @return bool the configuration value
+     */
+    public function isFullReindexEnabled(StoreInterface $store = null)
+    {
+        return (bool)$this->getStoreConfig(self::XML_PATH_FULL_REINDEX, $store);
+    }
+
+    /**
      * Returns if real time product updates are enabled from the configuration table
      *
-     * @param StoreInterface $store the store model or null.
+     * @param StoreInterface|null $store the store model or null.
      * @return bool the configuration value
      */
     public function isProductUpdatesEnabled(StoreInterface $store = null)
@@ -269,8 +407,132 @@ class Data extends AbstractHelper
     }
 
     /**
+     * Returns if real time cart updates are enabled from the configuration table
+     *
+     * @param StoreInterface|null $store the store model or null.
+     * @return bool the configuration value
+     */
+    public function isSendAddToCartEventEnabled(StoreInterface $store = null)
+    {
+        return (bool)$this->getStoreConfig(self::XML_PATH_SEND_ADD_TO_CART_EVENT, $store);
+    }
+
+    /**
+     * Returns if customer data should be send to Nosto
+     *
+     * @param StoreInterface|null $store the store model or null.
+     * @return bool the configuration value
+     */
+    public function isSendCustomerDataToNostoEnabled(StoreInterface $store = null)
+    {
+        return (bool)$this->getStoreConfig(self::XML_PATH_SEND_CUSTOMER_DATA, $store);
+    }
+
+    /**
+     * Returns if category sorting is enabled
+     *
+     * @param StoreInterface|null $store the store model or null.
+     * @return bool the configuration value
+     */
+    public function isCategorySortingEnabled(StoreInterface $store = null)
+    {
+        return (bool)$this->getStoreConfig(self::XML_PATH_CATEGORY_SORTING, $store);
+    }
+
+    /**
+     * Returns if low stock indication should be tagged
+     *
+     * @param StoreInterface|null $store the store model or null.
+     * @return bool the configuration value
+     */
+    public function isLowStockIndicationEnabled(StoreInterface $store = null)
+    {
+        return (bool)$this->getStoreConfig(self::XML_PATH_LOW_STOCK_INDICATION, $store);
+    }
+
+    /**
+     * Returns maximum percentage of PHP available memory that indexer should use
+     *
+     * @param StoreInterface|null $store the store model or null.
+     * @return bool the configuration value
+     */
+    public function getIndexerMemory(StoreInterface $store = null)
+    {
+        return $this->getStoreConfig(self::XML_PATH_INDEXER_MEMORY, $store);
+    }
+
+    /**
+     * Returns on/off setting for tagging product's date published
+     *
+     * @param StoreInterface|null $store the store model or null.
+     * @return bool the configuration value
+     */
+    public function isTagDatePublishedEnabled(StoreInterface $store = null)
+    {
+        return $this->getStoreConfig(self::XML_PATH_TAG_DATE_PUBLISHED, $store);
+    }
+
+    /**
+     * Returns if pricing variation is enabled
+     *
+     * @param StoreInterface|null $store the store model or null.
+     * @return bool the configuration value
+     */
+    public function isPricingVariationEnabled(StoreInterface $store = null)
+    {
+        return (bool)$this->getStoreConfig(self::XML_PATH_PRICING_VARIATION, $store);
+    }
+
+    /**
+     * Returns if multi currency is disabled
+     *
+     * @param StoreInterface|null $store the store model or null.
+     * @return bool the configuration value
+     */
+    public function isMultiCurrencyDisabled(StoreInterface $store = null)
+    {
+        $storeConfig = $this->getMultiCurrencyMethod($store);
+        return ($storeConfig === self::SETTING_VALUE_MC_DISABLED);
+    }
+
+    /**
+     * Returns if multi currency is enabled
+     *
+     * @param StoreInterface|null $store the store model or null.
+     * @return bool the configuration value
+     */
+    public function isMultiCurrencyExchangeRatesEnabled(StoreInterface $store = null)
+    {
+        $storeConfig = $this->getMultiCurrencyMethod($store);
+        return ($storeConfig === self::SETTING_VALUE_MC_EXCHANGE_RATE);
+    }
+
+    /**
+     * Returns the multi currency setup value / multi currency method
+     *
+     * @param StoreInterface|null $store the store model or null.
+     * @return string the configuration value
+     */
+    public function getMultiCurrencyMethod(StoreInterface $store = null)
+    {
+        return $this->getStoreConfig(self::XML_PATH_MULTI_CURRENCY, $store);
+    }
+
+    /**
+     * Saves the multi currency setup value / multi currency method
+     *
+     * @param string $value the value of the multi currency setting.
+     * @param StoreInterface|null $store the store model or null.
+     * @return string|null the configuration value
+     */
+    public function saveMultiCurrencyMethod($value, StoreInterface $store = null)
+    {
+        return $this->saveStoreConfig(self::XML_PATH_MULTI_CURRENCY, $value, $store);
+    }
+
+    /**
      * @param string $path
-     * @param StoreInterface|Store $store
+     * @param StoreInterface|Store|null $store
      * @return mixed|null
      */
     public function getStoreConfig($path, StoreInterface $store = null)
@@ -279,6 +541,23 @@ class Data extends AbstractHelper
             $store = $this->nostoHelperScope->getStore(true);
         }
         return $store->getConfig($path);
+    }
+
+    /**
+     * @param string $path
+     * @param mixed $value
+     * @param StoreInterface|Store|null $store
+     */
+    public function saveStoreConfig($path, $value, StoreInterface $store = null)
+    {
+        $scope = ScopeConfigInterface::SCOPE_TYPE_DEFAULT;
+        $storeId = 0;
+        if ($store !== null) {
+            $scope = 'stores'; // No const found for this one in M2.2.2
+            $storeId = $store->getStoreId(); // No const found for this one in M2.2.2
+        }
+
+        $this->configWriter->save($path, $value, $scope, $storeId);
     }
 
     /**
@@ -291,9 +570,8 @@ class Data extends AbstractHelper
         $nostoModule = $this->moduleListing->getOne('Nosto_Tagging');
         if (!empty($nostoModule['setup_version'])) {
             return $nostoModule['setup_version'];
-        } else {
-            return 'unknown';
         }
+        return 'unknown';
     }
 
     /**
@@ -315,19 +593,66 @@ class Data extends AbstractHelper
     }
 
     /**
+     * Returns the edition (community/enterprise) of the platform the e-commerce installation
+     *
+     * @return string the platforms's edition
+     */
+    public function getPlatformEdition()
+    {
+        $edition = 'unknown';
+        if ($this->productMetaData->getEdition()) {
+            $edition = $this->productMetaData->getEdition();
+        }
+
+        return $edition;
+    }
+
+    /**
      * Get tag1 mapping attributes
      *
-     * @param $tagId tag1, tag2 or tag3
-     * @param StoreInterface $store the store model or null.
+     * @param string $tagId tag1, tag2 or tag3
+     * @param StoreInterface|null $store the store model or null.
      * @return null|array of attributes
      */
     public function getTagAttributes($tagId, StoreInterface $store = null)
     {
         $attributesConfig = $this->getStoreConfig(self::XML_PATH_TAG . $tagId, $store);
+        /** @noinspection TypeUnsafeComparisonInspection */
         if ($attributesConfig == null) {
             return null;
         }
 
         return explode(',', $attributesConfig);
+    }
+
+    /**
+     * Returns the value if store codes should be added to Nosto URLs
+     *
+     * @param StoreInterface|null $store the store model or null.
+     * @return boolean the configuration value
+     */
+    public function getStoreCodeToUrl(StoreInterface $store = null)
+    {
+        return (bool)$this->getStoreConfig(self::XML_PATH_STORE_CODE_TO_URL, $store);
+    }
+
+    /**
+     * Clears Magento cache for given type (config, layout, block_html, etc.)
+     * @see http://devdocs.magento.com/guides/v2.2/config-guide/cli/config-cli-subcommands-cache.html
+     *
+     * @param string $type give "all" to clear all
+     */
+    public function clearMagentoCache($type)
+    {
+        $types = $this->cacheManager->getAvailableTypes();
+        $clearTypes = [];
+        if ($type === 'all') {
+            $clearTypes = $types;
+        } elseif (in_array($type, $types, false)) {
+            $clearTypes[] = $type;
+        }
+        if (!empty($clearTypes)) {
+            $this->cacheManager->clean($clearTypes);
+        }
     }
 }

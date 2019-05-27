@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2017, Nosto Solutions Ltd
+ * Copyright (c) 2019, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,7 +29,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <contact@nosto.com>
- * @copyright 2017 Nosto Solutions Ltd
+ * @copyright 2019 Nosto Solutions Ltd
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
@@ -41,27 +41,19 @@ use Magento\Sales\Model\ResourceModel\Order\CollectionFactory as OrderCollection
 use Magento\Store\Model\Store;
 use Nosto\NostoException;
 use Nosto\Object\Order\OrderCollection;
-use Nosto\Tagging\Helper\Account as NostoHelperAccount;
-use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Model\Order\Builder as NostoOrderBuilder;
 
 class Collection
 {
     private $orderCollectionFactory;
-    private $nostoHelperAccount;
     private $nostoOrderBuilder;
-    private $nostoHelperScope;
 
     public function __construct(
         OrderCollectionFactory $orderCollectionFactory,
-        NostoHelperScope $nostoHelperScope,
-        NostoHelperAccount $nostoHelperAccount,
         NostoOrderBuilder $nostoOrderBuilder
     ) {
         $this->orderCollectionFactory = $orderCollectionFactory;
-        $this->nostoHelperAccount = $nostoHelperAccount;
         $this->nostoOrderBuilder = $nostoOrderBuilder;
-        $this->nostoHelperScope = $nostoHelperScope;
     }
 
     public function getCollection(Store $store)
@@ -78,6 +70,7 @@ class Collection
      * @param Store $store
      * @param $id
      * @return OrderCollection
+     * @throws NostoException
      */
     public function buildSingle(Store $store, $id)
     {
@@ -91,6 +84,7 @@ class Collection
      * @param int $limit
      * @param int $offset
      * @return OrderCollection
+     * @throws NostoException
      */
     public function buildMany(Store $store, $limit = 100, $offset = 0)
     {

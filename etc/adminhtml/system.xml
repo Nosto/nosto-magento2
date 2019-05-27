@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!--
-  ~ Copyright (c) 2017, Nosto Solutions Ltd
+  ~ Copyright (c) 2019, Nosto Solutions Ltd
   ~ All rights reserved.
   ~
   ~ Redistribution and use in source and binary forms, with or without modification,
@@ -29,7 +29,7 @@
   ~ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   ~
   ~ @author Nosto Solutions Ltd <contact@nosto.com>
-  ~ @copyright 2017 Nosto Solutions Ltd
+  ~ @copyright 2019 Nosto Solutions Ltd
   ~ @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
   ~
   -->
@@ -54,8 +54,26 @@
                     </comment>
                     <source_model>Nosto\Tagging\Model\Config\Source\Image</source_model>
                 </field>
+                <field id="remove_pub_directory" translate="label comment" type="select" sortOrder="20"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Remove "pub/" from product image URLs</label>
+                    <comment><![CDATA[Set this to yes if you have configured the docroot to point to "pub/" directory.]]>
+                    </comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
             </group>
-            <group id="optional" translate="label" type="text" sortOrder="20" showInDefault="1"
+            <group id="url" translate="label" type="text" sortOrder="20" showInDefault="1"
+                   showInWebsite="1" showInStore="1">
+                <label>URL options</label>
+                <field id="store_code_to_url" translate="label comment" type="select" sortOrder="80"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Add Store Code to Nosto Urls</label>
+                    <comment><![CDATA[Set this to no if you have configured different URLs or domains for each store or if you are only using single store view.]]>
+                    </comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+            </group>
+            <group id="optional" translate="label" type="text" sortOrder="30" showInDefault="1"
                    showInWebsite="1" showInStore="1">
                 <label>Other Options</label>
                 <field id="brand" translate="label comment" type="select" sortOrder="10"
@@ -101,6 +119,13 @@
                     </comment>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
+                <field id="use_custom_fields" translate="label comment" type="select" sortOrder="10"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enable custom fields</label>
+                    <comment>Send attributes from product attribute set to Nosto as custom fields
+                    </comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
                 <field id="altimg_tagging" translate="label comment" type="select" sortOrder="20"
                        showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Enable Alternate Images</label>
@@ -113,8 +138,9 @@
                     <label>Enable Ratings &amp; Reviews</label>
                     <comment>Enable tagging rating and review data for use in recommendations.
                     </comment>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <source_model>Nosto\Tagging\Model\Config\Source\Ratings</source_model>
                 </field>
+
                 <field id="inventory_tagging" translate="label comment" type="select" sortOrder="40"
                        showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Enable Inventory Levels</label>
@@ -126,11 +152,65 @@
                 </field>
                 <field id="product_updates" translate="label comment" type="select" sortOrder="50"
                        showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Product Updates</label>
-                    <comment><![CDATA[Enable real time product updates for keeping the catalog in sync.
+                    <label>Product Updates via API</label>
+                    <comment><![CDATA[Enable product updates via API for keeping the catalog in sync.
                         <strong style="color:red">Warning!</strong> Disabling this feature may
                         lead to products with incorrect pricing and availability data to be displayed
                         in recommendations.]]>
+                    </comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="full_reindex" translate="label comment" type="select" sortOrder="60"
+                       showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Indexer full reindex</label>
+                    <comment><![CDATA[Enable full reindex for reindex all products to nosto by running
+                     the magento indexer:reindex command]]>
+                    </comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="low_stock_indication" translate="label comment" type="select" sortOrder="70"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enable Low Stock Indication</label>
+                    <comment><![CDATA[Indicate in Nosto product tags if product's stock is running low]]>
+                    </comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="send_add_to_cart_event" translate="label comment" type="select" sortOrder="80"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Real-time cart updates to Nosto</label>
+                    <comment><![CDATA[Set this to no if you don't want to send real-time cart updates to Nosto via API]]>
+                    </comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="send_customer_data" translate="label comment" type="select" sortOrder="90"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Send Customer Data To Nosto</label>
+                    <comment><![CDATA[Set this to no if you don't want to send customer data to Nosto]]>
+                    </comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="indexer_memory" translate="label comment" type="select" sortOrder="100"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Indexer Memory</label>
+                    <comment>
+                        <![CDATA[Percentage of total PHP available memory that Nosto indexer is allowed to use]]>
+                    </comment>
+                    <source_model>Nosto\Tagging\Model\Config\Source\Memory</source_model>
+                </field>
+                <field id="category_sorting" translate="label comment" type="select" sortOrder="100"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Category sorting (experimental)</label>
+                    <comment>
+                        <![CDATA[Experimental feature. Might be removed in future releases. Contact Nosto for further details.]]>
+                    </comment>
+                    <source_model>Nosto\Tagging\Model\Config\Source\CategorySorting</source_model>
+                    <frontend_model>Nosto\Tagging\Model\Config\Frontend\CategorySorting</frontend_model>
+                </field>
+                <field id="tag_date_published" translate="label comment" type="select" sortOrder="100"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Add product published date to tagging</label>
+                    <comment>
+                        <![CDATA[Set this yes if you want to tag the date a product has been added to Magento's catalog]]>
                     </comment>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
@@ -160,6 +240,37 @@
                     <comment>Choose attributes that will be added to tag 3 when present
                     </comment>
                     <source_model>Nosto\Tagging\Model\Config\Source\Tags</source_model>
+                </field>
+            </group>
+            <group id="multicurrency" translate="label" type="text" sortOrder="40" showInDefault="1"
+                   showInWebsite="1" showInStore="1">
+                <label>Currency setup</label>
+                <field id="method" translate="label comment" type="select" sortOrder="10"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Multi currency setup</label>
+                    <comment>Set this to "Exchange rates" if your store uses Magento's exchange rates. If the store view uses only one currency set this to "Single currency". If you have a custom pricing handling set this to "Disabled" and Nosto will not try to do any currency conversions.
+                    </comment>
+                    <source_model>Nosto\Tagging\Model\Config\Source\MultiCurrency</source_model>
+                    <backend_model>Nosto\Tagging\Model\Config\Backend\MultiCurrency</backend_model>
+                </field>
+                <field id="pricing_variation" translate="label comment" type="select" sortOrder="11"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <depends>
+                        <field id="method">disabled</field>
+                    </depends>
+                    <label>Price Variation</label>
+                    <comment><![CDATA[Enable price variation to support group price and catalog price rules.
+                        <strong style="color:red">Warning!</strong> It cannot be enabled if multi-currency is enabled.]]>
+                    </comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+            </group>
+            <group id="nosto_account_info" translate="label" type="text" sortOrder="60" showInDefault="0"
+                   showInWebsite="0" showInStore="1">
+                <label>Account Details and Tokens</label>
+                <field id="nosto_account_info_fields" translate="label comment" type="text" sortOrder="20"
+                       showInDefault="0" showInWebsite="0" showInStore="1">
+                    <frontend_model>Nosto\Tagging\Block\Adminhtml\Form\Field\Tokens</frontend_model>
                 </field>
             </group>
         </section>

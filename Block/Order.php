@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2017, Nosto Solutions Ltd
+ * Copyright (c) 2019, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,7 +29,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <contact@nosto.com>
- * @copyright 2017 Nosto Solutions Ltd
+ * @copyright 2019 Nosto Solutions Ltd
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
@@ -54,7 +54,7 @@ use Nosto\Tagging\Model\Order\Builder as NostoOrderBuilder;
 class Order extends Success
 {
     use TaggingTrait {
-        TaggingTrait::__construct as taggingConstruct;
+        TaggingTrait::__construct as taggingConstruct; // @codingStandardsIgnoreLine
     }
 
     private $nostoOrderBuilder;
@@ -94,7 +94,7 @@ class Order extends Success
      *
      * @return \Nosto\Object\Order\Order the order meta data model.
      */
-    public function getNostoOrder()
+    public function getAbstractObject()
     {
         /** @var \Magento\Sales\Model\Order $order */
         return $this->nostoOrderBuilder->build($this->checkoutSession->getLastRealOrder());

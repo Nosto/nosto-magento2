@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2017, Nosto Solutions Ltd
+ * Copyright (c) 2019, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,7 +29,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <contact@nosto.com>
- * @copyright 2017 Nosto Solutions Ltd
+ * @copyright 2019 Nosto Solutions Ltd
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
@@ -39,60 +39,63 @@ namespace Nosto\Tagging\Model\Product\Sku;
 use Magento\Catalog\Model\Product;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable as ConfigurableType;
 use Magento\Store\Model\Store;
-use Nosto\NostoException;
 use Nosto\Object\Product\SkuCollection;
-use Nosto\Tagging\Helper\Data as NostoHelperData;
-use Nosto\Tagging\Helper\Price as NostoPriceHelper;
 use Nosto\Tagging\Model\Product\Sku\Builder as NostoSkuBuilder;
-use Psr\Log\LoggerInterface;
+use Nosto\Tagging\Model\Product\Repository as NostoProductRepository;
+use Nosto\Tagging\Logger\Logger as NostoLogger;
+use Nosto\Types\Product\SkuInterface;
+use Nosto\NostoException;
 
 class Collection
 {
     private $configurableType;
     private $logger;
-    private $nostoHelperData;
-    private $nostoPriceHelper;
     private $nostoSkuBuilder;
+    private $nostoProductRepository;
 
     /**
      * Builder constructor.
-     * @param LoggerInterface $logger
+     * @param NostoLogger $logger
      * @param ConfigurableType $configurableType
-     * @param NostoHelperData $nostoHelperData
-     * @param NostoPriceHelper $priceHelper
      * @param Builder $nostoSkuBuilder
+     * @param NostoProductRepository $nostoProductRepository
      */
     public function __construct(
-        LoggerInterface $logger,
+        NostoLogger $logger,
         ConfigurableType $configurableType,
-        NostoHelperData $nostoHelperData,
-        NostoPriceHelper $priceHelper,
-        NostoSkuBuilder $nostoSkuBuilder
+        NostoSkuBuilder $nostoSkuBuilder,
+        NostoProductRepository $nostoProductRepository
     ) {
         $this->configurableType = $configurableType;
         $this->logger = $logger;
-        $this->nostoHelperData = $nostoHelperData;
-        $this->nostoPriceHelper = $priceHelper;
         $this->nostoSkuBuilder = $nostoSkuBuilder;
+        $this->nostoProductRepository = $nostoProductRepository;
     }
 
     /**
      * @param Product $product
      * @param Store $store
      * @return SkuCollection
+     * @throws \Exception
      */
     public function build(Product $product, Store $store)
     {
         $skuCollection = new SkuCollection();
         if ($product->getTypeId() === ConfigurableType::TYPE_CODE) {
             $attributes = $this->configurableType->getConfigurableAttributes($product);
+            $usedProducts = $this->nostoProductRepository->getSkus($product);
             /** @var Product $product */
-            foreach ($this->configurableType->getUsedProducts($product) as $product) {
-                try {
-                    $sku = $this->nostoSkuBuilder->build($product, $store, $attributes);
-                    $skuCollection->append($sku);
-                } catch (NostoException $e) {
-                    $this->logger->error($e->__toString());
+            foreach ($usedProducts as $usedProduct) {
+                /** @var Product $usedProduct */
+                if (!$usedProduct->isDisabled()) {
+                    try {
+                        $sku = $this->nostoSkuBuilder->build($usedProduct, $store, $attributes);
+                        if ($sku instanceof SkuInterface) {
+                            $skuCollection->append($sku);
+                        }
+                    } catch (NostoException $e) {
+                        $this->logger->exception($e);
+                    }
                 }
             }
         }

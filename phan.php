@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2017, Nosto Solutions Ltd
+ * Copyright (c) 2019, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,7 +29,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <contact@nosto.com>
- * @copyright 2017 Nosto Solutions Ltd
+ * @copyright 2019 Nosto Solutions Ltd
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
@@ -47,12 +47,16 @@ return [
         'Model',
         'Helper',
         'Observer',
-        '.phan/stubs',
+        'Logger',
+        'Util',
         'vendor/vlucas',
         'vendor/nosto/php-sdk',
         'vendor/phpseclib',
         'vendor/magento',
-        'vendor/psr'
+        'vendor/monolog',
+        'vendor/zendframework',
+        'vendor/psr',
+        'magento/generated'
     ],
     'exclude_file_list' => [
         'vendor/magento/zendframework1/library/Zend/Validate/Hostname/Biz.php',
@@ -60,9 +64,9 @@ return [
         'vendor/magento/zendframework1/library/Zend/Validate/Hostname/Com.php',
         'vendor/magento/zendframework1/library/Zend/Validate/Hostname/Jp.php',
     ],
-    "exclude_analysis_directory_list" => [
+    'exclude_analysis_directory_list' => [
         'vendor/',
-        '.phan/stubs'
+        'magento/'
     ],
     'suppress_issue_types' => [
         'PhanParamSignatureMismatch',

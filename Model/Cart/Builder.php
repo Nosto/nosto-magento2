@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2017, Nosto Solutions Ltd
+ * Copyright (c) 2019, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,7 +29,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <contact@nosto.com>
- * @copyright 2017 Nosto Solutions Ltd
+ * @copyright 2019 Nosto Solutions Ltd
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
@@ -38,36 +38,30 @@ namespace Nosto\Tagging\Model\Cart;
 
 use Magento\Catalog\Model\Product;
 use Magento\Framework\Event\ManagerInterface;
-use Magento\Framework\ObjectManagerInterface;
 use Magento\Quote\Model\Quote;
 use Magento\Store\Model\Store;
-use Nosto\NostoException;
 use Nosto\Object\Cart\Cart;
 use Nosto\Tagging\Model\Cart\Item\Builder as NostoCartItemBuilder;
-use Psr\Log\LoggerInterface;
+use Nosto\Tagging\Logger\Logger as NostoLogger;
 
 class Builder
 {
     private $nostoCartItemBuilder;
     private $logger;
-    private $objectManager;
     private $eventManager;
 
     /**
      * Constructor.
      *
      * @param NostoCartItemBuilder $nostoCartItemBuilder
-     * @param LoggerInterface $logger
-     * @param ObjectManagerInterface $objectManager
+     * @param NostoLogger $logger
      * @param ManagerInterface $eventManager
      */
     public function __construct(
         NostoCartItemBuilder $nostoCartItemBuilder,
-        LoggerInterface $logger,
-        ObjectManagerInterface $objectManager,
+        NostoLogger $logger,
         ManagerInterface $eventManager
     ) {
-        $this->objectManager = $objectManager;
         $this->nostoCartItemBuilder = $nostoCartItemBuilder;
         $this->logger = $logger;
         $this->eventManager = $eventManager;
@@ -91,8 +85,8 @@ class Builder
                     );
                     $nostoCart->addItem($cartItem);
                 }
-            } catch (NostoException $e) {
-                $this->logger->error($e->__toString());
+            } catch (\Exception $e) {
+                $this->logger->exception($e);
             }
         }
 

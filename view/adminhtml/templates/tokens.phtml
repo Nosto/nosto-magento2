@@ -1,0 +1,95 @@
+<?php
+/**
+ * Copyright (c) 2019, Nosto Solutions Ltd
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice,
+ * this list of conditions and the following disclaimer.
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * 3. Neither the name of the copyright holder nor the names of its contributors
+ * may be used to endorse or promote products derived from this software without
+ * specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * @author Nosto Solutions Ltd <contact@nosto.com>
+ * @copyright 2019 Nosto Solutions Ltd
+ * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
+ *
+ */
+
+/**
+ * @var $this Nosto\Tagging\Block\Adminhtml\Form\Field\Tokens
+ */
+?>
+
+<style>
+    .token-container{
+        background: #f3f4f4;
+    }
+    .token-title{
+        color: #303030;
+        float: none;
+        font-size: 14px;
+        font-weight: 600;
+        padding-right: 30px;
+        text-align: right;
+        width: 33%;
+        text-transform: capitalize;
+    }
+</style>
+<fieldset width="100%">
+    <?php $accountDetails =  $this->getAccountDetails(); ?>
+    <?php if ($accountDetails === null) : ?>
+        <div>
+            <?php echo __('There is no account connected') ?>
+        </div>
+    <?php else: ?>
+        <table>
+            <tr>
+                <td class="token-title">
+                    <?php echo __('Account ID'); ?>
+                </td>
+                <td class="token-container" style="padding: 2.2rem 1.5rem 1rem 1.5rem;">
+                  <label>
+                    <input type="text" readonly
+                        value = "<?php echo $accountDetails->getName(); ?>"
+                    />
+                  </label>
+                </td>
+            </tr>
+        <?php foreach ($accountDetails->getTokens() as $token): ?>
+            <tr>
+                <td class="token-title">
+                    <?php echo $token->getName() ?> Token
+                </td>
+                <td class="token-container" style="padding: 2.2rem 1.5rem 1rem 1.5rem;">
+                  <label>
+                    <input type="text" readonly style="width:100%; word-wrap:break-word;"
+                        value="<?php echo $token->getValue() ?>"
+                    />
+                  </label>
+                </td>
+            </tr>
+        <?php endforeach; ?>
+
+        </table>
+    <?php endif; ?>
+
+</fieldset>

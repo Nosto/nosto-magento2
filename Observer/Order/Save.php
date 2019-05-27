@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2017, Nosto Solutions Ltd
+ * Copyright (c) 2019, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,7 +29,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <contact@nosto.com>
- * @copyright 2017 Nosto Solutions Ltd
+ * @copyright 2019 Nosto Solutions Ltd
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
@@ -38,6 +38,7 @@ namespace Nosto\Tagging\Observer\Order;
 
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
+use Magento\Framework\Indexer\IndexerRegistry;
 use Magento\Framework\Module\Manager as ModuleManager;
 use Magento\Sales\Model\Order;
 use Nosto\Operation\OrderConfirm;
@@ -45,10 +46,13 @@ use Nosto\Request\Http\HttpRequest;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
-use Nosto\Tagging\Model\Customer as NostoCustomer;
-use Nosto\Tagging\Model\CustomerFactory;
+use Nosto\Tagging\Logger\Logger as NostoLogger;
+use Nosto\Tagging\Model\Customer\Customer as NostoCustomer;
+use Nosto\Tagging\Model\Customer\Repository as CustomerRepository;
+use Nosto\Tagging\Model\Indexer\Product\Indexer;
 use Nosto\Tagging\Model\Order\Builder as NostoOrderBuilder;
-use Psr\Log\LoggerInterface;
+use Nosto\Object\Order\Order as NostoOrder;
+use Nosto\Tagging\Helper\Url as NostoHelperUrl;
 
 /**
  * Class Save
@@ -61,8 +65,11 @@ class Save implements ObserverInterface
     private $logger;
     private $nostoOrderBuilder;
     private $moduleManager;
-    private $customerFactory;
+    private $customerRepository;
     private $nostoHelperScope;
+    private $indexer;
+    private $nostoHelperUrl;
+    private static $sent = [];
 
     /** @noinspection PhpUndefinedClassInspection */
     /**
@@ -71,34 +78,34 @@ class Save implements ObserverInterface
      * @param NostoHelperData $nostoHelperData
      * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoHelperScope $nostoHelperScope
-     * @param LoggerInterface $logger
+     * @param NostoLogger $logger
      * @param ModuleManager $moduleManager
-     * @param CustomerFactory $customerFactory
+     * @param CustomerRepository $customerRepository
      * @param NostoOrderBuilder $orderBuilder
+     * @param IndexerRegistry $indexerRegistry
+     * @param NostoHelperUrl $nostoHelperUrl
      */
     public function __construct(
         NostoHelperData $nostoHelperData,
         NostoHelperAccount $nostoHelperAccount,
         NostoHelperScope $nostoHelperScope,
-        LoggerInterface $logger,
+        NostoLogger $logger,
         ModuleManager $moduleManager,
         /** @noinspection PhpUndefinedClassInspection */
-        CustomerFactory $customerFactory,
-        NostoOrderBuilder $orderBuilder
+        CustomerRepository $customerRepository,
+        NostoOrderBuilder $orderBuilder,
+        IndexerRegistry $indexerRegistry,
+        NostoHelperUrl $nostoHelperUrl
     ) {
         $this->nostoHelperData = $nostoHelperData;
         $this->nostoHelperAccount = $nostoHelperAccount;
         $this->logger = $logger;
         $this->moduleManager = $moduleManager;
         $this->nostoOrderBuilder = $orderBuilder;
-        $this->customerFactory = $customerFactory;
-
-        HttpRequest::buildUserAgent(
-            'Magento',
-            $nostoHelperData->getPlatformVersion(),
-            $nostoHelperData->getModuleVersion()
-        );
+        $this->customerRepository = $customerRepository;
+        $this->indexer = $indexerRegistry->get(Indexer::INDEXER_ID);
         $this->nostoHelperScope = $nostoHelperScope;
+        $this->nostoHelperUrl = $nostoHelperUrl;
     }
 
     /**
@@ -108,39 +115,77 @@ class Save implements ObserverInterface
      * @param Observer $observer
      * @return void
      * @suppress PhanDeprecatedFunction
+     * @suppress PhanTypeMismatchArgument
      */
     public function execute(Observer $observer)
     {
         if ($this->moduleManager->isEnabled(NostoHelperData::MODULE_NAME)) {
+            HttpRequest::buildUserAgent(
+                'Magento',
+                $this->nostoHelperData->getPlatformVersion(),
+                $this->nostoHelperData->getModuleVersion()
+            );
+
             /* @var Order $order */
             /** @noinspection PhpUndefinedMethodInspection */
             $order = $observer->getOrder();
+
+            //Check if order has been sent once
+            if (in_array($order->getId(), self::$sent)) {
+                return;
+            }
+            $store = $order->getStore();
             $nostoOrder = $this->nostoOrderBuilder->build($order);
             $nostoAccount = $this->nostoHelperAccount->findAccount(
-                $this->nostoHelperScope->getStore()
+                $store
             );
             if ($nostoAccount !== null) {
                 $quoteId = $order->getQuoteId();
                 /** @var NostoCustomer $nostoCustomer */
-                /** @noinspection PhpDeprecationInspection */
-                $nostoCustomer = $this->customerFactory
-                    ->create()
-                    ->load($quoteId, NostoCustomer::QUOTE_ID);
-
-                $orderService = new OrderConfirm($nostoAccount);
+                $nostoCustomer = $this->customerRepository
+                    ->getOneByQuoteId($quoteId);
+                $nostoCustomerId = null;
+                if ($nostoCustomer instanceof NostoCustomer) {
+                    $nostoCustomerId = $nostoCustomer->getNostoId();
+                }
+                $orderService = new OrderConfirm($nostoAccount, $this->nostoHelperUrl->getActiveDomain($store));
                 try {
-                    $orderService->send($nostoOrder, $nostoCustomer->getNostoId());
+                    $orderService->send($nostoOrder, $nostoCustomerId);
                 } catch (\Exception $e) {
                     $this->logger->error(
                         sprintf(
-                            "Failed to save order with quote #%s for customer #%s.
-                        Message was: %s",
+                            'Failed to save order with quote #%s for customer #%s.
+                        Message was: %s',
                             $quoteId,
                             $nostoCustomer->getNostoId(),
                             $e->getMessage()
                         )
                     );
                 }
+                $this->handleInventoryLevelUpdate($nostoOrder);
+                self::$sent[] = $order->getId();
+            }
+        }
+    }
+
+    /**
+     * Handles the inventory level update to Nosto
+     *
+     * @param NostoOrder $nostoOrder
+     */
+    private function handleInventoryLevelUpdate(NostoOrder $nostoOrder)
+    {
+        //update inventory level
+        if (!$this->indexer->isScheduled() && $this->nostoHelperData->isInventoryTaggingEnabled()) {
+            $items = $nostoOrder->getPurchasedItems();
+            if ($items) {
+                $productIds = [];
+                foreach ($items as $item) {
+                    if ($item->getProductId() !== '-1') {
+                        $productIds[] = $item->getProductId();
+                    }
+                }
+                $this->indexer->reindexList($productIds);
             }
         }
     }

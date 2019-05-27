@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2017, Nosto Solutions Ltd
+ * Copyright (c) 2019, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,17 +29,18 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <contact@nosto.com>
- * @copyright 2017 Nosto Solutions Ltd
+ * @copyright 2019 Nosto Solutions Ltd
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
 
 namespace Nosto\Tagging\Controller\Export;
 
-use Magento\Catalog\Model\Product\Visibility as ProductVisibility;
-use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductCollectionFactory;
 use Magento\Framework\App\Action\Context;
 use Magento\Store\Model\Store;
+use Nosto\NostoException;
+use Nosto\Object\AbstractCollection;
+use Nosto\Object\Product\ProductCollection;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Model\Product\Collection as NostoProductCollection;
@@ -53,16 +54,12 @@ use Nosto\Tagging\Model\Product\Collection as NostoProductCollection;
  */
 class Product extends Base
 {
-    private $productCollectionFactory;
-    private $productVisibility;
     private $nostoProductCollection;
 
     /**
      * Constructor.
      *
      * @param Context $context
-     * @param ProductCollectionFactory $productCollectionFactory
-     * @param ProductVisibility $productVisibility
      * @param NostoHelperScope $nostoHelperScope
      * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoProductCollection $nostoProductCollection
@@ -70,21 +67,21 @@ class Product extends Base
     public function __construct(
         Context $context,
         /** @noinspection PhpUndefinedClassInspection */
-        ProductCollectionFactory $productCollectionFactory,
-        ProductVisibility $productVisibility,
         NostoHelperScope $nostoHelperScope,
         NostoHelperAccount $nostoHelperAccount,
         NostoProductCollection $nostoProductCollection
     ) {
         parent::__construct($context, $nostoHelperScope, $nostoHelperAccount);
 
-        $this->productCollectionFactory = $productCollectionFactory;
-        $this->productVisibility = $productVisibility;
         $this->nostoProductCollection = $nostoProductCollection;
     }
 
     /**
-     * @suppress PhanParamSignatureMismatch
+     * @param Store $store
+     * @param int $limit
+     * @param int $offset
+     * @return AbstractCollection|ProductCollection
+     * @throws NostoException
      */
     public function buildExportCollection(Store $store, $limit = 100, $offset = 0)
     {
@@ -92,7 +89,10 @@ class Product extends Base
     }
 
     /**
-     * @suppress PhanParamSignatureMismatch
+     * @param Store $store
+     * @param $id
+     * @return AbstractCollection|ProductCollection
+     * @throws NostoException
      */
     public function buildSingleExportCollection(Store $store, $id)
     {

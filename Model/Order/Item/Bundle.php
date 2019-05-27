@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2017, Nosto Solutions Ltd
+ * Copyright (c) 2019, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,23 +29,18 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <contact@nosto.com>
- * @copyright 2017 Nosto Solutions Ltd
+ * @copyright 2019 Nosto Solutions Ltd
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
 
 namespace Nosto\Tagging\Model\Order\Item;
 
-use Magento\Catalog\Model\Product\Type;
+use Nosto\Tagging\Model\Item\Bundle as BundleItem;
 use Magento\Sales\Model\Order\Item;
 
-class Bundle
+class Bundle extends BundleItem
 {
-    public static function getType()
-    {
-        return Type::TYPE_BUNDLE;
-    }
-
     /**
      * Returns the name of the product. Bundle products will have their chosen child product names
      * added.

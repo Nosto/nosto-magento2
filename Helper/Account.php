@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2017, Nosto Solutions Ltd
+ * Copyright (c) 2019, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,7 +29,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <contact@nosto.com>
- * @copyright 2017 Nosto Solutions Ltd
+ * @copyright 2019 Nosto Solutions Ltd
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
@@ -49,6 +49,8 @@ use Nosto\Request\Api\Token;
 use Nosto\Tagging\Helper\Data as NostoHelper;
 use Nosto\Types\Signup\AccountInterface;
 use Nosto\Object\Signup\Account as NostoSignupAccount;
+use Nosto\Tagging\Helper\Scope as NostoHelperScope;
+use Nosto\Tagging\Helper\Url as NostoHelperUrl;
 
 /**
  * NostoHelperAccount helper class for common tasks related to Nosto accounts.
@@ -67,28 +69,42 @@ class Account extends AbstractHelper
     const XML_PATH_TOKENS = 'nosto_tagging/settings/tokens';
 
     /**
+     * Path to store config store domain.
+     */
+    const XML_PATH_DOMAIN = 'nosto_tagging/settings/domain';
+
+    /**
      * Platform UI version
      */
     const IFRAME_VERSION = 0;
     private $config;
     private $moduleManager;
     private $logger;
+    private $nostoHelperScope;
+    private $nostoHelperUrl;
+    private $urlBuilder;
 
     /**
-     * Constructor.
-     *
-     * @param Context $context the context.
-     * @param WriterInterface $appConfig the app config writer.
+     * Account constructor.
+     * @param Context $context
+     * @param WriterInterface $appConfig
+     * @param Scope $nostoHelperScope
+     * @param Url $nostoHelperUrl
      */
     public function __construct(
         Context $context,
-        WriterInterface $appConfig
+        WriterInterface $appConfig,
+        NostoHelperScope $nostoHelperScope,
+        NostoHelperUrl $nostoHelperUrl
     ) {
         parent::__construct($context);
 
         $this->config = $appConfig;
         $this->moduleManager = $context->getModuleManager();
         $this->logger = $context->getLogger();
+        $this->nostoHelperScope = $nostoHelperScope;
+        $this->nostoHelperUrl = $nostoHelperUrl;
+        $this->urlBuilder = $context->getUrlBuilder();
     }
 
     /**
@@ -118,6 +134,12 @@ class Account extends AbstractHelper
         $this->config->save(
             self::XML_PATH_TOKENS,
             json_encode($tokens),
+            ScopeInterface::SCOPE_STORES,
+            $store->getId()
+        );
+        $this->config->save(
+            self::XML_PATH_DOMAIN,
+            $this->nostoHelperUrl->getActiveDomain($store),
             ScopeInterface::SCOPE_STORES,
             $store->getId()
         );
@@ -154,12 +176,17 @@ class Account extends AbstractHelper
             ScopeInterface::SCOPE_STORES,
             $store->getId()
         );
+        $this->config->delete(
+            self::XML_PATH_DOMAIN,
+            ScopeInterface::SCOPE_STORES,
+            $store->getId()
+        );
 
         try {
             // Notify Nosto that the account was deleted.
             $service = new UninstallAccount($account);
             $service->delete($currentUser);
-        } catch (NostoException $e) {
+        } catch (\Exception $e) {
             $this->logger->error($e->__toString());
         }
 
@@ -176,14 +203,8 @@ class Account extends AbstractHelper
      */
     public function nostoInstalledAndEnabled(Store $store)
     {
-        $enabled = false;
-        if ($this->moduleManager->isEnabled(NostoHelper::MODULE_NAME)) {
-            if ($this->findAccount($store)) {
-                $enabled = true;
-            }
-        }
-
-        return $enabled;
+        return $this->moduleManager->isEnabled(NostoHelper::MODULE_NAME)
+            && $this->findAccount($store);
     }
 
     /**
@@ -197,7 +218,7 @@ class Account extends AbstractHelper
         /** @noinspection PhpUndefinedMethodInspection */
         $accountName = $store->getConfig(self::XML_PATH_ACCOUNT);
 
-        if (!empty($accountName)) {
+        if ($accountName !== null) {
             $account = new NostoSignupAccount($accountName);
             /** @noinspection PhpUndefinedMethodInspection */
             $tokens = json_decode(
@@ -209,7 +230,7 @@ class Account extends AbstractHelper
                     try {
                         $account->addApiToken(new Token($name, $value));
                     } catch (Exception $e) {
-                        $this->_logger->error($e->__toString());
+                        $this->logger->error($e->__toString());
                     }
                 }
             }
@@ -240,21 +261,107 @@ class Account extends AbstractHelper
         $ssoToken = $account->getApiToken(Token::API_SSO);
         if ($ssoToken instanceof Token) {
             if (!$account->getApiToken(Token::API_EXCHANGE_RATES)) {
-                $ratesToken = new Token(
-                    Token::API_EXCHANGE_RATES,
-                    $ssoToken->getValue()
-                );
-                $tokens[] = $ratesToken;
+                try {
+                    $ratesToken = new Token(
+                        Token::API_EXCHANGE_RATES,
+                        $ssoToken->getValue()
+                    );
+                    $tokens[] = $ratesToken;
+                } catch (NostoException $e) {
+                    $this->logger->error($e->getMessage());
+                }
             }
             if (!$account->getApiToken(Token::API_SETTINGS)) {
-                $settingsToken = new Token(
-                    Token::API_SETTINGS,
-                    $ssoToken->getValue()
-                );
-                $tokens[] = $settingsToken;
+                try {
+                    $settingsToken = new Token(
+                        Token::API_SETTINGS,
+                        $ssoToken->getValue()
+                    );
+                    $tokens[] = $settingsToken;
+                } catch (NostoException $e) {
+                    $this->logger->error($e->getMessage());
+                }
             }
         }
 
         return $tokens;
+    }
+
+    /**
+     * Returns an array of stores where Nosto is installed
+     *
+     * @return Store[]
+     */
+    public function getStoresWithNosto()
+    {
+        $stores = $this->nostoHelperScope->getStores();
+        $storesWithNosto = [];
+        foreach ($stores as $store) {
+            $nostoAccount = $this->findAccount($store);
+            if ($nostoAccount instanceof NostoSignupAccount) {
+                $storesWithNosto[] = $store;
+            }
+        }
+
+        return $storesWithNosto;
+    }
+
+    /**
+     * Returns the stored storefront domain
+     *
+     * @param $store
+     * @return string the domain
+     */
+    public function getStoreFrontDomain($store)
+    {
+        return $store->getConfig(self::XML_PATH_DOMAIN);
+    }
+
+    /**
+     * Returns the Nosto account name for the store
+     *
+     * @param $store
+     * @return string account name
+     */
+    public function getAccountName($store)
+    {
+        return $store->getConfig(self::XML_PATH_ACCOUNT);
+    }
+
+    /**
+     * Returns bool value that represent validity of domain
+     *
+     * @param Store $store
+     * @return bool
+     */
+    public function isDomainValid(Store $store)
+    {
+        $storedDomain = $this->getStoreFrontDomain($store);
+        $realDomain = $this->nostoHelperUrl->getActiveDomain($store);
+        return ($realDomain === $storedDomain);
+    }
+
+    /**
+     * Returns the list of invalid Nosto accounts
+     *
+     * @return array
+     */
+    public function getInvalidAccounts()
+    {
+        $stores = $this->getStoresWithNosto();
+        $invalidAccounts = [];
+
+        foreach ($stores as $store) {
+            if (!$this->isDomainValid($store)) {
+                $invalidAccounts[] = [
+                    'storeName' => $store->getName(),
+                    'nostoAccount' => $this->getAccountName($store),
+                    'currentDomain' => $this->nostoHelperUrl->getActiveDomain($store),
+                    'storedDomain' => $this->getStoreFrontDomain($store),
+                    'resetUrl' => $this->urlBuilder->getUrl('nosto/account/index', ['store' => $store->getId()])
+                ];
+            }
+        }
+        return $invalidAccounts;
     }
 }

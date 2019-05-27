@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2017, Nosto Solutions Ltd
+ * Copyright (c) 2019, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,7 +29,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <contact@nosto.com>
- * @copyright 2017 Nosto Solutions Ltd
+ * @copyright 2019 Nosto Solutions Ltd
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
@@ -49,10 +49,22 @@
  * Please see a reference guide such as https://github.com/Nosto/nosto-magento2/wiki
  */
 
-/** @var \Nosto\Tagging\Block\Variation $this */
+/**
+ * Template for customer tagging. The actual data is populated via
+ * Magento's KnockoutJS logic.
+ *
+ * @see \Nosto\Tagging\CustomerData\ActiveVariationTagging
+ */
 ?>
-
-<?php if ($this->hasMultipleCurrencies()): ?>
-    <!-- Nosto Price Variation Tagging -->
-    <div class="nosto_variation" style="display:none"><?php echo $this->getVariationId(); ?></div>
-<?php endif; ?>
+<!-- Nosto Variation Tagging -->
+<div id="nosto_variation_tagging" style="display:none"
+     data-bind="scope: 'variationTagging'"
+     data-role="nosto-variation-tagging"
+>
+    <!-- ko if: variationTagging().active_variation -->
+    <span class="nosto_variation_dynamic" data-bind="text: variationTagging().active_variation, afterRender: reloadRecommendations"></span>
+    <!-- /ko -->
+</div>
+<script type="text/x-magento-init">
+{"[data-role=nosto-variation-tagging]": {"Magento_Ui/js/core/app": <?php /* @escapeNotVerified */ echo $block->getJsLayout();?>}}
+</script>

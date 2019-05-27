@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2017, Nosto Solutions Ltd
+ * Copyright (c) 2019, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,7 +29,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <contact@nosto.com>
- * @copyright 2017 Nosto Solutions Ltd
+ * @copyright 2019 Nosto Solutions Ltd
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
@@ -39,8 +39,10 @@ namespace Nosto\Tagging\Controller\Adminhtml\Account;
 use Magento\Backend\App\Action\Context;
 use Magento\Backend\Model\View\Result\Page;
 use Magento\Framework\Controller\Result\Redirect;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Exception\NotFoundException;
+use Magento\Framework\Phrase;
 use Magento\Framework\View\Result\PageFactory;
-use Magento\Store\Api\Data\StoreInterface;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 
 class Index extends Base
@@ -67,10 +69,14 @@ class Index extends Base
 
     /**
      * @return Page | Redirect
+     * @throws LocalizedException
+     * @throws NotFoundException
      */
     public function execute()
     {
-        if (!$this->getSelectedStore()) {
+        $store = $this->nostoHelperScope->getSelectedStore($this->getRequest());
+
+        if (!($store && $store->getId())) {
             // If we are not under a store view, then redirect to the first
             // found one. Nosto is configured per store.
             foreach ($this->nostoHelperScope->getWebsites() as $website) {
@@ -86,29 +92,9 @@ class Index extends Base
         $result = $this->resultPageFactory->create();
         if ($result instanceof Page) {
             $result->setActiveMenu(self::ADMIN_RESOURCE);
-            $result->getConfig()->getTitle()->prepend(__('Nosto - Account Settings'));
+            $result->getConfig()->getTitle()->prepend(new Phrase('Nosto - Account Settings'));
         }
 
         return $result;
-    }
-
-    /**
-     * Returns the currently selected store.
-     * If it is single store setup, then just return the default store.
-     * If it is a multi store setup, the expect a store id to passed in the
-     * request params and return that store as the current one.
-     *
-     * @return StoreInterface|null the store or null if not found.
-     */
-    private function getSelectedStore()
-    {
-        $store = null;
-        if ($this->nostoHelperScope->isSingleStoreMode()) {
-            $store = $this->nostoHelperScope->getStore(true);
-        } elseif (($storeId = $this->nostoHelperScope->getStore()->getId())) {
-            $store = $this->nostoHelperScope->getStore($storeId);
-        }
-
-        return $store;
     }
 }

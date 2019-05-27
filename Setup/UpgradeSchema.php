@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2017, Nosto Solutions Ltd
+ * Copyright (c) 2019, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,7 +29,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <contact@nosto.com>
- * @copyright 2017 Nosto Solutions Ltd
+ * @copyright 2019 Nosto Solutions Ltd
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
@@ -41,8 +41,9 @@ use Magento\Framework\Setup\UpgradeSchemaInterface;
 use Magento\Framework\Setup\ModuleContextInterface;
 use Magento\Framework\Setup\SchemaSetupInterface;
 use Nosto\Tagging\Api\Data\CustomerInterface;
+use Nosto\Tagging\Model\ResourceModel\Customer;
 
-class UpgradeSchema implements UpgradeSchemaInterface
+class UpgradeSchema extends Core implements UpgradeSchemaInterface
 {
     /**
      * {@inheritdoc}
@@ -53,7 +54,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
 
         if (version_compare($context->getVersion(), '2.1.0', '<')) {
             $setup->getConnection()->addColumn(
-                $setup->getTable('nosto_tagging_customer'),
+                $setup->getTable(Customer::TABLE_NAME),
                 CustomerInterface::RESTORE_CART_HASH,
                 [
                     'type' => Table::TYPE_TEXT,
@@ -62,6 +63,10 @@ class UpgradeSchema implements UpgradeSchemaInterface
                     'length' => CustomerInterface::NOSTO_TAGGING_RESTORE_CART_ATTRIBUTE_LENGTH
                 ]
             );
+        }
+
+        if (version_compare($context->getVersion(), '2.3.0', '<')) {
+            $this->createProductQueueTable($setup);
         }
 
         $setup->endSetup();

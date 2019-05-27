@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2017, Nosto Solutions Ltd
+ * Copyright (c) 2019, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,7 +29,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <contact@nosto.com>
- * @copyright 2017 Nosto Solutions Ltd
+ * @copyright 2019 Nosto Solutions Ltd
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
@@ -37,34 +37,29 @@
 namespace Nosto\Tagging\Model\Meta\Account\Settings;
 
 use Exception;
-use Magento\Framework\Event\ManagerInterface;
 use Magento\Store\Model\Store;
 use Nosto\Operation\UpdateSettings;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Model\Meta\Account\Settings\Builder as NostoSettingsBuilder;
-use Psr\Log\LoggerInterface;
+use Nosto\Tagging\Logger\Logger as NostoLogger;
 
 class Service
 {
     private $logger;
-    private $eventManager;
     private $nostoHelperAccount;
     private $nostoSettingsBuilder;
 
     /**
-     * @param LoggerInterface $logger
-     * @param ManagerInterface $eventManager
+     * @param NostoLogger $logger
      * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoSettingsBuilder $nostoSettingsBuilder
      */
     public function __construct(
-        LoggerInterface $logger,
-        ManagerInterface $eventManager,
+        NostoLogger $logger,
         NostoHelperAccount $nostoHelperAccount,
         NostoSettingsBuilder $nostoSettingsBuilder
     ) {
         $this->logger = $logger;
-        $this->eventManager = $eventManager;
         $this->nostoHelperAccount = $nostoHelperAccount;
         $this->nostoSettingsBuilder = $nostoSettingsBuilder;
     }
@@ -84,11 +79,13 @@ class Service
                 $service = new UpdateSettings($account);
                 return $service->update($settings);
             } catch (Exception $e) {
-                $this->logger->error($e->__toString());
+                $this->logger->exception($e);
             }
         } else {
-            $this->logger->info('Skipping update; an account doesn\'t exist for ' .
-                $store->getName());
+            $this->logger->info(
+                'Skipping update; an account doesn\'t exist for ' .
+                $store->getName()
+            );
         }
 
         return false;

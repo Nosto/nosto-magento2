@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2017, Nosto Solutions Ltd
+ * Copyright (c) 2019, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,7 +29,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <contact@nosto.com>
- * @copyright 2017 Nosto Solutions Ltd
+ * @copyright 2019 Nosto Solutions Ltd
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
@@ -38,10 +38,12 @@ namespace Nosto\Tagging\Controller\Adminhtml\Account;
 
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\Controller\Result\Json;
+use Magento\Framework\Exception\LocalizedException;
 use Nosto\Helper\IframeHelper;
 use Nosto\Nosto;
 use Nosto\NostoException;
 use Nosto\Operation\AccountSignup;
+use Nosto\Tagging\Helper\Cache as NostoHelperCache;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Currency as NostoCurrencyHelper;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
@@ -50,7 +52,7 @@ use Nosto\Tagging\Model\Meta\Account\Iframe\Builder as NostoIframeMetaBuilder;
 use Nosto\Tagging\Model\Meta\Account\Owner\Builder as NostoOwnerBuilder;
 use Nosto\Tagging\Model\Rates\Service as NostoRatesService;
 use Nosto\Tagging\Model\User\Builder as NostoCurrentUserBuilder;
-use Psr\Log\LoggerInterface;
+use Nosto\Tagging\Logger\Logger as NostoLogger;
 
 class Create extends Base
 {
@@ -65,6 +67,7 @@ class Create extends Base
     private $nostoSignupBuilder;
     private $logger;
     private $nostoHelperScope;
+    private $nostoHelperCache;
 
     /**
      * @param Context $context
@@ -75,9 +78,10 @@ class Create extends Base
      * @param NostoOwnerBuilder $nostoOwnerBuilder
      * @param NostoHelperScope $nostoHelperScope
      * @param Json $result
-     * @param LoggerInterface $logger
+     * @param NostoLogger $logger
      * @param NostoRatesService $nostoRatesService
      * @param NostoCurrencyHelper $nostoCurrencyHelper
+     * @param NostoHelperCache $nostoHelperCache
      * @SuppressWarnings(PHPMD.ExcessiveParameterList)
      */
     public function __construct(
@@ -89,9 +93,10 @@ class Create extends Base
         NostoOwnerBuilder $nostoOwnerBuilder,
         NostoHelperScope $nostoHelperScope,
         Json $result,
-        LoggerInterface $logger,
+        NostoLogger $logger,
         NostoRatesService $nostoRatesService,
-        NostoCurrencyHelper $nostoCurrencyHelper
+        NostoCurrencyHelper $nostoCurrencyHelper,
+        NostoHelperCache $nostoHelperCache
     ) {
         parent::__construct($context);
 
@@ -105,12 +110,16 @@ class Create extends Base
         $this->nostoRatesService = $nostoRatesService;
         $this->nostoCurrencyHelper = $nostoCurrencyHelper;
         $this->nostoHelperScope = $nostoHelperScope;
+        $this->nostoHelperCache = $nostoHelperCache;
     }
 
     /**
      * @return Json
+     * @throws LocalizedException
+     * @throws \Zend_Validate_Exception
      * @suppress PhanTypeMismatchArgument
      * @SuppressWarnings(PHPMD.CyclomaticComplexity
+     * @throws \Zend_Validate_Exception
      */
     public function execute()
     {
@@ -134,7 +143,7 @@ class Create extends Base
                         $accountOwner->setLastName(null);
                         $accountOwner->setEmail($emailAddress);
                     } else {
-                        throw new NostoException("Invalid email address " . $emailAddress);
+                        throw new NostoException('Invalid email address ' . $emailAddress);
                     }
                 }
 
@@ -158,16 +167,22 @@ class Create extends Base
                         ]
                     );
 
+                    // Note that we will send the exhange rates even if the multi currency
+                    // is not set. This is mostly for debugging purposes.
                     if ($this->nostoCurrencyHelper->getCurrencyCount($store) > 1) {
                         try {
                             $this->nostoRatesService->update($store);
                         } catch (\Exception $e) {
-                            $this->logger->error($e->__toString());
+                            $this->logger->exception($e);
                         }
                     }
+
+                    //invalidate page cache and layout cache
+                    $this->nostoHelperCache->invalidatePageCache();
+                    $this->nostoHelperCache->invalidateLayoutCache();
                 }
             } catch (NostoException $e) {
-                $this->logger->error($e->__toString());
+                $this->logger->exception($e);
                 $messageText = $e->getMessage();
             }
         }

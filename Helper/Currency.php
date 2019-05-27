@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2017, Nosto Solutions Ltd
+ * Copyright (c) 2019, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,7 +29,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <contact@nosto.com>
- * @copyright 2017 Nosto Solutions Ltd
+ * @copyright 2019 Nosto Solutions Ltd
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
@@ -38,13 +38,32 @@ namespace Nosto\Tagging\Helper;
 
 use Magento\Directory\Model\Currency as MagentoCurrency;
 use Magento\Framework\App\Helper\AbstractHelper;
+use Magento\Framework\App\Helper\Context;
 use Magento\Store\Model\Store;
+use Nosto\Tagging\Helper\Data as NostoHelperData;
 
 /**
  * Currency helper used for currency related tasks.
  */
 class Currency extends AbstractHelper
 {
+    private $nostoHelperData;
+
+    /**
+     * Constructor.
+     *
+     * @param Context $context the context.
+     * @param NostoHelperData $nostoHelperData
+     */
+    public function __construct(
+        Context $context,
+        NostoHelperData $nostoHelperData
+    ) {
+        parent::__construct($context);
+
+        $this->nostoHelperData = $nostoHelperData;
+    }
+
     /**
      * If the store uses multiple currencies the prices are converted from base
      * currency into given currency. Otherwise the given price is returned.
@@ -52,13 +71,23 @@ class Currency extends AbstractHelper
      * @param float $basePrice The price of a product in base currency
      * @param Store $store
      * @return float
+     * @throws \Exception
      */
     public function convertToTaggingPrice($basePrice, Store $store)
     {
+        // If multi currency is disabled or exchange rates are used
+        // we don't do any processing / conversions for the price
+        if ($this->nostoHelperData->isMultiCurrencyDisabled($store)
+            || $this->nostoHelperData->isMultiCurrencyExchangeRatesEnabled($store)
+        ) {
+            return $basePrice;
+        }
+
         $taggingPrice = $basePrice;
         $taggingCurrency = $this->getTaggingCurrency($store);
         $baseCurrency = $store->getBaseCurrency();
-        if ($taggingCurrency->getCode() !== $baseCurrency->getCode()) {
+
+        if ($taggingCurrency->getCurrencyCode() !== $baseCurrency->getCurrencyCode()) {
             $taggingPrice = $baseCurrency->convert($basePrice, $taggingCurrency);
         }
 
@@ -73,9 +102,13 @@ class Currency extends AbstractHelper
      */
     public function getTaggingCurrency(Store $store)
     {
-        $currencyCount = $this->getCurrencyCount($store);
-        $taggingCurrency = $store->getBaseCurrency();
-        if ($currencyCount == 1) {
+        // If multi currency is disabled or exhange rates are used
+        // we always use the base currency for tagging
+        if ($this->nostoHelperData->isMultiCurrencyExchangeRatesEnabled($store)
+            || $this->nostoHelperData->isMultiCurrencyDisabled($store)
+        ) {
+            $taggingCurrency = $store->getBaseCurrency();
+        } else {
             $taggingCurrency = $store->getDefaultCurrency();
         }
 
@@ -93,5 +126,32 @@ class Currency extends AbstractHelper
         $currencies = $store->getAvailableCurrencyCodes(true);
 
         return count($currencies);
+    }
+
+    /**
+     * Returns the info if exchange rates are used
+     *
+     * @param Store $store
+     * @return boolean
+     */
+    public function exchangeRatesInUse(Store $store)
+    {
+        if ($this->nostoHelperData->isMultiCurrencyExchangeRatesEnabled($store)) {
+            return true;
+        }
+        $method = $this->nostoHelperData->getMultiCurrencyMethod($store);
+        // Determine the value for MC setting if it's undefined
+        if ($method === Data::SETTING_VALUE_MC_UNDEFINED) {
+            if ($this->getCurrencyCount($store) > 1) {
+                $this->nostoHelperData->saveMultiCurrencyMethod(Data::SETTING_VALUE_MC_EXCHANGE_RATE, $store);
+                $this->nostoHelperData->clearMagentoCache('config');
+                return true;
+            }
+            if ($this->getCurrencyCount($store) === 1) {
+                $this->nostoHelperData->saveMultiCurrencyMethod(Data::SETTING_VALUE_MC_SINGLE, $store);
+                $this->nostoHelperData->clearMagentoCache('config');
+            }
+        }
+        return false;
     }
 }

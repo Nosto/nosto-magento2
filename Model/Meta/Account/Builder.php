@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2017, Nosto Solutions Ltd
+ * Copyright (c) 2019, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,7 +29,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <contact@nosto.com>
- * @copyright 2017 Nosto Solutions Ltd
+ * @copyright 2019 Nosto Solutions Ltd
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
@@ -40,52 +40,51 @@ use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\Locale\ResolverInterface;
 use Magento\Framework\UrlInterface;
 use Magento\Store\Model\Store;
-use Nosto\NostoException;
 use Nosto\Object\Signup\Signup;
 use Nosto\Request\Http\HttpRequest;
-use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Currency as NostoHelperCurrency;
 use Nosto\Tagging\Model\Meta\Account\Billing\Builder as NostoBillingBuilder;
 use Nosto\Tagging\Model\Meta\Account\Settings\Currencies\Builder as NostoCurrenciesBuilder;
-use Psr\Log\LoggerInterface;
+use Nosto\Tagging\Logger\Logger as NostoLogger;
+use Nosto\Tagging\Helper\Data as NostoDataHelper;
 
 class Builder
 {
     const API_TOKEN = 'YBDKYwSqTCzSsU8Bwbg4im2pkHMcgTy9cCX7vevjJwON1UISJIwXOLMM0a8nZY7h';
     const PLATFORM_NAME = 'magento';
-    private $nostoHelperData;
     private $accountBillingMetaBuilder;
     private $localeResolver;
     private $logger;
     private $eventManager;
     private $nostoHelperCurrency;
     private $nostoCurrenciesBuilder;
+    private $nostoDataHelper;
 
     /**
-     * @param NostoHelperData $nostoHelperData
      * @param NostoHelperCurrency $nostoHelperCurrency
      * @param NostoBillingBuilder $nostoAccountBillingMetaBuilder
      * @param NostoCurrenciesBuilder $nostoCurrenciesBuilder
      * @param ResolverInterface $localeResolver
-     * @param LoggerInterface $logger
+     * @param NostoLogger $logger
      * @param ManagerInterface $eventManager
+     * @param NostoDataHelper $nostoDataHelper
      */
     public function __construct(
-        NostoHelperData $nostoHelperData,
         NostoHelperCurrency $nostoHelperCurrency,
         NostoBillingBuilder $nostoAccountBillingMetaBuilder,
         NostoCurrenciesBuilder $nostoCurrenciesBuilder,
         ResolverInterface $localeResolver,
-        LoggerInterface $logger,
-        ManagerInterface $eventManager
+        NostoLogger $logger,
+        ManagerInterface $eventManager,
+        NostoDataHelper $nostoDataHelper
     ) {
-        $this->nostoHelperData = $nostoHelperData;
         $this->accountBillingMetaBuilder = $nostoAccountBillingMetaBuilder;
         $this->localeResolver = $localeResolver;
         $this->logger = $logger;
         $this->eventManager = $eventManager;
         $this->nostoHelperCurrency = $nostoHelperCurrency;
         $this->nostoCurrenciesBuilder = $nostoCurrenciesBuilder;
+        $this->nostoDataHelper = $nostoDataHelper;
     }
 
     /**
@@ -96,7 +95,7 @@ class Builder
      */
     public function build(Store $store, $accountOwner, $signupDetails)
     {
-        $metaData = new Signup(Builder::PLATFORM_NAME, Builder::API_TOKEN, null);
+        $metaData = new Signup(self::PLATFORM_NAME, self::API_TOKEN, null);
 
         try {
             $metaData->setTitle(
@@ -110,14 +109,15 @@ class Builder
                 )
             );
             $metaData->setName(substr(sha1((string)rand()), 0, 8));
-            $metaData->setFrontPageUrl(
-                HttpRequest::replaceQueryParamInUrl(
+            $url = $store->getBaseUrl(UrlInterface::URL_TYPE_WEB);
+            if ($this->nostoDataHelper->getStoreCodeToUrl($store)) {
+                $url = HttpRequest::replaceQueryParamInUrl(
                     '___store',
                     $store->getCode(),
-                    $store->getBaseUrl(UrlInterface::URL_TYPE_WEB)
-                )
-            );
-
+                    $url
+                );
+            }
+            $metaData->setFrontPageUrl($url);
             $metaData->setCurrencies($this->nostoCurrenciesBuilder->build($store));
             $metaData->setCurrencyCode($this->nostoHelperCurrency->getTaggingCurrency($store)->getCode());
             $lang = substr($store->getConfig('general/locale/code'), 0, 2);
@@ -125,7 +125,7 @@ class Builder
             $lang = substr($this->localeResolver->getLocale(), 0, 2);
             $metaData->setOwnerLanguageCode($lang);
             $metaData->setOwner($accountOwner);
-            if ($this->nostoHelperCurrency->getCurrencyCount($store) > 1) {
+            if ($this->nostoHelperCurrency->exchangeRatesInUse($store)) {
                 $metaData->setDefaultVariantId(
                     $this->nostoHelperCurrency->getTaggingCurrency($store)
                         ->getCode()
@@ -136,8 +136,8 @@ class Builder
             $metaData->setBillingDetails($billing);
 
             $metaData->setDetails($signupDetails);
-        } catch (NostoException $e) {
-            $this->logger->error($e->__toString());
+        } catch (\Exception $e) {
+            $this->logger->exception($e);
         }
 
         $this->eventManager->dispatch('nosto_account_load_after', ['account' => $metaData]);

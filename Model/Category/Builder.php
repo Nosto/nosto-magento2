@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2017, Nosto Solutions Ltd
+ * Copyright (c) 2019, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,80 +29,63 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <contact@nosto.com>
- * @copyright 2017 Nosto Solutions Ltd
+ * @copyright 2019 Nosto Solutions Ltd
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
 
 namespace Nosto\Tagging\Model\Category;
 
-use Magento\Catalog\Api\CategoryRepositoryInterface;
 use Magento\Catalog\Model\Category;
-use Magento\Catalog\Model\Product;
+use Magento\Store\Model\Store;
 use Magento\Framework\Event\ManagerInterface;
-use Nosto\NostoException;
-use Psr\Log\LoggerInterface;
+use Nosto\Tagging\Logger\Logger as NostoLogger;
+use Nosto\Object\Category as NostoCategory;
+use Nosto\Tagging\Model\CategoryString\Builder as NostoCategoryString;
 
 class Builder
 {
     private $logger;
-    private $categoryRepository;
     private $eventManager;
+    private $nostoCategoryString;
 
     /**
-     * @param CategoryRepositoryInterface $categoryRepository
-     * @param LoggerInterface $logger
+     * Builder constructor.
+     * @param NostoLogger $logger
      * @param ManagerInterface $eventManager
+     * @param NostoCategoryString $nostoCategoryString
      */
     public function __construct(
-        CategoryRepositoryInterface $categoryRepository,
-        LoggerInterface $logger,
-        ManagerInterface $eventManager
+        NostoLogger $logger,
+        ManagerInterface $eventManager,
+        NostoCategoryString $nostoCategoryString
     ) {
-        $this->categoryRepository = $categoryRepository;
+        $this->nostoCategoryString = $nostoCategoryString;
         $this->logger = $logger;
         $this->eventManager = $eventManager;
     }
 
     /**
-     * @param Product $product
-     * @return array
-     */
-    public function buildCategories(Product $product)
-    {
-        $categories = [];
-        foreach ($product->getCategoryCollection() as $category) {
-            $categoryString = $this->build($category);
-            if (!empty($categoryString)) {
-                $categories[] = $categoryString;
-            }
-        }
-
-        return $categories;
-    }
-
-    /**
      * @param Category $category
-     * @return string
+     * @param Store $store
+     * @return null|string
      */
-    public function build(Category $category)
+    public function build(Category $category, Store $store)
     {
-        $nostoCategory = '';
+        $nostoCategory = new NostoCategory();
         try {
-            $data = [];
-            $path = $category->getPath();
-            foreach (explode('/', $path) as $categoryId) {
-                $category = $this->categoryRepository->get($categoryId);
-                if ($category instanceof Category
-                    && $category->getLevel() > 1
-                    && !empty($category->getName())
-                ) {
-                    $data[] = $category->getName();
-                }
-            }
-            $nostoCategory = count($data) ? '/' . implode('/', $data) : '';
-        } catch (NostoException $e) {
-            $this->logger->error($e->__toString());
+            $nostoCategory->setId($category->getId());
+            $nostoCategory->setParentId($category->getParentId());
+            $nostoCategory->setImageUrl($category->getImageUrl());
+            $nostoCategory->setLevel($category->getLevel());
+            $nostoCategory->setUrl($category->getUrl());
+            $nostoCategory->setVisibleInMenu($this->getCategoryVisibleInMenu($category));
+            $nostoCategory->setCategoryString(
+                $this->nostoCategoryString->build($category, $store)
+            );
+            $nostoCategory->setName($category->getName());
+        } catch (\Exception $e) {
+            $this->logger->exception($e);
         }
         if (empty($nostoCategory)) {
             $nostoCategory = null;
@@ -114,5 +97,15 @@ class Builder
         }
 
         return $nostoCategory;
+    }
+
+    /**
+     * @param Category $category
+     * @return bool
+     */
+    private function getCategoryVisibleInMenu(Category $category)
+    {
+        $visibleInMenu = $category->getIncludeInMenu();
+        return $visibleInMenu === "1";
     }
 }

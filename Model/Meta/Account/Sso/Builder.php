@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2017, Nosto Solutions Ltd
+ * Copyright (c) 2019, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,7 +29,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <contact@nosto.com>
- * @copyright 2017 Nosto Solutions Ltd
+ * @copyright 2019 Nosto Solutions Ltd
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
@@ -38,9 +38,8 @@ namespace Nosto\Tagging\Model\Meta\Account\Sso;
 
 use Magento\Backend\Model\Auth\Session;
 use Magento\Framework\Event\ManagerInterface;
-use Nosto\NostoException;
 use Nosto\Object\Signup\Owner;
-use Psr\Log\LoggerInterface;
+use Nosto\Tagging\Logger\Logger as NostoLogger;
 
 class Builder
 {
@@ -50,12 +49,12 @@ class Builder
 
     /**
      * @param Session $backendAuthSession
-     * @param LoggerInterface $logger
+     * @param NostoLogger $logger
      * @param ManagerInterface $eventManager
      */
     public function __construct(
         Session $backendAuthSession,
-        LoggerInterface $logger,
+        NostoLogger $logger,
         ManagerInterface $eventManager
     ) {
         $this->backendAuthSession = $backendAuthSession;
@@ -77,8 +76,8 @@ class Builder
                 $owner->setLastName($user->getLastName());
                 $owner->setEmail($user->getEmail());
             }
-        } catch (NostoException $e) {
-            $this->logger->error($e->__toString());
+        } catch (\Exception $e) {
+            $this->logger->exception($e);
         }
 
         $this->eventManager->dispatch('nosto_sso_load_after', ['sso' => $owner]);

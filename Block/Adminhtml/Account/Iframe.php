@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2017, Nosto Solutions Ltd
+ * Copyright (c) 2019, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,7 +29,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <contact@nosto.com>
- * @copyright 2017 Nosto Solutions Ltd
+ * @copyright 2019 Nosto Solutions Ltd
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
@@ -41,13 +41,13 @@ use Magento\Backend\Block\Template\Context as BlockContext;
 use Magento\Backend\Model\Auth\Session;
 use Magento\Framework\Exception\NotFoundException;
 use Magento\Store\Model\Store;
-use Nosto\Helper\IframeHelper;
+use Nosto\Mixins\IframeTrait;
 use Nosto\Nosto;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Model\Meta\Account\Iframe\Builder as NostoIframeMetaBuilder;
-use Nosto\Tagging\Model\Meta\Account\Sso\Builder as NostoSsoBuilder;
 use Nosto\Tagging\Model\User\Builder as NostoCurrentUserBuilder;
+use Nosto\Tagging\Logger\Logger as NostoLogger;
 
 /**
  * Iframe block for displaying the Nosto account management iframe.
@@ -56,16 +56,19 @@ use Nosto\Tagging\Model\User\Builder as NostoCurrentUserBuilder;
  */
 class Iframe extends BlockTemplate
 {
+    use IframeTrait;
+    const IFRAME_VERSION = 1;
+
     /**
      * Default iframe origin regexp for validating window.postMessage() calls.
      */
     const DEFAULT_IFRAME_ORIGIN_REGEXP = '(https:\/\/(.*)\.hub\.nosto\.com)|(https:\/\/my\.nosto\.com)';
     private $nostoHelperAccount;
     private $backendAuthSession;
-    private $nostoSsoBuilder;
     private $nostoIframeMetaBuilder;
     private $nostoCurrentUserBuilder;
     private $nostoHelperScope;
+    private $logger;
 
     /**
      * Constructor.
@@ -73,7 +76,6 @@ class Iframe extends BlockTemplate
      * @param BlockContext $context the context.
      * @param NostoHelperAccount $nostoHelperAccount the account helper.
      * @param Session $backendAuthSession
-     * @param NostoSsoBuilder $nostoSsoBuilder
      * @param NostoIframeMetaBuilder $iframeMetaBuilder
      * @param NostoCurrentUserBuilder $nostoCurrentUserBuilder
      * @param NostoHelperScope $nostoHelperScope
@@ -83,20 +85,20 @@ class Iframe extends BlockTemplate
         BlockContext $context,
         NostoHelperAccount $nostoHelperAccount,
         Session $backendAuthSession,
-        NostoSsoBuilder $nostoSsoBuilder,
         NostoIframeMetaBuilder $iframeMetaBuilder,
         NostoCurrentUserBuilder $nostoCurrentUserBuilder,
         NostoHelperScope $nostoHelperScope,
+        NostoLogger $logger,
         array $data = []
     ) {
         parent::__construct($context, $data);
 
         $this->nostoHelperAccount = $nostoHelperAccount;
         $this->backendAuthSession = $backendAuthSession;
-        $this->nostoSsoBuilder = $nostoSsoBuilder;
         $this->nostoIframeMetaBuilder = $iframeMetaBuilder;
         $this->nostoCurrentUserBuilder = $nostoCurrentUserBuilder;
         $this->nostoHelperScope = $nostoHelperScope;
+        $this->logger = $logger;
     }
 
     /**
@@ -111,6 +113,8 @@ class Iframe extends BlockTemplate
     public function getIframeUrl()
     {
         $params = [];
+        $params['v'] = self::IFRAME_VERSION;
+
         // Pass any error/success messages we might have to the iframe.
         // These can be available when getting redirect back from the OAuth
         // front controller after connecting a Nosto account to a store.
@@ -125,38 +129,9 @@ class Iframe extends BlockTemplate
             $this->backendAuthSession->setData('nosto_message', null);
         }
 
-        $store = $this->getSelectedStore();
-        $account = $this->nostoHelperAccount->findAccount($store);
-        return IframeHelper::getUrl(
-            $this->nostoIframeMetaBuilder->build($store),
-            $account,
-            $this->nostoCurrentUserBuilder->build(),
-            $params
-        );
-    }
+        $url = $this->buildURL($params);
 
-    /**
-     * Returns the currently selected store.
-     * Nosto can only be configured on a store basis, and if we cannot find a
-     * store, an exception is thrown.
-     *
-     * @return Store the store.
-     * @throws NotFoundException store not found.
-     */
-    public function getSelectedStore()
-    {
-        $store = null;
-        if ($this->nostoHelperScope->isSingleStoreMode()) {
-            $store = $this->nostoHelperScope->getStore(true);
-        } elseif (($storeId = $this->_request->getParam('store'))) {
-            $store = $this->nostoHelperScope->getStore($storeId);
-        } elseif (($this->nostoHelperScope->getStore())) {
-            $store = $this->nostoHelperScope->getStore();
-        } else {
-            throw new NotFoundException(__('Store not found.'));
-        }
-
-        return $store;
+        return $url;
     }
 
     /**
@@ -164,16 +139,15 @@ class Iframe extends BlockTemplate
      * This config can be converted into JSON in the view file.
      *
      * @return array the config.
+     * @throws NotFoundException
      */
     public function getIframeConfig()
     {
-        $get = [
-            'store' => $this->getSelectedStore()->getId(),
-            'isAjax' => true
-        ];
+        $store = $this->nostoHelperScope->getSelectedStore($this->getRequest());
+        $get = ['store' => $store->getId(), 'isAjax' => true];
         return [
             'iframe_handler' => [
-                'origin' => $this->getIframeOrigin(),
+                'origin' => Nosto::getIframeOriginRegex(),
                 'xhrParams' => [
                     'form_key' => $this->formKey->getFormKey()
                 ],
@@ -188,17 +162,40 @@ class Iframe extends BlockTemplate
     }
 
     /**
-     * Returns the valid origin url regexp from where the iframe should accept
-     * postMessage calls.
-     * This is configurable to support different origins based on $_ENV.
-     *
-     * @return string the origin url regexp.
+     * @inheritdoc
      */
-    public function getIframeOrigin()
+    public function getIframe()
     {
-        return Nosto::getEnvVariable(
-            'NOSTO_IFRAME_ORIGIN_REGEXP',
-            self::DEFAULT_IFRAME_ORIGIN_REGEXP
-        );
+        try {
+            $store = $this->nostoHelperScope->getSelectedStore($this->getRequest());
+            return $this->nostoIframeMetaBuilder->build($store);
+        } catch (\Exception $e) {
+            $this->logger->exception($e);
+        }
+
+        return null;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getUser()
+    {
+        return $this->nostoCurrentUserBuilder->build();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getAccount()
+    {
+        try {
+            $store = $this->nostoHelperScope->getSelectedStore($this->getRequest());
+            return $this->nostoHelperAccount->findAccount($store);
+        } catch (\Exception $e) {
+            $this->logger->exception($e);
+        }
+
+        return null;
     }
 }

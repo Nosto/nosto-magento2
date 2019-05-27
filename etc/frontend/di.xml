@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!--
-  ~ Copyright (c) 2017, Nosto Solutions Ltd
+  ~ Copyright (c) 2019, Nosto Solutions Ltd
   ~ All rights reserved.
   ~
   ~ Redistribution and use in source and binary forms, with or without modification,
@@ -29,7 +29,7 @@
   ~ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   ~
   ~ @author Nosto Solutions Ltd <contact@nosto.com>
-  ~ @copyright 2017 Nosto Solutions Ltd
+  ~ @copyright 2019 Nosto Solutions Ltd
   ~ @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
   ~
   -->
@@ -42,7 +42,17 @@
             <argument name="sectionSourceMap" xsi:type="array">
                 <item name="customer-tagging" xsi:type="string">Nosto\Tagging\CustomerData\CustomerTagging</item>
                 <item name="cart-tagging" xsi:type="string">Nosto\Tagging\CustomerData\CartTagging</item>
+                <item name="active-variation-tagging" xsi:type="string">Nosto\Tagging\CustomerData\ActiveVariationTagging</item>
             </argument>
         </arguments>
+    </type>
+    <type name="Magento\Catalog\Model\Config">
+        <plugin name="sortby_add_custom_option" type="Nosto\Tagging\Plugin\Catalog\Model\Config" />
+    </type>
+    <type name="Magento\Catalog\Block\Product\ProductList\Toolbar">
+        <plugin name="sortby_extend_default_sort_filters" type="Nosto\Tagging\Plugin\Block\Toolbar" />
+    </type>
+    <type name="Magento\Checkout\Controller\Cart\Add">
+        <plugin name="nostoAddToCart" type="Nosto\Tagging\Controller\Checkout\Cart\Add" sortOrder="1" />
     </type>
 </config>

@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2017, Nosto Solutions Ltd
+ * Copyright (c) 2019, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,30 +29,26 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <contact@nosto.com>
- * @copyright 2017 Nosto Solutions Ltd
+ * @copyright 2019 Nosto Solutions Ltd
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
 
 namespace Nosto\Tagging\Model\Cart\Item;
 
-use Magento\Catalog\Model\Product\Type;
 use Magento\Catalog\Model\ResourceModel\Eav\Attribute;
 use Magento\Framework\App\ObjectManager;
 use Magento\Quote\Model\Quote\Item;
+use Nosto\Tagging\Model\Item\Simple as SimpleItem;
 
-class Simple
+class Simple extends SimpleItem
 {
-    public static function getType()
-    {
-        return Type::TYPE_SIMPLE;
-    }
-
     /**
      * Returns the name of the product. Simple products will have their own name
      *
      * @param Item $item the ordered item
      * @return string the name of the product
+
      */
     public static function buildItemName(Item $item)
     {
@@ -65,16 +61,23 @@ class Simple
         // the parent. If there are many parent IDs, we are safer to tag the
         // products own name alone.
         if (count($parentIds) === 1) {
-            $attributes = $item->getBuyRequest()->getData('super_attribute');
-            if (is_array($attributes)) {
-                foreach ($attributes as $id => $value) {
-                    /** @var Attribute $attribute */
-                    $attribute = $objectManager->get(Attribute::class)->load($id); // @codingStandardsIgnoreLine
-                    $label = $attribute->getSource()->getOptionText($value);
-                    if (!empty($label)) {
-                        $optNames[] = $label;
+            try {
+                $attributes = $item->getBuyRequest()
+                    ->getData('super_attribute');
+                if (is_array($attributes)) {
+                    foreach ($attributes as $id => $value) {
+                        /** @var Attribute $attribute */
+                        $attribute = $objectManager->get(Attribute::class)->load($id); // @codingStandardsIgnoreLine
+                        $label = $attribute->getSource()->getOptionText($value);
+                        if (!empty($label)) {
+                            $optNames[] = $label;
+                        }
                     }
                 }
+            } catch (\Throwable $e) {
+                // If the item name building fails, it's not crucial
+                // No need to handle the exception in any specific way
+                unset($e);
             }
         }
 

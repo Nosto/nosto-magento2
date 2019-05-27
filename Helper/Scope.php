@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2017, Nosto Solutions Ltd
+ * Copyright (c) 2019, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,7 +29,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <contact@nosto.com>
- * @copyright 2017 Nosto Solutions Ltd
+ * @copyright 2019 Nosto Solutions Ltd
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
@@ -38,6 +38,10 @@ namespace Nosto\Tagging\Helper;
 
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
+use Magento\Framework\App\RequestInterface;
+use Magento\Framework\Exception\NotFoundException;
+use Magento\Framework\Phrase;
+use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Store\Model\Website;
 
@@ -80,6 +84,23 @@ class Scope extends AbstractHelper
     }
 
     /**
+     * Return the store by store code
+     *
+     * @param $scopeCode
+     * @return mixed
+     */
+    public function getStoreByCode($scopeCode)
+    {
+        $stores = $this->getStores();
+        foreach ($stores as $store) {
+            if ($store->getCode() === $scopeCode) {
+                return $store;
+            }
+        }
+        return null;
+    }
+
+    /**
      * @return bool
      */
     public function isSingleStoreMode()
@@ -98,5 +119,31 @@ class Scope extends AbstractHelper
     {
         /** @noinspection PhpIncompatibleReturnTypeInspection */
         return $this->storeManager->getWebsites($withDefault, $codeKey);
+    }
+
+    /**
+     * Returns the currently selected store.
+     * If it is single store setup, then just return the default store.
+     * If it is a multi store setup, the expect a store id to passed in the
+     * request params and return that store as the current one.
+     *
+     * @param RequestInterface $request
+     * @return Store the store or null if not found.
+     * @throws NotFoundException
+     */
+    public function getSelectedStore(RequestInterface $request)
+    {
+        $store = null;
+        if ($this->isSingleStoreMode()) {
+            $store = $this->getStore(true);
+        } elseif ($storeId = $request->getParam('store')) {
+            $store = $this->getStore($storeId);
+        } elseif ($this->getStore()) {
+            $store = $this->getStore();
+        } else {
+            throw new NotFoundException(new Phrase('Store not found.'));
+        }
+
+        return $store;
     }
 }

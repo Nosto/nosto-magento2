@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2017, Nosto Solutions Ltd
+ * Copyright (c) 2019, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,7 +29,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <contact@nosto.com>
- * @copyright 2017 Nosto Solutions Ltd
+ * @copyright 2019 Nosto Solutions Ltd
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
@@ -39,55 +39,46 @@ namespace Nosto\Tagging\CustomerData;
 use Magento\Checkout\Helper\Cart as CartHelper;
 use Magento\Customer\CustomerData\SectionSourceInterface;
 use Magento\Framework\Stdlib\CookieManagerInterface;
-use Magento\Framework\Stdlib\DateTime\DateTime;
 use Magento\Quote\Model\Quote;
 use Nosto\Object\Cart\LineItem;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Model\Cart\Builder as NostoCartBuilder;
-use Nosto\Tagging\Model\Customer as NostoCustomer;
-use Nosto\Tagging\Model\CustomerFactory as NostoCustomerFactory;
+use Nosto\Tagging\Model\Customer\Customer as NostoCustomer;
 use Nosto\Tagging\Model\Cart\Restore\Builder as NostoRestoreCartUrlBuilder;
-use Psr\Log\LoggerInterface;
+use Nosto\Tagging\Logger\Logger as NostoLogger;
 
 class CartTagging extends HashedTagging implements SectionSourceInterface
 {
     private $cartHelper;
     private $cookieManager;
     private $logger;
-    private $date;
-    private $quote = null;
+    private $quote;
     private $nostoScopeHelper;
     private $nostoCartBuilder;
     private $nostoRestoreCartUrlBuilder;
-    private $nostoCustomerFactory;
 
     /** @noinspection PhpUndefinedClassInspection */
     /**
      * @param CartHelper $cartHelper
+     * @param CookieManagerInterface $cookieManager
+     * @param NostoLogger $logger
      * @param NostoCartBuilder $nostoCartBuilder
      * @param NostoHelperScope $nostoScopeHelper
-     * @param CookieManagerInterface $cookieManager
-     * @param LoggerInterface $logger
-     * @param DateTime $date
-     * @param NostoCustomerFactory $nostoCustomerFactory
+     * @param NostoRestoreCartUrlBuilder $nostoRestoreCartUrlBuilder
      */
     public function __construct(
         CartHelper $cartHelper,
         CookieManagerInterface $cookieManager,
-        LoggerInterface $logger,
-        DateTime $date,
+        NostoLogger $logger,
         NostoCartBuilder $nostoCartBuilder,
         NostoHelperScope $nostoScopeHelper,
         /** @noinspection PhpUndefinedClassInspection */
-        NostoCustomerFactory $nostoCustomerFactory,
         NostoRestoreCartUrlBuilder $nostoRestoreCartUrlBuilder
     ) {
         $this->cartHelper = $cartHelper;
         $this->logger = $logger;
-        $this->date = $date;
         $this->cookieManager = $cookieManager;
         $this->nostoScopeHelper = $nostoScopeHelper;
-        $this->nostoCustomerFactory = $nostoCustomerFactory;
         $this->nostoCartBuilder = $nostoCartBuilder;
         $this->nostoRestoreCartUrlBuilder = $nostoRestoreCartUrlBuilder;
     }
@@ -100,8 +91,8 @@ class CartTagging extends HashedTagging implements SectionSourceInterface
         $nostoCustomerId = $this->cookieManager->getCookie(NostoCustomer::COOKIE_NAME);
         $data = [
             'hcid' => parent::generateVisitorChecksum($nostoCustomerId),
-            "items" => [],
-            "itemCount" => 0,
+            'items' => [],
+            'itemCount' => 0,
             'restore_cart_url' => ''
         ];
         $cart = $this->cartHelper->getCart();
@@ -110,13 +101,14 @@ class CartTagging extends HashedTagging implements SectionSourceInterface
             $this->nostoScopeHelper->getStore()
         );
         $itemCount = $cart->getItemsCount();
-        $data["itemCount"] = $itemCount;
+        $data['itemCount'] = $itemCount;
         $addedCount = 0;
         /* @var LineItem $item */
         foreach ($nostoCart->getItems() as $item) {
             $addedCount++;
-            $data["items"][] = [
+            $data['items'][] = [
                 'product_id' => $item->getProductId(),
+                'sku_id' => $item->getSkuId(),
                 'quantity' => $item->getQuantity(),
                 'name' => $item->getName(),
                 'unit_price' => $item->getUnitPrice(),
@@ -126,13 +118,13 @@ class CartTagging extends HashedTagging implements SectionSourceInterface
             ];
         }
 
-        if ($data["itemCount"] > 0) {
+        if ($data['itemCount'] > 0) {
             $store = $this->nostoScopeHelper->getStore();
             try {
                 $data['restore_cart_url'] = $this->nostoRestoreCartUrlBuilder
                     ->build($this->getQuote(), $store);
-            } catch(\Exception $e) {
-                $this->logger->error($e->__toString());
+            } catch (\Exception $e) {
+                $this->logger->exception($e);
             }
         }
 
@@ -142,7 +134,7 @@ class CartTagging extends HashedTagging implements SectionSourceInterface
     /**
      * Get active quote
      *
-     * @return \Magento\Quote\Model\Quote
+     * @return Quote
      */
     public function getQuote()
     {
@@ -157,7 +149,7 @@ class CartTagging extends HashedTagging implements SectionSourceInterface
     /**
      * Return customer quote items
      *
-     * @return \Magento\Quote\Model\Quote\Item[]
+     * @return Quote\Item[]
      */
     public function getAllQuoteItems()
     {

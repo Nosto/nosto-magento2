@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2017, Nosto Solutions Ltd
+ * Copyright (c) 2019, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,7 +29,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <contact@nosto.com>
- * @copyright 2017 Nosto Solutions Ltd
+ * @copyright 2019 Nosto Solutions Ltd
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
@@ -37,36 +37,36 @@
 namespace Nosto\Tagging\Model\Rates;
 
 use Exception;
-use Magento\Framework\Event\ManagerInterface;
 use Magento\Store\Model\Store;
 use Nosto\Operation\SyncRates;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Model\Rates\Builder as NostoExchangeRatesBuilder;
-use Psr\Log\LoggerInterface;
+use Nosto\Tagging\Logger\Logger as NostoLogger;
+use Nosto\Tagging\Helper\Currency as NostoHelperCurrency;
 
 class Service
 {
     private $logger;
-    private $eventManager;
     private $nostoExchangeRatesBuilder;
     private $nostoHelperAccount;
+    private $nostoHelperCurrency;
 
     /**
-     * @param LoggerInterface $logger
-     * @param ManagerInterface $eventManager
+     * @param NostoLogger $logger
      * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoExchangeRatesBuilder $nostoExchangeRatesBuilder
+     * @param NostoHelperCurrency $nostoHelperCurrency
      */
     public function __construct(
-        LoggerInterface $logger,
-        ManagerInterface $eventManager,
+        NostoLogger $logger,
         NostoHelperAccount $nostoHelperAccount,
-        NostoExchangeRatesBuilder $nostoExchangeRatesBuilder
+        NostoExchangeRatesBuilder $nostoExchangeRatesBuilder,
+        NostoHelperCurrency $nostoHelperCurrency
     ) {
         $this->logger = $logger;
-        $this->eventManager = $eventManager;
         $this->nostoExchangeRatesBuilder = $nostoExchangeRatesBuilder;
         $this->nostoHelperAccount = $nostoHelperAccount;
+        $this->nostoHelperCurrency = $nostoHelperCurrency;
     }
 
     /**
@@ -79,26 +79,46 @@ class Service
     public function update(Store $store)
     {
         if ($account = $this->nostoHelperAccount->findAccount($store)) {
+            if (!$this->nostoHelperCurrency->exchangeRatesInUse($store)) {
+                $this->logger->debug(
+                    sprintf(
+                        'Skipping update; multi-currency is disabled for %s',
+                        $store->getName()
+                    )
+                );
+
+                return true;
+            }
             $rates = $this->nostoExchangeRatesBuilder->build($store);
             if (empty($rates->getRates())) {
-                $this->logger->info('Skipping update; no multi-currency configured for ' .
-                    $store->getName());
+                $this->logger->debug(
+                    sprintf(
+                        'Skipping update; no rates found for %s',
+                        $store->getName()
+                    )
+                );
 
                 return false;
             }
 
             try {
-                $this->logger->info(sprintf('Found %d currencies for store ', count($rates)));
+                /** @noinspection PhpParamsInspection */
+                $this->logger->info(
+                    sprintf('Found %d currencies for store ', count($rates->getRates()))
+                );
                 $service = new SyncRates($account);
+
                 return $service->update($rates);
             } catch (Exception $e) {
-                $this->logger->error($e->__toString());
+                $this->logger->exception($e);
             }
         } else {
-            $this->logger->info('Skipping update; an account doesn\'t exist for ' .
-                $store->getName());
+            $this->logger->debug(
+                'Skipping update; an account doesn\'t exist for ' .
+                $store->getName()
+            );
         }
 
-        return false;
+        return true;
     }
 }

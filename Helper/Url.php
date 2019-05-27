@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2017, Nosto Solutions Ltd
+ * Copyright (c) 2019, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,27 +29,37 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <contact@nosto.com>
- * @copyright 2017 Nosto Solutions Ltd
+ * @copyright 2019 Nosto Solutions Ltd
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
 
 namespace Nosto\Tagging\Helper;
 
-use Magento\Catalog\Model\Product\Visibility;
+use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\ResourceModel\Category\CollectionFactory as CategoryCollectionFactory;
-use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductCollectionFactory;
+use Magento\Backend\Helper\Data as BackendDataHelper;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Url as UrlBuilder;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 use Magento\Framework\UrlInterface;
 use Magento\Store\Model\Store;
 use Nosto\Request\Http\HttpRequest;
+use Nosto\Tagging\Helper\Data as NostoDataHelper;
+use Nosto\Tagging\Model\Product\Repository as ProductRepository;
+use Nosto\Tagging\Model\Product\Url\Builder as NostoUrlBuilder;
+use Nosto\Helper\UrlHelper;
+use Nosto\Tagging\Logger\Logger as NostoLogger;
 
 /**
  * Url helper class for common URL related tasks.
  */
 class Url extends AbstractHelper
 {
+    const URL_PATH_NOSTO_CONFIG = 'adminhtml/system_config/edit/section/nosto/';
+    const MAGENTO_URL_OPTION_STORE_ID = 'store';
+
     const MAGENTO_PATH_SEARCH_RESULT = 'catalogsearch/result';
     /**
      * Path to Magento's cart controller
@@ -122,36 +132,47 @@ class Url extends AbstractHelper
      */
     public static $urlType = UrlInterface::URL_TYPE_LINK;
 
-    private $productCollectionFactory;
     private $categoryCollectionFactory;
-    private $productVisibility;
     private $urlBuilder;
+    private $nostoDataHelper;
+    private $backendDataHelper;
+    private $productRepository;
+    private $nostoUrlBuilder;
+    private $logger;
 
     /** @noinspection PhpUndefinedClassInspection */
     /**
      * Constructor.
      *
      * @param Context $context the context.
-     * @param ProductCollectionFactory $productCollectionFactory auto generated product collection factory.
+     * @param ProductRepository $productRepository
      * @param CategoryCollectionFactory $categoryCollectionFactory auto generated category collection factory.
-     * @param Visibility $productVisibility product visibility.
-     * @param \Magento\Framework\Url $urlBuilder frontend URL builder.
+     * @param UrlBuilder $urlBuilder frontend URL builder.
+     * @param Data $nostoDataHelper
+     * @param BackendDataHelper $backendDataHelper
+     * @param NostoUrlBuilder $nostoUrlBuilder
      */
     public function __construct(
         Context $context,
-        /** @noinspection PhpUndefinedClassInspection */
-        ProductCollectionFactory $productCollectionFactory,
+        ProductRepository $productRepository,
         /** @noinspection PhpUndefinedClassInspection */
         CategoryCollectionFactory $categoryCollectionFactory,
-        Visibility $productVisibility,
-        \Magento\Framework\Url $urlBuilder
+        NostoDataHelper $nostoDataHelper,
+        UrlBuilder $urlBuilder,
+        /** @noinspection PhpDeprecationInspection */
+        BackendDataHelper $backendDataHelper,
+        NostoUrlBuilder $nostoUrlBuilder,
+        NostoLogger $nostoLogger
     ) {
         parent::__construct($context);
 
-        $this->productCollectionFactory = $productCollectionFactory;
+        $this->productRepository = $productRepository;
         $this->categoryCollectionFactory = $categoryCollectionFactory;
-        $this->productVisibility = $productVisibility;
         $this->urlBuilder = $urlBuilder;
+        $this->nostoDataHelper = $nostoDataHelper;
+        $this->backendDataHelper = $backendDataHelper;
+        $this->nostoUrlBuilder = $nostoUrlBuilder;
+        $this->logger = $nostoLogger;
     }
 
     /**
@@ -160,30 +181,15 @@ class Url extends AbstractHelper
      * The preview url includes "nostodebug=true" parameter.
      *
      * @param Store $store the store to get the url for.
-     * @return string the url.
+     * @return string|null the url.
+     * @suppress PhanTypeMismatchReturn
      */
     public function getPreviewUrlProduct(Store $store)
     {
-        /** @var \Magento\Catalog\Model\ResourceModel\Product\Collection $collection */
-        /** @noinspection PhpUndefinedMethodInspection */
-        $collection = $this->productCollectionFactory->create();
-        $collection->addStoreFilter($store->getId());
-        $collection->setVisibility($this->productVisibility->getVisibleInSiteIds());
-        $collection->addAttributeToFilter('status', ['eq' => '1']);
-        $collection->setCurPage(1);
-        $collection->setPageSize(1);
-        $collection->load();
-
-        $url = '';
-        foreach ($collection->getItems() as $product) {
-            /** @var \Magento\Catalog\Model\Product $product */
-            $url = $product->getUrlInStore(
-                [
-                    self::MAGENTO_URL_OPTION_NOSID => true,
-                    self::MAGENTO_URL_OPTION_SCOPE_TO_URL => true,
-                    self::MAGENTO_URL_OPTION_SCOPE => $store->getCode(),
-                ]
-            );
+        $product = $this->productRepository->getRandomSingleActiveProduct();
+        $url = null;
+        if ($product instanceof Product) {
+            $url = $this->nostoUrlBuilder->getUrlInStore($product, $store);
             $url = $this->addNostoDebugParamToUrl($url);
         }
 
@@ -213,6 +219,7 @@ class Url extends AbstractHelper
      * @param Store $store the store to get the url for.
      * @return string the url.
      *
+     * @throws LocalizedException
      */
     public function getPreviewUrlCategory(Store $store)
     {
@@ -226,14 +233,16 @@ class Url extends AbstractHelper
         $collection->setCurPage(1);
         $collection->setPageSize(1);
         $collection->load();
-
         foreach ($collection->getItems() as $category) {
             /** @var \Magento\Catalog\Model\Category $category */
             $url = $category->getUrl();
-            $url = $this->replaceQueryParamsInUrl(
-                ['___store' => $store->getCode()],
-                $url
-            );
+            if ($this->nostoDataHelper->getStoreCodeToUrl($store)) {
+                $url = $this->replaceQueryParamsInUrl(
+                    ['___store' => $store->getCode()],
+                    $url
+                );
+            }
+            
             return $this->addNostoDebugParamToUrl($url);
         }
 
@@ -266,12 +275,28 @@ class Url extends AbstractHelper
             self::MAGENTO_PATH_SEARCH_RESULT,
             [
                 self::MAGENTO_URL_OPTION_NOSID => true,
-                self::MAGENTO_URL_OPTION_SCOPE_TO_URL => true,
+                self::MAGENTO_URL_OPTION_SCOPE_TO_URL => $this->nostoDataHelper->getStoreCodeToUrl($store),
                 self::MAGENTO_URL_OPTION_SCOPE => $store->getCode(),
             ]
         );
         $url = $this->replaceQueryParamsInUrl(['q' => 'nosto'], $url);
         return $this->addNostoDebugParamToUrl($url);
+    }
+
+    /**
+     * Returns the store domain
+     *
+     * @param Store $store
+     * @return string
+     */
+    public function getActiveDomain(Store $store)
+    {
+        try {
+            return UrlHelper::parseDomain($store->getBaseUrl());
+        } catch (\Exception $e) {
+            $this->logger->exception($e);
+            return '';
+        }
     }
 
     /**
@@ -287,7 +312,7 @@ class Url extends AbstractHelper
             self::MAGENTO_PATH_CART,
             [
                 self::MAGENTO_URL_OPTION_NOSID => true,
-                self::MAGENTO_URL_OPTION_SCOPE_TO_URL => true,
+                self::MAGENTO_URL_OPTION_SCOPE_TO_URL => $this->nostoDataHelper->getStoreCodeToUrl($store),
                 self::MAGENTO_URL_OPTION_SCOPE => $store->getCode(),
             ]
         );
@@ -307,7 +332,7 @@ class Url extends AbstractHelper
             '',
             [
                 self::MAGENTO_URL_OPTION_NOSID => true,
-                self::MAGENTO_URL_OPTION_SCOPE_TO_URL => true,
+                self::MAGENTO_URL_OPTION_SCOPE_TO_URL => $this->nostoDataHelper->getStoreCodeToUrl($store),
                 self::MAGENTO_URL_OPTION_SCOPE => $store->getCode(),
             ]
         );
@@ -327,7 +352,7 @@ class Url extends AbstractHelper
         $zendHttp = \Zend_Uri_Http::fromString($currentUrl);
         $urlParameters = $zendHttp->getQueryAsArray();
 
-        $defaultParams = self::getUrlOptionsWithNoSid($store);
+        $defaultParams = $this->getUrlOptionsWithNoSid($store);
         $url = $store->getUrl(
             self::MAGENTO_PATH_CART,
             $defaultParams
@@ -349,17 +374,31 @@ class Url extends AbstractHelper
     /**
      * Returns the default options for fetching Magento urls with no session id
      *
+     * @param Store $store
      * @return array
      */
-    public static function getUrlOptionsWithNoSid(Store $store)
+    public function getUrlOptionsWithNoSid(Store $store)
     {
         $params = [
-            self::MAGENTO_URL_OPTION_SCOPE_TO_URL => true,
+            self::MAGENTO_URL_OPTION_SCOPE_TO_URL => $this->nostoDataHelper->getStoreCodeToUrl($store),
             self::MAGENTO_URL_OPTION_NOSID => true,
             self::MAGENTO_URL_OPTION_LINK_TYPE => self::$urlType,
             self::MAGENTO_URL_OPTION_SCOPE => $store->getCode(),
         ];
 
         return $params;
+    }
+
+    /**
+     * Gets the absolute URL to the Nosto configuration page
+     *
+     * @param Store $store the store to get the url for.
+     *
+     * @return string the url.
+     */
+    public function getAdminNostoConfigurationUrl(Store $store)
+    {
+        $params = [self::MAGENTO_URL_OPTION_STORE_ID => $store->getStoreId()];
+        return $this->backendDataHelper->getUrl(self::URL_PATH_NOSTO_CONFIG, $params);
     }
 }

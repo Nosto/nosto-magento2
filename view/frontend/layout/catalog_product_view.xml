@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!--
-  ~ Copyright (c) 2017, Nosto Solutions Ltd
+  ~ Copyright (c) 2019, Nosto Solutions Ltd
   ~ All rights reserved.
   ~
   ~ Redistribution and use in source and binary forms, with or without modification,
@@ -29,7 +29,7 @@
   ~ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   ~
   ~ @author Nosto Solutions Ltd <contact@nosto.com>
-  ~ @copyright 2017 Nosto Solutions Ltd
+  ~ @copyright 2019 Nosto Solutions Ltd
   ~ @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
   ~
   -->
@@ -39,14 +39,15 @@
       xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
     <body>
         <referenceContainer name="content">
-            <block class="Nosto\Tagging\Block\PageType" name="nosto.page.type.product" after="-"
-                   template="Nosto_Tagging::pagetype.phtml">
+            <block class="Nosto\Tagging\Block\PageType" name="nosto.page.type.product" after="-">
                 <arguments>
                     <argument name="page_type" xsi:type="string">product</argument>
                 </arguments>
             </block>
-            <block class="Nosto\Tagging\Block\Product" name="nosto.product" after="-"
-                   template="product.phtml"/>
+            <block class="Nosto\Tagging\Block\Product" name="nosto.product" after="-"/>
+
+            <block class="Nosto\Tagging\Block\Category" name="nosto.category" after="-"/>
+
             <block class="Nosto\Tagging\Block\Element" name="nosto.page.product1" after="-"
                    template="Nosto_Tagging::element.phtml">
                 <arguments>

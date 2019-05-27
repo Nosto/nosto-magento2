@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2017, Nosto Solutions Ltd
+ * Copyright (c) 2019, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,7 +29,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <contact@nosto.com>
- * @copyright 2017 Nosto Solutions Ltd
+ * @copyright 2019 Nosto Solutions Ltd
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
@@ -38,13 +38,14 @@ namespace Nosto\Tagging\Model\Meta\Account\Iframe;
 
 use Magento\Backend\Model\Auth\Session;
 use Magento\Framework\Event\ManagerInterface;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Locale\ResolverInterface;
 use Magento\Store\Model\Store;
 use Nosto\NostoException;
 use Nosto\Object\Iframe;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Url as NostoHelperUrl;
-use Psr\Log\LoggerInterface;
+use Nosto\Tagging\Logger\Logger as NostoLogger;
 
 class Builder
 {
@@ -60,7 +61,7 @@ class Builder
      * @param NostoHelperData $nostoHelperData
      * @param Session $backendAuthSession
      * @param ResolverInterface $localeResolver
-     * @param LoggerInterface $logger
+     * @param NostoLogger $logger
      * @param ManagerInterface $eventManager
      */
     public function __construct(
@@ -68,7 +69,7 @@ class Builder
         NostoHelperData $nostoHelperData,
         Session $backendAuthSession,
         ResolverInterface $localeResolver,
-        LoggerInterface $logger,
+        NostoLogger $logger,
         ManagerInterface $eventManager
     ) {
         $this->nostoHelperUrl = $nostoHelperUrl;
@@ -82,6 +83,7 @@ class Builder
     /**
      * @param Store $store
      * @return Iframe
+     * @throws LocalizedException
      */
     public function build(Store $store)
     {
@@ -89,14 +91,15 @@ class Builder
 
         try {
             $metaData->setUniqueId($this->nostoHelperData->getInstallationId());
-
             $lang = substr($this->localeResolver->getLocale(), 0, 2);
             $metaData->setLanguageIsoCode($lang);
-            /** @noinspection PhpUndefinedMethodInspection */
             $lang = substr($store->getConfig('general/locale/code'), 0, 2);
             $metaData->setLanguageIsoCodeShop($lang);
-
-            $metaData->setEmail($this->backendAuthSession->getUser()->getEmail());
+            if ($this->backendAuthSession->getUser()) {
+                $metaData->setEmail($this->backendAuthSession->getUser()->getEmail());
+            } else {
+                throw new NostoException('Could not get user from Backend Auth Session');
+            }
             $metaData->setPlatform('magento');
             $metaData->setShopName($store->getName());
             $metaData->setUniqueId($this->nostoHelperData->getInstallationId());
@@ -108,7 +111,7 @@ class Builder
             $metaData->setPreviewUrlCart($this->nostoHelperUrl->getPreviewUrlCart($store));
             $metaData->setPreviewUrlFront($this->nostoHelperUrl->getPreviewUrlFront($store));
         } catch (NostoException $e) {
-            $this->logger->error($e->__toString());
+            $this->logger->exception($e);
         }
 
         $this->eventManager->dispatch('nosto_iframe_load_after', ['iframe' => $metaData]);

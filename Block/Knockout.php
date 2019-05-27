@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2017, Nosto Solutions Ltd
+ * Copyright (c) 2019, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,7 +29,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <contact@nosto.com>
- * @copyright 2017 Nosto Solutions Ltd
+ * @copyright 2019 Nosto Solutions Ltd
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
@@ -63,12 +63,17 @@ class Knockout extends Template
         NostoHelperScope $nostoHelperScope,
         array $data = []
     ) {
-
         parent::__construct($context, $data);
         $this->nostoHelperAccount = $nostoHelperAccount;
         $this->nostoHelperScope = $nostoHelperScope;
     }
 
+    /**
+     * Get relevant path to template
+     *
+     * @return string
+     * @suppress PhanTypeMismatchReturn
+     */
     public function getTemplate()
     {
         $template = null;
@@ -92,9 +97,14 @@ class Knockout extends Template
         return $enabled;
     }
 
+    /**
+     * Retrieve serialized JS layout configuration ready to use in template
+     *
+     * @return string
+     */
     public function getJsLayout()
     {
-        $jsLayout = null;
+        $jsLayout = '';
         if ($this->nostoEnabled()) {
             $jsLayout = parent::getJsLayout();
         }

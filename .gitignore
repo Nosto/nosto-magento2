@@ -5,3 +5,6 @@ vendor
 build
 pub
 bin
+phan.xml
+chk*xml
+magento/

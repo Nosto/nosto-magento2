@@ -6,14 +6,30 @@
         <nosto>
             <images>
                 <version>image</version>
+                <remove_pub_directory>0</remove_pub_directory>
             </images>
+            <url>
+                <store_code_to_url>1</store_code_to_url>
+            </url>
             <flags>
                 <variation_tagging>1</variation_tagging>
+                <use_custom_fields>1</use_custom_fields>
                 <altimg_tagging>1</altimg_tagging>
                 <rating_tagging>1</rating_tagging>
-                <inventory_tagging>1</inventory_tagging>
+                <inventory_tagging>0</inventory_tagging>
                 <product_updates>1</product_updates>
+                <full_reindex>1</full_reindex>
+                <low_stock_indication>0</low_stock_indication>
+                <send_add_to_cart_event>0</send_add_to_cart_event>
+                <send_customer_data>1</send_customer_data>
+                <indexer_memory>50</indexer_memory>
+                <category_sorting>0</category_sorting>
+                <tag_date_published>0</tag_date_published>
             </flags>
+            <multicurrency>
+                <method>undefined</method>
+                <pricing_variation>0</pricing_variation>
+            </multicurrency>
         </nosto>
     </default>
 </config>

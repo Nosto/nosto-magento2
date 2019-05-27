@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2017, Nosto Solutions Ltd
+ * Copyright (c) 2019, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,7 +29,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <contact@nosto.com>
- * @copyright 2017 Nosto Solutions Ltd
+ * @copyright 2019 Nosto Solutions Ltd
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
@@ -43,6 +43,7 @@ use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Element\Template\Context;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
+use Nosto\Tagging\Helper\Data as NostoHelperData;
 
 /**
  * Embed script block that includes the Nosto script in the page <head> to be included on all pages.
@@ -50,10 +51,11 @@ use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 class Addtocart extends Template
 {
     use TaggingTrait {
-        TaggingTrait::__construct as taggingConstruct;
+        TaggingTrait::__construct as taggingConstruct; // @codingStandardsIgnoreLine
     }
 
     private $urlEncoder;
+    private $nostoHelperData;
 
     /**
      * Constructor.
@@ -62,6 +64,7 @@ class Addtocart extends Template
      * @param EncoderInterface $urlEncoder
      * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoHelperScope $nostoHelperScope
+     * @param NostoHelperData $nostoHelperData
      * @param array $data
      */
     public function __construct(
@@ -69,12 +72,14 @@ class Addtocart extends Template
         EncoderInterface $urlEncoder,
         NostoHelperAccount $nostoHelperAccount,
         NostoHelperScope $nostoHelperScope,
+        NostoHelperData $nostoHelperData,
         array $data = []
     ) {
         parent::__construct($context, $data);
 
         $this->taggingConstruct($nostoHelperAccount, $nostoHelperScope);
         $this->urlEncoder = $urlEncoder;
+        $this->nostoHelperData = $nostoHelperData;
     }
 
     /**
@@ -85,19 +90,27 @@ class Addtocart extends Template
     public function getSubmitUrl()
     {
         $continueUrl = $this->urlEncoder->encode($this->_urlBuilder->getCurrentUrl());
-
+        $activeStore = $this->nostoHelperScope->getStore(true);
         $routeParams = [ActionInterface::PARAM_NAME_URL_ENCODED => $continueUrl];
         $routeParams['_secure'] = $this->getRequest()->isSecure();
-        $routeParams['_scope'] = $this->nostoHelperScope->getStore(true)->getId();
-        $routeParams['_scope_to_url'] = true;
-
+        $routeParams['_scope'] = $activeStore->getCode();
+        $routeParams['_scope_to_url'] = $this->nostoHelperData->getStoreCodeToUrl($activeStore);
         $request = $this->getRequest();
-        if ($request instanceof Http) {
-            if ($request->getRouteName() == 'checkout' && $request->getControllerName() == 'cart') {
-                $routeParams['in_cart'] = 1;
-            }
+        if ($request instanceof Http
+            && $request->getRouteName() === 'checkout'
+            && $request->getControllerName() === 'cart'
+        ) {
+            $routeParams['in_cart'] = 1;
         }
-
         return $this->_urlBuilder->getUrl('checkout/cart/add', $routeParams);
+    }
+
+    /**
+     *
+     * @return null
+     */
+    public function getAbstractObject()
+    {
+        return null;
     }
 }

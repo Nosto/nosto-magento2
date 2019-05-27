@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2017, Nosto Solutions Ltd
+ * Copyright (c) 2019, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,7 +29,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <contact@nosto.com>
- * @copyright 2017 Nosto Solutions Ltd
+ * @copyright 2019 Nosto Solutions Ltd
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
@@ -37,15 +37,26 @@
 namespace Nosto\Tagging\Model\Cart\Item;
 
 use Magento\Catalog\Model\Product;
-use Magento\Framework\App\ObjectManager;
-use Magento\GroupedProduct\Model\Product\Type\Grouped as Type;
 use Magento\Quote\Model\Quote\Item;
+use Nosto\Tagging\Model\Item\Grouped as GroupedItem;
+use Magento\Catalog\Model\ProductRepository;
+use Magento\Framework\Exception\NoSuchEntityException;
+use Magento\Catalog\Api\Data\ProductInterface;
 
-class Grouped
+class Grouped extends GroupedItem
 {
-    public static function getType()
+    /**
+     * @var ProductRepository
+     */
+    private $productRepository;
+
+    /**
+     * Grouped constructor.
+     * @param ProductRepository $productRepository
+     */
+    public function __construct(ProductRepository $productRepository)
     {
-        return Type::TYPE_CODE;
+        $this->productRepository = $productRepository;
     }
 
     /**
@@ -53,22 +64,38 @@ class Grouped
      * their name.
      *
      * @param Item $item the ordered item
-     * @return string the name of the product
+     * @return string|null the name of the product
      */
-    public static function buildItemName(Item $item)
+    public function buildItemName(Item $item)
     {
         $name = $item->getName();
-        $config = $item->getBuyRequest()->getData('super_product_config');
-        $objectManager = ObjectManager::getInstance();
-        if (isset($config['product_id'])) {
-            /** @var Product $parent */
-            $parent = $objectManager->get(Product::class)->load($config['product_id']); // @codingStandardsIgnoreLine
-            $parentName = $parent->getName();
-            if (!empty($parentName)) {
-                $name = $parentName . ' - ' . $name;
+        try {
+            $config = $item->getBuyRequest()->getData('super_product_config');
+            $itemParent = $this->getGroupedItemParent($config['product_id']);
+            if ($itemParent instanceof Product) {
+                $itemParentName = $itemParent->getName();
+                if ($itemParentName !== null) {
+                    return $itemParentName . ' - ' . $name;
+                }
             }
+        } catch (\Throwable $e) {
+            // If the item name building fails, it's not crucial
+            // No need to handle the exception in any specific way
+            unset($e);
         }
 
         return $name;
+    }
+
+    /**
+     * Query the product id and returns the Product Object
+     *
+     * @param $productId
+     * @return ProductInterface|mixed
+     * @throws NoSuchEntityException
+     */
+    private function getGroupedItemParent($productId)
+    {
+        return $this->productRepository->getById($productId);
     }
 }

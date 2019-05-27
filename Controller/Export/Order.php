@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2017, Nosto Solutions Ltd
+ * Copyright (c) 2019, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,7 +29,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <contact@nosto.com>
- * @copyright 2017 Nosto Solutions Ltd
+ * @copyright 2019 Nosto Solutions Ltd
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
@@ -37,8 +37,10 @@
 namespace Nosto\Tagging\Controller\Export;
 
 use Magento\Framework\App\Action\Context;
-use Magento\Sales\Model\ResourceModel\Order\CollectionFactory as OrderCollectionFactory;
 use Magento\Store\Model\Store;
+use Nosto\NostoException;
+use Nosto\Object\AbstractCollection;
+use Nosto\Object\Order\OrderCollection;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Model\Order\Collection as NostoOrderCollection;
@@ -52,14 +54,12 @@ use Nosto\Tagging\Model\Order\Collection as NostoOrderCollection;
  */
 class Order extends Base
 {
-    private $orderCollectionFactory;
     private $nostoOrderCollection;
 
     /**
      * Constructor.
      *
      * @param Context $context
-     * @param OrderCollectionFactory $orderCollectionFactory
      * @param NostoHelperScope $nostoHelperScope
      * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoOrderCollection $nostoOrderCollection
@@ -67,18 +67,22 @@ class Order extends Base
     public function __construct(
         Context $context,
         /** @noinspection PhpUndefinedClassInspection */
-        OrderCollectionFactory $orderCollectionFactory,
         NostoHelperScope $nostoHelperScope,
         NostoHelperAccount $nostoHelperAccount,
         NostoOrderCollection $nostoOrderCollection
     ) {
         parent::__construct($context, $nostoHelperScope, $nostoHelperAccount);
-        $this->orderCollectionFactory = $orderCollectionFactory;
         $this->nostoOrderCollection = $nostoOrderCollection;
     }
 
     /**
+     *
      * @suppress PhanParamSignatureMismatch
+     * @param Store $store
+     * @param int $limit
+     * @param int $offset
+     * @return AbstractCollection|OrderCollection
+     * @throws NostoException
      */
     public function buildExportCollection(Store $store, $limit = 100, $offset = 0)
     {
@@ -87,6 +91,10 @@ class Order extends Base
 
     /**
      * @suppress PhanParamSignatureMismatch
+     * @param Store $store
+     * @param int $id
+     * @return AbstractCollection|OrderCollection
+     * @throws NostoException
      */
     public function buildSingleExportCollection(Store $store, $id)
     {

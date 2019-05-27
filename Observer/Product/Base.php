@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2017, Nosto Solutions Ltd
+ * Copyright (c) 2019, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,7 +29,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <contact@nosto.com>
- * @copyright 2017 Nosto Solutions Ltd
+ * @copyright 2019 Nosto Solutions Ltd
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
@@ -38,67 +38,43 @@ namespace Nosto\Tagging\Observer\Product;
 
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\ProductRepository;
-use Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable as ConfigurableProduct;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
+use Magento\Framework\Indexer\IndexerRegistry;
 use Magento\Framework\Module\Manager as ModuleManager;
-use Magento\Store\Model\Store;
-use Nosto\NostoException;
-use Nosto\Operation\UpsertProduct;
-use Nosto\Request\Http\HttpRequest;
-use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
-use Nosto\Tagging\Helper\Scope as NostoHelperScope;
-use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
-use Psr\Log\LoggerInterface;
+use Nosto\Tagging\Model\Indexer\Product\Indexer;
+use Nosto\Tagging\Model\Product\Service as NostoProductService;
 
 abstract class Base implements ObserverInterface
 {
-    private $nostoHelperData;
-    private $nostoHelperAccount;
-    private $logger;
-    private $moduleManager;
-    private $configurableProduct;
-    private $nostoHelperScope;
-    protected $nostoProductBuilder;
-    protected $productRepository;
+    public $moduleManager;
+    public $productService;
+    public $productRepository;
+    public $dataHelper;
+    public $indexer;
 
     /**
      * Constructor.
      *
-     * @param NostoHelperData $nostoHelperData
-     * @param NostoHelperAccount $nostoHelperAccount
-     * @param NostoProductBuilder $nostoProductBuilder
-     * @param NostoHelperScope $nostoHelperScope
-     * @param LoggerInterface $logger
      * @param ModuleManager $moduleManager
-     * @param ConfigurableProduct $configurableProduct
+     * @param NostoProductService $productService
      * @param ProductRepository $productRepository
+     * @param NostoHelperData $dataHelper
+     * @param IndexerRegistry $indexerRegistry
      */
     public function __construct(
-        NostoHelperData $nostoHelperData,
-        NostoHelperAccount $nostoHelperAccount,
-        NostoProductBuilder $nostoProductBuilder,
-        NostoHelperScope $nostoHelperScope,
-        LoggerInterface $logger,
         ModuleManager $moduleManager,
-        ConfigurableProduct $configurableProduct,
-        ProductRepository $productRepository
+        NostoProductService $productService,
+        ProductRepository $productRepository,
+        NostoHelperData $dataHelper,
+        IndexerRegistry $indexerRegistry
     ) {
-        $this->nostoHelperData = $nostoHelperData;
-        $this->nostoHelperAccount = $nostoHelperAccount;
-        $this->nostoProductBuilder = $nostoProductBuilder;
-        $this->logger = $logger;
+        $this->productService = $productService;
         $this->moduleManager = $moduleManager;
-        $this->configurableProduct = $configurableProduct;
         $this->productRepository = $productRepository;
-
-        HttpRequest::buildUserAgent(
-            NostoHelperData::PLATFORM_NAME,
-            $nostoHelperData->getPlatformVersion(),
-            $nostoHelperData->getModuleVersion()
-        );
-        $this->nostoHelperScope = $nostoHelperScope;
+        $this->dataHelper = $dataHelper;
+        $this->indexer = $indexerRegistry->get(Indexer::INDEXER_ID);
     }
 
     /**
@@ -107,56 +83,18 @@ abstract class Base implements ObserverInterface
      *
      * @param Observer $observer
      * @return void
-     * @suppress PhanDeprecatedFunction
+     * @throws \Exception
      */
     public function execute(Observer $observer)
     {
-        if ($this->moduleManager->isEnabled(NostoHelperData::MODULE_NAME)) {
+        if ($this->moduleManager->isEnabled(NostoHelperData::MODULE_NAME)
+            && !$this->indexer->isScheduled()
+        ) {
             /* @var \Magento\Catalog\Model\Product $product */
-            /** @noinspection PhpUndefinedMethodInspection */
             $product = $this->extractProduct($observer);
-            if ($product instanceof Product) {
-                // Figure out if we're updating a parent product
-                $parentProducts
-                    = $this->configurableProduct->getParentIdsByChild($product->getId());
-                if (!empty($parentProducts[0]) && is_int($parentProducts[0])) {
-                    $product = $this->productRepository->getById($parentProducts[0]);
-                }
-                foreach ($product->getStoreIds() as $storeId) {
-                    $store = $this->nostoHelperScope->getStore($storeId);
-                    $account = $this->nostoHelperAccount->findAccount($store);
-                    if ($account === null) {
-                        continue;
-                    }
 
-                    if (!$this->nostoHelperData->isProductUpdatesEnabled($store)) {
-                        continue;
-                    }
-
-                    if (!$this->validateProduct($product)) {
-                        continue;
-                    }
-
-                    $productInStore = $this->productRepository->getById(
-                        $product->getId(),
-                        false,
-                        $storeId,
-                        false
-                    );
-                    // Load the product model for this particular store view.
-                    $metaProduct = $this->buildProduct($productInStore, $store);
-                    if ($metaProduct === null) {
-                        continue;
-                    }
-
-                    try {
-                        $op = new UpsertProduct($account);
-                        $op->addProduct($metaProduct);
-                        $this->doRequest($op);
-                    } catch (NostoException $e) {
-                        $this->logger->error($e->__toString());
-                    }
-                }
+            if ($product instanceof Product && $product->getId()) {
+                $this->productService->update([$product]);
             }
         }
     }
@@ -166,33 +104,9 @@ abstract class Base implements ObserverInterface
      * @param Observer $observer
      * @return mixed
      */
-    protected function extractProduct(Observer $observer)
+    public function extractProduct(Observer $observer)
     {
+        /** @noinspection PhpUndefinedMethodInspection */
         return $observer->getProduct();
     }
-
-    /**
-     * Validate whether the event should be handled or not
-     *
-     * @param Product $product the product from the event
-     */
-    abstract public function validateProduct(Product $product);
-
-    /**
-     * Builds the product object for the operation using the builder
-     *
-     * @param Product $product the product to be built
-     * @param Store $store the store for which to build the product
-     * @return \Nosto\Object\Product\Product the built product
-     */
-    public function buildProduct(Product $product, Store $store)
-    {
-        return $this->nostoProductBuilder->build($product, $store);
-    }
-
-    /**
-     * @param UpsertProduct $operation
-     * @return mixed
-     */
-    abstract public function doRequest(UpsertProduct $operation);
 }
