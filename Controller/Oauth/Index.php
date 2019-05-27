@@ -47,6 +47,7 @@ use Nosto\OAuth;
 use Nosto\Tagging\Helper\Cache as NostoHelperCache;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
+use Nosto\Tagging\Helper\Url as NostoHelperUrl;
 use Nosto\Tagging\Model\Meta\Oauth\Builder as NostoOauthBuilder;
 use Nosto\Types\Signup\AccountInterface;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
@@ -134,7 +135,9 @@ class Index extends Action
     public function save(AccountInterface $account)
     {
         $stores = $this->storeRepository->getList();
-        $storeCode = $this->request->getParam('___store');
+        $storeCode = $this->request->getParam(
+            NostoHelperUrl::MAGENTO_URL_PARAMETER_STORE
+        );
 
         if ($storeCode !== null) {
             $currentStore = $this->nostoHelperScope->getStoreByCode($storeCode);
