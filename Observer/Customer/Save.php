@@ -39,27 +39,21 @@ namespace Nosto\Tagging\Observer\Customer;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Module\Manager as ModuleManager;
-use Nosto\Nosto;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\CustomerData\HashedTagging;
-use Magento\Customer\Api\CustomerRepositoryInterface;
 
 class Save implements ObserverInterface
 {
     private $moduleManger;
-    private $customerRepository;
 
     /**
      * Save constructor.
      * @param ModuleManager $moduleManger
-     * @param CustomerRepositoryInterface $customerRepository
      */
     public function __construct(
-        ModuleManager $moduleManger,
-        CustomerRepositoryInterface $customerRepository
+        ModuleManager $moduleManger
     ) {
         $this->moduleManger = $moduleManger;
-        $this->customerRepository = $customerRepository;
     }
 
     /**
