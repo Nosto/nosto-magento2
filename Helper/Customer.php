@@ -86,9 +86,8 @@ class Customer extends AbstractHelper
      */
     public function getGroupId()
     {
-        if ($this->customerSession->isLoggedIn()
-            && $this->customerSession->getCustomer()
-        ) {
+        $groupId = $this->customerSession->getCustomerGroupId();
+        if ($groupId && $groupId !== 0) {
             return $this->customerSession->getCustomer()->getGroupId();
         }
         return null;
