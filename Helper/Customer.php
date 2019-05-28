@@ -88,7 +88,7 @@ class Customer extends AbstractHelper
     {
         $groupId = $this->customerSession->getCustomerGroupId();
         if ($groupId && $groupId !== 0) {
-            return $this->customerSession->getCustomer()->getGroupId();
+            return $groupId;
         }
         return null;
     }
