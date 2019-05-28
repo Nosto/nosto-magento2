@@ -1,6 +1,6 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
-### 3.7.2
+### 3.7.3
 * Fix issue with add to cart controller where product from request could be null
 
 ### 3.7.2
