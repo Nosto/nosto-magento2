@@ -2,6 +2,7 @@ All notable changes to this project will be documented in this file. This projec
 
 ### 3.7.3
 * Fix issue with add to cart controller where product from request could be null
+* Fetch the customer group directly from the session since the logged in check seems to fail when full page cahce is enabled
 
 ### 3.7.2
 * Get current store from store code param when connecting existing Nosto account
