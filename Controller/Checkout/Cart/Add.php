@@ -89,8 +89,8 @@ class Add
     public function aroundExecute(MageAdd $add, callable $proceed)
     {
         $params = $add->getRequest()->getParams();
-        // Skip if request already has product attributes
-        if (isset($params['super_attribute'])) {
+        // Skip if request already has product attributes or doesn't have product array key
+        if (isset($params['super_attribute']) || !isset($params['product'])) {
             return $proceed();
         }
 
