@@ -36,6 +36,7 @@ pipeline {
           env['COMPOSE_PROJECT_NAME_STATICTESTS'] = sh(returnStdout: true, script: 'echo statictests_${BUILD_NUMBER} | tr -d "[:punct:]" | tr "[:upper:]" "[:lower:]"').trim()
           sh 'echo ${GIT_SHA} > REVISION'
           sh 'echo ${COMPOSE_PROJECT_NAME_STATICTESTS}'
+          sh 'docker-compose --version'
         }
       }
     }
@@ -48,10 +49,10 @@ pipeline {
               sh 'export COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME_STATICTESTS} && cat ${COMPOSE_FILE} | shyaml keys services | tail -n +2 | xargs docker-compose up -d'
               sh "#!/bin/bash \n" +
                    "set -o pipefail \n" +
-                   "docker-compose -p ${COMPOSE_PROJECT_NAME_STATICTESTS} run -u root -T magento cd vendor/nosto/module-nostotagging && composer config repositories.0 composer https://repo.magento.com \n" +
-                   "docker-compose -p ${COMPOSE_PROJECT_NAME_STATICTESTS} run -u root -T magento cd vendor/nosto/module-nostotagging && composer config http-basic.repo.magento.com $REPO_USR $REPO_PSW \n" +
-                   "docker-compose -p ${COMPOSE_PROJECT_NAME_STATICTESTS} run -u root -T magento cd vendor/nosto/module-nostotagging && composer install --no-progress --no-suggest"
-              sh 'COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME_STATICTESTS} docker-compose down'
+                   "docker-compose -p ${COMPOSE_PROJECT_NAME_STATICTESTS} run -u root -T -w /var/www/html/community-edition/vendor/nosto/module-nostotagging magento composer config repositories.0 composer https://repo.magento.com \n" +
+                   "docker-compose -p ${COMPOSE_PROJECT_NAME_STATICTESTS} run -u root -T -w /var/www/html/community-edition/vendor/nosto/module-nostotagging magento composer config http-basic.repo.magento.com $REPO_USR $REPO_PSW \n" +
+                   "docker-compose -p ${COMPOSE_PROJECT_NAME_STATICTESTS} run -u root -T -w /var/www/html/community-edition/vendor/nosto/module-nostotagging magento composer install --no-progress --no-suggest \n" +
+                   "docker-compose -p ${COMPOSE_PROJECT_NAME_STATICTESTS} run -u root -T -w /var/www/html/community-edition/vendor/nosto/module-nostotagging magento ./vendor/bin/phpcs --standard=ruleset.xml --report=checkstyle --report-file=chkphpcs.xml"
             }
           }
         )
@@ -63,7 +64,7 @@ pipeline {
         catchError {
             sh "#!/bin/bash \n" +
               "set -o pipefail \n" +
-              "docker-compose -p ${COMPOSE_PROJECT_NAME_STATICTESTS} run -u root -T magento vendor/nosto/module-nostotagging/vendor/bin/phpcs --standard=ruleset.xml --report=checkstyle --report-file=chkphpcs.xml \n"
+              "docker-compose -p ${COMPOSE_PROJECT_NAME_STATICTESTS} run -u root -T -w /var/www/html/community-edition/vendor/nosto/module-nostotagging magento ./vendor/bin/phpcs --standard=ruleset.xml --report=checkstyle --report-file=chkphpcs.xml"
         }
       }
     }
