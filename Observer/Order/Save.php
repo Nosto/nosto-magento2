@@ -155,12 +155,19 @@ class Save implements ObserverInterface
                 // If the id is still null, fetch the `customer_reference`
                 if ($nostoCustomerId === null) {
                     $customerId = $order->getCustomerId();
-                    $magentoCustomer = $this->magentoCustomerRepository->getById($customerId);
+                    try {
+                        $magentoCustomer = $this->magentoCustomerRepository->getById($customerId);
+                    } catch (\Exception $e) {
+                        $this->logger->exception($e);
+                    }
+
                     // Get the value of `customer_reference`
                     $customerReferenceAttribute = $magentoCustomer->getCustomAttribute(
                         NostoHelperData::NOSTO_CUSTOMER_REFERENCE_ATTRIBUTE_NAME
                     );
-                    $nostoCustomerId = $customerReferenceAttribute->getValue();
+                    if ($customerReferenceAttribute !== null) {
+                        $nostoCustomerId = $customerReferenceAttribute->getValue();
+                    }
                 }
                 $orderService = new OrderConfirm($nostoAccount, $this->nostoHelperUrl->getActiveDomain($store));
                 try {
