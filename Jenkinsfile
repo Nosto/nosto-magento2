@@ -2,15 +2,57 @@
 
 pipeline {
 
-  agent { dockerfile true }
+  agent {
+    label {
+      label 'slave'
+      customWorkspace "/var/lib/jenkins/workspace/${JOB_NAME}/${BUILD_NUMBER}"
+    }
+  }
+
   environment {
     REPO = credentials('magento')
+    COMPOSE_FILE = 'docker-compose-ci.yml'
   }
 
   stages {
     stage('Prepare environment') {
       steps {
         checkout scm
+        script {
+          env['GIT_SHA'] = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
+        }
+      }
+    }
+
+    stage('Prebuild') {
+      steps {
+        script {
+          if (!fileExists('console-logs')) {
+            sh 'mkdir -m 755 console-logs'
+          }
+          sh(returnStatus: true, script: 'mkdir -m 755 slowtest-logs unittest-logs integrationtest-logs')
+          sh "docker pull `cat Dockerfile | grep ^FROM | cut -d' ' -f2 | head -1`"
+          env['COMPOSE_PROJECT_NAME_BUILD'] = "magento${env.BUILD_NUMBER}"
+          env['COMPOSE_PROJECT_NAME_STATICTESTS'] = sh(returnStdout: true, script: 'echo _statictests_${BUILD_NUMBER} | tr -d "[:punct:]" | tr "[:upper:]" "[:lower:]"').trim()
+          sh 'echo ${GIT_SHA} > REVISION'
+          sh 'echo ${COMPOSE_PROJECT_NAME_STATICTESTS}'
+        }
+      }
+    }
+
+    stage('Static Tests') {
+      steps {
+        parallel (
+          'UnitTest' : {
+            script {
+              sh 'export COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME_STATICTESTS} && cat ${COMPOSE_FILE} | shyaml keys services | tail -n +2 | xargs docker-compose up -d'
+              sh "#!/bin/bash \n" +
+                   "set -o pipefail \n" +
+                   "docker-compose -p ${COMPOSE_PROJECT_NAME_STATICTESTS} run -u root -T composer install"
+              sh 'COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME_STATICTESTS} docker-compose down'
+            }
+          }
+        )
       }
     }
 
@@ -22,19 +64,6 @@ pipeline {
       }
     }
 
-    stage('Start docker') {
-      steps {
-        sh "docker-compose up -d"
-      }
-    }
-
-    stage('Install magento database') {
-      steps {
-        sh "mysql -e 'CREATE DATABASE magento_integration_tests'"
-        sh "bin/magento setup:install --base-url=http://localhost/magento20/ --db-host='127.0.0.1' --db-name=magento_integration_tests --db-user=root --admin-firstname=Admin --admin-lastname=Admin --admin-email=devnull@nosto.com --admin-user=admin --admin-password=tests123 --language=en_US --currency=USD --timezone=Europe/Helsinki --use-rewrites=1 --session-save=db"
-      }
-    }
-
     stage('Code Sniffer') {
       steps {
         catchError {
@@ -43,44 +72,6 @@ pipeline {
       }
     }
 
-    stage('Mess Detection') {
-      steps {
-        catchError {
-          sh "./vendor/bin/phpmd . xml codesize,naming,unusedcode,controversial,design --exclude vendor,var,build,tests --reportfile phpmd.xml || true"
-        }
-      }
-    }
-
-    stage('Phan Analysis') {
-      steps {
-        sh "composer create-project magento/community-edition magento"
-        sh "cd magento && composer config minimum-stability dev"
-        sh "cd magento && composer config prefer-stable true"
-        script {
-          try {
-            sh "cd magento && composer require --no-update nosto/module-nostotagging:dev-${CHANGE_BRANCH}#${env.GIT_COMMIT.substring(0, 7)} && composer update --no-dev"
-          } catch (MissingPropertyException e) {
-            sh "cd magento && composer require --no-update nosto/module-nostotagging:dev-${env.GIT_BRANCH}#${env.GIT_COMMIT.substring(0, 7)} && composer update --no-dev"
-          }
-        }
-        sh "cd magento && bin/magento module:enable --all"
-        sh "cd magento && bin/magento setup:di:compile"
-        catchError {
-          sh "./vendor/bin/phan --config-file=phan.php --output-mode=checkstyle --output=chkphan.xml || true"
-        }
-      }
-    }
-
-    stage('Package') {
-      steps {
-        script {
-          version = sh(returnStdout: true, script: 'git rev-parse --short HEAD').trim()
-          sh "composer archive --format=zip --file=${version}"
-          sh "composer validate-archive -- ${version}.zip"
-        }
-        archiveArtifacts "${version}.zip"
-      }
-    }
   }
 
   post {
