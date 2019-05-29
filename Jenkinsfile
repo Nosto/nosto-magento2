@@ -33,7 +33,7 @@ pipeline {
           sh(returnStatus: true, script: 'mkdir -m 755 slowtest-logs unittest-logs integrationtest-logs')
           sh "docker pull `cat Dockerfile | grep ^FROM | cut -d' ' -f2 | head -1`"
           env['COMPOSE_PROJECT_NAME_BUILD'] = "magento${env.BUILD_NUMBER}"
-          env['COMPOSE_PROJECT_NAME_STATICTESTS'] = sh(returnStdout: true, script: 'echo _statictests_${BUILD_NUMBER} | tr -d "[:punct:]" | tr "[:upper:]" "[:lower:]"').trim()
+          env['COMPOSE_PROJECT_NAME_STATICTESTS'] = sh(returnStdout: true, script: 'echo statictests_${BUILD_NUMBER} | tr -d "[:punct:]" | tr "[:upper:]" "[:lower:]"').trim()
           sh 'echo ${GIT_SHA} > REVISION'
           sh 'echo ${COMPOSE_PROJECT_NAME_STATICTESTS}'
         }
@@ -43,24 +43,18 @@ pipeline {
     stage('Static Tests') {
       steps {
         parallel (
-          'UnitTest' : {
+          'Preparation' : {
             script {
               sh 'export COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME_STATICTESTS} && cat ${COMPOSE_FILE} | shyaml keys services | tail -n +2 | xargs docker-compose up -d'
               sh "#!/bin/bash \n" +
                    "set -o pipefail \n" +
-                   "docker-compose -p ${COMPOSE_PROJECT_NAME_STATICTESTS} run -u root -T composer install"
+                   "docker-compose -p ${COMPOSE_PROJECT_NAME_STATICTESTS} run -u root -T magento composer config repositories.0 composer https://repo.magento.com \n" +
+                   "docker-compose -p ${COMPOSE_PROJECT_NAME_STATICTESTS} run -u root -T magento composer config http-basic.repo.magento.com $REPO_USR $REPO_PSW \n" +
+                   "docker-compose -p ${COMPOSE_PROJECT_NAME_STATICTESTS} run -u root -T magento composer install --no-progress --no-suggest"
               sh 'COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME_STATICTESTS} docker-compose down'
             }
           }
         )
-      }
-    }
-
-    stage('Update Dependencies') {
-      steps {
-        sh "composer config repositories.0 composer https://repo.magento.com"
-        sh "composer config http-basic.repo.magento.com $REPO_USR $REPO_PSW"
-        sh "composer install --no-progress --no-suggest"
       }
     }
 
