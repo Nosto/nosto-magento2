@@ -36,7 +36,6 @@
 
 namespace Nosto\Tagging\Console\Command;
 
-use Magento\Braintree\Test\Unit\Gateway\Request\CustomerDataBuilderTest;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -84,7 +83,7 @@ class NostoGenerateCustomerReferenceCommand extends Command
         $customers = $customerCollection->getItems();
         foreach ($customers as $customer) {
             $customerReference = HashedTagging::generateVisitorChecksum(
-                    $customer->getCustomerId() . $customer->getEmail()
+                $customer->getCustomerId() . $customer->getEmail()
             );
             $customer->setData(
                 NostoHelperData::NOSTO_CUSTOMER_REFERENCE_ATTRIBUTE_NAME,
