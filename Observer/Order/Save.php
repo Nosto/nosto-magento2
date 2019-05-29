@@ -157,16 +157,15 @@ class Save implements ObserverInterface
                     $customerId = $order->getCustomerId();
                     try {
                         $magentoCustomer = $this->magentoCustomerRepository->getById($customerId);
+                        // Get the value of `customer_reference`
+                        $customerReferenceAttribute = $magentoCustomer->getCustomAttribute(
+                            NostoHelperData::NOSTO_CUSTOMER_REFERENCE_ATTRIBUTE_NAME
+                        );
+                        if ($customerReferenceAttribute !== null) {
+                            $nostoCustomerId = $customerReferenceAttribute->getValue();
+                        }
                     } catch (\Exception $e) {
                         $this->logger->exception($e);
-                    }
-
-                    // Get the value of `customer_reference`
-                    $customerReferenceAttribute = $magentoCustomer->getCustomAttribute(
-                        NostoHelperData::NOSTO_CUSTOMER_REFERENCE_ATTRIBUTE_NAME
-                    );
-                    if ($customerReferenceAttribute !== null) {
-                        $nostoCustomerId = $customerReferenceAttribute->getValue();
                     }
                 }
                 $orderService = new OrderConfirm($nostoAccount, $this->nostoHelperUrl->getActiveDomain($store));
