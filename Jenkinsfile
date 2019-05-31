@@ -27,10 +27,6 @@ pipeline {
     stage('Prebuild') {
       steps {
         script {
-          if (!fileExists('console-logs')) {
-            sh 'mkdir -m 755 console-logs'
-          }
-          sh(returnStatus: true, script: 'mkdir -m 755 slowtest-logs unittest-logs integrationtest-logs')
           sh "docker pull `cat Dockerfile | grep ^FROM | cut -d' ' -f2 | head -1`"
           env['COMPOSE_PROJECT_NAME_BUILD'] = "magento${env.BUILD_NUMBER}"
           env['COMPOSE_PROJECT_NAME_STATICTESTS'] = sh(returnStdout: true, script: 'echo statictests_${BUILD_NUMBER} | tr -d "[:punct:]" | tr "[:upper:]" "[:lower:]"').trim()
@@ -46,6 +42,12 @@ pipeline {
           'Preparation' : {
             script {
               sh 'export COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME_STATICTESTS} && cat ${COMPOSE_FILE} | shyaml keys services | tail -n +2 | xargs docker-compose up -d'
+              sh 'export IMAGE_NAME=$(docker inspect -f \\"{{.Name}}\\" $(docker-compose ps -q magento) | cut -c2-)'
+              sh 'docker-compose up -d && docker-compose ps'
+              sh 'export CONTAINER_HASH=$(docker-compose ps -q magento)'
+              sh 'export CONTAINER_NAME=$(docker inspect -f \\"{{.Name}}\\" ${CONTAINER_HASH}})'
+              sh 'export CONTAINER_NAME=${CONTAINER_HASH}|cut -c2-'
+              sh "echo ${IMAGE_NAME}"
               sh "#!/bin/bash \n" +
                    "set -o pipefail \n" +
                    "docker-compose -p ${COMPOSE_PROJECT_NAME_STATICTESTS} run -u root -T -w /var/www/html/community-edition/vendor/nosto/module-nostotagging magento composer config repositories.0 composer https://repo.magento.com \n" +
