@@ -218,7 +218,7 @@
                        showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Use customer reference field</label>
                     <comment>
-                        <![CDATA[Set this yes if you want to track orders from all sales channels]]>
+                        <![CDATA[Set this yes if you want to track multi-channel orders]]>
                     </comment>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>

@@ -451,7 +451,7 @@ class Data extends AbstractHelper
      */
     public function isCustomerReferenceEnabled(StoreInterface $store = null)
     {
-        return (bool)$this->getStoreConfig(self::XML_PATH_CUSTOMER_REFERENCE);
+        return (bool)$this->getStoreConfig(self::XML_PATH_CUSTOMER_REFERENCE, $store);
     }
 
     /**
