@@ -42,7 +42,7 @@ use Magento\Customer\Model\Session\Proxy as CustomerSession;
 use Magento\Customer\Model\GroupManagement;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
-use Magento\Customer\Model\Data\Customer as MagentoCustomer;
+use Magento\Customer\Api\Data\CustomerInterface;
 use Magento\Customer\Model\Backend\Customer\Interceptor as CustomerInterceptor;
 
 /**
@@ -98,7 +98,7 @@ class Customer extends AbstractHelper
     }
 
     /**
-     * @param MagentoCustomer|CustomerInterceptor $customer
+     * @param CustomerInterface|CustomerInterceptor $customer
      * @return string
      */
     public function generateCustomerReference($customer)
