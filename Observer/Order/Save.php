@@ -157,7 +157,7 @@ class Save implements ObserverInterface
                             'Failed to save order with quote #%s for customer #%s.
                         Message was: %s',
                             $quoteId,
-                            $nostoCustomer->getNostoId(),
+                            $nostoCustomerId,
                             $e->getMessage()
                         )
                     );
