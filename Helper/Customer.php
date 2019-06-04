@@ -42,6 +42,8 @@ use Magento\Customer\Model\Session\Proxy as CustomerSession;
 use Magento\Customer\Model\GroupManagement;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
+use Magento\Customer\Model\Data\Customer as MagentoCustomer;
+use Magento\Customer\Model\Backend\Customer\Interceptor as CustomerInterceptor;
 
 /**
  * Customer helper
@@ -49,6 +51,8 @@ use Magento\Framework\Exception\NoSuchEntityException;
  */
 class Customer extends AbstractHelper
 {
+    const CUSTOMER_REFERENCE_HASH_ALGO = 'sha256';
+
     private $customerSession;
     private $groupRepository;
 
@@ -91,5 +95,17 @@ class Customer extends AbstractHelper
             return $groupId;
         }
         return null;
+    }
+
+    /**
+     * @param MagentoCustomer|CustomerInterceptor $customer
+     * @return string
+     */
+    public function generateCustomerReference($customer)
+    {
+        return hash(
+            self::CUSTOMER_REFERENCE_HASH_ALGO,
+            $customer->getId() . $customer->getEmail()
+        );
     }
 }

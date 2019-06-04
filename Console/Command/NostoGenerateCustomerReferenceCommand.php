@@ -41,20 +41,24 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Magento\Customer\Model\CustomerFactory;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
-use Nosto\Tagging\CustomerData\HashedTagging;
+use Nosto\Tagging\Helper\Customer as NostoHelperCustomer;
 
 class NostoGenerateCustomerReferenceCommand extends Command
 {
     private $customerFactory;
+    private $nostoHelperCustomer;
 
     /**
      * NostoGenerateCustomerReferenceCommand constructor.
      * @param CustomerFactory $customerFactory
+     * @param NostoHelperCustomer $nostoHelperCustomer
      */
     public function __construct(
-      CustomerFactory $customerFactory
+      CustomerFactory $customerFactory,
+      NostoHelperCustomer $nostoHelperCustomer
     ) {
         $this->customerFactory = $customerFactory;
+        $this->nostoHelperCustomer = $nostoHelperCustomer;
         parent::__construct();
     }
 
@@ -84,9 +88,8 @@ class NostoGenerateCustomerReferenceCommand extends Command
 
         $customers = $customerCollection->getItems();
         foreach ($customers as $customer) {
-            $customerReference = HashedTagging::generateVisitorChecksum(
-                $customer->getCustomerId() . $customer->getEmail()
-            );
+            $customerReference = $this->nostoHelperCustomer
+                ->generateCustomerReference($customer);
             $customer->setData(
                 NostoHelperData::NOSTO_CUSTOMER_REFERENCE_ATTRIBUTE_NAME,
                 $customerReference

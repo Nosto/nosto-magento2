@@ -46,9 +46,9 @@ use Nosto\Tagging\Model\Person\Builder as PersonBuilder;
 use Magento\Customer\Api\GroupRepositoryInterface as GroupRepository;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
-use Nosto\Tagging\CustomerData\HashedTagging;
 use Magento\Customer\Api\CustomerRepositoryInterface;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
+use Nosto\Tagging\Helper\Customer as NostoHelperCustomer;
 
 /**
  * Builder class for buyer
@@ -64,6 +64,7 @@ class Builder extends PersonBuilder
 
     private $groupRepository;
     private $customerRepository;
+    private $nostoHelperCustomer;
     private $logger;
 
     /**
@@ -74,6 +75,7 @@ class Builder extends PersonBuilder
      * @param NostoLogger $logger
      * @param EventManager $eventManager
      * @param NostoHelperData $nostoHelperData
+     * @param NostoHelperCustomer $nostoHelperCustomer
      */
     public function __construct(
         GroupRepository $groupRepository,
@@ -81,10 +83,12 @@ class Builder extends PersonBuilder
         NostoEmailRepository $emailRepository,
         NostoLogger $logger,
         EventManager $eventManager,
-        NostoHelperData $nostoHelperData
+        NostoHelperData $nostoHelperData,
+        NostoHelperCustomer $nostoHelperCustomer
     ) {
         $this->groupRepository = $groupRepository;
         $this->customerRepository = $customerRepository;
+        $this->nostoHelperCustomer = $nostoHelperCustomer;
         $this->logger = $logger;
         parent::__construct($emailRepository, $eventManager, $nostoHelperData);
     }
@@ -203,9 +207,8 @@ class Builder extends PersonBuilder
             );
 
             if ($customerReference === null) {
-                $customerReference = HashedTagging::generateVisitorChecksum(
-                    $currentCustomer->getCustomerId() . $customer->getEmail()
-                );
+                $customerReference = $this->nostoHelperCustomer
+                    ->generateCustomerReference($customer);
                 $customer->setCustomAttribute(
                     NostoHelperData::NOSTO_CUSTOMER_REFERENCE_ATTRIBUTE_NAME,
                     $customerReference
