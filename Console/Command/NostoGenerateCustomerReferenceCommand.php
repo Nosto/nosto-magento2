@@ -74,7 +74,9 @@ class NostoGenerateCustomerReferenceCommand extends Command
     public function execute(InputInterface $input, OutputInterface $output)
     {
         $customerCollection = $this->customerFactory->create()->getCollection()
-            ->addAttributeToSelect('*')
+            ->addAttributeToSelect([
+                'entity_id',
+                NostoHelperData::NOSTO_CUSTOMER_REFERENCE_ATTRIBUTE_NAME])
             ->addAttributeToFilter(
                 NostoHelperData::NOSTO_CUSTOMER_REFERENCE_ATTRIBUTE_NAME,
                 array("null" => true))
