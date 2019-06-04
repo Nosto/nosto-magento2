@@ -140,7 +140,6 @@ class Data extends AbstractHelper
     const XML_PATH_INDEXER_MEMORY = 'nosto/flags/indexer_memory';
 
     /**
-
      * Path to the configuration object that stores category sorting
      */
     const XML_PATH_CATEGORY_SORTING = 'nosto/flags/category_sorting';
@@ -149,6 +148,11 @@ class Data extends AbstractHelper
      * Path to the configuration object for tagging the date a product has beed added to Magento's catalog
      */
     const XML_PATH_TAG_DATE_PUBLISHED = 'nosto/flags/tag_date_published';
+
+    /**
+     * Path to the configuration object that stores customer reference
+     */
+    const XML_PATH_CUSTOMER_REFERENCE = 'nosto/flags/customer_reference';
 
     /**
      * Path to the configuration object for pricing variations
@@ -437,6 +441,17 @@ class Data extends AbstractHelper
     public function isCategorySortingEnabled(StoreInterface $store = null)
     {
         return (bool)$this->getStoreConfig(self::XML_PATH_CATEGORY_SORTING, $store);
+    }
+
+    /**
+     * Returns if customer reference is being used
+     *
+     * @param StoreInterface|null $store
+     * @return bool
+     */
+    public function isCustomerReferenceEnabled(StoreInterface $store = null)
+    {
+        return (bool)$this->getStoreConfig(self::XML_PATH_CUSTOMER_REFERENCE);
     }
 
     /**

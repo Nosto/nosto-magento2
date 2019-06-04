@@ -25,6 +25,7 @@
                 <indexer_memory>50</indexer_memory>
                 <category_sorting>0</category_sorting>
                 <tag_date_published>0</tag_date_published>
+                <customer_reference>1</customer_reference>
             </flags>
             <multicurrency>
                 <method>undefined</method>
