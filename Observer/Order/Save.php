@@ -154,21 +154,9 @@ class Save implements ObserverInterface
                 }
                 // If the id is still null, fetch the `customer_reference`
                 if ($nostoCustomerId === null &&
-                    $this->nostoHelperData->isCustomerReferenceEnabled($store)
+                    $this->nostoHelperData->isMultiChannelOrderTrackingEnabled($store)
                 ) {
-                    $customerId = $order->getCustomerId();
-                    try {
-                        $magentoCustomer = $this->magentoCustomerRepository->getById($customerId);
-                        // Get the value of `customer_reference`
-                        $customerReferenceAttribute = $magentoCustomer->getCustomAttribute(
-                            NostoHelperData::NOSTO_CUSTOMER_REFERENCE_ATTRIBUTE_NAME
-                        );
-                        if ($customerReferenceAttribute !== null) {
-                            $nostoCustomerId = $customerReferenceAttribute->getValue();
-                        }
-                    } catch (\Exception $e) {
-                        $this->logger->exception($e);
-                    }
+                    $nostoCustomerId = $this->getCustomerReference($order);
                 }
                 $orderService = new OrderConfirm($nostoAccount, $this->nostoHelperUrl->getActiveDomain($store));
                 try {
@@ -209,6 +197,29 @@ class Save implements ObserverInterface
                 }
                 $this->indexer->reindexList($productIds);
             }
+        }
+    }
+
+    /**
+     * @param Order $order
+     * @return string|null
+     */
+    private function getCustomerReference(Order $order)
+    {
+        $customerId = $order->getCustomerId();
+        try {
+            $magentoCustomer = $this->magentoCustomerRepository->getById($customerId);
+            // Get the value of `customer_reference`
+            $customerReferenceAttribute = $magentoCustomer->getCustomAttribute(
+                NostoHelperData::NOSTO_CUSTOMER_REFERENCE_ATTRIBUTE_NAME
+            );
+            $nostoCustomerId = null;
+            if ($customerReferenceAttribute !== null) {
+                $nostoCustomerId = $customerReferenceAttribute->getValue();
+            }
+            return $nostoCustomerId;
+        } catch (\Exception $e) {
+            $this->logger->exception($e);
         }
     }
 }

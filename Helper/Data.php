@@ -152,7 +152,7 @@ class Data extends AbstractHelper
     /**
      * Path to the configuration object that stores customer reference
      */
-    const XML_PATH_CUSTOMER_REFERENCE = 'nosto/flags/customer_reference';
+    const XML_PATH_TRACK_MULTI_CHANNEL_ORDERS = 'nosto/flags/track_multi_channel_orders';
 
     /**
      * Path to the configuration object for pricing variations
@@ -444,14 +444,14 @@ class Data extends AbstractHelper
     }
 
     /**
-     * Returns if customer reference is being used
+     * Returns if orders want to be tracked from various channels
      *
      * @param StoreInterface|null $store
      * @return bool
      */
-    public function isCustomerReferenceEnabled(StoreInterface $store = null)
+    public function isMultiChannelOrderTrackingEnabled(StoreInterface $store = null)
     {
-        return (bool)$this->getStoreConfig(self::XML_PATH_CUSTOMER_REFERENCE, $store);
+        return (bool)$this->getStoreConfig(self::XML_PATH_TRACK_MULTI_CHANNEL_ORDERS, $store);
     }
 
     /**
