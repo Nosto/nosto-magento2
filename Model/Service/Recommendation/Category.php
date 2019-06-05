@@ -42,17 +42,23 @@ use Nosto\Tagging\Helper\CategorySorting as NostoHelperSorting;
 use Nosto\Operation\Recommendation\CategoryBrowsingHistory;
 use Nosto\Operation\Recommendation\CategoryTopList;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
+use Magento\Framework\Stdlib\CookieManagerInterface;
 
 class Category
 {
     private $logger;
+    private $cookieManager;
 
     /**
      * Category constructor.
+     * @param CookieManagerInterface $cookieManager
      * @param NostoLogger $logger
      */
-    public function __construct(NostoLogger $logger)
-    {
+    public function __construct(
+        CookieManagerInterface $cookieManager,
+        NostoLogger $logger
+    ) {
+        $this->cookieManager = $cookieManager;
         $this->logger = $logger;
     }
 
@@ -83,6 +89,11 @@ class Category
             $recoOperation = new CategoryTopList($nostoAccount, $nostoCustomerId);
         }
         $recoOperation->setCategory($category);
+        //Todo Implement cookie logic
+        $previewMode = $this->cookieManager->getCookie('nostopreview');
+        if ($previewMode !== null && $previewMode)  {
+            $recoOperation->setPreviewMode(true);
+        }
         try {
             $result = $recoOperation->execute();
             foreach ($result as $item) {
