@@ -40,24 +40,20 @@ use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Module\Manager as ModuleManager;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
-use Nosto\Tagging\Helper\Customer as NostoHelperCustomer;
+use Nosto\Tagging\Util\Customer as CustomerUtil;
 
 class Save implements ObserverInterface
 {
     private $moduleManger;
-    private $nostoHelperCustomer;
 
     /**
      * Save constructor.
      * @param ModuleManager $moduleManger
-     * @param NostoHelperCustomer $nostoHelperCustomer
      */
     public function __construct(
-        ModuleManager $moduleManger,
-        NostoHelperCustomer $nostoHelperCustomer
+        ModuleManager $moduleManger
     ) {
         $this->moduleManger = $moduleManger;
-        $this->nostoHelperCustomer = $nostoHelperCustomer;
     }
 
     /**
@@ -72,8 +68,7 @@ class Save implements ObserverInterface
             );
 
             if ($customerReference === null) {
-                $customerReference = $this->nostoHelperCustomer
-                    ->generateCustomerReference($customer);
+                $customerReference = CustomerUtil::generateCustomerReference($customer);
                 $customer->setData(
                     NostoHelperData::NOSTO_CUSTOMER_REFERENCE_ATTRIBUTE_NAME,
                     $customerReference

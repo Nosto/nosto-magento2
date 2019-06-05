@@ -48,7 +48,7 @@ use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Customer\Api\CustomerRepositoryInterface;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
-use Nosto\Tagging\Helper\Customer as NostoHelperCustomer;
+use Nosto\Tagging\Util\Customer as CustomerUtil;
 
 /**
  * Builder class for buyer
@@ -64,7 +64,6 @@ class Builder extends PersonBuilder
 
     private $groupRepository;
     private $customerRepository;
-    private $nostoHelperCustomer;
     private $logger;
 
     /**
@@ -75,7 +74,6 @@ class Builder extends PersonBuilder
      * @param NostoLogger $logger
      * @param EventManager $eventManager
      * @param NostoHelperData $nostoHelperData
-     * @param NostoHelperCustomer $nostoHelperCustomer
      */
     public function __construct(
         GroupRepository $groupRepository,
@@ -83,12 +81,10 @@ class Builder extends PersonBuilder
         NostoEmailRepository $emailRepository,
         NostoLogger $logger,
         EventManager $eventManager,
-        NostoHelperData $nostoHelperData,
-        NostoHelperCustomer $nostoHelperCustomer
+        NostoHelperData $nostoHelperData
     ) {
         $this->groupRepository = $groupRepository;
         $this->customerRepository = $customerRepository;
-        $this->nostoHelperCustomer = $nostoHelperCustomer;
         $this->logger = $logger;
         parent::__construct($emailRepository, $eventManager, $nostoHelperData);
     }
@@ -207,8 +203,7 @@ class Builder extends PersonBuilder
             );
 
             if ($customerReference === null) {
-                $customerReference = $this->nostoHelperCustomer
-                    ->generateCustomerReference($customer);
+                $customerReference = CustomerUtil::generateCustomerReference($customer);
                 $customer->setCustomAttribute(
                     NostoHelperData::NOSTO_CUSTOMER_REFERENCE_ATTRIBUTE_NAME,
                     $customerReference
