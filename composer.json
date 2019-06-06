@@ -76,7 +76,7 @@
       "/bin/cp dev/tests/integration/phpunit.xml ../../../dev/tests/integration/",
       "/bin/cp dev/tests/integration/etc/install-config-mysql.php ../../../dev/tests/integration/etc/",
       "docker-compose -f dev/tests/docker-compose.yml up -d",
-      "../../../vendor/bin/phpunit -c ../../../dev/tests/integration/phpunit.xml",
+      "php ../../../vendor/phpunit/phpunit/phpunit --configuration ../../../dev/tests/Integration/phpunit.xml ../../../vendor/nosto/module-nostotagging/Test/Integration --testdox",
       "docker-compose -f dev/tests/docker-compose.yml stop"
     ]
   },
