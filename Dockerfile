@@ -74,21 +74,6 @@ RUN         apt-get -y -qq install build-essential php-pear && \
             apt-get purge -y build-essential && \
             apt-get -y clean
 
-# Install docker in order to run the integration tests
-RUN         apt-get update && \
-            apt-get -y -qq install apt-transport-https \
-                 ca-certificates \
-                 curl \
-                 gnupg2 \
-                 software-properties-common && \
-            curl -fsSL https://download.docker.com/linux/$(. /etc/os-release; echo "$ID")/gpg > /tmp/dkey; apt-key add /tmp/dkey && \
-            add-apt-repository \
-               "deb [arch=amd64] https://download.docker.com/linux/$(. /etc/os-release; echo "$ID") \
-               $(lsb_release -cs) \
-               stable" && \
-            apt-get update && \
-            apt-get -y -qq install docker-ce
-
 # Enable AST extension
 RUN         echo "extension=ast.so" >> /etc/php/7.1/cli/php.ini
 

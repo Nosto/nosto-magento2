@@ -22,19 +22,6 @@ pipeline {
       }
     }
 
-    stage('Start docker') {
-      steps {
-        sh "docker-compose up -d"
-      }
-    }
-
-    stage('Install magento database') {
-      steps {
-        sh "mysql -e 'CREATE DATABASE magento_integration_tests'"
-        sh "bin/magento setup:install --base-url=http://localhost/magento20/ --db-host='127.0.0.1' --db-name=magento_integration_tests --db-user=root --admin-firstname=Admin --admin-lastname=Admin --admin-email=devnull@nosto.com --admin-user=admin --admin-password=tests123 --language=en_US --currency=USD --timezone=Europe/Helsinki --use-rewrites=1 --session-save=db"
-      }
-    }
-
     stage('Code Sniffer') {
       steps {
         catchError {
