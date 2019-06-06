@@ -58,7 +58,6 @@
     <type name="Nosto\Tagging\Console\Command\NostoGenerateCustomerReferenceCommand">
         <arguments>
             <argument name="customerFactory" xsi:type="object">Magento\Customer\Model\CustomerFactory\Proxy</argument>
-            <argument name="nostoHelperCustomer" xsi:type="object">Nosto\Tagging\Helper\Customer\Proxy</argument>
         </arguments>
     </type>
     <type name="Nosto\Tagging\Logger\Logger">
