@@ -46,6 +46,8 @@ use Magento\Framework\Stdlib\CookieManagerInterface;
 
 class Category
 {
+    const NOSTO_PREVIEW_COOKIE = 'nostopreview';
+
     private $logger;
     private $cookieManager;
 
@@ -89,11 +91,12 @@ class Category
             $recoOperation = new CategoryTopList($nostoAccount, $nostoCustomerId);
         }
         $recoOperation->setCategory($category);
-        //Todo Implement cookie logic
-        $previewMode = $this->cookieManager->getCookie('nostopreview');
+
+        $previewMode = $this->cookieManager->getCookie(self::NOSTO_PREVIEW_COOKIE);
         if ($previewMode !== null && $previewMode)  {
             $recoOperation->setPreviewMode(true);
         }
+
         try {
             $result = $recoOperation->execute();
             foreach ($result as $item) {
