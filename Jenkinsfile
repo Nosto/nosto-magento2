@@ -2,72 +2,83 @@
 
 pipeline {
 
-  agent {
-    label {
-      label 'slave'
-      customWorkspace "/var/lib/jenkins/workspace/${JOB_NAME}/${BUILD_NUMBER}"
-    }
-  }
-
+  agent { dockerfile true }
   environment {
     REPO = credentials('magento')
-    COMPOSE_FILE = 'docker-compose-ci.yml'
   }
 
   stages {
     stage('Prepare environment') {
       steps {
         checkout scm
-        script {
-          env['GIT_SHA'] = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
-        }
       }
     }
 
-    stage('Prebuild') {
+    stage('Update Dependencies') {
       steps {
-        script {
-          sh "docker pull `cat Dockerfile | grep ^FROM | cut -d' ' -f2 | head -1`"
-          env['COMPOSE_PROJECT_NAME_BUILD'] = "magento${env.BUILD_NUMBER}"
-          env['COMPOSE_PROJECT_NAME_STATICTESTS'] = sh(returnStdout: true, script: 'echo statictests_${BUILD_NUMBER} | tr -d "[:punct:]" | tr "[:upper:]" "[:lower:]"').trim()
-          sh 'echo ${GIT_SHA} > REVISION'
-          sh 'echo ${COMPOSE_PROJECT_NAME_STATICTESTS}'
-        }
+        sh "composer config repositories.0 composer https://repo.magento.com"
+        sh "composer config http-basic.repo.magento.com $REPO_USR $REPO_PSW"
+        sh "composer install --no-progress --no-suggest"
       }
     }
 
-    stage('Static Tests') {
+    stage('Start docker') {
       steps {
-        parallel (
-          'Preparation' : {
-            script {
-              sh 'export COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME_STATICTESTS} && cat ${COMPOSE_FILE} | shyaml keys services | tail -n +2 | xargs docker-compose up -d'
-              sh 'export IMAGE_NAME=$(docker inspect -f \\"{{.Name}}\\" $(docker-compose ps -q magento) | cut -c2-)'
-              sh 'docker-compose up -d && docker-compose ps'
-              sh 'export CONTAINER_HASH=$(docker-compose ps -q magento)'
-              sh 'export CONTAINER_NAME=$(docker inspect -f \\"{{.Name}}\\" ${CONTAINER_HASH}})'
-              sh 'export CONTAINER_NAME=${CONTAINER_HASH}|cut -c2-'
-              sh "echo ${IMAGE_NAME}"
-              sh "#!/bin/bash \n" +
-                   "set -o pipefail \n" +
-                   "docker-compose -p ${COMPOSE_PROJECT_NAME_STATICTESTS} run -u root -T -w /var/www/html/community-edition/vendor/nosto/module-nostotagging magento composer config repositories.0 composer https://repo.magento.com \n" +
-                   "docker-compose -p ${COMPOSE_PROJECT_NAME_STATICTESTS} run -u root -T -w /var/www/html/community-edition/vendor/nosto/module-nostotagging magento composer config http-basic.repo.magento.com $REPO_USR $REPO_PSW \n" +
-                   "docker-compose -p ${COMPOSE_PROJECT_NAME_STATICTESTS} run -u root -T -w /var/www/html/community-edition/vendor/nosto/module-nostotagging magento composer install --no-progress --no-suggest \n" +
-                   "docker exec -it ${COMPOSE_PROJECT_NAME_STATICTESTS} composer install --no-progress --no-suggest"
-              sh 'COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME_STATICTESTS} docker-compose down'
-            }
-          }
-        )
+        sh "docker-compose up -d"
+      }
+    }
+
+    stage('Install magento database') {
+      steps {
+        sh "mysql -e 'CREATE DATABASE magento_integration_tests'"
+        sh "bin/magento setup:install --base-url=http://localhost/magento20/ --db-host='127.0.0.1' --db-name=magento_integration_tests --db-user=root --admin-firstname=Admin --admin-lastname=Admin --admin-email=devnull@nosto.com --admin-user=admin --admin-password=tests123 --language=en_US --currency=USD --timezone=Europe/Helsinki --use-rewrites=1 --session-save=db"
       }
     }
 
     stage('Code Sniffer') {
       steps {
         catchError {
-            sh "#!/bin/bash \n" +
-              "set -o pipefail \n" +
-              "docker-compose -p ${COMPOSE_PROJECT_NAME_STATICTESTS} run -u root -T -w /var/www/html/community-edition/vendor/nosto/module-nostotagging magento ./vendor/bin/phpcs --standard=ruleset.xml --report=checkstyle --report-file=chkphpcs.xml"
+          sh "./vendor/bin/phpcs --standard=ruleset.xml --report=checkstyle --report-file=chkphpcs.xml || true"
         }
+      }
+    }
+
+    stage('Mess Detection') {
+      steps {
+        catchError {
+          sh "./vendor/bin/phpmd . xml codesize,naming,unusedcode,controversial,design --exclude vendor,var,build,tests --reportfile phpmd.xml || true"
+        }
+      }
+    }
+
+    stage('Phan Analysis') {
+      steps {
+        sh "composer create-project magento/community-edition magento"
+        sh "cd magento && composer config minimum-stability dev"
+        sh "cd magento && composer config prefer-stable true"
+        script {
+          try {
+            sh "cd magento && composer require --no-update nosto/module-nostotagging:dev-${CHANGE_BRANCH}#${env.GIT_COMMIT.substring(0, 7)} && composer update --no-dev"
+          } catch (MissingPropertyException e) {
+            sh "cd magento && composer require --no-update nosto/module-nostotagging:dev-${env.GIT_BRANCH}#${env.GIT_COMMIT.substring(0, 7)} && composer update --no-dev"
+          }
+        }
+        sh "cd magento && bin/magento module:enable --all"
+        sh "cd magento && bin/magento setup:di:compile"
+        catchError {
+          sh "./vendor/bin/phan --config-file=phan.php --output-mode=checkstyle --output=chkphan.xml || true"
+        }
+      }
+    }
+
+    stage('Package') {
+      steps {
+        script {
+          version = sh(returnStdout: true, script: 'git rev-parse --short HEAD').trim()
+          sh "composer archive --format=zip --file=${version}"
+          sh "composer validate-archive -- ${version}.zip"
+        }
+        archiveArtifacts "${version}.zip"
       }
     }
   }
