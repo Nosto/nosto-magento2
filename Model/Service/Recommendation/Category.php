@@ -92,8 +92,8 @@ class Category
         }
         $recoOperation->setCategory($category);
 
-        $previewMode = $this->cookieManager->getCookie(self::NOSTO_PREVIEW_COOKIE);
-        if ($previewMode !== null && $previewMode)  {
+        $previewModeCookie = $this->cookieManager->getCookie(self::NOSTO_PREVIEW_COOKIE);
+        if ($previewModeCookie !== null && $previewModeCookie === "true") {
             $recoOperation->setPreviewMode(true);
         }
 
