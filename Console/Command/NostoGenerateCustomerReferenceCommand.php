@@ -74,25 +74,29 @@ class NostoGenerateCustomerReferenceCommand extends Command
      */
     public function execute(InputInterface $input, OutputInterface $output)
     {
-        $customerCollection = $this->customerFactory->create()->getCollection()
-            ->addAttributeToSelect([
-                'entity_id',
-                NostoHelperData::NOSTO_CUSTOMER_REFERENCE_ATTRIBUTE_NAME])
-            ->addAttributeToFilter(
-                NostoHelperData::NOSTO_CUSTOMER_REFERENCE_ATTRIBUTE_NAME,
-                array("null" => true))
-            ->load();
-
-        $customers = $customerCollection->getItems();
-        foreach ($customers as $customer) {
-            $customerReference = CustomerUtil::generateCustomerReference($customer);
-            $customer->setData(
-                NostoHelperData::NOSTO_CUSTOMER_REFERENCE_ATTRIBUTE_NAME,
-                $customerReference
-            );
-            $customer->save();
-        }
         $io = new SymfonyStyle($input, $output);
-        $io->success('Operation finished with success');
+        try {
+            $customerCollection = $this->customerFactory->create()->getCollection()
+                ->addAttributeToSelect([
+                    'entity_id',
+                    NostoHelperData::NOSTO_CUSTOMER_REFERENCE_ATTRIBUTE_NAME])
+                ->addAttributeToFilter(
+                    NostoHelperData::NOSTO_CUSTOMER_REFERENCE_ATTRIBUTE_NAME,
+                    array("null" => true))
+                ->load();
+
+            $customers = $customerCollection->getItems();
+            foreach ($customers as $customer) {
+                $customerReference = CustomerUtil::generateCustomerReference($customer);
+                $customer->setData(
+                    NostoHelperData::NOSTO_CUSTOMER_REFERENCE_ATTRIBUTE_NAME,
+                    $customerReference
+                );
+                $customer->save();
+            }
+            $io->success('Operation finished with success');
+        } catch (\Exception $e) {
+            $io->error($e->getMessage());
+        }
     }
 }
