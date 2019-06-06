@@ -34,46 +34,69 @@
  *
  */
 
-namespace Nosto\Tagging\Observer\Customer;
+namespace Nosto\Tagging\Console\Command;
 
-use Magento\Framework\Event\Observer;
-use Magento\Framework\Event\ObserverInterface;
-use Magento\Framework\Module\Manager as ModuleManager;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
+use Magento\Customer\Model\CustomerFactory;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Util\Customer as CustomerUtil;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
-class Save implements ObserverInterface
+class NostoGenerateCustomerReferenceCommand extends Command
 {
-    private $moduleManger;
+    private $customerFactory;
 
     /**
-     * Save constructor.
-     * @param ModuleManager $moduleManger
+     * NostoGenerateCustomerReferenceCommand constructor.
+     * @param CustomerFactory $customerFactory
      */
     public function __construct(
-        ModuleManager $moduleManger
+      CustomerFactory $customerFactory
     ) {
-        $this->moduleManger = $moduleManger;
+        $this->customerFactory = $customerFactory;
+        parent::__construct();
     }
 
     /**
-     * @param Observer $observer
+     * {@inheritdoc}
      */
-    public function execute(Observer $observer)
+    public function configure()
     {
-        if ($this->moduleManger->isEnabled(NostoHelperData::MODULE_NAME)) {
-            $customer = $observer->getCustomer();
-            $customerReference = $customer->getCustomAttribute(
-                NostoHelperData::NOSTO_CUSTOMER_REFERENCE_ATTRIBUTE_NAME
-            );
+        $this->setName('nosto:generate:customer-reference')
+            ->setDescription('Generate automatically customer_reference for all customer missing it');
+        parent::configure();
+    }
 
-            if ($customerReference === null) {
+    /**
+     * {@inheritdoc}
+     */
+    public function execute(InputInterface $input, OutputInterface $output)
+    {
+        $io = new SymfonyStyle($input, $output);
+        try {
+            $customerCollection = $this->customerFactory->create()->getCollection()
+                ->addAttributeToSelect([
+                    'entity_id',
+                    NostoHelperData::NOSTO_CUSTOMER_REFERENCE_ATTRIBUTE_NAME])
+                ->addAttributeToFilter(
+                    NostoHelperData::NOSTO_CUSTOMER_REFERENCE_ATTRIBUTE_NAME,
+                    array("null" => true))
+                ->load();
+
+            $customers = $customerCollection->getItems();
+            foreach ($customers as $customer) {
                 $customerReference = CustomerUtil::generateCustomerReference($customer);
                 $customer->setData(
                     NostoHelperData::NOSTO_CUSTOMER_REFERENCE_ATTRIBUTE_NAME,
                     $customerReference
                 );
+                $customer->save();
             }
+            $io->success('Operation finished with success');
+        } catch (\Exception $e) {
+            $io->error($e->getMessage());
         }
     }
 }

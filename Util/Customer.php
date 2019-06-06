@@ -34,63 +34,24 @@
  *
  */
 
-namespace Nosto\Tagging\Helper;
+namespace Nosto\Tagging\Util;
 
-use Magento\Framework\App\Helper\AbstractHelper;
-use Magento\Customer\Api\GroupRepositoryInterface as GroupRepository;
-use Magento\Customer\Model\Session\Proxy as CustomerSession;
-use Magento\Customer\Model\GroupManagement;
-use Magento\Framework\Exception\LocalizedException;
-use Magento\Framework\Exception\NoSuchEntityException;
+use Magento\Customer\Api\Data\CustomerInterface;
+use Magento\Customer\Model\Backend\Customer\Interceptor as CustomerInterceptor;
 
-/**
- * Customer helper
- * @package Nosto\Tagging\Helper
- */
-class Customer extends AbstractHelper
+class Customer
 {
-
-    private $customerSession;
-    private $groupRepository;
+    const CUSTOMER_REFERENCE_HASH_ALGO = 'sha256';
 
     /**
-     * Customer constructor.
-     *
-     * @param CustomerSession $customerSession
-     * @param GroupRepository $groupRepository
-     */
-    public function __construct(
-        CustomerSession $customerSession,
-        GroupRepository $groupRepository
-    ) {
-        $this->customerSession = $customerSession;
-        $this->groupRepository = $groupRepository;
-    }
-
-    /**
+     * @param CustomerInterface|CustomerInterceptor $customer
      * @return string
-     * @throws LocalizedException
-     * @throws NoSuchEntityException
      */
-    public function getGroupCode()
+    public static function generateCustomerReference($customer)
     {
-        $customerGroupId = $this->getGroupId();
-        if ($customerGroupId) {
-            $group = $this->groupRepository->getById($customerGroupId);
-            return $group->getCode();
-        }
-        return $this->groupRepository->getById(Variation::DEFAULT_CUSTOMER_GROUP_ID)->getCode();
-    }
-
-    /**
-     * @return int|null
-     */
-    public function getGroupId()
-    {
-        $groupId = $this->customerSession->getCustomerGroupId();
-        if ($groupId && $groupId !== 0) {
-            return $groupId;
-        }
-        return null;
+        return hash(
+            self::CUSTOMER_REFERENCE_HASH_ALGO,
+            $customer->getId() . $customer->getEmail()
+        );
     }
 }
