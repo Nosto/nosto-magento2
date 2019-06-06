@@ -34,62 +34,48 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Email;
+namespace Nosto\Tagging\Observer\Customer;
 
-use Magento\Newsletter\Model\ResourceModel\Subscriber as SubscriberResource;
-use Magento\Newsletter\Model\Subscriber;
+use Magento\Framework\Event\Observer;
+use Magento\Framework\Event\ObserverInterface;
+use Magento\Framework\Module\Manager as ModuleManager;
+use Nosto\Tagging\Helper\Data as NostoHelperData;
+use Nosto\Tagging\CustomerData\HashedTagging;
 
-/**
- * Repository wrapper / helper class for fetching marketing permission related items
- *
- * @package Nosto\Tagging\Model\Email
- */
-class Repository
+class Save implements ObserverInterface
 {
-    /**
-     * @var SubscriberResource
-     */
-    private $subscriber;
+    private $moduleManger;
 
     /**
-     * Repository constructor.
-     * @param SubscriberResource $subscriber
+     * Save constructor.
+     * @param ModuleManager $moduleManger
      */
     public function __construct(
-        SubscriberResource $subscriber
+        ModuleManager $moduleManger
     ) {
-        $this->subscriber = $subscriber;
+        $this->moduleManger = $moduleManger;
     }
 
     /**
-     * Gets newsletter subscription by email
-     * @param $email
-     * @return array
+     * @param Observer $observer
      */
-    public function getNewsletterOptInForEmail($email)
+    public function execute(Observer $observer)
     {
-        return $this->subscriber->loadByEmail($email);
-    }
+        if ($this->moduleManger->isEnabled(NostoHelperData::MODULE_NAME)) {
+            $customer = $observer->getCustomer();
+            $customerReference = $customer->getCustomAttribute(
+                NostoHelperData::NOSTO_CUSTOMER_REFERENCE_ATTRIBUTE_NAME
+            );
 
-    /**
-     * Checks if email is opted in / marketing permission has been given
-     *
-     * @param $email
-     * @return bool
-     */
-    public function isOptedIn($email)
-    {
-        $subscriber = $this->getNewsletterOptInForEmail($email);
-        if (!$subscriber || empty($subscriber)) {
-            return false;
+            if ($customerReference === null) {
+                $customerReference = HashedTagging::generateVisitorChecksum(
+                    $customer->getCustomerId() . $customer->getEmail()
+                );
+                $customer->setData(
+                    NostoHelperData::NOSTO_CUSTOMER_REFERENCE_ATTRIBUTE_NAME,
+                    $customerReference
+                );
+            }
         }
-
-        if (isset($subscriber['subscriber_status'])
-            && (int)$subscriber['subscriber_status'] === Subscriber::STATUS_SUBSCRIBED
-        ) {
-            return true;
-        }
-
-        return false;
     }
 }

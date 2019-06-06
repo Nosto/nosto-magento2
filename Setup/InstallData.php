@@ -34,62 +34,23 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Email;
+namespace Nosto\Tagging\Setup;
 
-use Magento\Newsletter\Model\ResourceModel\Subscriber as SubscriberResource;
-use Magento\Newsletter\Model\Subscriber;
+use Magento\Framework\Setup\InstallDataInterface;
+use Magento\Framework\Setup\ModuleContextInterface;
+use Magento\Framework\Setup\ModuleDataSetupInterface;
+use Magento\Framework\Exception\LocalizedException;
 
-/**
- * Repository wrapper / helper class for fetching marketing permission related items
- *
- * @package Nosto\Tagging\Model\Email
- */
-class Repository
+class InstallData extends CoreData implements InstallDataInterface
 {
     /**
-     * @var SubscriberResource
+     * @param ModuleDataSetupInterface $setup
+     * @param ModuleContextInterface $context
+     * @throws LocalizedException
+     * @throws \Zend_Validate_Exception
      */
-    private $subscriber;
-
-    /**
-     * Repository constructor.
-     * @param SubscriberResource $subscriber
-     */
-    public function __construct(
-        SubscriberResource $subscriber
-    ) {
-        $this->subscriber = $subscriber;
-    }
-
-    /**
-     * Gets newsletter subscription by email
-     * @param $email
-     * @return array
-     */
-    public function getNewsletterOptInForEmail($email)
+    public function install(ModuleDataSetupInterface $setup, ModuleContextInterface $context) // @codingStandardsIgnoreLine
     {
-        return $this->subscriber->loadByEmail($email);
-    }
-
-    /**
-     * Checks if email is opted in / marketing permission has been given
-     *
-     * @param $email
-     * @return bool
-     */
-    public function isOptedIn($email)
-    {
-        $subscriber = $this->getNewsletterOptInForEmail($email);
-        if (!$subscriber || empty($subscriber)) {
-            return false;
-        }
-
-        if (isset($subscriber['subscriber_status'])
-            && (int)$subscriber['subscriber_status'] === Subscriber::STATUS_SUBSCRIBED
-        ) {
-            return true;
-        }
-
-        return false;
+        $this->addCustomerReference($setup);
     }
 }

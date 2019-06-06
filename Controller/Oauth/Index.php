@@ -47,6 +47,7 @@ use Nosto\OAuth;
 use Nosto\Tagging\Helper\Cache as NostoHelperCache;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
+use Nosto\Tagging\Helper\Url as NostoHelperUrl;
 use Nosto\Tagging\Model\Meta\Oauth\Builder as NostoOauthBuilder;
 use Nosto\Types\Signup\AccountInterface;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
@@ -62,8 +63,10 @@ class Index extends Action
     private $nostoHelperScope;
     private $nostoHelperCache;
     private $storeRepository;
+    private $request;
 
     /**
+     * Index constructor.
      * @param Context $context
      * @param NostoLogger $logger
      * @param NostoHelperScope $nostoHelperScope
@@ -92,6 +95,7 @@ class Index extends Action
         $this->nostoHelperScope = $nostoHelperScope;
         $this->nostoHelperCache = $nostoHelperCache;
         $this->storeRepository = $storeRepository;
+        $this->request = $context->getRequest();
     }
 
     /**
@@ -131,7 +135,16 @@ class Index extends Action
     public function save(AccountInterface $account)
     {
         $stores = $this->storeRepository->getList();
-        $currentStore = $this->nostoHelperScope->getStore();
+        $storeCode = $this->request->getParam(
+            NostoHelperUrl::MAGENTO_URL_PARAMETER_STORE
+        );
+
+        if ($storeCode !== null) {
+            $currentStore = $this->nostoHelperScope->getStoreByCode($storeCode);
+        } else {
+            $currentStore = $this->nostoHelperScope->getStore();
+        }
+
         /** @var \Magento\Store\Model\Store $store */
         foreach ($stores as $store) {
             $existingAccount = $this->nostoHelperAccount->findAccount($store);
@@ -151,7 +164,7 @@ class Index extends Action
 
         $success =  $this->nostoHelperAccount->saveAccount(
             $account,
-            $this->nostoHelperScope->getStore()
+            $currentStore
         );
 
         // Invalidate cache after reconnected nosto account

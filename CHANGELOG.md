@@ -1,5 +1,20 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 3.7.3
+* Fix issue with add to cart controller where product from request could be null
+* Fetch the customer group directly from the session since the logged in check seems to fail when full page cahce is enabled
+
+### 3.7.2
+* Get current store from store code param when connecting existing Nosto account
+* Fix unclosed javascript method when Nosto autoload is enabled
+
+### 3.7.1
+* Fix issue in setting the marketing permission in customer tagging
+
+### 3.7.0
+* Add customer reference field when installing the extension
+* Ignore non-numeric product ids in Graphql responses
+
 ### 3.6.1
 * Use sections for active variation tagging when price variations are enabled
 * Exclude base variation from variation collection

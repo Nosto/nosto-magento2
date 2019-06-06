@@ -207,10 +207,9 @@ class Data extends AbstractHelper
     private $cacheManager;
 
     /**
-     * Constructor.
-     *
-     * @param Context $context the context.
-     * @param NostoHelperScope $nostoHelperScope
+     * Data constructor.
+     * @param Context $context
+     * @param Scope $nostoHelperScope
      * @param ModuleListInterface $moduleListing
      * @param WriterInterface $configWriter
      * @param ProductMetadataInterface $productMetadataInterface
