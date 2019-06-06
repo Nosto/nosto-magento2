@@ -42,6 +42,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Magento\Customer\Model\CustomerFactory;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Util\Customer as CustomerUtil;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 class NostoGenerateCustomerReferenceCommand extends Command
 {
@@ -91,5 +92,7 @@ class NostoGenerateCustomerReferenceCommand extends Command
             );
             $customer->save();
         }
+        $io = new SymfonyStyle($input, $output);
+        $io->success('Operation finished with success');
     }
 }
