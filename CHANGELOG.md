@@ -1,5 +1,11 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 3.8.0
+* Use mock product in category personalisation when preview mode is enabled
+* Generate customer_reference value automatically when new customer is created
+* Create command line to generate customer_reference value for all customers missing it
+* Add option to use customer_reference field for tracking multi-channel orders\
+
 ### 3.7.5
 * Remove product cache flushing after upsert to avoid failures in altering product categories
 
