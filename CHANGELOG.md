@@ -1,5 +1,11 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 3.7.5
+* Remove product cache flushing after upsert to avoid failures in altering product categories
+
+### 3.7.4
+* Fix issue with trying to call method on null when order confirmation observer fails
+
 ### 3.7.3
 * Fix issue with add to cart controller where product from request could be null
 * Fetch the customer group directly from the session since the logged in check seems to fail when full page cahce is enabled

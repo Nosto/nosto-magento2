@@ -399,18 +399,7 @@ class Service
             $op->clearCollection();
         }
         $this->logger->logWithMemoryConsumption('After Upsert sent');
-
-        try {
-            // Magento internally cache those queries
-            // Enforce cleaning of this as much as possible
-            foreach ($productsStillExist as $product) {
-                $product->clearInstance();
-            }
-        } catch (\Exception $e) {
-            $this->logger->exception($e);
-        }
         $productSearch->setItems([]);
-
         $batchEndMem = Memory::getConsumption(false);
         $this->logger->logWithMemoryConsumption(
             sprintf(

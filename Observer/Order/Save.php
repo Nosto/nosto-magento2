@@ -53,6 +53,7 @@ use Nosto\Tagging\Model\Indexer\Product\Indexer;
 use Nosto\Tagging\Model\Order\Builder as NostoOrderBuilder;
 use Nosto\Object\Order\Order as NostoOrder;
 use Nosto\Tagging\Helper\Url as NostoHelperUrl;
+use Magento\Customer\Api\CustomerRepositoryInterface as MagentoCustomerRepository;
 
 /**
  * Class Save
@@ -69,12 +70,12 @@ class Save implements ObserverInterface
     private $nostoHelperScope;
     private $indexer;
     private $nostoHelperUrl;
+    private $magentoCustomerRepository;
     private static $sent = [];
 
     /** @noinspection PhpUndefinedClassInspection */
     /**
-     * Constructor.
-     *
+     * Save constructor.
      * @param NostoHelperData $nostoHelperData
      * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoHelperScope $nostoHelperScope
@@ -84,6 +85,7 @@ class Save implements ObserverInterface
      * @param NostoOrderBuilder $orderBuilder
      * @param IndexerRegistry $indexerRegistry
      * @param NostoHelperUrl $nostoHelperUrl
+     * @param MagentoCustomerRepository $magentoCustomerRepository
      */
     public function __construct(
         NostoHelperData $nostoHelperData,
@@ -95,7 +97,8 @@ class Save implements ObserverInterface
         CustomerRepository $customerRepository,
         NostoOrderBuilder $orderBuilder,
         IndexerRegistry $indexerRegistry,
-        NostoHelperUrl $nostoHelperUrl
+        NostoHelperUrl $nostoHelperUrl,
+        MagentoCustomerRepository $magentoCustomerRepository
     ) {
         $this->nostoHelperData = $nostoHelperData;
         $this->nostoHelperAccount = $nostoHelperAccount;
@@ -106,6 +109,7 @@ class Save implements ObserverInterface
         $this->indexer = $indexerRegistry->get(Indexer::INDEXER_ID);
         $this->nostoHelperScope = $nostoHelperScope;
         $this->nostoHelperUrl = $nostoHelperUrl;
+        $this->magentoCustomerRepository = $magentoCustomerRepository;
     }
 
     /**
@@ -148,6 +152,12 @@ class Save implements ObserverInterface
                 if ($nostoCustomer instanceof NostoCustomer) {
                     $nostoCustomerId = $nostoCustomer->getNostoId();
                 }
+                // If the id is still null, fetch the `customer_reference`
+                if ($nostoCustomerId === null &&
+                    $this->nostoHelperData->isMultiChannelOrderTrackingEnabled($store)
+                ) {
+                    $nostoCustomerId = $this->getCustomerReference($order);
+                }
                 $orderService = new OrderConfirm($nostoAccount, $this->nostoHelperUrl->getActiveDomain($store));
                 try {
                     $orderService->send($nostoOrder, $nostoCustomerId);
@@ -157,7 +167,7 @@ class Save implements ObserverInterface
                             'Failed to save order with quote #%s for customer #%s.
                         Message was: %s',
                             $quoteId,
-                            $nostoCustomer->getNostoId(),
+                            (string)$nostoCustomerId,
                             $e->getMessage()
                         )
                     );
@@ -187,6 +197,29 @@ class Save implements ObserverInterface
                 }
                 $this->indexer->reindexList($productIds);
             }
+        }
+    }
+
+    /**
+     * @param Order $order
+     * @return string|null
+     */
+    private function getCustomerReference(Order $order)
+    {
+        $customerId = $order->getCustomerId();
+        try {
+            $magentoCustomer = $this->magentoCustomerRepository->getById($customerId);
+            // Get the value of `customer_reference`
+            $customerReferenceAttribute = $magentoCustomer->getCustomAttribute(
+                NostoHelperData::NOSTO_CUSTOMER_REFERENCE_ATTRIBUTE_NAME
+            );
+            $nostoCustomerId = null;
+            if ($customerReferenceAttribute !== null) {
+                $nostoCustomerId = $customerReferenceAttribute->getValue();
+            }
+            return $nostoCustomerId;
+        } catch (\Exception $e) {
+            $this->logger->exception($e);
         }
     }
 }
