@@ -49,6 +49,8 @@ use Nosto\Tagging\Helper\Price as NostoPriceHelper;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Product\BuilderTrait;
 use Nosto\Types\Product\ProductInterface;
+use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
+use Nosto\Tagging\Helper\Stock as NostoStockHelper;
 
 class Builder
 {
@@ -60,6 +62,7 @@ class Builder
     private $eventManager;
     private $logger;
     private $nostoCurrencyHelper;
+    private $nostoStockHelper;
 
     /**
      * @param NostoHelperData $nostoHelperData
@@ -67,6 +70,7 @@ class Builder
      * @param NostoLogger $logger
      * @param ManagerInterface $eventManager
      * @param CurrencyHelper $nostoCurrencyHelper
+     * @param NostoStockHelper $stockHelper
      */
     public function __construct(
         NostoHelperData $nostoHelperData,
@@ -74,13 +78,15 @@ class Builder
         NostoLogger $logger,
         ManagerInterface $eventManager,
         CurrencyHelper $nostoCurrencyHelper,
-        StockRegistryInterface $stockRegistry
+        StockRegistryInterface $stockRegistry,
+        NostoStockHelper $stockHelper
     ) {
         $this->nostoDataHelper = $nostoHelperData;
         $this->nostoPriceHelper = $priceHelper;
         $this->logger = $logger;
         $this->eventManager = $eventManager;
         $this->nostoCurrencyHelper = $nostoCurrencyHelper;
+        $this->nostoStockHelper = $stockHelper;
         $this->builderTraitConstruct(
             $nostoHelperData,
             $stockRegistry,
@@ -95,8 +101,12 @@ class Builder
      * @return NostoSku|null
      * @throws \Exception
      */
-    public function build(Product $product, Store $store, $attributes)
-    {
+    public function build(
+        Product $product,
+        Store $store,
+        $attributes,
+        $nostoScope = NostoProductBuilder::NOSTO_SCOPE_API
+    ) {
         if (!$this->isAvailabeInStore($product, $store)) {
             return null;
         }
@@ -139,6 +149,11 @@ class Builder
                 }
                 //load user defined attributes from attribute set
                 $nostoSku->setCustomFields($this->buildCustomFields($product, $store));
+            }
+            if ($nostoScope == NostoProductBuilder::NOSTO_SCOPE_API
+                && $this->nostoDataHelper->isInventoryTaggingEnabled($store)
+            ) {
+                $nostoSku->setInventoryLevel($this->nostoStockHelper->getQty($product));
             }
         } catch (\Exception $e) {
             $this->logger->exception($e);

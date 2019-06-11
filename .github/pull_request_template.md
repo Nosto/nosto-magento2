@@ -21,12 +21,10 @@
 <!--- Upon PR's approval, link the wiki page for your corresponding changes here. -->
 
 ## Checklist:
-<!--- Go over all the following points, and put an `x` in all the boxes that apply. -->
-<!--- If you're unsure about any of these, don't hesitate to ask. We're here to help! -->
 - [ ] My code follows the code style of this project.
 - [ ] I have updated the documentation accordingly.
 - [ ] All new and existing tests passed.
-- [ ] I have assigned the correct milestone or created one if non existent.
+- [ ] I have assigned the correct milestone or created one if non-existent.
 - [ ] I have correctly labeled this pull request.
 - [ ] I have linked the corresponding issue in this description.
 - [ ] I have updated the corresponding Jira ticket.
