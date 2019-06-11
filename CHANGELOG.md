@@ -1,5 +1,8 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 3.8.0 (Unreleased)
+* Add inventory level data to SKUs
+
 ### 3.7.5
 * Remove product cache flushing after upsert to avoid failures in altering product categories
 
