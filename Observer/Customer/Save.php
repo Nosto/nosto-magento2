@@ -34,63 +34,46 @@
  *
  */
 
-namespace Nosto\Tagging\Helper;
+namespace Nosto\Tagging\Observer\Customer;
 
-use Magento\Framework\App\Helper\AbstractHelper;
-use Magento\Customer\Api\GroupRepositoryInterface as GroupRepository;
-use Magento\Customer\Model\Session\Proxy as CustomerSession;
-use Magento\Customer\Model\GroupManagement;
-use Magento\Framework\Exception\LocalizedException;
-use Magento\Framework\Exception\NoSuchEntityException;
+use Magento\Framework\Event\Observer;
+use Magento\Framework\Event\ObserverInterface;
+use Magento\Framework\Module\Manager as ModuleManager;
+use Nosto\Tagging\Helper\Data as NostoHelperData;
+use Nosto\Tagging\Util\Customer as CustomerUtil;
 
-/**
- * Customer helper
- * @package Nosto\Tagging\Helper
- */
-class Customer extends AbstractHelper
+class Save implements ObserverInterface
 {
-
-    private $customerSession;
-    private $groupRepository;
+    private $moduleManger;
 
     /**
-     * Customer constructor.
-     *
-     * @param CustomerSession $customerSession
-     * @param GroupRepository $groupRepository
+     * Save constructor.
+     * @param ModuleManager $moduleManger
      */
     public function __construct(
-        CustomerSession $customerSession,
-        GroupRepository $groupRepository
+        ModuleManager $moduleManger
     ) {
-        $this->customerSession = $customerSession;
-        $this->groupRepository = $groupRepository;
+        $this->moduleManger = $moduleManger;
     }
 
     /**
-     * @return string
-     * @throws LocalizedException
-     * @throws NoSuchEntityException
+     * @param Observer $observer
      */
-    public function getGroupCode()
+    public function execute(Observer $observer)
     {
-        $customerGroupId = $this->getGroupId();
-        if ($customerGroupId) {
-            $group = $this->groupRepository->getById($customerGroupId);
-            return $group->getCode();
-        }
-        return $this->groupRepository->getById(Variation::DEFAULT_CUSTOMER_GROUP_ID)->getCode();
-    }
+        if ($this->moduleManger->isEnabled(NostoHelperData::MODULE_NAME)) {
+            $customer = $observer->getCustomer();
+            $customerReference = $customer->getCustomAttribute(
+                NostoHelperData::NOSTO_CUSTOMER_REFERENCE_ATTRIBUTE_NAME
+            );
 
-    /**
-     * @return int|null
-     */
-    public function getGroupId()
-    {
-        $groupId = $this->customerSession->getCustomerGroupId();
-        if ($groupId && $groupId !== 0) {
-            return $groupId;
+            if ($customerReference === null) {
+                $customerReference = CustomerUtil::generateCustomerReference($customer);
+                $customer->setData(
+                    NostoHelperData::NOSTO_CUSTOMER_REFERENCE_ATTRIBUTE_NAME,
+                    $customerReference
+                );
+            }
         }
-        return null;
     }
 }
