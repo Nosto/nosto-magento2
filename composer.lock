@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "76ef85de1e63d4b0b474ad966daa2a36",
+    "content-hash": "204319aa86669b825a9477bbe964e7d1",
     "packages": [
         {
             "name": "nosto/php-sdk",
@@ -841,7 +841,8 @@
                 "url": "https://github.com/magento/marketplace-tools",
                 "reference": "origin/master"
             },
-            "type": "library"
+            "type": "library",
+            "time": "2017-04-06T01:16:20+00:00"
         },
         {
             "name": "magento/module-authorization",
