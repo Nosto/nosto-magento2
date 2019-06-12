@@ -87,11 +87,12 @@ class UpgradeData extends CoreData implements UpgradeDataInterface
      */
     public function upgrade(ModuleDataSetupInterface $setup, ModuleContextInterface $context) // @codingStandardsIgnoreLine
     {
-        if (version_compare($context->getVersion(), '3.1.0', '>=')) {
+        $currentVersion = $context->getVersion();
+        if (version_compare($currentVersion, '3.1.0', '<=')) {
             $this->insertStoreDomain();
         }
 
-        if (version_compare($context->getVersion(), '3.5.0', '>=')) {
+        if (version_compare($currentVersion, '3.6.0', '<=')) {
             $this->addCustomerReference($setup);
         }
     }
