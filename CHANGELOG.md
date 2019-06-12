@@ -1,5 +1,8 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 3.8.1
+* Fix version comparison on data upgrading
+
 ### 3.8.0
 * Use mock product in category personalisation when preview mode is enabled
 * Generate customer_reference value automatically when new customer is created

@@ -51,8 +51,8 @@ class UpgradeSchema extends Core implements UpgradeSchemaInterface
     public function upgrade(SchemaSetupInterface $setup, ModuleContextInterface $context)
     {
         $setup->startSetup();
-
-        if (version_compare($context->getVersion(), '2.1.0', '<')) {
+        $fromVersion = $context->getVersion();
+        if (version_compare($fromVersion, '2.1.0', '<')) {
             $setup->getConnection()->addColumn(
                 $setup->getTable(Customer::TABLE_NAME),
                 CustomerInterface::RESTORE_CART_HASH,
@@ -65,7 +65,7 @@ class UpgradeSchema extends Core implements UpgradeSchemaInterface
             );
         }
 
-        if (version_compare($context->getVersion(), '2.3.0', '<')) {
+        if (version_compare($fromVersion, '2.3.0', '<')) {
             $this->createProductQueueTable($setup);
         }
 
