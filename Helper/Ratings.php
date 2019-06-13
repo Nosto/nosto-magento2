@@ -123,46 +123,41 @@ class Ratings extends AbstractHelper
      */
     private function getRatingsFromProviders(Product $product, Store $store)
     {
-        if ($this->nostoDataHelper->isRatingTaggingEnabled($store)) {
-            $provider = $this->nostoDataHelper->getRatingTaggingProvider($store);
-
-            if ($provider === NostoHelperData::SETTING_VALUE_YOTPO_RATINGS) {
-                if (!$this->canUseYotpo()) {
-                    return null;
-                }
-
-                try {
-                    $this->setRegistryProduct($product);
-
-                    /** @noinspection PhpUndefinedMethodInspection */
-                    $ratings = $this->ratingsFactory->create()->getRichSnippet();
-                } catch (\Exception $e) {
-                    $this->resetRegistryProduct();
-                    $this->logger->exception($e);
-                    return null;
-                }
-
-                $this->resetRegistryProduct();
-
-                if (empty($ratings)) {
-                    return null;
-                }
-
-                return [
-                    self::AVERAGE_SCORE => $ratings[self::AVERAGE_SCORE],
-                    self::REVIEW_COUNT => $ratings[self::REVIEW_COUNT]
-                ];
-            }
-
-            if ($provider === NostoHelperData::SETTING_VALUE_MAGENTO_RATINGS &&
-                $this->canUseMagentoRatingsAndReviews()) {
-                return [
-                    self::AVERAGE_SCORE => $this->buildRatingValue($product, $store),
-                    self::REVIEW_COUNT => $this->buildReviewCount($product, $store)
-                ];
-            }
+        if (!$this->nostoDataHelper->isRatingTaggingEnabled($store)) {
+            return null;
         }
 
+        $provider = $this->nostoDataHelper->getRatingTaggingProvider($store);
+
+        if ($provider === NostoHelperData::SETTING_VALUE_YOTPO_RATINGS && $this->canUseYotpo()) {
+            try {
+                $this->setRegistryProduct($product);
+                /** @noinspection PhpUndefinedMethodInspection */
+                $ratings = $this->ratingsFactory->create()->getRichSnippet();
+            } catch (\Exception $e) {
+                $this->resetRegistryProduct();
+                $this->logger->exception($e);
+                return null;
+            }
+            $this->resetRegistryProduct();
+
+            if (empty($ratings)) {
+                return null;
+            }
+
+            return [
+                self::AVERAGE_SCORE => $ratings[self::AVERAGE_SCORE],
+                self::REVIEW_COUNT => $ratings[self::REVIEW_COUNT]
+            ];
+        }
+
+        if ($provider === NostoHelperData::SETTING_VALUE_MAGENTO_RATINGS &&
+            $this->canUseMagentoRatingsAndReviews()) {
+            return [
+                self::AVERAGE_SCORE => $this->buildRatingValue($product, $store),
+                self::REVIEW_COUNT => $this->buildReviewCount($product, $store)
+            ];
+        }
         return null;
     }
 
@@ -176,15 +171,13 @@ class Ratings extends AbstractHelper
      */
     private function buildRatingValue(Product $product, Store $store)
     {
-        /** @noinspection PhpUndefinedMethodInspection */
-        if (!$product->getRatingSummary()) {
+        if (!$product->hasData('rating_summary')) {
+            // getEntitySummary also sets the ratingSummary into the given product
             $this->reviewFactory->create()->getEntitySummary($product, $store->getId());
         }
 
-        /** @noinspection PhpUndefinedMethodInspection */
-        if ($product->getRatingSummary()->getReviewsCount() > 0) {
-            /** @noinspection PhpUndefinedMethodInspection */
-            return round($product->getRatingSummary()->getRatingSummary() / 20, 1);
+        if ($product->getData('rating_summary') > 0) {
+            return round($product->getData('rating_summary') / 20, 1);
         }
 
         return null;
@@ -200,15 +193,13 @@ class Ratings extends AbstractHelper
      */
     private function buildReviewCount(Product $product, Store $store)
     {
-        /** @noinspection PhpUndefinedMethodInspection */
-        if (!$product->getRatingSummary()) {
+        if (!$product->getData('rating_summary')) {
+            // getEntitySummary also sets the ratingSummary into the given product
             $this->reviewFactory->create()->getEntitySummary($product, $store->getId());
         }
 
-        /** @noinspection PhpUndefinedMethodInspection */
-        if ($product->getRatingSummary()->getReviewsCount() > 0) {
-            /** @noinspection PhpUndefinedMethodInspection */
-            return $product->getRatingSummary()->getReviewsCount();
+        if ($product->getData('reviews_count') > 0) {
+            return $product->getData('reviews_count');
         }
 
         return null;
@@ -221,14 +212,9 @@ class Ratings extends AbstractHelper
      */
     public function canUseYotpo()
     {
-        if ($this->moduleManager->isEnabled('Yotpo_Yotpo') &&
+        return $this->moduleManager->isEnabled('Yotpo_Yotpo') &&
             class_exists('Yotpo\Yotpo\Helper\RichSnippets') &&
-            method_exists($this->ratingsFactory->create(), 'getRichSnippet')
-        ) {
-            return true;
-        }
-
-        return false;
+            method_exists($this->ratingsFactory->create(), 'getRichSnippet');
     }
 
     /**
