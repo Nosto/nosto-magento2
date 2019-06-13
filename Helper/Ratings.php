@@ -45,6 +45,7 @@ use Magento\Store\Model\Store;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Magento\Review\Model\ReviewFactory;
 use Nosto\Tagging\Model\Product\Ratings as ProductRatings;
+use Magento\Framework\DataObject;
 
 /**
  * Rating helper used for product rating related tasks.
@@ -171,15 +172,21 @@ class Ratings extends AbstractHelper
      */
     private function buildRatingValue(Product $product, Store $store)
     {
-        if (!$product->hasData('rating_summary')) {
+        /** @noinspection PhpUndefinedMethodInspection */
+        if (!$product->getRatingSummary()) {
             // getEntitySummary also sets the ratingSummary into the given product
             $this->reviewFactory->create()->getEntitySummary($product, $store->getId());
         }
-
-        if ($product->getData('rating_summary') > 0) {
-            return round($product->getData('rating_summary') / 20, 1);
+        /** @noinspection PhpUndefinedMethodInspection */
+        $ratingSummaryObj = $product->getRatingSummary();
+        if ($ratingSummaryObj instanceof DataObject) {
+            /** @noinspection PhpUndefinedMethodInspection */
+            return round($ratingSummaryObj->getRatingSummary() / 20, 1);
         }
-
+        // After Magento 2.3.1 getRatingSummary() returns a string.
+        if (!empty($ratingSummaryObj)) {
+            return round($ratingSummaryObj / 20, 1);
+        }
         return null;
     }
 
@@ -193,20 +200,25 @@ class Ratings extends AbstractHelper
      */
     private function buildReviewCount(Product $product, Store $store)
     {
-        if (!$product->getData('rating_summary')) {
+        /** @noinspection PhpUndefinedMethodInspection */
+        if (!$product->getRatingSummary()) {
             // getEntitySummary also sets the ratingSummary into the given product
             $this->reviewFactory->create()->getEntitySummary($product, $store->getId());
         }
 
-        if ($product->getData('reviews_count') > 0) {
-            return $product->getData('reviews_count');
+        /** @noinspection PhpUndefinedMethodInspection */
+        $ratingSummaryObj = $product->getRatingSummary();
+        /** @noinspection PhpUndefinedMethodInspection */
+        if ($ratingSummaryObj instanceof DataObject && $ratingSummaryObj->getReviewsCount() > 0) {
+            /** @noinspection PhpUndefinedMethodInspection */
+            return $ratingSummaryObj->getReviewsCount();
         }
-
-        return null;
+        /** @noinspection PhpUndefinedMethodInspection */
+        return $product->getReviewsCount();
     }
 
     /**
-     * Check if Yopto module is enabled and has getRichSnippet method
+     * Check if Yotpo module is enabled and has getRichSnippet method
      *
      * @return bool
      */
