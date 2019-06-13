@@ -27,13 +27,20 @@ class ProductTaggingTest extends TestCase
     private $productBlock;
 
     /**
+     * @var ProductRepositoryInterface
+     */
+    private $productRepository;
+
+    /**
      * @inheritDoc
      */
     public function setUp()
     {
         parent::setUp();
         $this->productBlock = $this->getObjectManager()->create(NostoProductBlock::class);
+        $this->productRepository = $this->getObjectManager()->create(ProductRepositoryInterface::class);
     }
+    
     /**
      * Test that we generate the Nosto product tagging correctly
      * ToDo - the fixture here is just as an example, it's not used
@@ -41,15 +48,17 @@ class ProductTaggingTest extends TestCase
      */
     public function testProductTaggingForSimpleProduct()
     {
-        /* @var ProductRepositoryInterface $productRepo */
-        $product = (new ProductBuilder($this->getObjectManager()))
-            ->defaultSimple()
-            ->build();
+        $product = $this->productRepository->getById(123);
+
         $this->setRegistry(self::PRODUCT_REGISTRY_KEY, $product);
 
         $html = self::stripAllWhiteSpace($this->productBlock->toHtml());
 
         $this->assertContains('<spanclass="product_id">', $html);
         $this->assertContains('<spanclass="name">NostoSimpleProduct</span>', $html);
+        $this->assertContains('<spanclass="price">5.99</span>', $html);
+        $this->assertContains('<spanclass="list_price">10.000000</span>', $html);
+        $this->assertContains('<spanclass="description">NostoProductDescription</span>', $html);
+        $this->assertContains('<spanclass="categories"><spanclass="category">/Training/VideoDownload</span></span>', $html);
     }
 }
