@@ -15,6 +15,8 @@ use Magento\Review\Model\Rating;
 use Magento\Review\Model\ReviewFactory;
 use Magento\Review\Model\RatingFactory;
 use Prophecy\Prophecy\Revealer;
+use Magento\Customer\Model\Group;
+use Magento\Catalog\Api\ProductTierPriceManagementInterface;
 
 trait FixturesTrait
 {
@@ -36,6 +38,7 @@ trait FixturesTrait
         $categoryIds = [16];
         self::assignCategories($product, $categoryIds);
         self::assignRatingAndReview($product);
+//        self::setTierPrice($product);
         return $product;
     }
 
@@ -74,23 +77,7 @@ trait FixturesTrait
                     'is_in_stock'               => 1,
                 ]
             )
-            ->setSpecialPrice('5.99')
-            ->setTierPrice(
-                [
-                    [
-                        'website_id' => 0,
-                        'cust_group' => \Magento\Customer\Model\Group::CUST_GROUP_ALL,
-                        'price_qty'  => 1,
-                        'price'      => 8,
-                    ],
-                    [
-                        'website_id' => 0,
-                        'cust_group' => \Magento\Customer\Model\Group::NOT_LOGGED_IN_ID,
-                        'price_qty'  => 1,
-                        'price'      => 7,
-                    ],
-                ]
-            );
+            ->setSpecialPrice('5.99');
 
         return $product;
     }
@@ -169,6 +156,44 @@ trait FixturesTrait
         }
 
         $review->aggregate();
+    }
+
+    /**
+     * @param Product $product
+     * @throws \Magento\Framework\Exception\CouldNotSaveException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
+    private static function setTierPrice(Product $product)
+    {
+        /* @var ObjectManagerInterface */
+        $objectManager = self::getStaticObjectManager();
+
+        /* @var ProductTierPriceManagementInterface $tier */
+        $tier = $objectManager->create(ProductTierPriceManagementInterface::class);
+
+        //General
+        $tier->add(
+            $product->getSku(),
+            1,
+            7,
+            1
+        );
+
+        //Wholesale
+        $tier->add(
+            $product->getSku(),
+            2,
+            7,
+            1
+        );
+
+        //Retailer
+        $tier->add(
+            $product->getSku(),
+            3,
+            5,
+            1
+            );
     }
 
 }

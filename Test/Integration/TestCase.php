@@ -156,4 +156,17 @@ abstract class TestCase extends PhpUnitTestCase
             NostoHelperData::XML_PATH_RATING_TAGGING,
             NostoHelperData::SETTING_VALUE_MAGENTO_RATINGS);
     }
+
+    public function enableVariations()
+    {
+        $this->setConfig(
+            NostoHelperData::XML_PATH_MULTI_CURRENCY,
+            NostoHelperData::SETTING_VALUE_MC_DISABLED
+        );
+
+        $this->setConfig(
+            NostoHelperData::XML_PATH_PRICING_VARIATION,
+            '1'
+        );
+    }
 }

@@ -74,4 +74,19 @@ class ProductTaggingTest extends TestCase
         $this->assertContains('<spanclass="variation_id">USD</span>', $html);
         $this->assertContains('<spanclass="variations"></span>', $html);
     }
+
+    /**
+     * Test that product price variations are generated correctly
+     * @magentoDataFixture fixtureLoadSimpleProduct
+     */
+    public function testProductTaggingWithVariations()
+    {
+        $this->enableVariations();
+
+        $product = $this->productRepository->getById(123);
+
+        $this->setRegistry(self::PRODUCT_REGISTRY_KEY, $product);
+
+        $html = self::stripAllWhiteSpace($this->productBlock->toHtml());
+    }
 }
