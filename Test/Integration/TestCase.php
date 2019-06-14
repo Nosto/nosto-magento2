@@ -42,6 +42,7 @@ use Nosto\Request\Api\Token;
 use Nosto\Tagging\Helper\Account;
 use PHPUnit\Framework\TestCase as PhpUnitTestCase;
 use Magento\TestFramework\Helper\Bootstrap;
+use Nosto\Tagging\Helper\Data as NostoHelperData;
 
 /**
  * Base class for Nosto integration tests.
@@ -144,5 +145,15 @@ abstract class TestCase extends PhpUnitTestCase
     public static function stripAllWhiteSpace($string)
     {
         return preg_replace('/\s+/', '', $string);
+    }
+
+    /*
+     * Enable Ratings feature flag
+     */
+    public function enableRatingsAndReviews()
+    {
+        $this->setConfig(
+            NostoHelperData::XML_PATH_RATING_TAGGING,
+            NostoHelperData::SETTING_VALUE_MAGENTO_RATINGS);
     }
 }

@@ -10,6 +10,11 @@ use Magento\TestFramework\Helper\Bootstrap;
 use Magento\Catalog\Api\CategoryLinkManagementInterface;
 use Magento\Catalog\Api\Data\ProductInterfaceFactory;
 use Magento\Catalog\Model\Product\Type;
+use Magento\Review\Model\Review;
+use Magento\Review\Model\Rating;
+use Magento\Review\Model\ReviewFactory;
+use Magento\Review\Model\RatingFactory;
+use Prophecy\Prophecy\Revealer;
 
 trait FixturesTrait
 {
@@ -30,6 +35,7 @@ trait FixturesTrait
         self::saveProduct($product);
         $categoryIds = [16];
         self::assignCategories($product, $categoryIds);
+        self::assignRatingAndReview($product);
         return $product;
     }
 
@@ -59,6 +65,7 @@ trait FixturesTrait
             ->setMetaDescription('Nosto Meta Descripption')
             ->setVisibility(Visibility::VISIBILITY_BOTH)
             ->setStatus(Status::STATUS_ENABLED)
+            ->setUrlKey('nosto-simple-product')
             ->setStockData(
                 [
                     'use_config_manage_stock'   => 1,
@@ -124,4 +131,44 @@ trait FixturesTrait
             $categories
         );
     }
+
+    /**
+     * @param Product $product
+     */
+    private static function assignRatingAndReview(Product $product)
+    {
+        /* @var ObjectManagerInterface */
+        $objectManager = self::getStaticObjectManager();
+
+        $reviewFinalData['ratings'][1] = 5;
+        $reviewFinalData['ratings'][2] = 5;
+        $reviewFinalData['ratings'][3] = 5;
+        $reviewFinalData['nickname'] = "John Doe";
+        $reviewFinalData['title'] = "Create Review Programatically";
+        $reviewFinalData['detail'] = "This is nice blog for magento 2.Creating product reviews programatically.";
+        $productId = $product->getId();
+
+        /* @var ReviewFactory $reviewFactory */
+        $reviewFactory = $objectManager->create(ReviewFactory::class);
+        $review = $reviewFactory->create()->setData($reviewFinalData);
+        $review->unsetData('review_id');
+        $review->setEntityId($review->getEntityIdByCode(Review::ENTITY_PRODUCT_CODE))
+            ->setEntityPkValue($productId)
+            ->setStatusId(Review::STATUS_APPROVED)//By default set approved
+            ->setStoreId(1)
+            ->setStores([1])
+            ->save();
+
+        /* @var RatingFactory $ratingFactory */
+        $ratingFactory = $objectManager->create(RatingFactory::class);
+        foreach ($reviewFinalData['ratings'] as $ratingId => $optionId) {
+            $ratingFactory->create()
+                ->setRatingId($ratingId)
+                ->setReviewId($review->getId())
+                ->addOptionVote($optionId, $productId);
+        }
+
+        $review->aggregate();
+    }
+
 }

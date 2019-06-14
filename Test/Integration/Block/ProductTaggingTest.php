@@ -43,22 +43,35 @@ class ProductTaggingTest extends TestCase
     
     /**
      * Test that we generate the Nosto product tagging correctly
-     * ToDo - the fixture here is just as an example, it's not used
      * @magentoDataFixture fixtureLoadSimpleProduct
      */
     public function testProductTaggingForSimpleProduct()
     {
+        $this->enableRatingsAndReviews();
+
         $product = $this->productRepository->getById(123);
 
         $this->setRegistry(self::PRODUCT_REGISTRY_KEY, $product);
 
         $html = self::stripAllWhiteSpace($this->productBlock->toHtml());
 
-        $this->assertContains('<spanclass="product_id">', $html);
+        $this->assertContains('<spanclass="product_id">123</span>', $html);
         $this->assertContains('<spanclass="name">NostoSimpleProduct</span>', $html);
         $this->assertContains('<spanclass="price">5.99</span>', $html);
         $this->assertContains('<spanclass="list_price">10.000000</span>', $html);
         $this->assertContains('<spanclass="description">NostoProductDescription</span>', $html);
+        $this->assertContains('<spanclass="url">http://localhost/index.php/nosto-simple-product.html</span>', $html);
         $this->assertContains('<spanclass="categories"><spanclass="category">/Training/VideoDownload</span></span>', $html);
+        $this->assertContains('<spanclass="price_currency_code">USD</span>', $html);
+        $this->assertContains('<spanclass="availability">InStock</span>', $html);
+        $this->assertContains('<spanclass="review_count">1</span>', $html);
+        $this->assertContains('<spanclass="rating_value">0</span>', $html);
+        $this->assertContains('<spanclass="alternate_image_urls"></span>', $html);
+        $this->assertContains('<spanclass="tags1"><spanclass="tag">add-to-cart</span></span>', $html);
+        $this->assertContains('<spanclass="tags2"></span>', $html);
+        $this->assertContains('<spanclass="tags3"></span>', $html);
+        $this->assertContains('<spanclass="skus"></span>', $html);
+        $this->assertContains('<spanclass="variation_id">USD</span>', $html);
+        $this->assertContains('<spanclass="variations"></span>', $html);
     }
 }
