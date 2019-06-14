@@ -89,4 +89,19 @@ class ProductTaggingTest extends TestCase
 
         $html = self::stripAllWhiteSpace($this->productBlock->toHtml());
     }
+
+    /**
+     * @magentoDataFixture fixtureLoadConfigurableProduct
+     */
+    public function testConfigurableProductTagging()
+    {
+        $product = $this->productRepository->getById(404);
+        $this->setRegistry(self::PRODUCT_REGISTRY_KEY, $product);
+        $html = self::stripAllWhiteSpace($this->productBlock->toHtml());
+
+        $this->assertContains('<spanclass="nosto_sku"><spanclass="id">5</span><spanclass="name">NostoSimpleProduct5</span><spanclass="price">5.99</span><spanclass="list_price">10.000000</span><spanclass="availability">InStock</span></span>', $html);
+        $this->assertContains('<spanclass="nosto_sku"><spanclass="id">6</span><spanclass="name">NostoSimpleProduct6</span><spanclass="price">5.99</span><spanclass="list_price">10.000000</span><spanclass="availability">InStock</span></span>', $html);
+        $this->assertContains('<spanclass="nosto_sku"><spanclass="id">7</span><spanclass="name">NostoSimpleProduct7</span><spanclass="price">5.99</span><spanclass="list_price">10.000000</span><spanclass="availability">InStock</span></span>', $html);
+        $this->assertContains('<spanclass="nosto_sku"><spanclass="id">8</span><spanclass="name">NostoSimple\Product8</span><spanclass="price">5.99</span><spanclass="list_price">10.000000</span><spanclass="availability">InStock</span></span>', $html);
+    }
 }
