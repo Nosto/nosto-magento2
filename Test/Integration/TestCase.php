@@ -157,7 +157,10 @@ abstract class TestCase extends PhpUnitTestCase
             NostoHelperData::SETTING_VALUE_MAGENTO_RATINGS);
     }
 
-    public function enableVariations()
+    /**
+     * Enable product varitions
+     */
+    public function enableCustomerGroupVariations()
     {
         $this->setConfig(
             NostoHelperData::XML_PATH_MULTI_CURRENCY,
@@ -166,6 +169,28 @@ abstract class TestCase extends PhpUnitTestCase
 
         $this->setConfig(
             NostoHelperData::XML_PATH_PRICING_VARIATION,
+            '1'
+        );
+    }
+
+    /**
+     * Disable tagging for skus
+     */
+    public function disableSkuVariations()
+    {
+        $this->setConfig(
+            NostoHelperData::XML_PATH_VARIATION_TAGGING,
+            '0'
+        );
+    }
+
+    /**
+     * Enable tagging for skus
+     */
+    public function enableSkuVariations()
+    {
+        $this->setConfig(
+            NostoHelperData::XML_PATH_VARIATION_TAGGING,
             '1'
         );
     }

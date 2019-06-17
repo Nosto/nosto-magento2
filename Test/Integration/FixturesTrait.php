@@ -34,7 +34,7 @@ trait FixturesTrait
      */
     public static function fixtureLoadSimpleProduct()
     {
-        $product = self::createSimpleProduct();
+        $product = self::createSimpleProduct(123, 10, '5.99');
         $categoryIds = [16];
         self::assignCategories($product, $categoryIds);
         self::assignRatingAndReview($product);
@@ -48,15 +48,23 @@ trait FixturesTrait
     public static function fixtureLoadConfigurableProduct()
     {
         $product = self::createConfigurableProduct();
-        self::createConfigurableProductWithSkus($product);
+        $categoryIds = [16];
+        self::assignCategories($product, $categoryIds);
+        self::attachSkusToConfigurableProduct($product);
     }
 
     /**
      * Creates simple product for testing purposes
      *
-     * @return Product $product
+     * @param int $productId
+     * @param float $price
+     * @param string|null $specialPrice
+     * @return Product
+     * @throws \Magento\Framework\Exception\CouldNotSaveException
+     * @throws \Magento\Framework\Exception\InputException
+     * @throws \Magento\Framework\Exception\StateException
      */
-    private static function createSimpleProduct($productId)
+    private static function createSimpleProduct($productId, $price, $specialPrice = null)
     {
         /* @var ObjectManagerInterface */
         $objectManager = self::getStaticObjectManager();
@@ -70,7 +78,7 @@ trait FixturesTrait
             ->setWebsiteIds([1])
             ->setName('Nosto Simple Product '.$productId)
             ->setSku('nosto-simple-product-'.$productId)
-            ->setPrice(10)
+            ->setPrice($price)
             ->setMetaTitle('Nosto Meta Title')
             ->setMetaKeyword('Nosto Mesta Keywords')
             ->setDescription('Nosto Product Description')
@@ -85,8 +93,11 @@ trait FixturesTrait
                     'is_qty_decimal'            => 0,
                     'is_in_stock'               => 1,
                 ]
-            )
-            ->setSpecialPrice('5.99');
+            );
+
+        if ($specialPrice !== null) {
+            $product->setSpecialPrice($specialPrice);
+        }
 
         //Save product in database
         self::saveProduct($product);
@@ -105,10 +116,12 @@ trait FixturesTrait
             ->setId(404)
             ->setAttributeSetId(4)
             ->setWebsiteIds([1])
-            ->setName('Configurable Product')
+            ->setName('Configurable Product 404')
             ->setSku('configurable')
             ->setVisibility(Visibility::VISIBILITY_BOTH)
             ->setStatus(Status::STATUS_ENABLED)
+            ->setUrlKey('nosto-configurable-product-404')
+            ->setDescription('Nosto Configurable Product Description')
             ->setStockData(['use_config_manage_stock' => 1, 'is_in_stock' => 1]);
 
         //Save product in database
@@ -117,15 +130,25 @@ trait FixturesTrait
         return $product;
     }
 
-    private static function createConfigurableProductWithSkus(Product $configurableProduct)
+    /**
+     * Attach SKU to a configurable product
+     *
+     * @param Product $configurableProduct
+     * @throws \Exception
+     */
+    private static function attachSkusToConfigurableProduct(Product $configurableProduct)
     {
-        $simpleProductIds = [5, 6, 7, 8];
-        $simpleProductsArray = [];
+        //Ids and prices
+        $simpleProductIds = [
+            [5, 10],
+            [6, 8.2],
+            [7, 9.5],
+            [8, 10]
+        ];
 
         //Generate some simple products
-        foreach ($simpleProductIds as $productId) {
-            $simpleProduct = self::createSimpleProduct($productId);
-            $simpleProductsArray[] = [$productId => $simpleProduct];
+        foreach ($simpleProductIds as $product) {
+            $simpleProduct = self::createSimpleProduct($product[0], $product[1]);
         }
 
         $colorAttrId = $configurableProduct->getResource()
@@ -141,7 +164,7 @@ trait FixturesTrait
         $configurableProduct->setCanSaveConfigurableAttributes(true);
         $configurableProduct->setConfigurableAttributesData($configurableAttributesData);
         $configurableProductsData = array();
-        $configurableProductsData[5] = array( // id of a simple product associated with the configurable
+        $configurableProductsData[5] = array(
             '0' => array(
                 'label' => 'Red', //attribute label
                 'attribute_id' => $colorAttrId, //color attribute id
@@ -150,7 +173,7 @@ trait FixturesTrait
                 'pricing_value' => '10',
             )
         );
-        $configurableProductsData[6] = array( // id of a simple product associated with the configurable
+        $configurableProductsData[6] = array(
             '0' => array(
                 'label' => 'Green', //attribute label
                 'attribute_id' => $colorAttrId, //color attribute id
@@ -159,7 +182,7 @@ trait FixturesTrait
                 'pricing_value' => '10',
             )
         );
-        $configurableProductsData[7] = array( // id of a simple product associated with the configurable
+        $configurableProductsData[7] = array(
             '0' => array(
                 'label' => 'Blue', //attribute label
                 'attribute_id' => $colorAttrId, //color attribute id
@@ -171,7 +194,7 @@ trait FixturesTrait
         $configurableProduct->setConfigurableProductsData($configurableProductsData);
         $configurableProduct->save();
 
-        $configurableProduct->setAssociatedProductIds($simpleProductIds); // Assign simple product id
+        $configurableProduct->setAssociatedProductIds([5,6,7,8]); // Assign simple product id
         $configurableProduct->setCanSaveConfigurableAttributes(true);
         $configurableProduct->save();
     }

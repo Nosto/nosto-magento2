@@ -56,11 +56,11 @@ class ProductTaggingTest extends TestCase
         $html = self::stripAllWhiteSpace($this->productBlock->toHtml());
 
         $this->assertContains('<spanclass="product_id">123</span>', $html);
-        $this->assertContains('<spanclass="name">NostoSimpleProduct</span>', $html);
+        $this->assertContains('<spanclass="name">NostoSimpleProduct123</span>', $html);
         $this->assertContains('<spanclass="price">5.99</span>', $html);
         $this->assertContains('<spanclass="list_price">10.000000</span>', $html);
         $this->assertContains('<spanclass="description">NostoProductDescription</span>', $html);
-        $this->assertContains('<spanclass="url">http://localhost/index.php/nosto-simple-product.html</span>', $html);
+        $this->assertContains('<spanclass="url">http://localhost/index.php/nosto-simple-product-123.html</span>', $html);
         $this->assertContains('<spanclass="categories"><spanclass="category">/Training/VideoDownload</span></span>', $html);
         $this->assertContains('<spanclass="price_currency_code">USD</span>', $html);
         $this->assertContains('<spanclass="availability">InStock</span>', $html);
@@ -79,29 +79,80 @@ class ProductTaggingTest extends TestCase
      * Test that product price variations are generated correctly
      * @magentoDataFixture fixtureLoadSimpleProduct
      */
-    public function testProductTaggingWithVariations()
-    {
-        $this->enableVariations();
-
-        $product = $this->productRepository->getById(123);
-
-        $this->setRegistry(self::PRODUCT_REGISTRY_KEY, $product);
-
-        $html = self::stripAllWhiteSpace($this->productBlock->toHtml());
-    }
+//    public function testProductTaggingWithVariations()
+//    {
+//        $this->enableCustomerGroupVariations();
+//
+//        $product = $this->productRepository->getById(123);
+//
+//        $this->setRegistry(self::PRODUCT_REGISTRY_KEY, $product);
+//
+//        $html = self::stripAllWhiteSpace($this->productBlock->toHtml());
+//    }
 
     /**
      * @magentoDataFixture fixtureLoadConfigurableProduct
      */
     public function testConfigurableProductTagging()
     {
+        $this->enableSkuVariations();
         $product = $this->productRepository->getById(404);
         $this->setRegistry(self::PRODUCT_REGISTRY_KEY, $product);
         $html = self::stripAllWhiteSpace($this->productBlock->toHtml());
 
-        $this->assertContains('<spanclass="nosto_sku"><spanclass="id">5</span><spanclass="name">NostoSimpleProduct5</span><spanclass="price">5.99</span><spanclass="list_price">10.000000</span><spanclass="availability">InStock</span></span>', $html);
-        $this->assertContains('<spanclass="nosto_sku"><spanclass="id">6</span><spanclass="name">NostoSimpleProduct6</span><spanclass="price">5.99</span><spanclass="list_price">10.000000</span><spanclass="availability">InStock</span></span>', $html);
-        $this->assertContains('<spanclass="nosto_sku"><spanclass="id">7</span><spanclass="name">NostoSimpleProduct7</span><spanclass="price">5.99</span><spanclass="list_price">10.000000</span><spanclass="availability">InStock</span></span>', $html);
-        $this->assertContains('<spanclass="nosto_sku"><spanclass="id">8</span><spanclass="name">NostoSimple\Product8</span><spanclass="price">5.99</span><spanclass="list_price">10.000000</span><spanclass="availability">InStock</span></span>', $html);
+        //Core product tagging
+        $this->assertContains('<spanclass="product_id">404</span>', $html);
+        $this->assertContains('<spanclass="name">ConfigurableProduct404</span>', $html);
+        $this->assertContains('<spanclass="price">8.2</span>', $html);
+        $this->assertContains('<spanclass="list_price">8.200000</span>', $html);
+        $this->assertContains('<spanclass="description">NostoConfigurableProductDescription</span>', $html);
+        $this->assertContains('<spanclass="url">http://localhost/index.php/nosto-configurable-product-404.html</span>', $html);
+        $this->assertContains('<spanclass="categories"><spanclass="category">/Training/VideoDownload</span></span>', $html);
+        $this->assertContains('<spanclass="price_currency_code">USD</span>', $html);
+        $this->assertContains('<spanclass="availability">InStock</span>', $html);
+        $this->assertContains('<spanclass="alternate_image_urls"></span>', $html);
+        $this->assertContains('<spanclass="tags1"></span>', $html);
+        $this->assertContains('<spanclass="tags2"></span>', $html);
+        $this->assertContains('<spanclass="tags3"></span>', $html);
+        $this->assertContains('<spanclass="skus">', $html);
+        $this->assertContains('<spanclass="variation_id">USD</span>', $html);
+        $this->assertContains('<spanclass="variations"></span>', $html);
+
+        //Skus tagging
+        $this->assertContains('<spanclass="nosto_sku"><spanclass="id">5</span><spanclass="name">NostoSimpleProduct5</span><spanclass="price">10</span><spanclass="list_price">10.000000</span><spanclass="availability">InStock</span></span>', $html);
+        $this->assertContains('<spanclass="nosto_sku"><spanclass="id">6</span><spanclass="name">NostoSimpleProduct6</span><spanclass="price">8.2</span><spanclass="list_price">8.200000</span><spanclass="availability">InStock</span></span>', $html);
+        $this->assertContains('<spanclass="nosto_sku"><spanclass="id">7</span><spanclass="name">NostoSimpleProduct7</span><spanclass="price">9.5</span><spanclass="list_price">9.500000</span><spanclass="availability">InStock</span></span>', $html);
+        $this->assertContains('<spanclass="nosto_sku"><spanclass="id">8</span><spanclass="name">NostoSimpleProduct8</span><spanclass="price">10</span><spanclass="list_price">10.000000</span><spanclass="availability">InStock</span></span>', $html);
+    }
+
+    /**
+     * @magentoDataFixture fixtureLoadConfigurableProduct
+     */
+    public function testConfigurableProductTaggingWithSkuDisabled()
+    {
+        $this->disableSkuVariations();
+        $product = $this->productRepository->getById(404);
+        $this->setRegistry(self::PRODUCT_REGISTRY_KEY, $product);
+        $html = self::stripAllWhiteSpace($this->productBlock->toHtml());
+
+        //Core product tagging
+        $this->assertContains('<spanclass="product_id">404</span>', $html);
+        $this->assertContains('<spanclass="name">ConfigurableProduct404</span>', $html);
+        $this->assertContains('<spanclass="price">8.2</span>', $html);
+        $this->assertContains('<spanclass="list_price">8.200000</span>', $html);
+        $this->assertContains('<spanclass="description">NostoConfigurableProductDescription</span>', $html);
+        $this->assertContains('<spanclass="url">http://localhost/index.php/nosto-configurable-product-404.html</span>', $html);
+        $this->assertContains('<spanclass="categories"><spanclass="category">/Training/VideoDownload</span></span>', $html);
+        $this->assertContains('<spanclass="price_currency_code">USD</span>', $html);
+        $this->assertContains('<spanclass="availability">InStock</span>', $html);
+        $this->assertContains('<spanclass="alternate_image_urls"></span>', $html);
+        $this->assertContains('<spanclass="tags1"></span>', $html);
+        $this->assertContains('<spanclass="tags2"></span>', $html);
+        $this->assertContains('<spanclass="tags3"></span>', $html);
+        $this->assertContains('<spanclass="variation_id">USD</span>', $html);
+        $this->assertContains('<spanclass="variations"></span>', $html);
+
+        //Skus tagging
+        $this->assertContains('<spanclass="skus"></span>', $html);
     }
 }
