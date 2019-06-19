@@ -7,6 +7,7 @@ use Magento\Framework\ObjectManagerInterface;
 use Magento\Catalog\Model\Order\Visibility;
 use Magento\Catalog\Model\Order\Attribute\Source\Status;
 use Magento\Sales\Model\Order\Payment;
+use Magento\Sales\Model\OrderFactory;
 use Magento\TestFramework\Helper\Bootstrap;
 use Magento\Sales\Model\Order\Address;
 use Magento\Checkout\Model\Session as CheckoutSession;
@@ -19,6 +20,9 @@ final class OrderBuilder implements BuilderInterface
     /* @var ObjectManagerInterface */
     private $objectManager;
 
+    /* @var OrderFactory */
+    private $orderFactory;
+
     /**
      * OrderBuilder constructor.
      * @param ObjectManagerInterface $objectManager
@@ -27,6 +31,9 @@ final class OrderBuilder implements BuilderInterface
     {
         $this->objectManager = $objectManager;
         $this->order = $objectManager->create(Order::class);
+        $this->orderFactory = Bootstrap::getObjectManager()->get(
+            OrderFactory::class
+        );
     }
 
     /**
@@ -48,30 +55,29 @@ final class OrderBuilder implements BuilderInterface
     }
 
     /**
-     * @return array
-     */
-    private static function getAddresData()
-    {
-        return [
-            'region' => 'Uusimaa',
-            'region_id' => '336',
-            'postcode' => '00180',
-            'lastname' => 'Solutions',
-            'firstname' => 'Nosto',
-            'street' => 'Bulevardi 21',
-            'city' => 'Helsinki',
-            'email' => 'devnull@nosto.com',
-            'telephone' => '11111111',
-            'country_id' => 'FI'
-        ];
-    }
-
-    /**
      * @throws \Magento\Framework\Exception\LocalizedException
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public static function createOrderFixture($orderId)
     {
+
+        $orderFactory = Bootstrap::getObjectManager()->get(
+            OrderFactory::class
+        );
+
+        $orderAutoincrementId = '100000001';
+        /** @var Order $orderModel */
+        $orderModel = $orderFactory->create();
+        $orderModel->loadByIncrementId($orderAutoincrementId);
+        $orderId = (int)$orderModel->getId();
+        return $orderModel;
+//        unset($orderModel);
+
+
+
+
+
+
         /** @var Address $billingAddress */
         $billingAddress = Bootstrap::getObjectManager()->create(Address::class, ['data' => self::getAddresData()]);
         $billingAddress->setAddressType('billing');
@@ -84,7 +90,7 @@ final class OrderBuilder implements BuilderInterface
         $payment->setMethod('checkmo')
             ->setAdditionalInformation([
                 'token_metadata' => [
-                    'token'       => 'f34vjw',
+                    'token' => 'f34vjw',
                     'customer_id' => 1,
                 ],
             ]);
