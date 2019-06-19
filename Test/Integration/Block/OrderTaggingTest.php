@@ -36,25 +36,11 @@
 
 namespace Nosto\Tagging\Test\Integration\Block;
 
-use Magento\Catalog\Api\ProductRepositoryInterface;
-use Magento\Catalog\Model\ProductRepository;
 use Magento\Sales\Model\Order;
-use Magento\Sales\Model\Order\Address;
-use Magento\Sales\Model\Order\Payment;
-use Magento\Sales\Model\OrderFactory;
 use Nosto\Tagging\Block\Order as NostoOrderBlock;
-use Nosto\Tagging\Test\_util\OrderBuilder;
 use Nosto\Tagging\Test\Integration\TestCase;
-use Magento\Catalog\Model\Product;
-use Magento\Catalog\Model\Product\Visibility;
-use Magento\Catalog\Model\Product\Attribute\Source\Status;
-use Magento\TestFramework\Helper\Bootstrap;
 use Magento\Framework\Registry;
 use Magento\Checkout\Model\Session as CheckoutSession;
-use Magento\Sales\Api\OrderRepositoryInterface;
-use Magento\Sales\Model\Order\Address as OrderAddress;
-use Magento\Sales\Model\Order\Item as OrderItem;
-use Magento\Store\Model\StoreManagerInterface;
 
 /**
  * Tests for Order tagging
@@ -63,7 +49,7 @@ use Magento\Store\Model\StoreManagerInterface;
  */
 final class OrderTaggingTest extends TestCase
 {
-    const ORDER_REGISTRY_KEY = 'order';
+    const ORDER_REGISTRY_KEY = 'current_order';
 
     /** @var NostoOrderBlock */
     private $orderBlock;
@@ -72,11 +58,6 @@ final class OrderTaggingTest extends TestCase
      * @var CheckoutSession
      */
     private $checkoutSession;
-
-    /**
-     * @var \Magento\Sales\Block\Order\Items
-     */
-    private $model;
 
     /**
      * @var \Magento\Framework\Registry
@@ -91,100 +72,6 @@ final class OrderTaggingTest extends TestCase
         parent::setUp();
         $this->orderBlock = $this->getObjectManager()->create(NostoOrderBlock::class);
         $this->checkoutSession = $this->getObjectManager()->create(CheckoutSession::class);
-        $this->registry = $this->getObjectManager()->get(\Magento\Framework\Registry::class);
-    }
-
-//    /**
-//     * @magentoDataFixture newOrderFixture
-//     */
-//    public function testGetCustomerGroupName()
-//    {
-//        $layout = $this->getObjectManager()->get(\Magento\Framework\View\LayoutInterface::class);
-//        /** @var \Magento\Sales\Block\Adminhtml\Order\View\Info $customerGroupBlock */
-//        $customerGroupBlock = $layout->createBlock(
-//            \Magento\Sales\Block\Adminhtml\Order\View\Info::class,
-//            'info_block' . mt_rand(),
-//            ['registry' => $this->putOrderIntoRegistry()]
-//        );
-//
-//        $result = $customerGroupBlock->getCustomerGroupName();
-//        $this->assertEquals('NOT LOGGED IN', $result);
-//    }
-
-    public static function newOrderFixture()
-    {
-        $objectManager = \Magento\TestFramework\Helper\Bootstrap::getObjectManager();
-
-        $billingAddress = $objectManager->create(OrderAddress::class, ['data' => self::getAddresData()]);
-        $billingAddress->setAddressType('billing');
-
-        $shippingAddress = clone $billingAddress;
-        $shippingAddress->setId(null)->setAddressType('shipping');
-
-        /** @var Payment $payment */
-        $payment = $objectManager->create(Payment::class);
-        $payment->setMethod('checkmo')
-            ->setAdditionalInformation('last_trans_id', '11122')
-            ->setAdditionalInformation(
-                'metadata',
-                [
-                    'type' => 'free',
-                    'fraudulent' => false,
-                ]
-            );
-
-        /** @var OrderItem $orderItem */
-        $orderItem = $objectManager->create(OrderItem::class);
-        $orderItem->setProductId($product->getId())
-            ->setQtyOrdered(2)
-            ->setBasePrice($product->getPrice())
-            ->setPrice($product->getPrice())
-            ->setRowTotal($product->getPrice())
-            ->setProductType('simple')
-            ->setName($product->getName());
-
-        /** @var Order $order */
-        $order = $objectManager->create(Order::class);
-        $order->setIncrementId('100000001')
-            ->setState(Order::STATE_PROCESSING)
-            ->setStatus($order->getConfig()->getStateDefaultStatus(Order::STATE_PROCESSING))
-            ->setSubtotal(100)
-            ->setGrandTotal(100)
-            ->setBaseSubtotal(100)
-            ->setBaseGrandTotal(100)
-            ->setCustomerIsGuest(true)
-            ->setCustomerEmail('customer@null.com')
-            ->setBillingAddress($billingAddress)
-            ->setShippingAddress($shippingAddress)
-            ->setStoreId($objectManager->get(StoreManagerInterface::class)->getStore()->getId())
-            ->addItem($orderItem)
-            ->setPayment($payment);
-
-        /** @var OrderRepositoryInterface $orderRepository */
-        $orderRepository = $objectManager->create(OrderRepositoryInterface::class);
-        $orderRepository->save($order);
-
-    }
-
-    /**
-     * @param array $additionalOrderData
-     * @return \Magento\Framework\Registry|\PHPUnit_Framework_MockObject_MockObject
-     */
-    private function putOrderIntoRegistry(array $additionalOrderData = [])
-    {
-        $registry = $this->getMockBuilder(\Magento\Framework\Registry::class)->disableOriginalConstructor()->getMock();
-
-        $order = $this->getObjectManager()->get(
-            \Magento\Sales\Model\Order::class
-        )->load(
-            '100000001'
-        )->setData(
-            array_merge(['customer_group_id' => 0], $additionalOrderData)
-        );
-
-        $registry->expects($this->any())->method('registry')->with('current_order')->will($this->returnValue($order));
-
-        return $registry;
     }
 
     /**
@@ -192,54 +79,31 @@ final class OrderTaggingTest extends TestCase
      */
     public function testOrderTaggingForSimpleOrder()
     {
-
         $order = $this->registerOrder();
-//        $this->model = $this->layout->createBlock(\Magento\Sales\Block\Order\Items::class);
-//        $this->assertTrue(count($this->model->getItems()) > 0);
-
-
-
-//        $order = (new OrderBuilder($this->getObjectManager()))
-//            ->defaultOrder()
-//            ->build();
-//
-//        $registry = $this->putOrderIntoRegistry();
-//
-//        $this->getObjectManager()->get('Magento\Framework\Registry')->registry('current_category');
-//
-//        $this->setRegistry(self::ORDER_REGISTRY_KEY, $registry);
-//        $this->checkoutSession
-//            ->setLastOrderId($order->getId())
-//            ->setLastRealOrderId($order->getIncrementId());
 
         $html = self::stripAllWhiteSpace($this->orderBlock->toHtml());
 
-        $this->assertContains('<spanclass="order_number">', $html);
-        $this->assertContains('<spanclass="order_number">M2_</span>', $html);
-
+        $this->assertContains('<spanclass="nosto_purchase_order"', $html);
+        $this->assertContains('<spanclass="order_number">M2_'. self::stripAllWhiteSpace($order->getId()) .'</span>', $html);
+        $this->assertContains('<spanclass="created_at">'. self::stripAllWhiteSpace($order->getCreatedAt()) .'</span>', $html);
+        $this->assertContains('<spanclass="payment_provider">' . self::stripAllWhiteSpace($order->getPayment()->getMethod()) . '</span>', $html);
+        $this->assertContains('<spanclass="buyer">', $html);
+        $this->assertContains('<spanclass="first_name">' . self::stripAllWhiteSpace($order->getCustomerFirstname()) . '</span>', $html);
+        $this->assertContains('<spanclass="last_name">' . self::stripAllWhiteSpace($order->getCustomerLastname()) . '</span>', $html);
+        $this->assertContains('<spanclass="email">' . self::stripAllWhiteSpace($order->getCustomerEmail()) . '</span>', $html);
+//        $this->assertContains('<spanclass="marketing_permission">' . $order->getCustomerId() . '</span>', $html); // missing newsletter. Need to get customer repo
+        $this->assertContains('<spanclass="purchased_items">', $html);
+        $this->assertContains('<spanclass="product_id">' . self::stripAllWhiteSpace($order->getItems()[1]->getProductId()) . '</span>', $html);
+        $this->assertContains('<spanclass="quantity">' . (int)$order->getItems()[1]->getQtyOrdered() . '</span>', $html);
+        $this->assertContains('<spanclass="name">' . self::stripAllWhiteSpace($order->getItems()[1]->getName()), $html); // Missing attributes
+        $this->assertContains('<spanclass="unit_price">' . sprintf("%.2f", $order->getItems()[1]->getPriceInclTax()) . '</span>', $html);
+        $this->assertContains('<spanclass="price_currency_code">' . $order->getOrderCurrencyCode() . '</span>', $html);
+        $this->assertContains('<spanclass="order_status_code">' . self::stripAllWhiteSpace($order->getStatus()) . '</span>', $html);
+        $this->assertContains('<spanclass="external_order_ref">' . $order->getIncrementId() . '</span>', $html);
     }
 
     /**
-     * @return array
-     */
-    public static function getAddresData()
-    {
-        return [
-            'region' => 'Uusimaa',
-            'region_id' => '336',
-            'postcode' => '00180',
-            'lastname' => 'Solutions',
-            'firstname' => 'Nosto',
-            'street' => 'Bulevardi 21',
-            'city' => 'Helsinki',
-            'email' => 'devnull@nosto.com',
-            'telephone' => '11111111',
-            'country_id' => 'FI'
-        ];
-    }
-
-    /**
-     * Register order in session registry
+     * Register order in session registry and returns the loaded object
      *
      * @return \Magento\Sales\Model\Order
      */
@@ -247,8 +111,9 @@ final class OrderTaggingTest extends TestCase
     {
         /** @var \Magento\Sales\Model\Order $order */
         $order = $this->getObjectManager()->get(\Magento\Sales\Model\Order::class);
+        // @TODO: Dynamically get the incrementId from already existing orders on the DB. If they don't exist, create
         $order->loadByIncrementId('000000001');
-        $this->setRegistry('current_order', $order);
+        $this->setRegistry(self::ORDER_REGISTRY_KEY, $order);
         $this->checkoutSession->setLastRealOrderId($order->getIncrementId());
         $this->checkoutSession->setLastOrderId($order->getIncrementId());
         return $order;
