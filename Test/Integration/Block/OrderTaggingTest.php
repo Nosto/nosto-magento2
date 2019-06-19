@@ -41,6 +41,7 @@ use Nosto\Tagging\Block\Order as NostoOrderBlock;
 use Nosto\Tagging\Test\Integration\TestCase;
 use Magento\Framework\Registry;
 use Magento\Checkout\Model\Session as CheckoutSession;
+use Nosto\Tagging\Test\_util\OrderBuilder;
 
 /**
  * Tests for Order tagging
@@ -51,18 +52,17 @@ final class OrderTaggingTest extends TestCase
 {
     const ORDER_REGISTRY_KEY = 'current_order';
 
-    /** @var NostoOrderBlock */
+    /* @var NostoOrderBlock */
     private $orderBlock;
 
-    /**
-     * @var CheckoutSession
-     */
+    /* @var CheckoutSession */
     private $checkoutSession;
 
-    /**
-     * @var \Magento\Framework\Registry
-     */
+    /* @var Registry */
     private $registry;
+
+    /* @var Order */
+    private $order;
 
     /**
      * @inheritDoc
@@ -72,6 +72,9 @@ final class OrderTaggingTest extends TestCase
         parent::setUp();
         $this->orderBlock = $this->getObjectManager()->create(NostoOrderBlock::class);
         $this->checkoutSession = $this->getObjectManager()->create(CheckoutSession::class);
+        $this->order = $this->registerOrder((new OrderBuilder($this->getObjectManager()))
+            ->defaultOrder()
+            ->build());
     }
 
     /**
@@ -79,45 +82,37 @@ final class OrderTaggingTest extends TestCase
      */
     public function testOrderTaggingForSimpleOrder()
     {
-        $order = $this->registerOrder();
-
         $html = self::stripAllWhiteSpace($this->orderBlock->toHtml());
 
         $this->assertContains('<spanclass="nosto_purchase_order"', $html);
-        $this->assertContains('<spanclass="order_number">M2_'. self::stripAllWhiteSpace($order->getId()) .'</span>', $html);
-        $this->assertContains('<spanclass="created_at">'. self::stripAllWhiteSpace($order->getCreatedAt()) .'</span>', $html);
-        $this->assertContains('<spanclass="payment_provider">' . self::stripAllWhiteSpace($order->getPayment()->getMethod()) . '</span>', $html);
+        $this->assertContains('<spanclass="order_number">M2_'. self::stripAllWhiteSpace($this->order->getId()) .'</span>', $html);
+        $this->assertContains('<spanclass="created_at">'. self::stripAllWhiteSpace($this->order->getCreatedAt()) .'</span>', $html);
+        $this->assertContains('<spanclass="payment_provider">' . self::stripAllWhiteSpace($this->order->getPayment()->getMethod()) . '</span>', $html);
         $this->assertContains('<spanclass="buyer">', $html);
-        $this->assertContains('<spanclass="first_name">' . self::stripAllWhiteSpace($order->getCustomerFirstname()) . '</span>', $html);
-        $this->assertContains('<spanclass="last_name">' . self::stripAllWhiteSpace($order->getCustomerLastname()) . '</span>', $html);
-        $this->assertContains('<spanclass="email">' . self::stripAllWhiteSpace($order->getCustomerEmail()) . '</span>', $html);
-//        $this->assertContains('<spanclass="marketing_permission">' . $order->getCustomerId() . '</span>', $html); // missing newsletter. Need to get customer repo
+        $this->assertContains('<spanclass="first_name">' . self::stripAllWhiteSpace($this->order->getCustomerFirstname()) . '</span>', $html);
+        $this->assertContains('<spanclass="last_name">' . self::stripAllWhiteSpace($this->order->getCustomerLastname()) . '</span>', $html);
+        $this->assertContains('<spanclass="email">' . self::stripAllWhiteSpace($this->order->getCustomerEmail()) . '</span>', $html);
         $this->assertContains('<spanclass="purchased_items">', $html);
-        $this->assertContains('<spanclass="product_id">' . self::stripAllWhiteSpace($order->getItems()[1]->getProductId()) . '</span>', $html);
-        $this->assertContains('<spanclass="quantity">' . (int)$order->getItems()[1]->getQtyOrdered() . '</span>', $html);
-        $this->assertContains('<spanclass="name">' . self::stripAllWhiteSpace($order->getItems()[1]->getName()), $html); // Missing attributes
-        $this->assertContains('<spanclass="unit_price">' . sprintf("%.2f", $order->getItems()[1]->getPriceInclTax()) . '</span>', $html);
-        $this->assertContains('<spanclass="price_currency_code">' . $order->getOrderCurrencyCode() . '</span>', $html);
-        $this->assertContains('<spanclass="order_status_code">' . self::stripAllWhiteSpace($order->getStatus()) . '</span>', $html);
-        $this->assertContains('<spanclass="external_order_ref">' . $order->getIncrementId() . '</span>', $html);
+        $this->assertContains('<spanclass="product_id">' . self::stripAllWhiteSpace($this->order->getItems()[1]->getProductId()) . '</span>', $html);
+        $this->assertContains('<spanclass="quantity">' . (int)$this->order->getItems()[1]->getQtyOrdered() . '</span>', $html);
+        $this->assertContains('<spanclass="name">' . self::stripAllWhiteSpace($this->order->getItems()[1]->getName()), $html); // Missing attributes
+        $this->assertContains('<spanclass="unit_price">' . sprintf("%.2f", $this->order->getItems()[1]->getPriceInclTax()) . '</span>', $html);
+        $this->assertContains('<spanclass="price_currency_code">' . $this->order->getOrderCurrencyCode() . '</span>', $html);
+        $this->assertContains('<spanclass="order_status_code">' . self::stripAllWhiteSpace($this->order->getStatus()) . '</span>', $html);
+        $this->assertContains('<spanclass="external_order_ref">' . $this->order->getIncrementId() . '</span>', $html);
     }
 
     /**
      * Register order in session registry and returns the loaded object
-     *
+     * @param \Magento\Sales\Model\Order $order
      * @return \Magento\Sales\Model\Order
      */
-    private function registerOrder()
+    private function registerOrder(Order $order)
     {
-        /** @var \Magento\Sales\Model\Order $order */
-        $order = $this->getObjectManager()->get(\Magento\Sales\Model\Order::class);
-        // @TODO: Dynamically get the incrementId from already existing orders on the DB. If they don't exist, create
-        $order->loadByIncrementId('000000001');
         $this->setRegistry(self::ORDER_REGISTRY_KEY, $order);
         $this->checkoutSession->setLastRealOrderId($order->getIncrementId());
         $this->checkoutSession->setLastOrderId($order->getIncrementId());
         return $order;
     }
-
 }
 
