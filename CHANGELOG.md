@@ -1,5 +1,8 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 3.8.2
+* Fix redirect_uri for multi-store setup with different domains
+
 ### 3.8.1
 * Fix version comparison on data upgrading
 
