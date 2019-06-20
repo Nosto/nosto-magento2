@@ -91,6 +91,15 @@ abstract class TestCase extends PhpUnitTestCase
     }
 
     /**
+     * @param $path
+     */
+    protected function unsetRegistry($path)
+    {
+        $this->getObjectManager()->get('Magento\Framework\Registry')
+            ->unregister($path);
+    }
+
+    /**
      * Setup a test
      */
     public function setUp()
