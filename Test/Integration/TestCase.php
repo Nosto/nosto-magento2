@@ -108,14 +108,6 @@ abstract class TestCase extends PhpUnitTestCase
     }
 
     /**
-     * Tear down the test
-     */
-    public function tearDown()
-    {
-        // ToDo - clean up
-    }
-
-    /**
      * Configures the default configurations for running tests
      */
     private function init()

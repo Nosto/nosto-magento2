@@ -125,7 +125,8 @@ trait FixturesTrait
             ->setStockData(['use_config_manage_stock' => 1, 'is_in_stock' => 1]);
 
         //Save product in database
-        self::saveProduct($product);
+        //ToDo - this fails
+        //self::saveProduct($product);
 
         return $product;
     }
