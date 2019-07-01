@@ -51,9 +51,11 @@ use Nosto\Tagging\Model\Customer\Customer as NostoCustomer;
 use Nosto\Tagging\Model\Customer\Repository as CustomerRepository;
 use Nosto\Tagging\Model\Indexer\Product\Indexer;
 use Nosto\Tagging\Model\Order\Builder as NostoOrderBuilder;
+use Nosto\Tagging\Model\Order\Status\Builder as NostoOrderStatusBuilder;
 use Nosto\Object\Order\Order as NostoOrder;
 use Nosto\Tagging\Helper\Url as NostoHelperUrl;
 use Magento\Customer\Api\CustomerRepositoryInterface as MagentoCustomerRepository;
+use Nosto\Operation\OrderStatus;
 
 /**
  * Class Save
@@ -65,6 +67,7 @@ class Save implements ObserverInterface
     private $nostoHelperAccount;
     private $logger;
     private $nostoOrderBuilder;
+    private $nostoOrderStatusBuilder;
     private $moduleManager;
     private $customerRepository;
     private $nostoHelperScope;
@@ -83,6 +86,7 @@ class Save implements ObserverInterface
      * @param ModuleManager $moduleManager
      * @param CustomerRepository $customerRepository
      * @param NostoOrderBuilder $orderBuilder
+     * @param NostoOrderStatusBuilder $orderStatusBuilder
      * @param IndexerRegistry $indexerRegistry
      * @param NostoHelperUrl $nostoHelperUrl
      * @param MagentoCustomerRepository $magentoCustomerRepository
@@ -96,6 +100,7 @@ class Save implements ObserverInterface
         /** @noinspection PhpUndefinedClassInspection */
         CustomerRepository $customerRepository,
         NostoOrderBuilder $orderBuilder,
+        NostoOrderStatusBuilder $orderStatusBuilder,
         IndexerRegistry $indexerRegistry,
         NostoHelperUrl $nostoHelperUrl,
         MagentoCustomerRepository $magentoCustomerRepository
@@ -105,6 +110,7 @@ class Save implements ObserverInterface
         $this->logger = $logger;
         $this->moduleManager = $moduleManager;
         $this->nostoOrderBuilder = $orderBuilder;
+        $this->nostoOrderStatusBuilder = $orderStatusBuilder;
         $this->customerRepository = $customerRepository;
         $this->indexer = $indexerRegistry->get(Indexer::INDEXER_ID);
         $this->nostoHelperScope = $nostoHelperScope;
@@ -139,7 +145,6 @@ class Save implements ObserverInterface
                 return;
             }
             $store = $order->getStore();
-            $nostoOrder = $this->nostoOrderBuilder->build($order);
             $nostoAccount = $this->nostoHelperAccount->findAccount(
                 $store
             );
@@ -159,8 +164,12 @@ class Save implements ObserverInterface
                     $nostoCustomerId = $this->getCustomerReference($order);
                 }
                 $orderService = new OrderConfirm($nostoAccount, $this->nostoHelperUrl->getActiveDomain($store));
+                $nostoOrder = $this->nostoOrderBuilder->build($order);
+                $nostoOrderStatus = $this->nostoOrderStatusBuilder->build($order);
+                $orderOperation = new OrderStatus($nostoAccount, $nostoOrderStatus);
                 try {
                     $orderService->send($nostoOrder, $nostoCustomerId);
+                    $orderOperation->execute(); // Update the order status
                 } catch (\Exception $e) {
                     $this->logger->error(
                         sprintf(
