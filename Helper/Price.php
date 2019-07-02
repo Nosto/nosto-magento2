@@ -37,39 +37,33 @@
 namespace Nosto\Tagging\Helper;
 
 use Magento\Bundle\Model\Product\Price as BundlePrice;
+use Magento\Bundle\Model\Product\Type as BundleType;
 use Magento\Catalog\Helper\Data as CatalogHelper;
 use Magento\Catalog\Model\Product;
+use Magento\CatalogRule\Model\ResourceModel\RuleFactory;
+use Magento\ConfigurableProduct\Model\Product\Type\Configurable as ConfigurableType;
 use Magento\Customer\Model\GroupManagement;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 use Magento\Framework\Exception\LocalizedException;
-use Magento\Framework\Exception\NoSuchEntityException;
-use Magento\GroupedProduct\Model\Product\Type\Grouped as GroupedType;
-use Magento\ConfigurableProduct\Model\Product\Type\Configurable as ConfigurableType;
-use Magento\Bundle\Model\Product\Type as BundleType;
-use Magento\CatalogRule\Model\ResourceModel\RuleFactory;
 use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
+use Magento\GroupedProduct\Model\Product\Type\Grouped as GroupedType;
 use Magento\Store\Model\Store;
-use Nosto\NostoException;
-use Nosto\Tagging\Model\Product\Repository as NostoProductRepository;
 use Magento\Tax\Helper\Data as TaxHelper;
 use Magento\Tax\Model\Config as TaxConfig;
-use Magento\Framework\App\ResourceConnection;
+use Nosto\NostoException;
+use Nosto\Tagging\Model\Product\Repository as NostoProductRepository;
 
 /**
  * Price helper used for product price related tasks.
  */
 class Price extends AbstractHelper
 {
-    const CATALOG_PRODUCT_PRICE_INDEX_TABLE = "catalog_product_index_price";
-    const CATALOG_INVENTORY_STOCK_STATUS_TABLE = "cataloginventory_stock_status";
-
     private $catalogHelper;
     private $priceRuleFactory;
     private $localeDate;
     private $nostoProductRepository;
     private $taxHelper;
-    private $resourceConnection;
 
     /**
      * Constructor.
@@ -87,8 +81,7 @@ class Price extends AbstractHelper
         RuleFactory $ruleFactory,
         TimezoneInterface $localeDate,
         NostoProductRepository $nostoProductRepository,
-        TaxHelper $taxHelper,
-        ResourceConnection $resourceConnection
+        TaxHelper $taxHelper
     ) {
         parent::__construct($context);
         $this->catalogHelper = $catalogHelper;
@@ -96,7 +89,6 @@ class Price extends AbstractHelper
         $this->localeDate = $localeDate;
         $this->nostoProductRepository = $nostoProductRepository;
         $this->taxHelper = $taxHelper;
-        $this->resourceConnection = $resourceConnection;
     }
 
     /**
@@ -385,11 +377,11 @@ class Price extends AbstractHelper
         if (!$product->getTypeInstance() instanceof ConfigurableType) {
             return $price;
         }
-        $skuPrices = $this->getSkus($product, $store);
+        $skuPrices = $this->nostoProductRepository->getSkusAsArray($product, $store);
         if (count($skuPrices) === 0) {
             return $price;
         }
-        $priceColumn = array_column($skuPrices, "min_price");
+        $priceColumn = array_column($skuPrices, "final_price");
         array_multisort($priceColumn, SORT_ASC, $skuPrices);
         $minSku = reset($skuPrices);
         if ($finalPrice && isset($minSku['final_price'])) {
@@ -407,32 +399,5 @@ class Price extends AbstractHelper
             }
         }
         return $price;
-    }
-
-    /**
-     * Fetches prices for the SKUs
-     *
-     * @param Product $product
-     * @param Store $store
-     * @return array
-     */
-    public function getSkus(
-        Product $product,
-        Store $store
-    ): array {
-        $gid = GroupManagement::NOT_LOGGED_IN_ID;
-        $skuIds = $this->nostoProductRepository->getSkuIds($product);
-        $select = $this->resourceConnection->getConnection()->select()
-            ->from(["cpip" => $this->resourceConnection->getTableName(self::CATALOG_PRODUCT_PRICE_INDEX_TABLE)])
-            ->joinInner(
-                ["ciss" => $this->resourceConnection->getTableName(self::CATALOG_INVENTORY_STOCK_STATUS_TABLE)],
-                "cpip.entity_id=ciss.product_id"
-            )
-            ->where("ciss.stock_status = ?", 1)
-            ->where("cpip.website_id = ?", $store->getWebsiteId())
-            ->where("cpip.customer_group_id = ?", $gid)
-            ->where("cpip.entity_id IN(?)", $skuIds);
-
-        return $this->resourceConnection->getConnection()->fetchAll($select);
     }
 }

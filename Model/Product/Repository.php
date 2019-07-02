@@ -46,6 +46,8 @@ use Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable as
 use Magento\Framework\Api\FilterBuilder;
 use Magento\Framework\Api\Search\FilterGroupBuilder;
 use Magento\Framework\Api\SearchCriteriaBuilder;
+use Magento\Store\Model\Store;
+use Nosto\Tagging\Model\ResourceModel\Sku as NostoSkuResource;
 
 /**
  * Repository wrapper class for fetching products
@@ -65,6 +67,7 @@ class Repository
     private $filterBuilder;
     private $configurableType;
     private $productVisibility;
+    private $nostoSkuResource;
 
     /**
      * Constructor to instantiating the reindex command. This constructor uses proxy classes for
@@ -88,7 +91,8 @@ class Repository
         FilterBuilder $filterBuilder,
         FilterGroupBuilder $filterGroupBuilder,
         ConfigurableType $configurableType,
-        ProductVisibility $productVisibility
+        ProductVisibility $productVisibility,
+        NostoSkuResource $nostoSkuResource
     ) {
         $this->productRepository = $productRepository;
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;
@@ -97,6 +101,7 @@ class Repository
         $this->filterBuilder = $filterBuilder;
         $this->configurableType = $configurableType;
         $this->productVisibility = $productVisibility;
+        $this->nostoSkuResource = $nostoSkuResource;
     }
 
     /**
@@ -315,5 +320,18 @@ class Repository
     private function saveParentIdsToCacheByProductId($productId, $parentProductIds)
     {
         $this->parentProductIdCache[$productId] = $parentProductIds;
+    }
+
+    /**
+     * Gets the variations / SKUs of configurable product as an associative array.
+     *
+     * @param Product $product
+     * @param Store $store
+     * @return array
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
+    public function getSkusAsArray(Product $product, Store $store)
+    {
+        return $this->nostoSkuResource->getSkusByIds($store, $this->getSkuIds($product));
     }
 }
