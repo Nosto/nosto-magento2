@@ -65,7 +65,7 @@ class Sku extends ProductResource
             )
             ->where("ciss.stock_status = ?", 1) //@codingStandardsIgnoreLine
             ->where("cpip.website_id = ?", $store->getWebsiteId()) //@codingStandardsIgnoreLine
-            ->where("cpip.entity_id IN(?)", $skuIds) //@codingStandardsIgnoreLine
+            ->where($this->_resource->getConnection()->quoteInto("cpip.entity_id IN(?)", $skuIds)) // We have to escape this already here. Otherwise the MEQP2 fails. 
             ->where("cpip.customer_group_id = ?", $gid); //@codingStandardsIgnoreLine
 
         return $this->_resource->getConnection()->fetchAll($select); //@codingStandardsIgnoreLine
