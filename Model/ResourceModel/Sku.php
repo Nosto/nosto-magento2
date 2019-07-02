@@ -63,10 +63,10 @@ class Sku extends ProductResource
                 ["ciss" => $this->_resource->getTableName(self::CATALOG_INVENTORY_STOCK_STATUS_TABLE)],
                 "cpip.entity_id=ciss.product_id"
             )
-            ->where("ciss.stock_status = ?", 1)  //@codingStandardsIgnoreLine
+            ->where("ciss.stock_status = ?", 1) //@codingStandardsIgnoreLine
             ->where("cpip.website_id = ?", $store->getWebsiteId()) //@codingStandardsIgnoreLine
-            ->where("cpip.customer_group_id = ?", $gid) //@codingStandardsIgnoreLine
-            ->where("cpip.entity_id IN(?)", $skuIds); //@codingStandardsIgnoreLine
+            ->where("cpip.entity_id IN(?)", $skuIds) //@codingStandardsIgnoreLine
+            ->where("cpip.customer_group_id = ?", $gid); //@codingStandardsIgnoreLine
 
         return $this->_resource->getConnection()->fetchAll($select); //@codingStandardsIgnoreLine
     }
