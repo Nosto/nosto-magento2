@@ -56,18 +56,18 @@ class Sku extends ProductResource
         Store $store,
         array $skuIds
     ): array {
-        $gid = GroupManagement::NOT_LOGGED_IN_ID;
+        $gid = (string)GroupManagement::NOT_LOGGED_IN_ID;
         $select = $this->_resource->getConnection()->select()
             ->from(["cpip" => $this->_resource->getTableName(self::CATALOG_PRODUCT_PRICE_INDEX_TABLE)])
             ->joinInner(
                 ["ciss" => $this->_resource->getTableName(self::CATALOG_INVENTORY_STOCK_STATUS_TABLE)],
                 "cpip.entity_id=ciss.product_id"
             )
-            ->where("ciss.stock_status = ?", 1)
-            ->where("cpip.website_id = ?", $store->getWebsiteId())
-            ->where("cpip.customer_group_id = ?", $gid)
-            ->where("cpip.entity_id IN(?)", $skuIds);
+            ->where("ciss.stock_status = ?", 1)  //@codingStandardsIgnoreLine
+            ->where("cpip.website_id = ?", $store->getWebsiteId()) //@codingStandardsIgnoreLine
+            ->where("cpip.customer_group_id = ?", $gid) //@codingStandardsIgnoreLine
+            ->where("cpip.entity_id IN(?)", $skuIds); //@codingStandardsIgnoreLine
 
-        return $this->_resource->getConnection()->fetchAll($select);
+        return $this->_resource->getConnection()->fetchAll($select); //@codingStandardsIgnoreLine
     }
 }
