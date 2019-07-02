@@ -369,7 +369,6 @@ class Price extends AbstractHelper
         return $price;
     }
 
-
     /**
      * Calculates the price for Product of type Configurable
      *
@@ -382,10 +381,10 @@ class Price extends AbstractHelper
      */
     private function getConfigurableProductPrice(Product $product, $finalPrice, $inclTax, Store $store)
     {
+        $price = 0.00;
         if (!$product->getTypeInstance() instanceof ConfigurableType) {
             return $price;
         }
-        $price = 0.00;
         $skuPrices = $this->getSkus($product, $store);
         if (count($skuPrices) === 0) {
             return $price;
@@ -395,7 +394,7 @@ class Price extends AbstractHelper
         $minSku = reset($skuPrices);
         if ($finalPrice && isset($minSku['final_price'])) {
             $price = $minSku['final_price'];
-        } elseif(isset($minSku['final_price'])) {
+        } elseif (isset($minSku['final_price'])) {
             $price = $minSku['price'];
         }
         if ($inclTax === true) {
@@ -406,21 +405,18 @@ class Price extends AbstractHelper
             if ($skuProduct instanceof Product) {
                 $price = $this->getProductPrice($skuProduct, $store, true, $finalPrice);
             }
-
         }
-
         return $price;
     }
 
     /**
      * Fetches prices for the SKUs
      *
-     * @param \Magento\Catalog\Model\Product $product
-     * @param \Magento\Store\Model\Store $store
-     * @param \Magento\Customer\Model\Session $session
-     * @return array[]
+     * @param Product $product
+     * @param Store $store
+     * @return array
      */
-    protected function getSkus(
+    public function getSkus(
         Product $product,
         Store $store
     ): array {
