@@ -54,6 +54,8 @@ use Magento\Framework\Api\SearchCriteriaBuilder;
  */
 class Repository
 {
+    const MAX_SKUS = 5000;
+
     private $parentProductIdCache = [];
 
     private $productRepository;
@@ -235,18 +237,34 @@ class Repository
      */
     public function getSkus(Product $product)
     {
-        $skuIds = $this->configurableType->getChildrenIds($product->getId());
-        $products = [];
-        foreach ($skuIds as $batch => $skus) {
-            if (is_array($skus)) {
-                foreach ($skus as $skuId) {
-                    // We need to load these one by one in order to get correct stock / availability info
-                    $products[] = $this->productRepository->getById($skuId);
+        $skuIds = $this->getSkuIds($product);
+        $searchCriteria = $this->searchCriteriaBuilder
+            ->addFilter('entity_id', $skuIds, 'in')
+            ->create();
+        $products = $this->productRepository->getList($searchCriteria)->setTotalCount(self::MAX_SKUS);
+
+        return $products->getItems();
+    }
+
+    /**
+     * Returns the sku ids for a specific product
+     *
+     * @param Product $product
+     * @return array
+     */
+    public function getSkuIds(Product $product)
+    {
+        $batched = $this->configurableType->getChildrenIds($product->getId());
+        $flat = [];
+        foreach ($batched as $batch => $ids) {
+            if (is_array($ids)) {
+                foreach ($ids as $id) {
+                    $flat[$id] = $id;
                 }
             }
         }
 
-        return $products;
+        return $flat;
     }
 
     /**

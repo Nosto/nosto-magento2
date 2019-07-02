@@ -50,20 +50,26 @@ use Magento\Bundle\Model\Product\Type as BundleType;
 use Magento\CatalogRule\Model\ResourceModel\RuleFactory;
 use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
 use Magento\Store\Model\Store;
+use Nosto\NostoException;
 use Nosto\Tagging\Model\Product\Repository as NostoProductRepository;
 use Magento\Tax\Helper\Data as TaxHelper;
 use Magento\Tax\Model\Config as TaxConfig;
+use Magento\Framework\App\ResourceConnection;
 
 /**
  * Price helper used for product price related tasks.
  */
 class Price extends AbstractHelper
 {
+    const CATALOG_PRODUCT_PRICE_INDEX_TABLE = "catalog_product_index_price";
+    const CATALOG_INVENTORY_STOCK_STATUS_TABLE = "cataloginventory_stock_status";
+
     private $catalogHelper;
     private $priceRuleFactory;
     private $localeDate;
     private $nostoProductRepository;
     private $taxHelper;
+    private $resourceConnection;
 
     /**
      * Constructor.
@@ -81,7 +87,8 @@ class Price extends AbstractHelper
         RuleFactory $ruleFactory,
         TimezoneInterface $localeDate,
         NostoProductRepository $nostoProductRepository,
-        TaxHelper $taxHelper
+        TaxHelper $taxHelper,
+        ResourceConnection $resourceConnection
     ) {
         parent::__construct($context);
         $this->catalogHelper = $catalogHelper;
@@ -89,6 +96,7 @@ class Price extends AbstractHelper
         $this->localeDate = $localeDate;
         $this->nostoProductRepository = $nostoProductRepository;
         $this->taxHelper = $taxHelper;
+        $this->resourceConnection = $resourceConnection;
     }
 
     /**
@@ -171,15 +179,7 @@ class Price extends AbstractHelper
                     $price = $product->getPrice();
                 }
                 if ($inclTax) {
-                    $price = $this->catalogHelper->getTaxPrice(
-                        $product,
-                        $price,
-                        true,
-                        null,
-                        null,
-                        null,
-                        $store
-                    );
+                    $price = $this->addTaxes($product, $store, $price);
                 }
                 break;
         }
@@ -216,9 +216,58 @@ class Price extends AbstractHelper
      * @param Store $store
      * @return bool
      */
-    private function includeTaxes(Store $store)
+    public function includeTaxes(Store $store)
     {
         return ($this->taxHelper->getPriceDisplayType($store) === TaxConfig::DISPLAY_TYPE_INCLUDING_TAX);
+    }
+
+    /**
+     * Adds taxes to the product based on product and store
+     *
+     * @param Product $product
+     * @param Store $store
+     * @param $price
+     *
+     * @return float
+     */
+    public function addTaxes(Product $product, Store $store, $price)
+    {
+        return $this->catalogHelper->getTaxPrice(
+            $product,
+            $price,
+            true,
+            null,
+            null,
+            null,
+            $store
+        );
+    }
+
+    /**
+     * Adds taxes to the price if the store view is configured to display the prices with taxes.
+     * Otherwise returns the price without taxes.
+     *
+     * @param Product $product
+     * @param Store $store
+     * @param $price
+     *
+     * @return float
+     */
+    public function addTaxDisplayPriceIfApplicable(Product $product, Store $store, $price)
+    {
+        if ($this->includeTaxes($store)) {
+            return $this->catalogHelper->getTaxPrice(
+                $product,
+                $price,
+                true,
+                null,
+                null,
+                null,
+                $store
+            );
+        }
+
+        return $price;
     }
 
     /**
@@ -320,6 +369,7 @@ class Price extends AbstractHelper
         return $price;
     }
 
+
     /**
      * Calculates the price for Product of type Configurable
      *
@@ -328,52 +378,65 @@ class Price extends AbstractHelper
      * @param $inclTax
      * @param Store $store
      * @return float
-     * @throws LocalizedException
-     * @throws NoSuchEntityException
+     * @throws NostoException
      */
     private function getConfigurableProductPrice(Product $product, $finalPrice, $inclTax, Store $store)
     {
-        $price = 0.0;
         if (!$product->getTypeInstance() instanceof ConfigurableType) {
             return $price;
         }
-        $products = $this->nostoProductRepository->getSkus($product);
-        $skus = [];
-        $finalPrices = [];
-        $outOfStockFinalPrices = [];
-        foreach ($products as $sku) {
-            if (!$sku instanceof Product) {
-                continue;
-            }
-            if (!$sku->isDisabled() && $sku->isAvailable()) {
-                $finalPrices[$sku->getId()] = $this->getProductPrice(
-                    $sku,
-                    $store,
-                    $inclTax,
-                    true
-                );
-            } elseif (empty($finalPrices)) {
-                $outOfStockFinalPrices[$sku->getId()] = $this->getProductPrice(
-                    $sku,
-                    $store,
-                    $inclTax,
-                    true
-                );
-            }
-            $skus[$sku->getId()] = $sku;
+        $price = 0.00;
+        $skuPrices = $this->getSkus($product, $store);
+        if (count($skuPrices) === 0) {
+            return $price;
         }
-        // If none of the SKU's are available, use the unavailable ones
-        $finalPrices = empty($finalPrices) ? $outOfStockFinalPrices : $finalPrices;
-        asort($finalPrices, SORT_NUMERIC);
-        $keys = array_keys($finalPrices);
-        if (!empty($keys[0]) && !empty($skus[$keys[0]])) {
-            $simpleProduct = $skus[$keys[0]];
-            if ($finalPrice) {
-                $price = $this->getProductFinalDisplayPrice($simpleProduct, $store);
-            } else {
-                $price = $this->getProductDisplayPrice($simpleProduct, $store);
-            }
+        $priceColumn = array_column($skuPrices, "min_price");
+        array_multisort($priceColumn, SORT_ASC, $skuPrices);
+        $minSku = reset($skuPrices);
+        if ($finalPrice && isset($minSku['final_price'])) {
+            $price = $minSku['final_price'];
+        } elseif(isset($minSku['final_price'])) {
+            $price = $minSku['price'];
         }
+        if ($inclTax === true) {
+            $skuResult = $this->nostoProductRepository->getByIds([$minSku['product_id']]);
+            $skuProducts = $skuResult->getItems();
+            $skuProduct = reset($skuProducts);
+
+            if ($skuProduct instanceof Product) {
+                $price = $this->getProductPrice($skuProduct, $store, true, $finalPrice);
+            }
+
+        }
+
         return $price;
+    }
+
+    /**
+     * Fetches prices for the SKUs
+     *
+     * @param \Magento\Catalog\Model\Product $product
+     * @param \Magento\Store\Model\Store $store
+     * @param \Magento\Customer\Model\Session $session
+     * @return array[]
+     */
+    protected function getSkus(
+        Product $product,
+        Store $store
+    ): array {
+        $gid = GroupManagement::NOT_LOGGED_IN_ID;
+        $skuIds = $this->nostoProductRepository->getSkuIds($product);
+        $select = $this->resourceConnection->getConnection()->select()
+            ->from(["cpip" => $this->resourceConnection->getTableName(self::CATALOG_PRODUCT_PRICE_INDEX_TABLE)])
+            ->joinInner(
+                ["ciss" => $this->resourceConnection->getTableName(self::CATALOG_INVENTORY_STOCK_STATUS_TABLE)],
+                "cpip.entity_id=ciss.product_id"
+            )
+            ->where("ciss.stock_status = ?", 1)
+            ->where("cpip.website_id = ?", $store->getWebsiteId())
+            ->where("cpip.customer_group_id = ?", $gid)
+            ->where("cpip.entity_id IN(?)", $skuIds);
+
+        return $this->resourceConnection->getConnection()->fetchAll($select);
     }
 }
