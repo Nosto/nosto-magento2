@@ -39,7 +39,7 @@
     <preference for="Magento\Framework\Stdlib\CookieManagerInterface" type="Magento\Framework\Stdlib\Cookie\PhpCookieManager"/>
     <preference for="Nosto\Tagging\Api\Data\ProductQueueSearchResultsInterface" type="Nosto\Tagging\Model\Product\QueueSearchResults"/>
     <type name="Magento\Catalog\Model\ResourceModel\Product">
-        <plugin name="nostoProductIndexer" type="Nosto\Tagging\Model\Indexer\Product\Observer"/>
+        <plugin name="nostoProductObserver" type="Nosto\Tagging\Observer\Product\Sync"/>
     </type>
     <type name="Nosto\Tagging\Console\Command\NostoAccountConnectCommand">
         <arguments>

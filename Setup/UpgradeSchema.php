@@ -69,6 +69,10 @@ class UpgradeSchema extends Core implements UpgradeSchemaInterface
             $this->createProductQueueTable($setup);
         }
 
+        if (version_compare($fromVersion, '4.0.0-beta', '<')) {
+            $this->createProductIndexTable($setup);
+        }
+
         $setup->endSetup();
     }
 }

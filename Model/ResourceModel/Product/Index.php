@@ -34,29 +34,21 @@
  *
  */
 
-namespace Nosto\Tagging\Setup;
+namespace Nosto\Tagging\Model\ResourceModel\Product;
 
-use Magento\Framework\Setup\InstallSchemaInterface;
-use Magento\Framework\Setup\ModuleContextInterface;
-use Magento\Framework\Setup\SchemaSetupInterface;
+use Magento\Framework\Model\ResourceModel\Db\AbstractDb;
+use Nosto\Tagging\Api\Data\ProductIndexInterface;
 
-class InstallSchema extends Core implements InstallSchemaInterface
+class Index extends AbstractDb
 {
+    const TABLE_NAME = 'nosto_tagging_product_index';
     /**
-     * Installs DB schema for Nosto Tagging module
+     * Initialize resource model
      *
-     * @param SchemaSetupInterface $setup
-     * @param ModuleContextInterface $context
      * @return void
      */
-    public function install(// @codingStandardsIgnoreLine
-        SchemaSetupInterface $setup,
-        ModuleContextInterface $context
-    ) {
-        $setup->startSetup();
-        $this->createCustomerTable($setup);
-        $this->createProductQueueTable($setup);
-        $this->createProductIndexTable($setup);
-        $setup->endSetup();
+    public function _construct()
+    {
+        $this->_init(self::TABLE_NAME, ProductIndexInterface::ID);
     }
 }

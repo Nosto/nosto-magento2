@@ -34,29 +34,24 @@
  *
  */
 
-namespace Nosto\Tagging\Setup;
+namespace Nosto\Tagging\Model\ResourceModel\Product\Index;
 
-use Magento\Framework\Setup\InstallSchemaInterface;
-use Magento\Framework\Setup\ModuleContextInterface;
-use Magento\Framework\Setup\SchemaSetupInterface;
+use Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection;
+use Nosto\Tagging\Model\Product\Index;
+use Nosto\Tagging\Model\ResourceModel\Product\Index as ResourceModelIndex;
 
-class InstallSchema extends Core implements InstallSchemaInterface
+class Collection extends AbstractCollection
 {
     /**
-     * Installs DB schema for Nosto Tagging module
+     * Define resource model
      *
-     * @param SchemaSetupInterface $setup
-     * @param ModuleContextInterface $context
      * @return void
      */
-    public function install(// @codingStandardsIgnoreLine
-        SchemaSetupInterface $setup,
-        ModuleContextInterface $context
-    ) {
-        $setup->startSetup();
-        $this->createCustomerTable($setup);
-        $this->createProductQueueTable($setup);
-        $this->createProductIndexTable($setup);
-        $setup->endSetup();
+    public function _construct()
+    {
+        $this->_init(
+            Index::class,
+            ResourceModelIndex::class
+        );
     }
 }

@@ -34,29 +34,25 @@
  *
  */
 
-namespace Nosto\Tagging\Setup;
+namespace Nosto\Tagging\Model\Product;
 
-use Magento\Framework\Setup\InstallSchemaInterface;
-use Magento\Framework\Setup\ModuleContextInterface;
-use Magento\Framework\Setup\SchemaSetupInterface;
+use Magento\Framework\Api\Search\SearchResult;
+use Nosto\NostoException;
+use Nosto\Tagging\Api\Data\ProductIndexInterface;
+use Nosto\Tagging\Api\Data\ProductIndexSearchResultsInterface;
 
-class InstallSchema extends Core implements InstallSchemaInterface
+class IndexSearchResults extends SearchResult implements ProductIndexSearchResultsInterface // @codingStandardsIgnoreLine
 {
     /**
-     * Installs DB schema for Nosto Tagging module
-     *
-     * @param SchemaSetupInterface $setup
-     * @param ModuleContextInterface $context
-     * @return void
+     * @return ProductIndexInterface|null
      */
-    public function install(// @codingStandardsIgnoreLine
-        SchemaSetupInterface $setup,
-        ModuleContextInterface $context
-    ) {
-        $setup->startSetup();
-        $this->createCustomerTable($setup);
-        $this->createProductQueueTable($setup);
-        $this->createProductIndexTable($setup);
-        $setup->endSetup();
+    public function getFirstItem()
+    {
+        if ($this->getTotalCount() == 0) {
+            return null;
+        }
+
+        $items = $this->getItems();
+        return current($items);
     }
 }

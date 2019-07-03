@@ -65,6 +65,7 @@ class Review extends Base
             $product = $this->productRepository->getById($review->getEntityPkValue());
         }
 
+        $was = new Sync();
         return $product;
     }
 }

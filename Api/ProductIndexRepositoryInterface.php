@@ -34,29 +34,59 @@
  *
  */
 
-namespace Nosto\Tagging\Setup;
+namespace Nosto\Tagging\Api;
 
-use Magento\Framework\Setup\InstallSchemaInterface;
-use Magento\Framework\Setup\ModuleContextInterface;
-use Magento\Framework\Setup\SchemaSetupInterface;
+use Magento\Catalog\Api\Data\ProductInterface;
+use Magento\Store\Api\Data\StoreInterface;
+use Nosto\Tagging\Api\Data\ProductIndexInterface;
+use Nosto\Tagging\Api\Data\ProductIndexSearchResultsInterface;
 
-class InstallSchema extends Core implements InstallSchemaInterface
+interface ProductIndexRepositoryInterface extends BaseRepositoryInterface
 {
     /**
-     * Installs DB schema for Nosto Tagging module
+     * Save Queue entry
      *
-     * @param SchemaSetupInterface $setup
-     * @param ModuleContextInterface $context
-     * @return void
+     * @param ProductIndexInterface $productIndex
+     * @return ProductIndexInterface
      */
-    public function install(// @codingStandardsIgnoreLine
-        SchemaSetupInterface $setup,
-        ModuleContextInterface $context
-    ) {
-        $setup->startSetup();
-        $this->createCustomerTable($setup);
-        $this->createProductQueueTable($setup);
-        $this->createProductIndexTable($setup);
-        $setup->endSetup();
-    }
+    public function save(ProductIndexInterface $productIndex);
+
+    /**
+     * Delete productIndex
+     *
+     * @param ProductIndexInterface $productIndex
+     */
+    public function delete(ProductIndexInterface $productIndex);
+
+    /**
+     * Returns all entries by product id
+     *
+     * @param int $productId
+     * @return ProductIndexSearchResultsInterface
+     */
+    public function getByProductId($productId);
+
+    /**
+     * Get list of productIndexs
+     *
+     * @param int $pageSize
+     * @return ProductIndexSearchResultsInterface
+     */
+    public function getFirstPage($pageSize);
+
+    /**
+     * Returns entry by product and store
+     *
+     * @param ProductInterface $product
+     * @param StoreInterface $store
+     * @return ProductIndexInterface|null
+     */
+    public function getOneByProductAndStore(ProductInterface $product, StoreInterface $store);
+
+    /**
+     * Returns all entries in product queue
+     *
+     * @return ProductIndexSearchResultsInterface
+     */
+    public function getAll();
 }

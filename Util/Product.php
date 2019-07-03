@@ -34,29 +34,23 @@
  *
  */
 
-namespace Nosto\Tagging\Setup;
+namespace Nosto\Tagging\Util;
 
-use Magento\Framework\Setup\InstallSchemaInterface;
-use Magento\Framework\Setup\ModuleContextInterface;
-use Magento\Framework\Setup\SchemaSetupInterface;
+use Nosto\Helper\SerializationHelper;
+use Nosto\Types\Product\ProductInterface;
 
-class InstallSchema extends Core implements InstallSchemaInterface
+class Product
 {
     /**
-     * Installs DB schema for Nosto Tagging module
-     *
-     * @param SchemaSetupInterface $setup
-     * @param ModuleContextInterface $context
-     * @return void
+     * @param ProductInterface $product1
+     * @param ProductInterface $product2
+     * @return boolean
      */
-    public function install(// @codingStandardsIgnoreLine
-        SchemaSetupInterface $setup,
-        ModuleContextInterface $context
-    ) {
-        $setup->startSetup();
-        $this->createCustomerTable($setup);
-        $this->createProductQueueTable($setup);
-        $this->createProductIndexTable($setup);
-        $setup->endSetup();
+    public static function isEqual(ProductInterface $product1, ProductInterface $product2)
+    {
+        $product1string = SerializationHelper::serialize($product1);
+        $product2string = SerializationHelper::serialize($product2);
+
+        return $product1string === $product2string;
     }
 }

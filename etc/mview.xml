@@ -34,7 +34,7 @@
   ~
   -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Mview/etc/mview.xsd">
-    <view id="nosto_product_sync" class="Nosto\Tagging\Model\Indexer\Product\Indexer" group="indexer">
+    <view id="nosto_product_sync" class="Nosto\Tagging\Model\Indexer\Sync" group="indexer">
         <subscriptions>
             <!-- basic product information -->
             <table name="catalog_product_entity" entity_column="entity_id" />
@@ -68,4 +68,12 @@
             <table name="catalog_product_website" entity_column="product_id" />
         </subscriptions>
     </view>
+
+    <view id="nosto_product_index" class="Nosto\Tagging\Model\Indexer\Product" group="indexer">
+        <subscriptions>
+            <!-- basic product information -->
+            <table name="catalog_product_entity" entity_column="entity_id" />
+        </subscriptions>
+    </view>
+
 </config>

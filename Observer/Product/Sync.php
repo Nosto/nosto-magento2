@@ -34,18 +34,19 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Indexer\Product;
+namespace Nosto\Tagging\Observer\Product;
 
 use Closure;
-use Magento\Catalog\Model\ResourceModel\Product;
+use Magento\Catalog\Model\ResourceModel\Product as MagentoResourceProduct;
 use Magento\Framework\Indexer\IndexerRegistry;
 use Magento\Catalog\Model\Product\Action;
 use Magento\Framework\Model\AbstractModel;
+use Nosto\Tagging\Model\Indexer\Sync as NostoSyncIndexer;
 
-/**
+/**s
  * Observer class to handle update on save mode
  */
-class Observer
+class Sync
 {
     /**
      * @var \Magento\Framework\Indexer\IndexerInterface
@@ -58,17 +59,17 @@ class Observer
      */
     public function __construct(IndexerRegistry $indexerRegistry)
     {
-        $this->indexer = $indexerRegistry->get(Indexer::INDEXER_ID);
+        $this->indexer = $indexerRegistry->get(NostoSyncIndexer::INDEXER_ID);
     }
 
     /**
-     * @param Product $productResource
+     * @param MagentoResourceProduct $productResource
      * @param Closure $proceed
      * @param AbstractModel $product
      * @return mixed
      */
     public function aroundSave(
-        Product $productResource,
+        MagentoResourceProduct $productResource,
         Closure $proceed,
         AbstractModel $product
     ) {
@@ -88,7 +89,7 @@ class Observer
      * @return mixed
      */
     public function aroundDelete(
-        Product $productResource,
+        MagentoResourceProduct $productResource,
         Closure $proceed,
         AbstractModel $product
     ) {

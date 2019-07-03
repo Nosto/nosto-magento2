@@ -34,8 +34,12 @@
   ~
   -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Indexer/etc/indexer.xsd">
-    <indexer id="nosto_product_sync" view_id="nosto_product_sync" class="Nosto\Tagging\Model\Indexer\Product\Indexer">
+    <indexer id="nosto_product_sync" view_id="nosto_product_sync" class="Nosto\Tagging\Model\Indexer\Sync">
         <title translate="true">Nosto Product Update</title>
-        <description translate="true">Updates products to Nosto</description>
+        <description translate="true">Updates products to Nosto via API</description>
+    </indexer>
+    <indexer id="nosto_product_index" view_id="nosto_product_index" class="Nosto\Tagging\Model\Indexer\Product">
+        <title translate="true">Nosto Product Index</title>
+        <description translate="true">Index for Nosto product data</description>
     </indexer>
 </config>

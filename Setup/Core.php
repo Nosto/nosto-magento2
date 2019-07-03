@@ -40,9 +40,12 @@ use Magento\Framework\DB\Adapter\AdapterInterface;
 use Magento\Framework\DB\Ddl\Table;
 use Magento\Framework\Setup\SchemaSetupInterface;
 use Nosto\Tagging\Api\Data\CustomerInterface;
+use Nosto\Tagging\Api\Data\ProductIndexInterface;
 use Nosto\Tagging\Api\Data\ProductQueueInterface;
+use Nosto\Tagging\Model\Product\Index;
 use Nosto\Tagging\Model\ResourceModel\Customer;
 use Nosto\Tagging\Model\ResourceModel\Product\Queue as ProductQueue;
+use Nosto\Tagging\Model\ResourceModel\Product\Index as ProductIndex;
 
 abstract class Core
 {
@@ -151,6 +154,90 @@ abstract class Core
                     [ProductQueueInterface::PRODUCT_ID]
                 ),
                 [ProductQueueInterface::PRODUCT_ID],
+                ['type' => AdapterInterface::INDEX_TYPE_UNIQUE]
+            );
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $setup->getConnection()->createTable($table);
+    }
+    
+    public function createProductIndexTable(SchemaSetupInterface $setup)
+    {
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $table = $setup->getConnection()
+            ->newTable($setup->getTable(ProductIndex::TABLE_NAME))
+            ->addColumn(
+                ProductIndexInterface::ID,
+                Table::TYPE_INTEGER,
+                null,
+                [
+                    'auto_increment' => true,
+                    'nullable' => false,
+                    'identity' => true,
+                    'primary' => true,
+                    'unsigned' => true,
+                ],
+                'ID'
+            )
+            ->addColumn(
+                ProductIndexInterface::PRODUCT_ID,
+                Table::TYPE_INTEGER,
+                null,
+                [
+                    'nullable' => false,
+                    'unsigned' => true,
+                ],
+                'Product ID'
+            )
+            ->addColumn(
+                ProductIndexInterface::STORE_ID,
+                Table::TYPE_SMALLINT,
+                null,
+                [
+                    'nullable' => false,
+                    'unsigned' => true,
+                ],
+                'Store ID'
+            )
+            ->addColumn(
+                ProductIndexInterface::IN_SYNC,
+                Table::TYPE_BOOLEAN,
+                null,
+                [
+                    'nullable' => false,
+                    'unsigned' => true,
+                ],
+                'In Sync'
+            )
+            ->addColumn(
+                ProductIndexInterface::PRODUCT_DATA,
+                Table::TYPE_TEXT,
+                null,
+                [
+                    'nullable' => false,
+                    'unsigned' => true,
+                ],
+                'Product data'
+            )
+            ->addColumn(
+                ProductIndexInterface::CREATED_AT,
+                Table::TYPE_DATETIME,
+                null,
+                ['nullable' => false],
+                'Creation Time'
+            )
+            ->addColumn(
+                ProductIndexInterface::UPDATED_AT,
+                Table::TYPE_DATETIME,
+                null,
+                ['nullable' => true],
+                'Updated Time'
+            )
+            ->addIndex(
+                $setup->getIdxName(
+                    ProductIndex::TABLE_NAME,
+                    [ProductIndexInterface::PRODUCT_ID, ProductIndexInterface::STORE_ID]
+                ),
+                [ProductIndexInterface::PRODUCT_ID, ProductIndexInterface::STORE_ID],
                 ['type' => AdapterInterface::INDEX_TYPE_UNIQUE]
             );
         /** @noinspection PhpUnhandledExceptionInspection */
