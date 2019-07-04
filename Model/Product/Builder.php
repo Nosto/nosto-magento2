@@ -297,8 +297,6 @@ class Builder
                     $store
                 )->getCode()
             );
-
-
         } catch (\Exception $e) {
             $this->logger->exception($e);
         }
@@ -507,7 +505,7 @@ class Builder
             }
         } else {
             $productIndex = $this->nostoIndexFactory->create();
-            $productIndex->getCreatedAt(new \DateTime('now'));
+            $productIndex->setCreatedAt(new \DateTime('now'));
         }
 
         $productIndex->setInSync(false);

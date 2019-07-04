@@ -125,14 +125,14 @@ class IndexRepository implements ProductIndexRepositoryInterface
             ->addFilter(ProductIndexInterface::STORE_ID, $store->getId(), 'eq')
             ->create();
 
-        /* @var ProductIndexSearchResults $results */
+        /* @var IndexSearchResults $results */
         $results = $this->search($searchCriteria);
 
         return $results->getFirstItem();
     }
 
     /**
-     * Get list of productQueues
+     * Get list of productIndexes
      *
      * @param int $pageSize
      *
@@ -145,7 +145,7 @@ class IndexRepository implements ProductIndexRepositoryInterface
         $collection->setPageSize($pageSize);
         $collection->setCurPage(1);
         $collection->load();
-        /* @var QueueSearchResults $searchResults */
+        /* @var IndexSearchResults $searchResults */
         $searchResults = $this->indexCollectionFactory->create();
         $searchResults->setItems($collection->getItems());
         $searchResults->setTotalCount($collection->getSize());

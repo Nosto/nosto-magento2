@@ -150,7 +150,7 @@ interface ProductIndexInterface
     /**
      * Set product data
      *
-     * @param string $storeId
+     * @param string $productData
      * @return self
      */
     public function setProductData($productData);
@@ -189,10 +189,8 @@ interface ProductIndexInterface
     public function getNostoProduct(): NostoProductInterface;
 
     /**
-     * @param StoreInterface $product
+     * @param StoreInterface $store
      * @return self
      */
     public function setStore(StoreInterface $store);
-
-
 }
