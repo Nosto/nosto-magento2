@@ -209,6 +209,16 @@ abstract class Core
                 'In Sync'
             )
             ->addColumn(
+                ProductIndexInterface::IS_DIRTY,
+                Table::TYPE_BOOLEAN,
+                null,
+                [
+                    'nullable' => false,
+                    'unsigned' => true,
+                ],
+                'Is Dirty'
+            )
+            ->addColumn(
                 ProductIndexInterface::PRODUCT_DATA,
                 Table::TYPE_TEXT,
                 null,

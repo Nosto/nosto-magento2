@@ -72,6 +72,14 @@ class Index extends AbstractModel implements ProductIndexInterface
     /**
      * @inheritdoc
      */
+    public function getIsDirty()
+    {
+        return $this->getData(self::IS_DIRTY);
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function getStoreId()
     {
         return $this->getData(self::STORE_ID);
@@ -139,6 +147,14 @@ class Index extends AbstractModel implements ProductIndexInterface
     public function setInSync($inSync)
     {
         return $this->setData(self::IN_SYNC, $inSync);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setIsDirty($isDirty)
+    {
+        return $this->setData(self::IS_DIRTY, $isDirty);
     }
 
     /**

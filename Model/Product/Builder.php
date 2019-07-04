@@ -511,6 +511,7 @@ class Builder
         }
 
         $productIndex->setInSync(false);
+        $productIndex->setIsDirty(false);
         $productIndex->setUpdatedAt(new \DateTime('now'));
         $productIndex->setNostoProduct($nostoProduct);
         $productIndex->setMagentoProduct($product);

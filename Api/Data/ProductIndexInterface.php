@@ -47,6 +47,7 @@ interface ProductIndexInterface
     const CREATED_AT = 'created_at';
     const UPDATED_AT = 'updated_at';
     const IN_SYNC = 'in_sync';
+    const IS_DIRTY = 'is_dirty';
     const STORE_ID = 'store_id';
     const PRODUCT_DATA = 'product_data';
 
@@ -86,6 +87,13 @@ interface ProductIndexInterface
     public function getInSync();
 
     /**
+     * Get is dirty
+     *
+     * @return boolean
+     */
+    public function getIsDirty();
+
+    /**
      * Get store id
      *
      * @return int
@@ -122,6 +130,14 @@ interface ProductIndexInterface
      * @return self
      */
     public function setInSync($inSync);
+
+    /**
+     * Set is dirty to false or true
+     *
+     * @param boolean $isDirty
+     * @return self
+     */
+    public function setIsDirty($isDirty);
 
     /**
      * Set store id
