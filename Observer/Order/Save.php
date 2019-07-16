@@ -152,12 +152,12 @@ class Save implements ObserverInterface
                 $store
             );
             if ($nostoAccount !== null) {
-
                 //Check if order is new or updated
                 if ($order->getState() === Order::STATE_NEW &&
                     NostoTimeUtil::isUpdatedEqualToCreated(
                         $order->getCreatedAt(),
-                        $order->getUpdatedAt())
+                        $order->getUpdatedAt()
+                    )
                 ) {
                     $this->sendNewOrder($order, $nostoAccount, $store);
                 } else {

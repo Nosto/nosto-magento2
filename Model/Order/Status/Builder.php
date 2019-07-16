@@ -86,12 +86,16 @@ class Builder
                 $orderNumber,
                 $orderStatus,
                 $paymentProvider,
-                $updatedAt);
+                $updatedAt
+            );
         } catch (\Exception $e) {
             $this->logger->exception($e);
         }
 
-        $this->eventManager->dispatch('nosto_order_status_load_after', ['order' => $orderStatus, 'magentoOrder' => $order]);
+        $this->eventManager->dispatch(
+            'nosto_order_status_load_after',
+            ['order' => $orderStatus, 'magentoOrder' => $order]
+        );
 
         return $orderStatus;
     }
