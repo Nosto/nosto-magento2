@@ -158,7 +158,11 @@ class Builder
             if ($price->getCustomerGroupId() === $group->getId()
                 && $price->getValue() < $product->getFinalPrice()
             ) {
-                return $price->getValue();
+                return $this->nostoPriceHelper->addTaxDisplayPriceIfApplicable(
+                    $product,
+                    $store,
+                    $price->getValue()
+                );
             }
         }
 
@@ -170,7 +174,11 @@ class Builder
         );
 
         if ($rulePrice) {
-            return $rulePrice;
+            return $this->nostoPriceHelper->addTaxDisplayPriceIfApplicable(
+                $product,
+                $store,
+                $rulePrice
+            );
         }
 
         // If no tier prices, there's no customer group pricing for this product
