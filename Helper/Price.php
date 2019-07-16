@@ -37,22 +37,22 @@
 namespace Nosto\Tagging\Helper;
 
 use Magento\Bundle\Model\Product\Price as BundlePrice;
+use Magento\Bundle\Model\Product\Type as BundleType;
 use Magento\Catalog\Helper\Data as CatalogHelper;
 use Magento\Catalog\Model\Product;
+use Magento\CatalogRule\Model\ResourceModel\RuleFactory;
+use Magento\ConfigurableProduct\Model\Product\Type\Configurable as ConfigurableType;
 use Magento\Customer\Model\GroupManagement;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 use Magento\Framework\Exception\LocalizedException;
-use Magento\Framework\Exception\NoSuchEntityException;
-use Magento\GroupedProduct\Model\Product\Type\Grouped as GroupedType;
-use Magento\ConfigurableProduct\Model\Product\Type\Configurable as ConfigurableType;
-use Magento\Bundle\Model\Product\Type as BundleType;
-use Magento\CatalogRule\Model\ResourceModel\RuleFactory;
 use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
+use Magento\GroupedProduct\Model\Product\Type\Grouped as GroupedType;
 use Magento\Store\Model\Store;
-use Nosto\Tagging\Model\Product\Repository as NostoProductRepository;
 use Magento\Tax\Helper\Data as TaxHelper;
 use Magento\Tax\Model\Config as TaxConfig;
+use Magento\Framework\Exception\NoSuchEntityException;
+use Nosto\Tagging\Model\Product\Repository as NostoProductRepository;
 
 /**
  * Price helper used for product price related tasks.
@@ -171,15 +171,7 @@ class Price extends AbstractHelper
                     $price = $product->getPrice();
                 }
                 if ($inclTax) {
-                    $price = $this->catalogHelper->getTaxPrice(
-                        $product,
-                        $price,
-                        true,
-                        null,
-                        null,
-                        null,
-                        $store
-                    );
+                    $price = $this->addTaxes($product, $store, $price);
                 }
                 break;
         }
@@ -219,6 +211,55 @@ class Price extends AbstractHelper
     private function includeTaxes(Store $store)
     {
         return ($this->taxHelper->getPriceDisplayType($store) === TaxConfig::DISPLAY_TYPE_INCLUDING_TAX);
+    }
+
+    /**
+     * Adds taxes to the product based on product and store
+     *
+     * @param Product $product
+     * @param Store $store
+     * @param float $price
+     *
+     * @return float
+     */
+    public function addTaxes(Product $product, Store $store, $price)
+    {
+        return $this->catalogHelper->getTaxPrice(
+            $product,
+            $price,
+            true,
+            null,
+            null,
+            null,
+            $store
+        );
+    }
+
+    /**
+     * Adds taxes to the price if the store view is configured to display the prices with taxes.
+     * Otherwise returns the price without taxes.
+     *
+     * @param Product $product
+     * @param Store $store
+     * @param float $price
+     *
+     * @return float
+     */
+    public function addTaxDisplayPriceIfApplicable(Product $product, Store $store, $price)
+    {
+        if ($this->includeTaxes($store)) {
+            return $this->catalogHelper->getTaxPrice(
+                $product,
+                $price,
+                true,
+                null,
+                null,
+                null,
+                $store
+            );
+        }
+
+        return $price;
     }
 
     /**
@@ -333,45 +374,29 @@ class Price extends AbstractHelper
      */
     private function getConfigurableProductPrice(Product $product, $finalPrice, $inclTax, Store $store)
     {
-        $price = 0.0;
+        $price = 0.00;
         if (!$product->getTypeInstance() instanceof ConfigurableType) {
             return $price;
         }
-        $products = $this->nostoProductRepository->getSkus($product);
-        $skus = [];
-        $finalPrices = [];
-        $outOfStockFinalPrices = [];
-        foreach ($products as $sku) {
-            if (!$sku instanceof Product) {
-                continue;
-            }
-            if (!$sku->isDisabled() && $sku->isAvailable()) {
-                $finalPrices[$sku->getId()] = $this->getProductPrice(
-                    $sku,
-                    $store,
-                    $inclTax,
-                    true
-                );
-            } elseif (empty($finalPrices)) {
-                $outOfStockFinalPrices[$sku->getId()] = $this->getProductPrice(
-                    $sku,
-                    $store,
-                    $inclTax,
-                    true
-                );
-            }
-            $skus[$sku->getId()] = $sku;
+        $skuPrices = $this->nostoProductRepository->getSkusAsArray($product, $store);
+        if (count($skuPrices) === 0) {
+            return $price;
         }
-        // If none of the SKU's are available, use the unavailable ones
-        $finalPrices = empty($finalPrices) ? $outOfStockFinalPrices : $finalPrices;
-        asort($finalPrices, SORT_NUMERIC);
-        $keys = array_keys($finalPrices);
-        if (!empty($keys[0]) && !empty($skus[$keys[0]])) {
-            $simpleProduct = $skus[$keys[0]];
-            if ($finalPrice) {
-                $price = $this->getProductFinalDisplayPrice($simpleProduct, $store);
-            } else {
-                $price = $this->getProductDisplayPrice($simpleProduct, $store);
+        $priceColumn = array_column($skuPrices, "final_price");
+        array_multisort($priceColumn, SORT_ASC, $skuPrices);
+        $minSku = reset($skuPrices);
+        if ($finalPrice && isset($minSku['final_price'])) {
+            $price = $minSku['final_price'];
+        } elseif (isset($minSku['final_price'])) {
+            $price = $minSku['price'];
+        }
+        if ($inclTax === true) {
+            $skuResult = $this->nostoProductRepository->getByIds([$minSku['product_id']]);
+            $skuProducts = $skuResult->getItems();
+            $skuProduct = reset($skuProducts);
+
+            if ($skuProduct instanceof Product) {
+                $price = $this->getProductPrice($skuProduct, $store, true, $finalPrice);
             }
         }
         return $price;
