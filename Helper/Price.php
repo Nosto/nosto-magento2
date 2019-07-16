@@ -51,7 +51,7 @@ use Magento\GroupedProduct\Model\Product\Type\Grouped as GroupedType;
 use Magento\Store\Model\Store;
 use Magento\Tax\Helper\Data as TaxHelper;
 use Magento\Tax\Model\Config as TaxConfig;
-use Nosto\NostoException;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Nosto\Tagging\Model\Product\Repository as NostoProductRepository;
 
 /**
@@ -208,7 +208,7 @@ class Price extends AbstractHelper
      * @param Store $store
      * @return bool
      */
-    public function includeTaxes(Store $store)
+    private function includeTaxes(Store $store)
     {
         return ($this->taxHelper->getPriceDisplayType($store) === TaxConfig::DISPLAY_TYPE_INCLUDING_TAX);
     }
@@ -218,7 +218,7 @@ class Price extends AbstractHelper
      *
      * @param Product $product
      * @param Store $store
-     * @param $price
+     * @param float $price
      *
      * @return float
      */
@@ -241,7 +241,7 @@ class Price extends AbstractHelper
      *
      * @param Product $product
      * @param Store $store
-     * @param $price
+     * @param float $price
      *
      * @return float
      */
@@ -369,7 +369,8 @@ class Price extends AbstractHelper
      * @param $inclTax
      * @param Store $store
      * @return float
-     * @throws NostoException
+     * @throws LocalizedException
+     * @throws NoSuchEntityException
      */
     private function getConfigurableProductPrice(Product $product, $finalPrice, $inclTax, Store $store)
     {
