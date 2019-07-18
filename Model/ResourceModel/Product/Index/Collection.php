@@ -37,7 +37,7 @@
 namespace Nosto\Tagging\Model\ResourceModel\Product\Index;
 
 use Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection;
-use Nosto\Tagging\Model\Product\Index;
+use Nosto\Tagging\Model\Product\Index\Index;
 use Nosto\Tagging\Model\ResourceModel\Product\Index as ResourceModelIndex;
 
 class Collection extends AbstractCollection

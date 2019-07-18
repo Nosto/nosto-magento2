@@ -34,66 +34,64 @@
  *
  */
 
-namespace Nosto\Tagging\Api;
+namespace Nosto\Tagging\Model\Product\Index;
 
-use Magento\Catalog\Api\Data\ProductInterface;
-use Magento\Store\Api\Data\StoreInterface;
+use Magento\Catalog\Model\Product;
+use Magento\Store\Model\Store;
+use Nosto\Tagging\Model\Product\BuilderTrait;
+use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
+use Nosto\Tagging\Model\Product\Index\IndexFactory;
 use Nosto\Tagging\Api\Data\ProductIndexInterface;
-use Nosto\Tagging\Api\Data\ProductIndexSearchResultsInterface;
 
-interface ProductIndexRepositoryInterface extends BaseRepositoryInterface
+class Builder
 {
-    /**
-     * Save Queue entry
-     *
-     * @param ProductIndexInterface $productIndex
-     * @return ProductIndexInterface
-     */
-    public function save(ProductIndexInterface $productIndex);
+    use BuilderTrait {
+        BuilderTrait::__construct as builderTraitConstruct; // @codingStandardsIgnoreLine
+    }
+
+    /** @var IndexFactory  */
+    private $nostoIndexFactory;
+
+    /** @var NostoProductBuilder */
+    private $nostoProductBuilder;
+
+    const NOSTO_SCOPE_API = 'api';
 
     /**
-     * Delete productIndex
-     *
-     * @param ProductIndexInterface $productIndex
+     * Builder constructor.
+     * @param IndexFactory $nostoIndexFactory
+     * @param NostoProductBuilder $nostoProductBuilder
      */
-    public function delete(ProductIndexInterface $productIndex);
+    public function __construct(
+        IndexFactory $nostoIndexFactory,
+        NostoProductBuilder $nostoProductBuilder
+    ) {
+        $this->nostoIndexFactory = $nostoIndexFactory;
+        $this->nostoProductBuilder = $nostoProductBuilder;
+    }
 
     /**
-     * Returns all entries by product id
-     *
-     * @param int $productId
-     * @return ProductIndexSearchResultsInterface
+     * @param Product $product
+     * @param Store $store
+     * @param string $nostoScope
+     * @return Index
+     * @throws \Exception
      */
-    public function getByProductId($productId);
+    public function build(
+        Product $product,
+        Store $store,
+        $nostoScope = self::NOSTO_SCOPE_API
+    ) {
+        $nostoProduct = $this->nostoProductBuilder->build($product, $store, $nostoScope);
+        $productIndex = $this->nostoIndexFactory->create();
+        $productIndex->setCreatedAt(new \DateTime('now'));
+        $productIndex->setInSync(false);
+        $productIndex->setIsDirty(false);
+        $productIndex->setUpdatedAt(new \DateTime('now'));
+        $productIndex->setNostoProduct($nostoProduct);
+        $productIndex->setMagentoProduct($product);
+        $productIndex->setStore($store);
 
-    /**
-     * Get list of productIndexs
-     *
-     * @param int $pageSize
-     * @return ProductIndexSearchResultsInterface
-     */
-    public function getFirstPage($pageSize);
-
-    /**
-     * Returns entry by product and store
-     *
-     * @param ProductInterface $product
-     * @param StoreInterface $store
-     * @return ProductIndexInterface|null
-     */
-    public function getOneByProductAndStore(ProductInterface $product, StoreInterface $store);
-
-    /**
-     * @param int $productId
-     * @param int $storeId
-     * @return ProductIndexInterface|null
-     */
-    public function getByProductIdAndStoreId(int $productId, int $storeId);
-
-    /**
-     * Returns all entries in product queue
-     *
-     * @return ProductIndexSearchResultsInterface
-     */
-    public function getAll();
+        return $productIndex;
+    }
 }

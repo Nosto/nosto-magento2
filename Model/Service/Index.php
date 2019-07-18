@@ -34,66 +34,54 @@
  *
  */
 
-namespace Nosto\Tagging\Api;
+namespace Nosto\Tagging\Model\Service;
 
-use Magento\Catalog\Api\Data\ProductInterface;
-use Magento\Store\Api\Data\StoreInterface;
+use Magento\Store\Model\Store;
+use Nosto\Tagging\Model\Product\Index\IndexRepository;
 use Nosto\Tagging\Api\Data\ProductIndexInterface;
-use Nosto\Tagging\Api\Data\ProductIndexSearchResultsInterface;
+use Nosto\Tagging\Model\Product\Index\Builder;
+use Magento\Catalog\Model\ProductRepository;
 
-interface ProductIndexRepositoryInterface extends BaseRepositoryInterface
+class Index
 {
-    /**
-     * Save Queue entry
-     *
-     * @param ProductIndexInterface $productIndex
-     * @return ProductIndexInterface
-     */
-    public function save(ProductIndexInterface $productIndex);
+    /** @var IndexRepository */
+    private $indexRepository;
+
+    /** @var Builder */
+    private $indexBuilder;
+
+    /** @var ProductRepository */
+    private $productRepository;
 
     /**
-     * Delete productIndex
-     *
-     * @param ProductIndexInterface $productIndex
+     * Index constructor.
+     * @param IndexRepository $indexRepository
+     * @param Builder $indexBuilder
+     * @param ProductRepository $productRepository
      */
-    public function delete(ProductIndexInterface $productIndex);
-
-    /**
-     * Returns all entries by product id
-     *
-     * @param int $productId
-     * @return ProductIndexSearchResultsInterface
-     */
-    public function getByProductId($productId);
-
-    /**
-     * Get list of productIndexs
-     *
-     * @param int $pageSize
-     * @return ProductIndexSearchResultsInterface
-     */
-    public function getFirstPage($pageSize);
-
-    /**
-     * Returns entry by product and store
-     *
-     * @param ProductInterface $product
-     * @param StoreInterface $store
-     * @return ProductIndexInterface|null
-     */
-    public function getOneByProductAndStore(ProductInterface $product, StoreInterface $store);
+    public function __construct(IndexRepository $indexRepository, Builder $indexBuilder, ProductRepository $productRepository)
+    {
+        $this->indexRepository = $indexRepository;
+        $this->indexBuilder = $indexBuilder;
+        $this->productRepository = $productRepository;
+    }
 
     /**
      * @param int $productId
-     * @param int $storeId
-     * @return ProductIndexInterface|null
+     * @param Store $store
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     * @throws \Exception
      */
-    public function getByProductIdAndStoreId(int $productId, int $storeId);
-
-    /**
-     * Returns all entries in product queue
-     *
-     * @return ProductIndexSearchResultsInterface
-     */
-    public function getAll();
+    public function handleProductChange(int $productId, Store $store)
+    {
+        $indexedProduct = $this->indexRepository->getByProductIdAndStoreId($productId, $store->getId());
+        if ($indexedProduct instanceof ProductIndexInterface) {
+            $indexedProduct->setIsDirty(true);
+            $indexedProduct->setUpdatedAt(new \DateTime('now'));
+        } else {
+            $product = $this->productRepository->getById($productId);
+            $indexedProduct = $this->indexBuilder->build($product, $store);
+        }
+        $this->indexRepository->save($indexedProduct);
+    }
 }

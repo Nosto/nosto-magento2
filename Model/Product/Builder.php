@@ -46,7 +46,6 @@ use Magento\Review\Model\ReviewFactory;
 use Magento\Store\Model\Store;
 use Nosto\NostoException;
 use Nosto\Object\Product\Product as NostoProduct;
-use Nosto\Tagging\Api\Data\ProductIndexInterface;
 use Nosto\Tagging\Helper\Currency as CurrencyHelper;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Price as NostoPriceHelper;
@@ -61,9 +60,6 @@ use Nosto\Object\ModelFilter;
 use Nosto\Tagging\Model\Product\Variation\Collection as PriceVariationCollection;
 use Nosto\Tagging\Helper\Variation as NostoVariationHelper;
 use Nosto\Tagging\Helper\Ratings as NostoRating;
-use Nosto\Tagging\Model\Product\IndexRepository;
-use Nosto\Tagging\Model\Product\Index;
-use Nosto\Tagging\Util\Product as ProductUtil;
 
 class Builder
 {
@@ -92,8 +88,6 @@ class Builder
     private $categoryRepository;
     private $attributeSetRepository;
     private $nostoRatingHelper;
-    private $nostoProductIndexRepository;
-    private $nostoIndexFactory;
 
     /**
      * Builder constructor.
@@ -135,9 +129,7 @@ class Builder
         StockRegistryInterface $stockRegistry,
         PriceVariationCollection $priceVariationCollection,
         NostoVariationHelper $nostoVariationHelper,
-        NostoRating $nostoRatingHelper,
-        IndexRepository $nostoProductIndexRepository,
-        IndexFactory $nostoIndexFactory
+        NostoRating $nostoRatingHelper
     ) {
         $this->nostoDataHelper = $nostoHelperData;
         $this->nostoPriceHelper = $priceHelper;
@@ -161,8 +153,6 @@ class Builder
         $this->priceVariationCollection = $priceVariationCollection;
         $this->nostoVariationHelper = $nostoVariationHelper;
         $this->nostoRatingHelper = $nostoRatingHelper;
-        $this->nostoProductIndexRepository = $nostoProductIndexRepository;
-        $this->nostoIndexFactory = $nostoIndexFactory;
     }
 
     /**
@@ -479,43 +469,6 @@ class Builder
         $nostoProduct = new NostoProduct();
         $nostoProduct->setProductId((string)$productId);
         $nostoProduct->setAvailability(ProductInterface::DISCONTINUED);
-
-        return $nostoProduct;
-    }
-
-    /**
-     * ToDo - this should be moved to somewhere else - perhaps some kind of index service
-     *
-     * @param Product $product
-     * @param Store $store
-     * @param string $nostoScope
-     * @return NostoProduct|null
-     * @throws \Exception
-     */
-    public function buildAndIndex(
-        Product $product,
-        Store $store,
-        $nostoScope = self::NOSTO_SCOPE_API
-    ) {
-        $nostoProduct = $this->build($product, $store, $nostoScope);
-        $productIndex = $this->nostoProductIndexRepository->getOneByProductAndStore($product, $store);
-        if ($productIndex instanceof ProductIndexInterface) {
-            if (ProductUtil::isEqual($productIndex->getNostoProduct(), $nostoProduct)) {
-                return $nostoProduct;
-            }
-        } else {
-            $productIndex = $this->nostoIndexFactory->create();
-            $productIndex->setCreatedAt(new \DateTime('now'));
-        }
-
-        $productIndex->setInSync(false);
-        $productIndex->setIsDirty(false);
-        $productIndex->setUpdatedAt(new \DateTime('now'));
-        $productIndex->setNostoProduct($nostoProduct);
-        $productIndex->setMagentoProduct($product);
-        $productIndex->setStore($store);
-
-        $this->nostoProductIndexRepository->save($productIndex);
 
         return $nostoProduct;
     }

@@ -34,7 +34,7 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Product;
+namespace Nosto\Tagging\Model\Product\Index;
 
 use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Framework\Api\SearchCriteriaBuilder;
@@ -130,6 +130,23 @@ class IndexRepository implements ProductIndexRepositoryInterface
 
         return $results->getFirstItem();
     }
+
+    /**
+     * @inheritdoc
+     */
+    public function getByProductIdAndStoreId(int $productId, int $storeId)
+    {
+        $searchCriteria = $this->searchCriteriaBuilder
+            ->addFilter(ProductIndexInterface::PRODUCT_ID, $productId, 'eq')
+            ->addFilter(ProductIndexInterface::STORE_ID, $storeId, 'eq')
+            ->create();
+
+        /* @var IndexSearchResults $results */
+        $results = $this->search($searchCriteria);
+
+        return $results->getFirstItem();
+    }
+
 
     /**
      * Get list of productIndexes
