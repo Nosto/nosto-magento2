@@ -41,6 +41,10 @@ use Nosto\Tagging\Model\Product\Index\IndexRepository;
 use Nosto\Tagging\Api\Data\ProductIndexInterface;
 use Nosto\Tagging\Model\Product\Index\Builder;
 use Magento\Catalog\Model\ProductRepository;
+use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
+use Nosto\Tagging\Helper\Scope as NostoHelperScope;
+use Nosto\Tagging\Util\Product as ProductUtil;
+use Nosto\Types\Product\ProductInterface as NostoProductInterface;
 
 class Index
 {
@@ -53,20 +57,35 @@ class Index
     /** @var ProductRepository */
     private $productRepository;
 
+    /** @var NostoProductBuilder */
+    private $nostoProductBuilder;
+
+    /** @var NostoHelperScope */
+    private $nostoHelperScope;
+
     /**
      * Index constructor.
      * @param IndexRepository $indexRepository
      * @param Builder $indexBuilder
      * @param ProductRepository $productRepository
+     * @param NostoProductBuilder $nostoProductBuilder
+     * @param NostoHelperScope $nostoHelperScope
      */
-    public function __construct(IndexRepository $indexRepository, Builder $indexBuilder, ProductRepository $productRepository)
+    public function __construct(IndexRepository $indexRepository, Builder $indexBuilder, ProductRepository $productRepository, NostoProductBuilder $nostoProductBuilder, NostoHelperScope $nostoHelperScope)
     {
         $this->indexRepository = $indexRepository;
         $this->indexBuilder = $indexBuilder;
         $this->productRepository = $productRepository;
+        $this->nostoProductBuilder = $nostoProductBuilder;
+        $this->nostoHelperScope = $nostoHelperScope;
     }
 
+
     /**
+     * Handles only the first step of indexing
+     * Create one if row does not exits
+     * Else set row to dirty
+     *
      * @param int $productId
      * @param Store $store
      * @throws \Magento\Framework\Exception\NoSuchEntityException
@@ -83,5 +102,36 @@ class Index
             $indexedProduct = $this->indexBuilder->build($product, $store);
         }
         $this->indexRepository->save($indexedProduct);
+    }
+
+    /**
+     * @param int $rowId
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
+    public function handleDirtyProduct(int $rowId)
+    {
+        $productIndex = $this->indexRepository->getById($rowId);
+        if ($productIndex instanceof ProductIndexInterface &&
+            $productIndex->getIsDirty() === true) {
+            $this->rebuildDirtyProduct($productIndex);
+        }
+    }
+
+    /**
+     * @param ProductIndexInterface $productIndex
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
+    private function rebuildDirtyProduct(ProductIndexInterface $productIndex)
+    {
+        $magentoProduct = $this->productRepository->getById($productIndex->getProductId());
+        $store = $this->nostoHelperScope->getStore($productIndex->getStoreId());
+        $nostoProduct = $this->nostoProductBuilder->build($magentoProduct, $store);
+        if ($nostoProduct instanceof NostoProductInterface &&
+            !ProductUtil::isEqual($nostoProduct, $productIndex->getNostoProduct())) {
+            $productIndex->setNostoProduct($nostoProduct);
+            $productIndex->setInSync(false);
+        }
+        $productIndex->setIsDirty(false);
+        $this->indexRepository->save($productIndex);
     }
 }

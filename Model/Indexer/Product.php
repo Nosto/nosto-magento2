@@ -51,6 +51,7 @@ use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Magento\Framework\Phrase;
 use Magento\Framework\Exception\LocalizedException;
 use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
+use Nosto\Tagging\Model\Service\Index as NostoIndexService;
 
 /**
  * An indexer for Nosto product sync
@@ -60,21 +61,40 @@ class Product implements IndexerActionInterface, MviewActionInterface
     const BATCH_SIZE = 1000;
     const INDEXER_ID = 'nosto_product_index';
 
+    /** @var ProductService  */
     private $productService;
+
+    /** @var NostoHelperData  */
     private $dataHelper;
+
+    /** @var NostoLogger  */
     private $logger;
+
+    /** @var ProductCollectionFactory  */
     private $productCollectionFactory;
+
+    /** @var NostoQueueRepository  */
     private $nostoQueueRepository;
+
+    /** @var NostoHelperAccount\Proxy  */
     private $nostoHelperAccount;
+
+    /** @var NostoProductBuilder  */
     private $nostoProductBuilder;
 
+    /** @var NostoIndexService */
+    private $nostoServiceIndex;
+
     /**
+     * Product constructor.
      * @param ProductService $productService
      * @param NostoHelperData $dataHelper
      * @param NostoLogger $logger
      * @param ProductCollectionFactory $productCollectionFactory
      * @param NostoQueueRepository $nostoQueueRepository
      * @param NostoHelperAccount\Proxy $nostoHelperAccount
+     * @param NostoProductBuilder $nostoProductBuilder
+     * @param NostoIndexService $nostoServiceIndex
      */
     public function __construct(
         ProductService $productService,
@@ -82,8 +102,9 @@ class Product implements IndexerActionInterface, MviewActionInterface
         NostoLogger $logger,
         ProductCollectionFactory $productCollectionFactory,
         NostoQueueRepository $nostoQueueRepository,
-        NostoHelperAccount\Proxy $nostoHelperAccount,
-        NostoProductBuilder $nostoProductBuilder
+        NostoHelperAccount $nostoHelperAccount,
+        NostoProductBuilder $nostoProductBuilder,
+        NostoIndexService $nostoServiceIndex
     ) {
         $this->productService = $productService;
         $this->dataHelper = $dataHelper;
@@ -92,6 +113,7 @@ class Product implements IndexerActionInterface, MviewActionInterface
         $this->nostoQueueRepository = $nostoQueueRepository;
         $this->nostoHelperAccount = $nostoHelperAccount;
         $this->nostoProductBuilder = $nostoProductBuilder;
+        $this->nostoServiceIndex = $nostoServiceIndex;
     }
 
     /**
@@ -100,41 +122,41 @@ class Product implements IndexerActionInterface, MviewActionInterface
      */
     public function executeFull()
     {
-        $storesWithNosto = $this->nostoHelperAccount->getStoresWithNosto();
-        if (!empty($storesWithNosto)) {
-            foreach ($storesWithNosto as $store) {
-                $this->logger->info(sprintf('Starting to process store %s', $store->getCode()));
-                $productCollection = $this->getProductCollection();
-                $productCollection->setPageSize(self::BATCH_SIZE);
-                $lastPage = $productCollection->getLastPageNumber();
-                $pageNumber = 1;
-                do {
-                    $productCollection->setCurPage($pageNumber);
-                    $productCollection->addAttributeToSelect('id')
-                        ->addAttributeToFilter(
-                            'status',
-                            ['eq' => Status::STATUS_ENABLED]
-                        )->addAttributeToFilter(
-                            'visibility',
-                            ['neq' => Visibility::VISIBILITY_NOT_VISIBLE]
-                        );
-
-                    foreach ($productCollection->getItems() as $product) {
-                        $this->nostoProductBuilder->buildAndIndex($product, $store);
-                    }
-                    $pageNumber++;
-
-                    //Todo - remove the break
-                    if ($pageNumber > 1) {
-                        break;
-                    }
-                } while ($pageNumber <= $lastPage);
-            }
-        } else {
-            $this->logger->info(
-                'Nosto account is not connected into any store view'
-            );
-        }
+//        $storesWithNosto = $this->nostoHelperAccount->getStoresWithNosto();
+//        if (!empty($storesWithNosto)) {
+//            foreach ($storesWithNosto as $store) {
+//                $this->logger->info(sprintf('Starting to process store %s', $store->getCode()));
+//                $productCollection = $this->getProductCollection();
+//                $productCollection->setPageSize(self::BATCH_SIZE);
+//                $lastPage = $productCollection->getLastPageNumber();
+//                $pageNumber = 1;
+//                do {
+//                    $productCollection->setCurPage($pageNumber);
+//                    $productCollection->addAttributeToSelect('id')
+//                        ->addAttributeToFilter(
+//                            'status',
+//                            ['eq' => Status::STATUS_ENABLED]
+//                        )->addAttributeToFilter(
+//                            'visibility',
+//                            ['neq' => Visibility::VISIBILITY_NOT_VISIBLE]
+//                        );
+//
+//                    foreach ($productCollection->getItems() as $product) {
+//                        $this->nostoProductBuilder->buildAndIndex($product, $store);
+//                    }
+//                    $pageNumber++;
+//
+//                    //Todo - remove the break
+//                    if ($pageNumber > 1) {
+//                        break;
+//                    }
+//                } while ($pageNumber <= $lastPage);
+//            }
+//        } else {
+//            $this->logger->info(
+//                'Nosto account is not connected into any store view'
+//            );
+//        }
     }
 
     /**
@@ -161,7 +183,16 @@ class Product implements IndexerActionInterface, MviewActionInterface
      */
     public function execute($ids)
     {
-        // ToDo
+        $storesWithNosto = $this->nostoHelperAccount->getStoresWithNosto();
+        if (!empty($storesWithNosto)) {
+            foreach ($ids as $id) {
+                $this->nostoServiceIndex->handleDirtyProduct($id);
+            }
+        } else {
+            $this->logger->info(
+                'Nosto account is not connected into any store view. Nothing to index.'
+            );
+        }
     }
 
     /**

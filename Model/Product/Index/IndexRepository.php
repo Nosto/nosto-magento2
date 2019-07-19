@@ -52,7 +52,7 @@ use Nosto\Tagging\Model\ResourceModel\Product\Index\CollectionFactory as IndexCo
 
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Util\Repository as RepositoryUtil;
-use Nosto\Tagging\Model\Product\IndexSearchResults;
+use Nosto\Tagging\Model\Product\Index\IndexSearchResults;
 use Magento\Framework\Api\Search\SearchResult;
 
 class IndexRepository implements ProductIndexRepositoryInterface
@@ -130,6 +130,22 @@ class IndexRepository implements ProductIndexRepositoryInterface
 
         return $results->getFirstItem();
     }
+
+    /**
+     * @inheritdoc
+     */
+    public function getById($id)
+    {
+        $searchCriteria = $this->searchCriteriaBuilder
+            ->addFilter(ProductIndexInterface::ID, $id, 'eq')
+            ->create();
+
+        /* @var IndexSearchResults $results */
+        $results = $this->search($searchCriteria);
+
+        return $results->getFirstItem();
+    }
+
 
     /**
      * @inheritdoc

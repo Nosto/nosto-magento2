@@ -67,6 +67,14 @@ interface ProductIndexRepositoryInterface extends BaseRepositoryInterface
     public function getByProductId($productId);
 
     /**
+     * Returns row from id
+     *
+     * @param int $id
+     * @return ProductIndexInterface
+     */
+    public function getById($id);
+
+    /**
      * Get list of productIndexs
      *
      * @param int $pageSize

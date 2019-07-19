@@ -51,6 +51,8 @@ use Nosto\Tagging\Model\Service\Index as NostoServiceIndex;
  */
 class Dirty implements IndexerActionInterface, MviewActionInterface
 {
+    const INDEXER_ID = 'nosto_index_product_dirty';
+
     /** @var NostoHelperAccount */
     private $nostoHelperAccount;
 
@@ -100,7 +102,7 @@ class Dirty implements IndexerActionInterface, MviewActionInterface
 
     public function executeFull()
     {
-        $this->execute(null);
+        $this->execute([]);
     }
 
     public function executeList(array $ids)
