@@ -72,14 +72,14 @@
     <view id="nosto_index_product_product" class="Nosto\Tagging\Model\Indexer\Product" group="indexer">
         <subscriptions>
             <!-- basic product information -->
-            <table name="nosto_tagging_product_index" entity_column="is_dirty" />
+            <table name="nosto_tagging_product_index" entity_column="id" />
         </subscriptions>
     </view>
 
     <view id="nosto_index_product_sync" class="Nosto\Tagging\Model\Indexer\Sync" group="indexer">
         <subscriptions>
             <!-- basic product information -->
-            <table name="nosto_tagging_product_index" entity_column="in_sync" />
+            <table name="nosto_tagging_product_index" entity_column="id" />
         </subscriptions>
     </view>
 

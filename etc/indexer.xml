@@ -35,15 +35,15 @@
   -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Indexer/etc/indexer.xsd">
     <indexer id="nosto_index_product_dirty" view_id="nosto_index_product_dirty" class="Nosto\Tagging\Model\Indexer\Dirty">
-        <title translate="true">Nosto Product Index</title>
+        <title translate="true">Nosto Product Dirty</title>
         <description translate="true">Detects changes on product data</description>
     </indexer>
     <indexer id="nosto_index_product_product" view_id="nosto_index_product_product" class="Nosto\Tagging\Model\Indexer\Product">
-        <title translate="true">Nosto Product Index</title>
+        <title translate="true">Nosto Product Index Data </title>
         <description translate="true">Generate changed products</description>
     </indexer>
     <indexer id="nosto_index_product_sync" view_id="nosto_index_product_sync" class="Nosto\Tagging\Model\Indexer\Sync">
-        <title translate="true">Nosto Product Update</title>
+        <title translate="true">Nosto Product Sync</title>
         <description translate="true">Updates products to Nosto via API</description>
     </indexer>
 </config>
