@@ -36,22 +36,20 @@
 
 namespace Nosto\Tagging\Model\Indexer;
 
-use Magento\Catalog\Model\Product\Attribute\Source\Status;
-use Magento\Catalog\Model\Product\Visibility;
-use Magento\Catalog\Model\ResourceModel\Product\Collection as ProductCollection;
 use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductCollectionFactory;
 use Magento\Framework\Indexer\ActionInterface as IndexerActionInterface;
 use Magento\Framework\Mview\ActionInterface as MviewActionInterface;
+use Nosto\Nosto;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Product\QueueRepository as NostoQueueRepository;
 use Nosto\Tagging\Model\Product\Service as ProductService;
-use Nosto\Exception\MemoryOutOfBoundsException;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
-use Magento\Framework\Phrase;
-use Magento\Framework\Exception\LocalizedException;
 use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
 use Nosto\Tagging\Model\Service\Index as NostoIndexService;
+use Nosto\Tagging\Model\ResourceModel\Product\Index\Collection as IndexCollection;
+use Nosto\Tagging\Model\ResourceModel\Product\Index\CollectionFactory as IndexCollectionFactory;
+use Nosto\Tagging\Model\Product\Index\Index as NostoIndex;
 
 /**
  * An indexer for Nosto product sync
@@ -85,6 +83,9 @@ class Product implements IndexerActionInterface, MviewActionInterface
     /** @var NostoIndexService */
     private $nostoServiceIndex;
 
+    /** @var IndexCollectionFactory */
+    private $indexCollectionFactory;
+
     /**
      * Product constructor.
      * @param ProductService $productService
@@ -95,17 +96,10 @@ class Product implements IndexerActionInterface, MviewActionInterface
      * @param NostoHelperAccount\Proxy $nostoHelperAccount
      * @param NostoProductBuilder $nostoProductBuilder
      * @param NostoIndexService $nostoServiceIndex
+     * @param IndexCollectionFactory $indexCollectionFactory
      */
-    public function __construct(
-        ProductService $productService,
-        NostoHelperData $dataHelper,
-        NostoLogger $logger,
-        ProductCollectionFactory $productCollectionFactory,
-        NostoQueueRepository $nostoQueueRepository,
-        NostoHelperAccount $nostoHelperAccount,
-        NostoProductBuilder $nostoProductBuilder,
-        NostoIndexService $nostoServiceIndex
-    ) {
+    public function __construct(ProductService $productService, NostoHelperData $dataHelper, NostoLogger $logger, ProductCollectionFactory $productCollectionFactory, NostoQueueRepository $nostoQueueRepository, NostoHelperAccount\Proxy $nostoHelperAccount, NostoProductBuilder $nostoProductBuilder, NostoIndexService $nostoServiceIndex, IndexCollectionFactory $indexCollectionFactory)
+    {
         $this->productService = $productService;
         $this->dataHelper = $dataHelper;
         $this->logger = $logger;
@@ -114,6 +108,7 @@ class Product implements IndexerActionInterface, MviewActionInterface
         $this->nostoHelperAccount = $nostoHelperAccount;
         $this->nostoProductBuilder = $nostoProductBuilder;
         $this->nostoServiceIndex = $nostoServiceIndex;
+        $this->indexCollectionFactory = $indexCollectionFactory;
     }
 
     /**
@@ -122,41 +117,20 @@ class Product implements IndexerActionInterface, MviewActionInterface
      */
     public function executeFull()
     {
-//        $storesWithNosto = $this->nostoHelperAccount->getStoresWithNosto();
-//        if (!empty($storesWithNosto)) {
-//            foreach ($storesWithNosto as $store) {
-//                $this->logger->info(sprintf('Starting to process store %s', $store->getCode()));
-//                $productCollection = $this->getProductCollection();
-//                $productCollection->setPageSize(self::BATCH_SIZE);
-//                $lastPage = $productCollection->getLastPageNumber();
-//                $pageNumber = 1;
-//                do {
-//                    $productCollection->setCurPage($pageNumber);
-//                    $productCollection->addAttributeToSelect('id')
-//                        ->addAttributeToFilter(
-//                            'status',
-//                            ['eq' => Status::STATUS_ENABLED]
-//                        )->addAttributeToFilter(
-//                            'visibility',
-//                            ['neq' => Visibility::VISIBILITY_NOT_VISIBLE]
-//                        );
-//
-//                    foreach ($productCollection->getItems() as $product) {
-//                        $this->nostoProductBuilder->buildAndIndex($product, $store);
-//                    }
-//                    $pageNumber++;
-//
-//                    //Todo - remove the break
-//                    if ($pageNumber > 1) {
-//                        break;
-//                    }
-//                } while ($pageNumber <= $lastPage);
-//            }
-//        } else {
-//            $this->logger->info(
-//                'Nosto account is not connected into any store view'
-//            );
-//        }
+        $indexCollection = $this->getIndexCollection();
+        $indexCollection->setPageSize(self::BATCH_SIZE);
+        $lastPage = $indexCollection->getLastPageNumber();
+        $page = 1;
+        while ($page <= $lastPage) {
+            $indexCollection->setCurPage($page);
+            $indexCollection->addAttributeToSelect(NostoIndex::ID)
+                ->addAttributeToFilter(NostoIndex::IS_DIRTY ,['eq' => NostoIndex::VALUE_IS_DIRTY]);
+
+            foreach ($indexCollection->getItems() as $indexedProduct) {
+                $this->nostoServiceIndex->handleDirtyProduct($indexedProduct[0]);
+            }
+            $page++;
+        }
     }
 
     /**
@@ -196,10 +170,10 @@ class Product implements IndexerActionInterface, MviewActionInterface
     }
 
     /**
-     * @return ProductCollection
+     * @return IndexCollection
      */
-    private function getProductCollection()
+    private function getIndexCollection()
     {
-        return $this->productCollectionFactory->create();
+        return $this->indexCollectionFactory->create();
     }
 }

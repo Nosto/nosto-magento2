@@ -50,6 +50,7 @@ use Nosto\Exception\MemoryOutOfBoundsException;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Magento\Framework\Phrase;
 use Magento\Framework\Exception\LocalizedException;
+use Nosto\Tagging\Model\Service\Index as NostoServiceIndex;
 
 /**
  * An indexer for Nosto product sync
@@ -57,14 +58,29 @@ use Magento\Framework\Exception\LocalizedException;
 class Sync implements IndexerActionInterface, MviewActionInterface
 {
     const BATCH_SIZE = 1000;
-    const INDEXER_ID = 'nosto_product_sync';
+    const INDEXER_ID = 'nosto_index_product_sync';
+
+    /** @var ProductService */
 
     private $productService;
+
+    /** @var NostoHelperData */
     private $dataHelper;
+
+    /** @var NostoLogger */
     private $logger;
+
+    /** @var ProductCollectionFactory */
     private $productCollectionFactory;
+
+    /** @var NostoQueueRepository */
     private $nostoQueueRepository;
+
+    /** @var NostoHelperAccount */
     private $nostoHelperAccount;
+
+    /** @var NostoServiceIndex */
+    private $nostoServiceIndex;
 
     /**
      * @param ProductService $productService
@@ -80,7 +96,8 @@ class Sync implements IndexerActionInterface, MviewActionInterface
         NostoLogger $logger,
         ProductCollectionFactory $productCollectionFactory,
         NostoQueueRepository $nostoQueueRepository,
-        NostoHelperAccount\Proxy $nostoHelperAccount
+        NostoHelperAccount $nostoHelperAccount,
+        NostoServiceIndex $nostoServiceIndex
     ) {
         $this->productService = $productService;
         $this->dataHelper = $dataHelper;
@@ -88,6 +105,7 @@ class Sync implements IndexerActionInterface, MviewActionInterface
         $this->productCollectionFactory = $productCollectionFactory;
         $this->nostoQueueRepository = $nostoQueueRepository;
         $this->nostoHelperAccount = $nostoHelperAccount;
+        $this->nostoServiceIndex = $nostoServiceIndex;
     }
 
     /**
@@ -96,50 +114,7 @@ class Sync implements IndexerActionInterface, MviewActionInterface
      */
     public function executeFull()
     {
-        if ($this->dataHelper->isFullReindexEnabled()
-            && !empty($this->nostoHelperAccount->getStoresWithNosto())
-        ) {
-            // Truncate queue table before first execution if they have leftover products
-            if ($this->nostoQueueRepository->isQueuePopulated()) {
-                $this->nostoQueueRepository->truncate();
-            }
-            $productCollection = $this->getProductCollection();
-            $productCollection->setPageSize(self::BATCH_SIZE);
-            $lastPage = $productCollection->getLastPageNumber();
-            $pageNumber = 1;
-            do {
-                $productCollection->setCurPage($pageNumber);
-                $productCollection->addAttributeToSelect('id')
-                    ->addAttributeToFilter(
-                        'status',
-                        ['eq'=> Status::STATUS_ENABLED]
-                    )->addAttributeToFilter(
-                        'visibility',
-                        ['neq'=> Visibility::VISIBILITY_NOT_VISIBLE]
-                    );
-                $products = [];
-                foreach ($productCollection->getItems() as $product) {
-                    $products[$product->getId()] = $product->getTypeId();
-                }
-                $productCollection->clear();
-                $this->logger->logWithMemoryConsumption(
-                    sprintf('Indexing from executeFull, remaining pages: %d', $lastPage - $pageNumber)
-                );
-                try {
-                    $this->productService->update($products);
-                } catch (MemoryOutOfBoundsException $e) {
-                    throw new LocalizedException(new Phrase($e->getMessage()));
-                }
-                $this->productService->processed = [];
-                $products = null;
-                $pageNumber++;
-            } while ($pageNumber <= $lastPage);
-            $productCollection = null;
-        } else {
-            $this->logger->info(
-                'Skip full reindex since full reindex is disabled or Nosto account is not connected into any store view'
-            );
-        }
+        $this->execute([33]);
     }
 
     /**
@@ -166,11 +141,10 @@ class Sync implements IndexerActionInterface, MviewActionInterface
      */
     public function execute($ids)
     {
-        if (!empty($this->nostoHelperAccount->getStoresWithNosto())) {
-            $this->logger->logWithMemoryConsumption(sprintf('Got %d ids from CL', count($ids)));
-            $splitted = array_chunk(array_unique($ids), self::BATCH_SIZE);
-            foreach ($splitted as $batch) {
-                $this->productService->updateByIds($batch);
+        $storesWithNosto = $this->nostoHelperAccount->getStoresWithNosto();
+        if (!empty($storesWithNosto)) {
+            foreach ($ids as $id) {
+                $this->nostoServiceIndex->handleProductSync($id);
             }
         } else {
             $this->logger->info(
