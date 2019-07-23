@@ -45,6 +45,9 @@ use Magento\Catalog\Api\Data\ProductInterface as MagentoProductInterface;
 
 class Index extends AbstractModel implements ProductIndexInterface
 {
+    const VALUE_IS_DIRTY = "1";
+    const VALUE_NOT_IN_SYNC = "0";
+
     /**
      * @inheritdoc
      */

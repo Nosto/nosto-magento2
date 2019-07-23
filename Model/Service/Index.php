@@ -43,11 +43,19 @@ use Nosto\Tagging\Model\Product\Index\Builder;
 use Magento\Catalog\Model\ProductRepository;
 use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
+use Nosto\Tagging\Helper\Account as NostoHelperAccount;
+use Nosto\Tagging\Helper\Url as NostoHelperUrl;
 use Nosto\Tagging\Util\Product as ProductUtil;
 use Nosto\Types\Product\ProductInterface as NostoProductInterface;
+use Nosto\Operation\UpsertProduct;
+use Nosto\Tagging\Logger\Logger as NostoLogger;
+use Nosto\Tagging\Model\Product\Repository as NostoProductRepository;
 
 class Index
 {
+    const IS_DIRTY = "1";
+    const NOT_IN_SYNC = "0";
+
     /** @var IndexRepository */
     private $indexRepository;
 
@@ -60,8 +68,20 @@ class Index
     /** @var NostoProductBuilder */
     private $nostoProductBuilder;
 
+    /** @var NostoProductRepository */
+    private $nostoProductRepository;
+
     /** @var NostoHelperScope */
     private $nostoHelperScope;
+
+    /** @var NostoHelperAccount */
+    private $nostoHelperAccount;
+
+    /** @var NostoHelperUrl */
+    private $nostoHelperUrl;
+
+    /** @var NostoLogger */
+    private $logger;
 
     /**
      * Index constructor.
@@ -69,17 +89,24 @@ class Index
      * @param Builder $indexBuilder
      * @param ProductRepository $productRepository
      * @param NostoProductBuilder $nostoProductBuilder
+     * @param NostoProductRepository $nostoProductRepository
      * @param NostoHelperScope $nostoHelperScope
+     * @param NostoHelperAccount $nostoHelperAccount
+     * @param NostoHelperUrl $nostoHelperUrl
+     * @param NostoLogger $logger
      */
-    public function __construct(IndexRepository $indexRepository, Builder $indexBuilder, ProductRepository $productRepository, NostoProductBuilder $nostoProductBuilder, NostoHelperScope $nostoHelperScope)
+    public function __construct(IndexRepository $indexRepository, Builder $indexBuilder, ProductRepository $productRepository, NostoProductBuilder $nostoProductBuilder, NostoProductRepository $nostoProductRepository, NostoHelperScope $nostoHelperScope, NostoHelperAccount $nostoHelperAccount, NostoHelperUrl $nostoHelperUrl, NostoLogger $logger)
     {
         $this->indexRepository = $indexRepository;
         $this->indexBuilder = $indexBuilder;
         $this->productRepository = $productRepository;
         $this->nostoProductBuilder = $nostoProductBuilder;
+        $this->nostoProductRepository = $nostoProductRepository;
         $this->nostoHelperScope = $nostoHelperScope;
+        $this->nostoHelperAccount = $nostoHelperAccount;
+        $this->nostoHelperUrl = $nostoHelperUrl;
+        $this->logger = $logger;
     }
-
 
     /**
      * Handles only the first step of indexing
@@ -88,20 +115,39 @@ class Index
      *
      * @param int $productId
      * @param Store $store
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
-     * @throws \Exception
      */
     public function handleProductChange(int $productId, Store $store)
     {
-        $indexedProduct = $this->indexRepository->getByProductIdAndStoreId($productId, $store->getId());
-        if ($indexedProduct instanceof ProductIndexInterface) {
-            $indexedProduct->setIsDirty(true);
-            $indexedProduct->setUpdatedAt(new \DateTime('now'));
-        } else {
-            $product = $this->productRepository->getById($productId);
-            $indexedProduct = $this->indexBuilder->build($product, $store);
+        try {
+            $finalProductIds = $this->getFinalProductsIds($productId);
+        } catch (\Exception $e) {
+            $this->logger->exception($e);
         }
-        $this->indexRepository->save($indexedProduct);
+
+        foreach ($finalProductIds as $finalProductId) {
+            $this->updateOrCreateDirtyEntity($finalProductId, $store);
+        }
+    }
+
+    /**
+     * @param int $productId
+     * @param Store $store
+     */
+    private function updateOrCreateDirtyEntity(int $productId, Store $store)
+    {
+        $indexedProduct = $this->indexRepository->getByProductIdAndStoreId($productId, $store->getId());
+        try {
+            if ($indexedProduct instanceof ProductIndexInterface) {
+                $indexedProduct->setIsDirty(true);
+                $indexedProduct->setUpdatedAt(new \DateTime('now'));
+            } else {
+                $product = $this->productRepository->getById($productId);
+                $indexedProduct = $this->indexBuilder->build($product, $store);
+            }
+            $this->indexRepository->save($indexedProduct);
+        } catch (\Exception $e) {
+            $this->logger->exception($e);
+        }
     }
 
     /**
@@ -112,8 +158,22 @@ class Index
     {
         $productIndex = $this->indexRepository->getById($rowId);
         if ($productIndex instanceof ProductIndexInterface &&
-            $productIndex->getIsDirty() === true) {
+            $productIndex->getIsDirty() === self::IS_DIRTY) {
             $this->rebuildDirtyProduct($productIndex);
+        }
+    }
+
+    /**
+     * Handles sync of product by sending it to Nosto through API
+     *
+     * @param int $rowId
+     */
+    public function handleProductSync(int $rowId)
+    {
+        $productIndex = $this->indexRepository->getById($rowId);
+        if ($productIndex instanceof ProductIndexInterface &&
+            $productIndex->getInSync() === self::NOT_IN_SYNC) {
+            $this->syncProductToNosto($productIndex);
         }
     }
 
@@ -125,13 +185,52 @@ class Index
     {
         $magentoProduct = $this->productRepository->getById($productIndex->getProductId());
         $store = $this->nostoHelperScope->getStore($productIndex->getStoreId());
-        $nostoProduct = $this->nostoProductBuilder->build($magentoProduct, $store);
-        if ($nostoProduct instanceof NostoProductInterface &&
-            !ProductUtil::isEqual($nostoProduct, $productIndex->getNostoProduct())) {
-            $productIndex->setNostoProduct($nostoProduct);
-            $productIndex->setInSync(false);
+        try {
+            $nostoProduct = $this->nostoProductBuilder->build($magentoProduct, $store);
+            if ($nostoProduct instanceof NostoProductInterface &&
+                !ProductUtil::isEqual($nostoProduct, $productIndex->getNostoProduct())) {
+                $productIndex->setNostoProduct($nostoProduct);
+                $productIndex->setInSync(false);
+            }
+            $productIndex->setIsDirty(false);
+            $this->indexRepository->save($productIndex);
+        } catch (\Exception $e) {
+            $this->logger->exception($e);
         }
-        $productIndex->setIsDirty(false);
-        $this->indexRepository->save($productIndex);
+    }
+
+    /**
+     * Get parent product ids
+     *
+     * @param int $productId
+     * @return array|int
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
+    private function getFinalProductsIds($productId)
+    {
+        $magentoProduct = $this->productRepository->getById($productId);
+        $parentIds = $this->nostoProductRepository->resolveParentProductIds($magentoProduct);
+        if ($parentIds === null) {
+            return $productId;
+        }
+        return array_unique($parentIds);
+    }
+
+    /**
+     * @param ProductIndexInterface $productIndex
+     */
+    private function syncProductToNosto(ProductIndexInterface $productIndex)
+    {
+        $store = $this->nostoHelperScope->getStore($productIndex->getStoreId());
+        $account = $this->nostoHelperAccount->findAccount($store);
+        try {
+            $op = new UpsertProduct($account, $this->nostoHelperUrl->getActiveDomain($store));
+            $op->addProduct($productIndex->getNostoProduct());
+            $op->upsert();
+            $productIndex->setInSync(true);
+            $this->indexRepository->save($productIndex);
+        } catch (\Exception $e) {
+            $this->logger->exception($e);
+        }
     }
 }

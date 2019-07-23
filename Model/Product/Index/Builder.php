@@ -41,7 +41,8 @@ use Magento\Store\Model\Store;
 use Nosto\Tagging\Model\Product\BuilderTrait;
 use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
 use Nosto\Tagging\Model\Product\Index\IndexFactory;
-use Nosto\Tagging\Api\Data\ProductIndexInterface;
+use Nosto\Object\Product\Product as NostoProduct;
+use Nosto\NostoException;
 
 class Builder
 {
@@ -83,15 +84,20 @@ class Builder
         $nostoScope = self::NOSTO_SCOPE_API
     ) {
         $nostoProduct = $this->nostoProductBuilder->build($product, $store, $nostoScope);
-        $productIndex = $this->nostoIndexFactory->create();
-        $productIndex->setCreatedAt(new \DateTime('now'));
-        $productIndex->setInSync(false);
-        $productIndex->setIsDirty(false);
-        $productIndex->setUpdatedAt(new \DateTime('now'));
-        $productIndex->setNostoProduct($nostoProduct);
-        $productIndex->setMagentoProduct($product);
-        $productIndex->setStore($store);
+        if ($nostoProduct instanceof NostoProduct) {
+            $productIndex = $this->nostoIndexFactory->create();
+            $productIndex->setProductId($nostoProduct->getProductId());
+            $productIndex->setCreatedAt(new \DateTime('now'));
+            $productIndex->setInSync(false);
+            $productIndex->setIsDirty(false);
+            $productIndex->setUpdatedAt(new \DateTime('now'));
+            $productIndex->setNostoProduct($nostoProduct);
+            $productIndex->setStore($store);
+            return $productIndex;
+        }
 
-        return $productIndex;
+        throw new NostoException(
+            'Could not build Nosto product for id '.$product->getId()
+        );
     }
 }
