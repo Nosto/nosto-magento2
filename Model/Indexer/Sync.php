@@ -36,9 +36,6 @@
 
 namespace Nosto\Tagging\Model\Indexer;
 
-use Magento\Catalog\Model\Product\Attribute\Source\Status;
-use Magento\Catalog\Model\Product\Visibility;
-use Magento\Catalog\Model\ResourceModel\Product\Collection as ProductCollection;
 use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductCollectionFactory;
 use Magento\Framework\Indexer\ActionInterface as IndexerActionInterface;
 use Magento\Framework\Mview\ActionInterface as MviewActionInterface;
@@ -46,11 +43,11 @@ use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Product\QueueRepository as NostoQueueRepository;
 use Nosto\Tagging\Model\Product\Service as ProductService;
-use Nosto\Exception\MemoryOutOfBoundsException;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
-use Magento\Framework\Phrase;
-use Magento\Framework\Exception\LocalizedException;
+use Nosto\Tagging\Model\ResourceModel\Product\Index\Collection as IndexCollection;
+use Nosto\Tagging\Model\ResourceModel\Product\Index\CollectionFactory as IndexCollectionFactory;
 use Nosto\Tagging\Model\Service\Index as NostoServiceIndex;
+use Nosto\Tagging\Model\Product\Index\Index as NostoIndex;
 
 /**
  * An indexer for Nosto product sync
@@ -82,23 +79,22 @@ class Sync implements IndexerActionInterface, MviewActionInterface
     /** @var NostoServiceIndex */
     private $nostoServiceIndex;
 
+    /** @var IndexCollectionFactory */
+    private $indexCollectionFactory;
+
     /**
+     * Sync constructor.
      * @param ProductService $productService
      * @param NostoHelperData $dataHelper
      * @param NostoLogger $logger
      * @param ProductCollectionFactory $productCollectionFactory
      * @param NostoQueueRepository $nostoQueueRepository
-     * @param NostoHelperAccount\Proxy $nostoHelperAccount
+     * @param NostoHelperAccount $nostoHelperAccount
+     * @param NostoServiceIndex $nostoServiceIndex
+     * @param IndexCollectionFactory $indexCollectionFactory
      */
-    public function __construct(
-        ProductService $productService,
-        NostoHelperData $dataHelper,
-        NostoLogger $logger,
-        ProductCollectionFactory $productCollectionFactory,
-        NostoQueueRepository $nostoQueueRepository,
-        NostoHelperAccount $nostoHelperAccount,
-        NostoServiceIndex $nostoServiceIndex
-    ) {
+    public function __construct(ProductService $productService, NostoHelperData $dataHelper, NostoLogger $logger, ProductCollectionFactory $productCollectionFactory, NostoQueueRepository $nostoQueueRepository, NostoHelperAccount $nostoHelperAccount, NostoServiceIndex $nostoServiceIndex, IndexCollectionFactory $indexCollectionFactory)
+    {
         $this->productService = $productService;
         $this->dataHelper = $dataHelper;
         $this->logger = $logger;
@@ -106,7 +102,9 @@ class Sync implements IndexerActionInterface, MviewActionInterface
         $this->nostoQueueRepository = $nostoQueueRepository;
         $this->nostoHelperAccount = $nostoHelperAccount;
         $this->nostoServiceIndex = $nostoServiceIndex;
+        $this->indexCollectionFactory = $indexCollectionFactory;
     }
+
 
     /**
      * @inheritdoc
@@ -114,7 +112,26 @@ class Sync implements IndexerActionInterface, MviewActionInterface
      */
     public function executeFull()
     {
-        $this->execute([33]);
+        $indexCollection = $this->getIndexCollection();
+        $indexCollection->setPageSize(self::BATCH_SIZE);
+        $lastPage = $indexCollection->getLastPageNumber();
+        $page = 1;
+        while ($page <= $lastPage) {
+            $indexCollection->setCurPage($page);
+            $indexCollection->addFieldToSelect(NostoIndex::ID)
+                ->addFieldToFilter(
+                    NostoIndex::IS_DIRTY ,
+                    ['eq' => NostoIndex::VALUE_IS_NOT_DIRTY]
+                )->addFieldToFilter(
+                    NostoIndex::IN_SYNC ,
+                    ['eq' => NostoIndex::VALUE_NOT_IN_SYNC]
+                );
+
+            foreach ($indexCollection->getItems() as $indexedProduct) {
+                $this->nostoServiceIndex->handleProductSync($indexedProduct[NostoIndex::ID]);
+            }
+            $page++;
+        }
     }
 
     /**
@@ -154,10 +171,10 @@ class Sync implements IndexerActionInterface, MviewActionInterface
     }
 
     /**
-     * @return ProductCollection
+     * @return IndexCollection
      */
-    private function getProductCollection()
+    private function getIndexCollection()
     {
-        return $this->productCollectionFactory->create();
+        return $this->indexCollectionFactory->create();
     }
 }

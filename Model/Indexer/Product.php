@@ -39,7 +39,6 @@ namespace Nosto\Tagging\Model\Indexer;
 use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductCollectionFactory;
 use Magento\Framework\Indexer\ActionInterface as IndexerActionInterface;
 use Magento\Framework\Mview\ActionInterface as MviewActionInterface;
-use Nosto\Nosto;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Product\QueueRepository as NostoQueueRepository;
@@ -123,11 +122,14 @@ class Product implements IndexerActionInterface, MviewActionInterface
         $page = 1;
         while ($page <= $lastPage) {
             $indexCollection->setCurPage($page);
-            $indexCollection->addAttributeToSelect(NostoIndex::ID)
-                ->addAttributeToFilter(NostoIndex::IS_DIRTY ,['eq' => NostoIndex::VALUE_IS_DIRTY]);
+            $indexCollection->addFieldToSelect(NostoIndex::ID)
+                ->addFieldToFilter(
+                    NostoIndex::IS_DIRTY ,
+                    ['eq' => NostoIndex::VALUE_IS_DIRTY]
+                );
 
             foreach ($indexCollection->getItems() as $indexedProduct) {
-                $this->nostoServiceIndex->handleDirtyProduct($indexedProduct[0]);
+                $this->nostoServiceIndex->handleDirtyProduct($indexedProduct[NostoIndex::ID]);
             }
             $page++;
         }

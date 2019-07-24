@@ -118,15 +118,8 @@ class Index
      */
     public function handleProductChange(int $productId, Store $store)
     {
-        try {
-            $finalProductIds = $this->getFinalProductsIds($productId);
-        } catch (\Exception $e) {
-            $this->logger->exception($e);
-        }
-
-        foreach ($finalProductIds as $finalProductId) {
-            $this->updateOrCreateDirtyEntity($finalProductId, $store);
-        }
+        //ToDo store only product of interest in the table
+        $this->updateOrCreateDirtyEntity($productId, $store);
     }
 
     /**
@@ -203,17 +196,24 @@ class Index
      * Get parent product ids
      *
      * @param int $productId
-     * @return array|int
+     * @return array
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     private function getFinalProductsIds($productId)
     {
         $magentoProduct = $this->productRepository->getById($productId);
         $parentIds = $this->nostoProductRepository->resolveParentProductIds($magentoProduct);
-        if ($parentIds === null) {
-            return $productId;
+
+        //ToDo check for different product types
+        // Bundle products
+        // Grouped products
+        if (count($parentIds) > 0) {
+            array_unique($parentIds);
         }
-        return array_unique($parentIds);
+        if ($parentIds === null) {
+            return [];
+        }
+        return [$productId];
     }
 
     /**
