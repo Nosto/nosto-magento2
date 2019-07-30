@@ -230,10 +230,10 @@ class Repository
     /**
      * Get parent ids from cache. Return null if the cache is not available
      *
-     * @param Product $product
+     * @param ProductInterface $product
      * @return string[]|null
      */
-    private function getParentIdsFromCache(Product $product)
+    private function getParentIdsFromCache(ProductInterface $product)
     {
         if (isset($this->parentProductIdCache[$product->getId()])) {
             return $this->parentProductIdCache[$product->getId()];
@@ -257,10 +257,10 @@ class Repository
      * Saves the parents product ids to internal cache to avoid redundant
      * database queries
      *
-     * @param Product $product
+     * @param ProductInterface $product
      * @param string[] $parentProductIds
      */
-    private function saveParentIdsToCache(Product $product, $parentProductIds)
+    private function saveParentIdsToCache(ProductInterface $product, $parentProductIds)
     {
         $this->parentProductIdCache[$product->getId()] = $parentProductIds;
     }
