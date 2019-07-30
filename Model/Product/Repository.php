@@ -203,30 +203,6 @@ class Repository
     }
 
     /**
-     * Gets the parent products for simple product using product ID
-     *
-     * @param $productId
-     * @param $typeId
-     * @return string[]|null
-     * @suppress PhanTypeMismatchReturn
-     */
-    public function resolveParentProductIdsByProductId($productId, $typeId)
-    {
-        $cachedProduct = $this->getParentIdsFromCacheByProductId($productId);
-        if ($cachedProduct) {
-            return $cachedProduct;
-        }
-        if ($typeId === Type::TYPE_SIMPLE) {
-            $parentProductIds = $this->configurableProduct->getParentIdsByChild(
-                $productId
-            );
-            $this->saveParentIdsToCacheByProductId($productId, $parentProductIds);
-            return $parentProductIds;
-        }
-        return null;
-    }
-
-    /**
      * Gets the variations / SKUs of configurable product
      *
      * @param Product $product
