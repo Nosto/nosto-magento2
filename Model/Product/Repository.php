@@ -42,6 +42,7 @@ use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\Product\Type;
 use Magento\Catalog\Model\Product\Visibility as ProductVisibility;
 use Magento\Catalog\Model\ProductRepository;
+use Magento\CatalogStaging\Test\Block\Adminhtml\Preview\ProductInfo;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable as ConfigurableType;
 use Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable as ConfigurableProduct;
 use Magento\Framework\Api\FilterBuilder;
@@ -183,11 +184,11 @@ class Repository
     /**
      * Gets the parent products for simple product
      *
-     * @param Product $product
+     * @param ProductInterface $product
      * @return string[]|null
      * @suppress PhanTypeMismatchReturn
      */
-    public function resolveParentProductIds(Product $product)
+    public function resolveParentProductIds(ProductInterface $product)
     {
         if ($this->getParentIdsFromCache($product)) {
             return $this->getParentIdsFromCache($product);
@@ -206,11 +207,11 @@ class Repository
     /**
      * Gets the variations / SKUs of configurable product
      *
-     * @param ProductInterface $product
+     * @param Product $product
      * @return array
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
-    public function getSkus(ProductInterface $product)
+    public function getSkus(Product $product)
     {
         $skuIds = $this->configurableType->getChildrenIds($product->getId());
         $products = [];
