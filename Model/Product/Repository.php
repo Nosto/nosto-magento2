@@ -36,6 +36,7 @@
 
 namespace Nosto\Tagging\Model\Product;
 
+use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Api\Data\ProductSearchResultsInterface;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\Product\Type;
@@ -205,11 +206,11 @@ class Repository
     /**
      * Gets the variations / SKUs of configurable product
      *
-     * @param Product $product
+     * @param ProductInterface $product
      * @return array
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
-    public function getSkus(Product $product)
+    public function getSkus(ProductInterface $product)
     {
         $skuIds = $this->configurableType->getChildrenIds($product->getId());
         $products = [];
