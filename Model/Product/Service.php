@@ -198,14 +198,14 @@ class Service
             )
         );
         $productIdsForQueue = [];
-        foreach ($products as $product => $typeId) {
-            $parentProductIds = $this->nostoProductRepository->resolveParentProductIdsByProductId($product, $typeId);
+        foreach ($products as $product) {
+            $parentProductIds = $this->nostoProductRepository->resolveParentProductIds($product);
             if (!empty($parentProductIds)) {
                 foreach ($parentProductIds as $parentProductId) {
                     $productIdsForQueue[] = $parentProductId;
                 }
             } else {
-                $productIdsForQueue[] = $product;
+                $productIdsForQueue[] = $product->getId();
             }
         }
 
