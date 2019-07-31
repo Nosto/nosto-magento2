@@ -205,7 +205,7 @@ class Service
                     $productIdsForQueue[] = $parentProductId;
                 }
             } else {
-                $productIdsForQueue[] = $product;
+                $productIdsForQueue[] = $product->getId();
             }
         }
 
