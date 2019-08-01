@@ -39,15 +39,15 @@ namespace Nosto\Tagging\Model\Indexer;
 use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductCollectionFactory;
 use Magento\Framework\Indexer\ActionInterface as IndexerActionInterface;
 use Magento\Framework\Mview\ActionInterface as MviewActionInterface;
+use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
+use Nosto\Tagging\Model\Product\Index\Index as NostoIndex;
 use Nosto\Tagging\Model\Product\QueueRepository as NostoQueueRepository;
 use Nosto\Tagging\Model\Product\Service as ProductService;
-use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Model\ResourceModel\Product\Index\Collection as IndexCollection;
 use Nosto\Tagging\Model\ResourceModel\Product\Index\CollectionFactory as IndexCollectionFactory;
 use Nosto\Tagging\Model\Service\Index as NostoServiceIndex;
-use Nosto\Tagging\Model\Product\Index\Index as NostoIndex;
 
 /**
  * An indexer for Nosto product sync
@@ -93,8 +93,16 @@ class Sync implements IndexerActionInterface, MviewActionInterface
      * @param NostoServiceIndex $nostoServiceIndex
      * @param IndexCollectionFactory $indexCollectionFactory
      */
-    public function __construct(ProductService $productService, NostoHelperData $dataHelper, NostoLogger $logger, ProductCollectionFactory $productCollectionFactory, NostoQueueRepository $nostoQueueRepository, NostoHelperAccount $nostoHelperAccount, NostoServiceIndex $nostoServiceIndex, IndexCollectionFactory $indexCollectionFactory)
-    {
+    public function __construct(
+        ProductService $productService,
+        NostoHelperData $dataHelper,
+        NostoLogger $logger,
+        ProductCollectionFactory $productCollectionFactory,
+        NostoQueueRepository $nostoQueueRepository,
+        NostoHelperAccount $nostoHelperAccount,
+        NostoServiceIndex $nostoServiceIndex,
+        IndexCollectionFactory $indexCollectionFactory
+    ) {
         $this->productService = $productService;
         $this->dataHelper = $dataHelper;
         $this->logger = $logger;
@@ -104,7 +112,6 @@ class Sync implements IndexerActionInterface, MviewActionInterface
         $this->nostoServiceIndex = $nostoServiceIndex;
         $this->indexCollectionFactory = $indexCollectionFactory;
     }
-
 
     /**
      * @inheritdoc
@@ -120,10 +127,10 @@ class Sync implements IndexerActionInterface, MviewActionInterface
             $indexCollection->setCurPage($page);
             $indexCollection->addFieldToSelect(NostoIndex::ID)
                 ->addFieldToFilter(
-                    NostoIndex::IS_DIRTY ,
+                    NostoIndex::IS_DIRTY,
                     ['eq' => NostoIndex::VALUE_IS_NOT_DIRTY]
                 )->addFieldToFilter(
-                    NostoIndex::IN_SYNC ,
+                    NostoIndex::IN_SYNC,
                     ['eq' => NostoIndex::VALUE_NOT_IN_SYNC]
                 );
 

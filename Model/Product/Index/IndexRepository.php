@@ -150,6 +150,21 @@ class IndexRepository implements ProductIndexRepositoryInterface
     /**
      * @inheritdoc
      */
+    public function getByIds(array $ids)
+    {
+        $searchCriteria = $this->searchCriteriaBuilder
+            ->addFilter(ProductIndexInterface::ID, $ids, 'in')
+            ->create();
+        /* @var IndexSearchResults $results */
+        $results = $this->search($searchCriteria);
+
+        return $results->getItems();
+    }
+
+
+    /**
+     * @inheritdoc
+     */
     public function getByProductIdAndStoreId(int $productId, int $storeId)
     {
         $searchCriteria = $this->searchCriteriaBuilder

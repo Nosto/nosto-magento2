@@ -36,25 +36,25 @@
 
 namespace Nosto\Tagging\Model\Service;
 
-use Magento\Store\Model\Store;
-use Nosto\Tagging\Model\Product\Index\IndexRepository;
-use Nosto\Tagging\Api\Data\ProductIndexInterface;
-use Nosto\Tagging\Model\Product\Index\Builder;
 use Magento\Catalog\Model\ProductRepository;
-use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
-use Nosto\Tagging\Helper\Scope as NostoHelperScope;
+use Magento\Store\Model\Store;
+use Nosto\Operation\UpsertProduct;
+use Nosto\Tagging\Api\Data\ProductIndexInterface;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
+use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Helper\Url as NostoHelperUrl;
+use Nosto\Tagging\Logger\Logger as NostoLogger;
+use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
+use Nosto\Tagging\Model\Product\Index\Builder;
+use Nosto\Tagging\Model\Product\Index\Index as NostoProductIndex;
+use Nosto\Tagging\Model\Product\Index\IndexRepository;
+use Nosto\Tagging\Model\Product\Repository as NostoProductRepository;
 use Nosto\Tagging\Util\Product as ProductUtil;
 use Nosto\Types\Product\ProductInterface as NostoProductInterface;
-use Nosto\Operation\UpsertProduct;
-use Nosto\Tagging\Logger\Logger as NostoLogger;
-use Nosto\Tagging\Model\Product\Repository as NostoProductRepository;
 
 class Index
 {
-    const IS_DIRTY = "1";
-    const NOT_IN_SYNC = "0";
+    const NOT_IN_SYNC = '0';
 
     /** @var IndexRepository */
     private $indexRepository;
@@ -136,6 +136,7 @@ class Index
             } else {
                 $product = $this->productRepository->getById($productId);
                 $indexedProduct = $this->indexBuilder->build($product, $store);
+                $indexedProduct->setIsDirty(false);
             }
             $this->indexRepository->save($indexedProduct);
         } catch (\Exception $e) {
@@ -151,7 +152,7 @@ class Index
     {
         $productIndex = $this->indexRepository->getById($rowId);
         if ($productIndex instanceof ProductIndexInterface &&
-            $productIndex->getIsDirty() === self::IS_DIRTY) {
+            $productIndex->getIsDirty() === NostoProductIndex::VALUE_IS_DIRTY) {
             $this->rebuildDirtyProduct($productIndex);
         }
     }

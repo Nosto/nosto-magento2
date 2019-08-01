@@ -36,48 +36,28 @@
 
 namespace Nosto\Tagging\Model\Indexer;
 
-use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductCollectionFactory;
 use Magento\Framework\Indexer\ActionInterface as IndexerActionInterface;
 use Magento\Framework\Mview\ActionInterface as MviewActionInterface;
-use Nosto\Tagging\Helper\Data as NostoHelperData;
-use Nosto\Tagging\Logger\Logger as NostoLogger;
-use Nosto\Tagging\Model\Product\QueueRepository as NostoQueueRepository;
-use Nosto\Tagging\Model\Product\Service as ProductService;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
-use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
-use Nosto\Tagging\Model\Service\Index as NostoIndexService;
+use Nosto\Tagging\Logger\Logger as NostoLogger;
+use Nosto\Tagging\Model\Product\Index\Index as NostoIndex;
 use Nosto\Tagging\Model\ResourceModel\Product\Index\Collection as IndexCollection;
 use Nosto\Tagging\Model\ResourceModel\Product\Index\CollectionFactory as IndexCollectionFactory;
-use Nosto\Tagging\Model\Product\Index\Index as NostoIndex;
+use Nosto\Tagging\Model\Service\Index as NostoIndexService;
 
 /**
  * An indexer for Nosto product sync
  */
 class Product implements IndexerActionInterface, MviewActionInterface
 {
-    const BATCH_SIZE = 1000;
+    const BATCH_SIZE = 500;
     const INDEXER_ID = 'nosto_product_index';
-
-    /** @var ProductService  */
-    private $productService;
-
-    /** @var NostoHelperData  */
-    private $dataHelper;
 
     /** @var NostoLogger  */
     private $logger;
 
-    /** @var ProductCollectionFactory  */
-    private $productCollectionFactory;
-
-    /** @var NostoQueueRepository  */
-    private $nostoQueueRepository;
-
     /** @var NostoHelperAccount\Proxy  */
     private $nostoHelperAccount;
-
-    /** @var NostoProductBuilder  */
-    private $nostoProductBuilder;
 
     /** @var NostoIndexService */
     private $nostoServiceIndex;
@@ -87,27 +67,18 @@ class Product implements IndexerActionInterface, MviewActionInterface
 
     /**
      * Product constructor.
-     * @param ProductService $productService
-     * @param NostoHelperData $dataHelper
-     * @param NostoLogger $logger
-     * @param ProductCollectionFactory $productCollectionFactory
-     * @param NostoQueueRepository $nostoQueueRepository
-     * @param NostoHelperAccount\Proxy $nostoHelperAccount
-     * @param NostoProductBuilder $nostoProductBuilder
      * @param NostoIndexService $nostoServiceIndex
      * @param IndexCollectionFactory $indexCollectionFactory
+     * @param NostoLogger $nostoLogger
      */
-    public function __construct(ProductService $productService, NostoHelperData $dataHelper, NostoLogger $logger, ProductCollectionFactory $productCollectionFactory, NostoQueueRepository $nostoQueueRepository, NostoHelperAccount\Proxy $nostoHelperAccount, NostoProductBuilder $nostoProductBuilder, NostoIndexService $nostoServiceIndex, IndexCollectionFactory $indexCollectionFactory)
-    {
-        $this->productService = $productService;
-        $this->dataHelper = $dataHelper;
-        $this->logger = $logger;
-        $this->productCollectionFactory = $productCollectionFactory;
-        $this->nostoQueueRepository = $nostoQueueRepository;
-        $this->nostoHelperAccount = $nostoHelperAccount;
-        $this->nostoProductBuilder = $nostoProductBuilder;
+    public function __construct(
+        NostoIndexService $nostoServiceIndex,
+        IndexCollectionFactory $indexCollectionFactory,
+        NostoLogger $nostoLogger
+    ) {
         $this->nostoServiceIndex = $nostoServiceIndex;
         $this->indexCollectionFactory = $indexCollectionFactory;
+        $this->logger = $nostoLogger;
     }
 
     /**
@@ -116,21 +87,18 @@ class Product implements IndexerActionInterface, MviewActionInterface
      */
     public function executeFull()
     {
-        $indexCollection = $this->getIndexCollection();
-        $indexCollection->setPageSize(self::BATCH_SIZE);
-        $lastPage = $indexCollection->getLastPageNumber();
+        $indexCollectionAll = $this->createCollection();
+        $lastPage = $indexCollectionAll->getLastPageNumber();
         $page = 1;
         while ($page <= $lastPage) {
+            $indexCollection = $this->createCollection();
             $indexCollection->setCurPage($page);
-            $indexCollection->addFieldToSelect(NostoIndex::ID)
-                ->addFieldToFilter(
-                    NostoIndex::IS_DIRTY ,
-                    ['eq' => NostoIndex::VALUE_IS_DIRTY]
-                );
-
             foreach ($indexCollection->getItems() as $indexedProduct) {
                 $this->nostoServiceIndex->handleDirtyProduct($indexedProduct[NostoIndex::ID]);
             }
+            $this->logger->logWithMemoryConsumption(
+                sprintf('Executing full reindex (Product data) for Nosto product index, remaining pages: %d', $lastPage - $page)
+            );
             $page++;
         }
     }
@@ -174,8 +142,14 @@ class Product implements IndexerActionInterface, MviewActionInterface
     /**
      * @return IndexCollection
      */
-    private function getIndexCollection()
+    private function createCollection()
     {
-        return $this->indexCollectionFactory->create();
+        return $this->indexCollectionFactory->create()
+            ->setPageSize(self::BATCH_SIZE)
+            ->addFieldToSelect(NostoIndex::ID)
+            ->addFieldToFilter(
+                NostoIndex::IS_DIRTY,
+                ['eq' => NostoIndex::VALUE_IS_DIRTY]
+            );
     }
 }

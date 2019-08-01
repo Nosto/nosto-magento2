@@ -158,7 +158,7 @@ class Index extends AbstractModel implements ProductIndexInterface
      */
     public function setIsDirty($isDirty)
     {
-        return $this->setData(self::IS_DIRTY, $isDirty);
+        return $this->setData(self::IS_DIRTY, $isDirty ? self::VALUE_IS_DIRTY : self::VALUE_IS_NOT_DIRTY);
     }
 
     /**

@@ -36,12 +36,16 @@
 
 namespace Nosto\Tagging\Model\Indexer;
 
+use Magento\Catalog\Model\ResourceModel\Product\Collection as ProductCollection;
+use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductCollectionFactory;
+use Magento\Store\Model\Store;
 use Magento\Framework\Indexer\ActionInterface as IndexerActionInterface;
 use Magento\Framework\Mview\ActionInterface as MviewActionInterface;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Service\Index as NostoServiceIndex;
-
+use Magento\Catalog\Model\Product\Attribute\Source\Status;
+use Magento\Catalog\Model\Product\Visibility;
 
 /**
  * Class Dirty
@@ -52,6 +56,7 @@ use Nosto\Tagging\Model\Service\Index as NostoServiceIndex;
 class Dirty implements IndexerActionInterface, MviewActionInterface
 {
     const INDEXER_ID = 'nosto_index_product_dirty';
+    const BATCH_SIZE = 500;
 
     /** @var NostoHelperAccount */
     private $nostoHelperAccount;
@@ -62,22 +67,27 @@ class Dirty implements IndexerActionInterface, MviewActionInterface
     /** @var NostoServiceIndex */
     private $nostoServiceIndex;
 
+    /** @var ProductCollectionFactory */
+    private $productCollectionFactory;
+
     /**
      * Dirty constructor.
      * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoLogger $logger
      * @param NostoServiceIndex $nostoServiceIndex
+     * @param ProductCollectionFactory $productCollectionFactory
      */
     public function __construct(
         NostoHelperAccount $nostoHelperAccount,
         NostoLogger $logger,
-        NostoServiceIndex $nostoServiceIndex
+        NostoServiceIndex $nostoServiceIndex,
+        ProductCollectionFactory $productCollectionFactory
     ) {
         $this->nostoHelperAccount = $nostoHelperAccount;
         $this->logger = $logger;
         $this->nostoServiceIndex = $nostoServiceIndex;
+        $this->productCollectionFactory = $productCollectionFactory;
     }
-
 
     /**
      * @param int[] $ids
@@ -102,7 +112,29 @@ class Dirty implements IndexerActionInterface, MviewActionInterface
 
     public function executeFull()
     {
-        $this->execute([]);
+        $storesWithNosto = $this->nostoHelperAccount->getStoresWithNosto();
+        if (!empty($storesWithNosto)) {
+            foreach ($storesWithNosto as $store) {
+                $productCollectionAll = $this->createCollection($store);
+                $lastPage = $productCollectionAll->getLastPageNumber();
+                $pageNumber = 1;
+                do {
+                    $productCollection = $this->createCollection($store);
+                    $productCollection->setCurPage($pageNumber);
+                    foreach ($productCollection->getItems() as $product) {
+                        $this->nostoServiceIndex->handleProductChange($product->getId(), $store);
+                    }
+                    $this->logger->logWithMemoryConsumption(
+                        sprintf('Executing full reindex (Dirty) for Nosto product index, remaining pages: %d', $lastPage - $pageNumber)
+                    );
+                    $pageNumber++;
+                } while ($pageNumber <= $lastPage);
+            }
+        } else {
+            $this->logger->info(
+                'Nosto account is not connected into any store view. Nothing to index.'
+            );
+        }
     }
 
     public function executeList(array $ids)
@@ -115,4 +147,21 @@ class Dirty implements IndexerActionInterface, MviewActionInterface
         $this->execute([$id]);
     }
 
+    /**
+     * @param Store $store
+     * @return ProductCollection
+     */
+    private function createCollection(Store $store)
+    {
+        return $this->productCollectionFactory->create()
+            ->setPageSize(self::BATCH_SIZE)
+            ->addAttributeToSelect('id')
+            ->addAttributeToFilter(
+                'status',
+                ['eq'=> Status::STATUS_ENABLED]
+            )->addAttributeToFilter(
+                'visibility',
+                ['neq'=> Visibility::VISIBILITY_NOT_VISIBLE]
+            )->addStoreFilter($store);
+    }
 }
