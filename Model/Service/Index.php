@@ -181,6 +181,7 @@ class Index
         do {
             $collection->clear();
             $collection->setCurPage($curPage);
+            $collection->load();
             foreach ($collection as $productIndex) {
                 if ($productIndex->getIsDirty() === NostoProductIndex::VALUE_IS_DIRTY) {
                     $this->rebuildDirtyProduct($productIndex);
@@ -260,7 +261,7 @@ class Index
         try {
             $nostoProduct = $this->nostoProductBuilder->build($magentoProduct, $store);
             $nostoIndexedProduct = $productIndex->getNostoProduct();
-            $nostoIndexedProduct->setName($nostoIndexedProduct->getName() . ' - INDEX');
+            $nostoIndexedProduct->setName($nostoIndexedProduct->getName());
             if ($nostoProduct instanceof NostoProductInterface &&
                 !ProductUtil::isEqual($nostoProduct, $nostoIndexedProduct)) {
                 $productIndex->setNostoProduct($nostoProduct);
