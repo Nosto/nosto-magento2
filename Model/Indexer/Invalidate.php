@@ -36,27 +36,26 @@
 
 namespace Nosto\Tagging\Model\Indexer;
 
+use Magento\Catalog\Model\Product\Attribute\Source\Status;
+use Magento\Catalog\Model\Product\Visibility;
 use Magento\Catalog\Model\ResourceModel\Product\Collection as ProductCollection;
 use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductCollectionFactory;
-use Magento\Store\Model\Store;
 use Magento\Framework\Indexer\ActionInterface as IndexerActionInterface;
 use Magento\Framework\Mview\ActionInterface as MviewActionInterface;
+use Magento\Store\Model\Store;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Service\Index as NostoServiceIndex;
-use Magento\Catalog\Model\Product\Attribute\Source\Status;
-use Magento\Catalog\Model\Product\Visibility;
 
 /**
- * Class Dirty
+ * Class Invalidate
  * This class is responsible for listening to product changes
  * and setting the `is_dirty` value in `nosto_product_index` table
  * @package Nosto\Tagging\Model\Indexer
  */
-class Dirty implements IndexerActionInterface, MviewActionInterface
+class Invalidate implements IndexerActionInterface, MviewActionInterface
 {
-    const INDEXER_ID = 'nosto_index_product_dirty';
-    const BATCH_SIZE = 500;
+    public const INDEXER_ID = 'nosto_index_product_invalidate';
 
     /** @var NostoHelperAccount */
     private $nostoHelperAccount;
@@ -97,43 +96,18 @@ class Dirty implements IndexerActionInterface, MviewActionInterface
     public function execute($ids)
     {
         $storesWithNosto = $this->nostoHelperAccount->getStoresWithNosto();
-        if (!empty($storesWithNosto)) {
-            foreach ($storesWithNosto as $store) {
-                foreach ($ids as $id) {
-                    $this->nostoServiceIndex->handleProductChange($id, $store);
-                }
-            }
-        } else {
-            $this->logger->info(
-                'Nosto account is not connected into any store view. Nothing to index.'
-            );
+        foreach ($storesWithNosto as $store) {
+            $productCollection = $this->getCollection($store, $ids);
+            $this->nostoServiceIndex->handleProductChange($productCollection, $store);
         }
     }
 
     public function executeFull()
     {
         $storesWithNosto = $this->nostoHelperAccount->getStoresWithNosto();
-        if (!empty($storesWithNosto)) {
-            foreach ($storesWithNosto as $store) {
-                $productCollectionAll = $this->createCollection($store);
-                $lastPage = $productCollectionAll->getLastPageNumber();
-                $pageNumber = 1;
-                do {
-                    $productCollection = $this->createCollection($store);
-                    $productCollection->setCurPage($pageNumber);
-                    foreach ($productCollection->getItems() as $product) {
-                        $this->nostoServiceIndex->handleProductChange($product->getId(), $store);
-                    }
-                    $this->logger->logWithMemoryConsumption(
-                        sprintf('Executing full reindex (Dirty) for Nosto product index, remaining pages: %d', $lastPage - $pageNumber)
-                    );
-                    $pageNumber++;
-                } while ($pageNumber <= $lastPage);
-            }
-        } else {
-            $this->logger->info(
-                'Nosto account is not connected into any store view. Nothing to index.'
-            );
+        foreach ($storesWithNosto as $store) {
+            $productCollection = $this->getCollection($store);
+            $this->nostoServiceIndex->handleProductChange($productCollection, $store);
         }
     }
 
@@ -151,10 +125,9 @@ class Dirty implements IndexerActionInterface, MviewActionInterface
      * @param Store $store
      * @return ProductCollection
      */
-    private function createCollection(Store $store)
+    private function getCollection(Store $store, array $ids = [])
     {
-        return $this->productCollectionFactory->create()
-            ->setPageSize(self::BATCH_SIZE)
+        $collection = $this->productCollectionFactory->create()
             ->addAttributeToSelect('id')
             ->addAttributeToFilter(
                 'status',
@@ -163,5 +136,9 @@ class Dirty implements IndexerActionInterface, MviewActionInterface
                 'visibility',
                 ['neq'=> Visibility::VISIBILITY_NOT_VISIBLE]
             )->addStoreFilter($store);
+        if (!empty($ids)) {
+            $collection->addAttributeToFilter('id', ['in', $ids]);
+        }
+        return $collection;
     }
 }

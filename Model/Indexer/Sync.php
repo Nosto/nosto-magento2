@@ -39,6 +39,7 @@ namespace Nosto\Tagging\Model\Indexer;
 use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductCollectionFactory;
 use Magento\Framework\Indexer\ActionInterface as IndexerActionInterface;
 use Magento\Framework\Mview\ActionInterface as MviewActionInterface;
+use Magento\Store\Model\Store;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
@@ -54,24 +55,10 @@ use Nosto\Tagging\Model\Service\Index as NostoServiceIndex;
  */
 class Sync implements IndexerActionInterface, MviewActionInterface
 {
-    const BATCH_SIZE = 1000;
-    const INDEXER_ID = 'nosto_index_product_sync';
-
-    /** @var ProductService */
-
-    private $productService;
-
-    /** @var NostoHelperData */
-    private $dataHelper;
+    public const INDEXER_ID = 'nosto_index_product_sync';
 
     /** @var NostoLogger */
     private $logger;
-
-    /** @var ProductCollectionFactory */
-    private $productCollectionFactory;
-
-    /** @var NostoQueueRepository */
-    private $nostoQueueRepository;
 
     /** @var NostoHelperAccount */
     private $nostoHelperAccount;
@@ -94,20 +81,12 @@ class Sync implements IndexerActionInterface, MviewActionInterface
      * @param IndexCollectionFactory $indexCollectionFactory
      */
     public function __construct(
-        ProductService $productService,
-        NostoHelperData $dataHelper,
         NostoLogger $logger,
-        ProductCollectionFactory $productCollectionFactory,
-        NostoQueueRepository $nostoQueueRepository,
         NostoHelperAccount $nostoHelperAccount,
         NostoServiceIndex $nostoServiceIndex,
         IndexCollectionFactory $indexCollectionFactory
     ) {
-        $this->productService = $productService;
-        $this->dataHelper = $dataHelper;
         $this->logger = $logger;
-        $this->productCollectionFactory = $productCollectionFactory;
-        $this->nostoQueueRepository = $nostoQueueRepository;
         $this->nostoHelperAccount = $nostoHelperAccount;
         $this->nostoServiceIndex = $nostoServiceIndex;
         $this->indexCollectionFactory = $indexCollectionFactory;
@@ -115,35 +94,18 @@ class Sync implements IndexerActionInterface, MviewActionInterface
 
     /**
      * @inheritdoc
-     * @throws \Exception
      */
     public function executeFull()
     {
-        $indexCollection = $this->getIndexCollection();
-        $indexCollection->setPageSize(self::BATCH_SIZE);
-        $lastPage = $indexCollection->getLastPageNumber();
-        $page = 1;
-        while ($page <= $lastPage) {
-            $indexCollection->setCurPage($page);
-            $indexCollection->addFieldToSelect(NostoIndex::ID)
-                ->addFieldToFilter(
-                    NostoIndex::IS_DIRTY,
-                    ['eq' => NostoIndex::VALUE_IS_NOT_DIRTY]
-                )->addFieldToFilter(
-                    NostoIndex::IN_SYNC,
-                    ['eq' => NostoIndex::VALUE_NOT_IN_SYNC]
-                );
-
-            foreach ($indexCollection->getItems() as $indexedProduct) {
-                $this->nostoServiceIndex->handleProductSync($indexedProduct[NostoIndex::ID]);
-            }
-            $page++;
+        $storesWithNosto = $this->nostoHelperAccount->getStoresWithNosto();
+        foreach ($storesWithNosto as $store) {
+            $indexCollection = $this->getCollection($store);
+            $this->nostoServiceIndex->handleProductSync($indexCollection, $store);
         }
     }
 
     /**
      * @inheritdoc
-     * @throws \Exception
      */
     public function executeList(array $ids)
     {
@@ -152,7 +114,6 @@ class Sync implements IndexerActionInterface, MviewActionInterface
 
     /**
      * @inheritdoc
-     * @throws \Exception
      */
     public function executeRow($id)
     {
@@ -161,27 +122,41 @@ class Sync implements IndexerActionInterface, MviewActionInterface
 
     /**
      * @inheritdoc
-     * @throws \Exception
      */
     public function execute($ids)
     {
         $storesWithNosto = $this->nostoHelperAccount->getStoresWithNosto();
-        if (!empty($storesWithNosto)) {
-            foreach ($ids as $id) {
-                $this->nostoServiceIndex->handleProductSync($id);
-            }
-        } else {
-            $this->logger->info(
-                'Nosto account is not connected into any store view. Nothing to index.'
-            );
+        foreach ($storesWithNosto as $store) {
+            $collection = $this->getCollection($store, $ids);
+            $this->nostoServiceIndex->handleProductSync($collection, $store);
         }
     }
 
     /**
+     * @param Store $store
+     * @param array $ids
      * @return IndexCollection
      */
-    private function getIndexCollection()
+    private function getCollection(Store $store, array $ids = [])
     {
-        return $this->indexCollectionFactory->create();
+        $collection = $this->indexCollectionFactory->create()
+            ->addFieldToSelect('*')
+            ->addFieldToFilter(
+                NostoIndex::IS_DIRTY,
+                ['eq' => NostoIndex::VALUE_IS_NOT_DIRTY]
+            )->addFieldToFilter(
+                NostoIndex::IN_SYNC,
+                ['eq' => NostoIndex::VALUE_NOT_IN_SYNC]
+            )->addFieldToFilter(
+                NostoIndex::STORE_ID,
+                ['eq' => $store->getId()]
+            );
+        if (!empty($ids)) {
+            $collection->addFieldToFilter(
+                NostoIndex::ID,
+                ['in' => $ids]
+            );
+        }
+        return $collection;
     }
 }

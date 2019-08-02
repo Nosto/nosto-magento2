@@ -48,10 +48,9 @@ use Nosto\Tagging\Model\Service\Index as NostoIndexService;
 /**
  * An indexer for Nosto product sync
  */
-class Product implements IndexerActionInterface, MviewActionInterface
+class Data implements IndexerActionInterface, MviewActionInterface
 {
-    const BATCH_SIZE = 500;
-    const INDEXER_ID = 'nosto_product_index';
+    public const INDEXER_ID = 'nosto_product_index_data';
 
     /** @var NostoLogger  */
     private $logger;
@@ -87,20 +86,8 @@ class Product implements IndexerActionInterface, MviewActionInterface
      */
     public function executeFull()
     {
-        $indexCollectionAll = $this->createCollection();
-        $lastPage = $indexCollectionAll->getLastPageNumber();
-        $page = 1;
-        while ($page <= $lastPage) {
-            $indexCollection = $this->createCollection();
-            $indexCollection->setCurPage($page);
-            foreach ($indexCollection->getItems() as $indexedProduct) {
-                $this->nostoServiceIndex->handleDirtyProduct($indexedProduct[NostoIndex::ID]);
-            }
-            $this->logger->logWithMemoryConsumption(
-                sprintf('Executing full reindex (Product data) for Nosto product index, remaining pages: %d', $lastPage - $page)
-            );
-            $page++;
-        }
+        $indexCollection = $this->getCollection();
+        $this->nostoServiceIndex->handleDirtyProducts($indexCollection);
     }
 
     /**
@@ -127,29 +114,28 @@ class Product implements IndexerActionInterface, MviewActionInterface
      */
     public function execute($ids)
     {
-        $storesWithNosto = $this->nostoHelperAccount->getStoresWithNosto();
-        if (!empty($storesWithNosto)) {
-            foreach ($ids as $id) {
-                $this->nostoServiceIndex->handleDirtyProduct($id);
-            }
-        } else {
-            $this->logger->info(
-                'Nosto account is not connected into any store view. Nothing to index.'
-            );
-        }
+        $collection = $this->getCollection($ids);
+        $this->nostoServiceIndex->handleDirtyProducts($collection);
     }
 
     /**
-     * @return IndexCollection
+     * @param array $ids
+     * @return void
      */
-    private function createCollection()
+    private function getCollection(array $ids = [])
     {
-        return $this->indexCollectionFactory->create()
-            ->setPageSize(self::BATCH_SIZE)
-            ->addFieldToSelect(NostoIndex::ID)
+        $collection = $this->indexCollectionFactory->create()
+            ->addFieldToSelect('*')
             ->addFieldToFilter(
                 NostoIndex::IS_DIRTY,
                 ['eq' => NostoIndex::VALUE_IS_DIRTY]
             );
+        if (!empty($ids)) {
+            $collection->addFieldToFilter(
+                NostoIndex::ID,
+                ['in' => $ids]
+            );
+        }
+        return $collection;
     }
 }
