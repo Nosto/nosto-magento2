@@ -103,30 +103,18 @@ class Indexer implements IndexerActionInterface, MviewActionInterface
             if ($this->nostoQueueRepository->isQueuePopulated()) {
                 $this->nostoQueueRepository->truncate();
             }
-            $productCollection = $this->getProductCollection();
-            $productCollection->setPageSize(self::BATCH_SIZE);
-            $lastPage = $productCollection->getLastPageNumber();
+            $productCollectionAll = $this->getCollection();
+            $productCollectionAll->setPageSize(self::BATCH_SIZE);
+            $lastPage = $productCollectionAll->getLastPageNumber();
             $pageNumber = 1;
             do {
+                $productCollection = $this->getCollection();
                 $productCollection->setCurPage($pageNumber);
-                $productCollection->addAttributeToSelect('id')
-                    ->addAttributeToFilter(
-                        'status',
-                        ['eq'=> Status::STATUS_ENABLED]
-                    )->addAttributeToFilter(
-                        'visibility',
-                        ['neq'=> Visibility::VISIBILITY_NOT_VISIBLE]
-                    );
-                $products = [];
-                foreach ($productCollection->getItems() as $product) {
-                    $products[$product->getId()] = $product->getTypeId();
-                }
-                $productCollection->clear();
                 $this->logger->logWithMemoryConsumption(
                     sprintf('Indexing from executeFull, remaining pages: %d', $lastPage - $pageNumber)
                 );
                 try {
-                    $this->productService->update($products);
+                    $this->productService->update($productCollection->getItems());
                 } catch (MemoryOutOfBoundsException $e) {
                     throw new LocalizedException(new Phrase($e->getMessage()));
                 }
@@ -182,8 +170,16 @@ class Indexer implements IndexerActionInterface, MviewActionInterface
     /**
      * @return ProductCollection
      */
-    private function getProductCollection()
+    private function getCollection()
     {
-        return $this->productCollectionFactory->create();
+        return $this->productCollectionFactory->create()
+            ->addAttributeToSelect('id')
+            ->addAttributeToFilter(
+                'status',
+                ['eq'=> Status::STATUS_ENABLED]
+            )->addAttributeToFilter(
+                'visibility',
+                ['neq'=> Visibility::VISIBILITY_NOT_VISIBLE]
+            );
     }
 }
