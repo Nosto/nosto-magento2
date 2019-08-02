@@ -1,5 +1,8 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 3.8.4
+* Fix Nosto indexer's full reindex logic 
+
 ### 3.8.3
 * Fix parent product resolving for SKUs in product service
 
