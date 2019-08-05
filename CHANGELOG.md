@@ -3,6 +3,12 @@ All notable changes to this project will be documented in this file. This projec
 ### not released
 * Implement Nosto product index to speedup the Nosto product building, indexing and sending the data to Nosto
 
+### 3.8.4
+* Fix Nosto indexer's full reindex logic 
+
+### 3.8.3
+* Fix parent product resolving for SKUs in product service
+
 ### 3.8.2
 * Fix redirect_uri for multi-store setup with different domains
 

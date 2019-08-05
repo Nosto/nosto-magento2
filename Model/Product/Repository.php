@@ -36,6 +36,7 @@
 
 namespace Nosto\Tagging\Model\Product;
 
+use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Api\Data\ProductSearchResultsInterface;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\Product\Type;
@@ -189,11 +190,11 @@ class Repository
     /**
      * Gets the parent products for simple product
      *
-     * @param Product $product
+     * @param ProductInterface $product
      * @return string[]|null
      * @suppress PhanTypeMismatchReturn
      */
-    public function resolveParentProductIds(Product $product)
+    public function resolveParentProductIds(ProductInterface $product)
     {
         if ($this->getParentIdsFromCache($product)) {
             return $this->getParentIdsFromCache($product);
@@ -207,30 +208,6 @@ class Repository
         }
 
         return $parentProductIds;
-    }
-
-    /**
-     * Gets the parent products for simple product using product ID
-     *
-     * @param $productId
-     * @param $typeId
-     * @return string[]|null
-     * @suppress PhanTypeMismatchReturn
-     */
-    public function resolveParentProductIdsByProductId($productId, $typeId)
-    {
-        $cachedProduct = $this->getParentIdsFromCacheByProductId($productId);
-        if ($cachedProduct) {
-            return $cachedProduct;
-        }
-        if ($typeId === Type::TYPE_SIMPLE) {
-            $parentProductIds = $this->configurableProduct->getParentIdsByChild(
-                $productId
-            );
-            $this->saveParentIdsToCacheByProductId($productId, $parentProductIds);
-            return $parentProductIds;
-        }
-        return null;
     }
 
     /**
@@ -275,10 +252,10 @@ class Repository
     /**
      * Get parent ids from cache. Return null if the cache is not available
      *
-     * @param Product $product
+     * @param ProductInterface $product
      * @return string[]|null
      */
-    private function getParentIdsFromCache(Product $product)
+    private function getParentIdsFromCache(ProductInterface $product)
     {
         if (isset($this->parentProductIdCache[$product->getId()])) {
             return $this->parentProductIdCache[$product->getId()];
@@ -302,10 +279,10 @@ class Repository
      * Saves the parents product ids to internal cache to avoid redundant
      * database queries
      *
-     * @param Product $product
+     * @param ProductInterface $product
      * @param string[] $parentProductIds
      */
-    private function saveParentIdsToCache(Product $product, $parentProductIds)
+    private function saveParentIdsToCache(ProductInterface $product, $parentProductIds)
     {
         $this->parentProductIdCache[$product->getId()] = $parentProductIds;
     }
