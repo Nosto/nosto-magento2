@@ -34,54 +34,41 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Config\Frontend;
+namespace Nosto\Tagging\Model\ResourceModel;
 
-use Magento\Config\Block\System\Config\Form\Field;
-use Magento\Framework\Data\Form\Element\AbstractElement;
-use Magento\Backend\Block\Template\Context;
-use Magento\Framework\App\Request\Http;
-use Nosto\Tagging\Helper\CategorySorting as NostoHelperSorting;
+use Magento\Catalog\Model\ResourceModel\Product as ProductResource;
+use Magento\Customer\Model\GroupManagement;
+use Magento\Store\Model\Store;
 
-class CategorySorting extends Field
+class Sku extends ProductResource
 {
-
-    /** @var NostoHelperSorting */
-    private $nostoHelperSorting;
-
-    /** @var Http $request */
-    public $request;
+    const CATALOG_PRODUCT_PRICE_INDEX_TABLE = "catalog_product_index_price";
+    const CATALOG_INVENTORY_STOCK_STATUS_TABLE = "cataloginventory_stock_status";
 
     /**
-     * CategorySorting constructor.
-     * @param Http $request
-     * @param NostoHelperSorting $nostoHelperSorting
-     * @param Context $context
-     * @param array $data
-     */
-    public function __construct(
-        Http $request,
-        NostoHelperSorting $nostoHelperSorting,
-        Context $context,
-        array $data = []
-    ) {
-        $this->request = $request;
-        $this->nostoHelperSorting = $nostoHelperSorting;
-        parent::__construct($context, $data);
-    }
-
-    /**
-     * Disable input if APPS token is not found
+     * Fetches prices for the SKUs
      *
-     * @param AbstractElement $element
-     * @return string
+     * @param Store $store
+     * @param array $skuIds
+     * @return array
+     * @suppress PhanTypeMismatchArgument
      */
-    protected function _getElementHtml(AbstractElement $element) //@codingStandardsIgnoreLine
-    {
-        $id = (int)$this->request->getParam('store');
-        if (!$this->nostoHelperSorting->canUseCategorySorting($id)) {
-            $element->setReadonly(true, true);
-        }
+    public function getSkusByIds(
+        Store $store,
+        array $skuIds
+    ): array {
+        $gid = (string)GroupManagement::NOT_LOGGED_IN_ID;
+        $select = $this->_resource->getConnection()->select()
+            ->from(["cpip" => $this->_resource->getTableName(self::CATALOG_PRODUCT_PRICE_INDEX_TABLE)])
+            ->joinInner(
+                ["ciss" => $this->_resource->getTableName(self::CATALOG_INVENTORY_STOCK_STATUS_TABLE)],
+                "cpip.entity_id=ciss.product_id"
+            )
+            ->where("ciss.stock_status = ?", 1)
+            ->where("cpip.website_id = ?", $store->getWebsiteId())
+            ->where("cpip.entity_id IN(?)", $skuIds)
+            ->where("cpip.customer_group_id = ?", $gid);
 
-        return parent::_getElementHtml($element);
+        return $this->_resource->getConnection()->fetchAll($select); // @codingStandardsIgnoreLine
     }
 }

@@ -36,6 +36,7 @@
 
 namespace Nosto\Tagging\Model\Product;
 
+use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Api\Data\ProductSearchResultsInterface;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\Product\Type;
@@ -46,6 +47,8 @@ use Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable as
 use Magento\Framework\Api\FilterBuilder;
 use Magento\Framework\Api\Search\FilterGroupBuilder;
 use Magento\Framework\Api\SearchCriteriaBuilder;
+use Magento\Store\Model\Store;
+use Nosto\Tagging\Model\ResourceModel\Sku as NostoSkuResource;
 
 /**
  * Repository wrapper class for fetching products
@@ -54,6 +57,8 @@ use Magento\Framework\Api\SearchCriteriaBuilder;
  */
 class Repository
 {
+    const MAX_SKUS = 5000;
+
     private $parentProductIdCache = [];
 
     private $productRepository;
@@ -63,6 +68,7 @@ class Repository
     private $filterBuilder;
     private $configurableType;
     private $productVisibility;
+    private $nostoSkuResource;
 
     /**
      * Constructor to instantiating the reindex command. This constructor uses proxy classes for
@@ -86,7 +92,8 @@ class Repository
         FilterBuilder $filterBuilder,
         FilterGroupBuilder $filterGroupBuilder,
         ConfigurableType $configurableType,
-        ProductVisibility $productVisibility
+        ProductVisibility $productVisibility,
+        NostoSkuResource $nostoSkuResource
     ) {
         $this->productRepository = $productRepository;
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;
@@ -95,6 +102,7 @@ class Repository
         $this->filterBuilder = $filterBuilder;
         $this->configurableType = $configurableType;
         $this->productVisibility = $productVisibility;
+        $this->nostoSkuResource = $nostoSkuResource;
     }
 
     /**
@@ -182,11 +190,11 @@ class Repository
     /**
      * Gets the parent products for simple product
      *
-     * @param Product $product
+     * @param ProductInterface $product
      * @return string[]|null
      * @suppress PhanTypeMismatchReturn
      */
-    public function resolveParentProductIds(Product $product)
+    public function resolveParentProductIds(ProductInterface $product)
     {
         if ($this->getParentIdsFromCache($product)) {
             return $this->getParentIdsFromCache($product);
@@ -203,30 +211,6 @@ class Repository
     }
 
     /**
-     * Gets the parent products for simple product using product ID
-     *
-     * @param $productId
-     * @param $typeId
-     * @return string[]|null
-     * @suppress PhanTypeMismatchReturn
-     */
-    public function resolveParentProductIdsByProductId($productId, $typeId)
-    {
-        $cachedProduct = $this->getParentIdsFromCacheByProductId($productId);
-        if ($cachedProduct) {
-            return $cachedProduct;
-        }
-        if ($typeId === Type::TYPE_SIMPLE) {
-            $parentProductIds = $this->configurableProduct->getParentIdsByChild(
-                $productId
-            );
-            $this->saveParentIdsToCacheByProductId($productId, $parentProductIds);
-            return $parentProductIds;
-        }
-        return null;
-    }
-
-    /**
      * Gets the variations / SKUs of configurable product
      *
      * @param Product $product
@@ -235,27 +219,43 @@ class Repository
      */
     public function getSkus(Product $product)
     {
-        $skuIds = $this->configurableType->getChildrenIds($product->getId());
-        $products = [];
-        foreach ($skuIds as $batch => $skus) {
-            if (is_array($skus)) {
-                foreach ($skus as $skuId) {
-                    // We need to load these one by one in order to get correct stock / availability info
-                    $products[] = $this->productRepository->getById($skuId);
+        $skuIds = $this->getSkuIds($product);
+        $searchCriteria = $this->searchCriteriaBuilder
+            ->addFilter('entity_id', $skuIds, 'in')
+            ->create();
+        $products = $this->productRepository->getList($searchCriteria)->setTotalCount(self::MAX_SKUS);
+
+        return $products->getItems();
+    }
+
+    /**
+     * Returns the sku ids for a specific product
+     *
+     * @param Product $product
+     * @return array
+     */
+    public function getSkuIds(Product $product)
+    {
+        $batched = $this->configurableType->getChildrenIds($product->getId());
+        $flat = [];
+        foreach ($batched as $batch => $ids) {
+            if (is_array($ids)) {
+                foreach ($ids as $id) {
+                    $flat[$id] = $id;
                 }
             }
         }
 
-        return $products;
+        return $flat;
     }
 
     /**
      * Get parent ids from cache. Return null if the cache is not available
      *
-     * @param Product $product
+     * @param ProductInterface $product
      * @return string[]|null
      */
-    private function getParentIdsFromCache(Product $product)
+    private function getParentIdsFromCache(ProductInterface $product)
     {
         if (isset($this->parentProductIdCache[$product->getId()])) {
             return $this->parentProductIdCache[$product->getId()];
@@ -279,10 +279,10 @@ class Repository
      * Saves the parents product ids to internal cache to avoid redundant
      * database queries
      *
-     * @param Product $product
+     * @param ProductInterface $product
      * @param string[] $parentProductIds
      */
-    private function saveParentIdsToCache(Product $product, $parentProductIds)
+    private function saveParentIdsToCache(ProductInterface $product, $parentProductIds)
     {
         $this->parentProductIdCache[$product->getId()] = $parentProductIds;
     }
@@ -297,5 +297,18 @@ class Repository
     private function saveParentIdsToCacheByProductId($productId, $parentProductIds)
     {
         $this->parentProductIdCache[$productId] = $parentProductIds;
+    }
+
+    /**
+     * Gets the variations / SKUs of configurable product as an associative array.
+     *
+     * @param Product $product
+     * @param Store $store
+     * @return array
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
+    public function getSkusAsArray(Product $product, Store $store)
+    {
+        return $this->nostoSkuResource->getSkusByIds($store, $this->getSkuIds($product));
     }
 }
