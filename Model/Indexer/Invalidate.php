@@ -106,6 +106,7 @@ class Invalidate implements IndexerActionInterface, MviewActionInterface
     {
         $storesWithNosto = $this->nostoHelperAccount->getStoresWithNosto();
         foreach ($storesWithNosto as $store) {
+            $productCollection = $this->getCollection($store);
             $this->nostoServiceIndex->handleProductChange($productCollection, $store);
         }
     }
