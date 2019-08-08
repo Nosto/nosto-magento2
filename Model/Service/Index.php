@@ -38,6 +38,7 @@ namespace Nosto\Tagging\Model\Service;
 
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\ProductRepository;
+use Magento\Catalog\Model\ResourceModel\Product\Collection as ProductCollection;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Store\Model\Store;
 use Nosto\NostoException;
@@ -56,7 +57,6 @@ use Nosto\Tagging\Model\Product\Repository as NostoProductRepository;
 use Nosto\Tagging\Model\ResourceModel\Product\Index\Collection as NostoIndexCollection;
 use Nosto\Tagging\Util\Product as ProductUtil;
 use Nosto\Types\Product\ProductInterface as NostoProductInterface;
-use Magento\Catalog\Model\ResourceModel\Product\Collection as ProductCollection;
 
 class Index
 {
@@ -142,8 +142,9 @@ class Index
     /**
      * @param Product $product
      * @param Store $store
+     * @return ProductIndexInterface|null
      */
-    private function updateOrCreateDirtyEntity(Product $product, Store $store)
+    public function updateOrCreateDirtyEntity(Product $product, Store $store)
     {
         $indexedProduct = $this->indexRepository->getByProductIdAndStoreId($product->getId(), $store->getId());
         try {
@@ -156,8 +157,10 @@ class Index
                 $indexedProduct->setIsDirty(false);
             }
             $this->indexRepository->save($indexedProduct);
+            return $indexedProduct;
         } catch (\Exception $e) {
             $this->logger->exception($e);
+            return null;
         }
     }
 
@@ -251,9 +254,10 @@ class Index
 
     /**
      * @param ProductIndexInterface $productIndex
+     * @return ProductIndexInterface|null
      * @throws NoSuchEntityException
      */
-    private function rebuildDirtyProduct(ProductIndexInterface $productIndex)
+    public function rebuildDirtyProduct(ProductIndexInterface $productIndex)
     {
         // ToDo - if the product doesn't exist this throws an error -> perhaps we can use that for detecting deletions
         $magentoProduct = $this->productRepository->getById($productIndex->getProductId());
@@ -261,14 +265,52 @@ class Index
         try {
             $nostoProduct = $this->nostoProductBuilder->build($magentoProduct, $store);
             $nostoIndexedProduct = $productIndex->getNostoProduct();
-            $nostoIndexedProduct->setName($nostoIndexedProduct->getName());
-            if ($nostoProduct instanceof NostoProductInterface &&
-                !ProductUtil::isEqual($nostoProduct, $nostoIndexedProduct)) {
+            if ($nostoIndexedProduct instanceof NostoProductInterface === false ||
+                (
+                    $nostoProduct instanceof NostoProductInterface
+                    && !ProductUtil::isEqual($nostoProduct, $nostoIndexedProduct)
+                )
+            ) {
                 $productIndex->setNostoProduct($nostoProduct);
                 $productIndex->setInSync(false);
             }
             $productIndex->setIsDirty(false);
             $this->indexRepository->save($productIndex);
+            return $productIndex;
+        } catch (\Exception $e) {
+            $this->logger->exception($e);
+            return null;
+        }
+    }
+
+    /**
+     * Defines product index as in sync
+     *
+     * @param ProductIndexInterface $productIndex
+     * @throws \Exception
+     * @return void
+     */
+    public function markAsInSync(ProductIndexInterface $productIndex)
+    {
+        if (!$productIndex->getInSync()) {
+            $productIndex->setInSync(true);
+            $this->indexRepository->save($productIndex);
+        }
+    }
+
+    /**
+     * @param int $productId
+     * @param int $storeId
+     * @return void
+     * @throws \Exception
+     */
+    public function markAsInSyncProductByIdAndStore($productId, $storeId)
+    {
+        try {
+            $productIndex = $this->indexRepository->getByProductIdAndStoreId($productId, $storeId);
+            if ($productIndex instanceof ProductIndexInterface) {
+                $this->markAsInSync($productIndex);
+            }
         } catch (\Exception $e) {
             $this->logger->exception($e);
         }

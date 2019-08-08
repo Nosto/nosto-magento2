@@ -37,6 +37,7 @@
 namespace Nosto\Tagging\Api\Data;
 
 use Magento\Store\Api\Data\StoreInterface;
+use Nosto\Object\Product\Product;
 use Nosto\Types\Product\ProductInterface as NostoProductInterface;
 use Magento\Catalog\Api\Data\ProductInterface as MagentoProductInterface;
 
@@ -184,9 +185,9 @@ interface ProductIndexInterface
     public function setMagentoProduct(MagentoProductInterface $product);
 
     /**
-     * @return NostoProductInterface
+     * @return NostoProductInterface|null
      */
-    public function getNostoProduct(): NostoProductInterface;
+    public function getNostoProduct();
 
     /**
      * @param StoreInterface $store

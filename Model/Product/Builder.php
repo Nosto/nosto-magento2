@@ -68,9 +68,6 @@ class Builder
     }
 
     const CUSTOMIZED_TAGS = ['tag1', 'tag2', 'tag3'];
-    const NOSTO_SCOPE_TAGGING = 'tagging';
-    const NOSTO_SCOPE_API = 'api';
-
     private $nostoDataHelper;
     private $nostoPriceHelper;
     private $nostoCategoryBuilder;
@@ -164,12 +161,10 @@ class Builder
      */
     public function build(
         Product $product,
-        Store $store,
-        $nostoScope = self::NOSTO_SCOPE_API
+        Store $store
     ) {
         $nostoProduct = new NostoProduct();
         $modelFilter = new ModelFilter();
-
         $this->eventManager->dispatch(
             'nosto_product_load_before',
             ['product' => $nostoProduct, 'magentoProduct' => $product, 'modelFilter' => $modelFilter]
@@ -178,11 +173,6 @@ class Builder
         if (!$modelFilter->isValid()) {
             return null;
         }
-
-        //ToDo
-        // - fetch from product index
-        // - separate builder for base data (the data that is saved in index table
-
         try {
             $nostoProduct->setUrl($this->urlBuilder->getUrlInStore($product, $store));
             $nostoProduct->setProductId((string)$product->getId());
@@ -211,9 +201,7 @@ class Builder
 
             $nostoProduct->setAvailability($this->buildAvailability($product, $store));
             $nostoProduct->setCategories($this->nostoCategoryBuilder->buildCategories($product, $store));
-            if ($nostoScope == self::NOSTO_SCOPE_API
-                && $this->nostoDataHelper->isInventoryTaggingEnabled($store)
-            ) {
+            if ($this->nostoDataHelper->isInventoryTaggingEnabled($store)) {
                 $nostoProduct->setInventoryLevel($this->nostoStockHelper->getQty($product));
             }
             $rating = $this->nostoRatingHelper->getRatings($product, $store);
@@ -242,14 +230,12 @@ class Builder
                 $nostoProduct->setBrand($this->getAttributeValue($product, $brandAttribute));
             }
             $marginAttribute = $this->nostoDataHelper->getMarginAttribute($store);
-            if ($nostoScope === self::NOSTO_SCOPE_API
-                && $product->hasData($marginAttribute)
-            ) {
+            if ($product->hasData($marginAttribute)) {
                 $nostoProduct->setSupplierCost($this->getAttributeValue($product, $marginAttribute));
             }
             $gtinAttribute = $this->nostoDataHelper->getGtinAttribute($store);
             if ($product->hasData($gtinAttribute)) {
-                $nostoProduct->setGtin($this->getAttributeValue($product, $marginAttribute));
+                $nostoProduct->setGtin($this->getAttributeValue($product, $gtinAttribute));
             }
             if (($tags = $this->buildTags($product, $store)) !== []) {
                 $nostoProduct->setTag1($tags);

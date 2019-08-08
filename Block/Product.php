@@ -53,6 +53,7 @@ use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Model\Category\Builder as NostoCategoryBuilder;
 use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
+use Nosto\Tagging\Model\Service\Product as NostoProductService;
 
 /**
  * Product block used for outputting meta-data on the stores product pages.
@@ -67,6 +68,10 @@ class Product extends View
 
     private $nostoProductBuilder;
     private $categoryBuilder;
+    /**
+     * @var NostoProductService
+     */
+    private $nostoProductService;
 
     /**
      * Constructor.
@@ -85,6 +90,7 @@ class Product extends View
      * @param NostoCategoryBuilder $categoryBuilder the category meta model builder.
      * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoHelperScope $nostoHelperScope
+     * @param NostoProductService $nostoProductService
      * @param array $data optional data.
      * @SuppressWarnings(PHPMD.ExcessiveParameterList)
      */
@@ -103,6 +109,7 @@ class Product extends View
         NostoCategoryBuilder $categoryBuilder,
         NostoHelperAccount $nostoHelperAccount,
         NostoHelperScope $nostoHelperScope,
+        NostoProductService $nostoProductService,
         array $data = []
     ) {
         parent::__construct(
@@ -122,6 +129,7 @@ class Product extends View
         $this->taggingConstruct($nostoHelperAccount, $nostoHelperScope);
         $this->nostoProductBuilder = $nostoProductBuilder;
         $this->categoryBuilder = $categoryBuilder;
+        $this->nostoProductService = $nostoProductService;
     }
 
     /**
@@ -133,10 +141,11 @@ class Product extends View
     public function getAbstractObject()
     {
         $store = $this->nostoHelperScope->getStore();
-        return $this->nostoProductBuilder->build(
+        // ToDo - fetch from index, rebuild if out of sync
+        return $this->nostoProductService->getNostoProduct(
             $this->getProduct(),
             $store,
-            NostoProductBuilder::NOSTO_SCOPE_TAGGING
+            NostoProductService::NOSTO_SCOPE_TAGGING
         );
     }
 

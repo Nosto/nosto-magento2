@@ -38,11 +38,10 @@ namespace Nosto\Tagging\Model\Product\Index;
 
 use Magento\Catalog\Model\Product;
 use Magento\Store\Model\Store;
-use Nosto\Tagging\Model\Product\BuilderTrait;
-use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
-use Nosto\Tagging\Model\Product\Index\IndexFactory;
-use Nosto\Object\Product\Product as NostoProduct;
 use Nosto\NostoException;
+use Nosto\Object\Product\Product as NostoProduct;
+use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
+use Nosto\Tagging\Model\Product\BuilderTrait;
 
 class Builder
 {
@@ -55,8 +54,6 @@ class Builder
 
     /** @var NostoProductBuilder */
     private $nostoProductBuilder;
-
-    const NOSTO_SCOPE_API = 'api';
 
     /**
      * Builder constructor.
@@ -80,10 +77,9 @@ class Builder
      */
     public function build(
         Product $product,
-        Store $store,
-        $nostoScope = self::NOSTO_SCOPE_API
+        Store $store
     ) {
-        $nostoProduct = $this->nostoProductBuilder->build($product, $store, $nostoScope);
+        $nostoProduct = $this->nostoProductBuilder->build($product, $store);
         if ($nostoProduct instanceof NostoProduct) {
             $productIndex = $this->nostoIndexFactory->create();
             $productIndex->setProductId($nostoProduct->getProductId());
@@ -97,7 +93,7 @@ class Builder
         }
 
         throw new NostoException(
-            'Could not build Nosto product for id '.$product->getId()
+            'Could not build Nosto product for id ' . $product->getId()
         );
     }
 }

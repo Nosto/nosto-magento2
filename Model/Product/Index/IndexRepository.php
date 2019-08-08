@@ -239,6 +239,6 @@ class IndexRepository implements ProductIndexRepositoryInterface
 
     public function delete(ProductIndexInterface $productIndex)
     {
-        $this->indexResource->delete($productQueue);
+        $this->indexResource->delete($productIndex);
     }
 }

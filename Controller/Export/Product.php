@@ -38,12 +38,15 @@ namespace Nosto\Tagging\Controller\Export;
 
 use Magento\Framework\App\Action\Context;
 use Magento\Store\Model\Store;
+use Nosto\Helper\SerializationHelper;
 use Nosto\NostoException;
 use Nosto\Object\AbstractCollection;
+use Nosto\Object\Product\Product as NostoProduct;
 use Nosto\Object\Product\ProductCollection;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Model\Product\Collection as NostoProductCollection;
+use Nosto\Tagging\Model\Service\Index as NostoIndexService;
 
 /**
  * Product export controller used to export product history to Nosto in order to
@@ -54,7 +57,13 @@ use Nosto\Tagging\Model\Product\Collection as NostoProductCollection;
  */
 class Product extends Base
 {
+    private const PARAM_PREVIEW = 'preview';
+
     private $nostoProductCollection;
+    /**
+     * @var NostoIndexService
+     */
+    private $nostoIndexService;
 
     /**
      * Constructor.
@@ -69,11 +78,13 @@ class Product extends Base
         /** @noinspection PhpUndefinedClassInspection */
         NostoHelperScope $nostoHelperScope,
         NostoHelperAccount $nostoHelperAccount,
-        NostoProductCollection $nostoProductCollection
+        NostoProductCollection $nostoProductCollection,
+        NostoIndexService $nostoIndexService
     ) {
         parent::__construct($context, $nostoHelperScope, $nostoHelperAccount);
 
         $this->nostoProductCollection = $nostoProductCollection;
+        $this->nostoIndexService = $nostoIndexService;
     }
 
     /**
@@ -97,5 +108,19 @@ class Product extends Base
     public function buildSingleExportCollection(Store $store, $id)
     {
         return $this->nostoProductCollection->buildSingle($store, $id);
+    }
+
+    public function export(AbstractCollection $collection)
+    {
+        $result = parent::export($collection);
+        $preview = $this->getRequest()->getParam(self::PARAM_PREVIEW, false);
+        if ($preview === false) {
+            $storeId = $this->nostoHelperScope->getStore()->getId();
+            /* @var $item NostoProduct */
+            foreach ($collection as $item) {
+                $this->nostoIndexService->markAsInSyncProductByIdAndStore($item->getProductId(), $storeId);
+            }
+        }
+        return $result;
     }
 }

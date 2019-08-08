@@ -42,7 +42,7 @@ use Magento\Sales\Api\Data\EntityInterface;
 use Magento\Store\Model\Store;
 use Nosto\NostoException;
 use Nosto\Object\Product\ProductCollection;
-use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
+use Nosto\Tagging\Model\Service\Product as NostoProductService;
 use Nosto\Types\Product\ProductInterface;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 
@@ -50,7 +50,7 @@ class Collection
 {
     private $productCollectionFactory;
     private $productVisibility;
-    private $nostoProductBuilder;
+    private $nostoProductService;
     private $logger;
 
     /**
@@ -63,12 +63,12 @@ class Collection
     public function __construct(
         ProductCollectionFactory $productCollectionFactory,
         ProductVisibility $productVisibility,
-        NostoProductBuilder $nostoProductBuilder,
+        NostoProductService $nostoProductService,
         NostoLogger $logger
     ) {
         $this->productCollectionFactory = $productCollectionFactory;
         $this->productVisibility = $productVisibility;
-        $this->nostoProductBuilder = $nostoProductBuilder;
+        $this->nostoProductService = $nostoProductService;
         $this->logger = $logger;
     }
 
@@ -132,10 +132,10 @@ class Collection
         foreach ($items as $product) {
             /** @var \Magento\Catalog\Model\Product $product */
             try {
-                $nostoProduct = $this->nostoProductBuilder->build(
+                $nostoProduct = $this->nostoProductService->getNostoProduct(
                     $product,
                     $store,
-                    NostoProductBuilder::NOSTO_SCOPE_API
+                    NostoProductService::NOSTO_SCOPE_API
                 );
                 if ($nostoProduct instanceof ProductInterface) {
                     $products->append($nostoProduct);

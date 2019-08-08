@@ -38,6 +38,7 @@ namespace Nosto\Tagging\Model\Product\Index;
 
 use Magento\Framework\Model\AbstractModel;
 use Magento\Store\Api\Data\StoreInterface;
+use Nosto\Object\Product\Product;
 use Nosto\Tagging\Api\Data\ProductIndexInterface;
 use Nosto\Tagging\Model\ResourceModel\Product\Index as NostoIndex;
 use Nosto\Types\Product\ProductInterface as NostoProductInterface;
@@ -188,9 +189,14 @@ class Index extends AbstractModel implements ProductIndexInterface
     /**
      * @inheritDoc
      */
-    public function getNostoProduct(): NostoProductInterface
+    public function getNostoProduct()
     {
-        return unserialize($this->getProductData());
+        try {
+            $unserialized = unserialize($this->getProductData(), [Product::class]);
+        } catch (\Exception $exception) {
+            $unserialized = null;
+        }
+        return $unserialized;
     }
 
     /**

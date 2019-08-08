@@ -49,8 +49,8 @@ use Nosto\Tagging\Helper\Price as NostoPriceHelper;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Product\BuilderTrait;
 use Nosto\Types\Product\ProductInterface;
-use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
 use Nosto\Tagging\Helper\Stock as NostoStockHelper;
+use Nosto\Tagging\Model\Service\Product as NostoProductService;
 
 class Builder
 {
@@ -104,8 +104,7 @@ class Builder
     public function build(
         Product $product,
         Store $store,
-        $attributes,
-        $nostoScope = NostoProductBuilder::NOSTO_SCOPE_API
+        $attributes
     ) {
         if (!$this->isAvailabeInStore($product, $store)) {
             return null;
@@ -150,9 +149,7 @@ class Builder
                 //load user defined attributes from attribute set
                 $nostoSku->setCustomFields($this->buildCustomFields($product, $store));
             }
-            if ($nostoScope == NostoProductBuilder::NOSTO_SCOPE_API
-                && $this->nostoDataHelper->isInventoryTaggingEnabled($store)
-            ) {
+            if ($this->nostoDataHelper->isInventoryTaggingEnabled($store)) {
                 $nostoSku->setInventoryLevel($this->nostoStockHelper->getQty($product));
             }
         } catch (\Exception $e) {
