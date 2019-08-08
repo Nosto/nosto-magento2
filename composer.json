@@ -36,7 +36,7 @@
   ],
   "minimum-stability": "dev",
   "require": {
-    "nosto/php-sdk": "dev-feature/refactor-exception-handling",
+    "nosto/php-sdk": "dev-develop",
     "php": ">=7.0.0"
   },
   "repositories": [
