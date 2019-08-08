@@ -106,7 +106,6 @@ class Invalidate implements IndexerActionInterface, MviewActionInterface
     {
         $storesWithNosto = $this->nostoHelperAccount->getStoresWithNosto();
         foreach ($storesWithNosto as $store) {
-            $productCollection = $this->getCollection($store);
             $this->nostoServiceIndex->handleProductChange($productCollection, $store);
         }
     }
@@ -123,12 +122,13 @@ class Invalidate implements IndexerActionInterface, MviewActionInterface
 
     /**
      * @param Store $store
+     * @param array $ids
      * @return ProductCollection
      */
     private function getCollection(Store $store, array $ids = [])
     {
-        $collection = $this->productCollectionFactory->create()
-            ->addAttributeToSelect('id')
+        $collection = $this->productCollectionFactory->create();
+        $collection->addAttributeToSelect($collection->getIdFieldName())
             ->addAttributeToFilter(
                 'status',
                 ['eq'=> Status::STATUS_ENABLED]
@@ -137,7 +137,7 @@ class Invalidate implements IndexerActionInterface, MviewActionInterface
                 ['neq'=> Visibility::VISIBILITY_NOT_VISIBLE]
             )->addStoreFilter($store);
         if (!empty($ids)) {
-            $collection->addAttributeToFilter('id', ['in', $ids]);
+            $collection->addAttributeToFilter($collection->getIdFieldName(), ['in', $ids]);
         }
         return $collection;
     }
