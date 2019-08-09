@@ -128,7 +128,7 @@ class Data implements IndexerActionInterface, MviewActionInterface
             ->addFieldToSelect('*')
             ->addFieldToFilter(
                 NostoIndex::IS_DIRTY,
-                ['eq' => NostoIndex::VALUE_IS_DIRTY]
+                ['eq' => NostoIndex::DB_VALUE_BOOLEAN_TRUE]
             );
         if (!empty($ids)) {
             $collection->addFieldToFilter(

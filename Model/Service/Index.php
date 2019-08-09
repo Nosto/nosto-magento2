@@ -53,15 +53,16 @@ use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
 use Nosto\Tagging\Model\Product\Index\Builder;
 use Nosto\Tagging\Model\Product\Index\Index as NostoProductIndex;
 use Nosto\Tagging\Model\Product\Index\IndexRepository;
-use Nosto\Tagging\Model\Product\Repository as NostoProductRepository;
 use Nosto\Tagging\Model\ResourceModel\Product\Index\Collection as NostoIndexCollection;
+use Nosto\Tagging\Model\ResourceModel\Product\Index\CollectionFactory as NostoIndexCollectionFactory;
 use Nosto\Tagging\Util\Product as ProductUtil;
 use Nosto\Types\Product\ProductInterface as NostoProductInterface;
 
 class Index
 {
     private const API_BATCH_SIZE = 50;
-    private const PRODUCT_DATA_BATCH_SIZE = 10;
+    private const PRODUCT_DATA_BATCH_SIZE = 100;
+    private const PRODUCT_DELETION_BATCH_SIZE = 100;
 
     /** @var IndexRepository */
     private $indexRepository;
@@ -75,9 +76,6 @@ class Index
     /** @var NostoProductBuilder */
     private $nostoProductBuilder;
 
-    /** @var NostoProductRepository */
-    private $nostoProductRepository;
-
     /** @var NostoHelperScope */
     private $nostoHelperScope;
 
@@ -86,6 +84,9 @@ class Index
 
     /** @var NostoHelperUrl */
     private $nostoHelperUrl;
+
+    /** @var NostoIndexCollectionFactory */
+    private $nostoIndexCollectionFactory;
 
     /** @var NostoLogger */
     private $logger;
@@ -96,32 +97,32 @@ class Index
      * @param Builder $indexBuilder
      * @param ProductRepository $productRepository
      * @param NostoProductBuilder $nostoProductBuilder
-     * @param NostoProductRepository $nostoProductRepository
      * @param NostoHelperScope $nostoHelperScope
      * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoHelperUrl $nostoHelperUrl
      * @param NostoLogger $logger
+     * @param NostoIndexCollectionFactory $nostoIndexCollectionFactory
      */
     public function __construct(
         IndexRepository $indexRepository,
         Builder $indexBuilder,
         ProductRepository $productRepository,
         NostoProductBuilder $nostoProductBuilder,
-        NostoProductRepository $nostoProductRepository,
         NostoHelperScope $nostoHelperScope,
         NostoHelperAccount $nostoHelperAccount,
         NostoHelperUrl $nostoHelperUrl,
-        NostoLogger $logger
+        NostoLogger $logger,
+        NostoIndexCollectionFactory $nostoIndexCollectionFactory
     ) {
         $this->indexRepository = $indexRepository;
         $this->indexBuilder = $indexBuilder;
         $this->productRepository = $productRepository;
         $this->nostoProductBuilder = $nostoProductBuilder;
-        $this->nostoProductRepository = $nostoProductRepository;
         $this->nostoHelperScope = $nostoHelperScope;
         $this->nostoHelperAccount = $nostoHelperAccount;
         $this->nostoHelperUrl = $nostoHelperUrl;
         $this->logger = $logger;
+        $this->nostoIndexCollectionFactory = $nostoIndexCollectionFactory;
     }
 
     /**
@@ -186,7 +187,7 @@ class Index
             $collection->setCurPage($curPage);
             $collection->load();
             foreach ($collection as $productIndex) {
-                if ($productIndex->getIsDirty() === NostoProductIndex::VALUE_IS_DIRTY) {
+                if ($productIndex->getIsDirty() === NostoProductIndex::DB_VALUE_BOOLEAN_TRUE) {
                     $this->rebuildDirtyProduct($productIndex);
                 }
             }
@@ -314,5 +315,41 @@ class Index
         } catch (\Exception $e) {
             $this->logger->exception($e);
         }
+    }
+
+    /**
+     * @param ProductCollection $collection
+     * @param array $ids
+     * @param Store $store
+     */
+    public function markProductsAsDeleted(ProductCollection $collection, array $ids, Store $store)
+    {
+        $uniqueIds = array_unique($ids);
+        $collection->setPageSize(self::PRODUCT_DELETION_BATCH_SIZE);
+        $lastPage = $collection->getLastPageNumber();
+        $curPage = 1;
+        do {
+            $collection->clear();
+            $collection->setCurPage($curPage);
+            $collection->load();
+            /** @var Product $magentoProduct */
+            foreach ($collection as $magentoProduct) {
+                $key = array_search($magentoProduct->getId(), $uniqueIds);
+                if (is_numeric($key)) {
+                    unset($uniqueIds[$key]);
+                }
+            }
+            ++$curPage;
+        } while ($curPage <= $lastPage);
+
+        // Flag the rest of the ids as deleted
+        $deleted = $this->nostoIndexCollectionFactory->create()->markAsDeleted($uniqueIds, $store);
+        $this->logger->info(
+            sprintf(
+                'Marked %d records as deleted for store %s',
+                $deleted,
+                $store->getName()
+            )
+        );
     }
 }

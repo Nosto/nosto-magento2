@@ -219,6 +219,16 @@ abstract class Core
                 'Is Dirty'
             )
             ->addColumn(
+                ProductIndexInterface::IS_DELETED,
+                Table::TYPE_BOOLEAN,
+                null,
+                [
+                    'nullable' => false,
+                    'unsigned' => true,
+                ],
+                'Is Deleted'
+            )
+            ->addColumn(
                 ProductIndexInterface::PRODUCT_DATA,
                 Table::TYPE_TEXT,
                 null,

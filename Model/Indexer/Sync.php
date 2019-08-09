@@ -143,10 +143,10 @@ class Sync implements IndexerActionInterface, MviewActionInterface
             ->addFieldToSelect('*')
             ->addFieldToFilter(
                 NostoIndex::IS_DIRTY,
-                ['eq' => NostoIndex::VALUE_IS_NOT_DIRTY]
+                ['eq' => NostoIndex::DB_VALUE_BOOLEAN_FALSE]
             )->addFieldToFilter(
                 NostoIndex::IN_SYNC,
-                ['eq' => NostoIndex::VALUE_NOT_IN_SYNC]
+                ['eq' => NostoIndex::DB_VALUE_BOOLEAN_FALSE]
             )->addFieldToFilter(
                 NostoIndex::STORE_ID,
                 ['eq' => $store->getId()]

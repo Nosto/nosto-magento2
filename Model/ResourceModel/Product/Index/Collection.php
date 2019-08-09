@@ -37,6 +37,7 @@
 namespace Nosto\Tagging\Model\ResourceModel\Product\Index;
 
 use Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection;
+use Magento\Store\Model\Store;
 use Nosto\Tagging\Model\Product\Index\Index;
 use Nosto\Tagging\Model\ResourceModel\Product\Index as ResourceModelIndex;
 
@@ -52,6 +53,26 @@ class Collection extends AbstractCollection
         $this->_init(
             Index::class,
             ResourceModelIndex::class
+        );
+    }
+
+    /**
+     * Marks products as deleted by given ids and store
+     *
+     * @param $ids
+     * @param Store $store
+     * @return int
+     */
+    public function markAsDeleted($ids, Store $store)
+    {
+        $connection = $this->getConnection();
+        $connection->update(
+            $this->getMainTable(),
+            [Index::IS_DELETED => Index::DB_VALUE_BOOLEAN_TRUE],
+            [
+                sprintf('%s IN (?)', Index::PRODUCT_ID) => array_unique($ids),
+                sprintf('%s=?', Index::STORE_ID) => $store->getId()
+            ]
         );
     }
 }
