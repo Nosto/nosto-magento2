@@ -72,9 +72,9 @@ class Builder
      */
     public function build(Order $order)
     {
-		$orderNumber = self::ORDER_NUMBER_PREFIX.''.$order->getId();
-		$orderStatus = $order->getStatus();
-		$updatedAt = $order->getUpdatedAt();
+        $orderNumber = self::ORDER_NUMBER_PREFIX.''.$order->getId();
+        $orderStatus = $order->getStatus();
+        $updatedAt = $order->getUpdatedAt();
         try {
             if ($order->getPayment() instanceof Payment) {
                 $paymentProvider = $order->getPayment()->getMethod();
@@ -89,15 +89,15 @@ class Builder
                 $updatedAt
             );
 
-			$this->eventManager->dispatch(
-				'nosto_order_status_load_after',
-				['order' => $nostoOrderStatus, 'magentoOrder' => $order]
-			);
+            $this->eventManager->dispatch(
+                'nosto_order_status_load_after',
+                ['order' => $nostoOrderStatus, 'magentoOrder' => $order]
+            );
 
-			return $nostoOrderStatus;
+            return $nostoOrderStatus;
         } catch (\Exception $e) {
             $this->logger->exception($e);
         }
-		return null;
+        return null;
     }
 }
