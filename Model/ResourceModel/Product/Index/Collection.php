@@ -57,20 +57,59 @@ class Collection extends AbstractCollection
     }
 
     /**
-     * Marks products as deleted by given ids and store
+     * @param Store $store
+     * @return Collection
+     */
+    public function addStoreFilter(Store $store)
+    {
+        return $this->addFieldToFilter(Index::STORE_ID, ['eq' => $store->getId()]);
+    }
+
+    /**
+     * Marks products as deleted by given product ids and store
      *
-     * @param $ids
+     * @param array $ids
      * @param Store $store
      * @return int
      */
-    public function markAsDeleted($ids, Store $store)
+    public function markAsDeleted(array $ids, Store $store)
     {
+        if (empty($ids)) {
+            return 0;
+        }
         $connection = $this->getConnection();
-        $connection->update(
+        return $connection->update(
             $this->getMainTable(),
             [Index::IS_DELETED => Index::DB_VALUE_BOOLEAN_TRUE],
             [
                 sprintf('%s IN (?)', Index::PRODUCT_ID) => array_unique($ids),
+                sprintf('%s=?', Index::STORE_ID) => $store->getId()
+            ]
+        );
+    }
+
+    /**
+     * Deletes current indexed products in store
+     *
+     * @param Store $store
+     * @return int
+     */
+    public function deleteCurrentItemsByStore(Store $store)
+    {
+        if ($this->getSize() === 0) {
+            return 0;
+        }
+        $indexIds = [];
+        /* @var Index $item */
+        $toArr = $this->toArray([Index::ID]);
+        foreach ($this->getItems() as $item) {
+            $indexIds[] = $item->getId();
+        }
+        $connection = $this->getConnection();
+        return $connection->delete(
+            $this->getMainTable(),
+            [
+                sprintf('%s IN (?)', Index::ID) => array_unique($indexIds),
                 sprintf('%s=?', Index::STORE_ID) => $store->getId()
             ]
         );

@@ -103,7 +103,7 @@ class Invalidate implements IndexerActionInterface, MviewActionInterface
             $collectionSize = $productCollection->getSize();
             $idsSize = count(array_unique($ids));
             if ($idsSize > $collectionSize) {
-                $this->nostoServiceIndex->markProductsAsDeleted($productCollection, $ids, $store);
+                $this->nostoServiceIndex->markProductsAsDeletedByDiff($productCollection, $ids, $store);
             }
         }
     }

@@ -43,6 +43,7 @@ use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Store\Model\Store;
 use Nosto\NostoException;
 use Nosto\Object\Signup\Account as NostoSignupAccount;
+use Nosto\Operation\DeleteProduct;
 use Nosto\Operation\UpsertProduct;
 use Nosto\Tagging\Api\Data\ProductIndexInterface;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
@@ -251,6 +252,18 @@ class Index
         } catch (\Exception $e) {
             $this->logger->exception($e);
         }
+        try {
+            $totalDeleted = $this->purgeDeletedProducts($store);
+            $this->logger->info(
+                sprintf(
+                    'Removed total of %d products from index for store %s',
+                    $totalDeleted,
+                    $store->getCode()
+                )
+            );
+        } catch (NostoException $e) {
+            $this->logger->exception($e);
+        }
     }
 
     /**
@@ -260,10 +273,9 @@ class Index
      */
     public function rebuildDirtyProduct(ProductIndexInterface $productIndex)
     {
-        // ToDo - if the product doesn't exist this throws an error -> perhaps we can use that for detecting deletions
-        $magentoProduct = $this->productRepository->getById($productIndex->getProductId());
-        $store = $this->nostoHelperScope->getStore($productIndex->getStoreId());
         try {
+            $magentoProduct = $this->productRepository->getById($productIndex->getProductId());
+            $store = $this->nostoHelperScope->getStore($productIndex->getStoreId());
             $nostoProduct = $this->nostoProductBuilder->build($magentoProduct, $store);
             $nostoIndexedProduct = $productIndex->getNostoProduct();
             if ($nostoIndexedProduct instanceof NostoProductInterface === false ||
@@ -322,7 +334,7 @@ class Index
      * @param array $ids
      * @param Store $store
      */
-    public function markProductsAsDeleted(ProductCollection $collection, array $ids, Store $store)
+    public function markProductsAsDeletedByDiff(ProductCollection $collection, array $ids, Store $store)
     {
         $uniqueIds = array_unique($ids);
         $collection->setPageSize(self::PRODUCT_DELETION_BATCH_SIZE);
@@ -351,5 +363,73 @@ class Index
                 $store->getName()
             )
         );
+    }
+
+    /**
+     * Discontinues products in Nosto and removes indexed products from Nosto product index
+     *
+     * @param array $ids
+     * @param Store $store
+     * @return int number of deleted products
+     * @throws NostoException
+     */
+    public function handleProductDeletion(NostoIndexCollection $collection, Store $store)
+    {
+        if ($collection->getSize() === 0) {
+            return 0;
+        }
+        $totalDeleted = 0;
+        $account = $this->nostoHelperAccount->findAccount($store);
+        if ($account instanceof NostoSignupAccount === false) {
+            throw new NostoException(sprintf('Store view %s does not have Nosto installed', $store->getName()));
+        }
+        $collection->setPageSize(self::PRODUCT_DELETION_BATCH_SIZE);
+        $lastPage = $collection->getLastPageNumber();
+        $curPage = 1;
+        do {
+            $collection->clear();
+            $collection->setCurPage($curPage);
+            $collection->load();
+            $ids = [];
+            /* @var $indexedProduct NostoProductIndex */
+            foreach ($collection as $indexedProduct) {
+                $ids[] = $indexedProduct->getId();
+            }
+            try {
+                $op = new DeleteProduct($account, $this->nostoHelperUrl->getActiveDomain($store));
+                $op->setResponseTimeout(30);
+                $op->setProductIds($ids);
+                $op->delete();
+
+                $rowsRemoved = $collection->deleteCurrentItemsByStore($store);
+                $totalDeleted += $rowsRemoved;
+            } catch (\Exception $e) {
+                $this->logger->exception($e);
+            }
+
+            ++$curPage;
+        } while ($curPage <= $lastPage);
+
+        return $totalDeleted;
+    }
+
+    /**
+     * Fetches deleted products from the product index, sends those to Nosto
+     * and deletes the deleted rows from database
+     *
+     * @param Store $store
+     * @return int
+     * @throws NostoException
+     */
+    public function purgeDeletedProducts(Store $store)
+    {
+        $collection = $this->nostoIndexCollectionFactory->create()
+            ->addFieldToSelect('*')
+            ->addFieldToFilter(
+                NostoProductIndex::IS_DELETED,
+                ['eq' => NostoProductIndex::DB_VALUE_BOOLEAN_TRUE]
+            )->addStoreFilter($store);
+
+        return $this->handleProductDeletion($collection, $store);
     }
 }
