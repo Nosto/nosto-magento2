@@ -238,26 +238,27 @@ class Save implements ObserverInterface
             $nostoCutomerIdentifier = NostoOrderCreate::IDENTIFIER_BY_REF;
         }
         $nostoOrder = $this->nostoOrderBuilder->build($order);
-
-        try {
-            $orderService = new NostoOrderCreate(
-                $nostoOrder,
-                $nostoAccount,
-                $nostoCutomerIdentifier,
-                $nostoCustomerId ?: '',
-                $this->nostoHelperUrl->getActiveDomain($store)
-            );
-            $orderService->execute();
-        } catch (\Exception $e) {
-            $this->logger->error(
-                sprintf(
-                    'Failed to save order with quote #%s for customer #%s.
-                        Message was: %s',
-                    $order->getQuoteId(),
-                    (string)$nostoCustomerId,
-                    $e->getMessage()
-                )
-            );
+        if ($nostoCustomerId !== null) {
+            try {
+                $orderService = new NostoOrderCreate(
+                    $nostoOrder,
+                    $nostoAccount,
+                    $nostoCutomerIdentifier,
+                    $nostoCustomerId,
+                    $this->nostoHelperUrl->getActiveDomain($store)
+                );
+                $orderService->execute();
+            } catch (\Exception $e) {
+                $this->logger->error(
+                    sprintf(
+                        'Failed to save order with quote #%s for customer #%s.
+                            Message was: %s',
+                        $order->getQuoteId(),
+                        (string)$nostoCustomerId,
+                        $e->getMessage()
+                    )
+                );
+            }
         }
         $this->handleInventoryLevelUpdate($nostoOrder);
     }
