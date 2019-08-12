@@ -222,10 +222,9 @@ class Save implements ObserverInterface
      */
     private function sendNewOrder(Order $order, AccountInterface $nostoAccount, Store $store)
     {
-        $quoteId = $order->getQuoteId();
         /** @var NostoCustomer $nostoCustomer */
         $nostoCustomer = $this->customerRepository
-            ->getOneByQuoteId($quoteId);
+            ->getOneByQuoteId($order->getQuoteId());
         $nostoCustomerId = null;
         $nostoCutomerIdentifier = NostoOrderCreate::IDENTIFIER_BY_CID;
         if ($nostoCustomer instanceof NostoCustomer) {
@@ -245,7 +244,7 @@ class Save implements ObserverInterface
                 $nostoOrder,
                 $nostoAccount,
                 $nostoCutomerIdentifier,
-                $nostoCustomerId,
+                $nostoCustomerId ?: '',
                 $this->nostoHelperUrl->getActiveDomain($store)
             );
             $orderService->execute();
@@ -254,7 +253,7 @@ class Save implements ObserverInterface
                 sprintf(
                     'Failed to save order with quote #%s for customer #%s.
                         Message was: %s',
-                    $quoteId,
+                    $order->getQuoteId(),
                     (string)$nostoCustomerId,
                     $e->getMessage()
                 )
@@ -276,12 +275,11 @@ class Save implements ObserverInterface
             $orderService = new NostoOrderUpdate($nostoAccount, $orderStatus);
             $orderService->execute();
         } catch (\Exception $e) {
-            $quoteId = $order->getQuoteId();
             $this->logger->error(
                 sprintf(
                     'Failed to update order with quote #%s.
                         Message was: %s',
-                    $quoteId,
+                    $order->getQuoteId(),
                     $e->getMessage()
                 )
             );
