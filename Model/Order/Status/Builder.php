@@ -68,35 +68,36 @@ class Builder
 
     /**
      * @param Order $order
-     * @return NostoOrderStatus
+     * @return NostoOrderStatus|null
      */
     public function build(Order $order)
     {
+		$orderNumber = self::ORDER_NUMBER_PREFIX.''.$order->getId();
+		$orderStatus = $order->getStatus();
+		$updatedAt = $order->getUpdatedAt();
         try {
-            $orderNumber = self::ORDER_NUMBER_PREFIX.''.$order->getId();
-            $orderStatus = $order->getStatus();
-            $updatedAt = $order->getUpdatedAt();
             if ($order->getPayment() instanceof Payment) {
                 $paymentProvider = $order->getPayment()->getMethod();
             } else {
                 throw new NostoException('Order has no payment associated');
             }
 
-            $orderStatus = new NostoOrderStatus(
+            $nostoOrderStatus = new NostoOrderStatus(
                 $orderNumber,
                 $orderStatus,
                 $paymentProvider,
                 $updatedAt
             );
+
+			$this->eventManager->dispatch(
+				'nosto_order_status_load_after',
+				['order' => $nostoOrderStatus, 'magentoOrder' => $order]
+			);
+
+			return $nostoOrderStatus;
         } catch (\Exception $e) {
             $this->logger->exception($e);
         }
-
-        $this->eventManager->dispatch(
-            'nosto_order_status_load_after',
-            ['order' => $orderStatus, 'magentoOrder' => $order]
-        );
-
-        return $orderStatus;
+		return null;
     }
 }
