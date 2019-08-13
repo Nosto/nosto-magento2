@@ -39,13 +39,18 @@ namespace Nosto\Tagging\Model\Product\Index;
 use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\Api\SearchCriteriaInterface;
+use Magento\Framework\Model\AbstractModel;
 use Magento\Store\Api\Data\StoreInterface;
+use Nosto\NostoException;
 use Nosto\Tagging\Api\Data\ProductIndexInterface;
+use Nosto\Tagging\Api\Data\ProductIndexSearchResultsInterface;
 use Nosto\Tagging\Api\ProductIndexRepositoryInterface;
 use Nosto\Tagging\Model\RepositoryTrait;
 use Nosto\Tagging\Model\ResourceModel\Product\Index as IndexResource;
 use Nosto\Tagging\Model\ResourceModel\Product\Index\Collection as IndexCollection;
 use Nosto\Tagging\Model\ResourceModel\Product\Index\CollectionFactory as IndexCollectionFactory;
+
+use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Util\Repository as RepositoryUtil;
 use Nosto\Tagging\Model\Product\Index\IndexSearchResults;
 use Magento\Framework\Api\Search\SearchResult;
@@ -61,21 +66,24 @@ class IndexRepository implements ProductIndexRepositoryInterface
     /**
      * IndexRepository constructor.
      *
-     * @param IndexResource $indexResource
-     * @param IndexCollectionFactory $indexCollectionFactory
-     * @param IndexSearchResultsFactory $indexSearchResultsFactory
+     * @param IndexResource $queueResource
+     * @param IndexCollectionFactory\ $queueCollectionFactory
+     * @param IndexSearchResultsFactory $queueSearchResultsFactory
      * @param SearchCriteriaBuilder $searchCriteriaBuilder
+     * @param NostoLogger $logger
      */
     public function __construct(
         IndexResource $indexResource,
         IndexCollectionFactory $indexCollectionFactory,
         IndexSearchResultsFactory $indexSearchResultsFactory,
-        SearchCriteriaBuilder $searchCriteriaBuilder
+        SearchCriteriaBuilder $searchCriteriaBuilder,
+        NostoLogger $logger
     ) {
         $this->indexResource = $indexResource;
         $this->indexCollectionFactory = $indexCollectionFactory;
         $this->indexSearchResultsFactory = $indexSearchResultsFactory;
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;
+        $this->logger = $logger;
     }
 
     /**
@@ -95,7 +103,8 @@ class IndexRepository implements ProductIndexRepositoryInterface
      * Returns all entries by product ids
      *
      * @param int $productId
-     * @return SearchResult|\Nosto\Tagging\Model\Product\Index\IndexSearchResults
+     *
+     * @return IndexSearchResults
      */
     public function getByProductId($productId)
     {
@@ -137,6 +146,7 @@ class IndexRepository implements ProductIndexRepositoryInterface
         return $results->getFirstItem();
     }
 
+
     /**
      * @inheritdoc
      */
@@ -150,6 +160,7 @@ class IndexRepository implements ProductIndexRepositoryInterface
 
         return $results->getItems();
     }
+
 
     /**
      * @inheritdoc
@@ -166,6 +177,7 @@ class IndexRepository implements ProductIndexRepositoryInterface
 
         return $results->getFirstItem();
     }
+
 
     /**
      * Get list of productIndexes
@@ -195,7 +207,7 @@ class IndexRepository implements ProductIndexRepositoryInterface
     /**
      * Returns all entries in product queue
      *
-     * @return IndexCollection
+     * @return IndexSearchResults
      */
     public function getAll()
     {

@@ -155,6 +155,7 @@ class Builder
     /**
      * @param Product $product
      * @param Store $store
+     * @param string $nostoScope
      * @return NostoProduct|null
      * @throws \Exception
      */

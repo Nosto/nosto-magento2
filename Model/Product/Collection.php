@@ -36,7 +36,6 @@
 
 namespace Nosto\Tagging\Model\Product;
 
-use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\Product\Visibility as ProductVisibility;
 use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductCollectionFactory;
 use Magento\Sales\Api\Data\EntityInterface;
@@ -46,7 +45,6 @@ use Nosto\Object\Product\ProductCollection;
 use Nosto\Tagging\Model\Service\Product as NostoProductService;
 use Nosto\Types\Product\ProductInterface;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
-use Magento\Catalog\Model\ResourceModel\Product\Collection as MageCollection;
 
 class Collection
 {
@@ -59,7 +57,7 @@ class Collection
      * Collection constructor.
      * @param ProductCollectionFactory $productCollectionFactory
      * @param ProductVisibility $productVisibility
-     * @param NostoProductService $nostoProductService
+     * @param Builder $nostoProductBuilder
      * @param NostoLogger $logger
      */
     public function __construct(
@@ -76,7 +74,7 @@ class Collection
 
     public function getCollection(Store $store)
     {
-        /** @var MageCollection $collection */
+        /** @var \Magento\Catalog\Model\ResourceModel\Product\Collection $collection */
         /** @noinspection PhpUndefinedMethodInspection */
         $collection = $this->productCollectionFactory->create();
         $collection->setVisibility($this->productVisibility->getVisibleInSiteIds());
@@ -123,7 +121,7 @@ class Collection
      */
     private function build(Store $store, $collection)
     {
-        /** @var MageCollection $collection */
+        /** @var \Magento\Catalog\Model\ResourceModel\Product\Collection $collection */
         $products = new ProductCollection();
         $items = $collection->loadData();
         if ($items instanceof \Traversable === false && !is_array($items)) {
@@ -132,7 +130,7 @@ class Collection
             );
         }
         foreach ($items as $product) {
-            /** @var Product $product */
+            /** @var \Magento\Catalog\Model\Product $product */
             try {
                 $nostoProduct = $this->nostoProductService->getNostoProduct(
                     $product,

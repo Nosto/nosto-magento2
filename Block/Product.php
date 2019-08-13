@@ -141,7 +141,7 @@ class Product extends View
     public function getAbstractObject()
     {
         $store = $this->nostoHelperScope->getStore();
-        // @TODO - fetch from index, rebuild if out of sync
+        // ToDo - fetch from index, rebuild if out of sync
         return $this->nostoProductService->getNostoProduct(
             $this->getProduct(),
             $store,
