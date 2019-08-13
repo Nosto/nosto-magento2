@@ -56,8 +56,8 @@ abstract class Base extends Action
     const LIMIT = 'limit';
     const OFFSET = 'offset';
 
-    protected $nostoHelperAccount;
-    protected $nostoHelperScope;
+    private $nostoHelperAccount;
+    private $nostoHelperScope;
 
     /**
      * Constructor.
@@ -135,5 +135,13 @@ abstract class Base extends Action
             }
         }
         return $result;
+    }
+
+    /**
+     * @return NostoHelperScope
+     */
+    public function getNostoHelperScope(): NostoHelperScope
+    {
+        return $this->nostoHelperScope;
     }
 }

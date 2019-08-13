@@ -115,7 +115,7 @@ class Product extends Base
         $result = parent::export($collection);
         $preview = $this->getRequest()->getParam(self::PARAM_PREVIEW, false);
         if ($preview === false) {
-            $storeId = $this->nostoHelperScope->getStore()->getId();
+            $storeId = $this->getNostoHelperScope()->getStore()->getId();
             /* @var $item NostoProduct */
             foreach ($collection as $item) {
                 $this->nostoIndexService->markAsInSyncProductByIdAndStore($item->getProductId(), $storeId);

@@ -96,12 +96,13 @@ class Invalidate implements IndexerActionInterface, MviewActionInterface
     public function execute($ids)
     {
         $ids = array_unique($ids);
+        $idsSize = count($ids);
         $storesWithNosto = $this->nostoHelperAccount->getStoresWithNosto();
         foreach ($storesWithNosto as $store) {
             $productCollection = $this->getCollection($store, $ids);
             $this->nostoServiceIndex->handleProductChange($productCollection, $store);
             $collectionSize = $productCollection->getSize();
-            $idsSize = count(array_unique($ids));
+
             if ($idsSize > $collectionSize) {
                 $this->nostoServiceIndex->markProductsAsDeletedByDiff($productCollection, $ids, $store);
             }
@@ -110,7 +111,6 @@ class Invalidate implements IndexerActionInterface, MviewActionInterface
 
     public function executeFull()
     {
-        //ToDo - don't do anything here - we don't want this to be executed every time setup:upgrade is ran
         $storesWithNosto = $this->nostoHelperAccount->getStoresWithNosto();
         foreach ($storesWithNosto as $store) {
             $productCollection = $this->getCollection($store);

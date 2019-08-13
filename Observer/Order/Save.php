@@ -51,7 +51,7 @@ use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Customer\Customer as NostoCustomer;
 use Nosto\Tagging\Model\Customer\Repository as CustomerRepository;
-use Nosto\Tagging\Model\Indexer\Product\Indexer;
+use Nosto\Tagging\Model\Indexer\Invalidate as InvalidateIndexer;
 use Nosto\Tagging\Model\Order\Builder as NostoOrderBuilder;
 use Nosto\Tagging\Model\Order\Status\Builder as NostoOrderStatusBuilder;
 use Nosto\Object\Order\Order as NostoOrder;
@@ -115,7 +115,7 @@ class Save implements ObserverInterface
         $this->nostoOrderBuilder = $orderBuilder;
         $this->orderStatusBuilder = $orderStatusBuilder;
         $this->customerRepository = $customerRepository;
-        $this->indexer = $indexerRegistry->get(Indexer::INDEXER_ID);
+        $this->indexer = $indexerRegistry->get(InvalidateIndexer::INDEXER_ID);
         $this->nostoHelperScope = $nostoHelperScope;
         $this->nostoHelperUrl = $nostoHelperUrl;
         $this->magentoCustomerRepository = $magentoCustomerRepository;

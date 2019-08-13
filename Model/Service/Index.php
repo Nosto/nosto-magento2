@@ -58,6 +58,7 @@ use Nosto\Tagging\Model\ResourceModel\Product\Index\Collection as NostoIndexColl
 use Nosto\Tagging\Model\ResourceModel\Product\Index\CollectionFactory as NostoIndexCollectionFactory;
 use Nosto\Tagging\Util\Product as ProductUtil;
 use Nosto\Types\Product\ProductInterface as NostoProductInterface;
+use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
 
 class Index
 {
@@ -92,6 +93,9 @@ class Index
     /** @var NostoLogger */
     private $logger;
 
+    /** @var TimezoneInterface */
+    private $magentoTimeZone;
+
     /**
      * Index constructor.
      * @param IndexRepository $indexRepository
@@ -103,6 +107,7 @@ class Index
      * @param NostoHelperUrl $nostoHelperUrl
      * @param NostoLogger $logger
      * @param NostoIndexCollectionFactory $nostoIndexCollectionFactory
+     * @param TimezoneInterface $magentoTimeZone
      */
     public function __construct(
         IndexRepository $indexRepository,
@@ -113,7 +118,8 @@ class Index
         NostoHelperAccount $nostoHelperAccount,
         NostoHelperUrl $nostoHelperUrl,
         NostoLogger $logger,
-        NostoIndexCollectionFactory $nostoIndexCollectionFactory
+        NostoIndexCollectionFactory $nostoIndexCollectionFactory,
+        TimezoneInterface $magentoTimeZone
     ) {
         $this->indexRepository = $indexRepository;
         $this->indexBuilder = $indexBuilder;
@@ -124,6 +130,7 @@ class Index
         $this->nostoHelperUrl = $nostoHelperUrl;
         $this->logger = $logger;
         $this->nostoIndexCollectionFactory = $nostoIndexCollectionFactory;
+        $this->magentoTimeZone = $magentoTimeZone;
     }
 
     /**
@@ -152,9 +159,10 @@ class Index
         try {
             if ($indexedProduct instanceof ProductIndexInterface) {
                 $indexedProduct->setIsDirty(true);
-                $indexedProduct->setUpdatedAt(new \DateTime('now'));
+                $indexedProduct->setUpdatedAt($this->magentoTimeZone->date());
             } else {
-                $fullProduct = $this->productRepository->getById($product->getId()); // We need to load the full product
+                /* @var Product $fullProduct */
+                $fullProduct = $this->productRepository->getById($product->getId());
                 $indexedProduct = $this->indexBuilder->build($fullProduct, $store);
                 $indexedProduct->setIsDirty(false);
             }
@@ -186,7 +194,6 @@ class Index
         do {
             $collection->clear();
             $collection->setCurPage($curPage);
-            $collection->load();
             foreach ($collection as $productIndex) {
                 if ($productIndex->getIsDirty() === NostoProductIndex::DB_VALUE_BOOLEAN_TRUE) {
                     $this->rebuildDirtyProduct($productIndex);
@@ -229,15 +236,13 @@ class Index
                 /* @var NostoProductIndex $productIndex */
                 foreach ($collection as $productIndex) {
                     $op->addProduct($productIndex->getNostoProduct());
-                    $productIndex->setInSync(true);
-                    $this->indexRepository->save($productIndex);
                 }
                 try {
                     $op->upsert();
-                    $sentProducts += $collection->count();
+                    $sentProducts += $collection->getSize();
                     $this->logger->logWithMemoryConsumption(
                         sprintf(
-                        'Sent %d/%d products to Nosto (%d/%d)',
+                            'Sent %d/%d products to Nosto (%d/%d)',
                             $sentProducts,
                             $totalCount,
                             $currentPage,
@@ -246,6 +251,9 @@ class Index
                     );
                 } catch (\Exception $upsertException) {
                     $this->logger->exception($upsertException);
+                } finally {
+                    // We will set this as in sync even if there was failures
+                    $collection->markAsInSyncCurrentItemsByStore($store);
                 }
                 ++$currentPage;
             } while ($currentPage <= $pages);
@@ -269,11 +277,11 @@ class Index
     /**
      * @param ProductIndexInterface $productIndex
      * @return ProductIndexInterface|null
-     * @throws NoSuchEntityException
      */
     public function rebuildDirtyProduct(ProductIndexInterface $productIndex)
     {
         try {
+            /* @var Product $magentoProduct */
             $magentoProduct = $this->productRepository->getById($productIndex->getProductId());
             $store = $this->nostoHelperScope->getStore($productIndex->getStoreId());
             $nostoProduct = $this->nostoProductBuilder->build($magentoProduct, $store);
@@ -343,7 +351,6 @@ class Index
         do {
             $collection->clear();
             $collection->setCurPage($curPage);
-            $collection->load();
             /** @var Product $magentoProduct */
             foreach ($collection as $magentoProduct) {
                 $key = array_search($magentoProduct->getId(), $uniqueIds);
@@ -368,7 +375,7 @@ class Index
     /**
      * Discontinues products in Nosto and removes indexed products from Nosto product index
      *
-     * @param array $ids
+     * @param NostoIndexCollection $collection
      * @param Store $store
      * @return int number of deleted products
      * @throws NostoException
@@ -389,7 +396,6 @@ class Index
         do {
             $collection->clear();
             $collection->setCurPage($curPage);
-            $collection->load();
             $ids = [];
             /* @var $indexedProduct NostoProductIndex */
             foreach ($collection as $indexedProduct) {
@@ -399,8 +405,7 @@ class Index
                 $op = new DeleteProduct($account, $this->nostoHelperUrl->getActiveDomain($store));
                 $op->setResponseTimeout(30);
                 $op->setProductIds($ids);
-                $op->delete();
-
+                $op->delete(); // @codingStandardsIgnoreLine
                 $rowsRemoved = $collection->deleteCurrentItemsByStore($store);
                 $totalDeleted += $rowsRemoved;
             } catch (\Exception $e) {

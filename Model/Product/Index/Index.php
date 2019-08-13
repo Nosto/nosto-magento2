@@ -36,13 +36,13 @@
 
 namespace Nosto\Tagging\Model\Product\Index;
 
+use Magento\Catalog\Api\Data\ProductInterface as MagentoProductInterface;
 use Magento\Framework\Model\AbstractModel;
 use Magento\Store\Api\Data\StoreInterface;
 use Nosto\Object\Product\Product;
 use Nosto\Tagging\Api\Data\ProductIndexInterface;
 use Nosto\Tagging\Model\ResourceModel\Product\Index as NostoIndex;
 use Nosto\Types\Product\ProductInterface as NostoProductInterface;
-use Magento\Catalog\Api\Data\ProductInterface as MagentoProductInterface;
 
 class Index extends AbstractModel implements ProductIndexInterface
 {
@@ -191,7 +191,7 @@ class Index extends AbstractModel implements ProductIndexInterface
     public function getNostoProduct()
     {
         try {
-            $unserialized = unserialize($this->getProductData(), [Product::class]);
+            $unserialized = unserialize($this->getProductData(), [Product::class]); // @codingStandardsIgnoreLine
         } catch (\Exception $exception) {
             $unserialized = null;
         }
@@ -227,9 +227,11 @@ class Index extends AbstractModel implements ProductIndexInterface
      */
     public function setIsDeleted($isDeleted)
     {
-        return $this->setData(self::IS_DELETED, $isDeleted ? self::DB_VALUE_BOOLEAN_TRUE : self::DB_VALUE_BOOLEAN_FALSE);
+        return $this->setData(
+            self::IS_DELETED,
+            $isDeleted ? self::DB_VALUE_BOOLEAN_TRUE : self::DB_VALUE_BOOLEAN_FALSE
+        );
     }
-
 
     /**
      * Initialize resource model

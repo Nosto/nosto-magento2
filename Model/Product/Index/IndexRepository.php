@@ -37,28 +37,20 @@
 namespace Nosto\Tagging\Model\Product\Index;
 
 use Magento\Catalog\Api\Data\ProductInterface;
+use Magento\Framework\Api\Search\SearchResult;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\Api\SearchCriteriaInterface;
-use Magento\Framework\Model\AbstractModel;
 use Magento\Store\Api\Data\StoreInterface;
-use Nosto\NostoException;
 use Nosto\Tagging\Api\Data\ProductIndexInterface;
-use Nosto\Tagging\Api\Data\ProductIndexSearchResultsInterface;
 use Nosto\Tagging\Api\ProductIndexRepositoryInterface;
-use Nosto\Tagging\Model\RepositoryTrait;
 use Nosto\Tagging\Model\ResourceModel\Product\Index as IndexResource;
-use Nosto\Tagging\Model\ResourceModel\Product\Index\Collection as IndexCollection;
-use Nosto\Tagging\Model\ResourceModel\Product\Index\CollectionFactory as IndexCollectionFactory;
 
-use Nosto\Tagging\Logger\Logger as NostoLogger;
+use Nosto\Tagging\Model\ResourceModel\Product\Index\CollectionFactory as IndexCollectionFactory;
 use Nosto\Tagging\Util\Repository as RepositoryUtil;
-use Nosto\Tagging\Model\Product\Index\IndexSearchResults;
-use Magento\Framework\Api\Search\SearchResult;
 
 class IndexRepository implements ProductIndexRepositoryInterface
 {
     private $searchCriteriaBuilder;
-    private $logger;
     private $indexCollectionFactory;
     private $indexSearchResultsFactory;
     private $indexResource;
@@ -66,24 +58,21 @@ class IndexRepository implements ProductIndexRepositoryInterface
     /**
      * IndexRepository constructor.
      *
-     * @param IndexResource $queueResource
-     * @param IndexCollectionFactory\ $queueCollectionFactory
-     * @param IndexSearchResultsFactory $queueSearchResultsFactory
+     * @param IndexResource $indexResource
+     * @param IndexCollectionFactory $indexCollectionFactory
+     * @param IndexSearchResultsFactory $indexSearchResultsFactory
      * @param SearchCriteriaBuilder $searchCriteriaBuilder
-     * @param NostoLogger $logger
      */
     public function __construct(
         IndexResource $indexResource,
         IndexCollectionFactory $indexCollectionFactory,
         IndexSearchResultsFactory $indexSearchResultsFactory,
-        SearchCriteriaBuilder $searchCriteriaBuilder,
-        NostoLogger $logger
+        SearchCriteriaBuilder $searchCriteriaBuilder
     ) {
         $this->indexResource = $indexResource;
         $this->indexCollectionFactory = $indexCollectionFactory;
         $this->indexSearchResultsFactory = $indexSearchResultsFactory;
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;
-        $this->logger = $logger;
     }
 
     /**
@@ -104,7 +93,7 @@ class IndexRepository implements ProductIndexRepositoryInterface
      *
      * @param int $productId
      *
-     * @return IndexSearchResults
+     * @return SearchResult
      */
     public function getByProductId($productId)
     {
@@ -146,7 +135,6 @@ class IndexRepository implements ProductIndexRepositoryInterface
         return $results->getFirstItem();
     }
 
-
     /**
      * @inheritdoc
      */
@@ -160,7 +148,6 @@ class IndexRepository implements ProductIndexRepositoryInterface
 
         return $results->getItems();
     }
-
 
     /**
      * @inheritdoc
@@ -176,48 +163,6 @@ class IndexRepository implements ProductIndexRepositoryInterface
         $results = $this->search($searchCriteria);
 
         return $results->getFirstItem();
-    }
-
-
-    /**
-     * Get list of productIndexes
-     *
-     * @param int $pageSize
-     *
-     * @return IndexSearchResults
-     */
-    public function getFirstPage($pageSize)
-    {
-        /* @var IndexCollection $collection */
-        $collection = $this->indexCollectionFactory->create();
-        $collection->setPageSize($pageSize);
-        $collection->setCurPage(1);
-        $collection->load();
-        /* @var IndexSearchResults $searchResults */
-        $searchResults = $this->indexCollectionFactory->create();
-        $searchResults->setItems($collection->getItems());
-        $searchResults->setTotalCount($collection->getSize());
-
-        // Set collection to be mem dealloc
-        $collection->clear();
-
-        return $searchResults;
-    }
-
-    /**
-     * Returns all entries in product queue
-     *
-     * @return IndexSearchResults
-     */
-    public function getAll()
-    {
-        $collection = $this->indexCollectionFactory->create();
-        $collection->load();
-        $searchResults = $this->indexCollectionFactory->create();
-        $searchResults->setItems($collection->getItems());
-        $searchResults->setTotalCount($collection->getSize());
-
-        return $searchResults;
     }
 
     /**

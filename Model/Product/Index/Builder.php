@@ -42,6 +42,7 @@ use Nosto\NostoException;
 use Nosto\Object\Product\Product as NostoProduct;
 use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
 use Nosto\Tagging\Model\Product\BuilderTrait;
+use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
 
 class Builder
 {
@@ -55,17 +56,23 @@ class Builder
     /** @var NostoProductBuilder */
     private $nostoProductBuilder;
 
+    /** @var TimezoneInterface */
+    private $magentoTimeZone;
+
     /**
      * Builder constructor.
      * @param IndexFactory $nostoIndexFactory
      * @param NostoProductBuilder $nostoProductBuilder
+     * @param TimezoneInterface $magentoTimeZone
      */
     public function __construct(
         IndexFactory $nostoIndexFactory,
-        NostoProductBuilder $nostoProductBuilder
+        NostoProductBuilder $nostoProductBuilder,
+        TimezoneInterface $magentoTimeZone
     ) {
         $this->nostoIndexFactory = $nostoIndexFactory;
         $this->nostoProductBuilder = $nostoProductBuilder;
+        $this->magentoTimeZone = $magentoTimeZone;
     }
 
     /**
@@ -83,10 +90,10 @@ class Builder
         if ($nostoProduct instanceof NostoProduct) {
             $productIndex = $this->nostoIndexFactory->create();
             $productIndex->setProductId($nostoProduct->getProductId());
-            $productIndex->setCreatedAt(new \DateTime('now'));
+            $productIndex->setCreatedAt($this->magentoTimeZone->date());
             $productIndex->setInSync(false);
             $productIndex->setIsDirty(false);
-            $productIndex->setUpdatedAt(new \DateTime('now'));
+            $productIndex->setUpdatedAt($this->magentoTimeZone->date());
             $productIndex->setNostoProduct($nostoProduct);
             $productIndex->setStore($store);
             return $productIndex;

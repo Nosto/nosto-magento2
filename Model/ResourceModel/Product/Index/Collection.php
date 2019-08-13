@@ -101,13 +101,39 @@ class Collection extends AbstractCollection
         }
         $indexIds = [];
         /* @var Index $item */
-        $toArr = $this->toArray([Index::ID]);
         foreach ($this->getItems() as $item) {
             $indexIds[] = $item->getId();
         }
         $connection = $this->getConnection();
         return $connection->delete(
             $this->getMainTable(),
+            [
+                sprintf('%s IN (?)', Index::ID) => array_unique($indexIds),
+                sprintf('%s=?', Index::STORE_ID) => $store->getId()
+            ]
+        );
+    }
+
+    /**
+     * Marks current items in collection as in_sync
+     *
+     * @param Store $store
+     * @return int
+     */
+    public function markAsInSyncCurrentItemsByStore(Store $store)
+    {
+        if ($this->getSize() === 0) {
+            return 0;
+        }
+        $indexIds = [];
+        /* @var Index $item */
+        foreach ($this->getItems() as $item) {
+            $indexIds[] = $item->getId();
+        }
+        $connection = $this->getConnection();
+        return $connection->update(
+            $this->getMainTable(),
+            [Index::IN_SYNC => Index::DB_VALUE_BOOLEAN_TRUE],
             [
                 sprintf('%s IN (?)', Index::ID) => array_unique($indexIds),
                 sprintf('%s=?', Index::STORE_ID) => $store->getId()

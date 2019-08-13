@@ -86,7 +86,7 @@ class Product
      * @param MagentoProduct $product
      * @param Store $store
      * @param string $scope
-     * @return NostoProduct
+     * @return NostoProduct|null
      */
     public function getNostoProduct(MagentoProduct $product, Store $store, $scope)
     {

@@ -75,14 +75,6 @@ interface ProductIndexRepositoryInterface extends BaseRepositoryInterface
     public function getById($id);
 
     /**
-     * Get list of productIndexs
-     *
-     * @param int $pageSize
-     * @return ProductIndexSearchResultsInterface
-     */
-    public function getFirstPage($pageSize);
-
-    /**
      * Returns entry by product and store
      *
      * @param ProductInterface $product
@@ -97,11 +89,4 @@ interface ProductIndexRepositoryInterface extends BaseRepositoryInterface
      * @return ProductIndexInterface|null
      */
     public function getByProductIdAndStoreId(int $productId, int $storeId);
-
-    /**
-     * Returns all entries in product queue
-     *
-     * @return ProductIndexSearchResultsInterface
-     */
-    public function getAll();
 }
