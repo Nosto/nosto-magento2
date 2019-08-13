@@ -76,19 +76,6 @@ class IndexRepository implements ProductIndexRepositoryInterface
     }
 
     /**
-     * Save Queue entry
-     *
-     * @param ProductIndexInterface $productIndex
-     * @return ProductIndexInterface|IndexResource
-     * @throws \Exception
-     * @suppress PhanTypeMismatchArgument
-     */
-    public function save(ProductIndexInterface $productIndex)
-    {
-        return $this->indexResource->save($productIndex);
-    }
-
-    /**
      * Returns all entries by product ids
      *
      * @param int $productId
@@ -112,6 +99,7 @@ class IndexRepository implements ProductIndexRepositoryInterface
         $searchCriteria = $this->searchCriteriaBuilder
             ->addFilter(ProductIndexInterface::PRODUCT_ID, $product->getId(), 'eq')
             ->addFilter(ProductIndexInterface::STORE_ID, $store->getId(), 'eq')
+            ->setPageSize(1)
             ->create();
 
         /* @var IndexSearchResults $results */
@@ -127,6 +115,7 @@ class IndexRepository implements ProductIndexRepositoryInterface
     {
         $searchCriteria = $this->searchCriteriaBuilder
             ->addFilter(ProductIndexInterface::ID, $id, 'eq')
+            ->setPageSize(1)
             ->create();
 
         /* @var IndexSearchResults $results */
@@ -157,6 +146,7 @@ class IndexRepository implements ProductIndexRepositoryInterface
         $searchCriteria = $this->searchCriteriaBuilder
             ->addFilter(ProductIndexInterface::PRODUCT_ID, $productId, 'eq')
             ->addFilter(ProductIndexInterface::STORE_ID, $storeId, 'eq')
+            ->setPageSize(1)
             ->create();
 
         /* @var IndexSearchResults $results */
@@ -168,7 +158,7 @@ class IndexRepository implements ProductIndexRepositoryInterface
     /**
      * @param SearchCriteriaInterface $searchCriteria
      *
-     * @return SearchResult
+     * @return IndexSearchResults
      */
     public function search(SearchCriteriaInterface $searchCriteria)
     {
@@ -182,6 +172,25 @@ class IndexRepository implements ProductIndexRepositoryInterface
         );
     }
 
+    /**
+     * Save product index entry
+     *
+     * @param ProductIndexInterface $productIndex
+     * @return ProductIndexInterface|IndexResource
+     * @throws \Exception
+     * @suppress PhanTypeMismatchArgument
+     */
+    public function save(ProductIndexInterface $productIndex)
+    {
+        return $this->indexResource->save($productIndex);
+    }
+
+    /**
+     * Delete product index entry
+     * @param ProductIndexInterface $productIndex
+     * @throws \Exception
+     * @suppress PhanTypeMismatchArgument
+     */
     public function delete(ProductIndexInterface $productIndex)
     {
         $this->indexResource->delete($productIndex);

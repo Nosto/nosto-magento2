@@ -57,7 +57,7 @@ class Collection
      * Collection constructor.
      * @param ProductCollectionFactory $productCollectionFactory
      * @param ProductVisibility $productVisibility
-     * @param Builder $nostoProductBuilder
+     * @param NostoProductService $nostoProductService
      * @param NostoLogger $logger
      */
     public function __construct(

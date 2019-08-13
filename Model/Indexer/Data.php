@@ -38,7 +38,6 @@ namespace Nosto\Tagging\Model\Indexer;
 
 use Magento\Framework\Indexer\ActionInterface as IndexerActionInterface;
 use Magento\Framework\Mview\ActionInterface as MviewActionInterface;
-use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Product\Index\Index as NostoIndex;
 use Nosto\Tagging\Model\ResourceModel\Product\Index\Collection as IndexCollection;
 use Nosto\Tagging\Model\ResourceModel\Product\Index\CollectionFactory as IndexCollectionFactory;
@@ -61,7 +60,6 @@ class Data implements IndexerActionInterface, MviewActionInterface
      * Product constructor.
      * @param NostoIndexService $nostoServiceIndex
      * @param IndexCollectionFactory $indexCollectionFactory
-     * @param NostoLogger $nostoLogger
      */
     public function __construct(
         NostoIndexService $nostoServiceIndex,
