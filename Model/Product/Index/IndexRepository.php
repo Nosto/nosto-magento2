@@ -49,7 +49,7 @@ use Nosto\Tagging\Model\RepositoryTrait;
 use Nosto\Tagging\Model\ResourceModel\Product\Index as IndexResource;
 use Nosto\Tagging\Model\ResourceModel\Product\Index\Collection as IndexCollection;
 use Nosto\Tagging\Model\ResourceModel\Product\Index\CollectionFactory as IndexCollectionFactory;
-
+use Nosto\Tagging\Model\Product\Index\Index as NostoIndex;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Util\Repository as RepositoryUtil;
 use Nosto\Tagging\Model\Product\Index\IndexSearchResults;
@@ -146,7 +146,29 @@ class IndexRepository implements ProductIndexRepositoryInterface
         return $results->getFirstItem();
     }
 
+    /**
+     * @inheritdoc
+     */
+    public function getTotalOutOfSync()
+    {
+        $searchCriteria = $this->searchCriteriaBuilder
+            ->addFilter(ProductIndexInterface::IN_SYNC, NostoIndex::VALUE_NOT_IN_SYNC, 'eq')
+            ->create();
 
+        return $this->search($searchCriteria)->getTotalCount();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getTotalDirty()
+    {
+        $searchCriteria = $this->searchCriteriaBuilder
+        ->addFilter(ProductIndexInterface::IS_DIRTY, NostoIndex::VALUE_IS_DIRTY, 'eq')
+        ->create();
+
+        return $this->search($searchCriteria)->getTotalCount();
+    }
     /**
      * @inheritdoc
      */

@@ -104,4 +104,18 @@ interface ProductIndexRepositoryInterface extends BaseRepositoryInterface
      * @return ProductIndexSearchResultsInterface
      */
     public function getAll();
+
+    /**
+     * Return total amount of products marked as out of sync
+     *
+     * @return int
+     */
+    public function getTotalOutOfSync();
+
+    /**
+     * Return total amount of products marked as dirty
+     *
+     * @return int
+     */
+    public function getTotalDirty();
 }
