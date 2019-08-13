@@ -40,6 +40,7 @@ use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Framework\Api\Search\SearchResult;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\Api\SearchCriteriaInterface;
+use Magento\Framework\Model\AbstractModel;
 use Magento\Store\Api\Data\StoreInterface;
 use Nosto\Tagging\Api\Data\ProductIndexInterface;
 use Nosto\Tagging\Api\ProductIndexRepositoryInterface;
@@ -182,6 +183,8 @@ class IndexRepository implements ProductIndexRepositoryInterface
      */
     public function save(ProductIndexInterface $productIndex)
     {
+        /** @noinspection PhpParamsInspection */
+        /** @var AbstractModel $productIndex */
         return $this->indexResource->save($productIndex);
     }
 
@@ -193,6 +196,8 @@ class IndexRepository implements ProductIndexRepositoryInterface
      */
     public function delete(ProductIndexInterface $productIndex)
     {
+        /** @noinspection PhpParamsInspection */
+        /** @var AbstractModel $productIndex */
         $this->indexResource->delete($productIndex);
     }
 }

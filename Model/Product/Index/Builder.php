@@ -78,9 +78,8 @@ class Builder
     /**
      * @param Product $product
      * @param Store $store
-     * @param string $nostoScope
      * @return Index
-     * @throws \Exception
+     * @throws NostoException
      */
     public function build(
         Product $product,
