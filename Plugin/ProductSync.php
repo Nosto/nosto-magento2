@@ -38,11 +38,12 @@ namespace Nosto\Tagging\Plugin;
 
 use Closure;
 use Magento\Catalog\Model\ResourceModel\Product as MagentoResourceProduct;
+use Nosto\Tagging\Model\ResourceModel\Product\Index;
 use Magento\Framework\Indexer\IndexerRegistry;
 use Magento\Framework\Model\AbstractModel;
-use Nosto\Tagging\Model\Indexer\Invalidate as IndexerInvalidate;
+use Nosto\Tagging\Model\Indexer\Sync as IndexerSync;
 
-class Product
+class ProductSync
 {
     /**
      * @var IndexerRegistry
@@ -50,39 +51,47 @@ class Product
     private $indexerRegistry;
 
     /**
-     * @var IndexerInvalidate
+     * @var IndexerSync
      */
-    private $indexerInvalidate;
+    private $indexerSync;
+
+    /**
+     * @var MagentoResourceProduct
+     */
+    private $magentoResourceProduct;
 
     /**
      * Product Observer constructor
+     * @param MagentoResourceProduct $magentoResourceProduct
      * @param IndexerRegistry $indexerRegistry
-     * @param IndexerInvalidate $indexerInvalidate
+     * @param IndexerSync $indexerSync
      */
     public function __construct(
+        MagentoResourceProduct $magentoResourceProduct,
         IndexerRegistry $indexerRegistry,
-        IndexerInvalidate $indexerInvalidate
+        IndexerSync $indexerSync
     )
     {
         $this->indexerRegistry = $indexerRegistry;
-        $this->indexerInvalidate = $indexerInvalidate;
+        $this->magentoResourceProduct = $magentoResourceProduct;
+        $this->indexerSync = $indexerSync;
     }
 
     /**
-     * @param MagentoResourceProduct $productResource
+     * @param Index $index
      * @param Closure $proceed
      * @param AbstractModel $product
      * @return mixed
      */
     public function aroundSave(
-        MagentoResourceProduct $productResource,
+        Index $index,
         Closure $proceed,
         AbstractModel $product
     ) {
-        $mageIndexer = $this->indexerRegistry->get(IndexerInvalidate::INDEXER_ID);
+        $mageIndexer = $this->indexerRegistry->get(IndexerSync::INDEXER_ID);
         if (!$mageIndexer->isScheduled()) {
-            $productResource->addCommitCallback(function () use ($product) {
-                $this->indexerInvalidate->executeRow($product->getId());
+            $this->magentoResourceProduct->addCommitCallback(function () use ($product) {
+                $this->indexerSync->executeRow($product->getId());
             });
         }
 

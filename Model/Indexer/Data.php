@@ -50,7 +50,7 @@ use Nosto\Tagging\Model\Service\Index as NostoIndexService;
  */
 class Data implements IndexerActionInterface, MviewActionInterface
 {
-    public const INDEXER_ID = 'nosto_product_index_data';
+    public const INDEXER_ID = 'nosto_index_product_data';
 
     /** @var NostoLogger  */
     private $logger;
@@ -120,7 +120,7 @@ class Data implements IndexerActionInterface, MviewActionInterface
 
     /**
      * @param array $ids
-     * @return void
+     * @return IndexCollection
      */
     private function getCollection(array $ids = [])
     {
