@@ -42,6 +42,7 @@ use Nosto\NostoException;
 use Nosto\Object\Product\Product as NostoProduct;
 use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
 use Nosto\Tagging\Model\Product\BuilderTrait;
+use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
 
 class Builder
 {
@@ -71,9 +72,8 @@ class Builder
     /**
      * @param Product $product
      * @param Store $store
-     * @param string $nostoScope
      * @return Index
-     * @throws \Exception
+     * @throws NostoException
      */
     public function build(
         Product $product,
@@ -81,12 +81,13 @@ class Builder
     ) {
         $nostoProduct = $this->nostoProductBuilder->build($product, $store);
         if ($nostoProduct instanceof NostoProduct) {
+            $timeZone = new TimezoneInterface;
             $productIndex = $this->nostoIndexFactory->create();
             $productIndex->setProductId($nostoProduct->getProductId());
-            $productIndex->setCreatedAt(new \DateTime('now'));
+            $productIndex->setCreatedAt($timeZone->date());
             $productIndex->setInSync(false);
             $productIndex->setIsDirty(false);
-            $productIndex->setUpdatedAt(new \DateTime('now'));
+            $productIndex->setUpdatedAt($timeZone->date());
             $productIndex->setNostoProduct($nostoProduct);
             $productIndex->setStore($store);
             return $productIndex;

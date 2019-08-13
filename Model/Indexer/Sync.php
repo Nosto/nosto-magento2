@@ -36,16 +36,11 @@
 
 namespace Nosto\Tagging\Model\Indexer;
 
-use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductCollectionFactory;
 use Magento\Framework\Indexer\ActionInterface as IndexerActionInterface;
 use Magento\Framework\Mview\ActionInterface as MviewActionInterface;
 use Magento\Store\Model\Store;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
-use Nosto\Tagging\Helper\Data as NostoHelperData;
-use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Product\Index\Index as NostoIndex;
-use Nosto\Tagging\Model\Product\QueueRepository as NostoQueueRepository;
-use Nosto\Tagging\Model\Product\Service as ProductService;
 use Nosto\Tagging\Model\ResourceModel\Product\Index\Collection as IndexCollection;
 use Nosto\Tagging\Model\ResourceModel\Product\Index\CollectionFactory as IndexCollectionFactory;
 use Nosto\Tagging\Model\Service\Index as NostoServiceIndex;
@@ -56,9 +51,6 @@ use Nosto\Tagging\Model\Service\Index as NostoServiceIndex;
 class Sync implements IndexerActionInterface, MviewActionInterface
 {
     public const INDEXER_ID = 'nosto_index_product_sync';
-
-    /** @var NostoLogger */
-    private $logger;
 
     /** @var NostoHelperAccount */
     private $nostoHelperAccount;
@@ -71,22 +63,15 @@ class Sync implements IndexerActionInterface, MviewActionInterface
 
     /**
      * Sync constructor.
-     * @param ProductService $productService
-     * @param NostoHelperData $dataHelper
-     * @param NostoLogger $logger
-     * @param ProductCollectionFactory $productCollectionFactory
-     * @param NostoQueueRepository $nostoQueueRepository
      * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoServiceIndex $nostoServiceIndex
      * @param IndexCollectionFactory $indexCollectionFactory
      */
     public function __construct(
-        NostoLogger $logger,
         NostoHelperAccount $nostoHelperAccount,
         NostoServiceIndex $nostoServiceIndex,
         IndexCollectionFactory $indexCollectionFactory
     ) {
-        $this->logger = $logger;
         $this->nostoHelperAccount = $nostoHelperAccount;
         $this->nostoServiceIndex = $nostoServiceIndex;
         $this->indexCollectionFactory = $indexCollectionFactory;

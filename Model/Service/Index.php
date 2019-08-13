@@ -259,7 +259,7 @@ class Index
      */
     public function rebuildDirtyProduct(ProductIndexInterface $productIndex)
     {
-        // ToDo - if the product doesn't exist this throws an error -> perhaps we can use that for detecting deletions
+        // @TODO - if the product doesn't exist this throws an error -> perhaps we can use that for detecting deletions
         $magentoProduct = $this->productRepository->getById($productIndex->getProductId());
         $store = $this->nostoHelperScope->getStore($productIndex->getStoreId());
         try {
