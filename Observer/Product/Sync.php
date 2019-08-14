@@ -38,6 +38,7 @@ namespace Nosto\Tagging\Observer\Product;
 
 use Closure;
 use Magento\Catalog\Model\ResourceModel\Product as MagentoResourceProduct;
+use Magento\Framework\Indexer\IndexerInterface;
 use Magento\Framework\Indexer\IndexerRegistry;
 use Magento\Catalog\Model\Product\Action;
 use Magento\Framework\Model\AbstractModel;
@@ -49,7 +50,7 @@ use Nosto\Tagging\Model\Indexer\Sync as NostoSyncIndexer;
 class Sync
 {
     /**
-     * @var \Magento\Framework\Indexer\IndexerInterface
+     * @var IndexerInterface
      */
     private $indexer;
 
@@ -83,7 +84,7 @@ class Sync
     }
 
     /**
-     * @param Product $productResource
+     * @param MagentoResourceProduct $productResource
      * @param Closure $proceed
      * @param AbstractModel $product
      * @return mixed
