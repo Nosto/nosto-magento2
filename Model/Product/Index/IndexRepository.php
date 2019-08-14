@@ -54,6 +54,7 @@ use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Util\Repository as RepositoryUtil;
 use Nosto\Tagging\Model\Product\Index\IndexSearchResults;
 use Magento\Framework\Api\Search\SearchResult;
+use Nosto\Tagging\Model\ResourceModel\Product\Index\Collection;
 
 class IndexRepository implements ProductIndexRepositoryInterface
 {
@@ -151,11 +152,11 @@ class IndexRepository implements ProductIndexRepositoryInterface
      */
     public function getTotalOutOfSync()
     {
-        $searchCriteria = $this->searchCriteriaBuilder
+        /* @var Collection $collection */
+        $collection = $this->indexCollectionFactory->create();
+        return $collection
             ->addFilter(ProductIndexInterface::IN_SYNC, NostoIndex::VALUE_NOT_IN_SYNC, 'eq')
-            ->create();
-
-        return $this->search($searchCriteria)->getTotalCount();
+            ->count();
     }
 
     /**
@@ -163,11 +164,11 @@ class IndexRepository implements ProductIndexRepositoryInterface
      */
     public function getTotalDirty()
     {
-        $searchCriteria = $this->searchCriteriaBuilder
-        ->addFilter(ProductIndexInterface::IS_DIRTY, NostoIndex::VALUE_IS_DIRTY, 'eq')
-        ->create();
-
-        return $this->search($searchCriteria)->getTotalCount();
+        /* @var Collection $collection */
+        $collection = $this->indexCollectionFactory->create();
+        return $collection
+            ->addFilter(ProductIndexInterface::IS_DIRTY, NostoIndex::VALUE_IS_DIRTY, 'eq')
+            ->count();
     }
     /**
      * @inheritdoc
