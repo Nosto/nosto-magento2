@@ -77,9 +77,10 @@ class IndexRepository implements ProductIndexRepositoryInterface
                 NostoIndex::PRODUCT_ID,
                 ['eq' => $product->getId()]
             )
-            ->addStoreFilter($store);
-        $collection->getSelect()->limit(1);
-        return $collection->getFirstItem();
+            ->addStoreFilter($store)
+            ->setPageSize(1)
+            ->setCurPage(1);
+        return $collection->getFirstItem(); // @codingStandardsIgnoreLine
     }
 
     /**
@@ -92,10 +93,10 @@ class IndexRepository implements ProductIndexRepositoryInterface
             ->addFieldToFilter(
                 NostoIndex::ID,
                 ['eq' => $id]
-            );
-        $collection->getSelect()->limit(1);
-
-        return $collection->getFirstItem();
+            )
+            ->setPageSize(1)
+            ->setCurPage(1);
+        return $collection->getFirstItem(); // @codingStandardsIgnoreLine
     }
 
     /**
@@ -105,8 +106,10 @@ class IndexRepository implements ProductIndexRepositoryInterface
     {
         $collection = $this->indexCollectionFactory->create()
             ->addFieldToSelect('*')
-            ->addIdsFilter($ids);
-        return $collection->getItems();
+            ->addIdsFilter($ids)
+            ->setPageSize(1)
+            ->setCurPage(1);
+        return $collection->getItems(); // @codingStandardsIgnoreLine
     }
 
     /**
@@ -124,9 +127,10 @@ class IndexRepository implements ProductIndexRepositoryInterface
             ->addFieldToFilter(
                 NostoIndex::STORE_ID,
                 ['eq' => $storeId]
-            );
-        $collection->getSelect()->limit(1);
-        return $collection->getFirstItem();
+            )
+            ->setPageSize(1)
+            ->setCurPage(1);
+        return $collection->getFirstItem(); // @codingStandardsIgnoreLine
     }
 
     /**

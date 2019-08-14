@@ -162,11 +162,8 @@ class Index
                 $indexedProduct->setUpdatedAt($this->magentoTimeZone->date());
             } else {
                 /* @var Product $fullProduct */
-                $fullProduct = $this->productRepository->getById(
-                    $product->getId(),
-                    false,
-                    $store->getId()
-                );
+                /** @noinspection PhpParamsInspection */
+                $fullProduct = $this->loadMagentoProduct($product->getId(), $store->getId());
                 $indexedProduct = $this->indexBuilder->build($fullProduct, $store);
                 $indexedProduct->setIsDirty(false);
             }
@@ -286,9 +283,9 @@ class Index
     {
         try {
             /* @var Product $magentoProduct */
-            $magentoProduct = $this->productRepository->getById(
+            /** @noinspection PhpParamsInspection */
+            $magentoProduct = $this->loadMagentoProduct(
                 $productIndex->getProductId(),
-                false,
                 $productIndex->getStoreId()
             );
             $store = $this->nostoHelperScope->getStore($productIndex->getStoreId());
@@ -444,5 +441,22 @@ class Index
             )->addStoreFilter($store);
 
         return $this->handleProductDeletion($collection, $store);
+    }
+
+    /**
+     * Loads (or reloads) Product object
+     * @param int $productId
+     * @param int $storeId
+     * @return \Magento\Catalog\Api\Data\ProductInterface|Product|mixed
+     * @throws NoSuchEntityException
+     */
+    private function loadMagentoProduct(int $productId, int $storeId)
+    {
+        return $this->productRepository->getById(
+            $productId,
+            false,
+            $storeId,
+            true
+        );
     }
 }
