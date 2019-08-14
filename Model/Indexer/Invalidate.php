@@ -105,7 +105,6 @@ class Invalidate implements IndexerActionInterface, MviewActionInterface
     public function executeFull()
     {
         // Empty on purpose to disable the full reindex for now
-        return;
     }
 
     public function executeList(array $ids)
