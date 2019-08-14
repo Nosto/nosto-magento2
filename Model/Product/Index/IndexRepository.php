@@ -156,7 +156,7 @@ class IndexRepository implements ProductIndexRepositoryInterface
         $collection = $this->indexCollectionFactory->create();
         return $collection
             ->addFilter(ProductIndexInterface::IN_SYNC, NostoIndex::VALUE_NOT_IN_SYNC, 'eq')
-            ->count();
+            ->getSize();
     }
 
     /**
@@ -168,7 +168,7 @@ class IndexRepository implements ProductIndexRepositoryInterface
         $collection = $this->indexCollectionFactory->create();
         return $collection
             ->addFilter(ProductIndexInterface::IS_DIRTY, NostoIndex::VALUE_IS_DIRTY, 'eq')
-            ->count();
+            ->getSize();
     }
     /**
      * @inheritdoc
