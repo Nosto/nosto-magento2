@@ -66,6 +66,18 @@ class Collection extends AbstractCollection
     }
 
     /**
+     * @param Store $store
+     * @return Collection
+     */
+    public function addIdsFilter(array $ids)
+    {
+        $this->addFieldToFilter(
+            Index::ID,
+            ['in' => $ids]
+        );
+    }
+
+    /**
      * Marks products as deleted by given product ids and store
      *
      * @param array $ids

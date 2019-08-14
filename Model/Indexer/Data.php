@@ -123,10 +123,7 @@ class Data implements IndexerActionInterface, MviewActionInterface
                 ['eq' => NostoIndex::DB_VALUE_BOOLEAN_FALSE]
             );
         if (!empty($ids)) {
-            $collection->addFieldToFilter(
-                NostoIndex::ID,
-                ['in' => $ids]
-            );
+            $collection->addIdsFilter($ids);
         }
         return $collection;
     }

@@ -39,9 +39,8 @@ namespace Nosto\Tagging\Api;
 use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Store\Api\Data\StoreInterface;
 use Nosto\Tagging\Api\Data\ProductIndexInterface;
-use Nosto\Tagging\Api\Data\ProductIndexSearchResultsInterface;
 
-interface ProductIndexRepositoryInterface extends BaseRepositoryInterface
+interface ProductIndexRepositoryInterface
 {
     /**
      * Save Queue entry
@@ -57,14 +56,6 @@ interface ProductIndexRepositoryInterface extends BaseRepositoryInterface
      * @param ProductIndexInterface $productIndex
      */
     public function delete(ProductIndexInterface $productIndex);
-
-    /**
-     * Returns all entries by product id
-     *
-     * @param int $productId
-     * @return ProductIndexSearchResultsInterface
-     */
-    public function getByProductId($productId);
 
     /**
      * Returns row from id

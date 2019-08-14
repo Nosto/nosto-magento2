@@ -138,10 +138,7 @@ class Sync implements IndexerActionInterface, MviewActionInterface
                 ['eq' => NostoIndex::DB_VALUE_BOOLEAN_FALSE]
             )->addStoreFilter($store);
         if (!empty($ids)) {
-            $collection->addFieldToFilter(
-                NostoIndex::ID,
-                ['in' => $ids]
-            );
+            $collection->addIdsFilter($ids);
         }
         return $collection;
     }

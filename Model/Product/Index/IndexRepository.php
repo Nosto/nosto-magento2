@@ -37,23 +37,18 @@
 namespace Nosto\Tagging\Model\Product\Index;
 
 use Magento\Catalog\Api\Data\ProductInterface;
-use Magento\Framework\Api\Search\SearchResult;
-use Magento\Framework\Api\SearchCriteriaBuilder;
-use Magento\Framework\Api\SearchCriteriaInterface;
 use Magento\Framework\Model\AbstractModel;
 use Magento\Store\Api\Data\StoreInterface;
 use Nosto\Tagging\Api\Data\ProductIndexInterface;
 use Nosto\Tagging\Api\ProductIndexRepositoryInterface;
+use Nosto\Tagging\Model\Product\Index\Index as NostoIndex;
 use Nosto\Tagging\Model\ResourceModel\Product\Index as IndexResource;
-
 use Nosto\Tagging\Model\ResourceModel\Product\Index\CollectionFactory as IndexCollectionFactory;
-use Nosto\Tagging\Util\Repository as RepositoryUtil;
+use Nosto\Tagging\Model\ResourceModel\Product\Index\Collection as IndexCollection;
 
 class IndexRepository implements ProductIndexRepositoryInterface
 {
-    private $searchCriteriaBuilder;
     private $indexCollectionFactory;
-    private $indexSearchResultsFactory;
     private $indexResource;
 
     /**
@@ -61,35 +56,13 @@ class IndexRepository implements ProductIndexRepositoryInterface
      *
      * @param IndexResource $indexResource
      * @param IndexCollectionFactory $indexCollectionFactory
-     * @param IndexSearchResultsFactory $indexSearchResultsFactory
-     * @param SearchCriteriaBuilder $searchCriteriaBuilder
      */
     public function __construct(
         IndexResource $indexResource,
-        IndexCollectionFactory $indexCollectionFactory,
-        IndexSearchResultsFactory $indexSearchResultsFactory,
-        SearchCriteriaBuilder $searchCriteriaBuilder
+        IndexCollectionFactory $indexCollectionFactory
     ) {
         $this->indexResource = $indexResource;
         $this->indexCollectionFactory = $indexCollectionFactory;
-        $this->indexSearchResultsFactory = $indexSearchResultsFactory;
-        $this->searchCriteriaBuilder = $searchCriteriaBuilder;
-    }
-
-    /**
-     * Returns all entries by product ids
-     *
-     * @param int $productId
-     *
-     * @return SearchResult
-     */
-    public function getByProductId($productId)
-    {
-        $searchCriteria = $this->searchCriteriaBuilder
-            ->addFilter(ProductIndexInterface::PRODUCT_ID, $productId, 'eq')
-            ->create();
-
-        return $this->search($searchCriteria);
     }
 
     /**
@@ -97,16 +70,16 @@ class IndexRepository implements ProductIndexRepositoryInterface
      */
     public function getOneByProductAndStore(ProductInterface $product, StoreInterface $store)
     {
-        $searchCriteria = $this->searchCriteriaBuilder
-            ->addFilter(ProductIndexInterface::PRODUCT_ID, $product->getId(), 'eq')
-            ->addFilter(ProductIndexInterface::STORE_ID, $store->getId(), 'eq')
+        /* @var IndexCollection $collection */
+        $collection = $this->indexCollectionFactory->create()
+            ->addFieldToSelect('*')
+            ->addFieldToFilter(
+                NostoIndex::PRODUCT_ID,
+                ['eq' => $product->getId()]
+            )->addStoreFilter($store)
             ->setPageSize(1)
-            ->create();
-
-        /* @var IndexSearchResults $results */
-        $results = $this->search($searchCriteria);
-
-        return $results->getFirstItem();
+            ->setCurPage(1);
+        return $collection->getFirstItem();
     }
 
     /**
@@ -114,15 +87,15 @@ class IndexRepository implements ProductIndexRepositoryInterface
      */
     public function getById($id)
     {
-        $searchCriteria = $this->searchCriteriaBuilder
-            ->addFilter(ProductIndexInterface::ID, $id, 'eq')
+        $collection = $this->indexCollectionFactory->create()
+            ->addFieldToSelect('*')
+            ->addFieldToFilter(
+                NostoIndex::ID,
+                ['eq' => $id]
+            )
             ->setPageSize(1)
-            ->create();
-
-        /* @var IndexSearchResults $results */
-        $results = $this->search($searchCriteria);
-
-        return $results->getFirstItem();
+            ->setCurPage(1);
+        return $collection->getFirstItem();
     }
 
     /**
@@ -130,13 +103,10 @@ class IndexRepository implements ProductIndexRepositoryInterface
      */
     public function getByIds(array $ids)
     {
-        $searchCriteria = $this->searchCriteriaBuilder
-            ->addFilter(ProductIndexInterface::ID, $ids, 'in')
-            ->create();
-        /* @var IndexSearchResults $results */
-        $results = $this->search($searchCriteria);
-
-        return $results->getItems();
+        $collection = $this->indexCollectionFactory->create()
+            ->addFieldToSelect('*')
+            ->addIdsFilter($ids);
+        return $collection->getItems();
     }
 
     /**
@@ -144,33 +114,20 @@ class IndexRepository implements ProductIndexRepositoryInterface
      */
     public function getByProductIdAndStoreId(int $productId, int $storeId)
     {
-        $searchCriteria = $this->searchCriteriaBuilder
-            ->addFilter(ProductIndexInterface::PRODUCT_ID, $productId, 'eq')
-            ->addFilter(ProductIndexInterface::STORE_ID, $storeId, 'eq')
+        /* @var IndexCollection $collection */
+        $collection = $this->indexCollectionFactory->create()
+            ->addFieldToSelect('*')
+            ->addFieldToFilter(
+                NostoIndex::PRODUCT_ID,
+                ['eq' => $productId]
+            )
+            ->addFieldToFilter(
+                NostoIndex::STORE_ID,
+                ['eq' => $storeId]
+            )
             ->setPageSize(1)
-            ->create();
-
-        /* @var IndexSearchResults $results */
-        $results = $this->search($searchCriteria);
-
-        return $results->getFirstItem();
-    }
-
-    /**
-     * @param SearchCriteriaInterface $searchCriteria
-     *
-     * @return IndexSearchResults
-     */
-    public function search(SearchCriteriaInterface $searchCriteria)
-    {
-        $collection = $this->indexCollectionFactory->create();
-        $searchResults = $this->indexSearchResultsFactory->create();
-
-        return RepositoryUtil::search(
-            $collection,
-            $searchCriteria,
-            $searchResults
-        );
+            ->setCurPage(1);
+        return $collection->getFirstItem();
     }
 
     /**
