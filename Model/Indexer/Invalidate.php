@@ -104,12 +104,8 @@ class Invalidate implements IndexerActionInterface, MviewActionInterface
 
     public function executeFull()
     {
+        // Empty on purpose to disable the full reindex for now
         return;
-        $storesWithNosto = $this->nostoHelperAccount->getStoresWithNosto();
-        foreach ($storesWithNosto as $store) {
-            $productCollection = $this->getCollection($store);
-            $this->nostoServiceIndex->handleProductChange($productCollection, $store);
-        }
     }
 
     public function executeList(array $ids)
