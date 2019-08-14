@@ -66,12 +66,12 @@ class Collection extends AbstractCollection
     }
 
     /**
-     * @param Store $store
+     * @param array $ids
      * @return Collection
      */
     public function addIdsFilter(array $ids)
     {
-        $this->addFieldToFilter(
+        return $this->addFieldToFilter(
             Index::ID,
             ['in' => $ids]
         );

@@ -226,7 +226,7 @@ class Save implements ObserverInterface
         $nostoCustomer = $this->customerRepository
             ->getOneByQuoteId($order->getQuoteId());
         $nostoCustomerId = null;
-        $nostoCutomerIdentifier = NostoOrderCreate::IDENTIFIER_BY_CID;
+        $nostoCustomerIdentifier = NostoOrderCreate::IDENTIFIER_BY_CID;
         if ($nostoCustomer instanceof NostoCustomer) {
             $nostoCustomerId = $nostoCustomer->getNostoId();
         }
@@ -235,7 +235,7 @@ class Save implements ObserverInterface
             $this->nostoHelperData->isMultiChannelOrderTrackingEnabled($store)
         ) {
             $nostoCustomerId = $this->getCustomerReference($order);
-            $nostoCutomerIdentifier = NostoOrderCreate::IDENTIFIER_BY_REF;
+            $nostoCustomerIdentifier = NostoOrderCreate::IDENTIFIER_BY_REF;
         }
         $nostoOrder = $this->nostoOrderBuilder->build($order);
         if ($nostoCustomerId !== null) {
@@ -243,7 +243,7 @@ class Save implements ObserverInterface
                 $orderService = new NostoOrderCreate(
                     $nostoOrder,
                     $nostoAccount,
-                    $nostoCutomerIdentifier,
+                    $nostoCustomerIdentifier,
                     $nostoCustomerId,
                     $this->nostoHelperUrl->getActiveDomain($store)
                 );

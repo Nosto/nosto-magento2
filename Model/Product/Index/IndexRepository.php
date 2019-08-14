@@ -76,9 +76,9 @@ class IndexRepository implements ProductIndexRepositoryInterface
             ->addFieldToFilter(
                 NostoIndex::PRODUCT_ID,
                 ['eq' => $product->getId()]
-            )->addStoreFilter($store)
-            ->setPageSize(1)
-            ->setCurPage(1);
+            )
+            ->addStoreFilter($store);
+        $collection->getSelect()->limit(1);
         return $collection->getFirstItem();
     }
 
@@ -92,9 +92,9 @@ class IndexRepository implements ProductIndexRepositoryInterface
             ->addFieldToFilter(
                 NostoIndex::ID,
                 ['eq' => $id]
-            )
-            ->setPageSize(1)
-            ->setCurPage(1);
+            );
+        $collection->getSelect()->limit(1);
+
         return $collection->getFirstItem();
     }
 
@@ -124,9 +124,8 @@ class IndexRepository implements ProductIndexRepositoryInterface
             ->addFieldToFilter(
                 NostoIndex::STORE_ID,
                 ['eq' => $storeId]
-            )
-            ->setPageSize(1)
-            ->setCurPage(1);
+            );
+        $collection->getSelect()->limit(1);
         return $collection->getFirstItem();
     }
 

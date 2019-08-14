@@ -162,7 +162,11 @@ class Index
                 $indexedProduct->setUpdatedAt($this->magentoTimeZone->date());
             } else {
                 /* @var Product $fullProduct */
-                $fullProduct = $this->productRepository->getById($product->getId());
+                $fullProduct = $this->productRepository->getById(
+                    $product->getId(),
+                    false,
+                    $store->getId()
+                );
                 $indexedProduct = $this->indexBuilder->build($fullProduct, $store);
                 $indexedProduct->setIsDirty(false);
             }
@@ -282,7 +286,11 @@ class Index
     {
         try {
             /* @var Product $magentoProduct */
-            $magentoProduct = $this->productRepository->getById($productIndex->getProductId());
+            $magentoProduct = $this->productRepository->getById(
+                $productIndex->getProductId(),
+                false,
+                $productIndex->getStoreId()
+            );
             $store = $this->nostoHelperScope->getStore($productIndex->getStoreId());
             $nostoProduct = $this->nostoProductBuilder->build($magentoProduct, $store);
             $nostoIndexedProduct = $productIndex->getNostoProduct();
