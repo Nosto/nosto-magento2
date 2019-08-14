@@ -57,7 +57,6 @@ class Data implements IndexerActionInterface, MviewActionInterface
     private $indexCollectionFactory;
 
     /**
-     * Product constructor.
      * @param NostoIndexService $nostoServiceIndex
      * @param IndexCollectionFactory $indexCollectionFactory
      */
@@ -108,7 +107,10 @@ class Data implements IndexerActionInterface, MviewActionInterface
     }
 
     /**
-     * @param array $ids
+     * Returns a collection Nosto product index items that are dirty and not deleted.
+     * If $ids attribute is present the collection will be limited to matching the ids and the
+     * condition mentioned above only.
+     * @param array $ids array of product index ids (not product id)
      * @return IndexCollection
      */
     private function getCollection(array $ids = [])

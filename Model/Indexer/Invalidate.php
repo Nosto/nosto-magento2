@@ -88,16 +88,18 @@ class Invalidate implements IndexerActionInterface, MviewActionInterface
      */
     public function execute($ids)
     {
-        $ids = array_unique($ids);
-        $idsSize = count($ids);
-        $storesWithNosto = $this->nostoHelperAccount->getStoresWithNosto();
-        foreach ($storesWithNosto as $store) {
-            $productCollection = $this->getCollection($store, $ids);
-            $this->nostoServiceIndex->handleProductChange($productCollection, $store);
-            $collectionSize = $productCollection->getSize();
+        if (!empty($ids)) {
+            $ids = array_unique($ids);
+            $idsSize = count($ids);
+            $storesWithNosto = $this->nostoHelperAccount->getStoresWithNosto();
+            foreach ($storesWithNosto as $store) {
+                $productCollection = $this->getCollection($store, $ids);
+                $this->nostoServiceIndex->handleProductChange($productCollection, $store);
+                $collectionSize = $productCollection->getSize();
 
-            if ($idsSize > $collectionSize) {
-                $this->nostoServiceIndex->markProductsAsDeletedByDiff($productCollection, $ids, $store);
+                if ($idsSize > $collectionSize) {
+                    $this->nostoServiceIndex->markProductsAsDeletedByDiff($productCollection, $ids, $store);
+                }
             }
         }
     }
@@ -105,6 +107,7 @@ class Invalidate implements IndexerActionInterface, MviewActionInterface
     public function executeFull()
     {
         // Empty on purpose to disable the full reindex for now
+        $this->execute([]);
     }
 
     public function executeList(array $ids)

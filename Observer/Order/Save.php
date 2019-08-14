@@ -36,29 +36,28 @@
 
 namespace Nosto\Tagging\Observer\Order;
 
+use Magento\Customer\Api\CustomerRepositoryInterface as MagentoCustomerRepository;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Indexer\IndexerRegistry;
 use Magento\Framework\Module\Manager as ModuleManager;
 use Magento\Sales\Model\Order;
 use Magento\Store\Model\Store;
+use Nosto\Object\Order\Order as NostoOrder;
 use Nosto\Operation\Order\OrderCreate as NostoOrderCreate;
 use Nosto\Operation\Order\OrderStatus as NostoOrderUpdate;
 use Nosto\Request\Http\HttpRequest;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
-use Nosto\Tagging\Helper\Scope as NostoHelperScope;
+use Nosto\Tagging\Helper\Url as NostoHelperUrl;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Customer\Customer as NostoCustomer;
 use Nosto\Tagging\Model\Customer\Repository as CustomerRepository;
 use Nosto\Tagging\Model\Indexer\Invalidate as InvalidateIndexer;
 use Nosto\Tagging\Model\Order\Builder as NostoOrderBuilder;
 use Nosto\Tagging\Model\Order\Status\Builder as NostoOrderStatusBuilder;
-use Nosto\Object\Order\Order as NostoOrder;
-use Nosto\Tagging\Helper\Url as NostoHelperUrl;
-use Nosto\Util\Time as NostoTimeUtil;
 use Nosto\Types\Signup\AccountInterface;
-use Magento\Customer\Api\CustomerRepositoryInterface as MagentoCustomerRepository;
+use Nosto\Util\Time as NostoTimeUtil;
 
 /**
  * Class Save
@@ -72,7 +71,6 @@ class Save implements ObserverInterface
     private $nostoOrderBuilder;
     private $moduleManager;
     private $customerRepository;
-    private $nostoHelperScope;
     private $indexer;
     private $nostoHelperUrl;
     private $magentoCustomerRepository;
@@ -84,7 +82,6 @@ class Save implements ObserverInterface
      * Save constructor.
      * @param NostoHelperData $nostoHelperData
      * @param NostoHelperAccount $nostoHelperAccount
-     * @param NostoHelperScope $nostoHelperScope
      * @param NostoLogger $logger
      * @param ModuleManager $moduleManager
      * @param CustomerRepository $customerRepository
@@ -97,7 +94,6 @@ class Save implements ObserverInterface
     public function __construct(
         NostoHelperData $nostoHelperData,
         NostoHelperAccount $nostoHelperAccount,
-        NostoHelperScope $nostoHelperScope,
         NostoLogger $logger,
         ModuleManager $moduleManager,
         /** @noinspection PhpUndefinedClassInspection */
@@ -116,7 +112,6 @@ class Save implements ObserverInterface
         $this->orderStatusBuilder = $orderStatusBuilder;
         $this->customerRepository = $customerRepository;
         $this->indexer = $indexerRegistry->get(InvalidateIndexer::INDEXER_ID);
-        $this->nostoHelperScope = $nostoHelperScope;
         $this->nostoHelperUrl = $nostoHelperUrl;
         $this->magentoCustomerRepository = $magentoCustomerRepository;
     }
