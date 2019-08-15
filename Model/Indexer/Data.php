@@ -154,7 +154,7 @@ class Data implements IndexerActionInterface, MviewActionInterface
      * If $ids attribute is present the collection will be limited to matching the ids and the
      * condition mentioned above only.
      *
-     * @param Store $store
+     * @param Store|null $store
      * @param array $ids
      * @return IndexCollection
      */
