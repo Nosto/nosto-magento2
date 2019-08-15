@@ -89,7 +89,7 @@ class Indexers extends Field
      *
      * @return string
      */
-    protected function _getElementHtml(AbstractElement $element)
+    protected function _getElementHtml(AbstractElement $element) //@codingStandardsIgnoreLine
     {
         return $this->toHtml();
     }
@@ -97,7 +97,7 @@ class Indexers extends Field
     /**
      * @return $this|Field
      */
-    protected function _prepareLayout()
+    protected function _prepareLayout() //@codingStandardsIgnoreLine
     {
         parent::_prepareLayout();
         $this->setTemplate('indexersStatuses.phtml');
