@@ -36,16 +36,11 @@
 
 namespace Nosto\Tagging\Model\Indexer;
 
-use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductCollectionFactory;
 use Magento\Framework\Indexer\ActionInterface as IndexerActionInterface;
 use Magento\Framework\Mview\ActionInterface as MviewActionInterface;
 use Magento\Store\Model\Store;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
-use Nosto\Tagging\Helper\Data as NostoHelperData;
-use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Product\Index\Index as NostoIndex;
-use Nosto\Tagging\Model\Product\QueueRepository as NostoQueueRepository;
-use Nosto\Tagging\Model\Product\Service as ProductService;
 use Nosto\Tagging\Model\ResourceModel\Product\Index\Collection as IndexCollection;
 use Nosto\Tagging\Model\ResourceModel\Product\Index\CollectionFactory as IndexCollectionFactory;
 use Nosto\Tagging\Model\Service\Index as NostoServiceIndex;
@@ -57,9 +52,6 @@ class Sync implements IndexerActionInterface, MviewActionInterface
 {
     public const INDEXER_ID = 'nosto_index_product_sync';
 
-    /** @var NostoLogger */
-    private $logger;
-
     /** @var NostoHelperAccount */
     private $nostoHelperAccount;
 
@@ -70,23 +62,17 @@ class Sync implements IndexerActionInterface, MviewActionInterface
     private $indexCollectionFactory;
 
     /**
-     * Sync constructor.
-     * @param ProductService $productService
-     * @param NostoHelperData $dataHelper
-     * @param NostoLogger $logger
-     * @param ProductCollectionFactory $productCollectionFactory
-     * @param NostoQueueRepository $nostoQueueRepository
+     * Sync constructor
+     *
      * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoServiceIndex $nostoServiceIndex
      * @param IndexCollectionFactory $indexCollectionFactory
      */
     public function __construct(
-        NostoLogger $logger,
         NostoHelperAccount $nostoHelperAccount,
         NostoServiceIndex $nostoServiceIndex,
         IndexCollectionFactory $indexCollectionFactory
     ) {
-        $this->logger = $logger;
         $this->nostoHelperAccount = $nostoHelperAccount;
         $this->nostoServiceIndex = $nostoServiceIndex;
         $this->indexCollectionFactory = $indexCollectionFactory;
@@ -143,19 +129,16 @@ class Sync implements IndexerActionInterface, MviewActionInterface
             ->addFieldToSelect('*')
             ->addFieldToFilter(
                 NostoIndex::IS_DIRTY,
-                ['eq' => NostoIndex::VALUE_IS_NOT_DIRTY]
+                ['eq' => NostoIndex::DB_VALUE_BOOLEAN_FALSE]
             )->addFieldToFilter(
                 NostoIndex::IN_SYNC,
-                ['eq' => NostoIndex::VALUE_NOT_IN_SYNC]
+                ['eq' => NostoIndex::DB_VALUE_BOOLEAN_FALSE]
             )->addFieldToFilter(
-                NostoIndex::STORE_ID,
-                ['eq' => $store->getId()]
-            );
+                NostoIndex::IS_DELETED,
+                ['eq' => NostoIndex::DB_VALUE_BOOLEAN_FALSE]
+            )->addStoreFilter($store);
         if (!empty($ids)) {
-            $collection->addFieldToFilter(
-                NostoIndex::ID,
-                ['in' => $ids]
-            );
+            $collection->addIdsFilter($ids);
         }
         return $collection;
     }

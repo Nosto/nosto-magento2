@@ -1,7 +1,11 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
 ### not released
-* Implement Nosto product index to speedup the Nosto product building, indexing and sending the data to Nosto
+
+### 3.9.0 (beta)
+* Remove category personalization features (separate plug-in)
+* Use graphql for sending order confirmations and order status updates
+* Speedup the SKU price lookups by using price index table (catalog_product_index_price)
 
 ### 3.8.4
 * Fix Nosto indexer's full reindex logic 

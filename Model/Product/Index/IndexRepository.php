@@ -37,57 +37,104 @@
 namespace Nosto\Tagging\Model\Product\Index;
 
 use Magento\Catalog\Api\Data\ProductInterface;
-use Magento\Framework\Api\SearchCriteriaBuilder;
-use Magento\Framework\Api\SearchCriteriaInterface;
 use Magento\Framework\Model\AbstractModel;
 use Magento\Store\Api\Data\StoreInterface;
-use Nosto\NostoException;
 use Nosto\Tagging\Api\Data\ProductIndexInterface;
-use Nosto\Tagging\Api\Data\ProductIndexSearchResultsInterface;
 use Nosto\Tagging\Api\ProductIndexRepositoryInterface;
-use Nosto\Tagging\Model\RepositoryTrait;
+use Nosto\Tagging\Model\Product\Index\Index as NostoIndex;
 use Nosto\Tagging\Model\ResourceModel\Product\Index as IndexResource;
-use Nosto\Tagging\Model\ResourceModel\Product\Index\Collection as IndexCollection;
 use Nosto\Tagging\Model\ResourceModel\Product\Index\CollectionFactory as IndexCollectionFactory;
-
-use Nosto\Tagging\Logger\Logger as NostoLogger;
-use Nosto\Tagging\Util\Repository as RepositoryUtil;
-use Nosto\Tagging\Model\Product\Index\IndexSearchResults;
-use Magento\Framework\Api\Search\SearchResult;
+use Nosto\Tagging\Model\ResourceModel\Product\Index\Collection as IndexCollection;
 
 class IndexRepository implements ProductIndexRepositoryInterface
 {
-    private $searchCriteriaBuilder;
-    private $logger;
     private $indexCollectionFactory;
-    private $indexSearchResultsFactory;
     private $indexResource;
 
     /**
      * IndexRepository constructor.
      *
-     * @param IndexResource $queueResource
-     * @param IndexCollectionFactory\ $queueCollectionFactory
-     * @param IndexSearchResultsFactory $queueSearchResultsFactory
-     * @param SearchCriteriaBuilder $searchCriteriaBuilder
-     * @param NostoLogger $logger
+     * @param IndexResource $indexResource
+     * @param IndexCollectionFactory $indexCollectionFactory
      */
     public function __construct(
         IndexResource $indexResource,
-        IndexCollectionFactory $indexCollectionFactory,
-        IndexSearchResultsFactory $indexSearchResultsFactory,
-        SearchCriteriaBuilder $searchCriteriaBuilder,
-        NostoLogger $logger
+        IndexCollectionFactory $indexCollectionFactory
     ) {
         $this->indexResource = $indexResource;
         $this->indexCollectionFactory = $indexCollectionFactory;
-        $this->indexSearchResultsFactory = $indexSearchResultsFactory;
-        $this->searchCriteriaBuilder = $searchCriteriaBuilder;
-        $this->logger = $logger;
     }
 
     /**
-     * Save Queue entry
+     * @inheritdoc
+     */
+    public function getOneByProductAndStore(ProductInterface $product, StoreInterface $store)
+    {
+        /* @var IndexCollection $collection */
+        $collection = $this->indexCollectionFactory->create()
+            ->addFieldToSelect('*')
+            ->addFieldToFilter(
+                NostoIndex::PRODUCT_ID,
+                ['eq' => $product->getId()]
+            )
+            ->addStoreFilter($store)
+            ->setPageSize(1)
+            ->setCurPage(1);
+        return $collection->getFirstItem(); // @codingStandardsIgnoreLine
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getById($id)
+    {
+        $collection = $this->indexCollectionFactory->create()
+            ->addFieldToSelect('*')
+            ->addFieldToFilter(
+                NostoIndex::ID,
+                ['eq' => $id]
+            )
+            ->setPageSize(1)
+            ->setCurPage(1);
+        return $collection->getFirstItem(); // @codingStandardsIgnoreLine
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getByIds(array $ids)
+    {
+        $collection = $this->indexCollectionFactory->create()
+            ->addFieldToSelect('*')
+            ->addIdsFilter($ids)
+            ->setPageSize(1)
+            ->setCurPage(1);
+        return $collection->getItems(); // @codingStandardsIgnoreLine
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getByProductIdAndStoreId(int $productId, int $storeId)
+    {
+        /* @var IndexCollection $collection */
+        $collection = $this->indexCollectionFactory->create()
+            ->addFieldToSelect('*')
+            ->addFieldToFilter(
+                NostoIndex::PRODUCT_ID,
+                ['eq' => $productId]
+            )
+            ->addFieldToFilter(
+                NostoIndex::STORE_ID,
+                ['eq' => $storeId]
+            )
+            ->setPageSize(1)
+            ->setCurPage(1);
+        return $collection->getFirstItem(); // @codingStandardsIgnoreLine
+    }
+
+    /**
+     * Save product index entry
      *
      * @param ProductIndexInterface $productIndex
      * @return ProductIndexInterface|IndexResource
@@ -96,149 +143,21 @@ class IndexRepository implements ProductIndexRepositoryInterface
      */
     public function save(ProductIndexInterface $productIndex)
     {
+        /** @noinspection PhpParamsInspection */
+        /** @var AbstractModel $productIndex */
         return $this->indexResource->save($productIndex);
     }
 
     /**
-     * Returns all entries by product ids
-     *
-     * @param int $productId
-     *
-     * @return IndexSearchResults
+     * Delete product index entry
+     * @param ProductIndexInterface $productIndex
+     * @throws \Exception
+     * @suppress PhanTypeMismatchArgument
      */
-    public function getByProductId($productId)
-    {
-        $searchCriteria = $this->searchCriteriaBuilder
-            ->addFilter(ProductIndexInterface::PRODUCT_ID, $productId, 'eq')
-            ->create();
-
-        return $this->search($searchCriteria);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getOneByProductAndStore(ProductInterface $product, StoreInterface $store)
-    {
-        $searchCriteria = $this->searchCriteriaBuilder
-            ->addFilter(ProductIndexInterface::PRODUCT_ID, $product->getId(), 'eq')
-            ->addFilter(ProductIndexInterface::STORE_ID, $store->getId(), 'eq')
-            ->create();
-
-        /* @var IndexSearchResults $results */
-        $results = $this->search($searchCriteria);
-
-        return $results->getFirstItem();
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getById($id)
-    {
-        $searchCriteria = $this->searchCriteriaBuilder
-            ->addFilter(ProductIndexInterface::ID, $id, 'eq')
-            ->create();
-
-        /* @var IndexSearchResults $results */
-        $results = $this->search($searchCriteria);
-
-        return $results->getFirstItem();
-    }
-
-
-    /**
-     * @inheritdoc
-     */
-    public function getByIds(array $ids)
-    {
-        $searchCriteria = $this->searchCriteriaBuilder
-            ->addFilter(ProductIndexInterface::ID, $ids, 'in')
-            ->create();
-        /* @var IndexSearchResults $results */
-        $results = $this->search($searchCriteria);
-
-        return $results->getItems();
-    }
-
-
-    /**
-     * @inheritdoc
-     */
-    public function getByProductIdAndStoreId(int $productId, int $storeId)
-    {
-        $searchCriteria = $this->searchCriteriaBuilder
-            ->addFilter(ProductIndexInterface::PRODUCT_ID, $productId, 'eq')
-            ->addFilter(ProductIndexInterface::STORE_ID, $storeId, 'eq')
-            ->create();
-
-        /* @var IndexSearchResults $results */
-        $results = $this->search($searchCriteria);
-
-        return $results->getFirstItem();
-    }
-
-
-    /**
-     * Get list of productIndexes
-     *
-     * @param int $pageSize
-     *
-     * @return IndexSearchResults
-     */
-    public function getFirstPage($pageSize)
-    {
-        /* @var IndexCollection $collection */
-        $collection = $this->indexCollectionFactory->create();
-        $collection->setPageSize($pageSize);
-        $collection->setCurPage(1);
-        $collection->load();
-        /* @var IndexSearchResults $searchResults */
-        $searchResults = $this->indexCollectionFactory->create();
-        $searchResults->setItems($collection->getItems());
-        $searchResults->setTotalCount($collection->getSize());
-
-        // Set collection to be mem dealloc
-        $collection->clear();
-
-        return $searchResults;
-    }
-
-    /**
-     * Returns all entries in product queue
-     *
-     * @return IndexSearchResults
-     */
-    public function getAll()
-    {
-        $collection = $this->indexCollectionFactory->create();
-        $collection->load();
-        $searchResults = $this->indexCollectionFactory->create();
-        $searchResults->setItems($collection->getItems());
-        $searchResults->setTotalCount($collection->getSize());
-
-        return $searchResults;
-    }
-
-    /**
-     * @param SearchCriteriaInterface $searchCriteria
-     *
-     * @return SearchResult
-     */
-    public function search(SearchCriteriaInterface $searchCriteria)
-    {
-        $collection = $this->indexCollectionFactory->create();
-        $searchResults = $this->indexSearchResultsFactory->create();
-
-        return RepositoryUtil::search(
-            $collection,
-            $searchCriteria,
-            $searchResults
-        );
-    }
-
     public function delete(ProductIndexInterface $productIndex)
     {
+        /** @noinspection PhpParamsInspection */
+        /** @var AbstractModel $productIndex */
         $this->indexResource->delete($productIndex);
     }
 }

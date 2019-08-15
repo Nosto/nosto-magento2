@@ -43,7 +43,7 @@ use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Indexer\IndexerRegistry;
 use Magento\Framework\Module\Manager as ModuleManager;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
-use Nosto\Tagging\Model\Indexer\Product\Indexer;
+use Nosto\Tagging\Model\Indexer\Invalidate as InvalidateIndexer;
 use Nosto\Tagging\Model\Product\Service as NostoProductService;
 
 abstract class Base implements ObserverInterface
@@ -74,7 +74,7 @@ abstract class Base implements ObserverInterface
         $this->moduleManager = $moduleManager;
         $this->productRepository = $productRepository;
         $this->dataHelper = $dataHelper;
-        $this->indexer = $indexerRegistry->get(Indexer::INDEXER_ID);
+        $this->indexer = $indexerRegistry->get(InvalidateIndexer::INDEXER_ID);
     }
 
     /**

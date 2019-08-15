@@ -49,6 +49,7 @@ interface ProductIndexInterface
     const UPDATED_AT = 'updated_at';
     const IN_SYNC = 'in_sync';
     const IS_DIRTY = 'is_dirty';
+    const IS_DELETED = 'is_deleted';
     const STORE_ID = 'store_id';
     const PRODUCT_DATA = 'product_data';
 
@@ -95,6 +96,13 @@ interface ProductIndexInterface
     public function getIsDirty();
 
     /**
+     * Get is deleted
+     *
+     * @return boolean
+     */
+    public function getIsDeleted();
+
+    /**
      * Get store id
      *
      * @return int
@@ -139,6 +147,14 @@ interface ProductIndexInterface
      * @return self
      */
     public function setIsDirty($isDirty);
+
+    /**
+     * Set is deleted to false or true
+     *
+     * @param boolean $isDeleted
+     * @return self
+     */
+    public function setIsDeleted($isDeleted);
 
     /**
      * Set store id

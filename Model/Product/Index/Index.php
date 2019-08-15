@@ -36,19 +36,18 @@
 
 namespace Nosto\Tagging\Model\Product\Index;
 
+use Magento\Catalog\Api\Data\ProductInterface as MagentoProductInterface;
 use Magento\Framework\Model\AbstractModel;
 use Magento\Store\Api\Data\StoreInterface;
 use Nosto\Object\Product\Product;
 use Nosto\Tagging\Api\Data\ProductIndexInterface;
 use Nosto\Tagging\Model\ResourceModel\Product\Index as NostoIndex;
 use Nosto\Types\Product\ProductInterface as NostoProductInterface;
-use Magento\Catalog\Api\Data\ProductInterface as MagentoProductInterface;
 
 class Index extends AbstractModel implements ProductIndexInterface
 {
-    const VALUE_IS_DIRTY = "1";
-    const VALUE_IS_NOT_DIRTY = "0";
-    const VALUE_NOT_IN_SYNC = "0";
+    public const DB_VALUE_BOOLEAN_TRUE = "1";
+    public const DB_VALUE_BOOLEAN_FALSE = "0";
 
     /**
      * @inheritdoc
@@ -151,7 +150,7 @@ class Index extends AbstractModel implements ProductIndexInterface
      */
     public function setInSync($inSync)
     {
-        return $this->setData(self::IN_SYNC, $inSync);
+        return $this->setData(self::IN_SYNC, $inSync ? self::DB_VALUE_BOOLEAN_TRUE : self::DB_VALUE_BOOLEAN_FALSE);
     }
 
     /**
@@ -159,7 +158,7 @@ class Index extends AbstractModel implements ProductIndexInterface
      */
     public function setIsDirty($isDirty)
     {
-        return $this->setData(self::IS_DIRTY, $isDirty ? self::VALUE_IS_DIRTY : self::VALUE_IS_NOT_DIRTY);
+        return $this->setData(self::IS_DIRTY, $isDirty ? self::DB_VALUE_BOOLEAN_TRUE : self::DB_VALUE_BOOLEAN_FALSE);
     }
 
     /**
@@ -192,7 +191,7 @@ class Index extends AbstractModel implements ProductIndexInterface
     public function getNostoProduct()
     {
         try {
-            $unserialized = unserialize($this->getProductData(), [Product::class]);
+            $unserialized = unserialize($this->getProductData(), [Product::class]); // @codingStandardsIgnoreLine
         } catch (\Exception $exception) {
             $unserialized = null;
         }
@@ -213,6 +212,25 @@ class Index extends AbstractModel implements ProductIndexInterface
     public function setMagentoProduct(MagentoProductInterface $product)
     {
         return $this->setProductId($product->getId());
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getIsDeleted()
+    {
+        return $this->getData(self::IS_DELETED);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setIsDeleted($isDeleted)
+    {
+        return $this->setData(
+            self::IS_DELETED,
+            $isDeleted ? self::DB_VALUE_BOOLEAN_TRUE : self::DB_VALUE_BOOLEAN_FALSE
+        );
     }
 
     /**
