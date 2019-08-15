@@ -36,6 +36,7 @@
 
 namespace Nosto\Tagging\Model\Service;
 
+use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\ProductRepository;
 use Magento\Catalog\Model\ResourceModel\Product\Collection as ProductCollection;
@@ -177,7 +178,6 @@ class Index
 
     /**
      * @param NostoIndexCollection $collection
-     * @throws NoSuchEntityException
      */
     public function handleDirtyProducts(NostoIndexCollection $collection)
     {
@@ -283,7 +283,6 @@ class Index
     {
         try {
             /* @var Product $magentoProduct */
-            /** @noinspection PhpParamsInspection */
             $magentoProduct = $this->loadMagentoProduct(
                 $productIndex->getProductId(),
                 $productIndex->getStoreId()
@@ -447,7 +446,7 @@ class Index
      * Loads (or reloads) Product object
      * @param int $productId
      * @param int $storeId
-     * @return \Magento\Catalog\Api\Data\ProductInterface|Product|mixed
+     * @return ProductInterface|Product|mixed
      * @throws NoSuchEntityException
      */
     private function loadMagentoProduct(int $productId, int $storeId)

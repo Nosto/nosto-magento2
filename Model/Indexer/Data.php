@@ -42,13 +42,15 @@ use Nosto\Tagging\Model\Product\Index\Index as NostoIndex;
 use Nosto\Tagging\Model\ResourceModel\Product\Index\Collection as IndexCollection;
 use Nosto\Tagging\Model\ResourceModel\Product\Index\CollectionFactory as IndexCollectionFactory;
 use Nosto\Tagging\Model\Service\Index as NostoIndexService;
+use Nosto\Tagging\Helper\Account as NostoHelperAccount;
+use Magento\Store\Model\Store;
 
 /**
  * An indexer for Nosto product sync
  */
 class Data implements IndexerActionInterface, MviewActionInterface
 {
-    public const INDEXER_ID = 'nosto_product_index_data';
+    public const INDEXER_ID = 'nosto_index_product_data_sync';
 
     /** @var NostoIndexService */
     private $nostoServiceIndex;
@@ -56,16 +58,22 @@ class Data implements IndexerActionInterface, MviewActionInterface
     /** @var IndexCollectionFactory */
     private $indexCollectionFactory;
 
+    /** @var NostoHelperAccount */
+    private $nostoHelperAccount;
+
     /**
      * @param NostoIndexService $nostoServiceIndex
      * @param IndexCollectionFactory $indexCollectionFactory
+     * @param NostoHelperAccount $nostoHelperAccount
      */
     public function __construct(
         NostoIndexService $nostoServiceIndex,
-        IndexCollectionFactory $indexCollectionFactory
+        IndexCollectionFactory $indexCollectionFactory,
+        NostoHelperAccount $nostoHelperAccount
     ) {
         $this->nostoServiceIndex = $nostoServiceIndex;
         $this->indexCollectionFactory = $indexCollectionFactory;
+        $this->nostoHelperAccount = $nostoHelperAccount;
     }
 
     /**
@@ -74,8 +82,13 @@ class Data implements IndexerActionInterface, MviewActionInterface
      */
     public function executeFull()
     {
-        $indexCollection = $this->getCollection();
-        $this->nostoServiceIndex->handleDirtyProducts($indexCollection);
+        $dirtyCollection = $this->getDirtyCollection();
+        $this->nostoServiceIndex->handleDirtyProducts($dirtyCollection);
+        $storesWithNosto = $this->nostoHelperAccount->getStoresWithNosto();
+        $outOfSyncCollection = $this->getOutOfSyncCollection();
+        foreach ($storesWithNosto as $store) {
+            $this->nostoServiceIndex->handleProductSync($outOfSyncCollection, $store);
+        }
     }
 
     /**
@@ -102,18 +115,24 @@ class Data implements IndexerActionInterface, MviewActionInterface
      */
     public function execute($ids)
     {
-        $collection = $this->getCollection($ids);
+        $collection = $this->getDirtyCollection($ids);
         $this->nostoServiceIndex->handleDirtyProducts($collection);
+        $storesWithNosto = $this->nostoHelperAccount->getStoresWithNosto();
+        foreach ($storesWithNosto as $store) {
+            $outOfSyncCollection = $this->getOutOfSyncCollection($store, $ids);
+            $this->nostoServiceIndex->handleProductSync($outOfSyncCollection, $store);
+        }
     }
 
     /**
      * Returns a collection Nosto product index items that are dirty and not deleted.
      * If $ids attribute is present the collection will be limited to matching the ids and the
      * condition mentioned above only.
+     *
      * @param array $ids array of product index ids (not product id)
      * @return IndexCollection
      */
-    private function getCollection(array $ids = [])
+    private function getDirtyCollection(array $ids = [])
     {
         $collection = $this->indexCollectionFactory->create()
             ->addFieldToSelect('*')
@@ -124,6 +143,35 @@ class Data implements IndexerActionInterface, MviewActionInterface
                 NostoIndex::IS_DELETED,
                 ['eq' => NostoIndex::DB_VALUE_BOOLEAN_FALSE]
             );
+        if (!empty($ids)) {
+            $collection->addIdsFilter($ids);
+        }
+        return $collection;
+    }
+
+    /**
+     * Returns a collection Nosto product index items that are out of sync and not deleted.
+     * If $ids attribute is present the collection will be limited to matching the ids and the
+     * condition mentioned above only.
+     *
+     * @param Store $store
+     * @param array $ids
+     * @return IndexCollection
+     */
+    private function getOutOfSyncCollection(Store $store = null, array $ids = [])
+    {
+        $collection = $this->indexCollectionFactory->create()
+            ->addFieldToSelect('*')
+            ->addFieldToFilter(
+                NostoIndex::IN_SYNC,
+                ['eq' => NostoIndex::DB_VALUE_BOOLEAN_FALSE]
+            )->addFieldToFilter(
+                NostoIndex::IS_DELETED,
+                ['eq' => NostoIndex::DB_VALUE_BOOLEAN_FALSE]
+            );
+        if ($store) {
+            $collection->addStoreFilter($store);
+        }
         if (!empty($ids)) {
             $collection->addIdsFilter($ids);
         }

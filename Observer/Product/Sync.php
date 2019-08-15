@@ -46,6 +46,7 @@ use Nosto\Tagging\Model\Indexer\Sync as NostoSyncIndexer;
 
 /**s
  * Observer class to handle update on save mode
+ * @deprecated
  */
 class Sync
 {
