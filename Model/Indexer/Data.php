@@ -38,8 +38,6 @@ namespace Nosto\Tagging\Model\Indexer;
 
 use Magento\Framework\Indexer\ActionInterface as IndexerActionInterface;
 use Magento\Framework\Mview\ActionInterface as MviewActionInterface;
-use Nosto\Tagging\Helper\Account as NostoHelperAccount;
-use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Product\Index\Index as NostoIndex;
 use Nosto\Tagging\Model\ResourceModel\Product\Index\Collection as IndexCollection;
 use Nosto\Tagging\Model\ResourceModel\Product\Index\CollectionFactory as IndexCollectionFactory;
@@ -52,12 +50,6 @@ class Data implements IndexerActionInterface, MviewActionInterface
 {
     public const INDEXER_ID = 'nosto_product_index_data';
 
-    /** @var NostoLogger  */
-    private $logger;
-
-    /** @var NostoHelperAccount\Proxy  */
-    private $nostoHelperAccount;
-
     /** @var NostoIndexService */
     private $nostoServiceIndex;
 
@@ -65,19 +57,15 @@ class Data implements IndexerActionInterface, MviewActionInterface
     private $indexCollectionFactory;
 
     /**
-     * Product constructor.
      * @param NostoIndexService $nostoServiceIndex
      * @param IndexCollectionFactory $indexCollectionFactory
-     * @param NostoLogger $nostoLogger
      */
     public function __construct(
         NostoIndexService $nostoServiceIndex,
-        IndexCollectionFactory $indexCollectionFactory,
-        NostoLogger $nostoLogger
+        IndexCollectionFactory $indexCollectionFactory
     ) {
         $this->nostoServiceIndex = $nostoServiceIndex;
         $this->indexCollectionFactory = $indexCollectionFactory;
-        $this->logger = $nostoLogger;
     }
 
     /**
@@ -119,8 +107,11 @@ class Data implements IndexerActionInterface, MviewActionInterface
     }
 
     /**
-     * @param array $ids
-     * @return void
+     * Returns a collection Nosto product index items that are dirty and not deleted.
+     * If $ids attribute is present the collection will be limited to matching the ids and the
+     * condition mentioned above only.
+     * @param array $ids array of product index ids (not product id)
+     * @return IndexCollection
      */
     private function getCollection(array $ids = [])
     {
@@ -128,13 +119,13 @@ class Data implements IndexerActionInterface, MviewActionInterface
             ->addFieldToSelect('*')
             ->addFieldToFilter(
                 NostoIndex::IS_DIRTY,
-                ['eq' => NostoIndex::VALUE_IS_DIRTY]
+                ['eq' => NostoIndex::DB_VALUE_BOOLEAN_TRUE]
+            )->addFieldToFilter(
+                NostoIndex::IS_DELETED,
+                ['eq' => NostoIndex::DB_VALUE_BOOLEAN_FALSE]
             );
         if (!empty($ids)) {
-            $collection->addFieldToFilter(
-                NostoIndex::ID,
-                ['in' => $ids]
-            );
+            $collection->addIdsFilter($ids);
         }
         return $collection;
     }

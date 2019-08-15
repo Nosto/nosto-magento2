@@ -84,6 +84,7 @@ class Repository
      * @param FilterGroupBuilder $filterGroupBuilder
      * @param ConfigurableType $configurableType
      * @param ProductVisibility $productVisibility
+     * @param NostoSkuResource $nostoSkuResource
      */
     public function __construct(
         ProductRepository\Proxy $productRepository,
@@ -265,17 +266,6 @@ class Repository
     }
 
     /**
-     * Get parent ids from cache. Return null if the cache is not available
-     *
-     * @param $productId
-     * @return string[]|null
-     */
-    private function getParentIdsFromCacheByProductId($productId)
-    {
-        return $this->parentProductIdCache[$productId] ?? null;
-    }
-
-    /**
      * Saves the parents product ids to internal cache to avoid redundant
      * database queries
      *
@@ -285,18 +275,6 @@ class Repository
     private function saveParentIdsToCache(ProductInterface $product, $parentProductIds)
     {
         $this->parentProductIdCache[$product->getId()] = $parentProductIds;
-    }
-
-    /**
-     * Saves the parents product ids to internal cache to avoid redundant
-     * database queries
-     *
-     * @param $productId
-     * @param string[] $parentProductIds
-     */
-    private function saveParentIdsToCacheByProductId($productId, $parentProductIds)
-    {
-        $this->parentProductIdCache[$productId] = $parentProductIds;
     }
 
     /**

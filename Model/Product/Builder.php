@@ -45,21 +45,21 @@ use Magento\Framework\Event\ManagerInterface;
 use Magento\Review\Model\ReviewFactory;
 use Magento\Store\Model\Store;
 use Nosto\NostoException;
+use Nosto\Object\ModelFilter;
 use Nosto\Object\Product\Product as NostoProduct;
 use Nosto\Tagging\Helper\Currency as CurrencyHelper;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Price as NostoPriceHelper;
+use Nosto\Tagging\Helper\Ratings as NostoRating;
 use Nosto\Tagging\Helper\Stock as NostoStockHelper;
+use Nosto\Tagging\Helper\Variation as NostoVariationHelper;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\CategoryString\Builder as NostoCategoryBuilder;
 use Nosto\Tagging\Model\Product\Sku\Collection as NostoSkuCollection;
 use Nosto\Tagging\Model\Product\Tags\LowStock as LowStockHelper;
 use Nosto\Tagging\Model\Product\Url\Builder as NostoUrlBuilder;
-use Nosto\Types\Product\ProductInterface;
-use Nosto\Object\ModelFilter;
 use Nosto\Tagging\Model\Product\Variation\Collection as PriceVariationCollection;
-use Nosto\Tagging\Helper\Variation as NostoVariationHelper;
-use Nosto\Tagging\Helper\Ratings as NostoRating;
+use Nosto\Types\Product\ProductInterface;
 
 class Builder
 {
@@ -155,7 +155,6 @@ class Builder
     /**
      * @param Product $product
      * @param Store $store
-     * @param string $nostoScope
      * @return NostoProduct|null
      * @throws \Exception
      */
@@ -370,7 +369,7 @@ class Builder
                             $nostoProduct->addTag3(sprintf('%s:%s', $productAttribute, $attributeValue));
                             break;
                         default:
-                            throw new NostoException('Method add'.$tag.' is not defined.');
+                            throw new NostoException('Method add' . $tag . ' is not defined.');
                     }
                 } catch (\Exception $e) {
                     $this->logger->exception($e);

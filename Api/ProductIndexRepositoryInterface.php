@@ -39,9 +39,8 @@ namespace Nosto\Tagging\Api;
 use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Store\Api\Data\StoreInterface;
 use Nosto\Tagging\Api\Data\ProductIndexInterface;
-use Nosto\Tagging\Api\Data\ProductIndexSearchResultsInterface;
 
-interface ProductIndexRepositoryInterface extends BaseRepositoryInterface
+interface ProductIndexRepositoryInterface
 {
     /**
      * Save Queue entry
@@ -59,28 +58,12 @@ interface ProductIndexRepositoryInterface extends BaseRepositoryInterface
     public function delete(ProductIndexInterface $productIndex);
 
     /**
-     * Returns all entries by product id
-     *
-     * @param int $productId
-     * @return ProductIndexSearchResultsInterface
-     */
-    public function getByProductId($productId);
-
-    /**
      * Returns row from id
      *
      * @param int $id
      * @return ProductIndexInterface
      */
     public function getById($id);
-
-    /**
-     * Get list of productIndexs
-     *
-     * @param int $pageSize
-     * @return ProductIndexSearchResultsInterface
-     */
-    public function getFirstPage($pageSize);
 
     /**
      * Returns entry by product and store
@@ -97,13 +80,6 @@ interface ProductIndexRepositoryInterface extends BaseRepositoryInterface
      * @return ProductIndexInterface|null
      */
     public function getByProductIdAndStoreId(int $productId, int $storeId);
-
-    /**
-     * Returns all entries in product queue
-     *
-     * @return ProductIndexSearchResultsInterface
-     */
-    public function getAll();
 
     /**
      * Return total amount of products marked as out of sync

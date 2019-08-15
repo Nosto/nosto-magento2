@@ -37,6 +37,7 @@
 namespace Nosto\Tagging\Model\ResourceModel\Product\Index;
 
 use Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection;
+use Magento\Store\Model\Store;
 use Nosto\Tagging\Model\Product\Index\Index;
 use Nosto\Tagging\Model\ResourceModel\Product\Index as ResourceModelIndex;
 
@@ -52,6 +53,103 @@ class Collection extends AbstractCollection
         $this->_init(
             Index::class,
             ResourceModelIndex::class
+        );
+    }
+
+    /**
+     * @param Store $store
+     * @return Collection
+     */
+    public function addStoreFilter(Store $store)
+    {
+        return $this->addFieldToFilter(Index::STORE_ID, ['eq' => $store->getId()]);
+    }
+
+    /**
+     * @param array $ids
+     * @return Collection
+     */
+    public function addIdsFilter(array $ids)
+    {
+        return $this->addFieldToFilter(
+            Index::ID,
+            ['in' => $ids]
+        );
+    }
+
+    /**
+     * Marks products as deleted by given product ids and store
+     *
+     * @param array $ids
+     * @param Store $store
+     * @return int
+     */
+    public function markAsDeleted(array $ids, Store $store)
+    {
+        if (empty($ids)) {
+            return 0;
+        }
+        $connection = $this->getConnection();
+        return $connection->update(
+            $this->getMainTable(),
+            [Index::IS_DELETED => Index::DB_VALUE_BOOLEAN_TRUE],
+            [
+                sprintf('%s IN (?)', Index::PRODUCT_ID) => array_unique($ids),
+                sprintf('%s=?', Index::STORE_ID) => $store->getId()
+            ]
+        );
+    }
+
+    /**
+     * Deletes current indexed products in store
+     *
+     * @param Store $store
+     * @return int
+     */
+    public function deleteCurrentItemsByStore(Store $store)
+    {
+        if ($this->getSize() === 0) {
+            return 0;
+        }
+        $indexIds = [];
+        /* @var Index $item */
+        foreach ($this->getItems() as $item) {
+            $indexIds[] = $item->getId();
+        }
+        $connection = $this->getConnection();
+        return $connection->delete(
+            $this->getMainTable(),
+            [
+                sprintf('%s IN (?)', Index::ID) => array_unique($indexIds),
+                sprintf('%s=?', Index::STORE_ID) => $store->getId()
+            ]
+        );
+    }
+
+    /**
+     * Marks current items in collection as in_sync
+     *
+     * @param Store $store
+     * @return int
+     */
+    public function markAsInSyncCurrentItemsByStore(Store $store)
+    {
+        if ($this->getSize() === 0) {
+            return 0;
+        }
+        $indexIds = [];
+        /* @var Index $item */
+        foreach ($this->getItems() as $item) {
+            $indexIds[] = $item->getId();
+        }
+        $connection = $this->getConnection();
+        return $connection->update(
+            $this->getMainTable(),
+            [Index::IN_SYNC => Index::DB_VALUE_BOOLEAN_TRUE],
+            [
+                sprintf('%s IN (?)', Index::ID) => array_unique($indexIds),
+                sprintf('%s=?', Index::STORE_ID) => $store->getId()
+            ]
         );
     }
 }

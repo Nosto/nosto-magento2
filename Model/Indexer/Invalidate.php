@@ -44,7 +44,6 @@ use Magento\Framework\Indexer\ActionInterface as IndexerActionInterface;
 use Magento\Framework\Mview\ActionInterface as MviewActionInterface;
 use Magento\Store\Model\Store;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
-use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Service\Index as NostoServiceIndex;
 
 /**
@@ -60,9 +59,6 @@ class Invalidate implements IndexerActionInterface, MviewActionInterface
     /** @var NostoHelperAccount */
     private $nostoHelperAccount;
 
-    /** @var NostoLogger */
-    private $logger;
-
     /** @var NostoServiceIndex */
     private $nostoServiceIndex;
 
@@ -72,18 +68,15 @@ class Invalidate implements IndexerActionInterface, MviewActionInterface
     /**
      * Dirty constructor.
      * @param NostoHelperAccount $nostoHelperAccount
-     * @param NostoLogger $logger
      * @param NostoServiceIndex $nostoServiceIndex
      * @param ProductCollectionFactory $productCollectionFactory
      */
     public function __construct(
         NostoHelperAccount $nostoHelperAccount,
-        NostoLogger $logger,
         NostoServiceIndex $nostoServiceIndex,
         ProductCollectionFactory $productCollectionFactory
     ) {
         $this->nostoHelperAccount = $nostoHelperAccount;
-        $this->logger = $logger;
         $this->nostoServiceIndex = $nostoServiceIndex;
         $this->productCollectionFactory = $productCollectionFactory;
     }
@@ -95,20 +88,26 @@ class Invalidate implements IndexerActionInterface, MviewActionInterface
      */
     public function execute($ids)
     {
-        $storesWithNosto = $this->nostoHelperAccount->getStoresWithNosto();
-        foreach ($storesWithNosto as $store) {
-            $productCollection = $this->getCollection($store, $ids);
-            $this->nostoServiceIndex->handleProductChange($productCollection, $store);
+        if (!empty($ids)) {
+            $ids = array_unique($ids);
+            $idsSize = count($ids);
+            $storesWithNosto = $this->nostoHelperAccount->getStoresWithNosto();
+            foreach ($storesWithNosto as $store) {
+                $productCollection = $this->getCollection($store, $ids);
+                $this->nostoServiceIndex->handleProductChange($productCollection, $store);
+                $collectionSize = $productCollection->getSize();
+
+                if ($idsSize > $collectionSize) {
+                    $this->nostoServiceIndex->markProductsAsDeletedByDiff($productCollection, $ids, $store);
+                }
+            }
         }
     }
 
     public function executeFull()
     {
-        $storesWithNosto = $this->nostoHelperAccount->getStoresWithNosto();
-        foreach ($storesWithNosto as $store) {
-            $productCollection = $this->getCollection($store);
-            $this->nostoServiceIndex->handleProductChange($productCollection, $store);
-        }
+        // Empty on purpose to disable the full reindex for now
+        $this->execute([]);
     }
 
     public function executeList(array $ids)
