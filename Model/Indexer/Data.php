@@ -82,12 +82,10 @@ class Data implements IndexerActionInterface, MviewActionInterface
      */
     public function executeFull()
     {
-        $dirtyCollection = $this->getDirtyCollection();
-        $this->nostoServiceIndex->handleDirtyProducts($dirtyCollection);
         $storesWithNosto = $this->nostoHelperAccount->getStoresWithNosto();
-        $outOfSyncCollection = $this->getOutOfSyncCollection();
         foreach ($storesWithNosto as $store) {
-            $this->nostoServiceIndex->handleProductSync($outOfSyncCollection, $store);
+            $indexCollection = $this->getCollection($store);
+            $this->nostoServiceIndex->handleDirtyProducts($indexCollection, $store);
         }
     }
 
@@ -115,63 +113,33 @@ class Data implements IndexerActionInterface, MviewActionInterface
      */
     public function execute($ids)
     {
-        $collection = $this->getDirtyCollection($ids);
-        $this->nostoServiceIndex->handleDirtyProducts($collection);
         $storesWithNosto = $this->nostoHelperAccount->getStoresWithNosto();
         foreach ($storesWithNosto as $store) {
-            $outOfSyncCollection = $this->getOutOfSyncCollection($store, $ids);
-            $this->nostoServiceIndex->handleProductSync($outOfSyncCollection, $store);
+            $collection = $this->getCollection($store, $ids);
+            $this->nostoServiceIndex->handleDirtyProducts($collection, $store);
         }
     }
 
     /**
-     * Returns a collection Nosto product index items that are dirty and not deleted.
+     * Returns a collection Nosto product index items that are dirty or out of sync and not deleted.
      * If $ids attribute is present the collection will be limited to matching the ids and the
      * condition mentioned above only.
      *
-     * @param array $ids array of product index ids (not product id)
-     * @return IndexCollection
-     */
-    private function getDirtyCollection(array $ids = [])
-    {
-        $collection = $this->indexCollectionFactory->create()
-            ->addFieldToSelect('*')
-            ->addFieldToFilter(
-                NostoIndex::IS_DIRTY,
-                ['eq' => NostoIndex::DB_VALUE_BOOLEAN_TRUE]
-            )->addFieldToFilter(
-                NostoIndex::IS_DELETED,
-                ['eq' => NostoIndex::DB_VALUE_BOOLEAN_FALSE]
-            );
-        if (!empty($ids)) {
-            $collection->addIdsFilter($ids);
-        }
-        return $collection;
-    }
-
-    /**
-     * Returns a collection Nosto product index items that are out of sync and not deleted.
-     * If $ids attribute is present the collection will be limited to matching the ids and the
-     * condition mentioned above only.
-     *
-     * @param Store|null $store
+     * @param Store $store
      * @param array $ids
      * @return IndexCollection
      */
-    private function getOutOfSyncCollection(Store $store = null, array $ids = [])
+    private function getCollection(Store $store, array $ids = [])
     {
         $collection = $this->indexCollectionFactory->create()
             ->addFieldToSelect('*')
             ->addFieldToFilter(
-                NostoIndex::IN_SYNC,
-                ['eq' => NostoIndex::DB_VALUE_BOOLEAN_FALSE]
+                [NostoIndex::IN_SYNC, NostoIndex::IS_DIRTY],
+                [NostoIndex::DB_VALUE_BOOLEAN_FALSE, NostoIndex::DB_VALUE_BOOLEAN_TRUE] // This is an OR condition
             )->addFieldToFilter(
                 NostoIndex::IS_DELETED,
                 ['eq' => NostoIndex::DB_VALUE_BOOLEAN_FALSE]
-            );
-        if ($store) {
-            $collection->addStoreFilter($store);
-        }
+            )->addStoreFilter($store);
         if (!empty($ids)) {
             $collection->addIdsFilter($ids);
         }

@@ -178,30 +178,34 @@ class Index
 
     /**
      * @param NostoIndexCollection $collection
+     * @param Store $store
+     * @throws NostoException
      */
-    public function handleDirtyProducts(NostoIndexCollection $collection)
+    public function handleDirtyProducts(NostoIndexCollection $collection, Store $store)
     {
-        $totalItems = $collection->getSize();
         $collection->setPageSize(self::PRODUCT_DATA_BATCH_SIZE);
         $lastPage = $collection->getLastPageNumber();
-        $this->logger->logWithMemoryConsumption(
-            sprintf(
-                'Rebuilding total of %d dirty products in %d batches',
-                $totalItems,
-                $lastPage
-            )
-        );
         $curPage = 1;
+        $totalDirty = 0;
         do {
             $collection->clear();
             $collection->setCurPage($curPage);
             foreach ($collection as $productIndex) {
                 if ($productIndex->getIsDirty() === NostoProductIndex::DB_VALUE_BOOLEAN_TRUE) {
                     $this->rebuildDirtyProduct($productIndex);
+                    $totalDirty++;
                 }
             }
+            $this->handleProductSync($collection, $store);
             ++$curPage;
         } while ($curPage <= $lastPage);
+        $this->logger->logWithMemoryConsumption(
+            sprintf(
+                'Rebuilt total of %d dirty products in %d batches',
+                $totalDirty,
+                $lastPage
+            )
+        );
     }
 
     /**
@@ -236,7 +240,9 @@ class Index
                 $collection->setCurPage($currentPage);
                 /* @var NostoProductIndex $productIndex */
                 foreach ($collection as $productIndex) {
-                    $op->addProduct($productIndex->getNostoProduct());
+                    if (!$productIndex->getInSync()) {
+                        $op->addProduct($productIndex->getNostoProduct());
+                    }
                 }
                 try {
                     $op->upsert();
