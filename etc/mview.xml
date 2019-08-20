@@ -68,19 +68,10 @@
             <table name="catalog_product_website" entity_column="product_id" />
         </subscriptions>
     </view>
-
-    <view id="nosto_index_product_data" class="Nosto\Tagging\Model\Indexer\Data" group="indexer">
+    <view id="nosto_index_product_data_sync" class="Nosto\Tagging\Model\Indexer\Data" group="indexer">
         <subscriptions>
             <!-- basic product information -->
             <table name="nosto_tagging_product_index" entity_column="id" />
         </subscriptions>
     </view>
-
-    <view id="nosto_index_product_sync" class="Nosto\Tagging\Model\Indexer\Sync" group="indexer">
-        <subscriptions>
-            <!-- basic product information -->
-            <table name="nosto_tagging_product_index" entity_column="id" />
-        </subscriptions>
-    </view>
-
 </config>
