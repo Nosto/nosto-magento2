@@ -40,6 +40,7 @@ use Magento\Backend\Block\Template\Context;
 use Magento\Config\Block\System\Config\Form\Field;
 use Magento\Framework\App\Request\Http;
 use Magento\Framework\Data\Form\Element\AbstractElement;
+use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Model\Product\Index\IndexRepository;
 
 class Indexers extends Field
@@ -50,38 +51,50 @@ class Indexers extends Field
     /** @var IndexRepository $indexRepository */
     public $indexRepository;
 
+    /** @var NostoHelperScope $nostoHelperScope */
+    public $nostoHelperScope;
+
     /**
      * Indexers block constructor.
      * @param Context $context
      * @param Http $request
      * @param IndexRepository $indexRepository
+     * @param NostoHelperScope $nostoHelperScope
      * @param array $data
      */
     public function __construct(
         Context $context,
         Http $request,
         IndexRepository $indexRepository,
+        NostoHelperScope $nostoHelperScope,
         array $data = []
     ) {
         parent::__construct($context, $data);
         $this->request = $request;
         $this->indexRepository = $indexRepository;
+        $this->nostoHelperScope = $nostoHelperScope;
     }
 
     /**
      * Return the amount of products marked as dirty
+     * @return int
      */
     public function getAmountDirtyProducts()
     {
-        return $this->indexRepository->getTotalDirty();
+        $id = (int) $this->request->getParam('store');
+        $store = $id > 0 ? $this->nostoHelperScope->getStore($id) : null;
+        return $this->indexRepository->getTotalDirty($store);
     }
 
     /**
      * return the amount of products marked as out of sync
+     * @return int
      */
     public function getAmountOutOfSyncProducts()
     {
-        return $this->indexRepository->getTotalOutOfSync();
+        $id = (int) $this->request->getParam('store');
+        $store = $id > 0 ? $this->nostoHelperScope->getStore($id) : null;
+        return $this->indexRepository->getTotalOutOfSync($store);
     }
 
     /**

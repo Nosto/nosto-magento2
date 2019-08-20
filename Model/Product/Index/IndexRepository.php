@@ -45,6 +45,7 @@ use Nosto\Tagging\Model\Product\Index\Index as NostoIndex;
 use Nosto\Tagging\Model\ResourceModel\Product\Index as IndexResource;
 use Nosto\Tagging\Model\ResourceModel\Product\Index\CollectionFactory as IndexCollectionFactory;
 use Nosto\Tagging\Model\ResourceModel\Product\Index\Collection as IndexCollection;
+use Magento\Store\Model\Store;
 
 class IndexRepository implements ProductIndexRepositoryInterface
 {
@@ -102,25 +103,35 @@ class IndexRepository implements ProductIndexRepositoryInterface
     /**
      * @inheritdoc
      */
-    public function getTotalOutOfSync()
+    public function getTotalOutOfSync(Store $store = null)
     {
         /* @var IndexCollection $collection */
         $collection = $this->indexCollectionFactory->create();
-        return $collection
-            ->addFilter(ProductIndexInterface::IN_SYNC, NostoIndex::DB_VALUE_BOOLEAN_FALSE, 'eq')
-            ->getSize();
+        $collection->addFilter(
+            ProductIndexInterface::IN_SYNC,
+            NostoIndex::DB_VALUE_BOOLEAN_FALSE, 'eq'
+        );
+        if ($store) {
+            $collection->addStoreFilter($store);
+        }
+        return $collection->getSize();
     }
 
     /**
      * @inheritdoc
      */
-    public function getTotalDirty()
+    public function getTotalDirty(Store $store = null)
     {
         /* @var IndexCollection $collection */
         $collection = $this->indexCollectionFactory->create();
-        return $collection
-            ->addFilter(ProductIndexInterface::IS_DIRTY, NostoIndex::DB_VALUE_BOOLEAN_TRUE, 'eq')
-            ->getSize();
+        $collection->addFilter(
+            ProductIndexInterface::IS_DIRTY,
+            NostoIndex::DB_VALUE_BOOLEAN_TRUE, 'eq'
+        );
+        if ($store) {
+            $collection->addStoreFilter($store);
+        }
+        return $collection->getSize();
     }
     /**
      * @inheritdoc

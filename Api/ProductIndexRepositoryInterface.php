@@ -38,6 +38,7 @@ namespace Nosto\Tagging\Api;
 
 use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Store\Api\Data\StoreInterface;
+use Magento\Store\Model\Store;
 use Nosto\Tagging\Api\Data\ProductIndexInterface;
 
 interface ProductIndexRepositoryInterface
@@ -84,14 +85,16 @@ interface ProductIndexRepositoryInterface
     /**
      * Return total amount of products marked as out of sync
      *
+     * @param Store|null $store
      * @return int
      */
-    public function getTotalOutOfSync();
+    public function getTotalOutOfSync(Store $store = null);
 
     /**
      * Return total amount of products marked as dirty
      *
+     * @param Store|null $store
      * @return int
      */
-    public function getTotalDirty();
+    public function getTotalDirty(Store $store = null);
 }
