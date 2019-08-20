@@ -112,7 +112,7 @@ class IndexRepository implements ProductIndexRepositoryInterface
             NostoIndex::DB_VALUE_BOOLEAN_FALSE,
             'eq'
         );
-        if ($store->getId() !== 0) {
+        if ((int)$store->getId() !== 0) {
             $collection->addStoreFilter($store);
         }
         return $collection->getSize();
@@ -130,7 +130,7 @@ class IndexRepository implements ProductIndexRepositoryInterface
             NostoIndex::DB_VALUE_BOOLEAN_TRUE,
             'eq'
         );
-        if ($store->getId() !== 0) {
+        if ((int)$store->getId() !== 0) {
             $collection->addStoreFilter($store);
         }
         return $collection->getSize();
