@@ -39,28 +39,13 @@
  */
 ?>
 
-<style>
-    .container{
-        background: #f3f4f4;
-    }
-    .title{
-        color: #303030;
-        float: none;
-        font-size: 14px;
-        font-weight: 600;
-        padding-right: 30px;
-        text-align: right;
-        width: 33%;
-        text-transform: capitalize;
-    }
-</style>
-<fieldset width="100%">
+<fieldset>
         <table>
             <tr>
-                <td class="title">
-                    <?php echo __('Products Marked As Dirty'); ?>
+                <td>
+                    <?= __('Products Marked As Dirty') ?>
                 </td>
-                <td class="token-container" style="padding: 2.2rem 1.5rem 1rem 1.5rem;">
+                <td>
                     <label>
                         <input type="text" readonly
                                value = "<?= $this->getAmountDirtyProducts() ?>"
@@ -69,10 +54,10 @@
                 </td>
             </tr>
             <tr>
-                <td class="title">
-                    <?php echo __('Products Out Of Sync'); ?>
+                <td>
+                    <?= __('Products Out Of Sync') ?>
                 </td>
-                <td class="token-container" style="padding: 2.2rem 1.5rem 1rem 1.5rem;">
+                <td>
                     <label>
                         <input type="text" readonly
                                value = "<?= $this->getAmountOutOfSyncProducts() ?>"
