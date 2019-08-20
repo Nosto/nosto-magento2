@@ -36,6 +36,7 @@
 
 namespace Nosto\Tagging\Model\Service;
 
+use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\ProductRepository;
 use Magento\Catalog\Model\ResourceModel\Product\Collection as ProductCollection;
@@ -177,31 +178,34 @@ class Index
 
     /**
      * @param NostoIndexCollection $collection
-     * @throws NoSuchEntityException
+     * @param Store $store
+     * @throws NostoException
      */
-    public function handleDirtyProducts(NostoIndexCollection $collection)
+    public function handleDirtyProducts(NostoIndexCollection $collection, Store $store)
     {
-        $totalItems = $collection->getSize();
         $collection->setPageSize(self::PRODUCT_DATA_BATCH_SIZE);
         $lastPage = $collection->getLastPageNumber();
-        $this->logger->logWithMemoryConsumption(
-            sprintf(
-                'Rebuilding total of %d dirty products in %d batches',
-                $totalItems,
-                $lastPage
-            )
-        );
         $curPage = 1;
+        $totalDirty = 0;
         do {
             $collection->clear();
             $collection->setCurPage($curPage);
             foreach ($collection as $productIndex) {
                 if ($productIndex->getIsDirty() === NostoProductIndex::DB_VALUE_BOOLEAN_TRUE) {
                     $this->rebuildDirtyProduct($productIndex);
+                    $totalDirty++;
                 }
             }
+            $this->handleProductSync($collection, $store);
             ++$curPage;
         } while ($curPage <= $lastPage);
+        $this->logger->logWithMemoryConsumption(
+            sprintf(
+                'Rebuilt total of %d dirty products in %d batches',
+                $totalDirty,
+                $lastPage
+            )
+        );
     }
 
     /**
@@ -236,7 +240,9 @@ class Index
                 $collection->setCurPage($currentPage);
                 /* @var NostoProductIndex $productIndex */
                 foreach ($collection as $productIndex) {
-                    $op->addProduct($productIndex->getNostoProduct());
+                    if (!$productIndex->getInSync()) {
+                        $op->addProduct($productIndex->getNostoProduct());
+                    }
                 }
                 try {
                     $op->upsert();
@@ -283,7 +289,6 @@ class Index
     {
         try {
             /* @var Product $magentoProduct */
-            /** @noinspection PhpParamsInspection */
             $magentoProduct = $this->loadMagentoProduct(
                 $productIndex->getProductId(),
                 $productIndex->getStoreId()
@@ -447,7 +452,7 @@ class Index
      * Loads (or reloads) Product object
      * @param int $productId
      * @param int $storeId
-     * @return \Magento\Catalog\Api\Data\ProductInterface|Product|mixed
+     * @return ProductInterface|Product|mixed
      * @throws NoSuchEntityException
      */
     private function loadMagentoProduct(int $productId, int $storeId)

@@ -68,6 +68,7 @@ class Product
      * Index constructor.
      * @param NostoIndexService $nostoIndexService
      * @param NostoIndexRepository $nostoIndexRepository
+     * @param Logger $nostoLogger
      */
     public function __construct(
         NostoIndexService $nostoIndexService,
