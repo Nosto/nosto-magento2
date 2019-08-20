@@ -85,16 +85,16 @@ interface ProductIndexRepositoryInterface
     /**
      * Return total amount of products marked as out of sync
      *
-     * @param Store|null $store
+     * @param Store $store
      * @return int
      */
-    public function getTotalOutOfSync(Store $store = null);
+    public function getTotalOutOfSync(Store $store);
 
     /**
      * Return total amount of products marked as dirty
      *
-     * @param Store|null $store
+     * @param Store $store
      * @return int
      */
-    public function getTotalDirty(Store $store = null);
+    public function getTotalDirty(Store $store);
 }

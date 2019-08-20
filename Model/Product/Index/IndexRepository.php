@@ -103,7 +103,7 @@ class IndexRepository implements ProductIndexRepositoryInterface
     /**
      * @inheritdoc
      */
-    public function getTotalOutOfSync(Store $store = null)
+    public function getTotalOutOfSync(Store $store)
     {
         /* @var IndexCollection $collection */
         $collection = $this->indexCollectionFactory->create();
@@ -112,7 +112,7 @@ class IndexRepository implements ProductIndexRepositoryInterface
             NostoIndex::DB_VALUE_BOOLEAN_FALSE,
             'eq'
         );
-        if ($store) {
+        if ($store->getId() !== 0) {
             $collection->addStoreFilter($store);
         }
         return $collection->getSize();
@@ -121,7 +121,7 @@ class IndexRepository implements ProductIndexRepositoryInterface
     /**
      * @inheritdoc
      */
-    public function getTotalDirty(Store $store = null)
+    public function getTotalDirty(Store $store)
     {
         /* @var IndexCollection $collection */
         $collection = $this->indexCollectionFactory->create();
@@ -130,7 +130,7 @@ class IndexRepository implements ProductIndexRepositoryInterface
             NostoIndex::DB_VALUE_BOOLEAN_TRUE,
             'eq'
         );
-        if ($store) {
+        if ($store->getId() !== 0) {
             $collection->addStoreFilter($store);
         }
         return $collection->getSize();

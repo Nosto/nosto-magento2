@@ -82,7 +82,7 @@ class Indexers extends Field
     public function getAmountDirtyProducts()
     {
         $id = (int) $this->request->getParam('store');
-        $store = $id > 0 ? $this->nostoHelperScope->getStore($id) : null;
+        $store = $this->nostoHelperScope->getStore($id);
         return $this->indexRepository->getTotalDirty($store);
     }
 
@@ -93,7 +93,7 @@ class Indexers extends Field
     public function getAmountOutOfSyncProducts()
     {
         $id = (int) $this->request->getParam('store');
-        $store = $id > 0 ? $this->nostoHelperScope->getStore($id) : null;
+        $store = $this->nostoHelperScope->getStore($id);
         return $this->indexRepository->getTotalOutOfSync($store);
     }
 
