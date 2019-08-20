@@ -43,7 +43,6 @@
     </type>
     <type name="Nosto\Tagging\Model\ResourceModel\Product\Index">
         <plugin name="nostoProductObserverData" type="Nosto\Tagging\Plugin\ProductData"/>
-        <plugin name="nostoProductObserverSync" type="Nosto\Tagging\Plugin\ProductSync"/>
     </type>
     <type name="Nosto\Tagging\Console\Command\NostoAccountConnectCommand">
         <arguments>
