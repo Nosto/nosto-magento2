@@ -109,7 +109,8 @@ class IndexRepository implements ProductIndexRepositoryInterface
         $collection = $this->indexCollectionFactory->create();
         $collection->addFilter(
             ProductIndexInterface::IN_SYNC,
-            NostoIndex::DB_VALUE_BOOLEAN_FALSE, 'eq'
+            NostoIndex::DB_VALUE_BOOLEAN_FALSE,
+            'eq'
         );
         if ($store) {
             $collection->addStoreFilter($store);
@@ -126,7 +127,8 @@ class IndexRepository implements ProductIndexRepositoryInterface
         $collection = $this->indexCollectionFactory->create();
         $collection->addFilter(
             ProductIndexInterface::IS_DIRTY,
-            NostoIndex::DB_VALUE_BOOLEAN_TRUE, 'eq'
+            NostoIndex::DB_VALUE_BOOLEAN_TRUE,
+            'eq'
         );
         if ($store) {
             $collection->addStoreFilter($store);
