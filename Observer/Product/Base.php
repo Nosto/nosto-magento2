@@ -90,7 +90,7 @@ abstract class Base implements ObserverInterface
         if ($this->moduleManager->isEnabled(NostoHelperData::MODULE_NAME)
             && !$this->indexer->isScheduled()
         ) {
-            /* @var \Magento\Catalog\Model\Product $product */
+            /* @var Product $product */
             $product = $this->extractProduct($observer);
 
             if ($product instanceof Product && $product->getId()) {
