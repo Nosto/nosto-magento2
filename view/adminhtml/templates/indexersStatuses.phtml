@@ -34,67 +34,36 @@
  *
  */
 
-namespace Nosto\Tagging\Api;
+/**
+ * @var $this Nosto\Tagging\Block\Adminhtml\Form\Field\Indexers
+ */
+?>
 
-use Magento\Catalog\Api\Data\ProductInterface;
-use Magento\Store\Api\Data\StoreInterface;
-use Magento\Store\Model\Store;
-use Nosto\Tagging\Api\Data\ProductIndexInterface;
-
-interface ProductIndexRepositoryInterface
-{
-    /**
-     * Save Queue entry
-     *
-     * @param ProductIndexInterface $productIndex
-     * @return ProductIndexInterface
-     */
-    public function save(ProductIndexInterface $productIndex);
-
-    /**
-     * Delete productIndex
-     *
-     * @param ProductIndexInterface $productIndex
-     */
-    public function delete(ProductIndexInterface $productIndex);
-
-    /**
-     * Returns row from id
-     *
-     * @param int $id
-     * @return ProductIndexInterface
-     */
-    public function getById($id);
-
-    /**
-     * Returns entry by product and store
-     *
-     * @param ProductInterface $product
-     * @param StoreInterface $store
-     * @return ProductIndexInterface|null
-     */
-    public function getOneByProductAndStore(ProductInterface $product, StoreInterface $store);
-
-    /**
-     * @param int $productId
-     * @param int $storeId
-     * @return ProductIndexInterface|null
-     */
-    public function getByProductIdAndStoreId(int $productId, int $storeId);
-
-    /**
-     * Return total amount of products marked as out of sync
-     *
-     * @param Store $store
-     * @return int
-     */
-    public function getTotalOutOfSync(Store $store);
-
-    /**
-     * Return total amount of products marked as dirty
-     *
-     * @param Store $store
-     * @return int
-     */
-    public function getTotalDirty(Store $store);
-}
+<fieldset>
+        <table>
+            <tr>
+                <td>
+                    <?= __('Products Marked As Dirty') ?>
+                </td>
+                <td>
+                    <label>
+                        <input type="text" readonly
+                               value = "<?= $this->getAmountDirtyProducts() ?>"
+                        />
+                    </label>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <?= __('Products Out Of Sync') ?>
+                </td>
+                <td>
+                    <label>
+                        <input type="text" readonly
+                               value = "<?= $this->getAmountOutOfSyncProducts() ?>"
+                        />
+                    </label>
+                </td>
+            </tr>
+        </table>
+</fieldset>

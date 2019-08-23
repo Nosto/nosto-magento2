@@ -264,12 +264,18 @@
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
             </group>
-            <group id="nosto_account_info" translate="label" type="text" sortOrder="60" showInDefault="0"
-                   showInWebsite="0" showInStore="1">
-                <label>Account Details and Tokens</label>
+            <group id="nosto_account_info" translate="label" type="text" sortOrder="60" showInDefault="1"
+                   showInWebsite="1" showInStore="1">
+                <label>Nosto Status</label>
                 <field id="nosto_account_info_fields" translate="label comment" type="text" sortOrder="20"
                        showInDefault="0" showInWebsite="0" showInStore="1">
+                    <label>Account Details and Tokens</label>
                     <frontend_model>Nosto\Tagging\Block\Adminhtml\Form\Field\Tokens</frontend_model>
+                </field>
+                <field id="nosto_indexers_info" translate="label comment" type="text" sortOrder="30"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Product Data Status</label>
+                    <frontend_model>Nosto\Tagging\Block\Adminhtml\Form\Field\Indexers</frontend_model>
                 </field>
             </group>
         </section>
