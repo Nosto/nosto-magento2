@@ -44,8 +44,9 @@ use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\ResourceModel\Product\Index\Collection as IndexCollection;
 use Nosto\Tagging\Helper\Account as NostoAccountHelper;
+
 /**
- * Observer to mark all indexed products as dirty is settings have changed
+ * Observer to mark all indexed products as dirty if settings have changed
  *
  * @package Nosto\Tagging\Observer\Adminhtml
  */

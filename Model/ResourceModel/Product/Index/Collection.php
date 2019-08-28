@@ -101,7 +101,7 @@ class Collection extends AbstractCollection
     }
 
     /**
-     * Marks all products as dirty by given store id
+     * Marks all products as dirty by given Store
      *
      * @param Store $store
      * @return int
