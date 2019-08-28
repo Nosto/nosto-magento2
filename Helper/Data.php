@@ -110,11 +110,6 @@ class Data extends AbstractHelper
     const XML_PATH_INVENTORY_TAGGING = 'nosto/flags/inventory_tagging';
 
     /**
-     * Path to the configuration object that stores the preference to full reindex
-     */
-    const XML_PATH_FULL_REINDEX = 'nosto/flags/full_reindex';
-
-    /**
      * Path to the configuration object that stores the preference for real time product updates
      */
     const XML_PATH_PRODUCT_UPDATES = 'nosto/flags/product_updates';
@@ -381,17 +376,6 @@ class Data extends AbstractHelper
     public function isInventoryTaggingEnabled(StoreInterface $store = null)
     {
         return (bool)$this->getStoreConfig(self::XML_PATH_INVENTORY_TAGGING, $store);
-    }
-
-    /**
-     * Returns true if full reindex is enable
-     *
-     * @param StoreInterface|null $store the store model or null.
-     * @return bool the configuration value
-     */
-    public function isFullReindexEnabled(StoreInterface $store = null)
-    {
-        return (bool)$this->getStoreConfig(self::XML_PATH_FULL_REINDEX, $store);
     }
 
     /**
