@@ -44,6 +44,7 @@ use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\ResourceModel\Product\Index\Collection as IndexCollection;
 use Nosto\Tagging\Helper\Account as NostoAccountHelper;
+use Magento\Store\Model\Store;
 
 /**
  * Observer to mark all indexed products as dirty if settings have changed
@@ -88,27 +89,46 @@ class Config implements ObserverInterface
      */
     public function execute(Observer $observer) // @codingStandardsIgnoreLine
     {
-        if (!$this->moduleManager->isEnabled(NostoHelperData::MODULE_NAME)) {
+        $changedConfig = $observer->getData('changed_paths');
+        if (empty($changedConfig)
+            || !$this->moduleManager->isEnabled(NostoHelperData::MODULE_NAME)
+            || in_array(NostoHelperData::XML_PATH_INDEXER_MEMORY, $changedConfig, false) // @todo: if it's the only thing in the array
+        ) {
             return;
         }
-        $changedConfig = $observer->getData('changed_paths');
-        if (!empty($changedConfig) && !in_array(NostoHelperData::XML_PATH_INDEXER_MEMORY, $changedConfig, false)) {
-            $store = $this->nostoHelperScope->getStore($observer->getData('store'));
-            if ($this->nostoAccountHelper->nostoInstalledAndEnabled($store)) {
-                $this->logger->info(
-                    sprintf(
-                        'Nosto Settings updated, marking all indexed products as dirty for store %s',
-                        $store->getName()
-                    )
-                );
-                $this->indexCollection->markAllAsDirtyByStore($store);
-                $this->logger->info(
-                    sprintf(
-                        'All indexed products were marked as dirty for store %s',
-                        $store->getName()
-                    )
-                );
+        $storeRequest = $observer->getData('store');
+        // If $storeRequest is empty string, means we're in a global scope
+        // mark as dirty for all stores
+        if (empty($storeRequest)) {
+            $stores = $this->nostoHelperScope->getStores();
+            foreach ($stores as $store) {
+                $this->markAllAsDirtyByStore($store);
             }
+        } else {
+            $store = $this->nostoHelperScope->getStore($storeRequest);
+            $this->markAllAsDirtyByStore($store);
+        }
+    }
+
+    /** Wrapper to log and mark all products as dirty after configuration has changed
+     * @param Store $store
+     */
+    private function markAllAsDirtyByStore(Store $store)
+    {
+        if ($this->nostoAccountHelper->nostoInstalledAndEnabled($store)) {
+            $this->logger->info(
+                sprintf(
+                    'Nosto Settings updated, marking all indexed products as dirty for store %s',
+                    $store->getName()
+                )
+            );
+            $this->indexCollection->markAllAsDirtyByStore($store);
+            $this->logger->info(
+                sprintf(
+                    'All indexed products were marked as dirty for store %s',
+                    $store->getName()
+                )
+            );
         }
     }
 }
