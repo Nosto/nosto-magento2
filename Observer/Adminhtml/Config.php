@@ -92,7 +92,7 @@ class Config implements ObserverInterface
         $changedConfig = $observer->getData('changed_paths');
         if (empty($changedConfig)
             || !$this->moduleManager->isEnabled(NostoHelperData::MODULE_NAME)
-            || in_array(NostoHelperData::XML_PATH_INDEXER_MEMORY, $changedConfig, false) // @todo: if it's the only thing in the array
+            || (count($changedConfig) === 1 && $changedConfig[0] === NostoHelperData::XML_PATH_INDEXER_MEMORY)
         ) {
             return;
         }
