@@ -166,7 +166,8 @@ class IndexRepository implements ProductIndexRepositoryInterface
             )
             ->setPageSize(1)
             ->setCurPage(1);
-        return $collection->getFirstItem(); // @codingStandardsIgnoreLine
+        // If the collection is empty, we should return null
+        return $collection->getSize() > 0 ? $collection->getFirstItem() : null; // @codingStandardsIgnoreLine
     }
 
     /**
