@@ -39,8 +39,10 @@ namespace Nosto\Tagging\Helper;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 use Magento\Framework\App\RequestInterface;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NotFoundException;
 use Magento\Framework\Phrase;
+use Magento\Store\Api\Data\WebsiteInterface;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Store\Model\Website;
@@ -119,6 +121,18 @@ class Scope extends AbstractHelper
     {
         /** @noinspection PhpIncompatibleReturnTypeInspection */
         return $this->storeManager->getWebsites($withDefault, $codeKey);
+    }
+
+    /**
+     * Get specified website
+     *
+     * @param null|bool|int|string|WebsiteInterface $websiteId
+     * @return WebsiteInterface|Website
+     * @throws LocalizedException
+     */
+    public function getWebsite($websiteId)
+    {
+        return $this->storeManager->getWebsite($websiteId);
     }
 
     /**

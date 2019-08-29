@@ -38,6 +38,7 @@ namespace Nosto\Tagging\Observer\Adminhtml;
 
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Module\Manager as ModuleManager;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
@@ -53,6 +54,9 @@ use Magento\Store\Model\Store;
  */
 class Config implements ObserverInterface
 {
+    const WEBSITE_SCOPE_KEY = 'website';
+    const STORE_SCOPE_KEY = 'store';
+
     private $logger;
     private $moduleManager;
     private $nostoHelperScope;
@@ -86,31 +90,42 @@ class Config implements ObserverInterface
      * Observer method to mark all indexed products as dirty on the index table
      *
      * @param Observer $observer the dispatched event
+     * @throws LocalizedException
      */
     public function execute(Observer $observer) // @codingStandardsIgnoreLine
     {
         $changedConfig = $observer->getData('changed_paths');
+        // If array of changes contains only indexer allow memory, we can skip
         if (empty($changedConfig)
             || !$this->moduleManager->isEnabled(NostoHelperData::MODULE_NAME)
             || (count($changedConfig) === 1 && $changedConfig[0] === NostoHelperData::XML_PATH_INDEXER_MEMORY)
         ) {
             return;
         }
-        $storeRequest = $observer->getData('store');
-        // If $storeRequest is empty string, means we're in a global scope
-        // mark as dirty for all stores
-        if (empty($storeRequest)) {
+        $storeRequest = $observer->getData(self::STORE_SCOPE_KEY);
+        $websiteRequest = $observer->getData(self::WEBSITE_SCOPE_KEY);
+        // If $storeRequest && $websiteRequest are empty strings, means we're in a global scope.
+        // Mark as dirty for all stores if config is different than the one just saved
+        if (empty($storeRequest) && empty($websiteRequest)) { // Global scope
             $stores = $this->nostoHelperScope->getStores();
             foreach ($stores as $store) {
                 $this->markAllAsDirtyByStore($store);
             }
-        } else {
+        } elseif (!empty($websiteRequest) && empty($storeRequest)) { // Website Level
+            // Get stores from the website and mark them all as dirty
+            $website = $this->nostoHelperScope->getWebsite($websiteRequest);
+            $stores = $website->getStores();
+            foreach ($stores as $store) {
+                $this->markAllAsDirtyByStore($store);
+            }
+        } else { // Store View Level
             $store = $this->nostoHelperScope->getStore($storeRequest);
             $this->markAllAsDirtyByStore($store);
         }
     }
 
-    /** Wrapper to log and mark all products as dirty after configuration has changed
+    /**
+     * Wrapper to log and mark all products as dirty after configuration has changed
      * @param Store $store
      */
     private function markAllAsDirtyByStore(Store $store)
