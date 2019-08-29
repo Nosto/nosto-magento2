@@ -120,6 +120,7 @@ class NostoRebuildIndexCommand extends Command
         if (empty($scopeCode)) {
             $storesWithNosto = $this->nostoHelperAccount->getStoresWithNosto();
             foreach ($storesWithNosto as $store) {
+                $this->io->block(sprintf('Rebuilding index for store %s', $store->getCode()));
                 $success = $this->rebuildIndex($store);
             }
         } else {
