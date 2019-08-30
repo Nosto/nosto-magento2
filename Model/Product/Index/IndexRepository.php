@@ -45,6 +45,7 @@ use Nosto\Tagging\Model\Product\Index\Index as NostoIndex;
 use Nosto\Tagging\Model\ResourceModel\Product\Index as IndexResource;
 use Nosto\Tagging\Model\ResourceModel\Product\Index\CollectionFactory as IndexCollectionFactory;
 use Nosto\Tagging\Model\ResourceModel\Product\Index\Collection as IndexCollection;
+use Nosto\Tagging\Util\Index as IndexUtil;
 use Magento\Store\Model\Store;
 
 class IndexRepository implements ProductIndexRepositoryInterface
@@ -81,7 +82,7 @@ class IndexRepository implements ProductIndexRepositoryInterface
             ->addStoreFilter($store)
             ->setPageSize(1)
             ->setCurPage(1);
-        return $collection->getFirstItem(); // @codingStandardsIgnoreLine
+        return IndexUtil::nullableFirstItem($collection);
     }
 
     /**
@@ -97,7 +98,7 @@ class IndexRepository implements ProductIndexRepositoryInterface
             )
             ->setPageSize(1)
             ->setCurPage(1);
-        return $collection->getFirstItem(); // @codingStandardsIgnoreLine
+        return IndexUtil::nullableFirstItem($collection);
     }
 
     /**
@@ -166,8 +167,7 @@ class IndexRepository implements ProductIndexRepositoryInterface
             )
             ->setPageSize(1)
             ->setCurPage(1);
-        // If the collection is empty, we should return null
-        return $collection->getSize() > 0 ? $collection->getFirstItem() : null; // @codingStandardsIgnoreLine
+        return IndexUtil::nullableFirstItem($collection);
     }
 
     /**

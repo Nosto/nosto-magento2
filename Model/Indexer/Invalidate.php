@@ -56,6 +56,8 @@ class Invalidate implements IndexerActionInterface, MviewActionInterface
 {
     public const INDEXER_ID = 'nosto_index_product_invalidate';
 
+    public static $disableFullReindex = true;
+
     /** @var NostoHelperAccount */
     private $nostoHelperAccount;
 
@@ -106,8 +108,13 @@ class Invalidate implements IndexerActionInterface, MviewActionInterface
 
     public function executeFull()
     {
-        // Empty on purpose to disable the full reindex for now
-        $this->execute([]);
+        if (!self::$disableFullReindex) {
+            $storesWithNosto = $this->nostoHelperAccount->getStoresWithNosto();
+            foreach ($storesWithNosto as $store) {
+                $productCollection = $this->getCollection($store);
+                $this->nostoServiceIndex->handleProductChange($productCollection, $store);
+            }
+        }
     }
 
     public function executeList(array $ids)
