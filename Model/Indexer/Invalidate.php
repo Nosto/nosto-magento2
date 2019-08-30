@@ -36,6 +36,7 @@
 
 namespace Nosto\Tagging\Model\Indexer;
 
+use Exception;
 use Magento\Catalog\Model\Product\Attribute\Source\Status;
 use Magento\Catalog\Model\Product\Visibility;
 use Magento\Catalog\Model\ResourceModel\Product\Collection as ProductCollection;
@@ -83,8 +84,7 @@ class Invalidate implements IndexerActionInterface, MviewActionInterface
 
     /**
      * @param int[] $ids
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
-     * @throws \Exception
+     * @throws Exception
      */
     public function execute($ids)
     {
@@ -104,17 +104,26 @@ class Invalidate implements IndexerActionInterface, MviewActionInterface
         }
     }
 
+    /**
+     * @inheritDoc
+     */
     public function executeFull()
     {
         // Empty on purpose to disable the full reindex for now
         $this->execute([]);
     }
 
+    /**
+     * @inheritDoc
+     */
     public function executeList(array $ids)
     {
         $this->execute($ids);
     }
 
+    /**
+     * @inheritDoc
+     */
     public function executeRow($id)
     {
         $this->execute([$id]);

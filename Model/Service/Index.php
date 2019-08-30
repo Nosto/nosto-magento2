@@ -147,6 +147,13 @@ class Index
         foreach ($collection as $product) {
             $this->updateOrCreateDirtyEntity($product, $store);
         }
+        $this->logger->logWithMemoryConsumption(
+            sprintf(
+                'Indexed %d products for store %s',
+                $collection->getSize(),
+                $store->getName()
+            )
+        );
     }
 
     /**
@@ -163,7 +170,6 @@ class Index
                 $indexedProduct->setUpdatedAt($this->magentoTimeZone->date());
             } else {
                 /* @var Product $fullProduct */
-                /** @noinspection PhpParamsInspection */
                 $fullProduct = $this->loadMagentoProduct($product->getId(), $store->getId());
                 $indexedProduct = $this->indexBuilder->build($fullProduct, $store);
                 $indexedProduct->setIsDirty(false);
@@ -418,6 +424,13 @@ class Index
                 $op->delete(); // @codingStandardsIgnoreLine
                 $rowsRemoved = $collection->deleteCurrentItemsByStore($store);
                 $totalDeleted += $rowsRemoved;
+                $this->logger->info(
+                    sprintf(
+                        'Deleted %d products for store %s',
+                        $rowsRemoved,
+                        $store->getName()
+                    )
+                );
             } catch (\Exception $e) {
                 $this->logger->exception($e);
             }
