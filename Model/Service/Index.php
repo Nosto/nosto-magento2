@@ -60,6 +60,7 @@ use Nosto\Tagging\Model\ResourceModel\Product\Index\CollectionFactory as NostoIn
 use Nosto\Tagging\Util\Product as ProductUtil;
 use Nosto\Types\Product\ProductInterface as NostoProductInterface;
 use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
+use Nosto\Tagging\Helper\Data as NostoDataHelper;
 
 class Index
 {
@@ -97,6 +98,9 @@ class Index
     /** @var TimezoneInterface */
     private $magentoTimeZone;
 
+    /** @var NostoDataHelper */
+    private $nostoDataHelper;
+
     /**
      * Index constructor.
      * @param IndexRepository $indexRepository
@@ -109,6 +113,7 @@ class Index
      * @param NostoLogger $logger
      * @param NostoIndexCollectionFactory $nostoIndexCollectionFactory
      * @param TimezoneInterface $magentoTimeZone
+     * @param NostoDataHelper $nostoDataHelper
      */
     public function __construct(
         IndexRepository $indexRepository,
@@ -120,7 +125,8 @@ class Index
         NostoHelperUrl $nostoHelperUrl,
         NostoLogger $logger,
         NostoIndexCollectionFactory $nostoIndexCollectionFactory,
-        TimezoneInterface $magentoTimeZone
+        TimezoneInterface $magentoTimeZone,
+        NostoDataHelper $nostoDataHelper
     ) {
         $this->indexRepository = $indexRepository;
         $this->indexBuilder = $indexBuilder;
@@ -132,6 +138,7 @@ class Index
         $this->logger = $logger;
         $this->nostoIndexCollectionFactory = $nostoIndexCollectionFactory;
         $this->magentoTimeZone = $magentoTimeZone;
+        $this->nostoDataHelper = $nostoDataHelper;
     }
 
     /**
@@ -202,7 +209,11 @@ class Index
                     $totalDirty++;
                 }
             }
-            $this->handleProductSync($collection, $store);
+            if ($this->nostoDataHelper->isProductUpdatesEnabled()) {
+                $this->handleProductSync($collection, $store);
+            } else {
+                $this->logger->info('Skipping product sync since product updates via API are disabled');
+            }
             ++$curPage;
         } while ($curPage <= $lastPage);
         $this->logger->logWithMemoryConsumption(
