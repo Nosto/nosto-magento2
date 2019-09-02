@@ -133,13 +133,9 @@ class Data implements IndexerActionInterface, MviewActionInterface
     {
         $collection = $this->indexCollectionFactory->create()
             ->addFieldToSelect('*')
-            ->addFieldToFilter(
-                [NostoIndex::IN_SYNC, NostoIndex::IS_DIRTY],
-                [NostoIndex::DB_VALUE_BOOLEAN_FALSE, NostoIndex::DB_VALUE_BOOLEAN_TRUE] // This is an OR condition
-            )->addFieldToFilter(
-                NostoIndex::IS_DELETED,
-                ['eq' => NostoIndex::DB_VALUE_BOOLEAN_FALSE]
-            )->addStoreFilter($store);
+            ->addOutOfSyncOrIsDirtyFilter()
+            ->addNotDeletedFilter()
+            ->addStoreFilter($store);
         if (!empty($ids)) {
             $collection->addIdsFilter($ids);
         }

@@ -36,8 +36,11 @@
 
 namespace Nosto\Tagging\Model\ResourceModel\Product\Index;
 
+use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection;
+use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\Store;
+use Nosto\Tagging\Api\Data\ProductIndexInterface;
 use Nosto\Tagging\Model\Product\Index\Index;
 use Nosto\Tagging\Model\ResourceModel\Product\Index as ResourceModelIndex;
 
@@ -57,12 +60,12 @@ class Collection extends AbstractCollection
     }
 
     /**
-     * @param Store $store
+     * @param StoreInterface $store
      * @return Collection
      */
-    public function addStoreFilter(Store $store)
+    public function addStoreFilter(StoreInterface $store)
     {
-        return $this->addFieldToFilter(Index::STORE_ID, ['eq' => $store->getId()]);
+        return $this->addStoreIdFilter($store->getId());
     }
 
     /**
@@ -75,6 +78,126 @@ class Collection extends AbstractCollection
             Index::ID,
             ['in' => $ids]
         );
+    }
+
+    /**
+     * Filters collection for items that are either dirty or out of sync with Nosto
+     * @return Collection
+     */
+    public function addOutOfSyncOrIsDirtyFilter()
+    {
+        return $this->addFieldToFilter(
+            [ProductIndexInterface::IN_SYNC, ProductIndexInterface::IS_DIRTY],
+            [Index::DB_VALUE_BOOLEAN_FALSE, Index::DB_VALUE_BOOLEAN_TRUE]
+        );
+    }
+
+    /**
+     * Filters collection for items that are dirty
+     *
+     * @return Collection
+     */
+    public function addIsDirtyFilter()
+    {
+        return $this->addFilter(
+            ProductIndexInterface::IS_DIRTY,
+            Index::DB_VALUE_BOOLEAN_TRUE,
+            'eq'
+        );
+    }
+
+    /**
+     * Filters collection by store id
+     *
+     * @param int $storeId
+     * @return Collection
+     */
+    public function addStoreIdFilter(int $storeId)
+    {
+        return $this->addFilter(
+            ProductIndexInterface::STORE_ID,
+            $storeId,
+            'eq'
+        );
+    }
+
+    /**
+     * Filters collection by product id
+     *
+     * @param int $productId
+     * @return Collection
+     */
+    public function addProductIdFilter(int $productId)
+    {
+        return $this->addFilter(
+            ProductIndexInterface::PRODUCT_ID,
+            $productId,
+            'eq'
+        );
+    }
+
+    /**
+     * Filters collection by product
+     *
+     * @param ProductInterface $product
+     * @return Collection
+     */
+    public function addProductFilter(ProductInterface $product)
+    {
+        return $this->addProductIdFilter($product->getId());
+    }
+
+    /**
+     * Filters collection by id (primary key)
+     *
+     * @param int $indexId
+     * @return Collection
+     */
+    public function addIdFilter(int $indexId)
+    {
+        return $this->addFilter(
+            ProductIndexInterface::ID,
+            $indexId,
+            'eq'
+        );
+    }
+
+    /**
+     * Filters collection for items that out of sync
+     *
+     * @return Collection
+     */
+    public function addOutOfSyncFilter()
+    {
+        return $this->addFilter(
+            ProductIndexInterface::IN_SYNC,
+            Index::DB_VALUE_BOOLEAN_FALSE,
+            'eq'
+        );
+    }
+
+    /**
+     * Filters collection for only products that are not marked as deleted
+     *
+     * @return Collection
+     */
+    public function addNotDeletedFilter()
+    {
+        return $this->addFieldToFilter(
+            ProductIndexInterface::IS_DELETED,
+            ['eq' => Index::DB_VALUE_BOOLEAN_FALSE]
+        );
+    }
+
+    /**
+     * Returns the first item of the collection
+     * or null if the collection is empty
+     *
+     * @return ProductIndexInterface|null
+     */
+    public function getFirstItemOrNull()
+    {
+        return $this->getSize() > 0 ? $this->getFirstItem() : null;
     }
 
     /**
