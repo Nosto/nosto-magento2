@@ -204,19 +204,11 @@ class Index
         $curPage = 1;
         $totalDirty = 0;
         $updatesEnabled = $this->nostoDataHelper->isProductUpdatesEnabled();
-        $maxMemPercentage = $this->nostoDataHelper->getIndexerMemory();
         if (!$updatesEnabled) {
             $this->logger->info('Skipping product sync since product updates via API are disabled');
         }
         do {
-            if (NostoMemUtil::getPercentageUsedMem() >= $maxMemPercentage) {
-                throw new MemoryOutOfBoundsException(
-                    sprintf(
-                        'Memory Out Of Bounds Error: Memory used by index service is over %d%% allowed',
-                        $maxMemPercentage
-                    )
-                );
-            }
+            $this->checkMemoryConsumption('index service');
             $collection->clear();
             $collection->setCurPage($curPage);
             foreach ($collection as $productIndex) {
@@ -267,14 +259,7 @@ class Index
                 )
             );
             do {
-                if (NostoMemUtil::getPercentageUsedMem() >= $maxMemPercentage) {
-                    throw new MemoryOutOfBoundsException(
-                        sprintf(
-                            'Memory Out Of Bounds Error: Memory used by product sync is over %d%% allowed',
-                            $maxMemPercentage
-                        )
-                    );
-                }
+                $this->checkMemoryConsumption('product sync');
                 $op = new UpsertProduct($account, $this->nostoHelperUrl->getActiveDomain($store));
                 $op->setResponseTimeout(60);
                 $collection->clear();
@@ -451,14 +436,7 @@ class Index
         $lastPage = $collection->getLastPageNumber();
         $curPage = 1;
         do {
-            if (NostoMemUtil::getPercentageUsedMem() >= $maxMemPercentage) {
-                throw new MemoryOutOfBoundsException(
-                    sprintf(
-                        'Memory Out Of Bounds Error: Memory used by product delete is over %d%% allowed',
-                        $maxMemPercentage
-                    )
-                );
-            }
+            $this->checkMemoryConsumption('product delete');
             $collection->clear();
             $collection->setCurPage($curPage);
             $ids = [];
@@ -526,5 +504,26 @@ class Index
             $storeId,
             true
         );
+    }
+
+    /**
+     * Throws new memory out of bounds exception if the memory
+     * consumption is higher than configured amount
+     *
+     * @param string $serviceName
+     * @throws MemoryOutOfBoundsException
+     */
+    private function checkMemoryConsumption($serviceName)
+    {
+        $maxMemPercentage = $this->nostoDataHelper->getIndexerMemory();
+        if (NostoMemUtil::getPercentageUsedMem() >= $maxMemPercentage) {
+            throw new MemoryOutOfBoundsException(
+                sprintf(
+                    'Memory Out Of Bounds Error: Memory used by %s is over %d%% allowed',
+                    $serviceName,
+                    $maxMemPercentage
+                )
+            );
+        }
     }
 }
