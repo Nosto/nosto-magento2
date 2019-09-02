@@ -101,6 +101,24 @@ class Collection extends AbstractCollection
     }
 
     /**
+     * Marks all products as dirty by given Store
+     *
+     * @param Store $store
+     * @return int
+     */
+    public function markAllAsDirtyByStore(Store $store)
+    {
+        $connection = $this->getConnection();
+        return $connection->update(
+            $this->getMainTable(),
+            [Index::IS_DIRTY => Index::DB_VALUE_BOOLEAN_TRUE],
+            [
+                sprintf('%s=?', Index::STORE_ID) => $store->getId()
+            ]
+        );
+    }
+
+    /**
      * Deletes current indexed products in store
      *
      * @param Store $store
