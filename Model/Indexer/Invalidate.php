@@ -38,8 +38,8 @@ namespace Nosto\Tagging\Model\Indexer;
 
 use Magento\Catalog\Model\Product\Attribute\Source\Status;
 use Magento\Catalog\Model\Product\Visibility;
-use Magento\Catalog\Model\ResourceModel\Product\Collection as ProductCollection;
-use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductCollectionFactory;
+use Nosto\Tagging\Model\ResourceModel\Magento\Product\Collection as ProductCollection;
+use Nosto\Tagging\Model\ResourceModel\Magento\Product\CollectionFactory as ProductCollectionFactory;
 use Magento\Framework\Indexer\ActionInterface as IndexerActionInterface;
 use Magento\Framework\Mview\ActionInterface as MviewActionInterface;
 use Magento\Store\Model\Store;
@@ -56,7 +56,7 @@ class Invalidate implements IndexerActionInterface, MviewActionInterface
 {
     public const INDEXER_ID = 'nosto_index_product_invalidate';
 
-    public static $disableFullReindex = true;
+    public static $disableFullReindex = false;
 
     /** @var NostoHelperAccount */
     private $nostoHelperAccount;
@@ -135,14 +135,7 @@ class Invalidate implements IndexerActionInterface, MviewActionInterface
     private function getCollection(Store $store, array $ids = [])
     {
         $collection = $this->productCollectionFactory->create();
-        $collection->addAttributeToSelect($collection->getIdFieldName())
-            ->addAttributeToFilter(
-                'status',
-                ['eq'=> Status::STATUS_ENABLED]
-            )->addAttributeToFilter(
-                'visibility',
-                ['neq'=> Visibility::VISIBILITY_NOT_VISIBLE]
-            )->addStoreFilter($store);
+        $collection->addActiveAndVisibleFilterByStore($store);
         if (!empty($ids)) {
             $collection->addAttributeToFilter($collection->getIdFieldName(), ['in', $ids]);
         }
