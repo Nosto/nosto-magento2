@@ -61,6 +61,8 @@ use Nosto\Tagging\Util\Product as ProductUtil;
 use Nosto\Types\Product\ProductInterface as NostoProductInterface;
 use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
 use Nosto\Tagging\Helper\Data as NostoDataHelper;
+use Nosto\Util\Memory as NostoMemUtil;
+use Nosto\Exception\MemoryOutOfBoundsException;
 
 class Index
 {
@@ -193,6 +195,7 @@ class Index
      * @param NostoIndexCollection $collection
      * @param Store $store
      * @throws NostoException
+     * @throws MemoryOutOfBoundsException
      */
     public function handleDirtyProducts(NostoIndexCollection $collection, Store $store)
     {
@@ -200,7 +203,20 @@ class Index
         $lastPage = $collection->getLastPageNumber();
         $curPage = 1;
         $totalDirty = 0;
+        $updatesEnabled = $this->nostoDataHelper->isProductUpdatesEnabled();
+        $maxMemPercentage = $this->nostoDataHelper->getIndexerMemory();
+        if (!$updatesEnabled) {
+            $this->logger->info('Skipping product sync since product updates via API are disabled');
+        }
         do {
+            if (NostoMemUtil::getPercentageUsedMem() >= $maxMemPercentage) {
+                throw new MemoryOutOfBoundsException(
+                    sprintf(
+                        'Memory Out Of Bounds Error: Memory used by index service is over %d%% allowed',
+                        $maxMemPercentage
+                    )
+                );
+            }
             $collection->clear();
             $collection->setCurPage($curPage);
             foreach ($collection as $productIndex) {
@@ -209,10 +225,8 @@ class Index
                     $totalDirty++;
                 }
             }
-            if ($this->nostoDataHelper->isProductUpdatesEnabled()) {
+            if ($updatesEnabled) {
                 $this->handleProductSync($collection, $store);
-            } else {
-                $this->logger->info('Skipping product sync since product updates via API are disabled');
             }
             ++$curPage;
         } while ($curPage <= $lastPage);
@@ -238,6 +252,7 @@ class Index
         if ($account instanceof NostoSignupAccount === false) {
             throw new NostoException(sprintf('Store view %s does not have Nosto installed', $store->getName()));
         }
+        $maxMemPercentage = $this->nostoDataHelper->getIndexerMemory();
         try {
             $collection->setPageSize(self::API_BATCH_SIZE);
             $pages = $collection->getLastPageNumber();
@@ -251,6 +266,14 @@ class Index
                 )
             );
             do {
+                if (NostoMemUtil::getPercentageUsedMem() >= $maxMemPercentage) {
+                    throw new MemoryOutOfBoundsException(
+                        sprintf(
+                            'Memory Out Of Bounds Error: Memory used by product sync is over %d%% allowed',
+                            $maxMemPercentage
+                        )
+                    );
+                }
                 $op = new UpsertProduct($account, $this->nostoHelperUrl->getActiveDomain($store));
                 $op->setResponseTimeout(60);
                 $collection->clear();
@@ -293,6 +316,8 @@ class Index
                     $store->getCode()
                 )
             );
+        } catch (MemoryOutOfBoundsException $e) {
+            $this->logger->warning($e->getMessage());
         } catch (NostoException $e) {
             $this->logger->exception($e);
         }
@@ -406,6 +431,7 @@ class Index
      * @param Store $store
      * @return int number of deleted products
      * @throws NostoException
+     * @throws MemoryOutOfBoundsException
      */
     public function handleProductDeletion(NostoIndexCollection $collection, Store $store)
     {
@@ -417,10 +443,19 @@ class Index
         if ($account instanceof NostoSignupAccount === false) {
             throw new NostoException(sprintf('Store view %s does not have Nosto installed', $store->getName()));
         }
+        $maxMemPercentage = $this->nostoDataHelper->getIndexerMemory();
         $collection->setPageSize(self::PRODUCT_DELETION_BATCH_SIZE);
         $lastPage = $collection->getLastPageNumber();
         $curPage = 1;
         do {
+            if (NostoMemUtil::getPercentageUsedMem() >= $maxMemPercentage) {
+                throw new MemoryOutOfBoundsException(
+                    sprintf(
+                        'Memory Out Of Bounds Error: Memory used by product delete is over %d%% allowed',
+                        $maxMemPercentage
+                    )
+                );
+            }
             $collection->clear();
             $collection->setCurPage($curPage);
             $ids = [];
@@ -459,6 +494,7 @@ class Index
      * @param Store $store
      * @return int
      * @throws NostoException
+     * @throws MemoryOutOfBoundsException
      */
     public function purgeDeletedProducts(Store $store)
     {

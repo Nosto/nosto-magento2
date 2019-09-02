@@ -36,6 +36,7 @@
 
 namespace Nosto\Tagging\Model\Indexer;
 
+use Exception;
 use Magento\Framework\Indexer\ActionInterface as IndexerActionInterface;
 use Magento\Framework\Mview\ActionInterface as MviewActionInterface;
 use Nosto\Tagging\Model\Product\Index\Index as NostoIndex;
@@ -44,6 +45,8 @@ use Nosto\Tagging\Model\ResourceModel\Product\Index\CollectionFactory as IndexCo
 use Nosto\Tagging\Model\Service\Index as NostoIndexService;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Magento\Store\Model\Store;
+use Nosto\Tagging\Logger\Logger as NostoLogger;
+use Nosto\Exception\MemoryOutOfBoundsException;
 
 /**
  * An indexer for Nosto product sync
@@ -61,37 +64,48 @@ class Data implements IndexerActionInterface, MviewActionInterface
     /** @var NostoHelperAccount */
     private $nostoHelperAccount;
 
+    /** @var NostoLogger */
+    private $nostoLogger;
+
     /**
      * @param NostoIndexService $nostoServiceIndex
      * @param IndexCollectionFactory $indexCollectionFactory
      * @param NostoHelperAccount $nostoHelperAccount
+     * @param NostoLogger $nostoLogger
      */
     public function __construct(
         NostoIndexService $nostoServiceIndex,
         IndexCollectionFactory $indexCollectionFactory,
-        NostoHelperAccount $nostoHelperAccount
+        NostoHelperAccount $nostoHelperAccount,
+        NostoLogger $nostoLogger
     ) {
         $this->nostoServiceIndex = $nostoServiceIndex;
         $this->indexCollectionFactory = $indexCollectionFactory;
         $this->nostoHelperAccount = $nostoHelperAccount;
+        $this->nostoLogger = $nostoLogger;
     }
 
     /**
      * @inheritdoc
-     * @throws \Exception
+     * @throws Exception
      */
     public function executeFull()
     {
         $storesWithNosto = $this->nostoHelperAccount->getStoresWithNosto();
         foreach ($storesWithNosto as $store) {
             $indexCollection = $this->getCollection($store);
-            $this->nostoServiceIndex->handleDirtyProducts($indexCollection, $store);
+            try {
+                $this->nostoServiceIndex->handleDirtyProducts($indexCollection, $store);
+            } catch (MemoryOutOfBoundsException $e) {
+                $this->nostoLogger->warning($e->getMessage());
+                throw $e;
+            }
         }
     }
 
     /**
      * @inheritdoc
-     * @throws \Exception
+     * @throws Exception
      */
     public function executeList(array $ids)
     {
@@ -100,7 +114,7 @@ class Data implements IndexerActionInterface, MviewActionInterface
 
     /**
      * @inheritdoc
-     * @throws \Exception
+     * @throws Exception
      */
     public function executeRow($id)
     {
@@ -109,14 +123,19 @@ class Data implements IndexerActionInterface, MviewActionInterface
 
     /**
      * @inheritdoc
-     * @throws \Exception
+     * @throws Exception
      */
     public function execute($ids)
     {
         $storesWithNosto = $this->nostoHelperAccount->getStoresWithNosto();
         foreach ($storesWithNosto as $store) {
             $collection = $this->getCollection($store, $ids);
-            $this->nostoServiceIndex->handleDirtyProducts($collection, $store);
+            try {
+                $this->nostoServiceIndex->handleDirtyProducts($collection, $store);
+            } catch (MemoryOutOfBoundsException $e) {
+                $this->nostoLogger->warning($e->getMessage());
+                throw $e;
+            }
         }
     }
 
