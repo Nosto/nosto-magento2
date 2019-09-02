@@ -63,9 +63,8 @@ class NostoRebuildIndexCommand extends Command
 
     /** @var NostoServiceIndex */
     private $nostoServiceIndex;
-    /**
-     * @var InvalidateIndexer
-     */
+
+    /** @var InvalidateIndexer */
     private $invalidateIndexer;
 
     /** @var SymfonyStyle*/
