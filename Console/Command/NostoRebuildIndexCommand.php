@@ -74,6 +74,8 @@ class NostoRebuildIndexCommand extends Command
      * NostoRebuildIndexCommand constructor.
      * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoHelperScope $nostoHelperScope
+     * @param NostoServiceIndex $nostoServiceIndex
+     * @param InvalidateIndexer $invalidateIndexer
      */
     public function __construct(
         NostoHelperAccount $nostoHelperAccount,
