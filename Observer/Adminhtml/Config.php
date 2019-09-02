@@ -92,7 +92,7 @@ class Config implements ObserverInterface
      * @param Observer $observer the dispatched event
      * @throws LocalizedException
      */
-    public function execute(Observer $observer) // @codingStandardsIgnoreLine
+    public function execute(Observer $observer)
     {
         $changedConfig = $observer->getData('changed_paths');
         // If array of changes contains only indexer allow memory, we can skip
@@ -138,12 +138,6 @@ class Config implements ObserverInterface
                 )
             );
             $this->indexCollection->markAllAsDirtyByStore($store);
-            $this->logger->info(
-                sprintf(
-                    'All indexed products were marked as dirty for store %s',
-                    $store->getName()
-                )
-            );
         }
     }
 }
