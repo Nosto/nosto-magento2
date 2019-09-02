@@ -320,7 +320,7 @@ class Index
                 )
             );
         } catch (MemoryOutOfBoundsException $e) {
-            $this->logger->warning($e->getMessage());
+            throw $e;
         } catch (NostoException $e) {
             $this->logger->exception($e);
         }
