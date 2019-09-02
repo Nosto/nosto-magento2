@@ -245,6 +245,7 @@ class Index
      * @param NostoIndexCollection $collection
      * @param Store $store
      * @throws NostoException
+     * @throws MemoryOutOfBoundsException
      */
     public function handleProductSync(NostoIndexCollection $collection, Store $store): void
     {
@@ -304,6 +305,8 @@ class Index
                 }
                 ++$currentPage;
             } while ($currentPage <= $pages);
+        } catch (MemoryOutOfBoundsException $e) {
+            throw $e;
         } catch (\Exception $e) {
             $this->logger->exception($e);
         }

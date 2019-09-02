@@ -97,7 +97,7 @@ class Data implements IndexerActionInterface, MviewActionInterface
             try {
                 $this->nostoServiceIndex->handleDirtyProducts($indexCollection, $store);
             } catch (MemoryOutOfBoundsException $e) {
-                $this->nostoLogger->warning($e->getMessage());
+                $this->nostoLogger->error($e->getMessage());
                 throw $e;
             }
         }
