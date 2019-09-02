@@ -440,11 +440,8 @@ class Index
     {
         $collection = $this->nostoIndexCollectionFactory->create()
             ->addFieldToSelect('*')
-            ->addFieldToFilter(
-                NostoProductIndex::IS_DELETED,
-                ['eq' => NostoProductIndex::DB_VALUE_BOOLEAN_TRUE]
-            )->addStoreFilter($store);
-
+            ->addIsDeletedFilter()
+            ->addStoreFilter($store);
         return $this->handleProductDeletion($collection, $store);
     }
 
