@@ -245,7 +245,6 @@ class Index
         if ($account instanceof NostoSignupAccount === false) {
             throw new NostoException(sprintf('Store view %s does not have Nosto installed', $store->getName()));
         }
-        $maxMemPercentage = $this->nostoDataHelper->getIndexerMemory();
         try {
             $collection->setPageSize(self::API_BATCH_SIZE);
             $pages = $collection->getLastPageNumber();
