@@ -60,6 +60,9 @@ use Nosto\Tagging\Model\ResourceModel\Product\Index\CollectionFactory as NostoIn
 use Nosto\Tagging\Util\Product as ProductUtil;
 use Nosto\Types\Product\ProductInterface as NostoProductInterface;
 use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
+use Nosto\Tagging\Helper\Data as NostoDataHelper;
+use Nosto\Util\Memory as NostoMemUtil;
+use Nosto\Exception\MemoryOutOfBoundsException;
 
 class Index
 {
@@ -97,6 +100,9 @@ class Index
     /** @var TimezoneInterface */
     private $magentoTimeZone;
 
+    /** @var NostoDataHelper */
+    private $nostoDataHelper;
+
     /**
      * Index constructor.
      * @param IndexRepository $indexRepository
@@ -109,6 +115,7 @@ class Index
      * @param NostoLogger $logger
      * @param NostoIndexCollectionFactory $nostoIndexCollectionFactory
      * @param TimezoneInterface $magentoTimeZone
+     * @param NostoDataHelper $nostoDataHelper
      */
     public function __construct(
         IndexRepository $indexRepository,
@@ -120,7 +127,8 @@ class Index
         NostoHelperUrl $nostoHelperUrl,
         NostoLogger $logger,
         NostoIndexCollectionFactory $nostoIndexCollectionFactory,
-        TimezoneInterface $magentoTimeZone
+        TimezoneInterface $magentoTimeZone,
+        NostoDataHelper $nostoDataHelper
     ) {
         $this->indexRepository = $indexRepository;
         $this->indexBuilder = $indexBuilder;
@@ -132,6 +140,7 @@ class Index
         $this->logger = $logger;
         $this->nostoIndexCollectionFactory = $nostoIndexCollectionFactory;
         $this->magentoTimeZone = $magentoTimeZone;
+        $this->nostoDataHelper = $nostoDataHelper;
     }
 
     /**
@@ -147,6 +156,13 @@ class Index
         foreach ($collection as $product) {
             $this->updateOrCreateDirtyEntity($product, $store);
         }
+        $this->logger->logWithMemoryConsumption(
+            sprintf(
+                'Indexed %d products for store %s',
+                $collection->getSize(),
+                $store->getName()
+            )
+        );
     }
 
     /**
@@ -163,7 +179,6 @@ class Index
                 $indexedProduct->setUpdatedAt($this->magentoTimeZone->date());
             } else {
                 /* @var Product $fullProduct */
-                /** @noinspection PhpParamsInspection */
                 $fullProduct = $this->loadMagentoProduct($product->getId(), $store->getId());
                 $indexedProduct = $this->indexBuilder->build($fullProduct, $store);
                 $indexedProduct->setIsDirty(false);
@@ -180,6 +195,7 @@ class Index
      * @param NostoIndexCollection $collection
      * @param Store $store
      * @throws NostoException
+     * @throws MemoryOutOfBoundsException
      */
     public function handleDirtyProducts(NostoIndexCollection $collection, Store $store)
     {
@@ -187,7 +203,12 @@ class Index
         $lastPage = $collection->getLastPageNumber();
         $curPage = 1;
         $totalDirty = 0;
+        $updatesEnabled = $this->nostoDataHelper->isProductUpdatesEnabled();
+        if (!$updatesEnabled) {
+            $this->logger->info('Skipping product sync since product updates via API are disabled');
+        }
         do {
+            $this->checkMemoryConsumption('index service');
             $collection->clear();
             $collection->setCurPage($curPage);
             foreach ($collection as $productIndex) {
@@ -196,7 +217,9 @@ class Index
                     $totalDirty++;
                 }
             }
-            $this->handleProductSync($collection, $store);
+            if ($updatesEnabled) {
+                $this->handleProductSync($collection, $store);
+            }
             ++$curPage;
         } while ($curPage <= $lastPage);
         $this->logger->logWithMemoryConsumption(
@@ -214,6 +237,7 @@ class Index
      * @param NostoIndexCollection $collection
      * @param Store $store
      * @throws NostoException
+     * @throws MemoryOutOfBoundsException
      */
     public function handleProductSync(NostoIndexCollection $collection, Store $store): void
     {
@@ -234,6 +258,7 @@ class Index
                 )
             );
             do {
+                $this->checkMemoryConsumption('product sync');
                 $op = new UpsertProduct($account, $this->nostoHelperUrl->getActiveDomain($store));
                 $op->setResponseTimeout(60);
                 $collection->clear();
@@ -264,6 +289,8 @@ class Index
                 }
                 ++$currentPage;
             } while ($currentPage <= $pages);
+        } catch (MemoryOutOfBoundsException $e) {
+            throw $e;
         } catch (\Exception $e) {
             $this->logger->exception($e);
         }
@@ -276,6 +303,8 @@ class Index
                     $store->getCode()
                 )
             );
+        } catch (MemoryOutOfBoundsException $e) {
+            throw $e;
         } catch (NostoException $e) {
             $this->logger->exception($e);
         }
@@ -389,6 +418,7 @@ class Index
      * @param Store $store
      * @return int number of deleted products
      * @throws NostoException
+     * @throws MemoryOutOfBoundsException
      */
     public function handleProductDeletion(NostoIndexCollection $collection, Store $store)
     {
@@ -400,10 +430,12 @@ class Index
         if ($account instanceof NostoSignupAccount === false) {
             throw new NostoException(sprintf('Store view %s does not have Nosto installed', $store->getName()));
         }
+        $maxMemPercentage = $this->nostoDataHelper->getIndexerMemory();
         $collection->setPageSize(self::PRODUCT_DELETION_BATCH_SIZE);
         $lastPage = $collection->getLastPageNumber();
         $curPage = 1;
         do {
+            $this->checkMemoryConsumption('product delete');
             $collection->clear();
             $collection->setCurPage($curPage);
             $ids = [];
@@ -418,6 +450,13 @@ class Index
                 $op->delete(); // @codingStandardsIgnoreLine
                 $rowsRemoved = $collection->deleteCurrentItemsByStore($store);
                 $totalDeleted += $rowsRemoved;
+                $this->logger->info(
+                    sprintf(
+                        'Deleted %d products for store %s',
+                        $rowsRemoved,
+                        $store->getName()
+                    )
+                );
             } catch (\Exception $e) {
                 $this->logger->exception($e);
             }
@@ -435,6 +474,7 @@ class Index
      * @param Store $store
      * @return int
      * @throws NostoException
+     * @throws MemoryOutOfBoundsException
      */
     public function purgeDeletedProducts(Store $store)
     {
@@ -463,5 +503,26 @@ class Index
             $storeId,
             true
         );
+    }
+
+    /**
+     * Throws new memory out of bounds exception if the memory
+     * consumption is higher than configured amount
+     *
+     * @param string $serviceName
+     * @throws MemoryOutOfBoundsException
+     */
+    private function checkMemoryConsumption($serviceName)
+    {
+        $maxMemPercentage = $this->nostoDataHelper->getIndexerMemory();
+        if (NostoMemUtil::getPercentageUsedMem() >= $maxMemPercentage) {
+            throw new MemoryOutOfBoundsException(
+                sprintf(
+                    'Memory Out Of Bounds Error: Memory used by %s is over %d%% allowed',
+                    $serviceName,
+                    $maxMemPercentage
+                )
+            );
+        }
     }
 }
