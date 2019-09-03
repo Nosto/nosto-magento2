@@ -89,8 +89,8 @@ class Service
      * compile phase.
      * @param NostoLogger $logger
      * @param Builder $nostoProductBuilder
-     * @param NostoHelperAccount\Proxy $nostoHelperAccount
-     * @param NostoHelperData\Proxy $nostoHelperData
+     * @param NostoHelperAccount $nostoHelperAccount
+     * @param NostoHelperData $nostoHelperData
      * @param NostoProductRepository $nostoProductRepository
      * @param QueueRepository $nostoQueueRepository
      * @param QueueFactory $nostoQueueFactory
@@ -102,8 +102,8 @@ class Service
     public function __construct(
         NostoLogger $logger,
         NostoProductBuilder $nostoProductBuilder,
-        NostoHelperAccount\Proxy $nostoHelperAccount,
-        NostoHelperData\Proxy $nostoHelperData,
+        NostoHelperAccount $nostoHelperAccount,
+        NostoHelperData $nostoHelperData,
         NostoProductRepository $nostoProductRepository,
         QueueRepository $nostoQueueRepository,
         QueueFactory $nostoQueueFactory,

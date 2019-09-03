@@ -72,7 +72,7 @@ class Indexer implements IndexerActionInterface, MviewActionInterface
      * @param NostoLogger $logger
      * @param ProductCollectionFactory $productCollectionFactory
      * @param NostoQueueRepository $nostoQueueRepository
-     * @param NostoHelperAccount\Proxy $nostoHelperAccount
+     * @param NostoHelperAccount $nostoHelperAccount
      */
     public function __construct(
         ProductService $productService,
@@ -80,7 +80,7 @@ class Indexer implements IndexerActionInterface, MviewActionInterface
         NostoLogger $logger,
         ProductCollectionFactory $productCollectionFactory,
         NostoQueueRepository $nostoQueueRepository,
-        NostoHelperAccount\Proxy $nostoHelperAccount
+        NostoHelperAccount $nostoHelperAccount
     ) {
         $this->productService = $productService;
         $this->dataHelper = $dataHelper;
