@@ -84,4 +84,25 @@
     <type name="Magento\Sales\Api\OrderRepositoryInterface">
         <plugin name="order_repository_nosto" type="Nosto\Tagging\Plugin\Sales\OrderRepository" />
     </type>
+    <type name="Nosto\Tagging\Model\Product\Repository">
+        <arguments>
+            <argument name="productRepository" xsi:type="object">Magento\Catalog\Model\ProductRepository\Proxy</argument>
+        </arguments>
+    </type>
+    <type name="Nosto\Tagging\Model\Product\Service">
+        <arguments>
+            <argument name="nostoHelperAccount" xsi:type="object">Nosto\Tagging\Helper\Account\Proxy</argument>
+            <argument name="nostoHelperData" xsi:type="object">Nosto\Tagging\Helper\Data\Proxy</argument>
+        </arguments>
+    </type>
+    <type name="Nosto\Tagging\Model\Indexer\Product\Indexer">
+        <arguments>
+            <argument name="nostoHelperAccount" xsi:type="object">Nosto\Tagging\Helper\Account\Proxy</argument>
+        </arguments>
+    </type>
+    <type name="Nosto\Tagging\Helper\Customer">
+        <arguments>
+            <argument name="customerSession" xsi:type="object">Magento\Customer\Model\Session\Proxy</argument>
+        </arguments>
+    </type>
 </config>
