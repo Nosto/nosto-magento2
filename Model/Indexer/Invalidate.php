@@ -130,7 +130,7 @@ class Invalidate implements IndexerActionInterface, MviewActionInterface
      * @param array $ids
      * @return ProductCollection
      */
-    private function getCollection(Store $store, array $ids = [])
+    public function getCollection(Store $store, array $ids = [])
     {
         $collection = $this->productCollectionFactory->create();
         $collection->addActiveAndVisibleFilterByStore($store);
