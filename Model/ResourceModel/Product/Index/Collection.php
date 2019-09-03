@@ -99,10 +99,9 @@ class Collection extends AbstractCollection
      */
     public function addIsDirtyFilter()
     {
-        return $this->addFilter(
+        return $this->addFieldToFilter(
             ProductIndexInterface::IS_DIRTY,
-            Index::DB_VALUE_BOOLEAN_TRUE,
-            'eq'
+            ['eq' => Index::DB_VALUE_BOOLEAN_TRUE]
         );
     }
 
@@ -114,10 +113,9 @@ class Collection extends AbstractCollection
      */
     public function addStoreIdFilter(int $storeId)
     {
-        return $this->addFilter(
+        return $this->addFieldToFilter(
             ProductIndexInterface::STORE_ID,
-            $storeId,
-            'eq'
+            ['eq' => $storeId]
         );
     }
 
@@ -129,10 +127,9 @@ class Collection extends AbstractCollection
      */
     public function addProductIdFilter(int $productId)
     {
-        return $this->addFilter(
+        return $this->addFieldToFilter(
             ProductIndexInterface::PRODUCT_ID,
-            $productId,
-            'eq'
+            ['eq' => $productId]
         );
     }
 
@@ -155,10 +152,9 @@ class Collection extends AbstractCollection
      */
     public function addIdFilter(int $indexId)
     {
-        return $this->addFilter(
+        return $this->addFieldToFilter(
             ProductIndexInterface::ID,
-            $indexId,
-            'eq'
+            ['eq' => $indexId]
         );
     }
 
@@ -169,10 +165,9 @@ class Collection extends AbstractCollection
      */
     public function addOutOfSyncFilter()
     {
-        return $this->addFilter(
+        return $this->addFieldToFilter(
             ProductIndexInterface::IN_SYNC,
-            Index::DB_VALUE_BOOLEAN_FALSE,
-            'eq'
+            ['eq' => Index::DB_VALUE_BOOLEAN_FALSE]
         );
     }
 
@@ -210,6 +205,7 @@ class Collection extends AbstractCollection
      */
     public function getFirstItemOrNull()
     {
+        $this->getSelect()->limit(1);
         return $this->getSize() > 0 ? $this->getFirstItem() : null;
     }
 
