@@ -1,5 +1,8 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 3.8.5
+* Remove proxy classes from constructors to be in accordance with Magento marketplace code review
+
 ### 3.8.4
 * Fix Nosto indexer's full reindex logic 
 
