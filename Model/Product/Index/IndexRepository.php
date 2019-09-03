@@ -77,7 +77,7 @@ class IndexRepository implements ProductIndexRepositoryInterface
             ->addStoreFilter($store)
             ->setPageSize(1)
             ->setCurPage(1);
-        return $collection->getFirstItemOrNull();
+        return $collection->getOneOrNull();
     }
 
     /**
@@ -90,7 +90,7 @@ class IndexRepository implements ProductIndexRepositoryInterface
             ->addIdFilter($id)
             ->setPageSize(1)
             ->setCurPage(1);
-        return $collection->getFirstItemOrNull();
+        return $collection->getOneOrNull();
     }
 
     /**
@@ -146,7 +146,7 @@ class IndexRepository implements ProductIndexRepositoryInterface
             ->setPageSize(1)
             ->setCurPage(1);
 
-        return $collection->getFirstItemOrNull();
+        return $collection->getOneOrNull();
     }
 
     /**

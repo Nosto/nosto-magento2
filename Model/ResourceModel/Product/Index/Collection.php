@@ -202,11 +202,12 @@ class Collection extends AbstractCollection
      * or null if the collection is empty
      *
      * @return ProductIndexInterface|null
+     * @suppress PhanTypeMismatchReturn
      */
-    public function getFirstItemOrNull()
+    public function getOneOrNull()
     {
         $this->getSelect()->limit(1);
-        return $this->getSize() > 0 ? $this->getFirstItem() : null;
+        return $this->getSize() > 0 ? $this->getLastItem() : null; // @codingStandardsIgnoreLine
     }
 
     /**
