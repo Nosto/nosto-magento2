@@ -437,7 +437,7 @@ class Data extends AbstractHelper
      * Returns maximum percentage of PHP available memory that indexer should use
      *
      * @param StoreInterface|null $store the store model or null.
-     * @return bool the configuration value
+     * @return int the configuration value
      */
     public function getIndexerMemory(StoreInterface $store = null)
     {
