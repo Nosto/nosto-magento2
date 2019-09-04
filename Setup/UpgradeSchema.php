@@ -42,10 +42,11 @@ use Magento\Framework\Setup\ModuleContextInterface;
 use Magento\Framework\Setup\SchemaSetupInterface;
 use Nosto\Tagging\Api\Data\CustomerInterface;
 use Nosto\Tagging\Model\ResourceModel\Customer;
-use Nosto\Tagging\Model\ResourceModel\Product\Queue as ProductQueue;
 
 class UpgradeSchema extends Core implements UpgradeSchemaInterface
 {
+    const PRODUCT_QUEUE_TABLE = 'nosto_tagging_product_queue';
+
     /**
      * {@inheritdoc}
      */
@@ -69,8 +70,8 @@ class UpgradeSchema extends Core implements UpgradeSchemaInterface
 
         if (version_compare($fromVersion, '4.0.0-beta', '<')) {
             $this->createProductIndexTable($setup);
-            if ($connection->isTableExists(ProductQueue::TABLE_NAME)) {
-                $connection->dropTable(ProductQueue::TABLE_NAME);
+            if ($connection->isTableExists(self::PRODUCT_QUEUE_TABLE)) {
+                $connection->dropTable(self::PRODUCT_QUEUE_TABLE);
             }
         }
 
