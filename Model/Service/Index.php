@@ -46,10 +46,8 @@ use Magento\Store\Model\Store;
 use Nosto\Exception\MemoryOutOfBoundsException;
 use Nosto\NostoException;
 use Nosto\Tagging\Api\Data\ProductIndexInterface;
-use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Data as NostoDataHelper;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
-use Nosto\Tagging\Helper\Url as NostoHelperUrl;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
 use Nosto\Tagging\Model\Product\Index\Builder;
@@ -57,15 +55,19 @@ use Nosto\Tagging\Model\Product\Index\Index as NostoProductIndex;
 use Nosto\Tagging\Model\Product\Index\IndexRepository;
 use Nosto\Tagging\Model\ResourceModel\Product\Index\Collection as NostoIndexCollection;
 use Nosto\Tagging\Model\ResourceModel\Product\Index\CollectionFactory as NostoIndexCollectionFactory;
+use Nosto\Tagging\Util\Benchmark;
 use Nosto\Tagging\Util\Iterator;
 use Nosto\Tagging\Util\Product as ProductUtil;
 use Nosto\Types\Product\ProductInterface as NostoProductInterface;
-use Nosto\Util\Memory as NostoMemUtil;
 
-class Index
+class Index extends AbstractService
 {
     private const PRODUCT_DATA_BATCH_SIZE = 100;
     private const PRODUCT_DELETION_BATCH_SIZE = 100;
+    private const BENCHMARK_BREAKPOINT_INVALIDATE = 100;
+    private const BENCHMARK_BREAKPOINT_REBUILD = 10;
+    private const BENCHMARK_NAME_INVALIDATE = 'nosto_index_invalidate';
+    private const BENCHMARK_NAME_REBUILD = 'nosto_index_rebuild';
 
     /** @var IndexRepository */
     private $indexRepository;
@@ -85,14 +87,8 @@ class Index
     /** @var NostoIndexCollectionFactory */
     private $nostoIndexCollectionFactory;
 
-    /** @var NostoLogger */
-    private $logger;
-
     /** @var TimezoneInterface */
     private $magentoTimeZone;
-
-    /** @var NostoDataHelper */
-    private $nostoDataHelper;
 
     /** @var Sync */
     private $nostoSyncService;
@@ -122,15 +118,14 @@ class Index
         NostoDataHelper $nostoDataHelper,
         Sync $nostoSyncService
     ) {
+        parent::__construct($nostoDataHelper, $logger);
         $this->indexRepository = $indexRepository;
         $this->indexBuilder = $indexBuilder;
         $this->productRepository = $productRepository;
         $this->nostoProductBuilder = $nostoProductBuilder;
         $this->nostoHelperScope = $nostoHelperScope;
-        $this->logger = $logger;
         $this->nostoIndexCollectionFactory = $nostoIndexCollectionFactory;
         $this->magentoTimeZone = $magentoTimeZone;
-        $this->nostoDataHelper = $nostoDataHelper;
         $this->nostoSyncService = $nostoSyncService;
     }
 
@@ -144,17 +139,20 @@ class Index
      */
     public function invalidateOrCreate(ProductCollection $collection, Store $store)
     {
+        $this->startBenchmark(
+            self::BENCHMARK_NAME_INVALIDATE,
+        self::BENCHMARK_BREAKPOINT_INVALIDATE
+        );
         $iterator = new Iterator($collection);
         $iterator->each(function ($item) use ($store) {
             $this->updateOrCreateDirtyEntity($item, $store);
+            $this->tickBenchmark(self::BENCHMARK_NAME_INVALIDATE);
         });
-        $this->logger->logWithMemoryConsumption(
-            sprintf(
-                'Invalidated / created %d products for store %s',
-                $collection->getSize(),
-                $store->getName()
-            )
-        );
+        try {
+            $this->logBenchmarkSummary(self::BENCHMARK_NAME_INVALIDATE, $store);
+        } catch (\Exception $e) {
+            $this->getLogger()->exception($e);
+        }
     }
 
     /**
@@ -178,7 +176,7 @@ class Index
             $this->indexRepository->save($indexedProduct);
             return $indexedProduct;
         } catch (\Exception $e) {
-            $this->logger->exception($e);
+            $this->getLogger()->exception($e);
             return null;
         }
     }
@@ -191,13 +189,19 @@ class Index
      */
     public function rebuildDirtyProducts(NostoIndexCollection $collection, Store $store)
     {
+        $this->startBenchmark(
+            self::BENCHMARK_NAME_REBUILD,
+            self::BENCHMARK_BREAKPOINT_REBUILD
+        );
         $collection->setPageSize(self::PRODUCT_DATA_BATCH_SIZE);
         $iterator = new Iterator($collection);
         $iterator->each(function ($item) {
             if ($item->getIsDirty() === NostoProductIndex::DB_VALUE_BOOLEAN_TRUE) {
                 $this->rebuildDirtyProduct($item);
+                $this->tickBenchmark(self::BENCHMARK_NAME_REBUILD);
             }
         });
+        $this->logBenchmarkSummary(self::BENCHMARK_NAME_REBUILD, $store);
         $this->nostoSyncService->syncIndexedProducts($collection, $store);
     }
 
@@ -232,7 +236,7 @@ class Index
             $this->indexRepository->save($productIndex);
             return $productIndex;
         } catch (\Exception $e) {
-            $this->logger->exception($e);
+            $this->getLogger()->exception($e);
             return null;
         }
     }
@@ -255,7 +259,7 @@ class Index
         });
         // Flag the rest of the ids as deleted
         $deleted = $this->nostoIndexCollectionFactory->create()->markAsDeleted($uniqueIds, $store);
-        $this->logger->info(
+        $this->getLogger()->info(
             sprintf(
                 'Marked %d indexed products as deleted for store %s',
                 $deleted,
@@ -279,26 +283,5 @@ class Index
             $storeId,
             true
         );
-    }
-
-    /**
-     * Throws new memory out of bounds exception if the memory
-     * consumption is higher than configured amount
-     *
-     * @param string $serviceName
-     * @throws MemoryOutOfBoundsException
-     */
-    private function checkMemoryConsumption($serviceName)
-    {
-        $maxMemPercentage = $this->nostoDataHelper->getIndexerMemory();
-        if (NostoMemUtil::getPercentageUsedMem() >= $maxMemPercentage) {
-            throw new MemoryOutOfBoundsException(
-                sprintf(
-                    'Memory Out Of Bounds Error: Memory used by %s is over %d%% allowed',
-                    $serviceName,
-                    $maxMemPercentage
-                )
-            );
-        }
     }
 }

@@ -36,12 +36,6 @@
 
 namespace Nosto\Tagging\Model\Service;
 
-use Magento\Catalog\Api\Data\ProductInterface;
-use Magento\Catalog\Model\Product;
-use Magento\Catalog\Model\ProductRepository;
-use Magento\Catalog\Model\ResourceModel\Product\Collection as ProductCollection;
-use Magento\Framework\Exception\NoSuchEntityException;
-use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
 use Magento\Store\Model\Store;
 use Nosto\Exception\MemoryOutOfBoundsException;
 use Nosto\NostoException;
@@ -51,37 +45,26 @@ use Nosto\Operation\UpsertProduct;
 use Nosto\Tagging\Api\Data\ProductIndexInterface;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Data as NostoDataHelper;
-use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Helper\Url as NostoHelperUrl;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
-use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
-use Nosto\Tagging\Model\Product\Index\Builder;
 use Nosto\Tagging\Model\Product\Index\Index as NostoProductIndex;
 use Nosto\Tagging\Model\Product\Index\IndexRepository;
 use Nosto\Tagging\Model\ResourceModel\Product\Index\Collection as NostoIndexCollection;
 use Nosto\Tagging\Model\ResourceModel\Product\Index\CollectionFactory as NostoIndexCollectionFactory;
 use Nosto\Tagging\Util\Iterator;
-use Nosto\Util\Memory as NostoMemUtil;
 
-class Sync
+class Sync extends AbstractService
 {
     private const API_BATCH_SIZE = 50;
     private const PRODUCT_DELETION_BATCH_SIZE = 100;
+    private const BENCHMARK_SYNC_NAME = 'nosto_product_sync';
+    private const BENCHMARK_SYNC_BREAKPOINT = 1;
+    private const BENCHMARK_DELETE_NAME = 'nosto_product_delete';
+    private const BENCHMARK_DELETE_BREAKPOINT = 1;
+    private const RESPONSE_TIMEOUT = 60;
 
     /** @var IndexRepository */
     private $indexRepository;
-
-    /** @var Builder */
-    private $indexBuilder;
-
-    /** @var ProductRepository */
-    private $productRepository;
-
-    /** @var NostoProductBuilder */
-    private $nostoProductBuilder;
-
-    /** @var NostoHelperScope */
-    private $nostoHelperScope;
 
     /** @var NostoHelperAccount */
     private $nostoHelperAccount;
@@ -92,52 +75,31 @@ class Sync
     /** @var NostoIndexCollectionFactory */
     private $nostoIndexCollectionFactory;
 
-    /** @var NostoLogger */
-    private $logger;
-
-    /** @var TimezoneInterface */
-    private $magentoTimeZone;
-
     /** @var NostoDataHelper */
     private $nostoDataHelper;
 
     /**
      * Index constructor.
      * @param IndexRepository $indexRepository
-     * @param Builder $indexBuilder
-     * @param ProductRepository $productRepository
-     * @param NostoProductBuilder $nostoProductBuilder
-     * @param NostoHelperScope $nostoHelperScope
      * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoHelperUrl $nostoHelperUrl
      * @param NostoLogger $logger
      * @param NostoIndexCollectionFactory $nostoIndexCollectionFactory
-     * @param TimezoneInterface $magentoTimeZone
      * @param NostoDataHelper $nostoDataHelper
      */
     public function __construct(
         IndexRepository $indexRepository,
-        Builder $indexBuilder,
-        ProductRepository $productRepository,
-        NostoProductBuilder $nostoProductBuilder,
-        NostoHelperScope $nostoHelperScope,
         NostoHelperAccount $nostoHelperAccount,
         NostoHelperUrl $nostoHelperUrl,
         NostoLogger $logger,
         NostoIndexCollectionFactory $nostoIndexCollectionFactory,
-        TimezoneInterface $magentoTimeZone,
         NostoDataHelper $nostoDataHelper
     ) {
+        parent::__construct($nostoDataHelper, $logger);
         $this->indexRepository = $indexRepository;
-        $this->indexBuilder = $indexBuilder;
-        $this->productRepository = $productRepository;
-        $this->nostoProductBuilder = $nostoProductBuilder;
-        $this->nostoHelperScope = $nostoHelperScope;
         $this->nostoHelperAccount = $nostoHelperAccount;
         $this->nostoHelperUrl = $nostoHelperUrl;
-        $this->logger = $logger;
         $this->nostoIndexCollectionFactory = $nostoIndexCollectionFactory;
-        $this->magentoTimeZone = $magentoTimeZone;
         $this->nostoDataHelper = $nostoDataHelper;
     }
 
@@ -152,7 +114,7 @@ class Sync
     public function syncIndexedProducts(NostoIndexCollection $collection, Store $store)
     {
         if (!$this->nostoDataHelper->isProductUpdatesEnabled($store)) {
-            $this->logger->info(
+            $this->getLogger()->info(
                 'Nosto product sync is disabled - skipping upserting products to Nosto'
             );
         }
@@ -160,30 +122,32 @@ class Sync
         if ($account instanceof NostoSignupAccount === false) {
             throw new NostoException(sprintf('Store view %s does not have Nosto installed', $store->getName()));
         }
-
+        $this->startBenchmark(self::BENCHMARK_SYNC_NAME, self::BENCHMARK_SYNC_BREAKPOINT);
         $collection->setPageSize(self::API_BATCH_SIZE);
         $iterator = new Iterator($collection);
-        $iterator->eachBatch(function ($collection) use ($account, $store) {
+        $iterator->eachBatch(function (NostoIndexCollection $collectionBatch) use ($account, $store) {
             $this->checkMemoryConsumption('product sync');
             $op = new UpsertProduct($account, $this->nostoHelperUrl->getActiveDomain($store));
-            $op->setResponseTimeout(60);
-            foreach ($collection as $productIndex) {
+            $op->setResponseTimeout(self::RESPONSE_TIMEOUT);
+            foreach ($collectionBatch as $productIndex) {
                 if (!$productIndex->getInSync()) {
                     $op->addProduct($productIndex->getNostoProduct());
                 }
             }
             try {
                 $op->upsert();
+                $this->tickBenchmark(self::BENCHMARK_SYNC_NAME);
             } catch (\Exception $upsertException) {
-                $this->logger->exception($upsertException);
+                $this->getLogger()->exception($upsertException);
             } finally {
                 // We will set this as in sync even if there was failures
-                $collection->markAsInSyncCurrentItemsByStore($store);
+                $collectionBatch->markAsInSyncCurrentItemsByStore($store);
             }
         });
+        $this->logBenchmarkSummary(self::BENCHMARK_SYNC_NAME, $store);
         try {
             $totalDeleted = $this->purgeDeletedProducts($store);
-            $this->logger->info(
+            $this->getLogger()->info(
                 sprintf(
                     'Removed total of %d products from index for store %s',
                     $totalDeleted,
@@ -193,7 +157,7 @@ class Sync
         } catch (MemoryOutOfBoundsException $e) {
             throw $e;
         } catch (NostoException $e) {
-            $this->logger->exception($e);
+            $this->getLogger()->exception($e);
         }
     }
 
@@ -226,7 +190,7 @@ class Sync
                 $this->markAsInSync($productIndex);
             }
         } catch (\Exception $e) {
-            $this->logger->exception($e);
+            $this->getLogger()->exception($e);
         }
     }
 
@@ -248,10 +212,11 @@ class Sync
         if ($account instanceof NostoSignupAccount === false) {
             throw new NostoException(sprintf('Store view %s does not have Nosto installed', $store->getName()));
         }
+        $this->startBenchmark(self::BENCHMARK_DELETE_NAME, self::BENCHMARK_DELETE_BREAKPOINT);
         $totalDeleted = 0;
         $collection->setPageSize(self::PRODUCT_DELETION_BATCH_SIZE);
         $iterator = new Iterator($collection);
-        $iterator->eachBatch(function ($collection) use ($account, &$totalDeleted) {
+        $iterator->eachBatch(function (NostoIndexCollection $collection) use ($account, $store, &$totalDeleted) {
             $this->checkMemoryConsumption('product delete');
             $ids = [];
             /* @var $indexedProduct NostoProductIndex */
@@ -265,18 +230,12 @@ class Sync
                 $op->delete(); // @codingStandardsIgnoreLine
                 $rowsRemoved = $collection->deleteCurrentItemsByStore($store);
                 $totalDeleted += $rowsRemoved;
-                $this->logger->info(
-                    sprintf(
-                        'Synchronized %d deleted products for store %s to Nosto',
-                        $rowsRemoved,
-                        $store->getName()
-                    )
-                );
+                $this->tickBenchmark(self::BENCHMARK_DELETE_NAME);
             } catch (\Exception $e) {
-                $this->logger->exception($e);
+                $this->getLogger()->exception($e);
             }
         });
-
+        $this->logBenchmarkSummary(self::BENCHMARK_DELETE_NAME);
         return $totalDeleted;
     }
 
@@ -297,7 +256,7 @@ class Sync
             ->addStoreFilter($store);
         $totalDeleted = $this->deleteIndexedProducts($collection, $store);
 
-        $this->logger->info(
+        $this->getLogger()->info(
             sprintf(
                 'Removed total of %d products from index for store %s',
                 $totalDeleted,
@@ -305,26 +264,5 @@ class Sync
             )
         );
         return $totalDeleted;
-    }
-
-    /**
-     * Throws new memory out of bounds exception if the memory
-     * consumption is higher than configured amount
-     *
-     * @param string $serviceName
-     * @throws MemoryOutOfBoundsException
-     */
-    private function checkMemoryConsumption($serviceName)
-    {
-        $maxMemPercentage = $this->nostoDataHelper->getIndexerMemory();
-        if (NostoMemUtil::getPercentageUsedMem() >= $maxMemPercentage) {
-            throw new MemoryOutOfBoundsException(
-                sprintf(
-                    'Memory Out Of Bounds Error: Memory used by %s is over %d%% allowed',
-                    $serviceName,
-                    $maxMemPercentage
-                )
-            );
-        }
     }
 }
