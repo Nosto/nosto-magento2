@@ -42,6 +42,7 @@ use Magento\Framework\Setup\ModuleContextInterface;
 use Magento\Framework\Setup\SchemaSetupInterface;
 use Nosto\Tagging\Api\Data\CustomerInterface;
 use Nosto\Tagging\Model\ResourceModel\Customer;
+use Nosto\Tagging\Model\ResourceModel\Product\Queue as ProductQueue;
 
 class UpgradeSchema extends Core implements UpgradeSchemaInterface
 {
@@ -51,9 +52,10 @@ class UpgradeSchema extends Core implements UpgradeSchemaInterface
     public function upgrade(SchemaSetupInterface $setup, ModuleContextInterface $context)
     {
         $setup->startSetup();
+        $connection = $setup->getConnection();
         $fromVersion = $context->getVersion();
         if (version_compare($fromVersion, '2.1.0', '<')) {
-            $setup->getConnection()->addColumn(
+            $connection->addColumn(
                 $setup->getTable(Customer::TABLE_NAME),
                 CustomerInterface::RESTORE_CART_HASH,
                 [
@@ -65,12 +67,11 @@ class UpgradeSchema extends Core implements UpgradeSchemaInterface
             );
         }
 
-        if (version_compare($fromVersion, '2.3.0', '<')) {
-            $this->createProductQueueTable($setup);
-        }
-
         if (version_compare($fromVersion, '4.0.0-beta', '<')) {
             $this->createProductIndexTable($setup);
+            if ($connection->isTableExists(ProductQueue::TABLE_NAME)) {
+                $connection->dropTable(ProductQueue::TABLE_NAME);
+            }
         }
 
         $setup->endSetup();
