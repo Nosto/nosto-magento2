@@ -36,8 +36,11 @@
 
 namespace Nosto\Tagging\Model\ResourceModel\Product\Index;
 
+use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection;
+use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\Store;
+use Nosto\Tagging\Api\Data\ProductIndexInterface;
 use Nosto\Tagging\Model\Product\Index\Index;
 use Nosto\Tagging\Model\ResourceModel\Product\Index as ResourceModelIndex;
 
@@ -57,12 +60,12 @@ class Collection extends AbstractCollection
     }
 
     /**
-     * @param Store $store
+     * @param StoreInterface $store
      * @return Collection
      */
-    public function addStoreFilter(Store $store)
+    public function addStoreFilter(StoreInterface $store)
     {
-        return $this->addFieldToFilter(Index::STORE_ID, ['eq' => $store->getId()]);
+        return $this->addStoreIdFilter($store->getId());
     }
 
     /**
@@ -75,6 +78,136 @@ class Collection extends AbstractCollection
             Index::ID,
             ['in' => $ids]
         );
+    }
+
+    /**
+     * Filters collection for items that are either dirty or out of sync with Nosto
+     * @return Collection
+     */
+    public function addOutOfSyncOrIsDirtyFilter()
+    {
+        return $this->addFieldToFilter(
+            [ProductIndexInterface::IN_SYNC, ProductIndexInterface::IS_DIRTY],
+            [Index::DB_VALUE_BOOLEAN_FALSE, Index::DB_VALUE_BOOLEAN_TRUE]
+        );
+    }
+
+    /**
+     * Filters collection for items that are dirty
+     *
+     * @return Collection
+     */
+    public function addIsDirtyFilter()
+    {
+        return $this->addFieldToFilter(
+            ProductIndexInterface::IS_DIRTY,
+            ['eq' => Index::DB_VALUE_BOOLEAN_TRUE]
+        );
+    }
+
+    /**
+     * Filters collection by store id
+     *
+     * @param int $storeId
+     * @return Collection
+     */
+    public function addStoreIdFilter(int $storeId)
+    {
+        return $this->addFieldToFilter(
+            ProductIndexInterface::STORE_ID,
+            ['eq' => $storeId]
+        );
+    }
+
+    /**
+     * Filters collection by product id
+     *
+     * @param int $productId
+     * @return Collection
+     */
+    public function addProductIdFilter(int $productId)
+    {
+        return $this->addFieldToFilter(
+            ProductIndexInterface::PRODUCT_ID,
+            ['eq' => $productId]
+        );
+    }
+
+    /**
+     * Filters collection by product
+     *
+     * @param ProductInterface $product
+     * @return Collection
+     */
+    public function addProductFilter(ProductInterface $product)
+    {
+        return $this->addProductIdFilter($product->getId());
+    }
+
+    /**
+     * Filters collection by id (primary key)
+     *
+     * @param int $indexId
+     * @return Collection
+     */
+    public function addIdFilter(int $indexId)
+    {
+        return $this->addFieldToFilter(
+            ProductIndexInterface::ID,
+            ['eq' => $indexId]
+        );
+    }
+
+    /**
+     * Filters collection for items that out of sync
+     *
+     * @return Collection
+     */
+    public function addOutOfSyncFilter()
+    {
+        return $this->addFieldToFilter(
+            ProductIndexInterface::IN_SYNC,
+            ['eq' => Index::DB_VALUE_BOOLEAN_FALSE]
+        );
+    }
+
+    /**
+     * Filters collection for only products that are not marked as deleted
+     *
+     * @return Collection
+     */
+    public function addNotDeletedFilter()
+    {
+        return $this->addFieldToFilter(
+            ProductIndexInterface::IS_DELETED,
+            ['eq' => Index::DB_VALUE_BOOLEAN_FALSE]
+        );
+    }
+
+    /**
+     * Filters collection for only products that are marked as deleted
+     *
+     * @return Collection
+     */
+    public function addIsDeletedFilter()
+    {
+        return $this->addFieldToFilter(
+            ProductIndexInterface::IS_DELETED,
+            ['eq' => Index::DB_VALUE_BOOLEAN_TRUE]
+        );
+    }
+
+    /**
+     * Returns the first item of the collection
+     * or null if the collection is empty
+     *
+     * @return ProductIndexInterface|null
+     * @suppress PhanTypeMismatchReturn
+     */
+    public function getOneOrNull()
+    {
+        $this->getSelect()->limit(1);
+        return $this->getSize() > 0 ? $this->getLastItem() : null; // @codingStandardsIgnoreLine
     }
 
     /**

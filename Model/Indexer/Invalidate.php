@@ -36,11 +36,9 @@
 
 namespace Nosto\Tagging\Model\Indexer;
 
+use Nosto\Tagging\Model\ResourceModel\Magento\Product\Collection as ProductCollection;
+use Nosto\Tagging\Model\ResourceModel\Magento\Product\CollectionFactory as ProductCollectionFactory;
 use Exception;
-use Magento\Catalog\Model\Product\Attribute\Source\Status;
-use Magento\Catalog\Model\Product\Visibility;
-use Magento\Catalog\Model\ResourceModel\Product\Collection as ProductCollection;
-use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductCollectionFactory;
 use Magento\Framework\Indexer\ActionInterface as IndexerActionInterface;
 use Magento\Framework\Mview\ActionInterface as MviewActionInterface;
 use Magento\Store\Model\Store;
@@ -56,6 +54,8 @@ use Nosto\Tagging\Model\Service\Index as NostoServiceIndex;
 class Invalidate implements IndexerActionInterface, MviewActionInterface
 {
     public const INDEXER_ID = 'nosto_index_product_invalidate';
+
+    public static $disableFullReindex = false;
 
     /** @var NostoHelperAccount */
     private $nostoHelperAccount;
@@ -109,8 +109,13 @@ class Invalidate implements IndexerActionInterface, MviewActionInterface
      */
     public function executeFull()
     {
-        // Empty on purpose to disable the full reindex for now
-        $this->execute([]);
+        if (!self::$disableFullReindex) {
+            $storesWithNosto = $this->nostoHelperAccount->getStoresWithNosto();
+            foreach ($storesWithNosto as $store) {
+                $productCollection = $this->getCollection($store);
+                $this->nostoServiceIndex->handleProductChange($productCollection, $store);
+            }
+        }
     }
 
     /**
@@ -137,14 +142,7 @@ class Invalidate implements IndexerActionInterface, MviewActionInterface
     public function getCollection(Store $store, array $ids = [])
     {
         $collection = $this->productCollectionFactory->create();
-        $collection->addAttributeToSelect($collection->getIdFieldName())
-            ->addAttributeToFilter(
-                'status',
-                ['eq'=> Status::STATUS_ENABLED]
-            )->addAttributeToFilter(
-                'visibility',
-                ['neq'=> Visibility::VISIBILITY_NOT_VISIBLE]
-            )->addStoreFilter($store);
+        $collection->addActiveAndVisibleFilterByStore($store);
         if (!empty($ids)) {
             $collection->addAttributeToFilter($collection->getIdFieldName(), ['in', $ids]);
         }

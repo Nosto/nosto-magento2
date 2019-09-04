@@ -41,7 +41,6 @@ use Magento\Framework\Model\AbstractModel;
 use Magento\Store\Api\Data\StoreInterface;
 use Nosto\Tagging\Api\Data\ProductIndexInterface;
 use Nosto\Tagging\Api\ProductIndexRepositoryInterface;
-use Nosto\Tagging\Model\Product\Index\Index as NostoIndex;
 use Nosto\Tagging\Model\ResourceModel\Product\Index as IndexResource;
 use Nosto\Tagging\Model\ResourceModel\Product\Index\CollectionFactory as IndexCollectionFactory;
 use Nosto\Tagging\Model\ResourceModel\Product\Index\Collection as IndexCollection;
@@ -74,14 +73,11 @@ class IndexRepository implements ProductIndexRepositoryInterface
         /* @var IndexCollection $collection */
         $collection = $this->indexCollectionFactory->create()
             ->addFieldToSelect('*')
-            ->addFieldToFilter(
-                NostoIndex::PRODUCT_ID,
-                ['eq' => $product->getId()]
-            )
+            ->addProductFilter($product)
             ->addStoreFilter($store)
             ->setPageSize(1)
             ->setCurPage(1);
-        return $collection->getFirstItem(); // @codingStandardsIgnoreLine
+        return $collection->getOneOrNull();
     }
 
     /**
@@ -91,13 +87,10 @@ class IndexRepository implements ProductIndexRepositoryInterface
     {
         $collection = $this->indexCollectionFactory->create()
             ->addFieldToSelect('*')
-            ->addFieldToFilter(
-                NostoIndex::ID,
-                ['eq' => $id]
-            )
+            ->addIdFilter($id)
             ->setPageSize(1)
             ->setCurPage(1);
-        return $collection->getFirstItem(); // @codingStandardsIgnoreLine
+        return $collection->getOneOrNull();
     }
 
     /**
@@ -107,11 +100,7 @@ class IndexRepository implements ProductIndexRepositoryInterface
     {
         /* @var IndexCollection $collection */
         $collection = $this->indexCollectionFactory->create();
-        $collection->addFilter(
-            ProductIndexInterface::IN_SYNC,
-            NostoIndex::DB_VALUE_BOOLEAN_FALSE,
-            'eq'
-        );
+        $collection->addOutOfSyncFilter();
         if ((int)$store->getId() !== 0) {
             $collection->addStoreFilter($store);
         }
@@ -125,11 +114,7 @@ class IndexRepository implements ProductIndexRepositoryInterface
     {
         /* @var IndexCollection $collection */
         $collection = $this->indexCollectionFactory->create();
-        $collection->addFilter(
-            ProductIndexInterface::IS_DIRTY,
-            NostoIndex::DB_VALUE_BOOLEAN_TRUE,
-            'eq'
-        );
+        $collection->addIsDirtyFilter();
         if ((int)$store->getId() !== 0) {
             $collection->addStoreFilter($store);
         }
@@ -156,18 +141,12 @@ class IndexRepository implements ProductIndexRepositoryInterface
         /* @var IndexCollection $collection */
         $collection = $this->indexCollectionFactory->create()
             ->addFieldToSelect('*')
-            ->addFieldToFilter(
-                NostoIndex::PRODUCT_ID,
-                ['eq' => $productId]
-            )
-            ->addFieldToFilter(
-                NostoIndex::STORE_ID,
-                ['eq' => $storeId]
-            )
+            ->addStoreIdFilter($storeId)
+            ->addProductIdFilter($productId)
             ->setPageSize(1)
             ->setCurPage(1);
-        // If the collection is empty, we should return null
-        return $collection->getSize() > 0 ? $collection->getFirstItem() : null; // @codingStandardsIgnoreLine
+
+        return $collection->getOneOrNull();
     }
 
     /**
