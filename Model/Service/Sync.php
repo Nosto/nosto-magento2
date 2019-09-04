@@ -45,6 +45,9 @@ use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
 use Magento\Store\Model\Store;
 use Nosto\Exception\MemoryOutOfBoundsException;
 use Nosto\NostoException;
+use Nosto\Object\Signup\Account as NostoSignupAccount;
+use Nosto\Operation\DeleteProduct;
+use Nosto\Operation\UpsertProduct;
 use Nosto\Tagging\Api\Data\ProductIndexInterface;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Data as NostoDataHelper;
@@ -58,13 +61,11 @@ use Nosto\Tagging\Model\Product\Index\IndexRepository;
 use Nosto\Tagging\Model\ResourceModel\Product\Index\Collection as NostoIndexCollection;
 use Nosto\Tagging\Model\ResourceModel\Product\Index\CollectionFactory as NostoIndexCollectionFactory;
 use Nosto\Tagging\Util\Iterator;
-use Nosto\Tagging\Util\Product as ProductUtil;
-use Nosto\Types\Product\ProductInterface as NostoProductInterface;
 use Nosto\Util\Memory as NostoMemUtil;
 
-class Index
+class Sync
 {
-    private const PRODUCT_DATA_BATCH_SIZE = 100;
+    private const API_BATCH_SIZE = 50;
     private const PRODUCT_DELETION_BATCH_SIZE = 100;
 
     /** @var IndexRepository */
@@ -82,6 +83,12 @@ class Index
     /** @var NostoHelperScope */
     private $nostoHelperScope;
 
+    /** @var NostoHelperAccount */
+    private $nostoHelperAccount;
+
+    /** @var NostoHelperUrl */
+    private $nostoHelperUrl;
+
     /** @var NostoIndexCollectionFactory */
     private $nostoIndexCollectionFactory;
 
@@ -94,9 +101,6 @@ class Index
     /** @var NostoDataHelper */
     private $nostoDataHelper;
 
-    /** @var Sync */
-    private $nostoSyncService;
-
     /**
      * Index constructor.
      * @param IndexRepository $indexRepository
@@ -104,11 +108,12 @@ class Index
      * @param ProductRepository $productRepository
      * @param NostoProductBuilder $nostoProductBuilder
      * @param NostoHelperScope $nostoHelperScope
+     * @param NostoHelperAccount $nostoHelperAccount
+     * @param NostoHelperUrl $nostoHelperUrl
      * @param NostoLogger $logger
      * @param NostoIndexCollectionFactory $nostoIndexCollectionFactory
      * @param TimezoneInterface $magentoTimeZone
      * @param NostoDataHelper $nostoDataHelper
-     * @param Sync $nostoSyncService
      */
     public function __construct(
         IndexRepository $indexRepository,
@@ -116,169 +121,190 @@ class Index
         ProductRepository $productRepository,
         NostoProductBuilder $nostoProductBuilder,
         NostoHelperScope $nostoHelperScope,
+        NostoHelperAccount $nostoHelperAccount,
+        NostoHelperUrl $nostoHelperUrl,
         NostoLogger $logger,
         NostoIndexCollectionFactory $nostoIndexCollectionFactory,
         TimezoneInterface $magentoTimeZone,
-        NostoDataHelper $nostoDataHelper,
-        Sync $nostoSyncService
+        NostoDataHelper $nostoDataHelper
     ) {
         $this->indexRepository = $indexRepository;
         $this->indexBuilder = $indexBuilder;
         $this->productRepository = $productRepository;
         $this->nostoProductBuilder = $nostoProductBuilder;
         $this->nostoHelperScope = $nostoHelperScope;
+        $this->nostoHelperAccount = $nostoHelperAccount;
+        $this->nostoHelperUrl = $nostoHelperUrl;
         $this->logger = $logger;
         $this->nostoIndexCollectionFactory = $nostoIndexCollectionFactory;
         $this->magentoTimeZone = $magentoTimeZone;
         $this->nostoDataHelper = $nostoDataHelper;
-        $this->nostoSyncService = $nostoSyncService;
     }
 
     /**
-     * Handles only the first step of indexing
-     * Create one if row does not exits
-     * Else set row to dirty
+     * Handles sync of product collection by sending it to Nosto
      *
-     * @param ProductCollection $collection
-     * @param Store $store
-     */
-    public function invalidateOrCreate(ProductCollection $collection, Store $store)
-    {
-        $iterator = new Iterator($collection);
-        $iterator->each(function ($item) use ($store) {
-            $this->updateOrCreateDirtyEntity($item, $store);
-        });
-        $this->logger->logWithMemoryConsumption(
-            sprintf(
-                'Invalidated / created %d products for store %s',
-                $collection->getSize(),
-                $store->getName()
-            )
-        );
-    }
-
-    /**
-     * @param Product $product
-     * @param Store $store
-     * @return ProductIndexInterface|null
-     */
-    public function updateOrCreateDirtyEntity(Product $product, Store $store)
-    {
-        $indexedProduct = $this->indexRepository->getByProductIdAndStoreId($product->getId(), $store->getId());
-        try {
-            if ($indexedProduct instanceof ProductIndexInterface) {
-                $indexedProduct->setIsDirty(true);
-                $indexedProduct->setUpdatedAt($this->magentoTimeZone->date());
-            } else {
-                /* @var Product $fullProduct */
-                $fullProduct = $this->loadMagentoProduct($product->getId(), $store->getId());
-                $indexedProduct = $this->indexBuilder->build($fullProduct, $store);
-                $indexedProduct->setIsDirty(false);
-            }
-            $this->indexRepository->save($indexedProduct);
-            return $indexedProduct;
-        } catch (\Exception $e) {
-            $this->logger->exception($e);
-            return null;
-        }
-    }
-
-    /**
      * @param NostoIndexCollection $collection
      * @param Store $store
      * @throws NostoException
      * @throws MemoryOutOfBoundsException
      */
-    public function rebuildDirtyProducts(NostoIndexCollection $collection, Store $store)
+    public function syncIndexedProducts(NostoIndexCollection $collection, Store $store)
     {
-        $collection->setPageSize(self::PRODUCT_DATA_BATCH_SIZE);
+        if (!$this->nostoDataHelper->isProductUpdatesEnabled($store)) {
+            $this->logger->info(
+                'Nosto product sync is disabled - skipping upserting products to Nosto'
+            );
+        }
+        $account = $this->nostoHelperAccount->findAccount($store);
+        if ($account instanceof NostoSignupAccount === false) {
+            throw new NostoException(sprintf('Store view %s does not have Nosto installed', $store->getName()));
+        }
+
+        $collection->setPageSize(self::API_BATCH_SIZE);
         $iterator = new Iterator($collection);
-        $iterator->each(function ($item) {
-            if ($item->getIsDirty() === NostoProductIndex::DB_VALUE_BOOLEAN_TRUE) {
-                $this->rebuildDirtyProduct($item);
+        $iterator->eachBatch(function ($collection) use ($account, $store) {
+            $this->checkMemoryConsumption('product sync');
+            $op = new UpsertProduct($account, $this->nostoHelperUrl->getActiveDomain($store));
+            $op->setResponseTimeout(60);
+            foreach ($collection as $productIndex) {
+                if (!$productIndex->getInSync()) {
+                    $op->addProduct($productIndex->getNostoProduct());
+                }
+            }
+            try {
+                $op->upsert();
+            } catch (\Exception $upsertException) {
+                $this->logger->exception($upsertException);
+            } finally {
+                // We will set this as in sync even if there was failures
+                $collection->markAsInSyncCurrentItemsByStore($store);
             }
         });
-        $this->nostoSyncService->syncIndexedProducts($collection, $store);
-    }
-
-    /**
-     * Rebuilds a dirty indexed product data & defines it as out of sync
-     * if Nosto product data changed
-     *
-     * @param ProductIndexInterface $productIndex
-     * @return ProductIndexInterface|null
-     */
-    public function rebuildDirtyProduct(ProductIndexInterface $productIndex)
-    {
         try {
-            /* @var Product $magentoProduct */
-            $magentoProduct = $this->loadMagentoProduct(
-                $productIndex->getProductId(),
-                $productIndex->getStoreId()
-            );
-            $store = $this->nostoHelperScope->getStore($productIndex->getStoreId());
-            $nostoProduct = $this->nostoProductBuilder->build($magentoProduct, $store);
-            $nostoIndexedProduct = $productIndex->getNostoProduct();
-            if ($nostoIndexedProduct instanceof NostoProductInterface === false ||
-                (
-                    $nostoProduct instanceof NostoProductInterface
-                    && !ProductUtil::isEqual($nostoProduct, $nostoIndexedProduct)
+            $totalDeleted = $this->purgeDeletedProducts($store);
+            $this->logger->info(
+                sprintf(
+                    'Removed total of %d products from index for store %s',
+                    $totalDeleted,
+                    $store->getCode()
                 )
-            ) {
-                $productIndex->setNostoProduct($nostoProduct);
-                $productIndex->setInSync(false);
-            }
-            $productIndex->setIsDirty(false);
-            $this->indexRepository->save($productIndex);
-            return $productIndex;
-        } catch (\Exception $e) {
+            );
+        } catch (MemoryOutOfBoundsException $e) {
+            throw $e;
+        } catch (NostoException $e) {
             $this->logger->exception($e);
-            return null;
         }
     }
 
     /**
-     * @param ProductCollection $collection
-     * @param array $ids
-     * @param Store $store
+     * Defines product index as in sync
+     *
+     * @param ProductIndexInterface $productIndex
+     * @throws \Exception
+     * @return void
      */
-    public function markProductsAsDeletedByDiff(ProductCollection $collection, array $ids, Store $store)
+    public function markAsInSync(ProductIndexInterface $productIndex)
     {
-        $uniqueIds = array_unique($ids);
-        $collection->setPageSize(self::PRODUCT_DELETION_BATCH_SIZE);
-        $iterator = new Iterator($collection);
-        $iterator->each(function ($magentoProduct) use ($uniqueIds) {
-            $key = array_search($magentoProduct->getId(), $uniqueIds);
-            if (is_numeric($key)) {
-                unset($uniqueIds[$key]);
-            }
-        });
-        // Flag the rest of the ids as deleted
-        $deleted = $this->nostoIndexCollectionFactory->create()->markAsDeleted($uniqueIds, $store);
-        $this->logger->info(
-            sprintf(
-                'Marked %d indexed products as deleted for store %s',
-                $deleted,
-                $store->getName()
-            )
-        );
+        if (!$productIndex->getInSync()) {
+            $productIndex->setInSync(true);
+            $this->indexRepository->save($productIndex);
+        }
     }
 
     /**
-     * Loads (or reloads) Product object
      * @param int $productId
      * @param int $storeId
-     * @return ProductInterface|Product|mixed
-     * @throws NoSuchEntityException
+     * @return void
+     * @throws \Exception
      */
-    private function loadMagentoProduct(int $productId, int $storeId)
+    public function markAsInSyncProductByIdAndStore($productId, $storeId)
     {
-        return $this->productRepository->getById(
-            $productId,
-            false,
-            $storeId,
-            true
+        try {
+            $productIndex = $this->indexRepository->getByProductIdAndStoreId($productId, $storeId);
+            if ($productIndex instanceof ProductIndexInterface) {
+                $this->markAsInSync($productIndex);
+            }
+        } catch (\Exception $e) {
+            $this->logger->exception($e);
+        }
+    }
+
+    /**
+     * Discontinues products in Nosto and removes indexed products from Nosto product index
+     *
+     * @param NostoIndexCollection $collection
+     * @param Store $store
+     * @return int number of deleted products
+     * @throws NostoException
+     * @throws MemoryOutOfBoundsException
+     */
+    public function deleteIndexedProducts(NostoIndexCollection $collection, Store $store)
+    {
+        if ($collection->getSize() === 0) {
+            return 0;
+        }
+        $account = $this->nostoHelperAccount->findAccount($store);
+        if ($account instanceof NostoSignupAccount === false) {
+            throw new NostoException(sprintf('Store view %s does not have Nosto installed', $store->getName()));
+        }
+        $totalDeleted = 0;
+        $collection->setPageSize(self::PRODUCT_DELETION_BATCH_SIZE);
+        $iterator = new Iterator($collection);
+        $iterator->eachBatch(function ($collection) use ($account, &$totalDeleted) {
+            $this->checkMemoryConsumption('product delete');
+            $ids = [];
+            /* @var $indexedProduct NostoProductIndex */
+            foreach ($collection as $indexedProduct) {
+                $ids[] = $indexedProduct->getId();
+            }
+            try {
+                $op = new DeleteProduct($account, $this->nostoHelperUrl->getActiveDomain($store));
+                $op->setResponseTimeout(30);
+                $op->setProductIds($ids);
+                $op->delete(); // @codingStandardsIgnoreLine
+                $rowsRemoved = $collection->deleteCurrentItemsByStore($store);
+                $totalDeleted += $rowsRemoved;
+                $this->logger->info(
+                    sprintf(
+                        'Synchronized %d deleted products for store %s to Nosto',
+                        $rowsRemoved,
+                        $store->getName()
+                    )
+                );
+            } catch (\Exception $e) {
+                $this->logger->exception($e);
+            }
+        });
+
+        return $totalDeleted;
+    }
+
+    /**
+     * Fetches deleted products from the product index, sends those to Nosto
+     * and deletes the deleted rows from database
+     *
+     * @param Store $store
+     * @return int the amount of deleted products
+     * @throws NostoException
+     * @throws MemoryOutOfBoundsException
+     */
+    public function purgeDeletedProducts(Store $store)
+    {
+        $collection = $this->nostoIndexCollectionFactory->create()
+            ->addFieldToSelect('*')
+            ->addIsDeletedFilter()
+            ->addStoreFilter($store);
+        $totalDeleted = $this->deleteIndexedProducts($collection, $store);
+
+        $this->logger->info(
+            sprintf(
+                'Removed total of %d products from index for store %s',
+                $totalDeleted,
+                $store->getCode()
+            )
         );
+        return $totalDeleted;
     }
 
     /**

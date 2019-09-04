@@ -95,7 +95,7 @@ class Data implements IndexerActionInterface, MviewActionInterface
         foreach ($storesWithNosto as $store) {
             $indexCollection = $this->getCollection($store);
             try {
-                $this->nostoServiceIndex->handleDirtyProducts($indexCollection, $store);
+                $this->nostoServiceIndex->rebuildDirtyProducts($indexCollection, $store);
             } catch (MemoryOutOfBoundsException $e) {
                 $this->nostoLogger->error($e->getMessage());
             }
@@ -130,7 +130,7 @@ class Data implements IndexerActionInterface, MviewActionInterface
         foreach ($storesWithNosto as $store) {
             $collection = $this->getCollection($store, $ids);
             try {
-                $this->nostoServiceIndex->handleDirtyProducts($collection, $store);
+                $this->nostoServiceIndex->rebuildDirtyProducts($collection, $store);
             } catch (MemoryOutOfBoundsException $e) {
                 $this->nostoLogger->error($e->getMessage());
                 throw $e;

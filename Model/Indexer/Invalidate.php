@@ -94,7 +94,7 @@ class Invalidate implements IndexerActionInterface, MviewActionInterface
             $storesWithNosto = $this->nostoHelperAccount->getStoresWithNosto();
             foreach ($storesWithNosto as $store) {
                 $productCollection = $this->getCollection($store, $ids);
-                $this->nostoServiceIndex->handleProductChange($productCollection, $store);
+                $this->nostoServiceIndex->invalidateOrCreate($productCollection, $store);
                 $collectionSize = $productCollection->getSize();
 
                 if ($idsSize > $collectionSize) {
@@ -113,7 +113,7 @@ class Invalidate implements IndexerActionInterface, MviewActionInterface
             $storesWithNosto = $this->nostoHelperAccount->getStoresWithNosto();
             foreach ($storesWithNosto as $store) {
                 $productCollection = $this->getCollection($store);
-                $this->nostoServiceIndex->handleProductChange($productCollection, $store);
+                $this->nostoServiceIndex->invalidateOrCreate($productCollection, $store);
             }
         }
     }

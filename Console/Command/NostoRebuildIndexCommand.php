@@ -152,7 +152,7 @@ class NostoRebuildIndexCommand extends Command
     {
         try {
             $indexCollection = $this->invalidateIndexer->getCollection($store);
-            $this->nostoServiceIndex->handleProductChange($indexCollection, $store);
+            $this->nostoServiceIndex->invalidateOrCreate($indexCollection, $store);
         } catch (Exception $e) {
             $this->io->error($e->getMessage());
             return false;
