@@ -44,10 +44,7 @@ use Magento\Framework\Indexer\IndexerRegistry;
 use Magento\Framework\Module\Manager as ModuleManager;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Model\Indexer\Invalidate as InvalidateIndexer;
-use Nosto\Tagging\Model\Service\Index as NostoServiceIndex;
 use Magento\Framework\Indexer\IndexerInterface;
-use Magento\Catalog\Model\ResourceModel\Product\Collection as ProductCollection;
-use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductCollectionFactory;
 use Magento\Catalog\Model\Product\Attribute\Source\Status;
 use Magento\Catalog\Model\Product\Visibility;
 
@@ -65,11 +62,8 @@ abstract class Base implements ObserverInterface
     /** @var IndexerInterface  */
     public $indexer;
 
-    /** @var NostoServiceIndex $nostoServiceIndexer */
-    public $nostoServiceIndexer;
-
-    /** @var ProductCollectionFactory $productCollectionFactory */
-    public $productCollectionFactory;
+    /** @var InvalidateIndexer $invalidateIndex */
+    public $indexerInvalidate;
 
     /**
      * Base constructor.
@@ -77,23 +71,21 @@ abstract class Base implements ObserverInterface
      * @param ProductRepository $productRepository
      * @param NostoHelperData $dataHelper
      * @param IndexerRegistry $indexerRegistry
-     * @param NostoServiceIndex $nostoServiceIndexer
-     * @param ProductCollectionFactory $productCollectionFactory
+     * @param InvalidateIndexer $indexerInvalidate
      */
     public function __construct(
         ModuleManager $moduleManager,
         ProductRepository $productRepository,
         NostoHelperData $dataHelper,
         IndexerRegistry $indexerRegistry,
-        NostoServiceIndex $nostoServiceIndexer,
-        ProductCollectionFactory $productCollectionFactory
+        InvalidateIndexer $indexerInvalidate
     ) {
         $this->moduleManager = $moduleManager;
         $this->productRepository = $productRepository;
         $this->dataHelper = $dataHelper;
         $this->indexer = $indexerRegistry->get(InvalidateIndexer::INDEXER_ID);
-        $this->nostoServiceIndexer = $nostoServiceIndexer;
         $this->productCollectionFactory = $productCollectionFactory;
+        $this->indexerInvalidate = $indexerInvalidate;
     }
 
 
@@ -114,8 +106,7 @@ abstract class Base implements ObserverInterface
             $product = $this->extractProduct($observer);
 
             if ($product instanceof Product && $product->getId()) {
-                $collection = $this->getCollection($product->getId());
-                $this->nostoServiceIndexer->handleProductChange($collection, $product->getStore());
+                $this->indexerInvalidate->executeRow($product->getId());
             }
         }
     }
@@ -129,23 +120,5 @@ abstract class Base implements ObserverInterface
     {
         /** @noinspection PhpUndefinedMethodInspection */
         return $observer->getProduct();
-    }
-
-    /**
-     * @param string $id
-     * @return ProductCollection
-     */
-    private function getCollection($id)
-    {
-        $collection = $this->productCollectionFactory->create();
-        $collection->addAttributeToSelect($collection->getIdFieldName())
-            ->addAttributeToFilter(
-                'status',
-                ['eq'=> Status::STATUS_ENABLED]
-            )->addAttributeToFilter(
-                'visibility',
-                ['neq'=> Visibility::VISIBILITY_NOT_VISIBLE]
-            )->addAttributeToFilter($collection->getIdFieldName(), ['eq', $id]);
-        return $collection;
     }
 }
