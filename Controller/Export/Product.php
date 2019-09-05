@@ -37,8 +37,8 @@
 namespace Nosto\Tagging\Controller\Export;
 
 use Magento\Framework\App\Action\Context;
+use Magento\Framework\Controller\Result\Raw as RawResult;
 use Magento\Store\Model\Store;
-use Nosto\Helper\SerializationHelper;
 use Nosto\NostoException;
 use Nosto\Object\AbstractCollection;
 use Nosto\Object\Product\Product as NostoProduct;
@@ -72,6 +72,7 @@ class Product extends Base
      * @param NostoHelperScope $nostoHelperScope
      * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoProductCollection $nostoProductCollection
+     * @param NostoSyncService $nostoSyncService
      */
     public function __construct(
         Context $context,
@@ -112,7 +113,7 @@ class Product extends Base
 
     /**
      * @param AbstractCollection $collection
-     * @return \Magento\Framework\Controller\Result\Raw
+     * @return RawResult
      */
     public function export(AbstractCollection $collection)
     {

@@ -147,11 +147,7 @@ class Index extends AbstractService
             $this->updateOrCreateDirtyEntity($item, $store);
             $this->tickBenchmark(self::BENCHMARK_NAME_INVALIDATE);
         });
-        try {
-            $this->logBenchmarkSummary(self::BENCHMARK_NAME_INVALIDATE, $store);
-        } catch (\Exception $e) {
-            $this->getLogger()->exception($e);
-        }
+        $this->logBenchmarkSummary(self::BENCHMARK_NAME_INVALIDATE, $store);
     }
 
     /**
@@ -199,6 +195,7 @@ class Index extends AbstractService
                 $this->rebuildDirtyProduct($item);
                 $this->tickBenchmark(self::BENCHMARK_NAME_REBUILD);
             }
+            $this->checkMemoryConsumption('product rebuild');
         });
         $this->logBenchmarkSummary(self::BENCHMARK_NAME_REBUILD, $store);
         $this->nostoSyncService->syncIndexedProducts($collection, $store);
@@ -250,7 +247,7 @@ class Index extends AbstractService
         $uniqueIds = array_unique($ids);
         $collection->setPageSize(self::PRODUCT_DELETION_BATCH_SIZE);
         $iterator = new Iterator($collection);
-        $iterator->each(function (Product $magentoProduct) use (&$uniqueIds) {
+        $iterator->each(static function (Product $magentoProduct) use (&$uniqueIds) {
             $key = array_search($magentoProduct->getId(), $uniqueIds);
             if (is_numeric($key)) {
                 unset($uniqueIds[$key]);
