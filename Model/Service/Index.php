@@ -36,6 +36,7 @@
 
 namespace Nosto\Tagging\Model\Service;
 
+use Exception;
 use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\ProductRepository;
@@ -185,7 +186,7 @@ class Index
             }
             $this->indexRepository->save($indexedProduct);
             return $indexedProduct;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->exception($e);
             return null;
         }
@@ -281,7 +282,7 @@ class Index
                             $pages
                         )
                     );
-                } catch (\Exception $upsertException) {
+                } catch (Exception $upsertException) {
                     $this->logger->exception($upsertException);
                 } finally {
                     // We will set this as in sync even if there was failures
@@ -291,7 +292,7 @@ class Index
             } while ($currentPage <= $pages);
         } catch (MemoryOutOfBoundsException $e) {
             throw $e;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->exception($e);
         }
         try {
@@ -337,7 +338,7 @@ class Index
             $productIndex->setIsDirty(false);
             $this->indexRepository->save($productIndex);
             return $productIndex;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->exception($e);
             return null;
         }
@@ -347,7 +348,7 @@ class Index
      * Defines product index as in sync
      *
      * @param ProductIndexInterface $productIndex
-     * @throws \Exception
+     * @throws Exception
      * @return void
      */
     public function markAsInSync(ProductIndexInterface $productIndex)
@@ -359,10 +360,25 @@ class Index
     }
 
     /**
+     * Defines product index item as dirty
+     *
+     * @param ProductIndexInterface $productIndex
+     * @throws Exception
+     * @return void
+     */
+    public function markAsDirty(ProductIndexInterface $productIndex)
+    {
+        if (!$productIndex->getIsDirty()) {
+            $productIndex->setIsDirty(true);
+            $this->indexRepository->save($productIndex);
+        }
+    }
+
+    /**
      * @param int $productId
      * @param int $storeId
      * @return void
-     * @throws \Exception
+     * @throws Exception
      */
     public function markAsInSyncProductByIdAndStore($productId, $storeId)
     {
@@ -371,7 +387,7 @@ class Index
             if ($productIndex instanceof ProductIndexInterface) {
                 $this->markAsInSync($productIndex);
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->exception($e);
         }
     }
@@ -457,7 +473,7 @@ class Index
                         $store->getName()
                     )
                 );
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $this->logger->exception($e);
             }
 

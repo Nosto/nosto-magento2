@@ -38,8 +38,13 @@
 namespace Nosto\Tagging\Cron;
 
 use Exception;
-use Psr\Log\LoggerInterface;
-use Nosto\Tagging\Model\ResourceModel\Product\Index\CollectionFactory as NostoIndexCollectionFactory;
+use Magento\Framework\Data\Collection\AbstractDb;
+use Nosto\Tagging\Logger\Logger;
+use Nosto\Tagging\Model\ResourceModel\Magento\Product\Collection;
+use Nosto\Tagging\Model\Service\Index as NostoServiceIndex;
+use Nosto\Tagging\Helper\Account as NostoAccountHelper;
+use Nosto\Tagging\Model\ResourceModel\Product\Index\CollectionFactory as IndexCollectionFactory;
+use Magento\Store\Model\Store;
 
 /**
  * Cronjob class that periodically invalidates Nosto indexed data for each of the store views
@@ -48,21 +53,38 @@ use Nosto\Tagging\Model\ResourceModel\Product\Index\CollectionFactory as NostoIn
  */
 class Invalidate
 {
+    const MAX_UPDATED_AT_INTERVAL = 4;
+
+    /** @var Logger */
     protected $logger;
-    private $nostoIndexCollectionFactory;
+
+    /** @var IndexCollectionFactory */
+    private $indexCollectionFactory;
+
+    /** @var NostoServiceIndex */
+    private $nostoServiceIndex;
+
+    /** @var NostoAccountHelper */
+    private $nostoAccountHelper;
 
     /**
      * Invalidate constructor.
      *
-     * @param LoggerInterface $logger
-     * @param NostoIndexCollectionFactory $nostoIndexCollectionFactory
+     * @param Logger $logger
+     * @param IndexCollectionFactory $indexCollectionFactory
+     * @param NostoServiceIndex $nostoServiceIndex
+     * @param NostoAccountHelper $nostoAccountHelper
      */
     public function __construct(
-        LoggerInterface $logger,
-        NostoIndexCollectionFactory $nostoIndexCollectionFactory
+        Logger $logger,
+        IndexCollectionFactory $indexCollectionFactory,
+        NostoServiceIndex $nostoServiceIndex,
+        NostoAccountHelper $nostoAccountHelper
     ) {
         $this->logger = $logger;
-        $this->nostoIndexCollectionFactory = $nostoIndexCollectionFactory;
+        $this->indexCollectionFactory = $indexCollectionFactory;
+        $this->nostoServiceIndex = $nostoServiceIndex;
+        $this->nostoAccountHelper = $nostoAccountHelper;
     }
 
     /**
@@ -71,18 +93,40 @@ class Invalidate
      */
     public function execute()
     {
-        $time = (new \DateTime('now'))
-            ->modify('-4 hours')
-            ->format('Y-m-d H:i:s');
-        $collection = $this->nostoIndexCollectionFactory->create()
+        $stores = $this->nostoAccountHelper->getStoresWithNosto();
+        foreach ($stores as $store) {
+            $productIndexCollection = $this->getCollection($store);
+            foreach ($productIndexCollection as $productIndex) {
+                $this->nostoServiceIndex->markAsDirty($productIndex);
+            }
+        }
+    }
+
+    /**
+     * @param Store $store
+     * @return AbstractDb|Collection
+     * @throws Exception
+     */
+    private function getCollection(Store $store)
+    {
+        return $this->indexCollectionFactory->create()
             ->addFieldToSelect('*')
             ->addFieldToFilter(
                 'updated_at',
-                ['lteq' => $time]
+                ['lteq' => $this->getTimeOffset()]
             )
-            ->getSelect()
-            ->limit(1000);
-
+            ->addStoreFilter($store)
+            ->limitResults(1000);
     }
 
+    /**
+     * @return string
+     * @throws Exception
+     */
+    private function getTimeOffset()
+    {
+        return (new \DateTime('now'))
+            ->modify('-'.self::MAX_UPDATED_AT_INTERVAL.' hours')
+            ->format('Y-m-d H:i:s');
+    }
 }

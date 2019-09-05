@@ -303,4 +303,16 @@ class Collection extends AbstractCollection
             ]
         );
     }
+
+    /**
+     * Sets a limit to this query
+     *
+     * @param int $limit
+     * @return Collection
+     */
+    public function limitResults(int $limit)
+    {
+        $this->getSelect()->limit($limit);
+        return $this;
+    }
 }
