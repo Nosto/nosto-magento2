@@ -99,24 +99,27 @@ abstract class AbstractService
      *
      * @param string $name
      * @param bool $writeLog if set to true debug log will be written
-     * @return null|float
+     * @return float|null
      * @throws \Exception
      */
     public function tickBenchmark(string $name, $writeLog = false)
     {
         $elapsed = Benchmark::getInstance()->tick($name);
-        if ($elapsed !== null && $writeLog === true) {
-            $reachedBreakpoints = count(Benchmark::getInstance()->getCheckpointTimes($name));
-            $this->nostoLogger->logWithMemoryConsumption(
-                sprintf(
-                    'Execution for %s took %f seconds - checkpoints reached %d',
-                    $name,
-                    $elapsed,
-                    $reachedBreakpoints
-                )
-            );
+        if ($elapsed !== null) {
+            if ($writeLog === true) {
+                $reachedBreakpoints = count(Benchmark::getInstance()->getCheckpointTimes($name));
+                $this->nostoLogger->logWithMemoryConsumption(
+                    sprintf(
+                        'Execution for %s took %f seconds - checkpoints reached %d',
+                        $name,
+                        $elapsed,
+                        $reachedBreakpoints
+                    )
+                );
+            }
+            return $elapsed;
         }
-        return $elapsed;
+        return null;
     }
 
     /**
