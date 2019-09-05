@@ -37,6 +37,7 @@
 namespace Nosto\Tagging\Model\Service;
 
 use Magento\Store\Model\Store;
+use Magento\Tests\NamingConvention\true\string;
 use Nosto\Exception\MemoryOutOfBoundsException;
 use Nosto\Tagging\Helper\Data as NostoDataHelper;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
@@ -54,6 +55,7 @@ abstract class AbstractService
     /**
      * AbstractService constructor.
      * @param NostoDataHelper $nostoDataHelper
+     * @param NostoLogger $nostoLogger
      */
     public function __construct(
         NostoDataHelper $nostoDataHelper,
@@ -98,7 +100,7 @@ abstract class AbstractService
      *
      * @param string $name
      * @param bool $writeLog if set to true debug log will be written
-     * @return float|null
+     * @return null|float
      * @throws \Exception
      */
     public function tickBenchmark(string $name, $writeLog = false)
@@ -108,7 +110,7 @@ abstract class AbstractService
             $reachedBreakpoints = count(Benchmark::getInstance()->getCheckpointTimes($name));
             $this->nostoLogger->logWithMemoryConsumption(
                 sprintf(
-                    'Execution for %s took %f seconds - breakpoints reached %d',
+                    'Execution for %s took %f seconds - checkpoints reached %d',
                     $name,
                     $elapsed,
                     $reachedBreakpoints
@@ -119,9 +121,10 @@ abstract class AbstractService
     }
 
     /**
-     * Logs the recorded bencmark summary
+     * Logs the recorded benchmark summary
      *
-     * @param $name
+     * @param string $name
+     * @param Store $store
      * @throws \Exception
      */
     public function logBenchmarkSummary(string $name, Store $store)

@@ -109,20 +109,20 @@ class Benchmark
      * null.
      *
      * @param string $name
-     * @return float|null
+     * @return null|float
      * @throws \Exception
      */
     public function tick(string $name)
     {
+        $elapsed = null;
         ++$this->ticks[$name];
         if ($this->ticks[$name] % $this->checkpoints[$name] === 0) {
             $elapsed = $this->getElapsed($name);
             $this->checkpointTimes[$name][] = $elapsed;
             $this->resetTimer($name);
-            return $elapsed;
         }
 
-        return null;
+        return $elapsed;
     }
 
     /**

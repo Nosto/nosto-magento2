@@ -231,7 +231,7 @@ class Sync extends AbstractService
                 $this->getLogger()->exception($e);
             }
         });
-        $this->logBenchmarkSummary(self::BENCHMARK_DELETE_NAME);
+        $this->logBenchmarkSummary(self::BENCHMARK_DELETE_NAME, $store);
         return $totalDeleted;
     }
 
