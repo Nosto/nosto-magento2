@@ -122,36 +122,6 @@ class Repository
     }
 
     /**
-     * Gets products that have scheduled pricing active
-     *
-     * @return ProductSearchResultsInterface
-     * @suppress PhanTypeMismatchArgument
-     * @throws \Exception
-     */
-    public function getWithActivePricingSchedule()
-    {
-        $today = new \DateTime('now'); // @codingStandardsIgnoreLine
-        $filterEndDateGreater = $this->filterBuilder
-            ->setField('special_to_date')
-            ->setValue($today->format('Y-m-d ' . '00:00:00'))
-            ->setConditionType('gt')
-            ->create();
-        $filterEndDateNotSet = $this->filterBuilder
-            ->setField('special_to_date')
-            ->setValue(['null' => true])
-            ->setConditionType('eq')
-            ->create();
-
-        $filterGroup = $this->filterGroupBuilder->setFilters([$filterEndDateGreater, $filterEndDateNotSet])->create();
-
-        $searchCriteria = $this->searchCriteriaBuilder
-            ->setFilterGroups([$filterGroup])
-            ->addFilter('special_from_date', $today->format('Y-m-d') . ' 00:00:00', 'gte')
-            ->create();
-        return $this->productRepository->getList($searchCriteria);
-    }
-
-    /**
      * Gets a product that is active in a given Store
      *
      * @return Product|null
@@ -186,29 +156,6 @@ class Repository
             return $item;
         }
         return null;
-    }
-
-    /**
-     * Gets the parent products for simple product
-     *
-     * @param ProductInterface $product
-     * @return string[]|null
-     * @suppress PhanTypeMismatchReturn
-     */
-    public function resolveParentProductIds(ProductInterface $product)
-    {
-        if ($this->getParentIdsFromCache($product)) {
-            return $this->getParentIdsFromCache($product);
-        }
-        $parentProductIds = null;
-        if ($product->getTypeId() === Type::TYPE_SIMPLE) {
-            $parentProductIds = $this->configurableProduct->getParentIdsByChild(
-                $product->getId()
-            );
-            $this->saveParentIdsToCache($product, $parentProductIds);
-        }
-
-        return $parentProductIds;
     }
 
     /**
