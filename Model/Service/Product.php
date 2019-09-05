@@ -94,7 +94,7 @@ class Product
         try {
             $indexedProduct = $this->nostoIndexRepository->getOneByProductAndStore($product, $store);
             if ($indexedProduct instanceof ProductIndexInterface === false) {
-                $indexedProduct = $this->nostoIndexService->updateOrCreateDirtyEntity($product, $store);
+                $indexedProduct = $this->nostoIndexService->invalidateOrCreateProductOrParent($product, $store);
             }
             if ($indexedProduct->getIsDirty()) {
                 $indexedProduct = $this->nostoIndexService->rebuildDirtyProduct($indexedProduct);

@@ -58,4 +58,13 @@ class Collection extends MagentoProductCollection
                 ['neq'=> Visibility::VISIBILITY_NOT_VISIBLE]
             )->addStoreFilter($store);
     }
+
+    /**
+     * @param array $ids
+     * @return Collection
+     */
+    public function addIdsToFilter(array $ids)
+    {
+        return $this->addAttributeToFilter($this->getIdFieldName(), ['in', $ids]);
+    }
 }

@@ -39,7 +39,8 @@ namespace Nosto\Tagging\Model\Service;
 use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\ProductRepository;
-use Magento\Catalog\Model\ResourceModel\Product\Collection as ProductCollection;
+use Nosto\Tagging\Model\ResourceModel\Magento\Product\Collection as ProductCollection;
+use Nosto\Tagging\Model\ResourceModel\Magento\Product\CollectionFactory as ProductCollectionFactory;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
 use Magento\Store\Model\Store;
@@ -55,6 +56,7 @@ use Nosto\Tagging\Model\Product\Index\Index as NostoProductIndex;
 use Nosto\Tagging\Model\Product\Index\IndexRepository;
 use Nosto\Tagging\Model\ResourceModel\Product\Index\Collection as NostoIndexCollection;
 use Nosto\Tagging\Model\ResourceModel\Product\Index\CollectionFactory as NostoIndexCollectionFactory;
+use Nosto\Tagging\Model\Product\Repository as NostoProductRepository;
 use Nosto\Tagging\Util\Benchmark;
 use Nosto\Tagging\Util\Iterator;
 use Nosto\Tagging\Util\Product as ProductUtil;
@@ -93,6 +95,15 @@ class Index extends AbstractService
     /** @var Sync */
     private $nostoSyncService;
 
+    /** @var NostoProductRepository $nostoProductRepository */
+    private $nostoProductRepository;
+
+    /** @var ProductCollectionFactory $productCollectionFactory */
+    private $productCollectionFactory;
+
+    /** @var array */
+    private $invalidatedProducts = [];
+
     /**
      * Index constructor.
      * @param IndexRepository $indexRepository
@@ -102,6 +113,8 @@ class Index extends AbstractService
      * @param NostoHelperScope $nostoHelperScope
      * @param NostoLogger $logger
      * @param NostoIndexCollectionFactory $nostoIndexCollectionFactory
+     * @param NostoProductRepository $nostoProductRepository
+     * @param ProductCollectionFactory $productCollectionFactory
      * @param TimezoneInterface $magentoTimeZone
      * @param NostoDataHelper $nostoDataHelper
      * @param Sync $nostoSyncService
@@ -114,6 +127,8 @@ class Index extends AbstractService
         NostoHelperScope $nostoHelperScope,
         NostoLogger $logger,
         NostoIndexCollectionFactory $nostoIndexCollectionFactory,
+        NostoProductRepository $nostoProductRepository,
+        ProductCollectionFactory $productCollectionFactory,
         TimezoneInterface $magentoTimeZone,
         NostoDataHelper $nostoDataHelper,
         Sync $nostoSyncService
@@ -125,6 +140,8 @@ class Index extends AbstractService
         $this->nostoProductBuilder = $nostoProductBuilder;
         $this->nostoHelperScope = $nostoHelperScope;
         $this->nostoIndexCollectionFactory = $nostoIndexCollectionFactory;
+        $this->nostoProductRepository = $nostoProductRepository;
+        $this->productCollectionFactory = $productCollectionFactory;
         $this->magentoTimeZone = $magentoTimeZone;
         $this->nostoSyncService = $nostoSyncService;
     }
@@ -145,7 +162,7 @@ class Index extends AbstractService
         );
         $iterator = new Iterator($collection);
         $iterator->each(function ($item) use ($store) {
-            $this->updateOrCreateDirtyEntity($item, $store);
+            $this->invalidateOrCreateProductOrParent($item, $store);
             $this->tickBenchmark(self::BENCHMARK_NAME_INVALIDATE);
         });
         try {
@@ -158,10 +175,70 @@ class Index extends AbstractService
     /**
      * @param Product $product
      * @param Store $store
-     * @return ProductIndexInterface|null
+     * @throws NoSuchEntityException
+     * @throws NostoException
      */
-    public function updateOrCreateDirtyEntity(Product $product, Store $store)
+    public function invalidateOrCreateProductOrParent(Product $product, Store $store)
     {
+        $parents = $this->nostoProductRepository->resolveParentProductIds($product);
+
+        //Products has no parents and Index product itself
+        if ($parents === null) {
+            $this->updateOrCreateDirtyEntity($product, $store);
+            return;
+        }
+
+        //Loop through product parents and Index the parents
+        if (is_array($parents)) {
+            $this->invalidateOrCreateParents($parents, $store);
+            return;
+        }
+
+        throw new NostoException('Could not index product with id: '. $product->getId());
+    }
+
+    /**
+     * @param $ids
+     * @throws NoSuchEntityException
+     */
+    private function invalidateOrCreateParents(array $ids, Store $store)
+    {
+        $collection = $this->productCollectionFactory->create();
+        $collection->addIdsToFilter($ids);
+        $collection->load();
+        /** @var ProductInterface $product */
+        foreach ($collection->getItems() as $product) {
+            if (!$this->hasParentBeenInvalidated($product->getId())) {
+                $this->updateOrCreateDirtyEntity($product, $store);
+                $this->invalidatedProducts[] = $product->getId();
+            }
+        }
+    }
+
+    /**
+     * @param Product $product
+     * @return bool
+     */
+    private function hasParentBeenInvalidated($productId)
+    {
+        if (in_array($productId, $this->invalidatedProducts)) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * @param Product $product
+     * @param Store $store
+     * @return ProductIndexInterface|NostoProductIndex|null
+     * @throws NostoException
+     */
+    private function updateOrCreateDirtyEntity(Product $product, Store $store)
+    {
+        if (!$product->isVisibleInCatalog()) {
+            throw new NostoException('Cannot index invisible product!');
+        }
+
         $indexedProduct = $this->indexRepository->getByProductIdAndStoreId($product->getId(), $store->getId());
         try {
             if ($indexedProduct instanceof ProductIndexInterface) {
