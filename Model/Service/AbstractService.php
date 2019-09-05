@@ -70,7 +70,7 @@ abstract class AbstractService
      * @param string $serviceName
      * @throws MemoryOutOfBoundsException
      */
-    protected function checkMemoryConsumption($serviceName)
+    public function checkMemoryConsumption($serviceName)
     {
         $maxMemPercentage = $this->nostoDataHelper->getIndexerMemory();
         if (NostoMemUtil::getPercentageUsedMem() >= $maxMemPercentage) {
@@ -88,7 +88,7 @@ abstract class AbstractService
      * @param string $name
      * @param int $breakpoint
      */
-    protected function startBenchmark(string $name, int $breakpoint)
+    public function startBenchmark(string $name, int $breakpoint)
     {
         Benchmark::getInstance()->startInstrumentation($name, $breakpoint);
     }
@@ -96,17 +96,16 @@ abstract class AbstractService
     /**
      * Records calls this function and writes log if breakpoint is reached
      *
-     * @param $name
-     * @param $breakpoint
-     * @param bool $writeLog
+     * @param string $name
+     * @param bool $writeLog if set to true debug log will be written
      * @return float|null
      * @throws \Exception
      */
-    protected function tickBenchmark($name, $writeLog = false)
+    public function tickBenchmark(string $name, $writeLog = false)
     {
         $elapsed = Benchmark::getInstance()->tick($name);
         if ($elapsed !== null && $writeLog === true) {
-            $reachedBreakpoints = count(Benchmark::getInstance()->getBreakPoints($name));
+            $reachedBreakpoints = count(Benchmark::getInstance()->getCheckpointTimes($name));
             $this->nostoLogger->logWithMemoryConsumption(
                 sprintf(
                     'Execution for %s took %f seconds - breakpoints reached %d',
@@ -125,7 +124,7 @@ abstract class AbstractService
      * @param $name
      * @throws \Exception
      */
-    protected function logBenchmarkSummary($name, Store $store)
+    public function logBenchmarkSummary(string $name, Store $store)
     {
         Benchmark::getInstance()->stopInstrumentation($name);
         $this->nostoLogger->debug(sprintf(
@@ -141,7 +140,7 @@ abstract class AbstractService
     /**
      * @return NostoLogger
      */
-    protected function getLogger()
+    public function getLogger()
     {
         return $this->nostoLogger;
     }

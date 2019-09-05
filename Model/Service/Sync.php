@@ -177,18 +177,14 @@ class Sync extends AbstractService
     }
 
     /**
-     * @param int $productId
-     * @param int $storeId
+     * @param int[] $productIds
+     * @param Store $store
      * @return void
-     * @throws \Exception
      */
-    public function markAsInSyncProductByIdAndStore($productId, $storeId)
+    public function markAsInSyncByProductIdsAndStoreId(array $productIds, Store $store)
     {
         try {
-            $productIndex = $this->indexRepository->getByProductIdAndStoreId($productId, $storeId);
-            if ($productIndex instanceof ProductIndexInterface) {
-                $this->markAsInSync($productIndex);
-            }
+            $this->nostoIndexCollectionFactory->create()->markAsInSync($productIds, $store);
         } catch (\Exception $e) {
             $this->getLogger()->exception($e);
         }

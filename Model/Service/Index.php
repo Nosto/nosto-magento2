@@ -141,7 +141,7 @@ class Index extends AbstractService
     {
         $this->startBenchmark(
             self::BENCHMARK_NAME_INVALIDATE,
-        self::BENCHMARK_BREAKPOINT_INVALIDATE
+            self::BENCHMARK_BREAKPOINT_INVALIDATE
         );
         $iterator = new Iterator($collection);
         $iterator->each(function ($item) use ($store) {

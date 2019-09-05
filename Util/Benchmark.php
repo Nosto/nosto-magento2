@@ -40,8 +40,8 @@ class Benchmark
 {
     private $times = [];
     private $ticks = [];
-    private $breakpoints = [];
-    private $breakpointTimes = [];
+    private $checkpoints = [];
+    private $checkpointTimes = [];
     private static $instance;
 
     /**
@@ -66,13 +66,13 @@ class Benchmark
 
     /**
      * @param string $name
-     * @param int $breakpoint
+     * @param int $checkpoint
      */
-    public function startInstrumentation(string $name, int $breakpoint)
+    public function startInstrumentation(string $name, int $checkpoint)
     {
         $this->resetTimer($name);
-        $this->breakpoints[$name] = $breakpoint;
-        $this->breakpointTimes[$name] = [];
+        $this->checkpoints[$name] = $checkpoint;
+        $this->checkpointTimes[$name] = [];
         $this->ticks[$name] = 0;
     }
 
@@ -87,15 +87,15 @@ class Benchmark
      */
     public function stopInstrumentation(string $name)
     {
-        $this->breakpointTimes[$name][] = $this->getElapsed($name);
+        $this->checkpointTimes[$name][] = $this->getElapsed($name);
     }
 
     /**
-     * @param $name
+     * @param string $name
      * @return float
      * @throws \Exception
      */
-    public function getElapsed($name)
+    public function getElapsed(string $name)
     {
         if (empty($this->times[$name])) {
             throw new \Exception(sprintf('No such instrumentation: %s', $name));
@@ -104,21 +104,20 @@ class Benchmark
     }
 
     /**
-     * Calculates one call for given name. When breakpoint is reached the elapsed time
-     * is stored into the breakpoints array. Returns elapsed time when breakpoint is reached, otherwise
+     * Calculates one call for given name. When checkpoint is reached the elapsed time
+     * is stored into the checkpoints array. Returns elapsed time when checkpoint is reached, otherwise
      * null.
      *
      * @param string $name
-     * @param int $breakpoint
      * @return float|null
      * @throws \Exception
      */
-    public function tick($name)
+    public function tick(string $name)
     {
         ++$this->ticks[$name];
-        if ($this->ticks[$name] % $this->breakpoints[$name] === 0) {
+        if ($this->ticks[$name] % $this->checkpoints[$name] === 0) {
             $elapsed = $this->getElapsed($name);
-            $this->breakpointTimes[$name][] = $elapsed;
+            $this->checkpointTimes[$name][] = $elapsed;
             $this->resetTimer($name);
             return $elapsed;
         }
@@ -127,28 +126,28 @@ class Benchmark
     }
 
     /**
-     * Returns recorder times in a specific breakpoint
+     * Returns recorded times in for a specific measurement name
      *
-     * @param $name
+     * @param string $name
      * @return array
      * @throws \Exception
      */
-    public function getBreakpointTimes($name)
+    public function getCheckpointTimes(string $name)
     {
-        if (!isset($this->breakpointTimes[$name])) {
+        if (!isset($this->checkpointTimes[$name])) {
             throw new \Exception(sprintf('No breakpoints found for %s', $name));
         }
-        return $this->breakpointTimes[$name];
+        return $this->checkpointTimes[$name];
     }
 
     /**
      * Returns the amount of ticks for given name
      *
-     * @param $name
+     * @param string $name
      * @return int
      * @throws \Exception
      */
-    public function getTickCount($name)
+    public function getTickCount(string $name)
     {
         if (!isset($this->ticks[$name])) {
             throw new \Exception(sprintf('No ticks defined for %s', $name));
@@ -159,31 +158,30 @@ class Benchmark
     /**
      * Returns the avg time for each tick
      *
-     * @param $name
-     * @return int
+     * @param string $name
+     * @return float
      * @throws \Exception
      */
-    public function getAvgTickTime($name)
+    public function getAvgTickTime(string $name)
     {
-        if (!isset($this->breakpointTimes[$name])) {
+        if (!isset($this->checkpointTimes[$name])) {
             throw new \Exception(sprintf('No breakpoints found for %s', $name));
         }
-        // ToDo - check if there not enough ticks for the first break point
         return round($this->getTotalTime($name)/$this->getTickCount($name), 6);
     }
 
     /**
      * Returns the total recorded time for given name
      *
-     * @param $name
-     * @return int
+     * @param string $name
+     * @return float
      * @throws \Exception
      */
-    public function getTotalTime($name)
+    public function getTotalTime(string $name)
     {
-        if (!isset($this->breakpointTimes[$name])) {
+        if (!isset($this->checkpointTimes[$name])) {
             throw new \Exception(sprintf('No breakpoints found for %s', $name));
         }
-        return round(array_sum($this->breakpointTimes[$name]), 4);
+        return round(array_sum($this->checkpointTimes[$name]), 4);
     }
 }
