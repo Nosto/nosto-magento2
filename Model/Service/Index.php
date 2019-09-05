@@ -55,7 +55,6 @@ use Nosto\Tagging\Model\Product\Index\Index as NostoProductIndex;
 use Nosto\Tagging\Model\Product\Index\IndexRepository;
 use Nosto\Tagging\Model\ResourceModel\Product\Index\Collection as NostoIndexCollection;
 use Nosto\Tagging\Model\ResourceModel\Product\Index\CollectionFactory as NostoIndexCollectionFactory;
-use Nosto\Tagging\Util\Benchmark;
 use Nosto\Tagging\Util\Iterator;
 use Nosto\Tagging\Util\Product as ProductUtil;
 use Nosto\Types\Product\ProductInterface as NostoProductInterface;
@@ -144,7 +143,7 @@ class Index extends AbstractService
             self::BENCHMARK_BREAKPOINT_INVALIDATE
         );
         $iterator = new Iterator($collection);
-        $iterator->each(function ($item) use ($store) {
+        $iterator->each(function (Product $item) use ($store) {
             $this->updateOrCreateDirtyEntity($item, $store);
             $this->tickBenchmark(self::BENCHMARK_NAME_INVALIDATE);
         });
@@ -195,7 +194,7 @@ class Index extends AbstractService
         );
         $collection->setPageSize(self::PRODUCT_DATA_BATCH_SIZE);
         $iterator = new Iterator($collection);
-        $iterator->each(function ($item) {
+        $iterator->each(function (NostoProductIndex $item) {
             if ($item->getIsDirty() === NostoProductIndex::DB_VALUE_BOOLEAN_TRUE) {
                 $this->rebuildDirtyProduct($item);
                 $this->tickBenchmark(self::BENCHMARK_NAME_REBUILD);
@@ -251,7 +250,7 @@ class Index extends AbstractService
         $uniqueIds = array_unique($ids);
         $collection->setPageSize(self::PRODUCT_DELETION_BATCH_SIZE);
         $iterator = new Iterator($collection);
-        $iterator->each(function ($magentoProduct) use ($uniqueIds) {
+        $iterator->each(function (Product $magentoProduct) use (&$uniqueIds) {
             $key = array_search($magentoProduct->getId(), $uniqueIds);
             if (is_numeric($key)) {
                 unset($uniqueIds[$key]);

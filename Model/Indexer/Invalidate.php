@@ -55,7 +55,7 @@ class Invalidate implements IndexerActionInterface, MviewActionInterface
 {
     const INDEXER_ID = 'nosto_index_product_invalidate';
 
-    public static $disableFullReindex = false;
+    public static $disableFullReindex = true;
 
     /** @var NostoHelperAccount */
     private $nostoHelperAccount;

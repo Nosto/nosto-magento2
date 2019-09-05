@@ -167,7 +167,8 @@ class Benchmark
         if (!isset($this->checkpointTimes[$name])) {
             throw new \Exception(sprintf('No breakpoints found for %s', $name));
         }
-        return round($this->getTotalTime($name)/$this->getTickCount($name), 6);
+        $ticks = $this->getTickCount($name) > 0 ?: 1;
+        return round($this->getTotalTime($name)/$ticks, 6);
     }
 
     /**
