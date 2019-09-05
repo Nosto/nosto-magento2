@@ -5,6 +5,9 @@ All notable changes to this project will be documented in this file. This projec
 * Use graphql for sending order confirmations and order status updates
 * Speedup the SKU price lookups by using price index table (catalog_product_index_price)
 
+### 3.8.6
+* Fix add to cart array comparison
+
 ### 3.8.5
 * Remove proxy classes from constructors to be in accordance with Magento marketplace code review
 
