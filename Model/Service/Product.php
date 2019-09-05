@@ -46,8 +46,8 @@ use Nosto\Tagging\Model\Service\Index as NostoIndexService;
 
 class Product
 {
-    public const NOSTO_SCOPE_TAGGING = 'tagging';
-    public const NOSTO_SCOPE_API = 'api';
+    const NOSTO_SCOPE_TAGGING = 'tagging';
+    const NOSTO_SCOPE_API = 'api';
 
     /**
      * @var NostoIndexService

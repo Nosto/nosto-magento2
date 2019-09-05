@@ -57,7 +57,7 @@ use Nosto\Tagging\Model\Service\Sync as NostoSyncService;
  */
 class Product extends Base
 {
-    private const PARAM_PREVIEW = 'preview';
+    const PARAM_PREVIEW = 'preview';
 
     private $nostoProductCollection;
     /**

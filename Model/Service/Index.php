@@ -62,12 +62,12 @@ use Nosto\Types\Product\ProductInterface as NostoProductInterface;
 
 class Index extends AbstractService
 {
-    private const PRODUCT_DATA_BATCH_SIZE = 100;
-    private const PRODUCT_DELETION_BATCH_SIZE = 100;
-    private const BENCHMARK_BREAKPOINT_INVALIDATE = 100;
-    private const BENCHMARK_BREAKPOINT_REBUILD = 10;
-    private const BENCHMARK_NAME_INVALIDATE = 'nosto_index_invalidate';
-    private const BENCHMARK_NAME_REBUILD = 'nosto_index_rebuild';
+    const PRODUCT_DATA_BATCH_SIZE = 100;
+    const PRODUCT_DELETION_BATCH_SIZE = 100;
+    const BENCHMARK_BREAKPOINT_INVALIDATE = 100;
+    const BENCHMARK_BREAKPOINT_REBUILD = 10;
+    const BENCHMARK_NAME_INVALIDATE = 'nosto_index_invalidate';
+    const BENCHMARK_NAME_REBUILD = 'nosto_index_rebuild';
 
     /** @var IndexRepository */
     private $indexRepository;

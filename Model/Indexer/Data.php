@@ -53,7 +53,7 @@ use Nosto\Exception\MemoryOutOfBoundsException;
  */
 class Data implements IndexerActionInterface, MviewActionInterface
 {
-    public const INDEXER_ID = 'nosto_index_product_data_sync';
+    const INDEXER_ID = 'nosto_index_product_data_sync';
 
     /** @var NostoIndexService */
     private $nostoServiceIndex;
