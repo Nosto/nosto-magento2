@@ -55,9 +55,11 @@ define([
     // Products must be and array of objects [{'productId': '123', 'skuId': '321'}, {...}]
     // skuId is optional for simple products.
     Recobuy.addMultipleProductsToCart = function (products, element) {
-        products.forEach(function (productObj) {
-            Recobuy.addSkuToCart(productObj, element, 1);
-        });
+        if (Array.isArray(products)) {
+            products.forEach(function (productObj) {
+                Recobuy.addSkuToCart(productObj, element, 1);
+            });
+        }
     };
 
     // Product object must have fields productId and skuId {'productId': '123', 'skuId': '321'}
