@@ -12,7 +12,7 @@
     </group>
     <group id="nosto_invalidate_indexer_group">
         <job name="nosto_invalidate_data" instance="Nosto\Tagging\Cron\Invalidate" method="execute">
-            <schedule>* * * * *</schedule>
+            <schedule>0 * * * *</schedule>
         </job>
     </group>
 </config>
