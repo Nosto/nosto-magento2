@@ -38,6 +38,7 @@ namespace Nosto\Tagging\Model\Service;
 
 use Magento\Store\Model\Store;
 use Nosto\Exception\MemoryOutOfBoundsException;
+use Nosto\NostoException;
 use Nosto\Tagging\Helper\Data as NostoDataHelper;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Util\Benchmark;
@@ -127,20 +128,23 @@ abstract class AbstractService
      *
      * @param string $name
      * @param Store $store
-     * @throws \Exception
      */
     public function logBenchmarkSummary(string $name, Store $store)
     {
-        Benchmark::getInstance()->stopInstrumentation($name);
-        $this->nostoLogger->logWithMemoryConsumption(sprintf(
-            'Summary of processing %s for store %s. Total amount of iterations %d'
-            . ', single iteration took on avg %f sec, total time was %f sec',
-            $name,
-            $store->getName(),
-            Benchmark::getInstance()->getTickCount($name),
-            Benchmark::getInstance()->getAvgTickTime($name),
-            Benchmark::getInstance()->getTotalTime($name)
-        ));
+        try {
+            Benchmark::getInstance()->stopInstrumentation($name);
+            $this->nostoLogger->logWithMemoryConsumption(sprintf(
+                'Summary of processing %s for store %s. Total amount of iterations %d'
+                . ', single iteration took on avg %f sec, total time was %f sec',
+                $name,
+                $store->getName(),
+                Benchmark::getInstance()->getTickCount($name),
+                Benchmark::getInstance()->getAvgTickTime($name),
+                Benchmark::getInstance()->getTotalTime($name)
+            ));
+        } catch (NostoException $e) {
+            $this->nostoLogger->exception($e);
+        }
     }
     /**
      * @return NostoLogger

@@ -197,7 +197,6 @@ class Sync extends AbstractService
      * @param Store $store
      * @return int number of deleted products
      * @throws NostoException
-     * @throws MemoryOutOfBoundsException
      */
     public function deleteIndexedProducts(NostoIndexCollection $collection, Store $store)
     {
@@ -242,7 +241,6 @@ class Sync extends AbstractService
      * @param Store $store
      * @return int the amount of deleted products
      * @throws NostoException
-     * @throws MemoryOutOfBoundsException
      */
     public function purgeDeletedProducts(Store $store)
     {
