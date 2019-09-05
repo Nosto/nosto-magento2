@@ -84,10 +84,8 @@ abstract class Base implements ObserverInterface
         $this->productRepository = $productRepository;
         $this->dataHelper = $dataHelper;
         $this->indexer = $indexerRegistry->get(InvalidateIndexer::INDEXER_ID);
-        $this->productCollectionFactory = $productCollectionFactory;
         $this->indexerInvalidate = $indexerInvalidate;
     }
-
 
     /**
      * Event handler for the "catalog_product_save_after" and  event.
