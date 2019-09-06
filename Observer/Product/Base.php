@@ -45,8 +45,6 @@ use Magento\Framework\Module\Manager as ModuleManager;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Model\Indexer\Invalidate as InvalidateIndexer;
 use Magento\Framework\Indexer\IndexerInterface;
-use Magento\Catalog\Model\Product\Attribute\Source\Status;
-use Magento\Catalog\Model\Product\Visibility;
 
 abstract class Base implements ObserverInterface
 {
