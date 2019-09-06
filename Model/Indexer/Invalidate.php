@@ -36,13 +36,13 @@
 
 namespace Nosto\Tagging\Model\Indexer;
 
-use Nosto\Tagging\Model\ResourceModel\Magento\Product\Collection as ProductCollection;
-use Nosto\Tagging\Model\ResourceModel\Magento\Product\CollectionFactory as ProductCollectionFactory;
 use Exception;
 use Magento\Framework\Indexer\ActionInterface as IndexerActionInterface;
 use Magento\Framework\Mview\ActionInterface as MviewActionInterface;
 use Magento\Store\Model\Store;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
+use Nosto\Tagging\Model\ResourceModel\Magento\Product\Collection as ProductCollection;
+use Nosto\Tagging\Model\ResourceModel\Magento\Product\CollectionFactory as ProductCollectionFactory;
 use Nosto\Tagging\Model\Service\Index as NostoServiceIndex;
 
 /**
@@ -53,9 +53,9 @@ use Nosto\Tagging\Model\Service\Index as NostoServiceIndex;
  */
 class Invalidate implements IndexerActionInterface, MviewActionInterface
 {
-    public const INDEXER_ID = 'nosto_index_product_invalidate';
+    const INDEXER_ID = 'nosto_index_product_invalidate';
 
-    public static $disableFullReindex = false;
+    public static $disableFullReindex = true;
 
     /** @var NostoHelperAccount */
     private $nostoHelperAccount;
@@ -94,7 +94,7 @@ class Invalidate implements IndexerActionInterface, MviewActionInterface
             $storesWithNosto = $this->nostoHelperAccount->getStoresWithNosto();
             foreach ($storesWithNosto as $store) {
                 $productCollection = $this->getCollection($store, $ids);
-                $this->nostoServiceIndex->handleProductChange($productCollection, $store);
+                $this->nostoServiceIndex->invalidateOrCreate($productCollection, $store);
                 $collectionSize = $productCollection->getSize();
 
                 if ($idsSize > $collectionSize) {
@@ -113,7 +113,7 @@ class Invalidate implements IndexerActionInterface, MviewActionInterface
             $storesWithNosto = $this->nostoHelperAccount->getStoresWithNosto();
             foreach ($storesWithNosto as $store) {
                 $productCollection = $this->getCollection($store);
-                $this->nostoServiceIndex->handleProductChange($productCollection, $store);
+                $this->nostoServiceIndex->invalidateOrCreate($productCollection, $store);
             }
         }
     }

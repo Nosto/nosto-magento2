@@ -34,62 +34,61 @@
  *
  */
 
-namespace Nosto\Tagging\Helper;
+namespace Nosto\Tagging\Util;
 
-use Magento\Framework\App\Helper\AbstractHelper;
-use Magento\Customer\Api\GroupRepositoryInterface as GroupRepository;
-use Magento\Customer\Model\Session as CustomerSession;
-use Magento\Framework\Exception\LocalizedException;
-use Magento\Framework\Exception\NoSuchEntityException;
+use Magento\Framework\Data\Collection;
+use Nosto\NostoException;
 
-/**
- * Customer helper
- * @package Nosto\Tagging\Helper
- */
-class Customer extends AbstractHelper
+class Iterator
 {
-
-    private $customerSession;
-    private $groupRepository;
+    private $collection;
 
     /**
-     * Customer constructor.
+     * Iterator constructor.
+     * @param Collection $collection
+     * @throws NostoException
+     */
+    public function __construct(Collection $collection)
+    {
+        if (!is_numeric($collection->getPageSize())) {
+            throw new NostoException('Page size not defined or not an integer');
+        }
+        $this->collection = $collection;
+    }
+
+    /**
+     * Iterates through the collection in batches defined by the collection page size
+     * and applies closure to each item
+     * @param \Closure $closure
+     * @throws NostoException
+     */
+    public function each(\Closure $closure)
+    {
+        $curPage = 1;
+        $lastPage = $this->collection->getLastPageNumber();
+        do {
+            $this->collection->clear();
+            $this->collection->setCurPage($curPage);
+            $this->collection->each($closure);
+            ++$curPage;
+        } while ($curPage <= $lastPage);
+    }
+
+    /**
+     * Handles the pagination / batching and batching for a collection
      *
-     * @param CustomerSession $customerSession
-     * @param GroupRepository $groupRepository
+     * @param \Closure $closure
+     * @throws NostoException
      */
-    public function __construct(
-        CustomerSession $customerSession, // @codingStandardsIgnoreLine
-        GroupRepository $groupRepository
-    ) {
-        $this->customerSession = $customerSession;
-        $this->groupRepository = $groupRepository;
-    }
-
-    /**
-     * @return string
-     * @throws LocalizedException
-     * @throws NoSuchEntityException
-     */
-    public function getGroupCode()
+    public function eachBatch(\Closure $closure)
     {
-        $customerGroupId = $this->getGroupId();
-        if ($customerGroupId) {
-            $group = $this->groupRepository->getById($customerGroupId);
-            return $group->getCode();
-        }
-        return $this->groupRepository->getById(Variation::DEFAULT_CUSTOMER_GROUP_ID)->getCode();
-    }
-
-    /**
-     * @return int|null
-     */
-    public function getGroupId()
-    {
-        $groupId = $this->customerSession->getCustomerGroupId();
-        if ($groupId && $groupId !== 0) {
-            return $groupId;
-        }
-        return null;
+        $curPage = 1;
+        $lastPage = $this->collection->getLastPageNumber();
+        do {
+            $this->collection->clear();
+            $this->collection->setCurPage($curPage);
+            $closure($this->collection);
+            ++$curPage;
+        } while ($curPage <= $lastPage);
     }
 }

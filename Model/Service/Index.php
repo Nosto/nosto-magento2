@@ -41,15 +41,13 @@ use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\ProductRepository;
 use Magento\Catalog\Model\ResourceModel\Product\Collection as ProductCollection;
 use Magento\Framework\Exception\NoSuchEntityException;
+use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
 use Magento\Store\Model\Store;
+use Nosto\Exception\MemoryOutOfBoundsException;
 use Nosto\NostoException;
-use Nosto\Object\Signup\Account as NostoSignupAccount;
-use Nosto\Operation\DeleteProduct;
-use Nosto\Operation\UpsertProduct;
 use Nosto\Tagging\Api\Data\ProductIndexInterface;
-use Nosto\Tagging\Helper\Account as NostoHelperAccount;
+use Nosto\Tagging\Helper\Data as NostoDataHelper;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
-use Nosto\Tagging\Helper\Url as NostoHelperUrl;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
 use Nosto\Tagging\Model\Product\Index\Builder;
@@ -57,18 +55,18 @@ use Nosto\Tagging\Model\Product\Index\Index as NostoProductIndex;
 use Nosto\Tagging\Model\Product\Index\IndexRepository;
 use Nosto\Tagging\Model\ResourceModel\Product\Index\Collection as NostoIndexCollection;
 use Nosto\Tagging\Model\ResourceModel\Product\Index\CollectionFactory as NostoIndexCollectionFactory;
+use Nosto\Tagging\Util\Iterator;
 use Nosto\Tagging\Util\Product as ProductUtil;
 use Nosto\Types\Product\ProductInterface as NostoProductInterface;
-use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
-use Nosto\Tagging\Helper\Data as NostoDataHelper;
-use Nosto\Util\Memory as NostoMemUtil;
-use Nosto\Exception\MemoryOutOfBoundsException;
 
-class Index
+class Index extends AbstractService
 {
-    private const API_BATCH_SIZE = 50;
-    private const PRODUCT_DATA_BATCH_SIZE = 100;
-    private const PRODUCT_DELETION_BATCH_SIZE = 100;
+    const PRODUCT_DATA_BATCH_SIZE = 100;
+    const PRODUCT_DELETION_BATCH_SIZE = 100;
+    const BENCHMARK_BREAKPOINT_INVALIDATE = 100;
+    const BENCHMARK_BREAKPOINT_REBUILD = 10;
+    const BENCHMARK_NAME_INVALIDATE = 'nosto_index_invalidate';
+    const BENCHMARK_NAME_REBUILD = 'nosto_index_rebuild';
 
     /** @var IndexRepository */
     private $indexRepository;
@@ -85,23 +83,14 @@ class Index
     /** @var NostoHelperScope */
     private $nostoHelperScope;
 
-    /** @var NostoHelperAccount */
-    private $nostoHelperAccount;
-
-    /** @var NostoHelperUrl */
-    private $nostoHelperUrl;
-
     /** @var NostoIndexCollectionFactory */
     private $nostoIndexCollectionFactory;
-
-    /** @var NostoLogger */
-    private $logger;
 
     /** @var TimezoneInterface */
     private $magentoTimeZone;
 
-    /** @var NostoDataHelper */
-    private $nostoDataHelper;
+    /** @var Sync */
+    private $nostoSyncService;
 
     /**
      * Index constructor.
@@ -110,12 +99,11 @@ class Index
      * @param ProductRepository $productRepository
      * @param NostoProductBuilder $nostoProductBuilder
      * @param NostoHelperScope $nostoHelperScope
-     * @param NostoHelperAccount $nostoHelperAccount
-     * @param NostoHelperUrl $nostoHelperUrl
      * @param NostoLogger $logger
      * @param NostoIndexCollectionFactory $nostoIndexCollectionFactory
      * @param TimezoneInterface $magentoTimeZone
      * @param NostoDataHelper $nostoDataHelper
+     * @param Sync $nostoSyncService
      */
     public function __construct(
         IndexRepository $indexRepository,
@@ -123,24 +111,21 @@ class Index
         ProductRepository $productRepository,
         NostoProductBuilder $nostoProductBuilder,
         NostoHelperScope $nostoHelperScope,
-        NostoHelperAccount $nostoHelperAccount,
-        NostoHelperUrl $nostoHelperUrl,
         NostoLogger $logger,
         NostoIndexCollectionFactory $nostoIndexCollectionFactory,
         TimezoneInterface $magentoTimeZone,
-        NostoDataHelper $nostoDataHelper
+        NostoDataHelper $nostoDataHelper,
+        Sync $nostoSyncService
     ) {
+        parent::__construct($nostoDataHelper, $logger);
         $this->indexRepository = $indexRepository;
         $this->indexBuilder = $indexBuilder;
         $this->productRepository = $productRepository;
         $this->nostoProductBuilder = $nostoProductBuilder;
         $this->nostoHelperScope = $nostoHelperScope;
-        $this->nostoHelperAccount = $nostoHelperAccount;
-        $this->nostoHelperUrl = $nostoHelperUrl;
-        $this->logger = $logger;
         $this->nostoIndexCollectionFactory = $nostoIndexCollectionFactory;
         $this->magentoTimeZone = $magentoTimeZone;
-        $this->nostoDataHelper = $nostoDataHelper;
+        $this->nostoSyncService = $nostoSyncService;
     }
 
     /**
@@ -150,19 +135,21 @@ class Index
      *
      * @param ProductCollection $collection
      * @param Store $store
+     * @throws NostoException
      */
-    public function handleProductChange(ProductCollection $collection, Store $store)
+    public function invalidateOrCreate(ProductCollection $collection, Store $store)
     {
-        foreach ($collection as $product) {
-            $this->updateOrCreateDirtyEntity($product, $store);
-        }
-        $this->logger->logWithMemoryConsumption(
-            sprintf(
-                'Indexed %d products for store %s',
-                $collection->getSize(),
-                $store->getName()
-            )
+        $this->startBenchmark(
+            self::BENCHMARK_NAME_INVALIDATE,
+            self::BENCHMARK_BREAKPOINT_INVALIDATE
         );
+        $collection->setPageSize(self::PRODUCT_DATA_BATCH_SIZE);
+        $iterator = new Iterator($collection);
+        $iterator->each(function (Product $item) use ($store) {
+            $this->updateOrCreateDirtyEntity($item, $store);
+            $this->tickBenchmark(self::BENCHMARK_NAME_INVALIDATE);
+        });
+        $this->logBenchmarkSummary(self::BENCHMARK_NAME_INVALIDATE, $store);
     }
 
     /**
@@ -186,7 +173,7 @@ class Index
             $this->indexRepository->save($indexedProduct);
             return $indexedProduct;
         } catch (\Exception $e) {
-            $this->logger->exception($e);
+            $this->getLogger()->exception($e);
             return null;
         }
     }
@@ -197,120 +184,29 @@ class Index
      * @throws NostoException
      * @throws MemoryOutOfBoundsException
      */
-    public function handleDirtyProducts(NostoIndexCollection $collection, Store $store)
+    public function rebuildDirtyProducts(NostoIndexCollection $collection, Store $store)
     {
-        $collection->setPageSize(self::PRODUCT_DATA_BATCH_SIZE);
-        $lastPage = $collection->getLastPageNumber();
-        $curPage = 1;
-        $totalDirty = 0;
-        $updatesEnabled = $this->nostoDataHelper->isProductUpdatesEnabled();
-        if (!$updatesEnabled) {
-            $this->logger->info('Skipping product sync since product updates via API are disabled');
-        }
-        do {
-            $this->checkMemoryConsumption('index service');
-            $collection->clear();
-            $collection->setCurPage($curPage);
-            foreach ($collection as $productIndex) {
-                if ($productIndex->getIsDirty() === NostoProductIndex::DB_VALUE_BOOLEAN_TRUE) {
-                    $this->rebuildDirtyProduct($productIndex);
-                    $totalDirty++;
-                }
-            }
-            if ($updatesEnabled) {
-                $this->handleProductSync($collection, $store);
-            }
-            ++$curPage;
-        } while ($curPage <= $lastPage);
-        $this->logger->logWithMemoryConsumption(
-            sprintf(
-                'Rebuilt total of %d dirty products in %d batches',
-                $totalDirty,
-                $lastPage
-            )
+        $this->startBenchmark(
+            self::BENCHMARK_NAME_REBUILD,
+            self::BENCHMARK_BREAKPOINT_REBUILD
         );
+        $collection->setPageSize(self::PRODUCT_DATA_BATCH_SIZE);
+        $iterator = new Iterator($collection);
+        $iterator->each(function (NostoProductIndex $item) {
+            if ($item->getIsDirty() === NostoProductIndex::DB_VALUE_BOOLEAN_TRUE) {
+                $this->rebuildDirtyProduct($item);
+                $this->tickBenchmark(self::BENCHMARK_NAME_REBUILD);
+            }
+            $this->checkMemoryConsumption('product rebuild');
+        });
+        $this->logBenchmarkSummary(self::BENCHMARK_NAME_REBUILD, $store);
+        $this->nostoSyncService->syncIndexedProducts($collection, $store);
     }
 
     /**
-     * Handles sync of product collection by sending it to Nosto through API
+     * Rebuilds a dirty indexed product data & defines it as out of sync
+     * if Nosto product data changed
      *
-     * @param NostoIndexCollection $collection
-     * @param Store $store
-     * @throws NostoException
-     * @throws MemoryOutOfBoundsException
-     */
-    public function handleProductSync(NostoIndexCollection $collection, Store $store): void
-    {
-        $account = $this->nostoHelperAccount->findAccount($store);
-        if ($account instanceof NostoSignupAccount === false) {
-            throw new NostoException(sprintf('Store view %s does not have Nosto installed', $store->getName()));
-        }
-        try {
-            $collection->setPageSize(self::API_BATCH_SIZE);
-            $pages = $collection->getLastPageNumber();
-            $currentPage = 1;
-            $totalCount = $collection->getSize();
-            $sentProducts = 0;
-            $this->logger->logWithMemoryConsumption(
-                sprintf(
-                    'Synchronizing total of %d product to Nosto',
-                    $totalCount
-                )
-            );
-            do {
-                $this->checkMemoryConsumption('product sync');
-                $op = new UpsertProduct($account, $this->nostoHelperUrl->getActiveDomain($store));
-                $op->setResponseTimeout(60);
-                $collection->clear();
-                $collection->setCurPage($currentPage);
-                /* @var NostoProductIndex $productIndex */
-                foreach ($collection as $productIndex) {
-                    if (!$productIndex->getInSync()) {
-                        $op->addProduct($productIndex->getNostoProduct());
-                    }
-                }
-                try {
-                    $op->upsert();
-                    $sentProducts += $collection->getSize();
-                    $this->logger->logWithMemoryConsumption(
-                        sprintf(
-                            'Sent %d/%d products to Nosto (%d/%d)',
-                            $sentProducts,
-                            $totalCount,
-                            $currentPage,
-                            $pages
-                        )
-                    );
-                } catch (\Exception $upsertException) {
-                    $this->logger->exception($upsertException);
-                } finally {
-                    // We will set this as in sync even if there was failures
-                    $collection->markAsInSyncCurrentItemsByStore($store);
-                }
-                ++$currentPage;
-            } while ($currentPage <= $pages);
-        } catch (MemoryOutOfBoundsException $e) {
-            throw $e;
-        } catch (\Exception $e) {
-            $this->logger->exception($e);
-        }
-        try {
-            $totalDeleted = $this->purgeDeletedProducts($store);
-            $this->logger->info(
-                sprintf(
-                    'Removed total of %d products from index for store %s',
-                    $totalDeleted,
-                    $store->getCode()
-                )
-            );
-        } catch (MemoryOutOfBoundsException $e) {
-            throw $e;
-        } catch (NostoException $e) {
-            $this->logger->exception($e);
-        }
-    }
-
-    /**
      * @param ProductIndexInterface $productIndex
      * @return ProductIndexInterface|null
      */
@@ -338,41 +234,8 @@ class Index
             $this->indexRepository->save($productIndex);
             return $productIndex;
         } catch (\Exception $e) {
-            $this->logger->exception($e);
+            $this->getLogger()->exception($e);
             return null;
-        }
-    }
-
-    /**
-     * Defines product index as in sync
-     *
-     * @param ProductIndexInterface $productIndex
-     * @throws \Exception
-     * @return void
-     */
-    public function markAsInSync(ProductIndexInterface $productIndex)
-    {
-        if (!$productIndex->getInSync()) {
-            $productIndex->setInSync(true);
-            $this->indexRepository->save($productIndex);
-        }
-    }
-
-    /**
-     * @param int $productId
-     * @param int $storeId
-     * @return void
-     * @throws \Exception
-     */
-    public function markAsInSyncProductByIdAndStore($productId, $storeId)
-    {
-        try {
-            $productIndex = $this->indexRepository->getByProductIdAndStoreId($productId, $storeId);
-            if ($productIndex instanceof ProductIndexInterface) {
-                $this->markAsInSync($productIndex);
-            }
-        } catch (\Exception $e) {
-            $this->logger->exception($e);
         }
     }
 
@@ -385,104 +248,22 @@ class Index
     {
         $uniqueIds = array_unique($ids);
         $collection->setPageSize(self::PRODUCT_DELETION_BATCH_SIZE);
-        $lastPage = $collection->getLastPageNumber();
-        $curPage = 1;
-        do {
-            $collection->clear();
-            $collection->setCurPage($curPage);
-            /** @var Product $magentoProduct */
-            foreach ($collection as $magentoProduct) {
-                $key = array_search($magentoProduct->getId(), $uniqueIds);
-                if (is_numeric($key)) {
-                    unset($uniqueIds[$key]);
-                }
+        $iterator = new Iterator($collection);
+        $iterator->each(static function (Product $magentoProduct) use (&$uniqueIds) {
+            $key = array_search($magentoProduct->getId(), $uniqueIds);
+            if (is_numeric($key)) {
+                unset($uniqueIds[$key]);
             }
-            ++$curPage;
-        } while ($curPage <= $lastPage);
-
+        });
         // Flag the rest of the ids as deleted
         $deleted = $this->nostoIndexCollectionFactory->create()->markAsDeleted($uniqueIds, $store);
-        $this->logger->info(
+        $this->getLogger()->info(
             sprintf(
-                'Marked %d records as deleted for store %s',
+                'Marked %d indexed products as deleted for store %s',
                 $deleted,
                 $store->getName()
             )
         );
-    }
-
-    /**
-     * Discontinues products in Nosto and removes indexed products from Nosto product index
-     *
-     * @param NostoIndexCollection $collection
-     * @param Store $store
-     * @return int number of deleted products
-     * @throws NostoException
-     * @throws MemoryOutOfBoundsException
-     */
-    public function handleProductDeletion(NostoIndexCollection $collection, Store $store)
-    {
-        if ($collection->getSize() === 0) {
-            return 0;
-        }
-        $totalDeleted = 0;
-        $account = $this->nostoHelperAccount->findAccount($store);
-        if ($account instanceof NostoSignupAccount === false) {
-            throw new NostoException(sprintf('Store view %s does not have Nosto installed', $store->getName()));
-        }
-        $maxMemPercentage = $this->nostoDataHelper->getIndexerMemory();
-        $collection->setPageSize(self::PRODUCT_DELETION_BATCH_SIZE);
-        $lastPage = $collection->getLastPageNumber();
-        $curPage = 1;
-        do {
-            $this->checkMemoryConsumption('product delete');
-            $collection->clear();
-            $collection->setCurPage($curPage);
-            $ids = [];
-            /* @var $indexedProduct NostoProductIndex */
-            foreach ($collection as $indexedProduct) {
-                $ids[] = $indexedProduct->getId();
-            }
-            try {
-                $op = new DeleteProduct($account, $this->nostoHelperUrl->getActiveDomain($store));
-                $op->setResponseTimeout(30);
-                $op->setProductIds($ids);
-                $op->delete(); // @codingStandardsIgnoreLine
-                $rowsRemoved = $collection->deleteCurrentItemsByStore($store);
-                $totalDeleted += $rowsRemoved;
-                $this->logger->info(
-                    sprintf(
-                        'Deleted %d products for store %s',
-                        $rowsRemoved,
-                        $store->getName()
-                    )
-                );
-            } catch (\Exception $e) {
-                $this->logger->exception($e);
-            }
-
-            ++$curPage;
-        } while ($curPage <= $lastPage);
-
-        return $totalDeleted;
-    }
-
-    /**
-     * Fetches deleted products from the product index, sends those to Nosto
-     * and deletes the deleted rows from database
-     *
-     * @param Store $store
-     * @return int
-     * @throws NostoException
-     * @throws MemoryOutOfBoundsException
-     */
-    public function purgeDeletedProducts(Store $store)
-    {
-        $collection = $this->nostoIndexCollectionFactory->create()
-            ->addFieldToSelect('*')
-            ->addIsDeletedFilter()
-            ->addStoreFilter($store);
-        return $this->handleProductDeletion($collection, $store);
     }
 
     /**
@@ -500,26 +281,5 @@ class Index
             $storeId,
             true
         );
-    }
-
-    /**
-     * Throws new memory out of bounds exception if the memory
-     * consumption is higher than configured amount
-     *
-     * @param string $serviceName
-     * @throws MemoryOutOfBoundsException
-     */
-    private function checkMemoryConsumption($serviceName)
-    {
-        $maxMemPercentage = $this->nostoDataHelper->getIndexerMemory();
-        if (NostoMemUtil::getPercentageUsedMem() >= $maxMemPercentage) {
-            throw new MemoryOutOfBoundsException(
-                sprintf(
-                    'Memory Out Of Bounds Error: Memory used by %s is over %d%% allowed',
-                    $serviceName,
-                    $maxMemPercentage
-                )
-            );
-        }
     }
 }
