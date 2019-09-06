@@ -45,15 +45,18 @@ use Nosto\Tagging\Model\ResourceModel\Customer;
 
 class UpgradeSchema extends Core implements UpgradeSchemaInterface
 {
+    const PRODUCT_QUEUE_TABLE = 'nosto_tagging_product_queue';
+
     /**
      * {@inheritdoc}
      */
     public function upgrade(SchemaSetupInterface $setup, ModuleContextInterface $context)
     {
         $setup->startSetup();
+        $connection = $setup->getConnection();
         $fromVersion = $context->getVersion();
         if (version_compare($fromVersion, '2.1.0', '<')) {
-            $setup->getConnection()->addColumn(
+            $connection->addColumn(
                 $setup->getTable(Customer::TABLE_NAME),
                 CustomerInterface::RESTORE_CART_HASH,
                 [
@@ -65,12 +68,11 @@ class UpgradeSchema extends Core implements UpgradeSchemaInterface
             );
         }
 
-        if (version_compare($fromVersion, '2.3.0', '<')) {
-            $this->createProductQueueTable($setup);
-        }
-
         if (version_compare($fromVersion, '4.0.0-beta', '<')) {
             $this->createProductIndexTable($setup);
+            if ($connection->isTableExists(self::PRODUCT_QUEUE_TABLE)) {
+                $connection->dropTable(self::PRODUCT_QUEUE_TABLE);
+            }
         }
 
         $setup->endSetup();
