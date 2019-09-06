@@ -183,8 +183,9 @@ class Index extends AbstractService
         $parents = $this->nostoProductRepository->resolveParentProductIds($product);
 
         //Products has no parents and Index product itself
-        if ($parents === null) {
+        if ($parents === null || (is_array($parents) && count($parents) == 0)) {
             $this->updateOrCreateDirtyEntity($product, $store);
+            $this->invalidatedProducts[] = $product->getId();
             return;
         }
 
