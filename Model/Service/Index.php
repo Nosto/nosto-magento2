@@ -135,6 +135,7 @@ class Index extends AbstractService
      *
      * @param ProductCollection $collection
      * @param Store $store
+     * @throws NostoException
      */
     public function invalidateOrCreate(ProductCollection $collection, Store $store)
     {
@@ -142,6 +143,7 @@ class Index extends AbstractService
             self::BENCHMARK_NAME_INVALIDATE,
             self::BENCHMARK_BREAKPOINT_INVALIDATE
         );
+        $collection->setPageSize(self::PRODUCT_DATA_BATCH_SIZE);
         $iterator = new Iterator($collection);
         $iterator->each(function (Product $item) use ($store) {
             $this->updateOrCreateDirtyEntity($item, $store);
