@@ -243,6 +243,7 @@ class Index extends AbstractService
      * @param ProductCollection $collection
      * @param array $ids
      * @param Store $store
+     * @throws NostoException
      */
     public function markProductsAsDeletedByDiff(ProductCollection $collection, array $ids, Store $store)
     {
