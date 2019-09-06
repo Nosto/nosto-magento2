@@ -58,14 +58,6 @@
             <argument name="nostoHelperCache" xsi:type="object">Nosto\Tagging\Helper\Cache\Proxy</argument>
         </arguments>
     </type>
-    <type name="Nosto\Tagging\Console\Command\NostoRebuildIndexCommand">
-        <arguments>
-            <argument name="nostoHelperAccount" xsi:type="object">Nosto\Tagging\Helper\Account\Proxy</argument>
-            <argument name="nostoHelperScope" xsi:type="object">Nosto\Tagging\Helper\Scope\Proxy</argument>
-            <argument name="nostoServiceIndex" xsi:type="object">Nosto\Tagging\Model\Service\Index\Proxy</argument>
-            <argument name="invalidateIndexer" xsi:type="object">Nosto\Tagging\Model\Indexer\Invalidate\Proxy</argument>
-        </arguments>
-    </type>
     <type name="Nosto\Tagging\Console\Command\NostoGenerateCustomerReferenceCommand">
         <arguments>
             <argument name="customerFactory" xsi:type="object">Magento\Customer\Model\CustomerFactory\Proxy</argument>
