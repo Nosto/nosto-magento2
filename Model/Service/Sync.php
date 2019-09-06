@@ -155,8 +155,6 @@ class Sync extends AbstractService
                     $store->getCode()
                 )
             );
-        } catch (MemoryOutOfBoundsException $e) {
-            throw $e;
         } catch (NostoException $e) {
             $this->getLogger()->exception($e);
         }
