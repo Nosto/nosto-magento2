@@ -117,6 +117,7 @@ class Sync extends AbstractService
             $this->getLogger()->info(
                 'Nosto product sync is disabled - skipping upserting products to Nosto'
             );
+            return;
         }
         $account = $this->nostoHelperAccount->findAccount($store);
         if ($account instanceof NostoSignupAccount === false) {

@@ -44,37 +44,45 @@ use Magento\Framework\Indexer\IndexerRegistry;
 use Magento\Framework\Module\Manager as ModuleManager;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Model\Indexer\Invalidate as InvalidateIndexer;
-use Nosto\Tagging\Model\Product\Service as NostoProductService;
+use Magento\Framework\Indexer\IndexerInterface;
 
 abstract class Base implements ObserverInterface
 {
+    /** @var ModuleManager $moduleManager */
     public $moduleManager;
-    public $productService;
+
+    /** @var ProductRepository $productRepository */
     public $productRepository;
+
+    /** @var NostoHelperData $dataHelper */
     public $dataHelper;
+
+    /** @var IndexerInterface  */
     public $indexer;
 
+    /** @var InvalidateIndexer $invalidateIndex */
+    public $indexerInvalidate;
+
     /**
-     * Constructor.
-     *
+     * Base constructor.
      * @param ModuleManager $moduleManager
-     * @param NostoProductService $productService
      * @param ProductRepository $productRepository
      * @param NostoHelperData $dataHelper
      * @param IndexerRegistry $indexerRegistry
+     * @param InvalidateIndexer $indexerInvalidate
      */
     public function __construct(
         ModuleManager $moduleManager,
-        NostoProductService $productService,
         ProductRepository $productRepository,
         NostoHelperData $dataHelper,
-        IndexerRegistry $indexerRegistry
+        IndexerRegistry $indexerRegistry,
+        InvalidateIndexer $indexerInvalidate
     ) {
-        $this->productService = $productService;
         $this->moduleManager = $moduleManager;
         $this->productRepository = $productRepository;
         $this->dataHelper = $dataHelper;
         $this->indexer = $indexerRegistry->get(InvalidateIndexer::INDEXER_ID);
+        $this->indexerInvalidate = $indexerInvalidate;
     }
 
     /**
@@ -94,7 +102,7 @@ abstract class Base implements ObserverInterface
             $product = $this->extractProduct($observer);
 
             if ($product instanceof Product && $product->getId()) {
-                $this->productService->update([$product]);
+                $this->indexerInvalidate->executeRow($product->getId());
             }
         }
     }
