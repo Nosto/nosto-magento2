@@ -37,6 +37,7 @@
 namespace Nosto\Tagging\Util;
 
 use Magento\Framework\Data\Collection;
+use Nosto\NostoException;
 
 class Iterator
 {
@@ -45,9 +46,13 @@ class Iterator
     /**
      * Iterator constructor.
      * @param Collection $collection
+     * @throws NostoException
      */
     public function __construct(Collection $collection)
     {
+        if (!is_numeric($collection->getPageSize())) {
+            throw new NostoException('Page size not defined or not an integer');
+        }
         $this->collection = $collection;
     }
 
@@ -55,6 +60,7 @@ class Iterator
      * Iterates through the collection in batches defined by the collection page size
      * and applies closure to each item
      * @param \Closure $closure
+     * @throws NostoException
      */
     public function each(\Closure $closure)
     {
@@ -72,6 +78,7 @@ class Iterator
      * Handles the pagination / batching and batching for a collection
      *
      * @param \Closure $closure
+     * @throws NostoException
      */
     public function eachBatch(\Closure $closure)
     {

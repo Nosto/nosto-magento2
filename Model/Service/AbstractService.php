@@ -38,6 +38,7 @@ namespace Nosto\Tagging\Model\Service;
 
 use Magento\Store\Model\Store;
 use Nosto\Exception\MemoryOutOfBoundsException;
+use Nosto\NostoException;
 use Nosto\Tagging\Helper\Data as NostoDataHelper;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Util\Benchmark;
@@ -54,6 +55,7 @@ abstract class AbstractService
     /**
      * AbstractService constructor.
      * @param NostoDataHelper $nostoDataHelper
+     * @param NostoLogger $nostoLogger
      */
     public function __construct(
         NostoDataHelper $nostoDataHelper,
@@ -104,38 +106,45 @@ abstract class AbstractService
     public function tickBenchmark(string $name, $writeLog = false)
     {
         $elapsed = Benchmark::getInstance()->tick($name);
-        if ($elapsed !== null && $writeLog === true) {
-            $reachedBreakpoints = count(Benchmark::getInstance()->getCheckpointTimes($name));
-            $this->nostoLogger->logWithMemoryConsumption(
-                sprintf(
-                    'Execution for %s took %f seconds - breakpoints reached %d',
-                    $name,
-                    $elapsed,
-                    $reachedBreakpoints
-                )
-            );
+        if ($elapsed !== null) {
+            if ($writeLog === true) {
+                $reachedBreakpoints = count(Benchmark::getInstance()->getCheckpointTimes($name));
+                $this->nostoLogger->logWithMemoryConsumption(
+                    sprintf(
+                        'Execution for %s took %f seconds - checkpoints reached %d',
+                        $name,
+                        $elapsed,
+                        $reachedBreakpoints
+                    )
+                );
+            }
+            return $elapsed;
         }
-        return $elapsed;
+        return null;
     }
 
     /**
-     * Logs the recorded bencmark summary
+     * Logs the recorded benchmark summary
      *
-     * @param $name
-     * @throws \Exception
+     * @param string $name
+     * @param Store $store
      */
     public function logBenchmarkSummary(string $name, Store $store)
     {
-        Benchmark::getInstance()->stopInstrumentation($name);
-        $this->nostoLogger->debug(sprintf(
-            'Summary of processing %s for store %s - avg time per. Total amount of iterations %d'
-            . ', single iteration took on avg %f sec, total time was %f sec',
-            $name,
-            $store->getName(),
-            Benchmark::getInstance()->getTickCount($name),
-            Benchmark::getInstance()->getAvgTickTime($name),
-            Benchmark::getInstance()->getTotalTime($name)
-        ));
+        try {
+            Benchmark::getInstance()->stopInstrumentation($name);
+            $this->nostoLogger->logWithMemoryConsumption(sprintf(
+                'Summary of processing %s for store %s. Total amount of iterations %d'
+                . ', single iteration took on avg %f sec, total time was %f sec',
+                $name,
+                $store->getName(),
+                Benchmark::getInstance()->getTickCount($name),
+                Benchmark::getInstance()->getAvgTickTime($name),
+                Benchmark::getInstance()->getTotalTime($name)
+            ));
+        } catch (NostoException $e) {
+            $this->nostoLogger->exception($e);
+        }
     }
     /**
      * @return NostoLogger

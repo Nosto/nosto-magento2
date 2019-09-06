@@ -53,9 +53,9 @@ use Nosto\Tagging\Model\Service\Index as NostoServiceIndex;
  */
 class Invalidate implements IndexerActionInterface, MviewActionInterface
 {
-    public const INDEXER_ID = 'nosto_index_product_invalidate';
+    const INDEXER_ID = 'nosto_index_product_invalidate';
 
-    public static $disableFullReindex = false;
+    public static $disableFullReindex = true;
 
     /** @var NostoHelperAccount */
     private $nostoHelperAccount;

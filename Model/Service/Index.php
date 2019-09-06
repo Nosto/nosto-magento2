@@ -56,20 +56,19 @@ use Nosto\Tagging\Model\Product\Index\Index as NostoProductIndex;
 use Nosto\Tagging\Model\Product\Index\IndexRepository;
 use Nosto\Tagging\Model\ResourceModel\Product\Index\Collection as NostoIndexCollection;
 use Nosto\Tagging\Model\ResourceModel\Product\Index\CollectionFactory as NostoIndexCollectionFactory;
-use Nosto\Tagging\Model\Product\Repository as NostoProductRepository;
-use Nosto\Tagging\Util\Benchmark;
+
 use Nosto\Tagging\Util\Iterator;
 use Nosto\Tagging\Util\Product as ProductUtil;
 use Nosto\Types\Product\ProductInterface as NostoProductInterface;
 
 class Index extends AbstractService
 {
-    private const PRODUCT_DATA_BATCH_SIZE = 100;
-    private const PRODUCT_DELETION_BATCH_SIZE = 100;
-    private const BENCHMARK_BREAKPOINT_INVALIDATE = 100;
-    private const BENCHMARK_BREAKPOINT_REBUILD = 10;
-    private const BENCHMARK_NAME_INVALIDATE = 'nosto_index_invalidate';
-    private const BENCHMARK_NAME_REBUILD = 'nosto_index_rebuild';
+    const PRODUCT_DATA_BATCH_SIZE = 100;
+    const PRODUCT_DELETION_BATCH_SIZE = 100;
+    const BENCHMARK_BREAKPOINT_INVALIDATE = 100;
+    const BENCHMARK_BREAKPOINT_REBUILD = 10;
+    const BENCHMARK_NAME_INVALIDATE = 'nosto_index_invalidate';
+    const BENCHMARK_NAME_REBUILD = 'nosto_index_rebuild';
 
     /** @var IndexRepository */
     private $indexRepository;
@@ -153,6 +152,7 @@ class Index extends AbstractService
      *
      * @param ProductCollection $collection
      * @param Store $store
+     * @throws NostoException
      */
     public function invalidateOrCreate(ProductCollection $collection, Store $store)
     {
@@ -160,16 +160,13 @@ class Index extends AbstractService
             self::BENCHMARK_NAME_INVALIDATE,
             self::BENCHMARK_BREAKPOINT_INVALIDATE
         );
+        $collection->setPageSize(self::PRODUCT_DATA_BATCH_SIZE);
         $iterator = new Iterator($collection);
-        $iterator->each(function ($item) use ($store) {
-            $this->invalidateOrCreateProductOrParent($item, $store);
+        $iterator->each(function (Product $item) use ($store) {
+            $this->updateOrCreateDirtyEntity($item, $store);
             $this->tickBenchmark(self::BENCHMARK_NAME_INVALIDATE);
         });
-        try {
-            $this->logBenchmarkSummary(self::BENCHMARK_NAME_INVALIDATE, $store);
-        } catch (\Exception $e) {
-            $this->getLogger()->exception($e);
-        }
+        $this->logBenchmarkSummary(self::BENCHMARK_NAME_INVALIDATE, $store);
     }
 
     /**
@@ -273,11 +270,12 @@ class Index extends AbstractService
         );
         $collection->setPageSize(self::PRODUCT_DATA_BATCH_SIZE);
         $iterator = new Iterator($collection);
-        $iterator->each(function ($item) {
+        $iterator->each(function (NostoProductIndex $item) {
             if ($item->getIsDirty() === NostoProductIndex::DB_VALUE_BOOLEAN_TRUE) {
                 $this->rebuildDirtyProduct($item);
                 $this->tickBenchmark(self::BENCHMARK_NAME_REBUILD);
             }
+            $this->checkMemoryConsumption('product rebuild');
         });
         $this->logBenchmarkSummary(self::BENCHMARK_NAME_REBUILD, $store);
         $this->nostoSyncService->syncIndexedProducts($collection, $store);
@@ -329,7 +327,7 @@ class Index extends AbstractService
         $uniqueIds = array_unique($ids);
         $collection->setPageSize(self::PRODUCT_DELETION_BATCH_SIZE);
         $iterator = new Iterator($collection);
-        $iterator->each(function ($magentoProduct) use ($uniqueIds) {
+        $iterator->each(static function (Product $magentoProduct) use (&$uniqueIds) {
             $key = array_search($magentoProduct->getId(), $uniqueIds);
             if (is_numeric($key)) {
                 unset($uniqueIds[$key]);

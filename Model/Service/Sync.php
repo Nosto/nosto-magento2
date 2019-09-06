@@ -55,13 +55,13 @@ use Nosto\Tagging\Util\Iterator;
 
 class Sync extends AbstractService
 {
-    private const API_BATCH_SIZE = 50;
-    private const PRODUCT_DELETION_BATCH_SIZE = 100;
-    private const BENCHMARK_SYNC_NAME = 'nosto_product_sync';
-    private const BENCHMARK_SYNC_BREAKPOINT = 1;
-    private const BENCHMARK_DELETE_NAME = 'nosto_product_delete';
-    private const BENCHMARK_DELETE_BREAKPOINT = 1;
-    private const RESPONSE_TIMEOUT = 60;
+    const API_BATCH_SIZE = 50;
+    const PRODUCT_DELETION_BATCH_SIZE = 100;
+    const BENCHMARK_SYNC_NAME = 'nosto_product_sync';
+    const BENCHMARK_SYNC_BREAKPOINT = 1;
+    const BENCHMARK_DELETE_NAME = 'nosto_product_delete';
+    const BENCHMARK_DELETE_BREAKPOINT = 1;
+    const RESPONSE_TIMEOUT = 60;
 
     /** @var IndexRepository */
     private $indexRepository;
@@ -117,6 +117,7 @@ class Sync extends AbstractService
             $this->getLogger()->info(
                 'Nosto product sync is disabled - skipping upserting products to Nosto'
             );
+            return;
         }
         $account = $this->nostoHelperAccount->findAccount($store);
         if ($account instanceof NostoSignupAccount === false) {
@@ -197,7 +198,6 @@ class Sync extends AbstractService
      * @param Store $store
      * @return int number of deleted products
      * @throws NostoException
-     * @throws MemoryOutOfBoundsException
      */
     public function deleteIndexedProducts(NostoIndexCollection $collection, Store $store)
     {
@@ -231,7 +231,7 @@ class Sync extends AbstractService
                 $this->getLogger()->exception($e);
             }
         });
-        $this->logBenchmarkSummary(self::BENCHMARK_DELETE_NAME);
+        $this->logBenchmarkSummary(self::BENCHMARK_DELETE_NAME, $store);
         return $totalDeleted;
     }
 
@@ -242,7 +242,6 @@ class Sync extends AbstractService
      * @param Store $store
      * @return int the amount of deleted products
      * @throws NostoException
-     * @throws MemoryOutOfBoundsException
      */
     public function purgeDeletedProducts(Store $store)
     {

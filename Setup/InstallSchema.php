@@ -55,7 +55,6 @@ class InstallSchema extends Core implements InstallSchemaInterface
     ) {
         $setup->startSetup();
         $this->createCustomerTable($setup);
-        $this->createProductQueueTable($setup);
         $this->createProductIndexTable($setup);
         $setup->endSetup();
     }
