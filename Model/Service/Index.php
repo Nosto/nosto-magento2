@@ -214,7 +214,7 @@ class Index extends AbstractService
     }
 
     /**
-     * @param Product $product
+     * @param $productId
      * @return bool
      */
     private function hasParentBeenInvalidated($productId)
