@@ -104,12 +104,9 @@ class Sync extends AbstractService
     }
 
     /**
-     * Handles sync of product collection by sending it to Nosto
-     *
      * @param NostoIndexCollection $collection
      * @param Store $store
      * @throws NostoException
-     * @throws MemoryOutOfBoundsException
      */
     public function syncIndexedProducts(NostoIndexCollection $collection, Store $store)
     {
@@ -120,20 +117,18 @@ class Sync extends AbstractService
             return;
         }
         $account = $this->nostoHelperAccount->findAccount($store);
-        if ($account instanceof NostoSignupAccount === false) {
-            throw new NostoException(sprintf('Store view %s does not have Nosto installed', $store->getName()));
-        }
         $this->startBenchmark(self::BENCHMARK_SYNC_NAME, self::BENCHMARK_SYNC_BREAKPOINT);
+
+        $collection->addOutOfSyncFilter();
         $collection->setPageSize(self::API_BATCH_SIZE);
         $iterator = new Iterator($collection);
         $iterator->eachBatch(function (NostoIndexCollection $collectionBatch) use ($account, $store) {
             $this->checkMemoryConsumption('product sync');
             $op = new UpsertProduct($account, $this->nostoHelperUrl->getActiveDomain($store));
             $op->setResponseTimeout(self::RESPONSE_TIMEOUT);
+            /** @var ProductIndexInterface $productIndex */
             foreach ($collectionBatch as $productIndex) {
-                if (!$productIndex->getInSync()) {
-                    $op->addProduct($productIndex->getNostoProduct());
-                }
+                $op->addProduct($productIndex->getNostoProduct());
             }
             try {
                 $op->upsert();
@@ -146,6 +141,13 @@ class Sync extends AbstractService
             }
         });
         $this->logBenchmarkSummary(self::BENCHMARK_SYNC_NAME, $store);
+    }
+
+    /**
+     * @param Store $store
+     */
+    public function syncDeletedProducts(Store $store)
+    {
         try {
             $totalDeleted = $this->purgeDeletedProducts($store);
             $this->getLogger()->info(

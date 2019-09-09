@@ -47,7 +47,9 @@ use Nosto\Exception\MemoryOutOfBoundsException;
 use Nosto\NostoException;
 use Nosto\Tagging\Api\Data\ProductIndexInterface;
 use Nosto\Tagging\Helper\Data as NostoDataHelper;
+use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
+use Nosto\Object\Signup\Account as NostoSignupAccount;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
 use Nosto\Tagging\Model\Product\Index\Builder;
@@ -83,6 +85,9 @@ class Index extends AbstractService
     /** @var NostoHelperScope */
     private $nostoHelperScope;
 
+    /** @var NostoHelperAccount */
+    private $nostoHelperAccount;
+
     /** @var NostoIndexCollectionFactory */
     private $nostoIndexCollectionFactory;
 
@@ -111,6 +116,7 @@ class Index extends AbstractService
         ProductRepository $productRepository,
         NostoProductBuilder $nostoProductBuilder,
         NostoHelperScope $nostoHelperScope,
+        NostoHelperAccount $nostoHelperAccount,
         NostoLogger $logger,
         NostoIndexCollectionFactory $nostoIndexCollectionFactory,
         TimezoneInterface $magentoTimeZone,
@@ -123,6 +129,7 @@ class Index extends AbstractService
         $this->productRepository = $productRepository;
         $this->nostoProductBuilder = $nostoProductBuilder;
         $this->nostoHelperScope = $nostoHelperScope;
+        $this->nostoHelperAccount = $nostoHelperAccount;
         $this->nostoIndexCollectionFactory = $nostoIndexCollectionFactory;
         $this->magentoTimeZone = $magentoTimeZone;
         $this->nostoSyncService = $nostoSyncService;
@@ -181,6 +188,23 @@ class Index extends AbstractService
     /**
      * @param NostoIndexCollection $collection
      * @param Store $store
+     * @throws MemoryOutOfBoundsException
+     * @throws NostoException
+     */
+    public function indexDirtyProducts(NostoIndexCollection $collection, Store $store)
+    {
+        $account = $this->nostoHelperAccount->findAccount($store);
+        if ($account instanceof NostoSignupAccount === false) {
+            throw new NostoException(sprintf('Store view %s does not have Nosto installed', $store->getName()));
+        }
+        $this->rebuildDirtyProducts($collection, $store);
+        $this->nostoSyncService->syncIndexedProducts($collection, $store);
+        $this->nostoSyncService->syncDeletedProducts($store);
+    }
+
+    /**
+     * @param NostoIndexCollection $collection
+     * @param Store $store
      * @throws NostoException
      * @throws MemoryOutOfBoundsException
      */
@@ -200,7 +224,6 @@ class Index extends AbstractService
             $this->checkMemoryConsumption('product rebuild');
         });
         $this->logBenchmarkSummary(self::BENCHMARK_NAME_REBUILD, $store);
-        $this->nostoSyncService->syncIndexedProducts($collection, $store);
     }
 
     /**
