@@ -93,13 +93,16 @@ class Product
     {
         try {
             $indexedProduct = $this->nostoIndexRepository->getOneByProductAndStore($product, $store);
-            if ($indexedProduct instanceof ProductIndexInterface === false) {
-                $indexedProduct = $this->nostoIndexService->updateOrCreateDirtyEntity($product, $store);
+            if ($indexedProduct === null) {
+                $this->nostoIndexService->updateOrCreateDirtyEntity($product, $store);
             }
             if ($indexedProduct->getIsDirty()) {
                 $indexedProduct = $this->nostoIndexService->rebuildDirtyProduct($indexedProduct);
             }
             $nostoProduct = $indexedProduct->getNostoProduct();
+            if ($nostoProduct === null) {
+                return null;
+            }
             if ($scope !== self::NOSTO_SCOPE_API) {
                 return $nostoProduct->sanitize();
             }

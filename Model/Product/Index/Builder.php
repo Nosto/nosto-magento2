@@ -79,27 +79,18 @@ class Builder
      * @param Product $product
      * @param Store $store
      * @return Index
-     * @throws NostoException
      */
     public function build(
         Product $product,
         Store $store
     ) {
-        $nostoProduct = $this->nostoProductBuilder->build($product, $store);
-        if ($nostoProduct instanceof NostoProduct) {
-            $productIndex = $this->nostoIndexFactory->create();
-            $productIndex->setProductId($nostoProduct->getProductId());
-            $productIndex->setCreatedAt($this->magentoTimeZone->date());
-            $productIndex->setInSync(false);
-            $productIndex->setIsDirty(false);
-            $productIndex->setUpdatedAt($this->magentoTimeZone->date());
-            $productIndex->setNostoProduct($nostoProduct);
-            $productIndex->setStore($store);
-            return $productIndex;
-        }
-
-        throw new NostoException(
-            'Could not build Nosto product for id ' . $product->getId()
-        );
+        $productIndex = $this->nostoIndexFactory->create();
+        $productIndex->setProductId($product->getId());
+        $productIndex->setCreatedAt($this->magentoTimeZone->date());
+        $productIndex->setInSync(false);
+        $productIndex->setIsDirty(false);
+        $productIndex->setUpdatedAt($this->magentoTimeZone->date());
+        $productIndex->setStore($store);
+        return $productIndex;
     }
 }

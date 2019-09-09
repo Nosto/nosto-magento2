@@ -162,26 +162,22 @@ class Index extends AbstractService
     /**
      * @param Product $product
      * @param Store $store
-     * @return ProductIndexInterface|null
      */
     public function updateOrCreateDirtyEntity(Product $product, Store $store)
     {
         $indexedProduct = $this->indexRepository->getByProductIdAndStoreId($product->getId(), $store->getId());
         try {
-            if ($indexedProduct instanceof ProductIndexInterface) {
-                $indexedProduct->setIsDirty(true);
-                $indexedProduct->setUpdatedAt($this->magentoTimeZone->date());
-            } else {
+            if ($indexedProduct === null) {
                 /* @var Product $fullProduct */
                 $fullProduct = $this->loadMagentoProduct($product->getId(), $store->getId());
                 $indexedProduct = $this->indexBuilder->build($fullProduct, $store);
                 $indexedProduct->setIsDirty(false);
             }
+            $indexedProduct->setIsDirty(true);
+            $indexedProduct->setUpdatedAt($this->magentoTimeZone->date());
             $this->indexRepository->save($indexedProduct);
-            return $indexedProduct;
         } catch (\Exception $e) {
             $this->getLogger()->exception($e);
-            return null;
         }
     }
 
