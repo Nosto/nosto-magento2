@@ -56,7 +56,7 @@ use Nosto\Tagging\Model\Product\Index\Index as NostoProductIndex;
 use Nosto\Tagging\Model\Product\Index\IndexRepository;
 use Nosto\Tagging\Model\ResourceModel\Product\Index\Collection as NostoIndexCollection;
 use Nosto\Tagging\Model\ResourceModel\Product\Index\CollectionFactory as NostoIndexCollectionFactory;
-
+use Nosto\Tagging\Model\Product\Repository as NostoProductRepository;
 use Nosto\Tagging\Util\Iterator;
 use Nosto\Tagging\Util\Product as ProductUtil;
 use Nosto\Types\Product\ProductInterface as NostoProductInterface;
