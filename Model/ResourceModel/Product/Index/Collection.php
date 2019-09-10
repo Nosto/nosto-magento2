@@ -43,7 +43,6 @@ use Magento\Store\Model\Store;
 use Nosto\Tagging\Api\Data\ProductIndexInterface;
 use Nosto\Tagging\Model\Product\Index\Index;
 use Nosto\Tagging\Model\ResourceModel\Product\Index as ResourceModelIndex;
-use Nosto\Tagging\Model\ResourceModel\Magento\Product\Collection as ProductCollection;
 
 class Collection extends AbstractCollection
 {
@@ -341,7 +340,7 @@ class Collection extends AbstractCollection
         foreach ($this->getItems() as $item) {
             $indexIds[] = $item->getId();
         }
-        if (count($indexIds) <= 0 ) {
+        if (count($indexIds) <= 0) {
             return 0;
         }
         $connection = $this->getConnection();
