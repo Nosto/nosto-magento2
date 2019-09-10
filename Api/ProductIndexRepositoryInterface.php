@@ -59,14 +59,6 @@ interface ProductIndexRepositoryInterface
     public function delete(ProductIndexInterface $productIndex);
 
     /**
-     * Returns row from id
-     *
-     * @param int $id
-     * @return ProductIndexInterface
-     */
-    public function getById($id);
-
-    /**
      * Returns entry by product and store
      *
      * @param ProductInterface $product

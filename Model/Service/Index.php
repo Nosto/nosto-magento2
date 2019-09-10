@@ -193,10 +193,8 @@ class Index extends AbstractService
         $collection->setPageSize(self::PRODUCT_DATA_BATCH_SIZE);
         $iterator = new Iterator($collection);
         $iterator->each(function (NostoProductIndex $item) {
-            if ($item->getIsDirty() === NostoProductIndex::DB_VALUE_BOOLEAN_TRUE) {
-                $this->rebuildDirtyProduct($item);
-                $this->tickBenchmark(self::BENCHMARK_NAME_REBUILD);
-            }
+            $this->rebuildDirtyProduct($item);
+            $this->tickBenchmark(self::BENCHMARK_NAME_REBUILD);
             $this->checkMemoryConsumption('product rebuild');
         });
         $this->logBenchmarkSummary(self::BENCHMARK_NAME_REBUILD, $store);
