@@ -83,7 +83,8 @@ class IndexRepository implements ProductIndexRepositoryInterface
             return null;
         }
         // Required for triggering beforeLoad, afterLoad, etc. method calls
-        return $this->indexResource->load($productIndex, $productIndex->getId());
+        $this->indexResource->load($productIndex, $productIndex->getId());
+        return $productIndex;
     }
 
     /**
