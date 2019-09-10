@@ -171,7 +171,6 @@ class Index extends AbstractService
                 /* @var Product $fullProduct */
                 $fullProduct = $this->loadMagentoProduct($product->getId(), $store->getId());
                 $indexedProduct = $this->indexBuilder->build($fullProduct, $store);
-                $indexedProduct->setIsDirty(false);
             }
             $indexedProduct->setIsDirty(true);
             $indexedProduct->setUpdatedAt($this->magentoTimeZone->date());

@@ -88,7 +88,7 @@ class Builder
         $productIndex->setProductId($product->getId());
         $productIndex->setCreatedAt($this->magentoTimeZone->date());
         $productIndex->setInSync(false);
-        $productIndex->setIsDirty(false);
+        $productIndex->setIsDirty(true);
         $productIndex->setUpdatedAt($this->magentoTimeZone->date());
         $productIndex->setStore($store);
         return $productIndex;
