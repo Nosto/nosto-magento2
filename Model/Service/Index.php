@@ -311,7 +311,7 @@ class Index extends AbstractService
      * @param array $ids
      * @return NostoIndexCollection
      */
-    private function getOutOfSyncCollection(Store $store,array $ids = [])
+    private function getOutOfSyncCollection(Store $store, array $ids = [])
     {
         $collection = $this->nostoIndexCollectionFactory->create()
             ->addFieldToSelect('*')
