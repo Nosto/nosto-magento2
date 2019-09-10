@@ -190,12 +190,7 @@ class Index extends AbstractModel implements ProductIndexInterface
      */
     public function getNostoProduct()
     {
-        try {
-            $unserialized = unserialize($this->getProductData(), [Product::class]); // @codingStandardsIgnoreLine
-        } catch (\Exception $exception) {
-            $unserialized = null;
-        }
-        return $unserialized;
+        return unserialize($this->getProductData(), [Product::class]); // @codingStandardsIgnoreLine
     }
 
     /**

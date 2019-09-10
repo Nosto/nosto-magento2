@@ -86,11 +86,7 @@ abstract class Base implements ObserverInterface
     }
 
     /**
-     * Event handler for the "catalog_product_save_after" and  event.
-     * Sends a product update API call to Nosto.
-     *
      * @param Observer $observer
-     * @return void
      * @throws \Exception
      */
     public function execute(Observer $observer)
