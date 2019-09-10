@@ -34,29 +34,63 @@
  *
  */
 
-namespace Nosto\Tagging\Model\ResourceModel\Product;
+namespace Nosto\Tagging\Util\Serializer;
+use Nosto\Object\Product\Product as NostoProduct;
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use Symfony\Component\Serializer\Serializer;
 
-use Magento\Framework\Model\ResourceModel\Db\AbstractDb;
-use Nosto\Tagging\Api\Data\ProductIndexInterface;
-use Nosto\Tagging\Util\Serializer\ProductJson;
-
-class Index extends AbstractDb
+class ProductJson
 {
-    protected $_serializableFields = [ProductIndexInterface::PRODUCT_DATA => [null, []]];
+    private static $instance;
 
-    const TABLE_NAME = 'nosto_tagging_product_index';
     /**
-     * Initialize resource model
-     *
-     * @return void
+     * @var Serializer
      */
-    public function _construct()
+    private $serializer;
+
+    public function serialize($object)
     {
-        $this->_init(self::TABLE_NAME, ProductIndexInterface::ID);
+        return $this->serializer->serialize(
+            $object,
+            'json'
+        );
     }
 
-    protected function getSerializer()
+    public function deserialize($data, $class)
     {
-        return ProductJson::getInstance(ProductJson::class);
+        return $this->serializer->deserialize($data, $class, 'json');
+    }
+
+    /**
+     * @param string $data
+     * @return array|object
+     */
+    public function unserialize($data)
+    {
+        return $this->deserialize($data, NostoProduct::class);
+    }
+
+    /**
+     * @return self
+     */
+    public static function getInstance()
+    {
+        if (self::$instance === null) {
+            self::$instance = new ProductJson();
+        }
+        return self::$instance;
+    }
+
+    /**
+     * ProductJson constructor.
+     */
+    private function __construct()
+    {
+        $encoders = [new JsonEncoder()];
+        $objectNormalizer = new ProductNormalizer();
+        $objectNormalizer->setIgnoredAttributes(['valid', 'autoEncodeAll', 'markupKey']);
+        $normalizers = [$objectNormalizer];
+
+        $this->serializer = new Serializer($normalizers, $encoders);
     }
 }

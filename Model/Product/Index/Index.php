@@ -42,12 +42,13 @@ use Magento\Store\Api\Data\StoreInterface;
 use Nosto\Object\Product\Product;
 use Nosto\Tagging\Api\Data\ProductIndexInterface;
 use Nosto\Tagging\Model\ResourceModel\Product\Index as NostoIndex;
+use Nosto\Tagging\Util\Json;
 use Nosto\Types\Product\ProductInterface as NostoProductInterface;
 
 class Index extends AbstractModel implements ProductIndexInterface
 {
-    const DB_VALUE_BOOLEAN_TRUE = "1";
-    const DB_VALUE_BOOLEAN_FALSE = "0";
+    const DB_VALUE_BOOLEAN_TRUE = '1';
+    const DB_VALUE_BOOLEAN_FALSE = '0';
 
     /**
      * @inheritdoc
@@ -182,7 +183,7 @@ class Index extends AbstractModel implements ProductIndexInterface
      */
     public function setNostoProduct(NostoProductInterface $product)
     {
-        return $this->setProductData(serialize($product));
+        return $this->setProductData($product);
     }
 
     /**
@@ -190,12 +191,7 @@ class Index extends AbstractModel implements ProductIndexInterface
      */
     public function getNostoProduct()
     {
-        try {
-            $unserialized = unserialize($this->getProductData(), [Product::class]); // @codingStandardsIgnoreLine
-        } catch (\Exception $exception) {
-            $unserialized = null;
-        }
-        return $unserialized;
+        return $this->getProductData();
     }
 
     /**
