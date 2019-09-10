@@ -38,7 +38,7 @@
   "require": {
     "nosto/php-sdk": "4.0.*",
     "php": ">=7.0.0",
-    "symfony/serializer": "~3.2"
+    "symfony/serializer": "3.2.*"
   },
   "repositories": [
     {
