@@ -176,4 +176,23 @@ class IndexRepository implements ProductIndexRepositoryInterface
         /** @var AbstractModel $productIndex */
         $this->indexResource->delete($productIndex);
     }
+
+    /**
+     * @param array $productIds
+     * @param Store $store
+     * @return int
+     */
+    public function markAsInSync(array $productIds, Store $store)
+    {
+        $collection = $this->indexCollectionFactory->create();
+        $connection = $collection->getConnection();
+        return $connection->update(
+            $collection->getMainTable(),
+            [Index::IN_SYNC => Index::DB_VALUE_BOOLEAN_TRUE],
+            [
+                sprintf('%s IN (?)', Index::PRODUCT_ID) => array_unique($productIds),
+                sprintf('%s=?', Index::STORE_ID) => $store->getId()
+            ]
+        );
+    }
 }
