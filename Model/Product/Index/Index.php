@@ -43,6 +43,7 @@ use Nosto\Object\Product\Product;
 use Nosto\Tagging\Api\Data\ProductIndexInterface;
 use Nosto\Tagging\Model\ResourceModel\Product\Index as NostoIndex;
 use Nosto\Tagging\Util\Json;
+use Nosto\Tagging\Util\Serializer\ProductJson;
 use Nosto\Types\Product\ProductInterface as NostoProductInterface;
 
 class Index extends AbstractModel implements ProductIndexInterface
@@ -191,7 +192,14 @@ class Index extends AbstractModel implements ProductIndexInterface
      */
     public function getNostoProduct()
     {
-        return $this->getProductData();
+        $productData = $this->getProductData();
+        // We need this check because if the index model is not loaded
+        // via resource model's load() method the data does not get unserialized
+        if ($productData instanceof NostoProductInterface) {
+            return $productData;
+        } else {
+            return ProductJson::getInstance(ProductJson::class)->deserialize($productData, Product::class);
+        }
     }
 
     /**

@@ -77,7 +77,13 @@ class IndexRepository implements ProductIndexRepositoryInterface
             ->addStoreFilter($store)
             ->setPageSize(1)
             ->setCurPage(1);
-        return $collection->getOneOrNull();
+
+        $productIndex = $collection->getOneOrNull();
+        if ($productIndex === null) {
+            return null;
+        }
+        // Required for triggering beforeLoad, afterLoad, etc. method calls
+        return $this->indexResource->load($productIndex, $productIndex->getId());
     }
 
     /**
