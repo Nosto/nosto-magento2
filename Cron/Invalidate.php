@@ -38,12 +38,10 @@
 namespace Nosto\Tagging\Cron;
 
 use Exception;
-use Magento\Framework\Data\Collection\AbstractDb;
 use Nosto\Tagging\Logger\Logger;
-use Nosto\Tagging\Model\ResourceModel\Magento\Product\Collection;
-use Nosto\Tagging\Model\Service\Index as NostoServiceIndex;
 use Nosto\Tagging\Helper\Account as NostoAccountHelper;
 use Nosto\Tagging\Model\ResourceModel\Product\Index\CollectionFactory as IndexCollectionFactory;
+use Nosto\Tagging\Model\ResourceModel\Product\Index\Collection as NostoIndexCollection;
 use Magento\Store\Model\Store;
 
 /**
@@ -61,9 +59,6 @@ class Invalidate
     /** @var IndexCollectionFactory */
     private $indexCollectionFactory;
 
-    /** @var NostoServiceIndex */
-    private $nostoServiceIndex;
-
     /** @var NostoAccountHelper */
     private $nostoAccountHelper;
 
@@ -72,18 +67,15 @@ class Invalidate
      *
      * @param Logger $logger
      * @param IndexCollectionFactory $indexCollectionFactory
-     * @param NostoServiceIndex $nostoServiceIndex
      * @param NostoAccountHelper $nostoAccountHelper
      */
     public function __construct(
         Logger $logger,
         IndexCollectionFactory $indexCollectionFactory,
-        NostoServiceIndex $nostoServiceIndex,
         NostoAccountHelper $nostoAccountHelper
     ) {
         $this->logger = $logger;
         $this->indexCollectionFactory = $indexCollectionFactory;
-        $this->nostoServiceIndex = $nostoServiceIndex;
         $this->nostoAccountHelper = $nostoAccountHelper;
     }
 
@@ -96,15 +88,13 @@ class Invalidate
         $stores = $this->nostoAccountHelper->getStoresWithNosto();
         foreach ($stores as $store) {
             $productIndexCollection = $this->getCollection($store);
-            foreach ($productIndexCollection as $productIndex) {
-                $this->nostoServiceIndex->markAsDirty($productIndex);
-            }
+            $productIndexCollection->markAsIsDirtyItemsByStore($store);
         }
     }
 
     /**
      * @param Store $store
-     * @return AbstractDb|Collection
+     * @return NostoIndexCollection
      * @throws Exception
      */
     private function getCollection(Store $store)
@@ -116,6 +106,7 @@ class Invalidate
                 ['lteq' => $this->getTimeOffset()]
             )
             ->addStoreFilter($store)
+            ->orderBy('updated_at', 'ASC')
             ->limitResults(1000);
     }
 

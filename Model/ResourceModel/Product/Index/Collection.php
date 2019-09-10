@@ -43,6 +43,7 @@ use Magento\Store\Model\Store;
 use Nosto\Tagging\Api\Data\ProductIndexInterface;
 use Nosto\Tagging\Model\Product\Index\Index;
 use Nosto\Tagging\Model\ResourceModel\Product\Index as ResourceModelIndex;
+use Nosto\Tagging\Model\ResourceModel\Magento\Product\Collection as ProductCollection;
 
 class Collection extends AbstractCollection
 {
@@ -305,6 +306,33 @@ class Collection extends AbstractCollection
     }
 
     /**
+     * Marks current items in collection as dirty
+     *
+     * @param Store $store
+     * @return int
+     */
+    public function markAsIsDirtyItemsByStore(Store $store)
+    {
+        $indexIds = [];
+        /* @var Index $item */
+        foreach ($this->getItems() as $item) {
+            $indexIds[] = $item->getId();
+        }
+        if (count($indexIds) <= 0 ) {
+            return 0;
+        }
+        $connection = $this->getConnection();
+        return $connection->update(
+            $this->getMainTable(),
+            [Index::IS_DIRTY => Index::DB_VALUE_BOOLEAN_TRUE],
+            [
+                sprintf('%s IN (?)', Index::ID) => array_unique($indexIds),
+                sprintf('%s=?', Index::STORE_ID) => $store->getId()
+            ]
+        );
+    }
+
+    /**
      * Sets a limit to this query
      *
      * @param int $limit
@@ -313,6 +341,19 @@ class Collection extends AbstractCollection
     public function limitResults(int $limit)
     {
         $this->getSelect()->limit($limit);
+        return $this;
+    }
+
+    /**
+     * Add sortby to query
+     *
+     * @param string $field
+     * @param string $sort
+     * @return Collection
+     */
+    public function orderBy($field, $sort)
+    {
+        $this->getSelect()->order($field . ' ' . $sort);
         return $this;
     }
 }

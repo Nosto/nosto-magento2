@@ -360,21 +360,6 @@ class Index
     }
 
     /**
-     * Defines product index item as dirty
-     *
-     * @param ProductIndexInterface $productIndex
-     * @throws Exception
-     * @return void
-     */
-    public function markAsDirty(ProductIndexInterface $productIndex)
-    {
-        if (!$productIndex->getIsDirty()) {
-            $productIndex->setIsDirty(true);
-            $this->indexRepository->save($productIndex);
-        }
-    }
-
-    /**
      * @param int $productId
      * @param int $storeId
      * @return void
