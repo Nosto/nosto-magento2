@@ -163,7 +163,7 @@ class Index extends AbstractService
         $collection->setPageSize(self::PRODUCT_DATA_BATCH_SIZE);
         $iterator = new Iterator($collection);
         $iterator->each(function (Product $item) use ($store) {
-            $this->updateOrCreateDirtyEntity($item, $store);
+            $this->invalidateOrCreateProductOrParent($item, $store);
             $this->tickBenchmark(self::BENCHMARK_NAME_INVALIDATE);
         });
         $this->logBenchmarkSummary(self::BENCHMARK_NAME_INVALIDATE, $store);
@@ -196,15 +196,16 @@ class Index extends AbstractService
     }
 
     /**
-     * @param $ids
-     * @throws NoSuchEntityException
+     * @param array $ids
+     * @param Store $store
+     * @throws NostoException
      */
     private function invalidateOrCreateParents(array $ids, Store $store)
     {
         $collection = $this->productCollectionFactory->create();
         $collection->addIdsToFilter($ids);
         $collection->load();
-        /** @var ProductInterface $product */
+        /** @var Product $product */
         foreach ($collection->getItems() as $product) {
             if (!$this->hasParentBeenInvalidated($product->getId())) {
                 $this->updateOrCreateDirtyEntity($product, $store);
