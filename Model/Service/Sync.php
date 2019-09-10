@@ -119,7 +119,6 @@ class Sync extends AbstractService
         $account = $this->nostoHelperAccount->findAccount($store);
         $this->startBenchmark(self::BENCHMARK_SYNC_NAME, self::BENCHMARK_SYNC_BREAKPOINT);
 
-        $collection->addOutOfSyncFilter();
         $collection->setPageSize(self::API_BATCH_SIZE);
         $iterator = new Iterator($collection);
         $iterator->eachBatch(function (NostoIndexCollection $collectionBatch) use ($account, $store) {
@@ -132,12 +131,10 @@ class Sync extends AbstractService
             }
             try {
                 $op->upsert();
+                $collectionBatch->markAsInSyncCurrentItemsByStore($store);
                 $this->tickBenchmark(self::BENCHMARK_SYNC_NAME);
             } catch (\Exception $upsertException) {
                 $this->getLogger()->exception($upsertException);
-            } finally {
-                // We will set this as in sync even if there was failures
-                $collectionBatch->markAsInSyncCurrentItemsByStore($store);
             }
         });
         $this->logBenchmarkSummary(self::BENCHMARK_SYNC_NAME, $store);
@@ -169,7 +166,7 @@ class Sync extends AbstractService
     public function markAsInSyncByProductIdsAndStoreId(array $productIds, Store $store)
     {
         try {
-            $this->nostoIndexCollectionFactory->create()->markAsInSync($productIds, $store);
+            $this->indexRepository->markAsInSync($productIds, $store);
         } catch (\Exception $e) {
             $this->getLogger()->exception($e);
         }

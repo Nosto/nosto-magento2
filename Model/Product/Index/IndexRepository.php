@@ -45,11 +45,18 @@ use Nosto\Tagging\Model\ResourceModel\Product\Index as IndexResource;
 use Nosto\Tagging\Model\ResourceModel\Product\Index\CollectionFactory as IndexCollectionFactory;
 use Nosto\Tagging\Model\ResourceModel\Product\Index\Collection as IndexCollection;
 use Magento\Store\Model\Store;
+use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
 
 class IndexRepository implements ProductIndexRepositoryInterface
 {
+    /** @var IndexCollectionFactory  */
     private $indexCollectionFactory;
+
+    /** @var IndexResource  */
     private $indexResource;
+
+    /** @var TimezoneInterface */
+    private $magentoTimeZone;
 
     /**
      * IndexRepository constructor.
@@ -59,10 +66,12 @@ class IndexRepository implements ProductIndexRepositoryInterface
      */
     public function __construct(
         IndexResource $indexResource,
-        IndexCollectionFactory $indexCollectionFactory
+        IndexCollectionFactory $indexCollectionFactory,
+        TimezoneInterface $magentoTimeZone
     ) {
         $this->indexResource = $indexResource;
         $this->indexCollectionFactory = $indexCollectionFactory;
+        $this->magentoTimeZone = $magentoTimeZone;
     }
 
     /**
@@ -178,6 +187,8 @@ class IndexRepository implements ProductIndexRepositoryInterface
     }
 
     /**
+     * Marks products as deleted by given product ids and store
+     *
      * @param array $productIds
      * @param Store $store
      * @return int
@@ -188,7 +199,10 @@ class IndexRepository implements ProductIndexRepositoryInterface
         $connection = $collection->getConnection();
         return $connection->update(
             $collection->getMainTable(),
-            [Index::IN_SYNC => Index::DB_VALUE_BOOLEAN_TRUE],
+            [
+                Index::IN_SYNC => Index::DB_VALUE_BOOLEAN_TRUE,
+                Index::UPDATED_AT => $this->magentoTimeZone->date()->format('Y-m-d H:i:s')
+            ],
             [
                 sprintf('%s IN (?)', Index::PRODUCT_ID) => array_unique($productIds),
                 sprintf('%s=?', Index::STORE_ID) => $store->getId()

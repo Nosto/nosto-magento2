@@ -234,29 +234,6 @@ class Collection extends AbstractCollection
     }
 
     /**
-     * Marks products as deleted by given product ids and store
-     *
-     * @param array $productIds array of product ids
-     * @param Store $store
-     * @return int
-     */
-    public function markAsInSync(array $productIds, Store $store)
-    {
-        if (empty($productIds)) {
-            return 0;
-        }
-        $connection = $this->getConnection();
-        return $connection->update(
-            $this->getMainTable(),
-            [Index::IN_SYNC => Index::DB_VALUE_BOOLEAN_TRUE],
-            [
-                sprintf('%s IN (?)', Index::PRODUCT_ID) => array_unique($productIds),
-                sprintf('%s=?', Index::STORE_ID) => $store->getId()
-            ]
-        );
-    }
-
-    /**
      * Marks all products as dirty by given Store
      *
      * @param Store $store
