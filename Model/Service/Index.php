@@ -47,7 +47,9 @@ use Nosto\Exception\MemoryOutOfBoundsException;
 use Nosto\NostoException;
 use Nosto\Tagging\Api\Data\ProductIndexInterface;
 use Nosto\Tagging\Helper\Data as NostoDataHelper;
+use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
+use Nosto\Object\Signup\Account as NostoSignupAccount;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
 use Nosto\Tagging\Model\Product\Index\Builder;
@@ -83,6 +85,9 @@ class Index extends AbstractService
     /** @var NostoHelperScope */
     private $nostoHelperScope;
 
+    /** @var NostoHelperAccount */
+    private $nostoHelperAccount;
+
     /** @var NostoIndexCollectionFactory */
     private $nostoIndexCollectionFactory;
 
@@ -111,6 +116,7 @@ class Index extends AbstractService
         ProductRepository $productRepository,
         NostoProductBuilder $nostoProductBuilder,
         NostoHelperScope $nostoHelperScope,
+        NostoHelperAccount $nostoHelperAccount,
         NostoLogger $logger,
         NostoIndexCollectionFactory $nostoIndexCollectionFactory,
         TimezoneInterface $magentoTimeZone,
@@ -123,6 +129,7 @@ class Index extends AbstractService
         $this->productRepository = $productRepository;
         $this->nostoProductBuilder = $nostoProductBuilder;
         $this->nostoHelperScope = $nostoHelperScope;
+        $this->nostoHelperAccount = $nostoHelperAccount;
         $this->nostoIndexCollectionFactory = $nostoIndexCollectionFactory;
         $this->magentoTimeZone = $magentoTimeZone;
         $this->nostoSyncService = $nostoSyncService;
@@ -155,27 +162,41 @@ class Index extends AbstractService
     /**
      * @param Product $product
      * @param Store $store
-     * @return ProductIndexInterface|null
      */
     public function updateOrCreateDirtyEntity(Product $product, Store $store)
     {
         $indexedProduct = $this->indexRepository->getByProductIdAndStoreId($product->getId(), $store->getId());
         try {
-            if ($indexedProduct instanceof ProductIndexInterface) {
-                $indexedProduct->setIsDirty(true);
-                $indexedProduct->setUpdatedAt($this->magentoTimeZone->date());
-            } else {
+            if ($indexedProduct === null) {
                 /* @var Product $fullProduct */
                 $fullProduct = $this->loadMagentoProduct($product->getId(), $store->getId());
                 $indexedProduct = $this->indexBuilder->build($fullProduct, $store);
-                $indexedProduct->setIsDirty(false);
             }
+            $indexedProduct->setIsDirty(true);
+            $indexedProduct->setUpdatedAt($this->magentoTimeZone->date());
             $this->indexRepository->save($indexedProduct);
-            return $indexedProduct;
         } catch (\Exception $e) {
             $this->getLogger()->exception($e);
-            return null;
         }
+    }
+
+    /**
+     * @param Store $store
+     * @param array $ids
+     * @throws MemoryOutOfBoundsException
+     * @throws NostoException
+     */
+    public function indexProducts(Store $store, array $ids = [])
+    {
+        $account = $this->nostoHelperAccount->findAccount($store);
+        if ($account instanceof NostoSignupAccount === false) {
+            throw new NostoException(sprintf('Store view %s does not have Nosto installed', $store->getName()));
+        }
+        $dirtyCollection = $this->getDirtyCollection($store, $ids);
+        $this->rebuildDirtyProducts($dirtyCollection, $store);
+        $outOfSyncCollection = $this->getOutOfSyncCollection($store, $ids);
+        $this->nostoSyncService->syncIndexedProducts($outOfSyncCollection, $store);
+        $this->nostoSyncService->syncDeletedProducts($store);
     }
 
     /**
@@ -198,7 +219,6 @@ class Index extends AbstractService
             $this->checkMemoryConsumption('product rebuild');
         });
         $this->logBenchmarkSummary(self::BENCHMARK_NAME_REBUILD, $store);
-        $this->nostoSyncService->syncIndexedProducts($collection, $store);
     }
 
     /**
@@ -263,6 +283,42 @@ class Index extends AbstractService
                 $store->getName()
             )
         );
+    }
+
+    /**
+     * @param Store $store
+     * @param array $ids
+     * @return NostoIndexCollection
+     */
+    private function getDirtyCollection(Store $store, array $ids = [])
+    {
+        $collection = $this->nostoIndexCollectionFactory->create()
+            ->addFieldToSelect('*')
+            ->addIsDirtyFilter()
+            ->addNotDeletedFilter()
+            ->addStoreFilter($store);
+        if (!empty($ids)) {
+            $collection->addIdsFilter($ids);
+        }
+        return $collection;
+    }
+
+    /**
+     * @param Store $store
+     * @param array $ids
+     * @return NostoIndexCollection
+     */
+    private function getOutOfSyncCollection(Store $store, array $ids = [])
+    {
+        $collection = $this->nostoIndexCollectionFactory->create()
+            ->addFieldToSelect('*')
+            ->addOutOfSyncFilter()
+            ->addNotDeletedFilter()
+            ->addStoreFilter($store);
+        if (!empty($ids)) {
+            $collection->addIdsFilter($ids);
+        }
+        return $collection;
     }
 
     /**
