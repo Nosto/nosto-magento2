@@ -46,8 +46,8 @@ use Nosto\Types\Product\ProductInterface as NostoProductInterface;
 
 class Index extends AbstractModel implements ProductIndexInterface
 {
-    public const DB_VALUE_BOOLEAN_TRUE = "1";
-    public const DB_VALUE_BOOLEAN_FALSE = "0";
+    const DB_VALUE_BOOLEAN_TRUE = "1";
+    const DB_VALUE_BOOLEAN_FALSE = "0";
 
     /**
      * @inheritdoc
@@ -190,12 +190,7 @@ class Index extends AbstractModel implements ProductIndexInterface
      */
     public function getNostoProduct()
     {
-        try {
-            $unserialized = unserialize($this->getProductData(), [Product::class]); // @codingStandardsIgnoreLine
-        } catch (\Exception $exception) {
-            $unserialized = null;
-        }
-        return $unserialized;
+        return unserialize($this->getProductData(), [Product::class]); // @codingStandardsIgnoreLine
     }
 
     /**

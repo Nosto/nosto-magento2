@@ -77,7 +77,7 @@ class Repository
      * Not using the proxy classes will lead to a "Area code not set" exception being thrown in the
      * compile phase.
      *
-     * @param ProductRepository\Proxy $productRepository
+     * @param ProductRepository $productRepository
      * @param SearchCriteriaBuilder $searchCriteriaBuilder
      * @param ConfigurableProduct $configurableProduct
      * @param FilterBuilder $filterBuilder
@@ -87,7 +87,7 @@ class Repository
      * @param NostoSkuResource $nostoSkuResource
      */
     public function __construct(
-        ProductRepository\Proxy $productRepository,
+        ProductRepository $productRepository,
         SearchCriteriaBuilder $searchCriteriaBuilder,
         ConfigurableProduct $configurableProduct,
         FilterBuilder $filterBuilder,
@@ -117,36 +117,6 @@ class Repository
         $this->productRepository->cleanCache();
         $searchCriteria = $this->searchCriteriaBuilder
             ->addFilter('entity_id', $ids, 'in')
-            ->create();
-        return $this->productRepository->getList($searchCriteria);
-    }
-
-    /**
-     * Gets products that have scheduled pricing active
-     *
-     * @return ProductSearchResultsInterface
-     * @suppress PhanTypeMismatchArgument
-     * @throws \Exception
-     */
-    public function getWithActivePricingSchedule()
-    {
-        $today = new \DateTime('now'); // @codingStandardsIgnoreLine
-        $filterEndDateGreater = $this->filterBuilder
-            ->setField('special_to_date')
-            ->setValue($today->format('Y-m-d ' . '00:00:00'))
-            ->setConditionType('gt')
-            ->create();
-        $filterEndDateNotSet = $this->filterBuilder
-            ->setField('special_to_date')
-            ->setValue(['null' => true])
-            ->setConditionType('eq')
-            ->create();
-
-        $filterGroup = $this->filterGroupBuilder->setFilters([$filterEndDateGreater, $filterEndDateNotSet])->create();
-
-        $searchCriteria = $this->searchCriteriaBuilder
-            ->setFilterGroups([$filterGroup])
-            ->addFilter('special_from_date', $today->format('Y-m-d') . ' 00:00:00', 'gte')
             ->create();
         return $this->productRepository->getList($searchCriteria);
     }
@@ -207,7 +177,6 @@ class Repository
             );
             $this->saveParentIdsToCache($product, $parentProductIds);
         }
-
         return $parentProductIds;
     }
 

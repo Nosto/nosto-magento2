@@ -53,7 +53,7 @@ use Nosto\Exception\MemoryOutOfBoundsException;
  */
 class Data implements IndexerActionInterface, MviewActionInterface
 {
-    public const INDEXER_ID = 'nosto_index_product_data_sync';
+    const INDEXER_ID = 'nosto_index_product_data_sync';
 
     /** @var NostoIndexService */
     private $nostoServiceIndex;
@@ -68,19 +68,17 @@ class Data implements IndexerActionInterface, MviewActionInterface
     private $nostoLogger;
 
     /**
+     * Data constructor.
      * @param NostoIndexService $nostoServiceIndex
-     * @param IndexCollectionFactory $indexCollectionFactory
      * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoLogger $nostoLogger
      */
     public function __construct(
         NostoIndexService $nostoServiceIndex,
-        IndexCollectionFactory $indexCollectionFactory,
         NostoHelperAccount $nostoHelperAccount,
         NostoLogger $nostoLogger
     ) {
         $this->nostoServiceIndex = $nostoServiceIndex;
-        $this->indexCollectionFactory = $indexCollectionFactory;
         $this->nostoHelperAccount = $nostoHelperAccount;
         $this->nostoLogger = $nostoLogger;
     }
@@ -93,9 +91,8 @@ class Data implements IndexerActionInterface, MviewActionInterface
     {
         $storesWithNosto = $this->nostoHelperAccount->getStoresWithNosto();
         foreach ($storesWithNosto as $store) {
-            $indexCollection = $this->getCollection($store);
             try {
-                $this->nostoServiceIndex->handleDirtyProducts($indexCollection, $store);
+                $this->nostoServiceIndex->indexProducts($store);
             } catch (MemoryOutOfBoundsException $e) {
                 $this->nostoLogger->error($e->getMessage());
             }
@@ -128,35 +125,12 @@ class Data implements IndexerActionInterface, MviewActionInterface
     {
         $storesWithNosto = $this->nostoHelperAccount->getStoresWithNosto();
         foreach ($storesWithNosto as $store) {
-            $collection = $this->getCollection($store, $ids);
             try {
-                $this->nostoServiceIndex->handleDirtyProducts($collection, $store);
+                $this->nostoServiceIndex->indexProducts($store, $ids);
             } catch (MemoryOutOfBoundsException $e) {
                 $this->nostoLogger->error($e->getMessage());
                 throw $e;
             }
         }
-    }
-
-    /**
-     * Returns a collection Nosto product index items that are dirty or out of sync and not deleted.
-     * If $ids attribute is present the collection will be limited to matching the ids and the
-     * condition mentioned above only.
-     *
-     * @param Store $store
-     * @param array $ids
-     * @return IndexCollection
-     */
-    private function getCollection(Store $store, array $ids = [])
-    {
-        $collection = $this->indexCollectionFactory->create()
-            ->addFieldToSelect('*')
-            ->addOutOfSyncOrIsDirtyFilter()
-            ->addNotDeletedFilter()
-            ->addStoreFilter($store);
-        if (!empty($ids)) {
-            $collection->addIdsFilter($ids);
-        }
-        return $collection;
     }
 }

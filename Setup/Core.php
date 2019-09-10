@@ -41,10 +41,8 @@ use Magento\Framework\DB\Ddl\Table;
 use Magento\Framework\Setup\SchemaSetupInterface;
 use Nosto\Tagging\Api\Data\CustomerInterface;
 use Nosto\Tagging\Api\Data\ProductIndexInterface;
-use Nosto\Tagging\Api\Data\ProductQueueInterface;
 use Nosto\Tagging\Model\Product\Index;
 use Nosto\Tagging\Model\ResourceModel\Customer;
-use Nosto\Tagging\Model\ResourceModel\Product\Queue as ProductQueue;
 use Nosto\Tagging\Model\ResourceModel\Product\Index as ProductIndex;
 
 abstract class Core
@@ -113,53 +111,6 @@ abstract class Core
         $setup->getConnection()->createTable($table);
     }
 
-    public function createProductQueueTable(SchemaSetupInterface $setup)
-    {
-        /** @noinspection PhpUnhandledExceptionInspection */
-        $table = $setup->getConnection()
-            ->newTable($setup->getTable(ProductQueue::TABLE_NAME))
-            ->addColumn(
-                ProductQueueInterface::ID,
-                Table::TYPE_INTEGER,
-                null,
-                [
-                    'auto_increment' => true,
-                    'nullable' => false,
-                    'identity' => true,
-                    'primary' => true,
-                    'unsigned' => true,
-                ],
-                'ID'
-            )
-            ->addColumn(
-                ProductQueueInterface::PRODUCT_ID,
-                Table::TYPE_INTEGER,
-                null,
-                [
-                    'nullable' => false,
-                    'unsigned' => true,
-                ],
-                'Product ID'
-            )
-            ->addColumn(
-                ProductQueueInterface::CREATED_AT,
-                Table::TYPE_DATETIME,
-                null,
-                ['nullable' => false],
-                'Creation Time'
-            )
-            ->addIndex(
-                $setup->getIdxName(
-                    ProductQueue::TABLE_NAME,
-                    [ProductQueueInterface::PRODUCT_ID]
-                ),
-                [ProductQueueInterface::PRODUCT_ID],
-                ['type' => AdapterInterface::INDEX_TYPE_UNIQUE]
-            );
-        /** @noinspection PhpUnhandledExceptionInspection */
-        $setup->getConnection()->createTable($table);
-    }
-    
     public function createProductIndexTable(SchemaSetupInterface $setup)
     {
         /** @noinspection PhpUnhandledExceptionInspection */
@@ -233,7 +184,7 @@ abstract class Core
                 Table::TYPE_TEXT,
                 null,
                 [
-                    'nullable' => false,
+                    'nullable' => true,
                     'unsigned' => true,
                 ],
                 'Product data'

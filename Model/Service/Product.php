@@ -46,8 +46,8 @@ use Nosto\Tagging\Model\Service\Index as NostoIndexService;
 
 class Product
 {
-    public const NOSTO_SCOPE_TAGGING = 'tagging';
-    public const NOSTO_SCOPE_API = 'api';
+    const NOSTO_SCOPE_TAGGING = 'tagging';
+    const NOSTO_SCOPE_API = 'api';
 
     /**
      * @var NostoIndexService
@@ -93,13 +93,16 @@ class Product
     {
         try {
             $indexedProduct = $this->nostoIndexRepository->getOneByProductAndStore($product, $store);
-            if ($indexedProduct instanceof ProductIndexInterface === false) {
-                $indexedProduct = $this->nostoIndexService->updateOrCreateDirtyEntity($product, $store);
+            if ($indexedProduct === null) {
+                $this->nostoIndexService->updateOrCreateDirtyEntity($product, $store);
             }
             if ($indexedProduct->getIsDirty()) {
                 $indexedProduct = $this->nostoIndexService->rebuildDirtyProduct($indexedProduct);
             }
             $nostoProduct = $indexedProduct->getNostoProduct();
+            if ($nostoProduct === null) {
+                return null;
+            }
             if ($scope !== self::NOSTO_SCOPE_API) {
                 return $nostoProduct->sanitize();
             }

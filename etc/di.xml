@@ -58,14 +58,6 @@
             <argument name="nostoHelperCache" xsi:type="object">Nosto\Tagging\Helper\Cache\Proxy</argument>
         </arguments>
     </type>
-    <type name="Nosto\Tagging\Console\Command\NostoRebuildIndexCommand">
-        <arguments>
-            <argument name="nostoHelperAccount" xsi:type="object">Nosto\Tagging\Helper\Account\Proxy</argument>
-            <argument name="nostoHelperScope" xsi:type="object">Nosto\Tagging\Helper\Scope\Proxy</argument>
-            <argument name="nostoServiceIndex" xsi:type="object">Nosto\Tagging\Model\Service\Index\Proxy</argument>
-            <argument name="invalidateIndexer" xsi:type="object">Nosto\Tagging\Model\Indexer\Invalidate\Proxy</argument>
-        </arguments>
-    </type>
     <type name="Nosto\Tagging\Console\Command\NostoGenerateCustomerReferenceCommand">
         <arguments>
             <argument name="customerFactory" xsi:type="object">Magento\Customer\Model\CustomerFactory\Proxy</argument>
@@ -86,11 +78,31 @@
                 <item name="nosto_account_connect_command" xsi:type="object">Nosto\Tagging\Console\Command\NostoAccountConnectCommand</item>
                 <item name="nosto_account_remove_command" xsi:type="object">Nosto\Tagging\Console\Command\NostoAccountRemoveCommand</item>
                 <item name="nosto_generate_customer_reference_command" xsi:type="object">Nosto\Tagging\Console\Command\NostoGenerateCustomerReferenceCommand</item>
-                <item name="nosto_rebuild_index" xsi:type="object">Nosto\Tagging\Console\Command\NostoRebuildIndexCommand</item>
             </argument>
         </arguments>
     </type>
     <type name="Magento\Sales\Api\OrderRepositoryInterface">
         <plugin name="order_repository_nosto" type="Nosto\Tagging\Plugin\Sales\OrderRepository" />
+    </type>
+    <type name="Nosto\Tagging\Model\Product\Repository">
+        <arguments>
+            <argument name="productRepository" xsi:type="object">Magento\Catalog\Model\ProductRepository\Proxy</argument>
+        </arguments>
+    </type>
+    <type name="Nosto\Tagging\Model\Product\Service">
+        <arguments>
+            <argument name="nostoHelperAccount" xsi:type="object">Nosto\Tagging\Helper\Account\Proxy</argument>
+            <argument name="nostoHelperData" xsi:type="object">Nosto\Tagging\Helper\Data\Proxy</argument>
+        </arguments>
+    </type>
+    <type name="Nosto\Tagging\Model\Indexer\Product\Indexer">
+        <arguments>
+            <argument name="nostoHelperAccount" xsi:type="object">Nosto\Tagging\Helper\Account\Proxy</argument>
+        </arguments>
+    </type>
+    <type name="Nosto\Tagging\Helper\Customer">
+        <arguments>
+            <argument name="customerSession" xsi:type="object">Magento\Customer\Model\Session\Proxy</argument>
+        </arguments>
     </type>
 </config>

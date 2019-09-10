@@ -34,21 +34,61 @@
  *
  */
 
-namespace Nosto\Tagging\Model\ResourceModel\Product;
+namespace Nosto\Tagging\Util;
 
-use Magento\Framework\Model\ResourceModel\Db\AbstractDb;
-use Nosto\Tagging\Api\Data\ProductQueueInterface;
+use Magento\Framework\Data\Collection;
+use Nosto\NostoException;
 
-class Queue extends AbstractDb
+class Iterator
 {
-    const TABLE_NAME = 'nosto_tagging_product_queue';
+    private $collection;
+
     /**
-     * Initialize resource model
-     *
-     * @return void
+     * Iterator constructor.
+     * @param Collection $collection
+     * @throws NostoException
      */
-    public function _construct()
+    public function __construct(Collection $collection)
     {
-        $this->_init(self::TABLE_NAME, ProductQueueInterface::ID);
+        if (!is_numeric($collection->getPageSize())) {
+            throw new NostoException('Page size not defined or not an integer');
+        }
+        $this->collection = $collection;
+    }
+
+    /**
+     * Iterates through the collection in batches defined by the collection page size
+     * and applies closure to each item
+     * @param \Closure $closure
+     * @throws NostoException
+     */
+    public function each(\Closure $closure)
+    {
+        $curPage = 1;
+        $lastPage = $this->collection->getLastPageNumber();
+        do {
+            $this->collection->clear();
+            $this->collection->setCurPage($curPage);
+            $this->collection->each($closure);
+            ++$curPage;
+        } while ($curPage <= $lastPage);
+    }
+
+    /**
+     * Handles the pagination / batching and batching for a collection
+     *
+     * @param \Closure $closure
+     * @throws NostoException
+     */
+    public function eachBatch(\Closure $closure)
+    {
+        $curPage = 1;
+        $lastPage = $this->collection->getLastPageNumber();
+        do {
+            $this->collection->clear();
+            $this->collection->setCurPage($curPage);
+            $closure($this->collection);
+            ++$curPage;
+        } while ($curPage <= $lastPage);
     }
 }

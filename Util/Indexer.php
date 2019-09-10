@@ -34,11 +34,23 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Product;
+namespace Nosto\Tagging\Util;
 
-use Magento\Framework\Api\Search\SearchResult;
-use Nosto\Tagging\Api\Data\ProductQueueSearchResultsInterface;
-
-class QueueSearchResults extends SearchResult implements ProductQueueSearchResultsInterface // @codingStandardsIgnoreLine
+class Indexer
 {
+    /**
+     * Checks if the execution scope is from Magento's setup:upgrade
+     *
+     * @return bool
+     */
+    public static function isCalledFromSetupUpgrade()
+    {
+        $trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 50);
+        foreach ($trace as $caller) {
+            if (!empty($caller['class']) && stristr($caller['class'], 'UpgradeCommand') !== false) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
