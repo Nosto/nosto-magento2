@@ -182,19 +182,21 @@ class Index extends AbstractService
     }
 
     /**
-     * @param NostoIndexCollection $collection
      * @param Store $store
+     * @param array $ids
      * @throws MemoryOutOfBoundsException
      * @throws NostoException
      */
-    public function indexDirtyProducts(NostoIndexCollection $collection, Store $store)
+    public function indexProducts(Store $store, array $ids = [])
     {
         $account = $this->nostoHelperAccount->findAccount($store);
         if ($account instanceof NostoSignupAccount === false) {
             throw new NostoException(sprintf('Store view %s does not have Nosto installed', $store->getName()));
         }
-        $this->rebuildDirtyProducts($collection, $store);
-        $this->nostoSyncService->syncIndexedProducts($collection, $store);
+        $dirtyCollection = $this->getDirtyCollection($store, $ids);
+        $this->rebuildDirtyProducts($dirtyCollection, $store);
+        $outOfSyncCollection = $this->getOutOfSyncCollection($store, $ids);
+        $this->nostoSyncService->syncIndexedProducts($outOfSyncCollection, $store);
         $this->nostoSyncService->syncDeletedProducts($store);
     }
 
@@ -284,6 +286,42 @@ class Index extends AbstractService
                 $store->getName()
             )
         );
+    }
+
+    /**
+     * @param Store $store
+     * @param array $ids
+     * @return NostoIndexCollection
+     */
+    private function getDirtyCollection(Store $store, array $ids = [])
+    {
+        $collection = $this->nostoIndexCollectionFactory->create()
+            ->addFieldToSelect('*')
+            ->addIsDirtyFilter()
+            ->addNotDeletedFilter()
+            ->addStoreFilter($store);
+        if (!empty($ids)) {
+            $collection->addIdsFilter($ids);
+        }
+        return $collection;
+    }
+
+    /**
+     * @param Store $store
+     * @param array $ids
+     * @return NostoIndexCollection
+     */
+    private function getOutOfSyncCollection(Store $store,array $ids = [])
+    {
+        $collection = $this->nostoIndexCollectionFactory->create()
+            ->addFieldToSelect('*')
+            ->addOutOfSyncFilter()
+            ->addNotDeletedFilter()
+            ->addStoreFilter($store);
+        if (!empty($ids)) {
+            $collection->addIdsFilter($ids);
+        }
+        return $collection;
     }
 
     /**
