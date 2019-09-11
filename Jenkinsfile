@@ -19,6 +19,7 @@ pipeline {
         sh "composer config repositories.0 composer https://repo.magento.com"
         sh "composer config http-basic.repo.magento.com $REPO_USR $REPO_PSW"
         sh "composer install --no-progress --no-suggest"
+        sh "composer dump-autoload"
       }
     }
 

@@ -71,7 +71,7 @@ class ProductJson
     }
 
     /**
-     * @return self
+     * @return ProductJson
      */
     public static function getInstance()
     {
