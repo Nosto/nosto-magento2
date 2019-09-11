@@ -96,6 +96,9 @@ class Invalidate implements IndexerActionInterface, MviewActionInterface
                 $this->nostoServiceIndex->invalidateOrCreate($productCollection, $store);
                 $collectionSize = $productCollection->getSize();
 
+                //In case for this specific set of ids
+                //there are more entries of products in the indexer table than the magento product collection
+                //it means that some products were deleted
                 if ($idsSize > $collectionSize) {
                     $this->nostoServiceIndex->markProductsAsDeletedByDiff($productCollection, $ids, $store);
                 }

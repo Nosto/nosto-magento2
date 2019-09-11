@@ -258,6 +258,10 @@ class Index extends AbstractService
     }
 
     /**
+     * Mark entries in the nosto indexer table as deleted
+     * by checking the difference in ids between the collection
+     * and the ones coming from cl table
+     *
      * @param ProductCollection $collection
      * @param array $ids
      * @param Store $store
