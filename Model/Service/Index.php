@@ -275,7 +275,7 @@ class Index extends AbstractService
             }
         });
         // Flag the rest of the ids as deleted
-        $deleted = $this->nostoIndexCollectionFactory->create()->markAsDeleted($uniqueIds, $store);
+        $deleted = $this->indexRepository->markProductsAsDeleted($uniqueIds, $store);
         $this->getLogger()->info(
             sprintf(
                 'Marked %d indexed products as deleted for store %s',

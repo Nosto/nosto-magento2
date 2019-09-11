@@ -131,7 +131,7 @@ class Sync extends AbstractService
             }
             try {
                 $op->upsert();
-                $collectionBatch->markAsInSyncCurrentItemsByStore($store);
+                $this->indexRepository->markAsInSyncCurrentItemsByStore($collectionBatch, $store);
                 $this->tickBenchmark(self::BENCHMARK_SYNC_NAME);
             } catch (\Exception $upsertException) {
                 $this->getLogger()->exception($upsertException);
@@ -196,14 +196,14 @@ class Sync extends AbstractService
             $ids = [];
             /* @var $indexedProduct NostoProductIndex */
             foreach ($collection as $indexedProduct) {
-                $ids[] = $indexedProduct->getId();
+                $ids[] = $indexedProduct->getProductId();
             }
             try {
                 $op = new DeleteProduct($account, $this->nostoHelperUrl->getActiveDomain($store));
                 $op->setResponseTimeout(30);
                 $op->setProductIds($ids);
                 $op->delete(); // @codingStandardsIgnoreLine
-                $collection->deleteCurrentItemsByStore($store);
+                $this->indexRepository->deleteCurrentItemsByStore($collection, $store);
                 $this->tickBenchmark(self::BENCHMARK_DELETE_NAME);
             } catch (\Exception $e) {
                 $this->getLogger()->exception($e);

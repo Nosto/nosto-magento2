@@ -209,4 +209,100 @@ class IndexRepository implements ProductIndexRepositoryInterface
             ]
         );
     }
+
+    /**
+     * Marks products as deleted by given product ids and store
+     *
+     * @param array $ids
+     * @param Store $store
+     * @return int
+     */
+    public function markProductsAsDeleted(array $ids, Store $store)
+    {
+        $collection = $this->indexCollectionFactory->create();
+        $connection = $collection->getConnection();
+        return $connection->update(
+            $collection->getMainTable(),
+            [
+                Index::IS_DELETED => Index::DB_VALUE_BOOLEAN_TRUE,
+                Index::UPDATED_AT => $this->magentoTimeZone->date()->format('Y-m-d H:i:s')
+            ],
+            [
+                sprintf('%s IN (?)', Index::PRODUCT_ID) => array_unique($ids),
+                sprintf('%s=?', Index::STORE_ID) => $store->getId()
+            ]
+        );
+    }
+
+    /**
+     * Deletes current indexed products in store
+     *
+     * @param Store $store
+     * @return int
+     */
+    public function deleteCurrentItemsByStore(IndexCollection $collection, Store $store)
+    {
+        $indexIds = [];
+        /* @var Index $item */
+        foreach ($collection->getItems() as $item) {
+            $indexIds[] = $item->getId();
+        }
+        $connection = $collection->getConnection();
+        return $connection->delete(
+            $collection->getMainTable(),
+            [
+                sprintf('%s IN (?)', Index::ID) => array_unique($indexIds),
+                sprintf('%s=?', Index::STORE_ID) => $store->getId()
+            ]
+        );
+    }
+
+    /**
+     * Marks current items in collection as in_sync
+     *
+     * @param Store $store
+     * @return int
+     */
+    public function markAsInSyncCurrentItemsByStore(IndexCollection $collection, Store $store)
+    {
+        $indexIds = [];
+        /* @var Index $item */
+        foreach ($collection->getItems() as $item) {
+            $indexIds[] = $item->getId();
+        }
+        $connection = $collection->getConnection();
+        return $connection->update(
+            $collection->getMainTable(),
+            [
+                Index::IN_SYNC => Index::DB_VALUE_BOOLEAN_TRUE,
+                Index::UPDATED_AT => $this->magentoTimeZone->date()->format('Y-m-d H:i:s')
+            ],
+            [
+                sprintf('%s IN (?)', Index::ID) => array_unique($indexIds),
+                sprintf('%s=?', Index::STORE_ID) => $store->getId()
+            ]
+        );
+    }
+
+    /**
+     * Marks all products as dirty by given Store
+     *
+     * @param Store $store
+     * @return int
+     */
+    public function markAllAsDirtyByStore(Store $store)
+    {
+        $collection = $this->indexCollectionFactory->create();
+        $connection = $collection->getConnection();
+        return $connection->update(
+            $collection->getMainTable(),
+            [
+                Index::IS_DIRTY => Index::DB_VALUE_BOOLEAN_TRUE,
+                Index::UPDATED_AT => $this->magentoTimeZone->date()->format('Y-m-d H:i:s')
+            ],
+            [
+                sprintf('%s=?', Index::STORE_ID) => $store->getId()
+            ]
+        );
+    }
 }

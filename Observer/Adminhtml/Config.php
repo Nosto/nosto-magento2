@@ -40,10 +40,12 @@ use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Module\Manager as ModuleManager;
+use Magento\Swagger\Block\Index;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\ResourceModel\Product\Index\Collection as IndexCollection;
+use Nosto\Tagging\Model\Product\Index\IndexRepository;
 use Nosto\Tagging\Helper\Account as NostoAccountHelper;
 use Magento\Store\Model\Store;
 
@@ -57,11 +59,23 @@ class Config implements ObserverInterface
     const WEBSITE_SCOPE_KEY = 'website';
     const STORE_SCOPE_KEY = 'store';
 
+    /** @var NostoLogger  */
     private $logger;
+
+    /** @var ModuleManager  */
     private $moduleManager;
+
+    /** @var NostoHelperScope  */
     private $nostoHelperScope;
+
+    /** @var NostoAccountHelper  */
     private $nostoAccountHelper;
+
+    /** @var IndexCollection  */
     private $indexCollection;
+
+    /** @var IndexRepository */
+    private $indexRepository;
 
     /**
      * Config Constructor.
@@ -77,7 +91,8 @@ class Config implements ObserverInterface
         ModuleManager $moduleManager,
         NostoHelperScope $nostoHelperScope,
         NostoAccountHelper $nostoAccountHelper,
-        IndexCollection $indexCollection
+        IndexCollection $indexCollection,
+        IndexRepository $indexRepository
     ) {
         $this->logger = $logger;
         $this->moduleManager = $moduleManager;
@@ -137,7 +152,7 @@ class Config implements ObserverInterface
                     $store->getName()
                 )
             );
-            $this->indexCollection->markAllAsDirtyByStore($store);
+            $this->indexRepository->markAllAsDirtyByStore($store);
         }
     }
 }
