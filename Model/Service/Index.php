@@ -215,7 +215,7 @@ class Index extends AbstractService
         /** @var Product $product */
         foreach ($collection->getItems() as $product) {
             if (!$this->hasParentBeenInvalidated($product->getId())) {
-                $this->updateOrCreateDirtyEntity($product, $store);
+                $this->updateOrCreateDirtyEntity($product, $store); // @codingStandardsIgnoreLine
                 $this->invalidatedProducts[] = $product->getId();
             }
         }
