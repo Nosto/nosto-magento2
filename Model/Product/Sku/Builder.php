@@ -50,7 +50,7 @@ use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Product\BuilderTrait;
 use Nosto\Types\Product\ProductInterface;
 use Nosto\Tagging\Helper\Stock as NostoStockHelper;
-use Nosto\Tagging\Model\Service\Product as NostoProductService;
+use Nosto\Tagging\Model\Service\CachingProductService as NostoProductService;
 
 class Builder
 {

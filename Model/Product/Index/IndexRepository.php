@@ -36,6 +36,7 @@
 
 namespace Nosto\Tagging\Model\Product\Index;
 
+use Exception;
 use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Framework\Model\AbstractModel;
 use Magento\Store\Api\Data\StoreInterface;
@@ -163,7 +164,7 @@ class IndexRepository implements ProductIndexRepositoryInterface
      *
      * @param ProductIndexInterface $productIndex
      * @return ProductIndexInterface|IndexResource
-     * @throws \Exception
+     * @throws Exception
      * @suppress PhanTypeMismatchArgument
      */
     public function save(ProductIndexInterface $productIndex)
@@ -176,7 +177,7 @@ class IndexRepository implements ProductIndexRepositoryInterface
     /**
      * Delete product index entry
      * @param ProductIndexInterface $productIndex
-     * @throws \Exception
+     * @throws Exception
      * @suppress PhanTypeMismatchArgument
      */
     public function delete(ProductIndexInterface $productIndex)
@@ -237,6 +238,7 @@ class IndexRepository implements ProductIndexRepositoryInterface
     /**
      * Deletes current indexed products in store
      *
+     * @param IndexCollection $collection
      * @param Store $store
      * @return int
      */
@@ -260,6 +262,7 @@ class IndexRepository implements ProductIndexRepositoryInterface
     /**
      * Marks current items in collection as in_sync
      *
+     * @param IndexCollection $collection
      * @param Store $store
      * @return int
      */
@@ -309,6 +312,7 @@ class IndexRepository implements ProductIndexRepositoryInterface
     /**
      * Marks current items in collection as dirty
      *
+     * @param IndexCollection $collection
      * @param Store $store
      * @return int
      */
@@ -334,5 +338,18 @@ class IndexRepository implements ProductIndexRepositoryInterface
                 sprintf('%s=?', Index::STORE_ID) => $store->getId()
             ]
         );
+    }
+
+    /**
+     * @param Index $product
+     * @param Store $store
+     * @throws Exception
+     */
+    public function updateProduct(Index $product, Store $store)
+    {
+        $product->setStore($store);
+        $product->setIsDirty(false);
+        $product->setUpdatedAt($this->magentoTimeZone->date());
+        $this->save($product);
     }
 }

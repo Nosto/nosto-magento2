@@ -160,7 +160,7 @@ class Index extends AbstractService
     }
 
     /**
-     * @param Product $product
+     * @param CachingProductService $product
      * @param Store $store
      */
     public function updateOrCreateDirtyEntity(Product $product, Store $store)
@@ -168,7 +168,7 @@ class Index extends AbstractService
         $indexedProduct = $this->indexRepository->getByProductIdAndStoreId($product->getId(), $store->getId());
         try {
             if ($indexedProduct === null) {
-                /* @var Product $fullProduct */
+                /* @var CachingProductService $fullProduct */
                 $fullProduct = $this->loadMagentoProduct($product->getId(), $store->getId());
                 $indexedProduct = $this->indexBuilder->build($fullProduct, $store);
             }
@@ -231,7 +231,7 @@ class Index extends AbstractService
     public function rebuildDirtyProduct(ProductIndexInterface $productIndex)
     {
         try {
-            /* @var Product $magentoProduct */
+            /* @var CachingProductService $magentoProduct */
             $magentoProduct = $this->loadMagentoProduct(
                 $productIndex->getProductId(),
                 $productIndex->getStoreId()
@@ -329,7 +329,7 @@ class Index extends AbstractService
      * Loads (or reloads) Product object
      * @param int $productId
      * @param int $storeId
-     * @return ProductInterface|Product|mixed
+     * @return ProductInterface|CachingProductService|mixed
      * @throws NoSuchEntityException
      */
     private function loadMagentoProduct(int $productId, int $storeId)

@@ -36,15 +36,18 @@
 
 namespace Nosto\Tagging\Model\Product;
 
+use Exception;
+use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\Product\Visibility as ProductVisibility;
 use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductCollectionFactory;
 use Magento\Sales\Api\Data\EntityInterface;
 use Magento\Store\Model\Store;
 use Nosto\NostoException;
 use Nosto\Object\Product\ProductCollection;
-use Nosto\Tagging\Model\Service\Product as NostoProductService;
+use Nosto\Tagging\Model\Service\ProductService as NostoProductService;
 use Nosto\Types\Product\ProductInterface;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
+use Traversable;
 
 class Collection
 {
@@ -124,23 +127,22 @@ class Collection
         /** @var \Magento\Catalog\Model\ResourceModel\Product\Collection $collection */
         $products = new ProductCollection();
         $items = $collection->loadData();
-        if ($items instanceof \Traversable === false && !is_array($items)) {
+        if ($items instanceof Traversable === false && !is_array($items)) {
             throw new NostoException(
                 sprintf('Invalid collection type %s for product export', get_class($collection))
             );
         }
         foreach ($items as $product) {
-            /** @var \Magento\Catalog\Model\Product $product */
+            /** @var Product $product */
             try {
-                $nostoProduct = $this->nostoProductService->getNostoProduct(
+                $nostoProduct = $this->nostoProductService->getProduct(
                     $product,
-                    $store,
-                    NostoProductService::NOSTO_SCOPE_API
+                    $store
                 );
                 if ($nostoProduct instanceof ProductInterface) {
                     $products->append($nostoProduct);
                 }
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $this->logger->exception($e);
             }
         }

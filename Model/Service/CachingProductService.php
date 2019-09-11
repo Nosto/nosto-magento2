@@ -36,23 +36,17 @@
 
 namespace Nosto\Tagging\Model\Service;
 
-use Magento\Catalog\Model\Product as MagentoProduct;
+use Exception;
 use Magento\Store\Model\Store;
-use Nosto\Object\Product\Product as NostoProduct;
-use Nosto\Tagging\Api\Data\ProductIndexInterface;
 use Nosto\Tagging\Logger\Logger;
+use Nosto\Tagging\Model\Product\Index\Builder as NostoIndexBuilder;
 use Nosto\Tagging\Model\Product\Index\IndexRepository as NostoIndexRepository;
-use Nosto\Tagging\Model\Service\Index as NostoIndexService;
+use Magento\Catalog\Api\Data\ProductInterface;
 
-class Product
+class CachingProductService implements ProductService
 {
     const NOSTO_SCOPE_TAGGING = 'tagging';
     const NOSTO_SCOPE_API = 'api';
-
-    /**
-     * @var NostoIndexService
-     */
-    private $nostoIndexService;
 
     /**
      * @var NostoIndexRepository
@@ -63,51 +57,46 @@ class Product
      * @var Logger
      */
     private $nostoLogger;
+    /**
+     * @var ProductService
+     */
+    private $productService;
+    /**
+     * @var NostoIndexBuilder
+     */
+    private $nostoIndexBuilder;
 
     /**
      * Index constructor.
-     * @param NostoIndexService $nostoIndexService
      * @param NostoIndexRepository $nostoIndexRepository
      * @param Logger $nostoLogger
+     * @param ProductService $productService
+     * @param NostoIndexBuilder $nostoIndexBuilder
      */
     public function __construct(
-        NostoIndexService $nostoIndexService,
         NostoIndexRepository $nostoIndexRepository,
-        Logger $nostoLogger
+        Logger $nostoLogger,
+        ProductService $productService,
+        NostoIndexBuilder $nostoIndexBuilder
     ) {
-        $this->nostoIndexService = $nostoIndexService;
         $this->nostoIndexRepository = $nostoIndexRepository;
         $this->nostoLogger = $nostoLogger;
+        $this->productService = $productService;
+        $this->nostoIndexBuilder = $nostoIndexBuilder;
     }
 
-    /**
-     * Gets Nosto product from database. If the product doesn't exist or is dirty
-     * it will be added / regenerated on-the-fly
-     *
-     * @param MagentoProduct $product
-     * @param Store $store
-     * @param string $scope
-     * @return NostoProduct|null
-     */
-    public function getNostoProduct(MagentoProduct $product, Store $store, $scope)
+    public function getProduct(ProductInterface $product, Store $store)
     {
         try {
             $indexedProduct = $this->nostoIndexRepository->getOneByProductAndStore($product, $store);
-            if ($indexedProduct === null) {
-                $this->nostoIndexService->updateOrCreateDirtyEntity($product, $store);
+            if ($indexedProduct === null || $indexedProduct->getIsDirty()) {
+                $fullProduct = $this->productService->getProduct($product, $store);
+
+                $indexedProduct = $this->nostoIndexBuilder->build($fullProduct, $store);
+                $this->nostoIndexRepository->updateProduct($indexedProduct, $store);
             }
-            if ($indexedProduct->getIsDirty()) {
-                $indexedProduct = $this->nostoIndexService->rebuildDirtyProduct($indexedProduct);
-            }
-            $nostoProduct = $indexedProduct->getNostoProduct();
-            if ($nostoProduct === null) {
-                return null;
-            }
-            if ($scope !== self::NOSTO_SCOPE_API) {
-                return $nostoProduct->sanitize();
-            }
-            return $nostoProduct;
-        } catch (\Exception $e) {
+            return $indexedProduct->getNostoProduct();
+        } catch (Exception $e) {
             $this->nostoLogger->exception($e);
             return null;
         }

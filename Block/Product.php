@@ -37,6 +37,7 @@
 /** @noinspection PhpDeprecationInspection */
 namespace Nosto\Tagging\Block;
 
+use Exception;
 use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Catalog\Block\Product\Context;
 use Magento\Catalog\Block\Product\View;
@@ -52,8 +53,7 @@ use Nosto\Helper\PriceHelper;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Model\Category\Builder as NostoCategoryBuilder;
-use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
-use Nosto\Tagging\Model\Service\Product as NostoProductService;
+use Nosto\Tagging\Model\Service\ProductService as NostoProductService;
 
 /**
  * Product block used for outputting meta-data on the stores product pages.
@@ -86,7 +86,6 @@ class Product extends View
      * @param Session $customerSession the user session.
      * @param ProductRepositoryInterface $productRepository th product repository.
      * @param PriceCurrencyInterface $priceCurrency the price currency.
-     * @param NostoProductBuilder $nostoProductBuilder the product meta model builder.
      * @param NostoCategoryBuilder $categoryBuilder the category meta model builder.
      * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoHelperScope $nostoHelperScope
@@ -105,7 +104,6 @@ class Product extends View
         Session $customerSession,
         ProductRepositoryInterface $productRepository,
         PriceCurrencyInterface $priceCurrency,
-        NostoProductBuilder $nostoProductBuilder,
         NostoCategoryBuilder $categoryBuilder,
         NostoHelperAccount $nostoHelperAccount,
         NostoHelperScope $nostoHelperScope,
@@ -127,7 +125,6 @@ class Product extends View
         );
 
         $this->taggingConstruct($nostoHelperAccount, $nostoHelperScope);
-        $this->nostoProductBuilder = $nostoProductBuilder;
         $this->categoryBuilder = $categoryBuilder;
         $this->nostoProductService = $nostoProductService;
     }
@@ -136,15 +133,14 @@ class Product extends View
      * Returns the Nosto product DTO.
      *
      * @return \Nosto\Object\Product\Product the product meta data model.
-     * @throws \Exception
+     * @throws Exception
      */
     public function getAbstractObject()
     {
         $store = $this->nostoHelperScope->getStore();
-        return $this->nostoProductService->getNostoProduct(
-            $this->getProduct(),
-            $store,
-            NostoProductService::NOSTO_SCOPE_TAGGING
+        return $this->nostoProductService->getProduct(
+            $this->getProduct(), //@TODO: add scope, sanitizing product service
+            $store
         );
     }
 
