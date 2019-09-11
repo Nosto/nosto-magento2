@@ -39,7 +39,8 @@
     "nosto/php-sdk": "4.0.*",
     "php": ">=7.0.0",
     "symfony/serializer": "3.2.*",
-    "symfony/property-info": "3.1.*"
+    "symfony/property-info": "3.1.*",
+    "symfony/property-access": "3.0.*"
   },
   "repositories": [
     {
