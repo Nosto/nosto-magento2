@@ -99,6 +99,7 @@ class Config implements ObserverInterface
         $this->nostoHelperScope = $nostoHelperScope;
         $this->nostoAccountHelper = $nostoAccountHelper;
         $this->indexCollection = $indexCollection;
+        $this->indexRepository = $indexRepository;
     }
 
     /**
