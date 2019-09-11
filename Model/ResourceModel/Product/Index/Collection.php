@@ -211,119 +211,27 @@ class Collection extends AbstractCollection
     }
 
     /**
-     * Marks products as deleted by given product ids and store
+     * Sets a limit to this query
      *
-     * @param array $ids
-     * @param Store $store
-     * @return int
+     * @param int $limit
+     * @return Collection
      */
-    public function markAsDeleted(array $ids, Store $store)
+    public function limitResults(int $limit)
     {
-        if (empty($ids)) {
-            return 0;
-        }
-        $connection = $this->getConnection();
-        return $connection->update(
-            $this->getMainTable(),
-            [Index::IS_DELETED => Index::DB_VALUE_BOOLEAN_TRUE],
-            [
-                sprintf('%s IN (?)', Index::PRODUCT_ID) => array_unique($ids),
-                sprintf('%s=?', Index::STORE_ID) => $store->getId()
-            ]
-        );
+        $this->getSelect()->limit($limit);
+        return $this;
     }
 
     /**
-     * Marks products as deleted by given product ids and store
+     * Add sortby to query
      *
-     * @param array $productIds array of product ids
-     * @param Store $store
-     * @return int
+     * @param string $field
+     * @param string $sort
+     * @return Collection
      */
-    public function markAsInSync(array $productIds, Store $store)
+    public function orderBy($field, $sort)
     {
-        if (empty($productIds)) {
-            return 0;
-        }
-        $connection = $this->getConnection();
-        return $connection->update(
-            $this->getMainTable(),
-            [Index::IN_SYNC => Index::DB_VALUE_BOOLEAN_TRUE],
-            [
-                sprintf('%s IN (?)', Index::PRODUCT_ID) => array_unique($productIds),
-                sprintf('%s=?', Index::STORE_ID) => $store->getId()
-            ]
-        );
-    }
-
-    /**
-     * Marks all products as dirty by given Store
-     *
-     * @param Store $store
-     * @return int
-     */
-    public function markAllAsDirtyByStore(Store $store)
-    {
-        $connection = $this->getConnection();
-        return $connection->update(
-            $this->getMainTable(),
-            [Index::IS_DIRTY => Index::DB_VALUE_BOOLEAN_TRUE],
-            [
-                sprintf('%s=?', Index::STORE_ID) => $store->getId()
-            ]
-        );
-    }
-
-    /**
-     * Deletes current indexed products in store
-     *
-     * @param Store $store
-     * @return int
-     */
-    public function deleteCurrentItemsByStore(Store $store)
-    {
-        if ($this->getSize() === 0) {
-            return 0;
-        }
-        $indexIds = [];
-        /* @var Index $item */
-        foreach ($this->getItems() as $item) {
-            $indexIds[] = $item->getId();
-        }
-        $connection = $this->getConnection();
-        return $connection->delete(
-            $this->getMainTable(),
-            [
-                sprintf('%s IN (?)', Index::ID) => array_unique($indexIds),
-                sprintf('%s=?', Index::STORE_ID) => $store->getId()
-            ]
-        );
-    }
-
-    /**
-     * Marks current items in collection as in_sync
-     *
-     * @param Store $store
-     * @return int
-     */
-    public function markAsInSyncCurrentItemsByStore(Store $store)
-    {
-        if ($this->getSize() === 0) {
-            return 0;
-        }
-        $indexIds = [];
-        /* @var Index $item */
-        foreach ($this->getItems() as $item) {
-            $indexIds[] = $item->getId();
-        }
-        $connection = $this->getConnection();
-        return $connection->update(
-            $this->getMainTable(),
-            [Index::IN_SYNC => Index::DB_VALUE_BOOLEAN_TRUE],
-            [
-                sprintf('%s IN (?)', Index::ID) => array_unique($indexIds),
-                sprintf('%s=?', Index::STORE_ID) => $store->getId()
-            ]
-        );
+        $this->getSelect()->order($field . ' ' . $sort);
+        return $this;
     }
 }

@@ -45,11 +45,18 @@ use Nosto\Tagging\Model\ResourceModel\Product\Index as IndexResource;
 use Nosto\Tagging\Model\ResourceModel\Product\Index\CollectionFactory as IndexCollectionFactory;
 use Nosto\Tagging\Model\ResourceModel\Product\Index\Collection as IndexCollection;
 use Magento\Store\Model\Store;
+use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
 
 class IndexRepository implements ProductIndexRepositoryInterface
 {
+    /** @var IndexCollectionFactory  */
     private $indexCollectionFactory;
+
+    /** @var IndexResource  */
     private $indexResource;
+
+    /** @var TimezoneInterface */
+    private $magentoTimeZone;
 
     /**
      * IndexRepository constructor.
@@ -59,10 +66,12 @@ class IndexRepository implements ProductIndexRepositoryInterface
      */
     public function __construct(
         IndexResource $indexResource,
-        IndexCollectionFactory $indexCollectionFactory
+        IndexCollectionFactory $indexCollectionFactory,
+        TimezoneInterface $magentoTimeZone
     ) {
         $this->indexResource = $indexResource;
         $this->indexCollectionFactory = $indexCollectionFactory;
+        $this->magentoTimeZone = $magentoTimeZone;
     }
 
     /**
@@ -175,5 +184,155 @@ class IndexRepository implements ProductIndexRepositoryInterface
         /** @noinspection PhpParamsInspection */
         /** @var AbstractModel $productIndex */
         $this->indexResource->delete($productIndex);
+    }
+
+    /**
+     * Marks products as deleted by given product ids and store
+     *
+     * @param array $productIds
+     * @param Store $store
+     * @return int
+     */
+    public function markAsInSync(array $productIds, Store $store)
+    {
+        $collection = $this->indexCollectionFactory->create();
+        $connection = $collection->getConnection();
+        return $connection->update(
+            $collection->getMainTable(),
+            [
+                Index::IN_SYNC => Index::DB_VALUE_BOOLEAN_TRUE,
+                Index::UPDATED_AT => $this->magentoTimeZone->date()->format('Y-m-d H:i:s')
+            ],
+            [
+                sprintf('%s IN (?)', Index::PRODUCT_ID) => array_unique($productIds),
+                sprintf('%s=?', Index::STORE_ID) => $store->getId()
+            ]
+        );
+    }
+
+    /**
+     * Marks products as deleted by given product ids and store
+     *
+     * @param array $ids
+     * @param Store $store
+     * @return int
+     */
+    public function markProductsAsDeleted(array $ids, Store $store)
+    {
+        $collection = $this->indexCollectionFactory->create();
+        $connection = $collection->getConnection();
+        return $connection->update(
+            $collection->getMainTable(),
+            [
+                Index::IS_DELETED => Index::DB_VALUE_BOOLEAN_TRUE,
+                Index::UPDATED_AT => $this->magentoTimeZone->date()->format('Y-m-d H:i:s')
+            ],
+            [
+                sprintf('%s IN (?)', Index::PRODUCT_ID) => array_unique($ids),
+                sprintf('%s=?', Index::STORE_ID) => $store->getId()
+            ]
+        );
+    }
+
+    /**
+     * Deletes current indexed products in store
+     *
+     * @param Store $store
+     * @return int
+     */
+    public function deleteCurrentItemsByStore(IndexCollection $collection, Store $store)
+    {
+        $indexIds = [];
+        /* @var Index $item */
+        foreach ($collection->getItems() as $item) {
+            $indexIds[] = $item->getId();
+        }
+        $connection = $collection->getConnection();
+        return $connection->delete(
+            $collection->getMainTable(),
+            [
+                sprintf('%s IN (?)', Index::ID) => array_unique($indexIds),
+                sprintf('%s=?', Index::STORE_ID) => $store->getId()
+            ]
+        );
+    }
+
+    /**
+     * Marks current items in collection as in_sync
+     *
+     * @param Store $store
+     * @return int
+     */
+    public function markAsInSyncCurrentItemsByStore(IndexCollection $collection, Store $store)
+    {
+        $indexIds = [];
+        /* @var Index $item */
+        foreach ($collection->getItems() as $item) {
+            $indexIds[] = $item->getId();
+        }
+        $connection = $collection->getConnection();
+        return $connection->update(
+            $collection->getMainTable(),
+            [
+                Index::IN_SYNC => Index::DB_VALUE_BOOLEAN_TRUE,
+                Index::UPDATED_AT => $this->magentoTimeZone->date()->format('Y-m-d H:i:s')
+            ],
+            [
+                sprintf('%s IN (?)', Index::ID) => array_unique($indexIds),
+                sprintf('%s=?', Index::STORE_ID) => $store->getId()
+            ]
+        );
+    }
+
+    /**
+     * Marks all products as dirty by given Store
+     *
+     * @param Store $store
+     * @return int
+     */
+    public function markAllAsDirtyByStore(Store $store)
+    {
+        $collection = $this->indexCollectionFactory->create();
+        $connection = $collection->getConnection();
+        return $connection->update(
+            $collection->getMainTable(),
+            [
+                Index::IS_DIRTY => Index::DB_VALUE_BOOLEAN_TRUE,
+                Index::UPDATED_AT => $this->magentoTimeZone->date()->format('Y-m-d H:i:s')
+            ],
+            [
+                sprintf('%s=?', Index::STORE_ID) => $store->getId()
+            ]
+        );
+    }
+
+    /**
+     * Marks current items in collection as dirty
+     *
+     * @param Store $store
+     * @return int
+     */
+    public function markAsIsDirtyItemsByStore(IndexCollection $collection, Store $store)
+    {
+        $indexIds = [];
+        /* @var Index $item */
+        foreach ($collection->getItems() as $item) {
+            $indexIds[] = $item->getId();
+        }
+        if (count($indexIds) <= 0) {
+            return 0;
+        }
+        $connection = $collection->getConnection();
+        return $connection->update(
+            $collection->getMainTable(),
+            [
+                Index::IS_DIRTY => Index::DB_VALUE_BOOLEAN_TRUE,
+                Index::UPDATED_AT => $this->magentoTimeZone->date()->format('Y-m-d H:i:s')
+            ],
+            [
+                sprintf('%s IN (?)', Index::ID) => array_unique($indexIds),
+                sprintf('%s=?', Index::STORE_ID) => $store->getId()
+            ]
+        );
     }
 }

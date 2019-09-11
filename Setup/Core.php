@@ -184,7 +184,7 @@ abstract class Core
                 Table::TYPE_TEXT,
                 null,
                 [
-                    'nullable' => false,
+                    'nullable' => true,
                     'unsigned' => true,
                 ],
                 'Product data'

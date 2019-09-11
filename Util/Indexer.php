@@ -34,59 +34,23 @@
  *
  */
 
-namespace Nosto\Tagging\Api;
+namespace Nosto\Tagging\Util;
 
-use Magento\Catalog\Api\Data\ProductInterface;
-use Magento\Store\Api\Data\StoreInterface;
-use Magento\Store\Model\Store;
-use Nosto\Tagging\Api\Data\ProductIndexInterface;
-
-interface ProductIndexRepositoryInterface
+class Indexer
 {
     /**
-     * Save Queue entry
+     * Checks if the execution scope is from Magento's setup:upgrade
      *
-     * @param ProductIndexInterface $productIndex
-     * @return ProductIndexInterface
+     * @return bool
      */
-    public function save(ProductIndexInterface $productIndex);
-
-    /**
-     * Delete productIndex
-     *
-     * @param ProductIndexInterface $productIndex
-     */
-    public function delete(ProductIndexInterface $productIndex);
-
-    /**
-     * Returns entry by product and store
-     *
-     * @param ProductInterface $product
-     * @param StoreInterface $store
-     * @return ProductIndexInterface|null
-     */
-    public function getOneByProductAndStore(ProductInterface $product, StoreInterface $store);
-
-    /**
-     * @param int $productId
-     * @param int $storeId
-     * @return ProductIndexInterface|null
-     */
-    public function getByProductIdAndStoreId(int $productId, int $storeId);
-
-    /**
-     * Return total amount of products marked as out of sync
-     *
-     * @param Store $store
-     * @return int
-     */
-    public function getTotalOutOfSync(Store $store);
-
-    /**
-     * Return total amount of products marked as dirty
-     *
-     * @param Store $store
-     * @return int
-     */
-    public function getTotalDirty(Store $store);
+    public static function isCalledFromSetupUpgrade()
+    {
+        $trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 50);
+        foreach ($trace as $caller) {
+            if (!empty($caller['class']) && stristr($caller['class'], 'UpgradeCommand') !== false) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

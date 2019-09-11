@@ -104,12 +104,9 @@ class Sync extends AbstractService
     }
 
     /**
-     * Handles sync of product collection by sending it to Nosto
-     *
      * @param NostoIndexCollection $collection
      * @param Store $store
      * @throws NostoException
-     * @throws MemoryOutOfBoundsException
      */
     public function syncIndexedProducts(NostoIndexCollection $collection, Store $store)
     {
@@ -120,60 +117,44 @@ class Sync extends AbstractService
             return;
         }
         $account = $this->nostoHelperAccount->findAccount($store);
-        if ($account instanceof NostoSignupAccount === false) {
-            throw new NostoException(sprintf('Store view %s does not have Nosto installed', $store->getName()));
-        }
         $this->startBenchmark(self::BENCHMARK_SYNC_NAME, self::BENCHMARK_SYNC_BREAKPOINT);
+
         $collection->setPageSize(self::API_BATCH_SIZE);
         $iterator = new Iterator($collection);
         $iterator->eachBatch(function (NostoIndexCollection $collectionBatch) use ($account, $store) {
             $this->checkMemoryConsumption('product sync');
             $op = new UpsertProduct($account, $this->nostoHelperUrl->getActiveDomain($store));
             $op->setResponseTimeout(self::RESPONSE_TIMEOUT);
+            /** @var ProductIndexInterface $productIndex */
             foreach ($collectionBatch as $productIndex) {
-                if (!$productIndex->getInSync()) {
-                    $op->addProduct($productIndex->getNostoProduct());
-                }
+                $op->addProduct($productIndex->getNostoProduct());
             }
             try {
                 $op->upsert();
+                $this->indexRepository->markAsInSyncCurrentItemsByStore($collectionBatch, $store);
                 $this->tickBenchmark(self::BENCHMARK_SYNC_NAME);
             } catch (\Exception $upsertException) {
                 $this->getLogger()->exception($upsertException);
-            } finally {
-                // We will set this as in sync even if there was failures
-                $collectionBatch->markAsInSyncCurrentItemsByStore($store);
             }
         });
         $this->logBenchmarkSummary(self::BENCHMARK_SYNC_NAME, $store);
-        try {
-            $totalDeleted = $this->purgeDeletedProducts($store);
-            $this->getLogger()->info(
-                sprintf(
-                    'Removed total of %d products from index for store %s',
-                    $totalDeleted,
-                    $store->getCode()
-                )
-            );
-        } catch (MemoryOutOfBoundsException $e) {
-            throw $e;
-        } catch (NostoException $e) {
-            $this->getLogger()->exception($e);
-        }
     }
 
     /**
-     * Defines product index as in sync
-     *
-     * @param ProductIndexInterface $productIndex
-     * @throws \Exception
-     * @return void
+     * @param Store $store
      */
-    public function markAsInSync(ProductIndexInterface $productIndex)
+    public function syncDeletedProducts(Store $store)
     {
-        if (!$productIndex->getInSync()) {
-            $productIndex->setInSync(true);
-            $this->indexRepository->save($productIndex);
+        try {
+            $this->purgeDeletedProducts($store);
+            $this->getLogger()->info(
+                sprintf(
+                    'Removed products from index for store %s',
+                    $store->getCode()
+                )
+            );
+        } catch (NostoException $e) {
+            $this->getLogger()->exception($e);
         }
     }
 
@@ -185,7 +166,7 @@ class Sync extends AbstractService
     public function markAsInSyncByProductIdsAndStoreId(array $productIds, Store $store)
     {
         try {
-            $this->nostoIndexCollectionFactory->create()->markAsInSync($productIds, $store);
+            $this->indexRepository->markAsInSync($productIds, $store);
         } catch (\Exception $e) {
             $this->getLogger()->exception($e);
         }
@@ -196,7 +177,6 @@ class Sync extends AbstractService
      *
      * @param NostoIndexCollection $collection
      * @param Store $store
-     * @return int number of deleted products
      * @throws NostoException
      */
     public function deleteIndexedProducts(NostoIndexCollection $collection, Store $store)
@@ -209,30 +189,27 @@ class Sync extends AbstractService
             throw new NostoException(sprintf('Store view %s does not have Nosto installed', $store->getName()));
         }
         $this->startBenchmark(self::BENCHMARK_DELETE_NAME, self::BENCHMARK_DELETE_BREAKPOINT);
-        $totalDeleted = 0;
         $collection->setPageSize(self::PRODUCT_DELETION_BATCH_SIZE);
         $iterator = new Iterator($collection);
-        $iterator->eachBatch(function (NostoIndexCollection $collection) use ($account, $store, &$totalDeleted) {
+        $iterator->eachBatch(function (NostoIndexCollection $collection) use ($account, $store) {
             $this->checkMemoryConsumption('product delete');
             $ids = [];
             /* @var $indexedProduct NostoProductIndex */
             foreach ($collection as $indexedProduct) {
-                $ids[] = $indexedProduct->getId();
+                $ids[] = $indexedProduct->getProductId();
             }
             try {
                 $op = new DeleteProduct($account, $this->nostoHelperUrl->getActiveDomain($store));
                 $op->setResponseTimeout(30);
                 $op->setProductIds($ids);
                 $op->delete(); // @codingStandardsIgnoreLine
-                $rowsRemoved = $collection->deleteCurrentItemsByStore($store);
-                $totalDeleted += $rowsRemoved;
+                $this->indexRepository->deleteCurrentItemsByStore($collection, $store);
                 $this->tickBenchmark(self::BENCHMARK_DELETE_NAME);
             } catch (\Exception $e) {
                 $this->getLogger()->exception($e);
             }
         });
         $this->logBenchmarkSummary(self::BENCHMARK_DELETE_NAME, $store);
-        return $totalDeleted;
     }
 
     /**
@@ -240,7 +217,6 @@ class Sync extends AbstractService
      * and deletes the deleted rows from database
      *
      * @param Store $store
-     * @return int the amount of deleted products
      * @throws NostoException
      */
     public function purgeDeletedProducts(Store $store)
@@ -249,15 +225,6 @@ class Sync extends AbstractService
             ->addFieldToSelect('*')
             ->addIsDeletedFilter()
             ->addStoreFilter($store);
-        $totalDeleted = $this->deleteIndexedProducts($collection, $store);
-
-        $this->getLogger()->info(
-            sprintf(
-                'Removed total of %d products from index for store %s',
-                $totalDeleted,
-                $store->getCode()
-            )
-        );
-        return $totalDeleted;
+        $this->deleteIndexedProducts($collection, $store);
     }
 }

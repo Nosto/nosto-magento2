@@ -44,6 +44,7 @@ use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Model\ResourceModel\Magento\Product\Collection as ProductCollection;
 use Nosto\Tagging\Model\ResourceModel\Magento\Product\CollectionFactory as ProductCollectionFactory;
 use Nosto\Tagging\Model\Service\Index as NostoServiceIndex;
+use Nosto\Tagging\Util\Indexer as IndexerUtil;
 
 /**
  * Class Invalidate
@@ -54,8 +55,6 @@ use Nosto\Tagging\Model\Service\Index as NostoServiceIndex;
 class Invalidate implements IndexerActionInterface, MviewActionInterface
 {
     const INDEXER_ID = 'nosto_index_product_invalidate';
-
-    public static $disableFullReindex = true;
 
     /** @var NostoHelperAccount */
     private $nostoHelperAccount;
@@ -97,6 +96,9 @@ class Invalidate implements IndexerActionInterface, MviewActionInterface
                 $this->nostoServiceIndex->invalidateOrCreate($productCollection, $store);
                 $collectionSize = $productCollection->getSize();
 
+                //In case for this specific set of ids
+                //there are more entries of products in the indexer table than the magento product collection
+                //it means that some products were deleted
                 if ($idsSize > $collectionSize) {
                     $this->nostoServiceIndex->markProductsAsDeletedByDiff($productCollection, $ids, $store);
                 }
@@ -109,7 +111,7 @@ class Invalidate implements IndexerActionInterface, MviewActionInterface
      */
     public function executeFull()
     {
-        if (!self::$disableFullReindex) {
+        if ($this->allowFullExecution() === true) {
             $storesWithNosto = $this->nostoHelperAccount->getStoresWithNosto();
             foreach ($storesWithNosto as $store) {
                 $productCollection = $this->getCollection($store);
@@ -149,5 +151,13 @@ class Invalidate implements IndexerActionInterface, MviewActionInterface
             $collection->addActiveAndVisibleFilter();
         }
         return $collection;
+    }
+
+    /**
+     * @return bool
+     */
+    public function allowFullExecution()
+    {
+        return IndexerUtil::isCalledFromSetupUpgrade() === false;
     }
 }

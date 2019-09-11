@@ -93,7 +93,7 @@ class Product
     {
         try {
             $indexedProduct = $this->nostoIndexRepository->getOneByProductAndStore($product, $store);
-            if ($indexedProduct instanceof ProductIndexInterface === false) {
+            if ($indexedProduct === null) {
                 $this->nostoIndexService->invalidateOrCreateProductOrParent($product, $store);
                 $indexedProduct = $this->nostoIndexRepository->getOneByProductAndStore($product, $store);
             }
@@ -101,6 +101,9 @@ class Product
                 $indexedProduct = $this->nostoIndexService->rebuildDirtyProduct($indexedProduct);
             }
             $nostoProduct = $indexedProduct->getNostoProduct();
+            if ($nostoProduct === null) {
+                return null;
+            }
             if ($scope !== self::NOSTO_SCOPE_API) {
                 return $nostoProduct->sanitize();
             }
