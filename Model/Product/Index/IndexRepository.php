@@ -305,4 +305,34 @@ class IndexRepository implements ProductIndexRepositoryInterface
             ]
         );
     }
+
+    /**
+     * Marks current items in collection as dirty
+     *
+     * @param Store $store
+     * @return int
+     */
+    public function markAsIsDirtyItemsByStore(IndexCollection $collection, Store $store)
+    {
+        $indexIds = [];
+        /* @var Index $item */
+        foreach ($collection->getItems() as $item) {
+            $indexIds[] = $item->getId();
+        }
+        if (count($indexIds) <= 0) {
+            return 0;
+        }
+        $connection = $collection->getConnection();
+        return $connection->update(
+            $collection->getMainTable(),
+            [
+                Index::IS_DIRTY => Index::DB_VALUE_BOOLEAN_TRUE,
+                Index::UPDATED_AT => $this->magentoTimeZone->date()->format('Y-m-d H:i:s')
+            ],
+            [
+                sprintf('%s IN (?)', Index::ID) => array_unique($indexIds),
+                sprintf('%s=?', Index::STORE_ID) => $store->getId()
+            ]
+        );
+    }
 }

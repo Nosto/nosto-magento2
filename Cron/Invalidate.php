@@ -42,6 +42,7 @@ use Nosto\Tagging\Logger\Logger;
 use Nosto\Tagging\Helper\Account as NostoAccountHelper;
 use Nosto\Tagging\Model\ResourceModel\Product\Index\CollectionFactory as IndexCollectionFactory;
 use Nosto\Tagging\Model\ResourceModel\Product\Index\Collection as NostoIndexCollection;
+use Nosto\Tagging\Model\Product\Index\IndexRepository;
 use Magento\Store\Model\Store;
 
 /**
@@ -62,6 +63,9 @@ class Invalidate
     /** @var NostoAccountHelper */
     private $nostoAccountHelper;
 
+    /** @var IndexRepository */
+    private $indexRepository;
+
     /**
      * Invalidate constructor.
      *
@@ -72,10 +76,12 @@ class Invalidate
     public function __construct(
         Logger $logger,
         IndexCollectionFactory $indexCollectionFactory,
+        IndexRepository $indexRepository,
         NostoAccountHelper $nostoAccountHelper
     ) {
         $this->logger = $logger;
         $this->indexCollectionFactory = $indexCollectionFactory;
+        $this->indexRepository = $indexRepository;
         $this->nostoAccountHelper = $nostoAccountHelper;
     }
 
@@ -88,7 +94,7 @@ class Invalidate
         $stores = $this->nostoAccountHelper->getStoresWithNosto();
         foreach ($stores as $store) {
             $productIndexCollection = $this->getCollection($store);
-            $productIndexCollection->markAsIsDirtyItemsByStore($store);
+            $this->indexRepository->markAsIsDirtyItemsByStore($productIndexCollection, $store);
         }
     }
 
