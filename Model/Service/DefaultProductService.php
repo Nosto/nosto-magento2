@@ -39,7 +39,7 @@ namespace Nosto\Tagging\Model\Service;
 use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Model\ProductRepository;
 use Magento\Framework\Exception\NoSuchEntityException;
-use Magento\Store\Model\Store;
+use Magento\Store\Api\Data\StoreInterface;
 
 class DefaultProductService implements ProductServiceInterface
 {
@@ -58,10 +58,10 @@ class DefaultProductService implements ProductServiceInterface
 
     /**
      * @param ProductInterface $product
-     * @param Store $store
+     * @param StoreInterface $store
      * @return ProductInterface|null
      */
-    public function getProduct(ProductInterface $product, Store $store)
+    public function getProduct(ProductInterface $product, StoreInterface $store)
     {
         try {
             return $this->productRepository->getById(

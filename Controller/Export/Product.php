@@ -59,10 +59,10 @@ class Product extends Base
 {
     const PARAM_PREVIEW = 'preview';
 
+    /** @var NostoProductCollection */
     private $nostoProductCollection;
-    /**
-     * @var NostoSyncService
-     */
+
+    /** @var NostoSyncService */
     private $nostoSyncService;
 
     /**
@@ -76,7 +76,6 @@ class Product extends Base
      */
     public function __construct(
         Context $context,
-        /** @noinspection PhpUndefinedClassInspection */
         NostoHelperScope $nostoHelperScope,
         NostoHelperAccount $nostoHelperAccount,
         NostoProductCollection $nostoProductCollection,

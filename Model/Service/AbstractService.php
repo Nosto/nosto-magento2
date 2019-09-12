@@ -36,6 +36,7 @@
 
 namespace Nosto\Tagging\Model\Service;
 
+use Exception;
 use Magento\Store\Model\Store;
 use Nosto\Exception\MemoryOutOfBoundsException;
 use Nosto\NostoException;
@@ -101,7 +102,7 @@ abstract class AbstractService
      * @param string $name
      * @param bool $writeLog if set to true debug log will be written
      * @return float|null
-     * @throws \Exception
+     * @throws Exception
      */
     public function tickBenchmark(string $name, $writeLog = false)
     {

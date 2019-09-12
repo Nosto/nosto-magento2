@@ -343,10 +343,10 @@ class IndexRepository implements ProductIndexRepositoryInterface
 
     /**
      * @param Index $product
-     * @param Store $store
+     * @param StoreInterface $store
      * @throws Exception
      */
-    public function updateProduct(Index $product, Store $store)
+    public function updateProduct(Index $product, StoreInterface $store)
     {
         $product->setStore($store);
         $product->setIsDirty(false);

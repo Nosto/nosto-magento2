@@ -37,6 +37,7 @@
 
 namespace Nosto\Tagging\Cron;
 
+use DateTime;
 use Exception;
 use Nosto\Tagging\Logger\Logger;
 use Nosto\Tagging\Helper\Account as NostoAccountHelper;
@@ -123,7 +124,7 @@ class Invalidate
      */
     private function getTimeOffset()
     {
-        return (new \DateTime('now'))
+        return (new DateTime('now'))
             ->modify('-'.self::MAX_UPDATED_AT_INTERVAL.' hours')
             ->format('Y-m-d H:i:s');
     }

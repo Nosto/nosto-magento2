@@ -44,7 +44,7 @@ use Magento\Sales\Api\Data\EntityInterface;
 use Magento\Store\Model\Store;
 use Nosto\NostoException;
 use Nosto\Object\Product\ProductCollection;
-use Nosto\Tagging\Model\Service\ProductService as NostoProductService;
+use Nosto\Tagging\Model\Service\ProductServiceInterface as NostoProductService;
 use Nosto\Types\Product\ProductInterface;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Traversable;

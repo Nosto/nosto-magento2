@@ -39,12 +39,8 @@ namespace Nosto\Tagging\Model\Indexer;
 use Exception;
 use Magento\Framework\Indexer\ActionInterface as IndexerActionInterface;
 use Magento\Framework\Mview\ActionInterface as MviewActionInterface;
-use Nosto\Tagging\Model\Product\Index\Index as NostoIndex;
-use Nosto\Tagging\Model\ResourceModel\Product\Index\Collection as IndexCollection;
-use Nosto\Tagging\Model\ResourceModel\Product\Index\CollectionFactory as IndexCollectionFactory;
 use Nosto\Tagging\Model\Service\Index as NostoIndexService;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
-use Magento\Store\Model\Store;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Exception\MemoryOutOfBoundsException;
 
@@ -57,9 +53,6 @@ class Data implements IndexerActionInterface, MviewActionInterface
 
     /** @var NostoIndexService */
     private $nostoServiceIndex;
-
-    /** @var IndexCollectionFactory */
-    private $indexCollectionFactory;
 
     /** @var NostoHelperAccount */
     private $nostoHelperAccount;

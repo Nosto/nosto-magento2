@@ -43,7 +43,6 @@ use Magento\Catalog\Model\ResourceModel\Product\Collection as ProductCollection;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
 use Magento\Store\Model\Store;
-use Nosto\Exception\MemoryOutOfBoundsException;
 use Nosto\NostoException;
 use Nosto\Tagging\Api\Data\ProductIndexInterface;
 use Nosto\Tagging\Helper\Data as NostoDataHelper;
@@ -184,7 +183,6 @@ class Index extends AbstractService
     /**
      * @param Store $store
      * @param array $ids
-     * @throws MemoryOutOfBoundsException
      * @throws NostoException
      */
     public function indexProducts(Store $store, array $ids = [])
