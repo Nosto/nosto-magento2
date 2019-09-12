@@ -41,7 +41,7 @@ use Magento\Catalog\Model\ProductRepository;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Store\Model\Store;
 
-class DefaultProductService implements ProductService
+class DefaultProductService implements ProductServiceInterface
 {
     /** @var ProductRepository */
     private $productRepository;
@@ -52,8 +52,7 @@ class DefaultProductService implements ProductService
      */
     public function __construct(
         ProductRepository $productRepository
-    )
-    {
+    ) {
         $this->productRepository = $productRepository;
     }
 

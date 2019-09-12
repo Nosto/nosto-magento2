@@ -75,6 +75,10 @@ class Collection
         $this->logger = $logger;
     }
 
+    /**
+     * @param Store $store
+     * @return \Magento\Catalog\Model\ResourceModel\Product\Collection
+     */
     public function getCollection(Store $store)
     {
         /** @var \Magento\Catalog\Model\ResourceModel\Product\Collection $collection */

@@ -64,6 +64,7 @@ class IndexRepository implements ProductIndexRepositoryInterface
      *
      * @param IndexResource $indexResource
      * @param IndexCollectionFactory $indexCollectionFactory
+     * @param TimezoneInterface $magentoTimeZone
      */
     public function __construct(
         IndexResource $indexResource,

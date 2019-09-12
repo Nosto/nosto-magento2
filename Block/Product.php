@@ -38,6 +38,7 @@
 namespace Nosto\Tagging\Block;
 
 use Exception;
+use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Catalog\Block\Product\Context;
 use Magento\Catalog\Block\Product\View;
@@ -53,7 +54,7 @@ use Nosto\Helper\PriceHelper;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Model\Category\Builder as NostoCategoryBuilder;
-use Nosto\Tagging\Model\Service\ProductService as NostoProductService;
+use Nosto\Tagging\Model\Service\ProductServiceInterface as NostoProductService;
 
 /**
  * Product block used for outputting meta-data on the stores product pages.
@@ -132,7 +133,7 @@ class Product extends View
     /**
      * Returns the Nosto product DTO.
      *
-     * @return \Nosto\Object\Product\Product the product meta data model.
+     * @return ProductInterface
      * @throws Exception
      */
     public function getAbstractObject()

@@ -37,35 +37,30 @@
 namespace Nosto\Tagging\Model\Service;
 
 use Magento\Catalog\Api\Data\ProductInterface;
-use Nosto\Tagging\Model\Service\ProductService as NostoProductService;
-use Magento\Store\Model\Store;
+use Nosto\Tagging\Model\Service\ProductServiceInterface as NostoProductService;
+use Magento\Store\Api\Data\StoreInterface;
 
-class SanitizingProductService implements ProductService
+class SanitizingProductService implements ProductServiceInterface
 {
-    /**
-     * @var ProductService
-     */
+    /** @var ProductServiceInterface */
     private $nostoProductService;
 
     /**
      * DefaultProductService constructor.
-     * @param ProductService $nostoProductService
+     * @param ProductServiceInterface $nostoProductService
      */
     public function __construct(
         NostoProductService $nostoProductService
-    )
-    {
+    ) {
         $this->nostoProductService = $nostoProductService;
     }
 
     /**
-     * @param ProductInterface $product
-     * @param Store $store
-     * @return void
+     * @inheritDoc
      */
-    public function getProduct(ProductInterface $product, Store $store)
+    public function getProduct(ProductInterface $product, StoreInterface $store)
     {
-        $product = $this->nostoProductService->getProduct(
+        return $this->nostoProductService->getProduct(
             $product,
             $store
         );

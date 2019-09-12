@@ -71,6 +71,7 @@ class Invalidate
      *
      * @param Logger $logger
      * @param IndexCollectionFactory $indexCollectionFactory
+     * @param IndexRepository $indexRepository
      * @param NostoAccountHelper $nostoAccountHelper
      */
     public function __construct(

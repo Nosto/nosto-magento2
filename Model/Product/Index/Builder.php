@@ -38,8 +38,6 @@ namespace Nosto\Tagging\Model\Product\Index;
 
 use Magento\Catalog\Model\Product;
 use Magento\Store\Model\Store;
-use Nosto\NostoException;
-use Nosto\Object\Product\Product as NostoProduct;
 use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
 use Nosto\Tagging\Model\Product\BuilderTrait;
 use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
@@ -62,16 +60,13 @@ class Builder
     /**
      * Builder constructor.
      * @param IndexFactory $nostoIndexFactory
-     * @param NostoProductBuilder $nostoProductBuilder
      * @param TimezoneInterface $magentoTimeZone
      */
     public function __construct(
         IndexFactory $nostoIndexFactory,
-        NostoProductBuilder $nostoProductBuilder,
         TimezoneInterface $magentoTimeZone
     ) {
         $this->nostoIndexFactory = $nostoIndexFactory;
-        $this->nostoProductBuilder = $nostoProductBuilder;
         $this->magentoTimeZone = $magentoTimeZone;
     }
 

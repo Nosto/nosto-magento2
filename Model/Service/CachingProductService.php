@@ -43,40 +43,34 @@ use Nosto\Tagging\Model\Product\Index\Builder as NostoIndexBuilder;
 use Nosto\Tagging\Model\Product\Index\IndexRepository as NostoIndexRepository;
 use Magento\Catalog\Api\Data\ProductInterface;
 
-class CachingProductService implements ProductService
+class CachingProductService implements ProductServiceInterface
 {
     const NOSTO_SCOPE_TAGGING = 'tagging';
     const NOSTO_SCOPE_API = 'api';
 
-    /**
-     * @var NostoIndexRepository
-     */
+    /** @var NostoIndexRepository */
     private $nostoIndexRepository;
 
-    /**
-     * @var Logger
-     */
+    /** @var Logger */
     private $nostoLogger;
-    /**
-     * @var ProductService
-     */
+
+    /** @var ProductServiceInterface */
     private $productService;
-    /**
-     * @var NostoIndexBuilder
-     */
+
+    /** @var NostoIndexBuilder */
     private $nostoIndexBuilder;
 
     /**
      * Index constructor.
      * @param NostoIndexRepository $nostoIndexRepository
      * @param Logger $nostoLogger
-     * @param ProductService $productService
+     * @param ProductServiceInterface $productService
      * @param NostoIndexBuilder $nostoIndexBuilder
      */
     public function __construct(
         NostoIndexRepository $nostoIndexRepository,
         Logger $nostoLogger,
-        ProductService $productService,
+        ProductServiceInterface $productService,
         NostoIndexBuilder $nostoIndexBuilder
     ) {
         $this->nostoIndexRepository = $nostoIndexRepository;
@@ -85,6 +79,11 @@ class CachingProductService implements ProductService
         $this->nostoIndexBuilder = $nostoIndexBuilder;
     }
 
+    /**
+     * @param ProductInterface $product
+     * @param Store $store
+     * @return \Nosto\Types\Product\ProductInterface|null
+     */
     public function getProduct(ProductInterface $product, Store $store)
     {
         try {

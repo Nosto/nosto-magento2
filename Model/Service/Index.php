@@ -104,6 +104,7 @@ class Index extends AbstractService
      * @param ProductRepository $productRepository
      * @param NostoProductBuilder $nostoProductBuilder
      * @param NostoHelperScope $nostoHelperScope
+     * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoLogger $logger
      * @param NostoIndexCollectionFactory $nostoIndexCollectionFactory
      * @param TimezoneInterface $magentoTimeZone
@@ -160,7 +161,7 @@ class Index extends AbstractService
     }
 
     /**
-     * @param CachingProductService $product
+     * @param Product $product
      * @param Store $store
      */
     public function updateOrCreateDirtyEntity(Product $product, Store $store)
@@ -203,7 +204,6 @@ class Index extends AbstractService
      * @param NostoIndexCollection $collection
      * @param Store $store
      * @throws NostoException
-     * @throws MemoryOutOfBoundsException
      */
     public function rebuildDirtyProducts(NostoIndexCollection $collection, Store $store)
     {
