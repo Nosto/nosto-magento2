@@ -34,7 +34,6 @@
  *
  */
 
-/** @noinspection PhpDeprecationInspection */
 namespace Nosto\Tagging\Block;
 
 use Exception;
@@ -67,11 +66,10 @@ class Product extends View
         TaggingTrait::__construct as taggingConstruct; // @codingStandardsIgnoreLine
     }
 
-    private $nostoProductBuilder;
+    /** @var NostoCategoryBuilder */
     private $categoryBuilder;
-    /**
-     * @var NostoProductService
-     */
+
+    /** @var NostoProductService */
     private $nostoProductService;
 
     /**
@@ -138,10 +136,9 @@ class Product extends View
      */
     public function getAbstractObject()
     {
-        $store = $this->nostoHelperScope->getStore();
         return $this->nostoProductService->getProduct(
-            $this->getProduct(), //@TODO: add scope, sanitizing product service
-            $store
+            $this->getProduct(),
+            $this->nostoHelperScope->getStore()
         );
     }
 

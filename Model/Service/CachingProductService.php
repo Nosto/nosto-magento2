@@ -40,14 +40,11 @@ use Exception;
 use Magento\Store\Api\Data\StoreInterface;
 use Magento\Catalog\Api\Data\ProductInterface;
 use Nosto\Tagging\Logger\Logger;
-use Nosto\Tagging\Model\Product\Index\Builder as NostoIndexBuilder;
 use Nosto\Tagging\Model\Product\Index\IndexRepository as NostoIndexRepository;
 use Nosto\Tagging\Model\Service\Index as NostoIndexService;
 
 class CachingProductService implements ProductServiceInterface
 {
-    const NOSTO_SCOPE_TAGGING = 'tagging'; // @TODO REMOVE after checking
-    const NOSTO_SCOPE_API = 'api';
 
     /** @var NostoIndexRepository */
     private $nostoIndexRepository;
@@ -95,7 +92,6 @@ class CachingProductService implements ProductServiceInterface
                     return null;
                 }
                 $this->nostoIndexService->updateOrCreateDirtyEntity($fullProduct, $store);
-                $this->nostoIndexRepository->updateProduct($indexedProduct, $store);
             }
             return $indexedProduct->getNostoProduct();
         } catch (Exception $e) {
