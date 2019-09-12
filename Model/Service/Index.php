@@ -210,13 +210,14 @@ class Index extends AbstractService
     {
         $collection = $this->productCollectionFactory->create();
         $collection->addIdsToFilter($ids);
-        /** @var Product $product */
-        foreach ($collection->getItems() as $product) {
+        $collection->setPageSize(self::PRODUCT_DATA_BATCH_SIZE);
+        $iterator = new Iterator($collection);
+        $iterator->each(function (Product $product) use ($store) {
             if ($this->hasParentBeenInvalidated($product->getId()) === false) {
                 $this->updateOrCreateDirtyEntity($product, $store);
                 $this->invalidatedProducts[] = $product->getId();
             }
-        }
+        });
     }
 
     /**
