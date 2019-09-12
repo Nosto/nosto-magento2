@@ -39,15 +39,13 @@ namespace Nosto\Tagging\Model\ResourceModel\Magento\Product;
 use Magento\Catalog\Model\Product\Visibility;
 use Magento\Catalog\Model\ResourceModel\Product\Collection as MagentoProductCollection;
 use Magento\Catalog\Model\Product\Attribute\Source\Status;
-use Magento\Store\Model\Store;
 
 class Collection extends MagentoProductCollection
 {
     /**
-     * @param Store $store
      * @return Collection
      */
-    public function addActiveAndVisibleFilterByStore(Store $store)
+    public function addActiveAndVisibleFilter()
     {
         return $this->addAttributeToSelect($this->getIdFieldName())
             ->addAttributeToFilter(
@@ -56,6 +54,15 @@ class Collection extends MagentoProductCollection
             )->addAttributeToFilter(
                 'visibility',
                 ['neq'=> Visibility::VISIBILITY_NOT_VISIBLE]
-            )->addStoreFilter($store);
+            );
+    }
+
+    /**
+     * @param array $ids
+     * @return Collection
+     */
+    public function addIdsToFilter(array $ids)
+    {
+        return $this->addAttributeToFilter($this->getIdFieldName(), ['in', $ids]);
     }
 }

@@ -182,7 +182,7 @@ class Sync extends AbstractService
     public function deleteIndexedProducts(NostoIndexCollection $collection, Store $store)
     {
         if ($collection->getSize() === 0) {
-            return 0;
+            return;
         }
         $account = $this->nostoHelperAccount->findAccount($store);
         if ($account instanceof NostoSignupAccount === false) {
