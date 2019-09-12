@@ -39,26 +39,26 @@ namespace Nosto\Tagging\Model\Service;
 use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\ProductRepository;
-use Nosto\Tagging\Model\ResourceModel\Magento\Product\Collection as ProductCollection;
-use Nosto\Tagging\Model\ResourceModel\Magento\Product\CollectionFactory as ProductCollectionFactory;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
 use Magento\Store\Model\Store;
 use Nosto\Exception\MemoryOutOfBoundsException;
 use Nosto\NostoException;
-use Nosto\Tagging\Api\Data\ProductIndexInterface;
-use Nosto\Tagging\Helper\Data as NostoDataHelper;
-use Nosto\Tagging\Helper\Account as NostoHelperAccount;
-use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Object\Signup\Account as NostoSignupAccount;
+use Nosto\Tagging\Api\Data\ProductIndexInterface;
+use Nosto\Tagging\Helper\Account as NostoHelperAccount;
+use Nosto\Tagging\Helper\Data as NostoDataHelper;
+use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
 use Nosto\Tagging\Model\Product\Index\Builder;
 use Nosto\Tagging\Model\Product\Index\Index as NostoProductIndex;
 use Nosto\Tagging\Model\Product\Index\IndexRepository;
+use Nosto\Tagging\Model\Product\Repository as NostoProductRepository;
+use Nosto\Tagging\Model\ResourceModel\Magento\Product\Collection as ProductCollection;
+use Nosto\Tagging\Model\ResourceModel\Magento\Product\CollectionFactory as ProductCollectionFactory;
 use Nosto\Tagging\Model\ResourceModel\Product\Index\Collection as NostoIndexCollection;
 use Nosto\Tagging\Model\ResourceModel\Product\Index\CollectionFactory as NostoIndexCollectionFactory;
-use Nosto\Tagging\Model\Product\Repository as NostoProductRepository;
 use Nosto\Tagging\Util\Iterator;
 use Nosto\Tagging\Util\Product as ProductUtil;
 use Nosto\Types\Product\ProductInterface as NostoProductInterface;
@@ -179,7 +179,6 @@ class Index extends AbstractService
     /**
      * @param Product $product
      * @param Store $store
-     * @throws NoSuchEntityException
      * @throws NostoException
      */
     public function invalidateOrCreateProductOrParent(Product $product, Store $store)
@@ -187,7 +186,7 @@ class Index extends AbstractService
         $parents = $this->nostoProductRepository->resolveParentProductIds($product);
 
         //Products has no parents and Index product itself
-        if ($parents === null || (is_array($parents) && count($parents) == 0)) {
+        if (empty($parents)) {
             $this->updateOrCreateDirtyEntity($product, $store);
             $this->invalidatedProducts[] = $product->getId();
             return;
@@ -199,7 +198,7 @@ class Index extends AbstractService
             return;
         }
 
-        throw new NostoException('Could not index product with id: '. $product->getId());
+        throw new NostoException('Could not index product with id: ' . $product->getId());
     }
 
     /**
@@ -211,11 +210,10 @@ class Index extends AbstractService
     {
         $collection = $this->productCollectionFactory->create();
         $collection->addIdsToFilter($ids);
-        $collection->load();
         /** @var Product $product */
         foreach ($collection->getItems() as $product) {
-            if (!$this->hasParentBeenInvalidated($product->getId())) {
-                $this->updateOrCreateDirtyEntity($product, $store); // @codingStandardsIgnoreLine
+            if ($this->hasParentBeenInvalidated($product->getId()) === false) {
+                $this->updateOrCreateDirtyEntity($product, $store);
                 $this->invalidatedProducts[] = $product->getId();
             }
         }
@@ -236,7 +234,7 @@ class Index extends AbstractService
     /**
      * @param Product $product
      * @param Store $store
-     * @return ProductIndexInterface|NostoProductIndex|null
+     * @return void
      * @throws NostoException
      */
     private function updateOrCreateDirtyEntity(Product $product, Store $store)
@@ -283,7 +281,6 @@ class Index extends AbstractService
      * @param NostoIndexCollection $collection
      * @param Store $store
      * @throws NostoException
-     * @throws MemoryOutOfBoundsException
      */
     public function rebuildDirtyProducts(NostoIndexCollection $collection, Store $store)
     {
