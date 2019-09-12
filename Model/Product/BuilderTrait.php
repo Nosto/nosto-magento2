@@ -55,6 +55,7 @@ trait BuilderTrait
 
     /**
      * @param NostoHelperData $nostoHelperData
+     * @param StockRegistryInterface $stockRegistry
      * @param NostoLogger $logger
      */
     public function __construct(

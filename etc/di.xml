@@ -105,4 +105,20 @@
             <argument name="customerSession" xsi:type="object">Magento\Customer\Model\Session\Proxy</argument>
         </arguments>
     </type>
+
+    <type name="Nosto\Tagging\Model\Service\CachingProductService">
+        <arguments>
+            <argument name="nostoProductService" xsi:type="object">Nosto\Tagging\Model\Service\DefaultProductService</argument>
+        </arguments>
+    </type>
+    <type name="Nosto\Tagging\Model\Service\SanitizingProductService">
+        <arguments>
+            <argument name="nostoProductService" xsi:type="object">Nosto\Tagging\Model\Service\CachingProductService</argument>
+        </arguments>
+    </type>
+    <type name="Nosto\Tagging\Block\Product">
+        <arguments>
+            <argument name="nostoProductService" xsi:type="object">Nosto\Tagging\Model\Service\SanitizingProductService</argument>
+        </arguments>
+    </type>
 </config>

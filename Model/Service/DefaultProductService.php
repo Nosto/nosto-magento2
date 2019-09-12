@@ -37,41 +37,44 @@
 namespace Nosto\Tagging\Model\Service;
 
 use Magento\Catalog\Api\Data\ProductInterface;
-use Magento\Catalog\Model\ProductRepository;
-use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Store\Api\Data\StoreInterface;
+use Magento\Catalog\Model\ProductRepository;
+use Nosto\Object\Product\Product;
+use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
 
 class DefaultProductService implements ProductServiceInterface
 {
     /** @var ProductRepository */
     private $productRepository;
 
+    /** @var NostoProductBuilder */
+    private $nostoProductBuilder;
+
     /**
      * DefaultProductService constructor.
      * @param ProductRepository $productRepository
+     * @param NostoProductBuilder $nostoProductBuilder
      */
     public function __construct(
-        ProductRepository $productRepository
+        ProductRepository $productRepository,
+        NostoProductBuilder $nostoProductBuilder
     ) {
         $this->productRepository = $productRepository;
+        $this->nostoProductBuilder = $nostoProductBuilder;
     }
 
     /**
+     * @TODO: dockblock here
      * @param ProductInterface $product
      * @param StoreInterface $store
-     * @return ProductInterface|null
+     * @return Product|null
+     * @throws \Exception
      */
     public function getProduct(ProductInterface $product, StoreInterface $store)
     {
-        try {
-            return $this->productRepository->getById(
-                $product->getId(),
-                false,
-                $store->getId(),
-                true
-            );
-        } catch (NoSuchEntityException $e) {
-            return null;
-        }
+        return $this->nostoProductBuilder->build(
+            $product,
+            $store
+        );
     }
 }

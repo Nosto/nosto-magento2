@@ -42,10 +42,11 @@ use Magento\Catalog\Api\Data\ProductInterface;
 use Nosto\Tagging\Logger\Logger;
 use Nosto\Tagging\Model\Product\Index\Builder as NostoIndexBuilder;
 use Nosto\Tagging\Model\Product\Index\IndexRepository as NostoIndexRepository;
+use Nosto\Tagging\Model\Service\Index as NostoIndexService;
 
 class CachingProductService implements ProductServiceInterface
 {
-    const NOSTO_SCOPE_TAGGING = 'tagging';
+    const NOSTO_SCOPE_TAGGING = 'tagging'; // @TODO REMOVE after checking
     const NOSTO_SCOPE_API = 'api';
 
     /** @var NostoIndexRepository */
@@ -55,28 +56,28 @@ class CachingProductService implements ProductServiceInterface
     private $nostoLogger;
 
     /** @var ProductServiceInterface */
-    private $productService;
+    private $nostoProductService;
 
-    /** @var NostoIndexBuilder */
-    private $nostoIndexBuilder;
+    /** @var NostoIndexService */
+    private $nostoIndexService;
 
     /**
      * Index constructor.
      * @param NostoIndexRepository $nostoIndexRepository
      * @param Logger $nostoLogger
-     * @param ProductServiceInterface $productService
-     * @param NostoIndexBuilder $nostoIndexBuilder
+     * @param ProductServiceInterface $nostoProductService
+     * @param NostoIndexService $nostoIndexService
      */
     public function __construct(
         NostoIndexRepository $nostoIndexRepository,
         Logger $nostoLogger,
-        ProductServiceInterface $productService,
-        NostoIndexBuilder $nostoIndexBuilder
+        ProductServiceInterface $nostoProductService,
+        NostoIndexService $nostoIndexService
     ) {
         $this->nostoIndexRepository = $nostoIndexRepository;
         $this->nostoLogger = $nostoLogger;
-        $this->productService = $productService;
-        $this->nostoIndexBuilder = $nostoIndexBuilder;
+        $this->nostoProductService = $nostoProductService;
+        $this->nostoIndexService = $nostoIndexService;
     }
 
     /**
@@ -89,11 +90,11 @@ class CachingProductService implements ProductServiceInterface
         try {
             $indexedProduct = $this->nostoIndexRepository->getOneByProductAndStore($product, $store);
             if ($indexedProduct === null || $indexedProduct->getIsDirty()) {
-                $fullProduct = $this->productService->getProduct($product, $store);
+                $fullProduct = $this->nostoProductService->getProduct($product, $store);
                 if ($fullProduct === null) {
                     return null;
                 }
-                $indexedProduct = $this->nostoIndexBuilder->build($fullProduct, $store);
+                $this->nostoIndexService->updateOrCreateDirtyEntity($fullProduct, $store);
                 $this->nostoIndexRepository->updateProduct($indexedProduct, $store);
             }
             return $indexedProduct->getNostoProduct();

@@ -37,6 +37,7 @@
 namespace Nosto\Tagging\Model\Service;
 
 use Magento\Catalog\Api\Data\ProductInterface;
+use Magento\Store\Api\Data\StoreInterface;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\ProductRepository;
 use Magento\Catalog\Model\ResourceModel\Product\Collection as ProductCollection;
@@ -160,15 +161,14 @@ class Index extends AbstractService
     }
 
     /**
-     * @param Product $product
-     * @param Store $store
+     * @param ProductInterface $product
+     * @param StoreInterface $store
      */
-    public function updateOrCreateDirtyEntity(Product $product, Store $store)
+    public function updateOrCreateDirtyEntity(ProductInterface $product, StoreInterface $store)
     {
         $indexedProduct = $this->indexRepository->getByProductIdAndStoreId($product->getId(), $store->getId());
         try {
             if ($indexedProduct === null) {
-                /* @var CachingProductService $fullProduct */
                 $fullProduct = $this->loadMagentoProduct($product->getId(), $store->getId());
                 $indexedProduct = $this->indexBuilder->build($fullProduct, $store);
             }
@@ -229,7 +229,6 @@ class Index extends AbstractService
     public function rebuildDirtyProduct(ProductIndexInterface $productIndex)
     {
         try {
-            /* @var CachingProductService $magentoProduct */
             $magentoProduct = $this->loadMagentoProduct(
                 $productIndex->getProductId(),
                 $productIndex->getStoreId()
