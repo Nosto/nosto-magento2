@@ -71,7 +71,7 @@ class DefaultProductService implements ProductServiceInterface
         /** @var MageProduct $product */
         /** @var Store $store */
         return $this->nostoProductBuilder->build(
-            $product,
+            $product, // @codingStandardsIgnoreLine
             $store
         );
     }
