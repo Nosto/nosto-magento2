@@ -64,6 +64,7 @@ class DefaultProductService implements ProductServiceInterface
      * @param ProductInterface $product
      * @param StoreInterface $store
      * @return Product|null
+     * @suppress PhanTypeMismatchArgument
      * @throws Exception
      */
     public function getProduct(ProductInterface $product, StoreInterface $store)
@@ -71,7 +72,7 @@ class DefaultProductService implements ProductServiceInterface
         /** @var MageProduct $product */
         /** @var Store $store */
         return $this->nostoProductBuilder->build(
-            $product, // @codingStandardsIgnoreLine
+            $product,
             $store
         );
     }

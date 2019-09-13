@@ -105,7 +105,6 @@
             <argument name="customerSession" xsi:type="object">Magento\Customer\Model\Session\Proxy</argument>
         </arguments>
     </type>
-
     <type name="Nosto\Tagging\Model\Service\CachingProductService">
         <arguments>
             <argument name="nostoProductService" xsi:type="object">Nosto\Tagging\Model\Service\DefaultProductService</argument>

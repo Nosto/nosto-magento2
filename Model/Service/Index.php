@@ -242,7 +242,7 @@ class Index extends AbstractService
     {
         $indexedProduct = $this->indexRepository->getByProductIdAndStoreId($product->getId(), $store->getId());
         try {
-            if ($indexedProduct === null) {
+            if ($indexedProduct === null) { // Creates Index Product
                 $fullProduct = $this->loadMagentoProduct($product->getId(), $store->getId());
                 $indexedProduct = $this->indexBuilder->build($fullProduct, $store);
             }

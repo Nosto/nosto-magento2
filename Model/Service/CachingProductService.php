@@ -78,6 +78,10 @@ class CachingProductService implements ProductServiceInterface
     }
 
     /**
+     * Get Nosto Product
+     * If is not indexed or dirty, rebuilds, saves product to the indexed table
+     * and returns NostoProduct from indexed product
+     *
      * @param ProductInterface $product
      * @param StoreInterface $store
      * @return \Nosto\Types\Product\ProductInterface|null
@@ -92,7 +96,6 @@ class CachingProductService implements ProductServiceInterface
                     return null;
                 }
                 $this->nostoIndexService->updateOrCreateDirtyEntity($fullProduct, $store);
-                $this->nostoIndexService->invalidateOrCreateProductOrParent($product, $store);
                 $indexedProduct = $this->nostoIndexRepository->getOneByProductAndStore($product, $store);
             }
             return $indexedProduct->getNostoProduct();
