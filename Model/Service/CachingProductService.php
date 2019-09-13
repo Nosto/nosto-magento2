@@ -92,6 +92,8 @@ class CachingProductService implements ProductServiceInterface
                     return null;
                 }
                 $this->nostoIndexService->updateOrCreateDirtyEntity($fullProduct, $store);
+                $this->nostoIndexService->invalidateOrCreateProductOrParent($product, $store);
+                $indexedProduct = $this->nostoIndexRepository->getOneByProductAndStore($product, $store);
             }
             return $indexedProduct->getNostoProduct();
         } catch (Exception $e) {
