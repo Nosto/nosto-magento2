@@ -36,6 +36,7 @@
 
 namespace Nosto\Tagging\Model\Service;
 
+use Exception;
 use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Store\Api\Data\StoreInterface;
 use Magento\Catalog\Model\Product;
@@ -249,7 +250,7 @@ class Index extends AbstractService
             $indexedProduct->setIsDirty(true);
             $indexedProduct->setUpdatedAt($this->magentoTimeZone->date());
             $this->indexRepository->save($indexedProduct);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->getLogger()->exception($e);
         }
     }
@@ -322,7 +323,7 @@ class Index extends AbstractService
             $productIndex->setIsDirty(false);
             $this->indexRepository->save($productIndex);
             return $productIndex;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->getLogger()->exception($e);
             return null;
         }
@@ -344,7 +345,7 @@ class Index extends AbstractService
         $collection->setPageSize(self::PRODUCT_DELETION_BATCH_SIZE);
         $iterator = new Iterator($collection);
         $iterator->each(static function (Product $magentoProduct) use (&$uniqueIds) {
-            $key = array_search($magentoProduct->getId(), $uniqueIds);
+            $key = array_search($magentoProduct->getId(), $uniqueIds, false);
             if (is_numeric($key)) {
                 unset($uniqueIds[$key]);
             }
