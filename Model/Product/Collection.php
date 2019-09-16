@@ -39,6 +39,7 @@ namespace Nosto\Tagging\Model\Product;
 use Exception;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\Product\Visibility as ProductVisibility;
+use Magento\Catalog\Model\ResourceModel\Product\Collection as MageProductCollection;
 use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductCollectionFactory;
 use Magento\Sales\Api\Data\EntityInterface;
 use Magento\Store\Model\Store;
@@ -77,12 +78,11 @@ class Collection
 
     /**
      * @param Store $store
-     * @return \Magento\Catalog\Model\ResourceModel\Product\Collection
+     * @return MageProductCollection
      */
     public function getCollection(Store $store)
     {
-        /** @var \Magento\Catalog\Model\ResourceModel\Product\Collection $collection */
-        /** @noinspection PhpUndefinedMethodInspection */
+        /** @var MageProductCollection $collection */
         $collection = $this->productCollectionFactory->create();
         $collection->setVisibility($this->productVisibility->getVisibleInSiteIds());
         $collection->addAttributeToFilter('status', ['eq' => '1']);
@@ -128,7 +128,7 @@ class Collection
      */
     private function build(Store $store, $collection)
     {
-        /** @var \Magento\Catalog\Model\ResourceModel\Product\Collection $collection */
+        /** @var MageProductCollection $collection */
         $products = new ProductCollection();
         $items = $collection->loadData();
         if ($items instanceof Traversable === false && !is_array($items)) {
