@@ -39,10 +39,10 @@ namespace Nosto\Tagging\Model\Service;
 use Exception;
 use Magento\Store\Api\Data\StoreInterface;
 use Magento\Catalog\Api\Data\ProductInterface;
-use Nosto\Object\Product\Product;
 use Nosto\Tagging\Logger\Logger;
 use Nosto\Tagging\Model\Product\Index\IndexRepository as NostoIndexRepository;
 use Nosto\Tagging\Model\Service\Index as NostoIndexService;
+use Nosto\Types\Product\ProductInterface as NostoProductInterface;
 
 class CachingProductService implements ProductServiceInterface
 {
@@ -85,7 +85,7 @@ class CachingProductService implements ProductServiceInterface
      *
      * @param ProductInterface $product
      * @param StoreInterface $store
-     * @return Product|null
+     * @return NostoProductInterface|null
      */
     public function getProduct(ProductInterface $product, StoreInterface $store)
     {

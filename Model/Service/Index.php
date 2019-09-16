@@ -304,6 +304,7 @@ class Index extends AbstractService
     public function rebuildDirtyProduct(ProductIndexInterface $productIndex)
     {
         try {
+            /** @var Product $magentoProduct */
             $magentoProduct = $this->loadMagentoProduct(
                 $productIndex->getProductId(),
                 $productIndex->getStoreId()
@@ -401,7 +402,7 @@ class Index extends AbstractService
      * Loads (or reloads) Product object
      * @param int $productId
      * @param int $storeId
-     * @return Product
+     * @return ProductInterface|Product
      * @throws NoSuchEntityException
      */
     private function loadMagentoProduct(int $productId, int $storeId)

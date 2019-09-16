@@ -241,7 +241,7 @@ class IndexRepository implements ProductIndexRepositoryInterface
      *
      * @param IndexCollection $collection
      * @param Store $store
-     * @return int
+     * @return int number of deleted rows
      */
     public function deleteCurrentItemsByStore(IndexCollection $collection, Store $store)
     {
