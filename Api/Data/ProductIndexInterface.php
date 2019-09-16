@@ -201,7 +201,7 @@ interface ProductIndexInterface
     public function setMagentoProduct(MagentoProductInterface $product);
 
     /**
-     * @return NostoProductInterface|null
+     * @return Product|null
      */
     public function getNostoProduct();
 
