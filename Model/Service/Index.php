@@ -401,7 +401,7 @@ class Index extends AbstractService
      * Loads (or reloads) Product object
      * @param int $productId
      * @param int $storeId
-     * @return ProductInterface|CachingProductService|mixed
+     * @return Product
      * @throws NoSuchEntityException
      */
     private function loadMagentoProduct(int $productId, int $storeId)
