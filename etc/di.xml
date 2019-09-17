@@ -122,7 +122,7 @@
     </type>
     <type name="Nosto\Tagging\Model\Product\Collection">
         <arguments>
-            <argument name="nostoProductService" xsi:type="object">Nosto\Tagging\Model\Service\CachingProductService</argument>
+            <argument name="productServiceInterface" xsi:type="object">Nosto\Tagging\Model\Service\CachingProductService</argument>
         </arguments>
     </type>
 </config>

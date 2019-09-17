@@ -45,7 +45,7 @@ use Magento\Sales\Api\Data\EntityInterface;
 use Magento\Store\Model\Store;
 use Nosto\NostoException;
 use Nosto\Object\Product\ProductCollection as NostoProductCollection;
-use Nosto\Tagging\Model\Service\ProductServiceInterface as NostoProductService;
+use Nosto\Tagging\Model\Service\ProductServiceInterface;
 use Nosto\Types\Product\ProductInterface;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Traversable;
@@ -54,25 +54,25 @@ class Collection
 {
     private $productCollectionFactory;
     private $productVisibility;
-    private $nostoProductService;
+    private $productServiceInterface;
     private $logger;
 
     /**
      * Collection constructor.
      * @param ProductCollectionFactory $productCollectionFactory
      * @param ProductVisibility $productVisibility
-     * @param NostoProductService $nostoProductService
+     * @param ProductServiceInterface $productServiceInterface
      * @param NostoLogger $logger
      */
     public function __construct(
         ProductCollectionFactory $productCollectionFactory,
         ProductVisibility $productVisibility,
-        NostoProductService $nostoProductService,
+        ProductServiceInterface $productServiceInterface,
         NostoLogger $logger
     ) {
         $this->productCollectionFactory = $productCollectionFactory;
         $this->productVisibility = $productVisibility;
-        $this->nostoProductService = $nostoProductService;
+        $this->productServiceInterface = $productServiceInterface;
         $this->logger = $logger;
     }
 
@@ -139,7 +139,7 @@ class Collection
         foreach ($items as $product) {
             /** @var Product $product */
             try {
-                $nostoProduct = $this->nostoProductService->getProduct(
+                $nostoProduct = $this->productServiceInterface->getProduct(
                     $product,
                     $store
                 );
