@@ -7,9 +7,12 @@
             <schedule>4 * * * *</schedule>
         </job>
     </group>
-    <group id="nosto_invalidate_indexer_group">
+    <group id="nosto_indexer_group">
         <job name="nosto_invalidate_data" instance="Nosto\Tagging\Cron\Invalidate" method="execute">
             <schedule>0 * * * *</schedule>
+        </job>
+        <job name="nosto_upsert_product_data" instance="Nosto\Tagging\Cron\Upsert" method="execute">
+            <schedule>* * * * *</schedule>
         </job>
     </group>
 </config>
