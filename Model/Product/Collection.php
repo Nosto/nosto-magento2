@@ -39,12 +39,12 @@ namespace Nosto\Tagging\Model\Product;
 use Exception;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\Product\Visibility as ProductVisibility;
-use Magento\Catalog\Model\ResourceModel\Product\Collection as MageProductCollection;
+use Magento\Catalog\Model\ResourceModel\Product\Collection as ProductCollection;
 use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductCollectionFactory;
 use Magento\Sales\Api\Data\EntityInterface;
 use Magento\Store\Model\Store;
 use Nosto\NostoException;
-use Nosto\Object\Product\ProductCollection;
+use Nosto\Object\Product\ProductCollection as NostoProductCollection;
 use Nosto\Tagging\Model\Service\ProductServiceInterface as NostoProductService;
 use Nosto\Types\Product\ProductInterface;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
@@ -78,11 +78,11 @@ class Collection
 
     /**
      * @param Store $store
-     * @return MageProductCollection
+     * @return ProductCollection
      */
     public function getCollection(Store $store)
     {
-        /** @var MageProductCollection $collection */
+        /** @var ProductCollection $collection */
         $collection = $this->productCollectionFactory->create();
         $collection->setVisibility($this->productVisibility->getVisibleInSiteIds());
         $collection->addAttributeToFilter('status', ['eq' => '1']);
@@ -94,7 +94,7 @@ class Collection
     /**
      * @param Store $store
      * @param $id
-     * @return ProductCollection
+     * @return NostoProductCollection
      * @throws NostoException
      */
     public function buildSingle(Store $store, $id)
@@ -108,7 +108,7 @@ class Collection
      * @param Store $store
      * @param int $limit
      * @param int $offset
-     * @return ProductCollection
+     * @return NostoProductCollection
      * @throws NostoException
      */
     public function buildMany(Store $store, $limit = 100, $offset = 0)
@@ -123,13 +123,13 @@ class Collection
     /**
      * @param Store $store
      * @param $collection
-     * @return ProductCollection
+     * @return NostoProductCollection
      * @throws NostoException
      */
     private function build(Store $store, $collection)
     {
-        /** @var MageProductCollection $collection */
-        $products = new ProductCollection();
+        /** @var ProductCollection $collection */
+        $products = new NostoProductCollection();
         $items = $collection->loadData();
         if ($items instanceof Traversable === false && !is_array($items)) {
             throw new NostoException(

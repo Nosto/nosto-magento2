@@ -39,9 +39,9 @@ namespace Nosto\Tagging\Model\Service;
 use Exception;
 use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Store\Api\Data\StoreInterface;
-use Nosto\Object\Product\Product;
+use Nosto\Object\Product\Product as NostoProduct;
 use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
-use Magento\Catalog\Model\Product as MageProduct;
+use Magento\Catalog\Model\Product as Product;
 use Magento\Store\Model\Store;
 
 class DefaultProductService implements ProductServiceInterface
@@ -63,13 +63,13 @@ class DefaultProductService implements ProductServiceInterface
     /**
      * @param ProductInterface $product
      * @param StoreInterface $store
-     * @return Product|null
+     * @return NostoProduct|null
      * @suppress PhanTypeMismatchArgument
      * @throws Exception
      */
     public function getProduct(ProductInterface $product, StoreInterface $store)
     {
-        /** @var MageProduct $product */
+        /** @var Product $product */
         /** @var Store $store */
         return $this->nostoProductBuilder->build(
             $product,
