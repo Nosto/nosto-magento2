@@ -53,7 +53,7 @@ use Nosto\Helper\PriceHelper;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Model\Category\Builder as NostoCategoryBuilder;
-use Nosto\Tagging\Model\Service\ProductServiceInterface as NostoProductService;
+use Nosto\Tagging\Model\Service\ProductServiceInterface;
 
 /**
  * Product block used for outputting meta-data on the stores product pages.
@@ -69,8 +69,8 @@ class Product extends View
     /** @var NostoCategoryBuilder */
     private $categoryBuilder;
 
-    /** @var NostoProductService */
-    private $nostoProductService;
+    /** @var ProductServiceInterface */
+    private $productServiceInterface;
 
     /**
      * Constructor.
@@ -88,7 +88,7 @@ class Product extends View
      * @param NostoCategoryBuilder $categoryBuilder the category meta model builder.
      * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoHelperScope $nostoHelperScope
-     * @param NostoProductService $nostoProductService
+     * @param ProductServiceInterface $productServiceInterface
      * @param array $data optional data.
      * @SuppressWarnings(PHPMD.ExcessiveParameterList)
      */
@@ -106,7 +106,7 @@ class Product extends View
         NostoCategoryBuilder $categoryBuilder,
         NostoHelperAccount $nostoHelperAccount,
         NostoHelperScope $nostoHelperScope,
-        NostoProductService $nostoProductService,
+        ProductServiceInterface $productServiceInterface,
         array $data = []
     ) {
         parent::__construct(
@@ -125,7 +125,7 @@ class Product extends View
 
         $this->taggingConstruct($nostoHelperAccount, $nostoHelperScope);
         $this->categoryBuilder = $categoryBuilder;
-        $this->nostoProductService = $nostoProductService;
+        $this->productServiceInterface = $productServiceInterface;
     }
 
     /**
@@ -136,7 +136,7 @@ class Product extends View
      */
     public function getAbstractObject()
     {
-        return $this->nostoProductService->getProduct(
+        return $this->productServiceInterface->getProduct(
             $this->getProduct(),
             $this->nostoHelperScope->getStore()
         );

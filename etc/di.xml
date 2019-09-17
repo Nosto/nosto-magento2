@@ -117,7 +117,7 @@
     </type>
     <type name="Nosto\Tagging\Block\Product">
         <arguments>
-            <argument name="nostoProductService" xsi:type="object">Nosto\Tagging\Model\Service\SanitizingProductService</argument>
+            <argument name="productServiceInterface" xsi:type="object">Nosto\Tagging\Model\Service\SanitizingProductService</argument>
         </arguments>
     </type>
     <type name="Nosto\Tagging\Model\Product\Collection">
