@@ -34,68 +34,39 @@
  *
  */
 
-namespace Nosto\Tagging\Block;
+namespace Nosto\Tagging\Model\Service;
 
-use Nosto\AbstractObject;
-use Nosto\NostoException;
-use Nosto\Tagging\Helper\Account as NostoHelperAccount;
-use Nosto\Tagging\Helper\Scope as NostoHelperScope;
+use Magento\Catalog\Api\Data\ProductInterface;
+use Nosto\Object\Product\Product;
+use Nosto\Tagging\Model\Service\ProductServiceInterface as NostoProductService;
+use Magento\Store\Api\Data\StoreInterface;
 
-trait TaggingTrait
+class SanitizingProductService implements ProductServiceInterface
 {
-    private $nostoHelperAccount;
-    private $nostoHelperScope;
+    /** @var ProductServiceInterface */
+    private $nostoProductService;
 
     /**
-     * TaggingTrait constructor.
-     * @param NostoHelperAccount $nostoHelperAccount
-     * @param NostoHelperScope $nostoHelperScope
+     * DefaultProductService constructor.
+     * @param ProductServiceInterface $nostoProductService
      */
     public function __construct(
-        NostoHelperAccount $nostoHelperAccount,
-        NostoHelperScope $nostoHelperScope
+        NostoProductService $nostoProductService
     ) {
-        $this->nostoHelperAccount = $nostoHelperAccount;
-        $this->nostoHelperScope = $nostoHelperScope;
+        $this->nostoProductService = $nostoProductService;
     }
 
     /**
-     * Overridden method that only outputs any markup if the extension is enabled and an account
-     * exists for the current store view.
-     *
-     * @return string the markup or an empty string (if an account doesn't exist)
-     * @suppress PhanTraitParentReference
+     * @inheritDoc
      */
-    public function _toHtml()
+    public function getProduct(ProductInterface $product, StoreInterface $store)
     {
-        if ($this->nostoHelperAccount->nostoInstalledAndEnabled($this->nostoHelperScope->getStore())) {
-            $abstractObject = $this->getAbstractObject();
-            if ($abstractObject instanceof AbstractObject) {
-                return $abstractObject->toHtml();
-            }
-            return parent::_toHtml();
-        }
-        return '';
+        /** @var Product $nostoProduct */
+        $nostoProduct = $this->nostoProductService->getProduct(
+            $product,
+            $store
+        );
+        /** @noinspection PhpUnhandledExceptionInspection */
+        return $nostoProduct->sanitize();
     }
-
-    /**
-     * @return NostoHelperScope
-     */
-    public function getNostoHelperScope()
-    {
-        return $this->nostoHelperScope;
-    }
-
-    /**
-     * @return NostoHelperAccount
-     */
-    public function getNostoHelperAccount()
-    {
-        return $this->nostoHelperAccount;
-    }
-
-    /**
-     * @return AbstractObject
-     */
-    abstract public function getAbstractObject();
 }

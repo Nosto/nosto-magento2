@@ -36,79 +36,71 @@
 
 namespace Nosto\Tagging\Model\Service;
 
-use Magento\Catalog\Model\Product as MagentoProduct;
-use Magento\Store\Model\Store;
-use Nosto\Object\Product\Product as NostoProduct;
-use Nosto\Tagging\Api\Data\ProductIndexInterface;
+use Exception;
+use Magento\Store\Api\Data\StoreInterface;
+use Magento\Catalog\Api\Data\ProductInterface;
 use Nosto\Tagging\Logger\Logger;
 use Nosto\Tagging\Model\Product\Index\IndexRepository as NostoIndexRepository;
 use Nosto\Tagging\Model\Service\Index as NostoIndexService;
+use Nosto\Types\Product\ProductInterface as NostoProductInterface;
 
-class Product
+class CachingProductService implements ProductServiceInterface
 {
-    const NOSTO_SCOPE_TAGGING = 'tagging';
-    const NOSTO_SCOPE_API = 'api';
 
-    /**
-     * @var NostoIndexService
-     */
+    /** @var NostoIndexRepository */
+    private $nostoIndexRepository;
+
+    /** @var Logger */
+    private $nostoLogger;
+
+    /** @var ProductServiceInterface */
+    private $nostoProductService;
+
+    /** @var NostoIndexService */
     private $nostoIndexService;
 
     /**
-     * @var NostoIndexRepository
-     */
-    private $nostoIndexRepository;
-
-    /**
-     * @var Logger
-     */
-    private $nostoLogger;
-
-    /**
      * Index constructor.
-     * @param NostoIndexService $nostoIndexService
      * @param NostoIndexRepository $nostoIndexRepository
      * @param Logger $nostoLogger
+     * @param ProductServiceInterface $nostoProductService
+     * @param NostoIndexService $nostoIndexService
      */
     public function __construct(
-        NostoIndexService $nostoIndexService,
         NostoIndexRepository $nostoIndexRepository,
-        Logger $nostoLogger
+        Logger $nostoLogger,
+        ProductServiceInterface $nostoProductService,
+        NostoIndexService $nostoIndexService
     ) {
-        $this->nostoIndexService = $nostoIndexService;
         $this->nostoIndexRepository = $nostoIndexRepository;
         $this->nostoLogger = $nostoLogger;
+        $this->nostoProductService = $nostoProductService;
+        $this->nostoIndexService = $nostoIndexService;
     }
 
     /**
-     * Gets Nosto product from database. If the product doesn't exist or is dirty
-     * it will be added / regenerated on-the-fly
+     * Get Nosto Product
+     * If is not indexed or dirty, rebuilds, saves product to the indexed table
+     * and returns NostoProduct from indexed product
      *
-     * @param MagentoProduct $product
-     * @param Store $store
-     * @param string $scope
-     * @return NostoProduct|null
+     * @param ProductInterface $product
+     * @param StoreInterface $store
+     * @return NostoProductInterface|null
      */
-    public function getNostoProduct(MagentoProduct $product, Store $store, $scope)
+    public function getProduct(ProductInterface $product, StoreInterface $store)
     {
         try {
             $indexedProduct = $this->nostoIndexRepository->getOneByProductAndStore($product, $store);
-            if ($indexedProduct === null) {
-                $this->nostoIndexService->invalidateOrCreateProductOrParent($product, $store);
+            if ($indexedProduct === null || $indexedProduct->getIsDirty()) {
+                $fullProduct = $this->nostoProductService->getProduct($product, $store);
+                if ($fullProduct === null) {
+                    return null;
+                }
+                $this->nostoIndexService->updateOrCreateDirtyEntity($fullProduct, $store);
                 $indexedProduct = $this->nostoIndexRepository->getOneByProductAndStore($product, $store);
             }
-            if ($indexedProduct->getIsDirty()) {
-                $indexedProduct = $this->nostoIndexService->rebuildDirtyProduct($indexedProduct);
-            }
-            $nostoProduct = $indexedProduct->getNostoProduct();
-            if ($nostoProduct === null) {
-                return null;
-            }
-            if ($scope !== self::NOSTO_SCOPE_API) {
-                return $nostoProduct->sanitize();
-            }
-            return $nostoProduct;
-        } catch (\Exception $e) {
+            return $indexedProduct->getNostoProduct();
+        } catch (Exception $e) {
             $this->nostoLogger->exception($e);
             return null;
         }

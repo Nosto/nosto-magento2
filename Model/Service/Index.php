@@ -36,13 +36,14 @@
 
 namespace Nosto\Tagging\Model\Service;
 
+use Exception;
 use Magento\Catalog\Api\Data\ProductInterface;
+use Magento\Store\Api\Data\StoreInterface;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\ProductRepository;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
 use Magento\Store\Model\Store;
-use Nosto\Exception\MemoryOutOfBoundsException;
 use Nosto\NostoException;
 use Nosto\Object\Signup\Account as NostoSignupAccount;
 use Nosto\Tagging\Api\Data\ProductIndexInterface;
@@ -115,6 +116,7 @@ class Index extends AbstractService
      * @param ProductRepository $productRepository
      * @param NostoProductBuilder $nostoProductBuilder
      * @param NostoHelperScope $nostoHelperScope
+     * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoLogger $logger
      * @param NostoIndexCollectionFactory $nostoIndexCollectionFactory
      * @param NostoProductRepository $nostoProductRepository
@@ -226,35 +228,29 @@ class Index extends AbstractService
      */
     private function hasParentBeenInvalidated($productId)
     {
-        if (in_array($productId, $this->invalidatedProducts)) {
+        if (in_array($productId, $this->invalidatedProducts, false)) {
             return true;
         }
         return false;
     }
 
     /**
-     * @param Product $product
-     * @param Store $store
+     * @param ProductInterface $product
+     * @param StoreInterface $store
      * @return void
-     * @throws NostoException
      */
-    private function updateOrCreateDirtyEntity(Product $product, Store $store)
+    public function updateOrCreateDirtyEntity(ProductInterface $product, StoreInterface $store)
     {
-        if (!$product->isVisibleInCatalog()) {
-            throw new NostoException('Cannot index invisible product!');
-        }
-
         $indexedProduct = $this->indexRepository->getByProductIdAndStoreId($product->getId(), $store->getId());
         try {
-            if ($indexedProduct === null) {
-                /* @var Product $fullProduct */
+            if ($indexedProduct === null) { // Creates Index Product
                 $fullProduct = $this->loadMagentoProduct($product->getId(), $store->getId());
                 $indexedProduct = $this->indexBuilder->build($fullProduct, $store);
             }
             $indexedProduct->setIsDirty(true);
             $indexedProduct->setUpdatedAt($this->magentoTimeZone->date());
             $this->indexRepository->save($indexedProduct);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->getLogger()->exception($e);
         }
     }
@@ -262,7 +258,6 @@ class Index extends AbstractService
     /**
      * @param Store $store
      * @param array $ids
-     * @throws MemoryOutOfBoundsException
      * @throws NostoException
      */
     public function indexProducts(Store $store, array $ids = [])
@@ -309,7 +304,7 @@ class Index extends AbstractService
     public function rebuildDirtyProduct(ProductIndexInterface $productIndex)
     {
         try {
-            /* @var Product $magentoProduct */
+            /** @var Product $magentoProduct */
             $magentoProduct = $this->loadMagentoProduct(
                 $productIndex->getProductId(),
                 $productIndex->getStoreId()
@@ -329,7 +324,7 @@ class Index extends AbstractService
             $productIndex->setIsDirty(false);
             $this->indexRepository->save($productIndex);
             return $productIndex;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->getLogger()->exception($e);
             return null;
         }
@@ -351,7 +346,7 @@ class Index extends AbstractService
         $collection->setPageSize(self::PRODUCT_DELETION_BATCH_SIZE);
         $iterator = new Iterator($collection);
         $iterator->each(static function (Product $magentoProduct) use (&$uniqueIds) {
-            $key = array_search($magentoProduct->getId(), $uniqueIds);
+            $key = array_search($magentoProduct->getId(), $uniqueIds, false);
             if (is_numeric($key)) {
                 unset($uniqueIds[$key]);
             }
@@ -407,7 +402,7 @@ class Index extends AbstractService
      * Loads (or reloads) Product object
      * @param int $productId
      * @param int $storeId
-     * @return ProductInterface|Product|mixed
+     * @return ProductInterface|Product
      * @throws NoSuchEntityException
      */
     private function loadMagentoProduct(int $productId, int $storeId)

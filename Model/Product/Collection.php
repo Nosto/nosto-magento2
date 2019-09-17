@@ -36,46 +36,53 @@
 
 namespace Nosto\Tagging\Model\Product;
 
+use Exception;
+use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\Product\Visibility as ProductVisibility;
+use Magento\Catalog\Model\ResourceModel\Product\Collection as ProductCollection;
 use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductCollectionFactory;
 use Magento\Sales\Api\Data\EntityInterface;
 use Magento\Store\Model\Store;
 use Nosto\NostoException;
-use Nosto\Object\Product\ProductCollection;
-use Nosto\Tagging\Model\Service\Product as NostoProductService;
+use Nosto\Object\Product\ProductCollection as NostoProductCollection;
+use Nosto\Tagging\Model\Service\ProductServiceInterface;
 use Nosto\Types\Product\ProductInterface;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
+use Traversable;
 
 class Collection
 {
     private $productCollectionFactory;
     private $productVisibility;
-    private $nostoProductService;
+    private $productServiceInterface;
     private $logger;
 
     /**
      * Collection constructor.
      * @param ProductCollectionFactory $productCollectionFactory
      * @param ProductVisibility $productVisibility
-     * @param NostoProductService $nostoProductService
+     * @param ProductServiceInterface $productServiceInterface
      * @param NostoLogger $logger
      */
     public function __construct(
         ProductCollectionFactory $productCollectionFactory,
         ProductVisibility $productVisibility,
-        NostoProductService $nostoProductService,
+        ProductServiceInterface $productServiceInterface,
         NostoLogger $logger
     ) {
         $this->productCollectionFactory = $productCollectionFactory;
         $this->productVisibility = $productVisibility;
-        $this->nostoProductService = $nostoProductService;
+        $this->productServiceInterface = $productServiceInterface;
         $this->logger = $logger;
     }
 
+    /**
+     * @param Store $store
+     * @return ProductCollection
+     */
     public function getCollection(Store $store)
     {
-        /** @var \Magento\Catalog\Model\ResourceModel\Product\Collection $collection */
-        /** @noinspection PhpUndefinedMethodInspection */
+        /** @var ProductCollection $collection */
         $collection = $this->productCollectionFactory->create();
         $collection->setVisibility($this->productVisibility->getVisibleInSiteIds());
         $collection->addAttributeToFilter('status', ['eq' => '1']);
@@ -87,7 +94,7 @@ class Collection
     /**
      * @param Store $store
      * @param $id
-     * @return ProductCollection
+     * @return NostoProductCollection
      * @throws NostoException
      */
     public function buildSingle(Store $store, $id)
@@ -101,7 +108,7 @@ class Collection
      * @param Store $store
      * @param int $limit
      * @param int $offset
-     * @return ProductCollection
+     * @return NostoProductCollection
      * @throws NostoException
      */
     public function buildMany(Store $store, $limit = 100, $offset = 0)
@@ -116,31 +123,30 @@ class Collection
     /**
      * @param Store $store
      * @param $collection
-     * @return ProductCollection
+     * @return NostoProductCollection
      * @throws NostoException
      */
     private function build(Store $store, $collection)
     {
-        /** @var \Magento\Catalog\Model\ResourceModel\Product\Collection $collection */
-        $products = new ProductCollection();
+        /** @var ProductCollection $collection */
+        $products = new NostoProductCollection();
         $items = $collection->loadData();
-        if ($items instanceof \Traversable === false && !is_array($items)) {
+        if ($items instanceof Traversable === false && !is_array($items)) {
             throw new NostoException(
                 sprintf('Invalid collection type %s for product export', get_class($collection))
             );
         }
         foreach ($items as $product) {
-            /** @var \Magento\Catalog\Model\Product $product */
+            /** @var Product $product */
             try {
-                $nostoProduct = $this->nostoProductService->getNostoProduct(
+                $nostoProduct = $this->productServiceInterface->getProduct(
                     $product,
-                    $store,
-                    NostoProductService::NOSTO_SCOPE_API
+                    $store
                 );
                 if ($nostoProduct instanceof ProductInterface) {
                     $products->append($nostoProduct);
                 }
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $this->logger->exception($e);
             }
         }

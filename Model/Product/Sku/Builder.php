@@ -36,12 +36,12 @@
 
 namespace Nosto\Tagging\Model\Product\Sku;
 
+use Exception;
 use Magento\Catalog\Model\Product;
 use Magento\CatalogInventory\Api\StockRegistryInterface;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable\Attribute as ConfigurableAttribute;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Store\Model\Store;
-use Nosto\NostoException;
 use Nosto\Object\Product\Sku as NostoSku;
 use Nosto\Tagging\Helper\Currency as CurrencyHelper;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
@@ -50,7 +50,6 @@ use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Product\BuilderTrait;
 use Nosto\Types\Product\ProductInterface;
 use Nosto\Tagging\Helper\Stock as NostoStockHelper;
-use Nosto\Tagging\Model\Service\Product as NostoProductService;
 
 class Builder
 {
@@ -70,6 +69,7 @@ class Builder
      * @param NostoLogger $logger
      * @param ManagerInterface $eventManager
      * @param CurrencyHelper $nostoCurrencyHelper
+     * @param StockRegistryInterface $stockRegistry
      * @param NostoStockHelper $stockHelper
      */
     public function __construct(
@@ -99,7 +99,7 @@ class Builder
      * @param Store $store
      * @param ConfigurableAttribute[] $attributes
      * @return NostoSku|null
-     * @throws \Exception
+     * @throws Exception
      */
     public function build(
         Product $product,
@@ -142,7 +142,7 @@ class Builder
                     try {
                         $code = $attribute->getProductAttribute()->getAttributeCode();
                         $nostoSku->addCustomField($code, $product->getAttributeText($code));
-                    } catch (NostoException $e) {
+                    } catch (Exception $e) {
                         $this->logger->exception($e);
                     }
                 }
@@ -152,7 +152,7 @@ class Builder
             if ($this->nostoDataHelper->isInventoryTaggingEnabled($store)) {
                 $nostoSku->setInventoryLevel($this->nostoStockHelper->getQty($product));
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->exception($e);
         }
 

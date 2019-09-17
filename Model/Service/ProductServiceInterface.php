@@ -33,69 +33,18 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
+namespace Nosto\Tagging\Model\Service;
 
-namespace Nosto\Tagging\Block;
+use Magento\Store\Api\Data\StoreInterface;
+use Magento\Catalog\Api\Data\ProductInterface;
+use Nosto\Object\Product\Product as NostoProduct;
 
-use Nosto\AbstractObject;
-use Nosto\NostoException;
-use Nosto\Tagging\Helper\Account as NostoHelperAccount;
-use Nosto\Tagging\Helper\Scope as NostoHelperScope;
-
-trait TaggingTrait
+interface ProductServiceInterface
 {
-    private $nostoHelperAccount;
-    private $nostoHelperScope;
-
     /**
-     * TaggingTrait constructor.
-     * @param NostoHelperAccount $nostoHelperAccount
-     * @param NostoHelperScope $nostoHelperScope
+     * @param ProductInterface $product
+     * @param StoreInterface $store
+     * @return ProductInterface|NostoProduct|null
      */
-    public function __construct(
-        NostoHelperAccount $nostoHelperAccount,
-        NostoHelperScope $nostoHelperScope
-    ) {
-        $this->nostoHelperAccount = $nostoHelperAccount;
-        $this->nostoHelperScope = $nostoHelperScope;
-    }
-
-    /**
-     * Overridden method that only outputs any markup if the extension is enabled and an account
-     * exists for the current store view.
-     *
-     * @return string the markup or an empty string (if an account doesn't exist)
-     * @suppress PhanTraitParentReference
-     */
-    public function _toHtml()
-    {
-        if ($this->nostoHelperAccount->nostoInstalledAndEnabled($this->nostoHelperScope->getStore())) {
-            $abstractObject = $this->getAbstractObject();
-            if ($abstractObject instanceof AbstractObject) {
-                return $abstractObject->toHtml();
-            }
-            return parent::_toHtml();
-        }
-        return '';
-    }
-
-    /**
-     * @return NostoHelperScope
-     */
-    public function getNostoHelperScope()
-    {
-        return $this->nostoHelperScope;
-    }
-
-    /**
-     * @return NostoHelperAccount
-     */
-    public function getNostoHelperAccount()
-    {
-        return $this->nostoHelperAccount;
-    }
-
-    /**
-     * @return AbstractObject
-     */
-    abstract public function getAbstractObject();
+    public function getProduct(ProductInterface $product, StoreInterface $store);
 }

@@ -44,6 +44,7 @@ use Nosto\Tagging\Model\ResourceModel\Product\Index\CollectionFactory as IndexCo
 use Nosto\Tagging\Model\ResourceModel\Product\Index\Collection as NostoIndexCollection;
 use Nosto\Tagging\Model\Product\Index\IndexRepository;
 use Magento\Store\Model\Store;
+use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
 
 /**
  * Cronjob class that periodically invalidates Nosto indexed data for each of the store views
@@ -66,23 +67,30 @@ class Invalidate
     /** @var IndexRepository */
     private $indexRepository;
 
+    /** @var TimezoneInterface */
+    private $timezoneInterface;
+
     /**
      * Invalidate constructor.
      *
      * @param Logger $logger
      * @param IndexCollectionFactory $indexCollectionFactory
+     * @param IndexRepository $indexRepository
      * @param NostoAccountHelper $nostoAccountHelper
+     * @param TimezoneInterface $timezoneInterface
      */
     public function __construct(
         Logger $logger,
         IndexCollectionFactory $indexCollectionFactory,
         IndexRepository $indexRepository,
-        NostoAccountHelper $nostoAccountHelper
+        NostoAccountHelper $nostoAccountHelper,
+        TimezoneInterface $timezoneInterface
     ) {
         $this->logger = $logger;
         $this->indexCollectionFactory = $indexCollectionFactory;
         $this->indexRepository = $indexRepository;
         $this->nostoAccountHelper = $nostoAccountHelper;
+        $this->timezoneInterface = $timezoneInterface;
     }
 
     /**
@@ -122,7 +130,8 @@ class Invalidate
      */
     private function getTimeOffset()
     {
-        return (new \DateTime('now'))
+        return $this->timezoneInterface
+            ->date()
             ->modify('-'.self::MAX_UPDATED_AT_INTERVAL.' hours')
             ->format('Y-m-d H:i:s');
     }

@@ -36,6 +36,7 @@
 
 namespace Nosto\Tagging\Model\Product;
 
+use Exception;
 use Magento\Catalog\Api\CategoryRepositoryInterface;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\Product\Gallery\ReadHandler as GalleryReadHandler;
@@ -156,7 +157,7 @@ class Builder
      * @param Product $product
      * @param Store $store
      * @return NostoProduct|null
-     * @throws \Exception
+     * @throws Exception
      */
     public function build(
         Product $product,
@@ -272,7 +273,7 @@ class Builder
                     $store
                 )->getCode()
             );
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->exception($e);
         }
         $this->eventManager->dispatch(
@@ -371,7 +372,7 @@ class Builder
                         default:
                             throw new NostoException('Method add' . $tag . ' is not defined.');
                     }
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     $this->logger->exception($e);
                 }
             }

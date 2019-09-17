@@ -40,6 +40,7 @@ use Exception;
 use Magento\Framework\Indexer\ActionInterface as IndexerActionInterface;
 use Magento\Framework\Mview\ActionInterface as MviewActionInterface;
 use Magento\Store\Model\Store;
+use Nosto\NostoException;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Model\ResourceModel\Magento\Product\Collection as ProductCollection;
 use Nosto\Tagging\Model\ResourceModel\Magento\Product\CollectionFactory as ProductCollectionFactory;
@@ -108,6 +109,7 @@ class Invalidate implements IndexerActionInterface, MviewActionInterface
 
     /**
      * @inheritDoc
+     * @throws NostoException
      */
     public function executeFull()
     {

@@ -36,13 +36,12 @@
 
 namespace Nosto\Tagging\Model\Product\Index;
 
-use Magento\Catalog\Model\Product;
-use Magento\Store\Model\Store;
-use Nosto\NostoException;
-use Nosto\Object\Product\Product as NostoProduct;
 use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
 use Nosto\Tagging\Model\Product\BuilderTrait;
 use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
+use Magento\Store\Api\Data\StoreInterface;
+use Magento\Catalog\Api\Data\ProductInterface;
+use Nosto\Tagging\Model\Product\Index\IndexFactory as NostoIndexFactory;
 
 class Builder
 {
@@ -50,7 +49,7 @@ class Builder
         BuilderTrait::__construct as builderTraitConstruct; // @codingStandardsIgnoreLine
     }
 
-    /** @var IndexFactory  */
+    /** @var NostoIndexFactory  */
     private $nostoIndexFactory;
 
     /** @var NostoProductBuilder */
@@ -61,28 +60,25 @@ class Builder
 
     /**
      * Builder constructor.
-     * @param IndexFactory $nostoIndexFactory
-     * @param NostoProductBuilder $nostoProductBuilder
+     * @param NostoIndexFactory $nostoIndexFactory
      * @param TimezoneInterface $magentoTimeZone
      */
     public function __construct(
-        IndexFactory $nostoIndexFactory,
-        NostoProductBuilder $nostoProductBuilder,
+        NostoIndexFactory $nostoIndexFactory,
         TimezoneInterface $magentoTimeZone
     ) {
         $this->nostoIndexFactory = $nostoIndexFactory;
-        $this->nostoProductBuilder = $nostoProductBuilder;
         $this->magentoTimeZone = $magentoTimeZone;
     }
 
     /**
-     * @param Product $product
-     * @param Store $store
+     * @param ProductInterface $product
+     * @param StoreInterface $store
      * @return Index
      */
     public function build(
-        Product $product,
-        Store $store
+        ProductInterface $product,
+        StoreInterface $store
     ) {
         $productIndex = $this->nostoIndexFactory->create();
         $productIndex->setProductId($product->getId());
