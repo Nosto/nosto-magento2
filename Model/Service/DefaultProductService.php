@@ -41,7 +41,7 @@ use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Store\Api\Data\StoreInterface;
 use Nosto\Object\Product\Product as NostoProduct;
 use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
-use Magento\Catalog\Model\Product as Product;
+use Magento\Catalog\Model\Product;
 use Magento\Store\Model\Store;
 
 class DefaultProductService implements ProductServiceInterface
