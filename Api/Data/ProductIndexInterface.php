@@ -189,21 +189,10 @@ interface ProductIndexInterface
     public function setUpdatedAt(\DateTime $updatedAt);
 
     /**
-     * @param NostoProductInterface $product
-     * @return self
-     */
-    public function setNostoProduct(NostoProductInterface $product);
-
-    /**
      * @param MagentoProductInterface $product
      * @return self
      */
     public function setMagentoProduct(MagentoProductInterface $product);
-
-    /**
-     * @return NostoProductInterface|null
-     */
-    public function getNostoProduct();
 
     /**
      * @param StoreInterface $store

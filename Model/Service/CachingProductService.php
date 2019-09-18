@@ -42,6 +42,7 @@ use Magento\Catalog\Api\Data\ProductInterface;
 use Nosto\Tagging\Logger\Logger;
 use Nosto\Tagging\Model\Product\Index\IndexRepository as NostoIndexRepository;
 use Nosto\Tagging\Model\Service\Index as NostoIndexService;
+use Nosto\Tagging\Model\Service\Serializer\SerializedProductBuilder;
 use Nosto\Types\Product\ProductInterface as NostoProductInterface;
 
 class CachingProductService implements ProductServiceInterface
@@ -59,23 +60,29 @@ class CachingProductService implements ProductServiceInterface
     /** @var NostoIndexService */
     private $nostoIndexService;
 
+    /** @var SerializedProductBuilder */
+    private $serializedProductBuilder;
+
     /**
      * Index constructor.
      * @param NostoIndexRepository $nostoIndexRepository
      * @param Logger $nostoLogger
      * @param ProductServiceInterface $nostoProductService
      * @param NostoIndexService $nostoIndexService
+     * @param SerializedProductBuilder $serializedProductBuilder
      */
     public function __construct(
         NostoIndexRepository $nostoIndexRepository,
         Logger $nostoLogger,
         ProductServiceInterface $nostoProductService,
-        NostoIndexService $nostoIndexService
+        NostoIndexService $nostoIndexService,
+        SerializedProductBuilder $serializedProductBuilder
     ) {
         $this->nostoIndexRepository = $nostoIndexRepository;
         $this->nostoLogger = $nostoLogger;
         $this->nostoProductService = $nostoProductService;
         $this->nostoIndexService = $nostoIndexService;
+        $this->serializedProductBuilder = $serializedProductBuilder;
     }
 
     /**
@@ -99,7 +106,9 @@ class CachingProductService implements ProductServiceInterface
                 $this->nostoIndexService->updateOrCreateDirtyEntity($fullProduct, $store);
                 $indexedProduct = $this->nostoIndexRepository->getOneByProductAndStore($product, $store);
             }
-            return $indexedProduct->getNostoProduct();
+            return $this->serializedProductBuilder->fromString(
+                $indexedProduct->getProductData()
+            );
         } catch (Exception $e) {
             $this->nostoLogger->exception($e);
             return null;

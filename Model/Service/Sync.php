@@ -51,6 +51,7 @@ use Nosto\Tagging\Model\Product\Index\Index as NostoProductIndex;
 use Nosto\Tagging\Model\Product\Index\IndexRepository;
 use Nosto\Tagging\Model\ResourceModel\Product\Index\Collection as NostoIndexCollection;
 use Nosto\Tagging\Model\ResourceModel\Product\Index\CollectionFactory as NostoIndexCollectionFactory;
+use Nosto\Tagging\Model\Service\Serializer\SerializedProductBuilder;
 use Nosto\Tagging\Util\Iterator;
 
 class Sync extends AbstractService
@@ -78,6 +79,9 @@ class Sync extends AbstractService
     /** @var NostoDataHelper */
     private $nostoDataHelper;
 
+    /** @var SerializedProductBuilder */
+    private $serializedProductBuilder;
+
     /**
      * Index constructor.
      * @param IndexRepository $indexRepository
@@ -86,6 +90,7 @@ class Sync extends AbstractService
      * @param NostoLogger $logger
      * @param NostoIndexCollectionFactory $nostoIndexCollectionFactory
      * @param NostoDataHelper $nostoDataHelper
+     * @param SerializedProductBuilder $serializedProductBuilder
      */
     public function __construct(
         IndexRepository $indexRepository,
@@ -93,7 +98,8 @@ class Sync extends AbstractService
         NostoHelperUrl $nostoHelperUrl,
         NostoLogger $logger,
         NostoIndexCollectionFactory $nostoIndexCollectionFactory,
-        NostoDataHelper $nostoDataHelper
+        NostoDataHelper $nostoDataHelper,
+        SerializedProductBuilder $serializedProductBuilder
     ) {
         parent::__construct($nostoDataHelper, $logger);
         $this->indexRepository = $indexRepository;
@@ -101,6 +107,7 @@ class Sync extends AbstractService
         $this->nostoHelperUrl = $nostoHelperUrl;
         $this->nostoIndexCollectionFactory = $nostoIndexCollectionFactory;
         $this->nostoDataHelper = $nostoDataHelper;
+        $this->serializedProductBuilder = $serializedProductBuilder;
     }
 
     /**
@@ -127,7 +134,11 @@ class Sync extends AbstractService
             $op->setResponseTimeout(self::RESPONSE_TIMEOUT);
             /** @var ProductIndexInterface $productIndex */
             foreach ($collectionBatch as $productIndex) {
-                $op->addProduct($productIndex->getNostoProduct());
+                $op->addProduct(
+                    $this->serializedProductBuilder->fromString(
+                        $productIndex->getProductData()
+                    )
+                );
             }
             try {
                 $op->upsert();
