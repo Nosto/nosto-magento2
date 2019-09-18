@@ -33,20 +33,30 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
-namespace Nosto\Tagging\Model\Service\Serializer;
 
-interface SerializerInterface
+namespace Nosto\Tagging\Util\Serializer;
+
+/**
+ * Default class for serializing and deserializing objects
+ */
+class DefaultSerializer implements SerializerInterface
 {
     /**
-     * @param object|mixed $object
-     * @return mixed
+     * @param mixed|object $object
+     * @return mixed|string
      */
-    public function serialize($object);
+    public function serialize($object)
+    {
+        return serialize($object);  // @codingStandardsIgnoreLine
+    }
 
     /**
      * @param string $data
      * @param string $class
-     * @return object
+     * @return mixed|object
      */
-    public function deserialize($data, $class);
+    public function deserialize($data, $class)
+    {
+        return unserialize($data, [$class]); // @codingStandardsIgnoreLine
+    }
 }

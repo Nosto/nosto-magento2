@@ -51,7 +51,7 @@ use Nosto\Tagging\Model\Product\Index\Index as NostoProductIndex;
 use Nosto\Tagging\Model\Product\Index\IndexRepository;
 use Nosto\Tagging\Model\ResourceModel\Product\Index\Collection as NostoIndexCollection;
 use Nosto\Tagging\Model\ResourceModel\Product\Index\CollectionFactory as NostoIndexCollectionFactory;
-use Nosto\Tagging\Model\Service\Serializer\SerializedProductBuilder;
+use Nosto\Tagging\Util\Serializer\ProductSerializer;
 use Nosto\Tagging\Util\Iterator;
 
 class Sync extends AbstractService
@@ -79,8 +79,8 @@ class Sync extends AbstractService
     /** @var NostoDataHelper */
     private $nostoDataHelper;
 
-    /** @var SerializedProductBuilder */
-    private $serializedProductBuilder;
+    /** @var ProductSerializer */
+    private $productSerializer;
 
     /**
      * Index constructor.
@@ -90,7 +90,7 @@ class Sync extends AbstractService
      * @param NostoLogger $logger
      * @param NostoIndexCollectionFactory $nostoIndexCollectionFactory
      * @param NostoDataHelper $nostoDataHelper
-     * @param SerializedProductBuilder $serializedProductBuilder
+     * @param ProductSerializer $productSerializer
      */
     public function __construct(
         IndexRepository $indexRepository,
@@ -99,7 +99,7 @@ class Sync extends AbstractService
         NostoLogger $logger,
         NostoIndexCollectionFactory $nostoIndexCollectionFactory,
         NostoDataHelper $nostoDataHelper,
-        SerializedProductBuilder $serializedProductBuilder
+        ProductSerializer $productSerializer
     ) {
         parent::__construct($nostoDataHelper, $logger);
         $this->indexRepository = $indexRepository;
@@ -107,7 +107,7 @@ class Sync extends AbstractService
         $this->nostoHelperUrl = $nostoHelperUrl;
         $this->nostoIndexCollectionFactory = $nostoIndexCollectionFactory;
         $this->nostoDataHelper = $nostoDataHelper;
-        $this->serializedProductBuilder = $serializedProductBuilder;
+        $this->productSerializer = $productSerializer;
     }
 
     /**
@@ -135,7 +135,7 @@ class Sync extends AbstractService
             /** @var ProductIndexInterface $productIndex */
             foreach ($collectionBatch as $productIndex) {
                 $op->addProduct(
-                    $this->serializedProductBuilder->fromString(
+                    $this->productSerializer->fromString(
                         $productIndex->getProductData()
                     )
                 );

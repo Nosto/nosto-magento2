@@ -34,29 +34,49 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Service\Serializer;
+namespace Nosto\Tagging\Util\Serializer;
+
+use Nosto\Object\Product\Product;
 
 /**
  * Default class for serializing and deserializing objects
  */
-class DefaultSerializer implements SerializerInterface
+class ProductSerializer
 {
     /**
-     * @param mixed|object $object
-     * @return mixed|string
+     * @var SerializerInterface
      */
-    public function serialize($object)
-    {
-        return serialize($object);  // @codingStandardsIgnoreLine
+    private $serializer;
+
+    /**
+     * Constructor
+     * @param SerializerInterface $serializer
+     */
+    public function __construct(
+        SerializerInterface $serializer
+    ) {
+        $this->serializer = $serializer;
     }
 
     /**
+     * Builds Nosto product from string
+     *
      * @param string $data
-     * @param string $class
-     * @return mixed|object
+     * @return Product
      */
-    public function deserialize($data, $class)
+    public function fromString($data)
     {
-        return unserialize($data, [$class]); // @codingStandardsIgnoreLine
+        return $this->serializer->deserialize($data, Product::class);
+    }
+
+    /**
+     * Serializes Nosto product to string
+     *
+     * @param Product $product
+     * @return string
+     */
+    public function toString(Product $product)
+    {
+        return $this->serializer->serialize($product);
     }
 }

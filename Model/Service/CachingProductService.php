@@ -42,7 +42,7 @@ use Magento\Catalog\Api\Data\ProductInterface;
 use Nosto\Tagging\Logger\Logger;
 use Nosto\Tagging\Model\Product\Index\IndexRepository as NostoIndexRepository;
 use Nosto\Tagging\Model\Service\Index as NostoIndexService;
-use Nosto\Tagging\Model\Service\Serializer\SerializedProductBuilder;
+use Nosto\Tagging\Util\Serializer\ProductSerializer;
 use Nosto\Types\Product\ProductInterface as NostoProductInterface;
 
 class CachingProductService implements ProductServiceInterface
@@ -60,8 +60,8 @@ class CachingProductService implements ProductServiceInterface
     /** @var NostoIndexService */
     private $nostoIndexService;
 
-    /** @var SerializedProductBuilder */
-    private $serializedProductBuilder;
+    /** @var ProductSerializer */
+    private $productSerializer;
 
     /**
      * Index constructor.
@@ -69,20 +69,20 @@ class CachingProductService implements ProductServiceInterface
      * @param Logger $nostoLogger
      * @param ProductServiceInterface $nostoProductService
      * @param NostoIndexService $nostoIndexService
-     * @param SerializedProductBuilder $serializedProductBuilder
+     * @param ProductSerializer $productSerializer
      */
     public function __construct(
         NostoIndexRepository $nostoIndexRepository,
         Logger $nostoLogger,
         ProductServiceInterface $nostoProductService,
         NostoIndexService $nostoIndexService,
-        SerializedProductBuilder $serializedProductBuilder
+        ProductSerializer $productSerializer
     ) {
         $this->nostoIndexRepository = $nostoIndexRepository;
         $this->nostoLogger = $nostoLogger;
         $this->nostoProductService = $nostoProductService;
         $this->nostoIndexService = $nostoIndexService;
-        $this->serializedProductBuilder = $serializedProductBuilder;
+        $this->productSerializer = $productSerializer;
     }
 
     /**
@@ -106,7 +106,7 @@ class CachingProductService implements ProductServiceInterface
                 $this->nostoIndexService->updateOrCreateDirtyEntity($fullProduct, $store);
                 $indexedProduct = $this->nostoIndexRepository->getOneByProductAndStore($product, $store);
             }
-            return $this->serializedProductBuilder->fromString(
+            return $this->productSerializer->fromString(
                 $indexedProduct->getProductData()
             );
         } catch (Exception $e) {
