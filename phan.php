@@ -53,10 +53,13 @@ return [
         'vendor/nosto/php-sdk',
         'vendor/phpseclib',
         'vendor/magento',
+        '../../../lib/internal', // When Running Locally
+        'magento/lib/internal', // When Running On CI
         'vendor/monolog',
         'vendor/zendframework',
         'vendor/psr',
-        'magento/generated'
+        'magento/generated', // When Running On CI
+        '../../../generated' // When Running Locally
     ],
     'exclude_file_list' => [
         'vendor/magento/zendframework1/library/Zend/Validate/Hostname/Biz.php',
@@ -66,7 +69,9 @@ return [
     ],
     'exclude_analysis_directory_list' => [
         'vendor/',
-        'magento/'
+        'magento/',
+        '../../../lib/internal',
+        '../../../generated'
     ],
     'suppress_issue_types' => [
         'PhanParamSignatureMismatch',
