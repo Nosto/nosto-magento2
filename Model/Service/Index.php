@@ -38,6 +38,7 @@ namespace Nosto\Tagging\Model\Service;
 
 use Exception;
 use Magento\Catalog\Api\Data\ProductInterface;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Store\Api\Data\StoreInterface;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\ProductRepository;
@@ -109,6 +110,9 @@ class Index extends AbstractService
     /** @var array */
     private $invalidatedProducts = [];
 
+    /** @var SyncBulkPublisher */
+    private $syncBulkPublisher;
+
     /**
      * Index constructor.
      * @param IndexRepository $indexRepository
@@ -124,6 +128,7 @@ class Index extends AbstractService
      * @param TimezoneInterface $magentoTimeZone
      * @param NostoDataHelper $nostoDataHelper
      * @param Sync $nostoSyncService
+     * @param SyncBulkPublisher $syncBulkPublisher
      */
     public function __construct(
         IndexRepository $indexRepository,
@@ -138,7 +143,8 @@ class Index extends AbstractService
         ProductCollectionFactory $productCollectionFactory,
         TimezoneInterface $magentoTimeZone,
         NostoDataHelper $nostoDataHelper,
-        Sync $nostoSyncService
+        Sync $nostoSyncService,
+        SyncBulkPublisher $syncBulkPublisher
     ) {
         parent::__construct($nostoDataHelper, $logger);
         $this->indexRepository = $indexRepository;
@@ -152,6 +158,7 @@ class Index extends AbstractService
         $this->productCollectionFactory = $productCollectionFactory;
         $this->magentoTimeZone = $magentoTimeZone;
         $this->nostoSyncService = $nostoSyncService;
+        $this->syncBulkPublisher = $syncBulkPublisher;
     }
 
     /**
@@ -259,6 +266,7 @@ class Index extends AbstractService
      * @param Store $store
      * @param array $ids
      * @throws NostoException
+     * @throws LocalizedException
      */
     public function indexProducts(Store $store, array $ids = [])
     {
@@ -269,6 +277,7 @@ class Index extends AbstractService
         $dirtyCollection = $this->getDirtyCollection($store, $ids);
         $this->rebuildDirtyProducts($dirtyCollection, $store);
         $outOfSyncCollection = $this->getOutOfSyncCollection($store, $ids);
+        $this->syncBulkPublisher->publishCollectionToQueue($outOfSyncCollection, $store);
         $this->nostoSyncService->syncIndexedProducts($outOfSyncCollection, $store);
         $this->nostoSyncService->syncDeletedProducts($store);
     }
