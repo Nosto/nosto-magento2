@@ -81,6 +81,18 @@ class Collection extends AbstractCollection
     }
 
     /**
+     * @param array $ids
+     * @return Collection
+     */
+    public function addProductIdsFilter(array $ids)
+    {
+        return $this->addFieldToFilter(
+            Index::PRODUCT_ID,
+            ['in' => $ids]
+        );
+    }
+
+    /**
      * Filters collection for items that are either dirty or out of sync with Nosto
      * @return Collection
      */
