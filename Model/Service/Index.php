@@ -60,6 +60,7 @@ use Nosto\Tagging\Model\ResourceModel\Magento\Product\Collection as ProductColle
 use Nosto\Tagging\Model\ResourceModel\Magento\Product\CollectionFactory as ProductCollectionFactory;
 use Nosto\Tagging\Model\ResourceModel\Product\Index\Collection as NostoIndexCollection;
 use Nosto\Tagging\Model\ResourceModel\Product\Index\CollectionFactory as NostoIndexCollectionFactory;
+use Nosto\Tagging\Util\Serializer\ProductSerializer;
 use Nosto\Tagging\Util\Iterator;
 use Nosto\Tagging\Util\Product as ProductUtil;
 use Nosto\Types\Product\ProductInterface as NostoProductInterface;
@@ -109,6 +110,9 @@ class Index extends AbstractService
     /** @var array */
     private $invalidatedProducts = [];
 
+    /** @var ProductSerializer */
+    private $productSerializer;
+
     /**
      * Index constructor.
      * @param IndexRepository $indexRepository
@@ -124,6 +128,7 @@ class Index extends AbstractService
      * @param TimezoneInterface $magentoTimeZone
      * @param NostoDataHelper $nostoDataHelper
      * @param Sync $nostoSyncService
+     * @param ProductSerializer $productSerializer
      */
     public function __construct(
         IndexRepository $indexRepository,
@@ -138,7 +143,8 @@ class Index extends AbstractService
         ProductCollectionFactory $productCollectionFactory,
         TimezoneInterface $magentoTimeZone,
         NostoDataHelper $nostoDataHelper,
-        Sync $nostoSyncService
+        Sync $nostoSyncService,
+        ProductSerializer $productSerializer
     ) {
         parent::__construct($nostoDataHelper, $logger);
         $this->indexRepository = $indexRepository;
@@ -152,6 +158,7 @@ class Index extends AbstractService
         $this->productCollectionFactory = $productCollectionFactory;
         $this->magentoTimeZone = $magentoTimeZone;
         $this->nostoSyncService = $nostoSyncService;
+        $this->productSerializer = $productSerializer;
     }
 
     /**
@@ -311,14 +318,20 @@ class Index extends AbstractService
             );
             $store = $this->nostoHelperScope->getStore($productIndex->getStoreId());
             $nostoProduct = $this->nostoProductBuilder->build($magentoProduct, $store);
-            $nostoIndexedProduct = $productIndex->getNostoProduct();
+            $nostoIndexedProduct = $this->productSerializer->fromString(
+                $productIndex->getProductData()
+            );
             if ($nostoIndexedProduct instanceof NostoProductInterface === false ||
                 (
                     $nostoProduct instanceof NostoProductInterface
                     && !ProductUtil::isEqual($nostoProduct, $nostoIndexedProduct)
                 )
             ) {
-                $productIndex->setNostoProduct($nostoProduct);
+                $productIndex->setProductData(
+                    $this->productSerializer->toString(
+                        $nostoProduct
+                    )
+                );
                 $productIndex->setInSync(false);
             }
             $productIndex->setIsDirty(false);
