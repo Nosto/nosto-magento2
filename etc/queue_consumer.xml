@@ -40,6 +40,6 @@
             queue="nosto_product_sync.update"
             connection="db"
             maxMessages="5000"
-            consumerInstance="Nosto\Tagging\MessageQueue\Consumer"
-            handler="Nosto\Tagging\Model\Attribute\Backend\Consumer::process" />
+            consumerInstance="Magento\Framework\MessageQueue\Consumer"
+            handler="Nosto\Tagging\Model\Attribute\Backend\Consumer::processOperation" />
 </config>
