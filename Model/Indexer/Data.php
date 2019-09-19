@@ -38,16 +38,23 @@ namespace Nosto\Tagging\Model\Indexer;
 
 use Exception;
 use Magento\Framework\Indexer\ActionInterface as IndexerActionInterface;
+use Magento\Framework\Indexer\DimensionalIndexerInterface;
+use Magento\Framework\Indexer\DimensionProviderInterface;
+use Nosto\NostoException;
+use Nosto\Tagging\Model\Indexer\Data\ModeSwitcher;
+use Nosto\Tagging\Model\Indexer\Data\DimensionModeConfiguration;
 use Magento\Framework\Mview\ActionInterface as MviewActionInterface;
 use Nosto\Tagging\Model\Service\Index as NostoIndexService;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
+use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Exception\MemoryOutOfBoundsException;
-
+use Magento\Store\Model\StoreDimensionProvider;
+use Magento\Indexer\Model\ProcessManager;
 /**
  * An indexer for Nosto product sync
  */
-class Data implements IndexerActionInterface, MviewActionInterface
+class Data implements IndexerActionInterface, MviewActionInterface, DimensionalIndexerInterface
 {
     const INDEXER_ID = 'nosto_index_product_data_sync';
 
@@ -57,23 +64,46 @@ class Data implements IndexerActionInterface, MviewActionInterface
     /** @var NostoHelperAccount */
     private $nostoHelperAccount;
 
+    /** @var NostoHelperScope */
+    private $nostoHelperScope;
+
+    /** @var DimensionProviderInterface; */
+    private $dimensionProvider;
+
+    /** @var ModeSwitcher */
+    private $modeSwitcher;
+
     /** @var NostoLogger */
     private $nostoLogger;
+
+    /** @var ProcessManager */
+    private $processManager;
 
     /**
      * Data constructor.
      * @param NostoIndexService $nostoServiceIndex
      * @param NostoHelperAccount $nostoHelperAccount
+     * @param StoreDimensionProvider $storeDimensionProvider
      * @param NostoLogger $nostoLogger
      */
     public function __construct(
         NostoIndexService $nostoServiceIndex,
         NostoHelperAccount $nostoHelperAccount,
-        NostoLogger $nostoLogger
+        NostoHelperScope $nostoHelperScope,
+        DimensionProviderInterface $dimensionProvider,
+        ModeSwitcher $modeSwitcher,
+        NostoLogger $nostoLogger,
+        ProcessManager $processManager = null
     ) {
         $this->nostoServiceIndex = $nostoServiceIndex;
         $this->nostoHelperAccount = $nostoHelperAccount;
+        $this->nostoHelperScope = $nostoHelperScope;
+        $this->dimensionProvider = $dimensionProvider;
+        $this->modeSwitcher = $modeSwitcher;
         $this->nostoLogger = $nostoLogger;
+        $this->processManager = $processManager ?: \Magento\Framework\App\ObjectManager::getInstance()->get(
+            ProcessManager::class
+        );
     }
 
     /**
@@ -82,16 +112,37 @@ class Data implements IndexerActionInterface, MviewActionInterface
      */
     public function executeFull()
     {
+        $dimensionProvider = $this->getDimensionsProvider();
+        if ($dimensionProvider === null) {
+            $this->executeInSequence();
+        } else {
+            $this->executeInParallel($dimensionProvider);
+        }
+    }
+
+    private function executeInSequence(array $ids = [])
+    {
         $storesWithNosto = $this->nostoHelperAccount->getStoresWithNosto();
         foreach ($storesWithNosto as $store) {
             try {
-                $this->nostoServiceIndex->indexProducts($store);
+                $this->nostoServiceIndex->indexProducts($store, $ids);
                 // Catch only MemoryOutOfBoundsException as this is the most expected ones
                 // And the ones we are interested of
             } catch (MemoryOutOfBoundsException $e) {
                 $this->nostoLogger->error($e->getMessage());
             }
         }
+    }
+
+    private function executeInParallel(DimensionProviderInterface $dimensionProvider)
+    {
+        $userFunctions = [];
+        foreach ($dimensionProvider->getIterator() as $dimension) {
+            $userFunctions[] = function () use ($dimension) {
+                $this->executeByDimensions($dimension);
+            };
+        }
+        $this->processManager->execute($userFunctions);
     }
 
     /**
@@ -128,5 +179,39 @@ class Data implements IndexerActionInterface, MviewActionInterface
                 $this->nostoLogger->error($e->getMessage());
             }
         }
+    }
+
+    public function executeByDimensions(array $dimensions, \Traversable $entityIds = null)
+    {
+        if (count($dimensions) > 1 || !isset($dimensions[StoreDimensionProvider::DIMENSION_NAME])) {
+            throw new \InvalidArgumentException('Indexer "' . self::INDEXER_ID . '" support only Store dimension');
+        }
+        $storeId = $dimensions[StoreDimensionProvider::DIMENSION_NAME]->getValue();
+        $store = $this->nostoHelperScope->getStore($storeId);
+        $this->nostoLogger->info('NOSTO-DIMENSION store:'. $store->getName() .' STARTED: '. date('Y-m-d H:i:s'));
+        try {
+            $this->nostoServiceIndex->indexProducts($store);
+            // Catch only MemoryOutOfBoundsException as this is the most expected ones
+            // And the ones we are interested of
+        } catch (MemoryOutOfBoundsException $e) {
+            $this->nostoLogger->error($e->getMessage());
+        } catch (NostoException $e) {
+            $this->nostoLogger->error($e->getMessage());
+        }
+        $this->nostoLogger->info('NOSTO-DIMENSION store:'. $store->getName() .' ENDED: '. date('Y-m-d H:i:s'));
+    }
+
+    /**
+     * @return DimensionProviderInterface|null
+     */
+    public function getDimensionsProvider()
+    {
+        $mode = $this->modeSwitcher->getMode();
+        if ($mode === DimensionModeConfiguration::DIMENSION_NONE) {
+            return null;
+        } elseif ($mode === DimensionModeConfiguration::DIMENSION_STORE) {
+            return $this->dimensionProvider;
+        }
+        return null;
     }
 }
