@@ -51,6 +51,8 @@ use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Exception\MemoryOutOfBoundsException;
 use Magento\Store\Model\StoreDimensionProvider;
 use Magento\Indexer\Model\ProcessManager;
+use Nosto\Tagging\Util\Benchmark;
+
 /**
  * An indexer for Nosto product sync
  */
@@ -186,9 +188,12 @@ class Data implements IndexerActionInterface, MviewActionInterface, DimensionalI
         if (count($dimensions) > 1 || !isset($dimensions[StoreDimensionProvider::DIMENSION_NAME])) {
             throw new \InvalidArgumentException('Indexer "' . self::INDEXER_ID . '" support only Store dimension');
         }
+
         $storeId = $dimensions[StoreDimensionProvider::DIMENSION_NAME]->getValue();
         $store = $this->nostoHelperScope->getStore($storeId);
-        $this->nostoLogger->info('NOSTO-DIMENSION store:'. $store->getName() .' STARTED: '. date('Y-m-d H:i:s'));
+        $benchmarkName = sprintf('STORE-DIMENSION-%s', $store->getCode());
+        Benchmark::getInstance()->startInstrumentation($benchmarkName, 0);
+        $this->nostoLogger->info('[START] NOSTO-DIMENSION store:'. $store->getName());
         try {
             $this->nostoServiceIndex->indexProducts($store);
             // Catch only MemoryOutOfBoundsException as this is the most expected ones
@@ -198,7 +203,10 @@ class Data implements IndexerActionInterface, MviewActionInterface, DimensionalI
         } catch (NostoException $e) {
             $this->nostoLogger->error($e->getMessage());
         }
-        $this->nostoLogger->info('NOSTO-DIMENSION store:'. $store->getName() .' ENDED: '. date('Y-m-d H:i:s'));
+
+        Benchmark::getInstance()->stopInstrumentation($benchmarkName);
+        $duration = Benchmark::getInstance()->getElapsed($benchmarkName);
+        $this->nostoLogger->info('[END] NOSTO-DIMENSION store:'. $store->getName() . '('.round($duration,2).' secs)');
     }
 
     /**
