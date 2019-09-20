@@ -90,8 +90,7 @@ class Data implements IndexerActionInterface, MviewActionInterface, DimensionalI
      * @param DimensionProviderInterface $dimensionProvider
      * @param ModeSwitcher $modeSwitcher
      * @param NostoLogger $nostoLogger
-     * @param ProcessManager $processManager
-     * @suppress PhanTypeMismatchDeclaredParamNullable
+     * @param ProcessManager|null $processManager
      */
     public function __construct(
         NostoIndexService $nostoServiceIndex,
@@ -108,9 +107,7 @@ class Data implements IndexerActionInterface, MviewActionInterface, DimensionalI
         $this->dimensionProvider = $dimensionProvider;
         $this->modeSwitcher = $modeSwitcher;
         $this->nostoLogger = $nostoLogger;
-        $this->processManager = $processManager ?: ObjectManager::getInstance()->get(
-            ProcessManager::class
-        );
+        $this->processManager = $processManager;
     }
 
     /**
@@ -159,7 +156,7 @@ class Data implements IndexerActionInterface, MviewActionInterface, DimensionalI
                 $this->executeByDimensions($dimension, new \ArrayIterator($ids));
             };
         }
-        $this->processManager->execute($userFunctions);
+        $this->getProcessManager()->execute($userFunctions);
     }
 
     /**
@@ -243,5 +240,18 @@ class Data implements IndexerActionInterface, MviewActionInterface, DimensionalI
             return $this->dimensionProvider;
         }
         return null;
+    }
+
+    /**
+     * @return ProcessManager
+     */
+    private function getProcessManager()
+    {
+        if ($this->processManager ===  null) {
+            $this->processManager = ObjectManager::getInstance()->get(
+                ProcessManager::class
+            );
+        }
+        return $this->processManager;
     }
 }
