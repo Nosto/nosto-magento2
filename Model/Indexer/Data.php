@@ -52,6 +52,7 @@ use Nosto\Exception\MemoryOutOfBoundsException;
 use Magento\Store\Model\StoreDimensionProvider;
 use Magento\Indexer\Model\ProcessManager;
 use Nosto\Tagging\Util\Benchmark;
+use Magento\Framework\App\ObjectManager;
 
 /**
  * An indexer for Nosto product sync
@@ -90,6 +91,7 @@ class Data implements IndexerActionInterface, MviewActionInterface, DimensionalI
      * @param ModeSwitcher $modeSwitcher
      * @param NostoLogger $nostoLogger
      * @param ProcessManager $processManager
+     * @suppress PhanTypeMismatchDeclaredParamNullable
      */
     public function __construct(
         NostoIndexService $nostoServiceIndex,
@@ -98,7 +100,7 @@ class Data implements IndexerActionInterface, MviewActionInterface, DimensionalI
         DimensionProviderInterface $dimensionProvider,
         ModeSwitcher $modeSwitcher,
         NostoLogger $nostoLogger,
-        ProcessManager $processManager
+        ProcessManager $processManager = null
     ) {
         $this->nostoServiceIndex = $nostoServiceIndex;
         $this->nostoHelperAccount = $nostoHelperAccount;
@@ -106,7 +108,9 @@ class Data implements IndexerActionInterface, MviewActionInterface, DimensionalI
         $this->dimensionProvider = $dimensionProvider;
         $this->modeSwitcher = $modeSwitcher;
         $this->nostoLogger = $nostoLogger;
-        $this->processManager = $processManager;
+        $this->processManager = $processManager ?: ObjectManager::getInstance()->get(
+            ProcessManager::class
+        );
     }
 
     /**
@@ -144,12 +148,14 @@ class Data implements IndexerActionInterface, MviewActionInterface, DimensionalI
     /**
      * @param DimensionProviderInterface $dimensionProvider
      * @param array $ids
+     * @suppress PhanTypeMismatchArgument
      */
     private function executeInParallel(DimensionProviderInterface $dimensionProvider, array $ids = [])
     {
         $userFunctions = [];
         foreach ($dimensionProvider->getIterator() as $dimension) {
             $userFunctions[] = function () use ($dimension, $ids) {
+                /** @var Dimension[] $dimension  */
                 $this->executeByDimensions($dimension, new \ArrayIterator($ids));
             };
         }

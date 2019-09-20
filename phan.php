@@ -56,7 +56,9 @@ return [
         'vendor/monolog',
         'vendor/zendframework',
         'vendor/psr',
-        'magento/generated'
+        'magento/generated',
+        '../../../app/code/Magento/Store', // When Running Locally
+        'magento/app/code/Magento/Store' // When Running on CI
     ],
     'exclude_file_list' => [
         'vendor/magento/zendframework1/library/Zend/Validate/Hostname/Biz.php',
