@@ -170,7 +170,7 @@ class Stock extends AbstractHelper
     /**
      * Searches the minimum quantity from the products collection
      *
-     * @param int[] $productCollection
+     * @param int[] $productIds
      * @return int|mixed
      */
     private function getMinQty(array $productIds)
