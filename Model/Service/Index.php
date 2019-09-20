@@ -278,8 +278,6 @@ class Index extends AbstractService
         $this->rebuildDirtyProducts($dirtyCollection, $store);
         $outOfSyncCollection = $this->getOutOfSyncCollection($store, $ids);
         $this->syncBulkPublisher->publishCollectionToQueue($outOfSyncCollection, $store);
-        $this->nostoSyncService->syncIndexedProducts($outOfSyncCollection, $store);
-        $this->nostoSyncService->syncDeletedProducts($store);
     }
 
     /**
