@@ -138,38 +138,7 @@ trait BuilderTrait
     }
 
 
-    /**
-     * Resolves "textual" product attribute value
-     *
-     * @param Product $product
-     * @param $attribute
-     * @return bool|float|int|null|string
-     */
-    public function getAttributeValue(Product $product, $attribute)
-    {
-        $value = null;
-        try {
-            $attributes = $product->getAttributes();
-            if (isset($attributes[$attribute])) {
-                $attributeObject = $attributes[$attribute];
-                $frontend = $attributeObject->getFrontend();
-                $frontendValue = $frontend->getValue($product);
-                if (is_array($frontendValue) && !empty($frontendValue)
-                    && ArrayHelper::onlyScalarValues($frontendValue)
-                ) {
-                    $value = implode(',', $frontendValue);
-                } elseif (is_scalar($frontendValue)) {
-                    $value = $frontendValue;
-                } elseif ($frontendValue instanceof Phrase) {
-                    $value = (string)$frontendValue;
-                }
-            }
-        } catch (\Exception $e) {
-            $this->loggerTrait->exception($e);
-        }
 
-        return $value;
-    }
 
     /**
      * Finalizes product image urls, stips off "pub/" directory if applicable

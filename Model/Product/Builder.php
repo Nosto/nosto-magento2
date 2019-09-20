@@ -37,13 +37,10 @@
 namespace Nosto\Tagging\Model\Product;
 
 use Exception;
-use Magento\Catalog\Api\CategoryRepositoryInterface;
 use Magento\Catalog\Model\Product;
-use Magento\Catalog\Model\Product\Gallery\ReadHandler as GalleryReadHandler;
 use Magento\CatalogInventory\Api\StockRegistryInterface;
 use Magento\Eav\Api\AttributeSetRepositoryInterface;
 use Magento\Framework\Event\ManagerInterface;
-use Magento\Review\Model\ReviewFactory;
 use Magento\Store\Model\Store;
 use Nosto\NostoException;
 use Nosto\Object\ModelFilter;
@@ -51,14 +48,7 @@ use Nosto\Object\Product\Product as NostoProduct;
 use Nosto\Tagging\Helper\Currency as CurrencyHelper;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Price as NostoPriceHelper;
-use Nosto\Tagging\Helper\Ratings as NostoRating;
-use Nosto\Tagging\Helper\Stock as NostoStockHelper;
-use Nosto\Tagging\Helper\Variation as NostoVariationHelper;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
-use Nosto\Tagging\Model\CategoryString\Builder as NostoCategoryBuilder;
-use Nosto\Tagging\Model\Product\Sku\Collection as NostoSkuCollection;
-use Nosto\Tagging\Model\Product\Tags\LowStock as LowStockHelper;
-use Nosto\Tagging\Model\Product\Url\Builder as NostoUrlBuilder;
 use Nosto\Tagging\Model\Product\Variation\Collection as PriceVariationCollection;
 use Nosto\Types\Product\ProductInterface;
 
@@ -72,16 +62,11 @@ class Builder
     private $nostoDataHelper;
     private $nostoPriceHelper;
     private $nostoCategoryBuilder;
-    private $nostoStockHelper;
     private $galleryReadHandler;
     private $eventManager;
     private $logger;
     private $reviewFactory;
-    private $urlBuilder;
-    private $skuCollection;
     private $nostoCurrencyHelper;
-    private $lowStockHelper;
-    private $priceVariationCollection;
     private $nostoVariationHelper;
     private $categoryRepository;
     private $attributeSetRepository;
@@ -92,65 +77,32 @@ class Builder
      *
      * @param NostoHelperData $nostoHelperData
      * @param NostoPriceHelper $priceHelper
-     * @param NostoCategoryBuilder $categoryBuilder
-     * @param NostoStockHelper $stockHelper
-     * @param NostoSkuCollection $skuCollection
-     * @param CategoryRepositoryInterface $categoryRepository
      * @param AttributeSetRepositoryInterface $attributeSetRepository
      * @param NostoLogger $logger
      * @param ManagerInterface $eventManager
-     * @param ReviewFactory $reviewFactory
-     * @param GalleryReadHandler $galleryReadHandler
-     * @param NostoUrlBuilder $urlBuilder
      * @param CurrencyHelper $nostoCurrencyHelper
-     * @param LowStockHelper $lowStockHelper
      * @param StockRegistryInterface $stockRegistry
-     * @param PriceVariationCollection $priceVariationCollection
-     * @param NostoVariationHelper $nostoVariationHelper
-     * @param NostoRating $nostoRatingHelper
      */
     public function __construct(
         NostoHelperData $nostoHelperData,
         NostoPriceHelper $priceHelper,
-        NostoCategoryBuilder $categoryBuilder,
-        NostoStockHelper $stockHelper,
-        NostoSkuCollection $skuCollection,
-        CategoryRepositoryInterface $categoryRepository,
         AttributeSetRepositoryInterface $attributeSetRepository,
         NostoLogger $logger,
         ManagerInterface $eventManager,
-        ReviewFactory $reviewFactory,
-        GalleryReadHandler $galleryReadHandler,
-        NostoUrlBuilder $urlBuilder,
         CurrencyHelper $nostoCurrencyHelper,
-        LowStockHelper $lowStockHelper,
-        StockRegistryInterface $stockRegistry,
-        PriceVariationCollection $priceVariationCollection,
-        NostoVariationHelper $nostoVariationHelper,
-        NostoRating $nostoRatingHelper
+        StockRegistryInterface $stockRegistry
     ) {
         $this->nostoDataHelper = $nostoHelperData;
         $this->nostoPriceHelper = $priceHelper;
-        $this->nostoCategoryBuilder = $categoryBuilder;
-        $this->categoryRepository = $categoryRepository;
         $this->attributeSetRepository = $attributeSetRepository;
         $this->logger = $logger;
         $this->eventManager = $eventManager;
-        $this->nostoStockHelper = $stockHelper;
-        $this->reviewFactory = $reviewFactory;
-        $this->galleryReadHandler = $galleryReadHandler;
-        $this->urlBuilder = $urlBuilder;
-        $this->skuCollection = $skuCollection;
         $this->nostoCurrencyHelper = $nostoCurrencyHelper;
-        $this->lowStockHelper = $lowStockHelper;
         $this->builderTraitConstruct(
             $nostoHelperData,
             $stockRegistry,
             $logger
         );
-        $this->priceVariationCollection = $priceVariationCollection;
-        $this->nostoVariationHelper = $nostoVariationHelper;
-        $this->nostoRatingHelper = $nostoRatingHelper;
     }
 
     /**
@@ -174,7 +126,6 @@ class Builder
             return null;
         }
         try {
-            $nostoProduct->setUrl($this->urlBuilder->getUrlInStore($product, $store));
             $nostoProduct->setProductId((string)$product->getId());
             $nostoProduct->setName($product->getName());
             $nostoProduct->setImageUrl($this->buildImageUrl($product, $store));
@@ -187,34 +138,7 @@ class Builder
                 $store
             );
 
-            if ($this->nostoCurrencyHelper->exchangeRatesInUse($store)) {
-                $nostoProduct->setVariationId(
-                    $this->nostoCurrencyHelper->getTaggingCurrency(
-                        $store
-                    )->getCode()
-                );
-            } elseif ($this->nostoDataHelper->isPricingVariationEnabled($store)) {
-                $nostoProduct->setVariationId(
-                    $this->nostoVariationHelper->getDefaultVariationCode()
-                );
-            }
-
             $nostoProduct->setAvailability($this->buildAvailability($product, $store));
-            $nostoProduct->setCategories($this->nostoCategoryBuilder->buildCategories($product, $store));
-            if ($this->nostoDataHelper->isInventoryTaggingEnabled($store)) {
-                $nostoProduct->setInventoryLevel($this->nostoStockHelper->getQty($product));
-            }
-            $rating = $this->nostoRatingHelper->getRatings($product, $store);
-            if ($rating !== null) {
-                $nostoProduct->setRatingValue($rating->getRating());
-                $nostoProduct->setReviewCount($rating->getReviewCount());
-            }
-            if ($this->nostoDataHelper->isAltimgTaggingEnabled($store)) {
-                $nostoProduct->setAlternateImageUrls($this->buildAlternativeImages($product, $store));
-            }
-            if ($this->nostoDataHelper->isVariationTaggingEnabled($store)) {
-                $nostoProduct->setSkus($this->skuCollection->build($product, $store));
-            }
             $descriptions = [];
             if ($product->hasData('short_description')) {
                 $descriptions[] = $product->getData('short_description');
@@ -225,35 +149,10 @@ class Builder
             if (!empty($descriptions)) {
                 $nostoProduct->setDescription(implode(' ', $descriptions));
             }
-            $brandAttribute = $this->nostoDataHelper->getBrandAttribute($store);
-            if ($product->hasData($brandAttribute)) {
-                $nostoProduct->setBrand($this->getAttributeValue($product, $brandAttribute));
-            }
-            $marginAttribute = $this->nostoDataHelper->getMarginAttribute($store);
-            if ($product->hasData($marginAttribute)) {
-                $nostoProduct->setSupplierCost($this->getAttributeValue($product, $marginAttribute));
-            }
-            $gtinAttribute = $this->nostoDataHelper->getGtinAttribute($store);
-            if ($product->hasData($gtinAttribute)) {
-                $nostoProduct->setGtin($this->getAttributeValue($product, $gtinAttribute));
-            }
-            if (($tags = $this->buildTags($product, $store)) !== []) {
-                $nostoProduct->setTag1($tags);
-            }
-
-            $nostoProduct->setCustomFields($this->getCustomFieldsWithAttributes($product, $store));
 
             // Update customised Tag1, Tag2 and Tag3
             $this->amendAttributeTags($product, $nostoProduct, $store);
 
-            // When using customer group price variations, set the variations
-            if ($this->nostoDataHelper->isPricingVariationEnabled($store)
-                && $this->nostoDataHelper->isMultiCurrencyDisabled($store)
-            ) {
-                $nostoProduct->setVariations(
-                    $this->priceVariationCollection->build($product, $nostoProduct, $store)
-                );
-            }
             if ($this->nostoDataHelper->isTagDatePublishedEnabled($store)) {
                 $nostoProduct->setDatePublished($product->getCreatedAt());
             }
@@ -402,60 +301,4 @@ class Builder
         return $availability;
     }
 
-    /**
-     * Adds the alternative image urls
-     *
-     * @param Product $product the product model.
-     * @param Store $store
-     * @return array
-     */
-    public function buildAlternativeImages(Product $product, Store $store)
-    {
-        $images = [];
-        $this->galleryReadHandler->execute($product);
-        foreach ($product->getMediaGalleryImages() as $image) {
-            if (isset($image['url']) && (isset($image['disabled']) && $image['disabled'] !== '1')) {
-                $images[] = $this->finalizeImageUrl($image['url'], $store);
-            }
-        }
-
-        return $images;
-    }
-
-    /**
-     * @param Product $product
-     * @param Store $store
-     * @return array
-     */
-    public function buildTags(Product $product, Store $store)
-    {
-        $tags = [];
-
-        if (!$product->canConfigure()) {
-            $tags[] = ProductInterface::ADD_TO_CART;
-        }
-
-        if ($this->nostoDataHelper->isLowStockIndicationEnabled($store)
-            && $this->lowStockHelper->build($product)
-        ) {
-            $tags[] = ProductInterface::LOW_STOCK;
-        }
-
-        return $tags;
-    }
-
-    /**
-     * Builds a product with required info for deletion
-     *
-     * @param int $productId
-     * @return NostoProduct
-     */
-    public function buildForDeletion($productId)
-    {
-        $nostoProduct = new NostoProduct();
-        $nostoProduct->setProductId((string)$productId);
-        $nostoProduct->setAvailability(ProductInterface::DISCONTINUED);
-
-        return $nostoProduct;
-    }
 }
