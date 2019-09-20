@@ -122,6 +122,10 @@ class Data implements IndexerActionInterface, MviewActionInterface, DimensionalI
         }
     }
 
+    /**
+     * @param array $ids
+     * @throws NostoException
+     */
     private function executeInSequence(array $ids = [])
     {
         $storesWithNosto = $this->nostoHelperAccount->getStoresWithNosto();
@@ -136,12 +140,15 @@ class Data implements IndexerActionInterface, MviewActionInterface, DimensionalI
         }
     }
 
-    private function executeInParallel(DimensionProviderInterface $dimensionProvider)
+    /**
+     * @param DimensionProviderInterface $dimensionProvider
+     */
+    private function executeInParallel(DimensionProviderInterface $dimensionProvider, array  $ids = [])
     {
         $userFunctions = [];
         foreach ($dimensionProvider->getIterator() as $dimension) {
-            $userFunctions[] = function () use ($dimension) {
-                $this->executeByDimensions($dimension);
+            $userFunctions[] = function () use ($dimension, $ids) {
+                $this->executeByDimensions($dimension, new \ArrayIterator($ids));
             };
         }
         $this->processManager->execute($userFunctions);
@@ -171,18 +178,19 @@ class Data implements IndexerActionInterface, MviewActionInterface, DimensionalI
      */
     public function execute($ids)
     {
-        $storesWithNosto = $this->nostoHelperAccount->getStoresWithNosto();
-        foreach ($storesWithNosto as $store) {
-            try {
-                $this->nostoServiceIndex->indexProducts($store, $ids);
-                // Catch only MemoryOutOfBoundsException as this is the most expected ones
-                // And the ones we are interested of
-            } catch (MemoryOutOfBoundsException $e) {
-                $this->nostoLogger->error($e->getMessage());
-            }
+        $dimensionProvider = $this->getDimensionsProvider();
+        if ($dimensionProvider === null) {
+            $this->executeInSequence($ids);
+        } else {
+            $this->executeInParallel($dimensionProvider, $ids);
         }
     }
 
+    /**
+     * @param array $dimensions
+     * @param \Traversable|null $entityIds
+     * @throws NostoException
+     */
     public function executeByDimensions(array $dimensions, \Traversable $entityIds = null)
     {
         if (count($dimensions) > 1 || !isset($dimensions[StoreDimensionProvider::DIMENSION_NAME])) {
@@ -195,7 +203,11 @@ class Data implements IndexerActionInterface, MviewActionInterface, DimensionalI
         Benchmark::getInstance()->startInstrumentation($benchmarkName, 0);
         $this->nostoLogger->info('[START] NOSTO-DIMENSION store:'. $store->getName());
         try {
-            $this->nostoServiceIndex->indexProducts($store);
+            $ids = [];
+            if ($entityIds === null) {
+                $ids = iterator_to_array($entityIds);
+            }
+            $this->nostoServiceIndex->indexProducts($store, $ids);
             // Catch only MemoryOutOfBoundsException as this is the most expected ones
             // And the ones we are interested of
         } catch (MemoryOutOfBoundsException $e) {
