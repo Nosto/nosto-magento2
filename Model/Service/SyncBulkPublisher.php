@@ -70,20 +70,20 @@ class SyncBulkPublisher
     /**
      * SyncBulkPublisher constructor.
      * @param BulkManagementInterface $bulkManagement
-     * @param OperationInterfaceFactory $operartionFactory
+     * @param OperationInterfaceFactory $operationFactory
      * @param IdentityGeneratorInterface $identityService
      * @param SerializerInterface $serializer
      * @param UserContextInterface $userContext
      */
     public function __construct(
         BulkManagementInterface $bulkManagement,
-        OperationInterfaceFactory $operartionFactory,
+        OperationInterfaceFactory $operationFactory,
         IdentityGeneratorInterface $identityService,
         SerializerInterface $serializer,
         UserContextInterface $userContext
     ) {
         $this->bulkManagement = $bulkManagement;
-        $this->operationFactory = $operartionFactory;
+        $this->operationFactory = $operationFactory;
         $this->identityService = $identityService;
         $this->serializer = $serializer;
         $this->userContext = $userContext;
