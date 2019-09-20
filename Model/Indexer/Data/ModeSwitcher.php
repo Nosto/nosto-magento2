@@ -48,19 +48,7 @@ use Nosto\Tagging\Model\Indexer\Data\ModeSwitcherConfiguration;
 class ModeSwitcher implements ModeSwitcherInterface
 {
     /**
-     * DimensionCollectionFactory
-     *
-     * @var \Magento\Catalog\Model\Indexer\Product\Price\DimensionCollectionFactory
-     */
-    private $dimensionCollectionFactory;
-
-    /**
-     * @var array|null
-     */
-    private $dimensionsArray;
-
-    /**
-     * @var \Magento\Catalog\Model\Indexer\Product\Price\DimensionModeConfiguration
+     * @var DimensionModeConfiguration
      */
     private $dimensionModeConfiguration;
 
@@ -98,7 +86,7 @@ class ModeSwitcher implements ModeSwitcherInterface
     /**
      * @inheritdoc
      */
-    public function switchMode(string $currentMode, string $previousMode)
+    public function switchMode(string $currentMode, string $previousMode) // @codingStandardsIgnoreLine
     {
         $this->modeSwitcherConfiguration->saveMode($currentMode);
     }
@@ -110,5 +98,4 @@ class ModeSwitcher implements ModeSwitcherInterface
     {
         return $this->modeSwitcherConfiguration->getMode();
     }
-
 }

@@ -85,8 +85,11 @@ class Data implements IndexerActionInterface, MviewActionInterface, DimensionalI
      * Data constructor.
      * @param NostoIndexService $nostoServiceIndex
      * @param NostoHelperAccount $nostoHelperAccount
-     * @param StoreDimensionProvider $storeDimensionProvider
+     * @param NostoHelperScope $nostoHelperScope
+     * @param DimensionProviderInterface $dimensionProvider
+     * @param ModeSwitcher $modeSwitcher
      * @param NostoLogger $nostoLogger
+     * @param ProcessManager $processManager
      */
     public function __construct(
         NostoIndexService $nostoServiceIndex,
@@ -95,7 +98,7 @@ class Data implements IndexerActionInterface, MviewActionInterface, DimensionalI
         DimensionProviderInterface $dimensionProvider,
         ModeSwitcher $modeSwitcher,
         NostoLogger $nostoLogger,
-        ProcessManager $processManager = null
+        ProcessManager $processManager
     ) {
         $this->nostoServiceIndex = $nostoServiceIndex;
         $this->nostoHelperAccount = $nostoHelperAccount;
@@ -103,9 +106,7 @@ class Data implements IndexerActionInterface, MviewActionInterface, DimensionalI
         $this->dimensionProvider = $dimensionProvider;
         $this->modeSwitcher = $modeSwitcher;
         $this->nostoLogger = $nostoLogger;
-        $this->processManager = $processManager ?: \Magento\Framework\App\ObjectManager::getInstance()->get(
-            ProcessManager::class
-        );
+        $this->processManager = $processManager;
     }
 
     /**
@@ -142,8 +143,9 @@ class Data implements IndexerActionInterface, MviewActionInterface, DimensionalI
 
     /**
      * @param DimensionProviderInterface $dimensionProvider
+     * @param array $ids
      */
-    private function executeInParallel(DimensionProviderInterface $dimensionProvider, array  $ids = [])
+    private function executeInParallel(DimensionProviderInterface $dimensionProvider, array $ids = [])
     {
         $userFunctions = [];
         foreach ($dimensionProvider->getIterator() as $dimension) {
@@ -204,7 +206,7 @@ class Data implements IndexerActionInterface, MviewActionInterface, DimensionalI
         $this->nostoLogger->info('[START] NOSTO-DIMENSION store:'. $store->getName());
         try {
             $ids = [];
-            if ($entityIds === null) {
+            if ($entityIds !== null) {
                 $ids = iterator_to_array($entityIds);
             }
             $this->nostoServiceIndex->indexProducts($store, $ids);
@@ -218,7 +220,9 @@ class Data implements IndexerActionInterface, MviewActionInterface, DimensionalI
 
         Benchmark::getInstance()->stopInstrumentation($benchmarkName);
         $duration = Benchmark::getInstance()->getElapsed($benchmarkName);
-        $this->nostoLogger->info('[END] NOSTO-DIMENSION store:'. $store->getName() . '('.round($duration,2).' secs)');
+        $this->nostoLogger->info(
+            '[END] NOSTO-DIMENSION store:' . $store->getName() . '(' . round($duration, 2) . ' secs)'
+        );
     }
 
     /**
