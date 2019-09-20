@@ -53,9 +53,6 @@ class Stock extends AbstractHelper
 {
     const MAX_CACHED_ITEMS = 1000;
 
-    /** @var ProductFactory */
-    private $productFactory;
-
     /** @var StockRegistryProvider */
     private $stockRegistryProvider;
 
@@ -65,18 +62,13 @@ class Stock extends AbstractHelper
      * Constructor.
      *
      * @param Context $context the context.
-     * @param ProductFactory $productFactory
      * @param StockRegistryProvider $stockRegistryProvider
      */
     public function __construct(
         Context $context,
-        ProductFactory $productFactory,
         StockRegistryProvider $stockRegistryProvider
-
     ) {
         parent::__construct($context);
-
-        $this->productFactory = $productFactory;
         $this->stockRegistryProvider = $stockRegistryProvider;
     }
 
