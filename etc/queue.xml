@@ -39,6 +39,6 @@
         <queue name="nosto_product_sync.update"
                consumer="nosto_product_sync.update"
                consumerInstance="Nosto\Tagging\MessageQueue\Consumer"
-               handler="Nosto\Tagging\Model\Attribute\Backend\Consumer::process"/>
+               handler="Nosto\Tagging\Model\Product\Sync\Consumer::process"/>
     </broker>
 </config>

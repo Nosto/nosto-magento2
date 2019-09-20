@@ -34,7 +34,7 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Attribute\Backend;
+namespace Nosto\Tagging\Model\Product\Sync;
 
 use Magento\AsynchronousOperations\Api\Data\OperationInterface;
 use Magento\AsynchronousOperations\Model\OperationManagement;
