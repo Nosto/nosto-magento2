@@ -202,7 +202,8 @@ class Builder
             $nostoProduct->setAvailability($this->buildAvailability($product, $store));
             $nostoProduct->setCategories($this->nostoCategoryBuilder->buildCategories($product, $store));
             if ($this->nostoDataHelper->isInventoryTaggingEnabled($store)) {
-                $nostoProduct->setInventoryLevel($this->nostoStockHelper->getQty($product));
+                $inventoryLevel = $this->nostoStockHelper->getQty($product);
+                $nostoProduct->setInventoryLevel($inventoryLevel);
             }
             $rating = $this->nostoRatingHelper->getRatings($product, $store);
             if ($rating !== null) {

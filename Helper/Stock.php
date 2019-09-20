@@ -45,6 +45,7 @@ use Magento\ConfigurableProduct\Model\Product\Type\Configurable;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 use Magento\GroupedProduct\Model\Product\Type\Grouped;
+use Nosto\Tagging\Model\Stock\StockRegistryProvider;
 
 /**
  * Stock helper used for product inventory level related tasks.
@@ -53,6 +54,9 @@ class Stock extends AbstractHelper
 {
     private $productFactory;
     private $stockItem;
+
+    /** @var StockRegistryProvider */
+    private $stockRegistryProvider;
 
     /**
      * Constructor.
@@ -64,12 +68,15 @@ class Stock extends AbstractHelper
     public function __construct(
         Context $context,
         ProductFactory $productFactory,
-        StockStateInterface $stockItem
+        StockStateInterface $stockItem,
+        StockRegistryProvider $stockRegistryProvider
+
     ) {
         parent::__construct($context);
 
         $this->productFactory = $productFactory;
         $this->stockItem = $stockItem;
+        $this->stockRegistryProvider = $stockRegistryProvider;
     }
 
     /**
@@ -84,7 +91,6 @@ class Stock extends AbstractHelper
     public function getQty(Product $product)
     {
         $qty = 0;
-
         switch ($product->getTypeId()) {
             case ProductType::TYPE_BUNDLE:
                 /** @var Bundled $productType */
@@ -113,8 +119,8 @@ class Stock extends AbstractHelper
             case Configurable::TYPE_CODE:
                 $productType = $product->getTypeInstance();
                 if ($productType instanceof Configurable) {
-                    $products = $productType->getUsedProducts($product);
-                    $qty = $this->getQtySum($products);
+                    $productsIds = $productType->getChildrenIds($product);
+                    $qty = $this->getQtySum($productsIds);
                 }
                 break;
             default:
@@ -148,19 +154,18 @@ class Stock extends AbstractHelper
     }
 
     /**
-     * Sums quantities for all products in array
+     * Sums quantities for all product ids in array
      *
-     * @param array|Product[] $productCollection
+     * @param int[] $productIds
      * @return int
      */
-    private function getQtySum(array $productCollection)
+    private function getQtySum(array $productIds)
     {
         $qty = 0;
-        /* @var Product $product */
-        foreach ($productCollection as $product) {
-            $qty += $this->getQty($product);
+        $stockItems = $this->stockRegistryProvider->getStockStatuses($productIds);
+        foreach ($stockItems->getItems() as $item) {
+            $qty += $item->getQty();
         }
-
         return $qty;
     }
 }
