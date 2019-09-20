@@ -64,29 +64,23 @@ class SyncBulkPublisher
     /** @var SerializerInterface */
     private $serializer;
 
-    /** @var UserContextInterface */
-    private $userContext;
-
     /**
      * SyncBulkPublisher constructor.
      * @param BulkManagementInterface $bulkManagement
      * @param OperationInterfaceFactory $operationFactory
      * @param IdentityGeneratorInterface $identityService
      * @param SerializerInterface $serializer
-     * @param UserContextInterface $userContext
      */
     public function __construct(
         BulkManagementInterface $bulkManagement,
         OperationInterfaceFactory $operationFactory,
         IdentityGeneratorInterface $identityService,
-        SerializerInterface $serializer,
-        UserContextInterface $userContext
+        SerializerInterface $serializer
     ) {
         $this->bulkManagement = $bulkManagement;
         $this->operationFactory = $operationFactory;
         $this->identityService = $identityService;
         $this->serializer = $serializer;
-        $this->userContext = $userContext;
     }
 
     /**
@@ -128,7 +122,7 @@ class SyncBulkPublisher
                 $bulkUuid,
                 $operations,
                 $bulkDescription,
-                $this->userContext->getUserId()
+                UserContextInterface::USER_TYPE_INTEGRATION
             );
             if (!$result) {
                 throw new LocalizedException(
