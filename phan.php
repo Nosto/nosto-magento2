@@ -59,7 +59,9 @@ return [
         'vendor/zendframework',
         'vendor/psr',
         'magento/generated', // When Running On CI
-        '../../../generated' // When Running Locally
+        '../../../generated', // When Running Locally
+        '../../../app/code/Magento/AsynchronousOperations', // When Running Locally
+        'magento/app/code/Magento/AsynchronousOperations' // When Running on CI
     ],
     'exclude_file_list' => [
         'vendor/magento/zendframework1/library/Zend/Validate/Hostname/Biz.php',
@@ -71,7 +73,9 @@ return [
         'vendor/',
         'magento/',
         '../../../lib/internal',
-        '../../../generated'
+        '../../../generated',
+        '../../../app/code/Magento/AsynchronousOperations',
+        'magento/app/code/Magento/AsynchronousOperations'
     ],
     'suppress_issue_types' => [
         'PhanParamSignatureMismatch',
