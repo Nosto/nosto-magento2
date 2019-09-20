@@ -38,7 +38,6 @@ namespace Nosto\Tagging\Model\Indexer\Data;
 
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Store\Model\Indexer\WebsiteDimensionProvider;
-use Magento\Customer\Model\Indexer\CustomerGroupDimensionProvider;
 use Magento\Store\Model\StoreDimensionProvider;
 
 class DimensionModeConfiguration
@@ -115,7 +114,8 @@ class DimensionModeConfiguration
     private function getCurrentMode(): string
     {
         if (null === $this->currentMode) {
-            $this->currentMode = $this->scopeConfig->getValue(ModeSwitcherConfiguration::XML_PATH_PRICE_DIMENSIONS_MODE)
+            $this->currentMode = $this->scopeConfig
+                ->getValue(ModeSwitcherConfiguration::XML_PATH_PRODUCT_DATA_DIMENSIONS_MODE)
                 ?: self::DIMENSION_NONE;
         }
 
