@@ -38,76 +38,56 @@ namespace Nosto\Tagging\Model\Indexer;
 
 use Exception;
 use Magento\Framework\Indexer\ActionInterface as IndexerActionInterface;
-use Magento\Framework\Indexer\DimensionalIndexerInterface;
-use Magento\Framework\Indexer\DimensionProviderInterface;
+use Magento\Store\Model\Store;
 use Nosto\NostoException;
-use Nosto\Tagging\Model\Indexer\Data\ModeSwitcher;
-use Nosto\Tagging\Model\Indexer\Data\DimensionModeConfiguration;
 use Magento\Framework\Mview\ActionInterface as MviewActionInterface;
+use Nosto\Tagging\Model\Indexer\Dimensions\ModeSwitcherInterface;
 use Nosto\Tagging\Model\Service\Index as NostoIndexService;
+use Nosto\Exception\MemoryOutOfBoundsException;
+use Nosto\Tagging\Model\Indexer\Data\ModeSwitcher as DataModeSwitcher;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
-use Nosto\Exception\MemoryOutOfBoundsException;
-use Magento\Store\Model\StoreDimensionProvider;
 use Magento\Indexer\Model\ProcessManager;
-use Nosto\Tagging\Util\Benchmark;
-use Magento\Framework\App\ObjectManager;
 
 /**
  * An indexer for Nosto product sync
  */
-class Data implements IndexerActionInterface, MviewActionInterface, DimensionalIndexerInterface
+class Data extends ParallelIndexer implements IndexerActionInterface, MviewActionInterface
 {
     const INDEXER_ID = 'nosto_index_product_data_sync';
 
     /** @var NostoIndexService */
     private $nostoServiceIndex;
 
-    /** @var NostoHelperAccount */
-    private $nostoHelperAccount;
-
-    /** @var NostoHelperScope */
-    private $nostoHelperScope;
-
-    /** @var DimensionProviderInterface; */
-    private $dimensionProvider;
-
-    /** @var ModeSwitcher */
+    /** @var DataModeSwitcher */
     private $modeSwitcher;
-
-    /** @var NostoLogger */
-    private $nostoLogger;
-
-    /** @var ProcessManager */
-    private $processManager;
 
     /**
      * Data constructor.
      * @param NostoIndexService $nostoServiceIndex
      * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoHelperScope $nostoHelperScope
-     * @param DimensionProviderInterface $dimensionProvider
-     * @param ModeSwitcher $modeSwitcher
-     * @param NostoLogger $nostoLogger
-     * @param ProcessManager|null $processManager
+     * @param DataModeSwitcher $dataModeSwitcher
+     * @param NostoLogger $logger
+     * @param ProcessManager $processManager
      */
     public function __construct(
         NostoIndexService $nostoServiceIndex,
         NostoHelperAccount $nostoHelperAccount,
         NostoHelperScope $nostoHelperScope,
-        DimensionProviderInterface $dimensionProvider,
-        ModeSwitcher $modeSwitcher,
-        NostoLogger $nostoLogger,
-        ProcessManager $processManager = null
+        DataModeSwitcher $dataModeSwitcher,
+        NostoLogger $logger,
+        ProcessManager $processManager
     ) {
         $this->nostoServiceIndex = $nostoServiceIndex;
-        $this->nostoHelperAccount = $nostoHelperAccount;
-        $this->nostoHelperScope = $nostoHelperScope;
-        $this->dimensionProvider = $dimensionProvider;
-        $this->modeSwitcher = $modeSwitcher;
-        $this->nostoLogger = $nostoLogger;
-        $this->processManager = $processManager;
+        $this->modeSwitcher = $dataModeSwitcher;
+        parent::__construct(
+            $nostoHelperAccount,
+            $nostoHelperScope,
+            $logger,
+            $processManager
+        );
     }
 
     /**
@@ -116,47 +96,7 @@ class Data implements IndexerActionInterface, MviewActionInterface, DimensionalI
      */
     public function executeFull()
     {
-        $dimensionProvider = $this->getDimensionsProvider();
-        if ($dimensionProvider === null) {
-            $this->executeInSequence();
-        } else {
-            $this->executeInParallel($dimensionProvider);
-        }
-    }
-
-    /**
-     * @param array $ids
-     * @throws NostoException
-     */
-    private function executeInSequence(array $ids = [])
-    {
-        $storesWithNosto = $this->nostoHelperAccount->getStoresWithNosto();
-        foreach ($storesWithNosto as $store) {
-            try {
-                $this->nostoServiceIndex->indexProducts($store, $ids);
-                // Catch only MemoryOutOfBoundsException as this is the most expected ones
-                // And the ones we are interested of
-            } catch (MemoryOutOfBoundsException $e) {
-                $this->nostoLogger->error($e->getMessage());
-            }
-        }
-    }
-
-    /**
-     * @param DimensionProviderInterface $dimensionProvider
-     * @param array $ids
-     * @suppress PhanTypeMismatchArgument
-     */
-    private function executeInParallel(DimensionProviderInterface $dimensionProvider, array $ids = [])
-    {
-        $userFunctions = [];
-        foreach ($dimensionProvider->getIterator() as $dimension) {
-            $userFunctions[] = function () use ($dimension, $ids) {
-                /** @var Dimension[] $dimension  */
-                $this->executeByDimensions($dimension, new \ArrayIterator($ids));
-            };
-        }
-        $this->getProcessManager()->execute($userFunctions);
+        $this->doWork();
     }
 
     /**
@@ -183,35 +123,23 @@ class Data implements IndexerActionInterface, MviewActionInterface, DimensionalI
      */
     public function execute($ids)
     {
-        $dimensionProvider = $this->getDimensionsProvider();
-        if ($dimensionProvider === null) {
-            $this->executeInSequence($ids);
-        } else {
-            $this->executeInParallel($dimensionProvider, $ids);
-        }
+        $this->doWork($ids);
     }
 
     /**
-     * @param array $dimensions
-     * @param \Traversable|null $entityIds
-     * @throws NostoException
+     * @inheritdoc
      */
-    public function executeByDimensions(array $dimensions, \Traversable $entityIds = null)
+    public function getModeSwitcher(): ModeSwitcherInterface
     {
-        if (count($dimensions) > 1 || !isset($dimensions[StoreDimensionProvider::DIMENSION_NAME])) {
-            throw new \InvalidArgumentException('Indexer "' . self::INDEXER_ID . '" support only Store dimension');
-        }
+        return $this->modeSwitcher;
+    }
 
-        $storeId = $dimensions[StoreDimensionProvider::DIMENSION_NAME]->getValue();
-        $store = $this->nostoHelperScope->getStore($storeId);
-        $benchmarkName = sprintf('STORE-DIMENSION-%s', $store->getCode());
-        Benchmark::getInstance()->startInstrumentation($benchmarkName, 0);
-        $this->nostoLogger->info('[START] NOSTO-DIMENSION store:'. $store->getName());
+    /**
+     * @inheritdoc
+     */
+    public function doIndex(Store $store, array $ids = [])
+    {
         try {
-            $ids = [];
-            if ($entityIds !== null) {
-                $ids = iterator_to_array($entityIds);
-            }
             $this->nostoServiceIndex->indexProducts($store, $ids);
             // Catch only MemoryOutOfBoundsException as this is the most expected ones
             // And the ones we are interested of
@@ -220,38 +148,5 @@ class Data implements IndexerActionInterface, MviewActionInterface, DimensionalI
         } catch (NostoException $e) {
             $this->nostoLogger->error($e->getMessage());
         }
-
-        Benchmark::getInstance()->stopInstrumentation($benchmarkName);
-        $duration = Benchmark::getInstance()->getElapsed($benchmarkName);
-        $this->nostoLogger->info(
-            '[END] NOSTO-DIMENSION store:' . $store->getName() . '(' . round($duration, 2) . ' secs)'
-        );
-    }
-
-    /**
-     * @return DimensionProviderInterface|null
-     */
-    public function getDimensionsProvider()
-    {
-        $mode = $this->modeSwitcher->getMode();
-        if ($mode === DimensionModeConfiguration::DIMENSION_NONE) {
-            return null;
-        } elseif ($mode === DimensionModeConfiguration::DIMENSION_STORE) {
-            return $this->dimensionProvider;
-        }
-        return null;
-    }
-
-    /**
-     * @return ProcessManager
-     */
-    private function getProcessManager()
-    {
-        if ($this->processManager ===  null) {
-            $this->processManager = ObjectManager::getInstance()->get(
-                ProcessManager::class
-            );
-        }
-        return $this->processManager;
     }
 }

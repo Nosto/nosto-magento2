@@ -47,7 +47,6 @@ class DimensionModeConfiguration
      */
     const DIMENSION_NONE = 'none';
     const DIMENSION_STORE = 'store';
-    /**#@-*/
 
     /**
      * Mapping between dimension mode and dimension provider name
@@ -113,10 +112,15 @@ class DimensionModeConfiguration
      */
     private function getCurrentMode(): string
     {
-        if (null === $this->currentMode) {
-            $this->currentMode = $this->scopeConfig
-                ->getValue(ModeSwitcherConfiguration::XML_PATH_PRODUCT_DATA_DIMENSIONS_MODE)
-                ?: self::DIMENSION_NONE;
+        if ($this->currentMode === null) {
+            $mode = $this->scopeConfig->getValue(
+                ModeSwitcherConfiguration::XML_PATH_PRODUCT_DATA_DIMENSIONS_MODE
+            );
+            if ($mode) {
+                $this->currentMode = $mode;
+            } else {
+                $this->currentMode = self::DIMENSION_NONE;
+            }
         }
 
         return $this->currentMode;

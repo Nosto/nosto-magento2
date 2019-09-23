@@ -96,7 +96,6 @@ class ModeSwitcherConfiguration
      */
     public function saveMode(string $mode)
     {
-        //Change config options
         $this->configWriter->saveConfig(self::XML_PATH_PRODUCT_DATA_DIMENSIONS_MODE, $mode);
         $this->cacheTypeList->cleanType('config');
         $this->indexer->load(NostoDataIndexer::INDEXER_ID);
