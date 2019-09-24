@@ -60,6 +60,7 @@ use Nosto\Object\ModelFilter;
 use Nosto\Tagging\Model\Product\Variation\Collection as PriceVariationCollection;
 use Nosto\Tagging\Helper\Variation as NostoVariationHelper;
 use Nosto\Tagging\Helper\Ratings as NostoRating;
+use Magento\Store\Model\StoreManagerInterface;
 
 class Builder
 {
@@ -110,6 +111,7 @@ class Builder
      * @param PriceVariationCollection $priceVariationCollection
      * @param NostoVariationHelper $nostoVariationHelper
      * @param NostoRating $nostoRatingHelper
+     * @param StoreManagerInterface $storeManager
      */
     public function __construct(
         NostoHelperData $nostoHelperData,
@@ -129,7 +131,8 @@ class Builder
         StockRegistryInterface $stockRegistry,
         PriceVariationCollection $priceVariationCollection,
         NostoVariationHelper $nostoVariationHelper,
-        NostoRating $nostoRatingHelper
+        NostoRating $nostoRatingHelper,
+        StoreManagerInterface $storeManager
     ) {
         $this->nostoDataHelper = $nostoHelperData;
         $this->nostoPriceHelper = $priceHelper;
@@ -148,7 +151,8 @@ class Builder
         $this->builderTraitConstruct(
             $nostoHelperData,
             $stockRegistry,
-            $logger
+            $logger,
+            $storeManager
         );
         $this->priceVariationCollection = $priceVariationCollection;
         $this->nostoVariationHelper = $nostoVariationHelper;
@@ -397,7 +401,7 @@ class Builder
     {
         $availability = ProductInterface::OUT_OF_STOCK;
         if (!$product->isVisibleInSiteVisibility()
-            || !$this->isAvailabeInStore($product, $store)
+            || !$this->isAvailableInStore($product, $store)
         ) {
             $availability = ProductInterface::INVISIBLE;
         } elseif ($product->isAvailable()
