@@ -46,25 +46,31 @@ use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Util\Url as UrlUtil;
 use Nosto\Helper\ArrayHelper;
+use Magento\Store\Model\StoreManagerInterface;
 
 trait BuilderTrait
 {
     private $nostoDataHelperTrait;
     private $loggerTrait;
     private $stockRegistry;
+    private $storeManager;
 
     /**
      * @param NostoHelperData $nostoHelperData
+     * @param StockRegistryInterface $stockRegistry
      * @param NostoLogger $logger
+     * @param StoreManagerInterface $storeManager
      */
     public function __construct(
         NostoHelperData $nostoHelperData,
         StockRegistryInterface $stockRegistry,
-        NostoLogger $logger
+        NostoLogger $logger,
+        StoreManagerInterface $storeManager
     ) {
         $this->nostoDataHelperTrait = $nostoHelperData;
         $this->stockRegistry = $stockRegistry;
         $this->loggerTrait = $logger;
+        $this->storeManager = $storeManager;
     }
 
     /**
@@ -191,9 +197,12 @@ trait BuilderTrait
      * @param Store $store
      * @return bool
      */
-    public function isAvailabeInStore(Product $product, Store $store)
+    public function isAvailableInStore(Product $product, Store $store)
     {
-        return in_array($store->getId(), $product->getStoreIds());
+        if ($this->storeManager->isSingleStoreMode()) {
+            return $product->isAvailable();
+        }
+        return in_array($store->getId(), $product->getStoreIds(), false);
     }
 
     /**
