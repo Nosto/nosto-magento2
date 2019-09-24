@@ -401,7 +401,7 @@ class Builder
     {
         $availability = ProductInterface::OUT_OF_STOCK;
         if (!$product->isVisibleInSiteVisibility()
-            || !$this->isAvailableInStore($product, $store)
+            || (!$this->isAvailableInStore($product, $store) && $this->isInStock($product, $store))
         ) {
             $availability = ProductInterface::INVISIBLE;
         } elseif ($product->isAvailable()
