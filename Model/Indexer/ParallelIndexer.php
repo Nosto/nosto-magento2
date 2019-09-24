@@ -124,6 +124,7 @@ abstract class ParallelIndexer implements DimensionalIndexerInterface, IndexerAc
 
     /**
      * @param array $ids
+     * @suppress PhanTypeMismatchArgument
      */
     public function doWork(array $ids = [])
     {
