@@ -39,6 +39,8 @@ namespace Nosto\Tagging\Model\Indexer;
 use Magento\Framework\Indexer\DimensionalIndexerInterface;
 use Magento\Framework\Indexer\DimensionProviderInterface;
 use Magento\Framework\Indexer\Dimension;
+use Magento\Framework\Mview\ActionInterface as MviewActionInterface;
+use Magento\Framework\Indexer\ActionInterface as IndexerActionInterface;
 use Nosto\NostoException;
 use Nosto\Tagging\Model\Indexer\Data\DimensionModeConfiguration;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
@@ -51,7 +53,7 @@ use Magento\Framework\App\ObjectManager;
 use Nosto\Tagging\Model\Indexer\Dimensions\ModeSwitcherInterface;
 use Magento\Store\Model\Store;
 
-abstract class ParallelIndexer implements DimensionalIndexerInterface
+abstract class ParallelIndexer implements DimensionalIndexerInterface, IndexerActionInterface, MviewActionInterface
 {
     /** @var NostoHelperAccount */
     private $nostoHelperAccount;
@@ -96,9 +98,13 @@ abstract class ParallelIndexer implements DimensionalIndexerInterface
      *
      * @param Store $store
      * @param array $ids
-     * @return mixed
      */
     abstract public function doIndex(Store $store, array $ids = []);
+
+    /**
+     * @return string
+     */
+    abstract public function getIndexerId(): string ;
 
     /**
      * @return DimensionProviderInterface|null
@@ -118,44 +124,28 @@ abstract class ParallelIndexer implements DimensionalIndexerInterface
 
     /**
      * @param array $ids
-     * @throws NostoException
      */
     public function doWork(array $ids = [])
     {
         $dimensionProvider = $this->getDimensionProvider();
-        if ($dimensionProvider === null) {
-            $this->executeInSequence($ids);
-        } else {
-            $this->executeInParallel($dimensionProvider);
-        }
-    }
-
-    /**
-     * @param array $ids
-     * @throws NostoException
-     */
-    private function executeInSequence(array $ids = [])
-    {
-        $storesWithNosto = $this->nostoHelperAccount->getStoresWithNosto();
-        foreach ($storesWithNosto as $store) {
-            $this->doIndex($store, $ids);
-        }
-    }
-
-    /**
-     * @param DimensionProviderInterface $dimensionProvider
-     * @param array $ids
-     * @suppress PhanTypeMismatchArgument
-     */
-    private function executeInParallel(DimensionProviderInterface $dimensionProvider, array $ids = [])
-    {
         $userFunctions = [];
-        /** @var Dimension[] $dimension  */
-        foreach ($dimensionProvider->getIterator() as $dimension) {
-            $userFunctions[] = function () use ($dimension, $ids) {
-                /** @var Dimension[] $dimension  */
-                $this->executeByDimensions($dimension, new \ArrayIterator($ids));
+
+        if ($dimensionProvider === null) {
+            $userFunctions[] = function () use ($ids) {
+                $storesWithNosto = $this->nostoHelperAccount->getStoresWithNosto();
+                foreach ($storesWithNosto as $store) {
+                    $this->doIndex($store, $ids);
+                }
             };
+        } else {
+
+            /** @var Dimension[] $dimension  */
+            foreach ($dimensionProvider->getIterator() as $dimension) {
+                $userFunctions[] = function () use ($dimension, $ids) {
+                    /** @var Dimension[] $dimension  */
+                    $this->executeByDimensions($dimension, new \ArrayIterator($ids));
+                };
+            }
         }
         $this->getProcessManager()->execute($userFunctions);
     }
@@ -185,7 +175,7 @@ abstract class ParallelIndexer implements DimensionalIndexerInterface
     public function executeByDimensions(array $dimensions, \Traversable $entityIds = null)
     {
         if (count($dimensions) > 1 || !isset($dimensions[StoreDimensionProvider::DIMENSION_NAME])) {
-            throw new \InvalidArgumentException('Indexer "' . self::INDEXER_ID . '" support only Store dimension');
+            throw new \InvalidArgumentException('Indexer "' . $this->getIndexerId() . '" support only Store dimension');
         }
 
         $storeId = $dimensions[StoreDimensionProvider::DIMENSION_NAME]->getValue();

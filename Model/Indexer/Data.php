@@ -37,10 +37,8 @@
 namespace Nosto\Tagging\Model\Indexer;
 
 use Exception;
-use Magento\Framework\Indexer\ActionInterface as IndexerActionInterface;
 use Magento\Store\Model\Store;
 use Nosto\NostoException;
-use Magento\Framework\Mview\ActionInterface as MviewActionInterface;
 use Nosto\Tagging\Model\Indexer\Dimensions\ModeSwitcherInterface;
 use Nosto\Tagging\Model\Service\Index as NostoIndexService;
 use Nosto\Exception\MemoryOutOfBoundsException;
@@ -53,7 +51,7 @@ use Magento\Indexer\Model\ProcessManager;
 /**
  * An indexer for Nosto product sync
  */
-class Data extends ParallelIndexer implements IndexerActionInterface, MviewActionInterface
+class Data extends ParallelIndexer
 {
     const INDEXER_ID = 'nosto_index_product_data_sync';
 
@@ -132,6 +130,14 @@ class Data extends ParallelIndexer implements IndexerActionInterface, MviewActio
     public function getModeSwitcher(): ModeSwitcherInterface
     {
         return $this->modeSwitcher;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getIndexerId(): string
+    {
+        return self::INDEXER_ID;
     }
 
     /**
