@@ -51,6 +51,7 @@ use Nosto\Tagging\Model\Product\BuilderTrait;
 use Nosto\Types\Product\ProductInterface;
 use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
 use Nosto\Tagging\Helper\Stock as NostoStockHelper;
+use Magento\Store\Model\StoreManagerInterface;
 
 class Builder
 {
@@ -70,7 +71,9 @@ class Builder
      * @param NostoLogger $logger
      * @param ManagerInterface $eventManager
      * @param CurrencyHelper $nostoCurrencyHelper
+     * @param StockRegistryInterface $stockRegistry
      * @param NostoStockHelper $stockHelper
+     * @param StoreManagerInterface $storeManager
      */
     public function __construct(
         NostoHelperData $nostoHelperData,
@@ -79,7 +82,8 @@ class Builder
         ManagerInterface $eventManager,
         CurrencyHelper $nostoCurrencyHelper,
         StockRegistryInterface $stockRegistry,
-        NostoStockHelper $stockHelper
+        NostoStockHelper $stockHelper,
+        StoreManagerInterface $storeManager
     ) {
         $this->nostoDataHelper = $nostoHelperData;
         $this->nostoPriceHelper = $priceHelper;
@@ -90,7 +94,8 @@ class Builder
         $this->builderTraitConstruct(
             $nostoHelperData,
             $stockRegistry,
-            $logger
+            $logger,
+            $storeManager
         );
     }
 
@@ -107,7 +112,7 @@ class Builder
         $attributes,
         $nostoScope = NostoProductBuilder::NOSTO_SCOPE_API
     ) {
-        if (!$this->isAvailabeInStore($product, $store)) {
+        if (!$this->isAvailableInStore($product, $store)) {
             return null;
         }
 
