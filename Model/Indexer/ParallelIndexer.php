@@ -52,6 +52,7 @@ use Nosto\Tagging\Util\Benchmark;
 use Magento\Framework\App\ObjectManager;
 use Nosto\Tagging\Model\Indexer\Dimensions\ModeSwitcherInterface;
 use Magento\Store\Model\Store;
+use Traversable;
 
 abstract class ParallelIndexer implements DimensionalIndexerInterface, IndexerActionInterface, MviewActionInterface
 {
@@ -142,12 +143,13 @@ abstract class ParallelIndexer implements DimensionalIndexerInterface, IndexerAc
 
             /** @var Dimension[] $dimension  */
             foreach ($dimensionProvider->getIterator() as $dimension) {
+                /** @suppress PhanTypeMismatchArgument */
                 $userFunctions[] = function () use ($dimension, $ids) {
-                    /** @var Dimension[] $dimension  */
                     $this->executeByDimensions($dimension, new \ArrayIterator($ids));
                 };
             }
         }
+        /** @var Traversable $userFunctions  */
         $this->getProcessManager()->execute($userFunctions);
     }
 
@@ -170,10 +172,10 @@ abstract class ParallelIndexer implements DimensionalIndexerInterface, IndexerAc
 
     /**
      * @param Dimension[] $dimensions
-     * @param \Traversable|null $entityIds
+     * @param Traversable|null $entityIds
      * @throws NostoException
      */
-    public function executeByDimensions(array $dimensions, \Traversable $entityIds = null)
+    public function executeByDimensions(array $dimensions, Traversable $entityIds = null)
     {
         if (count($dimensions) > 1 || !isset($dimensions[StoreDimensionProvider::DIMENSION_NAME])) {
             throw new \InvalidArgumentException('Indexer "' . $this->getIndexerId() . '" support only Store dimension');
