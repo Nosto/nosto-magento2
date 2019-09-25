@@ -39,7 +39,7 @@ namespace Nosto\Tagging\Model\Product\Sync;
 use Exception;
 use Magento\AsynchronousOperations\Api\Data\OperationInterface;
 use Magento\Framework\EntityManager\EntityManager;
-use Magento\Framework\Json\Helper\Data;
+use Magento\Framework\Json\Helper\Data as JsonHelper;
 use Nosto\Tagging\Logger\Logger;
 use Nosto\Tagging\Model\Product\Index\IndexRepository;
 use Nosto\Tagging\Model\Service\Sync as NostoSyncService;
@@ -53,7 +53,7 @@ class Consumer
     /** @var Logger */
     private $logger;
 
-    /** @var Data */
+    /** @var JsonHelper */
     private $jsonHelper;
 
     /** @var IndexRepository */
@@ -72,7 +72,7 @@ class Consumer
      * Consumer constructor.
      *
      * @param Logger $logger
-     * @param Data $jsonHelper
+     * @param JsonHelper $jsonHelper
      * @param IndexRepository $indexRepository
      * @param NostoSyncService $nostoSyncService
      * @param NostoScopeHelper $nostoScopeHelper
@@ -80,7 +80,7 @@ class Consumer
      */
     public function __construct(
         Logger $logger,
-        Data $jsonHelper,
+        JsonHelper $jsonHelper,
         IndexRepository $indexRepository,
         NostoSyncService $nostoSyncService,
         NostoScopeHelper $nostoScopeHelper,
