@@ -34,68 +34,57 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Indexer\Data;
+namespace Nosto\Tagging\Model\Indexer\Dimensions;
 
-use Magento\Indexer\Model\DimensionModes;
-use Magento\Framework\Search\Request\Dimension;
-use Magento\Store\Model\Indexer\WebsiteDimensionProvider;
-use Magento\Customer\Model\Indexer\CustomerGroupDimensionProvider;
-use Magento\Indexer\Model\DimensionMode;
-use Nosto\Tagging\Model\Indexer\Dimensions\ModeSwitcherInterface;
-use Nosto\Tagging\Model\Indexer\Data\DimensionModeConfiguration;
-use Nosto\Tagging\Model\Indexer\Data\ModeSwitcherConfiguration;
+use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Store\Model\StoreDimensionProvider;
 
-class ModeSwitcher implements ModeSwitcherInterface
+abstract class AbstractDimensionModeConfiguration
 {
     /**
-     * @var DimensionModeConfiguration
+     * Available modes of dimensions for nosto product data indexer
      */
-    private $dimensionModeConfiguration;
+    const DIMENSION_NONE = 'none';
+    const DIMENSION_STORE = 'store';
 
     /**
-     * @var ModeSwitcherConfiguration
+     * Mapping between dimension mode and dimension provider name
+     *
+     * @var array
      */
-    private $modeSwitcherConfiguration;
+    public $modesMapping = [
+        self::DIMENSION_NONE => [
+        ],
+        self::DIMENSION_STORE => [
+            StoreDimensionProvider::DIMENSION_NAME
+        ]
+    ];
 
     /**
-     * ModeSwitcher constructor.
-     * @param DimensionModeConfiguration $dimensionModeConfiguration
-     * @param ModeSwitcherConfiguration $modeSwitcherConfiguration
+     * @var ScopeConfigInterface
      */
-    public function __construct(
-        DimensionModeConfiguration $dimensionModeConfiguration,
-        ModeSwitcherConfiguration $modeSwitcherConfiguration
-    ) {
-        $this->dimensionModeConfiguration = $dimensionModeConfiguration;
-        $this->modeSwitcherConfiguration = $modeSwitcherConfiguration;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getDimensionModes(): DimensionModes
-    {
-        $dimensionsList = [];
-        foreach ($this->dimensionModeConfiguration->getDimensionModes() as $dimension => $modes) {
-            $dimensionsList[] = new DimensionMode($dimension, $modes);
-        }
-
-        return new DimensionModes($dimensionsList);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function switchMode(string $currentMode, string $previousMode) // @codingStandardsIgnoreLine
-    {
-        $this->modeSwitcherConfiguration->saveMode($currentMode);
-    }
+    public $scopeConfig;
 
     /**
      * @return string
      */
-    public function getMode(): string
+    abstract public function getCurrentMode(): string;
+
+    /**
+     * @param ScopeConfigInterface $scopeConfig
+     */
+    public function __construct(ScopeConfigInterface $scopeConfig)
     {
-        return $this->modeSwitcherConfiguration->getMode();
+        $this->scopeConfig = $scopeConfig;
+    }
+
+    /**
+     * Return dimension modes configuration.
+     *
+     * @return array
+     */
+    public function getDimensionModes(): array
+    {
+        return $this->modesMapping;
     }
 }

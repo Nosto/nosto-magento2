@@ -34,83 +34,21 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Indexer\Data;
+namespace Nosto\Tagging\Model\Indexer\Dimensions\Data;
 
-use Magento\Framework\App\Config\ScopeConfigInterface;
-use Magento\Store\Model\Indexer\WebsiteDimensionProvider;
-use Magento\Store\Model\StoreDimensionProvider;
+use Nosto\Tagging\Model\Indexer\Dimensions\AbstractDimensionModeConfiguration;
 
-class DimensionModeConfiguration
+class DimensionModeConfiguration extends AbstractDimensionModeConfiguration
 {
-    /**
-     * Available modes of dimensions for nosto product data indexer
-     */
-    const DIMENSION_NONE = 'none';
-    const DIMENSION_STORE = 'store';
-
-    /**
-     * Mapping between dimension mode and dimension provider name
-     *
-     * @var array
-     */
-    private $modesMapping = [
-        self::DIMENSION_NONE => [
-        ],
-        self::DIMENSION_STORE => [
-            StoreDimensionProvider::DIMENSION_NAME
-        ]
-    ];
-
-    /**
-     * @var ScopeConfigInterface
-     */
-    private $scopeConfig;
-
     /**
      * @var string
      */
     private $currentMode;
 
     /**
-     * @param ScopeConfigInterface $scopeConfig
-     */
-    public function __construct(ScopeConfigInterface $scopeConfig)
-    {
-        $this->scopeConfig = $scopeConfig;
-    }
-
-    /**
-     * Return dimension modes configuration.
-     *
-     * @return array
-     */
-    public function getDimensionModes(): array
-    {
-        return $this->modesMapping;
-    }
-
-    /**
-     * Get names of dimensions which used for provided mode.
-     * By default return dimensions for current enabled mode
-     *
-     * @param string|null $mode
-     * @return string[]
-     * @throws \InvalidArgumentException
-     */
-    public function getDimensionConfiguration(string $mode = null): array
-    {
-        if ($mode && !isset($this->modesMapping[$mode])) {
-            throw new \InvalidArgumentException(
-                sprintf('Undefined dimension mode "%s".', $mode)
-            );
-        }
-        return $this->modesMapping[$mode ?? $this->getCurrentMode()];
-    }
-
-    /**
      * @return string
      */
-    private function getCurrentMode(): string
+    public function getCurrentMode(): string
     {
         if ($this->currentMode === null) {
             $mode = $this->scopeConfig->getValue(

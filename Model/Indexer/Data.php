@@ -42,7 +42,7 @@ use Nosto\NostoException;
 use Nosto\Tagging\Model\Indexer\Dimensions\ModeSwitcherInterface;
 use Nosto\Tagging\Model\Service\Index as NostoIndexService;
 use Nosto\Exception\MemoryOutOfBoundsException;
-use Nosto\Tagging\Model\Indexer\Data\ModeSwitcher as DataModeSwitcher;
+use Nosto\Tagging\Model\Indexer\Dimensions\Data\ModeSwitcher as DataModeSwitcher;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
@@ -51,7 +51,7 @@ use Magento\Indexer\Model\ProcessManager;
 /**
  * An indexer for Nosto product sync
  */
-class Data extends ParallelIndexer
+class Data extends AbstractIndexer
 {
     const INDEXER_ID = 'nosto_index_product_data_sync';
 

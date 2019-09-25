@@ -42,7 +42,7 @@ use Magento\Framework\Indexer\Dimension;
 use Magento\Framework\Mview\ActionInterface as MviewActionInterface;
 use Magento\Framework\Indexer\ActionInterface as IndexerActionInterface;
 use Nosto\NostoException;
-use Nosto\Tagging\Model\Indexer\Data\DimensionModeConfiguration;
+use Nosto\Tagging\Model\Indexer\Dimensions\AbstractDimensionModeConfiguration as DimensionModeConfiguration;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
@@ -54,7 +54,7 @@ use Nosto\Tagging\Model\Indexer\Dimensions\ModeSwitcherInterface;
 use Magento\Store\Model\Store;
 use Traversable;
 
-abstract class ParallelIndexer implements DimensionalIndexerInterface, IndexerActionInterface, MviewActionInterface
+abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerActionInterface, MviewActionInterface
 {
     /** @var NostoHelperAccount */
     private $nostoHelperAccount;
