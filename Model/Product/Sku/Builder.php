@@ -64,13 +64,7 @@ class Builder
     private $nostoCurrencyHelper;
     private $nostoStockHelper;
     private $stockProvider;
-    /**
-     * @var StockRegistryInterface
-     */
     private $stockRegistry;
-    /**
-     * @var StockService
-     */
     private $stockService;
 
     /**

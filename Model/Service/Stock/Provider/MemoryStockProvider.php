@@ -74,7 +74,6 @@ class MemoryStockProvider implements StockProvider
             $this->saveQtyToCache($item);
         }
 
-
         return $lookups;
 
     }
