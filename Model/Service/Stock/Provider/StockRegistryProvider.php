@@ -37,7 +37,7 @@ namespace Nosto\Tagging\Model\Service\Stock\Provider;
  *
  */
 
-use Magento\CatalogInventory\Api\Data\StockStatusCollectionInterface as StockStatusCollectionInterface;
+use Magento\CatalogInventory\Api\Data\StockStatusCollectionInterface;
 use Magento\CatalogInventory\Model\StockRegistryProvider as MagentoStockRegistryProvider;
 
 class StockRegistryProvider extends MagentoStockRegistryProvider
