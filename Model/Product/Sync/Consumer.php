@@ -36,8 +36,9 @@
 
 namespace Nosto\Tagging\Model\Product\Sync;
 
+use Exception;
 use Magento\AsynchronousOperations\Api\Data\OperationInterface;
-use Magento\AsynchronousOperations\Model\OperationManagement;
+use Magento\Framework\EntityManager\EntityManager;
 use Magento\Framework\Json\Helper\Data;
 use Nosto\Tagging\Logger\Logger;
 use Nosto\Tagging\Model\Product\Index\IndexRepository;
@@ -55,9 +56,6 @@ class Consumer
     /** @var Data */
     private $jsonHelper;
 
-    /** @var OperationManagement */
-    private $operationManagement;
-
     /** @var IndexRepository */
     private $indexRepository;
 
@@ -67,30 +65,33 @@ class Consumer
     /** @var NostoScopeHelper */
     private $nostoScopeHelper;
 
+    /** @var EntityManager */
+    private $entityManager;
+
     /**
      * Consumer constructor.
      *
      * @param Logger $logger
      * @param Data $jsonHelper
-     * @param OperationManagement $operationManagement
      * @param IndexRepository $indexRepository
      * @param NostoSyncService $nostoSyncService
      * @param NostoScopeHelper $nostoScopeHelper
+     * @param EntityManager $entityManager
      */
     public function __construct(
         Logger $logger,
         Data $jsonHelper,
-        OperationManagement $operationManagement,
         IndexRepository $indexRepository,
         NostoSyncService $nostoSyncService,
-        NostoScopeHelper $nostoScopeHelper
+        NostoScopeHelper $nostoScopeHelper,
+        EntityManager $entityManager
     ) {
         $this->logger = $logger;
         $this->jsonHelper = $jsonHelper;
-        $this->operationManagement = $operationManagement;
         $this->indexRepository = $indexRepository;
         $this->nostoSyncService = $nostoSyncService;
         $this->nostoScopeHelper = $nostoScopeHelper;
+        $this->entityManager = $entityManager;
     }
 
     /**
@@ -98,6 +99,7 @@ class Consumer
      *
      * @param OperationInterface $operation
      * @return void
+     * @throws Exception
      */
     public function processOperation(OperationInterface $operation)
     {
@@ -113,18 +115,15 @@ class Consumer
             $outOfSyncCollection = $this->indexRepository->getByProductIdsAndStoreId($productIds, $storeId);
             $this->nostoSyncService->syncIndexedProducts($outOfSyncCollection, $store);
             $this->nostoSyncService->syncDeletedProducts($store);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->critical($e->getMessage());
-            $status = OperationInterface::STATUS_TYPE_NOT_RETRIABLY_FAILED;
-            $errorCode = $e->getCode();
             $message = __('Something went wrong when syncing products to Nosto. Check log for details.');
+            $operation->setStatus(OperationInterface::STATUS_TYPE_NOT_RETRIABLY_FAILED)
+                ->setErrorCode($e->getCode())
+                ->setResultMessage($message);
         }
-        $this->operationManagement->changeOperationStatus(
-            $operation->getId(),
-            $status,
-            $errorCode,
-            $message,
-            $serializedData
-        );
+        $operation->setStatus($status ? OperationInterface::STATUS_TYPE_COMPLETE : null)
+            ->setResultMessage($message);
+        $this->entityManager->save($operation);
     }
 }
