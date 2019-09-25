@@ -49,9 +49,6 @@ use Nosto\Tagging\Model\Service\Stock\Provider\StockProvider;
  */
 class StockService
 {
-    /**
-     * @var StockProvider
-     */
     private $stockProvider;
 
     /**
