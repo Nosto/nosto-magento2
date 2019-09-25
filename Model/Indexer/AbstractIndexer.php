@@ -79,14 +79,14 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
      * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoHelperScope $nostoHelperScope
      * @param NostoLogger $nostoLogger
-     * @param DimensionProviderInterface $dimensionProvider
+     * @param StoreDimensionProvider $dimensionProvider
      * @param ProcessManager|null $processManager
      */
     public function __construct(
         NostoHelperAccount $nostoHelperAccount,
         NostoHelperScope $nostoHelperScope,
         NostoLogger $nostoLogger,
-        DimensionProviderInterface $dimensionProvider,
+        StoreDimensionProvider $dimensionProvider,
         ProcessManager $processManager = null
     ) {
         $this->nostoHelperAccount = $nostoHelperAccount;
@@ -126,12 +126,14 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
 
         switch ($this->getModeSwitcher()->getMode()) {
             case DimensionModeConfiguration::DIMENSION_NONE:
-                $userFunctions[] = function () use ($ids) {
-                    $storesWithNosto = $this->nostoHelperAccount->getStoresWithNosto();
-                    foreach ($storesWithNosto as $store) {
-                        $this->doIndex($store, $ids);
+                foreach ($this->dimensionProvider->getIterator() as $dimension) {
+                    if ($this->nostoHelperAccount->nostoInstalledAndEnabled(
+                        $dimension[StoreDimensionProvider::DIMENSION_NAME]->getValue())
+                    ) {
+                        /** @suppress PhanTypeMismatchArgument */
+                        $this->executeByDimensions($dimension, new ArrayIterator($ids));
                     }
-                };
+                }
                 break;
             case DimensionModeConfiguration::DIMENSION_STORE:
                 /** @var Dimension[] $dimension  */
@@ -141,12 +143,12 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
                         $this->executeByDimensions($dimension, new ArrayIterator($ids));
                     };
                 }
+                /** @var Traversable $userFunctions  */
+                $this->getProcessManager()->execute($userFunctions);
                 break;
             default:
                 throw new UnexpectedValueException("Undefined dimension mode.");
         }
-        /** @var Traversable $userFunctions  */
-        $this->getProcessManager()->execute($userFunctions);
     }
 
     /**
