@@ -40,7 +40,6 @@ use Exception;
 use Magento\Catalog\Api\CategoryRepositoryInterface;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\Product\Gallery\ReadHandler as GalleryReadHandler;
-use Magento\CatalogInventory\Api\StockRegistryInterface;
 use Magento\Eav\Api\AttributeSetRepositoryInterface;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Review\Model\ReviewFactory;
@@ -86,8 +85,6 @@ class Builder
     private $categoryRepository;
     private $attributeSetRepository;
     private $nostoRatingHelper;
-    private $stockProvider;
-    private $stockRegistry;
     private $stockService;
 
     /**
@@ -107,7 +104,6 @@ class Builder
      * @param NostoUrlBuilder $urlBuilder
      * @param CurrencyHelper $nostoCurrencyHelper
      * @param LowStockHelper $lowStockHelper
-     * @param StockRegistryInterface $stockRegistry
      * @param PriceVariationCollection $priceVariationCollection
      * @param NostoVariationHelper $nostoVariationHelper
      * @param NostoRating $nostoRatingHelper
@@ -127,7 +123,6 @@ class Builder
         NostoUrlBuilder $urlBuilder,
         CurrencyHelper $nostoCurrencyHelper,
         LowStockHelper $lowStockHelper,
-        StockRegistryInterface $stockRegistry,
         PriceVariationCollection $priceVariationCollection,
         NostoVariationHelper $nostoVariationHelper,
         NostoRating $nostoRatingHelper
@@ -147,13 +142,12 @@ class Builder
         $this->lowStockHelper = $lowStockHelper;
         $this->builderTraitConstruct(
             $nostoHelperData,
-            $stockRegistry,
+            $stockService,
             $logger
         );
         $this->priceVariationCollection = $priceVariationCollection;
         $this->nostoVariationHelper = $nostoVariationHelper;
         $this->nostoRatingHelper = $nostoRatingHelper;
-        $this->stockRegistry = $stockRegistry;
         $this->stockService = $stockService;
     }
 

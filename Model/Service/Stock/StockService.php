@@ -39,10 +39,10 @@ namespace Nosto\Tagging\Model\Service\Stock;
 use Magento\Bundle\Model\Product\Type as Bundled;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\Product\Type as ProductType;
-use Magento\Catalog\Model\ProductFactory;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable;
 use Magento\GroupedProduct\Model\Product\Type\Grouped;
-use Nosto\Tagging\Model\Service\Stock\Provider\StockProvider;
+use Magento\Store\Model\Store;
+use Nosto\Tagging\Model\Service\Stock\Provider\StockProviderInterface;
 
 /**
  * StockService helper used for product inventory level related tasks.
@@ -54,12 +54,11 @@ class StockService
     /**
      * Constructor.
      *
-     * @param StockProvider $stockProvider
+     * @param StockProviderInterface $stockProvider
      */
     public function __construct(
-        StockProvider $stockProvider
-    )
-    {
+        StockProviderInterface $stockProvider
+    ) {
         $this->stockProvider = $stockProvider;
     }
 
@@ -101,11 +100,14 @@ class StockService
                 $productType = $product->getTypeInstance();
                 if ($productType instanceof Configurable) {
                     $productIds = $productType->getChildrenIds($product->getId());
+                    if (isset($productIds[0]) && is_array($productIds[0])) {
+                        $productIds = $productIds[0];
+                    }
                     $qty = $this->getQtySum($productIds);
                 }
                 break;
             default:
-                $qty += $this->stockProvider->getQuantity($product->getId())->getQty();
+                $qty += $this->stockProvider->getStockStatus($product->getId())->getQty();
                 break;
         }
 
@@ -121,7 +123,7 @@ class StockService
     private function getMinQty(array $productIds)
     {
         $quantities = [];
-        $stockItems = $this->stockProvider->getQuantities($productIds);
+        $stockItems = $this->stockProvider->getStockStatuses($productIds);
         $minQty = 0;
         /* @var Product $product */
         foreach ($stockItems as $stockItem) {
@@ -143,10 +145,25 @@ class StockService
     private function getQtySum($productIds)
     {
         $qty = 0;
-        $stockItems = $this->stockProvider->getQuantities($productIds);
+        $stockItems = $this->stockProvider->getStockStatuses($productIds);
         foreach ($stockItems as $item) {
             $qty += $item->getQty();
         }
         return $qty;
+    }
+
+    /**
+     * Sums quantities for all product ids in array
+     *
+     * @param Product $product
+     * @param Store $store
+     * @return bool
+     */
+    public function isInStock(Product $product, Store $store)
+    {
+        return (bool)$this->stockProvider->getStockItem(
+            $product->getId(),
+            $store->getWebsiteId()
+        )->getIsInStock();
     }
 }

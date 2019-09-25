@@ -38,7 +38,6 @@ namespace Nosto\Tagging\Model\Product\Sku;
 
 use Exception;
 use Magento\Catalog\Model\Product;
-use Magento\CatalogInventory\Api\StockRegistryInterface;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable\Attribute as ConfigurableAttribute;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Store\Model\Store;
@@ -49,7 +48,6 @@ use Nosto\Tagging\Helper\Price as NostoPriceHelper;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Product\BuilderTrait;
 use Nosto\Tagging\Model\Service\Stock\StockService;
-use Nosto\Tagging\Model\Stock\StockProvider;
 use Nosto\Types\Product\ProductInterface;
 
 class Builder
@@ -63,8 +61,6 @@ class Builder
     private $logger;
     private $nostoCurrencyHelper;
     private $nostoStockHelper;
-    private $stockProvider;
-    private $stockRegistry;
     private $stockService;
 
     /**
@@ -73,7 +69,6 @@ class Builder
      * @param NostoLogger $logger
      * @param ManagerInterface $eventManager
      * @param CurrencyHelper $nostoCurrencyHelper
-     * @param StockRegistryInterface $stockRegistry
      * @param StockService $stockService
      */
     public function __construct(
@@ -82,7 +77,6 @@ class Builder
         NostoLogger $logger,
         ManagerInterface $eventManager,
         CurrencyHelper $nostoCurrencyHelper,
-        StockRegistryInterface $stockRegistry,
         StockService $stockService
     ) {
         $this->nostoDataHelper = $nostoHelperData;
@@ -92,10 +86,9 @@ class Builder
         $this->nostoCurrencyHelper = $nostoCurrencyHelper;
         $this->builderTraitConstruct(
             $nostoHelperData,
-            $stockRegistry,
+            $stockService,
             $logger
         );
-        $this->stockRegistry = $stockRegistry;
         $this->stockService = $stockService;
     }
 

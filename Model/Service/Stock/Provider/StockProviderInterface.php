@@ -37,20 +37,28 @@ namespace Nosto\Tagging\Model\Service\Stock\Provider;
  *
  */
 
+use Magento\CatalogInventory\Api\Data\StockItemInterface;
 use Magento\CatalogInventory\Api\Data\StockStatusInterface;
 
-interface StockProvider
+interface StockProviderInterface
 {
 
     /**
-     * @param int[] $ids
+     * @param int[] $ids array of product ids
      * @return StockStatusInterface[]
      */
-    public function getQuantities($ids);
+    public function getStockStatuses(array $ids);
+
+    /**
+     * @param int $id Product id
+     * @return StockStatusInterface
+     */
+    public function getStockStatus($id);
 
     /**
      * @param int $id
-     * @return StockStatusInterface
+     * @param int $websiteId
+     * @return StockItemInterface
      */
-    public function getQuantity(int $id);
+    public function getStockItem($id, $websiteId);
 }
