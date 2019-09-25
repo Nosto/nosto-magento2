@@ -34,42 +34,35 @@
  *
  */
 
-namespace Nosto\Tagging\Helper;
+namespace Nosto\Tagging\Model\Service\Stock;
 
 use Magento\Bundle\Model\Product\Type as Bundled;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\Product\Type as ProductType;
 use Magento\Catalog\Model\ProductFactory;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable;
-use Magento\Framework\App\Helper\AbstractHelper;
-use Magento\Framework\App\Helper\Context;
 use Magento\GroupedProduct\Model\Product\Type\Grouped;
-use Nosto\Tagging\Model\Stock\StockRegistryProvider;
+use Nosto\Tagging\Model\Service\Stock\Provider\StockProvider;
 
 /**
- * Stock helper used for product inventory level related tasks.
+ * StockService helper used for product inventory level related tasks.
  */
-class Stock extends AbstractHelper
+class StockService
 {
-    const MAX_CACHED_ITEMS = 1000;
-
-    /** @var StockRegistryProvider */
-    private $stockRegistryProvider;
-
-    private $runTimeCache = [];
+    /**
+     * @var StockProvider
+     */
+    private $stockProvider;
 
     /**
      * Constructor.
      *
-     * @param Context $context the context.
-     * @param StockRegistryProvider $stockRegistryProvider
+     * @param StockProvider $stockProvider
      */
     public function __construct(
-        Context $context,
-        StockRegistryProvider $stockRegistryProvider
+        StockProvider $stockProvider
     ) {
-        parent::__construct($context);
-        $this->stockRegistryProvider = $stockRegistryProvider;
+        $this->stockProvider = $stockProvider;
     }
 
     /**
@@ -81,7 +74,7 @@ class Stock extends AbstractHelper
      * @suppress PhanUndeclaredMethod
      * @suppress PhanDeprecatedFunction
      */
-    public function getQty(Product $product)
+    public function getQuantity(Product $product)
     {
         $qty = 0;
         switch ($product->getTypeId()) {
@@ -114,57 +107,11 @@ class Stock extends AbstractHelper
                 }
                 break;
             default:
-                $qty += $this->getQtyForSingleProduct($product);
+                $qty += $this->stockProvider->getQuantity($product->getId())->getQty();
                 break;
         }
 
         return $qty;
-    }
-
-    /**
-     * @param Product $product
-     * @return int|null
-     */
-    private function getQtyForSingleProduct(Product $product)
-    {
-        $qtyFromCache = $this->getQtyFromCache($product->getId());
-        if ($qtyFromCache !== null) {
-            return $qtyFromCache;
-        }
-        $stockStatus = $this->stockRegistryProvider->getStockStatus(
-            $product->getId(),
-            StockRegistryProvider::DEFAULT_STOCK_SCOPE
-        );
-        $qty = $stockStatus->getQty();
-        $this->saveQtyToCache($product->getId(), $qty);
-        return $qty;
-    }
-
-    /**
-     * @param int $productId
-     * @param $qty
-     */
-    private function saveQtyToCache($productId, $qty)
-    {
-        $this->runTimeCache[$productId] = $qty;
-        if (count($this->runTimeCache) >= self::MAX_CACHED_ITEMS) {
-            foreach ($this->runTimeCache as $key => $val) {
-                unset($this->runTimeCache[$key]);
-                break;
-            }
-        }
-    }
-
-    /**
-     * @param int $productId
-     * @return int|null
-     */
-    private function getQtyFromCache($productId)
-    {
-        if (!isset($this->runTimeCache[$productId])) {
-            return null;
-        }
-        return $this->runTimeCache[$productId];
     }
 
     /**
@@ -176,10 +123,10 @@ class Stock extends AbstractHelper
     private function getMinQty(array $productIds)
     {
         $quantities = [];
-        $stockItems = $this->stockRegistryProvider->getStockStatuses($productIds);
+        $stockItems = $this->stockProvider->getQuantities($productIds);
         $minQty = 0;
         /* @var Product $product */
-        foreach ($stockItems->getItems() as $stockItem) {
+        foreach ($stockItems as $stockItem) {
             $quantities[] = $stockItem->getQty();
         }
         if (!empty($quantities)) {
@@ -195,13 +142,12 @@ class Stock extends AbstractHelper
      * @param int[] $productIds
      * @return int
      */
-    private function getQtySum(array $productIds)
+    private function getQtySum($productIds)
     {
         $qty = 0;
-        $stockItems = $this->stockRegistryProvider->getStockStatuses($productIds);
-        foreach ($stockItems->getItems() as $item) {
+        $stockItems = $this->stockProvider->getQuantities($productIds);
+        foreach ($stockItems as $item) {
             $qty += $item->getQty();
-            $this->saveQtyToCache($item->getProductId(), $item->getQty());
         }
         return $qty;
     }
