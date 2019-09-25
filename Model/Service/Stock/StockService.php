@@ -61,7 +61,8 @@ class StockService
      */
     public function __construct(
         StockProvider $stockProvider
-    ) {
+    )
+    {
         $this->stockProvider = $stockProvider;
     }
 

@@ -1,4 +1,5 @@
 <?php
+
 namespace Nosto\Tagging\Model\Service\Stock\Provider;
 
 /**

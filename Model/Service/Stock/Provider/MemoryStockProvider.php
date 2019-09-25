@@ -79,6 +79,27 @@ class MemoryStockProvider implements StockProvider
     }
 
     /**
+     * @param int $productId
+     * @return StockStatusInterface
+     */
+    private function getQtyFromCache($productId)
+    {
+        if (!isset($this->runTimeCache[$productId])) {
+            return null;
+        }
+        return $this->runTimeCache[$productId];
+    }
+
+    /**
+     * @param StockStatusInterface $item
+     */
+    private function saveQtyToCache(StockStatusInterface $item)
+    {
+        $this->runTimeCache[$item->getProductId()] = $item;
+        $this->runTimeCache = array_slice($this->runTimeCache, 0, self::MAX_CACHED_ITEMS);
+    }
+
+    /**
      * @inheritDoc
      */
     public function getQuantity(int $id)
@@ -93,28 +114,8 @@ class MemoryStockProvider implements StockProvider
 
     }
 
-    private function existsInCache($productId) : bool {
+    private function existsInCache($productId): bool
+    {
         return isset($this->runTimeCache[$productId]);
-    }
-
-    /**
-     * @param StockStatusInterface $item
-     */
-    private function saveQtyToCache(StockStatusInterface $item)
-    {
-        $this->runTimeCache[$item->getProductId()] = $item;
-        $this->runTimeCache = array_slice($this->runTimeCache, 0, self::MAX_CACHED_ITEMS);
-    }
-
-    /**
-     * @param int $productId
-     * @return StockStatusInterface
-     */
-    private function getQtyFromCache($productId)
-    {
-        if (!isset($this->runTimeCache[$productId])) {
-            return null;
-        }
-        return $this->runTimeCache[$productId];
     }
 }
