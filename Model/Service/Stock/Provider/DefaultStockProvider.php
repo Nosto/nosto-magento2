@@ -40,9 +40,6 @@ namespace Nosto\Tagging\Model\Service\Stock\Provider;
 class DefaultStockProvider implements StockProvider
 {
 
-    /**
-     * @var StockRegistryProvider
-     */
     private $stockRegistryProvider;
 
     public function __construct(StockRegistryProvider $stockRegistryProvider)
@@ -56,7 +53,6 @@ class DefaultStockProvider implements StockProvider
     public function getQuantities($ids)
     {
         return $this->stockRegistryProvider->getStockStatuses($ids)->getItems();
-
     }
 
     /**
