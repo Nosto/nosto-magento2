@@ -42,12 +42,7 @@ use Magento\CatalogInventory\Api\Data\StockStatusInterface;
 class MemoryStockProvider implements StockProvider
 {
     const MAX_CACHED_ITEMS = 1000;
-
     private $runTimeCache = [];
-
-    /**
-     * @var StockProvider
-     */
     private $stockProvider;
 
     public function __construct(StockProvider $stockProvider)
