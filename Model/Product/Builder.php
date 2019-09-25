@@ -137,8 +137,6 @@ class Builder
                 ),
                 $store
             );
-
-            $nostoProduct->setAvailability($this->buildAvailability($product, $store));
             $descriptions = [];
             if ($product->hasData('short_description')) {
                 $descriptions[] = $product->getData('short_description');
@@ -276,29 +274,6 @@ class Builder
                 }
             }
         }
-    }
-
-    /**
-     * Generates the availability for the product
-     *
-     * @param Product $product
-     * @param Store $store
-     * @return string
-     */
-    private function buildAvailability(Product $product, Store $store)
-    {
-        $availability = ProductInterface::OUT_OF_STOCK;
-        if (!$product->isVisibleInSiteVisibility()
-            || !$this->isAvailabeInStore($product, $store)
-        ) {
-            $availability = ProductInterface::INVISIBLE;
-        } elseif ($product->isAvailable()
-            && $this->isInStock($product, $store)
-        ) {
-            $availability = ProductInterface::IN_STOCK;
-        }
-
-        return $availability;
     }
 
 }
