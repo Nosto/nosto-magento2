@@ -47,6 +47,7 @@ use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Magento\Indexer\Model\ProcessManager;
+use Magento\Framework\Indexer\DimensionProviderInterface;
 
 /**
  * An indexer for Nosto product sync
@@ -68,6 +69,7 @@ class Data extends AbstractIndexer
      * @param NostoHelperScope $nostoHelperScope
      * @param DataModeSwitcher $dataModeSwitcher
      * @param NostoLogger $logger
+     * @param DimensionProviderInterface $dimensionProvider
      * @param ProcessManager $processManager
      */
     public function __construct(
@@ -76,6 +78,7 @@ class Data extends AbstractIndexer
         NostoHelperScope $nostoHelperScope,
         DataModeSwitcher $dataModeSwitcher,
         NostoLogger $logger,
+        DimensionProviderInterface $dimensionProvider,
         ProcessManager $processManager
     ) {
         $this->nostoServiceIndex = $nostoServiceIndex;
@@ -84,6 +87,7 @@ class Data extends AbstractIndexer
             $nostoHelperAccount,
             $nostoHelperScope,
             $logger,
+            $dimensionProvider,
             $processManager
         );
     }

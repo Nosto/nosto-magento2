@@ -68,7 +68,6 @@ class ModeSwitcherConfiguration
      * ModeSwitcherConfiguration constructor.
      * @param ConfigInterface $configWriter
      * @param TypeListInterface $cacheTypeList
-     * @param ScopeConfigInterface $scopeConfig
      * @param Indexer $indexer
      */
     public function __construct(

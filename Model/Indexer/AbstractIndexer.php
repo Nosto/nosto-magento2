@@ -53,6 +53,9 @@ use Magento\Framework\App\ObjectManager;
 use Nosto\Tagging\Model\Indexer\Dimensions\ModeSwitcherInterface;
 use Magento\Store\Model\Store;
 use Traversable;
+use ArrayIterator;
+use InvalidArgumentException;
+use UnexpectedValueException;
 
 abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerActionInterface, MviewActionInterface
 {
@@ -68,22 +71,28 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
     /** @var ProcessManager */
     private $processManager;
 
+    /** @var DimensionProviderInterface */
+    private $dimensionProvider;
+
     /**
-     * ParallelIndexer constructor.
+     * AbstractIndexer constructor.
      * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoHelperScope $nostoHelperScope
      * @param NostoLogger $nostoLogger
+     * @param DimensionProviderInterface $dimensionProvider
      * @param ProcessManager|null $processManager
      */
     public function __construct(
         NostoHelperAccount $nostoHelperAccount,
         NostoHelperScope $nostoHelperScope,
         NostoLogger $nostoLogger,
+        DimensionProviderInterface $dimensionProvider,
         ProcessManager $processManager = null
     ) {
         $this->nostoHelperAccount = $nostoHelperAccount;
         $this->nostoHelperScope = $nostoHelperScope;
         $this->nostoLogger = $nostoLogger;
+        $this->dimensionProvider = $dimensionProvider;
         $this->processManager = $processManager;
     }
 
@@ -108,46 +117,33 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
     abstract public function getIndexerId(): string ;
 
     /**
-     * @return DimensionProviderInterface|null
-     */
-    private function getDimensionProvider()
-    {
-        $mode = $this->getModeSwitcher()->getMode();
-        if ($mode === DimensionModeConfiguration::DIMENSION_NONE) {
-            return null;
-        } elseif ($mode === DimensionModeConfiguration::DIMENSION_STORE) {
-            return ObjectManager::getInstance()->get(
-                StoreDimensionProvider::class
-            );
-        }
-        return null;
-    }
-
-    /**
      * @param array $ids
      * @suppress PhanTypeMismatchArgument
      */
     public function doWork(array $ids = [])
     {
-        $dimensionProvider = $this->getDimensionProvider();
         $userFunctions = [];
 
-        if ($dimensionProvider === null) {
-            $userFunctions[] = function () use ($ids) {
-                $storesWithNosto = $this->nostoHelperAccount->getStoresWithNosto();
-                foreach ($storesWithNosto as $store) {
-                    $this->doIndex($store, $ids);
-                }
-            };
-        } else {
-
-            /** @var Dimension[] $dimension  */
-            foreach ($dimensionProvider->getIterator() as $dimension) {
-                /** @suppress PhanTypeMismatchArgument */
-                $userFunctions[] = function () use ($dimension, $ids) {
-                    $this->executeByDimensions($dimension, new \ArrayIterator($ids));
+        switch ($this->getModeSwitcher()->getMode()) {
+            case DimensionModeConfiguration::DIMENSION_NONE:
+                $userFunctions[] = function () use ($ids) {
+                    $storesWithNosto = $this->nostoHelperAccount->getStoresWithNosto();
+                    foreach ($storesWithNosto as $store) {
+                        $this->doIndex($store, $ids);
+                    }
                 };
-            }
+                break;
+            case DimensionModeConfiguration::DIMENSION_STORE:
+                /** @var Dimension[] $dimension  */
+                foreach ($this->dimensionProvider->getIterator() as $dimension) {
+                    /** @suppress PhanTypeMismatchArgument */
+                    $userFunctions[] = function () use ($dimension, $ids) {
+                        $this->executeByDimensions($dimension, new ArrayIterator($ids));
+                    };
+                }
+                break;
+            default:
+                throw new UnexpectedValueException("Undefined dimension mode.");
         }
         /** @var Traversable $userFunctions  */
         $this->getProcessManager()->execute($userFunctions);
@@ -178,7 +174,7 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
     public function executeByDimensions(array $dimensions, Traversable $entityIds = null)
     {
         if (count($dimensions) > 1 || !isset($dimensions[StoreDimensionProvider::DIMENSION_NAME])) {
-            throw new \InvalidArgumentException('Indexer "' . $this->getIndexerId() . '" support only Store dimension');
+            throw new InvalidArgumentException('Indexer "' . $this->getIndexerId() . '" support only Store dimension');
         }
 
         $storeId = $dimensions[StoreDimensionProvider::DIMENSION_NAME]->getValue();

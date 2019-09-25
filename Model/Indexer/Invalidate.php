@@ -49,6 +49,7 @@ use Nosto\Tagging\Util\Indexer as IndexerUtil;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Magento\Indexer\Model\ProcessManager;
 use Nosto\Tagging\Model\Indexer\Dimensions\Invalidate\ModeSwitcher as InvalidateModeSwitcher;
+use Magento\Framework\Indexer\DimensionProviderInterface;
 
 /**
  * Class Invalidate
@@ -80,6 +81,7 @@ class Invalidate extends AbstractIndexer
      * @param NostoLogger $logger
      * @param ProductCollectionFactory $productCollectionFactory
      * @param InvalidateModeSwitcher $modeSwitcher
+     * @param DimensionProviderInterface $dimensionProvider
      * @param ProcessManager $processManager
      */
     public function __construct(
@@ -89,6 +91,7 @@ class Invalidate extends AbstractIndexer
         NostoLogger $logger,
         ProductCollectionFactory $productCollectionFactory,
         InvalidateModeSwitcher $modeSwitcher,
+        DimensionProviderInterface $dimensionProvider,
         ProcessManager $processManager
     ) {
         $this->nostoServiceIndex = $nostoServiceIndex;
@@ -99,6 +102,7 @@ class Invalidate extends AbstractIndexer
             $nostoHelperAccount,
             $nostoHelperScope,
             $logger,
+            $dimensionProvider,
             $processManager
         );
     }
