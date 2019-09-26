@@ -127,4 +127,9 @@
             <argument name="productServiceInterface" xsi:type="object">Nosto\Tagging\Model\Service\CachingProductService</argument>
         </arguments>
     </type>
+    <type name="Nosto\Tagging\Model\Indexer\Invalidate">
+        <arguments>
+            <argument name="input" xsi:type="object">Symfony\Component\Console\Input\ArgvInput</argument>
+        </arguments>
+    </type>
 </config>

@@ -46,6 +46,7 @@ use Nosto\Tagging\Model\ResourceModel\Magento\Product\Collection as ProductColle
 use Nosto\Tagging\Model\ResourceModel\Magento\Product\CollectionFactory as ProductCollectionFactory;
 use Nosto\Tagging\Model\Service\Index as NostoServiceIndex;
 use Nosto\Tagging\Util\Indexer as IndexerUtil;
+use Symfony\Component\Console\Input\InputInterface;
 
 /**
  * Class Invalidate
@@ -66,6 +67,9 @@ class Invalidate implements IndexerActionInterface, MviewActionInterface
     /** @var ProductCollectionFactory */
     private $productCollectionFactory;
 
+    /** @var InputInterface */
+    private $input;
+
     /**
      * Dirty constructor.
      * @param NostoHelperAccount $nostoHelperAccount
@@ -75,11 +79,13 @@ class Invalidate implements IndexerActionInterface, MviewActionInterface
     public function __construct(
         NostoHelperAccount $nostoHelperAccount,
         NostoServiceIndex $nostoServiceIndex,
-        ProductCollectionFactory $productCollectionFactory
+        ProductCollectionFactory $productCollectionFactory,
+        InputInterface $input
     ) {
         $this->nostoHelperAccount = $nostoHelperAccount;
         $this->nostoServiceIndex = $nostoServiceIndex;
         $this->productCollectionFactory = $productCollectionFactory;
+        $this->input = $input;
     }
 
     /**
@@ -160,6 +166,6 @@ class Invalidate implements IndexerActionInterface, MviewActionInterface
      */
     public function allowFullExecution()
     {
-        return IndexerUtil::isCalledFromSetupUpgrade() === false;
+        return IndexerUtil::isCalledFromSetupUpgrade($this->input) === false;
     }
 }

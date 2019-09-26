@@ -36,21 +36,18 @@
 
 namespace Nosto\Tagging\Util;
 
+use Symfony\Component\Console\Input\InputInterface;
+
 class Indexer
 {
     /**
      * Checks if the execution scope is from Magento's setup:upgrade
      *
+     * @param InputInterface $input
      * @return bool
      */
-    public static function isCalledFromSetupUpgrade()
+    public static function isCalledFromSetupUpgrade(InputInterface $input)
     {
-        $trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 50);
-        foreach ($trace as $caller) {
-            if (!empty($caller['class']) && stristr($caller['class'], 'UpgradeCommand') !== false) {
-                return true;
-            }
-        }
-        return false;
+        return (bool)strstr($input->getFirstArgument(), 'setup:upgrade');
     }
 }
