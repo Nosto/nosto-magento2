@@ -56,6 +56,7 @@ return [
         'vendor/monolog',
         'vendor/zendframework',
         'vendor/psr',
+        'vendor/symfony/console',
         'magento/generated',
         '../../../app/code/Magento/Store', // When Running Locally
         'magento/app/code/Magento/Store' // When Running on CI
