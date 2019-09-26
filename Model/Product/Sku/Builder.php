@@ -38,7 +38,6 @@ namespace Nosto\Tagging\Model\Product\Sku;
 
 use Exception;
 use Magento\Catalog\Model\Product;
-use Magento\CatalogInventory\Api\StockRegistryInterface;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable\Attribute as ConfigurableAttribute;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Store\Model\Store;
@@ -48,8 +47,8 @@ use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Price as NostoPriceHelper;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Product\BuilderTrait;
+use Nosto\Tagging\Model\Service\Stock\StockService;
 use Nosto\Types\Product\ProductInterface;
-use Nosto\Tagging\Helper\Stock as NostoStockHelper;
 
 class Builder
 {
@@ -62,6 +61,7 @@ class Builder
     private $logger;
     private $nostoCurrencyHelper;
     private $nostoStockHelper;
+    private $stockService;
 
     /**
      * @param NostoHelperData $nostoHelperData
@@ -69,8 +69,7 @@ class Builder
      * @param NostoLogger $logger
      * @param ManagerInterface $eventManager
      * @param CurrencyHelper $nostoCurrencyHelper
-     * @param StockRegistryInterface $stockRegistry
-     * @param NostoStockHelper $stockHelper
+     * @param StockService $stockService
      */
     public function __construct(
         NostoHelperData $nostoHelperData,
@@ -78,20 +77,19 @@ class Builder
         NostoLogger $logger,
         ManagerInterface $eventManager,
         CurrencyHelper $nostoCurrencyHelper,
-        StockRegistryInterface $stockRegistry,
-        NostoStockHelper $stockHelper
+        StockService $stockService
     ) {
         $this->nostoDataHelper = $nostoHelperData;
         $this->nostoPriceHelper = $priceHelper;
         $this->logger = $logger;
         $this->eventManager = $eventManager;
         $this->nostoCurrencyHelper = $nostoCurrencyHelper;
-        $this->nostoStockHelper = $stockHelper;
         $this->builderTraitConstruct(
             $nostoHelperData,
-            $stockRegistry,
+            $stockService,
             $logger
         );
+        $this->stockService = $stockService;
     }
 
     /**
@@ -150,7 +148,7 @@ class Builder
                 $nostoSku->setCustomFields($this->buildCustomFields($product, $store));
             }
             if ($this->nostoDataHelper->isInventoryTaggingEnabled($store)) {
-                $nostoSku->setInventoryLevel($this->nostoStockHelper->getQty($product));
+                $nostoSku->setInventoryLevel($this->stockService->getQuantity($product));
             }
         } catch (Exception $e) {
             $this->logger->exception($e);

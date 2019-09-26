@@ -39,6 +39,7 @@
     <preference for="Magento\Framework\Stdlib\CookieManagerInterface" type="Magento\Framework\Stdlib\Cookie\PhpCookieManager"/>
     <preference for="Nosto\Tagging\Api\Data\ProductQueueSearchResultsInterface" type="Nosto\Tagging\Model\Product\QueueSearchResults"/>
     <preference for="Nosto\Tagging\Model\Service\ProductServiceInterface" type="Nosto\Tagging\Model\Service\DefaultProductService"/>
+    <preference for="Nosto\Tagging\Model\Service\Stock\Provider\StockProviderInterface" type="Nosto\Tagging\Model\Service\Stock\Provider\CachingStockProvider"/>
     <preference for="Nosto\Tagging\Util\Serializer\SerializerInterface" type="Nosto\Tagging\Util\Serializer\DefaultSerializer"/>
     <type name="Magento\Catalog\Model\ResourceModel\Product">
         <plugin name="nostoProductObserverInvalidate" type="Nosto\Tagging\Plugin\ProductInvalidate"/>
@@ -105,6 +106,11 @@
     <type name="Nosto\Tagging\Helper\Customer">
         <arguments>
             <argument name="customerSession" xsi:type="object">Magento\Customer\Model\Session\Proxy</argument>
+        </arguments>
+    </type>
+    <type name="Nosto\Tagging\Model\Service\Stock\Provider\CachingStockProvider">
+        <arguments>
+            <argument name="stockProvider" xsi:type="object">Nosto\Tagging\Model\Service\Stock\Provider\DefaultStockProvider</argument>
         </arguments>
     </type>
     <type name="Nosto\Tagging\Model\Service\CachingProductService">
