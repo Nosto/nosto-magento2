@@ -47,6 +47,10 @@ class CachingStockProvider implements StockProviderInterface
     private $inStockCache = [];
     private $stockProvider;
 
+    /**
+     * CachingStockProvider constructor.
+     * @param StockProviderInterface $stockProvider
+     */
     public function __construct(StockProviderInterface $stockProvider)
     {
         $this->stockProvider = $stockProvider;
@@ -100,7 +104,7 @@ class CachingStockProvider implements StockProviderInterface
 
     /**
      * @param int $productId
-     * @return StockStatusInterface
+     * @return StockStatusInterface|null
      */
     private function getQtyFromCache($productId)
     {
@@ -111,7 +115,8 @@ class CachingStockProvider implements StockProviderInterface
     }
 
     /**
-     * @param StockStatusInterface $item
+     * @param StockItemInterface $item
+     * @param $websiteId
      */
     private function saveToInStockCache(StockItemInterface $item, $websiteId)
     {
@@ -130,7 +135,7 @@ class CachingStockProvider implements StockProviderInterface
 
     /**
      * @param int $productId
-     * @return StockStatusInterface
+     * @return StockStatusInterface|null
      */
     private function getIsInStockFromCache($productId, $websiteId)
     {
@@ -141,7 +146,7 @@ class CachingStockProvider implements StockProviderInterface
     }
 
     /**
-     * @param StockItemInterface $item
+     * @param StockStatusInterface $item
      */
     private function saveQtyToCache(StockStatusInterface $item)
     {

@@ -1,7 +1,4 @@
 <?php
-
-namespace Nosto\Tagging\Model\Service\Stock\Provider;
-
 /**
  * Copyright (c) 2019, Nosto Solutions Ltd
  * All rights reserved.
@@ -37,25 +34,64 @@ namespace Nosto\Tagging\Model\Service\Stock\Provider;
  *
  */
 
-use Magento\CatalogInventory\Api\Data\StockStatusCollectionInterface;
-use Magento\CatalogInventory\Model\StockRegistryProvider as MagentoStockRegistryProvider;
+namespace Nosto\Tagging\Model\Indexer\Dimensions\Invalidate;
 
-class StockRegistryProvider extends MagentoStockRegistryProvider
+use Magento\Framework\App\Config\ConfigResource\ConfigInterface;
+use Magento\Framework\App\Cache\TypeListInterface;
+use Magento\Indexer\Model\Indexer;
+use Nosto\Tagging\Model\Indexer\Invalidate as NostoInvalidateIndexer;
+
+class ModeSwitcherConfiguration
 {
-    const DEFAULT_STOCK_SCOPE = 0;
+    const XML_PATH_PRODUCT_INVALIDATE_DIMENSIONS_MODE = 'indexer/nosto_index_product_invalidate/dimensions_mode';
 
     /**
-     * @param int[] $productIds
-     * @param int $scopeId
-     * @return StockStatusCollectionInterface
-     * @suppress PhanTypeMismatchArgument
+     * ConfigInterface
+     *
+     * @var ConfigInterface
      */
-    public function getStockStatuses(array $productIds, $scopeId = self::DEFAULT_STOCK_SCOPE)
-    {
-        $criteria = $this->stockStatusCriteriaFactory->create();
-        $criteria->setProductsFilter($productIds); // @codingStandardsIgnoreLine
-        $criteria->setScopeFilter($scopeId);
+    private $configWriter;
 
-        return $this->stockStatusRepository->getList($criteria);
+    /**
+     * TypeListInterface
+     *
+     * @var TypeListInterface
+     */
+    private $cacheTypeList;
+
+    /**
+     * @var Indexer $indexer
+     */
+    private $indexer;
+
+    /**
+     * ModeSwitcherConfiguration constructor.
+     * @param ConfigInterface $configWriter
+     * @param TypeListInterface $cacheTypeList
+     * @param Indexer $indexer
+     */
+    public function __construct(
+        ConfigInterface $configWriter,
+        TypeListInterface $cacheTypeList,
+        Indexer $indexer
+    ) {
+        $this->configWriter = $configWriter;
+        $this->cacheTypeList = $cacheTypeList;
+        $this->indexer = $indexer;
+    }
+
+    /**
+     * Save switcher mode and invalidate reindex.
+     *
+     * @param string $mode
+     * @return void
+     * @throws \InvalidArgumentException
+     */
+    public function saveMode(string $mode)
+    {
+        $this->configWriter->saveConfig(self::XML_PATH_PRODUCT_INVALIDATE_DIMENSIONS_MODE, $mode);
+        $this->cacheTypeList->cleanType('config');
+        $this->indexer->load(NostoInvalidateIndexer::INDEXER_ID);
+        $this->indexer->invalidate();
     }
 }

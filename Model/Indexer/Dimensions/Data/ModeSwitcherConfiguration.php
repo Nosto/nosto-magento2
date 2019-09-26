@@ -34,12 +34,11 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Indexer\Data;
+namespace Nosto\Tagging\Model\Indexer\Dimensions\Data;
 
 use Magento\Framework\App\Config\ConfigResource\ConfigInterface;
 use Magento\Framework\App\Cache\TypeListInterface;
 use Magento\Indexer\Model\Indexer;
-use Magento\Framework\App\Config\ScopeConfigInterface;
 use Nosto\Tagging\Model\Indexer\Data as NostoDataIndexer;
 
 class ModeSwitcherConfiguration
@@ -66,11 +65,7 @@ class ModeSwitcherConfiguration
     private $indexer;
 
     /**
-     * @var ScopeConfigInterface $scopeConfig
-     */
-    private $scopeConfig;
-
-    /**
+     * ModeSwitcherConfiguration constructor.
      * @param ConfigInterface $configWriter
      * @param TypeListInterface $cacheTypeList
      * @param Indexer $indexer
@@ -78,12 +73,10 @@ class ModeSwitcherConfiguration
     public function __construct(
         ConfigInterface $configWriter,
         TypeListInterface $cacheTypeList,
-        ScopeConfigInterface $scopeConfig,
         Indexer $indexer
     ) {
         $this->configWriter = $configWriter;
         $this->cacheTypeList = $cacheTypeList;
-        $this->scopeConfig = $scopeConfig;
         $this->indexer = $indexer;
     }
 
@@ -96,18 +89,9 @@ class ModeSwitcherConfiguration
      */
     public function saveMode(string $mode)
     {
-        //Change config options
         $this->configWriter->saveConfig(self::XML_PATH_PRODUCT_DATA_DIMENSIONS_MODE, $mode);
         $this->cacheTypeList->cleanType('config');
         $this->indexer->load(NostoDataIndexer::INDEXER_ID);
         $this->indexer->invalidate();
-    }
-
-    /**
-     * @return string
-     */
-    public function getMode()
-    {
-        return $this->scopeConfig->getValue(self::XML_PATH_PRODUCT_DATA_DIMENSIONS_MODE);
     }
 }

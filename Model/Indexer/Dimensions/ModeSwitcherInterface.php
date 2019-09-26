@@ -1,7 +1,4 @@
 <?php
-
-namespace Nosto\Tagging\Model\Service\Stock\Provider;
-
 /**
  * Copyright (c) 2019, Nosto Solutions Ltd
  * All rights reserved.
@@ -37,25 +34,14 @@ namespace Nosto\Tagging\Model\Service\Stock\Provider;
  *
  */
 
-use Magento\CatalogInventory\Api\Data\StockStatusCollectionInterface;
-use Magento\CatalogInventory\Model\StockRegistryProvider as MagentoStockRegistryProvider;
+namespace Nosto\Tagging\Model\Indexer\Dimensions;
 
-class StockRegistryProvider extends MagentoStockRegistryProvider
+use Magento\Indexer\Model\ModeSwitcherInterface as MagentoModeSwitcherInterface;
+
+interface ModeSwitcherInterface extends MagentoModeSwitcherInterface
 {
-    const DEFAULT_STOCK_SCOPE = 0;
-
     /**
-     * @param int[] $productIds
-     * @param int $scopeId
-     * @return StockStatusCollectionInterface
-     * @suppress PhanTypeMismatchArgument
+     * @return string
      */
-    public function getStockStatuses(array $productIds, $scopeId = self::DEFAULT_STOCK_SCOPE)
-    {
-        $criteria = $this->stockStatusCriteriaFactory->create();
-        $criteria->setProductsFilter($productIds); // @codingStandardsIgnoreLine
-        $criteria->setScopeFilter($scopeId);
-
-        return $this->stockStatusRepository->getList($criteria);
-    }
+    public function getMode(): string;
 }

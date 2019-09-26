@@ -34,16 +34,11 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Indexer\Data;
+namespace Nosto\Tagging\Model\Indexer\Dimensions\Invalidate;
 
 use Magento\Indexer\Model\DimensionModes;
-use Magento\Framework\Search\Request\Dimension;
-use Magento\Store\Model\Indexer\WebsiteDimensionProvider;
-use Magento\Customer\Model\Indexer\CustomerGroupDimensionProvider;
 use Magento\Indexer\Model\DimensionMode;
-use Magento\Indexer\Model\ModeSwitcherInterface;
-use Nosto\Tagging\Model\Indexer\Data\DimensionModeConfiguration;
-use Nosto\Tagging\Model\Indexer\Data\ModeSwitcherConfiguration;
+use Nosto\Tagging\Model\Indexer\Dimensions\ModeSwitcherInterface;
 
 class ModeSwitcher implements ModeSwitcherInterface
 {
@@ -94,8 +89,8 @@ class ModeSwitcher implements ModeSwitcherInterface
     /**
      * @return string
      */
-    public function getMode()
+    public function getMode(): string
     {
-        return $this->modeSwitcherConfiguration->getMode();
+        return $this->dimensionModeConfiguration->getCurrentMode();
     }
 }

@@ -135,7 +135,7 @@
     <type name="Magento\Indexer\Console\Command\IndexerSetDimensionsModeCommand">
         <arguments>
             <argument name="dimensionSwitchers" xsi:type="array">
-                <item name="nosto_index_product_data_sync" xsi:type="object">Nosto\Tagging\Model\Indexer\Data\ModeSwitcher</item>
+                <item name="nosto_index_product_data_sync" xsi:type="object">Nosto\Tagging\Model\Indexer\Dimensions\Data\ModeSwitcher</item>
             </argument>
         </arguments>
     </type>
@@ -146,7 +146,28 @@
             </argument>
         </arguments>
     </type>
+    <type name="Magento\Indexer\Console\Command\IndexerSetDimensionsModeCommand">
+        <arguments>
+            <argument name="dimensionSwitchers" xsi:type="array">
+                <item name="nosto_index_product_invalidate" xsi:type="object">Nosto\Tagging\Model\Indexer\Dimensions\Invalidate\ModeSwitcher</item>
+            </argument>
+        </arguments>
+    </type>
+    <type name="Magento\Indexer\Console\Command\IndexerShowDimensionsModeCommand">
+        <arguments>
+            <argument name="indexers" xsi:type="array">
+                <item name="nosto_index_product_invalidate" xsi:type="string">nosto_index_product_invalidate</item>
+            </argument>
+        </arguments>
+    </type>
     <type name="Nosto\Tagging\Model\Indexer\Data">
+        <arguments>
+            <argument name="dimensionProvider" xsi:type="object" shared="false">
+                Magento\Store\Model\StoreDimensionProvider
+            </argument>
+        </arguments>
+    </type>
+    <type name="Nosto\Tagging\Model\Indexer\Invalidate">
         <arguments>
             <argument name="dimensionProvider" xsi:type="object" shared="false">
                 Magento\Store\Model\StoreDimensionProvider

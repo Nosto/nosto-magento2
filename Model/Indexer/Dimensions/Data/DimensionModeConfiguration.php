@@ -1,7 +1,4 @@
 <?php
-
-namespace Nosto\Tagging\Model\Service\Stock\Provider;
-
 /**
  * Copyright (c) 2019, Nosto Solutions Ltd
  * All rights reserved.
@@ -37,25 +34,33 @@ namespace Nosto\Tagging\Model\Service\Stock\Provider;
  *
  */
 
-use Magento\CatalogInventory\Api\Data\StockStatusCollectionInterface;
-use Magento\CatalogInventory\Model\StockRegistryProvider as MagentoStockRegistryProvider;
+namespace Nosto\Tagging\Model\Indexer\Dimensions\Data;
 
-class StockRegistryProvider extends MagentoStockRegistryProvider
+use Nosto\Tagging\Model\Indexer\Dimensions\AbstractDimensionModeConfiguration;
+
+class DimensionModeConfiguration extends AbstractDimensionModeConfiguration
 {
-    const DEFAULT_STOCK_SCOPE = 0;
+    /**
+     * @var string
+     */
+    private $currentMode;
 
     /**
-     * @param int[] $productIds
-     * @param int $scopeId
-     * @return StockStatusCollectionInterface
-     * @suppress PhanTypeMismatchArgument
+     * @return string
      */
-    public function getStockStatuses(array $productIds, $scopeId = self::DEFAULT_STOCK_SCOPE)
+    public function getCurrentMode(): string
     {
-        $criteria = $this->stockStatusCriteriaFactory->create();
-        $criteria->setProductsFilter($productIds); // @codingStandardsIgnoreLine
-        $criteria->setScopeFilter($scopeId);
+        if ($this->currentMode === null) {
+            $mode = $this->scopeConfig->getValue(
+                ModeSwitcherConfiguration::XML_PATH_PRODUCT_DATA_DIMENSIONS_MODE
+            );
+            if ($mode) {
+                $this->currentMode = $mode;
+            } else {
+                $this->currentMode = self::DIMENSION_NONE;
+            }
+        }
 
-        return $this->stockStatusRepository->getList($criteria);
+        return $this->currentMode;
     }
 }

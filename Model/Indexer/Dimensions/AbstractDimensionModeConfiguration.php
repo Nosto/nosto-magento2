@@ -34,27 +34,25 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Indexer\Data;
+namespace Nosto\Tagging\Model\Indexer\Dimensions;
 
 use Magento\Framework\App\Config\ScopeConfigInterface;
-use Magento\Store\Model\Indexer\WebsiteDimensionProvider;
 use Magento\Store\Model\StoreDimensionProvider;
 
-class DimensionModeConfiguration
+abstract class AbstractDimensionModeConfiguration
 {
     /**
      * Available modes of dimensions for nosto product data indexer
      */
     const DIMENSION_NONE = 'none';
     const DIMENSION_STORE = 'store';
-    /**#@-*/
 
     /**
      * Mapping between dimension mode and dimension provider name
      *
      * @var array
      */
-    private $modesMapping = [
+    public $modesMapping = [
         self::DIMENSION_NONE => [
         ],
         self::DIMENSION_STORE => [
@@ -65,12 +63,12 @@ class DimensionModeConfiguration
     /**
      * @var ScopeConfigInterface
      */
-    private $scopeConfig;
+    public $scopeConfig;
 
     /**
-     * @var string
+     * @return string
      */
-    private $currentMode;
+    abstract public function getCurrentMode(): string;
 
     /**
      * @param ScopeConfigInterface $scopeConfig
@@ -88,37 +86,5 @@ class DimensionModeConfiguration
     public function getDimensionModes(): array
     {
         return $this->modesMapping;
-    }
-
-    /**
-     * Get names of dimensions which used for provided mode.
-     * By default return dimensions for current enabled mode
-     *
-     * @param string|null $mode
-     * @return string[]
-     * @throws \InvalidArgumentException
-     */
-    public function getDimensionConfiguration(string $mode = null): array
-    {
-        if ($mode && !isset($this->modesMapping[$mode])) {
-            throw new \InvalidArgumentException(
-                sprintf('Undefined dimension mode "%s".', $mode)
-            );
-        }
-        return $this->modesMapping[$mode ?? $this->getCurrentMode()];
-    }
-
-    /**
-     * @return string
-     */
-    private function getCurrentMode(): string
-    {
-        if (null === $this->currentMode) {
-            $this->currentMode = $this->scopeConfig
-                ->getValue(ModeSwitcherConfiguration::XML_PATH_PRODUCT_DATA_DIMENSIONS_MODE)
-                ?: self::DIMENSION_NONE;
-        }
-
-        return $this->currentMode;
     }
 }

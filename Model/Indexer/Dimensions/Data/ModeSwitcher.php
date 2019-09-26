@@ -1,7 +1,4 @@
 <?php
-
-namespace Nosto\Tagging\Model\Service\Stock\Provider;
-
 /**
  * Copyright (c) 2019, Nosto Solutions Ltd
  * All rights reserved.
@@ -37,25 +34,63 @@ namespace Nosto\Tagging\Model\Service\Stock\Provider;
  *
  */
 
-use Magento\CatalogInventory\Api\Data\StockStatusCollectionInterface;
-use Magento\CatalogInventory\Model\StockRegistryProvider as MagentoStockRegistryProvider;
+namespace Nosto\Tagging\Model\Indexer\Dimensions\Data;
 
-class StockRegistryProvider extends MagentoStockRegistryProvider
+use Magento\Indexer\Model\DimensionModes;
+use Magento\Indexer\Model\DimensionMode;
+use Nosto\Tagging\Model\Indexer\Dimensions\ModeSwitcherInterface;
+
+class ModeSwitcher implements ModeSwitcherInterface
 {
-    const DEFAULT_STOCK_SCOPE = 0;
+    /**
+     * @var DimensionModeConfiguration
+     */
+    private $dimensionModeConfiguration;
 
     /**
-     * @param int[] $productIds
-     * @param int $scopeId
-     * @return StockStatusCollectionInterface
-     * @suppress PhanTypeMismatchArgument
+     * @var ModeSwitcherConfiguration
      */
-    public function getStockStatuses(array $productIds, $scopeId = self::DEFAULT_STOCK_SCOPE)
-    {
-        $criteria = $this->stockStatusCriteriaFactory->create();
-        $criteria->setProductsFilter($productIds); // @codingStandardsIgnoreLine
-        $criteria->setScopeFilter($scopeId);
+    private $modeSwitcherConfiguration;
 
-        return $this->stockStatusRepository->getList($criteria);
+    /**
+     * ModeSwitcher constructor.
+     * @param DimensionModeConfiguration $dimensionModeConfiguration
+     * @param ModeSwitcherConfiguration $modeSwitcherConfiguration
+     */
+    public function __construct(
+        DimensionModeConfiguration $dimensionModeConfiguration,
+        ModeSwitcherConfiguration $modeSwitcherConfiguration
+    ) {
+        $this->dimensionModeConfiguration = $dimensionModeConfiguration;
+        $this->modeSwitcherConfiguration = $modeSwitcherConfiguration;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getDimensionModes(): DimensionModes
+    {
+        $dimensionsList = [];
+        foreach ($this->dimensionModeConfiguration->getDimensionModes() as $dimension => $modes) {
+            $dimensionsList[] = new DimensionMode($dimension, $modes);
+        }
+
+        return new DimensionModes($dimensionsList);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function switchMode(string $currentMode, string $previousMode) // @codingStandardsIgnoreLine
+    {
+        $this->modeSwitcherConfiguration->saveMode($currentMode);
+    }
+
+    /**
+     * @return string
+     */
+    public function getMode(): string
+    {
+        return $this->dimensionModeConfiguration->getCurrentMode();
     }
 }
