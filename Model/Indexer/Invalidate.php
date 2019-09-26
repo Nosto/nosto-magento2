@@ -37,15 +37,19 @@
 namespace Nosto\Tagging\Model\Indexer;
 
 use Exception;
-use Magento\Framework\Indexer\ActionInterface as IndexerActionInterface;
-use Magento\Framework\Mview\ActionInterface as MviewActionInterface;
 use Magento\Store\Model\Store;
 use Nosto\NostoException;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
+use Nosto\Tagging\Helper\Scope as NostoHelperScope;
+use Nosto\Tagging\Model\Indexer\Dimensions\ModeSwitcherInterface;
 use Nosto\Tagging\Model\ResourceModel\Magento\Product\Collection as ProductCollection;
 use Nosto\Tagging\Model\ResourceModel\Magento\Product\CollectionFactory as ProductCollectionFactory;
 use Nosto\Tagging\Model\Service\Index as NostoServiceIndex;
 use Nosto\Tagging\Util\Indexer as IndexerUtil;
+use Nosto\Tagging\Logger\Logger as NostoLogger;
+use Magento\Indexer\Model\ProcessManager;
+use Nosto\Tagging\Model\Indexer\Dimensions\Invalidate\ModeSwitcher as InvalidateModeSwitcher;
+use Magento\Store\Model\StoreDimensionProvider;
 use Symfony\Component\Console\Input\InputInterface;
 
 /**
@@ -54,12 +58,9 @@ use Symfony\Component\Console\Input\InputInterface;
  * and setting the `is_dirty` value in `nosto_product_index` table
  * @package Nosto\Tagging\Model\Indexer
  */
-class Invalidate implements IndexerActionInterface, MviewActionInterface
+class Invalidate extends AbstractIndexer
 {
     const INDEXER_ID = 'nosto_index_product_invalidate';
-
-    /** @var NostoHelperAccount */
-    private $nostoHelperAccount;
 
     /** @var NostoServiceIndex */
     private $nostoServiceIndex;
@@ -67,25 +68,49 @@ class Invalidate implements IndexerActionInterface, MviewActionInterface
     /** @var ProductCollectionFactory */
     private $productCollectionFactory;
 
+    /** @var NostoHelperAccount */
+    private $nostoHelperAccount;
+
+    /** @var InvalidateModeSwitcher */
+    private $modeSwitcher;
+
     /** @var InputInterface */
     private $input;
 
     /**
-     * Dirty constructor.
+     * Invalidate constructor.
      * @param NostoHelperAccount $nostoHelperAccount
+     * @param NostoHelperScope $nostoHelperScope
      * @param NostoServiceIndex $nostoServiceIndex
+     * @param NostoLogger $logger
      * @param ProductCollectionFactory $productCollectionFactory
+     * @param InvalidateModeSwitcher $modeSwitcher
+     * @param StoreDimensionProvider $dimensionProvider
+     * @param ProcessManager $processManager
      */
     public function __construct(
         NostoHelperAccount $nostoHelperAccount,
+        NostoHelperScope $nostoHelperScope,
         NostoServiceIndex $nostoServiceIndex,
+        NostoLogger $logger,
         ProductCollectionFactory $productCollectionFactory,
+        InvalidateModeSwitcher $modeSwitcher,
+        StoreDimensionProvider $dimensionProvider,
+        ProcessManager $processManager,
         InputInterface $input
     ) {
-        $this->nostoHelperAccount = $nostoHelperAccount;
         $this->nostoServiceIndex = $nostoServiceIndex;
+        $this->nostoHelperAccount = $nostoHelperAccount;
         $this->productCollectionFactory = $productCollectionFactory;
+        $this->modeSwitcher = $modeSwitcher;
         $this->input = $input;
+        parent::__construct(
+            $nostoHelperAccount,
+            $nostoHelperScope,
+            $logger,
+            $dimensionProvider,
+            $processManager
+        );
     }
 
     /**
@@ -94,23 +119,7 @@ class Invalidate implements IndexerActionInterface, MviewActionInterface
      */
     public function execute($ids)
     {
-        if (!empty($ids)) {
-            $ids = array_unique($ids);
-            $idsSize = count($ids);
-            $storesWithNosto = $this->nostoHelperAccount->getStoresWithNosto();
-            foreach ($storesWithNosto as $store) {
-                $productCollection = $this->getCollection($store, $ids);
-                $this->nostoServiceIndex->invalidateOrCreate($productCollection, $store);
-                $collectionSize = $productCollection->getSize();
-
-                //In case for this specific set of ids
-                //there are more entries of products in the indexer table than the magento product collection
-                //it means that some products were deleted
-                if ($idsSize > $collectionSize) {
-                    $this->nostoServiceIndex->markProductsAsDeletedByDiff($productCollection, $ids, $store);
-                }
-            }
-        }
+        $this->doWork($ids);
     }
 
     /**
@@ -120,11 +129,7 @@ class Invalidate implements IndexerActionInterface, MviewActionInterface
     public function executeFull()
     {
         if ($this->allowFullExecution() === true) {
-            $storesWithNosto = $this->nostoHelperAccount->getStoresWithNosto();
-            foreach ($storesWithNosto as $store) {
-                $productCollection = $this->getCollection($store);
-                $this->nostoServiceIndex->invalidateOrCreate($productCollection, $store);
-            }
+            $this->doWork();
         }
     }
 
@@ -142,6 +147,46 @@ class Invalidate implements IndexerActionInterface, MviewActionInterface
     public function executeRow($id)
     {
         $this->execute([$id]);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getModeSwitcher(): ModeSwitcherInterface
+    {
+        return $this->modeSwitcher;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function doIndex(Store $store, array $ids = [])
+    {
+        if (!$this->nostoHelperAccount->nostoInstalledAndEnabled($store)) {
+            return;
+        }
+        $productCollection = $this->getCollection($store, $ids);
+        $this->nostoServiceIndex->invalidateOrCreate($productCollection, $store);
+
+        if (!empty($ids)) {
+            //In case for this specific set of ids
+            //there are more entries of products in the indexer table than the magento product collection
+            //it means that some products were deleted
+            $ids = array_unique($ids);
+            $idsSize = count($ids);
+            $collectionSize = $productCollection->getSize();
+            if ($idsSize > $collectionSize) {
+                $this->nostoServiceIndex->markProductsAsDeletedByDiff($productCollection, $ids, $store);
+            }
+        }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getIndexerId(): string
+    {
+        return self::INDEXER_ID;
     }
 
     /**
