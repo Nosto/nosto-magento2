@@ -127,17 +127,21 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
         switch ($this->getModeSwitcher()->getMode()) {
             case DimensionModeConfiguration::DIMENSION_NONE:
                 foreach ($this->dimensionProvider->getIterator() as $dimension) {
-                    /** @suppress PhanTypeMismatchArgument */
-                    $this->executeByDimensions($dimension, new ArrayIterator($ids));
+                    if ($this->isDimensionProcessable($dimension)) {
+                        /** @suppress PhanTypeMismatchArgument */
+                        $this->executeByDimensions($dimension, new ArrayIterator($ids));
+                    }
                 }
                 break;
             case DimensionModeConfiguration::DIMENSION_STORE:
                 /** @var Dimension[] $dimension  */
                 foreach ($this->dimensionProvider->getIterator() as $dimension) {
-                    /** @suppress PhanTypeMismatchArgument */
-                    $userFunctions[] = function () use ($dimension, $ids) {
-                        $this->executeByDimensions($dimension, new ArrayIterator($ids));
-                    };
+                    if ($this->isDimensionProcessable($dimension)) {
+                        /** @suppress PhanTypeMismatchArgument */
+                        $userFunctions[] = function () use ($dimension, $ids) {
+                            $this->executeByDimensions($dimension, new ArrayIterator($ids));
+                        };
+                    }
                 }
                 /** @var Traversable $userFunctions  */
                 $this->getProcessManager()->execute($userFunctions);
@@ -192,5 +196,21 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
         $this->nostoLogger->info(
             '[END] NOSTO-DIMENSION store:' . $store->getName() . '(' . round($duration, 2) . ' secs)'
         );
+    }
+
+    /**
+     * @param Dimension[] $dimension
+     * @return bool
+     * @suppress PhanTypeArraySuspicious
+     */
+    private function isDimensionProcessable(array $dimension)
+    {
+        $storeId = $dimension[StoreDimensionProvider::DIMENSION_NAME]->getValue();
+        $store = $this->nostoHelperScope->getStore($storeId);
+        if ($this->nostoHelperAccount->nostoInstalledAndEnabled($store)) {
+            return true;
+        }
+
+        return false;
     }
 }

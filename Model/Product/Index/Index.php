@@ -180,22 +180,6 @@ class Index extends AbstractModel implements ProductIndexInterface
     /**
      * @inheritDoc
      */
-    public function setNostoProduct(NostoProductInterface $product)
-    {
-        return $this->setProductData(serialize($product));
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getNostoProduct()
-    {
-        return unserialize($this->getProductData(), [Product::class]); // @codingStandardsIgnoreLine
-    }
-
-    /**
-     * @inheritDoc
-     */
     public function setStore(StoreInterface $store)
     {
         return $this->setStoreId($store->getId());
