@@ -34,43 +34,14 @@
  *
  */
 
-return [
-    'backward_compatibility_checks' => false,
-    'signature-compatibility' => true,
-    'progress-bar' => true,
-    'exclude_file_regex' => '@^vendor/.*/(tests|test|Tests|Test)/@',
-    'directory_list' => [
-        'Api',
-        'Block',
-        'Controller',
-        'CustomerData',
-        'Model',
-        'Helper',
-        'Observer',
-        'Logger',
-        'Util',
-        'vendor/vlucas',
-        'vendor/nosto/php-sdk',
-        'vendor/phpseclib',
-        'vendor/magento',
-        'vendor/monolog',
-        'vendor/zendframework',
-        'vendor/psr',
-        'magento/generated',
-        '../../../app/code/Magento/Store', // When Running Locally
-        'magento/app/code/Magento/Store' // When Running on CI
-    ],
-    'exclude_file_list' => [
-        'vendor/magento/zendframework1/library/Zend/Validate/Hostname/Biz.php',
-        'vendor/magento/zendframework1/library/Zend/Validate/Hostname/Cn.php',
-        'vendor/magento/zendframework1/library/Zend/Validate/Hostname/Com.php',
-        'vendor/magento/zendframework1/library/Zend/Validate/Hostname/Jp.php',
-    ],
-    'exclude_analysis_directory_list' => [
-        'vendor/',
-        'magento/'
-    ],
-    'suppress_issue_types' => [
-        'PhanParamSignatureMismatch',
-    ]
-];
+namespace Nosto\Tagging\Model\Indexer\Dimensions;
+
+use Magento\Indexer\Model\ModeSwitcherInterface as MagentoModeSwitcherInterface;
+
+interface ModeSwitcherInterface extends MagentoModeSwitcherInterface
+{
+    /**
+     * @return string
+     */
+    public function getMode(): string;
+}

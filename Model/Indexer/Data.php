@@ -37,43 +37,59 @@
 namespace Nosto\Tagging\Model\Indexer;
 
 use Exception;
-use Magento\Framework\Indexer\ActionInterface as IndexerActionInterface;
-use Magento\Framework\Mview\ActionInterface as MviewActionInterface;
+use Magento\Store\Model\Store;
+use Nosto\NostoException;
+use Nosto\Tagging\Model\Indexer\Dimensions\ModeSwitcherInterface;
 use Nosto\Tagging\Model\Service\Index as NostoIndexService;
-use Nosto\Tagging\Helper\Account as NostoHelperAccount;
-use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Exception\MemoryOutOfBoundsException;
+use Nosto\Tagging\Model\Indexer\Dimensions\Data\ModeSwitcher as DataModeSwitcher;
+use Nosto\Tagging\Helper\Account as NostoHelperAccount;
+use Nosto\Tagging\Helper\Scope as NostoHelperScope;
+use Nosto\Tagging\Logger\Logger as NostoLogger;
+use Magento\Indexer\Model\ProcessManager;
+use Magento\Store\Model\StoreDimensionProvider;
 
 /**
  * An indexer for Nosto product sync
  */
-class Data implements IndexerActionInterface, MviewActionInterface
+class Data extends AbstractIndexer
 {
     const INDEXER_ID = 'nosto_index_product_data_sync';
 
     /** @var NostoIndexService */
     private $nostoServiceIndex;
 
-    /** @var NostoHelperAccount */
-    private $nostoHelperAccount;
-
-    /** @var NostoLogger */
-    private $nostoLogger;
+    /** @var DataModeSwitcher */
+    private $modeSwitcher;
 
     /**
      * Data constructor.
      * @param NostoIndexService $nostoServiceIndex
      * @param NostoHelperAccount $nostoHelperAccount
-     * @param NostoLogger $nostoLogger
+     * @param NostoHelperScope $nostoHelperScope
+     * @param DataModeSwitcher $dataModeSwitcher
+     * @param NostoLogger $logger
+     * @param StoreDimensionProvider $dimensionProvider
+     * @param ProcessManager $processManager
      */
     public function __construct(
         NostoIndexService $nostoServiceIndex,
         NostoHelperAccount $nostoHelperAccount,
-        NostoLogger $nostoLogger
+        NostoHelperScope $nostoHelperScope,
+        DataModeSwitcher $dataModeSwitcher,
+        NostoLogger $logger,
+        StoreDimensionProvider $dimensionProvider,
+        ProcessManager $processManager
     ) {
         $this->nostoServiceIndex = $nostoServiceIndex;
-        $this->nostoHelperAccount = $nostoHelperAccount;
-        $this->nostoLogger = $nostoLogger;
+        $this->modeSwitcher = $dataModeSwitcher;
+        parent::__construct(
+            $nostoHelperAccount,
+            $nostoHelperScope,
+            $logger,
+            $dimensionProvider,
+            $processManager
+        );
     }
 
     /**
@@ -82,16 +98,7 @@ class Data implements IndexerActionInterface, MviewActionInterface
      */
     public function executeFull()
     {
-        $storesWithNosto = $this->nostoHelperAccount->getStoresWithNosto();
-        foreach ($storesWithNosto as $store) {
-            try {
-                $this->nostoServiceIndex->indexProducts($store);
-                // Catch only MemoryOutOfBoundsException as this is the most expected ones
-                // And the ones we are interested of
-            } catch (MemoryOutOfBoundsException $e) {
-                $this->nostoLogger->error($e->getMessage());
-            }
-        }
+        $this->doWork();
     }
 
     /**
@@ -118,15 +125,38 @@ class Data implements IndexerActionInterface, MviewActionInterface
      */
     public function execute($ids)
     {
-        $storesWithNosto = $this->nostoHelperAccount->getStoresWithNosto();
-        foreach ($storesWithNosto as $store) {
-            try {
-                $this->nostoServiceIndex->indexProducts($store, $ids);
-                // Catch only MemoryOutOfBoundsException as this is the most expected ones
-                // And the ones we are interested of
-            } catch (MemoryOutOfBoundsException $e) {
-                $this->nostoLogger->error($e->getMessage());
-            }
+        $this->doWork($ids);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getModeSwitcher(): ModeSwitcherInterface
+    {
+        return $this->modeSwitcher;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getIndexerId(): string
+    {
+        return self::INDEXER_ID;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function doIndex(Store $store, array $ids = [])
+    {
+        try {
+            $this->nostoServiceIndex->indexProducts($store, $ids);
+            // Catch only MemoryOutOfBoundsException as this is the most expected ones
+            // And the ones we are interested of
+        } catch (MemoryOutOfBoundsException $e) {
+            $this->nostoLogger->error($e->getMessage());
+        } catch (NostoException $e) {
+            $this->nostoLogger->error($e->getMessage());
         }
     }
 }

@@ -34,43 +34,57 @@
  *
  */
 
-return [
-    'backward_compatibility_checks' => false,
-    'signature-compatibility' => true,
-    'progress-bar' => true,
-    'exclude_file_regex' => '@^vendor/.*/(tests|test|Tests|Test)/@',
-    'directory_list' => [
-        'Api',
-        'Block',
-        'Controller',
-        'CustomerData',
-        'Model',
-        'Helper',
-        'Observer',
-        'Logger',
-        'Util',
-        'vendor/vlucas',
-        'vendor/nosto/php-sdk',
-        'vendor/phpseclib',
-        'vendor/magento',
-        'vendor/monolog',
-        'vendor/zendframework',
-        'vendor/psr',
-        'magento/generated',
-        '../../../app/code/Magento/Store', // When Running Locally
-        'magento/app/code/Magento/Store' // When Running on CI
-    ],
-    'exclude_file_list' => [
-        'vendor/magento/zendframework1/library/Zend/Validate/Hostname/Biz.php',
-        'vendor/magento/zendframework1/library/Zend/Validate/Hostname/Cn.php',
-        'vendor/magento/zendframework1/library/Zend/Validate/Hostname/Com.php',
-        'vendor/magento/zendframework1/library/Zend/Validate/Hostname/Jp.php',
-    ],
-    'exclude_analysis_directory_list' => [
-        'vendor/',
-        'magento/'
-    ],
-    'suppress_issue_types' => [
-        'PhanParamSignatureMismatch',
-    ]
-];
+namespace Nosto\Tagging\Model\Indexer\Dimensions;
+
+use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Store\Model\StoreDimensionProvider;
+
+abstract class AbstractDimensionModeConfiguration
+{
+    /**
+     * Available modes of dimensions for nosto product data indexer
+     */
+    const DIMENSION_NONE = 'none';
+    const DIMENSION_STORE = 'store';
+
+    /**
+     * Mapping between dimension mode and dimension provider name
+     *
+     * @var array
+     */
+    public $modesMapping = [
+        self::DIMENSION_NONE => [
+        ],
+        self::DIMENSION_STORE => [
+            StoreDimensionProvider::DIMENSION_NAME
+        ]
+    ];
+
+    /**
+     * @var ScopeConfigInterface
+     */
+    public $scopeConfig;
+
+    /**
+     * @return string
+     */
+    abstract public function getCurrentMode(): string;
+
+    /**
+     * @param ScopeConfigInterface $scopeConfig
+     */
+    public function __construct(ScopeConfigInterface $scopeConfig)
+    {
+        $this->scopeConfig = $scopeConfig;
+    }
+
+    /**
+     * Return dimension modes configuration.
+     *
+     * @return array
+     */
+    public function getDimensionModes(): array
+    {
+        return $this->modesMapping;
+    }
+}
