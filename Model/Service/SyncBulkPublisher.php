@@ -36,26 +36,25 @@
 
 namespace Nosto\Tagging\Model\Service;
 
-use Magento\AsynchronousOperations\Api\Data\OperationInterface;
-use Magento\AsynchronousOperations\Api\Data\OperationInterfaceFactory;
 use Magento\Authorization\Model\UserContextInterface;
-use Magento\Framework\Bulk\BulkManagementInterface;
-use Magento\Framework\Bulk\OperationInterface as BulkOperationInterface;
 use Magento\Framework\DataObject\IdentityGeneratorInterface;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Serialize\SerializerInterface;
 use Magento\Store\Model\Store;
+use Magento\Framework\App\ObjectManager;
+use Magento\Framework\Module\Manager;
 use Nosto\Tagging\Model\ResourceModel\Product\Index\Collection as NostoIndexCollection;
+use Nosto\NostoException;
 
 class SyncBulkPublisher
 {
     const NOSTO_SYNC_MESSAGE_QUEUE = 'nosto_product_sync.update';
     const BULK_SIZE = 100;
 
-    /** @var BulkManagementInterface */
+    /** @var \Magento\Framework\Bulk\BulkManagementInterface|null */
     private $bulkManagement;
 
-    /** @var OperationInterfaceFactory */
+    /** @var \Magento\AsynchronousOperations\Api\Data\OperationInterfaceFactory|null */
     private $operationFactory;
 
     /** @var IdentityGeneratorInterface */
@@ -64,21 +63,21 @@ class SyncBulkPublisher
     /** @var SerializerInterface */
     private $serializer;
 
+    /** @var Manager */
+    private $manager;
+
     /**
      * SyncBulkPublisher constructor.
-     * @param BulkManagementInterface $bulkManagement
-     * @param OperationInterfaceFactory $operationFactory
      * @param IdentityGeneratorInterface $identityService
      * @param SerializerInterface $serializer
+     * @param Manager $manager
      */
     public function __construct(
-        BulkManagementInterface $bulkManagement,
-        OperationInterfaceFactory $operationFactory,
         IdentityGeneratorInterface $identityService,
-        SerializerInterface $serializer
+        SerializerInterface $serializer,
+        Manager $manager
     ) {
-        $this->bulkManagement = $bulkManagement;
-        $this->operationFactory = $operationFactory;
+        $this->manager = $manager;
         $this->identityService = $identityService;
         $this->serializer = $serializer;
     }
@@ -87,11 +86,30 @@ class SyncBulkPublisher
      * @param NostoIndexCollection $collection
      * @param Store $store
      * @throws LocalizedException
+     * @throws NostoException
      */
     public function publishCollectionToQueue(NostoIndexCollection $collection, Store $store)
     {
+        if (!$this->canUseBulkOperations()) {
+            throw new NostoException('Module Magento_AsynchronousOperations is not installed.');
+        }
         $productIds = $collection->walk('getProductId');
         $this->publish($store->getId(), $productIds);
+    }
+
+    /**
+     * @return bool
+     */
+    private function canUseBulkOperations()
+    {
+        if ($this->manager->isEnabled('Magento_AsynchronousOperations')) {
+            $this->bulkManagement = ObjectManager::getInstance()
+                ->get(\Magento\Framework\Bulk\BulkManagementInterface::class);
+            $this->operationFactory = ObjectManager::getInstance()
+                ->get(\Magento\AsynchronousOperations\Api\Data\OperationInterfaceFactory::class);
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -141,7 +159,7 @@ class SyncBulkPublisher
      * @param array $productIds
      * @param string $bulkUuid
      *
-     * @return OperationInterface
+     * @return \Magento\AsynchronousOperations\Api\Data\OperationInterface
      */
     private function makeOperation(
         $meta,
@@ -160,7 +178,7 @@ class SyncBulkPublisher
                 'bulk_uuid' => $bulkUuid,
                 'topic_name' => $queue,
                 'serialized_data' => $this->serializer->serialize($dataToEncode),
-                'status' => BulkOperationInterface::STATUS_TYPE_OPEN,
+                'status' => \Magento\Framework\Bulk\OperationInterface::STATUS_TYPE_OPEN,
             ]
         ];
 

@@ -284,7 +284,12 @@ class Index extends AbstractService
         $dirtyCollection = $this->getDirtyCollection($store, $ids);
         $this->rebuildDirtyProducts($dirtyCollection, $store);
         $outOfSyncCollection = $this->getOutOfSyncCollection($store, $ids);
-        $this->syncBulkPublisher->publishCollectionToQueue($outOfSyncCollection, $store);
+        try {
+            $this->syncBulkPublisher->publishCollectionToQueue($outOfSyncCollection, $store);
+        } catch (NostoException $e) { // Module Async operations is not installed.
+            $this->nostoSyncService->syncIndexedProducts($outOfSyncCollection, $store);
+            $this->nostoSyncService->syncDeletedProducts($store);
+        }
     }
 
     /**
