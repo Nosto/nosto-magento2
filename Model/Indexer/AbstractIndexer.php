@@ -119,6 +119,7 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
     /**
      * @param array $ids
      * @suppress PhanTypeMismatchArgument
+     * @suppress PhanTypeArraySuspicious
      */
     public function doWork(array $ids = [])
     {
@@ -127,9 +128,9 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
         switch ($this->getModeSwitcher()->getMode()) {
             case DimensionModeConfiguration::DIMENSION_NONE:
                 foreach ($this->dimensionProvider->getIterator() as $dimension) {
-                    if ($this->nostoHelperAccount->nostoInstalledAndEnabled(
-                        $dimension[StoreDimensionProvider::DIMENSION_NAME]->getValue())
-                    ) {
+                    $storeId = $dimension[StoreDimensionProvider::DIMENSION_NAME]->getValue();
+                    $store = $this->nostoHelperScope->getStore($storeId);
+                    if ($this->nostoHelperAccount->nostoInstalledAndEnabled($store)) {
                         /** @suppress PhanTypeMismatchArgument */
                         $this->executeByDimensions($dimension, new ArrayIterator($ids));
                     }
@@ -138,10 +139,14 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
             case DimensionModeConfiguration::DIMENSION_STORE:
                 /** @var Dimension[] $dimension  */
                 foreach ($this->dimensionProvider->getIterator() as $dimension) {
-                    /** @suppress PhanTypeMismatchArgument */
-                    $userFunctions[] = function () use ($dimension, $ids) {
-                        $this->executeByDimensions($dimension, new ArrayIterator($ids));
-                    };
+                    $storeId = $dimension[StoreDimensionProvider::DIMENSION_NAME]->getValue();
+                    $store = $this->nostoHelperScope->getStore($storeId);
+                    if ($this->nostoHelperAccount->nostoInstalledAndEnabled($store)) {
+                        /** @suppress PhanTypeMismatchArgument */
+                        $userFunctions[] = function () use ($dimension, $ids) {
+                            $this->executeByDimensions($dimension, new ArrayIterator($ids));
+                        };
+                    }
                 }
                 /** @var Traversable $userFunctions  */
                 $this->getProcessManager()->execute($userFunctions);
