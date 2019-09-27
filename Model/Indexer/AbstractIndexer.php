@@ -186,7 +186,7 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
         }
 
         $storeId = $dimensions[StoreDimensionProvider::DIMENSION_NAME]->getValue();
-        $this->storeEmulator->startEnvironmentEmulation($storeId);
+        $this->storeEmulator->startEnvironmentEmulation((int)$storeId);
         $store = $this->nostoHelperScope->getStore($storeId);
         $benchmarkName = sprintf('STORE-DIMENSION-%s', $store->getCode());
         Benchmark::getInstance()->startInstrumentation($benchmarkName, 0);
