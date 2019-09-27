@@ -41,12 +41,10 @@ use Magento\Framework\DataObject\IdentityGeneratorInterface;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Serialize\SerializerInterface;
 use Magento\Store\Model\Store;
-use Magento\Framework\App\ObjectManager;
-use Magento\Framework\Module\Manager;
-use Nosto\NostoException;
 use Nosto\Tagging\Model\ResourceModel\Product\Index\Collection as NostoIndexCollection;
+use Magento\Framework\App\ObjectManager;
 
-class BulkPublisher implements BulkPublisherInterface
+class AsyncBulkSync implements BulkSyncInterface
 {
     const NOSTO_SYNC_MESSAGE_QUEUE = 'nosto_product_sync.update';
     const BULK_SIZE = 100;
@@ -63,60 +61,31 @@ class BulkPublisher implements BulkPublisherInterface
     /** @var SerializerInterface */
     private $serializer;
 
-    /** @var Manager */
-    private $manager;
-
-    /** @var SyncService */
-    private $syncService;
-
     /**
      * SyncBulkPublisher constructor.
      * @param IdentityGeneratorInterface $identityService
      * @param SerializerInterface $serializer
-     * @param Manager $manager
-     * @param SyncService $syncService
      */
     public function __construct(
         IdentityGeneratorInterface $identityService,
-        SerializerInterface $serializer,
-        Manager $manager,
-        SyncService $syncService
+        SerializerInterface $serializer
     ) {
-        $this->manager = $manager;
         $this->identityService = $identityService;
         $this->serializer = $serializer;
-        $this->syncService = $syncService;
+        $this->bulkManagement = ObjectManager::getInstance()
+                ->get(\Magento\Framework\Bulk\BulkManagementInterface::class);
+        $this->operationFactory = ObjectManager::getInstance()
+                ->get(\Magento\AsynchronousOperations\Api\Data\OperationInterfaceFactory::class);
     }
 
     /**
      * @inheritDoc
      * @throws LocalizedException
-     * @throws NostoException
      */
     public function execute(NostoIndexCollection $collection, Store $store)
     {
-        if ($this->canUseBulkOperations()) {
-            $productIds = $collection->walk('getProductId');
-            $this->publishCollectionToQueue($store->getId(), $productIds);
-        } else {
-            $this->syncService->syncIndexedProducts($collection, $store);
-            $this->syncService->syncDeletedProducts($store);
-        }
-    }
-
-    /**
-     * @return bool
-     */
-    private function canUseBulkOperations()
-    {
-        if ($this->manager->isEnabled('Magento_AsynchronousOperations')) {
-            $this->bulkManagement = ObjectManager::getInstance()
-                ->get(\Magento\Framework\Bulk\BulkManagementInterface::class);
-            $this->operationFactory = ObjectManager::getInstance()
-                ->get(\Magento\AsynchronousOperations\Api\Data\OperationInterfaceFactory::class);
-            return true;
-        }
-        return false;
+        $productIds = $collection->walk('getProductId');
+        $this->publishCollectionToQueue($store->getId(), $productIds);
     }
 
     /**

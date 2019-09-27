@@ -65,7 +65,7 @@ use Nosto\Tagging\Model\Service\Comparator\ProductComparatorInterface;
 use Nosto\Tagging\Util\Serializer\ProductSerializer;
 use Nosto\Tagging\Util\Iterator;
 use Nosto\Types\Product\ProductInterface as NostoProductInterface;
-use Nosto\Tagging\Model\Service\Sync\BulkPublisherInterface;
+use Nosto\Tagging\Model\Service\Sync\BulkSyncInterface;
 
 class Index extends AbstractService
 {
@@ -109,7 +109,7 @@ class Index extends AbstractService
     /** @var array */
     private $invalidatedProducts = [];
 
-    /** @var BulkPublisherInterface */
+    /** @var BulkSyncInterface */
     private $syncBulkPublisher;
 
     /** @var ProductSerializer */
@@ -132,7 +132,7 @@ class Index extends AbstractService
      * @param ProductCollectionFactory $productCollectionFactory
      * @param TimezoneInterface $magentoTimeZone
      * @param NostoDataHelper $nostoDataHelper
-     * @param BulkPublisherInterface $syncBulkPublisher
+     * @param BulkSyncInterface $syncBulkPublisher
      * @param ProductSerializer $productSerializer
      * @param ProductComparatorInterface $productComparator
      */
@@ -149,7 +149,7 @@ class Index extends AbstractService
         ProductCollectionFactory $productCollectionFactory,
         TimezoneInterface $magentoTimeZone,
         NostoDataHelper $nostoDataHelper,
-        BulkPublisherInterface $syncBulkPublisher,
+        BulkSyncInterface $syncBulkPublisher,
         ProductSerializer $productSerializer,
         ProductComparatorInterface $productComparator
     ) {

@@ -33,18 +33,36 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
+
 namespace Nosto\Tagging\Model\Service\Sync;
 
-use Nosto\Tagging\Model\ResourceModel\Product\Index\Collection as NostoIndexCollection;
+use Exception;
 use Magento\Store\Model\Store;
+use Nosto\Tagging\Model\ResourceModel\Product\Index\Collection as NostoIndexCollection;
 
-interface BulkPublisherInterface
+class DirectBulkSync implements BulkSyncInterface
 {
+    /** @var SyncService */
+    private $syncService;
+
+    /**
+     * DirectBulkSync constructor.
+     * @param SyncService $syncService
+     */
+    public function __construct(
+        SyncService $syncService
+    ) {
+        $this->syncService = $syncService;
+    }
 
     /**
      * @param NostoIndexCollection $collection
      * @param Store $store
-     * @return void
+     * @throws Exception
      */
-    public function execute(NostoIndexCollection $collection, Store $store);
+    public function execute(NostoIndexCollection $collection, Store $store)
+    {
+        $this->syncService->syncIndexedProducts($collection, $store);
+        $this->syncService->syncDeletedProducts($store);
+    }
 }
