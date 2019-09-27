@@ -50,6 +50,7 @@ use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Magento\Indexer\Model\ProcessManager;
 use Nosto\Tagging\Model\Indexer\Dimensions\Invalidate\ModeSwitcher as InvalidateModeSwitcher;
 use Magento\Store\Model\StoreDimensionProvider;
+use Symfony\Component\Console\Input\InputInterface;
 
 /**
  * Class Invalidate
@@ -73,6 +74,9 @@ class Invalidate extends AbstractIndexer
     /** @var InvalidateModeSwitcher */
     private $modeSwitcher;
 
+    /** @var InputInterface */
+    private $input;
+
     /**
      * Invalidate constructor.
      * @param NostoHelperAccount $nostoHelperAccount
@@ -92,12 +96,14 @@ class Invalidate extends AbstractIndexer
         ProductCollectionFactory $productCollectionFactory,
         InvalidateModeSwitcher $modeSwitcher,
         StoreDimensionProvider $dimensionProvider,
-        ProcessManager $processManager
+        ProcessManager $processManager,
+        InputInterface $input
     ) {
         $this->nostoServiceIndex = $nostoServiceIndex;
         $this->nostoHelperAccount = $nostoHelperAccount;
         $this->productCollectionFactory = $productCollectionFactory;
         $this->modeSwitcher = $modeSwitcher;
+        $this->input = $input;
         parent::__construct(
             $nostoHelperAccount,
             $nostoHelperScope,
@@ -205,6 +211,6 @@ class Invalidate extends AbstractIndexer
      */
     public function allowFullExecution()
     {
-        return IndexerUtil::isCalledFromSetupUpgrade() === false;
+        return IndexerUtil::isCalledFromSetupUpgrade($this->input) === false;
     }
 }
