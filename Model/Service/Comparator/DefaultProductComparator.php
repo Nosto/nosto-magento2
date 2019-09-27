@@ -34,36 +34,21 @@
  *
  */
 
-namespace Nosto\Tagging\Util;
+namespace Nosto\Tagging\Model\Service\Comparator;
 
-use Symfony\Component\Console\Input\InputInterface;
+use Nosto\Helper\SerializationHelper;
+use Nosto\Types\Product\ProductInterface;
 
-class Indexer
+class DefaultProductComparator implements ProductComparatorInterface
 {
-    /** Non-ambiguous scope for settings commands */
-    const SETUP_UPGRADE_SCOPE = 'se';
-
-    /** Non-ambiguous action argument for settings command */
-    const SETUP_UPGRADE_ACTION = 'up';
-
     /**
-     * Checks if the execution scope is from Magento's setup:upgrade
-     *
-     * @param InputInterface $input
-     * @return bool
+     * @inheritDoc
      */
-    public static function isCalledFromSetupUpgrade(InputInterface $input)
+    public function isEqual(ProductInterface $product1, ProductInterface $product2)
     {
-        $parts = explode(':', $input->getFirstArgument());
-        if (count($parts) !== 2) {
-            return false;
-        }
-        list($commandScope, $commandAction) = $parts;
-        $currentCommandScope = substr($commandScope, 0, strlen(self::SETUP_UPGRADE_SCOPE));
-        $currentCommandAction = substr($commandAction, 0, strlen(self::SETUP_UPGRADE_ACTION));
-        return (
-            $currentCommandScope === self::SETUP_UPGRADE_SCOPE
-            && $currentCommandAction === self::SETUP_UPGRADE_ACTION
-        );
+        $product1string = SerializationHelper::serialize($product1);
+        $product2string = SerializationHelper::serialize($product2);
+
+        return $product1string === $product2string;
     }
 }

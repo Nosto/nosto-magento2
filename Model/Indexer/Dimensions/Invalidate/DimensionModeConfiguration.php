@@ -34,36 +34,33 @@
  *
  */
 
-namespace Nosto\Tagging\Util;
+namespace Nosto\Tagging\Model\Indexer\Dimensions\Invalidate;
 
-use Symfony\Component\Console\Input\InputInterface;
+use Nosto\Tagging\Model\Indexer\Dimensions\AbstractDimensionModeConfiguration;
 
-class Indexer
+class DimensionModeConfiguration extends AbstractDimensionModeConfiguration
 {
-    /** Non-ambiguous scope for settings commands */
-    const SETUP_UPGRADE_SCOPE = 'se';
-
-    /** Non-ambiguous action argument for settings command */
-    const SETUP_UPGRADE_ACTION = 'up';
+    /**
+     * @var string
+     */
+    private $currentMode;
 
     /**
-     * Checks if the execution scope is from Magento's setup:upgrade
-     *
-     * @param InputInterface $input
-     * @return bool
+     * @return string
      */
-    public static function isCalledFromSetupUpgrade(InputInterface $input)
+    public function getCurrentMode(): string
     {
-        $parts = explode(':', $input->getFirstArgument());
-        if (count($parts) !== 2) {
-            return false;
+        if ($this->currentMode === null) {
+            $mode = $this->scopeConfig->getValue(
+                ModeSwitcherConfiguration::XML_PATH_PRODUCT_INVALIDATE_DIMENSIONS_MODE
+            );
+            if ($mode) {
+                $this->currentMode = $mode;
+            } else {
+                $this->currentMode = self::DIMENSION_NONE;
+            }
         }
-        list($commandScope, $commandAction) = $parts;
-        $currentCommandScope = substr($commandScope, 0, strlen(self::SETUP_UPGRADE_SCOPE));
-        $currentCommandAction = substr($commandAction, 0, strlen(self::SETUP_UPGRADE_ACTION));
-        return (
-            $currentCommandScope === self::SETUP_UPGRADE_SCOPE
-            && $currentCommandAction === self::SETUP_UPGRADE_ACTION
-        );
+
+        return $this->currentMode;
     }
 }

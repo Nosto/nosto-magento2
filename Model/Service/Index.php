@@ -61,9 +61,9 @@ use Nosto\Tagging\Model\ResourceModel\Magento\Product\Collection as ProductColle
 use Nosto\Tagging\Model\ResourceModel\Magento\Product\CollectionFactory as ProductCollectionFactory;
 use Nosto\Tagging\Model\ResourceModel\Product\Index\Collection as NostoIndexCollection;
 use Nosto\Tagging\Model\ResourceModel\Product\Index\CollectionFactory as NostoIndexCollectionFactory;
+use Nosto\Tagging\Model\Service\Comparator\ProductComparatorInterface;
 use Nosto\Tagging\Util\Serializer\ProductSerializer;
 use Nosto\Tagging\Util\Iterator;
-use Nosto\Tagging\Util\Product as ProductUtil;
 use Nosto\Types\Product\ProductInterface as NostoProductInterface;
 use Nosto\Tagging\Model\Service\Sync\BulkPublisherInterface;
 
@@ -115,6 +115,9 @@ class Index extends AbstractService
     /** @var ProductSerializer */
     private $productSerializer;
 
+    /** @var ProductComparatorInterface */
+    private $productComparator;
+
     /**
      * Index constructor.
      * @param IndexRepository $indexRepository
@@ -131,6 +134,7 @@ class Index extends AbstractService
      * @param NostoDataHelper $nostoDataHelper
      * @param BulkPublisherInterface $syncBulkPublisher
      * @param ProductSerializer $productSerializer
+     * @param ProductComparatorInterface $productComparator
      */
     public function __construct(
         IndexRepository $indexRepository,
@@ -146,7 +150,8 @@ class Index extends AbstractService
         TimezoneInterface $magentoTimeZone,
         NostoDataHelper $nostoDataHelper,
         BulkPublisherInterface $syncBulkPublisher,
-        ProductSerializer $productSerializer
+        ProductSerializer $productSerializer,
+        ProductComparatorInterface $productComparator
     ) {
         parent::__construct($nostoDataHelper, $logger);
         $this->indexRepository = $indexRepository;
@@ -161,6 +166,7 @@ class Index extends AbstractService
         $this->magentoTimeZone = $magentoTimeZone;
         $this->syncBulkPublisher = $syncBulkPublisher;
         $this->productSerializer = $productSerializer;
+        $this->productComparator = $productComparator;
     }
 
     /**
@@ -253,8 +259,7 @@ class Index extends AbstractService
         $indexedProduct = $this->indexRepository->getByProductIdAndStoreId($product->getId(), $store->getId());
         try {
             if ($indexedProduct === null) { // Creates Index Product
-                $fullProduct = $this->loadMagentoProduct($product->getId(), $store->getId());
-                $indexedProduct = $this->indexBuilder->build($fullProduct, $store);
+                $indexedProduct = $this->indexBuilder->build($product, $store);
             }
             $indexedProduct->setIsDirty(true);
             $indexedProduct->setUpdatedAt($this->magentoTimeZone->date());
@@ -326,7 +331,7 @@ class Index extends AbstractService
             if ($nostoIndexedProduct instanceof NostoProductInterface === false ||
                 (
                     $nostoProduct instanceof NostoProductInterface
-                    && !ProductUtil::isEqual($nostoProduct, $nostoIndexedProduct)
+                    && !$this->productComparator->isEqual($nostoProduct, $nostoIndexedProduct)
                 )
             ) {
                 $productIndex->setProductData(

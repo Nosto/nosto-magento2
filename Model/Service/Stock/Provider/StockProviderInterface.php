@@ -1,4 +1,7 @@
 <?php
+
+namespace Nosto\Tagging\Model\Service\Stock\Provider;
+
 /**
  * Copyright (c) 2019, Nosto Solutions Ltd
  * All rights reserved.
@@ -34,36 +37,28 @@
  *
  */
 
-namespace Nosto\Tagging\Util;
+use Magento\CatalogInventory\Api\Data\StockItemInterface;
+use Magento\CatalogInventory\Api\Data\StockStatusInterface;
 
-use Symfony\Component\Console\Input\InputInterface;
-
-class Indexer
+interface StockProviderInterface
 {
-    /** Non-ambiguous scope for settings commands */
-    const SETUP_UPGRADE_SCOPE = 'se';
-
-    /** Non-ambiguous action argument for settings command */
-    const SETUP_UPGRADE_ACTION = 'up';
 
     /**
-     * Checks if the execution scope is from Magento's setup:upgrade
-     *
-     * @param InputInterface $input
-     * @return bool
+     * @param int[] $ids array of product ids
+     * @return StockStatusInterface[]
      */
-    public static function isCalledFromSetupUpgrade(InputInterface $input)
-    {
-        $parts = explode(':', $input->getFirstArgument());
-        if (count($parts) !== 2) {
-            return false;
-        }
-        list($commandScope, $commandAction) = $parts;
-        $currentCommandScope = substr($commandScope, 0, strlen(self::SETUP_UPGRADE_SCOPE));
-        $currentCommandAction = substr($commandAction, 0, strlen(self::SETUP_UPGRADE_ACTION));
-        return (
-            $currentCommandScope === self::SETUP_UPGRADE_SCOPE
-            && $currentCommandAction === self::SETUP_UPGRADE_ACTION
-        );
-    }
+    public function getStockStatuses(array $ids);
+
+    /**
+     * @param int $id Product id
+     * @return StockStatusInterface
+     */
+    public function getStockStatus($id);
+
+    /**
+     * @param int $id
+     * @param int $websiteId
+     * @return StockItemInterface
+     */
+    public function getStockItem($id, $websiteId);
 }

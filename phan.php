@@ -61,7 +61,11 @@ return [
         'magento/generated', // When Running On CI
         '../../../generated', // When Running Locally
         '../../../app/code/Magento/AsynchronousOperations', // When Running Locally
-        'magento/app/code/Magento/AsynchronousOperations' // When Running on CI
+        'magento/app/code/Magento/AsynchronousOperations', // When Running on CI
+        'vendor/symfony/console',
+        'magento/generated',
+        '../../../app/code/Magento/Store', // When Running Locally
+        'magento/app/code/Magento/Store' // When Running on CI
     ],
     'exclude_file_list' => [
         'vendor/magento/zendframework1/library/Zend/Validate/Hostname/Biz.php',

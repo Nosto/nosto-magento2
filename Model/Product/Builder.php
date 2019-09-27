@@ -40,7 +40,6 @@ use Exception;
 use Magento\Catalog\Api\CategoryRepositoryInterface;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\Product\Gallery\ReadHandler as GalleryReadHandler;
-use Magento\CatalogInventory\Api\StockRegistryInterface;
 use Magento\Eav\Api\AttributeSetRepositoryInterface;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Review\Model\ReviewFactory;
@@ -52,7 +51,6 @@ use Nosto\Tagging\Helper\Currency as CurrencyHelper;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Price as NostoPriceHelper;
 use Nosto\Tagging\Helper\Ratings as NostoRating;
-use Nosto\Tagging\Helper\Stock as NostoStockHelper;
 use Nosto\Tagging\Helper\Variation as NostoVariationHelper;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\CategoryString\Builder as NostoCategoryBuilder;
@@ -60,6 +58,7 @@ use Nosto\Tagging\Model\Product\Sku\Collection as NostoSkuCollection;
 use Nosto\Tagging\Model\Product\Tags\LowStock as LowStockHelper;
 use Nosto\Tagging\Model\Product\Url\Builder as NostoUrlBuilder;
 use Nosto\Tagging\Model\Product\Variation\Collection as PriceVariationCollection;
+use Nosto\Tagging\Model\Service\Stock\StockService;
 use Nosto\Types\Product\ProductInterface;
 
 class Builder
@@ -86,6 +85,7 @@ class Builder
     private $categoryRepository;
     private $attributeSetRepository;
     private $nostoRatingHelper;
+    private $stockService;
 
     /**
      * Builder constructor.
@@ -93,7 +93,7 @@ class Builder
      * @param NostoHelperData $nostoHelperData
      * @param NostoPriceHelper $priceHelper
      * @param NostoCategoryBuilder $categoryBuilder
-     * @param NostoStockHelper $stockHelper
+     * @param StockService $stockService
      * @param NostoSkuCollection $skuCollection
      * @param CategoryRepositoryInterface $categoryRepository
      * @param AttributeSetRepositoryInterface $attributeSetRepository
@@ -104,7 +104,6 @@ class Builder
      * @param NostoUrlBuilder $urlBuilder
      * @param CurrencyHelper $nostoCurrencyHelper
      * @param LowStockHelper $lowStockHelper
-     * @param StockRegistryInterface $stockRegistry
      * @param PriceVariationCollection $priceVariationCollection
      * @param NostoVariationHelper $nostoVariationHelper
      * @param NostoRating $nostoRatingHelper
@@ -113,7 +112,7 @@ class Builder
         NostoHelperData $nostoHelperData,
         NostoPriceHelper $priceHelper,
         NostoCategoryBuilder $categoryBuilder,
-        NostoStockHelper $stockHelper,
+        StockService $stockService,
         NostoSkuCollection $skuCollection,
         CategoryRepositoryInterface $categoryRepository,
         AttributeSetRepositoryInterface $attributeSetRepository,
@@ -124,7 +123,6 @@ class Builder
         NostoUrlBuilder $urlBuilder,
         CurrencyHelper $nostoCurrencyHelper,
         LowStockHelper $lowStockHelper,
-        StockRegistryInterface $stockRegistry,
         PriceVariationCollection $priceVariationCollection,
         NostoVariationHelper $nostoVariationHelper,
         NostoRating $nostoRatingHelper
@@ -136,7 +134,6 @@ class Builder
         $this->attributeSetRepository = $attributeSetRepository;
         $this->logger = $logger;
         $this->eventManager = $eventManager;
-        $this->nostoStockHelper = $stockHelper;
         $this->reviewFactory = $reviewFactory;
         $this->galleryReadHandler = $galleryReadHandler;
         $this->urlBuilder = $urlBuilder;
@@ -145,12 +142,13 @@ class Builder
         $this->lowStockHelper = $lowStockHelper;
         $this->builderTraitConstruct(
             $nostoHelperData,
-            $stockRegistry,
+            $stockService,
             $logger
         );
         $this->priceVariationCollection = $priceVariationCollection;
         $this->nostoVariationHelper = $nostoVariationHelper;
         $this->nostoRatingHelper = $nostoRatingHelper;
+        $this->stockService = $stockService;
     }
 
     /**
@@ -202,7 +200,8 @@ class Builder
             $nostoProduct->setAvailability($this->buildAvailability($product, $store));
             $nostoProduct->setCategories($this->nostoCategoryBuilder->buildCategories($product, $store));
             if ($this->nostoDataHelper->isInventoryTaggingEnabled($store)) {
-                $nostoProduct->setInventoryLevel($this->nostoStockHelper->getQty($product));
+                $inventoryLevel = $this->stockService->getQuantity($product);
+                $nostoProduct->setInventoryLevel($inventoryLevel);
             }
             $rating = $this->nostoRatingHelper->getRatings($product, $store);
             if ($rating !== null) {
@@ -442,20 +441,5 @@ class Builder
         }
 
         return $tags;
-    }
-
-    /**
-     * Builds a product with required info for deletion
-     *
-     * @param int $productId
-     * @return NostoProduct
-     */
-    public function buildForDeletion($productId)
-    {
-        $nostoProduct = new NostoProduct();
-        $nostoProduct->setProductId((string)$productId);
-        $nostoProduct->setAvailability(ProductInterface::DISCONTINUED);
-
-        return $nostoProduct;
     }
 }

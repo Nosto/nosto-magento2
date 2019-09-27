@@ -34,23 +34,33 @@
  *
  */
 
-namespace Nosto\Tagging\Util;
+namespace Nosto\Tagging\Model\Indexer\Dimensions\Data;
 
-use Nosto\Helper\SerializationHelper;
-use Nosto\Types\Product\ProductInterface;
+use Nosto\Tagging\Model\Indexer\Dimensions\AbstractDimensionModeConfiguration;
 
-class Product
+class DimensionModeConfiguration extends AbstractDimensionModeConfiguration
 {
     /**
-     * @param ProductInterface $product1
-     * @param ProductInterface $product2
-     * @return boolean
+     * @var string
      */
-    public static function isEqual(ProductInterface $product1, ProductInterface $product2)
-    {
-        $product1string = SerializationHelper::serialize($product1);
-        $product2string = SerializationHelper::serialize($product2);
+    private $currentMode;
 
-        return $product1string === $product2string;
+    /**
+     * @return string
+     */
+    public function getCurrentMode(): string
+    {
+        if ($this->currentMode === null) {
+            $mode = $this->scopeConfig->getValue(
+                ModeSwitcherConfiguration::XML_PATH_PRODUCT_DATA_DIMENSIONS_MODE
+            );
+            if ($mode) {
+                $this->currentMode = $mode;
+            } else {
+                $this->currentMode = self::DIMENSION_NONE;
+            }
+        }
+
+        return $this->currentMode;
     }
 }

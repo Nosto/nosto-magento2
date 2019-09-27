@@ -1,4 +1,5 @@
-<?php
+<?php /** @noinspection PhpUnused */
+
 /**
  * Copyright (c) 2019, Nosto Solutions Ltd
  * All rights reserved.
@@ -34,36 +35,41 @@
  *
  */
 
-namespace Nosto\Tagging\Util;
+namespace Nosto\Tagging\Model\Service\Stock\Provider;
 
-use Symfony\Component\Console\Input\InputInterface;
-
-class Indexer
+class DefaultStockProvider implements StockProviderInterface
 {
-    /** Non-ambiguous scope for settings commands */
-    const SETUP_UPGRADE_SCOPE = 'se';
+    private $stockRegistryProvider;
 
-    /** Non-ambiguous action argument for settings command */
-    const SETUP_UPGRADE_ACTION = 'up';
+    public function __construct(StockRegistryProvider $stockRegistryProvider)
+    {
+        $this->stockRegistryProvider = $stockRegistryProvider;
+    }
 
     /**
-     * Checks if the execution scope is from Magento's setup:upgrade
-     *
-     * @param InputInterface $input
-     * @return bool
+     * @inheritDoc
      */
-    public static function isCalledFromSetupUpgrade(InputInterface $input)
+    public function getStockStatuses(array $ids)
     {
-        $parts = explode(':', $input->getFirstArgument());
-        if (count($parts) !== 2) {
-            return false;
-        }
-        list($commandScope, $commandAction) = $parts;
-        $currentCommandScope = substr($commandScope, 0, strlen(self::SETUP_UPGRADE_SCOPE));
-        $currentCommandAction = substr($commandAction, 0, strlen(self::SETUP_UPGRADE_ACTION));
-        return (
-            $currentCommandScope === self::SETUP_UPGRADE_SCOPE
-            && $currentCommandAction === self::SETUP_UPGRADE_ACTION
+        return $this->stockRegistryProvider->getStockStatuses($ids)->getItems();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getStockStatus($id)
+    {
+        return $this->stockRegistryProvider->getStockStatus(
+            $id,
+            StockRegistryProvider::DEFAULT_STOCK_SCOPE
         );
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getStockItem($id, $websiteId)
+    {
+        return $this->stockRegistryProvider->getStockItem($id, $websiteId);
     }
 }

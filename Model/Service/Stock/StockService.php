@@ -34,42 +34,32 @@
  *
  */
 
-namespace Nosto\Tagging\Helper;
+namespace Nosto\Tagging\Model\Service\Stock;
 
 use Magento\Bundle\Model\Product\Type as Bundled;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\Product\Type as ProductType;
-use Magento\Catalog\Model\ProductFactory;
-use Magento\CatalogInventory\Api\StockStateInterface;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable;
-use Magento\Framework\App\Helper\AbstractHelper;
-use Magento\Framework\App\Helper\Context;
 use Magento\GroupedProduct\Model\Product\Type\Grouped;
+use Magento\Store\Model\Store;
+use Nosto\Tagging\Model\Service\Stock\Provider\StockProviderInterface;
 
 /**
- * Stock helper used for product inventory level related tasks.
+ * StockService helper used for product inventory level related tasks.
  */
-class Stock extends AbstractHelper
+class StockService
 {
-    private $productFactory;
-    private $stockItem;
+    private $stockProvider;
 
     /**
      * Constructor.
      *
-     * @param Context $context the context.
-     * @param ProductFactory $productFactory
-     * @param StockStateInterface $stockItem
+     * @param StockProviderInterface $stockProvider
      */
     public function __construct(
-        Context $context,
-        ProductFactory $productFactory,
-        StockStateInterface $stockItem
+        StockProviderInterface $stockProvider
     ) {
-        parent::__construct($context);
-
-        $this->productFactory = $productFactory;
-        $this->stockItem = $stockItem;
+        $this->stockProvider = $stockProvider;
     }
 
     /**
@@ -81,44 +71,43 @@ class Stock extends AbstractHelper
      * @suppress PhanUndeclaredMethod
      * @suppress PhanDeprecatedFunction
      */
-    public function getQty(Product $product)
+    public function getQuantity(Product $product)
     {
         $qty = 0;
-
         switch ($product->getTypeId()) {
             case ProductType::TYPE_BUNDLE:
                 /** @var Bundled $productType */
                 $productType = $product->getTypeInstance();
                 $bundledItemIds = $productType->getChildrenIds($product->getId(), $required = true);
-                $products = [];
+                $productIds = [];
                 foreach ($bundledItemIds as $variants) {
                     if (is_array($variants) && count($variants) > 0) { // @codingStandardsIgnoreLine
-                        foreach ($variants as $variantId) {
-                            /* @var Product $productModel */
-                            /** @noinspection PhpDeprecationInspection */
-                            $productModel = $this->productFactory->create()->load($variantId); // @codingStandardsIgnoreLine
-                            $products[] = $productModel;
+                        foreach ($variants as $productId) {
+                            $productIds[] = $productId;
                         }
                     }
                 }
-                $qty = $this->getMinQty($products);
+                $qty = $this->getMinQty($productIds);
                 break;
             case Grouped::TYPE_CODE:
                 $productType = $product->getTypeInstance();
                 if ($productType instanceof Grouped) {
-                    $products = $productType->getAssociatedProducts($product);
+                    $products = $productType->getAssociatedProductIds($product);
                     $qty = $this->getMinQty($products);
                 }
                 break;
             case Configurable::TYPE_CODE:
                 $productType = $product->getTypeInstance();
                 if ($productType instanceof Configurable) {
-                    $products = $productType->getUsedProducts($product);
-                    $qty = $this->getQtySum($products);
+                    $productIds = $productType->getChildrenIds($product->getId());
+                    if (isset($productIds[0]) && is_array($productIds[0])) {
+                        $productIds = $productIds[0];
+                    }
+                    $qty = $this->getQtySum($productIds);
                 }
                 break;
             default:
-                $qty += $this->stockItem->getStockQty($product->getId());
+                $qty += $this->stockProvider->getStockStatus($product->getId())->getQty();
                 break;
         }
 
@@ -128,39 +117,53 @@ class Stock extends AbstractHelper
     /**
      * Searches the minimum quantity from the products collection
      *
-     * @param array|Product[] $productCollection
+     * @param int[] $productIds
      * @return int|mixed
      */
-    private function getMinQty(array $productCollection)
+    private function getMinQty(array $productIds)
     {
         $quantities = [];
+        $stockItems = $this->stockProvider->getStockStatuses($productIds);
         $minQty = 0;
         /* @var Product $product */
-        foreach ($productCollection as $product) {
-            $quantities[] = $this->getQty($product);
+        foreach ($stockItems as $stockItem) {
+            $quantities[] = $stockItem->getQty();
         }
         if (!empty($quantities)) {
             rsort($quantities, SORT_NUMERIC);
             $minQty = array_pop($quantities);
         }
-
         return $minQty;
     }
 
     /**
-     * Sums quantities for all products in array
+     * Sums quantities for all product ids in array
      *
-     * @param array|Product[] $productCollection
+     * @param int[] $productIds
      * @return int
      */
-    private function getQtySum(array $productCollection)
+    private function getQtySum($productIds)
     {
         $qty = 0;
-        /* @var Product $product */
-        foreach ($productCollection as $product) {
-            $qty += $this->getQty($product);
+        $stockItems = $this->stockProvider->getStockStatuses($productIds);
+        foreach ($stockItems as $item) {
+            $qty += $item->getQty();
         }
-
         return $qty;
+    }
+
+    /**
+     * Sums quantities for all product ids in array
+     *
+     * @param Product $product
+     * @param Store $store
+     * @return bool
+     */
+    public function isInStock(Product $product, Store $store)
+    {
+        return (bool)$this->stockProvider->getStockItem(
+            $product->getId(),
+            $store->getWebsiteId()
+        )->getIsInStock();
     }
 }

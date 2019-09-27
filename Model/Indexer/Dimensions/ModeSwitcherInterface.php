@@ -34,36 +34,14 @@
  *
  */
 
-namespace Nosto\Tagging\Util;
+namespace Nosto\Tagging\Model\Indexer\Dimensions;
 
-use Symfony\Component\Console\Input\InputInterface;
+use Magento\Indexer\Model\ModeSwitcherInterface as MagentoModeSwitcherInterface;
 
-class Indexer
+interface ModeSwitcherInterface extends MagentoModeSwitcherInterface
 {
-    /** Non-ambiguous scope for settings commands */
-    const SETUP_UPGRADE_SCOPE = 'se';
-
-    /** Non-ambiguous action argument for settings command */
-    const SETUP_UPGRADE_ACTION = 'up';
-
     /**
-     * Checks if the execution scope is from Magento's setup:upgrade
-     *
-     * @param InputInterface $input
-     * @return bool
+     * @return string
      */
-    public static function isCalledFromSetupUpgrade(InputInterface $input)
-    {
-        $parts = explode(':', $input->getFirstArgument());
-        if (count($parts) !== 2) {
-            return false;
-        }
-        list($commandScope, $commandAction) = $parts;
-        $currentCommandScope = substr($commandScope, 0, strlen(self::SETUP_UPGRADE_SCOPE));
-        $currentCommandAction = substr($commandAction, 0, strlen(self::SETUP_UPGRADE_ACTION));
-        return (
-            $currentCommandScope === self::SETUP_UPGRADE_SCOPE
-            && $currentCommandAction === self::SETUP_UPGRADE_ACTION
-        );
-    }
+    public function getMode(): string;
 }

@@ -37,35 +37,39 @@
 namespace Nosto\Tagging\Model\Product;
 
 use Magento\Catalog\Model\Product;
-use Magento\CatalogInventory\Api\StockRegistryInterface;
 use Magento\Eav\Model\Entity\Attribute\AbstractAttribute;
-use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Phrase;
 use Magento\Store\Model\Store;
+use Nosto\Helper\ArrayHelper;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
+use Nosto\Tagging\Model\Service\Stock\StockService;
 use Nosto\Tagging\Util\Url as UrlUtil;
-use Nosto\Helper\ArrayHelper;
 
 trait BuilderTrait
 {
-    private $nostoDataHelperTrait;
-    private $loggerTrait;
-    private $stockRegistry;
+    /** @var NostoHelperData */
+    private $nostoDataHelper;
+
+    /** @var NostoLogger */
+    private $logger;
+
+    /** @var StockService */
+    private $stockService;
 
     /**
      * @param NostoHelperData $nostoHelperData
-     * @param StockRegistryInterface $stockRegistry
+     * @param StockService $stockService
      * @param NostoLogger $logger
      */
     public function __construct(
         NostoHelperData $nostoHelperData,
-        StockRegistryInterface $stockRegistry,
+        StockService $stockService,
         NostoLogger $logger
     ) {
-        $this->nostoDataHelperTrait = $nostoHelperData;
-        $this->stockRegistry = $stockRegistry;
-        $this->loggerTrait = $logger;
+        $this->nostoDataHelper = $nostoHelperData;
+        $this->stockService = $stockService;
+        $this->logger = $logger;
     }
 
     /**
@@ -79,7 +83,7 @@ trait BuilderTrait
     {
         $customFields = [];
 
-        if (!$this->nostoDataHelperTrait->isCustomFieldsEnabled($store)) {
+        if (!$this->nostoDataHelper->isCustomFieldsEnabled($store)) {
             return $customFields;
         }
 
@@ -103,7 +107,7 @@ trait BuilderTrait
                     }
                 }
             } catch (\Exception $e) {
-                $this->loggerTrait->exception($e);
+                $this->logger->exception($e);
             }
         }
 
@@ -117,7 +121,7 @@ trait BuilderTrait
      */
     public function buildImageUrl(Product $product, Store $store)
     {
-        $primary = $this->nostoDataHelperTrait->getProductImageVersion($store);
+        $primary = $this->nostoDataHelper->getProductImageVersion($store);
         $secondary = 'image'; // The "base" image.
         $media = $product->getMediaAttributeValues();
 
@@ -136,7 +140,6 @@ trait BuilderTrait
             $store
         );
     }
-
 
     /**
      * Resolves "textual" product attribute value
@@ -165,7 +168,7 @@ trait BuilderTrait
                 }
             }
         } catch (\Exception $e) {
-            $this->loggerTrait->exception($e);
+            $this->logger->exception($e);
         }
 
         return $value;
@@ -180,7 +183,7 @@ trait BuilderTrait
      */
     public function finalizeImageUrl($url, Store $store)
     {
-        if ($this->nostoDataHelperTrait->getRemovePubDirectoryFromProductImageUrl($store)) {
+        if ($this->nostoDataHelper->getRemovePubDirectoryFromProductImageUrl($store)) {
             return UrlUtil::removePubFromUrl($url);
         }
 
@@ -206,15 +209,6 @@ trait BuilderTrait
      */
     public function isInStock(Product $product, Store $store)
     {
-        try {
-            $stockItem = $this->stockRegistry->getStockItem(
-                $product->getId(),
-                $store->getWebsiteId()
-            );
-            return (bool)$stockItem->getIsInStock();
-        } catch (NoSuchEntityException $e) {
-            $this->loggerTrait->exception($e);
-            return false;
-        }
+        return $this->stockService->isInStock($product, $store);
     }
 }
