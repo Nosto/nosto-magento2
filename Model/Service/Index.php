@@ -65,6 +65,7 @@ use Nosto\Tagging\Util\Serializer\ProductSerializer;
 use Nosto\Tagging\Util\Iterator;
 use Nosto\Tagging\Util\Product as ProductUtil;
 use Nosto\Types\Product\ProductInterface as NostoProductInterface;
+use Nosto\Tagging\Model\Service\Sync\BulkPublisher;
 
 class Index extends AbstractService
 {
@@ -99,9 +100,6 @@ class Index extends AbstractService
     /** @var TimezoneInterface */
     private $magentoTimeZone;
 
-    /** @var Sync */
-    private $nostoSyncService;
-
     /** @var NostoProductRepository $nostoProductRepository */
     private $nostoProductRepository;
 
@@ -111,7 +109,7 @@ class Index extends AbstractService
     /** @var array */
     private $invalidatedProducts = [];
 
-    /** @var SyncBulkPublisher */
+    /** @var BulkPublisher */
     private $syncBulkPublisher;
 
     /** @var ProductSerializer */
@@ -131,8 +129,7 @@ class Index extends AbstractService
      * @param ProductCollectionFactory $productCollectionFactory
      * @param TimezoneInterface $magentoTimeZone
      * @param NostoDataHelper $nostoDataHelper
-     * @param Sync $nostoSyncService
-     * @param SyncBulkPublisher $syncBulkPublisher
+     * @param BulkPublisher $syncBulkPublisher
      * @param ProductSerializer $productSerializer
      */
     public function __construct(
@@ -148,8 +145,7 @@ class Index extends AbstractService
         ProductCollectionFactory $productCollectionFactory,
         TimezoneInterface $magentoTimeZone,
         NostoDataHelper $nostoDataHelper,
-        Sync $nostoSyncService,
-        SyncBulkPublisher $syncBulkPublisher,
+        BulkPublisher $syncBulkPublisher,
         ProductSerializer $productSerializer
     ) {
         parent::__construct($nostoDataHelper, $logger);
@@ -163,7 +159,6 @@ class Index extends AbstractService
         $this->nostoProductRepository = $nostoProductRepository;
         $this->productCollectionFactory = $productCollectionFactory;
         $this->magentoTimeZone = $magentoTimeZone;
-        $this->nostoSyncService = $nostoSyncService;
         $this->syncBulkPublisher = $syncBulkPublisher;
         $this->productSerializer = $productSerializer;
     }
@@ -284,12 +279,7 @@ class Index extends AbstractService
         $dirtyCollection = $this->getDirtyCollection($store, $ids);
         $this->rebuildDirtyProducts($dirtyCollection, $store);
         $outOfSyncCollection = $this->getOutOfSyncCollection($store, $ids);
-        try {
-            $this->syncBulkPublisher->publishCollectionToQueue($outOfSyncCollection, $store);
-        } catch (NostoException $e) { // Module Async operations is not installed.
-            $this->nostoSyncService->syncIndexedProducts($outOfSyncCollection, $store);
-            $this->nostoSyncService->syncDeletedProducts($store);
-        }
+        $this->syncBulkPublisher->publish($outOfSyncCollection, $store);
     }
 
     /**

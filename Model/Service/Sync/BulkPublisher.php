@@ -34,7 +34,7 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Service;
+namespace Nosto\Tagging\Model\Service\Sync;
 
 use Magento\Authorization\Model\UserContextInterface;
 use Magento\Framework\DataObject\IdentityGeneratorInterface;
@@ -43,10 +43,10 @@ use Magento\Framework\Serialize\SerializerInterface;
 use Magento\Store\Model\Store;
 use Magento\Framework\App\ObjectManager;
 use Magento\Framework\Module\Manager;
-use Nosto\Tagging\Model\ResourceModel\Product\Index\Collection as NostoIndexCollection;
 use Nosto\NostoException;
+use Nosto\Tagging\Model\ResourceModel\Product\Index\Collection as NostoIndexCollection;
 
-class SyncBulkPublisher
+class BulkPublisher
 {
     const NOSTO_SYNC_MESSAGE_QUEUE = 'nosto_product_sync.update';
     const BULK_SIZE = 100;
@@ -66,20 +66,26 @@ class SyncBulkPublisher
     /** @var Manager */
     private $manager;
 
+    /** @var SyncService */
+    private $syncService;
+
     /**
      * SyncBulkPublisher constructor.
      * @param IdentityGeneratorInterface $identityService
      * @param SerializerInterface $serializer
      * @param Manager $manager
+     * @param SyncService $syncService
      */
     public function __construct(
         IdentityGeneratorInterface $identityService,
         SerializerInterface $serializer,
-        Manager $manager
+        Manager $manager,
+        SyncService $syncService
     ) {
         $this->manager = $manager;
         $this->identityService = $identityService;
         $this->serializer = $serializer;
+        $this->syncService = $syncService;
     }
 
     /**
@@ -88,13 +94,15 @@ class SyncBulkPublisher
      * @throws LocalizedException
      * @throws NostoException
      */
-    public function publishCollectionToQueue(NostoIndexCollection $collection, Store $store)
+    public function publish(NostoIndexCollection $collection, Store $store)
     {
-        if (!$this->canUseBulkOperations()) {
-            throw new NostoException('Module Magento_AsynchronousOperations is not installed.');
+        if ($this->canUseBulkOperations()) {
+            $productIds = $collection->walk('getProductId');
+            $this->publishCollectionToQueue($store->getId(), $productIds);
+        } else {
+            $this->syncService->syncIndexedProducts($collection, $store);
+            $this->syncService->syncDeletedProducts($store);
         }
-        $productIds = $collection->walk('getProductId');
-        $this->publish($store->getId(), $productIds);
     }
 
     /**
@@ -117,7 +125,7 @@ class SyncBulkPublisher
      * @param $productIds
      * @throws LocalizedException
      */
-    private function publish(
+    private function publishCollectionToQueue(
         $storeId,
         $productIds
     ) {

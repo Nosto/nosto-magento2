@@ -34,7 +34,7 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Product\Sync;
+namespace Nosto\Tagging\Model\Service\Sync;
 
 use Exception;
 use Magento\AsynchronousOperations\Api\Data\OperationInterface;
@@ -42,13 +42,13 @@ use Magento\Framework\EntityManager\EntityManager;
 use Magento\Framework\Json\Helper\Data as JsonHelper;
 use Nosto\Tagging\Logger\Logger;
 use Nosto\Tagging\Model\Product\Index\IndexRepository;
-use Nosto\Tagging\Model\Service\Sync as NostoSyncService;
+use Nosto\Tagging\Model\Service\Sync\SyncService as NostoSyncService;
 use Nosto\Tagging\Helper\Scope as NostoScopeHelper;
 
 /**
  * Class Consumer
  */
-class Consumer
+class BulkConsumer
 {
     /** @var Logger */
     private $logger;
