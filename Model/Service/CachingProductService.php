@@ -100,7 +100,7 @@ class CachingProductService implements ProductServiceInterface
             $indexedProduct = $this->nostoIndexRepository->getOneByProductAndStore($product, $store);
             //In case the product is not present in the index table
             if ($indexedProduct === null) {
-                $this->nostoIndexService->updateOrCreateDirtyEntity($fullProduct, $store);
+                $this->nostoIndexService->updateOrCreateDirtyEntity($product, $store);
                 $indexedProduct = $this->nostoIndexRepository->getOneByProductAndStore($product, $store);
             }
             //If it is dirty rebuild the product data
