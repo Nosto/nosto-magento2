@@ -284,7 +284,7 @@ class Index extends AbstractService
         $dirtyCollection = $this->getDirtyCollection($store, $ids);
         $this->rebuildDirtyProducts($dirtyCollection, $store);
         $outOfSyncCollection = $this->getOutOfSyncCollection($store, $ids);
-        $this->syncBulkPublisher->publish($outOfSyncCollection, $store);
+        $this->syncBulkPublisher->execute($outOfSyncCollection, $store);
     }
 
     /**

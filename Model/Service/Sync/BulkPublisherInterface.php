@@ -46,5 +46,5 @@ interface BulkPublisherInterface
      * @param Store $store
      * @return void
      */
-    public function publish(NostoIndexCollection $collection, Store $store);
+    public function execute(NostoIndexCollection $collection, Store $store);
 }

@@ -93,7 +93,7 @@ class BulkPublisher implements BulkPublisherInterface
      * @throws LocalizedException
      * @throws NostoException
      */
-    public function publish(NostoIndexCollection $collection, Store $store)
+    public function execute(NostoIndexCollection $collection, Store $store)
     {
         if ($this->canUseBulkOperations()) {
             $productIds = $collection->walk('getProductId');
