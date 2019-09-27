@@ -40,6 +40,7 @@
     <preference for="Nosto\Tagging\Api\Data\ProductQueueSearchResultsInterface" type="Nosto\Tagging\Model\Product\QueueSearchResults"/>
     <preference for="Nosto\Tagging\Model\Service\ProductServiceInterface" type="Nosto\Tagging\Model\Service\DefaultProductService"/>
     <preference for="Nosto\Tagging\Util\Serializer\SerializerInterface" type="Nosto\Tagging\Util\Serializer\DefaultSerializer"/>
+    <preference for="use Nosto\Tagging\Model\Service\Sync\BulkPublisherInterface" type="use Nosto\Tagging\Model\Service\Sync\BulkPublisher"/>
     <type name="Magento\Catalog\Model\ResourceModel\Product">
         <plugin name="nostoProductObserverInvalidate" type="Nosto\Tagging\Plugin\ProductInvalidate"/>
     </type>

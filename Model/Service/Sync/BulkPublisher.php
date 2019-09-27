@@ -46,7 +46,7 @@ use Magento\Framework\Module\Manager;
 use Nosto\NostoException;
 use Nosto\Tagging\Model\ResourceModel\Product\Index\Collection as NostoIndexCollection;
 
-class BulkPublisher
+class BulkPublisher implements BulkPublisherInterface
 {
     const NOSTO_SYNC_MESSAGE_QUEUE = 'nosto_product_sync.update';
     const BULK_SIZE = 100;
@@ -89,8 +89,7 @@ class BulkPublisher
     }
 
     /**
-     * @param NostoIndexCollection $collection
-     * @param Store $store
+     * @inheritDoc
      * @throws LocalizedException
      * @throws NostoException
      */

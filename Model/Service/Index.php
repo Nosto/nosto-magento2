@@ -65,7 +65,7 @@ use Nosto\Tagging\Util\Serializer\ProductSerializer;
 use Nosto\Tagging\Util\Iterator;
 use Nosto\Tagging\Util\Product as ProductUtil;
 use Nosto\Types\Product\ProductInterface as NostoProductInterface;
-use Nosto\Tagging\Model\Service\Sync\BulkPublisher;
+use Nosto\Tagging\Model\Service\Sync\BulkPublisherInterface;
 
 class Index extends AbstractService
 {
@@ -109,7 +109,7 @@ class Index extends AbstractService
     /** @var array */
     private $invalidatedProducts = [];
 
-    /** @var BulkPublisher */
+    /** @var BulkPublisherInterface */
     private $syncBulkPublisher;
 
     /** @var ProductSerializer */
@@ -129,7 +129,7 @@ class Index extends AbstractService
      * @param ProductCollectionFactory $productCollectionFactory
      * @param TimezoneInterface $magentoTimeZone
      * @param NostoDataHelper $nostoDataHelper
-     * @param BulkPublisher $syncBulkPublisher
+     * @param BulkPublisherInterface $syncBulkPublisher
      * @param ProductSerializer $productSerializer
      */
     public function __construct(
@@ -145,7 +145,7 @@ class Index extends AbstractService
         ProductCollectionFactory $productCollectionFactory,
         TimezoneInterface $magentoTimeZone,
         NostoDataHelper $nostoDataHelper,
-        BulkPublisher $syncBulkPublisher,
+        BulkPublisherInterface $syncBulkPublisher,
         ProductSerializer $productSerializer
     ) {
         parent::__construct($nostoDataHelper, $logger);
