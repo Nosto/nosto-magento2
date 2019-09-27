@@ -103,7 +103,6 @@ class Consumer
      */
     public function processOperation(OperationInterface $operation)
     {
-        $status = OperationInterface::STATUS_TYPE_COMPLETE;
         $errorCode = null;
         $message = null;
         $serializedData = $operation->getSerializedData();
@@ -122,7 +121,7 @@ class Consumer
                 ->setErrorCode($e->getCode())
                 ->setResultMessage($message);
         }
-        $operation->setStatus($status ? OperationInterface::STATUS_TYPE_COMPLETE : null)
+        $operation->setStatus(OperationInterface::STATUS_TYPE_COMPLETE)
             ->setResultMessage($message);
         $this->entityManager->save($operation);
     }

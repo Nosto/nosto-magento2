@@ -126,7 +126,7 @@ class SyncBulkPublisher
         $bulkDescription = __('Sync ' . count($productIds) . ' Nosto products');
         $operations = [];
         foreach ($productIdsChunks as $productIdsChunk) {
-            $operations[] = $this->makeOperation(
+            $operations[] = $this->buildOperation(
                 'Sync Nosto products',
                 self::NOSTO_SYNC_MESSAGE_QUEUE,
                 $storeId,
@@ -161,7 +161,7 @@ class SyncBulkPublisher
      *
      * @return \Magento\AsynchronousOperations\Api\Data\OperationInterface
      */
-    private function makeOperation(
+    private function buildOperation(
         $meta,
         $queue,
         $storeId,
