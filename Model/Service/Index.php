@@ -60,9 +60,9 @@ use Nosto\Tagging\Model\ResourceModel\Magento\Product\Collection as ProductColle
 use Nosto\Tagging\Model\ResourceModel\Magento\Product\CollectionFactory as ProductCollectionFactory;
 use Nosto\Tagging\Model\ResourceModel\Product\Index\Collection as NostoIndexCollection;
 use Nosto\Tagging\Model\ResourceModel\Product\Index\CollectionFactory as NostoIndexCollectionFactory;
+use Nosto\Tagging\Model\Service\Comparator\ProductComparatorInterface;
 use Nosto\Tagging\Util\Serializer\ProductSerializer;
 use Nosto\Tagging\Util\Iterator;
-use Nosto\Tagging\Util\Comparator\ProductComparatorInterface;
 use Nosto\Types\Product\ProductInterface as NostoProductInterface;
 
 class Index extends AbstractService

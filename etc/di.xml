@@ -41,7 +41,7 @@
     <preference for="Nosto\Tagging\Model\Service\ProductServiceInterface" type="Nosto\Tagging\Model\Service\DefaultProductService"/>
     <preference for="Nosto\Tagging\Model\Service\Stock\Provider\StockProviderInterface" type="Nosto\Tagging\Model\Service\Stock\Provider\CachingStockProvider"/>
     <preference for="Nosto\Tagging\Util\Serializer\SerializerInterface" type="Nosto\Tagging\Util\Serializer\DefaultSerializer"/>
-    <preference for="Nosto\Tagging\Util\Comparator\ProductComparatorInterface" type="Nosto\Tagging\Util\Comparator\DefaultProductComparator"/>
+    <preference for="Nosto\Tagging\Model\Service\Comparator\ProductComparatorInterface" type="Nosto\Tagging\Model\Service\Comparator\DefaultProductComparator"/>
     <type name="Magento\Catalog\Model\ResourceModel\Product">
         <plugin name="nostoProductObserverInvalidate" type="Nosto\Tagging\Plugin\ProductInvalidate"/>
     </type>
