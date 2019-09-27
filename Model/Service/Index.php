@@ -62,7 +62,7 @@ use Nosto\Tagging\Model\ResourceModel\Product\Index\Collection as NostoIndexColl
 use Nosto\Tagging\Model\ResourceModel\Product\Index\CollectionFactory as NostoIndexCollectionFactory;
 use Nosto\Tagging\Util\Serializer\ProductSerializer;
 use Nosto\Tagging\Util\Iterator;
-use Nosto\Tagging\Util\Product as ProductUtil;
+use Nosto\Tagging\Util\Comparator\ProductComparatorInterface;
 use Nosto\Types\Product\ProductInterface as NostoProductInterface;
 
 class Index extends AbstractService
@@ -113,6 +113,9 @@ class Index extends AbstractService
     /** @var ProductSerializer */
     private $productSerializer;
 
+    /** @var ProductComparatorInterface */
+    private $productComparator;
+
     /**
      * Index constructor.
      * @param IndexRepository $indexRepository
@@ -129,6 +132,7 @@ class Index extends AbstractService
      * @param NostoDataHelper $nostoDataHelper
      * @param Sync $nostoSyncService
      * @param ProductSerializer $productSerializer
+     * @param ProductComparatorInterface $productComparator
      */
     public function __construct(
         IndexRepository $indexRepository,
@@ -144,7 +148,8 @@ class Index extends AbstractService
         TimezoneInterface $magentoTimeZone,
         NostoDataHelper $nostoDataHelper,
         Sync $nostoSyncService,
-        ProductSerializer $productSerializer
+        ProductSerializer $productSerializer,
+        ProductComparatorInterface $productComparator
     ) {
         parent::__construct($nostoDataHelper, $logger);
         $this->indexRepository = $indexRepository;
@@ -159,6 +164,7 @@ class Index extends AbstractService
         $this->magentoTimeZone = $magentoTimeZone;
         $this->nostoSyncService = $nostoSyncService;
         $this->productSerializer = $productSerializer;
+        $this->productComparator = $productComparator;
     }
 
     /**
@@ -323,7 +329,7 @@ class Index extends AbstractService
             if ($nostoIndexedProduct instanceof NostoProductInterface === false ||
                 (
                     $nostoProduct instanceof NostoProductInterface
-                    && !ProductUtil::isEqual($nostoProduct, $nostoIndexedProduct)
+                    && !$this->productComparator->isEqual($nostoProduct, $nostoIndexedProduct)
                 )
             ) {
                 $productIndex->setProductData(

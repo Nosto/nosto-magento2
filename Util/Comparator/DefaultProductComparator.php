@@ -34,19 +34,17 @@
  *
  */
 
-namespace Nosto\Tagging\Util;
+namespace Nosto\Tagging\Util\Comparator;
 
 use Nosto\Helper\SerializationHelper;
 use Nosto\Types\Product\ProductInterface;
 
-class Product
+class DefaultProductComparator implements ProductComparatorInterface
 {
     /**
-     * @param ProductInterface $product1
-     * @param ProductInterface $product2
-     * @return boolean
+     * @inheritDoc
      */
-    public static function isEqual(ProductInterface $product1, ProductInterface $product2)
+    public function isEqual(ProductInterface $product1, ProductInterface $product2)
     {
         $product1string = SerializationHelper::serialize($product1);
         $product2string = SerializationHelper::serialize($product2);
