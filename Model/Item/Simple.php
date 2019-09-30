@@ -37,9 +37,53 @@
 namespace Nosto\Tagging\Model\Item;
 
 use Magento\Catalog\Model\Product\Type;
+use Magento\Catalog\Model\ResourceModel\Eav\Attribute;
+use Magento\Framework\App\ObjectManager;
+use Magento\Quote\Model\Quote\Item;
+use Throwable;
 
 class Simple
 {
+
+    /**
+     * @param \Magento\Sales\Model\Order\Item|Item $item
+     * @param $parentIds
+     * @return string|null
+     */
+    public static function buildName(Item $item, $parentIds) {
+        $name = $item->getName();
+        $optNames = [];
+        $objectManager = ObjectManager::getInstance();
+        // If the product has a configurable parent, we assume we should tag
+        // the parent. If there are many parent IDs, we are safer to tag the
+        // products own name alone.
+        if (count($parentIds) === 1) {
+            try {
+                $attributes = $item->getBuyRequest()->getData('super_attribute');
+                if (is_array($attributes)) {
+                    foreach ($attributes as $id => $value) {
+                        /** @var Attribute $attribute */
+                        $attribute = $objectManager->get(Attribute::class)->load($id); // @codingStandardsIgnoreLine
+                        $label = $attribute->getSource()->getOptionText($value);
+                        if (!empty($label)) {
+                            $optNames[] = $label;
+                        }
+                    }
+                }
+            } catch (Throwable $e) {
+                // If the item name building fails, it's not crucial
+                // No need to handle the exception in any specific way
+                unset($e);
+            }
+        }
+
+        if (!empty($optNames)) {
+            $name .= ' (' . implode(', ', $optNames) . ')';
+        }
+        return $name;
+    }
+
+
     /**
      * Returns the product type for simple item
      *
