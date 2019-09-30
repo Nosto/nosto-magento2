@@ -70,6 +70,7 @@ class Data extends AbstractIndexer
      * @param DataModeSwitcher $dataModeSwitcher
      * @param NostoLogger $logger
      * @param StoreDimensionProvider $dimensionProvider
+     * @param Emulation $storeEmulation
      * @param ProcessManager $processManager
      */
     public function __construct(
