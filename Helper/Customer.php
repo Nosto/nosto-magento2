@@ -42,6 +42,7 @@ use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
+use Nosto\Tagging\Logger\Logger;
 
 /**
  * Customer helper
@@ -52,37 +53,50 @@ class Customer extends AbstractHelper
 
     private $customerSession;
     private $groupRepository;
+    /**
+     * @var Logger
+     */
+    private $logger;
 
     /**
      * Customer constructor.
      *
      * @param Context $context
+     * @param Logger $logger
      * @param CustomerSession $customerSession
      * @param GroupRepository $groupRepository
      */
     public function __construct(
         Context $context,
+        Logger $logger,
         CustomerSession $customerSession, // @codingStandardsIgnoreLine
         GroupRepository $groupRepository
     ) {
         parent::__construct($context);
         $this->customerSession = $customerSession;
         $this->groupRepository = $groupRepository;
+        $this->logger = $logger;
     }
 
     /**
      * @return string
-     * @throws LocalizedException
-     * @throws NoSuchEntityException
      */
     public function getGroupCode()
     {
-        $customerGroupId = $this->getGroupId();
-        if ($customerGroupId) {
-            $group = $this->groupRepository->getById($customerGroupId);
-            return $group->getCode();
+        try {
+            $customerGroupId = $this->getGroupId();
+            if ($customerGroupId) {
+                $group = $this->groupRepository->getById($customerGroupId);
+                return $group->getCode();
+            }
+            return $this->groupRepository->getById(Variation::DEFAULT_CUSTOMER_GROUP_ID)->getCode();
+        } catch (NoSuchEntityException $e) {
+            $this->logger->exception($e);
+            return "missing";
+        } catch (LocalizedException $e) {
+            $this->logger->exception($e);
+            return "missing";
         }
-        return $this->groupRepository->getById(Variation::DEFAULT_CUSTOMER_GROUP_ID)->getCode();
     }
 
     /**
