@@ -1,4 +1,5 @@
 <?php
+/** @noinspection DuplicatedCode */
 /**
  * Copyright (c) 2019, Nosto Solutions Ltd
  * All rights reserved.
