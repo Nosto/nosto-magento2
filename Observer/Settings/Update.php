@@ -39,6 +39,7 @@ namespace Nosto\Tagging\Observer\Settings;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Module\Manager as ModuleManager;
+use Nosto\NostoException;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
@@ -82,7 +83,7 @@ class Update implements ObserverInterface
      * settings management service
      *
      * @param Observer $observer the dispatched event
-     * @throws \Nosto\NostoException
+     * @throws NostoException
      */
     public function execute(Observer $observer) // @codingStandardsIgnoreLine
     {

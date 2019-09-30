@@ -40,6 +40,8 @@ use Magento\Backend\Block\Template\Context;
 use Magento\Config\Block\System\Config\Form\Field;
 use Magento\Framework\App\Request\Http;
 use Magento\Framework\Data\Form\Element\AbstractElement;
+use Magento\Framework\Exception\NoSuchEntityException;
+use Nosto\NostoException;
 use Nosto\Object\Signup\Account as SignupAccount;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
@@ -80,8 +82,8 @@ class Tokens extends Field
      * Get the Nosto account details
      *
      * @return SignupAccount|null
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
-     * @throws \Nosto\NostoException
+     * @throws NoSuchEntityException
+     * @throws NostoException
      */
     public function getAccountDetails()
     {

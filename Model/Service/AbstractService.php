@@ -37,6 +37,7 @@
 namespace Nosto\Tagging\Model\Service;
 
 use Exception;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Store\Model\Store;
 use Nosto\Exception\MemoryOutOfBoundsException;
 use Nosto\NostoException;
@@ -72,7 +73,7 @@ abstract class AbstractService
      *
      * @param string $serviceName
      * @throws MemoryOutOfBoundsException
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     * @throws NoSuchEntityException
      */
     public function checkMemoryConsumption($serviceName)
     {

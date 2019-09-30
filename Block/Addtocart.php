@@ -38,6 +38,7 @@ namespace Nosto\Tagging\Block;
 
 use Magento\Framework\App\ActionInterface;
 use Magento\Framework\App\Request\Http;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Url\EncoderInterface;
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Element\Template\Context;
@@ -86,7 +87,7 @@ class Addtocart extends Template
      * Retrieve url for add product to cart
      *
      * @return  string
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     * @throws NoSuchEntityException
      */
     public function getSubmitUrl()
     {

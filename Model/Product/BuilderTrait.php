@@ -40,6 +40,7 @@ use Exception;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\ResourceModel\Eav\Attribute\Interceptor;
 use Magento\Eav\Model\Entity\Attribute\AbstractAttribute;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Phrase;
 use Magento\Store\Model\Store;
 use Nosto\Helper\ArrayHelper;
@@ -80,7 +81,7 @@ trait BuilderTrait
      * @param Product $product
      * @param Store $store
      * @return array
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     * @throws NoSuchEntityException
      */
     public function buildCustomFields(Product $product, Store $store)
     {
@@ -121,7 +122,7 @@ trait BuilderTrait
      * @param Product $product
      * @param Store $store
      * @return string|null
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     * @throws NoSuchEntityException
      */
     public function buildImageUrl(Product $product, Store $store)
     {
@@ -184,7 +185,7 @@ trait BuilderTrait
      * @param string $url
      * @param Store $store
      * @return string
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     * @throws NoSuchEntityException
      */
     public function finalizeImageUrl($url, Store $store)
     {

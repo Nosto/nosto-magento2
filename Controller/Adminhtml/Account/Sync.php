@@ -38,7 +38,9 @@ namespace Nosto\Tagging\Controller\Adminhtml\Account;
 
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\Controller\Result\Json;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Nosto\Helper\OAuthHelper;
+use Nosto\NostoException;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Model\Meta\Oauth\Builder as NostoOauthBuilder;
@@ -75,8 +77,8 @@ class Sync extends Base
 
     /**
      * @return Json
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
-     * @throws \Nosto\NostoException
+     * @throws NoSuchEntityException
+     * @throws NostoException
      */
     public function execute()
     {

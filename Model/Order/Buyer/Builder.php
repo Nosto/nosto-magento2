@@ -36,6 +36,7 @@
 
 namespace Nosto\Tagging\Model\Order\Buyer;
 
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Sales\Api\Data\OrderAddressInterface;
 use Magento\Sales\Model\Order;
 use Nosto\Object\AbstractPerson;
@@ -80,7 +81,7 @@ class Builder extends PersonBuilder
      *
      * @param Order $order
      * @return AbstractPerson|null
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     * @throws NoSuchEntityException
      * @suppress PhanTypeMismatchArgument
      */
     public function fromOrder(Order $order)

@@ -36,7 +36,9 @@
 
 namespace Nosto\Tagging\Block;
 
+use Magento\Framework\Exception\NoSuchEntityException;
 use Nosto\AbstractObject;
+use Nosto\NostoException;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 
@@ -63,8 +65,8 @@ trait TaggingTrait
      * exists for the current store view.
      *
      * @return string the markup or an empty string (if an account doesn't exist)
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
-     * @throws \Nosto\NostoException
+     * @throws NoSuchEntityException
+     * @throws NostoException
      * @suppress PhanTraitParentReference
      */
     public function _toHtml()

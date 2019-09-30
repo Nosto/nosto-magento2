@@ -39,8 +39,10 @@ namespace Nosto\Tagging\Observer\Adminhtml;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Module\Manager as ModuleManager;
 use Magento\Store\Model\Store;
+use Nosto\NostoException;
 use Nosto\Tagging\Helper\Account as NostoAccountHelper;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
@@ -107,8 +109,8 @@ class Config implements ObserverInterface
      *
      * @param Observer $observer the dispatched event
      * @throws LocalizedException
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
-     * @throws \Nosto\NostoException
+     * @throws NoSuchEntityException
+     * @throws NostoException
      */
     public function execute(Observer $observer)
     {
@@ -145,7 +147,7 @@ class Config implements ObserverInterface
     /**
      * Wrapper to log and mark all products as dirty after configuration has changed
      * @param Store $store
-     * @throws \Nosto\NostoException
+     * @throws NostoException
      */
     private function markAllAsDirtyByStore(Store $store)
     {

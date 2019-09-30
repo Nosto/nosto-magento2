@@ -36,8 +36,10 @@
 
 namespace Nosto\Tagging\Block\Email;
 
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Element\Template\Context;
+use Nosto\NostoException;
 use Nosto\Object\Email\ImageUrl as NostoImageUrl;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
@@ -78,8 +80,8 @@ class ImageUrl extends Template
      * Format the image url
      *
      * @return string
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
-     * @throws \Nosto\NostoException
+     * @throws NoSuchEntityException
+     * @throws NostoException
      */
     public function _toHtml()
     {
