@@ -27,8 +27,6 @@
 
 namespace Nosto\Tagging\Block;
 
-use Magento\Framework\Exception\LocalizedException;
-use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Element\Template\Context;
 use Nosto\Object\MarkupableString;
@@ -103,8 +101,6 @@ class Variation extends Template
      * Return the current variation id
      *
      * @return string
-     * @throws LocalizedException
-     * @throws NoSuchEntityException
      */
     public function getVariationId()
     {
@@ -134,8 +130,6 @@ class Variation extends Template
      * Returns the HTML to render variation blocks
      *
      * @return MarkupableString|string
-     * @throws LocalizedException
-     * @throws NoSuchEntityException
      */
     public function getAbstractObject()
     {

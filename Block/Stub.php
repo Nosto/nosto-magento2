@@ -27,8 +27,6 @@
 
 namespace Nosto\Tagging\Block;
 
-use Magento\Framework\Exception\LocalizedException;
-use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\View\Element\Template;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Customer as NostoHelperCustomer;
@@ -103,8 +101,6 @@ class Stub extends Template
      * Returns if autoloading recommendations is disabled or not.
      *
      * @return boolean
-     * @throws LocalizedException
-     * @throws NoSuchEntityException
      */
     public function isRecoAutoloadDisabled()
     {

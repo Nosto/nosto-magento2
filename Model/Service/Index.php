@@ -174,7 +174,6 @@ class Index extends AbstractService
      *
      * @param ProductCollection $collection
      * @param Store $store
-     * @throws NostoException
      */
     public function invalidateOrCreate(ProductCollection $collection, Store $store)
     {
@@ -219,7 +218,6 @@ class Index extends AbstractService
     /**
      * @param array $ids
      * @param Store $store
-     * @throws NostoException
      */
     private function invalidateOrCreateParents(array $ids, Store $store)
     {
@@ -288,7 +286,6 @@ class Index extends AbstractService
     /**
      * @param NostoIndexCollection $collection
      * @param Store $store
-     * @throws NostoException
      */
     public function rebuildDirtyProducts(NostoIndexCollection $collection, Store $store)
     {
@@ -356,7 +353,6 @@ class Index extends AbstractService
      * @param ProductCollection $collection
      * @param array $ids
      * @param Store $store
-     * @throws NostoException
      */
     public function markProductsAsDeletedByDiff(ProductCollection $collection, array $ids, Store $store)
     {
