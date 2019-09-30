@@ -83,6 +83,7 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
      * @param NostoHelperScope $nostoHelperScope
      * @param NostoLogger $nostoLogger
      * @param StoreDimensionProvider $dimensionProvider
+     * @param Emulation $storeEmulator
      * @param ProcessManager|null $processManager
      */
     public function __construct(
