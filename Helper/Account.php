@@ -73,10 +73,6 @@ class Account extends AbstractHelper
      */
     const XML_PATH_DOMAIN = 'nosto_tagging/settings/domain';
 
-    /**
-     * Platform UI version
-     */
-    const IFRAME_VERSION = 0;
     private $config;
     private $moduleManager;
     private $logger;
