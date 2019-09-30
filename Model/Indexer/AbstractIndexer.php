@@ -123,7 +123,8 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
     public function executeFull()
     {
         $indexerId = $this->getIndexerId();
-        $message = sprintf('Begin a full reindex for indexer "%s"',
+        $message = sprintf(
+            'Begin a full reindex for indexer "%s"',
             $indexerId
         );
         $this->nostoLogger->info($message);
@@ -139,7 +140,8 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
     {
         $indexerId = $this->getIndexerId();
         $idCount = count($ids);
-        $message = sprintf('Begin a partial reindex for indexer "%s" for "%d ids',
+        $message = sprintf(
+            'Begin a partial reindex for indexer "%s" for "%d ids',
             $indexerId,
             $idCount
         );
@@ -155,8 +157,8 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
     public function executeRow($id)
     {
         $indexerId = $this->getIndexerId();
-        $idCount = count($ids);
-        $message = sprintf('Begin a row  reindex for indexer "%s" for "%s"',
+        $message = sprintf(
+            'Begin a row  reindex for indexer "%s" for "%s"',
             $indexerId,
             $id
         );
@@ -253,7 +255,8 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
         Benchmark::getInstance()->stopInstrumentation($benchmarkName);
         $duration = Benchmark::getInstance()->getElapsed($benchmarkName);
         $this->nostoLogger->info(
-            sprintf('[END] Finished processing dimension: "%s", (%f)',
+            sprintf(
+                '[END] Finished processing dimension: "%s", (%f)',
                 $store->getCode(),
                 round($duration, 2)
             )

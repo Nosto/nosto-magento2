@@ -343,7 +343,8 @@ class Index extends AbstractService
                 );
                 $productIndex->setInSync(false);
                 $this->getLogger()->debug(
-                    sprintf('Saved dirty product "%d" for store "%d"',
+                    sprintf(
+                        'Saved dirty product "%d" for store "%d"',
                         $productIndex->getProductId(),
                         $productIndex->getStoreId()
                     )

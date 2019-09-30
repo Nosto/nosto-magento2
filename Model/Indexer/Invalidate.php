@@ -120,7 +120,7 @@ class Invalidate extends AbstractIndexer
     public function executeFull()
     {
         if ($this->allowFullExecution() === true) {
-           parent::executeFull();
+            parent::executeFull();
         }
     }
 
