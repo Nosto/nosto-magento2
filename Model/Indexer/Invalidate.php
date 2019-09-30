@@ -36,6 +36,7 @@
 
 namespace Nosto\Tagging\Model\Indexer;
 
+use Exception;
 use Magento\Indexer\Model\ProcessManager;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreDimensionProvider;
@@ -117,14 +118,6 @@ class Invalidate extends AbstractIndexer
     }
 
     /**
-     * @param int[] $ids
-     */
-    public function execute($ids)
-    {
-        $this->doWork($ids);
-    }
-
-    /**
      * @inheritDoc
      */
     public function executeFull()
@@ -135,7 +128,8 @@ class Invalidate extends AbstractIndexer
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
+     * @throws Exception
      */
     public function executeList(array $ids)
     {
@@ -143,11 +137,21 @@ class Invalidate extends AbstractIndexer
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
+     * @throws Exception
      */
     public function executeRow($id)
     {
         $this->execute([$id]);
+    }
+
+    /**
+     * @inheritdoc
+     * @throws Exception
+     */
+    public function execute($ids)
+    {
+        $this->doWork($ids);
     }
 
     /**

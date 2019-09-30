@@ -135,8 +135,9 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
                 /** @var Dimension[] $dimension */
                 foreach ($this->dimensionProvider->getIterator() as $dimension) {
                     if ($this->isDimensionProcessable($dimension)) {
-                        /** @suppress PhanTypeMismatchArgument */
-                        $this->executeByDimensions($dimension, new ArrayIterator($ids));
+                        (function () use ($dimension, $ids) {
+                            $this->executeByDimensions($dimension, new ArrayIterator($ids));
+                        })();
                     }
                 }
                 break;
