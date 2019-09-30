@@ -78,7 +78,7 @@ return [
         'magento/',
         '../../../lib/internal',
         '../../../generated',
-        '../../../app/code/Magento/AsynchronousOperations',
+        '../../../app/',
         'magento/app/code/Magento/AsynchronousOperations'
     ],
     'suppress_issue_types' => [
