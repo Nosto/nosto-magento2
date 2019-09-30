@@ -77,6 +77,7 @@ class AsyncBulkPublisher implements BulkSyncInterface
      * @param AsyncBulkConsumer $asyncBulkConsumer
      * @param Manager $manager
      * @param Logger $logger
+     * @suppress CustomOperationsFound
      */
     public function __construct(
         IdentityGeneratorInterface $identityService,
