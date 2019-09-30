@@ -158,7 +158,7 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
     {
         $indexerId = $this->getIndexerId();
         $message = sprintf(
-            'Begin a row  reindex for indexer "%s" for "%s"',
+            'Begin a row reindex for indexer "%s" for "%s"',
             $indexerId,
             $id
         );
