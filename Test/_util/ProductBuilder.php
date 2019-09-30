@@ -24,6 +24,7 @@ class ProductBuilder implements BuilderInterface
      */
     public function defaultSimple()
     {
+        /** @noinspection PhpUndefinedMethodInspection */
         $this->product->setTypeId('simple')
             ->setId(123)
             ->setAttributeSetId(4)
