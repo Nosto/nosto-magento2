@@ -36,55 +36,54 @@
 
 namespace Nosto\Tagging\Model\Indexer\Dimensions;
 
-use Magento\Framework\App\Config\ScopeConfigInterface;
-use Nosto\Tagging\Model\Indexer\Dimensions\StoreDimensionProvider;
+use Magento\Framework\Indexer\DimensionFactory;
+use Magento\Framework\Indexer\DimensionProviderInterface;
+use Magento\Store\Model\StoreManagerInterface;
+use Nosto\Tagging\Helper\Account;
+use Magento\Store\Model\Store;
 
-abstract class AbstractDimensionModeConfiguration
+class StoreDimensionProvider implements DimensionProviderInterface
 {
     /**
-     * Available modes of dimensions for nosto product data indexer
+     * Hold the name of Store dimension. Uses for retrieve dimension value.
+     * Used "scope" name for support current indexer implementation
      */
-    const DIMENSION_NONE = 'none';
-    const DIMENSION_STORE = 'store';
+    const DIMENSION_NAME = 'scope';
+
+    /** @var StoreManagerInterface */
+    private $storeManager;
+
+    /** @var DimensionFactory */
+    private $dimensionFactory;
+
+    /** @var Account */
+    private $account;
 
     /**
-     * Mapping between dimension mode and dimension provider name
-     *
-     * @var array
+     * @param StoreManagerInterface $storeManager
+     * @param DimensionFactory $dimensionFactory
+     * @param Account $account
      */
-    public $modesMapping = [
-        self::DIMENSION_NONE => [
-        ],
-        self::DIMENSION_STORE => [
-            StoreDimensionProvider::DIMENSION_NAME
-        ]
-    ];
-
-    /**
-     * @var ScopeConfigInterface
-     */
-    public $scopeConfig;
-
-    /**
-     * @return string
-     */
-    abstract public function getCurrentMode(): string;
-
-    /**
-     * @param ScopeConfigInterface $scopeConfig
-     */
-    public function __construct(ScopeConfigInterface $scopeConfig)
-    {
-        $this->scopeConfig = $scopeConfig;
+    public function __construct(
+        StoreManagerInterface $storeManager,
+        DimensionFactory $dimensionFactory,
+        Account $account
+    ) {
+        $this->storeManager = $storeManager;
+        $this->dimensionFactory = $dimensionFactory;
+        $this->account = $account;
     }
 
     /**
-     * Return dimension modes configuration.
-     *
-     * @return array
+     * @inheritdoc
      */
-    public function getDimensionModes(): array
+    public function getIterator(): \Traversable
     {
-        return $this->modesMapping;
+        foreach ($this->storeManager->getStores() as $store) {
+            /** @var Store $store */
+            if ($this->account->nostoInstalledAndEnabled($store)) {
+                yield [self::DIMENSION_NAME => $this->dimensionFactory->create(self::DIMENSION_NAME, (string)$store->getId())];
+            }
+        }
     }
 }

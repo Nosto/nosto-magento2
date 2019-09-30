@@ -154,14 +154,14 @@
     <type name="Nosto\Tagging\Model\Indexer\Data">
         <arguments>
             <argument name="dimensionProvider" xsi:type="object" shared="false">
-                Magento\Store\Model\StoreDimensionProvider
+                Nosto\Tagging\Model\Indexer\Dimensions\StoreDimensionProvider
             </argument>
         </arguments>
     </type>
     <type name="Nosto\Tagging\Model\Indexer\Invalidate">
         <arguments>
             <argument name="dimensionProvider" xsi:type="object" shared="false">
-                Magento\Store\Model\StoreDimensionProvider
+                Nosto\Tagging\Model\Indexer\Dimensions\StoreDimensionProvider
             </argument>
             <argument name="input" xsi:type="object">Symfony\Component\Console\Input\ArgvInput</argument>
         </arguments>
