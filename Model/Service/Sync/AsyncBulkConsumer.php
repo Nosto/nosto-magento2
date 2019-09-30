@@ -106,7 +106,11 @@ class AsyncBulkConsumer
     {
         $errorCode = null;
         $message = null;
-        $serializedData = $operation->getSerializedData();
+        if (!is_array($operation)) {
+            $serializedData = $operation->getSerializedData();
+        } else {
+            $serializedData = $operation['data']['serialized_data'];
+        }
         $unserializedData = $this->jsonHelper->jsonDecode($serializedData);
         $productIds = $unserializedData['product_ids'];
         $storeId = $unserializedData['store_id'];
@@ -118,12 +122,16 @@ class AsyncBulkConsumer
         } catch (Exception $e) {
             $this->logger->critical($e->getMessage());
             $message = __('Something went wrong when syncing products to Nosto. Check log for details.');
-            $operation->setStatus(OperationInterface::STATUS_TYPE_NOT_RETRIABLY_FAILED)
-                ->setErrorCode($e->getCode())
-                ->setResultMessage($message);
+            if (!is_array($operation)) {
+                $operation->setStatus(OperationInterface::STATUS_TYPE_NOT_RETRIABLY_FAILED)
+                    ->setErrorCode($e->getCode())
+                    ->setResultMessage($message);
+            }
         }
-        $operation->setStatus(OperationInterface::STATUS_TYPE_COMPLETE)
-            ->setResultMessage($message);
-        $this->entityManager->save($operation);
+        if (!is_array($operation)) {
+            $operation->setStatus(OperationInterface::STATUS_TYPE_COMPLETE)
+                ->setResultMessage($message);
+            $this->entityManager->save($operation);
+        }
     }
 }
