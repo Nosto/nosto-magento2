@@ -36,11 +36,11 @@
 
 namespace Nosto\Tagging\Model\Product\Index;
 
-use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
-use Nosto\Tagging\Model\Product\BuilderTrait;
+use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
 use Magento\Store\Api\Data\StoreInterface;
-use Magento\Catalog\Api\Data\ProductInterface;
+use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
+use Nosto\Tagging\Model\Product\BuilderTrait;
 use Nosto\Tagging\Model\Product\Index\IndexFactory as NostoIndexFactory;
 
 class Builder

@@ -36,18 +36,18 @@
 
 namespace Nosto\Tagging\Block\Adminhtml\Account;
 
+use Exception;
 use Magento\Backend\Block\Template as BlockTemplate;
 use Magento\Backend\Block\Template\Context as BlockContext;
 use Magento\Backend\Model\Auth\Session;
 use Magento\Framework\Exception\NotFoundException;
-use Magento\Store\Model\Store;
 use Nosto\Mixins\IframeTrait;
 use Nosto\Nosto;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
+use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Meta\Account\Iframe\Builder as NostoIframeMetaBuilder;
 use Nosto\Tagging\Model\User\Builder as NostoCurrentUserBuilder;
-use Nosto\Tagging\Logger\Logger as NostoLogger;
 
 /**
  * Iframe block for displaying the Nosto account management iframe.
@@ -140,6 +140,7 @@ class Iframe extends BlockTemplate
      *
      * @return array the config.
      * @throws NotFoundException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function getIframeConfig()
     {
@@ -169,7 +170,7 @@ class Iframe extends BlockTemplate
         try {
             $store = $this->nostoHelperScope->getSelectedStore($this->getRequest());
             return $this->nostoIframeMetaBuilder->build($store);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->exception($e);
         }
 
@@ -192,7 +193,7 @@ class Iframe extends BlockTemplate
         try {
             $store = $this->nostoHelperScope->getSelectedStore($this->getRequest());
             return $this->nostoHelperAccount->findAccount($store);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->exception($e);
         }
 

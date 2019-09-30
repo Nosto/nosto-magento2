@@ -36,12 +36,11 @@
 
 namespace Nosto\Tagging\Test\Integration\Block;
 
+use Magento\Checkout\Model\Session as CheckoutSession;
 use Magento\Sales\Model\Order;
 use Nosto\Tagging\Block\Order as NostoOrderBlock;
-use Nosto\Tagging\Test\Integration\TestCase;
-use Magento\Framework\Registry;
-use Magento\Checkout\Model\Session as CheckoutSession;
 use Nosto\Tagging\Test\_util\OrderBuilder;
+use Nosto\Tagging\Test\Integration\TestCase;
 
 /**
  * Tests for Order tagging
@@ -57,9 +56,6 @@ final class OrderTaggingTest extends TestCase
 
     /* @var CheckoutSession */
     private $checkoutSession;
-
-    /* @var Registry */
-    private $registry;
 
     /* @var Order */
     private $order;
@@ -104,8 +100,8 @@ final class OrderTaggingTest extends TestCase
 
     /**
      * Register order in session registry and returns the loaded object
-     * @param \Magento\Sales\Model\Order $order
-     * @return \Magento\Sales\Model\Order
+     * @param Order $order
+     * @return Order
      */
     private function registerOrder(Order $order)
     {

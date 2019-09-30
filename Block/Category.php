@@ -39,10 +39,10 @@ namespace Nosto\Tagging\Block;
 use Magento\Framework\Registry;
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Element\Template\Context;
-use Nosto\Tagging\Model\Category\Builder as NostoCategoryBuilder;
-use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Object\Category as NostoCategory;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
+use Nosto\Tagging\Helper\Scope as NostoHelperScope;
+use Nosto\Tagging\Model\Category\Builder as NostoCategoryBuilder;
 
 /**
  * Category block used for outputting meta-data on the stores category pages.
@@ -104,6 +104,7 @@ class Category extends Template
      * Returns the current category as a slash delimited string
      *
      * @return string|null the current category as a slash delimited string
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     private function getNostoCategory()
     {
@@ -119,6 +120,7 @@ class Category extends Template
      * Returns the HTML to render categories
      *
      * @return NostoCategory
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function getAbstractObject()
     {

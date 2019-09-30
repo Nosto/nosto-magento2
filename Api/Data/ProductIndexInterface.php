@@ -36,10 +36,9 @@
 
 namespace Nosto\Tagging\Api\Data;
 
-use Magento\Store\Api\Data\StoreInterface;
-use Nosto\Object\Product\Product;
-use Nosto\Types\Product\ProductInterface as NostoProductInterface;
+use DateTime;
 use Magento\Catalog\Api\Data\ProductInterface as MagentoProductInterface;
+use Magento\Store\Api\Data\StoreInterface;
 
 interface ProductIndexInterface
 {
@@ -70,14 +69,14 @@ interface ProductIndexInterface
     /**
      * Get created at time
      *
-     * @return \DateTime
+     * @return DateTime
      */
     public function getCreatedAt();
 
     /**
      * Get updated at time
      *
-     * @return \DateTime
+     * @return DateTime
      */
     public function getUpdatedAt();
 
@@ -175,18 +174,18 @@ interface ProductIndexInterface
     /**
      * Set created at time
      *
-     * @param \DateTime $createdAt
+     * @param DateTime $createdAt
      * @return self
      */
-    public function setCreatedAt(\DateTime $createdAt);
+    public function setCreatedAt(DateTime $createdAt);
 
     /**
      * Set updated at time
      *
-     * @param \DateTime $updatedAt
+     * @param DateTime $updatedAt
      * @return self
      */
-    public function setUpdatedAt(\DateTime $updatedAt);
+    public function setUpdatedAt(DateTime $updatedAt);
 
     /**
      * @param MagentoProductInterface $product

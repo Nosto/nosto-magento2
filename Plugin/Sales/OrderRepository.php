@@ -37,8 +37,8 @@
 namespace Nosto\Tagging\Plugin\Sales;
 
 use Magento\Framework\Event\ManagerInterface;
-use Magento\Sales\Api\OrderRepositoryInterface;
 use Magento\Sales\Api\Data\OrderInterface;
+use Magento\Sales\Api\OrderRepositoryInterface;
 use Magento\Sales\Model\Order;
 
 class OrderRepository

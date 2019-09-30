@@ -88,6 +88,8 @@ class Embed extends Template
      * Returns the account name for the current store.
      *
      * @return string the account name or empty string if account is not found.
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     * @throws \Nosto\NostoException
      */
     public function getAccountName()
     {

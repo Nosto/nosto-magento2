@@ -37,8 +37,8 @@
 namespace Nosto\Tagging\Model\ResourceModel\Customer;
 
 use Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection;
-use Nosto\Tagging\Model\ResourceModel\Customer as ResourceModelCustomer;
 use Nosto\Tagging\Model\Customer\Customer;
+use Nosto\Tagging\Model\ResourceModel\Customer as ResourceModelCustomer;
 
 class Collection extends AbstractCollection
 {

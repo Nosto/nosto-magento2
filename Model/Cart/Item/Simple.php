@@ -40,6 +40,7 @@ use Magento\Catalog\Model\ResourceModel\Eav\Attribute;
 use Magento\Framework\App\ObjectManager;
 use Magento\Quote\Model\Quote\Item;
 use Nosto\Tagging\Model\Item\Simple as SimpleItem;
+use Throwable;
 
 class Simple extends SimpleItem
 {
@@ -74,7 +75,7 @@ class Simple extends SimpleItem
                         }
                     }
                 }
-            } catch (\Throwable $e) {
+            } catch (Throwable $e) {
                 // If the item name building fails, it's not crucial
                 // No need to handle the exception in any specific way
                 unset($e);

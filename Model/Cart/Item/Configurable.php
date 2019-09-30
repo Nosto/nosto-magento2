@@ -36,8 +36,8 @@
 
 namespace Nosto\Tagging\Model\Cart\Item;
 
-use Nosto\Tagging\Model\Item\Configurable as ConfigurableItem;
 use Magento\Quote\Model\Quote\Item;
+use Nosto\Tagging\Model\Item\Configurable as ConfigurableItem;
 
 class Configurable extends ConfigurableItem
 {

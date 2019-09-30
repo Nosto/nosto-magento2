@@ -39,14 +39,14 @@ namespace Nosto\Tagging\Model\Product\Index;
 use Exception;
 use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Framework\Model\AbstractModel;
+use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
 use Magento\Store\Api\Data\StoreInterface;
+use Magento\Store\Model\Store;
 use Nosto\Tagging\Api\Data\ProductIndexInterface;
 use Nosto\Tagging\Api\ProductIndexRepositoryInterface;
 use Nosto\Tagging\Model\ResourceModel\Product\Index as IndexResource;
-use Nosto\Tagging\Model\ResourceModel\Product\Index\CollectionFactory as IndexCollectionFactory;
 use Nosto\Tagging\Model\ResourceModel\Product\Index\Collection as IndexCollection;
-use Magento\Store\Model\Store;
-use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
+use Nosto\Tagging\Model\ResourceModel\Product\Index\CollectionFactory as IndexCollectionFactory;
 
 class IndexRepository implements ProductIndexRepositoryInterface
 {

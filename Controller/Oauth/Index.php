@@ -41,17 +41,18 @@ use Magento\Backend\Model\UrlInterface;
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\App\Response\Http;
+use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreRepository;
 use Nosto\Mixins\OauthTrait;
+use Nosto\NostoException;
 use Nosto\OAuth;
-use Nosto\Tagging\Helper\Cache as NostoHelperCache;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
+use Nosto\Tagging\Helper\Cache as NostoHelperCache;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Helper\Url as NostoHelperUrl;
+use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Meta\Oauth\Builder as NostoOauthBuilder;
 use Nosto\Types\Signup\AccountInterface;
-use Nosto\Tagging\Logger\Logger as NostoLogger;
-use Nosto\NostoException;
 
 class Index extends Action
 {
@@ -116,6 +117,8 @@ class Index extends Action
      * OAuth operations
      *
      * @return Oauth the OAuth parameters for the operations
+     * @throws NostoException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function getMeta()
     {
@@ -130,6 +133,7 @@ class Index extends Action
      * @param AccountInterface $account the account to save
      * @return boolean a boolean value indicating whether the account was saved
      * @throws NostoException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      * @suppress PhanTypeMismatchArgument
      */
     public function save(AccountInterface $account)
@@ -145,7 +149,7 @@ class Index extends Action
             $currentStore = $this->nostoHelperScope->getStore();
         }
 
-        /** @var \Magento\Store\Model\Store $store */
+        /** @var Store $store */
         foreach ($stores as $store) {
             $existingAccount = $this->nostoHelperAccount->findAccount($store);
             if ($existingAccount !== null
@@ -181,6 +185,7 @@ class Index extends Action
      * admin controller.
      *
      * @param array $params the parameters to be used when building the redirect
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function redirect(array $params)
     {

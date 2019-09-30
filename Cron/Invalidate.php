@@ -38,13 +38,13 @@
 namespace Nosto\Tagging\Cron;
 
 use Exception;
-use Nosto\Tagging\Logger\Logger;
-use Nosto\Tagging\Helper\Account as NostoAccountHelper;
-use Nosto\Tagging\Model\ResourceModel\Product\Index\CollectionFactory as IndexCollectionFactory;
-use Nosto\Tagging\Model\ResourceModel\Product\Index\Collection as NostoIndexCollection;
-use Nosto\Tagging\Model\Product\Index\IndexRepository;
-use Magento\Store\Model\Store;
 use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
+use Magento\Store\Model\Store;
+use Nosto\Tagging\Helper\Account as NostoAccountHelper;
+use Nosto\Tagging\Logger\Logger;
+use Nosto\Tagging\Model\Product\Index\IndexRepository;
+use Nosto\Tagging\Model\ResourceModel\Product\Index\Collection as NostoIndexCollection;
+use Nosto\Tagging\Model\ResourceModel\Product\Index\CollectionFactory as IndexCollectionFactory;
 
 /**
  * Cronjob class that periodically invalidates Nosto indexed data for each of the store views

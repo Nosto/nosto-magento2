@@ -36,16 +36,17 @@
 
 namespace Nosto\Tagging\CustomerData;
 
+use Exception;
 use Magento\Checkout\Helper\Cart as CartHelper;
 use Magento\Customer\CustomerData\SectionSourceInterface;
 use Magento\Framework\Stdlib\CookieManagerInterface;
 use Magento\Quote\Model\Quote;
 use Nosto\Object\Cart\LineItem;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
-use Nosto\Tagging\Model\Cart\Builder as NostoCartBuilder;
-use Nosto\Tagging\Model\Customer\Customer as NostoCustomer;
-use Nosto\Tagging\Model\Cart\Restore\Builder as NostoRestoreCartUrlBuilder;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
+use Nosto\Tagging\Model\Cart\Builder as NostoCartBuilder;
+use Nosto\Tagging\Model\Cart\Restore\Builder as NostoRestoreCartUrlBuilder;
+use Nosto\Tagging\Model\Customer\Customer as NostoCustomer;
 
 class CartTagging extends HashedTagging implements SectionSourceInterface
 {
@@ -123,7 +124,7 @@ class CartTagging extends HashedTagging implements SectionSourceInterface
             try {
                 $data['restore_cart_url'] = $this->nostoRestoreCartUrlBuilder
                     ->build($this->getQuote(), $store);
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $this->logger->exception($e);
             }
         }

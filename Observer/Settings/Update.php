@@ -41,8 +41,8 @@ use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Module\Manager as ModuleManager;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
-use Nosto\Tagging\Model\Meta\Account\Settings\Service as NostoSettingsService;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
+use Nosto\Tagging\Model\Meta\Account\Settings\Service as NostoSettingsService;
 
 /**
  * Observer to update the account settings for each of the store views if the module is enabled and
@@ -82,6 +82,7 @@ class Update implements ObserverInterface
      * settings management service
      *
      * @param Observer $observer the dispatched event
+     * @throws \Nosto\NostoException
      */
     public function execute(Observer $observer) // @codingStandardsIgnoreLine
     {

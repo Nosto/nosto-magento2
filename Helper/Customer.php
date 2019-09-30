@@ -36,9 +36,10 @@
 
 namespace Nosto\Tagging\Helper;
 
-use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Customer\Api\GroupRepositoryInterface as GroupRepository;
 use Magento\Customer\Model\Session as CustomerSession;
+use Magento\Framework\App\Helper\AbstractHelper;
+use Magento\Framework\App\Helper\Context;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
 
@@ -55,13 +56,16 @@ class Customer extends AbstractHelper
     /**
      * Customer constructor.
      *
+     * @param Context $context
      * @param CustomerSession $customerSession
      * @param GroupRepository $groupRepository
      */
     public function __construct(
+        Context $context,
         CustomerSession $customerSession, // @codingStandardsIgnoreLine
         GroupRepository $groupRepository
     ) {
+        parent::__construct($context);
         $this->customerSession = $customerSession;
         $this->groupRepository = $groupRepository;
     }

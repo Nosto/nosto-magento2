@@ -39,7 +39,6 @@ namespace Nosto\Tagging\Model\ResourceModel\Product\Index;
 use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection;
 use Magento\Store\Api\Data\StoreInterface;
-use Magento\Store\Model\Store;
 use Nosto\Tagging\Api\Data\ProductIndexInterface;
 use Nosto\Tagging\Model\Product\Index\Index;
 use Nosto\Tagging\Model\ResourceModel\Product\Index as ResourceModelIndex;

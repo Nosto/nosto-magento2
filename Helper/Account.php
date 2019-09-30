@@ -43,14 +43,14 @@ use Magento\Framework\App\Helper\Context;
 use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\Store;
 use Nosto\NostoException;
+use Nosto\Object\Signup\Account as NostoSignupAccount;
 use Nosto\Object\User;
 use Nosto\Operation\UninstallAccount;
 use Nosto\Request\Api\Token;
 use Nosto\Tagging\Helper\Data as NostoHelper;
-use Nosto\Types\Signup\AccountInterface;
-use Nosto\Object\Signup\Account as NostoSignupAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Helper\Url as NostoHelperUrl;
+use Nosto\Types\Signup\AccountInterface;
 
 /**
  * NostoHelperAccount helper class for common tasks related to Nosto accounts.
@@ -186,7 +186,7 @@ class Account extends AbstractHelper
             // Notify Nosto that the account was deleted.
             $service = new UninstallAccount($account);
             $service->delete($currentUser);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error($e->__toString());
         }
 
@@ -200,6 +200,7 @@ class Account extends AbstractHelper
      *
      * @param Store $store
      * @return bool
+     * @throws NostoException
      */
     public function nostoInstalledAndEnabled(Store $store)
     {
@@ -212,6 +213,7 @@ class Account extends AbstractHelper
      *
      * @param Store $store the store.
      * @return NostoSignupAccount|null the account or null if not found.
+     * @throws NostoException
      */
     public function findAccount(Store $store)
     {
@@ -291,6 +293,7 @@ class Account extends AbstractHelper
      * Returns an array of stores where Nosto is installed
      *
      * @return Store[]
+     * @throws NostoException
      */
     public function getStoresWithNosto()
     {
@@ -345,6 +348,7 @@ class Account extends AbstractHelper
      * Returns the list of invalid Nosto accounts
      *
      * @return array
+     * @throws NostoException
      */
     public function getInvalidAccounts()
     {

@@ -36,18 +36,17 @@
 
 namespace Nosto\Tagging\Model\Customer;
 
+use Exception;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\Api\SearchCriteriaInterface;
 use Magento\Framework\Exception\AlreadyExistsException;
 use Nosto\Tagging\Api\CustomerRepositoryInterface;
 use Nosto\Tagging\Api\Data\CustomerInterface;
+use Nosto\Tagging\Model\Customer\Customer as NostoCustomer;
 use Nosto\Tagging\Model\RepositoryTrait;
 use Nosto\Tagging\Model\ResourceModel\Customer as CustomerResource;
 use Nosto\Tagging\Model\ResourceModel\Customer\CollectionFactory as CustomerCollectionFactory;
 use Nosto\Tagging\Util\Repository as RepositoryUtil;
-use /** @noinspection PhpUnusedAliasInspection */
-    Nosto\Tagging\Model\Customer\CustomerSearchResults;
-use Nosto\Tagging\Model\Customer\Customer as NostoCustomer;
 
 /**
  * Class Repository
@@ -86,7 +85,7 @@ class Repository implements CustomerRepositoryInterface
      * @param CustomerInterface $customer
      *
      * @return CustomerInterface
-     * @throws \Exception
+     * @throws Exception
      * @throws AlreadyExistsException
      *
      * @suppress PhanTypeMismatchArgument

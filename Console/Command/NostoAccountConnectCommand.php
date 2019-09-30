@@ -36,15 +36,16 @@
 
 namespace Nosto\Tagging\Console\Command;
 
+use Nosto\NostoException;
+use Nosto\Object\Signup\Account as NostoSignupAccount;
+use Nosto\Request\Api\Token;
+use Nosto\Tagging\Helper\Account as NostoHelperAccount;
+use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Nosto\Tagging\Helper\Account as NostoHelperAccount;
-use Nosto\Tagging\Helper\Scope as NostoHelperScope;
-use Nosto\Object\Signup\Account as NostoSignupAccount;
-use Nosto\Request\Api\Token;
 
 class NostoAccountConnectCommand extends Command
 {
@@ -158,7 +159,10 @@ class NostoAccountConnectCommand extends Command
      *
      * @param array $tokens
      * @param $accountId
+     * @param SymfonyStyle $io
+     * @param $scopeCode
      * @return bool
+     * @throws NostoException
      */
     private function updateNostoTokens(array $tokens, $accountId, SymfonyStyle $io, $scopeCode)
     {
@@ -196,6 +200,7 @@ class NostoAccountConnectCommand extends Command
      * @param InputInterface $input
      * @param SymfonyStyle $io
      * @return Token[]
+     * @throws NostoException
      */
     private function getTokensFromInput(InputInterface $input, SymfonyStyle $io)
     {

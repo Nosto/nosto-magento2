@@ -78,6 +78,8 @@ class ImageUrl extends Template
      * Format the image url
      *
      * @return string
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     * @throws \Nosto\NostoException
      */
     public function _toHtml()
     {

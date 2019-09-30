@@ -35,8 +35,8 @@
  */
 namespace Nosto\Tagging\Model\Service;
 
-use Magento\Store\Api\Data\StoreInterface;
 use Magento\Catalog\Api\Data\ProductInterface;
+use Magento\Store\Api\Data\StoreInterface;
 use Nosto\Object\Product\Product as NostoProduct;
 
 interface ProductServiceInterface

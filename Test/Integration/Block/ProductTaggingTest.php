@@ -3,15 +3,9 @@
 namespace Nosto\Tagging\Test\Integration\Block;
 
 use Magento\Catalog\Api\ProductRepositoryInterface;
-use Magento\Catalog\Model\ProductRepository;
 use Nosto\Tagging\Block\Product as NostoProductBlock;
 use Nosto\Tagging\Test\_util\ProductBuilder;
 use Nosto\Tagging\Test\Integration\TestCase;
-use Magento\Catalog\Model\Product;
-use Magento\Catalog\Model\Product\Visibility;
-use Magento\Catalog\Model\Product\Attribute\Source\Status;
-use Magento\TestFramework\Helper\Bootstrap;
-use Magento\Framework\Registry;
 
 /**
  * Tests for product tagging

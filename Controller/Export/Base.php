@@ -42,7 +42,6 @@ use Magento\Framework\Controller\Result\Raw;
 use Magento\Framework\Controller\ResultFactory;
 use Magento\Store\Model\Store;
 use Nosto\Helper\ExportHelper;
-use Nosto\Helper\SerializationHelper;
 use Nosto\Object\AbstractCollection;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
@@ -82,6 +81,8 @@ abstract class Base extends Action
      * encrypts the JSON and returns the result
      *
      * @return Raw
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     * @throws \Nosto\NostoException
      * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      */
     public function execute()
@@ -122,6 +123,8 @@ abstract class Base extends Action
      *
      * @param AbstractCollection $collection the data collection to export.
      * @return Raw
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     * @throws \Nosto\NostoException
      */
     public function export(AbstractCollection $collection)
     {

@@ -36,8 +36,8 @@
 
 namespace Nosto\Tagging\Model\Service;
 
+use Exception;
 use Magento\Store\Model\Store;
-use Nosto\Exception\MemoryOutOfBoundsException;
 use Nosto\NostoException;
 use Nosto\Object\Signup\Account as NostoSignupAccount;
 use Nosto\Operation\DeleteProduct;
@@ -51,8 +51,8 @@ use Nosto\Tagging\Model\Product\Index\Index as NostoProductIndex;
 use Nosto\Tagging\Model\Product\Index\IndexRepository;
 use Nosto\Tagging\Model\ResourceModel\Product\Index\Collection as NostoIndexCollection;
 use Nosto\Tagging\Model\ResourceModel\Product\Index\CollectionFactory as NostoIndexCollectionFactory;
-use Nosto\Tagging\Util\Serializer\ProductSerializer;
 use Nosto\Tagging\Util\Iterator;
+use Nosto\Tagging\Util\Serializer\ProductSerializer;
 
 class Sync extends AbstractService
 {
@@ -144,7 +144,7 @@ class Sync extends AbstractService
                 $op->upsert();
                 $this->indexRepository->markAsInSyncCurrentItemsByStore($collectionBatch, $store);
                 $this->tickBenchmark(self::BENCHMARK_SYNC_NAME);
-            } catch (\Exception $upsertException) {
+            } catch (Exception $upsertException) {
                 $this->getLogger()->exception($upsertException);
             }
         });
@@ -178,7 +178,7 @@ class Sync extends AbstractService
     {
         try {
             $this->indexRepository->markAsInSync($productIds, $store);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->getLogger()->exception($e);
         }
     }
@@ -216,7 +216,7 @@ class Sync extends AbstractService
                 $op->delete(); // @codingStandardsIgnoreLine
                 $this->indexRepository->deleteCurrentItemsByStore($collection, $store);
                 $this->tickBenchmark(self::BENCHMARK_DELETE_NAME);
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $this->getLogger()->exception($e);
             }
         });

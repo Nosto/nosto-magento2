@@ -100,6 +100,7 @@ class Meta extends Template
      * Returns the current stores language code in ISO 639-1 format.
      *
      * @return string the language code.
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function getLanguageCode()
     {

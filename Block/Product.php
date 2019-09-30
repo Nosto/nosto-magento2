@@ -146,6 +146,7 @@ class Product extends View
      * Returns the Nosto category DTO.
      *
      * @return string|null the current category as a slash-delimited string
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function getNostoCategory()
     {
@@ -181,6 +182,7 @@ class Product extends View
      * nosto_variation tagging.
      *
      * @return bool a boolean value indicating whether the store has more than one currency
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function hasMultipleCurrencies()
     {

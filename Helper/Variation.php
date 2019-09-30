@@ -36,15 +36,15 @@
 
 namespace Nosto\Tagging\Helper;
 
-use Magento\Customer\Api\GroupRepositoryInterface as GroupRepository;
-use Magento\Framework\App\Helper\AbstractHelper;
-use Magento\Customer\Model\GroupManagement;
-use Magento\Customer\Model\Data\Group;
-use Magento\Store\Model\Store;
+use Exception;
 use Magento\Customer\Api\Data\GroupInterface;
+use Magento\Customer\Api\GroupRepositoryInterface as GroupRepository;
+use Magento\Customer\Model\Data\Group;
+use Magento\Customer\Model\GroupManagement;
+use Magento\Framework\App\Helper\AbstractHelper;
+use Magento\Framework\App\Helper\Context;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
-use Magento\Customer\Model\Customer;
 
 /**
  * Variation helper
@@ -58,10 +58,14 @@ class Variation extends AbstractHelper
 
     /**
      * Variation constructor.
+     * @param Context $context
      * @param GroupRepository $groupRepository
      */
-    public function __construct(GroupRepository $groupRepository)
+    public function __construct(
+        Context $context,
+        GroupRepository $groupRepository)
     {
+        parent::__construct($context);
         $this->groupRepository = $groupRepository;
     }
 
@@ -111,7 +115,7 @@ class Variation extends AbstractHelper
             if ($code === $this->getDefaultVariationCode()) {
                 return true;
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return false;
         }
 

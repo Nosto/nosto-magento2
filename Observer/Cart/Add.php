@@ -36,11 +36,13 @@
 
 namespace Nosto\Tagging\Observer\Cart;
 
+use Exception;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Module\Manager as ModuleManager;
-use Magento\Framework\Stdlib\CookieManagerInterface;
 use Magento\Framework\Stdlib\Cookie\CookieMetadataFactory;
+use Magento\Framework\Stdlib\CookieManagerInterface;
+use Magento\Quote\Model\Quote;
 use Magento\Quote\Model\Quote\Item;
 use Nosto\Helper\SerializationHelper;
 use Nosto\Object\Event\Cart\Update;
@@ -174,7 +176,7 @@ class Add implements ObserverInterface
                 if ($this->nostoHelperData->isSendAddToCartEventEnabled()) {
                     //use the message way
                     $quote = $quoteItem->getQuote();
-                    if ($quote instanceof \Magento\Quote\Model\Quote) {
+                    if ($quote instanceof Quote) {
                         $nostoCart = $this->nostoCartBuilder->build(
                             $quote,
                             $store
@@ -188,7 +190,7 @@ class Add implements ObserverInterface
                     $cartOperation->updateCart($cartUpdate, $nostoCustomerId, $nostoAccount->getName());
                 }
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->exception($e);
         }
     }

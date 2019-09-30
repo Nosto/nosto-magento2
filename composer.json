@@ -37,7 +37,10 @@
   "minimum-stability": "dev",
   "require": {
     "nosto/php-sdk": "4.0.0",
-    "php": ">=7.0.0"
+    "php": ">=7.0.0",
+    "ext-json": "*",
+    "ext-newrelic": "*",
+    "ext-code": "*"
   },
   "repositories": [
     {

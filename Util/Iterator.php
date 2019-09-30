@@ -36,6 +36,7 @@
 
 namespace Nosto\Tagging\Util;
 
+use Closure;
 use Magento\Framework\Data\Collection;
 use Nosto\NostoException;
 
@@ -59,10 +60,10 @@ class Iterator
     /**
      * Iterates through the collection in batches defined by the collection page size
      * and applies closure to each item
-     * @param \Closure $closure
+     * @param Closure $closure
      * @throws NostoException
      */
-    public function each(\Closure $closure)
+    public function each(Closure $closure)
     {
         $curPage = 1;
         $lastPage = $this->collection->getLastPageNumber();
@@ -77,10 +78,10 @@ class Iterator
     /**
      * Handles the pagination / batching and batching for a collection
      *
-     * @param \Closure $closure
+     * @param Closure $closure
      * @throws NostoException
      */
-    public function eachBatch(\Closure $closure)
+    public function eachBatch(Closure $closure)
     {
         $curPage = 1;
         $lastPage = $this->collection->getLastPageNumber();

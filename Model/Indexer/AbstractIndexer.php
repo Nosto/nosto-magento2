@@ -36,25 +36,25 @@
 
 namespace Nosto\Tagging\Model\Indexer;
 
+use ArrayIterator;
+use InvalidArgumentException;
+use Magento\Framework\App\ObjectManager;
+use Magento\Framework\Indexer\ActionInterface as IndexerActionInterface;
+use Magento\Framework\Indexer\Dimension;
 use Magento\Framework\Indexer\DimensionalIndexerInterface;
 use Magento\Framework\Indexer\DimensionProviderInterface;
-use Magento\Framework\Indexer\Dimension;
 use Magento\Framework\Mview\ActionInterface as MviewActionInterface;
-use Magento\Framework\Indexer\ActionInterface as IndexerActionInterface;
+use Magento\Indexer\Model\ProcessManager;
+use Magento\Store\Model\Store;
+use Magento\Store\Model\StoreDimensionProvider;
 use Nosto\NostoException;
-use Nosto\Tagging\Model\Indexer\Dimensions\AbstractDimensionModeConfiguration as DimensionModeConfiguration;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
-use Magento\Store\Model\StoreDimensionProvider;
-use Magento\Indexer\Model\ProcessManager;
-use Nosto\Tagging\Util\Benchmark;
-use Magento\Framework\App\ObjectManager;
+use Nosto\Tagging\Model\Indexer\Dimensions\AbstractDimensionModeConfiguration as DimensionModeConfiguration;
 use Nosto\Tagging\Model\Indexer\Dimensions\ModeSwitcherInterface;
-use Magento\Store\Model\Store;
+use Nosto\Tagging\Util\Benchmark;
 use Traversable;
-use ArrayIterator;
-use InvalidArgumentException;
 use UnexpectedValueException;
 
 abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerActionInterface, MviewActionInterface
@@ -118,6 +118,8 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
 
     /**
      * @param array $ids
+     * @throws NostoException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      * @suppress PhanTypeMismatchArgument
      */
     public function doWork(array $ids = [])
@@ -172,6 +174,7 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
      * @param Dimension[] $dimensions
      * @param Traversable|null $entityIds
      * @throws NostoException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function executeByDimensions(array $dimensions, Traversable $entityIds = null)
     {
@@ -201,6 +204,8 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
     /**
      * @param Dimension[] $dimension
      * @return bool
+     * @throws NostoException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      * @suppress PhanTypeArraySuspicious
      */
     private function isDimensionProcessable(array $dimension)

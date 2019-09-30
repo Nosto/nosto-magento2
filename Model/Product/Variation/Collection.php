@@ -37,12 +37,13 @@
 namespace Nosto\Tagging\Model\Product\Variation;
 
 use Magento\Catalog\Model\Product;
-use Magento\Customer\Model\GroupManagement;
-use Magento\Store\Model\Store;
-use Nosto\Nosto;
-use Nosto\Object\Product\VariationCollection;
-use Nosto\Object\Product\Product as NostoProduct;
 use Magento\Customer\Api\GroupRepositoryInterface as GroupRepository;
+use Magento\Customer\Model\Data\Group;
+use Magento\Customer\Model\GroupManagement;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\Store\Model\Store;
+use Nosto\Object\Product\Product as NostoProduct;
+use Nosto\Object\Product\VariationCollection;
 use Nosto\Tagging\Model\Product\Variation\Builder as VariationBuilder;
 
 class Collection
@@ -72,8 +73,10 @@ class Collection
 
     /**
      * @param Product $product
+     * @param NostoProduct $nostoProduct
      * @param Store $store
      * @return VariationCollection
+     * @throws LocalizedException
      * @suppress PhanTypeMismatchArgument
      */
     public function build(Product $product, NostoProduct $nostoProduct, Store $store)
@@ -86,7 +89,7 @@ class Collection
             if ($group->getCode() === (string)$nostoProduct->getVariationId()) {
                 continue;
             }
-            /** @var \Magento\Customer\Model\Data\Group $group */
+            /** @var Group $group */
             $collection->append(
                 $this->variationBuilder->build(
                     $product,

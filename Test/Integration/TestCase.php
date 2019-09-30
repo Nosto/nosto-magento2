@@ -38,10 +38,10 @@ namespace Nosto\Tagging\Test\Integration;
 
 use Magento\Framework\ObjectManagerInterface;
 use Magento\Store\Model\ScopeInterface;
+use Magento\TestFramework\Helper\Bootstrap;
 use Nosto\Request\Api\Token;
 use Nosto\Tagging\Helper\Account;
 use PHPUnit\Framework\TestCase as PhpUnitTestCase;
-use Magento\TestFramework\Helper\Bootstrap;
 
 /**
  * Base class for Nosto integration tests.

@@ -47,6 +47,7 @@ use Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable as
 use Magento\Framework\Api\FilterBuilder;
 use Magento\Framework\Api\Search\FilterGroupBuilder;
 use Magento\Framework\Api\SearchCriteriaBuilder;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Store\Model\Store;
 use Nosto\Tagging\Model\ResourceModel\Sku as NostoSkuResource;
 
@@ -152,7 +153,7 @@ class Repository
         $product = $this->productRepository->getList($searchCriteria)->setTotalCount(1);
 
         foreach ($product->getItems() as $item) {
-            /** @var \Magento\Catalog\Model\Product $item */
+            /** @var Product $item */
             return $item;
         }
         return null;
@@ -185,7 +186,7 @@ class Repository
      *
      * @param Product $product
      * @return array
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     * @throws NoSuchEntityException
      */
     public function getSkus(Product $product)
     {
@@ -252,7 +253,7 @@ class Repository
      * @param Product $product
      * @param Store $store
      * @return array
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     * @throws NoSuchEntityException
      */
     public function getSkusAsArray(Product $product, Store $store)
     {

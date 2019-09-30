@@ -36,8 +36,8 @@
 
 namespace Nosto\Tagging\Model\Order\Item;
 
-use Nosto\Tagging\Model\Item\Configurable as ConfigurableItem;
 use Magento\Sales\Model\Order\Item;
+use Nosto\Tagging\Model\Item\Configurable as ConfigurableItem;
 
 class Configurable extends ConfigurableItem
 {

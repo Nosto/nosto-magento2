@@ -36,6 +36,7 @@
 
 namespace Nosto\Tagging\Model\Rates;
 
+use Exception;
 use Magento\Directory\Model\Currency;
 use Magento\Directory\Model\CurrencyFactory;
 use Magento\Framework\Event\ManagerInterface;
@@ -96,7 +97,7 @@ class Builder
                 ));
                 $exchangeRates->addRate($code, new ExchangeRate($code, $rate));
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->exception($e);
         }
 

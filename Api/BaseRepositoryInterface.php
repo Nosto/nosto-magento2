@@ -36,8 +36,8 @@
 
 namespace Nosto\Tagging\Api;
 
-use Magento\Framework\Data\SearchResultInterface;
 use Magento\Framework\Api\SearchCriteriaInterface;
+use Magento\Framework\Data\SearchResultInterface;
 
 interface BaseRepositoryInterface
 {

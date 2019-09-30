@@ -80,6 +80,8 @@ class Tokens extends Field
      * Get the Nosto account details
      *
      * @return SignupAccount|null
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     * @throws \Nosto\NostoException
      */
     public function getAccountDetails()
     {

@@ -78,6 +78,7 @@ class Indexers extends Field
     /**
      * Return the amount of products marked as dirty
      * @return int
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function getAmountDirtyProducts()
     {
@@ -89,6 +90,7 @@ class Indexers extends Field
     /**
      * return the amount of products marked as out of sync
      * @return int
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function getAmountOutOfSyncProducts()
     {

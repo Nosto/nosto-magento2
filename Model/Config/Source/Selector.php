@@ -77,7 +77,7 @@ abstract class Selector implements ArrayInterface
     public function toOptionArray()
     {
         $entity = $this->eavConfig->getEntityType(Product::ENTITY);
-        /** @var \Magento\Catalog\Model\ResourceModel\Product\Attribute\Collection $collection */
+        /** @var Collection $collection */
         /** @noinspection PhpUndefinedMethodInspection */
         $collection = $this->attributeCollectionFactory->create();
         $collection->setEntityTypeFilter($entity->getId());

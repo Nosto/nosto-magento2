@@ -36,12 +36,13 @@
 
 namespace Nosto\Tagging\Model\CategoryString;
 
+use Exception;
 use Magento\Catalog\Api\CategoryRepositoryInterface;
 use Magento\Catalog\Model\Category;
-use Magento\Store\Model\Store;
 use Magento\Catalog\Model\Product;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\Exception\NoSuchEntityException;
+use Magento\Store\Model\Store;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 
 class Builder
@@ -109,7 +110,7 @@ class Builder
                 }
             }
             $nostoCategory = count($data) ? '/' . implode('/', $data) : '';
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->exception($e);
         }
         if (empty($nostoCategory)) {

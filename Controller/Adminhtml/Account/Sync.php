@@ -75,6 +75,8 @@ class Sync extends Base
 
     /**
      * @return Json
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     * @throws \Nosto\NostoException
      */
     public function execute()
     {

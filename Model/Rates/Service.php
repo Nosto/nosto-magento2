@@ -40,9 +40,9 @@ use Exception;
 use Magento\Store\Model\Store;
 use Nosto\Operation\SyncRates;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
-use Nosto\Tagging\Model\Rates\Builder as NostoExchangeRatesBuilder;
-use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Helper\Currency as NostoHelperCurrency;
+use Nosto\Tagging\Logger\Logger as NostoLogger;
+use Nosto\Tagging\Model\Rates\Builder as NostoExchangeRatesBuilder;
 
 class Service
 {
@@ -75,6 +75,7 @@ class Service
      *
      * @param Store $store the store for which the rates are to be updated.
      * @return bool a boolean value indicating whether the operation was successful
+     * @throws \Nosto\NostoException
      */
     public function update(Store $store)
     {

@@ -36,12 +36,13 @@
 
 namespace Nosto\Tagging\Console\Command;
 
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
+use Exception;
 use Magento\Customer\Model\CustomerFactory;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Util\Customer as CustomerUtil;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 class NostoGenerateCustomerReferenceCommand extends Command
@@ -95,7 +96,7 @@ class NostoGenerateCustomerReferenceCommand extends Command
                 $customer->save();
             }
             $io->success('Operation finished with success');
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $io->error($e->getMessage());
         }
     }

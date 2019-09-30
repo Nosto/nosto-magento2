@@ -113,6 +113,8 @@ class Product extends Base
     /**
      * @param AbstractCollection $collection
      * @return RawResult
+     * @throws NostoException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function export(AbstractCollection $collection)
     {

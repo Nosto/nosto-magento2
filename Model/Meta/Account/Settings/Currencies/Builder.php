@@ -36,6 +36,7 @@
 
 namespace Nosto\Tagging\Model\Meta\Account\Settings\Currencies;
 
+use Exception;
 use Magento\Directory\Model\CurrencyFactory;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\Locale\Bundle\DataBundle;
@@ -122,7 +123,7 @@ class Builder
                     );
                 }
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->exception($e);
         }
 
@@ -205,7 +206,7 @@ class Builder
             $priceFormat = substr($priceFormat, 0, $pos);
         }
         // Remove all other characters than "0", "#", "." and ",",
-        return preg_replace('/[^0\#\.,]/', '', $priceFormat);
+        return preg_replace('/[^0#.]/', '', $priceFormat);
     }
 
     /**

@@ -37,8 +37,8 @@
 namespace Nosto\Tagging\Test\_util;
 
 use Magento\Catalog\Api\OrderRepositoryInterface;
-use Magento\Sales\Model\Order;
 use Magento\Framework\ObjectManagerInterface;
+use Magento\Sales\Model\Order;
 
 final class OrderBuilder implements BuilderInterface
 {

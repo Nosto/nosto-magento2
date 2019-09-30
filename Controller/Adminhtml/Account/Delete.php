@@ -36,14 +36,15 @@
 
 namespace Nosto\Tagging\Controller\Adminhtml\Account;
 
+use Exception;
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\Controller\Result\Json;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Phrase;
 use Nosto\Helper\IframeHelper;
 use Nosto\Nosto;
-use Nosto\Tagging\Helper\Cache as NostoHelperCache;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
+use Nosto\Tagging\Helper\Cache as NostoHelperCache;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Model\Meta\Account\Iframe\Builder as NostoIframeMetaBuilder;
 use Nosto\Tagging\Model\User\Builder as NostoCurrentUserBuilder;
@@ -88,7 +89,7 @@ class Delete extends Base
 
     /**
      * @return Json
-     * @throws \Exception
+     * @throws Exception
      */
     public function execute()
     {

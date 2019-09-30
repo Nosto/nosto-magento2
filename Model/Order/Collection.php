@@ -37,11 +37,13 @@
 namespace Nosto\Tagging\Model\Order;
 
 use Magento\Sales\Api\Data\EntityInterface;
+use Magento\Sales\Model\Order;
 use Magento\Sales\Model\ResourceModel\Order\CollectionFactory as OrderCollectionFactory;
 use Magento\Store\Model\Store;
 use Nosto\NostoException;
 use Nosto\Object\Order\OrderCollection;
 use Nosto\Tagging\Model\Order\Builder as NostoOrderBuilder;
+use Traversable;
 
 class Collection
 {
@@ -105,13 +107,13 @@ class Collection
         /** @var \Magento\Sales\Model\ResourceModel\Order\Collection $collection */
         $orders = new OrderCollection();
         $items = $collection->loadData();
-        if ($items instanceof \Traversable === false && !is_array($items)) {
+        if ($items instanceof Traversable === false && !is_array($items)) {
             throw new NostoException(
                 sprintf('Invalid collection type %s for product export', get_class($collection))
             );
         }
         foreach ($items as $order) {
-            /** @var \Magento\Sales\Model\Order $order */
+            /** @var Order $order */
             $orders->append($this->nostoOrderBuilder->build($order));
         }
         return $orders;

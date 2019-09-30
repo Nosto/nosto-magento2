@@ -39,15 +39,16 @@ namespace Nosto\Tagging\Logger;
 use Monolog\Logger as MonologLogger;
 use Nosto\Tagging\Helper\NewRelic;
 use Nosto\Util\Memory;
+use Throwable;
 
 class Logger extends MonologLogger
 {
     /**
      * Logs an exception and sends it to New relic if available
-     * @param \Throwable $exception
+     * @param Throwable $exception
      * @return bool
      */
-    public function exception(\Throwable $exception)
+    public function exception(Throwable $exception)
     {
         NewRelic::reportException($exception);
         return parent::error($exception->__toString());

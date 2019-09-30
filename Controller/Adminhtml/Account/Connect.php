@@ -70,6 +70,7 @@ class Connect extends Base
 
     /**
      * @return Json
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function execute()
     {

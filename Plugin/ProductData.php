@@ -38,10 +38,10 @@ namespace Nosto\Tagging\Plugin;
 
 use Closure;
 use Magento\Catalog\Model\ResourceModel\Product as MagentoResourceProduct;
-use Nosto\Tagging\Model\ResourceModel\Product\Index;
 use Magento\Framework\Indexer\IndexerRegistry;
 use Magento\Framework\Model\AbstractModel;
 use Nosto\Tagging\Model\Indexer\Data as IndexerData;
+use Nosto\Tagging\Model\ResourceModel\Product\Index;
 
 class ProductData
 {

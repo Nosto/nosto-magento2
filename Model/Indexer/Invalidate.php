@@ -37,19 +37,19 @@
 namespace Nosto\Tagging\Model\Indexer;
 
 use Exception;
+use Magento\Indexer\Model\ProcessManager;
 use Magento\Store\Model\Store;
+use Magento\Store\Model\StoreDimensionProvider;
 use Nosto\NostoException;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
+use Nosto\Tagging\Logger\Logger as NostoLogger;
+use Nosto\Tagging\Model\Indexer\Dimensions\Invalidate\ModeSwitcher as InvalidateModeSwitcher;
 use Nosto\Tagging\Model\Indexer\Dimensions\ModeSwitcherInterface;
 use Nosto\Tagging\Model\ResourceModel\Magento\Product\Collection as ProductCollection;
 use Nosto\Tagging\Model\ResourceModel\Magento\Product\CollectionFactory as ProductCollectionFactory;
 use Nosto\Tagging\Model\Service\Index as NostoServiceIndex;
 use Nosto\Tagging\Util\Indexer as IndexerUtil;
-use Nosto\Tagging\Logger\Logger as NostoLogger;
-use Magento\Indexer\Model\ProcessManager;
-use Nosto\Tagging\Model\Indexer\Dimensions\Invalidate\ModeSwitcher as InvalidateModeSwitcher;
-use Magento\Store\Model\StoreDimensionProvider;
 use Symfony\Component\Console\Input\InputInterface;
 
 /**

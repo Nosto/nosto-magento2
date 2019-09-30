@@ -36,6 +36,7 @@
 
 namespace Nosto\Tagging\Model\Customer;
 
+use DateTime;
 use Magento\Framework\Model\AbstractModel;
 use Nosto\Tagging\Api\Data\CustomerInterface;
 use Nosto\Tagging\Model\ResourceModel\Customer as NostoCustomer;
@@ -114,7 +115,7 @@ class Customer extends AbstractModel implements CustomerInterface
     /**
      * @inheritdoc
      */
-    public function setCreatedAt(\DateTime $createdAt)
+    public function setCreatedAt(DateTime $createdAt)
     {
         return $this->setData(self::CREATED_AT, $createdAt);
     }
@@ -122,7 +123,7 @@ class Customer extends AbstractModel implements CustomerInterface
     /**
      * @inheritdoc
      */
-    public function setUpdatedAt(\DateTime $updatedAt)
+    public function setUpdatedAt(DateTime $updatedAt)
     {
         return $this->setData(self::UPDATED_AT, $updatedAt);
     }

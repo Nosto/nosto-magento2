@@ -36,16 +36,19 @@
 
 namespace Nosto\Tagging\Observer\Customer;
 
+use Exception;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Module\Manager as ModuleManager;
+use Magento\Newsletter\Model\Subscriber;
+use Magento\Store\Api\WebsiteRepositoryInterface;
+use Nosto\NostoException;
+use Nosto\Operation\MarketingPermission;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
-use Magento\Newsletter\Model\Subscriber;
-use Nosto\Operation\MarketingPermission;
-use Magento\Store\Api\WebsiteRepositoryInterface;
 
 /**
  * Class UpdateMarketingPermission
@@ -92,11 +95,13 @@ class UpdateMarketingPermission implements ObserverInterface
      *
      * @param Observer $observer
      * @return void
+     * @throws NoSuchEntityException
+     * @throws NostoException
      */
     public function execute(Observer $observer)
     {
         /** @noinspection PhpUndefinedMethodInspection */
-        /** @var \Magento\Newsletter\Model\Subscriber $subscriber */
+        /** @var Subscriber $subscriber */
         $subscriber = $observer->getEvent()->getSubscriber();
         $currentStore = $this->nostoHelperScope->getStore();
         $stores = $currentStore->getWebsite()->getStores();
@@ -120,7 +125,7 @@ class UpdateMarketingPermission implements ObserverInterface
                     $subscriber->getSubscriberEmail(),
                     $isSubscribed
                 );
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $this->logger->error(
                     sprintf(
                         "Failed to update customer marketing permission.
