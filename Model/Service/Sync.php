@@ -134,6 +134,10 @@ class Sync extends AbstractService
             $op->setResponseTimeout(self::RESPONSE_TIMEOUT);
             /** @var ProductIndexInterface $productIndex */
             foreach ($collectionBatch as $productIndex) {
+                $this->getLogger()->debug(
+                    sprintf('Upserting product "%s"', $productIndex->getProductId()),
+                    ['store' => $productIndex->getStoreId()]
+                );
                 $op->addProduct(
                     $this->productSerializer->fromString(
                         $productIndex->getProductData()
@@ -141,6 +145,7 @@ class Sync extends AbstractService
                 );
             }
             try {
+                $this->getLogger()->debug('Upserting batch');
                 $op->upsert();
                 $this->indexRepository->markAsInSyncCurrentItemsByStore($collectionBatch, $store);
                 $this->tickBenchmark(self::BENCHMARK_SYNC_NAME);

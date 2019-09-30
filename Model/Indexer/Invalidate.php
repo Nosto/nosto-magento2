@@ -114,39 +114,14 @@ class Invalidate extends AbstractIndexer
     }
 
     /**
-     * @param int[] $ids
-     * @throws Exception
-     */
-    public function execute($ids)
-    {
-        $this->doWork($ids);
-    }
-
-    /**
      * @inheritDoc
      * @throws NostoException
      */
     public function executeFull()
     {
         if ($this->allowFullExecution() === true) {
-            $this->doWork();
+           parent::executeFull();
         }
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function executeList(array $ids)
-    {
-        $this->execute($ids);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function executeRow($id)
-    {
-        $this->execute([$id]);
     }
 
     /**

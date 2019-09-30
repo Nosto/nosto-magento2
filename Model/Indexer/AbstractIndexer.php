@@ -117,14 +117,73 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
     abstract public function getIndexerId(): string ;
 
     /**
+     * @inheritdoc
+     * @throws Exception
+     */
+    public function executeFull()
+    {
+        $indexerId = $this->getIndexerId();
+        $message = sprintf('Begin a full reindex for indexer "%s"',
+            $indexerId
+        );
+        $this->nostoLogger->info($message);
+        $this->doWork();
+        $this->nostoLogger->info("Finished full reindex");
+    }
+
+    /**
+     * @inheritdoc
+     * @throws Exception
+     */
+    public function executeList(array $ids)
+    {
+        $indexerId = $this->getIndexerId();
+        $idCount = count($ids);
+        $message = sprintf('Begin a partial reindex for indexer "%s" for "%d ids',
+            $indexerId,
+            $idCount
+        );
+        $this->nostoLogger->info($message);
+        $this->execute($ids);
+        $this->nostoLogger->info("Finished partial reindex");
+    }
+
+    /**
+     * @inheritdoc
+     * @throws Exception
+     */
+    public function executeRow($id)
+    {
+        $indexerId = $this->getIndexerId();
+        $idCount = count($ids);
+        $message = sprintf('Begin a row  reindex for indexer "%s" for "%s"',
+            $indexerId,
+            $id
+        );
+        $this->nostoLogger->info($message);
+        $this->execute([$id]);
+        $this->nostoLogger->info("Finished row reindex");
+    }
+
+    /**
+     * @inheritdoc
+     * @throws Exception
+     */
+    public function execute($ids)
+    {
+        $this->doWork($ids);
+    }
+
+    /**
      * @param array $ids
      * @suppress PhanTypeMismatchArgument
      */
     public function doWork(array $ids = [])
     {
         $userFunctions = [];
-
-        switch ($this->getModeSwitcher()->getMode()) {
+        $mode = $this->getModeSwitcher()->getMode();
+        $this->nostoLogger->info(sprintf('Indexing by mode "%s"', $mode));
+        switch ($mode) {
             case DimensionModeConfiguration::DIMENSION_NONE:
                 foreach ($this->dimensionProvider->getIterator() as $dimension) {
                     if ($this->isDimensionProcessable($dimension)) {
@@ -183,7 +242,7 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
         $store = $this->nostoHelperScope->getStore($storeId);
         $benchmarkName = sprintf('STORE-DIMENSION-%s', $store->getCode());
         Benchmark::getInstance()->startInstrumentation($benchmarkName, 0);
-        $this->nostoLogger->info('[START] NOSTO-DIMENSION store:'. $store->getName());
+        $this->nostoLogger->info(sprintf('[START] Processing dimension: "%s"', $store->getCode()));
         $ids = [];
         if ($entityIds !== null) {
             $ids = iterator_to_array($entityIds);
@@ -194,7 +253,10 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
         Benchmark::getInstance()->stopInstrumentation($benchmarkName);
         $duration = Benchmark::getInstance()->getElapsed($benchmarkName);
         $this->nostoLogger->info(
-            '[END] NOSTO-DIMENSION store:' . $store->getName() . '(' . round($duration, 2) . ' secs)'
+            sprintf('[END] Finished processing dimension: "%s", (%f)',
+                $store->getCode(),
+                round($duration, 2)
+            )
         );
     }
 
@@ -211,6 +273,7 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
             return true;
         }
 
+        $this->nostoLogger->debug(sprintf('Skipping store dimension: "%s"', $store->getCode()));
         return false;
     }
 }

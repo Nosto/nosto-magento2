@@ -61,7 +61,7 @@ class Logger extends MonologLogger
      */
     public function logWithMemoryConsumption($message)
     {
-        return parent::addInfo(
+        return parent::debug(
             sprintf(
                 '%s [mem usage: %sM / %s] [realmem: %sM]',
                 $message,

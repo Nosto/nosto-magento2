@@ -299,6 +299,10 @@ class Index extends AbstractService
         $collection->setPageSize(self::PRODUCT_DATA_BATCH_SIZE);
         $iterator = new Iterator($collection);
         $iterator->each(function (NostoProductIndex $item) {
+            $this->getLogger()->debug(
+                sprintf('Rebuilding product "%s"', $item->getProductId()),
+                ['store' => $item->getStoreId()]
+            );
             $this->rebuildDirtyProduct($item);
             $this->tickBenchmark(self::BENCHMARK_NAME_REBUILD);
             $this->checkMemoryConsumption('product rebuild');
@@ -338,6 +342,12 @@ class Index extends AbstractService
                     )
                 );
                 $productIndex->setInSync(false);
+                $this->getLogger()->debug(
+                    sprintf('Saved dirty product "%d" for store "%d"',
+                        $productIndex->getProductId(),
+                        $productIndex->getStoreId()
+                    )
+                );
             }
             $productIndex->setIsDirty(false);
             $this->indexRepository->save($productIndex);

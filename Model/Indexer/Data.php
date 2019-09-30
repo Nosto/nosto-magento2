@@ -94,42 +94,6 @@ class Data extends AbstractIndexer
 
     /**
      * @inheritdoc
-     * @throws Exception
-     */
-    public function executeFull()
-    {
-        $this->doWork();
-    }
-
-    /**
-     * @inheritdoc
-     * @throws Exception
-     */
-    public function executeList(array $ids)
-    {
-        $this->execute($ids);
-    }
-
-    /**
-     * @inheritdoc
-     * @throws Exception
-     */
-    public function executeRow($id)
-    {
-        $this->execute([$id]);
-    }
-
-    /**
-     * @inheritdoc
-     * @throws Exception
-     */
-    public function execute($ids)
-    {
-        $this->doWork($ids);
-    }
-
-    /**
-     * @inheritdoc
      */
     public function getModeSwitcher(): ModeSwitcherInterface
     {
