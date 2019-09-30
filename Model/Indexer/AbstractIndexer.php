@@ -129,6 +129,7 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
 
         switch ($this->getModeSwitcher()->getMode()) {
             case DimensionModeConfiguration::DIMENSION_NONE:
+                /** @var Dimension[] $dimension */
                 foreach ($this->dimensionProvider->getIterator() as $dimension) {
                     if ($this->isDimensionProcessable($dimension)) {
                         /** @suppress PhanTypeMismatchArgument */

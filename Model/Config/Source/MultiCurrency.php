@@ -36,7 +36,7 @@
 
 namespace Nosto\Tagging\Model\Config\Source;
 
-use Magento\Framework\Option\ArrayInterface;
+use Magento\Framework\Data\OptionSourceInterface;
 use Magento\Framework\Phrase;
 use Nosto\Tagging\Helper\Data;
 
@@ -46,7 +46,7 @@ use Nosto\Tagging\Helper\Data;
  *
  * @package Nosto\Tagging\Model\Config\Source
  */
-class MultiCurrency implements ArrayInterface
+class MultiCurrency implements OptionSourceInterface
 {
     /**
      * Options getter

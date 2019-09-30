@@ -66,6 +66,7 @@ class ProductSerializer
      */
     public function fromString($data)
     {
+        /** @noinspection PhpIncompatibleReturnTypeInspection */
         return $this->serializer->deserialize($data, Product::class);
     }
 

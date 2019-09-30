@@ -41,8 +41,8 @@ use Magento\Catalog\Model\ResourceModel\Eav\Attribute;
 use Magento\Catalog\Model\ResourceModel\Product\Attribute\Collection;
 use Magento\Catalog\Model\ResourceModel\Product\Attribute\CollectionFactory as AttributeCollectionFactory;
 use Magento\Eav\Model\Config;
+use Magento\Framework\Data\OptionSourceInterface;
 use Magento\Framework\Exception\LocalizedException;
-use Magento\Framework\Option\ArrayInterface;
 
 /**
  * Abstract option array class to generate a list of selectable options that allows the merchant to
@@ -50,7 +50,7 @@ use Magento\Framework\Option\ArrayInterface;
  *
  * @package Nosto\Tagging\Model\Config\Source
  */
-abstract class Selector implements ArrayInterface
+abstract class Selector implements OptionSourceInterface
 {
     private $attributeCollectionFactory;
     private $eavConfig;
