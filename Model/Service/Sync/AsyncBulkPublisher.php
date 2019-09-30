@@ -36,6 +36,7 @@
 
 namespace Nosto\Tagging\Model\Service\Sync;
 
+use Exception;
 use Magento\Authorization\Model\UserContextInterface;
 use Magento\Framework\DataObject\IdentityGeneratorInterface;
 use Magento\Framework\Exception\LocalizedException;
@@ -46,6 +47,7 @@ use Magento\Framework\App\ObjectManager;
 use Magento\Framework\Module\Manager;
 use Nosto\Tagging\Logger\Logger;
 
+// @codingStandardsIgnoreFile
 class AsyncBulkPublisher implements BulkSyncInterface
 {
     const NOSTO_SYNC_MESSAGE_QUEUE = 'nosto_product_sync.update';
@@ -77,7 +79,6 @@ class AsyncBulkPublisher implements BulkSyncInterface
      * @param AsyncBulkConsumer $asyncBulkConsumer
      * @param Manager $manager
      * @param Logger $logger
-     * @suppress CustomOperationsFound
      */
     public function __construct(
         IdentityGeneratorInterface $identityService,
@@ -95,7 +96,7 @@ class AsyncBulkPublisher implements BulkSyncInterface
                     ->get(\Magento\Framework\Bulk\BulkManagementInterface::class);
             $this->operationFactory = ObjectManager::getInstance()
                     ->get(\Magento\AsynchronousOperations\Api\Data\OperationInterfaceFactory::class);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $logger->info('Module Magento_AsynchronousOperations not available');
         }
     }
@@ -114,8 +115,7 @@ class AsyncBulkPublisher implements BulkSyncInterface
      * @param $storeId
      * @param $productIds
      * @throws LocalizedException
-     * @throws \Exception
-     * @suppress PhanUndeclaredVariableDim
+     * @throws Exception
      */
     private function publishCollectionToQueue(
         $storeId,
