@@ -20,12 +20,12 @@
             <file>testsuite/Magento/MemoryUsageTest.php</file>
         </testsuite>
         <testsuite name="Magento Integration Tests">
-            <directory suffix="Test.php">testsuite</directory>
-            <directory suffix="Test.php">../../../app/code/*/*/Test/Integration</directory>
+            <directory>testsuite</directory>
+            <directory>../../../app/code/*/*/Test/Integration</directory>
             <exclude>testsuite/Magento/MemoryUsageTest.php</exclude>
         </testsuite>
         <testsuite name="Nosto Integration Tests">
-            <directory suffix="Test.php">testsuite</directory>
+            <directory>testsuite</directory>
             <directory>../../../vendor/nosto/module-nostotagging/Test/Integration</directory>
         </testsuite>
     </testsuites>
