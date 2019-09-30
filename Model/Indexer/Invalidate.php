@@ -36,7 +36,6 @@
 
 namespace Nosto\Tagging\Model\Indexer;
 
-use Exception;
 use Magento\Indexer\Model\ProcessManager;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreDimensionProvider;
@@ -115,7 +114,6 @@ class Invalidate extends AbstractIndexer
 
     /**
      * @param int[] $ids
-     * @throws Exception
      */
     public function execute($ids)
     {

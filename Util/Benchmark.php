@@ -85,7 +85,6 @@ class Benchmark
 
     /**
      * @param string $name
-     * @throws NostoException
      */
     public function stopInstrumentation(string $name)
     {
@@ -95,12 +94,11 @@ class Benchmark
     /**
      * @param string $name
      * @return float
-     * @throws NostoException
      */
     public function getElapsed(string $name)
     {
         if (empty($this->times[$name])) {
-            throw new NostoException(sprintf('No such instrumentation: %s', $name));
+            return 0;
         }
         return microtime(true) - $this->times[$name];
     }
@@ -112,7 +110,6 @@ class Benchmark
      *
      * @param string $name
      * @return float|null
-     * @throws NostoException
      */
     public function tick(string $name)
     {
