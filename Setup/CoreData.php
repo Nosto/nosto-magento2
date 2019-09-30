@@ -39,10 +39,8 @@ namespace Nosto\Tagging\Setup;
 use Magento\Customer\Model\Customer;
 use Magento\Customer\Setup\CustomerSetupFactory;
 use Magento\Eav\Model\Entity\Attribute\SetFactory as AttributeSetFactory;
-use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Setup\ModuleDataSetupInterface;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
-use Zend_Validate_Exception;
 
 abstract class CoreData
 {
@@ -64,8 +62,6 @@ abstract class CoreData
 
     /**
      * @param ModuleDataSetupInterface $setup
-     * @throws LocalizedException
-     * @throws Zend_Validate_Exception
      */
     public function addCustomerReference(ModuleDataSetupInterface $setup)
     {
