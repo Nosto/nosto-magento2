@@ -119,6 +119,7 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
     /**
      * @param array $ids
      * @suppress PhanTypeMismatchArgument
+     * @throws NostoException
      */
     public function doWork(array $ids = [])
     {

@@ -37,6 +37,7 @@
 namespace Nosto\Tagging\Model\Indexer;
 
 use Exception;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Store\Model\Store;
 use Nosto\NostoException;
 use Nosto\Tagging\Model\Indexer\Dimensions\ModeSwitcherInterface;

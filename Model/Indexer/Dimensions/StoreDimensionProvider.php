@@ -80,9 +80,15 @@ class StoreDimensionProvider implements DimensionProviderInterface
     public function getIterator(): \Traversable
     {
         foreach ($this->storeManager->getStores() as $store) {
-            /** @var Store $store */
-            if ($this->account->nostoInstalledAndEnabled($store)) {
-                yield [self::DIMENSION_NAME => $this->dimensionFactory->create(self::DIMENSION_NAME, (string)$store->getId())];
+            // instanceof check for Phan
+            if ($store instanceof Store && $this->account->nostoInstalledAndEnabled($store)) {
+                yield [
+                    self::DIMENSION_NAME =>
+                        $this->dimensionFactory->create(
+                            self::DIMENSION_NAME,
+                            (string)$store->getId()
+                        )
+                ];
             }
         }
     }

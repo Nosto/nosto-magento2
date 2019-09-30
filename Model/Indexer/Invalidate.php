@@ -87,6 +87,7 @@ class Invalidate extends AbstractIndexer
      * @param InvalidateModeSwitcher $modeSwitcher
      * @param StoreDimensionProvider $dimensionProvider
      * @param ProcessManager $processManager
+     * @param InputInterface $input
      */
     public function __construct(
         NostoHelperAccount $nostoHelperAccount,
@@ -135,6 +136,7 @@ class Invalidate extends AbstractIndexer
 
     /**
      * @inheritDoc
+     * @throws Exception
      */
     public function executeList(array $ids)
     {
@@ -143,6 +145,7 @@ class Invalidate extends AbstractIndexer
 
     /**
      * @inheritDoc
+     * @throws Exception
      */
     public function executeRow($id)
     {
@@ -159,6 +162,7 @@ class Invalidate extends AbstractIndexer
 
     /**
      * @inheritdoc
+     * @throws NostoException
      */
     public function doIndex(Store $store, array $ids = [])
     {
