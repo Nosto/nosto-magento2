@@ -49,6 +49,7 @@ class AsyncBulkPublisher implements BulkSyncInterface
 {
     const NOSTO_SYNC_MESSAGE_QUEUE = 'nosto_product_sync.update';
     const BULK_SIZE = 100;
+    const STATUS_TYPE_OPEN = 4; //\Magento\Framework\Bulk\OperationInterface::STATUS_TYPE_OPEN;
 
     /** @var \Magento\Framework\Bulk\BulkManagementInterface|null */
     private $bulkManagement;
@@ -91,7 +92,6 @@ class AsyncBulkPublisher implements BulkSyncInterface
             $this->operationFactory = ObjectManager::getInstance()
                     ->get(\Magento\AsynchronousOperations\Api\Data\OperationInterfaceFactory::class);
         } catch (\Exception $e) {
-            //log here that is not available?
         }
     }
 
@@ -181,7 +181,7 @@ class AsyncBulkPublisher implements BulkSyncInterface
                 'bulk_uuid' => $bulkUuid,
                 'topic_name' => $queue,
                 'serialized_data' => $this->serializer->serialize($dataToEncode),
-                'status' => \Magento\Framework\Bulk\OperationInterface::STATUS_TYPE_OPEN,
+                'status' => self::STATUS_TYPE_OPEN
             ]
         ];
     }
