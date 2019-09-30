@@ -124,14 +124,16 @@ class AsyncBulkConsumer
             $this->logger->critical($e->getMessage());
             $message = __('Something went wrong when syncing products to Nosto. Check log for details.');
             if (!is_array($operation)) {
-                $operation->setStatus(OperationInterface::STATUS_TYPE_NOT_RETRIABLY_FAILED)
-                    ->setErrorCode($e->getCode())
-                    ->setResultMessage($message);
+                $operation->setStatus(
+                    \Magento\AsynchronousOperations\Api\Data\OperationInterface::STATUS_TYPE_NOT_RETRIABLY_FAILED
+                )->setErrorCode($e->getCode())
+                ->setResultMessage($message);
             }
         }
         if (!is_array($operation)) {
-            $operation->setStatus(OperationInterface::STATUS_TYPE_COMPLETE)
-                ->setResultMessage($message);
+            $operation->setStatus(
+                \Magento\AsynchronousOperations\Api\Data\OperationInterface::STATUS_TYPE_COMPLETE
+            )->setResultMessage($message);
             $this->entityManager->save($operation);
         }
     }
