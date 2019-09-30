@@ -55,11 +55,6 @@ class Embed extends Template
     }
 
     /**
-     * The default Nosto server address to use if none is configured.
-     */
-    const DEFAULT_SERVER_ADDRESS = 'connect.nosto.com';
-
-    /**
      * Constructor.
      *
      * @param Context $context the context.

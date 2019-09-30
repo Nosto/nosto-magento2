@@ -312,10 +312,10 @@ class Account extends AbstractHelper
     /**
      * Returns the stored storefront domain
      *
-     * @param $store
+     * @param Store $store
      * @return string the domain
      */
-    public function getStoreFrontDomain($store)
+    public function getStoreFrontDomain(Store $store)
     {
         return $store->getConfig(self::XML_PATH_DOMAIN);
     }
@@ -323,10 +323,10 @@ class Account extends AbstractHelper
     /**
      * Returns the Nosto account name for the store
      *
-     * @param $store
+     * @param Store $store
      * @return string account name
      */
-    public function getAccountName($store)
+    public function getAccountName(Store $store)
     {
         return $store->getConfig(self::XML_PATH_ACCOUNT);
     }
