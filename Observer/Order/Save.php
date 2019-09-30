@@ -40,12 +40,10 @@ use Exception;
 use Magento\Customer\Api\CustomerRepositoryInterface as MagentoCustomerRepository;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
-use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Indexer\IndexerRegistry;
 use Magento\Framework\Module\Manager as ModuleManager;
 use Magento\Sales\Model\Order;
 use Magento\Store\Model\Store;
-use Nosto\NostoException;
 use Nosto\Object\Order\Order as NostoOrder;
 use Nosto\Operation\Order\OrderCreate as NostoOrderCreate;
 use Nosto\Operation\Order\OrderStatus as NostoOrderUpdate;
@@ -125,8 +123,6 @@ class Save implements ObserverInterface
      *
      * @param Observer $observer
      * @return void
-     * @throws NoSuchEntityException
-     * @throws NostoException
      * @suppress PhanDeprecatedFunction
      * @suppress PhanTypeMismatchArgument
      */
@@ -172,7 +168,6 @@ class Save implements ObserverInterface
      * Handles the inventory level update to Nosto
      *
      * @param NostoOrder $nostoOrder
-     * @throws NoSuchEntityException
      */
     private function handleInventoryLevelUpdate(NostoOrder $nostoOrder)
     {
@@ -220,7 +215,6 @@ class Save implements ObserverInterface
      * @param Order $order
      * @param AccountInterface $nostoAccount
      * @param Store $store
-     * @throws NoSuchEntityException
      */
     private function sendNewOrder(Order $order, AccountInterface $nostoAccount, Store $store)
     {

@@ -38,7 +38,6 @@ namespace Nosto\Tagging\Model\Meta\Account\Settings;
 
 use Exception;
 use Magento\Store\Model\Store;
-use Nosto\NostoException;
 use Nosto\Operation\UpdateSettings;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
@@ -70,7 +69,6 @@ class Service
      *
      * @param Store $store the store for which the settings are to be updated.
      * @return bool a boolean value indicating whether the operation was successful
-     * @throws NostoException
      */
     public function update(Store $store)
     {

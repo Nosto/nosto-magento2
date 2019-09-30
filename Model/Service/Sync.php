@@ -37,7 +37,6 @@
 namespace Nosto\Tagging\Model\Service;
 
 use Exception;
-use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Store\Model\Store;
 use Nosto\NostoException;
 use Nosto\Object\Signup\Account as NostoSignupAccount;
@@ -115,7 +114,6 @@ class Sync extends AbstractService
      * @param NostoIndexCollection $collection
      * @param Store $store
      * @throws NostoException
-     * @throws NoSuchEntityException
      */
     public function syncIndexedProducts(NostoIndexCollection $collection, Store $store)
     {

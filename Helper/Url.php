@@ -45,7 +45,6 @@ use Magento\Catalog\Model\ResourceModel\Category\CollectionFactory as CategoryCo
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 use Magento\Framework\Exception\LocalizedException;
-use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Url as UrlBuilder;
 use Magento\Framework\UrlInterface;
 use Magento\Store\Model\Store;
@@ -274,7 +273,6 @@ class Url extends AbstractHelper
      *
      * @param Store $store the store to get the url for.
      * @return string the url.
-     * @throws NoSuchEntityException
      */
     public function getPreviewUrlSearch(Store $store)
     {
@@ -312,7 +310,6 @@ class Url extends AbstractHelper
      *
      * @param Store $store the store to get the url for.
      * @return string the url.
-     * @throws NoSuchEntityException
      */
     public function getPreviewUrlCart(Store $store)
     {
@@ -333,7 +330,6 @@ class Url extends AbstractHelper
      *
      * @param Store $store the store to get the url for.
      * @return string the url.
-     * @throws NoSuchEntityException
      */
     public function getPreviewUrlFront(Store $store)
     {
@@ -385,7 +381,6 @@ class Url extends AbstractHelper
      *
      * @param Store $store
      * @return array
-     * @throws NoSuchEntityException
      */
     public function getUrlOptionsWithNoSid(Store $store)
     {

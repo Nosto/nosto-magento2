@@ -36,10 +36,8 @@
 
 namespace Nosto\Tagging\Block\Email;
 
-use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Element\Template\Context;
-use Nosto\NostoException;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 
@@ -75,8 +73,6 @@ class Visible extends Template
      * Returns "" if current store view has nosto, otherwise 'style="display:none"'
      *
      * @return string
-     * @throws NoSuchEntityException
-     * @throws NostoException
      */
     public function _toHtml()
     {

@@ -39,7 +39,6 @@ namespace Nosto\Tagging\Model\Indexer;
 use ArrayIterator;
 use InvalidArgumentException;
 use Magento\Framework\App\ObjectManager;
-use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Indexer\ActionInterface as IndexerActionInterface;
 use Magento\Framework\Indexer\Dimension;
 use Magento\Framework\Indexer\DimensionalIndexerInterface;
@@ -119,8 +118,6 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
 
     /**
      * @param array $ids
-     * @throws NostoException
-     * @throws NoSuchEntityException
      * @suppress PhanTypeMismatchArgument
      */
     public function doWork(array $ids = [])
@@ -175,8 +172,6 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
     /**
      * @param Dimension[] $dimensions
      * @param Traversable|null $entityIds
-     * @throws NostoException
-     * @throws NoSuchEntityException
      */
     public function executeByDimensions(array $dimensions, Traversable $entityIds = null)
     {
@@ -206,8 +201,6 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
     /**
      * @param Dimension[] $dimension
      * @return bool
-     * @throws NostoException
-     * @throws NoSuchEntityException
      * @suppress PhanTypeArraySuspicious
      */
     private function isDimensionProcessable(array $dimension)

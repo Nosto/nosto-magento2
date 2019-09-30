@@ -40,7 +40,6 @@ use Magento\Backend\Block\Template\Context;
 use Magento\Config\Block\System\Config\Form\Field;
 use Magento\Framework\App\Request\Http;
 use Magento\Framework\Data\Form\Element\AbstractElement;
-use Magento\Framework\Exception\NoSuchEntityException;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Model\Product\Index\IndexRepository;
 
@@ -79,7 +78,6 @@ class Indexers extends Field
     /**
      * Return the amount of products marked as dirty
      * @return int
-     * @throws NoSuchEntityException
      */
     public function getAmountDirtyProducts()
     {
@@ -91,7 +89,6 @@ class Indexers extends Field
     /**
      * return the amount of products marked as out of sync
      * @return int
-     * @throws NoSuchEntityException
      */
     public function getAmountOutOfSyncProducts()
     {

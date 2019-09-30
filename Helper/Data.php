@@ -43,7 +43,6 @@ use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 use Magento\Framework\App\ProductMetadataInterface;
 use Magento\Framework\AppInterface;
-use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Module\ModuleListInterface;
 use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\Store;
@@ -255,7 +254,6 @@ class Data extends AbstractHelper
      *
      * @param StoreInterface|null $store the store model or null.
      * @return string the configuration value
-     * @throws NoSuchEntityException
      */
     public function getProductImageVersion(StoreInterface $store = null)
     {
@@ -269,7 +267,6 @@ class Data extends AbstractHelper
      *
      * @param StoreInterface|null $store the store model or null.
      * @return boolean
-     * @throws NoSuchEntityException
      */
     public function getRemovePubDirectoryFromProductImageUrl(StoreInterface $store = null)
     {
@@ -281,7 +278,6 @@ class Data extends AbstractHelper
      *
      * @param StoreInterface|null $store the store model or null.
      * @return string the configuration value
-     * @throws NoSuchEntityException
      */
     public function getBrandAttribute(StoreInterface $store = null)
     {
@@ -293,7 +289,6 @@ class Data extends AbstractHelper
      *
      * @param StoreInterface|null $store the store model or null.
      * @return string the configuration value
-     * @throws NoSuchEntityException
      */
     public function getMarginAttribute(StoreInterface $store = null)
     {
@@ -305,7 +300,6 @@ class Data extends AbstractHelper
      *
      * @param StoreInterface|null $store the store model or null.
      * @return string the configuration value
-     * @throws NoSuchEntityException
      */
     public function getGtinAttribute(StoreInterface $store = null)
     {
@@ -317,7 +311,6 @@ class Data extends AbstractHelper
      *
      * @param StoreInterface|null $store the store model or null.
      * @return bool the configuration value
-     * @throws NoSuchEntityException
      */
     public function isVariationTaggingEnabled(StoreInterface $store = null)
     {
@@ -329,7 +322,6 @@ class Data extends AbstractHelper
      *
      * @param StoreInterface|null $store the store model or null.
      * @return boolean
-     * @throws NoSuchEntityException
      */
     public function isCustomFieldsEnabled(StoreInterface $store = null)
     {
@@ -341,7 +333,6 @@ class Data extends AbstractHelper
      *
      * @param StoreInterface|null $store the store model or null.
      * @return bool the configuration value
-     * @throws NoSuchEntityException
      */
     public function isAltimgTaggingEnabled(StoreInterface $store = null)
     {
@@ -353,7 +344,6 @@ class Data extends AbstractHelper
      *
      * @param StoreInterface|null $store the store model or null.
      * @return bool the configuration value
-     * @throws NoSuchEntityException
      */
     public function isRatingTaggingEnabled(StoreInterface $store = null)
     {
@@ -371,7 +361,6 @@ class Data extends AbstractHelper
      *
      * @param StoreInterface|null $store
      * @return mixed|null
-     * @throws NoSuchEntityException
      */
     public function getRatingTaggingProvider(StoreInterface $store = null)
     {
@@ -383,7 +372,6 @@ class Data extends AbstractHelper
      *
      * @param StoreInterface|null $store the store model or null.
      * @return bool the configuration value
-     * @throws NoSuchEntityException
      */
     public function isInventoryTaggingEnabled(StoreInterface $store = null)
     {
@@ -395,7 +383,6 @@ class Data extends AbstractHelper
      *
      * @param StoreInterface|null $store the store model or null.
      * @return bool the configuration value
-     * @throws NoSuchEntityException
      */
     public function isProductUpdatesEnabled(StoreInterface $store = null)
     {
@@ -407,7 +394,6 @@ class Data extends AbstractHelper
      *
      * @param StoreInterface|null $store the store model or null.
      * @return bool the configuration value
-     * @throws NoSuchEntityException
      */
     public function isSendAddToCartEventEnabled(StoreInterface $store = null)
     {
@@ -419,7 +405,6 @@ class Data extends AbstractHelper
      *
      * @param StoreInterface|null $store the store model or null.
      * @return bool the configuration value
-     * @throws NoSuchEntityException
      */
     public function isSendCustomerDataToNostoEnabled(StoreInterface $store = null)
     {
@@ -431,7 +416,6 @@ class Data extends AbstractHelper
      *
      * @param StoreInterface|null $store
      * @return bool
-     * @throws NoSuchEntityException
      */
     public function isMultiChannelOrderTrackingEnabled(StoreInterface $store = null)
     {
@@ -443,7 +427,6 @@ class Data extends AbstractHelper
      *
      * @param StoreInterface|null $store the store model or null.
      * @return bool the configuration value
-     * @throws NoSuchEntityException
      */
     public function isLowStockIndicationEnabled(StoreInterface $store = null)
     {
@@ -455,7 +438,6 @@ class Data extends AbstractHelper
      *
      * @param StoreInterface|null $store the store model or null.
      * @return int the configuration value
-     * @throws NoSuchEntityException
      */
     public function getIndexerMemory(StoreInterface $store = null)
     {
@@ -467,7 +449,6 @@ class Data extends AbstractHelper
      *
      * @param StoreInterface|null $store the store model or null.
      * @return bool the configuration value
-     * @throws NoSuchEntityException
      */
     public function isTagDatePublishedEnabled(StoreInterface $store = null)
     {
@@ -479,7 +460,6 @@ class Data extends AbstractHelper
      *
      * @param StoreInterface|null $store the store model or null.
      * @return bool the configuration value
-     * @throws NoSuchEntityException
      */
     public function isPricingVariationEnabled(StoreInterface $store = null)
     {
@@ -491,7 +471,6 @@ class Data extends AbstractHelper
      *
      * @param StoreInterface|null $store the store model or null.
      * @return bool the configuration value
-     * @throws NoSuchEntityException
      */
     public function isMultiCurrencyDisabled(StoreInterface $store = null)
     {
@@ -504,7 +483,6 @@ class Data extends AbstractHelper
      *
      * @param StoreInterface|null $store the store model or null.
      * @return bool the configuration value
-     * @throws NoSuchEntityException
      */
     public function isMultiCurrencyExchangeRatesEnabled(StoreInterface $store = null)
     {
@@ -517,7 +495,6 @@ class Data extends AbstractHelper
      *
      * @param StoreInterface|null $store the store model or null.
      * @return string the configuration value
-     * @throws NoSuchEntityException
      */
     public function getMultiCurrencyMethod(StoreInterface $store = null)
     {
@@ -540,7 +517,6 @@ class Data extends AbstractHelper
      * @param string $path
      * @param StoreInterface|Store|null $store
      * @return mixed|null
-     * @throws NoSuchEntityException
      */
     public function getStoreConfig($path, StoreInterface $store = null)
     {
@@ -620,7 +596,6 @@ class Data extends AbstractHelper
      * @param string $tagId tag1, tag2 or tag3
      * @param StoreInterface|null $store the store model or null.
      * @return null|array of attributes
-     * @throws NoSuchEntityException
      */
     public function getTagAttributes($tagId, StoreInterface $store = null)
     {
@@ -638,7 +613,6 @@ class Data extends AbstractHelper
      *
      * @param StoreInterface|null $store the store model or null.
      * @return boolean the configuration value
-     * @throws NoSuchEntityException
      */
     public function getStoreCodeToUrl(StoreInterface $store = null)
     {

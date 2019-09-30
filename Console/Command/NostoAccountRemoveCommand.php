@@ -39,7 +39,6 @@ namespace Nosto\Tagging\Console\Command;
 use Magento\Framework\App\Config\Storage\WriterInterface;
 use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\Store;
-use Nosto\NostoException;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Cache as NostoHelperCache;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
@@ -139,7 +138,6 @@ class NostoAccountRemoveCommand extends Command
      * @param SymfonyStyle $io
      * @param $scopeCode
      * @return bool
-     * @throws NostoException
      */
     private function removeNostoAccount(SymfonyStyle $io, $scopeCode)
     {

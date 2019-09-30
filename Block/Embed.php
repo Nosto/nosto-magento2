@@ -36,11 +36,9 @@
 
 namespace Nosto\Tagging\Block;
 
-use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Element\Template\Context;
 use Nosto\Nosto;
-use Nosto\NostoException;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 
@@ -85,8 +83,6 @@ class Embed extends Template
      * Returns the account name for the current store.
      *
      * @return string the account name or empty string if account is not found.
-     * @throws NoSuchEntityException
-     * @throws NostoException
      */
     public function getAccountName()
     {

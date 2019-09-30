@@ -123,7 +123,6 @@ class Variation extends Template
      * nosto_variation tagging.
      *
      * @return bool a boolean value indicating whether the store has more than one currency
-     * @throws NoSuchEntityException
      */
     public function hasMultipleCurrencies()
     {

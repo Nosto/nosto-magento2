@@ -51,6 +51,7 @@ use Nosto\Tagging\Helper\Data as NostoHelper;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Helper\Url as NostoHelperUrl;
 use Nosto\Types\Signup\AccountInterface;
+use RuntimeException;
 
 /**
  * NostoHelperAccount helper class for common tasks related to Nosto accounts.
@@ -196,7 +197,6 @@ class Account extends AbstractHelper
      *
      * @param Store $store
      * @return bool
-     * @throws NostoException
      */
     public function nostoInstalledAndEnabled(Store $store)
     {
@@ -209,7 +209,6 @@ class Account extends AbstractHelper
      *
      * @param Store $store the store.
      * @return NostoSignupAccount|null the account or null if not found.
-     * @throws NostoException
      */
     public function findAccount(Store $store)
     {
@@ -217,7 +216,11 @@ class Account extends AbstractHelper
         $accountName = $store->getConfig(self::XML_PATH_ACCOUNT);
 
         if ($accountName !== null) {
-            $account = new NostoSignupAccount($accountName);
+            try {
+                $account = new NostoSignupAccount($accountName);
+            } catch (NostoException $e) {
+                throw new RuntimeException();
+            }
             /** @noinspection PhpUndefinedMethodInspection */
             $tokens = json_decode(
                 $store->getConfig(self::XML_PATH_TOKENS),
@@ -289,7 +292,6 @@ class Account extends AbstractHelper
      * Returns an array of stores where Nosto is installed
      *
      * @return Store[]
-     * @throws NostoException
      */
     public function getStoresWithNosto()
     {
@@ -344,7 +346,6 @@ class Account extends AbstractHelper
      * Returns the list of invalid Nosto accounts
      *
      * @return array
-     * @throws NostoException
      */
     public function getInvalidAccounts()
     {

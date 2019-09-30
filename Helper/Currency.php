@@ -40,7 +40,6 @@ use Exception;
 use Magento\Directory\Model\Currency as MagentoCurrency;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
-use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Store\Model\Store;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 
@@ -101,7 +100,6 @@ class Currency extends AbstractHelper
      *
      * @param Store $store
      * @return MagentoCurrency
-     * @throws NoSuchEntityException
      */
     public function getTaggingCurrency(Store $store)
     {
@@ -136,7 +134,6 @@ class Currency extends AbstractHelper
      *
      * @param Store $store
      * @return boolean
-     * @throws NoSuchEntityException
      */
     public function exchangeRatesInUse(Store $store)
     {

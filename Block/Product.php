@@ -43,7 +43,6 @@ use Magento\Catalog\Block\Product\Context;
 use Magento\Catalog\Block\Product\View;
 use Magento\Catalog\Model\ProductTypes\ConfigInterface;
 use Magento\Customer\Model\Session;
-use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Json\EncoderInterface as JsonEncoder;
 use Magento\Framework\Locale\FormatInterface;
 use Magento\Framework\Pricing\PriceCurrencyInterface;
@@ -147,7 +146,6 @@ class Product extends View
      * Returns the Nosto category DTO.
      *
      * @return string|null the current category as a slash-delimited string
-     * @throws NoSuchEntityException
      */
     public function getNostoCategory()
     {
@@ -183,7 +181,6 @@ class Product extends View
      * nosto_variation tagging.
      *
      * @return bool a boolean value indicating whether the store has more than one currency
-     * @throws NoSuchEntityException
      */
     public function hasMultipleCurrencies()
     {

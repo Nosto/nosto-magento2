@@ -37,9 +37,7 @@
 namespace Nosto\Tagging\Model\Rates;
 
 use Exception;
-use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Store\Model\Store;
-use Nosto\NostoException;
 use Nosto\Operation\SyncRates;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Currency as NostoHelperCurrency;
@@ -77,8 +75,6 @@ class Service
      *
      * @param Store $store the store for which the rates are to be updated.
      * @return bool a boolean value indicating whether the operation was successful
-     * @throws NoSuchEntityException
-     * @throws NostoException
      */
     public function update(Store $store)
     {

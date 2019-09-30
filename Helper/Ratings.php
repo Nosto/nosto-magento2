@@ -40,7 +40,6 @@ use Exception;
 use Magento\Catalog\Model\Product;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
-use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Registry;
 use Magento\Review\Model\ReviewFactory;
 use Magento\Store\Model\Store;
@@ -100,7 +99,6 @@ class Ratings extends AbstractHelper
      * @param Product $product
      * @param Store $store
      * @return ProductRatings|null
-     * @throws NoSuchEntityException
      */
     public function getRatings(Product $product, Store $store)
     {
@@ -122,7 +120,6 @@ class Ratings extends AbstractHelper
      * @param Store $store
      * @return array|null
      *
-     * @throws NoSuchEntityException
      * @suppress PhanUndeclaredClassMethod
      */
     private function getRatingsFromProviders(Product $product, Store $store)

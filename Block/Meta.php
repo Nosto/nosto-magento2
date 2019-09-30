@@ -36,7 +36,6 @@
 
 namespace Nosto\Tagging\Block;
 
-use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Element\Template\Context;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
@@ -101,7 +100,6 @@ class Meta extends Template
      * Returns the current stores language code in ISO 639-1 format.
      *
      * @return string the language code.
-     * @throws NoSuchEntityException
      */
     public function getLanguageCode()
     {

@@ -43,7 +43,6 @@ use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Module\Manager as ModuleManager;
 use Magento\Newsletter\Model\Subscriber;
 use Magento\Store\Api\WebsiteRepositoryInterface;
-use Nosto\NostoException;
 use Nosto\Operation\MarketingPermission;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
@@ -96,7 +95,6 @@ class UpdateMarketingPermission implements ObserverInterface
      * @param Observer $observer
      * @return void
      * @throws NoSuchEntityException
-     * @throws NostoException
      */
     public function execute(Observer $observer)
     {

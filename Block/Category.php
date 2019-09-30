@@ -36,7 +36,6 @@
 
 namespace Nosto\Tagging\Block;
 
-use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Registry;
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Element\Template\Context;
@@ -106,7 +105,6 @@ class Category extends Template
      * Returns the current category as a slash delimited string
      *
      * @return string|null the current category as a slash delimited string
-     * @throws NoSuchEntityException
      */
     private function getNostoCategory()
     {
@@ -122,7 +120,6 @@ class Category extends Template
      * Returns the HTML to render categories
      *
      * @return NostoCategory
-     * @throws NoSuchEntityException
      */
     public function getAbstractObject()
     {

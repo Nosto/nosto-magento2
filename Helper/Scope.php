@@ -48,6 +48,7 @@ use Magento\Store\Api\Data\WebsiteInterface;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Store\Model\Website;
+use Nosto\Tagging\Model\Service\Store\MissingStoreException;
 
 class Scope extends AbstractHelper
 {
@@ -69,12 +70,15 @@ class Scope extends AbstractHelper
     /**
      * @param null|string|bool|int|StoreInterface $storeId
      * @return Store
-     * @throws NoSuchEntityException
      */
     public function getStore($storeId = null)
     {
-        /** @noinspection PhpIncompatibleReturnTypeInspection */
-        return $this->storeManager->getStore($storeId);
+        try {
+            /** @noinspection PhpIncompatibleReturnTypeInspection */
+            return $this->storeManager->getStore($storeId);
+        } catch (NoSuchEntityException $e) {
+            throw new MissingStoreException($e);
+        }
     }
 
     /**
@@ -146,7 +150,6 @@ class Scope extends AbstractHelper
      *
      * @param RequestInterface $request
      * @return Store the store or null if not found.
-     * @throws NoSuchEntityException
      * @throws NotFoundException
      */
     public function getSelectedStore(RequestInterface $request)

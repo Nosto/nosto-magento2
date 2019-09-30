@@ -38,7 +38,6 @@ namespace Nosto\Tagging\Controller\Export;
 
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\Controller\Result\Raw as RawResult;
-use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Store\Model\Store;
 use Nosto\NostoException;
 use Nosto\Object\AbstractCollection;
@@ -114,8 +113,6 @@ class Product extends Base
     /**
      * @param AbstractCollection $collection
      * @return RawResult
-     * @throws NostoException
-     * @throws NoSuchEntityException
      */
     public function export(AbstractCollection $collection)
     {

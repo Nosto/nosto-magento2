@@ -37,7 +37,6 @@
 namespace Nosto\Tagging\Model\Person;
 
 use Magento\Framework\Event\ManagerInterface as EventManager;
-use Magento\Framework\Exception\NoSuchEntityException;
 use Nosto\Object\AbstractPerson;
 use Nosto\Object\ModelFilter;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
@@ -87,7 +86,6 @@ abstract class Builder
      * @param string|null $customerReference
      *
      * @return AbstractPerson|null
-     * @throws NoSuchEntityException
      */
     public function build(
         $firstName,

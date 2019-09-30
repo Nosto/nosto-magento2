@@ -40,7 +40,6 @@ use Exception;
 use Magento\Backend\Block\Template as BlockTemplate;
 use Magento\Backend\Block\Template\Context as BlockContext;
 use Magento\Backend\Model\Auth\Session;
-use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Exception\NotFoundException;
 use Nosto\Mixins\IframeTrait;
 use Nosto\Nosto;
@@ -142,7 +141,6 @@ class Iframe extends BlockTemplate
      *
      * @return array the config.
      * @throws NotFoundException
-     * @throws NoSuchEntityException
      */
     public function getIframeConfig()
     {

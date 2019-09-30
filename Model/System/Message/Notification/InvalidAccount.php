@@ -38,7 +38,6 @@ namespace Nosto\Tagging\Model\System\Message\Notification;
 
 use Magento\Framework\Notification\MessageInterface;
 use Magento\Framework\Phrase;
-use Nosto\NostoException;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 
@@ -80,7 +79,6 @@ class InvalidAccount implements MessageInterface
 
     /**
      * @return bool
-     * @throws NostoException
      */
     public function isDisplayed()
     {
