@@ -53,7 +53,7 @@ class NostoAccountConnectCommand extends Command
     const TOKEN_SUFFIX = '_token';
     const SCOPE_CODE = 'scope-code';
 
-    /*
+    /**
      * @var NostoHelperAccount
      */
     private $nostoHelperAccount;
@@ -145,11 +145,15 @@ class NostoAccountConnectCommand extends Command
         $scopeCode = $input->getOption(self::SCOPE_CODE) ?:
             $io->ask('Enter Store Scope Code');
 
-        $tokens = $this->getTokensFromInput($input, $io);
-        if ($this->updateNostoTokens($tokens, $accountId, $io, $scopeCode)) {
-            $io->success('Tokens successfully Configured');
-        } else {
-            $io->error('Could not complete operation');
+        try {
+            $tokens = $this->getTokensFromInput($input, $io);
+            if ($this->updateNostoTokens($tokens, $accountId, $io, $scopeCode)) {
+                $io->success('Tokens successfully Configured');
+            } else {
+                $io->error('Could not complete operation');
+            }
+        } catch (NostoException $e) {
+            $io->error('An error occurred');
         }
     }
 

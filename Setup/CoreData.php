@@ -106,6 +106,7 @@ abstract class CoreData
         );
 
         /** @noinspection PhpUnhandledExceptionInspection */
+        /** @noinspection PhpDeprecationInspection */
         $attribute->save();
     }
 }

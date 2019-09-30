@@ -1,4 +1,5 @@
-<?php
+<?php /** @noinspection PhpMissingParentConstructorInspection */
+
 /**
  * Copyright (c) 2019, Nosto Solutions Ltd
  * All rights reserved.

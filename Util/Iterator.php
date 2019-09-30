@@ -38,7 +38,6 @@ namespace Nosto\Tagging\Util;
 
 use Closure;
 use Magento\Framework\Data\Collection;
-use Nosto\NostoException;
 
 class Iterator
 {
@@ -47,12 +46,11 @@ class Iterator
     /**
      * Iterator constructor.
      * @param Collection $collection
-     * @throws NostoException
      */
     public function __construct(Collection $collection)
     {
         if (!is_numeric($collection->getPageSize())) {
-            throw new NostoException('Page size not defined or not an integer');
+            $collection->setPageSize(1);
         }
         $this->collection = $collection;
     }
