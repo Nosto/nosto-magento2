@@ -101,6 +101,7 @@ class AsyncBulkConsumer
      * @param array|\Magento\AsynchronousOperations\Api\Data\OperationInterface $operation
      * @return void
      * @throws Exception
+     * @suppress PhanUndeclaredClassConstant
      */
     public function processOperation($operation)
     {

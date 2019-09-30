@@ -44,6 +44,7 @@ use Magento\Store\Model\Store;
 use Nosto\Tagging\Model\ResourceModel\Product\Index\Collection as NostoIndexCollection;
 use Magento\Framework\App\ObjectManager;
 use Magento\Framework\Module\Manager;
+use Nosto\Tagging\Logger\Logger;
 
 class AsyncBulkPublisher implements BulkSyncInterface
 {
@@ -75,12 +76,14 @@ class AsyncBulkPublisher implements BulkSyncInterface
      * @param SerializerInterface $serializer
      * @param AsyncBulkConsumer $asyncBulkConsumer
      * @param Manager $manager
+     * @param Logger $logger
      */
     public function __construct(
         IdentityGeneratorInterface $identityService,
         SerializerInterface $serializer,
         AsyncBulkConsumer $asyncBulkConsumer,
-        Manager $manager
+        Manager $manager,
+        Logger $logger
     ) {
         $this->identityService = $identityService;
         $this->serializer = $serializer;
@@ -92,6 +95,7 @@ class AsyncBulkPublisher implements BulkSyncInterface
             $this->operationFactory = ObjectManager::getInstance()
                     ->get(\Magento\AsynchronousOperations\Api\Data\OperationInterfaceFactory::class);
         } catch (\Exception $e) {
+            $logger->info('Module Magento_AsynchronousOperations not available');
         }
     }
 
@@ -110,6 +114,7 @@ class AsyncBulkPublisher implements BulkSyncInterface
      * @param $productIds
      * @throws LocalizedException
      * @throws \Exception
+     * @suppress PhanUndeclaredVariableDim
      */
     private function publishCollectionToQueue(
         $storeId,
@@ -129,6 +134,7 @@ class AsyncBulkPublisher implements BulkSyncInterface
             );
         }
         if ($this->canUseAsyncOperations()) {
+            $operations = [];
             foreach ($operationsData as $operationData) {
                 $operations[] = $this->operationFactory->create($operationData);
             }
