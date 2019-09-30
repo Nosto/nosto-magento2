@@ -43,7 +43,6 @@ use Magento\Framework\Exception\AlreadyExistsException;
 use Nosto\Tagging\Api\CustomerRepositoryInterface;
 use Nosto\Tagging\Api\Data\CustomerInterface;
 use Nosto\Tagging\Model\Customer\Customer as NostoCustomer;
-use Nosto\Tagging\Model\RepositoryTrait;
 use Nosto\Tagging\Model\ResourceModel\Customer as CustomerResource;
 use Nosto\Tagging\Model\ResourceModel\Customer\CollectionFactory as CustomerCollectionFactory;
 use Nosto\Tagging\Util\Repository as RepositoryUtil;
@@ -185,6 +184,7 @@ class Repository implements CustomerRepositoryInterface
         /** @noinspection PhpUndefinedMethodInspection */
         $searchResults = $this->customerSearchResultsFactory->create();
 
+        /** @noinspection PhpIncompatibleReturnTypeInspection */
         return RepositoryUtil::search(
             $collection,
             $searchCriteria,

@@ -36,7 +36,6 @@
 
 namespace Nosto\Tagging\Test\_util;
 
-use Magento\Catalog\Api\OrderRepositoryInterface;
 use Magento\Framework\ObjectManagerInterface;
 use Magento\Sales\Model\Order;
 

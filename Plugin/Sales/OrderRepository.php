@@ -56,14 +56,17 @@ class OrderRepository
         ManagerInterface $eventManager
     ) {
         $this->eventManager = $eventManager;
-    }/** @noinspection PhpUnusedParameterInspection */
+    }
 
     /**
      * @param OrderRepositoryInterface $subject
      * @param OrderInterface|Order $order
      * @return OrderInterface
      */
-    public function afterSave(OrderRepositoryInterface $subject, OrderInterface $order)
+    public function afterSave(
+        /** @noinspection PhpUnusedParameterInspection */
+        OrderRepositoryInterface $subject,
+        OrderInterface $order)
     {
         $this->eventManager->dispatch('nosto_sales_save_after', ['order' => $order]);
         return $order;

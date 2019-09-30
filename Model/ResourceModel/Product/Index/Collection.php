@@ -206,6 +206,7 @@ class Collection extends AbstractCollection
     public function getOneOrNull()
     {
         $this->getSelect()->limit(1);
+        /** @noinspection PhpIncompatibleReturnTypeInspection */
         return $this->getSize() > 0 ? $this->getLastItem() : null; // @codingStandardsIgnoreLine
     }
 

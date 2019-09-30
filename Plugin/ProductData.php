@@ -75,7 +75,7 @@ class ProductData
         $this->indexerRegistry = $indexerRegistry;
         $this->indexerData = $indexerData;
         $this->magentoResourceProduct = $magentoResourceProduct;
-    }/** @noinspection PhpUnusedParameterInspection */
+    }
 
     /**
      * @param Index $index
@@ -84,6 +84,7 @@ class ProductData
      * @return mixed
      */
     public function aroundSave(
+        /** @noinspection PhpUnusedParameterInspection */
         Index $index,
         Closure $proceed,
         AbstractModel $product

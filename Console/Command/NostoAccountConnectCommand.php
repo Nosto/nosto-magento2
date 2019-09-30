@@ -147,7 +147,7 @@ class NostoAccountConnectCommand extends Command
 
         $tokens = $this->getTokensFromInput($input, $io);
         if ($this->updateNostoTokens($tokens, $accountId, $io, $scopeCode)) {
-            $io->success('Tokens Sucessfully Configured');
+            $io->success('Tokens successfully Configured');
         } else {
             $io->error('Could not complete operation');
         }
@@ -184,6 +184,8 @@ class NostoAccountConnectCommand extends Command
             if ($confirmOverride) {
                 $account->setTokens($tokens);
                 return $this->nostoHelperAccount->saveAccount($account, $store);
+            } else {
+                return false;
             }
         } else {
             $io->note('Local account not found. Saving local account...');
