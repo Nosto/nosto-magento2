@@ -38,6 +38,7 @@ namespace Nosto\Tagging\Model\Indexer;
 
 use Exception;
 use Magento\Indexer\Model\ProcessManager;
+use Magento\Store\Model\App\Emulation;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreDimensionProvider;
 use Nosto\NostoException;
@@ -78,6 +79,7 @@ class Data extends AbstractIndexer
         DataModeSwitcher $dataModeSwitcher,
         NostoLogger $logger,
         StoreDimensionProvider $dimensionProvider,
+        Emulation $storeEmulation,
         ProcessManager $processManager
     ) {
         $this->nostoServiceIndex = $nostoServiceIndex;
@@ -87,6 +89,7 @@ class Data extends AbstractIndexer
             $nostoHelperScope,
             $logger,
             $dimensionProvider,
+            $storeEmulation,
             $processManager
         );
     }

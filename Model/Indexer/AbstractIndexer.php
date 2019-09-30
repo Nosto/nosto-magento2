@@ -55,6 +55,7 @@ use Nosto\Tagging\Model\Indexer\Dimensions\ModeSwitcherInterface;
 use Nosto\Tagging\Util\Benchmark;
 use Traversable;
 use UnexpectedValueException;
+use Magento\Store\Model\App\Emulation;
 
 abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerActionInterface, MviewActionInterface
 {
@@ -73,6 +74,9 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
     /** @var DimensionProviderInterface */
     private $dimensionProvider;
 
+    /** @var Emulation */
+    private $storeEmulator;
+
     /**
      * AbstractIndexer constructor.
      * @param NostoHelperAccount $nostoHelperAccount
@@ -86,6 +90,7 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
         NostoHelperScope $nostoHelperScope,
         NostoLogger $nostoLogger,
         StoreDimensionProvider $dimensionProvider,
+        Emulation $storeEmulator,
         ProcessManager $processManager = null
     ) {
         $this->nostoHelperAccount = $nostoHelperAccount;
@@ -93,6 +98,7 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
         $this->nostoLogger = $nostoLogger;
         $this->dimensionProvider = $dimensionProvider;
         $this->processManager = $processManager;
+        $this->storeEmulator = $storeEmulator;
     }
 
     /**
@@ -179,6 +185,7 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
         }
 
         $storeId = $dimensions[StoreDimensionProvider::DIMENSION_NAME]->getValue();
+        $this->storeEmulator->startEnvironmentEmulation((int)$storeId);
         $store = $this->nostoHelperScope->getStore($storeId);
         $benchmarkName = sprintf('STORE-DIMENSION-%s', $store->getCode());
         Benchmark::getInstance()->startInstrumentation($benchmarkName, 0);
@@ -195,6 +202,7 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
         $this->nostoLogger->info(
             '[END] NOSTO-DIMENSION store:' . $store->getName() . '(' . round($duration, 2) . ' secs)'
         );
+        $this->storeEmulator->stopEnvironmentEmulation();
     }
 
     /**

@@ -49,6 +49,7 @@ use Nosto\Tagging\Model\ResourceModel\Magento\Product\CollectionFactory as Produ
 use Nosto\Tagging\Model\Service\Index as NostoServiceIndex;
 use Nosto\Tagging\Util\Indexer as IndexerUtil;
 use Symfony\Component\Console\Input\InputInterface;
+use Magento\Store\Model\App\Emulation;
 
 /**
  * Class Invalidate
@@ -84,6 +85,7 @@ class Invalidate extends AbstractIndexer
      * @param ProductCollectionFactory $productCollectionFactory
      * @param InvalidateModeSwitcher $modeSwitcher
      * @param StoreDimensionProvider $dimensionProvider
+     * @param Emulation $storeEmulation
      * @param ProcessManager $processManager
      * @param InputInterface $input
      */
@@ -95,6 +97,7 @@ class Invalidate extends AbstractIndexer
         ProductCollectionFactory $productCollectionFactory,
         InvalidateModeSwitcher $modeSwitcher,
         StoreDimensionProvider $dimensionProvider,
+        Emulation $storeEmulation,
         ProcessManager $processManager,
         InputInterface $input
     ) {
@@ -108,6 +111,7 @@ class Invalidate extends AbstractIndexer
             $nostoHelperScope,
             $logger,
             $dimensionProvider,
+            $storeEmulation,
             $processManager
         );
     }
