@@ -1,4 +1,5 @@
 <?php /** @noinspection SpellCheckingInspection */
+/** @noinspection HtmlUnknownTag */
 
 /**
  * Copyright (c) 2019, Nosto Solutions Ltd

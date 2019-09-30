@@ -1,4 +1,5 @@
-<?php /** @noinspection HtmlUnknownTag */
+<?php
+/** @noinspection HtmlUnknownTag */
 
 namespace Nosto\Tagging\Test\Integration\Block;
 
