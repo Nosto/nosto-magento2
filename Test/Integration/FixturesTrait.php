@@ -28,6 +28,7 @@ trait FixturesTrait
         /** @var Product $product */
         $product = self::getStaticObjectManager()
             ->create('Magento\Catalog\Model\Product');
+        /** @noinspection PhpUndefinedMethodInspection */
         $product->setTypeId('simple')
             ->setAttributeSetId(4)
             ->setWebsiteIds([1])

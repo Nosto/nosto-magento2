@@ -53,7 +53,7 @@ class NostoAccountRemoveCommand extends Command
 {
     const SCOPE_CODE = 'scope-code';
 
-    /*
+    /**
      * @var NostoHelperAccount
      */
     private $nostoHelperAccount;
