@@ -40,5 +40,5 @@
             connection="db"
             maxMessages="5000"
             consumerInstance="Magento\Framework\MessageQueue\Consumer"
-            handler="Nosto\Tagging\Model\Service\Sync\BulkConsumer::processOperation" />
+            handler="Nosto\Tagging\Model\Service\Sync\AsyncBulkConsumer::processOperation" />
 </config>

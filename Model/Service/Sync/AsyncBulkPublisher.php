@@ -43,8 +43,9 @@ use Magento\Framework\Serialize\SerializerInterface;
 use Magento\Store\Model\Store;
 use Nosto\Tagging\Model\ResourceModel\Product\Index\Collection as NostoIndexCollection;
 use Magento\Framework\App\ObjectManager;
+use Magento\Framework\Module\Manager;
 
-class AsyncBulkSync implements BulkSyncInterface
+class AsyncBulkPublisher implements BulkSyncInterface
 {
     const NOSTO_SYNC_MESSAGE_QUEUE = 'nosto_product_sync.update';
     const BULK_SIZE = 100;
@@ -61,21 +62,37 @@ class AsyncBulkSync implements BulkSyncInterface
     /** @var SerializerInterface */
     private $serializer;
 
+    /** @var AsyncBulkConsumer */
+    private $asyncBulkConsumer;
+
+    /** @var Manager */
+    private $manager;
+
     /**
-     * SyncBulkPublisher constructor.
+     * AsyncBulkPublisher constructor.
      * @param IdentityGeneratorInterface $identityService
      * @param SerializerInterface $serializer
+     * @param AsyncBulkConsumer $asyncBulkConsumer
+     * @param Manager $manager
      */
     public function __construct(
         IdentityGeneratorInterface $identityService,
-        SerializerInterface $serializer
+        SerializerInterface $serializer,
+        AsyncBulkConsumer $asyncBulkConsumer,
+        Manager $manager
     ) {
         $this->identityService = $identityService;
         $this->serializer = $serializer;
-        $this->bulkManagement = ObjectManager::getInstance()
-                ->get(\Magento\Framework\Bulk\BulkManagementInterface::class);
-        $this->operationFactory = ObjectManager::getInstance()
-                ->get(\Magento\AsynchronousOperations\Api\Data\OperationInterfaceFactory::class);
+        $this->asyncBulkConsumer = $asyncBulkConsumer;
+        $this->manager = $manager;
+        try {
+            $this->bulkManagement = ObjectManager::getInstance()
+                    ->get(\Magento\Framework\Bulk\BulkManagementInterface::class);
+            $this->operationFactory = ObjectManager::getInstance()
+                    ->get(\Magento\AsynchronousOperations\Api\Data\OperationInterfaceFactory::class);
+        } catch (\Exception $e) {
+            //log here that is not available?
+        }
     }
 
     /**
@@ -92,6 +109,7 @@ class AsyncBulkSync implements BulkSyncInterface
      * @param $storeId
      * @param $productIds
      * @throws LocalizedException
+     * @throws \Exception
      */
     private function publishCollectionToQueue(
         $storeId,
@@ -100,9 +118,9 @@ class AsyncBulkSync implements BulkSyncInterface
         $productIdsChunks = array_chunk($productIds, self::BULK_SIZE);
         $bulkUuid = $this->identityService->generateId();
         $bulkDescription = __('Sync ' . count($productIds) . ' Nosto products');
-        $operations = [];
+        $operationsData = [];
         foreach ($productIdsChunks as $productIdsChunk) {
-            $operations[] = $this->buildOperation(
+            $operationsData[] = $this->buildOperationData(
                 'Sync Nosto products',
                 self::NOSTO_SYNC_MESSAGE_QUEUE,
                 $storeId,
@@ -110,8 +128,13 @@ class AsyncBulkSync implements BulkSyncInterface
                 $bulkUuid
             );
         }
-
-        if (!empty($operations)) {
+        if ($this->canUseAsyncOperations()) {
+            foreach ($operationsData as $operationData) {
+                $operations[] = $this->operationFactory->create($operationData);
+            }
+            if (empty($operations)) {
+                return;
+            }
             $result = $this->bulkManagement->scheduleBulk(
                 $bulkUuid,
                 $operations,
@@ -123,21 +146,25 @@ class AsyncBulkSync implements BulkSyncInterface
                     __('Something went wrong while processing the request.')
                 );
             }
+        } else {
+            foreach ($operationsData as $operationData) {
+                $this->asyncBulkConsumer->processOperation($operationData);
+            }
+            return;
         }
     }
 
     /**
-     * Make asynchronous operation
+     * Build asynchronous operation data
      *
      * @param string $meta
      * @param string $queue
      * @param int $storeId
      * @param array $productIds
      * @param string $bulkUuid
-     *
-     * @return \Magento\AsynchronousOperations\Api\Data\OperationInterface
+     * @return array
      */
-    private function buildOperation(
+    private function buildOperationData(
         $meta,
         $queue,
         $storeId,
@@ -149,7 +176,7 @@ class AsyncBulkSync implements BulkSyncInterface
             'product_ids' => $productIds,
             'store_id' => $storeId
         ];
-        $data = [
+        return [
             'data' => [
                 'bulk_uuid' => $bulkUuid,
                 'topic_name' => $queue,
@@ -157,7 +184,16 @@ class AsyncBulkSync implements BulkSyncInterface
                 'status' => \Magento\Framework\Bulk\OperationInterface::STATUS_TYPE_OPEN,
             ]
         ];
+    }
 
-        return $this->operationFactory->create($data);
+    /**
+     * @return bool
+     */
+    private function canUseAsyncOperations()
+    {
+        if ($this->manager->isEnabled('Magento_AsynchronousOperations')) {
+            return true;
+        }
+        return false;
     }
 }

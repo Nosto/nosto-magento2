@@ -37,7 +37,6 @@
 namespace Nosto\Tagging\Model\Service\Sync;
 
 use Exception;
-use Magento\AsynchronousOperations\Api\Data\OperationInterface;
 use Magento\Framework\EntityManager\EntityManager;
 use Magento\Framework\Json\Helper\Data as JsonHelper;
 use Nosto\Tagging\Logger\Logger;
@@ -46,9 +45,11 @@ use Nosto\Tagging\Model\Service\Sync\SyncService as NostoSyncService;
 use Nosto\Tagging\Helper\Scope as NostoScopeHelper;
 
 /**
- * Class Consumer
+ * Asynchronous Bulk Consumer
+ *
+ * Class AsyncBulkConsumer
  */
-class BulkConsumer
+class AsyncBulkConsumer
 {
     /** @var Logger */
     private $logger;
@@ -69,7 +70,7 @@ class BulkConsumer
     private $entityManager;
 
     /**
-     * Consumer constructor.
+     * AsyncBulkConsumer constructor.
      *
      * @param Logger $logger
      * @param JsonHelper $jsonHelper
@@ -97,11 +98,11 @@ class BulkConsumer
     /**
      * Processing operation for product sync
      *
-     * @param OperationInterface $operation
+     * @param array|\Magento\AsynchronousOperations\Api\Data\OperationInterface $operation
      * @return void
      * @throws Exception
      */
-    public function processOperation(OperationInterface $operation)
+    public function processOperation($operation)
     {
         $errorCode = null;
         $message = null;

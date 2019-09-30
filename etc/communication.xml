@@ -36,6 +36,6 @@
 <!--suppress XmlUnboundNsPrefix -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Communication/etc/communication.xsd">
     <topic name="nosto_product_sync.update" request="Magento\AsynchronousOperations\Api\Data\OperationInterface">
-        <handler name="nosto_product_sync.update" type="Nosto\Tagging\Model\Service\Sync\BulkConsumer" method="processOperation" />
+        <handler name="nosto_product_sync.update" type="Nosto\Tagging\Model\Service\Sync\AsyncBulkConsumer" method="processOperation" />
     </topic>
 </config>
