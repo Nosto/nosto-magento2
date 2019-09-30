@@ -40,7 +40,6 @@ use Exception;
 use Magento\Indexer\Model\ProcessManager;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreDimensionProvider;
-use Nosto\NostoException;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
@@ -87,6 +86,7 @@ class Invalidate extends AbstractIndexer
      * @param InvalidateModeSwitcher $modeSwitcher
      * @param StoreDimensionProvider $dimensionProvider
      * @param ProcessManager $processManager
+     * @param InputInterface $input
      */
     public function __construct(
         NostoHelperAccount $nostoHelperAccount,
@@ -124,7 +124,6 @@ class Invalidate extends AbstractIndexer
 
     /**
      * @inheritDoc
-     * @throws NostoException
      */
     public function executeFull()
     {

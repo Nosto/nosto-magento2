@@ -80,8 +80,9 @@ class Category extends Template
      *
      * @param Context $context
      * @param Registry $registry
-     * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoCategoryBuilder $categoryBuilder
+     * @param NostoHelperScope $nostoHelperScope
+     * @param NostoHelperAccount $nostoHelperAccount
      * @param array $data
      */
     public function __construct(

@@ -151,10 +151,11 @@ class Url extends AbstractHelper
      * @param Context $context the context.
      * @param ProductRepository $productRepository
      * @param CategoryCollectionFactory $categoryCollectionFactory auto generated category collection factory.
-     * @param UrlBuilder $urlBuilder frontend URL builder.
      * @param Data $nostoDataHelper
+     * @param UrlBuilder $urlBuilder frontend URL builder.
      * @param BackendDataHelper $backendDataHelper
      * @param NostoUrlBuilder $nostoUrlBuilder
+     * @param NostoLogger $nostoLogger
      */
     public function __construct(
         Context $context,
@@ -272,6 +273,7 @@ class Url extends AbstractHelper
      *
      * @param Store $store the store to get the url for.
      * @return string the url.
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function getPreviewUrlSearch(Store $store)
     {
@@ -309,6 +311,7 @@ class Url extends AbstractHelper
      *
      * @param Store $store the store to get the url for.
      * @return string the url.
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function getPreviewUrlCart(Store $store)
     {
@@ -329,6 +332,7 @@ class Url extends AbstractHelper
      *
      * @param Store $store the store to get the url for.
      * @return string the url.
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function getPreviewUrlFront(Store $store)
     {
@@ -380,6 +384,7 @@ class Url extends AbstractHelper
      *
      * @param Store $store
      * @return array
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function getUrlOptionsWithNoSid(Store $store)
     {

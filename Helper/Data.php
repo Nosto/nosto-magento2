@@ -490,6 +490,7 @@ class Data extends AbstractHelper
      *
      * @param StoreInterface|null $store the store model or null.
      * @return bool the configuration value
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function isMultiCurrencyDisabled(StoreInterface $store = null)
     {
@@ -502,6 +503,7 @@ class Data extends AbstractHelper
      *
      * @param StoreInterface|null $store the store model or null.
      * @return bool the configuration value
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function isMultiCurrencyExchangeRatesEnabled(StoreInterface $store = null)
     {

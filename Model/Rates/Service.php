@@ -75,6 +75,7 @@ class Service
      *
      * @param Store $store the store for which the rates are to be updated.
      * @return bool a boolean value indicating whether the operation was successful
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      * @throws \Nosto\NostoException
      */
     public function update(Store $store)

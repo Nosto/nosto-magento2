@@ -84,6 +84,7 @@ class Config implements ObserverInterface
      * @param NostoHelperScope $nostoHelperScope
      * @param NostoAccountHelper $nostoAccountHelper
      * @param IndexCollection $indexCollection
+     * @param IndexRepository $indexRepository
      */
     public function __construct(
         NostoLogger $logger,
@@ -106,6 +107,8 @@ class Config implements ObserverInterface
      *
      * @param Observer $observer the dispatched event
      * @throws LocalizedException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     * @throws \Nosto\NostoException
      */
     public function execute(Observer $observer)
     {

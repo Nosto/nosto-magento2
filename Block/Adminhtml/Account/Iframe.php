@@ -79,6 +79,7 @@ class Iframe extends BlockTemplate
      * @param NostoIframeMetaBuilder $iframeMetaBuilder
      * @param NostoCurrentUserBuilder $nostoCurrentUserBuilder
      * @param NostoHelperScope $nostoHelperScope
+     * @param NostoLogger $logger
      * @param array $data
      */
     public function __construct(

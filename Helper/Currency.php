@@ -100,6 +100,7 @@ class Currency extends AbstractHelper
      *
      * @param Store $store
      * @return MagentoCurrency
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function getTaggingCurrency(Store $store)
     {
@@ -134,6 +135,7 @@ class Currency extends AbstractHelper
      *
      * @param Store $store
      * @return boolean
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function exchangeRatesInUse(Store $store)
     {

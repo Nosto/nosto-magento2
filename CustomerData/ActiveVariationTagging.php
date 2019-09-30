@@ -76,6 +76,7 @@ class ActiveVariationTagging implements SectionSourceInterface
      * @param NostoHelperData $nostoHelperData
      * @param NostoHelperCustomer $nostoHelperCustomer
      * @param NostoHelperScope $nostoHelperScope
+     * @param NostoHelperVariation $nostoHelperVariation
      * @param NostoLogger $nostoLogger
      */
     public function __construct(

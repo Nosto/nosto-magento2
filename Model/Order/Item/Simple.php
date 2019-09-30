@@ -38,7 +38,6 @@ namespace Nosto\Tagging\Model\Order\Item;
 
 use Magento\Catalog\Model\ResourceModel\Eav\Attribute;
 use Magento\Framework\App\ObjectManager;
-use Magento\Framework\Exception\LocalizedException;
 use Magento\Sales\Model\Order\Item;
 use Nosto\Tagging\Model\Item\Simple as SimpleItem;
 use Throwable;
@@ -50,7 +49,6 @@ class Simple extends SimpleItem
      *
      * @param Item $item the ordered item
      * @return string the name of the product
-     * @throws LocalizedException
      */
     public static function buildItemName(Item $item)
     {

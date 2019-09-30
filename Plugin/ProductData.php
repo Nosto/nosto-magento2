@@ -75,7 +75,7 @@ class ProductData
         $this->indexerRegistry = $indexerRegistry;
         $this->indexerData = $indexerData;
         $this->magentoResourceProduct = $magentoResourceProduct;
-    }
+    }/** @noinspection PhpUnusedParameterInspection */
 
     /**
      * @param Index $index

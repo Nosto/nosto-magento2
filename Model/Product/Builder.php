@@ -292,6 +292,7 @@ class Builder
      * @param Product $product
      * @param Store $store
      * @return array
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     private function getCustomFieldsWithAttributes(Product $product, Store $store)
     {
@@ -317,6 +318,7 @@ class Builder
      *
      * @param Store $store
      * @return array
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     private function getAttributesFromAllTags(Store $store)
     {
@@ -343,6 +345,7 @@ class Builder
      * @param Product $product the magento product model.
      * @param NostoProduct $nostoProduct nosto product object
      * @param Store $store the store model.
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     private function amendAttributeTags(Product $product, NostoProduct $nostoProduct, Store $store)
     {
@@ -407,6 +410,7 @@ class Builder
      * @param Product $product the product model.
      * @param Store $store
      * @return array
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function buildAlternativeImages(Product $product, Store $store)
     {
@@ -425,6 +429,7 @@ class Builder
      * @param Product $product
      * @param Store $store
      * @return array
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function buildTags(Product $product, Store $store)
     {

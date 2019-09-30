@@ -40,7 +40,6 @@ use Exception;
 use Magento\Indexer\Model\ProcessManager;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreDimensionProvider;
-use Nosto\Exception\MemoryOutOfBoundsException;
 use Nosto\NostoException;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;

@@ -58,6 +58,7 @@ class Collection
      * @param Builder $nostoVariationBuilder
      * @param GroupManagement $customerGroupManager
      * @param GroupRepository $groupRepository
+     * @param Builder $variationBuilder
      */
     public function __construct(
         Builder $nostoVariationBuilder,

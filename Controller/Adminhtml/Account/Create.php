@@ -170,7 +170,7 @@ class Create extends Base
                         ]
                     );
 
-                    // Note that we will send the exhange rates even if the multi currency
+                    // Note that we will send the exchange rates even if the multi currency
                     // is not set. This is mostly for debugging purposes.
                     if ($this->nostoCurrencyHelper->getCurrencyCount($store) > 1) {
                         try {

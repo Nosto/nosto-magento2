@@ -56,7 +56,7 @@ class OrderRepository
         ManagerInterface $eventManager
     ) {
         $this->eventManager = $eventManager;
-    }
+    }/** @noinspection PhpUnusedParameterInspection */
 
     /**
      * @param OrderRepositoryInterface $subject

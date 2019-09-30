@@ -114,6 +114,7 @@ class Sync extends AbstractService
      * @param NostoIndexCollection $collection
      * @param Store $store
      * @throws NostoException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function syncIndexedProducts(NostoIndexCollection $collection, Store $store)
     {

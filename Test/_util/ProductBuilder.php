@@ -20,8 +20,6 @@ class ProductBuilder implements BuilderInterface
     }
 
     /**
-     * @param $name
-     * @param $type
      * @return $this
      */
     public function defaultSimple()

@@ -99,6 +99,7 @@ class Ratings extends AbstractHelper
      * @param Product $product
      * @param Store $store
      * @return ProductRatings|null
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function getRatings(Product $product, Store $store)
     {
@@ -120,6 +121,7 @@ class Ratings extends AbstractHelper
      * @param Store $store
      * @return array|null
      *
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      * @suppress PhanUndeclaredClassMethod
      */
     private function getRatingsFromProviders(Product $product, Store $store)

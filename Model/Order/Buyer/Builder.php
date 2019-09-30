@@ -80,6 +80,7 @@ class Builder extends PersonBuilder
      *
      * @param Order $order
      * @return AbstractPerson|null
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      * @suppress PhanTypeMismatchArgument
      */
     public function fromOrder(Order $order)

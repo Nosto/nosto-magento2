@@ -72,6 +72,7 @@ abstract class AbstractService
      *
      * @param string $serviceName
      * @throws MemoryOutOfBoundsException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function checkMemoryConsumption($serviceName)
     {

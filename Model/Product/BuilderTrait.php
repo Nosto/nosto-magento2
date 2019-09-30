@@ -80,6 +80,7 @@ trait BuilderTrait
      * @param Product $product
      * @param Store $store
      * @return array
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function buildCustomFields(Product $product, Store $store)
     {
@@ -120,6 +121,7 @@ trait BuilderTrait
      * @param Product $product
      * @param Store $store
      * @return string|null
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function buildImageUrl(Product $product, Store $store)
     {
@@ -182,6 +184,7 @@ trait BuilderTrait
      * @param string $url
      * @param Store $store
      * @return string
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function finalizeImageUrl($url, Store $store)
     {

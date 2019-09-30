@@ -79,6 +79,7 @@ class InvalidAccount implements MessageInterface
 
     /**
      * @return bool
+     * @throws \Nosto\NostoException
      */
     public function isDisplayed()
     {

@@ -82,6 +82,7 @@ class Update implements ObserverInterface
      * rates management service
      *
      * @param Observer $observer the dispatched event
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      * @throws \Nosto\NostoException
      */
     public function execute(Observer $observer) // @codingStandardsIgnoreLine

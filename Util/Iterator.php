@@ -61,7 +61,6 @@ class Iterator
      * Iterates through the collection in batches defined by the collection page size
      * and applies closure to each item
      * @param Closure $closure
-     * @throws NostoException
      */
     public function each(Closure $closure)
     {
@@ -79,7 +78,6 @@ class Iterator
      * Handles the pagination / batching and batching for a collection
      *
      * @param Closure $closure
-     * @throws NostoException
      */
     public function eachBatch(Closure $closure)
     {

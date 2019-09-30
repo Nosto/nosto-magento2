@@ -41,7 +41,6 @@ use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\Product\Type;
 use Magento\Catalog\Model\ProductRepository;
 use Magento\Framework\Event\ManagerInterface;
-use Magento\Framework\Exception\LocalizedException;
 use Magento\Quote\Model\Quote\Item;
 use Nosto\Object\Cart\LineItem;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
@@ -88,7 +87,6 @@ class Builder
      * @param Item $item
      * @param $currencyCode
      * @return LineItem
-     * @throws LocalizedException
      */
     public function build(Item $item, $currencyCode)
     {

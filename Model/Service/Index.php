@@ -270,6 +270,7 @@ class Index extends AbstractService
     /**
      * @param Store $store
      * @param array $ids
+     * @throws NoSuchEntityException
      * @throws NostoException
      */
     public function indexProducts(Store $store, array $ids = [])

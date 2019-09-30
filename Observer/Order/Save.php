@@ -123,6 +123,7 @@ class Save implements ObserverInterface
      *
      * @param Observer $observer
      * @return void
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      * @throws \Nosto\NostoException
      * @suppress PhanDeprecatedFunction
      * @suppress PhanTypeMismatchArgument
@@ -169,6 +170,7 @@ class Save implements ObserverInterface
      * Handles the inventory level update to Nosto
      *
      * @param NostoOrder $nostoOrder
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     private function handleInventoryLevelUpdate(NostoOrder $nostoOrder)
     {
@@ -216,6 +218,7 @@ class Save implements ObserverInterface
      * @param Order $order
      * @param AccountInterface $nostoAccount
      * @param Store $store
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     private function sendNewOrder(Order $order, AccountInterface $nostoAccount, Store $store)
     {

@@ -118,6 +118,7 @@ class Builder
      *
      * @param Store $store the store for which to build the front-page URL
      * @return string the absolute front-page URL of the store
+     * @throws NoSuchEntityException
      */
     private function buildURL(Store $store)
     {

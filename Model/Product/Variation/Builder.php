@@ -99,8 +99,7 @@ class Builder
 
     /**
      * @param Product $product
-     * @param NostoProduct $
-     * @param $nostoProduct
+     * @param NostoProduct $nostoProduct
      * @param Store $store
      * @param Group $group
      * @return Variation
