@@ -97,7 +97,7 @@ class AsyncBulkPublisher implements BulkSyncInterface
             $this->operationFactory = ObjectManager::getInstance()
                     ->get(\Magento\AsynchronousOperations\Api\Data\OperationInterfaceFactory::class);
         } catch (Exception $e) {
-            $logger->info('Module Magento_AsynchronousOperations not available');
+            $logger->debug('Module Magento_AsynchronousOperations not available');
         }
     }
 
