@@ -163,7 +163,7 @@
             <argument name="dimensionProvider" xsi:type="object" shared="false">
                 Nosto\Tagging\Model\Indexer\Dimensions\StoreDimensionProvider
             </argument>
-            <argument name="input" xsi:type="object">Symfony\Component\Console\Input\ArgvInput</argument>
+            <argument name="input" xsi:type="object">Symfony\Component\Console\Input\ArgvInput\Proxy</argument>
         </arguments>
     </type>
 </config>
