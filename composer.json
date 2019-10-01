@@ -13,7 +13,6 @@
     "magento-ecg/coding-standard": "2.*",
     "magento/marketplace-eqp": "1.*",
     "magento/marketplace-tools": "dev-master",
-    "magento/framework": "*",
     "magento/module-catalog": "*",
     "magento/module-sales": "101.0.0",
     "magento/module-sales-inventory": "100.2.0",
@@ -37,7 +36,8 @@
   "minimum-stability": "dev",
   "require": {
     "nosto/php-sdk": "4.0.0",
-    "php": ">=7.0.0"
+    "php": ">=7.0.0",
+    "magento/framework": ">=101.0.6|~102.0"
   },
   "repositories": [
     {
