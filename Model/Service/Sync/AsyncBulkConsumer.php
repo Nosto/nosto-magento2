@@ -37,6 +37,7 @@
 namespace Nosto\Tagging\Model\Service\Sync;
 
 use Exception;
+use InvalidArgumentException;
 use Magento\Framework\EntityManager\EntityManager;
 use Magento\Framework\Json\Helper\Data as JsonHelper;
 use Nosto\Tagging\Logger\Logger;
@@ -107,10 +108,17 @@ class AsyncBulkConsumer
     {
         $errorCode = null;
         $message = null;
-        if (!is_array($operation)) {
+        if (is_array($operation)) {
+            $serializedData = $operation['data']['serialized_data'];
+        } elseif ($operation instanceof \Magento\AsynchronousOperations\Api\Data\OperationInterface) {
             $serializedData = $operation->getSerializedData();
         } else {
-            $serializedData = $operation['data']['serialized_data'];
+            throw new InvalidArgumentException(
+                sprintf(
+                    'Expected array or \Magento\AsynchronousOperations\Api\Data\OperationInterface got %s',
+                    gettype($operation)
+                )
+            );
         }
         $unserializedData = $this->jsonHelper->jsonDecode($serializedData);
         $productIds = $unserializedData['product_ids'];
@@ -120,6 +128,12 @@ class AsyncBulkConsumer
             $outOfSyncCollection = $this->indexRepository->getByProductIdsAndStoreId($productIds, $storeId);
             $this->nostoSyncService->syncIndexedProducts($outOfSyncCollection, $store);
             $this->nostoSyncService->syncDeletedProducts($store);
+            if (!is_array($operation)) {
+                $operation->setStatus(
+                    \Magento\AsynchronousOperations\Api\Data\OperationInterface::STATUS_TYPE_COMPLETE
+                )->setResultMessage($message);
+                $this->entityManager->save($operation);
+            }
         } catch (Exception $e) {
             $this->logger->critical($e->getMessage());
             $message = __('Something went wrong when syncing products to Nosto. Check log for details.');
@@ -129,12 +143,6 @@ class AsyncBulkConsumer
                 )->setErrorCode($e->getCode())
                 ->setResultMessage($message);
             }
-        }
-        if (!is_array($operation)) {
-            $operation->setStatus(
-                \Magento\AsynchronousOperations\Api\Data\OperationInterface::STATUS_TYPE_COMPLETE
-            )->setResultMessage($message);
-            $this->entityManager->save($operation);
         }
     }
 }
