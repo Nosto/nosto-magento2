@@ -53,9 +53,15 @@ return [
         'vendor/nosto/php-sdk',
         'vendor/phpseclib',
         'vendor/magento',
+        '../../../lib/internal', // When Running Locally
+        'magento/lib/internal', // When Running On CI
         'vendor/monolog',
         'vendor/zendframework',
         'vendor/psr',
+        'magento/generated', // When Running On CI
+        '../../../generated', // When Running Locally
+        '../../../app/code/Magento/AsynchronousOperations', // When Running Locally
+        'magento/app/code/Magento/AsynchronousOperations', // When Running on CI
         'vendor/symfony/console',
         'magento/generated',
         '../../../app/code/Magento/Store', // When Running Locally
@@ -69,7 +75,11 @@ return [
     ],
     'exclude_analysis_directory_list' => [
         'vendor/',
-        'magento/'
+        'magento/',
+        '../../../lib/internal',
+        '../../../generated',
+        '../../../app/',
+        'magento/app/code/Magento/AsynchronousOperations'
     ],
     'suppress_issue_types' => [
         'PhanParamSignatureMismatch',

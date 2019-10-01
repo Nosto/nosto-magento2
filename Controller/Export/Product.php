@@ -46,7 +46,7 @@ use Nosto\Object\Product\ProductCollection;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Model\Product\Collection as NostoProductCollection;
-use Nosto\Tagging\Model\Service\Sync as NostoSyncService;
+use Nosto\Tagging\Model\Service\Sync\SyncService as NostoSyncService;
 
 /**
  * Product export controller used to export product history to Nosto in order to

@@ -46,7 +46,7 @@ use Nosto\Tagging\Model\Indexer\Dimensions\AbstractDimensionModeConfiguration as
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
-use Magento\Store\Model\StoreDimensionProvider;
+use Nosto\Tagging\Model\Indexer\Dimensions\StoreDimensionProvider;
 use Magento\Indexer\Model\ProcessManager;
 use Nosto\Tagging\Util\Benchmark;
 use Magento\Framework\App\ObjectManager;
@@ -125,6 +125,7 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
     /**
      * @param array $ids
      * @suppress PhanTypeMismatchArgument
+     * @throws NostoException
      */
     public function doWork(array $ids = [])
     {
