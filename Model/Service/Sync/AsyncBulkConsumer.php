@@ -114,10 +114,8 @@ class AsyncBulkConsumer
             $serializedData = $operation->getSerializedData();
         } else {
             throw new InvalidArgumentException(
-                sprintf(
-                    'Expected array or \Magento\AsynchronousOperations\Api\Data\OperationInterface got %s',
-                    gettype($operation)
-                )
+                'Wrong type passed to AsyncBulkConsumer::processOperation. 
+                Expected array|\Magento\AsynchronousOperations\Api\Data\OperationInterface.'
             );
         }
         $unserializedData = $this->jsonHelper->jsonDecode($serializedData);
