@@ -38,6 +38,7 @@ namespace Nosto\Tagging\Model\Service;
 
 use Exception;
 use Magento\Catalog\Api\Data\ProductInterface;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Store\Api\Data\StoreInterface;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\ProductRepository;
@@ -66,6 +67,7 @@ use Nosto\Tagging\Util\PagingIterator;
 use Nosto\Types\Product\ProductInterface as NostoProductInterface;
 use Nosto\Tagging\Model\Indexer\Invalidate as NostoIndexerInvalidate;
 use Nosto\Tagging\Model\Indexer\Data as NostoIndexerData;
+use Nosto\Tagging\Model\Service\Sync\BulkSyncInterface;
 
 class Index extends AbstractService
 {
@@ -100,9 +102,6 @@ class Index extends AbstractService
     /** @var TimezoneInterface */
     private $magentoTimeZone;
 
-    /** @var Sync */
-    private $nostoSyncService;
-
     /** @var NostoProductRepository $nostoProductRepository */
     private $nostoProductRepository;
 
@@ -111,6 +110,9 @@ class Index extends AbstractService
 
     /** @var array */
     private $invalidatedProducts = [];
+
+    /** @var BulkSyncInterface */
+    private $syncBulkPublisher;
 
     /** @var ProductSerializer */
     private $productSerializer;
@@ -132,7 +134,7 @@ class Index extends AbstractService
      * @param ProductCollectionFactory $productCollectionFactory
      * @param TimezoneInterface $magentoTimeZone
      * @param NostoDataHelper $nostoDataHelper
-     * @param Sync $nostoSyncService
+     * @param BulkSyncInterface $syncBulkPublisher
      * @param ProductSerializer $productSerializer
      * @param ProductComparatorInterface $productComparator
      */
@@ -149,7 +151,7 @@ class Index extends AbstractService
         ProductCollectionFactory $productCollectionFactory,
         TimezoneInterface $magentoTimeZone,
         NostoDataHelper $nostoDataHelper,
-        Sync $nostoSyncService,
+        BulkSyncInterface $syncBulkPublisher,
         ProductSerializer $productSerializer,
         ProductComparatorInterface $productComparator
     ) {
@@ -164,7 +166,7 @@ class Index extends AbstractService
         $this->nostoProductRepository = $nostoProductRepository;
         $this->productCollectionFactory = $productCollectionFactory;
         $this->magentoTimeZone = $magentoTimeZone;
-        $this->nostoSyncService = $nostoSyncService;
+        $this->syncBulkPublisher = $syncBulkPublisher;
         $this->productSerializer = $productSerializer;
         $this->productComparator = $productComparator;
     }
@@ -303,8 +305,7 @@ class Index extends AbstractService
         $dirtyCollection = $this->getDirtyCollection($store, $ids);
         $this->rebuildDirtyProducts($dirtyCollection, $store);
         $outOfSyncCollection = $this->getOutOfSyncCollection($store, $ids);
-        $this->nostoSyncService->syncIndexedProducts($outOfSyncCollection, $store);
-        $this->nostoSyncService->syncDeletedProducts($store);
+        $this->syncBulkPublisher->execute($outOfSyncCollection, $store);
     }
 
     /**

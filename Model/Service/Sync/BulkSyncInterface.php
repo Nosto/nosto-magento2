@@ -33,58 +33,17 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
+namespace Nosto\Tagging\Model\Service\Sync;
 
-namespace Nosto\Tagging\Model\Indexer\Dimensions;
+use Nosto\Tagging\Model\ResourceModel\Product\Index\Collection as NostoIndexCollection;
+use Magento\Store\Model\Store;
 
-use Magento\Framework\App\Config\ScopeConfigInterface;
-use Nosto\Tagging\Model\Indexer\Dimensions\StoreDimensionProvider;
-
-abstract class AbstractDimensionModeConfiguration
+interface BulkSyncInterface
 {
     /**
-     * Available modes of dimensions for nosto product data indexer
+     * @param NostoIndexCollection $collection
+     * @param Store $store
+     * @return void
      */
-    const DIMENSION_NONE = 'none';
-    const DIMENSION_STORE = 'store';
-
-    /**
-     * Mapping between dimension mode and dimension provider name
-     *
-     * @var array
-     */
-    public $modesMapping = [
-        self::DIMENSION_NONE => [
-        ],
-        self::DIMENSION_STORE => [
-            StoreDimensionProvider::DIMENSION_NAME
-        ]
-    ];
-
-    /**
-     * @var ScopeConfigInterface
-     */
-    public $scopeConfig;
-
-    /**
-     * @return string
-     */
-    abstract public function getCurrentMode(): string;
-
-    /**
-     * @param ScopeConfigInterface $scopeConfig
-     */
-    public function __construct(ScopeConfigInterface $scopeConfig)
-    {
-        $this->scopeConfig = $scopeConfig;
-    }
-
-    /**
-     * Return dimension modes configuration.
-     *
-     * @return array
-     */
-    public function getDimensionModes(): array
-    {
-        return $this->modesMapping;
-    }
+    public function execute(NostoIndexCollection $collection, Store $store);
 }

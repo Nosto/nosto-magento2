@@ -37,6 +37,7 @@
 namespace Nosto\Tagging\Model\Indexer;
 
 use Exception;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Store\Model\Store;
 use Nosto\NostoException;
 use Nosto\Tagging\Model\Indexer\Dimensions\ModeSwitcherInterface;
@@ -47,7 +48,8 @@ use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Magento\Indexer\Model\ProcessManager;
-use Magento\Store\Model\StoreDimensionProvider;
+use Nosto\Tagging\Model\Indexer\Dimensions\StoreDimensionProvider;
+use Magento\Store\Model\App\Emulation;
 
 /**
  * An indexer for Nosto product sync
@@ -70,6 +72,7 @@ class Data extends AbstractIndexer
      * @param DataModeSwitcher $dataModeSwitcher
      * @param NostoLogger $logger
      * @param StoreDimensionProvider $dimensionProvider
+     * @param Emulation $storeEmulation
      * @param ProcessManager $processManager
      */
     public function __construct(
@@ -79,6 +82,7 @@ class Data extends AbstractIndexer
         DataModeSwitcher $dataModeSwitcher,
         NostoLogger $logger,
         StoreDimensionProvider $dimensionProvider,
+        Emulation $storeEmulation,
         ProcessManager $processManager
     ) {
         $this->nostoServiceIndex = $nostoServiceIndex;
@@ -88,6 +92,7 @@ class Data extends AbstractIndexer
             $nostoHelperScope,
             $logger,
             $dimensionProvider,
+            $storeEmulation,
             $processManager
         );
     }

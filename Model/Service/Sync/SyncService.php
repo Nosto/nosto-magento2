@@ -34,10 +34,9 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Service;
+namespace Nosto\Tagging\Model\Service\Sync;
 
 use Magento\Store\Model\Store;
-use Nosto\Exception\MemoryOutOfBoundsException;
 use Nosto\NostoException;
 use Nosto\Object\Signup\Account as NostoSignupAccount;
 use Nosto\Operation\DeleteProduct;
@@ -52,9 +51,10 @@ use Nosto\Tagging\Model\Product\Index\IndexRepository;
 use Nosto\Tagging\Model\ResourceModel\Product\Index\Collection as NostoIndexCollection;
 use Nosto\Tagging\Model\ResourceModel\Product\Index\CollectionFactory as NostoIndexCollectionFactory;
 use Nosto\Tagging\Util\Serializer\ProductSerializer;
-use Nosto\Tagging\Util\PagingIterator;
+use Nosto\Tagging\Util\Iterator;
+use Nosto\Tagging\Model\Service\AbstractService;
 
-class Sync extends AbstractService
+class SyncService extends AbstractService
 {
     const API_BATCH_SIZE = 50;
     const PRODUCT_DELETION_BATCH_SIZE = 100;

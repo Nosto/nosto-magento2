@@ -161,6 +161,19 @@ class IndexRepository implements ProductIndexRepositoryInterface
     }
 
     /**
+     * @param array $productIds
+     * @param int $storeId
+     * @return IndexCollection
+     */
+    public function getByProductIdsAndStoreId(array $productIds, int $storeId)
+    {
+        return $this->indexCollectionFactory->create()
+            ->addFieldToSelect('*')
+            ->addStoreIdFilter($storeId)
+            ->addProductIdsFilter($productIds);
+    }
+
+    /**
      * Save product index entry
      *
      * @param ProductIndexInterface $productIndex

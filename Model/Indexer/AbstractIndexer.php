@@ -46,7 +46,7 @@ use Nosto\Tagging\Model\Indexer\Dimensions\AbstractDimensionModeConfiguration as
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
-use Magento\Store\Model\StoreDimensionProvider;
+use Nosto\Tagging\Model\Indexer\Dimensions\StoreDimensionProvider;
 use Magento\Indexer\Model\ProcessManager;
 use Nosto\Tagging\Util\Benchmark;
 use Magento\Framework\App\ObjectManager;
@@ -56,6 +56,7 @@ use Traversable;
 use ArrayIterator;
 use InvalidArgumentException;
 use UnexpectedValueException;
+use Magento\Store\Model\App\Emulation;
 
 abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerActionInterface, MviewActionInterface
 {
@@ -74,6 +75,9 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
     /** @var DimensionProviderInterface */
     private $dimensionProvider;
 
+    /** @var Emulation */
+    private $storeEmulator;
+
     /**
      * AbstractIndexer constructor.
      * @param NostoHelperAccount $nostoHelperAccount
@@ -87,6 +91,7 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
         NostoHelperScope $nostoHelperScope,
         NostoLogger $nostoLogger,
         StoreDimensionProvider $dimensionProvider,
+        Emulation $storeEmulator,
         ProcessManager $processManager = null
     ) {
         $this->nostoHelperAccount = $nostoHelperAccount;
@@ -94,6 +99,7 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
         $this->nostoLogger = $nostoLogger;
         $this->dimensionProvider = $dimensionProvider;
         $this->processManager = $processManager;
+        $this->storeEmulator = $storeEmulator;
     }
 
     /**
@@ -179,6 +185,7 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
     /**
      * @param array $ids
      * @suppress PhanTypeMismatchArgument
+     * @throws NostoException
      */
     public function doWork(array $ids = [])
     {
@@ -241,6 +248,7 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
         }
 
         $storeId = $dimensions[StoreDimensionProvider::DIMENSION_NAME]->getValue();
+        $this->storeEmulator->startEnvironmentEmulation((int)$storeId);
         $store = $this->nostoHelperScope->getStore($storeId);
         $benchmarkName = sprintf('STORE-DIMENSION-%s', $store->getCode());
         Benchmark::getInstance()->startInstrumentation($benchmarkName, 0);
@@ -261,6 +269,7 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
                 round($duration, 2)
             )
         );
+        $this->storeEmulator->stopEnvironmentEmulation();
     }
 
     /**

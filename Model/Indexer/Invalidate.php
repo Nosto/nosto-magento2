@@ -49,8 +49,9 @@ use Nosto\Tagging\Util\Indexer as IndexerUtil;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Magento\Indexer\Model\ProcessManager;
 use Nosto\Tagging\Model\Indexer\Dimensions\Invalidate\ModeSwitcher as InvalidateModeSwitcher;
-use Magento\Store\Model\StoreDimensionProvider;
+use Nosto\Tagging\Model\Indexer\Dimensions\StoreDimensionProvider;
 use Symfony\Component\Console\Input\InputInterface;
+use Magento\Store\Model\App\Emulation;
 
 /**
  * Class Invalidate
@@ -86,7 +87,9 @@ class Invalidate extends AbstractIndexer
      * @param ProductCollectionFactory $productCollectionFactory
      * @param InvalidateModeSwitcher $modeSwitcher
      * @param StoreDimensionProvider $dimensionProvider
+     * @param Emulation $storeEmulation
      * @param ProcessManager $processManager
+     * @param InputInterface $input
      */
     public function __construct(
         NostoHelperAccount $nostoHelperAccount,
@@ -96,6 +99,7 @@ class Invalidate extends AbstractIndexer
         ProductCollectionFactory $productCollectionFactory,
         InvalidateModeSwitcher $modeSwitcher,
         StoreDimensionProvider $dimensionProvider,
+        Emulation $storeEmulation,
         ProcessManager $processManager,
         InputInterface $input
     ) {
@@ -109,6 +113,7 @@ class Invalidate extends AbstractIndexer
             $nostoHelperScope,
             $logger,
             $dimensionProvider,
+            $storeEmulation,
             $processManager
         );
     }
@@ -134,6 +139,7 @@ class Invalidate extends AbstractIndexer
 
     /**
      * @inheritdoc
+     * @throws NostoException
      */
     public function doIndex(Store $store, array $ids = [])
     {
