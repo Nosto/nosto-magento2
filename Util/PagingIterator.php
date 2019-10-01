@@ -39,9 +39,15 @@ namespace Nosto\Tagging\Util;
 use Magento\Framework\Data\Collection;
 use Nosto\NostoException;
 
-class Iterator
+class PagingIterator implements \Iterator
 {
     private $collection;
+
+    /** @var int */
+    private $currentPageNumber;
+
+    /** @var int */
+    private $lastPageNumber;
 
     /**
      * Iterator constructor.
@@ -54,41 +60,68 @@ class Iterator
             throw new NostoException('Page size not defined or not an integer');
         }
         $this->collection = $collection;
+        $this->lastPageNumber = $this->collection->getLastPageNumber();
     }
 
     /**
-     * Iterates through the collection in batches defined by the collection page size
-     * and applies closure to each item
-     * @param \Closure $closure
-     * @throws NostoException
+     * @inheritdoc
      */
-    public function each(\Closure $closure)
+    public function current()
     {
-        $curPage = 1;
-        $lastPage = $this->collection->getLastPageNumber();
-        do {
-            $this->collection->clear();
-            $this->collection->setCurPage($curPage);
-            $this->collection->each($closure);
-            ++$curPage;
-        } while ($curPage <= $lastPage);
+        return $this->collection;
     }
 
     /**
-     * Handles the pagination / batching and batching for a collection
-     *
-     * @param \Closure $closure
-     * @throws NostoException
+     * @inheritdoc
      */
-    public function eachBatch(\Closure $closure)
+    public function next()
     {
-        $curPage = 1;
-        $lastPage = $this->collection->getLastPageNumber();
-        do {
-            $this->collection->clear();
-            $this->collection->setCurPage($curPage);
-            $closure($this->collection);
-            ++$curPage;
-        } while ($curPage <= $lastPage);
+        ++$this->currentPageNumber;
+        $this->page($this->currentPageNumber);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function key()
+    {
+        return $this->collection->getCurPage();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function valid(): bool
+    {
+        if ($this->currentPageNumber <= $this->lastPageNumber) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function rewind()
+    {
+        $this->page(1);
+    }
+
+    /**
+     * @param int $pageNumber
+     */
+    private function page(int $pageNumber)
+    {
+        $this->collection->clear();
+        $this->collection->setCurPage($pageNumber);
+        $this->currentPageNumber = $pageNumber;
+    }
+
+    /**
+     * @return int
+     */
+    public function getLastPageNumber(): int
+    {
+        return $this->lastPageNumber;
     }
 }
