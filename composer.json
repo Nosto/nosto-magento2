@@ -29,7 +29,9 @@
   },
   "suggest": {
     "magento/product-community-edition": "2.*",
-    "yotpo/module-review": "^2.9"
+    "yotpo/module-review": "^2.9",
+    "ext-newrelic": "*",
+    "ext-code": "*"
   },
   "license": [
     "OSL-3.0"
@@ -39,8 +41,6 @@
     "nosto/php-sdk": "4.0.0",
     "php": ">=7.0.0",
     "ext-json": "*",
-    "ext-newrelic": "*",
-    "ext-code": "*",
     "magento/framework": ">=101.0.6|~102.0"
   },
   "repositories": [
