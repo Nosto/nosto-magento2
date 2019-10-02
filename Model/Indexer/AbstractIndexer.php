@@ -37,6 +37,7 @@
 namespace Nosto\Tagging\Model\Indexer;
 
 use ArrayIterator;
+use Exception;
 use InvalidArgumentException;
 use Magento\Framework\App\ObjectManager;
 use Magento\Framework\Indexer\ActionInterface as IndexerActionInterface;
@@ -56,10 +57,11 @@ use Nosto\Tagging\Model\Indexer\Dimensions\AbstractDimensionModeConfiguration as
 use Nosto\Tagging\Model\Indexer\Dimensions\ModeSwitcherInterface;
 use Nosto\Tagging\Model\Indexer\Dimensions\StoreDimensionProvider;
 use Nosto\Tagging\Util\Benchmark;
+use Nosto\Tagging\Model\Indexer\Util\Indexer as IndexerUtil;
+use Symfony\Component\Console\Input\InputInterface;
 use Traversable;
 use UnexpectedValueException;
 use Nosto\Tagging\Model\Indexer\Provider\ChangeLogProvider;
-use Nosto\Tagging\Model\Indexer\Util\Indexer as IndexerUtil;
 
 abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerActionInterface, MviewActionInterface
 {
@@ -84,6 +86,9 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
     /** @var ChangeLogProvider */
     private $changeLogProvider;
 
+    /** @var InputInterface */
+    private $input;
+
     /** @var Mview */
     private $mview;
 
@@ -95,6 +100,7 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
      * @param StoreDimensionProvider $dimensionProvider
      * @param Emulation $storeEmulator
      * @param ChangeLogProvider $changeLogProvider
+     * @param InputInterface $input
      * @param Mview $mview
      * @param ProcessManager|null $processManager
      */
@@ -105,6 +111,7 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
         StoreDimensionProvider $dimensionProvider,
         Emulation $storeEmulator,
         ChangeLogProvider $changeLogProvider,
+        InputInterface $input,
         Mview $mview,
         ProcessManager $processManager = null
     ) {
@@ -113,6 +120,7 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
         $this->nostoLogger = $nostoLogger;
         $this->dimensionProvider = $dimensionProvider;
         $this->processManager = $processManager;
+        $this->input = $input;
         $this->storeEmulator = $storeEmulator;
         $this->changeLogProvider = $changeLogProvider;
         $this->mview = $mview;
@@ -144,14 +152,16 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
      */
     public function executeFull()
     {
-        $indexerId = $this->getIndexerId();
-        $message = sprintf(
-            'Begin a full reindex for indexer "%s"',
-            $indexerId
-        );
-        $this->nostoLogger->info($message);
-        $this->doWork();
-        $this->nostoLogger->info("Finished full reindex");
+        if ($this->allowFullExecution() === true) {
+            $indexerId = $this->getIndexerId();
+            $message = sprintf(
+                'Begin a full reindex for indexer "%s"',
+                $indexerId
+            );
+            $this->nostoLogger->info($message);
+            $this->doWork();
+            $this->nostoLogger->info("Finished full reindex");
+        }
     }
 
     /**
@@ -311,7 +321,15 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
     }
 
     /**
-     * Clears the procesed rows from CL table
+     * @return bool
+     */
+    public function allowFullExecution(): bool
+    {
+        return IndexerUtil::isCalledFromSetupUpgrade($this->input) === false;
+    }
+
+    /**
+     * Clears the CL tables
      */
     private function clearProcessedChangelog()
     {

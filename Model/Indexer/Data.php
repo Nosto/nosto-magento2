@@ -36,7 +36,6 @@
 
 namespace Nosto\Tagging\Model\Indexer;
 
-use Exception;
 use Magento\Framework\Mview\View as Mview;
 use Magento\Store\Model\Store;
 use Nosto\NostoException;
@@ -51,6 +50,7 @@ use Magento\Indexer\Model\ProcessManager;
 use Nosto\Tagging\Model\Indexer\Dimensions\StoreDimensionProvider;
 use Magento\Store\Model\App\Emulation;
 use Nosto\Tagging\Model\Indexer\Provider\ChangeLogProvider;
+use Symfony\Component\Console\Input\InputInterface;
 
 /**
  * An indexer for Nosto product sync
@@ -88,6 +88,7 @@ class Data extends AbstractIndexer
         Emulation $storeEmulation,
         ProcessManager $processManager,
         ChangeLogProvider $changeLogProvider,
+        InputInterface $input,
         Mview $mview
     ) {
         $this->nostoServiceIndex = $nostoServiceIndex;
@@ -99,6 +100,7 @@ class Data extends AbstractIndexer
             $dimensionProvider,
             $storeEmulation,
             $changeLogProvider,
+            $input,
             $mview,
             $processManager
         );

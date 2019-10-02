@@ -36,23 +36,22 @@
 
 namespace Nosto\Tagging\Model\Indexer;
 
-use Exception;
 use Magento\Framework\Mview\View as Mview;
+use Magento\Indexer\Model\ProcessManager;
+use Magento\Store\Model\App\Emulation;
 use Magento\Store\Model\Store;
 use Nosto\NostoException;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
+use Nosto\Tagging\Logger\Logger as NostoLogger;
+use Nosto\Tagging\Model\Indexer\Dimensions\Invalidate\ModeSwitcher as InvalidateModeSwitcher;
 use Nosto\Tagging\Model\Indexer\Dimensions\ModeSwitcherInterface;
+use Nosto\Tagging\Model\Indexer\Dimensions\StoreDimensionProvider;
 use Nosto\Tagging\Model\ResourceModel\Magento\Product\Collection as ProductCollection;
 use Nosto\Tagging\Model\ResourceModel\Magento\Product\CollectionFactory as ProductCollectionFactory;
 use Nosto\Tagging\Model\Service\Index as NostoServiceIndex;
 use Nosto\Tagging\Model\Indexer\Util\Indexer as IndexerUtil;
-use Nosto\Tagging\Logger\Logger as NostoLogger;
-use Magento\Indexer\Model\ProcessManager;
-use Nosto\Tagging\Model\Indexer\Dimensions\Invalidate\ModeSwitcher as InvalidateModeSwitcher;
-use Nosto\Tagging\Model\Indexer\Dimensions\StoreDimensionProvider;
 use Symfony\Component\Console\Input\InputInterface;
-use Magento\Store\Model\App\Emulation;
 use Nosto\Tagging\Model\Indexer\Provider\ChangeLogProvider;
 
 /**
@@ -76,9 +75,6 @@ class Invalidate extends AbstractIndexer
 
     /** @var InvalidateModeSwitcher */
     private $modeSwitcher;
-
-    /** @var InputInterface */
-    private $input;
 
     /**
      * Invalidate constructor.
@@ -113,7 +109,6 @@ class Invalidate extends AbstractIndexer
         $this->nostoHelperAccount = $nostoHelperAccount;
         $this->productCollectionFactory = $productCollectionFactory;
         $this->modeSwitcher = $modeSwitcher;
-        $this->input = $input;
         parent::__construct(
             $nostoHelperAccount,
             $nostoHelperScope,
@@ -121,20 +116,10 @@ class Invalidate extends AbstractIndexer
             $dimensionProvider,
             $storeEmulation,
             $changeLogProvider,
+            $input,
             $mview,
             $processManager
         );
-    }
-
-    /**
-     * @inheritDoc
-     * @throws NostoException
-     */
-    public function executeFull()
-    {
-        if ($this->allowFullExecution() === true) {
-            parent::executeFull();
-        }
     }
 
     /**
@@ -193,13 +178,5 @@ class Invalidate extends AbstractIndexer
             $collection->addActiveAndVisibleFilter();
         }
         return $collection;
-    }
-
-    /**
-     * @return bool
-     */
-    public function allowFullExecution()
-    {
-        return IndexerUtil::isCalledFromSetupUpgrade($this->input) === false;
     }
 }
