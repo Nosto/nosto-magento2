@@ -51,7 +51,8 @@ class Simple
      * @param $parentIds
      * @return string|null
      */
-    public static function buildName(ExtensibleDataInterface $item, $parentIds) {
+    public static function buildName(ExtensibleDataInterface $item, $parentIds)
+    {
         $name = $item->getName();
         $optNames = [];
         $objectManager = ObjectManager::getInstance();

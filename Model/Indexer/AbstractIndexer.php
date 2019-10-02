@@ -57,6 +57,10 @@ use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Util\Benchmark;
 
+/**
+ * Class AbstractIndexer
+ * @package Nosto\Tagging\Model\Indexer
+ */
 abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerActionInterface, MviewActionInterface
 {
     /** @var NostoHelperAccount */
