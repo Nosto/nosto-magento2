@@ -5,10 +5,10 @@
   "version": "4.0.0-beta",
   "require-dev": {
     "php": ">=7.1.0",
-    "phan/phan": "2.2.12",
+    "phan/phan": "0.8.8",
     "phpmd/phpmd": "^2.5",
     "sebastian/phpcpd": "*",
-    "phpdocumentor/reflection-docblock": "4.0.0",
+    "phpdocumentor/reflection-docblock": "3.0.0",
     "phing/phing": "2.*",
     "magento-ecg/coding-standard": "2.*",
     "magento/marketplace-eqp": "1.*",

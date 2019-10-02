@@ -70,7 +70,7 @@ RUN         apt-get -y -qq install apache2 php7.1 php7.1-common default-mysql-cl
 
 # Upgrade AST extension
 RUN         apt-get -y -qq install build-essential php-pear && \
-            pecl install ast-1.0.1 && \
+            pecl install ast-0.1.6 && \
             apt-get purge -y build-essential && \
             apt-get -y clean
 
