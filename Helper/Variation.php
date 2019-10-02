@@ -63,8 +63,8 @@ class Variation extends AbstractHelper
      */
     public function __construct(
         Context $context,
-        GroupRepository $groupRepository)
-    {
+        GroupRepository $groupRepository
+    ) {
         parent::__construct($context);
         $this->groupRepository = $groupRepository;
     }

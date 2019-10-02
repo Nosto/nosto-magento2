@@ -40,17 +40,18 @@ use Magento\Catalog\Model\Product\Type;
 use Magento\Catalog\Model\ResourceModel\Eav\Attribute;
 use Magento\Framework\App\ObjectManager;
 use Magento\Quote\Model\Quote\Item;
+use Magento\Sales\Model\Order\Item as SalesItem;
+use Magento\Framework\Api\ExtensibleDataInterface;
 use Throwable;
 
 class Simple
 {
-
     /**
-     * @param \Magento\Sales\Model\Order\Item|Item $item
+     * @param ExtensibleDataInterface|SalesItem|Item $item
      * @param $parentIds
      * @return string|null
      */
-    public static function buildName(Item $item, $parentIds) {
+    public static function buildName(ExtensibleDataInterface $item, $parentIds) {
         $name = $item->getName();
         $optNames = [];
         $objectManager = ObjectManager::getInstance();
@@ -82,7 +83,6 @@ class Simple
         }
         return $name;
     }
-
 
     /**
      * Returns the product type for simple item

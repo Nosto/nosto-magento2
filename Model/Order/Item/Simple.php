@@ -55,7 +55,6 @@ class Simple extends SimpleItem
         } else {
             $parentIds = 0;
         }
-        $name = self::buildName($item, $parentIds);
-        return $name;
+        return self::buildName($item, $parentIds);
     }
 }
