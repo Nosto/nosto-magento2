@@ -174,11 +174,11 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
         $idCount = count($ids);
         $totalEntries = $this->getTotalCLRows();
         $message = sprintf(
-            'Begin a partial reindex for indexer "%s" for "%d ids. 
-            Total number of entries in CL table: "%s"',
+            'Begin a partial reindex for indexer "%s" for "%d ids. ' .
+            'Total number of entries in CL table: "%s"',
             $indexerId,
             $idCount,
-            $totalEntries ?: 'table was not found'
+            $totalEntries
         );
         $this->nostoLogger->info($message);
         $this->execute($ids);
@@ -344,6 +344,7 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
     private function getTotalCLRows()
     {
         $this->changeLog->setViewId($this->getIndexerId());
-        return $this->changeLog->getTotalRows();
+        $totalEntries =  $this->changeLog->getTotalRows();
+        return $totalEntries !== null ? $totalEntries : 'table was not found';
     }
 }
