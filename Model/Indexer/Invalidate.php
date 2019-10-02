@@ -50,9 +50,8 @@ use Nosto\Tagging\Model\Indexer\Dimensions\StoreDimensionProvider;
 use Nosto\Tagging\Model\ResourceModel\Magento\Product\Collection as ProductCollection;
 use Nosto\Tagging\Model\ResourceModel\Magento\Product\CollectionFactory as ProductCollectionFactory;
 use Nosto\Tagging\Model\Service\Index as NostoServiceIndex;
-use Nosto\Tagging\Model\Indexer\Util\Indexer as IndexerUtil;
 use Symfony\Component\Console\Input\InputInterface;
-use Nosto\Tagging\Model\Indexer\Provider\ChangeLogProvider;
+use Nosto\Tagging\Model\MView\ChangeLog as NostoChangeLog;
 
 /**
  * Class Invalidate
@@ -88,7 +87,7 @@ class Invalidate extends AbstractIndexer
      * @param Emulation $storeEmulation
      * @param ProcessManager $processManager
      * @param InputInterface $input
-     * @param ChangeLogProvider $changeLogProvider
+     * @param NostoChangeLog $changeLog
      * @param Mview $mview
      */
     public function __construct(
@@ -102,7 +101,7 @@ class Invalidate extends AbstractIndexer
         Emulation $storeEmulation,
         ProcessManager $processManager,
         InputInterface $input,
-        ChangeLogProvider $changeLogProvider,
+        NostoChangeLog $changeLog,
         Mview $mview
     ) {
         $this->nostoServiceIndex = $nostoServiceIndex;
@@ -115,9 +114,9 @@ class Invalidate extends AbstractIndexer
             $logger,
             $dimensionProvider,
             $storeEmulation,
-            $changeLogProvider,
             $input,
             $mview,
+            $changeLog,
             $processManager
         );
     }

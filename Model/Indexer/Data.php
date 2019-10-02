@@ -49,7 +49,7 @@ use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Magento\Indexer\Model\ProcessManager;
 use Nosto\Tagging\Model\Indexer\Dimensions\StoreDimensionProvider;
 use Magento\Store\Model\App\Emulation;
-use Nosto\Tagging\Model\Indexer\Provider\ChangeLogProvider;
+use Nosto\Tagging\Model\MView\ChangeLog as NostoChangeLog;
 use Symfony\Component\Console\Input\InputInterface;
 
 /**
@@ -75,7 +75,8 @@ class Data extends AbstractIndexer
      * @param StoreDimensionProvider $dimensionProvider
      * @param Emulation $storeEmulation
      * @param ProcessManager $processManager
-     * @param ChangeLogProvider $changeLogProvider
+     * @param InputInterface $input
+     * @param NostoChangeLog $changeLog
      * @param Mview $mview
      */
     public function __construct(
@@ -87,8 +88,8 @@ class Data extends AbstractIndexer
         StoreDimensionProvider $dimensionProvider,
         Emulation $storeEmulation,
         ProcessManager $processManager,
-        ChangeLogProvider $changeLogProvider,
         InputInterface $input,
+        NostoChangeLog $changeLog,
         Mview $mview
     ) {
         $this->nostoServiceIndex = $nostoServiceIndex;
@@ -99,9 +100,9 @@ class Data extends AbstractIndexer
             $logger,
             $dimensionProvider,
             $storeEmulation,
-            $changeLogProvider,
             $input,
             $mview,
+            $changeLog,
             $processManager
         );
     }

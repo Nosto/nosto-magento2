@@ -34,37 +34,28 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Indexer\Provider;
+namespace Nosto\Tagging\Model\MView;
 
-use Magento\Framework\App\ResourceConnection;
+use Magento\Framework\Mview\View\Changelog as MagentoChangelog;
+use Exception;
 
-class ChangeLogProvider
+class ChangeLog extends MagentoChangelog
 {
-
-    /** @var ResourceConnection */
-    private $resourceConnection;
-
     /**
-     * ChangeLogProvider constructor.
-     * @param ResourceConnection $resourceConnection
+     * @return string|null
+     * @throws Exception
      */
-    public function __construct(ResourceConnection $resourceConnection)
+    public function getTotalRows()
     {
-        $this->resourceConnection = $resourceConnection;
-    }
+        $changelogTableName = $this->resource->getTableName($this->getName());
+        if ($this->connection->isTableExists($changelogTableName)) {
+            $select = $this->connection->select() // @codingStandardsIgnoreLine
+                ->from( // @codingStandardsIgnoreLine
+                    $changelogTableName,
+                    'COUNT(*)'
+                );
 
-    /**
-     * @param string $tableName
-     * @return null
-     */
-    public function countCLTableEntries(string $indexerName)
-    {
-        $connection = $this->resourceConnection->getConnection();
-        $tableName = $indexerName.'_cl';
-        if ($connection->isTableExists($tableName)) {
-            $sql = sprintf('SELECT count(*) AS total FROM %s', $tableName);
-            return $connection->fetchOne($sql);
-
+            return $this->connection->fetchOne($select);
         }
         return null;
     }
