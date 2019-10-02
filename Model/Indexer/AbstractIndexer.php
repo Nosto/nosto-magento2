@@ -37,6 +37,7 @@
 namespace Nosto\Tagging\Model\Indexer;
 
 use ArrayIterator;
+use Exception;
 use InvalidArgumentException;
 use Magento\Framework\App\ObjectManager;
 use Magento\Framework\Indexer\ActionInterface as IndexerActionInterface;
@@ -56,6 +57,8 @@ use Nosto\Tagging\Model\Indexer\Dimensions\AbstractDimensionModeConfiguration as
 use Nosto\Tagging\Model\Indexer\Dimensions\ModeSwitcherInterface;
 use Nosto\Tagging\Model\Indexer\Dimensions\StoreDimensionProvider;
 use Nosto\Tagging\Util\Benchmark;
+use Nosto\Tagging\Util\Indexer as IndexerUtil;
+use Symfony\Component\Console\Input\InputInterface;
 use Traversable;
 use UnexpectedValueException;
 
@@ -79,6 +82,9 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
     /** @var Emulation */
     private $storeEmulator;
 
+    /** @var InputInterface */
+    private $input;
+
     /** @var Mview */
     private $mview;
 
@@ -89,6 +95,7 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
      * @param NostoLogger $nostoLogger
      * @param StoreDimensionProvider $dimensionProvider
      * @param Emulation $storeEmulator
+     * @param InputInterface $input
      * @param Mview $mview
      * @param ProcessManager|null $processManager
      */
@@ -98,6 +105,7 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
         NostoLogger $nostoLogger,
         StoreDimensionProvider $dimensionProvider,
         Emulation $storeEmulator,
+        InputInterface $input,
         Mview $mview,
         ProcessManager $processManager = null
     ) {
@@ -106,6 +114,7 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
         $this->nostoLogger = $nostoLogger;
         $this->dimensionProvider = $dimensionProvider;
         $this->processManager = $processManager;
+        $this->input = $input;
         $this->storeEmulator = $storeEmulator;
         $this->mview = $mview;
     }
@@ -234,7 +243,53 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
     }
 
     /**
-     * Clears the procesed rows from CL table
+     * @param int[] $ids
+     * @throws Exception
+     */
+    public function execute($ids)
+    {
+        $this->doWork($ids);
+    }
+
+    /**
+     * @inheritDoc
+     * @throws NostoException
+     */
+    public function executeFull()
+    {
+        if ($this->allowFullExecution() === true) {
+            $this->doWork();
+        }
+    }
+
+    /**
+     * @inheritDoc
+     * @throws Exception
+     */
+    public function executeList(array $ids)
+    {
+        $this->execute($ids);
+    }
+
+    /**
+     * @inheritDoc
+     * @throws Exception
+     */
+    public function executeRow($id)
+    {
+        $this->execute([$id]);
+    }
+
+    /**
+     * @return bool
+     */
+    public function allowFullExecution()
+    {
+        return IndexerUtil::isCalledFromSetupUpgrade($this->input) === false;
+    }
+
+    /**
+     * Clears the CL tables
      */
     private function clearProcessedChangelog()
     {

@@ -36,7 +36,6 @@
 
 namespace Nosto\Tagging\Model\Indexer;
 
-use Exception;
 use Magento\Framework\Mview\View as Mview;
 use Magento\Store\Model\Store;
 use Nosto\NostoException;
@@ -50,6 +49,7 @@ use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Magento\Indexer\Model\ProcessManager;
 use Nosto\Tagging\Model\Indexer\Dimensions\StoreDimensionProvider;
 use Magento\Store\Model\App\Emulation;
+use Symfony\Component\Console\Input\InputInterface;
 
 /**
  * An indexer for Nosto product sync
@@ -85,6 +85,7 @@ class Data extends AbstractIndexer
         StoreDimensionProvider $dimensionProvider,
         Emulation $storeEmulation,
         ProcessManager $processManager,
+        InputInterface $input,
         Mview $mview
     ) {
         $this->nostoServiceIndex = $nostoServiceIndex;
@@ -95,45 +96,10 @@ class Data extends AbstractIndexer
             $logger,
             $dimensionProvider,
             $storeEmulation,
+            $input,
             $mview,
             $processManager
         );
-    }
-
-    /**
-     * @inheritdoc
-     * @throws Exception
-     */
-    public function executeFull()
-    {
-        $this->doWork();
-    }
-
-    /**
-     * @inheritdoc
-     * @throws Exception
-     */
-    public function executeList(array $ids)
-    {
-        $this->execute($ids);
-    }
-
-    /**
-     * @inheritdoc
-     * @throws Exception
-     */
-    public function executeRow($id)
-    {
-        $this->execute([$id]);
-    }
-
-    /**
-     * @inheritdoc
-     * @throws Exception
-     */
-    public function execute($ids)
-    {
-        $this->doWork($ids);
     }
 
     /**
