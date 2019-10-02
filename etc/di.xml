@@ -43,6 +43,7 @@
     <preference for="Nosto\Tagging\Util\Serializer\SerializerInterface" type="Nosto\Tagging\Util\Serializer\DefaultSerializer"/>
     <preference for="Nosto\Tagging\Model\Service\Comparator\ProductComparatorInterface" type="Nosto\Tagging\Model\Service\Comparator\DefaultProductComparator"/>
     <preference for="Nosto\Tagging\Model\Service\Sync\BulkSyncInterface" type="Nosto\Tagging\Model\Service\Sync\AsyncBulkPublisher"/>
+    <preference for="Symfony\Component\Console\Input\InputInterface" type="Symfony\Component\Console\Input\ArgvInput\Proxy"/>
     <type name="Magento\Catalog\Model\ResourceModel\Product">
         <plugin name="nostoProductObserverInvalidate" type="Nosto\Tagging\Plugin\ProductInvalidate"/>
     </type>
@@ -163,7 +164,6 @@
             <argument name="dimensionProvider" xsi:type="object" shared="false">
                 Nosto\Tagging\Model\Indexer\Dimensions\StoreDimensionProvider
             </argument>
-            <argument name="input" xsi:type="object">Symfony\Component\Console\Input\ArgvInput\Proxy</argument>
         </arguments>
     </type>
 </config>

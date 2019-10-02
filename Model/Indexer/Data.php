@@ -50,6 +50,7 @@ use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Magento\Indexer\Model\ProcessManager;
 use Nosto\Tagging\Model\Indexer\Dimensions\StoreDimensionProvider;
 use Magento\Store\Model\App\Emulation;
+use Symfony\Component\Console\Input\InputInterface;
 
 /**
  * An indexer for Nosto product sync
@@ -83,7 +84,8 @@ class Data extends AbstractIndexer
         NostoLogger $logger,
         StoreDimensionProvider $dimensionProvider,
         Emulation $storeEmulation,
-        ProcessManager $processManager
+        ProcessManager $processManager,
+        InputInterface $input
     ) {
         $this->nostoServiceIndex = $nostoServiceIndex;
         $this->modeSwitcher = $dataModeSwitcher;
@@ -93,44 +95,9 @@ class Data extends AbstractIndexer
             $logger,
             $dimensionProvider,
             $storeEmulation,
+            $input,
             $processManager
         );
-    }
-
-    /**
-     * @inheritdoc
-     * @throws Exception
-     */
-    public function executeFull()
-    {
-        $this->doWork();
-    }
-
-    /**
-     * @inheritdoc
-     * @throws Exception
-     */
-    public function executeList(array $ids)
-    {
-        $this->execute($ids);
-    }
-
-    /**
-     * @inheritdoc
-     * @throws Exception
-     */
-    public function executeRow($id)
-    {
-        $this->execute([$id]);
-    }
-
-    /**
-     * @inheritdoc
-     * @throws Exception
-     */
-    public function execute($ids)
-    {
-        $this->doWork($ids);
     }
 
     /**

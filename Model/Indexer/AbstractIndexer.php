@@ -36,27 +36,30 @@
 
 namespace Nosto\Tagging\Model\Indexer;
 
+use ArrayIterator;
+use Exception;
+use InvalidArgumentException;
+use Magento\Framework\App\ObjectManager;
+use Magento\Framework\Indexer\ActionInterface as IndexerActionInterface;
+use Magento\Framework\Indexer\Dimension;
 use Magento\Framework\Indexer\DimensionalIndexerInterface;
 use Magento\Framework\Indexer\DimensionProviderInterface;
-use Magento\Framework\Indexer\Dimension;
 use Magento\Framework\Mview\ActionInterface as MviewActionInterface;
-use Magento\Framework\Indexer\ActionInterface as IndexerActionInterface;
+use Magento\Indexer\Model\ProcessManager;
+use Magento\Store\Model\App\Emulation;
+use Magento\Store\Model\Store;
 use Nosto\NostoException;
-use Nosto\Tagging\Model\Indexer\Dimensions\AbstractDimensionModeConfiguration as DimensionModeConfiguration;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
-use Nosto\Tagging\Model\Indexer\Dimensions\StoreDimensionProvider;
-use Magento\Indexer\Model\ProcessManager;
-use Nosto\Tagging\Util\Benchmark;
-use Magento\Framework\App\ObjectManager;
+use Nosto\Tagging\Model\Indexer\Dimensions\AbstractDimensionModeConfiguration as DimensionModeConfiguration;
 use Nosto\Tagging\Model\Indexer\Dimensions\ModeSwitcherInterface;
-use Magento\Store\Model\Store;
+use Nosto\Tagging\Model\Indexer\Dimensions\StoreDimensionProvider;
+use Nosto\Tagging\Util\Benchmark;
+use Nosto\Tagging\Util\Indexer as IndexerUtil;
+use Symfony\Component\Console\Input\InputInterface;
 use Traversable;
-use ArrayIterator;
-use InvalidArgumentException;
 use UnexpectedValueException;
-use Magento\Store\Model\App\Emulation;
 
 abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerActionInterface, MviewActionInterface
 {
@@ -78,12 +81,17 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
     /** @var Emulation */
     private $storeEmulator;
 
+    /** @var InputInterface */
+    private $input;
+
     /**
      * AbstractIndexer constructor.
      * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoHelperScope $nostoHelperScope
      * @param NostoLogger $nostoLogger
      * @param StoreDimensionProvider $dimensionProvider
+     * @param Emulation $storeEmulator
+     * @param InputInterface $input
      * @param ProcessManager|null $processManager
      */
     public function __construct(
@@ -92,6 +100,7 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
         NostoLogger $nostoLogger,
         StoreDimensionProvider $dimensionProvider,
         Emulation $storeEmulator,
+        InputInterface $input,
         ProcessManager $processManager = null
     ) {
         $this->nostoHelperAccount = $nostoHelperAccount;
@@ -99,6 +108,7 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
         $this->nostoLogger = $nostoLogger;
         $this->dimensionProvider = $dimensionProvider;
         $this->processManager = $processManager;
+        $this->input = $input;
         $this->storeEmulator = $storeEmulator;
     }
 
@@ -120,7 +130,7 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
     /**
      * @return string
      */
-    abstract public function getIndexerId(): string ;
+    abstract public function getIndexerId(): string;
 
     /**
      * @param array $ids
@@ -191,7 +201,7 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
         $store = $this->nostoHelperScope->getStore($storeId);
         $benchmarkName = sprintf('STORE-DIMENSION-%s', $store->getCode());
         Benchmark::getInstance()->startInstrumentation($benchmarkName, 0);
-        $this->nostoLogger->info('[START] NOSTO-DIMENSION store:'. $store->getName());
+        $this->nostoLogger->info('[START] NOSTO-DIMENSION store:' . $store->getName());
         $ids = [];
         if ($entityIds !== null) {
             $ids = iterator_to_array($entityIds);
@@ -221,5 +231,51 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
         }
 
         return false;
+    }
+
+    /**
+     * @param int[] $ids
+     * @throws Exception
+     */
+    public function execute($ids)
+    {
+        $this->doWork($ids);
+    }
+
+    /**
+     * @inheritDoc
+     * @throws NostoException
+     */
+    public function executeFull()
+    {
+        if ($this->allowFullExecution() === true) {
+            $this->doWork();
+        }
+    }
+
+    /**
+     * @inheritDoc
+     * @throws Exception
+     */
+    public function executeList(array $ids)
+    {
+        $this->execute($ids);
+    }
+
+    /**
+     * @inheritDoc
+     * @throws Exception
+     */
+    public function executeRow($id)
+    {
+        $this->execute([$id]);
+    }
+
+    /**
+     * @return bool
+     */
+    public function allowFullExecution()
+    {
+        return IndexerUtil::isCalledFromSetupUpgrade($this->input) === false;
     }
 }
