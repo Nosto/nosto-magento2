@@ -44,8 +44,7 @@ use Magento\Framework\Indexer\Dimension;
 use Magento\Framework\Indexer\DimensionalIndexerInterface;
 use Magento\Framework\Indexer\DimensionProviderInterface;
 use Magento\Framework\Mview\ActionInterface as MviewActionInterface;
-use Magento\Framework\Mview\View;
-use Magento\Framework\Mview\ViewInterface;
+use Magento\Framework\Mview\View as Mview;
 use Magento\Indexer\Model\ProcessManager;
 use Magento\Store\Model\App\Emulation;
 use Magento\Store\Model\Store;
@@ -80,7 +79,7 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
     /** @var Emulation */
     private $storeEmulator;
 
-    /** @var ViewInterface */
+    /** @var Mview */
     private $mview;
 
     /**
@@ -90,7 +89,7 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
      * @param NostoLogger $nostoLogger
      * @param StoreDimensionProvider $dimensionProvider
      * @param Emulation $storeEmulator
-     * @param View $mview
+     * @param Mview $mview
      * @param ProcessManager|null $processManager
      */
     public function __construct(
@@ -99,7 +98,7 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
         NostoLogger $nostoLogger,
         StoreDimensionProvider $dimensionProvider,
         Emulation $storeEmulator,
-        View $mview,
+        Mview $mview,
         ProcessManager $processManager = null
     ) {
         $this->nostoHelperAccount = $nostoHelperAccount;
