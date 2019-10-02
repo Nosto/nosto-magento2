@@ -38,11 +38,11 @@ namespace Nosto\Tagging\Model\Service;
 
 use Exception;
 use Magento\Catalog\Api\Data\ProductInterface;
+use Magento\Store\Api\Data\StoreInterface;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\ProductRepository;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
-use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\Store;
 use Nosto\NostoException;
 use Nosto\Object\Signup\Account as NostoSignupAccount;
@@ -64,6 +64,7 @@ use Nosto\Tagging\Model\Service\Comparator\ProductComparatorInterface;
 use Nosto\Tagging\Util\Iterator;
 use Nosto\Tagging\Util\Serializer\ProductSerializer;
 use Nosto\Types\Product\ProductInterface as NostoProductInterface;
+use Nosto\Tagging\Model\Service\Sync\BulkSyncInterface;
 
 class Index extends AbstractService
 {
@@ -98,9 +99,6 @@ class Index extends AbstractService
     /** @var TimezoneInterface */
     private $magentoTimeZone;
 
-    /** @var Sync */
-    private $nostoSyncService;
-
     /** @var NostoProductRepository $nostoProductRepository */
     private $nostoProductRepository;
 
@@ -109,6 +107,9 @@ class Index extends AbstractService
 
     /** @var array */
     private $invalidatedProducts = [];
+
+    /** @var BulkSyncInterface */
+    private $syncBulkPublisher;
 
     /** @var ProductSerializer */
     private $productSerializer;
@@ -130,7 +131,7 @@ class Index extends AbstractService
      * @param ProductCollectionFactory $productCollectionFactory
      * @param TimezoneInterface $magentoTimeZone
      * @param NostoDataHelper $nostoDataHelper
-     * @param Sync $nostoSyncService
+     * @param BulkSyncInterface $syncBulkPublisher
      * @param ProductSerializer $productSerializer
      * @param ProductComparatorInterface $productComparator
      */
@@ -147,7 +148,7 @@ class Index extends AbstractService
         ProductCollectionFactory $productCollectionFactory,
         TimezoneInterface $magentoTimeZone,
         NostoDataHelper $nostoDataHelper,
-        Sync $nostoSyncService,
+        BulkSyncInterface $syncBulkPublisher,
         ProductSerializer $productSerializer,
         ProductComparatorInterface $productComparator
     ) {
@@ -162,7 +163,7 @@ class Index extends AbstractService
         $this->nostoProductRepository = $nostoProductRepository;
         $this->productCollectionFactory = $productCollectionFactory;
         $this->magentoTimeZone = $magentoTimeZone;
-        $this->nostoSyncService = $nostoSyncService;
+        $this->syncBulkPublisher = $syncBulkPublisher;
         $this->productSerializer = $productSerializer;
         $this->productComparator = $productComparator;
     }
@@ -279,8 +280,7 @@ class Index extends AbstractService
         $dirtyCollection = $this->getDirtyCollection($store, $ids);
         $this->rebuildDirtyProducts($dirtyCollection, $store);
         $outOfSyncCollection = $this->getOutOfSyncCollection($store, $ids);
-        $this->nostoSyncService->syncIndexedProducts($outOfSyncCollection, $store);
-        $this->nostoSyncService->syncDeletedProducts($store);
+        $this->syncBulkPublisher->execute($outOfSyncCollection, $store);
     }
 
     /**

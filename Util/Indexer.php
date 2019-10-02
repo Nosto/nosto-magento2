@@ -36,6 +36,7 @@
 
 namespace Nosto\Tagging\Util;
 
+use Exception;
 use Symfony\Component\Console\Input\InputInterface;
 
 class Indexer
@@ -54,16 +55,21 @@ class Indexer
      */
     public static function isCalledFromSetupUpgrade(InputInterface $input)
     {
-        $parts = explode(':', $input->getFirstArgument());
-        if (count($parts) !== 2) {
+        try {
+            $parts = explode(':', $input->getFirstArgument());
+            if (count($parts) !== 2) {
+                return false;
+            }
+            list($commandScope, $commandAction) = $parts;
+            $currentCommandScope = substr($commandScope, 0, strlen(self::SETUP_UPGRADE_SCOPE));
+            $currentCommandAction = substr($commandAction, 0, strlen(self::SETUP_UPGRADE_ACTION));
+            return (
+                $currentCommandScope === self::SETUP_UPGRADE_SCOPE
+                && $currentCommandAction === self::SETUP_UPGRADE_ACTION
+            );
+            // Exception will be thrown if InputInterface\Proxy is instantiated in non-cli context
+        } catch (Exception $e) {
             return false;
         }
-        list($commandScope, $commandAction) = $parts;
-        $currentCommandScope = substr($commandScope, 0, strlen(self::SETUP_UPGRADE_SCOPE));
-        $currentCommandAction = substr($commandAction, 0, strlen(self::SETUP_UPGRADE_ACTION));
-        return (
-            $currentCommandScope === self::SETUP_UPGRADE_SCOPE
-            && $currentCommandAction === self::SETUP_UPGRADE_ACTION
-        );
     }
 }

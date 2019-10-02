@@ -40,7 +40,6 @@ use Exception;
 use Magento\Indexer\Model\ProcessManager;
 use Magento\Store\Model\App\Emulation;
 use Magento\Store\Model\Store;
-use Magento\Store\Model\StoreDimensionProvider;
 use Nosto\NostoException;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
@@ -48,6 +47,7 @@ use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Indexer\Dimensions\Data\ModeSwitcher as DataModeSwitcher;
 use Nosto\Tagging\Model\Indexer\Dimensions\ModeSwitcherInterface;
 use Nosto\Tagging\Model\Service\Index as NostoIndexService;
+use Nosto\Tagging\Model\Indexer\Dimensions\StoreDimensionProvider;
 
 /**
  * An indexer for Nosto product sync

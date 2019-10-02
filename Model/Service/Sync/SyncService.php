@@ -34,7 +34,7 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Service;
+namespace Nosto\Tagging\Model\Service\Sync;
 
 use Exception;
 use Magento\Store\Model\Store;
@@ -53,8 +53,9 @@ use Nosto\Tagging\Model\ResourceModel\Product\Index\Collection as NostoIndexColl
 use Nosto\Tagging\Model\ResourceModel\Product\Index\CollectionFactory as NostoIndexCollectionFactory;
 use Nosto\Tagging\Util\Iterator;
 use Nosto\Tagging\Util\Serializer\ProductSerializer;
+use Nosto\Tagging\Model\Service\AbstractService;
 
-class Sync extends AbstractService
+class SyncService extends AbstractService
 {
     const API_BATCH_SIZE = 50;
     const PRODUCT_DELETION_BATCH_SIZE = 100;
@@ -113,7 +114,6 @@ class Sync extends AbstractService
     /**
      * @param NostoIndexCollection $collection
      * @param Store $store
-     * @throws NostoException
      */
     public function syncIndexedProducts(NostoIndexCollection $collection, Store $store)
     {

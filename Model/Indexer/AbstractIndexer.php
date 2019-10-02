@@ -36,26 +36,26 @@
 
 namespace Nosto\Tagging\Model\Indexer;
 
+use Traversable;
 use ArrayIterator;
+use UnexpectedValueException;
 use InvalidArgumentException;
 use Magento\Framework\App\ObjectManager;
 use Magento\Framework\Indexer\ActionInterface as IndexerActionInterface;
-use Magento\Framework\Indexer\Dimension;
+use Magento\Framework\Mview\ActionInterface as MviewActionInterface;
 use Magento\Framework\Indexer\DimensionalIndexerInterface;
 use Magento\Framework\Indexer\DimensionProviderInterface;
-use Magento\Framework\Mview\ActionInterface as MviewActionInterface;
 use Magento\Indexer\Model\ProcessManager;
+use Magento\Framework\Indexer\Dimension;
+use Magento\Store\Model\App\Emulation;
 use Magento\Store\Model\Store;
-use Magento\Store\Model\StoreDimensionProvider;
+use Nosto\Tagging\Model\Indexer\Dimensions\AbstractDimensionModeConfiguration as DimensionModeConfiguration;
+use Nosto\Tagging\Model\Indexer\Dimensions\StoreDimensionProvider;
+use Nosto\Tagging\Model\Indexer\Dimensions\ModeSwitcherInterface;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
-use Nosto\Tagging\Model\Indexer\Dimensions\AbstractDimensionModeConfiguration as DimensionModeConfiguration;
-use Nosto\Tagging\Model\Indexer\Dimensions\ModeSwitcherInterface;
 use Nosto\Tagging\Util\Benchmark;
-use Traversable;
-use UnexpectedValueException;
-use Magento\Store\Model\App\Emulation;
 
 abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerActionInterface, MviewActionInterface
 {
@@ -155,7 +155,7 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
                 $this->getProcessManager()->execute($userFunctions);
                 break;
             default:
-                throw new UnexpectedValueException("Undefined dimension mode.");
+                throw new UnexpectedValueException('Undefined dimension mode.');
         }
     }
 
