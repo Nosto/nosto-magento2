@@ -200,7 +200,7 @@ class Index extends AbstractService
             $this->getLogger()->info(sprintf(
                 '"%s" has processed by %d/%d for store "%s"',
                 NostoIndexerInvalidate::INDEXER_ID,
-                $iterator->key(),
+                $iterator->getCurrentPageNumber(),
                 $iterator->getLastPageNumber(),
                 $store->getCode()
             ));
@@ -339,7 +339,7 @@ class Index extends AbstractService
             $this->getLogger()->info(sprintf(
                 '"%s" has processed by %d/%d for store "%s"',
                 NostoIndexerData::INDEXER_ID,
-                $iterator->key(),
+                $iterator->getCurrentPageNumber(),
                 $iterator->getLastPageNumber(),
                 $store->getCode()
             ));

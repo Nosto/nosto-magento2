@@ -51,7 +51,7 @@ use Nosto\Tagging\Model\Product\Index\IndexRepository;
 use Nosto\Tagging\Model\ResourceModel\Product\Index\Collection as NostoIndexCollection;
 use Nosto\Tagging\Model\ResourceModel\Product\Index\CollectionFactory as NostoIndexCollectionFactory;
 use Nosto\Tagging\Util\Serializer\ProductSerializer;
-use Nosto\Tagging\Util\Iterator;
+use Nosto\Tagging\Util\PagingIterator;
 use Nosto\Tagging\Model\Service\AbstractService;
 
 class SyncService extends AbstractService

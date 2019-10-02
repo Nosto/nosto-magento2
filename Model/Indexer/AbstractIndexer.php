@@ -57,6 +57,8 @@ use ArrayIterator;
 use InvalidArgumentException;
 use UnexpectedValueException;
 use Magento\Store\Model\App\Emulation;
+use Nosto\Tagging\Model\Indexer\Provider\ChangeLogProvider;
+use Nosto\Tagging\Model\Indexer\Util\Indexer as IndexerUtil;
 
 abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerActionInterface, MviewActionInterface
 {
@@ -78,12 +80,17 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
     /** @var Emulation */
     private $storeEmulator;
 
+    /** @var ChangeLogProvider */
+    private $changeLogProvider;
+
     /**
      * AbstractIndexer constructor.
      * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoHelperScope $nostoHelperScope
      * @param NostoLogger $nostoLogger
      * @param StoreDimensionProvider $dimensionProvider
+     * @param Emulation $storeEmulator
+     * @param ChangeLogProvider $changeLogProvider
      * @param ProcessManager|null $processManager
      */
     public function __construct(
@@ -92,6 +99,7 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
         NostoLogger $nostoLogger,
         StoreDimensionProvider $dimensionProvider,
         Emulation $storeEmulator,
+        ChangeLogProvider $changeLogProvider,
         ProcessManager $processManager = null
     ) {
         $this->nostoHelperAccount = $nostoHelperAccount;
@@ -100,6 +108,7 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
         $this->dimensionProvider = $dimensionProvider;
         $this->processManager = $processManager;
         $this->storeEmulator = $storeEmulator;
+        $this->changeLogProvider = $changeLogProvider;
     }
 
     /**
@@ -146,10 +155,13 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
     {
         $indexerId = $this->getIndexerId();
         $idCount = count($ids);
+        $totalEntries = $this->changeLogProvider->countCLTableEntries($indexerId);
         $message = sprintf(
-            'Begin a partial reindex for indexer "%s" for "%d ids',
+            'Begin a partial reindex for indexer "%s" for "%d ids. 
+            Total number of entries in CL table: "%s"',
             $indexerId,
-            $idCount
+            $idCount,
+            $totalEntries ?: "table was not found"
         );
         $this->nostoLogger->info($message);
         $this->execute($ids);

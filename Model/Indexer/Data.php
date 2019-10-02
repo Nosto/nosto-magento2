@@ -50,6 +50,7 @@ use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Magento\Indexer\Model\ProcessManager;
 use Nosto\Tagging\Model\Indexer\Dimensions\StoreDimensionProvider;
 use Magento\Store\Model\App\Emulation;
+use Nosto\Tagging\Model\Indexer\Provider\ChangeLogProvider;
 
 /**
  * An indexer for Nosto product sync
@@ -74,6 +75,7 @@ class Data extends AbstractIndexer
      * @param StoreDimensionProvider $dimensionProvider
      * @param Emulation $storeEmulation
      * @param ProcessManager $processManager
+     * @param ChangeLogProvider $changeLogProvider
      */
     public function __construct(
         NostoIndexService $nostoServiceIndex,
@@ -83,7 +85,8 @@ class Data extends AbstractIndexer
         NostoLogger $logger,
         StoreDimensionProvider $dimensionProvider,
         Emulation $storeEmulation,
-        ProcessManager $processManager
+        ProcessManager $processManager,
+        ChangeLogProvider $changeLogProvider
     ) {
         $this->nostoServiceIndex = $nostoServiceIndex;
         $this->modeSwitcher = $dataModeSwitcher;
@@ -93,6 +96,7 @@ class Data extends AbstractIndexer
             $logger,
             $dimensionProvider,
             $storeEmulation,
+            $changeLogProvider,
             $processManager
         );
     }

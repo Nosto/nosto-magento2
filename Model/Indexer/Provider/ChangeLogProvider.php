@@ -34,26 +34,37 @@
  *
  */
 
-namespace Nosto\Tagging\Util;
+namespace Nosto\Tagging\Model\Indexer\Provider;
 
-use Magento\Framework\App\ObjectManager;
 use Magento\Framework\App\ResourceConnection;
 
-class IndexerChangeLog
+class ChangeLogProvider
 {
+
+    /** @var ResourceConnection */
+    private $resourceConnection;
+
     /**
-     * @return array
+     * ChangeLogProvider constructor.
+     * @param ResourceConnection $resourceConnection
      */
-    public static function countInvalidateCLRows()
+    public function __construct(ResourceConnection $resourceConnection)
     {
-        $objectManager = ObjectManager::getInstance(); // Instance of object manager
-        /** @var ResourceConnection $resource */
-        $resource = $objectManager->get('Magento\Framework\App\ResourceConnection');
-        $connection = $resource->getConnection();
-        $sql = 'SELECT count(*) AS total FROM nosto_index_product_invalidate_cl';
-        $result = $connection->fetchAll($sql);
-        if (is_array($result) && count($result)>0){
-            return $result[0];
+        $this->resourceConnection = $resourceConnection;
+    }
+
+    /**
+     * @param string $tableName
+     * @return null
+     */
+    public function countCLTableEntries(string $indexerName)
+    {
+        $connection = $this->resourceConnection->getConnection();
+        $tableName = $indexerName.'_cl';
+        if ($connection->isTableExists($tableName)) {
+            $sql = sprintf('SELECT count(*) AS total FROM %s', $tableName);
+            return $connection->fetchOne($sql);
+
         }
         return null;
     }

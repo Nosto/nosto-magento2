@@ -34,7 +34,7 @@
  *
  */
 
-namespace Nosto\Tagging\Util;
+namespace Nosto\Tagging\Model\Indexer\Util;
 
 use Exception;
 use Symfony\Component\Console\Input\InputInterface;

@@ -124,4 +124,12 @@ class PagingIterator implements \Iterator
     {
         return $this->lastPageNumber;
     }
+
+    /**
+     * @return int
+     */
+    public function getCurrentPageNumber(): int
+    {
+        return $this->currentPageNumber;
+    }
 }
