@@ -37,7 +37,7 @@
 namespace Nosto\Tagging\Model\Indexer;
 
 use Exception;
-use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Mview\View;
 use Magento\Store\Model\Store;
 use Nosto\NostoException;
 use Nosto\Tagging\Model\Indexer\Dimensions\ModeSwitcherInterface;
@@ -74,6 +74,7 @@ class Data extends AbstractIndexer
      * @param StoreDimensionProvider $dimensionProvider
      * @param Emulation $storeEmulation
      * @param ProcessManager $processManager
+     * @param View $mview
      */
     public function __construct(
         NostoIndexService $nostoServiceIndex,
@@ -83,7 +84,8 @@ class Data extends AbstractIndexer
         NostoLogger $logger,
         StoreDimensionProvider $dimensionProvider,
         Emulation $storeEmulation,
-        ProcessManager $processManager
+        ProcessManager $processManager,
+        View $mview
     ) {
         $this->nostoServiceIndex = $nostoServiceIndex;
         $this->modeSwitcher = $dataModeSwitcher;
@@ -93,6 +95,7 @@ class Data extends AbstractIndexer
             $logger,
             $dimensionProvider,
             $storeEmulation,
+            $mview,
             $processManager
         );
     }

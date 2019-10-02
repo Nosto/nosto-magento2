@@ -37,6 +37,7 @@
 namespace Nosto\Tagging\Model\Indexer;
 
 use Exception;
+use Magento\Framework\Mview\View;
 use Magento\Store\Model\Store;
 use Nosto\NostoException;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
@@ -90,6 +91,7 @@ class Invalidate extends AbstractIndexer
      * @param Emulation $storeEmulation
      * @param ProcessManager $processManager
      * @param InputInterface $input
+     * @param View $mview
      */
     public function __construct(
         NostoHelperAccount $nostoHelperAccount,
@@ -101,7 +103,8 @@ class Invalidate extends AbstractIndexer
         StoreDimensionProvider $dimensionProvider,
         Emulation $storeEmulation,
         ProcessManager $processManager,
-        InputInterface $input
+        InputInterface $input,
+        View $mview
     ) {
         $this->nostoServiceIndex = $nostoServiceIndex;
         $this->nostoHelperAccount = $nostoHelperAccount;
@@ -114,6 +117,7 @@ class Invalidate extends AbstractIndexer
             $logger,
             $dimensionProvider,
             $storeEmulation,
+            $mview,
             $processManager
         );
     }
