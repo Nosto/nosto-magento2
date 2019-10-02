@@ -45,6 +45,7 @@ use Magento\Framework\Indexer\Dimension;
 use Magento\Framework\Indexer\DimensionalIndexerInterface;
 use Magento\Framework\Indexer\DimensionProviderInterface;
 use Magento\Framework\Mview\ActionInterface as MviewActionInterface;
+use Magento\Framework\Mview\View as Mview;
 use Magento\Indexer\Model\ProcessManager;
 use Magento\Store\Model\App\Emulation;
 use Magento\Store\Model\Store;
@@ -84,6 +85,9 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
     /** @var InputInterface */
     private $input;
 
+    /** @var Mview */
+    private $mview;
+
     /**
      * AbstractIndexer constructor.
      * @param NostoHelperAccount $nostoHelperAccount
@@ -92,6 +96,7 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
      * @param StoreDimensionProvider $dimensionProvider
      * @param Emulation $storeEmulator
      * @param InputInterface $input
+     * @param Mview $mview
      * @param ProcessManager|null $processManager
      */
     public function __construct(
@@ -101,6 +106,7 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
         StoreDimensionProvider $dimensionProvider,
         Emulation $storeEmulator,
         InputInterface $input,
+        Mview $mview,
         ProcessManager $processManager = null
     ) {
         $this->nostoHelperAccount = $nostoHelperAccount;
@@ -110,6 +116,7 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
         $this->processManager = $processManager;
         $this->input = $input;
         $this->storeEmulator = $storeEmulator;
+        $this->mview = $mview;
     }
 
     /**
@@ -166,6 +173,8 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
             default:
                 throw new UnexpectedValueException("Undefined dimension mode.");
         }
+
+        $this->clearProcessedChangelog();
     }
 
     /**
@@ -277,5 +286,14 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
     public function allowFullExecution()
     {
         return IndexerUtil::isCalledFromSetupUpgrade($this->input) === false;
+    }
+
+    /**
+     * Clears the CL tables
+     */
+    private function clearProcessedChangelog()
+    {
+        $this->mview->setId($this->getIndexerId());
+        $this->mview->clearChangelog();
     }
 }
