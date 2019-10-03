@@ -38,6 +38,6 @@ namespace Nosto\Tagging\Model\Service\Store;
 
 use RuntimeException;
 
-class MissingStoreException extends RuntimeException
+class MissingStoreException extends RuntimeException // @codingStandardsIgnoreLine
 {
 }
