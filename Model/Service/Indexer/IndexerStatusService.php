@@ -34,7 +34,7 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Service\Product;
+namespace Nosto\Tagging\Model\Service\Indexer;
 
 use Magento\Framework\Indexer\IndexerRegistry;
 use Nosto\Tagging\Model\Mview\ChangeLogInterface;

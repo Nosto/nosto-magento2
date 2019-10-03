@@ -71,7 +71,7 @@ use Nosto\Tagging\Util\PagingIterator;
 use Nosto\Tagging\Util\Serializer\ProductSerializer;
 use Nosto\Types\Product\ProductInterface as NostoProductInterface;
 
-class Index extends AbstractService
+class IndexService extends AbstractService
 {
     const PRODUCT_DATA_BATCH_SIZE = 100;
     const PRODUCT_DELETION_BATCH_SIZE = 100;

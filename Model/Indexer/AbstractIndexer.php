@@ -36,30 +36,30 @@
 
 namespace Nosto\Tagging\Model\Indexer;
 
-use Exception;
-use Traversable;
 use ArrayIterator;
-use UnexpectedValueException;
+use Exception;
 use InvalidArgumentException;
 use Magento\Framework\App\ObjectManager;
 use Magento\Framework\Indexer\ActionInterface as IndexerActionInterface;
-use Magento\Framework\Mview\ActionInterface as MviewActionInterface;
+use Magento\Framework\Indexer\Dimension;
 use Magento\Framework\Indexer\DimensionalIndexerInterface;
 use Magento\Framework\Indexer\DimensionProviderInterface;
+use Magento\Framework\Mview\ActionInterface as MviewActionInterface;
 use Magento\Indexer\Model\ProcessManager;
-use Magento\Framework\Indexer\Dimension;
 use Magento\Store\Model\App\Emulation;
 use Magento\Store\Model\Store;
-use Nosto\Tagging\Model\Indexer\Dimensions\AbstractDimensionModeConfiguration as DimensionModeConfiguration;
-use Nosto\Tagging\Model\Indexer\Dimensions\StoreDimensionProvider;
-use Nosto\Tagging\Model\Indexer\Dimensions\ModeSwitcherInterface;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
+use Nosto\Tagging\Model\Indexer\Dimensions\AbstractDimensionModeConfiguration as DimensionModeConfiguration;
+use Nosto\Tagging\Model\Indexer\Dimensions\ModeSwitcherInterface;
+use Nosto\Tagging\Model\Indexer\Dimensions\StoreDimensionProvider;
 use Nosto\Tagging\Model\Indexer\Util\Indexer as IndexerUtil;
+use Nosto\Tagging\Model\Service\Indexer\IndexerStatusServiceInterface;
 use Nosto\Tagging\Util\Benchmark;
-use Nosto\Tagging\Model\Service\IndexerStatusServiceInterface;
 use Symfony\Component\Console\Input\InputInterface;
+use Traversable;
+use UnexpectedValueException;
 
 /**
  * Class AbstractIndexer
