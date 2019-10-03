@@ -36,7 +36,6 @@
 
 namespace Nosto\Tagging\Model\Indexer;
 
-use Magento\Framework\Mview\View as Mview;
 use Magento\Indexer\Model\ProcessManager;
 use Magento\Store\Model\App\Emulation;
 use Magento\Store\Model\Store;
@@ -48,7 +47,6 @@ use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Indexer\Dimensions\Data\ModeSwitcher as DataModeSwitcher;
 use Nosto\Tagging\Model\Indexer\Dimensions\ModeSwitcherInterface;
 use Nosto\Tagging\Model\Indexer\Dimensions\StoreDimensionProvider;
-use Nosto\Tagging\Model\MView\ChangeLog as NostoChangeLog;
 use Nosto\Tagging\Model\Service\Index as NostoIndexService;
 use Nosto\Tagging\Model\Service\IndexerStatusServiceInterface;
 use Symfony\Component\Console\Input\InputInterface;
