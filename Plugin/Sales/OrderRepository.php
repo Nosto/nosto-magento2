@@ -66,8 +66,8 @@ class OrderRepository
     public function afterSave(
         /** @noinspection PhpUnusedParameterInspection */
         OrderRepositoryInterface $subject,
-        OrderInterface $order)
-    {
+        OrderInterface $order
+    ) {
         $this->eventManager->dispatch('nosto_sales_save_after', ['order' => $order]);
         return $order;
     }

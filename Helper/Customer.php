@@ -53,9 +53,6 @@ class Customer extends AbstractHelper
 
     private $customerSession;
     private $groupRepository;
-    /**
-     * @var Logger
-     */
     private $logger;
 
     /**
@@ -92,10 +89,10 @@ class Customer extends AbstractHelper
             return $this->groupRepository->getById(Variation::DEFAULT_CUSTOMER_GROUP_ID)->getCode();
         } catch (NoSuchEntityException $e) {
             $this->logger->exception($e);
-            return "missing";
+            return 'missing';
         } catch (LocalizedException $e) {
             $this->logger->exception($e);
-            return "missing";
+            return 'missing';
         }
     }
 
