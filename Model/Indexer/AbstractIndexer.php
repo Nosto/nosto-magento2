@@ -348,7 +348,7 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
     }
 
     /**
-     * @return null|string
+     * @return int
      * @throws Exception
      */
     private function getTotalCLRows()

@@ -64,7 +64,6 @@ class IndexerStatusService implements IndexerStatusServiceInterface
         $this->changeLog = $changeLog;
         $this->mview = $mview;
         $this->indexerRegistry = $indexerRegistry;
-
     }
 
     /**
@@ -99,7 +98,7 @@ class IndexerStatusService implements IndexerStatusServiceInterface
         if (!$this->isScheduled($indexerId)) {
             return 0;
         }
-        return $this->mview->getState()->getVersionId();
+        return (int)$this->mview->getState()->getVersionId();
     }
 
     /**

@@ -44,6 +44,7 @@ use Magento\Framework\Mview\View;
  * but it exists in the implementation class
  * @package Nosto\Tagging\Model\Mview
  */
+// @codingStandardsIgnoreFile
 class Mview extends View implements MviewInterface
 {
 }
