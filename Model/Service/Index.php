@@ -257,7 +257,7 @@ class Index extends AbstractService
      */
     public function updateOrCreateDirtyEntity(ProductInterface $product, StoreInterface $store)
     {
-        if (!$this->canNostoBuildProduct($product)) {
+        if (!$this->canBuildBundleProduct($product)) {
             $this->getLogger()
                 ->debug(sprintf('Product %s cannot be processed by Nosto', $product->getId()));
             return;
@@ -282,7 +282,7 @@ class Index extends AbstractService
      * @param ProductInterface $product
      * @return bool
      */
-    private function canNostoBuildProduct(ProductInterface $product)
+    private function canBuildBundleProduct(ProductInterface $product)
     {
         if ($product->getTypeId() === Type::TYPE_BUNDLE && empty($product->getOptions())) {
             return false;
