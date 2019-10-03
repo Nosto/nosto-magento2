@@ -66,6 +66,7 @@ class SyncService extends AbstractService
     const BENCHMARK_DELETE_BREAKPOINT = 1;
     const RESPONSE_TIMEOUT = 60;
 
+
     /** @var IndexRepository */
     private $indexRepository;
 
@@ -226,7 +227,7 @@ class SyncService extends AbstractService
             }
             try {
                 $op = new DeleteProduct($account, $this->nostoHelperUrl->getActiveDomain($store));
-                $op->setResponseTimeout(30);
+                $op->setResponseTimeout(self::RESPONSE_TIMEOUT);
                 $op->setProductIds($ids);
                 $op->delete(); // @codingStandardsIgnoreLine
                 $this->indexRepository->deleteCurrentItemsByStore($page, $store);

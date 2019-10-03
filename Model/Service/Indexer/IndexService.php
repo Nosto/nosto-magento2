@@ -320,7 +320,7 @@ class IndexService extends AbstractService
     public function indexProducts(Store $store, array $ids = [])
     {
         $account = $this->nostoHelperAccount->findAccount($store);
-        if ($account instanceof NostoSignupAccount === false) {
+        if ($account === null) {
             throw new NostoException(sprintf('Store view %s does not have Nosto installed', $store->getName()));
         }
         $dirtyCollection = $this->getDirtyCollection($store, $ids);
