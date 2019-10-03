@@ -36,7 +36,6 @@
 
 namespace Nosto\Tagging\Model\Indexer;
 
-use Magento\Framework\Mview\View as Mview;
 use Magento\Indexer\Model\ProcessManager;
 use Magento\Store\Model\App\Emulation;
 use Magento\Store\Model\Store;
@@ -50,8 +49,8 @@ use Nosto\Tagging\Model\Indexer\Dimensions\StoreDimensionProvider;
 use Nosto\Tagging\Model\ResourceModel\Magento\Product\Collection as ProductCollection;
 use Nosto\Tagging\Model\ResourceModel\Magento\Product\CollectionFactory as ProductCollectionFactory;
 use Nosto\Tagging\Model\Service\Index as NostoServiceIndex;
+use Nosto\Tagging\Model\Service\IndexerStatusServiceInterface;
 use Symfony\Component\Console\Input\InputInterface;
-use Nosto\Tagging\Model\MView\ChangeLog as NostoChangeLog;
 
 /**
  * Class Invalidate
@@ -87,8 +86,7 @@ class Invalidate extends AbstractIndexer
      * @param Emulation $storeEmulation
      * @param ProcessManager $processManager
      * @param InputInterface $input
-     * @param NostoChangeLog $changeLog
-     * @param Mview $mview
+     * @param IndexerStatusServiceInterface $indexerStatusService
      */
     public function __construct(
         NostoHelperAccount $nostoHelperAccount,
@@ -101,8 +99,7 @@ class Invalidate extends AbstractIndexer
         Emulation $storeEmulation,
         ProcessManager $processManager,
         InputInterface $input,
-        NostoChangeLog $changeLog,
-        Mview $mview
+        IndexerStatusServiceInterface $indexerStatusService
     ) {
         $this->nostoServiceIndex = $nostoServiceIndex;
         $this->nostoHelperAccount = $nostoHelperAccount;
@@ -115,8 +112,7 @@ class Invalidate extends AbstractIndexer
             $dimensionProvider,
             $storeEmulation,
             $input,
-            $mview,
-            $changeLog,
+            $indexerStatusService,
             $processManager
         );
     }

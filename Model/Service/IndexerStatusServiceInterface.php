@@ -33,28 +33,25 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
+namespace Nosto\Tagging\Model\Service;
 
-namespace Nosto\Tagging\Model\Mview;
-
-use Magento\Framework\Mview\View\Changelog as MagentoChangelog;
-
-class ChangeLog extends MagentoChangelog implements ChangeLogInterface
+interface IndexerStatusServiceInterface
 {
     /**
-     * @inheritDoc
+     * @param $indexerId
+     * @return void
      */
-    public function getTotalRows()
-    {
-        $changelogTableName = $this->resource->getTableName($this->getName());
-        if ($this->connection->isTableExists($changelogTableName)) {
-            $select = $this->connection->select() // @codingStandardsIgnoreLine
-                ->from( // @codingStandardsIgnoreLine
-                    $changelogTableName,
-                    'COUNT(*)'
-                );
+    public function clearProcessedChangelog($indexerId);
 
-            return $this->connection->fetchOne($select);
-        }
-        return null;
-    }
+    /**
+     * @param $indexerId
+     * @return int
+     */
+    public function getTotalChangelogCount($indexerId);
+
+    /**
+     * @param $indexerId
+     * @return int
+     */
+    public function getCurrentWatermark($indexerId);
 }

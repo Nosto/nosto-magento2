@@ -36,25 +36,14 @@
 
 namespace Nosto\Tagging\Model\Mview;
 
-use Magento\Framework\Mview\View\Changelog as MagentoChangelog;
+use Magento\Framework\Mview\ViewInterface;
 
-class ChangeLog extends MagentoChangelog implements ChangeLogInterface
+interface MviewInterface extends ViewInterface
 {
     /**
-     * @inheritDoc
+     * Set view id
+     * @param string $id
+     * @return $this
      */
-    public function getTotalRows()
-    {
-        $changelogTableName = $this->resource->getTableName($this->getName());
-        if ($this->connection->isTableExists($changelogTableName)) {
-            $select = $this->connection->select() // @codingStandardsIgnoreLine
-                ->from( // @codingStandardsIgnoreLine
-                    $changelogTableName,
-                    'COUNT(*)'
-                );
-
-            return $this->connection->fetchOne($select);
-        }
-        return null;
-    }
+    public function setId($id);
 }
