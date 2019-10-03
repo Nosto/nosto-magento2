@@ -38,7 +38,7 @@
         xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
     <preference for="Magento\Framework\Stdlib\CookieManagerInterface" type="Magento\Framework\Stdlib\Cookie\PhpCookieManager"/>
     <preference for="Nosto\Tagging\Api\Data\ProductQueueSearchResultsInterface" type="Nosto\Tagging\Model\Product\QueueSearchResults"/>
-    <preference for="Nosto\Tagging\Model\Service\ProductServiceInterface" type="Nosto\Tagging\Model\Service\DefaultProductService"/>
+    <preference for="Nosto\Tagging\Model\Service\Product\ProductServiceInterface" type="Nosto\Tagging\Model\Service\Product\DefaultProductService"/>
     <preference for="Nosto\Tagging\Model\Service\Stock\Provider\StockProviderInterface" type="Nosto\Tagging\Model\Service\Stock\Provider\CachingStockProvider"/>
     <preference for="Nosto\Tagging\Util\Serializer\SerializerInterface" type="Nosto\Tagging\Util\Serializer\DefaultSerializer"/>
     <preference for="Nosto\Tagging\Model\Service\Comparator\ProductComparatorInterface" type="Nosto\Tagging\Model\Service\Comparator\DefaultProductComparator"/>
@@ -119,24 +119,24 @@
             <argument name="stockProvider" xsi:type="object">Nosto\Tagging\Model\Service\Stock\Provider\DefaultStockProvider</argument>
         </arguments>
     </type>
-    <type name="Nosto\Tagging\Model\Service\CachingProductService">
+    <type name="Nosto\Tagging\Model\Service\Product\CachingProductService">
         <arguments>
-            <argument name="nostoProductService" xsi:type="object">Nosto\Tagging\Model\Service\DefaultProductService</argument>
+            <argument name="nostoProductService" xsi:type="object">Nosto\Tagging\Model\Service\Product\DefaultProductService</argument>
         </arguments>
     </type>
-    <type name="Nosto\Tagging\Model\Service\SanitizingProductService">
+    <type name="Nosto\Tagging\Model\Service\Product\SanitizingProductService">
         <arguments>
-            <argument name="nostoProductService" xsi:type="object">Nosto\Tagging\Model\Service\CachingProductService</argument>
+            <argument name="nostoProductService" xsi:type="object">Nosto\Tagging\Model\Service\Product\CachingProductService</argument>
         </arguments>
     </type>
     <type name="Nosto\Tagging\Block\Product">
         <arguments>
-            <argument name="productServiceInterface" xsi:type="object">Nosto\Tagging\Model\Service\SanitizingProductService</argument>
+            <argument name="productServiceInterface" xsi:type="object">Nosto\Tagging\Model\Service\Product\SanitizingProductService</argument>
         </arguments>
     </type>
     <type name="Nosto\Tagging\Model\Product\Collection">
         <arguments>
-            <argument name="productServiceInterface" xsi:type="object">Nosto\Tagging\Model\Service\CachingProductService</argument>
+            <argument name="productServiceInterface" xsi:type="object">Nosto\Tagging\Model\Service\Product\CachingProductService</argument>
         </arguments>
     </type>
     <type name="Magento\Indexer\Console\Command\IndexerSetDimensionsModeCommand">

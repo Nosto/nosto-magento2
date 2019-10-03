@@ -34,15 +34,16 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Service;
+namespace Nosto\Tagging\Model\Service\Indexer;
 
 use Exception;
 use Magento\Catalog\Api\Data\ProductInterface;
-use Magento\Store\Api\Data\StoreInterface;
 use Magento\Catalog\Model\Product;
+use Magento\Catalog\Model\Product\Type;
 use Magento\Catalog\Model\ProductRepository;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
+use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\Store;
 use Nosto\Exception\MemoryOutOfBoundsException;
 use Nosto\NostoException;
@@ -52,6 +53,8 @@ use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Data as NostoDataHelper;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
+use Nosto\Tagging\Model\Indexer\Data as NostoIndexerData;
+use Nosto\Tagging\Model\Indexer\Invalidate as NostoIndexerInvalidate;
 use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
 use Nosto\Tagging\Model\Product\Index\Builder;
 use Nosto\Tagging\Model\Product\Index\Index as NostoProductIndex;
@@ -61,14 +64,12 @@ use Nosto\Tagging\Model\ResourceModel\Magento\Product\Collection as ProductColle
 use Nosto\Tagging\Model\ResourceModel\Magento\Product\CollectionFactory as ProductCollectionFactory;
 use Nosto\Tagging\Model\ResourceModel\Product\Index\Collection as NostoIndexCollection;
 use Nosto\Tagging\Model\ResourceModel\Product\Index\CollectionFactory as NostoIndexCollectionFactory;
+use Nosto\Tagging\Model\Service\AbstractService;
 use Nosto\Tagging\Model\Service\Comparator\ProductComparatorInterface;
-use Nosto\Tagging\Util\Serializer\ProductSerializer;
-use Nosto\Tagging\Util\PagingIterator;
-use Nosto\Types\Product\ProductInterface as NostoProductInterface;
-use Nosto\Tagging\Model\Indexer\Invalidate as NostoIndexerInvalidate;
-use Nosto\Tagging\Model\Indexer\Data as NostoIndexerData;
 use Nosto\Tagging\Model\Service\Sync\BulkSyncInterface;
-use Magento\Catalog\Model\Product\Type;
+use Nosto\Tagging\Util\PagingIterator;
+use Nosto\Tagging\Util\Serializer\ProductSerializer;
+use Nosto\Types\Product\ProductInterface as NostoProductInterface;
 
 class Index extends AbstractService
 {

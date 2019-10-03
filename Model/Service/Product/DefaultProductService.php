@@ -33,18 +33,47 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
-namespace Nosto\Tagging\Model\Service;
 
+namespace Nosto\Tagging\Model\Service\Product;
+
+use Exception;
 use Magento\Catalog\Api\Data\ProductInterface;
+use Magento\Catalog\Model\Product;
 use Magento\Store\Api\Data\StoreInterface;
+use Magento\Store\Model\Store;
 use Nosto\Object\Product\Product as NostoProduct;
+use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
 
-interface ProductServiceInterface
+class DefaultProductService implements ProductServiceInterface
 {
+
+    /** @var NostoProductBuilder */
+    private $nostoProductBuilder;
+
+    /**
+     * DefaultProductService constructor.
+     * @param NostoProductBuilder $nostoProductBuilder
+     */
+    public function __construct(
+        NostoProductBuilder $nostoProductBuilder
+    ) {
+        $this->nostoProductBuilder = $nostoProductBuilder;
+    }
+
     /**
      * @param ProductInterface $product
      * @param StoreInterface $store
-     * @return ProductInterface|NostoProduct|null
+     * @return NostoProduct|null
+     * @suppress PhanTypeMismatchArgument
+     * @throws Exception
      */
-    public function getProduct(ProductInterface $product, StoreInterface $store);
+    public function getProduct(ProductInterface $product, StoreInterface $store)
+    {
+        /** @var Product $product */
+        /** @var Store $store */
+        return $this->nostoProductBuilder->build(
+            $product,
+            $store
+        );
+    }
 }

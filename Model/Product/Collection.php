@@ -46,7 +46,7 @@ use Magento\Store\Model\Store;
 use Nosto\NostoException;
 use Nosto\Object\Product\ProductCollection as NostoProductCollection;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
-use Nosto\Tagging\Model\Service\ProductServiceInterface;
+use Nosto\Tagging\Model\Service\Product\ProductServiceInterface;
 use Nosto\Types\Product\ProductInterface;
 use Traversable;
 

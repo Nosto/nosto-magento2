@@ -34,7 +34,7 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Service;
+namespace Nosto\Tagging\Model\Service\Product;
 
 use Exception;
 use Magento\Catalog\Api\Data\ProductInterface;
