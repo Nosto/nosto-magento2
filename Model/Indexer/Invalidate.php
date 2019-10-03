@@ -49,7 +49,7 @@ use Nosto\Tagging\Model\Service\Index as NostoServiceIndex;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
-use Nosto\Tagging\Util\Indexer as IndexerUtil;
+use Magento\Framework\Mview\View as Mview;
 use Symfony\Component\Console\Input\InputInterface;
 
 /**
@@ -74,9 +74,6 @@ class Invalidate extends AbstractIndexer
     /** @var InvalidateModeSwitcher */
     private $modeSwitcher;
 
-    /** @var InputInterface */
-    private $input;
-
     /**
      * Invalidate constructor.
      * @param NostoHelperAccount $nostoHelperAccount
@@ -89,6 +86,7 @@ class Invalidate extends AbstractIndexer
      * @param Emulation $storeEmulation
      * @param ProcessManager $processManager
      * @param InputInterface $input
+     * @param Mview $mview
      */
     public function __construct(
         NostoHelperAccount $nostoHelperAccount,
@@ -100,58 +98,23 @@ class Invalidate extends AbstractIndexer
         StoreDimensionProvider $dimensionProvider,
         Emulation $storeEmulation,
         ProcessManager $processManager,
-        InputInterface $input
+        InputInterface $input,
+        Mview $mview
     ) {
         $this->nostoServiceIndex = $nostoServiceIndex;
         $this->nostoHelperAccount = $nostoHelperAccount;
         $this->productCollectionFactory = $productCollectionFactory;
         $this->modeSwitcher = $modeSwitcher;
-        $this->input = $input;
         parent::__construct(
             $nostoHelperAccount,
             $nostoHelperScope,
             $logger,
             $dimensionProvider,
             $storeEmulation,
+            $input,
+            $mview,
             $processManager
         );
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function executeFull()
-    {
-        if ($this->allowFullExecution() === true) {
-            $this->doWork();
-        }
-    }
-
-    /**
-     * @inheritdoc
-     * @throws Exception
-     */
-    public function executeList(array $ids)
-    {
-        $this->execute($ids);
-    }
-
-    /**
-     * @inheritDoc
-     * @throws Exception
-     */
-    public function executeRow($id)
-    {
-        $this->execute([$id]);
-    }
-
-    /**
-     * @inheritdoc
-     * @throws Exception
-     */
-    public function execute($ids)
-    {
-        $this->doWork($ids);
     }
 
     /**
@@ -209,13 +172,5 @@ class Invalidate extends AbstractIndexer
             $collection->addActiveAndVisibleFilter();
         }
         return $collection;
-    }
-
-    /**
-     * @return bool
-     */
-    public function allowFullExecution()
-    {
-        return IndexerUtil::isCalledFromSetupUpgrade($this->input) === false;
     }
 }

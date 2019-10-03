@@ -36,9 +36,9 @@
 
 namespace Nosto\Tagging\Model\Indexer;
 
-use Exception;
 use Magento\Indexer\Model\ProcessManager;
 use Magento\Store\Model\App\Emulation;
+use Magento\Framework\Mview\View as Mview;
 use Magento\Store\Model\Store;
 use Nosto\NostoException;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
@@ -48,6 +48,7 @@ use Nosto\Tagging\Model\Indexer\Dimensions\Data\ModeSwitcher as DataModeSwitcher
 use Nosto\Tagging\Model\Indexer\Dimensions\ModeSwitcherInterface;
 use Nosto\Tagging\Model\Service\Index as NostoIndexService;
 use Nosto\Tagging\Model\Indexer\Dimensions\StoreDimensionProvider;
+use Symfony\Component\Console\Input\InputInterface;
 
 /**
  * An indexer for Nosto product sync
@@ -72,6 +73,8 @@ class Data extends AbstractIndexer
      * @param StoreDimensionProvider $dimensionProvider
      * @param Emulation $storeEmulation
      * @param ProcessManager $processManager
+     * @param InputInterface $input
+     * @param Mview $mview
      */
     public function __construct(
         NostoIndexService $nostoServiceIndex,
@@ -81,7 +84,9 @@ class Data extends AbstractIndexer
         NostoLogger $logger,
         StoreDimensionProvider $dimensionProvider,
         Emulation $storeEmulation,
-        ProcessManager $processManager
+        ProcessManager $processManager,
+        InputInterface $input,
+        Mview $mview
     ) {
         $this->nostoServiceIndex = $nostoServiceIndex;
         $this->modeSwitcher = $dataModeSwitcher;
@@ -91,44 +96,10 @@ class Data extends AbstractIndexer
             $logger,
             $dimensionProvider,
             $storeEmulation,
+            $input,
+            $mview,
             $processManager
         );
-    }
-
-    /**
-     * @inheritdoc
-     * @throws Exception
-     */
-    public function executeFull()
-    {
-        $this->doWork();
-    }
-
-    /**
-     * @inheritdoc
-     * @throws Exception
-     */
-    public function executeList(array $ids)
-    {
-        $this->execute($ids);
-    }
-
-    /**
-     * @inheritdoc
-     * @throws Exception
-     */
-    public function executeRow($id)
-    {
-        $this->execute([$id]);
-    }
-
-    /**
-     * @inheritdoc
-     * @throws Exception
-     */
-    public function execute($ids)
-    {
-        $this->doWork($ids);
     }
 
     /**
