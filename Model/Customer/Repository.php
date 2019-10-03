@@ -109,13 +109,14 @@ class Repository implements CustomerRepositoryInterface
     public function getOneByNostoIdAndQuoteId($nostoId, $quoteId)
     {
         $searchCriteria = $this->searchCriteriaBuilder
-            ->addFilter(CustomerInterface::NOSTO_ID, $nostoId, 'eq')
-            ->addFilter(CustomerInterface::QUOTE_ID, $quoteId, 'eq')
+            ->addFilter(CustomerInterface::NOSTO_ID, $nostoId)
+            ->addFilter(CustomerInterface::QUOTE_ID, $quoteId)
             ->setPageSize(1)
             ->setCurrentPage(1)
             ->create();
 
         $items = $this->search($searchCriteria)->getItems();
+        /** @noinspection LoopWhichDoesNotLoopInspection */
         foreach ($items as $customer) {
             return $customer;
         }
@@ -134,12 +135,13 @@ class Repository implements CustomerRepositoryInterface
     public function getOneByQuoteId($quoteId)
     {
         $searchCriteria = $this->searchCriteriaBuilder
-            ->addFilter(NostoCustomer::QUOTE_ID, $quoteId, 'eq')
+            ->addFilter(NostoCustomer::QUOTE_ID, $quoteId)
             ->setPageSize(1)
             ->setCurrentPage(1)
             ->create();
 
         $items = $this->search($searchCriteria)->getItems();
+        /** @noinspection LoopWhichDoesNotLoopInspection */
         foreach ($items as $customer) {
             /** @var CustomerInterface $customer */
             return $customer;
@@ -159,12 +161,13 @@ class Repository implements CustomerRepositoryInterface
     public function getOneByRestoreCartHash($hash)
     {
         $searchCriteria = $this->searchCriteriaBuilder
-            ->addFilter(CustomerInterface::RESTORE_CART_HASH, $hash, 'eq')
+            ->addFilter(CustomerInterface::RESTORE_CART_HASH, $hash)
             ->setPageSize(1)
             ->setCurrentPage(1)
             ->create();
 
         $items = $this->search($searchCriteria)->getItems();
+        /** @noinspection LoopWhichDoesNotLoopInspection */
         foreach ($items as $customer) {
             return $customer;
         }
