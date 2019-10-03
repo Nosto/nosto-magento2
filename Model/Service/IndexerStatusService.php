@@ -102,6 +102,10 @@ class IndexerStatusService implements IndexerStatusServiceInterface
         return $this->mview->getState()->getVersionId();
     }
 
+    /**
+     * @param $indexerId
+     * @return bool
+     */
     private function isScheduled($indexerId)
     {
         return $this->indexerRegistry->get($indexerId)->isScheduled();

@@ -37,6 +37,7 @@
 namespace Nosto\Tagging\Model\Service\Sync;
 
 use Magento\Store\Model\Store;
+use Nosto\Exception\MemoryOutOfBoundsException;
 use Nosto\NostoException;
 use Nosto\Object\Signup\Account as NostoSignupAccount;
 use Nosto\Operation\DeleteProduct;
@@ -113,8 +114,8 @@ class SyncService extends AbstractService
     /**
      * @param NostoIndexCollection $collection
      * @param Store $store
-     * @throws MemoryOutOfBoundsException
      * @throws NostoException
+     * @throws MemoryOutOfBoundsException
      */
     public function syncIndexedProducts(NostoIndexCollection $collection, Store $store)
     {
@@ -225,7 +226,7 @@ class SyncService extends AbstractService
                 $op = new DeleteProduct($account, $this->nostoHelperUrl->getActiveDomain($store));
                 $op->setResponseTimeout(30);
                 $op->setProductIds($ids);
-                $op->delete(); // @codingStandardsIgnoreLine$
+                $op->delete(); // @codingStandardsIgnoreLine
                 $this->indexRepository->deleteCurrentItemsByStore($page, $store);
                 $this->tickBenchmark(self::BENCHMARK_DELETE_NAME);
             } catch (\Exception $e) {

@@ -42,7 +42,7 @@ interface ChangeLogInterface extends MagentoChangelogInterface
 {
     /**
      * Get total rows in changelog table
-     * @return int|null
+     * @return int
      */
     public function getTotalRows();
 }

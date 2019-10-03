@@ -93,10 +93,7 @@ class PagingIterator implements \Iterator
      */
     public function valid(): bool
     {
-        if ($this->currentPageNumber <= $this->lastPageNumber) {
-            return true;
-        }
-        return false;
+        return $this->currentPageNumber <= $this->lastPageNumber;
     }
 
     /**
