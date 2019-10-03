@@ -16,7 +16,7 @@
  * 3. Neither the name of the copyright holder nor the names of its contributors
  * may be used to endorse or promote products derived from this software without
  * specific prior written permission.
- *
+ * o
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -34,42 +34,79 @@
  *
  */
 
-namespace Nosto\Tagging\Logger;
+namespace Nosto\Tagging\Model\Service;
 
-use Monolog\Logger as MonologLogger;
-use Nosto\Tagging\Helper\NewRelic;
-use Nosto\Util\Memory;
-use Throwable;
+use Magento\Framework\Indexer\IndexerRegistry;
+use Nosto\Tagging\Model\Mview\ChangeLogInterface;
+use Nosto\Tagging\Model\Mview\MviewInterface;
 
-class Logger extends MonologLogger
+class IndexerStatusService implements IndexerStatusServiceInterface
 {
+    /** @var IndexerRegistry  */
+    private $indexerRegistry;
+
+    /** @var ChangeLogInterface */
+    private $changeLog;
+
+    /** @var MviewInterface */
+    private $mview;
+
     /**
-     * Logs an exception and sends it to New relic if available
-     * @param Throwable $exception
-     * @return bool
+     * @param ChangelogInterface $changeLog
+     * @param MviewInterface $mview
+     * @param IndexerRegistry $indexerRegistry
      */
-    public function exception(Throwable $exception)
-    {
-        NewRelic::reportException($exception);
-        return parent::error($exception->__toString());
+    public function __construct(
+        ChangeLogInterface $changeLog,
+        MviewInterface $mview,
+        IndexerRegistry $indexerRegistry
+    ) {
+        $this->changeLog = $changeLog;
+        $this->mview = $mview;
+        $this->indexerRegistry = $indexerRegistry;
     }
 
     /**
-     * Logs a message along with the memory consumption
-     *
-     * @param $message
+     * @inheritDoc
+     */
+    public function clearProcessedChangelog($indexerId)
+    {
+        if (!$this->isScheduled($indexerId)) {
+            return;
+        }
+        $this->mview->setId($indexerId);
+        $this->mview->clearChangelog();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getTotalChangelogCount($indexerId)
+    {
+        if (!$this->isScheduled($indexerId)) {
+            return 0;
+        }
+        $this->changeLog->setViewId($indexerId);
+        return $this->changeLog->getTotalRows();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getCurrentWatermark($indexerId)
+    {
+        if (!$this->isScheduled($indexerId)) {
+            return 0;
+        }
+        return (int)$this->mview->getState()->getVersionId();
+    }
+
+    /**
+     * @param $indexerId
      * @return bool
      */
-    public function logWithMemoryConsumption($message)
+    private function isScheduled($indexerId)
     {
-        return parent::debug(
-            sprintf(
-                '%s [mem usage: %sM / %s] [realmem: %sM]',
-                $message,
-                Memory::getConsumption(),
-                Memory::getTotalMemoryLimit(),
-                Memory::getRealConsumption()
-            )
-        );
+        return $this->indexerRegistry->get($indexerId)->isScheduled();
     }
 }

@@ -38,7 +38,6 @@ namespace Nosto\Tagging\Model\Indexer;
 
 use Magento\Indexer\Model\ProcessManager;
 use Magento\Store\Model\App\Emulation;
-use Magento\Framework\Mview\View as Mview;
 use Magento\Store\Model\Store;
 use Nosto\NostoException;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
@@ -48,6 +47,7 @@ use Nosto\Tagging\Model\Indexer\Dimensions\Data\ModeSwitcher as DataModeSwitcher
 use Nosto\Tagging\Model\Indexer\Dimensions\ModeSwitcherInterface;
 use Nosto\Tagging\Model\Service\Index as NostoIndexService;
 use Nosto\Tagging\Model\Indexer\Dimensions\StoreDimensionProvider;
+use Nosto\Tagging\Model\Service\IndexerStatusServiceInterface;
 use Symfony\Component\Console\Input\InputInterface;
 
 /**
@@ -74,7 +74,7 @@ class Data extends AbstractIndexer
      * @param Emulation $storeEmulation
      * @param ProcessManager $processManager
      * @param InputInterface $input
-     * @param Mview $mview
+     * @param IndexerStatusServiceInterface $indexerStatusService
      */
     public function __construct(
         NostoIndexService $nostoServiceIndex,
@@ -86,7 +86,7 @@ class Data extends AbstractIndexer
         Emulation $storeEmulation,
         ProcessManager $processManager,
         InputInterface $input,
-        Mview $mview
+        IndexerStatusServiceInterface $indexerStatusService
     ) {
         $this->nostoServiceIndex = $nostoServiceIndex;
         $this->modeSwitcher = $dataModeSwitcher;
@@ -97,7 +97,7 @@ class Data extends AbstractIndexer
             $dimensionProvider,
             $storeEmulation,
             $input,
-            $mview,
+            $indexerStatusService,
             $processManager
         );
     }

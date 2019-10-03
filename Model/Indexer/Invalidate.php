@@ -48,7 +48,7 @@ use Nosto\Tagging\Model\Service\Index as NostoServiceIndex;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
-use Magento\Framework\Mview\View as Mview;
+use Nosto\Tagging\Model\Service\IndexerStatusServiceInterface;
 use Symfony\Component\Console\Input\InputInterface;
 
 /**
@@ -85,7 +85,7 @@ class Invalidate extends AbstractIndexer
      * @param Emulation $storeEmulation
      * @param ProcessManager $processManager
      * @param InputInterface $input
-     * @param Mview $mview
+     * @param IndexerStatusServiceInterface $indexerStatusService
      */
     public function __construct(
         NostoHelperAccount $nostoHelperAccount,
@@ -98,7 +98,7 @@ class Invalidate extends AbstractIndexer
         Emulation $storeEmulation,
         ProcessManager $processManager,
         InputInterface $input,
-        Mview $mview
+        IndexerStatusServiceInterface $indexerStatusService
     ) {
         $this->nostoServiceIndex = $nostoServiceIndex;
         $this->nostoHelperAccount = $nostoHelperAccount;
@@ -111,7 +111,7 @@ class Invalidate extends AbstractIndexer
             $dimensionProvider,
             $storeEmulation,
             $input,
-            $mview,
+            $indexerStatusService,
             $processManager
         );
     }

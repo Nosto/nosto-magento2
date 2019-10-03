@@ -38,6 +38,7 @@ namespace Nosto\Tagging\Model\Service\Sync;
 
 use Exception;
 use Magento\Store\Model\Store;
+use Nosto\Exception\MemoryOutOfBoundsException;
 use Nosto\NostoException;
 use Nosto\Object\Signup\Account as NostoSignupAccount;
 use Nosto\Operation\DeleteProduct;
@@ -51,8 +52,8 @@ use Nosto\Tagging\Model\Product\Index\Index as NostoProductIndex;
 use Nosto\Tagging\Model\Product\Index\IndexRepository;
 use Nosto\Tagging\Model\ResourceModel\Product\Index\Collection as NostoIndexCollection;
 use Nosto\Tagging\Model\ResourceModel\Product\Index\CollectionFactory as NostoIndexCollectionFactory;
-use Nosto\Tagging\Util\Iterator;
 use Nosto\Tagging\Util\Serializer\ProductSerializer;
+use Nosto\Tagging\Util\PagingIterator;
 use Nosto\Tagging\Model\Service\AbstractService;
 
 class SyncService extends AbstractService
@@ -114,6 +115,8 @@ class SyncService extends AbstractService
     /**
      * @param NostoIndexCollection $collection
      * @param Store $store
+     * @throws NostoException
+     * @throws MemoryOutOfBoundsException
      */
     public function syncIndexedProducts(NostoIndexCollection $collection, Store $store)
     {
@@ -127,13 +130,19 @@ class SyncService extends AbstractService
         $this->startBenchmark(self::BENCHMARK_SYNC_NAME, self::BENCHMARK_SYNC_BREAKPOINT);
 
         $collection->setPageSize(self::API_BATCH_SIZE);
-        $iterator = new Iterator($collection);
-        $iterator->eachBatch(function (NostoIndexCollection $collectionBatch) use ($account, $store) {
+        $iterator = new PagingIterator($collection);
+
+        /** @var NostoIndexCollection $page */
+        foreach ($iterator as $page) {
             $this->checkMemoryConsumption('product sync');
             $op = new UpsertProduct($account, $this->nostoHelperUrl->getActiveDomain($store));
             $op->setResponseTimeout(self::RESPONSE_TIMEOUT);
             /** @var ProductIndexInterface $productIndex */
-            foreach ($collectionBatch as $productIndex) {
+            foreach ($page as $productIndex) {
+                $this->getLogger()->debug(
+                    sprintf('Upserting product "%s"', $productIndex->getProductId()),
+                    ['store' => $productIndex->getStoreId()]
+                );
                 $op->addProduct(
                     $this->productSerializer->fromString(
                         $productIndex->getProductData()
@@ -141,18 +150,21 @@ class SyncService extends AbstractService
                 );
             }
             try {
+                $this->getLogger()->debug('Upserting batch');
                 $op->upsert();
-                $this->indexRepository->markAsInSyncCurrentItemsByStore($collectionBatch, $store);
+                $this->indexRepository->markAsInSyncCurrentItemsByStore($page, $store);
                 $this->tickBenchmark(self::BENCHMARK_SYNC_NAME);
             } catch (Exception $upsertException) {
                 $this->getLogger()->exception($upsertException);
             }
-        });
+        }
+
         $this->logBenchmarkSummary(self::BENCHMARK_SYNC_NAME, $store);
     }
 
     /**
      * @param Store $store
+     * @throws MemoryOutOfBoundsException
      */
     public function syncDeletedProducts(Store $store)
     {
@@ -188,6 +200,7 @@ class SyncService extends AbstractService
      *
      * @param NostoIndexCollection $collection
      * @param Store $store
+     * @throws MemoryOutOfBoundsException
      * @throws NostoException
      */
     public function deleteIndexedProducts(NostoIndexCollection $collection, Store $store)
@@ -201,12 +214,14 @@ class SyncService extends AbstractService
         }
         $this->startBenchmark(self::BENCHMARK_DELETE_NAME, self::BENCHMARK_DELETE_BREAKPOINT);
         $collection->setPageSize(self::PRODUCT_DELETION_BATCH_SIZE);
-        $iterator = new Iterator($collection);
-        $iterator->eachBatch(function (NostoIndexCollection $collection) use ($account, $store) {
+        $iterator = new PagingIterator($collection);
+
+        /** @var NostoIndexCollection $page */
+        foreach ($iterator as $page) {
             $this->checkMemoryConsumption('product delete');
             $ids = [];
             /* @var $indexedProduct NostoProductIndex */
-            foreach ($collection as $indexedProduct) {
+            foreach ($page as $indexedProduct) {
                 $ids[] = $indexedProduct->getProductId();
             }
             try {
@@ -214,12 +229,13 @@ class SyncService extends AbstractService
                 $op->setResponseTimeout(30);
                 $op->setProductIds($ids);
                 $op->delete(); // @codingStandardsIgnoreLine
-                $this->indexRepository->deleteCurrentItemsByStore($collection, $store);
+                $this->indexRepository->deleteCurrentItemsByStore($page, $store);
                 $this->tickBenchmark(self::BENCHMARK_DELETE_NAME);
             } catch (Exception $e) {
                 $this->getLogger()->exception($e);
             }
-        });
+        }
+
         $this->logBenchmarkSummary(self::BENCHMARK_DELETE_NAME, $store);
     }
 
@@ -228,6 +244,7 @@ class SyncService extends AbstractService
      * and deletes the deleted rows from database
      *
      * @param Store $store
+     * @throws MemoryOutOfBoundsException
      * @throws NostoException
      */
     public function purgeDeletedProducts(Store $store)
