@@ -36,23 +36,28 @@
 
 namespace Nosto\Tagging\Model\Item;
 
+use InvalidArgumentException;
 use Magento\Catalog\Model\Product\Type;
 use Magento\Catalog\Model\ResourceModel\Eav\Attribute;
 use Magento\Framework\App\ObjectManager;
 use Magento\Quote\Model\Quote\Item;
 use Magento\Sales\Model\Order\Item as SalesItem;
-use Magento\Framework\Api\ExtensibleDataInterface;
 use Throwable;
 
 class Simple
 {
     /**
-     * @param ExtensibleDataInterface|SalesItem|Item $item
+     * @param SalesItem|Item $item
      * @param $parentIds
      * @return string|null
      */
-    public static function buildName(ExtensibleDataInterface $item, $parentIds)
+    public static function buildName($item, $parentIds)
     {
+        if (!$item instanceof Item && !$item instanceof SalesItem) {
+            throw new InvalidArgumentException(
+                'item should be instance of Magento\Quote\Model\Quote\Item or Magento\Sales\Model\Order\Item'
+            );
+        }
         $name = $item->getName();
         $optNames = [];
         $objectManager = ObjectManager::getInstance();
