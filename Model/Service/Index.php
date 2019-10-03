@@ -66,6 +66,7 @@ use Nosto\Tagging\Util\Serializer\ProductSerializer;
 use Nosto\Tagging\Util\Iterator;
 use Nosto\Types\Product\ProductInterface as NostoProductInterface;
 use Nosto\Tagging\Model\Service\Sync\BulkSyncInterface;
+use Magento\Catalog\Model\Product\Type;
 
 class Index extends AbstractService
 {
@@ -256,6 +257,11 @@ class Index extends AbstractService
      */
     public function updateOrCreateDirtyEntity(ProductInterface $product, StoreInterface $store)
     {
+        if (!$this->canNostoBuildProduct($product)) {
+            $this->getLogger()
+                ->debug(sprintf('Product %s cannot be processed by Nosto', $product->getId()));
+            return;
+        }
         $indexedProduct = $this->indexRepository->getByProductIdAndStoreId($product->getId(), $store->getId());
         try {
             if ($indexedProduct === null) { // Creates Index Product
@@ -267,6 +273,21 @@ class Index extends AbstractService
         } catch (Exception $e) {
             $this->getLogger()->exception($e);
         }
+    }
+
+    /**
+     * Handle edge case when
+     * 1. Bundle product has no options
+     *
+     * @param ProductInterface $product
+     * @return bool
+     */
+    private function canNostoBuildProduct(ProductInterface $product)
+    {
+        if ($product->getTypeId() === Type::TYPE_BUNDLE && empty($product->getOptions())) {
+            return false;
+        }
+        return true;
     }
 
     /**
