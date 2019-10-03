@@ -44,6 +44,9 @@
     <preference for="Nosto\Tagging\Model\Service\Comparator\ProductComparatorInterface" type="Nosto\Tagging\Model\Service\Comparator\DefaultProductComparator"/>
     <preference for="Nosto\Tagging\Model\Service\Sync\BulkSyncInterface" type="Nosto\Tagging\Model\Service\Sync\AsyncBulkPublisher"/>
     <preference for="Symfony\Component\Console\Input\InputInterface" type="Symfony\Component\Console\Input\ArgvInput\Proxy"/>
+    <preference for="Nosto\Tagging\Model\Mview\ChangeLogInterface" type="Nosto\Tagging\Model\Mview\ChangeLog"/>
+    <preference for="Nosto\Tagging\Model\Mview\MviewInterface" type="Nosto\Tagging\Model\Mview\Mview"/>
+    <preference for="Nosto\Tagging\Model\Service\IndexerStatusServiceInterface" type="Nosto\Tagging\Model\Service\IndexerStatusService"/>
     <type name="Magento\Catalog\Model\ResourceModel\Product">
         <plugin name="nostoProductObserverInvalidate" type="Nosto\Tagging\Plugin\ProductInvalidate"/>
     </type>

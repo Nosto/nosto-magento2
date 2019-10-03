@@ -34,41 +34,16 @@
  *
  */
 
-namespace Nosto\Tagging\Logger;
+namespace Nosto\Tagging\Model\Mview;
 
-use Monolog\Logger as MonologLogger;
-use Nosto\Tagging\Helper\NewRelic;
-use Nosto\Util\Memory;
+use Magento\Framework\Mview\ViewInterface;
 
-class Logger extends MonologLogger
+interface MviewInterface extends ViewInterface
 {
     /**
-     * Logs an exception and sends it to New relic if available
-     * @param \Throwable $exception
-     * @return bool
+     * Set view id
+     * @param string $id
+     * @return $this
      */
-    public function exception(\Throwable $exception)
-    {
-        NewRelic::reportException($exception);
-        return parent::error($exception->__toString());
-    }
-
-    /**
-     * Logs a message along with the memory consumption
-     *
-     * @param $message
-     * @return bool
-     */
-    public function logWithMemoryConsumption($message)
-    {
-        return parent::debug(
-            sprintf(
-                '%s [mem usage: %sM / %s] [realmem: %sM]',
-                $message,
-                Memory::getConsumption(),
-                Memory::getTotalMemoryLimit(),
-                Memory::getRealConsumption()
-            )
-        );
-    }
+    public function setId($id);
 }

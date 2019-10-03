@@ -63,8 +63,10 @@ use Nosto\Tagging\Model\ResourceModel\Product\Index\Collection as NostoIndexColl
 use Nosto\Tagging\Model\ResourceModel\Product\Index\CollectionFactory as NostoIndexCollectionFactory;
 use Nosto\Tagging\Model\Service\Comparator\ProductComparatorInterface;
 use Nosto\Tagging\Util\Serializer\ProductSerializer;
-use Nosto\Tagging\Util\Iterator;
+use Nosto\Tagging\Util\PagingIterator;
 use Nosto\Types\Product\ProductInterface as NostoProductInterface;
+use Nosto\Tagging\Model\Indexer\Invalidate as NostoIndexerInvalidate;
+use Nosto\Tagging\Model\Indexer\Data as NostoIndexerData;
 use Nosto\Tagging\Model\Service\Sync\BulkSyncInterface;
 use Magento\Catalog\Model\Product\Type;
 
@@ -178,6 +180,7 @@ class Index extends AbstractService
      * @param ProductCollection $collection
      * @param Store $store
      * @throws NostoException
+     * @throws Exception
      */
     public function invalidateOrCreate(ProductCollection $collection, Store $store)
     {
@@ -186,11 +189,23 @@ class Index extends AbstractService
             self::BENCHMARK_BREAKPOINT_INVALIDATE
         );
         $collection->setPageSize(self::PRODUCT_DATA_BATCH_SIZE);
-        $iterator = new Iterator($collection);
-        $iterator->each(function (Product $item) use ($store) {
-            $this->invalidateOrCreateProductOrParent($item, $store);
-            $this->tickBenchmark(self::BENCHMARK_NAME_INVALIDATE);
-        });
+        $iterator = new PagingIterator($collection);
+
+        /** @var ProductCollection $page */
+        foreach ($iterator as $page) {
+            /** @var Product $item */
+            foreach ($page->getItems() as $item) {
+                $this->invalidateOrCreateProductOrParent($item, $store);
+                $this->tickBenchmark(self::BENCHMARK_NAME_INVALIDATE);
+            }
+            $this->getLogger()->info(sprintf(
+                '"%s" has processed by %d/%d for store "%s"',
+                NostoIndexerInvalidate::INDEXER_ID,
+                $iterator->getCurrentPageNumber(),
+                $iterator->getLastPageNumber(),
+                $store->getCode()
+            ));
+        }
         $this->logBenchmarkSummary(self::BENCHMARK_NAME_INVALIDATE, $store);
     }
 
@@ -226,16 +241,22 @@ class Index extends AbstractService
      */
     private function invalidateOrCreateParents(array $ids, Store $store)
     {
+        /** @var ProductCollection $collection */
         $collection = $this->productCollectionFactory->create();
         $collection->addIdsToFilter($ids);
         $collection->setPageSize(self::PRODUCT_DATA_BATCH_SIZE);
-        $iterator = new Iterator($collection);
-        $iterator->each(function (Product $product) use ($store) {
-            if ($this->hasParentBeenInvalidated($product->getId()) === false) {
-                $this->updateOrCreateDirtyEntity($product, $store);
-                $this->invalidatedProducts[] = $product->getId();
+        $iterator = new PagingIterator($collection);
+
+        /** @var ProductCollection $page */
+        foreach ($iterator as $page) {
+            /** @var ProductInterface $product */
+            foreach ($page->getItems() as $product) {
+                if ($this->hasParentBeenInvalidated($product->getId()) === false) {
+                    $this->updateOrCreateDirtyEntity($product, $store);
+                    $this->invalidatedProducts[] = $product->getId();
+                }
             }
-        });
+        }
     }
 
     /**
@@ -294,6 +315,7 @@ class Index extends AbstractService
      * @param Store $store
      * @param array $ids
      * @throws NostoException
+     * @throws \Nosto\Exception\MemoryOutOfBoundsException
      */
     public function indexProducts(Store $store, array $ids = [])
     {
@@ -310,7 +332,9 @@ class Index extends AbstractService
     /**
      * @param NostoIndexCollection $collection
      * @param Store $store
+     * @throws Exception
      * @throws NostoException
+     * @throws \Nosto\Exception\MemoryOutOfBoundsException
      */
     public function rebuildDirtyProducts(NostoIndexCollection $collection, Store $store)
     {
@@ -319,12 +343,29 @@ class Index extends AbstractService
             self::BENCHMARK_BREAKPOINT_REBUILD
         );
         $collection->setPageSize(self::PRODUCT_DATA_BATCH_SIZE);
-        $iterator = new Iterator($collection);
-        $iterator->each(function (NostoProductIndex $item) {
-            $this->rebuildDirtyProduct($item);
-            $this->tickBenchmark(self::BENCHMARK_NAME_REBUILD);
-            $this->checkMemoryConsumption('product rebuild');
-        });
+        $iterator = new PagingIterator($collection);
+
+        /** @var NostoIndexCollection $page */
+        foreach ($iterator as $page) {
+            /** @var NostoProductIndex $item */
+            foreach ($page->getItems() as $item) {
+                $this->getLogger()->debug(
+                    sprintf('Rebuilding product "%s"', $item->getProductId()),
+                    ['store' => $item->getStoreId()]
+                );
+                $this->rebuildDirtyProduct($item);
+                $this->tickBenchmark(self::BENCHMARK_NAME_REBUILD);
+                $this->checkMemoryConsumption('product rebuild');
+            }
+            $this->getLogger()->info(sprintf(
+                '"%s" has processed by %d/%d for store "%s"',
+                NostoIndexerData::INDEXER_ID,
+                $iterator->getCurrentPageNumber(),
+                $iterator->getLastPageNumber(),
+                $store->getCode()
+            ));
+        }
+
         $this->logBenchmarkSummary(self::BENCHMARK_NAME_REBUILD, $store);
     }
 
@@ -360,6 +401,13 @@ class Index extends AbstractService
                     )
                 );
                 $productIndex->setInSync(false);
+                $this->getLogger()->debug(
+                    sprintf(
+                        'Saved dirty product "%d" for store "%d"',
+                        $productIndex->getProductId(),
+                        $productIndex->getStoreId()
+                    )
+                );
             }
             $productIndex->setIsDirty(false);
             $this->indexRepository->save($productIndex);
@@ -384,13 +432,19 @@ class Index extends AbstractService
     {
         $uniqueIds = array_unique($ids);
         $collection->setPageSize(self::PRODUCT_DELETION_BATCH_SIZE);
-        $iterator = new Iterator($collection);
-        $iterator->each(static function (Product $magentoProduct) use (&$uniqueIds) {
-            $key = array_search($magentoProduct->getId(), $uniqueIds, false);
-            if (is_numeric($key)) {
-                unset($uniqueIds[$key]);
+        $iterator = new PagingIterator($collection);
+
+        /** @var ProductCollection $page */
+        foreach ($iterator as $page) {
+            /** @var Product $product */
+            foreach ($page->getItems() as $product) {
+                $key = array_search($product->getId(), $uniqueIds, false);
+                if (is_numeric($key)) {
+                    unset($uniqueIds[$key]);
+                }
             }
-        });
+        }
+
         // Flag the rest of the ids as deleted
         $deleted = $this->indexRepository->markProductsAsDeleted($uniqueIds, $store);
         $this->getLogger()->info(

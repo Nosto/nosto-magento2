@@ -33,42 +33,25 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
+namespace Nosto\Tagging\Model\Service;
 
-namespace Nosto\Tagging\Logger;
-
-use Monolog\Logger as MonologLogger;
-use Nosto\Tagging\Helper\NewRelic;
-use Nosto\Util\Memory;
-
-class Logger extends MonologLogger
+interface IndexerStatusServiceInterface
 {
     /**
-     * Logs an exception and sends it to New relic if available
-     * @param \Throwable $exception
-     * @return bool
+     * @param $indexerId
+     * @return void
      */
-    public function exception(\Throwable $exception)
-    {
-        NewRelic::reportException($exception);
-        return parent::error($exception->__toString());
-    }
+    public function clearProcessedChangelog($indexerId);
 
     /**
-     * Logs a message along with the memory consumption
-     *
-     * @param $message
-     * @return bool
+     * @param $indexerId
+     * @return int
      */
-    public function logWithMemoryConsumption($message)
-    {
-        return parent::debug(
-            sprintf(
-                '%s [mem usage: %sM / %s] [realmem: %sM]',
-                $message,
-                Memory::getConsumption(),
-                Memory::getTotalMemoryLimit(),
-                Memory::getRealConsumption()
-            )
-        );
-    }
+    public function getTotalChangelogCount($indexerId);
+
+    /**
+     * @param $indexerId
+     * @return int
+     */
+    public function getCurrentWatermark($indexerId);
 }

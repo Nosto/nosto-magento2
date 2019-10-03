@@ -34,41 +34,27 @@
  *
  */
 
-namespace Nosto\Tagging\Logger;
+namespace Nosto\Tagging\Model\Mview;
 
-use Monolog\Logger as MonologLogger;
-use Nosto\Tagging\Helper\NewRelic;
-use Nosto\Util\Memory;
+use Magento\Framework\Mview\View\Changelog as MagentoChangelog;
 
-class Logger extends MonologLogger
+class ChangeLog extends MagentoChangelog implements ChangeLogInterface
 {
     /**
-     * Logs an exception and sends it to New relic if available
-     * @param \Throwable $exception
-     * @return bool
+     * @inheritDoc
      */
-    public function exception(\Throwable $exception)
+    public function getTotalRows()
     {
-        NewRelic::reportException($exception);
-        return parent::error($exception->__toString());
-    }
+        $changelogTableName = $this->resource->getTableName($this->getName());
+        if ($this->connection->isTableExists($changelogTableName)) {
+            $select = $this->connection->select() // @codingStandardsIgnoreLine
+                ->from( // @codingStandardsIgnoreLine
+                    $changelogTableName,
+                    'COUNT(*)'
+                );
 
-    /**
-     * Logs a message along with the memory consumption
-     *
-     * @param $message
-     * @return bool
-     */
-    public function logWithMemoryConsumption($message)
-    {
-        return parent::debug(
-            sprintf(
-                '%s [mem usage: %sM / %s] [realmem: %sM]',
-                $message,
-                Memory::getConsumption(),
-                Memory::getTotalMemoryLimit(),
-                Memory::getRealConsumption()
-            )
-        );
+            return (int)$this->connection->fetchOne($select);
+        }
+        return 0;
     }
 }

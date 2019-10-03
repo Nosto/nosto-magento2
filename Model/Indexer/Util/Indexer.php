@@ -34,41 +34,42 @@
  *
  */
 
-namespace Nosto\Tagging\Logger;
+namespace Nosto\Tagging\Model\Indexer\Util;
 
-use Monolog\Logger as MonologLogger;
-use Nosto\Tagging\Helper\NewRelic;
-use Nosto\Util\Memory;
+use Exception;
+use Symfony\Component\Console\Input\InputInterface;
 
-class Logger extends MonologLogger
+class Indexer
 {
-    /**
-     * Logs an exception and sends it to New relic if available
-     * @param \Throwable $exception
-     * @return bool
-     */
-    public function exception(\Throwable $exception)
-    {
-        NewRelic::reportException($exception);
-        return parent::error($exception->__toString());
-    }
+    /** Non-ambiguous scope for settings commands */
+    const SETUP_UPGRADE_SCOPE = 'se';
+
+    /** Non-ambiguous action argument for settings command */
+    const SETUP_UPGRADE_ACTION = 'up';
 
     /**
-     * Logs a message along with the memory consumption
+     * Checks if the execution scope is from Magento's setup:upgrade
      *
-     * @param $message
+     * @param InputInterface $input
      * @return bool
      */
-    public function logWithMemoryConsumption($message)
+    public static function isCalledFromSetupUpgrade(InputInterface $input)
     {
-        return parent::debug(
-            sprintf(
-                '%s [mem usage: %sM / %s] [realmem: %sM]',
-                $message,
-                Memory::getConsumption(),
-                Memory::getTotalMemoryLimit(),
-                Memory::getRealConsumption()
-            )
-        );
+        try {
+            $parts = explode(':', $input->getFirstArgument());
+            if (count($parts) !== 2) {
+                return false;
+            }
+            list($commandScope, $commandAction) = $parts;
+            $currentCommandScope = substr($commandScope, 0, strlen(self::SETUP_UPGRADE_SCOPE));
+            $currentCommandAction = substr($commandAction, 0, strlen(self::SETUP_UPGRADE_ACTION));
+            return (
+                $currentCommandScope === self::SETUP_UPGRADE_SCOPE
+                && $currentCommandAction === self::SETUP_UPGRADE_ACTION
+            );
+            // Exception will be thrown if InputInterface\Proxy is instantiated in non-cli context
+        } catch (Exception $e) {
+            return false;
+        }
     }
 }
