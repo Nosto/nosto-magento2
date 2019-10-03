@@ -36,6 +36,8 @@
 
 namespace Nosto\Tagging\Api\Data;
 
+use DateTime;
+
 interface ProductQueueInterface
 {
     const ID = 'id';
@@ -59,7 +61,7 @@ interface ProductQueueInterface
     /**
      * Get created at time
      *
-     * @return \DateTime
+     * @return DateTime
      */
     public function getCreatedAt();
 
@@ -82,8 +84,8 @@ interface ProductQueueInterface
     /**
      * Set created at time
      *
-     * @param \DateTime $createdAt
+     * @param DateTime $createdAt
      * @return self
      */
-    public function setCreatedAt(\DateTime $createdAt);
+    public function setCreatedAt(DateTime $createdAt);
 }

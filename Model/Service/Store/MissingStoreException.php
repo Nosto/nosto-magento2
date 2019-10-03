@@ -1,6 +1,4 @@
 <?php
-/** @noinspection DuplicatedCode */
-
 /**
  * Copyright (c) 2019, Nosto Solutions Ltd
  * All rights reserved.
@@ -36,36 +34,10 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Order\Item;
+namespace Nosto\Tagging\Model\Service\Store;
 
-use Magento\Sales\Model\Order\Item;
-use Nosto\Tagging\Model\Item\Configurable as ConfigurableItem;
+use RuntimeException;
 
-class Configurable extends ConfigurableItem
+class MissingStoreException extends RuntimeException // @codingStandardsIgnoreLine
 {
-    /**
-     * Returns the name of the product. Configurable products will have their chosen options
-     * added to their name.
-     *
-     * @param Item $item the ordered item
-     * @return string the name of the product
-     */
-    public static function buildItemName(Item $item)
-    {
-        $name = $item->getName();
-        $optNames = [];
-        $opts = $item->getProductOptionByCode('attributes_info');
-        if (is_array($opts)) {
-            foreach ($opts as $opt) {
-                if (isset($opt['value']) && is_string($opt['value'])) {
-                    $optNames[] = $opt['value'];
-                }
-            }
-        }
-
-        if (!empty($optNames)) {
-            $name .= ' (' . implode(', ', $optNames) . ')';
-        }
-        return $name;
-    }
 }

@@ -51,6 +51,7 @@ class Sync extends Base
     private $oauthMetaBuilder;
     private $nostoHelperScope;
 
+    /** @noinspection PhpMissingParentConstructorInspection */
     /**
      * @param Context $context
      * @param NostoHelperAccount $nostoHelperAccount

@@ -37,7 +37,6 @@
 namespace Nosto\Tagging\Block;
 
 use Nosto\AbstractObject;
-use Nosto\NostoException;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 

@@ -39,15 +39,14 @@ namespace Nosto\Tagging\Model\Indexer;
 use Magento\Indexer\Model\ProcessManager;
 use Magento\Store\Model\App\Emulation;
 use Magento\Store\Model\Store;
-use Nosto\Exception\MemoryOutOfBoundsException;
 use Nosto\NostoException;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Indexer\Dimensions\Data\ModeSwitcher as DataModeSwitcher;
 use Nosto\Tagging\Model\Indexer\Dimensions\ModeSwitcherInterface;
-use Nosto\Tagging\Model\Indexer\Dimensions\StoreDimensionProvider;
 use Nosto\Tagging\Model\Service\Index as NostoIndexService;
+use Nosto\Tagging\Model\Indexer\Dimensions\StoreDimensionProvider;
 use Nosto\Tagging\Model\Service\IndexerStatusServiceInterface;
 use Symfony\Component\Console\Input\InputInterface;
 
@@ -128,8 +127,6 @@ class Data extends AbstractIndexer
             $this->nostoServiceIndex->indexProducts($store, $ids);
             // Catch only MemoryOutOfBoundsException as this is the most expected ones
             // And the ones we are interested of
-        } catch (MemoryOutOfBoundsException $e) {
-            $this->nostoLogger->error($e->getMessage());
         } catch (NostoException $e) {
             $this->nostoLogger->error($e->getMessage());
         }

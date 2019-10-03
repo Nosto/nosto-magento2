@@ -1,4 +1,6 @@
 <?php
+/** @noinspection DuplicatedCode */
+
 /**
  * Copyright (c) 2019, Nosto Solutions Ltd
  * All rights reserved.
@@ -41,13 +43,13 @@ use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\Product\Type;
 use Magento\Catalog\Model\ProductRepository;
 use Magento\Framework\Event\ManagerInterface;
-use Magento\Framework\Exception\LocalizedException;
 use Magento\Quote\Model\Quote\Item;
 use Nosto\Object\Cart\LineItem;
+use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Item\Downloadable;
 use Nosto\Tagging\Model\Item\Giftcard;
 use Nosto\Tagging\Model\Item\Virtual;
-use Nosto\Tagging\Logger\Logger as NostoLogger;
+use Throwable;
 
 class Builder
 {
@@ -87,7 +89,6 @@ class Builder
      * @param Item $item
      * @param $currencyCode
      * @return LineItem
-     * @throws LocalizedException
      */
     public function build(Item $item, $currencyCode)
     {
@@ -153,7 +154,7 @@ class Builder
                 if (!empty($attributes) && count($parentIds) === 1) {
                     return $parentIds[0];
                 }
-            } catch (\Throwable $e) {
+            } catch (Throwable $e) {
                 $this->logger->exception($e);
             }
         }

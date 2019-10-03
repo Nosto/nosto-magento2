@@ -36,12 +36,13 @@
 
 namespace Nosto\Tagging\Model\Order\Status;
 
-use Nosto\Object\Order\GraphQL\OrderStatus as NostoOrderStatus;
+use Exception;
+use Magento\Framework\Event\ManagerInterface;
 use Magento\Sales\Model\Order;
-use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Magento\Sales\Model\Order\Payment;
 use Nosto\NostoException;
-use Magento\Framework\Event\ManagerInterface;
+use Nosto\Object\Order\GraphQL\OrderStatus as NostoOrderStatus;
+use Nosto\Tagging\Logger\Logger as NostoLogger;
 
 class Builder
 {
@@ -95,7 +96,7 @@ class Builder
             );
 
             return $nostoOrderStatus;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->exception($e);
         }
         return null;

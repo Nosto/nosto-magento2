@@ -36,15 +36,15 @@
 
 namespace Nosto\Tagging\Model\Product\Sku;
 
+use Exception;
 use Magento\Catalog\Model\Product;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable as ConfigurableType;
 use Magento\Store\Model\Store;
 use Nosto\Object\Product\SkuCollection;
-use Nosto\Tagging\Model\Product\Sku\Builder as NostoSkuBuilder;
-use Nosto\Tagging\Model\Product\Repository as NostoProductRepository;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
+use Nosto\Tagging\Model\Product\Repository as NostoProductRepository;
+use Nosto\Tagging\Model\Product\Sku\Builder as NostoSkuBuilder;
 use Nosto\Types\Product\SkuInterface;
-use Nosto\NostoException;
 
 class Collection
 {
@@ -76,7 +76,7 @@ class Collection
      * @param Product $product
      * @param Store $store
      * @return SkuCollection
-     * @throws \Exception
+     * @throws Exception
      */
     public function build(Product $product, Store $store)
     {
@@ -88,13 +88,9 @@ class Collection
             foreach ($usedProducts as $usedProduct) {
                 /** @var Product $usedProduct */
                 if (!$usedProduct->isDisabled()) {
-                    try {
-                        $sku = $this->nostoSkuBuilder->build($usedProduct, $store, $attributes);
-                        if ($sku instanceof SkuInterface) {
-                            $skuCollection->append($sku);
-                        }
-                    } catch (NostoException $e) {
-                        $this->logger->exception($e);
+                    $sku = $this->nostoSkuBuilder->build($usedProduct, $store, $attributes);
+                    if ($sku instanceof SkuInterface) {
+                        $skuCollection->append($sku);
                     }
                 }
             }

@@ -36,13 +36,13 @@
 
 namespace Nosto\Tagging\Model\Config\Source;
 
-use Magento\Framework\Option\ArrayInterface;
+use Magento\Framework\Data\OptionSourceInterface;
 use Magento\Framework\Phrase;
 
 /**
  * @package Nosto\Tagging\Model\Config\Source
  */
-class Memory implements ArrayInterface
+class Memory implements OptionSourceInterface
 {
     /**
      * Options getter

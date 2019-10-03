@@ -40,14 +40,13 @@ use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Module\Manager as ModuleManager;
-use Magento\Swagger\Block\Index;
+use Magento\Store\Model\Store;
+use Nosto\Tagging\Helper\Account as NostoAccountHelper;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
-use Nosto\Tagging\Model\ResourceModel\Product\Index\Collection as IndexCollection;
 use Nosto\Tagging\Model\Product\Index\IndexRepository;
-use Nosto\Tagging\Helper\Account as NostoAccountHelper;
-use Magento\Store\Model\Store;
+use Nosto\Tagging\Model\ResourceModel\Product\Index\Collection as IndexCollection;
 
 /**
  * Observer to mark all indexed products as dirty if settings have changed
@@ -85,6 +84,7 @@ class Config implements ObserverInterface
      * @param NostoHelperScope $nostoHelperScope
      * @param NostoAccountHelper $nostoAccountHelper
      * @param IndexCollection $indexCollection
+     * @param IndexRepository $indexRepository
      */
     public function __construct(
         NostoLogger $logger,

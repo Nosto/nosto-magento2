@@ -36,6 +36,7 @@
 
 namespace Nosto\Tagging\Model\Service\Sync;
 
+use Exception;
 use Magento\Store\Model\Store;
 use Nosto\Exception\MemoryOutOfBoundsException;
 use Nosto\NostoException;
@@ -153,7 +154,7 @@ class SyncService extends AbstractService
                 $op->upsert();
                 $this->indexRepository->markAsInSyncCurrentItemsByStore($page, $store);
                 $this->tickBenchmark(self::BENCHMARK_SYNC_NAME);
-            } catch (\Exception $upsertException) {
+            } catch (Exception $upsertException) {
                 $this->getLogger()->exception($upsertException);
             }
         }
@@ -163,6 +164,7 @@ class SyncService extends AbstractService
 
     /**
      * @param Store $store
+     * @throws MemoryOutOfBoundsException
      */
     public function syncDeletedProducts(Store $store)
     {
@@ -188,7 +190,7 @@ class SyncService extends AbstractService
     {
         try {
             $this->indexRepository->markAsInSync($productIds, $store);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->getLogger()->exception($e);
         }
     }
@@ -229,7 +231,7 @@ class SyncService extends AbstractService
                 $op->delete(); // @codingStandardsIgnoreLine
                 $this->indexRepository->deleteCurrentItemsByStore($page, $store);
                 $this->tickBenchmark(self::BENCHMARK_DELETE_NAME);
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $this->getLogger()->exception($e);
             }
         }

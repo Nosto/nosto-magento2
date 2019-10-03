@@ -152,7 +152,7 @@ class Repository
         $product = $this->productRepository->getList($searchCriteria)->setTotalCount(1);
 
         foreach ($product->getItems() as $item) {
-            /** @var \Magento\Catalog\Model\Product $item */
+            /** @var Product $item */
             return $item;
         }
         return null;
@@ -185,7 +185,6 @@ class Repository
      *
      * @param Product $product
      * @return array
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function getSkus(Product $product)
     {
@@ -252,7 +251,6 @@ class Repository
      * @param Product $product
      * @param Store $store
      * @return array
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function getSkusAsArray(Product $product, Store $store)
     {

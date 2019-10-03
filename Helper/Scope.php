@@ -40,12 +40,15 @@ use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Exception\NotFoundException;
 use Magento\Framework\Phrase;
+use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Api\Data\WebsiteInterface;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Store\Model\Website;
+use Nosto\Tagging\Model\Service\Store\MissingStoreException;
 
 class Scope extends AbstractHelper
 {
@@ -65,19 +68,23 @@ class Scope extends AbstractHelper
     }
 
     /**
-     * @param null|string|bool|int|\Magento\Store\Api\Data\StoreInterface $storeId
-     * @return \Magento\Store\Model\Store
+     * @param null|string|bool|int|StoreInterface $storeId
+     * @return Store
      */
     public function getStore($storeId = null)
     {
-        /** @noinspection PhpIncompatibleReturnTypeInspection */
-        return $this->storeManager->getStore($storeId);
+        try {
+            /** @noinspection PhpIncompatibleReturnTypeInspection */
+            return $this->storeManager->getStore($storeId);
+        } catch (NoSuchEntityException $e) {
+            throw new MissingStoreException($e);
+        }
     }
 
     /**
      * @param bool $withDefault
      * @param bool $codeKey
-     * @return \Magento\Store\Model\Store[]
+     * @return Store[]
      */
     public function getStores($withDefault = false, $codeKey = false)
     {

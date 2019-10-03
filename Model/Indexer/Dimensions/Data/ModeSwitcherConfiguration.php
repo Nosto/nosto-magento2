@@ -36,8 +36,9 @@
 
 namespace Nosto\Tagging\Model\Indexer\Dimensions\Data;
 
-use Magento\Framework\App\Config\ConfigResource\ConfigInterface;
+use InvalidArgumentException;
 use Magento\Framework\App\Cache\TypeListInterface;
+use Magento\Framework\App\Config\ConfigResource\ConfigInterface;
 use Magento\Indexer\Model\Indexer;
 use Nosto\Tagging\Model\Indexer\Data as NostoDataIndexer;
 
@@ -85,7 +86,7 @@ class ModeSwitcherConfiguration
      *
      * @param string $mode
      * @return void
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function saveMode(string $mode)
     {

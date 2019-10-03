@@ -38,8 +38,8 @@
 namespace Nosto\Tagging\Cron;
 
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
-use Nosto\Tagging\Model\Rates\Service as NostoRatesService;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
+use Nosto\Tagging\Model\Rates\Service as NostoRatesService;
 
 /**
  * Cronjob class that periodically updates exchange-rates to Nosto for each of the store views,

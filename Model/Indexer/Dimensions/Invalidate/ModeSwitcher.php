@@ -1,4 +1,5 @@
 <?php
+/** @noinspection DuplicatedCode */
 /**
  * Copyright (c) 2019, Nosto Solutions Ltd
  * All rights reserved.
@@ -36,8 +37,8 @@
 
 namespace Nosto\Tagging\Model\Indexer\Dimensions\Invalidate;
 
-use Magento\Indexer\Model\DimensionModes;
 use Magento\Indexer\Model\DimensionMode;
+use Magento\Indexer\Model\DimensionModes;
 use Nosto\Tagging\Model\Indexer\Dimensions\ModeSwitcherInterface;
 
 class ModeSwitcher implements ModeSwitcherInterface

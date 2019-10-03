@@ -1,12 +1,10 @@
 <?php
 namespace Nosto\Tagging\Test\_util;
 
-use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Catalog\Model\Product;
-use Magento\Framework\ObjectManagerInterface;
-use Magento\Catalog\Model\Product\Visibility;
 use Magento\Catalog\Model\Product\Attribute\Source\Status;
-use Magento\TestFramework\Helper\Bootstrap;
+use Magento\Catalog\Model\Product\Visibility;
+use Magento\Framework\ObjectManagerInterface;
 
 class ProductBuilder implements BuilderInterface
 {
@@ -22,12 +20,11 @@ class ProductBuilder implements BuilderInterface
     }
 
     /**
-     * @param $name
-     * @param $type
      * @return $this
      */
     public function defaultSimple()
     {
+        /** @noinspection PhpUndefinedMethodInspection */
         $this->product->setTypeId('simple')
             ->setId(123)
             ->setAttributeSetId(4)

@@ -37,8 +37,8 @@
 namespace Nosto\Tagging\Model\Service;
 
 use Exception;
-use Magento\Store\Api\Data\StoreInterface;
 use Magento\Catalog\Api\Data\ProductInterface;
+use Magento\Store\Api\Data\StoreInterface;
 use Nosto\Tagging\Logger\Logger;
 use Nosto\Tagging\Model\Product\Index\IndexRepository as NostoIndexRepository;
 use Nosto\Tagging\Model\Service\Index as NostoIndexService;

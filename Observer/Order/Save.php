@@ -36,6 +36,7 @@
 
 namespace Nosto\Tagging\Observer\Order;
 
+use Exception;
 use Magento\Customer\Api\CustomerRepositoryInterface as MagentoCustomerRepository;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
@@ -202,7 +203,7 @@ class Save implements ObserverInterface
             if ($customerReferenceAttribute !== null) {
                 $nostoCustomerId = $customerReferenceAttribute->getValue();
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->exception($e);
         }
         return $nostoCustomerId;
@@ -243,7 +244,7 @@ class Save implements ObserverInterface
                     $this->nostoHelperUrl->getActiveDomain($store)
                 );
                 $orderService->execute();
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $this->logger->error(
                     sprintf(
                         'Failed to save order with quote #%s for customer #%s.
@@ -277,7 +278,7 @@ class Save implements ObserverInterface
             $orderStatus = $this->orderStatusBuilder->build($order);
             $orderService = new NostoOrderUpdate($nostoAccount, $orderStatus);
             $orderService->execute();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error(
                 sprintf(
                     'Failed to update order with quote #%s.

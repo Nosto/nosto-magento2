@@ -36,26 +36,31 @@
 
 namespace Nosto\Tagging\Console\Command;
 
+use Exception;
+use Magento\Customer\Api\Data\CustomerInterface;
+use Magento\Customer\Model\ResourceModel\Customer\CollectionFactory;
+use Nosto\Tagging\Helper\Data as NostoHelperData;
+use Nosto\Tagging\Util\Customer as CustomerUtil;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Magento\Customer\Model\CustomerFactory;
-use Nosto\Tagging\Helper\Data as NostoHelperData;
-use Nosto\Tagging\Util\Customer as CustomerUtil;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 class NostoGenerateCustomerReferenceCommand extends Command
 {
-    private $customerFactory;
+    /**
+     * @var CollectionFactory
+     */
+    private $collectionFactory;
 
     /**
      * NostoGenerateCustomerReferenceCommand constructor.
-     * @param CustomerFactory $customerFactory
+     * @param CollectionFactory $collectionFactory
      */
     public function __construct(
-      CustomerFactory $customerFactory
+        CollectionFactory $collectionFactory
     ) {
-        $this->customerFactory = $customerFactory;
+        $this->collectionFactory = $collectionFactory;
         parent::__construct();
     }
 
@@ -76,16 +81,18 @@ class NostoGenerateCustomerReferenceCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
         try {
-            $customerCollection = $this->customerFactory->create()->getCollection()
+            $customerCollection = $this->collectionFactory->create()
                 ->addAttributeToSelect([
                     'entity_id',
                     NostoHelperData::NOSTO_CUSTOMER_REFERENCE_ATTRIBUTE_NAME])
                 ->addAttributeToFilter(
                     NostoHelperData::NOSTO_CUSTOMER_REFERENCE_ATTRIBUTE_NAME,
-                    array("null" => true))
+                    ["null" => true]
+                )
                 ->load();
 
             $customers = $customerCollection->getItems();
+            /** @var CustomerInterface $customer */
             foreach ($customers as $customer) {
                 $customerReference = CustomerUtil::generateCustomerReference($customer);
                 $customer->setData(
@@ -95,7 +102,7 @@ class NostoGenerateCustomerReferenceCommand extends Command
                 $customer->save();
             }
             $io->success('Operation finished with success');
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $io->error($e->getMessage());
         }
     }

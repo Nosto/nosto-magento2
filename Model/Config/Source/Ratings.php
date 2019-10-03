@@ -36,7 +36,7 @@
 
 namespace Nosto\Tagging\Model\Config\Source;
 
-use Magento\Framework\Option\ArrayInterface;
+use Magento\Framework\Data\OptionSourceInterface;
 use Magento\Framework\Phrase;
 use Nosto\Tagging\Helper\Data;
 use Nosto\Tagging\Helper\Ratings as NostoRatingsHelper;
@@ -47,7 +47,7 @@ use Nosto\Tagging\Helper\Ratings as NostoRatingsHelper;
  *
  * @package Nosto\Tagging\Model\Config\Source
  */
-class Ratings implements ArrayInterface
+class Ratings implements OptionSourceInterface
 {
     private $nostoRatingsHelper;
 

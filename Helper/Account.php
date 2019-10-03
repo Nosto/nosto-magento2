@@ -43,14 +43,15 @@ use Magento\Framework\App\Helper\Context;
 use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\Store;
 use Nosto\NostoException;
+use Nosto\Object\Signup\Account as NostoSignupAccount;
 use Nosto\Object\User;
 use Nosto\Operation\UninstallAccount;
 use Nosto\Request\Api\Token;
 use Nosto\Tagging\Helper\Data as NostoHelper;
-use Nosto\Types\Signup\AccountInterface;
-use Nosto\Object\Signup\Account as NostoSignupAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Helper\Url as NostoHelperUrl;
+use Nosto\Types\Signup\AccountInterface;
+use RuntimeException;
 
 /**
  * NostoHelperAccount helper class for common tasks related to Nosto accounts.
@@ -73,10 +74,6 @@ class Account extends AbstractHelper
      */
     const XML_PATH_DOMAIN = 'nosto_tagging/settings/domain';
 
-    /**
-     * Platform UI version
-     */
-    const IFRAME_VERSION = 0;
     private $config;
     private $moduleManager;
     private $logger;
@@ -186,7 +183,7 @@ class Account extends AbstractHelper
             // Notify Nosto that the account was deleted.
             $service = new UninstallAccount($account);
             $service->delete($currentUser);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error($e->__toString());
         }
 
@@ -219,7 +216,11 @@ class Account extends AbstractHelper
         $accountName = $store->getConfig(self::XML_PATH_ACCOUNT);
 
         if ($accountName !== null) {
-            $account = new NostoSignupAccount($accountName);
+            try {
+                $account = new NostoSignupAccount($accountName);
+            } catch (NostoException $e) {
+                throw new RuntimeException();
+            }
             /** @noinspection PhpUndefinedMethodInspection */
             $tokens = json_decode(
                 $store->getConfig(self::XML_PATH_TOKENS),
@@ -309,10 +310,10 @@ class Account extends AbstractHelper
     /**
      * Returns the stored storefront domain
      *
-     * @param $store
+     * @param Store $store
      * @return string the domain
      */
-    public function getStoreFrontDomain($store)
+    public function getStoreFrontDomain(Store $store)
     {
         return $store->getConfig(self::XML_PATH_DOMAIN);
     }
@@ -320,10 +321,10 @@ class Account extends AbstractHelper
     /**
      * Returns the Nosto account name for the store
      *
-     * @param $store
+     * @param Store $store
      * @return string account name
      */
-    public function getAccountName($store)
+    public function getAccountName(Store $store)
     {
         return $store->getConfig(self::XML_PATH_ACCOUNT);
     }

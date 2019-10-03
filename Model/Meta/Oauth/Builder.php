@@ -36,6 +36,7 @@
 
 namespace Nosto\Tagging\Model\Meta\Oauth;
 
+use Exception;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\Locale\ResolverInterface;
 use Magento\Framework\Url;
@@ -43,8 +44,8 @@ use Magento\Store\Model\Store;
 use Nosto\OAuth;
 use Nosto\Object\Signup\Account;
 use Nosto\Request\Api\Token;
-use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
+use Nosto\Tagging\Logger\Logger as NostoLogger;
 
 class Builder
 {
@@ -103,7 +104,7 @@ class Builder
             if ($account !== null) {
                 $metaData->setAccount($account);
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->exception($e);
         }
 

@@ -38,10 +38,10 @@ namespace Nosto\Tagging\Model\Order\Item;
 
 use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Model\Product;
-use Magento\Framework\Exception\NoSuchEntityException;
-use Nosto\Tagging\Model\Item\Grouped as GroupedItem;
-use Magento\Sales\Model\Order\Item;
 use Magento\Catalog\Model\ProductRepository;
+use Magento\Framework\Exception\NoSuchEntityException;
+use Magento\Sales\Model\Order\Item;
+use Nosto\Tagging\Model\Item\Grouped as GroupedItem;
 
 class Grouped extends GroupedItem
 {

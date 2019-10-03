@@ -36,9 +36,10 @@
 
 namespace Nosto\Tagging\CustomerData;
 
+use Exception;
 use Magento\Customer\CustomerData\SectionSourceInterface;
-use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Customer as NostoHelperCustomer;
+use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Helper\Variation as NostoHelperVariation;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
@@ -75,6 +76,7 @@ class ActiveVariationTagging implements SectionSourceInterface
      * @param NostoHelperData $nostoHelperData
      * @param NostoHelperCustomer $nostoHelperCustomer
      * @param NostoHelperScope $nostoHelperScope
+     * @param NostoHelperVariation $nostoHelperVariation
      * @param NostoLogger $nostoLogger
      */
     public function __construct(
@@ -105,7 +107,7 @@ class ActiveVariationTagging implements SectionSourceInterface
         ) {
             try {
                 $data['active_variation'] = $this->nostoHelperCustomer->getGroupCode();
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $this->nostoLogger->exception($e);
             }
         }

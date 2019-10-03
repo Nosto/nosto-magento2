@@ -36,6 +36,7 @@
 
 namespace Nosto\Tagging\Model\User;
 
+use Exception;
 use Magento\Backend\Model\Auth\Session;
 use Magento\Framework\Event\ManagerInterface;
 use Nosto\Object\User;
@@ -76,7 +77,7 @@ class Builder
                 $metaData->setLastName($user->getLastName());
                 $metaData->setEmail($user->getEmail());
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->exception($e);
         }
 

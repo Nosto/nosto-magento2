@@ -37,9 +37,9 @@
 namespace Nosto\Tagging\Model\Service;
 
 use Magento\Catalog\Api\Data\ProductInterface;
+use Magento\Store\Api\Data\StoreInterface;
 use Nosto\Object\Product\Product;
 use Nosto\Tagging\Model\Service\ProductServiceInterface as NostoProductService;
-use Magento\Store\Api\Data\StoreInterface;
 
 class SanitizingProductService implements ProductServiceInterface
 {

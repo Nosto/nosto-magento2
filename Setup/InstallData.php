@@ -36,10 +36,11 @@
 
 namespace Nosto\Tagging\Setup;
 
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Setup\InstallDataInterface;
 use Magento\Framework\Setup\ModuleContextInterface;
 use Magento\Framework\Setup\ModuleDataSetupInterface;
-use Magento\Framework\Exception\LocalizedException;
+use Zend_Validate_Exception;
 
 class InstallData extends CoreData implements InstallDataInterface
 {
@@ -47,7 +48,7 @@ class InstallData extends CoreData implements InstallDataInterface
      * @param ModuleDataSetupInterface $setup
      * @param ModuleContextInterface $context
      * @throws LocalizedException
-     * @throws \Zend_Validate_Exception
+     * @throws Zend_Validate_Exception
      */
     public function install(ModuleDataSetupInterface $setup, ModuleContextInterface $context) // @codingStandardsIgnoreLine
     {

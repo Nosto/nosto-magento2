@@ -36,32 +36,35 @@
 
 namespace Nosto\Tagging\Model\Indexer;
 
-use ArrayIterator;
 use Exception;
+use Traversable;
+use ArrayIterator;
+use UnexpectedValueException;
 use InvalidArgumentException;
 use Magento\Framework\App\ObjectManager;
 use Magento\Framework\Indexer\ActionInterface as IndexerActionInterface;
-use Magento\Framework\Indexer\Dimension;
+use Magento\Framework\Mview\ActionInterface as MviewActionInterface;
 use Magento\Framework\Indexer\DimensionalIndexerInterface;
 use Magento\Framework\Indexer\DimensionProviderInterface;
-use Magento\Framework\Mview\ActionInterface as MviewActionInterface;
 use Magento\Indexer\Model\ProcessManager;
+use Magento\Framework\Indexer\Dimension;
 use Magento\Store\Model\App\Emulation;
 use Magento\Store\Model\Store;
-use Nosto\NostoException;
+use Nosto\Tagging\Model\Indexer\Dimensions\AbstractDimensionModeConfiguration as DimensionModeConfiguration;
+use Nosto\Tagging\Model\Indexer\Dimensions\StoreDimensionProvider;
+use Nosto\Tagging\Model\Indexer\Dimensions\ModeSwitcherInterface;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
-use Nosto\Tagging\Model\Indexer\Dimensions\AbstractDimensionModeConfiguration as DimensionModeConfiguration;
-use Nosto\Tagging\Model\Indexer\Dimensions\ModeSwitcherInterface;
-use Nosto\Tagging\Model\Indexer\Dimensions\StoreDimensionProvider;
 use Nosto\Tagging\Model\Indexer\Util\Indexer as IndexerUtil;
-use Nosto\Tagging\Model\Service\IndexerStatusServiceInterface;
 use Nosto\Tagging\Util\Benchmark;
+use Nosto\Tagging\Model\Service\IndexerStatusServiceInterface;
 use Symfony\Component\Console\Input\InputInterface;
-use Traversable;
-use UnexpectedValueException;
 
+/**
+ * Class AbstractIndexer
+ * @package Nosto\Tagging\Model\Indexer
+ */
 abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerActionInterface, MviewActionInterface
 {
     /** @var NostoHelperAccount */
@@ -207,7 +210,6 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
     /**
      * @param array $ids
      * @suppress PhanTypeMismatchArgument
-     * @throws NostoException
      */
     public function doWork(array $ids = [])
     {
@@ -216,10 +218,12 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
         $this->nostoLogger->info(sprintf('Indexing by mode "%s"', $mode));
         switch ($mode) {
             case DimensionModeConfiguration::DIMENSION_NONE:
+                /** @var Dimension[] $dimension */
                 foreach ($this->dimensionProvider->getIterator() as $dimension) {
-                    if ($this->isDimensionProcessable($dimension)) {
-                        /** @suppress PhanTypeMismatchArgument */
-                        $this->executeByDimensions($dimension, new ArrayIterator($ids));
+                    if (is_array($dimension) && $this->isDimensionProcessable($dimension)) {
+                        (function () use ($dimension, $ids) {
+                            $this->executeByDimensions($dimension, new ArrayIterator($ids));
+                        })();
                     }
                 }
                 break;
@@ -237,9 +241,8 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
                 $this->getProcessManager()->execute($userFunctions);
                 break;
             default:
-                throw new UnexpectedValueException("Undefined dimension mode.");
+                throw new UnexpectedValueException('Undefined dimension mode.');
         }
-
         $this->clearProcessedChangelog();
     }
 
@@ -263,7 +266,6 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
     /**
      * @param Dimension[] $dimensions
      * @param Traversable|null $entityIds
-     * @throws NostoException
      */
     public function executeByDimensions(array $dimensions, Traversable $entityIds = null)
     {

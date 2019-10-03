@@ -40,8 +40,8 @@ use Exception;
 use Magento\Store\Model\Store;
 use Nosto\Operation\UpdateSettings;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
-use Nosto\Tagging\Model\Meta\Account\Settings\Builder as NostoSettingsBuilder;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
+use Nosto\Tagging\Model\Meta\Account\Settings\Builder as NostoSettingsBuilder;
 
 class Service
 {

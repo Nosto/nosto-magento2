@@ -36,11 +36,12 @@
 
 namespace Nosto\Tagging\Model\Category;
 
+use Exception;
 use Magento\Catalog\Model\Category;
-use Magento\Store\Model\Store;
 use Magento\Framework\Event\ManagerInterface;
-use Nosto\Tagging\Logger\Logger as NostoLogger;
+use Magento\Store\Model\Store;
 use Nosto\Object\Category as NostoCategory;
+use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\CategoryString\Builder as NostoCategoryString;
 
 class Builder
@@ -84,7 +85,7 @@ class Builder
                 $this->nostoCategoryString->build($category, $store)
             );
             $nostoCategory->setName($category->getName());
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->exception($e);
         }
         if (empty($nostoCategory)) {

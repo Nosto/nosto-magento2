@@ -37,8 +37,8 @@
 namespace Nosto\Tagging\Plugin\Sales;
 
 use Magento\Framework\Event\ManagerInterface;
-use Magento\Sales\Api\OrderRepositoryInterface;
 use Magento\Sales\Api\Data\OrderInterface;
+use Magento\Sales\Api\OrderRepositoryInterface;
 use Magento\Sales\Model\Order;
 
 class OrderRepository
@@ -63,8 +63,11 @@ class OrderRepository
      * @param OrderInterface|Order $order
      * @return OrderInterface
      */
-    public function afterSave(OrderRepositoryInterface $subject, OrderInterface $order)
-    {
+    public function afterSave(
+        /** @noinspection PhpUnusedParameterInspection */
+        OrderRepositoryInterface $subject,
+        OrderInterface $order
+    ) {
         $this->eventManager->dispatch('nosto_sales_save_after', ['order' => $order]);
         return $order;
     }

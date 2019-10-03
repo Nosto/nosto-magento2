@@ -38,13 +38,13 @@ namespace Nosto\Tagging\Model\Service;
 
 use Exception;
 use Magento\Catalog\Api\Data\ProductInterface;
-use Magento\Framework\Exception\LocalizedException;
 use Magento\Store\Api\Data\StoreInterface;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\ProductRepository;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
 use Magento\Store\Model\Store;
+use Nosto\Exception\MemoryOutOfBoundsException;
 use Nosto\NostoException;
 use Nosto\Object\Signup\Account as NostoSignupAccount;
 use Nosto\Tagging\Api\Data\ProductIndexInterface;
@@ -237,7 +237,6 @@ class Index extends AbstractService
     /**
      * @param array $ids
      * @param Store $store
-     * @throws NostoException
      */
     private function invalidateOrCreateParents(array $ids, Store $store)
     {
@@ -315,7 +314,7 @@ class Index extends AbstractService
      * @param Store $store
      * @param array $ids
      * @throws NostoException
-     * @throws \Nosto\Exception\MemoryOutOfBoundsException
+     * @throws MemoryOutOfBoundsException
      */
     public function indexProducts(Store $store, array $ids = [])
     {
@@ -333,8 +332,7 @@ class Index extends AbstractService
      * @param NostoIndexCollection $collection
      * @param Store $store
      * @throws Exception
-     * @throws NostoException
-     * @throws \Nosto\Exception\MemoryOutOfBoundsException
+     * @throws MemoryOutOfBoundsException
      */
     public function rebuildDirtyProducts(NostoIndexCollection $collection, Store $store)
     {
@@ -426,7 +424,6 @@ class Index extends AbstractService
      * @param ProductCollection $collection
      * @param array $ids
      * @param Store $store
-     * @throws NostoException
      */
     public function markProductsAsDeletedByDiff(ProductCollection $collection, array $ids, Store $store)
     {

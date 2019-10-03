@@ -1,11 +1,10 @@
 <?php
 namespace Nosto\Tagging\Test\Integration;
 
-use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Catalog\Model\Product;
-use Magento\Framework\ObjectManagerInterface;
-use Magento\Catalog\Model\Product\Visibility;
 use Magento\Catalog\Model\Product\Attribute\Source\Status;
+use Magento\Catalog\Model\Product\Visibility;
+use Magento\Framework\ObjectManagerInterface;
 use Magento\TestFramework\Helper\Bootstrap;
 
 trait FixturesTrait
@@ -29,6 +28,7 @@ trait FixturesTrait
         /** @var Product $product */
         $product = self::getStaticObjectManager()
             ->create('Magento\Catalog\Model\Product');
+        /** @noinspection PhpUndefinedMethodInspection */
         $product->setTypeId('simple')
             ->setAttributeSetId(4)
             ->setWebsiteIds([1])

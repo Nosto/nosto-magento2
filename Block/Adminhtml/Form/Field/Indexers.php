@@ -54,6 +54,7 @@ class Indexers extends Field
     /** @var NostoHelperScope $nostoHelperScope */
     public $nostoHelperScope;
 
+    /** @noinspection PhpMissingParentConstructorInspection */
     /**
      * Indexers block constructor.
      * @param Context $context

@@ -37,7 +37,6 @@
 namespace Nosto\Tagging\Model\Product\Index;
 
 use Magento\Framework\Api\Search\SearchResult;
-use Nosto\NostoException;
 use Nosto\Tagging\Api\Data\ProductIndexInterface;
 use Nosto\Tagging\Api\Data\ProductIndexSearchResultsInterface;
 

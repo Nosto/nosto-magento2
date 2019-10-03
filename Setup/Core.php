@@ -41,7 +41,6 @@ use Magento\Framework\DB\Ddl\Table;
 use Magento\Framework\Setup\SchemaSetupInterface;
 use Nosto\Tagging\Api\Data\CustomerInterface;
 use Nosto\Tagging\Api\Data\ProductIndexInterface;
-use Nosto\Tagging\Model\Product\Index;
 use Nosto\Tagging\Model\ResourceModel\Customer;
 use Nosto\Tagging\Model\ResourceModel\Product\Index as ProductIndex;
 

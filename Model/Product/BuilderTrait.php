@@ -36,7 +36,9 @@
 
 namespace Nosto\Tagging\Model\Product;
 
+use Exception;
 use Magento\Catalog\Model\Product;
+use Magento\Catalog\Model\ResourceModel\Eav\Attribute\Interceptor;
 use Magento\Eav\Model\Entity\Attribute\AbstractAttribute;
 use Magento\Framework\Phrase;
 use Magento\Store\Model\Store;
@@ -90,7 +92,7 @@ trait BuilderTrait
         $attributes = $product->getTypeInstance()->getSetAttributes($product);
         /** @var AbstractAttribute $attribute */
         foreach ($attributes as $attribute) {
-            /** @var \Magento\Catalog\Model\ResourceModel\Eav\Attribute\Interceptor $attribute */
+            /** @var Interceptor $attribute */
             try {
                 //tag user defined attributes that are visible or filterable
                 if ($attribute->getIsUserDefined()
@@ -106,7 +108,7 @@ trait BuilderTrait
                         }
                     }
                 }
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $this->logger->exception($e);
             }
         }
@@ -167,7 +169,7 @@ trait BuilderTrait
                     $value = (string)$frontendValue;
                 }
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->exception($e);
         }
 

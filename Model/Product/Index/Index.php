@@ -36,13 +36,12 @@
 
 namespace Nosto\Tagging\Model\Product\Index;
 
+use DateTime;
 use Magento\Catalog\Api\Data\ProductInterface as MagentoProductInterface;
 use Magento\Framework\Model\AbstractModel;
 use Magento\Store\Api\Data\StoreInterface;
-use Nosto\Object\Product\Product;
 use Nosto\Tagging\Api\Data\ProductIndexInterface;
 use Nosto\Tagging\Model\ResourceModel\Product\Index as NostoIndex;
-use Nosto\Types\Product\ProductInterface as NostoProductInterface;
 
 class Index extends AbstractModel implements ProductIndexInterface
 {
@@ -132,7 +131,7 @@ class Index extends AbstractModel implements ProductIndexInterface
     /**
      * @inheritdoc
      */
-    public function setCreatedAt(\DateTime $createdAt)
+    public function setCreatedAt(DateTime $createdAt)
     {
         return $this->setData(self::CREATED_AT, $createdAt);
     }
@@ -140,7 +139,7 @@ class Index extends AbstractModel implements ProductIndexInterface
     /**
      * @inheritDoc
      */
-    public function setUpdatedAt(\DateTime $updatedAt)
+    public function setUpdatedAt(DateTime $updatedAt)
     {
         return $this->setData(self::UPDATED_AT, $updatedAt);
     }

@@ -36,15 +36,16 @@
 
 namespace Nosto\Tagging\Observer\Product;
 
+use Exception;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\ProductRepository;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
+use Magento\Framework\Indexer\IndexerInterface;
 use Magento\Framework\Indexer\IndexerRegistry;
 use Magento\Framework\Module\Manager as ModuleManager;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Model\Indexer\Invalidate as InvalidateIndexer;
-use Magento\Framework\Indexer\IndexerInterface;
 
 abstract class Base implements ObserverInterface
 {
@@ -87,7 +88,7 @@ abstract class Base implements ObserverInterface
 
     /**
      * @param Observer $observer
-     * @throws \Exception
+     * @throws Exception
      */
     public function execute(Observer $observer)
     {

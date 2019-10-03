@@ -36,21 +36,25 @@
 
 namespace Nosto\Tagging\Helper;
 
-use Magento\Catalog\Model\Product;
-use Magento\Catalog\Model\ResourceModel\Category\CollectionFactory as CategoryCollectionFactory;
+use Exception;
 use Magento\Backend\Helper\Data as BackendDataHelper;
-use Magento\Framework\Exception\LocalizedException;
-use Magento\Framework\Url as UrlBuilder;
+use Magento\Catalog\Model\Category;
+use Magento\Catalog\Model\Product;
+use Magento\Catalog\Model\ResourceModel\Category\Collection;
+use Magento\Catalog\Model\ResourceModel\Category\CollectionFactory as CategoryCollectionFactory;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Url as UrlBuilder;
 use Magento\Framework\UrlInterface;
 use Magento\Store\Model\Store;
+use Nosto\Helper\UrlHelper;
 use Nosto\Request\Http\HttpRequest;
 use Nosto\Tagging\Helper\Data as NostoDataHelper;
+use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Product\Repository as ProductRepository;
 use Nosto\Tagging\Model\Product\Url\Builder as NostoUrlBuilder;
-use Nosto\Helper\UrlHelper;
-use Nosto\Tagging\Logger\Logger as NostoLogger;
+use Zend_Uri_Http;
 
 /**
  * Url helper class for common URL related tasks.
@@ -147,10 +151,11 @@ class Url extends AbstractHelper
      * @param Context $context the context.
      * @param ProductRepository $productRepository
      * @param CategoryCollectionFactory $categoryCollectionFactory auto generated category collection factory.
-     * @param UrlBuilder $urlBuilder frontend URL builder.
      * @param Data $nostoDataHelper
+     * @param UrlBuilder $urlBuilder frontend URL builder.
      * @param BackendDataHelper $backendDataHelper
      * @param NostoUrlBuilder $nostoUrlBuilder
+     * @param NostoLogger $nostoLogger
      */
     public function __construct(
         Context $context,
@@ -225,7 +230,7 @@ class Url extends AbstractHelper
     {
         $rootCatId = (int)$store->getRootCategoryId();
         /** @noinspection PhpUndefinedClassInspection */
-        /** @var \Magento\Catalog\Model\ResourceModel\Category\Collection $collection */
+        /** @var Collection $collection */
         /** @noinspection PhpUndefinedMethodInspection */
         $collection = $this->categoryCollectionFactory->create();
         $collection->addAttributeToFilter('is_active', ['eq' => 1]);
@@ -234,7 +239,7 @@ class Url extends AbstractHelper
         $collection->setPageSize(1);
         $collection->load();
         foreach ($collection->getItems() as $category) {
-            /** @var \Magento\Catalog\Model\Category $category */
+            /** @var Category $category */
             $url = $category->getUrl();
             if ($this->nostoDataHelper->getStoreCodeToUrl($store)) {
                 $url = $this->replaceQueryParamsInUrl(
@@ -293,7 +298,7 @@ class Url extends AbstractHelper
     {
         try {
             return UrlHelper::parseDomain($store->getBaseUrl());
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->exception($e);
             return '';
         }
@@ -349,7 +354,7 @@ class Url extends AbstractHelper
      */
     public function getUrlCart(Store $store, $currentUrl)
     {
-        $zendHttp = \Zend_Uri_Http::fromString($currentUrl);
+        $zendHttp = Zend_Uri_Http::fromString($currentUrl);
         $urlParameters = $zendHttp->getQueryAsArray();
 
         $defaultParams = $this->getUrlOptionsWithNoSid($store);
