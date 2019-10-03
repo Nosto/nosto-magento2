@@ -55,6 +55,6 @@ class ChangeLog extends MagentoChangelog implements ChangeLogInterface
 
             return (int)$this->connection->fetchOne($select);
         }
-        return null;
+        return 0;
     }
 }
