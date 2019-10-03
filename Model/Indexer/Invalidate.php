@@ -39,6 +39,7 @@ namespace Nosto\Tagging\Model\Indexer;
 use Magento\Indexer\Model\ProcessManager;
 use Magento\Store\Model\App\Emulation;
 use Magento\Store\Model\Store;
+use Nosto\NostoException;
 use Nosto\Tagging\Model\ResourceModel\Magento\Product\CollectionFactory as ProductCollectionFactory;
 use Nosto\Tagging\Model\Indexer\Dimensions\Invalidate\ModeSwitcher as InvalidateModeSwitcher;
 use Nosto\Tagging\Model\ResourceModel\Magento\Product\Collection as ProductCollection;
@@ -126,6 +127,7 @@ class Invalidate extends AbstractIndexer
 
     /**
      * @inheritdoc
+     * @throws NostoException
      */
     public function doIndex(Store $store, array $ids = [])
     {
