@@ -42,7 +42,7 @@ use Magento\Store\Api\Data\StoreInterface;
 use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
 use Nosto\Tagging\Model\Product\BuilderTrait;
 use Nosto\Tagging\Model\Product\Cache;
-use Nosto\Tagging\Model\Product\Cache\CacheFactory as NostoCacheFactory;
+use Nosto\Tagging\Model\Product\CacheFactory as NostoCacheFactory;
 
 class Builder
 {
