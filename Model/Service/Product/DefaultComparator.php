@@ -33,16 +33,23 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
-namespace Nosto\Tagging\Model\Service\Comparator;
 
+namespace Nosto\Tagging\Model\Service\Product;
+
+use Nosto\Helper\SerializationHelper;
+use Nosto\Tagging\Model\Service\Product\ComparatorInterface;
 use Nosto\Types\Product\ProductInterface;
 
-interface ProductComparatorInterface
+class DefaultComparator implements ComparatorInterface
 {
     /**
-     * @param ProductInterface $product1
-     * @param ProductInterface $product2
-     * @return boolean
+     * @inheritDoc
      */
-    public function isEqual(ProductInterface $product1, ProductInterface $product2);
+    public function isEqual(ProductInterface $product1, ProductInterface $product2)
+    {
+        $product1string = SerializationHelper::serialize($product1);
+        $product2string = SerializationHelper::serialize($product2);
+
+        return $product1string === $product2string;
+    }
 }

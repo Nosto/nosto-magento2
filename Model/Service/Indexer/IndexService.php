@@ -47,7 +47,6 @@ use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\Store;
 use Nosto\Exception\MemoryOutOfBoundsException;
 use Nosto\NostoException;
-use Nosto\Object\Signup\Account as NostoSignupAccount;
 use Nosto\Tagging\Api\Data\ProductIndexInterface;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Data as NostoDataHelper;
@@ -65,7 +64,7 @@ use Nosto\Tagging\Model\ResourceModel\Magento\Product\CollectionFactory as Produ
 use Nosto\Tagging\Model\ResourceModel\Product\Index\Collection as NostoIndexCollection;
 use Nosto\Tagging\Model\ResourceModel\Product\Index\CollectionFactory as NostoIndexCollectionFactory;
 use Nosto\Tagging\Model\Service\AbstractService;
-use Nosto\Tagging\Model\Service\Comparator\ProductComparatorInterface;
+use Nosto\Tagging\Model\Service\Product\ComparatorInterface;
 use Nosto\Tagging\Model\Service\Sync\BulkSyncInterface;
 use Nosto\Tagging\Util\PagingIterator;
 use Nosto\Tagging\Util\Serializer\ProductSerializer;
@@ -119,7 +118,7 @@ class IndexService extends AbstractService
     /** @var ProductSerializer */
     private $productSerializer;
 
-    /** @var ProductComparatorInterface */
+    /** @var ComparatorInterface */
     private $productComparator;
 
     /**
@@ -138,7 +137,7 @@ class IndexService extends AbstractService
      * @param NostoDataHelper $nostoDataHelper
      * @param BulkSyncInterface $syncBulkPublisher
      * @param ProductSerializer $productSerializer
-     * @param ProductComparatorInterface $productComparator
+     * @param ComparatorInterface $productComparator
      */
     public function __construct(
         IndexRepository $indexRepository,
@@ -155,7 +154,7 @@ class IndexService extends AbstractService
         NostoDataHelper $nostoDataHelper,
         BulkSyncInterface $syncBulkPublisher,
         ProductSerializer $productSerializer,
-        ProductComparatorInterface $productComparator
+        ComparatorInterface $productComparator
     ) {
         parent::__construct($nostoDataHelper, $logger);
         $this->indexRepository = $indexRepository;

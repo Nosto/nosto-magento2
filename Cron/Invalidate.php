@@ -112,7 +112,7 @@ class Invalidate
         if (!$this->productLimit || !is_numeric($this->productLimit)) {
             $this->logger->debug(
                 sprintf(
-                    'Product limit for invalidate cron is set to %s. Not invalidting any products.',
+                    'Product limit for invalidate cron is set to %s. Not invalidating any products.',
                     $this->productLimit
                 )
             );
