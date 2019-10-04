@@ -34,12 +34,12 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Indexer\Util;
+namespace Nosto\Tagging\Model\Indexer;
 
 use Exception;
 use Symfony\Component\Console\Input\InputInterface;
 
-class Indexer
+class IndexerUtil
 {
     /** Non-ambiguous scope for settings commands */
     const SETUP_UPGRADE_SCOPE = 'se';

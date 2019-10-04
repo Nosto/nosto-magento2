@@ -40,7 +40,6 @@ use InvalidArgumentException;
 use Magento\Framework\App\Cache\TypeListInterface;
 use Magento\Framework\App\Config\ConfigResource\ConfigInterface;
 use Magento\Indexer\Model\Indexer;
-use Nosto\Tagging\Model\Indexer\Invalidate as NostoInvalidateIndexer;
 
 class ModeSwitcherConfiguration
 {
@@ -61,15 +60,9 @@ class ModeSwitcherConfiguration
     private $cacheTypeList;
 
     /**
-     * @var Indexer $indexer
-     */
-    private $indexer;
-
-    /**
      * ModeSwitcherConfiguration constructor.
      * @param ConfigInterface $configWriter
      * @param TypeListInterface $cacheTypeList
-     * @param Indexer $indexer
      */
     public function __construct(
         ConfigInterface $configWriter,
@@ -78,7 +71,6 @@ class ModeSwitcherConfiguration
     ) {
         $this->configWriter = $configWriter;
         $this->cacheTypeList = $cacheTypeList;
-        $this->indexer = $indexer;
     }
 
     /**
@@ -92,7 +84,5 @@ class ModeSwitcherConfiguration
     {
         $this->configWriter->saveConfig(self::XML_PATH_PRODUCT_INVALIDATE_DIMENSIONS_MODE, $mode);
         $this->cacheTypeList->cleanType('config');
-        $this->indexer->load(NostoInvalidateIndexer::INDEXER_ID);
-        $this->indexer->invalidate();
     }
 }
