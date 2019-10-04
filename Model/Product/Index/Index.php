@@ -93,7 +93,11 @@ class Index extends AbstractModel implements ProductIndexInterface
      */
     public function getProductData()
     {
-        return $this->getData(self::PRODUCT_DATA);
+        $productData = $this->getData(self::PRODUCT_DATA);
+        if (empty($productData)) {
+            return null;
+        }
+        return $productData;
     }
 
     /**

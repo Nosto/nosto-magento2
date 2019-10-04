@@ -111,7 +111,7 @@ interface ProductIndexInterface
     /**
      * Get product data
      *
-     * @return string
+     * @return string|null
      */
     public function getProductData();
 
