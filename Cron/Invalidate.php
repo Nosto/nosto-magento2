@@ -109,13 +109,14 @@ class Invalidate
      */
     public function execute()
     {
-        if ($this->productLimit === 0 || !is_numeric($this->productLimit)) {
+        if (!$this->productLimit || !is_numeric($this->productLimit)) {
             $this->logger->debug(
                 sprintf(
-                    'Product limit for invalidate cron is set to %s. Not running the cron',
+                    'Product limit for invalidate cron is set to %s. Not invalidting any products.',
                     $this->productLimit
                 )
             );
+            return;
         }
         $stores = $this->nostoAccountHelper->getStoresWithNosto();
         foreach ($stores as $store) {
@@ -123,7 +124,7 @@ class Invalidate
             $updatedCount = $this->indexRepository->markAsIsDirtyItemsByStore($productIndexCollection, $store);
             $this->logger->debug(
                 sprintf(
-                    'Invalidated (set dirty) %d products for store %d by invalidate cron.' .
+                    'Invalidated (set dirty) %d products for store %s by invalidate cron.' .
                             ' Product limit is %d and interval is %d',
                     $updatedCount,
                     $store->getCode(),

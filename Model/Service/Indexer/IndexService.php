@@ -238,6 +238,7 @@ class IndexService extends AbstractService
     /**
      * @param array $ids
      * @param Store $store
+     * @throws NostoException
      */
     private function invalidateOrCreateParents(array $ids, Store $store)
     {
