@@ -66,7 +66,6 @@ class SyncService extends AbstractService
     const BENCHMARK_DELETE_BREAKPOINT = 1;
     const RESPONSE_TIMEOUT = 60;
 
-
     /** @var IndexRepository */
     private $indexRepository;
 
