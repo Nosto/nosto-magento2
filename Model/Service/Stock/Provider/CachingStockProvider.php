@@ -42,18 +42,22 @@ use Magento\CatalogInventory\Api\Data\StockStatusInterface;
 
 class CachingStockProvider implements StockProviderInterface
 {
-    const MAX_CACHED_ITEMS = 2;
     private $quantityCache = [];
     private $inStockCache = [];
     private $stockProvider;
+    private $maxCacheSize;
 
     /**
      * CachingStockProvider constructor.
      * @param StockProviderInterface $stockProvider
+     * @param int $maxCacheSize
      */
-    public function __construct(StockProviderInterface $stockProvider)
-    {
+    public function __construct(
+        StockProviderInterface $stockProvider,
+        $maxCacheSize
+    ) {
         $this->stockProvider = $stockProvider;
+        $this->maxCacheSize = $maxCacheSize;
     }
 
     /**
@@ -125,12 +129,12 @@ class CachingStockProvider implements StockProviderInterface
         }
         $this->inStockCache[$websiteId][$item->getProductId()] = $item;
         $count = count($this->inStockCache);
-        $offset = $count-self::MAX_CACHED_ITEMS;
+        $offset = $count-$this->maxCacheSize;
         if ($offset > 0) {
-            $this->inStockCache = array_slice($this->inStockCache, $offset, self::MAX_CACHED_ITEMS, true);
+            $this->inStockCache = array_slice($this->inStockCache, $offset, $this->maxCacheSize, true);
         }
 
-        $this->inStockCache = array_slice($this->inStockCache, 0, self::MAX_CACHED_ITEMS);
+        $this->inStockCache = array_slice($this->inStockCache, 0, $this->maxCacheSize);
     }
 
     /**
@@ -153,9 +157,9 @@ class CachingStockProvider implements StockProviderInterface
     {
         $this->quantityCache[$item->getProductId()] = $item;
         $count = count($this->quantityCache);
-        $offset = $count-self::MAX_CACHED_ITEMS;
+        $offset = $count-$this->maxCacheSize;
         if ($offset > 0) {
-            $this->quantityCache = array_slice($this->quantityCache, $offset, self::MAX_CACHED_ITEMS, true);
+            $this->quantityCache = array_slice($this->quantityCache, $offset, $this->maxCacheSize, true);
         }
     }
 
