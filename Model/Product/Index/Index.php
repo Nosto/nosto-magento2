@@ -93,7 +93,11 @@ class Index extends AbstractModel implements ProductIndexInterface
      */
     public function getProductData()
     {
-        return $this->getData(self::PRODUCT_DATA);
+        $productData = $this->getData(self::PRODUCT_DATA);
+        if (empty($productData)) {
+            return null;
+        }
+        return $productData;
     }
 
     /**
@@ -149,7 +153,7 @@ class Index extends AbstractModel implements ProductIndexInterface
      */
     public function setInSync($inSync)
     {
-        return $this->setData(self::IN_SYNC, $inSync ? self::DB_VALUE_BOOLEAN_TRUE : self::DB_VALUE_BOOLEAN_FALSE);
+        return $this->setData(self::IN_SYNC, $this->convertToDatabaseBoolean($inSync));
     }
 
     /**
@@ -157,7 +161,7 @@ class Index extends AbstractModel implements ProductIndexInterface
      */
     public function setIsDirty($isDirty)
     {
-        return $this->setData(self::IS_DIRTY, $isDirty ? self::DB_VALUE_BOOLEAN_TRUE : self::DB_VALUE_BOOLEAN_FALSE);
+        return $this->setData(self::IS_DIRTY, $this->convertToDatabaseBoolean($isDirty));
     }
 
     /**
@@ -207,10 +211,21 @@ class Index extends AbstractModel implements ProductIndexInterface
     {
         return $this->setData(
             self::IS_DELETED,
-            $isDeleted ? self::DB_VALUE_BOOLEAN_TRUE : self::DB_VALUE_BOOLEAN_FALSE
+            $this->convertToDatabaseBoolean($isDeleted)
         );
     }
 
+    /**
+     * @param bool $value
+     * @return string
+     */
+    private function convertToDatabaseBoolean($value)
+    {
+        if ($value !== true) {
+            return self::DB_VALUE_BOOLEAN_FALSE;
+        }
+        return self::DB_VALUE_BOOLEAN_TRUE;
+    }
     /**
      * Initialize resource model
      *

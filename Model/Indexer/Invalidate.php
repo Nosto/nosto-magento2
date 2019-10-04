@@ -45,11 +45,11 @@ use Nosto\Tagging\Model\Indexer\Dimensions\Invalidate\ModeSwitcher as Invalidate
 use Nosto\Tagging\Model\ResourceModel\Magento\Product\Collection as ProductCollection;
 use Nosto\Tagging\Model\Indexer\Dimensions\StoreDimensionProvider;
 use Nosto\Tagging\Model\Indexer\Dimensions\ModeSwitcherInterface;
-use Nosto\Tagging\Model\Service\Index as NostoServiceIndex;
+use Nosto\Tagging\Model\Service\Indexer\IndexService as NostoServiceIndex;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
-use Nosto\Tagging\Model\Service\IndexerStatusServiceInterface;
+use Nosto\Tagging\Model\Service\Indexer\IndexerStatusServiceInterface;
 use Symfony\Component\Console\Input\InputInterface;
 
 /**

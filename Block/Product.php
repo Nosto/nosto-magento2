@@ -53,7 +53,7 @@ use Nosto\Helper\PriceHelper;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Model\Category\Builder as NostoCategoryBuilder;
-use Nosto\Tagging\Model\Service\ProductServiceInterface;
+use Nosto\Tagging\Model\Service\Product\ProductServiceInterface;
 
 /**
  * Product block used for outputting meta-data on the stores product pages.

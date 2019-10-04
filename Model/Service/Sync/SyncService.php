@@ -139,13 +139,23 @@ class SyncService extends AbstractService
             $op->setResponseTimeout(self::RESPONSE_TIMEOUT);
             /** @var ProductIndexInterface $productIndex */
             foreach ($page as $productIndex) {
+                $productData = $productIndex->getProductData();
+                if (empty($productData) && !$productIndex->getIsDirty()) {
+                    throw new NostoException(
+                        'Something is wrong in the nosto product index table.
+                        Product do not have data nor is marked as dirty'
+                    );
+                }
+                if (empty($productData)) {
+                    continue; // Do not sync products with null data
+                }
                 $this->getLogger()->debug(
                     sprintf('Upserting product "%s"', $productIndex->getProductId()),
                     ['store' => $productIndex->getStoreId()]
                 );
                 $op->addProduct(
                     $this->productSerializer->fromString(
-                        $productIndex->getProductData()
+                        $productData
                     )
                 );
             }
@@ -226,7 +236,7 @@ class SyncService extends AbstractService
             }
             try {
                 $op = new DeleteProduct($account, $this->nostoHelperUrl->getActiveDomain($store));
-                $op->setResponseTimeout(30);
+                $op->setResponseTimeout(self::RESPONSE_TIMEOUT);
                 $op->setProductIds($ids);
                 $op->delete(); // @codingStandardsIgnoreLine
                 $this->indexRepository->deleteCurrentItemsByStore($page, $store);

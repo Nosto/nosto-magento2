@@ -53,8 +53,6 @@ use Nosto\Tagging\Model\ResourceModel\Product\Index\CollectionFactory as IndexCo
  */
 class Invalidate
 {
-    const MAX_UPDATED_AT_INTERVAL = 4;
-
     /** @var Logger */
     protected $logger;
 
@@ -70,6 +68,12 @@ class Invalidate
     /** @var TimezoneInterface */
     private $timezoneInterface;
 
+    /** @var int */
+    private $intervalHours;
+
+    /** @var int */
+    private $productLimit;
+
     /**
      * Invalidate constructor.
      *
@@ -78,19 +82,25 @@ class Invalidate
      * @param IndexRepository $indexRepository
      * @param NostoAccountHelper $nostoAccountHelper
      * @param TimezoneInterface $timezoneInterface
+     * @param int $intervalHours
+     * @param int $productLimit
      */
     public function __construct(
         Logger $logger,
         IndexCollectionFactory $indexCollectionFactory,
         IndexRepository $indexRepository,
         NostoAccountHelper $nostoAccountHelper,
-        TimezoneInterface $timezoneInterface
+        TimezoneInterface $timezoneInterface,
+        $intervalHours,
+        $productLimit
     ) {
         $this->logger = $logger;
         $this->indexCollectionFactory = $indexCollectionFactory;
         $this->indexRepository = $indexRepository;
         $this->nostoAccountHelper = $nostoAccountHelper;
         $this->timezoneInterface = $timezoneInterface;
+        $this->intervalHours = $intervalHours;
+        $this->productLimit = $productLimit;
     }
 
     /**
@@ -99,10 +109,30 @@ class Invalidate
      */
     public function execute()
     {
+        if (!$this->productLimit || !is_numeric($this->productLimit)) {
+            $this->logger->debug(
+                sprintf(
+                    'Product limit for invalidate cron is set to %s. Not invalidting any products.',
+                    $this->productLimit
+                )
+            );
+            return;
+        }
         $stores = $this->nostoAccountHelper->getStoresWithNosto();
         foreach ($stores as $store) {
             $productIndexCollection = $this->getCollection($store);
-            $this->indexRepository->markAsIsDirtyItemsByStore($productIndexCollection, $store);
+            $updatedCount = $this->indexRepository->markAsIsDirtyItemsByStore($productIndexCollection, $store);
+            $this->logger->debug(
+                sprintf(
+                    'Invalidated (set dirty) %d products for store %s by invalidate cron.' .
+                            ' Product limit is %d and interval is %d',
+                    $updatedCount,
+                    $store->getCode(),
+                    $this->productLimit,
+                    $this->intervalHours
+                )
+            );
+
         }
     }
 
@@ -121,7 +151,7 @@ class Invalidate
             )
             ->addStoreFilter($store)
             ->orderBy('updated_at', 'ASC')
-            ->limitResults(1000);
+            ->limitResults($this->productLimit);
     }
 
     /**
@@ -132,7 +162,7 @@ class Invalidate
     {
         return $this->timezoneInterface
             ->date()
-            ->modify('-'.self::MAX_UPDATED_AT_INTERVAL.' hours')
+            ->modify('-' . $this->intervalHours . ' hours')
             ->format('Y-m-d H:i:s');
     }
 }
