@@ -42,7 +42,7 @@ use Magento\Framework\DataObject\IdentityGeneratorInterface;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Serialize\SerializerInterface;
 use Magento\Store\Model\Store;
-use Nosto\Tagging\Model\ResourceModel\Product\Index\Collection as NostoIndexCollection;
+use Nosto\Tagging\Model\ResourceModel\Product\Cache\Collection as NostoCacheCollection;
 use Magento\Framework\App\ObjectManager;
 use Magento\Framework\Module\Manager;
 use Nosto\Tagging\Logger\Logger;
@@ -105,7 +105,7 @@ class AsyncBulkPublisher implements BulkSyncInterface
      * @inheritDoc
      * @throws LocalizedException
      */
-    public function execute(NostoIndexCollection $collection, Store $store)
+    public function execute(NostoCacheCollection $collection, Store $store)
     {
         $productIds = $collection->walk('getProductId');
         $this->publishCollectionToQueue($store->getId(), $productIds);

@@ -47,7 +47,7 @@ use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\Store;
 use Nosto\Exception\MemoryOutOfBoundsException;
 use Nosto\NostoException;
-use Nosto\Tagging\Api\Data\ProductIndexInterface;
+use Nosto\Tagging\Api\Data\ProductCacheInterface;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Data as NostoDataHelper;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
@@ -55,14 +55,15 @@ use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Indexer\Data as NostoIndexerData;
 use Nosto\Tagging\Model\Indexer\Invalidate as NostoIndexerInvalidate;
 use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
-use Nosto\Tagging\Model\Product\Index\Builder;
-use Nosto\Tagging\Model\Product\Index\Index as NostoProductIndex;
-use Nosto\Tagging\Model\Product\Index\IndexRepository;
+use Nosto\Tagging\Model\Product\Cache\Builder;
+use Nosto\Tagging\Model\Product\Cache as NostoProductIndex;
+use Nosto\Tagging\Model\Product\Cache\CacheRepository;
 use Nosto\Tagging\Model\Product\Repository as NostoProductRepository;
 use Nosto\Tagging\Model\ResourceModel\Magento\Product\Collection as ProductCollection;
 use Nosto\Tagging\Model\ResourceModel\Magento\Product\CollectionFactory as ProductCollectionFactory;
-use Nosto\Tagging\Model\ResourceModel\Product\Index\Collection as NostoIndexCollection;
-use Nosto\Tagging\Model\ResourceModel\Product\Index\CollectionFactory as NostoIndexCollectionFactory;
+use Nosto\Tagging\Model\ResourceModel\Product\Cache\Collection;
+use Nosto\Tagging\Model\ResourceModel\Product\Cache\Collection as NostoCacheCollection;
+use Nosto\Tagging\Model\ResourceModel\Product\Cache\CollectionFactory as NostoCacheCollectionFactory;
 use Nosto\Tagging\Model\Service\AbstractService;
 use Nosto\Tagging\Model\Service\Product\ComparatorInterface;
 use Nosto\Tagging\Model\Service\Sync\BulkSyncInterface;
@@ -79,8 +80,8 @@ class IndexService extends AbstractService
     const BENCHMARK_NAME_INVALIDATE = 'nosto_index_invalidate';
     const BENCHMARK_NAME_REBUILD = 'nosto_index_rebuild';
 
-    /** @var IndexRepository */
-    private $indexRepository;
+    /** @var CacheRepository */
+    private $cacheRepository;
 
     /** @var Builder */
     private $indexBuilder;
@@ -97,8 +98,8 @@ class IndexService extends AbstractService
     /** @var NostoHelperAccount */
     private $nostoHelperAccount;
 
-    /** @var NostoIndexCollectionFactory */
-    private $nostoIndexCollectionFactory;
+    /** @var NostoCacheCollectionFactory */
+    private $nostoCacheCollectionFactory;
 
     /** @var TimezoneInterface */
     private $magentoTimeZone;
@@ -123,14 +124,14 @@ class IndexService extends AbstractService
 
     /**
      * Index constructor.
-     * @param IndexRepository $indexRepository
+     * @param CacheRepository $cacheRepository
      * @param Builder $indexBuilder
      * @param ProductRepository $productRepository
      * @param NostoProductBuilder $nostoProductBuilder
      * @param NostoHelperScope $nostoHelperScope
      * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoLogger $logger
-     * @param NostoIndexCollectionFactory $nostoIndexCollectionFactory
+     * @param NostoCacheCollectionFactory $nostoCacheCollectionFactory
      * @param NostoProductRepository $nostoProductRepository
      * @param ProductCollectionFactory $productCollectionFactory
      * @param TimezoneInterface $magentoTimeZone
@@ -140,14 +141,14 @@ class IndexService extends AbstractService
      * @param ComparatorInterface $productComparator
      */
     public function __construct(
-        IndexRepository $indexRepository,
+        CacheRepository $cacheRepository,
         Builder $indexBuilder,
         ProductRepository $productRepository,
         NostoProductBuilder $nostoProductBuilder,
         NostoHelperScope $nostoHelperScope,
         NostoHelperAccount $nostoHelperAccount,
         NostoLogger $logger,
-        NostoIndexCollectionFactory $nostoIndexCollectionFactory,
+        NostoCacheCollectionFactory $nostoCacheCollectionFactory,
         NostoProductRepository $nostoProductRepository,
         ProductCollectionFactory $productCollectionFactory,
         TimezoneInterface $magentoTimeZone,
@@ -157,13 +158,13 @@ class IndexService extends AbstractService
         ComparatorInterface $productComparator
     ) {
         parent::__construct($nostoDataHelper, $logger);
-        $this->indexRepository = $indexRepository;
+        $this->cacheRepository = $cacheRepository;
         $this->indexBuilder = $indexBuilder;
         $this->productRepository = $productRepository;
         $this->nostoProductBuilder = $nostoProductBuilder;
         $this->nostoHelperScope = $nostoHelperScope;
         $this->nostoHelperAccount = $nostoHelperAccount;
-        $this->nostoIndexCollectionFactory = $nostoIndexCollectionFactory;
+        $this->nostoCacheCollectionFactory = $nostoCacheCollectionFactory;
         $this->nostoProductRepository = $nostoProductRepository;
         $this->productCollectionFactory = $productCollectionFactory;
         $this->magentoTimeZone = $magentoTimeZone;
@@ -283,14 +284,14 @@ class IndexService extends AbstractService
                 ->debug(sprintf('Product %s cannot be processed by Nosto', $product->getId()));
             return;
         }
-        $indexedProduct = $this->indexRepository->getByProductIdAndStoreId($product->getId(), $store->getId());
+        $indexedProduct = $this->cacheRepository->getByProductIdAndStoreId($product->getId(), $store->getId());
         try {
             if ($indexedProduct === null) { // Creates Index Product
                 $indexedProduct = $this->indexBuilder->build($product, $store);
             }
             $indexedProduct->setIsDirty(true);
             $indexedProduct->setUpdatedAt($this->magentoTimeZone->date());
-            $this->indexRepository->save($indexedProduct);
+            $this->cacheRepository->save($indexedProduct);
         } catch (Exception $e) {
             $this->getLogger()->exception($e);
         }
@@ -330,12 +331,12 @@ class IndexService extends AbstractService
     }
 
     /**
-     * @param NostoIndexCollection $collection
+     * @param NostoCacheCollection $collection
      * @param Store $store
      * @throws Exception
      * @throws MemoryOutOfBoundsException
      */
-    public function rebuildDirtyProducts(NostoIndexCollection $collection, Store $store)
+    public function rebuildDirtyProducts(NostoCacheCollection $collection, Store $store)
     {
         $this->startBenchmark(
             self::BENCHMARK_NAME_REBUILD,
@@ -344,7 +345,7 @@ class IndexService extends AbstractService
         $collection->setPageSize(self::PRODUCT_DATA_BATCH_SIZE);
         $iterator = new PagingIterator($collection);
 
-        /** @var NostoIndexCollection $page */
+        /** @var NostoCacheCollection $page */
         foreach ($iterator as $page) {
             /** @var NostoProductIndex $item */
             foreach ($page->getItems() as $item) {
@@ -372,10 +373,10 @@ class IndexService extends AbstractService
      * Rebuilds a dirty indexed product data & defines it as out of sync
      * if Nosto product data changed
      *
-     * @param ProductIndexInterface $productIndex
-     * @return ProductIndexInterface|null
+     * @param ProductCacheInterface $productIndex
+     * @return ProductCacheInterface|null
      */
-    public function rebuildDirtyProduct(ProductIndexInterface $productIndex)
+    public function rebuildDirtyProduct(ProductCacheInterface $productIndex)
     {
         try {
             /** @var Product $magentoProduct */
@@ -409,7 +410,7 @@ class IndexService extends AbstractService
                 );
             }
             $productIndex->setIsDirty(false);
-            $this->indexRepository->save($productIndex);
+            $this->cacheRepository->save($productIndex);
             return $productIndex;
         } catch (Exception $e) {
             $this->getLogger()->exception($e);
@@ -444,7 +445,7 @@ class IndexService extends AbstractService
         }
 
         // Flag the rest of the ids as deleted
-        $deleted = $this->indexRepository->markProductsAsDeleted($uniqueIds, $store);
+        $deleted = $this->cacheRepository->markProductsAsDeleted($uniqueIds, $store);
         $this->getLogger()->info(
             sprintf(
                 'Marked %d indexed products as deleted for store %s',
@@ -457,11 +458,11 @@ class IndexService extends AbstractService
     /**
      * @param Store $store
      * @param array $ids
-     * @return NostoIndexCollection
+     * @return NostoCacheCollection
      */
     private function getDirtyCollection(Store $store, array $ids = [])
     {
-        $collection = $this->nostoIndexCollectionFactory->create()
+        $collection = $this->nostoCacheCollectionFactory->create()
             ->addFieldToSelect('*')
             ->addIsDirtyFilter()
             ->addNotDeletedFilter()
@@ -475,11 +476,11 @@ class IndexService extends AbstractService
     /**
      * @param Store $store
      * @param array $ids
-     * @return NostoIndexCollection
+     * @return NostoCacheCollection
      */
     private function getOutOfSyncCollection(Store $store, array $ids = [])
     {
-        $collection = $this->nostoIndexCollectionFactory->create()
+        $collection = $this->nostoCacheCollectionFactory->create()
             ->addFieldToSelect('*')
             ->addOutOfSyncFilter()
             ->addNotDeletedFilter()

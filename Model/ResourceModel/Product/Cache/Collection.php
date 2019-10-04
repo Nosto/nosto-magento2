@@ -34,14 +34,14 @@
  *
  */
 
-namespace Nosto\Tagging\Model\ResourceModel\Product\Index;
+namespace Nosto\Tagging\Model\ResourceModel\Product\Cache;
 
 use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection;
 use Magento\Store\Api\Data\StoreInterface;
-use Nosto\Tagging\Api\Data\ProductIndexInterface;
-use Nosto\Tagging\Model\Product\Index\Index;
-use Nosto\Tagging\Model\ResourceModel\Product\Index as ResourceModelIndex;
+use Nosto\Tagging\Api\Data\ProductCacheInterface;
+use Nosto\Tagging\Model\Product\Cache;
+use Nosto\Tagging\Model\ResourceModel\Product\Cache as ResourceModelCache;
 
 class Collection extends AbstractCollection
 {
@@ -53,8 +53,8 @@ class Collection extends AbstractCollection
     public function _construct()
     {
         $this->_init(
-            Index::class,
-            ResourceModelIndex::class
+            \Nosto\Tagging\Model\Product\Cache::class,
+            ResourceModelCache::class
         );
     }
 
@@ -74,7 +74,7 @@ class Collection extends AbstractCollection
     public function addIdsFilter(array $ids)
     {
         return $this->addFieldToFilter(
-            Index::ID,
+            \Nosto\Tagging\Model\Product\Cache::ID,
             ['in' => $ids]
         );
     }
@@ -86,7 +86,7 @@ class Collection extends AbstractCollection
     public function addProductIdsFilter(array $ids)
     {
         return $this->addFieldToFilter(
-            Index::PRODUCT_ID,
+            \Nosto\Tagging\Model\Product\Cache::PRODUCT_ID,
             ['in' => $ids]
         );
     }
@@ -98,8 +98,8 @@ class Collection extends AbstractCollection
     public function addOutOfSyncOrIsDirtyFilter()
     {
         return $this->addFieldToFilter(
-            [ProductIndexInterface::IN_SYNC, ProductIndexInterface::IS_DIRTY],
-            [Index::DB_VALUE_BOOLEAN_FALSE, Index::DB_VALUE_BOOLEAN_TRUE]
+            [ProductCacheInterface::IN_SYNC, ProductCacheInterface::IS_DIRTY],
+            [\Nosto\Tagging\Model\Product\Cache::DB_VALUE_BOOLEAN_FALSE, \Nosto\Tagging\Model\Product\Cache::DB_VALUE_BOOLEAN_TRUE]
         );
     }
 
@@ -111,8 +111,8 @@ class Collection extends AbstractCollection
     public function addIsDirtyFilter()
     {
         return $this->addFieldToFilter(
-            ProductIndexInterface::IS_DIRTY,
-            ['eq' => Index::DB_VALUE_BOOLEAN_TRUE]
+            ProductCacheInterface::IS_DIRTY,
+            ['eq' => \Nosto\Tagging\Model\Product\Cache::DB_VALUE_BOOLEAN_TRUE]
         );
     }
 
@@ -125,7 +125,7 @@ class Collection extends AbstractCollection
     public function addStoreIdFilter(int $storeId)
     {
         return $this->addFieldToFilter(
-            ProductIndexInterface::STORE_ID,
+            ProductCacheInterface::STORE_ID,
             ['eq' => $storeId]
         );
     }
@@ -139,7 +139,7 @@ class Collection extends AbstractCollection
     public function addProductIdFilter(int $productId)
     {
         return $this->addFieldToFilter(
-            ProductIndexInterface::PRODUCT_ID,
+            ProductCacheInterface::PRODUCT_ID,
             ['eq' => $productId]
         );
     }
@@ -164,7 +164,7 @@ class Collection extends AbstractCollection
     public function addIdFilter(int $indexId)
     {
         return $this->addFieldToFilter(
-            ProductIndexInterface::ID,
+            ProductCacheInterface::ID,
             ['eq' => $indexId]
         );
     }
@@ -177,8 +177,8 @@ class Collection extends AbstractCollection
     public function addOutOfSyncFilter()
     {
         return $this->addFieldToFilter(
-            ProductIndexInterface::IN_SYNC,
-            ['eq' => Index::DB_VALUE_BOOLEAN_FALSE]
+            ProductCacheInterface::IN_SYNC,
+            ['eq' => \Nosto\Tagging\Model\Product\Cache::DB_VALUE_BOOLEAN_FALSE]
         );
     }
 
@@ -190,8 +190,8 @@ class Collection extends AbstractCollection
     public function addNotDeletedFilter()
     {
         return $this->addFieldToFilter(
-            ProductIndexInterface::IS_DELETED,
-            ['eq' => Index::DB_VALUE_BOOLEAN_FALSE]
+            ProductCacheInterface::IS_DELETED,
+            ['eq' => Cache::DB_VALUE_BOOLEAN_FALSE]
         );
     }
 
@@ -203,8 +203,8 @@ class Collection extends AbstractCollection
     public function addIsDeletedFilter()
     {
         return $this->addFieldToFilter(
-            ProductIndexInterface::IS_DELETED,
-            ['eq' => Index::DB_VALUE_BOOLEAN_TRUE]
+            ProductCacheInterface::IS_DELETED,
+            ['eq' => Cache::DB_VALUE_BOOLEAN_TRUE]
         );
     }
 
@@ -212,7 +212,7 @@ class Collection extends AbstractCollection
      * Returns the first item of the collection
      * or null if the collection is empty
      *
-     * @return ProductIndexInterface|null
+     * @return ProductCacheInterface|null
      * @suppress PhanTypeMismatchReturn
      */
     public function getOneOrNull()

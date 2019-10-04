@@ -34,59 +34,31 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Product\Index;
+namespace Nosto\Tagging\Api\Data;
 
-use Magento\Catalog\Api\Data\ProductInterface;
-use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
-use Magento\Store\Api\Data\StoreInterface;
-use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
-use Nosto\Tagging\Model\Product\BuilderTrait;
-use Nosto\Tagging\Model\Product\Index\IndexFactory as NostoIndexFactory;
+use Magento\Framework\Data\SearchResultInterface;
 
-class Builder
+interface ProductCacheSearchResultsInterface extends SearchResultInterface
 {
-    use BuilderTrait {
-        BuilderTrait::__construct as builderTraitConstruct; // @codingStandardsIgnoreLine
-    }
-
-    /** @var NostoIndexFactory  */
-    private $nostoIndexFactory;
-
-    /** @var NostoProductBuilder */
-    private $nostoProductBuilder;
-
-    /** @var TimezoneInterface */
-    private $magentoTimeZone;
+    /**
+     * Get items from search results
+     *
+     * @return ProductCacheInterface[]
+     */
+    public function getItems();
 
     /**
-     * Builder constructor.
-     * @param NostoIndexFactory $nostoIndexFactory
-     * @param TimezoneInterface $magentoTimeZone
+     * Get first item from search results
+     *
+     * @return ProductCacheInterface
      */
-    public function __construct(
-        NostoIndexFactory $nostoIndexFactory,
-        TimezoneInterface $magentoTimeZone
-    ) {
-        $this->nostoIndexFactory = $nostoIndexFactory;
-        $this->magentoTimeZone = $magentoTimeZone;
-    }
+    public function getFirstItem();
 
     /**
-     * @param ProductInterface $product
-     * @param StoreInterface $store
-     * @return Index
+     * Set items for search results
+     *
+     * @param ProductCacheInterface[] $items
+     * @return $this
      */
-    public function build(
-        ProductInterface $product,
-        StoreInterface $store
-    ) {
-        $productIndex = $this->nostoIndexFactory->create();
-        $productIndex->setProductId($product->getId());
-        $productIndex->setCreatedAt($this->magentoTimeZone->date());
-        $productIndex->setInSync(false);
-        $productIndex->setIsDirty(true);
-        $productIndex->setUpdatedAt($this->magentoTimeZone->date());
-        $productIndex->setStore($store);
-        return $productIndex;
-    }
+    public function setItems(array $items);
 }

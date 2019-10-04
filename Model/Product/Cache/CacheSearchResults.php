@@ -34,16 +34,16 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Product\Index;
+namespace Nosto\Tagging\Model\Product\Cache;
 
 use Magento\Framework\Api\Search\SearchResult;
-use Nosto\Tagging\Api\Data\ProductIndexInterface;
-use Nosto\Tagging\Api\Data\ProductIndexSearchResultsInterface;
+use Nosto\Tagging\Api\Data\ProductCacheInterface;
+use Nosto\Tagging\Api\Data\ProductCacheSearchResultsInterface;
 
-class IndexSearchResults extends SearchResult implements ProductIndexSearchResultsInterface // @codingStandardsIgnoreLine
+class CacheSearchResults extends SearchResult implements ProductCacheSearchResultsInterface // @codingStandardsIgnoreLine
 {
     /**
-     * @return ProductIndexInterface|null
+     * @return ProductCacheInterface|null
      */
     public function getFirstItem()
     {

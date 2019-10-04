@@ -34,16 +34,16 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Product\Index;
+namespace Nosto\Tagging\Model\Product;
 
 use DateTime;
 use Magento\Catalog\Api\Data\ProductInterface as MagentoProductInterface;
 use Magento\Framework\Model\AbstractModel;
 use Magento\Store\Api\Data\StoreInterface;
-use Nosto\Tagging\Api\Data\ProductIndexInterface;
-use Nosto\Tagging\Model\ResourceModel\Product\Index as NostoIndex;
+use Nosto\Tagging\Api\Data\ProductCacheInterface;
+use Nosto\Tagging\Model\ResourceModel\Product\Cache as NostoIndex;
 
-class Index extends AbstractModel implements ProductIndexInterface
+class Cache extends AbstractModel implements ProductCacheInterface
 {
     const DB_VALUE_BOOLEAN_TRUE = "1";
     const DB_VALUE_BOOLEAN_FALSE = "0";

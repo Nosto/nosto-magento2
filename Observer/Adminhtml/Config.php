@@ -45,8 +45,8 @@ use Nosto\Tagging\Helper\Account as NostoAccountHelper;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
-use Nosto\Tagging\Model\Product\Index\IndexRepository;
-use Nosto\Tagging\Model\ResourceModel\Product\Index\Collection as IndexCollection;
+use Nosto\Tagging\Model\Product\Cache\CacheRepository;
+use Nosto\Tagging\Model\ResourceModel\Product\Cache\Collection as CacheCollection;
 
 /**
  * Observer to mark all indexed products as dirty if settings have changed
@@ -70,11 +70,11 @@ class Config implements ObserverInterface
     /** @var NostoAccountHelper  */
     private $nostoAccountHelper;
 
-    /** @var IndexCollection  */
-    private $indexCollection;
+    /** @var CacheCollection  */
+    private $cacheCollection;
 
-    /** @var IndexRepository */
-    private $indexRepository;
+    /** @var CacheRepository */
+    private $cacheRepository;
 
     /**
      * Config Constructor.
@@ -83,23 +83,23 @@ class Config implements ObserverInterface
      * @param ModuleManager $moduleManager
      * @param NostoHelperScope $nostoHelperScope
      * @param NostoAccountHelper $nostoAccountHelper
-     * @param IndexCollection $indexCollection
-     * @param IndexRepository $indexRepository
+     * @param CacheCollection $cacheCollection
+     * @param CacheRepository $cacheRepository
      */
     public function __construct(
         NostoLogger $logger,
         ModuleManager $moduleManager,
         NostoHelperScope $nostoHelperScope,
         NostoAccountHelper $nostoAccountHelper,
-        IndexCollection $indexCollection,
-        IndexRepository $indexRepository
+        CacheCollection $cacheCollection,
+        CacheRepository $cacheRepository
     ) {
         $this->logger = $logger;
         $this->moduleManager = $moduleManager;
         $this->nostoHelperScope = $nostoHelperScope;
         $this->nostoAccountHelper = $nostoAccountHelper;
-        $this->indexCollection = $indexCollection;
-        $this->indexRepository = $indexRepository;
+        $this->cacheCollection = $cacheCollection;
+        $this->cacheRepository = $cacheRepository;
     }
 
     /**
@@ -153,7 +153,7 @@ class Config implements ObserverInterface
                     $store->getName()
                 )
             );
-            $this->indexRepository->markAllAsDirtyByStore($store);
+            $this->cacheRepository->markAllAsDirtyByStore($store);
         }
     }
 }
