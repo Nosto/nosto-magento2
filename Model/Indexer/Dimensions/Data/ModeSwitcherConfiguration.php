@@ -39,8 +39,6 @@ namespace Nosto\Tagging\Model\Indexer\Dimensions\Data;
 use InvalidArgumentException;
 use Magento\Framework\App\Cache\TypeListInterface;
 use Magento\Framework\App\Config\ConfigResource\ConfigInterface;
-use Magento\Indexer\Model\Indexer;
-use Nosto\Tagging\Model\Indexer\Data as NostoDataIndexer;
 
 class ModeSwitcherConfiguration
 {
@@ -61,24 +59,16 @@ class ModeSwitcherConfiguration
     private $cacheTypeList;
 
     /**
-     * @var Indexer $indexer
-     */
-    private $indexer;
-
-    /**
      * ModeSwitcherConfiguration constructor.
      * @param ConfigInterface $configWriter
      * @param TypeListInterface $cacheTypeList
-     * @param Indexer $indexer
      */
     public function __construct(
         ConfigInterface $configWriter,
-        TypeListInterface $cacheTypeList,
-        Indexer $indexer
+        TypeListInterface $cacheTypeList
     ) {
         $this->configWriter = $configWriter;
         $this->cacheTypeList = $cacheTypeList;
-        $this->indexer = $indexer;
     }
 
     /**
@@ -92,7 +82,5 @@ class ModeSwitcherConfiguration
     {
         $this->configWriter->saveConfig(self::XML_PATH_PRODUCT_DATA_DIMENSIONS_MODE, $mode);
         $this->cacheTypeList->cleanType('config');
-        $this->indexer->load(NostoDataIndexer::INDEXER_ID);
-        $this->indexer->invalidate();
     }
 }
