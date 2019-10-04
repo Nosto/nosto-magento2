@@ -34,21 +34,18 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Service\Sync;
+namespace Nosto\Tagging\Model\Service\Sync\Upsert;
 
 use Exception;
 use Magento\Store\Model\Store;
 use Nosto\Exception\MemoryOutOfBoundsException;
 use Nosto\NostoException;
-use Nosto\Object\Signup\Account as NostoSignupAccount;
-use Nosto\Operation\DeleteProduct;
 use Nosto\Operation\UpsertProduct;
 use Nosto\Tagging\Api\Data\ProductIndexInterface;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Data as NostoDataHelper;
 use Nosto\Tagging\Helper\Url as NostoHelperUrl;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
-use Nosto\Tagging\Model\Product\Index\Index as NostoProductIndex;
 use Nosto\Tagging\Model\Product\Index\IndexRepository;
 use Nosto\Tagging\Model\ResourceModel\Product\Index\Collection as NostoIndexCollection;
 use Nosto\Tagging\Model\ResourceModel\Product\Index\CollectionFactory as NostoIndexCollectionFactory;
@@ -59,11 +56,8 @@ use Nosto\Tagging\Model\Service\AbstractService;
 class SyncService extends AbstractService
 {
     const API_BATCH_SIZE = 50;
-    const PRODUCT_DELETION_BATCH_SIZE = 100;
     const BENCHMARK_SYNC_NAME = 'nosto_product_sync';
     const BENCHMARK_SYNC_BREAKPOINT = 1;
-    const BENCHMARK_DELETE_NAME = 'nosto_product_delete';
-    const BENCHMARK_DELETE_BREAKPOINT = 1;
     const RESPONSE_TIMEOUT = 60;
 
     /** @var IndexRepository */
@@ -173,25 +167,6 @@ class SyncService extends AbstractService
     }
 
     /**
-     * @param Store $store
-     * @throws MemoryOutOfBoundsException
-     */
-    public function syncDeletedProducts(Store $store)
-    {
-        try {
-            $this->purgeDeletedProducts($store);
-            $this->getLogger()->info(
-                sprintf(
-                    'Removed products from index for store %s',
-                    $store->getCode()
-                )
-            );
-        } catch (NostoException $e) {
-            $this->getLogger()->exception($e);
-        }
-    }
-
-    /**
      * @param int[] $productIds
      * @param Store $store
      * @return void
@@ -203,66 +178,5 @@ class SyncService extends AbstractService
         } catch (Exception $e) {
             $this->getLogger()->exception($e);
         }
-    }
-
-    /**
-     * Discontinues products in Nosto and removes indexed products from Nosto product index
-     *
-     * @param NostoIndexCollection $collection
-     * @param Store $store
-     * @throws MemoryOutOfBoundsException
-     * @throws NostoException
-     */
-    public function deleteIndexedProducts(NostoIndexCollection $collection, Store $store)
-    {
-        if ($collection->getSize() === 0) {
-            return;
-        }
-        $account = $this->nostoHelperAccount->findAccount($store);
-        if ($account instanceof NostoSignupAccount === false) {
-            throw new NostoException(sprintf('Store view %s does not have Nosto installed', $store->getName()));
-        }
-        $this->startBenchmark(self::BENCHMARK_DELETE_NAME, self::BENCHMARK_DELETE_BREAKPOINT);
-        $collection->setPageSize(self::PRODUCT_DELETION_BATCH_SIZE);
-        $iterator = new PagingIterator($collection);
-
-        /** @var NostoIndexCollection $page */
-        foreach ($iterator as $page) {
-            $this->checkMemoryConsumption('product delete');
-            $ids = [];
-            /* @var $indexedProduct NostoProductIndex */
-            foreach ($page as $indexedProduct) {
-                $ids[] = $indexedProduct->getProductId();
-            }
-            try {
-                $op = new DeleteProduct($account, $this->nostoHelperUrl->getActiveDomain($store));
-                $op->setResponseTimeout(self::RESPONSE_TIMEOUT);
-                $op->setProductIds($ids);
-                $op->delete(); // @codingStandardsIgnoreLine
-                $this->indexRepository->deleteCurrentItemsByStore($page, $store);
-                $this->tickBenchmark(self::BENCHMARK_DELETE_NAME);
-            } catch (Exception $e) {
-                $this->getLogger()->exception($e);
-            }
-        }
-
-        $this->logBenchmarkSummary(self::BENCHMARK_DELETE_NAME, $store);
-    }
-
-    /**
-     * Fetches deleted products from the product index, sends those to Nosto
-     * and deletes the deleted rows from database
-     *
-     * @param Store $store
-     * @throws MemoryOutOfBoundsException
-     * @throws NostoException
-     */
-    public function purgeDeletedProducts(Store $store)
-    {
-        $collection = $this->nostoIndexCollectionFactory->create()
-            ->addFieldToSelect('*')
-            ->addIsDeletedFilter()
-            ->addStoreFilter($store);
-        $this->deleteIndexedProducts($collection, $store);
     }
 }
