@@ -66,7 +66,8 @@ use Nosto\Tagging\Model\ResourceModel\Product\Index\Collection as NostoIndexColl
 use Nosto\Tagging\Model\ResourceModel\Product\Index\CollectionFactory as NostoIndexCollectionFactory;
 use Nosto\Tagging\Model\Service\AbstractService;
 use Nosto\Tagging\Model\Service\Comparator\ProductComparatorInterface;
-use Nosto\Tagging\Model\Service\Sync\BulkSyncInterface;
+use Nosto\Tagging\Model\Service\Sync\Upsert\AsyncBulkPublisher as ProductUpsertBulkPublisher;
+use Nosto\Tagging\Model\Service\Sync\Delete\AsyncBulkPublisher as ProductDeleteBulkPublisher;
 use Nosto\Tagging\Util\PagingIterator;
 use Nosto\Tagging\Util\Serializer\ProductSerializer;
 use Nosto\Types\Product\ProductInterface as NostoProductInterface;
@@ -113,8 +114,11 @@ class IndexService extends AbstractService
     /** @var array */
     private $invalidatedProducts = [];
 
-    /** @var BulkSyncInterface */
-    private $syncBulkPublisher;
+    /** @var ProductUpsertBulkPublisher */
+    private $productUpsertBulkPublisher;
+
+    /** @var ProductDeleteBulkPublisher */
+    private $productDeleteBulkPublisher;
 
     /** @var ProductSerializer */
     private $productSerializer;
@@ -123,7 +127,7 @@ class IndexService extends AbstractService
     private $productComparator;
 
     /**
-     * Index constructor.
+     * IndexService constructor.
      * @param IndexRepository $indexRepository
      * @param Builder $indexBuilder
      * @param ProductRepository $productRepository
@@ -136,7 +140,8 @@ class IndexService extends AbstractService
      * @param ProductCollectionFactory $productCollectionFactory
      * @param TimezoneInterface $magentoTimeZone
      * @param NostoDataHelper $nostoDataHelper
-     * @param BulkSyncInterface $syncBulkPublisher
+     * @param ProductUpsertBulkPublisher $productUpsertBulkPublisher
+     * @param ProductDeleteBulkPublisher $productDeleteBulkPublisher
      * @param ProductSerializer $productSerializer
      * @param ProductComparatorInterface $productComparator
      */
@@ -153,7 +158,8 @@ class IndexService extends AbstractService
         ProductCollectionFactory $productCollectionFactory,
         TimezoneInterface $magentoTimeZone,
         NostoDataHelper $nostoDataHelper,
-        BulkSyncInterface $syncBulkPublisher,
+        ProductUpsertBulkPublisher $productUpsertBulkPublisher,
+        ProductDeleteBulkPublisher $productDeleteBulkPublisher,
         ProductSerializer $productSerializer,
         ProductComparatorInterface $productComparator
     ) {
@@ -168,7 +174,8 @@ class IndexService extends AbstractService
         $this->nostoProductRepository = $nostoProductRepository;
         $this->productCollectionFactory = $productCollectionFactory;
         $this->magentoTimeZone = $magentoTimeZone;
-        $this->syncBulkPublisher = $syncBulkPublisher;
+        $this->productUpsertBulkPublisher = $productUpsertBulkPublisher;
+        $this->productDeleteBulkPublisher = $productDeleteBulkPublisher;
         $this->productSerializer = $productSerializer;
         $this->productComparator = $productComparator;
     }
@@ -327,7 +334,9 @@ class IndexService extends AbstractService
         $dirtyCollection = $this->getDirtyCollection($store, $ids);
         $this->rebuildDirtyProducts($dirtyCollection, $store);
         $outOfSyncCollection = $this->getOutOfSyncCollection($store, $ids);
-        $this->syncBulkPublisher->execute($outOfSyncCollection, $store);
+        $this->productUpsertBulkPublisher->execute($outOfSyncCollection, $store);
+        $deletedCollection = $this->getDeletedCollection($store);
+        $this->productDeleteBulkPublisher->execute($deletedCollection, $store);
     }
 
     /**
@@ -488,6 +497,20 @@ class IndexService extends AbstractService
         if (!empty($ids)) {
             $collection->addIdsFilter($ids);
         }
+        return $collection;
+    }
+
+    /**
+     * @param Store $store
+     * @param array $ids
+     * @return NostoIndexCollection
+     */
+    private function getDeletedCollection(Store $store)
+    {
+        $collection = $this->nostoIndexCollectionFactory->create()
+            ->addFieldToSelect('*')
+            ->addDeletedFilter()
+            ->addStoreFilter($store);
         return $collection;
     }
 

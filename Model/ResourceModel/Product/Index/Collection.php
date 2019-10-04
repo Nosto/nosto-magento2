@@ -196,6 +196,19 @@ class Collection extends AbstractCollection
     }
 
     /**
+     * Filters collection for only products that are not marked as deleted
+     *
+     * @return Collection
+     */
+    public function addDeletedFilter()
+    {
+        return $this->addFieldToFilter(
+            ProductIndexInterface::IS_DELETED,
+            ['eq' => Index::DB_VALUE_BOOLEAN_TRUE]
+        );
+    }
+
+    /**
      * Filters collection for only products that are marked as deleted
      *
      * @return Collection
