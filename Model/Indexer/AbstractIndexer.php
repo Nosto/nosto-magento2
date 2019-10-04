@@ -220,7 +220,7 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
             case DimensionModeConfiguration::DIMENSION_NONE:
                 /** @var Dimension[] $dimension */
                 foreach ($this->dimensionProvider->getIterator() as $dimension) {
-                    if (is_array($dimension) && $this->isDimensionProcessable($dimension)) {
+                    if (is_array($dimension)) {
                         (function () use ($dimension, $ids) {
                             $this->executeByDimensions($dimension, new ArrayIterator($ids));
                         })();
@@ -230,12 +230,10 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
             case DimensionModeConfiguration::DIMENSION_STORE:
                 /** @var Dimension[] $dimension  */
                 foreach ($this->dimensionProvider->getIterator() as $dimension) {
-                    if ($this->isDimensionProcessable($dimension)) {
-                        /** @suppress PhanTypeMismatchArgument */
-                        $userFunctions[] = function () use ($dimension, $ids) {
-                            $this->executeByDimensions($dimension, new ArrayIterator($ids));
-                        };
-                    }
+                    /** @suppress PhanTypeMismatchArgument */
+                    $userFunctions[] = function () use ($dimension, $ids) {
+                        $this->executeByDimensions($dimension, new ArrayIterator($ids));
+                    };
                 }
                 /** @var Traversable $userFunctions  */
                 $this->getProcessManager()->execute($userFunctions);
@@ -296,23 +294,6 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
             )
         );
         $this->storeEmulator->stopEnvironmentEmulation();
-    }
-
-    /**
-     * @param Dimension[] $dimension
-     * @return bool
-     * @suppress PhanTypeArraySuspicious
-     */
-    private function isDimensionProcessable(array $dimension)
-    {
-        $storeId = $dimension[StoreDimensionProvider::DIMENSION_NAME]->getValue();
-        $store = $this->nostoHelperScope->getStore($storeId);
-        if ($this->nostoHelperAccount->nostoInstalledAndEnabled($store)) {
-            return true;
-        }
-
-        $this->nostoLogger->debug(sprintf('Skipping store dimension: "%s"', $store->getCode()));
-        return false;
     }
 
     /**
