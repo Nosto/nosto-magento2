@@ -54,7 +54,6 @@ use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Indexer\Dimensions\AbstractDimensionModeConfiguration as DimensionModeConfiguration;
 use Nosto\Tagging\Model\Indexer\Dimensions\ModeSwitcherInterface;
 use Nosto\Tagging\Model\Indexer\Dimensions\StoreDimensionProvider;
-use Nosto\Tagging\Model\Indexer\IndexerUtil as IndexerUtil;
 use Nosto\Tagging\Model\Service\Indexer\IndexerStatusServiceInterface;
 use Nosto\Tagging\Util\Benchmark;
 use Symfony\Component\Console\Input\InputInterface;
