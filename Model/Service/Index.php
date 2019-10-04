@@ -302,7 +302,7 @@ class Index extends AbstractService
      * @param ProductInterface $product
      * @return bool
      */
-    private function canBuildBundleProduct(ProductInterface $product)
+    public function canBuildBundleProduct(ProductInterface $product)
     {
         if ($product->getTypeId() === Type::TYPE_BUNDLE && empty($product->getOptions())) {
             return false;
