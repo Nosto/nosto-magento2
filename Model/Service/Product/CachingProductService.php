@@ -34,14 +34,14 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Service;
+namespace Nosto\Tagging\Model\Service\Product;
 
 use Exception;
 use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Store\Api\Data\StoreInterface;
 use Nosto\Tagging\Logger\Logger;
 use Nosto\Tagging\Model\Product\Index\IndexRepository as NostoIndexRepository;
-use Nosto\Tagging\Model\Service\Index as NostoIndexService;
+use Nosto\Tagging\Model\Service\Indexer\IndexService as NostoIndexService;
 use Nosto\Tagging\Util\Serializer\ProductSerializer;
 use Nosto\Types\Product\ProductInterface as NostoProductInterface;
 

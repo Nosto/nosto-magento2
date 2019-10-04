@@ -46,8 +46,7 @@ use Magento\Store\Model\Store;
 use Nosto\NostoException;
 use Nosto\Object\Product\ProductCollection as NostoProductCollection;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
-use Nosto\Tagging\Model\Service\ProductServiceInterface;
-use Nosto\Types\Product\ProductInterface;
+use Nosto\Tagging\Model\Service\Product\ProductServiceInterface;
 use Traversable;
 
 class Collection
@@ -143,7 +142,7 @@ class Collection
                     $product,
                     $store
                 );
-                if ($nostoProduct instanceof ProductInterface) {
+                if ($nostoProduct !== null) {
                     $products->append($nostoProduct);
                 }
             } catch (Exception $e) {

@@ -33,25 +33,47 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
-namespace Nosto\Tagging\Model\Service;
 
-interface IndexerStatusServiceInterface
+namespace Nosto\Tagging\Model\Service\Product;
+
+use Exception;
+use Magento\Catalog\Api\Data\ProductInterface;
+use Magento\Catalog\Model\Product;
+use Magento\Store\Api\Data\StoreInterface;
+use Magento\Store\Model\Store;
+use Nosto\Object\Product\Product as NostoProduct;
+use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
+
+class DefaultProductService implements ProductServiceInterface
 {
-    /**
-     * @param $indexerId
-     * @return void
-     */
-    public function clearProcessedChangelog($indexerId);
+
+    /** @var NostoProductBuilder */
+    private $nostoProductBuilder;
 
     /**
-     * @param $indexerId
-     * @return int
+     * DefaultProductService constructor.
+     * @param NostoProductBuilder $nostoProductBuilder
      */
-    public function getTotalChangelogCount($indexerId);
+    public function __construct(
+        NostoProductBuilder $nostoProductBuilder
+    ) {
+        $this->nostoProductBuilder = $nostoProductBuilder;
+    }
 
     /**
-     * @param $indexerId
-     * @return int
+     * @param ProductInterface $product
+     * @param StoreInterface $store
+     * @return NostoProduct|null
+     * @suppress PhanTypeMismatchArgument
+     * @throws Exception
      */
-    public function getCurrentWatermark($indexerId);
+    public function getProduct(ProductInterface $product, StoreInterface $store)
+    {
+        /** @var Product $product */
+        /** @var Store $store */
+        return $this->nostoProductBuilder->build(
+            $product,
+            $store
+        );
+    }
 }
