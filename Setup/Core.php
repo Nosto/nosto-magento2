@@ -40,12 +40,18 @@ use Magento\Framework\DB\Adapter\AdapterInterface;
 use Magento\Framework\DB\Ddl\Table;
 use Magento\Framework\Setup\SchemaSetupInterface;
 use Nosto\Tagging\Api\Data\CustomerInterface;
-use Nosto\Tagging\Api\Data\ProductIndexInterface;
+use Nosto\Tagging\Api\Data\ProductCacheInterface;
 use Nosto\Tagging\Model\ResourceModel\Customer;
-use Nosto\Tagging\Model\ResourceModel\Product\Index as ProductIndex;
+use Nosto\Tagging\Model\ResourceModel\Product\Cache as CacheResource;
 
 abstract class Core
 {
+    /**
+     * Creates a table for mapping Nosto customer to Magento's cart & orders
+     *
+     * @param SchemaSetupInterface $setup
+     * @throws \Zend_Db_Exception
+     */
     public function createCustomerTable(SchemaSetupInterface $setup)
     {
         /** @noinspection PhpUnhandledExceptionInspection */
@@ -110,13 +116,19 @@ abstract class Core
         $setup->getConnection()->createTable($table);
     }
 
-    public function createProductIndexTable(SchemaSetupInterface $setup)
+    /**
+     * Creates a cache table for Nosto product data
+     *
+     * @param SchemaSetupInterface $setup
+     * @throws \Zend_Db_Exception
+     */
+    public function createProductCacheTable(SchemaSetupInterface $setup)
     {
         /** @noinspection PhpUnhandledExceptionInspection */
         $table = $setup->getConnection()
-            ->newTable($setup->getTable(ProductIndex::TABLE_NAME))
+            ->newTable($setup->getTable(CacheResource::TABLE_NAME))
             ->addColumn(
-                ProductIndexInterface::ID,
+                ProductCacheInterface::ID,
                 Table::TYPE_INTEGER,
                 null,
                 [
@@ -129,7 +141,7 @@ abstract class Core
                 'ID'
             )
             ->addColumn(
-                ProductIndexInterface::PRODUCT_ID,
+                ProductCacheInterface::PRODUCT_ID,
                 Table::TYPE_INTEGER,
                 null,
                 [
@@ -139,7 +151,7 @@ abstract class Core
                 'Product ID'
             )
             ->addColumn(
-                ProductIndexInterface::STORE_ID,
+                ProductCacheInterface::STORE_ID,
                 Table::TYPE_SMALLINT,
                 null,
                 [
@@ -149,7 +161,7 @@ abstract class Core
                 'Store ID'
             )
             ->addColumn(
-                ProductIndexInterface::IN_SYNC,
+                ProductCacheInterface::IN_SYNC,
                 Table::TYPE_BOOLEAN,
                 null,
                 [
@@ -159,7 +171,7 @@ abstract class Core
                 'In Sync'
             )
             ->addColumn(
-                ProductIndexInterface::IS_DIRTY,
+                ProductCacheInterface::IS_DIRTY,
                 Table::TYPE_BOOLEAN,
                 null,
                 [
@@ -169,7 +181,7 @@ abstract class Core
                 'Is Dirty'
             )
             ->addColumn(
-                ProductIndexInterface::IS_DELETED,
+                ProductCacheInterface::IS_DELETED,
                 Table::TYPE_BOOLEAN,
                 null,
                 [
@@ -179,7 +191,7 @@ abstract class Core
                 'Is Deleted'
             )
             ->addColumn(
-                ProductIndexInterface::PRODUCT_DATA,
+                ProductCacheInterface::PRODUCT_DATA,
                 Table::TYPE_TEXT,
                 null,
                 [
@@ -189,14 +201,14 @@ abstract class Core
                 'Product data'
             )
             ->addColumn(
-                ProductIndexInterface::CREATED_AT,
+                ProductCacheInterface::CREATED_AT,
                 Table::TYPE_DATETIME,
                 null,
                 ['nullable' => false],
                 'Creation Time'
             )
             ->addColumn(
-                ProductIndexInterface::UPDATED_AT,
+                ProductCacheInterface::UPDATED_AT,
                 Table::TYPE_DATETIME,
                 null,
                 ['nullable' => true],
@@ -204,10 +216,10 @@ abstract class Core
             )
             ->addIndex(
                 $setup->getIdxName(
-                    ProductIndex::TABLE_NAME,
-                    [ProductIndexInterface::PRODUCT_ID, ProductIndexInterface::STORE_ID]
+                    CacheResource::TABLE_NAME,
+                    [ProductCacheInterface::PRODUCT_ID, ProductCacheInterface::STORE_ID]
                 ),
-                [ProductIndexInterface::PRODUCT_ID, ProductIndexInterface::STORE_ID],
+                [ProductCacheInterface::PRODUCT_ID, ProductCacheInterface::STORE_ID],
                 ['type' => AdapterInterface::INDEX_TYPE_UNIQUE]
             );
         /** @noinspection PhpUnhandledExceptionInspection */

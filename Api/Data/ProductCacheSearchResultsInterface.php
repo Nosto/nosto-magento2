@@ -34,21 +34,31 @@
  *
  */
 
-namespace Nosto\Tagging\Model\ResourceModel\Product;
+namespace Nosto\Tagging\Api\Data;
 
-use Magento\Framework\Model\ResourceModel\Db\AbstractDb;
-use Nosto\Tagging\Api\Data\ProductIndexInterface;
+use Magento\Framework\Data\SearchResultInterface;
 
-class Index extends AbstractDb
+interface ProductCacheSearchResultsInterface extends SearchResultInterface
 {
-    const TABLE_NAME = 'nosto_tagging_product_index';
     /**
-     * Initialize resource model
+     * Get items from search results
      *
-     * @return void
+     * @return ProductCacheInterface[]
      */
-    public function _construct()
-    {
-        $this->_init(self::TABLE_NAME, ProductIndexInterface::ID);
-    }
+    public function getItems();
+
+    /**
+     * Get first item from search results
+     *
+     * @return ProductCacheInterface
+     */
+    public function getFirstItem();
+
+    /**
+     * Set items for search results
+     *
+     * @param ProductCacheInterface[] $items
+     * @return $this
+     */
+    public function setItems(array $items);
 }

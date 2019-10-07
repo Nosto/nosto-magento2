@@ -34,61 +34,24 @@
  *
  */
 
-namespace Nosto\Tagging\Api;
+namespace Nosto\Tagging\Model\Product\Cache;
 
-use Nosto\Tagging\Api\Data\ProductQueueInterface;
-use Nosto\Tagging\Api\Data\ProductQueueSearchResultsInterface;
+use Magento\Framework\Api\Search\SearchResult;
+use Nosto\Tagging\Api\Data\ProductCacheInterface;
+use Nosto\Tagging\Api\Data\ProductCacheSearchResultsInterface;
 
-interface ProductQueueRepositoryInterface extends BaseRepositoryInterface
+class CacheSearchResults extends SearchResult implements ProductCacheSearchResultsInterface // @codingStandardsIgnoreLine
 {
     /**
-     * Save Queue entry
-     *
-     * @param ProductQueueInterface $productQueue
-     * @return ProductQueueInterface
+     * @return ProductCacheInterface|null
      */
-    public function save(ProductQueueInterface $productQueue);
+    public function getFirstItem()
+    {
+        if ($this->getTotalCount() == 0) {
+            return null;
+        }
 
-    /**
-     * Delete productQueue
-     *
-     * @param ProductQueueInterface $productQueue
-     */
-    public function delete(ProductQueueInterface $productQueue);
-
-    /**
-     * @param array $ids
-     */
-    public function deleteByProductIds(array $ids);
-
-    /**
-     * Returns all entries by product ids
-     *
-     * @param int $productId
-     * @return ProductQueueSearchResultsInterface
-     */
-    public function getByProductId($productId);
-
-    /**
-     * Returns single entry by product id
-     *
-     * @param int $productId
-     * @return ProductQueueInterface|null
-     */
-    public function getOneByProductId($productId);
-
-    /**
-     * Get list of productQueues
-     *
-     * @param int $pageSize
-     * @return ProductQueueSearchResultsInterface
-     */
-    public function getFirstPage($pageSize);
-
-    /**
-     * Returns all entries in product queue
-     *
-     * @return ProductQueueSearchResultsInterface
-     */
-    public function getAll();
+        $items = $this->getItems();
+        return current($items);
+    }
 }

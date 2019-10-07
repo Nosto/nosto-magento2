@@ -39,38 +39,38 @@ namespace Nosto\Tagging\Api;
 use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\Store;
-use Nosto\Tagging\Api\Data\ProductIndexInterface;
+use Nosto\Tagging\Api\Data\ProductCacheInterface;
 
-interface ProductIndexRepositoryInterface
+interface ProductCacheRepositoryInterface
 {
     /**
      * Save Queue entry
      *
-     * @param ProductIndexInterface $productIndex
-     * @return ProductIndexInterface
+     * @param ProductCacheInterface $productIndex
+     * @return ProductCacheInterface
      */
-    public function save(ProductIndexInterface $productIndex);
+    public function save(ProductCacheInterface $productIndex);
 
     /**
      * Delete productIndex
      *
-     * @param ProductIndexInterface $productIndex
+     * @param ProductCacheInterface $productIndex
      */
-    public function delete(ProductIndexInterface $productIndex);
+    public function delete(ProductCacheInterface $productIndex);
 
     /**
      * Returns entry by product and store
      *
      * @param ProductInterface $product
      * @param StoreInterface $store
-     * @return ProductIndexInterface|null
+     * @return ProductCacheInterface|null
      */
     public function getOneByProductAndStore(ProductInterface $product, StoreInterface $store);
 
     /**
      * @param int $productId
      * @param int $storeId
-     * @return ProductIndexInterface|null
+     * @return ProductCacheInterface|null
      */
     public function getByProductIdAndStoreId(int $productId, int $storeId);
 

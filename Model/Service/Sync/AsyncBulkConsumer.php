@@ -41,7 +41,7 @@ use InvalidArgumentException;
 use Magento\Framework\EntityManager\EntityManager;
 use Magento\Framework\Json\Helper\Data as JsonHelper;
 use Nosto\Tagging\Logger\Logger;
-use Nosto\Tagging\Model\Product\Index\IndexRepository;
+use Nosto\Tagging\Model\Product\Cache\CacheRepository;
 use Nosto\Tagging\Model\Service\Sync\SyncService as NostoSyncService;
 use Nosto\Tagging\Helper\Scope as NostoScopeHelper;
 
@@ -58,8 +58,8 @@ class AsyncBulkConsumer
     /** @var JsonHelper */
     private $jsonHelper;
 
-    /** @var IndexRepository */
-    private $indexRepository;
+    /** @var CacheRepository */
+    private $cacheRepository;
 
     /** @var NostoSyncService */
     private $nostoSyncService;
@@ -75,7 +75,7 @@ class AsyncBulkConsumer
      *
      * @param Logger $logger
      * @param JsonHelper $jsonHelper
-     * @param IndexRepository $indexRepository
+     * @param CacheRepository $cacheRepository
      * @param NostoSyncService $nostoSyncService
      * @param NostoScopeHelper $nostoScopeHelper
      * @param EntityManager $entityManager
@@ -83,14 +83,14 @@ class AsyncBulkConsumer
     public function __construct(
         Logger $logger,
         JsonHelper $jsonHelper,
-        IndexRepository $indexRepository,
+        CacheRepository $cacheRepository,
         NostoSyncService $nostoSyncService,
         NostoScopeHelper $nostoScopeHelper,
         EntityManager $entityManager
     ) {
         $this->logger = $logger;
         $this->jsonHelper = $jsonHelper;
-        $this->indexRepository = $indexRepository;
+        $this->cacheRepository = $cacheRepository;
         $this->nostoSyncService = $nostoSyncService;
         $this->nostoScopeHelper = $nostoScopeHelper;
         $this->entityManager = $entityManager;
@@ -123,7 +123,7 @@ class AsyncBulkConsumer
         $storeId = $unserializedData['store_id'];
         try {
             $store = $this->nostoScopeHelper->getStore($storeId);
-            $outOfSyncCollection = $this->indexRepository->getByProductIdsAndStoreId($productIds, $storeId);
+            $outOfSyncCollection = $this->cacheRepository->getByProductIdsAndStoreId($productIds, $storeId);
             $this->nostoSyncService->syncIndexedProducts($outOfSyncCollection, $store);
             $this->nostoSyncService->syncDeletedProducts($store);
             if (!is_array($operation)) {

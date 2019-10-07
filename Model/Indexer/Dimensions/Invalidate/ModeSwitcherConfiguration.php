@@ -39,7 +39,6 @@ namespace Nosto\Tagging\Model\Indexer\Dimensions\Invalidate;
 use InvalidArgumentException;
 use Magento\Framework\App\Cache\TypeListInterface;
 use Magento\Framework\App\Config\ConfigResource\ConfigInterface;
-use Magento\Indexer\Model\Indexer;
 
 class ModeSwitcherConfiguration
 {
@@ -66,8 +65,7 @@ class ModeSwitcherConfiguration
      */
     public function __construct(
         ConfigInterface $configWriter,
-        TypeListInterface $cacheTypeList,
-        Indexer $indexer
+        TypeListInterface $cacheTypeList
     ) {
         $this->configWriter = $configWriter;
         $this->cacheTypeList = $cacheTypeList;

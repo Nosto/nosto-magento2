@@ -34,24 +34,60 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Product\Index;
+namespace Nosto\Tagging\Model\Product\Cache;
 
-use Magento\Framework\Api\Search\SearchResult;
-use Nosto\Tagging\Api\Data\ProductIndexInterface;
-use Nosto\Tagging\Api\Data\ProductIndexSearchResultsInterface;
+use Magento\Catalog\Api\Data\ProductInterface;
+use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
+use Magento\Store\Api\Data\StoreInterface;
+use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
+use Nosto\Tagging\Model\Product\BuilderTrait;
+use Nosto\Tagging\Model\Product\Cache as CacheModel;
+use Nosto\Tagging\Model\Product\CacheFactory;
 
-class IndexSearchResults extends SearchResult implements ProductIndexSearchResultsInterface // @codingStandardsIgnoreLine
+class CacheBuilder
 {
-    /**
-     * @return ProductIndexInterface|null
-     */
-    public function getFirstItem()
-    {
-        if ($this->getTotalCount() == 0) {
-            return null;
-        }
+    use BuilderTrait {
+        BuilderTrait::__construct as builderTraitConstruct; // @codingStandardsIgnoreLine
+    }
 
-        $items = $this->getItems();
-        return current($items);
+    /** @var CacheFactory  */
+    private $cacheFactory;
+
+    /** @var NostoProductBuilder */
+    private $nostoProductBuilder;
+
+    /** @var TimezoneInterface */
+    private $magentoTimeZone;
+
+    /**
+     * Builder constructor.
+     * @param CacheFactory $NostoCacheFactory
+     * @param TimezoneInterface $magentoTimeZone
+     */
+    public function __construct(
+        CacheFactory $NostoCacheFactory,
+        TimezoneInterface $magentoTimeZone
+    ) {
+        $this->cacheFactory = $NostoCacheFactory;
+        $this->magentoTimeZone = $magentoTimeZone;
+    }
+
+    /**
+     * @param ProductInterface $product
+     * @param StoreInterface $store
+     * @return CacheModel
+     */
+    public function build(
+        ProductInterface $product,
+        StoreInterface $store
+    ) {
+        $productIndex = $this->cacheFactory->create();
+        $productIndex->setProductId($product->getId());
+        $productIndex->setCreatedAt($this->magentoTimeZone->date());
+        $productIndex->setInSync(false);
+        $productIndex->setIsDirty(true);
+        $productIndex->setUpdatedAt($this->magentoTimeZone->date());
+        $productIndex->setStore($store);
+        return $productIndex;
     }
 }

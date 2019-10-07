@@ -35,15 +35,15 @@
  */
 namespace Nosto\Tagging\Model\Service\Sync;
 
-use Nosto\Tagging\Model\ResourceModel\Product\Index\Collection as NostoIndexCollection;
 use Magento\Store\Model\Store;
+use Nosto\Tagging\Model\ResourceModel\Product\Cache\CacheCollection;
 
 interface BulkSyncInterface
 {
     /**
-     * @param NostoIndexCollection $collection
+     * @param CacheCollection $collection
      * @param Store $store
      * @return void
      */
-    public function execute(NostoIndexCollection $collection, Store $store);
+    public function execute(CacheCollection $collection, Store $store);
 }

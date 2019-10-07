@@ -40,7 +40,7 @@ use DateTime;
 use Magento\Catalog\Api\Data\ProductInterface as MagentoProductInterface;
 use Magento\Store\Api\Data\StoreInterface;
 
-interface ProductIndexInterface
+interface ProductCacheInterface
 {
     const ID = 'id';
     const PRODUCT_ID = 'product_id';

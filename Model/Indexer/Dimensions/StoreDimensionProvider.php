@@ -84,9 +84,9 @@ class StoreDimensionProvider implements DimensionProviderInterface
             if ($store instanceof Store && $this->account->nostoInstalledAndEnabled($store)) {
                 yield [
                     self::DIMENSION_NAME => $this->dimensionFactory->create(
-                            self::DIMENSION_NAME,
-                            (string)$store->getId()
-                        )
+                        self::DIMENSION_NAME,
+                        (string)$store->getId()
+                    )
                 ];
             }
         }

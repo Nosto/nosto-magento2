@@ -34,58 +34,21 @@
  *
  */
 
-namespace Nosto\Tagging\Api\Data;
+namespace Nosto\Tagging\Model\ResourceModel\Product;
 
-use DateTime;
+use Magento\Framework\Model\ResourceModel\Db\AbstractDb;
+use Nosto\Tagging\Api\Data\ProductCacheInterface;
 
-interface ProductQueueInterface
+class Cache extends AbstractDb
 {
-    const ID = 'id';
-    const PRODUCT_ID = 'product_id';
-    const CREATED_AT = 'created_at';
-
+    const TABLE_NAME = 'nosto_tagging_product_index';
     /**
-     * Get row id
+     * Initialize resource model
      *
-     * @return int|null
+     * @return void
      */
-    public function getId();
-
-    /**
-     * Get product id
-     *
-     * @return int|null
-     */
-    public function getProductId();
-
-    /**
-     * Get created at time
-     *
-     * @return DateTime
-     */
-    public function getCreatedAt();
-
-    /**
-     * Set id
-     *
-     * @param int $id
-     * @return self
-     */
-    public function setId($id);
-
-    /**
-     * Set product id
-     *
-     * @param int $productId
-     * @return self
-     */
-    public function setProductId($productId);
-
-    /**
-     * Set created at time
-     *
-     * @param DateTime $createdAt
-     * @return self
-     */
-    public function setCreatedAt(DateTime $createdAt);
+    public function _construct()
+    {
+        $this->_init(self::TABLE_NAME, ProductCacheInterface::ID);
+    }
 }
