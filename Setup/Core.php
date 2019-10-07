@@ -42,10 +42,16 @@ use Magento\Framework\Setup\SchemaSetupInterface;
 use Nosto\Tagging\Api\Data\CustomerInterface;
 use Nosto\Tagging\Api\Data\ProductCacheInterface;
 use Nosto\Tagging\Model\ResourceModel\Customer;
-use Nosto\Tagging\Model\ResourceModel\Product\Cache as ProductIndex;
+use Nosto\Tagging\Model\ResourceModel\Product\Cache as CacheResource;
 
 abstract class Core
 {
+    /**
+     * Creates a table for mapping Nosto customer to Magento's cart & orders
+     *
+     * @param SchemaSetupInterface $setup
+     * @throws \Zend_Db_Exception
+     */
     public function createCustomerTable(SchemaSetupInterface $setup)
     {
         /** @noinspection PhpUnhandledExceptionInspection */
@@ -110,11 +116,17 @@ abstract class Core
         $setup->getConnection()->createTable($table);
     }
 
-    public function createProductIndexTable(SchemaSetupInterface $setup)
+    /**
+     * Creates a cache table for Nosto product data
+     *
+     * @param SchemaSetupInterface $setup
+     * @throws \Zend_Db_Exception
+     */
+    public function createProductCacheTable(SchemaSetupInterface $setup)
     {
         /** @noinspection PhpUnhandledExceptionInspection */
         $table = $setup->getConnection()
-            ->newTable($setup->getTable(ProductIndex::TABLE_NAME))
+            ->newTable($setup->getTable(CacheResource::TABLE_NAME))
             ->addColumn(
                 ProductCacheInterface::ID,
                 Table::TYPE_INTEGER,
@@ -204,7 +216,7 @@ abstract class Core
             )
             ->addIndex(
                 $setup->getIdxName(
-                    ProductIndex::TABLE_NAME,
+                    CacheResource::TABLE_NAME,
                     [ProductCacheInterface::PRODUCT_ID, ProductCacheInterface::STORE_ID]
                 ),
                 [ProductCacheInterface::PRODUCT_ID, ProductCacheInterface::STORE_ID],

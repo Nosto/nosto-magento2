@@ -50,7 +50,7 @@
     <type name="Magento\Catalog\Model\ResourceModel\Product">
         <plugin name="nostoProductObserverInvalidate" type="Nosto\Tagging\Plugin\ProductInvalidate"/>
     </type>
-    <type name="Nosto\Tagging\Model\ResourceModel\Product\Index">
+    <type name="Nosto\Tagging\Model\ResourceModel\Product\Cache">
         <plugin name="nostoProductObserverData" type="Nosto\Tagging\Plugin\ProductData"/>
     </type>
     <type name="Nosto\Tagging\Console\Command\NostoAccountConnectCommand">
