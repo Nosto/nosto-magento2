@@ -71,7 +71,7 @@
     <view id="nosto_index_product_data_sync" class="Nosto\Tagging\Model\Indexer\Data" group="indexer">
         <subscriptions>
             <!-- basic product information -->
-            <table name="nosto_tagging_product_index" entity_column="id" />
+            <table name="nosto_tagging_product_cache" entity_column="id" />
         </subscriptions>
     </view>
 </config>
