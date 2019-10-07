@@ -51,7 +51,7 @@ class CacheBuilder
     }
 
     /** @var CacheFactory  */
-    private $NostoCacheFactory;
+    private $cacheFactory;
 
     /** @var NostoProductBuilder */
     private $nostoProductBuilder;
@@ -68,7 +68,7 @@ class CacheBuilder
         CacheFactory $NostoCacheFactory,
         TimezoneInterface $magentoTimeZone
     ) {
-        $this->NostoCacheFactory = $NostoCacheFactory;
+        $this->cacheFactory = $NostoCacheFactory;
         $this->magentoTimeZone = $magentoTimeZone;
     }
 
@@ -81,7 +81,7 @@ class CacheBuilder
         ProductInterface $product,
         StoreInterface $store
     ) {
-        $productIndex = $this->NostoCacheFactory->create();
+        $productIndex = $this->cacheFactory->create();
         $productIndex->setProductId($product->getId());
         $productIndex->setCreatedAt($this->magentoTimeZone->date());
         $productIndex->setInSync(false);

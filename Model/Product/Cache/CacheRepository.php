@@ -52,7 +52,7 @@ use Nosto\Tagging\Model\ResourceModel\Product\Cache\CacheCollectionFactory;
 class CacheRepository implements ProductCacheRepositoryInterface
 {
     /** @var CacheCollectionFactory  */
-    private $CacheCollectionFactory;
+    private $cacheCollectionFactory;
 
     /** @var CacheResource  */
     private $indexResource;
@@ -73,7 +73,7 @@ class CacheRepository implements ProductCacheRepositoryInterface
         TimezoneInterface $magentoTimeZone
     ) {
         $this->indexResource = $indexResource;
-        $this->CacheCollectionFactory = $CacheCollectionFactory;
+        $this->cacheCollectionFactory = $CacheCollectionFactory;
         $this->magentoTimeZone = $magentoTimeZone;
     }
 
@@ -83,7 +83,7 @@ class CacheRepository implements ProductCacheRepositoryInterface
     public function getOneByProductAndStore(ProductInterface $product, StoreInterface $store)
     {
         /* @var CacheCollection $collection */
-        $collection = $this->CacheCollectionFactory->create()
+        $collection = $this->cacheCollectionFactory->create()
             ->addFieldToSelect('*')
             ->addProductFilter($product)
             ->addStoreFilter($store)
@@ -97,7 +97,7 @@ class CacheRepository implements ProductCacheRepositoryInterface
      */
     public function getById($id)
     {
-        $collection = $this->CacheCollectionFactory->create()
+        $collection = $this->cacheCollectionFactory->create()
             ->addFieldToSelect('*')
             ->addIdFilter($id)
             ->setPageSize(1)
@@ -111,7 +111,7 @@ class CacheRepository implements ProductCacheRepositoryInterface
     public function getTotalOutOfSync(Store $store)
     {
         /* @var CacheCollection $collection */
-        $collection = $this->CacheCollectionFactory->create();
+        $collection = $this->cacheCollectionFactory->create();
         $collection->addOutOfSyncFilter();
         if ((int)$store->getId() !== 0) {
             $collection->addStoreFilter($store);
@@ -125,7 +125,7 @@ class CacheRepository implements ProductCacheRepositoryInterface
     public function getTotalDirty(Store $store)
     {
         /* @var CacheCollection $collection */
-        $collection = $this->CacheCollectionFactory->create();
+        $collection = $this->cacheCollectionFactory->create();
         $collection->addIsDirtyFilter();
         if ((int)$store->getId() !== 0) {
             $collection->addStoreFilter($store);
@@ -137,7 +137,7 @@ class CacheRepository implements ProductCacheRepositoryInterface
      */
     public function getByIds(array $ids)
     {
-        $collection = $this->CacheCollectionFactory->create()
+        $collection = $this->cacheCollectionFactory->create()
             ->addFieldToSelect('*')
             ->addIdsFilter($ids)
             ->setPageSize(1)
@@ -151,7 +151,7 @@ class CacheRepository implements ProductCacheRepositoryInterface
     public function getByProductIdAndStoreId(int $productId, int $storeId)
     {
         /* @var CacheCollection $collection */
-        $collection = $this->CacheCollectionFactory->create()
+        $collection = $this->cacheCollectionFactory->create()
             ->addFieldToSelect('*')
             ->addStoreIdFilter($storeId)
             ->addProductIdFilter($productId)
@@ -168,7 +168,7 @@ class CacheRepository implements ProductCacheRepositoryInterface
      */
     public function getByProductIdsAndStoreId(array $productIds, int $storeId)
     {
-        return $this->CacheCollectionFactory->create()
+        return $this->cacheCollectionFactory->create()
             ->addFieldToSelect('*')
             ->addStoreIdFilter($storeId)
             ->addProductIdsFilter($productIds);
@@ -211,7 +211,7 @@ class CacheRepository implements ProductCacheRepositoryInterface
      */
     public function markAsInSync(array $productIds, Store $store)
     {
-        $collection = $this->CacheCollectionFactory->create();
+        $collection = $this->cacheCollectionFactory->create();
         $connection = $collection->getConnection();
         return $connection->update(
             $collection->getMainTable(),
@@ -235,7 +235,7 @@ class CacheRepository implements ProductCacheRepositoryInterface
      */
     public function markProductsAsDeleted(array $ids, Store $store)
     {
-        $collection = $this->CacheCollectionFactory->create();
+        $collection = $this->cacheCollectionFactory->create();
         $connection = $collection->getConnection();
         return $connection->update(
             $collection->getMainTable(),
@@ -310,7 +310,7 @@ class CacheRepository implements ProductCacheRepositoryInterface
      */
     public function markAllAsDirtyByStore(Store $store)
     {
-        $collection = $this->CacheCollectionFactory->create();
+        $collection = $this->cacheCollectionFactory->create();
         $connection = $collection->getConnection();
         return $connection->update(
             $collection->getMainTable(),

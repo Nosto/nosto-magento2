@@ -78,7 +78,7 @@ class Invalidate
      * Invalidate constructor.
      *
      * @param Logger $logger
-     * @param CacheCollectionFactory $CacheCollectionFactory
+     * @param CacheCollectionFactory $cacheCollectionFactory
      * @param CacheRepository $cacheRepository
      * @param NostoAccountHelper $nostoAccountHelper
      * @param TimezoneInterface $timezoneInterface
@@ -87,7 +87,7 @@ class Invalidate
      */
     public function __construct(
         Logger $logger,
-        CacheCollectionFactory $CacheCollectionFactory,
+        CacheCollectionFactory $cacheCollectionFactory,
         CacheRepository $cacheRepository,
         NostoAccountHelper $nostoAccountHelper,
         TimezoneInterface $timezoneInterface,
@@ -95,7 +95,7 @@ class Invalidate
         $productLimit
     ) {
         $this->logger = $logger;
-        $this->cacheCollectionFactory = $CacheCollectionFactory;
+        $this->cacheCollectionFactory = $cacheCollectionFactory;
         $this->cacheRepository = $cacheRepository;
         $this->nostoAccountHelper = $nostoAccountHelper;
         $this->timezoneInterface = $timezoneInterface;
