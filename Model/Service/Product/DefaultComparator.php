@@ -34,61 +34,22 @@
  *
  */
 
-namespace Nosto\Tagging\Api;
+namespace Nosto\Tagging\Model\Service\Product;
 
-use Nosto\Tagging\Api\Data\ProductQueueInterface;
-use Nosto\Tagging\Api\Data\ProductQueueSearchResultsInterface;
+use Nosto\Helper\SerializationHelper;
+use Nosto\Tagging\Model\Service\Product\ComparatorInterface;
+use Nosto\Types\Product\ProductInterface;
 
-interface ProductQueueRepositoryInterface extends BaseRepositoryInterface
+class DefaultComparator implements ComparatorInterface
 {
     /**
-     * Save Queue entry
-     *
-     * @param ProductQueueInterface $productQueue
-     * @return ProductQueueInterface
+     * @inheritDoc
      */
-    public function save(ProductQueueInterface $productQueue);
+    public function isEqual(ProductInterface $product1, ProductInterface $product2)
+    {
+        $product1string = SerializationHelper::serialize($product1);
+        $product2string = SerializationHelper::serialize($product2);
 
-    /**
-     * Delete productQueue
-     *
-     * @param ProductQueueInterface $productQueue
-     */
-    public function delete(ProductQueueInterface $productQueue);
-
-    /**
-     * @param array $ids
-     */
-    public function deleteByProductIds(array $ids);
-
-    /**
-     * Returns all entries by product ids
-     *
-     * @param int $productId
-     * @return ProductQueueSearchResultsInterface
-     */
-    public function getByProductId($productId);
-
-    /**
-     * Returns single entry by product id
-     *
-     * @param int $productId
-     * @return ProductQueueInterface|null
-     */
-    public function getOneByProductId($productId);
-
-    /**
-     * Get list of productQueues
-     *
-     * @param int $pageSize
-     * @return ProductQueueSearchResultsInterface
-     */
-    public function getFirstPage($pageSize);
-
-    /**
-     * Returns all entries in product queue
-     *
-     * @return ProductQueueSearchResultsInterface
-     */
-    public function getAll();
+        return $product1string === $product2string;
+    }
 }

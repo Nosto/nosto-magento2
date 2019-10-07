@@ -34,59 +34,42 @@
  *
  */
 
-namespace Nosto\Tagging\Api;
+namespace Nosto\Tagging\Model\Indexer;
 
-use Magento\Catalog\Api\Data\ProductInterface;
-use Magento\Store\Api\Data\StoreInterface;
-use Magento\Store\Model\Store;
-use Nosto\Tagging\Api\Data\ProductIndexInterface;
+use Exception;
+use Symfony\Component\Console\Input\InputInterface;
 
-interface ProductIndexRepositoryInterface
+class IndexerUtil
 {
-    /**
-     * Save Queue entry
-     *
-     * @param ProductIndexInterface $productIndex
-     * @return ProductIndexInterface
-     */
-    public function save(ProductIndexInterface $productIndex);
+    /** Non-ambiguous scope for settings commands */
+    const SETUP_UPGRADE_SCOPE = 'se';
+
+    /** Non-ambiguous action argument for settings command */
+    const SETUP_UPGRADE_ACTION = 'up';
 
     /**
-     * Delete productIndex
+     * Checks if the execution scope is from Magento's setup:upgrade
      *
-     * @param ProductIndexInterface $productIndex
+     * @param InputInterface $input
+     * @return bool
      */
-    public function delete(ProductIndexInterface $productIndex);
-
-    /**
-     * Returns entry by product and store
-     *
-     * @param ProductInterface $product
-     * @param StoreInterface $store
-     * @return ProductIndexInterface|null
-     */
-    public function getOneByProductAndStore(ProductInterface $product, StoreInterface $store);
-
-    /**
-     * @param int $productId
-     * @param int $storeId
-     * @return ProductIndexInterface|null
-     */
-    public function getByProductIdAndStoreId(int $productId, int $storeId);
-
-    /**
-     * Return total amount of products marked as out of sync
-     *
-     * @param Store $store
-     * @return int
-     */
-    public function getTotalOutOfSync(Store $store);
-
-    /**
-     * Return total amount of products marked as dirty
-     *
-     * @param Store $store
-     * @return int
-     */
-    public function getTotalDirty(Store $store);
+    public static function isCalledFromSetupUpgrade(InputInterface $input)
+    {
+        try {
+            $parts = explode(':', $input->getFirstArgument());
+            if (count($parts) !== 2) {
+                return false;
+            }
+            list($commandScope, $commandAction) = $parts;
+            $currentCommandScope = substr($commandScope, 0, strlen(self::SETUP_UPGRADE_SCOPE));
+            $currentCommandAction = substr($commandAction, 0, strlen(self::SETUP_UPGRADE_ACTION));
+            return (
+                $currentCommandScope === self::SETUP_UPGRADE_SCOPE
+                && $currentCommandAction === self::SETUP_UPGRADE_ACTION
+            );
+            // Exception will be thrown if InputInterface\Proxy is instantiated in non-cli context
+        } catch (Exception $e) {
+            return false;
+        }
+    }
 }

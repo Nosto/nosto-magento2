@@ -34,58 +34,59 @@
  *
  */
 
-namespace Nosto\Tagging\Api\Data;
+namespace Nosto\Tagging\Api;
 
-use DateTime;
+use Magento\Catalog\Api\Data\ProductInterface;
+use Magento\Store\Api\Data\StoreInterface;
+use Magento\Store\Model\Store;
+use Nosto\Tagging\Api\Data\ProductCacheInterface;
 
-interface ProductQueueInterface
+interface ProductCacheRepositoryInterface
 {
-    const ID = 'id';
-    const PRODUCT_ID = 'product_id';
-    const CREATED_AT = 'created_at';
-
     /**
-     * Get row id
+     * Save Queue entry
      *
-     * @return int|null
+     * @param ProductCacheInterface $productIndex
+     * @return ProductCacheInterface
      */
-    public function getId();
+    public function save(ProductCacheInterface $productIndex);
 
     /**
-     * Get product id
+     * Delete productIndex
      *
-     * @return int|null
+     * @param ProductCacheInterface $productIndex
      */
-    public function getProductId();
+    public function delete(ProductCacheInterface $productIndex);
 
     /**
-     * Get created at time
+     * Returns entry by product and store
      *
-     * @return DateTime
+     * @param ProductInterface $product
+     * @param StoreInterface $store
+     * @return ProductCacheInterface|null
      */
-    public function getCreatedAt();
+    public function getOneByProductAndStore(ProductInterface $product, StoreInterface $store);
 
     /**
-     * Set id
-     *
-     * @param int $id
-     * @return self
-     */
-    public function setId($id);
-
-    /**
-     * Set product id
-     *
      * @param int $productId
-     * @return self
+     * @param int $storeId
+     * @return ProductCacheInterface|null
      */
-    public function setProductId($productId);
+    public function getByProductIdAndStoreId(int $productId, int $storeId);
 
     /**
-     * Set created at time
+     * Return total amount of products marked as out of sync
      *
-     * @param DateTime $createdAt
-     * @return self
+     * @param Store $store
+     * @return int
      */
-    public function setCreatedAt(DateTime $createdAt);
+    public function getTotalOutOfSync(Store $store);
+
+    /**
+     * Return total amount of products marked as dirty
+     *
+     * @param Store $store
+     * @return int
+     */
+    public function getTotalDirty(Store $store);
 }

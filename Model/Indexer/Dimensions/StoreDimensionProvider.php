@@ -38,9 +38,9 @@ namespace Nosto\Tagging\Model\Indexer\Dimensions;
 
 use Magento\Framework\Indexer\DimensionFactory;
 use Magento\Framework\Indexer\DimensionProviderInterface;
+use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
 use Nosto\Tagging\Helper\Account;
-use Magento\Store\Model\Store;
 
 class StoreDimensionProvider implements DimensionProviderInterface
 {
@@ -83,11 +83,10 @@ class StoreDimensionProvider implements DimensionProviderInterface
             // instanceof check for Phan
             if ($store instanceof Store && $this->account->nostoInstalledAndEnabled($store)) {
                 yield [
-                    self::DIMENSION_NAME =>
-                        $this->dimensionFactory->create(
-                            self::DIMENSION_NAME,
-                            (string)$store->getId()
-                        )
+                    self::DIMENSION_NAME => $this->dimensionFactory->create(
+                        self::DIMENSION_NAME,
+                        (string)$store->getId()
+                    )
                 ];
             }
         }

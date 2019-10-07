@@ -38,7 +38,7 @@ namespace Nosto\Tagging\Model\Service\Sync\Upsert;
 
 use Nosto\Tagging\Model\Service\Sync\AbstractBulkConsumer;
 use Nosto\Tagging\Helper\Scope as NostoScopeHelper;
-use Nosto\Tagging\Model\Product\Index\IndexRepository;
+use Nosto\Tagging\Model\Product\Cache\CacheRepository;
 use Magento\Framework\EntityManager\EntityManager;
 use Magento\Framework\Json\Helper\Data as JsonHelper;
 use Nosto\Tagging\Logger\Logger;
@@ -56,14 +56,14 @@ class AsyncBulkConsumer extends AbstractBulkConsumer
     /** @var NostoScopeHelper */
     private $nostoScopeHelper;
 
-    /** @var IndexRepository */
-    private $indexRepository;
+    /** @var CacheRepository */
+    private $cacheRepository;
 
     /**
      * AsyncBulkConsumer constructor.
      * @param SyncService $syncService
      * @param NostoScopeHelper $nostoScopeHelper
-     * @param IndexRepository $indexRepository
+     * @param CacheRepository $cacheRepository
      * @param JsonHelper $jsonHelper
      * @param EntityManager $entityManager
      * @param Logger $logger
@@ -71,14 +71,14 @@ class AsyncBulkConsumer extends AbstractBulkConsumer
     public function __construct(
         SyncService $syncService,
         NostoScopeHelper $nostoScopeHelper,
-        IndexRepository $indexRepository,
+        CacheRepository $cacheRepository,
         JsonHelper $jsonHelper,
         EntityManager $entityManager,
         Logger $logger
     ) {
         $this->syncService = $syncService;
         $this->nostoScopeHelper = $nostoScopeHelper;
-        $this->indexRepository = $indexRepository;
+        $this->cacheRepository = $cacheRepository;
         parent::__construct(
             $logger,
             $jsonHelper,
@@ -95,7 +95,7 @@ class AsyncBulkConsumer extends AbstractBulkConsumer
     public function doOperation(array $productIds, string $storeId)
     {
         $store = $this->nostoScopeHelper->getStore($storeId);
-        $outOfSyncCollection = $this->indexRepository->getByProductIdsAndStoreId($productIds, $storeId);
+        $outOfSyncCollection = $this->cacheRepository->getByProductIdsAndStoreId($productIds, $storeId);
         $this->syncService->syncIndexedProducts($outOfSyncCollection, $store);
     }
 }

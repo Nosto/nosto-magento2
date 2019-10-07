@@ -38,7 +38,6 @@ namespace Nosto\Tagging\Model\Service\Sync\Delete;
 
 use Nosto\Tagging\Model\Service\Sync\AbstractBulkConsumer;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
-use Nosto\Tagging\Model\Product\Index\IndexRepository;
 use Magento\Framework\EntityManager\EntityManager;
 use Magento\Framework\Json\Helper\Data as JsonHelper;
 use Nosto\Tagging\Logger\Logger;
@@ -55,7 +54,6 @@ class AsyncBulkConsumer extends AbstractBulkConsumer
      * AsyncBulkConsumer constructor.
      * @param DeleteService $deleteService
      * @param NostoHelperScope $nostoHelperScope
-     * @param IndexRepository $indexRepository
      * @param JsonHelper $jsonHelper
      * @param EntityManager $entityManager
      * @param Logger $logger
@@ -63,7 +61,6 @@ class AsyncBulkConsumer extends AbstractBulkConsumer
     public function __construct(
         DeleteService $deleteService,
         NostoHelperScope $nostoHelperScope,
-        IndexRepository $indexRepository,
         JsonHelper $jsonHelper,
         EntityManager $entityManager,
         Logger $logger

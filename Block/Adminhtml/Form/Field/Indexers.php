@@ -41,15 +41,15 @@ use Magento\Config\Block\System\Config\Form\Field;
 use Magento\Framework\App\Request\Http;
 use Magento\Framework\Data\Form\Element\AbstractElement;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
-use Nosto\Tagging\Model\Product\Index\IndexRepository;
+use Nosto\Tagging\Model\Product\Cache\CacheRepository;
 
 class Indexers extends Field
 {
     /** @var Http $request */
     public $request;
 
-    /** @var IndexRepository $indexRepository */
-    public $indexRepository;
+    /** @var CacheRepository $cacheRepository */
+    public $cacheRepository;
 
     /** @var NostoHelperScope $nostoHelperScope */
     public $nostoHelperScope;
@@ -59,20 +59,20 @@ class Indexers extends Field
      * Indexers block constructor.
      * @param Context $context
      * @param Http $request
-     * @param IndexRepository $indexRepository
+     * @param CacheRepository $cacheRepository
      * @param NostoHelperScope $nostoHelperScope
      * @param array $data
      */
     public function __construct(
         Context $context,
         Http $request,
-        IndexRepository $indexRepository,
+        CacheRepository $cacheRepository,
         NostoHelperScope $nostoHelperScope,
         array $data = []
     ) {
         parent::__construct($context, $data);
         $this->request = $request;
-        $this->indexRepository = $indexRepository;
+        $this->cacheRepository = $cacheRepository;
         $this->nostoHelperScope = $nostoHelperScope;
     }
 
@@ -84,7 +84,7 @@ class Indexers extends Field
     {
         $id = (int) $this->request->getParam('store');
         $store = $this->nostoHelperScope->getStore($id);
-        return $this->indexRepository->getTotalDirty($store);
+        return $this->cacheRepository->getTotalDirty($store);
     }
 
     /**
@@ -95,7 +95,7 @@ class Indexers extends Field
     {
         $id = (int) $this->request->getParam('store');
         $store = $this->nostoHelperScope->getStore($id);
-        return $this->indexRepository->getTotalOutOfSync($store);
+        return $this->cacheRepository->getTotalOutOfSync($store);
     }
 
     /**

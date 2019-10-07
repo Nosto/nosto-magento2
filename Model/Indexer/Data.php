@@ -40,14 +40,13 @@ use Magento\Indexer\Model\ProcessManager;
 use Magento\Store\Model\App\Emulation;
 use Magento\Store\Model\Store;
 use Nosto\NostoException;
-use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Indexer\Dimensions\Data\ModeSwitcher as DataModeSwitcher;
 use Nosto\Tagging\Model\Indexer\Dimensions\ModeSwitcherInterface;
 use Nosto\Tagging\Model\Indexer\Dimensions\StoreDimensionProvider;
+use Nosto\Tagging\Model\Service\Cache\CacheService;
 use Nosto\Tagging\Model\Service\Indexer\IndexerStatusServiceInterface;
-use Nosto\Tagging\Model\Service\Indexer\IndexService as NostoIndexService;
 use Symfony\Component\Console\Input\InputInterface;
 
 /**
@@ -57,16 +56,15 @@ class Data extends AbstractIndexer
 {
     const INDEXER_ID = 'nosto_index_product_data_sync';
 
-    /** @var NostoIndexService */
-    private $nostoServiceIndex;
+    /** @var CacheService */
+    private $nostoCacheService;
 
     /** @var DataModeSwitcher */
     private $modeSwitcher;
 
     /**
      * Data constructor.
-     * @param NostoIndexService $nostoServiceIndex
-     * @param NostoHelperAccount $nostoHelperAccount
+     * @param CacheService $nostoCacheService
      * @param NostoHelperScope $nostoHelperScope
      * @param DataModeSwitcher $dataModeSwitcher
      * @param NostoLogger $logger
@@ -77,8 +75,7 @@ class Data extends AbstractIndexer
      * @param IndexerStatusServiceInterface $indexerStatusService
      */
     public function __construct(
-        NostoIndexService $nostoServiceIndex,
-        NostoHelperAccount $nostoHelperAccount,
+        CacheService $nostoCacheService,
         NostoHelperScope $nostoHelperScope,
         DataModeSwitcher $dataModeSwitcher,
         NostoLogger $logger,
@@ -88,10 +85,9 @@ class Data extends AbstractIndexer
         InputInterface $input,
         IndexerStatusServiceInterface $indexerStatusService
     ) {
-        $this->nostoServiceIndex = $nostoServiceIndex;
+        $this->nostoCacheService = $nostoCacheService;
         $this->modeSwitcher = $dataModeSwitcher;
         parent::__construct(
-            $nostoHelperAccount,
             $nostoHelperScope,
             $logger,
             $dimensionProvider,
@@ -124,9 +120,7 @@ class Data extends AbstractIndexer
     public function doIndex(Store $store, array $ids = [])
     {
         try {
-            $this->nostoServiceIndex->indexProducts($store, $ids);
-            // Catch only MemoryOutOfBoundsException as this is the most expected ones
-            // And the ones we are interested of
+            $this->nostoCacheService->generateProductsInStore($store, $ids);
         } catch (NostoException $e) {
             $this->nostoLogger->error($e->getMessage());
         }

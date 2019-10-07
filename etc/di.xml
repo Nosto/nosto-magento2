@@ -41,7 +41,7 @@
     <preference for="Nosto\Tagging\Model\Service\Product\ProductServiceInterface" type="Nosto\Tagging\Model\Service\Product\DefaultProductService"/>
     <preference for="Nosto\Tagging\Model\Service\Stock\Provider\StockProviderInterface" type="Nosto\Tagging\Model\Service\Stock\Provider\CachingStockProvider"/>
     <preference for="Nosto\Tagging\Util\Serializer\SerializerInterface" type="Nosto\Tagging\Util\Serializer\DefaultSerializer"/>
-    <preference for="Nosto\Tagging\Model\Service\Comparator\ProductComparatorInterface" type="Nosto\Tagging\Model\Service\Comparator\DefaultProductComparator"/>
+    <preference for="Nosto\Tagging\Model\Service\Product\ComparatorInterface" type="Nosto\Tagging\Model\Service\Product\DefaultComparator"/>
     <preference for="Symfony\Component\Console\Input\InputInterface" type="Symfony\Component\Console\Input\ArgvInput\Proxy"/>
     <preference for="Nosto\Tagging\Model\Mview\ChangeLogInterface" type="Nosto\Tagging\Model\Mview\ChangeLog"/>
     <preference for="Nosto\Tagging\Model\Mview\MviewInterface" type="Nosto\Tagging\Model\Mview\Mview"/>
@@ -49,7 +49,7 @@
     <type name="Magento\Catalog\Model\ResourceModel\Product">
         <plugin name="nostoProductObserverInvalidate" type="Nosto\Tagging\Plugin\ProductInvalidate"/>
     </type>
-    <type name="Nosto\Tagging\Model\ResourceModel\Product\Index">
+    <type name="Nosto\Tagging\Model\ResourceModel\Product\Cache">
         <plugin name="nostoProductObserverData" type="Nosto\Tagging\Plugin\ProductData"/>
     </type>
     <type name="Nosto\Tagging\Console\Command\NostoAccountConnectCommand">
@@ -109,11 +109,6 @@
         <arguments>
             <argument name="nostoHelperAccount" xsi:type="object">Nosto\Tagging\Helper\Account\Proxy</argument>
             <argument name="nostoHelperData" xsi:type="object">Nosto\Tagging\Helper\Data\Proxy</argument>
-        </arguments>
-    </type>
-    <type name="Nosto\Tagging\Model\Indexer\Product\Indexer">
-        <arguments>
-            <argument name="nostoHelperAccount" xsi:type="object">Nosto\Tagging\Helper\Account\Proxy</argument>
         </arguments>
     </type>
     <type name="Nosto\Tagging\Helper\Customer">

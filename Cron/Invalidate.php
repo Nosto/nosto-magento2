@@ -42,9 +42,9 @@ use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
 use Magento\Store\Model\Store;
 use Nosto\Tagging\Helper\Account as NostoAccountHelper;
 use Nosto\Tagging\Logger\Logger;
-use Nosto\Tagging\Model\Product\Index\IndexRepository;
-use Nosto\Tagging\Model\ResourceModel\Product\Index\Collection as NostoIndexCollection;
-use Nosto\Tagging\Model\ResourceModel\Product\Index\CollectionFactory as IndexCollectionFactory;
+use Nosto\Tagging\Model\Product\Cache\CacheRepository;
+use Nosto\Tagging\Model\ResourceModel\Product\Cache\CacheCollection;
+use Nosto\Tagging\Model\ResourceModel\Product\Cache\CacheCollectionFactory;
 
 /**
  * Cronjob class that periodically invalidates Nosto indexed data for each of the store views
@@ -56,14 +56,14 @@ class Invalidate
     /** @var Logger */
     protected $logger;
 
-    /** @var IndexCollectionFactory */
-    private $indexCollectionFactory;
+    /** @var CacheCollectionFactory */
+    private $cacheCollectionFactory;
 
     /** @var NostoAccountHelper */
     private $nostoAccountHelper;
 
-    /** @var IndexRepository */
-    private $indexRepository;
+    /** @var CacheRepository */
+    private $cacheRepository;
 
     /** @var TimezoneInterface */
     private $timezoneInterface;
@@ -78,8 +78,8 @@ class Invalidate
      * Invalidate constructor.
      *
      * @param Logger $logger
-     * @param IndexCollectionFactory $indexCollectionFactory
-     * @param IndexRepository $indexRepository
+     * @param CacheCollectionFactory $cacheCollectionFactory
+     * @param CacheRepository $cacheRepository
      * @param NostoAccountHelper $nostoAccountHelper
      * @param TimezoneInterface $timezoneInterface
      * @param int $intervalHours
@@ -87,16 +87,16 @@ class Invalidate
      */
     public function __construct(
         Logger $logger,
-        IndexCollectionFactory $indexCollectionFactory,
-        IndexRepository $indexRepository,
+        CacheCollectionFactory $cacheCollectionFactory,
+        CacheRepository $cacheRepository,
         NostoAccountHelper $nostoAccountHelper,
         TimezoneInterface $timezoneInterface,
         $intervalHours,
         $productLimit
     ) {
         $this->logger = $logger;
-        $this->indexCollectionFactory = $indexCollectionFactory;
-        $this->indexRepository = $indexRepository;
+        $this->cacheCollectionFactory = $cacheCollectionFactory;
+        $this->cacheRepository = $cacheRepository;
         $this->nostoAccountHelper = $nostoAccountHelper;
         $this->timezoneInterface = $timezoneInterface;
         $this->intervalHours = $intervalHours;
@@ -112,7 +112,7 @@ class Invalidate
         if (!$this->productLimit || !is_numeric($this->productLimit)) {
             $this->logger->debug(
                 sprintf(
-                    'Product limit for invalidate cron is set to %s. Not invalidting any products.',
+                    'Product limit for invalidate cron is set to %s. Not invalidating any products.',
                     $this->productLimit
                 )
             );
@@ -120,8 +120,8 @@ class Invalidate
         }
         $stores = $this->nostoAccountHelper->getStoresWithNosto();
         foreach ($stores as $store) {
-            $productIndexCollection = $this->getCollection($store);
-            $updatedCount = $this->indexRepository->markAsIsDirtyItemsByStore($productIndexCollection, $store);
+            $productCacheCollection = $this->getCollection($store);
+            $updatedCount = $this->cacheRepository->markAsIsDirtyItemsByStore($productCacheCollection, $store);
             $this->logger->debug(
                 sprintf(
                     'Invalidated (set dirty) %d products for store %s by invalidate cron.' .
@@ -138,12 +138,12 @@ class Invalidate
 
     /**
      * @param Store $store
-     * @return NostoIndexCollection
+     * @return CacheCollection
      * @throws Exception
      */
     private function getCollection(Store $store)
     {
-        return $this->indexCollectionFactory->create()
+        return $this->cacheCollectionFactory->create()
             ->addFieldToSelect('*')
             ->addFieldToFilter(
                 'updated_at',

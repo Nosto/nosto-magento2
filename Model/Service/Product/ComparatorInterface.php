@@ -33,43 +33,16 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
+namespace Nosto\Tagging\Model\Service\Product;
 
-namespace Nosto\Tagging\Model\Indexer\Util;
+use Nosto\Types\Product\ProductInterface;
 
-use Exception;
-use Symfony\Component\Console\Input\InputInterface;
-
-class Indexer
+interface ComparatorInterface
 {
-    /** Non-ambiguous scope for settings commands */
-    const SETUP_UPGRADE_SCOPE = 'se';
-
-    /** Non-ambiguous action argument for settings command */
-    const SETUP_UPGRADE_ACTION = 'up';
-
     /**
-     * Checks if the execution scope is from Magento's setup:upgrade
-     *
-     * @param InputInterface $input
-     * @return bool
+     * @param ProductInterface $product1
+     * @param ProductInterface $product2
+     * @return boolean
      */
-    public static function isCalledFromSetupUpgrade(InputInterface $input)
-    {
-        try {
-            $parts = explode(':', $input->getFirstArgument());
-            if (count($parts) !== 2) {
-                return false;
-            }
-            list($commandScope, $commandAction) = $parts;
-            $currentCommandScope = substr($commandScope, 0, strlen(self::SETUP_UPGRADE_SCOPE));
-            $currentCommandAction = substr($commandAction, 0, strlen(self::SETUP_UPGRADE_ACTION));
-            return (
-                $currentCommandScope === self::SETUP_UPGRADE_SCOPE
-                && $currentCommandAction === self::SETUP_UPGRADE_ACTION
-            );
-            // Exception will be thrown if InputInterface\Proxy is instantiated in non-cli context
-        } catch (Exception $e) {
-            return false;
-        }
-    }
+    public function isEqual(ProductInterface $product1, ProductInterface $product2);
 }

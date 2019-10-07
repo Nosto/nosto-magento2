@@ -34,7 +34,7 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Product\Index;
+namespace Nosto\Tagging\Model\Product\Cache;
 
 use Exception;
 use Magento\Catalog\Api\Data\ProductInterface;
@@ -42,18 +42,19 @@ use Magento\Framework\Model\AbstractModel;
 use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
 use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\Store;
-use Nosto\Tagging\Api\Data\ProductIndexInterface;
-use Nosto\Tagging\Api\ProductIndexRepositoryInterface;
-use Nosto\Tagging\Model\ResourceModel\Product\Index as IndexResource;
-use Nosto\Tagging\Model\ResourceModel\Product\Index\Collection as IndexCollection;
-use Nosto\Tagging\Model\ResourceModel\Product\Index\CollectionFactory as IndexCollectionFactory;
+use Nosto\Tagging\Api\Data\ProductCacheInterface;
+use Nosto\Tagging\Api\ProductCacheRepositoryInterface;
+use Nosto\Tagging\Model\Product\Cache;
+use Nosto\Tagging\Model\ResourceModel\Product\Cache as CacheResource;
+use Nosto\Tagging\Model\ResourceModel\Product\Cache\CacheCollection;
+use Nosto\Tagging\Model\ResourceModel\Product\Cache\CacheCollectionFactory;
 
-class IndexRepository implements ProductIndexRepositoryInterface
+class CacheRepository implements ProductCacheRepositoryInterface
 {
-    /** @var IndexCollectionFactory  */
-    private $indexCollectionFactory;
+    /** @var CacheCollectionFactory  */
+    private $cacheCollectionFactory;
 
-    /** @var IndexResource  */
+    /** @var CacheResource  */
     private $indexResource;
 
     /** @var TimezoneInterface */
@@ -62,17 +63,17 @@ class IndexRepository implements ProductIndexRepositoryInterface
     /**
      * IndexRepository constructor.
      *
-     * @param IndexResource $indexResource
-     * @param IndexCollectionFactory $indexCollectionFactory
+     * @param CacheResource $cacheResource
+     * @param CacheCollectionFactory $cacheCollectionFactory
      * @param TimezoneInterface $magentoTimeZone
      */
     public function __construct(
-        IndexResource $indexResource,
-        IndexCollectionFactory $indexCollectionFactory,
+        CacheResource $cacheResource,
+        CacheCollectionFactory $cacheCollectionFactory,
         TimezoneInterface $magentoTimeZone
     ) {
-        $this->indexResource = $indexResource;
-        $this->indexCollectionFactory = $indexCollectionFactory;
+        $this->indexResource = $cacheResource;
+        $this->cacheCollectionFactory = $cacheCollectionFactory;
         $this->magentoTimeZone = $magentoTimeZone;
     }
 
@@ -81,8 +82,8 @@ class IndexRepository implements ProductIndexRepositoryInterface
      */
     public function getOneByProductAndStore(ProductInterface $product, StoreInterface $store)
     {
-        /* @var IndexCollection $collection */
-        $collection = $this->indexCollectionFactory->create()
+        /* @var CacheCollection $collection */
+        $collection = $this->cacheCollectionFactory->create()
             ->addFieldToSelect('*')
             ->addProductFilter($product)
             ->addStoreFilter($store)
@@ -96,7 +97,7 @@ class IndexRepository implements ProductIndexRepositoryInterface
      */
     public function getById($id)
     {
-        $collection = $this->indexCollectionFactory->create()
+        $collection = $this->cacheCollectionFactory->create()
             ->addFieldToSelect('*')
             ->addIdFilter($id)
             ->setPageSize(1)
@@ -109,8 +110,8 @@ class IndexRepository implements ProductIndexRepositoryInterface
      */
     public function getTotalOutOfSync(Store $store)
     {
-        /* @var IndexCollection $collection */
-        $collection = $this->indexCollectionFactory->create();
+        /* @var CacheCollection $collection */
+        $collection = $this->cacheCollectionFactory->create();
         $collection->addOutOfSyncFilter();
         if ((int)$store->getId() !== 0) {
             $collection->addStoreFilter($store);
@@ -123,8 +124,8 @@ class IndexRepository implements ProductIndexRepositoryInterface
      */
     public function getTotalDirty(Store $store)
     {
-        /* @var IndexCollection $collection */
-        $collection = $this->indexCollectionFactory->create();
+        /* @var CacheCollection $collection */
+        $collection = $this->cacheCollectionFactory->create();
         $collection->addIsDirtyFilter();
         if ((int)$store->getId() !== 0) {
             $collection->addStoreFilter($store);
@@ -136,7 +137,7 @@ class IndexRepository implements ProductIndexRepositoryInterface
      */
     public function getByIds(array $ids)
     {
-        $collection = $this->indexCollectionFactory->create()
+        $collection = $this->cacheCollectionFactory->create()
             ->addFieldToSelect('*')
             ->addIdsFilter($ids)
             ->setPageSize(1)
@@ -149,8 +150,8 @@ class IndexRepository implements ProductIndexRepositoryInterface
      */
     public function getByProductIdAndStoreId(int $productId, int $storeId)
     {
-        /* @var IndexCollection $collection */
-        $collection = $this->indexCollectionFactory->create()
+        /* @var CacheCollection $collection */
+        $collection = $this->cacheCollectionFactory->create()
             ->addFieldToSelect('*')
             ->addStoreIdFilter($storeId)
             ->addProductIdFilter($productId)
@@ -163,11 +164,11 @@ class IndexRepository implements ProductIndexRepositoryInterface
     /**
      * @param array $productIds
      * @param int $storeId
-     * @return IndexCollection
+     * @return CacheCollection
      */
     public function getByProductIdsAndStoreId(array $productIds, int $storeId)
     {
-        return $this->indexCollectionFactory->create()
+        return $this->cacheCollectionFactory->create()
             ->addFieldToSelect('*')
             ->addStoreIdFilter($storeId)
             ->addProductIdsFilter($productIds);
@@ -176,12 +177,12 @@ class IndexRepository implements ProductIndexRepositoryInterface
     /**
      * Save product index entry
      *
-     * @param ProductIndexInterface $productIndex
-     * @return ProductIndexInterface|IndexResource
+     * @param ProductCacheInterface $productIndex
+     * @return ProductCacheInterface|CacheResource
      * @throws Exception
      * @suppress PhanTypeMismatchArgument
      */
-    public function save(ProductIndexInterface $productIndex)
+    public function save(ProductCacheInterface $productIndex)
     {
         /** @noinspection PhpParamsInspection */
         /** @var AbstractModel $productIndex */
@@ -190,11 +191,11 @@ class IndexRepository implements ProductIndexRepositoryInterface
 
     /**
      * Delete product index entry
-     * @param ProductIndexInterface $productIndex
+     * @param ProductCacheInterface $productIndex
      * @throws Exception
      * @suppress PhanTypeMismatchArgument
      */
-    public function delete(ProductIndexInterface $productIndex)
+    public function delete(ProductCacheInterface $productIndex)
     {
         /** @noinspection PhpParamsInspection */
         /** @var AbstractModel $productIndex */
@@ -210,17 +211,17 @@ class IndexRepository implements ProductIndexRepositoryInterface
      */
     public function markAsInSync(array $productIds, Store $store)
     {
-        $collection = $this->indexCollectionFactory->create();
+        $collection = $this->cacheCollectionFactory->create();
         $connection = $collection->getConnection();
         return $connection->update(
             $collection->getMainTable(),
             [
-                Index::IN_SYNC => Index::DB_VALUE_BOOLEAN_TRUE,
-                Index::UPDATED_AT => $this->magentoTimeZone->date()->format('Y-m-d H:i:s')
+                Cache::IN_SYNC => Cache::DB_VALUE_BOOLEAN_TRUE,
+                Cache::UPDATED_AT => $this->magentoTimeZone->date()->format('Y-m-d H:i:s')
             ],
             [
-                sprintf('%s IN (?)', Index::PRODUCT_ID) => array_unique($productIds),
-                sprintf('%s=?', Index::STORE_ID) => $store->getId()
+                sprintf('%s IN (?)', Cache::PRODUCT_ID) => array_unique($productIds),
+                sprintf('%s=?', Cache::STORE_ID) => $store->getId()
             ]
         );
     }
@@ -234,17 +235,17 @@ class IndexRepository implements ProductIndexRepositoryInterface
      */
     public function markProductsAsDeleted(array $ids, Store $store)
     {
-        $collection = $this->indexCollectionFactory->create();
+        $collection = $this->cacheCollectionFactory->create();
         $connection = $collection->getConnection();
         return $connection->update(
             $collection->getMainTable(),
             [
-                Index::IS_DELETED => Index::DB_VALUE_BOOLEAN_TRUE,
-                Index::UPDATED_AT => $this->magentoTimeZone->date()->format('Y-m-d H:i:s')
+                Cache::IS_DELETED => Cache::DB_VALUE_BOOLEAN_TRUE,
+                Cache::UPDATED_AT => $this->magentoTimeZone->date()->format('Y-m-d H:i:s')
             ],
             [
-                sprintf('%s IN (?)', Index::PRODUCT_ID) => array_unique($ids),
-                sprintf('%s=?', Index::STORE_ID) => $store->getId()
+                sprintf('%s IN (?)', Cache::PRODUCT_ID) => array_unique($ids),
+                sprintf('%s=?', Cache::STORE_ID) => $store->getId()
             ]
         );
     }
@@ -252,14 +253,14 @@ class IndexRepository implements ProductIndexRepositoryInterface
     /**
      * Deletes current indexed products in store
      *
-     * @param IndexCollection $collection
+     * @param CacheCollection $collection
      * @param Store $store
      * @return int number of deleted rows
      */
-    public function deleteCurrentItemsByStore(IndexCollection $collection, Store $store)
+    public function deleteCurrentItemsByStore(CacheCollection $collection, Store $store)
     {
         $indexIds = [];
-        /* @var Index $item */
+        /* @var Cache $item */
         foreach ($collection->getItems() as $item) {
             $indexIds[] = $item->getId();
         }
@@ -267,8 +268,8 @@ class IndexRepository implements ProductIndexRepositoryInterface
         return $connection->delete(
             $collection->getMainTable(),
             [
-                sprintf('%s IN (?)', Index::ID) => array_unique($indexIds),
-                sprintf('%s=?', Index::STORE_ID) => $store->getId()
+                sprintf('%s IN (?)', Cache::ID) => array_unique($indexIds),
+                sprintf('%s=?', Cache::STORE_ID) => $store->getId()
             ]
         );
     }
@@ -276,14 +277,14 @@ class IndexRepository implements ProductIndexRepositoryInterface
     /**
      * Marks current items in collection as in_sync
      *
-     * @param IndexCollection $collection
+     * @param CacheCollection $collection
      * @param Store $store
      * @return int
      */
-    public function markAsInSyncCurrentItemsByStore(IndexCollection $collection, Store $store)
+    public function markAsInSyncCurrentItemsByStore(CacheCollection $collection, Store $store)
     {
         $indexIds = [];
-        /* @var Index $item */
+        /* @var Cache $item */
         foreach ($collection->getItems() as $item) {
             $indexIds[] = $item->getId();
         }
@@ -291,12 +292,12 @@ class IndexRepository implements ProductIndexRepositoryInterface
         return $connection->update(
             $collection->getMainTable(),
             [
-                Index::IN_SYNC => Index::DB_VALUE_BOOLEAN_TRUE,
-                Index::UPDATED_AT => $this->magentoTimeZone->date()->format('Y-m-d H:i:s')
+                Cache::IN_SYNC => Cache::DB_VALUE_BOOLEAN_TRUE,
+                Cache::UPDATED_AT => $this->magentoTimeZone->date()->format('Y-m-d H:i:s')
             ],
             [
-                sprintf('%s IN (?)', Index::ID) => array_unique($indexIds),
-                sprintf('%s=?', Index::STORE_ID) => $store->getId()
+                sprintf('%s IN (?)', Cache::ID) => array_unique($indexIds),
+                sprintf('%s=?', Cache::STORE_ID) => $store->getId()
             ]
         );
     }
@@ -309,16 +310,16 @@ class IndexRepository implements ProductIndexRepositoryInterface
      */
     public function markAllAsDirtyByStore(Store $store)
     {
-        $collection = $this->indexCollectionFactory->create();
+        $collection = $this->cacheCollectionFactory->create();
         $connection = $collection->getConnection();
         return $connection->update(
             $collection->getMainTable(),
             [
-                Index::IS_DIRTY => Index::DB_VALUE_BOOLEAN_TRUE,
-                Index::UPDATED_AT => $this->magentoTimeZone->date()->format('Y-m-d H:i:s')
+                Cache::IS_DIRTY => Cache::DB_VALUE_BOOLEAN_TRUE,
+                Cache::UPDATED_AT => $this->magentoTimeZone->date()->format('Y-m-d H:i:s')
             ],
             [
-                sprintf('%s=?', Index::STORE_ID) => $store->getId()
+                sprintf('%s=?', Cache::STORE_ID) => $store->getId()
             ]
         );
     }
@@ -326,14 +327,14 @@ class IndexRepository implements ProductIndexRepositoryInterface
     /**
      * Marks current items in collection as dirty
      *
-     * @param IndexCollection $collection
+     * @param CacheCollection $collection
      * @param Store $store
      * @return int
      */
-    public function markAsIsDirtyItemsByStore(IndexCollection $collection, Store $store)
+    public function markAsIsDirtyItemsByStore(CacheCollection $collection, Store $store)
     {
         $indexIds = [];
-        /* @var Index $item */
+        /* @var Cache $item */
         foreach ($collection->getItems() as $item) {
             $indexIds[] = $item->getId();
         }
@@ -344,22 +345,22 @@ class IndexRepository implements ProductIndexRepositoryInterface
         return $connection->update(
             $collection->getMainTable(),
             [
-                Index::IS_DIRTY => Index::DB_VALUE_BOOLEAN_TRUE,
-                Index::UPDATED_AT => $this->magentoTimeZone->date()->format('Y-m-d H:i:s')
+                Cache::IS_DIRTY => Cache::DB_VALUE_BOOLEAN_TRUE,
+                Cache::UPDATED_AT => $this->magentoTimeZone->date()->format('Y-m-d H:i:s')
             ],
             [
-                sprintf('%s IN (?)', Index::ID) => array_unique($indexIds),
-                sprintf('%s=?', Index::STORE_ID) => $store->getId()
+                sprintf('%s IN (?)', Cache::ID) => array_unique($indexIds),
+                sprintf('%s=?', Cache::STORE_ID) => $store->getId()
             ]
         );
     }
 
     /**
-     * @param Index $product
+     * @param Cache $product
      * @param StoreInterface $store
      * @throws Exception
      */
-    public function updateProduct(Index $product, StoreInterface $store)
+    public function updateProduct(Cache $product, StoreInterface $store)
     {
         $product->setStore($store);
         $product->setIsDirty(false);

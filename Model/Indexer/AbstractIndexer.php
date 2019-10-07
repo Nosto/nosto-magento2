@@ -48,13 +48,11 @@ use Magento\Framework\Mview\ActionInterface as MviewActionInterface;
 use Magento\Indexer\Model\ProcessManager;
 use Magento\Store\Model\App\Emulation;
 use Magento\Store\Model\Store;
-use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Indexer\Dimensions\AbstractDimensionModeConfiguration as DimensionModeConfiguration;
 use Nosto\Tagging\Model\Indexer\Dimensions\ModeSwitcherInterface;
 use Nosto\Tagging\Model\Indexer\Dimensions\StoreDimensionProvider;
-use Nosto\Tagging\Model\Indexer\Util\Indexer as IndexerUtil;
 use Nosto\Tagging\Model\Service\Indexer\IndexerStatusServiceInterface;
 use Nosto\Tagging\Util\Benchmark;
 use Symfony\Component\Console\Input\InputInterface;
@@ -67,9 +65,6 @@ use UnexpectedValueException;
  */
 abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerActionInterface, MviewActionInterface
 {
-    /** @var NostoHelperAccount */
-    private $nostoHelperAccount;
-
     /** @var NostoHelperScope */
     private $nostoHelperScope;
 
@@ -93,7 +88,6 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
 
     /**
      * AbstractIndexer constructor.
-     * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoHelperScope $nostoHelperScope
      * @param NostoLogger $nostoLogger
      * @param StoreDimensionProvider $dimensionProvider
@@ -103,7 +97,6 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
      * @param ProcessManager|null $processManager
      */
     public function __construct(
-        NostoHelperAccount $nostoHelperAccount,
         NostoHelperScope $nostoHelperScope,
         NostoLogger $nostoLogger,
         StoreDimensionProvider $dimensionProvider,
@@ -112,7 +105,6 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
         IndexerStatusServiceInterface $indexerStatusService,
         ProcessManager $processManager = null
     ) {
-        $this->nostoHelperAccount = $nostoHelperAccount;
         $this->nostoHelperScope = $nostoHelperScope;
         $this->nostoLogger = $nostoLogger;
         $this->dimensionProvider = $dimensionProvider;
@@ -220,7 +212,7 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
             case DimensionModeConfiguration::DIMENSION_NONE:
                 /** @var Dimension[] $dimension */
                 foreach ($this->dimensionProvider->getIterator() as $dimension) {
-                    if (is_array($dimension) && $this->isDimensionProcessable($dimension)) {
+                    if (is_array($dimension)) {
                         (function () use ($dimension, $ids) {
                             $this->executeByDimensions($dimension, new ArrayIterator($ids));
                         })();
@@ -230,12 +222,10 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
             case DimensionModeConfiguration::DIMENSION_STORE:
                 /** @var Dimension[] $dimension  */
                 foreach ($this->dimensionProvider->getIterator() as $dimension) {
-                    if ($this->isDimensionProcessable($dimension)) {
-                        /** @suppress PhanTypeMismatchArgument */
-                        $userFunctions[] = function () use ($dimension, $ids) {
-                            $this->executeByDimensions($dimension, new ArrayIterator($ids));
-                        };
-                    }
+                    /** @suppress PhanTypeMismatchArgument */
+                    $userFunctions[] = function () use ($dimension, $ids) {
+                        $this->executeByDimensions($dimension, new ArrayIterator($ids));
+                    };
                 }
                 /** @var Traversable $userFunctions  */
                 $this->getProcessManager()->execute($userFunctions);
@@ -296,23 +286,6 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
             )
         );
         $this->storeEmulator->stopEnvironmentEmulation();
-    }
-
-    /**
-     * @param Dimension[] $dimension
-     * @return bool
-     * @suppress PhanTypeArraySuspicious
-     */
-    private function isDimensionProcessable(array $dimension)
-    {
-        $storeId = $dimension[StoreDimensionProvider::DIMENSION_NAME]->getValue();
-        $store = $this->nostoHelperScope->getStore($storeId);
-        if ($this->nostoHelperAccount->nostoInstalledAndEnabled($store)) {
-            return true;
-        }
-
-        $this->nostoLogger->debug(sprintf('Skipping store dimension: "%s"', $store->getCode()));
-        return false;
     }
 
     /**

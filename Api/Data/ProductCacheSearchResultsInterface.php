@@ -33,16 +33,32 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
-namespace Nosto\Tagging\Model\Service\Comparator;
 
-use Nosto\Types\Product\ProductInterface;
+namespace Nosto\Tagging\Api\Data;
 
-interface ProductComparatorInterface
+use Magento\Framework\Data\SearchResultInterface;
+
+interface ProductCacheSearchResultsInterface extends SearchResultInterface
 {
     /**
-     * @param ProductInterface $product1
-     * @param ProductInterface $product2
-     * @return boolean
+     * Get items from search results
+     *
+     * @return ProductCacheInterface[]
      */
-    public function isEqual(ProductInterface $product1, ProductInterface $product2);
+    public function getItems();
+
+    /**
+     * Get first item from search results
+     *
+     * @return ProductCacheInterface
+     */
+    public function getFirstItem();
+
+    /**
+     * Set items for search results
+     *
+     * @param ProductCacheInterface[] $items
+     * @return $this
+     */
+    public function setItems(array $items);
 }
