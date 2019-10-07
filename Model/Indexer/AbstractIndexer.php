@@ -48,7 +48,6 @@ use Magento\Framework\Mview\ActionInterface as MviewActionInterface;
 use Magento\Indexer\Model\ProcessManager;
 use Magento\Store\Model\App\Emulation;
 use Magento\Store\Model\Store;
-use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Indexer\Dimensions\AbstractDimensionModeConfiguration as DimensionModeConfiguration;
@@ -66,9 +65,6 @@ use UnexpectedValueException;
  */
 abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerActionInterface, MviewActionInterface
 {
-    /** @var NostoHelperAccount */
-    private $nostoHelperAccount;
-
     /** @var NostoHelperScope */
     private $nostoHelperScope;
 
@@ -92,7 +88,6 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
 
     /**
      * AbstractIndexer constructor.
-     * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoHelperScope $nostoHelperScope
      * @param NostoLogger $nostoLogger
      * @param StoreDimensionProvider $dimensionProvider
@@ -102,7 +97,6 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
      * @param ProcessManager|null $processManager
      */
     public function __construct(
-        NostoHelperAccount $nostoHelperAccount,
         NostoHelperScope $nostoHelperScope,
         NostoLogger $nostoLogger,
         StoreDimensionProvider $dimensionProvider,
@@ -111,7 +105,6 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
         IndexerStatusServiceInterface $indexerStatusService,
         ProcessManager $processManager = null
     ) {
-        $this->nostoHelperAccount = $nostoHelperAccount;
         $this->nostoHelperScope = $nostoHelperScope;
         $this->nostoLogger = $nostoLogger;
         $this->dimensionProvider = $dimensionProvider;

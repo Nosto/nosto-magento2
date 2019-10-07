@@ -40,42 +40,42 @@ use Exception;
 use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Store\Api\Data\StoreInterface;
 use Nosto\Tagging\Logger\Logger;
-use Nosto\Tagging\Model\Product\Cache\CacheRepository as NostoCacheRepository;
-use Nosto\Tagging\Model\Service\Indexer\IndexService as NostoIndexService;
+use Nosto\Tagging\Model\Product\Cache\CacheRepository;
+use Nosto\Tagging\Model\Service\Cache\CacheService;
 use Nosto\Tagging\Util\Serializer\ProductSerializer;
 use Nosto\Types\Product\ProductInterface as NostoProductInterface;
 
 class CachingProductService implements ProductServiceInterface
 {
 
-    /** @var NostoCacheRepository */
+    /** @var CacheRepository */
     private $nostoCacheRepository;
 
     /** @var Logger */
     private $nostoLogger;
 
-    /** @var NostoIndexService */
-    private $nostoIndexService;
+    /** @var CacheService */
+    private $nostoCacheService;
 
     /** @var ProductSerializer */
     private $productSerializer;
 
     /**
      * Index constructor.
-     * @param NostoCacheRepository $nostoCacheRepository
+     * @param CacheRepository $nostoCacheRepository
      * @param Logger $nostoLogger
-     * @param NostoIndexService $nostoIndexService
+     * @param CacheService $nostoCacheService
      * @param ProductSerializer $productSerializer
      */
     public function __construct(
-        NostoCacheRepository $nostoCacheRepository,
+        CacheRepository $nostoCacheRepository,
         Logger $nostoLogger,
-        NostoIndexService $nostoIndexService,
+        CacheService $nostoCacheService,
         ProductSerializer $productSerializer
     ) {
         $this->nostoCacheRepository = $nostoCacheRepository;
         $this->nostoLogger = $nostoLogger;
-        $this->nostoIndexService = $nostoIndexService;
+        $this->nostoCacheService = $nostoCacheService;
         $this->productSerializer = $productSerializer;
     }
 
@@ -94,12 +94,12 @@ class CachingProductService implements ProductServiceInterface
             $cachedProduct = $this->nostoCacheRepository->getOneByProductAndStore($product, $store);
             //In case the product is not present in the index table
             if ($cachedProduct === null) {
-                $this->nostoIndexService->updateOrCreateDirtyEntity($product, $store);
+                $this->nostoCacheService->updateOrCreateDirtyEntity($product, $store);
                 $cachedProduct = $this->nostoCacheRepository->getOneByProductAndStore($product, $store);
             }
             //If it is dirty rebuild the product data
             if ($cachedProduct->getIsDirty()) {
-                $cachedProduct = $this->nostoIndexService->rebuildDirtyProduct($cachedProduct);
+                $cachedProduct = $this->nostoCacheService->rebuildDirtyProduct($cachedProduct);
             }
             return $this->productSerializer->fromString(
                 $cachedProduct->getProductData()

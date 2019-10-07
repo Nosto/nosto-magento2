@@ -34,7 +34,7 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Service\Indexer;
+namespace Nosto\Tagging\Model\Service\Cache;
 
 use Exception;
 use Magento\Catalog\Api\Data\ProductInterface;
@@ -70,7 +70,7 @@ use Nosto\Tagging\Util\PagingIterator;
 use Nosto\Tagging\Util\Serializer\ProductSerializer;
 use Nosto\Types\Product\ProductInterface as NostoProductInterface;
 
-class IndexService extends AbstractService
+class CacheService extends AbstractService
 {
     const PRODUCT_DATA_BATCH_SIZE = 100;
     const PRODUCT_DELETION_BATCH_SIZE = 100;
@@ -278,7 +278,7 @@ class IndexService extends AbstractService
      */
     public function updateOrCreateDirtyEntity(ProductInterface $product, StoreInterface $store)
     {
-        if (!$this->canBuildBundleProduct($product)) {
+        if (!$this->canBuildProduct($product)) {
             $this->getLogger()
                 ->debug(sprintf('Product %s cannot be processed by Nosto', $product->getId()));
             return;
@@ -303,7 +303,7 @@ class IndexService extends AbstractService
      * @param ProductInterface $product
      * @return bool
      */
-    private function canBuildBundleProduct(ProductInterface $product)
+    private function canBuildProduct(ProductInterface $product)
     {
         if ($product->getTypeId() === Type::TYPE_BUNDLE && empty($product->getOptions())) {
             return false;
@@ -317,7 +317,7 @@ class IndexService extends AbstractService
      * @throws NostoException
      * @throws MemoryOutOfBoundsException
      */
-    public function indexProducts(Store $store, array $ids = [])
+    public function generateProductsInStore(Store $store, array $ids = [])
     {
         $account = $this->nostoHelperAccount->findAccount($store);
         if ($account === null) {
@@ -385,13 +385,13 @@ class IndexService extends AbstractService
             );
             $store = $this->nostoHelperScope->getStore($productIndex->getStoreId());
             $nostoProduct = $this->nostoProductBuilder->build($magentoProduct, $store);
-            $nostoIndexedProduct = $this->productSerializer->fromString(
+            $nostoCachedProduct = $this->productSerializer->fromString(
                 $productIndex->getProductData()
             );
-            if ($nostoIndexedProduct instanceof NostoProductInterface === false ||
+            if ($nostoCachedProduct instanceof NostoProductInterface === false ||
                 (
                     $nostoProduct instanceof NostoProductInterface
-                    && !$this->productComparator->isEqual($nostoProduct, $nostoIndexedProduct)
+                    && !$this->productComparator->isEqual($nostoProduct, $nostoCachedProduct)
                 )
             ) {
                 $productIndex->setProductData(

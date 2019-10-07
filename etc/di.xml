@@ -112,11 +112,6 @@
             <argument name="nostoHelperData" xsi:type="object">Nosto\Tagging\Helper\Data\Proxy</argument>
         </arguments>
     </type>
-    <type name="Nosto\Tagging\Model\Indexer\Product\Indexer">
-        <arguments>
-            <argument name="nostoHelperAccount" xsi:type="object">Nosto\Tagging\Helper\Account\Proxy</argument>
-        </arguments>
-    </type>
     <type name="Nosto\Tagging\Helper\Customer">
         <arguments>
             <argument name="customerSession" xsi:type="object">Magento\Customer\Model\Session\Proxy</argument>
