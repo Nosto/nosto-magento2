@@ -110,7 +110,7 @@ class AsyncBulkConsumer
         $message = null;
         if (is_array($operation)) {
             $serializedData = $operation['data']['serialized_data'];
-        } elseif ($operation instanceof OperationInterface) {
+        } elseif ($operation instanceof \Magento\AsynchronousOperations\Api\Data\OperationInterface) {
             $serializedData = $operation->getSerializedData();
         } else {
             throw new InvalidArgumentException(
