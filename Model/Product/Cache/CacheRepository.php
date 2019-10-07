@@ -45,17 +45,16 @@ use Magento\Store\Model\Store;
 use Nosto\Tagging\Api\Data\ProductCacheInterface;
 use Nosto\Tagging\Api\ProductCacheRepositoryInterface;
 use Nosto\Tagging\Model\Product\Cache;
-use Nosto\Tagging\Model\ResourceModel\Product\Cache as IndexResource;
-use Nosto\Tagging\Model\ResourceModel\Product\Cache\Collection;
-use Nosto\Tagging\Model\ResourceModel\Product\Cache\Collection as CacheCollection;
-use Nosto\Tagging\Model\ResourceModel\Product\Cache\CollectionFactory as CacheCollectionFactory;
+use Nosto\Tagging\Model\ResourceModel\Product\Cache as CacheResource;
+use Nosto\Tagging\Model\ResourceModel\Product\Cache\CacheCollection;
+use Nosto\Tagging\Model\ResourceModel\Product\Cache\CacheCollectionFactory;
 
 class CacheRepository implements ProductCacheRepositoryInterface
 {
     /** @var CacheCollectionFactory  */
     private $CacheCollectionFactory;
 
-    /** @var IndexResource  */
+    /** @var CacheResource  */
     private $indexResource;
 
     /** @var TimezoneInterface */
@@ -64,12 +63,12 @@ class CacheRepository implements ProductCacheRepositoryInterface
     /**
      * IndexRepository constructor.
      *
-     * @param IndexResource $indexResource
+     * @param CacheResource $indexResource
      * @param CacheCollectionFactory $CacheCollectionFactory
      * @param TimezoneInterface $magentoTimeZone
      */
     public function __construct(
-        IndexResource $indexResource,
+        CacheResource $indexResource,
         CacheCollectionFactory $CacheCollectionFactory,
         TimezoneInterface $magentoTimeZone
     ) {
@@ -179,7 +178,7 @@ class CacheRepository implements ProductCacheRepositoryInterface
      * Save product index entry
      *
      * @param ProductCacheInterface $productIndex
-     * @return ProductCacheInterface|IndexResource
+     * @return ProductCacheInterface|CacheResource
      * @throws Exception
      * @suppress PhanTypeMismatchArgument
      */

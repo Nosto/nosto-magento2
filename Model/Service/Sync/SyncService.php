@@ -48,15 +48,13 @@ use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Data as NostoDataHelper;
 use Nosto\Tagging\Helper\Url as NostoHelperUrl;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
-use Nosto\Tagging\Model\Product\Cache;
 use Nosto\Tagging\Model\Product\Cache as NostoProductIndex;
 use Nosto\Tagging\Model\Product\Cache\CacheRepository;
-use Nosto\Tagging\Model\ResourceModel\Product\Cache\Collection;
-use Nosto\Tagging\Model\ResourceModel\Product\Cache\Collection as NostoCacheCollection;
-use Nosto\Tagging\Model\ResourceModel\Product\Cache\CollectionFactory as NostoCacheCollectionFactory;
-use Nosto\Tagging\Util\Serializer\ProductSerializer;
-use Nosto\Tagging\Util\PagingIterator;
+use Nosto\Tagging\Model\ResourceModel\Product\Cache\CacheCollection;
+use Nosto\Tagging\Model\ResourceModel\Product\Cache\CacheCollectionFactory;
 use Nosto\Tagging\Model\Service\AbstractService;
+use Nosto\Tagging\Util\PagingIterator;
+use Nosto\Tagging\Util\Serializer\ProductSerializer;
 
 class SyncService extends AbstractService
 {
@@ -77,7 +75,7 @@ class SyncService extends AbstractService
     /** @var NostoHelperUrl */
     private $nostoHelperUrl;
 
-    /** @var NostoCacheCollectionFactory */
+    /** @var CacheCollectionFactory */
     private $nostoCacheCollectionFactory;
 
     /** @var NostoDataHelper */
@@ -92,7 +90,7 @@ class SyncService extends AbstractService
      * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoHelperUrl $nostoHelperUrl
      * @param NostoLogger $logger
-     * @param NostoCacheCollectionFactory $nostoCacheCollectionFactory
+     * @param CacheCollectionFactory $nostoCacheCollectionFactory
      * @param NostoDataHelper $nostoDataHelper
      * @param ProductSerializer $productSerializer
      */
@@ -101,7 +99,7 @@ class SyncService extends AbstractService
         NostoHelperAccount $nostoHelperAccount,
         NostoHelperUrl $nostoHelperUrl,
         NostoLogger $logger,
-        NostoCacheCollectionFactory $nostoCacheCollectionFactory,
+        CacheCollectionFactory $nostoCacheCollectionFactory,
         NostoDataHelper $nostoDataHelper,
         ProductSerializer $productSerializer
     ) {
@@ -115,12 +113,12 @@ class SyncService extends AbstractService
     }
 
     /**
-     * @param NostoCacheCollection $collection
+     * @param CacheCollection $collection
      * @param Store $store
      * @throws NostoException
      * @throws MemoryOutOfBoundsException
      */
-    public function syncIndexedProducts(NostoCacheCollection $collection, Store $store)
+    public function syncIndexedProducts(CacheCollection $collection, Store $store)
     {
         if (!$this->nostoDataHelper->isProductUpdatesEnabled($store)) {
             $this->getLogger()->info(
@@ -134,7 +132,7 @@ class SyncService extends AbstractService
         $collection->setPageSize(self::API_BATCH_SIZE);
         $iterator = new PagingIterator($collection);
 
-        /** @var NostoCacheCollection $page */
+        /** @var CacheCollection $page */
         foreach ($iterator as $page) {
             $this->checkMemoryConsumption('product sync');
             $op = new UpsertProduct($account, $this->nostoHelperUrl->getActiveDomain($store));
@@ -210,12 +208,12 @@ class SyncService extends AbstractService
     /**
      * Discontinues products in Nosto and removes indexed products from Nosto product index
      *
-     * @param NostoCacheCollection $collection
+     * @param CacheCollection $collection
      * @param Store $store
      * @throws MemoryOutOfBoundsException
      * @throws NostoException
      */
-    public function deleteIndexedProducts(NostoCacheCollection $collection, Store $store)
+    public function deleteIndexedProducts(CacheCollection $collection, Store $store)
     {
         if ($collection->getSize() === 0) {
             return;
@@ -228,7 +226,7 @@ class SyncService extends AbstractService
         $collection->setPageSize(self::PRODUCT_DELETION_BATCH_SIZE);
         $iterator = new PagingIterator($collection);
 
-        /** @var NostoCacheCollection $page */
+        /** @var CacheCollection $page */
         foreach ($iterator as $page) {
             $this->checkMemoryConsumption('product delete');
             $ids = [];

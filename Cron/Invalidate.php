@@ -43,8 +43,8 @@ use Magento\Store\Model\Store;
 use Nosto\Tagging\Helper\Account as NostoAccountHelper;
 use Nosto\Tagging\Logger\Logger;
 use Nosto\Tagging\Model\Product\Cache\CacheRepository;
-use Nosto\Tagging\Model\ResourceModel\Product\Cache\Collection as NostoCacheCollection;
-use Nosto\Tagging\Model\ResourceModel\Product\Cache\CollectionFactory as CacheCollectionFactory;
+use Nosto\Tagging\Model\ResourceModel\Product\Cache\CacheCollection;
+use Nosto\Tagging\Model\ResourceModel\Product\Cache\CacheCollectionFactory;
 
 /**
  * Cronjob class that periodically invalidates Nosto indexed data for each of the store views
@@ -138,7 +138,7 @@ class Invalidate
 
     /**
      * @param Store $store
-     * @return NostoCacheCollection
+     * @return CacheCollection
      * @throws Exception
      */
     private function getCollection(Store $store)

@@ -55,15 +55,14 @@ use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Indexer\Data as NostoIndexerData;
 use Nosto\Tagging\Model\Indexer\Invalidate as NostoIndexerInvalidate;
 use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
-use Nosto\Tagging\Model\Product\Cache\Builder;
 use Nosto\Tagging\Model\Product\Cache as NostoProductIndex;
+use Nosto\Tagging\Model\Product\Cache\CacheBuilder;
 use Nosto\Tagging\Model\Product\Cache\CacheRepository;
 use Nosto\Tagging\Model\Product\Repository as NostoProductRepository;
 use Nosto\Tagging\Model\ResourceModel\Magento\Product\Collection as ProductCollection;
 use Nosto\Tagging\Model\ResourceModel\Magento\Product\CollectionFactory as ProductCollectionFactory;
-use Nosto\Tagging\Model\ResourceModel\Product\Cache\Collection;
-use Nosto\Tagging\Model\ResourceModel\Product\Cache\Collection as NostoCacheCollection;
-use Nosto\Tagging\Model\ResourceModel\Product\Cache\CollectionFactory as NostoCacheCollectionFactory;
+use Nosto\Tagging\Model\ResourceModel\Product\Cache\CacheCollection;
+use Nosto\Tagging\Model\ResourceModel\Product\Cache\CacheCollectionFactory;
 use Nosto\Tagging\Model\Service\AbstractService;
 use Nosto\Tagging\Model\Service\Product\ComparatorInterface;
 use Nosto\Tagging\Model\Service\Sync\BulkSyncInterface;
@@ -83,7 +82,7 @@ class IndexService extends AbstractService
     /** @var CacheRepository */
     private $cacheRepository;
 
-    /** @var Builder */
+    /** @var CacheBuilder */
     private $indexBuilder;
 
     /** @var ProductRepository */
@@ -98,7 +97,7 @@ class IndexService extends AbstractService
     /** @var NostoHelperAccount */
     private $nostoHelperAccount;
 
-    /** @var NostoCacheCollectionFactory */
+    /** @var CacheCollectionFactory */
     private $nostoCacheCollectionFactory;
 
     /** @var TimezoneInterface */
@@ -125,13 +124,13 @@ class IndexService extends AbstractService
     /**
      * Index constructor.
      * @param CacheRepository $cacheRepository
-     * @param Builder $indexBuilder
+     * @param CacheBuilder $indexBuilder
      * @param ProductRepository $productRepository
      * @param NostoProductBuilder $nostoProductBuilder
      * @param NostoHelperScope $nostoHelperScope
      * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoLogger $logger
-     * @param NostoCacheCollectionFactory $nostoCacheCollectionFactory
+     * @param CacheCollectionFactory $nostoCacheCollectionFactory
      * @param NostoProductRepository $nostoProductRepository
      * @param ProductCollectionFactory $productCollectionFactory
      * @param TimezoneInterface $magentoTimeZone
@@ -142,13 +141,13 @@ class IndexService extends AbstractService
      */
     public function __construct(
         CacheRepository $cacheRepository,
-        Builder $indexBuilder,
+        CacheBuilder $indexBuilder,
         ProductRepository $productRepository,
         NostoProductBuilder $nostoProductBuilder,
         NostoHelperScope $nostoHelperScope,
         NostoHelperAccount $nostoHelperAccount,
         NostoLogger $logger,
-        NostoCacheCollectionFactory $nostoCacheCollectionFactory,
+        CacheCollectionFactory $nostoCacheCollectionFactory,
         NostoProductRepository $nostoProductRepository,
         ProductCollectionFactory $productCollectionFactory,
         TimezoneInterface $magentoTimeZone,
@@ -331,12 +330,12 @@ class IndexService extends AbstractService
     }
 
     /**
-     * @param NostoCacheCollection $collection
+     * @param CacheCollection $collection
      * @param Store $store
      * @throws Exception
      * @throws MemoryOutOfBoundsException
      */
-    public function rebuildDirtyProducts(NostoCacheCollection $collection, Store $store)
+    public function rebuildDirtyProducts(CacheCollection $collection, Store $store)
     {
         $this->startBenchmark(
             self::BENCHMARK_NAME_REBUILD,
@@ -345,7 +344,7 @@ class IndexService extends AbstractService
         $collection->setPageSize(self::PRODUCT_DATA_BATCH_SIZE);
         $iterator = new PagingIterator($collection);
 
-        /** @var NostoCacheCollection $page */
+        /** @var CacheCollection $page */
         foreach ($iterator as $page) {
             /** @var NostoProductIndex $item */
             foreach ($page->getItems() as $item) {
@@ -458,7 +457,7 @@ class IndexService extends AbstractService
     /**
      * @param Store $store
      * @param array $ids
-     * @return NostoCacheCollection
+     * @return CacheCollection
      */
     private function getDirtyCollection(Store $store, array $ids = [])
     {
@@ -476,7 +475,7 @@ class IndexService extends AbstractService
     /**
      * @param Store $store
      * @param array $ids
-     * @return NostoCacheCollection
+     * @return CacheCollection
      */
     private function getOutOfSyncCollection(Store $store, array $ids = [])
     {

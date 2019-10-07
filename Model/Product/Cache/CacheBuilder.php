@@ -41,16 +41,16 @@ use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
 use Magento\Store\Api\Data\StoreInterface;
 use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
 use Nosto\Tagging\Model\Product\BuilderTrait;
-use Nosto\Tagging\Model\Product\Cache;
-use Nosto\Tagging\Model\Product\CacheFactory as NostoCacheFactory;
+use Nosto\Tagging\Model\Product\Cache as CacheModel;
+use Nosto\Tagging\Model\Product\CacheFactory;
 
-class Builder
+class CacheBuilder
 {
     use BuilderTrait {
         BuilderTrait::__construct as builderTraitConstruct; // @codingStandardsIgnoreLine
     }
 
-    /** @var NostoCacheFactory  */
+    /** @var CacheFactory  */
     private $NostoCacheFactory;
 
     /** @var NostoProductBuilder */
@@ -61,11 +61,11 @@ class Builder
 
     /**
      * Builder constructor.
-     * @param NostoCacheFactory $NostoCacheFactory
+     * @param CacheFactory $NostoCacheFactory
      * @param TimezoneInterface $magentoTimeZone
      */
     public function __construct(
-        NostoCacheFactory $NostoCacheFactory,
+        CacheFactory $NostoCacheFactory,
         TimezoneInterface $magentoTimeZone
     ) {
         $this->NostoCacheFactory = $NostoCacheFactory;
@@ -75,7 +75,7 @@ class Builder
     /**
      * @param ProductInterface $product
      * @param StoreInterface $store
-     * @return \Nosto\Tagging\Model\Product\Cache
+     * @return CacheModel
      */
     public function build(
         ProductInterface $product,

@@ -46,7 +46,7 @@ use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Product\Cache\CacheRepository;
-use Nosto\Tagging\Model\ResourceModel\Product\Cache\Collection as CacheCollection;
+use Nosto\Tagging\Model\ResourceModel\Product\Cache\CacheCollection;
 
 /**
  * Observer to mark all indexed products as dirty if settings have changed

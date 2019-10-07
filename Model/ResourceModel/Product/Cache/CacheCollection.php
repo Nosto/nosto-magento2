@@ -41,9 +41,9 @@ use Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection;
 use Magento\Store\Api\Data\StoreInterface;
 use Nosto\Tagging\Api\Data\ProductCacheInterface;
 use Nosto\Tagging\Model\Product\Cache;
-use Nosto\Tagging\Model\ResourceModel\Product\Cache as ResourceModelCache;
+use Nosto\Tagging\Model\ResourceModel\Product\Cache as CacheResource;
 
-class Collection extends AbstractCollection
+class CacheCollection extends AbstractCollection
 {
     /**
      * Define resource model
@@ -54,13 +54,13 @@ class Collection extends AbstractCollection
     {
         $this->_init(
             \Nosto\Tagging\Model\Product\Cache::class,
-            ResourceModelCache::class
+            CacheResource::class
         );
     }
 
     /**
      * @param StoreInterface $store
-     * @return Collection
+     * @return CacheCollection
      */
     public function addStoreFilter(StoreInterface $store)
     {
@@ -69,7 +69,7 @@ class Collection extends AbstractCollection
 
     /**
      * @param array $ids
-     * @return Collection
+     * @return CacheCollection
      */
     public function addIdsFilter(array $ids)
     {
@@ -81,7 +81,7 @@ class Collection extends AbstractCollection
 
     /**
      * @param array $ids
-     * @return Collection
+     * @return CacheCollection
      */
     public function addProductIdsFilter(array $ids)
     {
@@ -93,7 +93,7 @@ class Collection extends AbstractCollection
 
     /**
      * Filters collection for items that are either dirty or out of sync with Nosto
-     * @return Collection
+     * @return CacheCollection
      */
     public function addOutOfSyncOrIsDirtyFilter()
     {
@@ -106,7 +106,7 @@ class Collection extends AbstractCollection
     /**
      * Filters collection for items that are dirty
      *
-     * @return Collection
+     * @return CacheCollection
      */
     public function addIsDirtyFilter()
     {
@@ -120,7 +120,7 @@ class Collection extends AbstractCollection
      * Filters collection by store id
      *
      * @param int $storeId
-     * @return Collection
+     * @return CacheCollection
      */
     public function addStoreIdFilter(int $storeId)
     {
@@ -134,7 +134,7 @@ class Collection extends AbstractCollection
      * Filters collection by product id
      *
      * @param int $productId
-     * @return Collection
+     * @return CacheCollection
      */
     public function addProductIdFilter(int $productId)
     {
@@ -148,7 +148,7 @@ class Collection extends AbstractCollection
      * Filters collection by product
      *
      * @param ProductInterface $product
-     * @return Collection
+     * @return CacheCollection
      */
     public function addProductFilter(ProductInterface $product)
     {
@@ -159,7 +159,7 @@ class Collection extends AbstractCollection
      * Filters collection by id (primary key)
      *
      * @param int $indexId
-     * @return Collection
+     * @return CacheCollection
      */
     public function addIdFilter(int $indexId)
     {
@@ -172,7 +172,7 @@ class Collection extends AbstractCollection
     /**
      * Filters collection for items that out of sync
      *
-     * @return Collection
+     * @return CacheCollection
      */
     public function addOutOfSyncFilter()
     {
@@ -185,7 +185,7 @@ class Collection extends AbstractCollection
     /**
      * Filters collection for only products that are not marked as deleted
      *
-     * @return Collection
+     * @return CacheCollection
      */
     public function addNotDeletedFilter()
     {
@@ -198,7 +198,7 @@ class Collection extends AbstractCollection
     /**
      * Filters collection for only products that are marked as deleted
      *
-     * @return Collection
+     * @return CacheCollection
      */
     public function addIsDeletedFilter()
     {
@@ -226,7 +226,7 @@ class Collection extends AbstractCollection
      * Sets a limit to this query
      *
      * @param int $limit
-     * @return Collection
+     * @return CacheCollection
      */
     public function limitResults(int $limit)
     {
@@ -239,7 +239,7 @@ class Collection extends AbstractCollection
      *
      * @param string $field
      * @param string $sort
-     * @return Collection
+     * @return CacheCollection
      */
     public function orderBy($field, $sort)
     {
