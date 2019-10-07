@@ -40,15 +40,14 @@ use Magento\Indexer\Model\ProcessManager;
 use Magento\Store\Model\App\Emulation;
 use Magento\Store\Model\Store;
 use Nosto\NostoException;
-use Nosto\Tagging\Model\ResourceModel\Magento\Product\CollectionFactory as ProductCollectionFactory;
-use Nosto\Tagging\Model\Indexer\Dimensions\Invalidate\ModeSwitcher as InvalidateModeSwitcher;
-use Nosto\Tagging\Model\ResourceModel\Magento\Product\Collection as ProductCollection;
-use Nosto\Tagging\Model\Indexer\Dimensions\StoreDimensionProvider;
-use Nosto\Tagging\Model\Indexer\Dimensions\ModeSwitcherInterface;
-use Nosto\Tagging\Model\Service\Indexer\IndexService as NostoServiceIndex;
-use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
+use Nosto\Tagging\Model\Indexer\Dimensions\Invalidate\ModeSwitcher as InvalidateModeSwitcher;
+use Nosto\Tagging\Model\Indexer\Dimensions\ModeSwitcherInterface;
+use Nosto\Tagging\Model\Indexer\Dimensions\StoreDimensionProvider;
+use Nosto\Tagging\Model\ResourceModel\Magento\Product\Collection as ProductCollection;
+use Nosto\Tagging\Model\ResourceModel\Magento\Product\CollectionFactory as ProductCollectionFactory;
+use Nosto\Tagging\Model\Service\Cache\CacheService;
 use Nosto\Tagging\Model\Service\Indexer\IndexerStatusServiceInterface;
 use Symfony\Component\Console\Input\InputInterface;
 
@@ -62,23 +61,19 @@ class Invalidate extends AbstractIndexer
 {
     const INDEXER_ID = 'nosto_index_product_invalidate';
 
-    /** @var NostoServiceIndex */
+    /** @var CacheService */
     private $nostoServiceIndex;
 
     /** @var ProductCollectionFactory */
     private $productCollectionFactory;
-
-    /** @var NostoHelperAccount */
-    private $nostoHelperAccount;
 
     /** @var InvalidateModeSwitcher */
     private $modeSwitcher;
 
     /**
      * Invalidate constructor.
-     * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoHelperScope $nostoHelperScope
-     * @param NostoServiceIndex $nostoServiceIndex
+     * @param CacheService $nostoCacheService
      * @param NostoLogger $logger
      * @param ProductCollectionFactory $productCollectionFactory
      * @param InvalidateModeSwitcher $modeSwitcher
@@ -89,9 +84,8 @@ class Invalidate extends AbstractIndexer
      * @param IndexerStatusServiceInterface $indexerStatusService
      */
     public function __construct(
-        NostoHelperAccount $nostoHelperAccount,
         NostoHelperScope $nostoHelperScope,
-        NostoServiceIndex $nostoServiceIndex,
+        CacheService $nostoCacheService,
         NostoLogger $logger,
         ProductCollectionFactory $productCollectionFactory,
         InvalidateModeSwitcher $modeSwitcher,
@@ -101,12 +95,10 @@ class Invalidate extends AbstractIndexer
         InputInterface $input,
         IndexerStatusServiceInterface $indexerStatusService
     ) {
-        $this->nostoServiceIndex = $nostoServiceIndex;
-        $this->nostoHelperAccount = $nostoHelperAccount;
+        $this->nostoServiceIndex = $nostoCacheService;
         $this->productCollectionFactory = $productCollectionFactory;
         $this->modeSwitcher = $modeSwitcher;
         parent::__construct(
-            $nostoHelperAccount,
             $nostoHelperScope,
             $logger,
             $dimensionProvider,
@@ -131,9 +123,6 @@ class Invalidate extends AbstractIndexer
      */
     public function doIndex(Store $store, array $ids = [])
     {
-        if (!$this->nostoHelperAccount->nostoInstalledAndEnabled($store)) {
-            return;
-        }
         $productCollection = $this->getCollection($store, $ids);
         $this->nostoServiceIndex->invalidateOrCreate($productCollection, $store);
 

@@ -41,7 +41,7 @@ use Nosto\Tagging\Api\Data\ProductCacheInterface;
 
 class Cache extends AbstractDb
 {
-    const TABLE_NAME = 'nosto_tagging_product_index';
+    const TABLE_NAME = 'nosto_tagging_product_cache';
     /**
      * Initialize resource model
      *
