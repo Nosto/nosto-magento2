@@ -53,7 +53,7 @@ class CacheCollection extends AbstractCollection
     public function _construct()
     {
         $this->_init(
-            \Nosto\Tagging\Model\Product\Cache::class,
+            Cache::class,
             CacheResource::class
         );
     }
@@ -74,7 +74,7 @@ class CacheCollection extends AbstractCollection
     public function addIdsFilter(array $ids)
     {
         return $this->addFieldToFilter(
-            \Nosto\Tagging\Model\Product\Cache::ID,
+            Cache::ID,
             ['in' => $ids]
         );
     }
@@ -86,7 +86,7 @@ class CacheCollection extends AbstractCollection
     public function addProductIdsFilter(array $ids)
     {
         return $this->addFieldToFilter(
-            \Nosto\Tagging\Model\Product\Cache::PRODUCT_ID,
+            Cache::PRODUCT_ID,
             ['in' => $ids]
         );
     }
@@ -99,7 +99,7 @@ class CacheCollection extends AbstractCollection
     {
         return $this->addFieldToFilter(
             [ProductCacheInterface::IN_SYNC, ProductCacheInterface::IS_DIRTY],
-            [\Nosto\Tagging\Model\Product\Cache::DB_VALUE_BOOLEAN_FALSE, \Nosto\Tagging\Model\Product\Cache::DB_VALUE_BOOLEAN_TRUE]
+            [Cache::DB_VALUE_BOOLEAN_FALSE, Cache::DB_VALUE_BOOLEAN_TRUE]
         );
     }
 
@@ -112,7 +112,7 @@ class CacheCollection extends AbstractCollection
     {
         return $this->addFieldToFilter(
             ProductCacheInterface::IS_DIRTY,
-            ['eq' => \Nosto\Tagging\Model\Product\Cache::DB_VALUE_BOOLEAN_TRUE]
+            ['eq' => Cache::DB_VALUE_BOOLEAN_TRUE]
         );
     }
 
@@ -178,7 +178,7 @@ class CacheCollection extends AbstractCollection
     {
         return $this->addFieldToFilter(
             ProductCacheInterface::IN_SYNC,
-            ['eq' => \Nosto\Tagging\Model\Product\Cache::DB_VALUE_BOOLEAN_FALSE]
+            ['eq' => Cache::DB_VALUE_BOOLEAN_FALSE]
         );
     }
 
