@@ -63,17 +63,17 @@ class CacheRepository implements ProductCacheRepositoryInterface
     /**
      * IndexRepository constructor.
      *
-     * @param CacheResource $indexResource
-     * @param CacheCollectionFactory $CacheCollectionFactory
+     * @param CacheResource $cacheResource
+     * @param CacheCollectionFactory $cacheCollectionFactory
      * @param TimezoneInterface $magentoTimeZone
      */
     public function __construct(
-        CacheResource $indexResource,
-        CacheCollectionFactory $CacheCollectionFactory,
+        CacheResource $cacheResource,
+        CacheCollectionFactory $cacheCollectionFactory,
         TimezoneInterface $magentoTimeZone
     ) {
-        $this->indexResource = $indexResource;
-        $this->cacheCollectionFactory = $CacheCollectionFactory;
+        $this->indexResource = $cacheResource;
+        $this->cacheCollectionFactory = $cacheCollectionFactory;
         $this->magentoTimeZone = $magentoTimeZone;
     }
 

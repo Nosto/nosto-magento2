@@ -91,18 +91,18 @@ class CachingProductService implements ProductServiceInterface
     public function getProduct(ProductInterface $product, StoreInterface $store)
     {
         try {
-            $indexedProduct = $this->nostoCacheRepository->getOneByProductAndStore($product, $store);
+            $cachedProduct = $this->nostoCacheRepository->getOneByProductAndStore($product, $store);
             //In case the product is not present in the index table
-            if ($indexedProduct === null) {
+            if ($cachedProduct === null) {
                 $this->nostoIndexService->updateOrCreateDirtyEntity($product, $store);
-                $indexedProduct = $this->nostoCacheRepository->getOneByProductAndStore($product, $store);
+                $cachedProduct = $this->nostoCacheRepository->getOneByProductAndStore($product, $store);
             }
             //If it is dirty rebuild the product data
-            if ($indexedProduct->getIsDirty()) {
-                $indexedProduct = $this->nostoIndexService->rebuildDirtyProduct($indexedProduct);
+            if ($cachedProduct->getIsDirty()) {
+                $cachedProduct = $this->nostoIndexService->rebuildDirtyProduct($cachedProduct);
             }
             return $this->productSerializer->fromString(
-                $indexedProduct->getProductData()
+                $cachedProduct->getProductData()
             );
         } catch (Exception $e) {
             $this->nostoLogger->exception($e);

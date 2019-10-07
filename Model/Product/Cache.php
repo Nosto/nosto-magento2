@@ -41,7 +41,7 @@ use Magento\Catalog\Api\Data\ProductInterface as MagentoProductInterface;
 use Magento\Framework\Model\AbstractModel;
 use Magento\Store\Api\Data\StoreInterface;
 use Nosto\Tagging\Api\Data\ProductCacheInterface;
-use Nosto\Tagging\Model\ResourceModel\Product\Cache as NostoIndex;
+use Nosto\Tagging\Model\ResourceModel\Product\Cache as CacheResource;
 
 class Cache extends AbstractModel implements ProductCacheInterface
 {
@@ -233,6 +233,6 @@ class Cache extends AbstractModel implements ProductCacheInterface
      */
     public function _construct()
     {
-        $this->_init(NostoIndex::class);
+        $this->_init(CacheResource::class);
     }
 }
