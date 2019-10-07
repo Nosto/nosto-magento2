@@ -38,7 +38,6 @@ namespace Nosto\Tagging\Model\Service\Sync;
 
 use Exception;
 use InvalidArgumentException;
-use Magento\AsynchronousOperations\Api\Data\OperationInterface;
 use Magento\Framework\EntityManager\EntityManager;
 use Magento\Framework\Json\Helper\Data as JsonHelper;
 use Nosto\Tagging\Logger\Logger;
@@ -100,7 +99,7 @@ class AsyncBulkConsumer
     /**
      * Processing operation for product sync
      *
-     * @param array|OperationInterface $operation
+     * @param array|\Magento\AsynchronousOperations\Api\Data\OperationInterface $operation
      * @return void
      * @throws Exception
      * @suppress PhanUndeclaredClassConstant
@@ -129,7 +128,7 @@ class AsyncBulkConsumer
             $this->nostoSyncService->syncDeletedProducts($store);
             if (!is_array($operation)) {
                 $operation->setStatus(
-                    OperationInterface::STATUS_TYPE_COMPLETE
+                    \Magento\AsynchronousOperations\Api\Data\OperationInterface::STATUS_TYPE_COMPLETE
                 )->setResultMessage($message);
                 $this->entityManager->save($operation);
             }
@@ -138,7 +137,7 @@ class AsyncBulkConsumer
             $message = __('Something went wrong when syncing products to Nosto. Check log for details.');
             if (!is_array($operation)) {
                 $operation->setStatus(
-                    OperationInterface::STATUS_TYPE_NOT_RETRIABLY_FAILED
+                    \Magento\AsynchronousOperations\Api\Data\OperationInterface::STATUS_TYPE_NOT_RETRIABLY_FAILED
                 )->setErrorCode($e->getCode())
                 ->setResultMessage($message);
             }
