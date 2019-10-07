@@ -42,7 +42,7 @@ use Magento\Framework\Indexer\IndexerRegistry;
 use Magento\Framework\Model\AbstractModel;
 use Nosto\Tagging\Model\Indexer\Invalidate as IndexerInvalidate;
 use Nosto\Tagging\Model\Product\Repository as NostoProductRepository;
-use Nosto\Tagging\Model\Service\Index as IndexerService;
+use Nosto\Tagging\Model\Service\Indexer\IndexService as IndexerService;
 
 class ProductInvalidate
 {

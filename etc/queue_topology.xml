@@ -38,4 +38,7 @@
     <exchange name="magento-db" type="topic" connection="db">
         <binding id="updateBinding" topic="nosto_product_sync.update" destinationType="queue" destination="nosto_product_sync.update"/>
     </exchange>
+    <exchange name="magento-db" type="topic" connection="db">
+        <binding id="updateBinding" topic="nosto_product_sync.delete" destinationType="queue" destination="nosto_product_sync.delete"/>
+    </exchange>
 </config>

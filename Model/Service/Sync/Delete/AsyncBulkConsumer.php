@@ -36,7 +36,6 @@
 
 namespace Nosto\Tagging\Model\Service\Sync\Delete;
 
-use Nosto\Tagging\Model\Service\Delete\DeleteService;
 use Nosto\Tagging\Model\Service\Sync\AbstractBulkConsumer;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Model\Product\Index\IndexRepository;

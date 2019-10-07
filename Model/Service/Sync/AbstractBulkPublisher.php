@@ -42,12 +42,10 @@ use Magento\Framework\DataObject\IdentityGeneratorInterface;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Serialize\SerializerInterface;
 use Magento\Store\Model\Store;
-use MEQP2\Tests\NamingConventions\true\string;
 use Nosto\Tagging\Model\ResourceModel\Product\Index\Collection as NostoIndexCollection;
 use Magento\Framework\App\ObjectManager;
 use Magento\Framework\Module\Manager;
 use Nosto\Tagging\Logger\Logger;
-use Nosto\Tagging\Model\Service\BulkPublisherInterface;
 
 abstract class AbstractBulkPublisher implements BulkPublisherInterface
 {

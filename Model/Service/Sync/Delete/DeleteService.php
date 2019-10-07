@@ -34,7 +34,7 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Service\Delete;
+namespace Nosto\Tagging\Model\Service\Sync\Delete;
 
 use Exception;
 use Magento\Store\Model\Store;
