@@ -417,9 +417,9 @@ class IndexService extends AbstractService
                         $productIndex->getStoreId()
                     )
                 );
+                $productIndex->setIsDirty(false);
+                $this->indexRepository->save($productIndex);
             }
-            $productIndex->setIsDirty(false);
-            $this->indexRepository->save($productIndex);
             return $productIndex;
         } catch (Exception $e) {
             $this->getLogger()->exception($e);
