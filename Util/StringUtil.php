@@ -34,23 +34,26 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Service\Product;
+namespace Nosto\Tagging\Util;
 
-use Nosto\Helper\SerializationHelper;
-use Nosto\Tagging\Model\Service\Product\ComparatorInterface;
-use Nosto\Tagging\Util\StringUtil;
-use Nosto\Types\Product\ProductInterface;
-
-class DefaultComparator implements ComparatorInterface
+class StringUtil
 {
     /**
-     * @inheritDoc
+     * Strips out all whitespace and line breaks from a given string
+     *
+     * @param string $string
+     * @return string
      */
-    public function isEqual(ProductInterface $product1, ProductInterface $product2)
+    public static function stripWhitespaceAndLinebreaks($string)
     {
-        $product1string = StringUtil::stripWhitespaceAndLinebreaks(SerializationHelper::serialize($product1));
-        $product2string = StringUtil::stripWhitespaceAndLinebreaks(SerializationHelper::serialize($product2));
-
-        return $product1string === $product2string;
+        return preg_replace(
+            '/[ \t]+/',
+            ' ',
+            preg_replace(
+                '/[\r\n]+/',
+                "\n",
+                $string
+            )
+        );
     }
 }
