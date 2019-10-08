@@ -77,7 +77,7 @@ abstract class AbstractBulkPublisher implements BulkPublisherInterface
      * @param Manager $manager
      * @param Logger $logger
      */
-    public function __construct(
+    public function __construct( // @codingStandardsIgnoreLine
         IdentityGeneratorInterface $identityService,
         SerializerInterface $serializer,
         BulkConsumerInterface $asyncBulkConsumer,

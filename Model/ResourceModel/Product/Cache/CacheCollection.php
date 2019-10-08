@@ -196,19 +196,6 @@ class CacheCollection extends AbstractCollection
     }
 
     /**
-     * Filters collection for only products that are not marked as deleted
-     *
-     * @return CacheCollection
-     */
-    public function addDeletedFilter()
-    {
-        return $this->addFieldToFilter(
-            ProductCacheInterface::IS_DELETED,
-            ['eq' => Cache::DB_VALUE_BOOLEAN_TRUE]
-        );
-    }
-
-    /**
      * Filters collection for only products that are marked as deleted
      *
      * @return CacheCollection

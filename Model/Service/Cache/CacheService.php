@@ -310,7 +310,7 @@ class CacheService extends AbstractService
      * @param ProductInterface $product
      * @return bool
      */
-    private function canBuildProduct(ProductInterface $product)
+    public function canBuildProduct(ProductInterface $product)
     {
         if ($product->getTypeId() === Type::TYPE_BUNDLE && empty($product->getOptions())) {
             return false;
@@ -416,9 +416,9 @@ class CacheService extends AbstractService
                         $productIndex->getStoreId()
                     )
                 );
-                $productIndex->setIsDirty(false);
-                $this->cacheRepository->save($productIndex);
             }
+            $productIndex->setIsDirty(false);
+            $this->cacheRepository->save($productIndex);
             return $productIndex;
         } catch (Exception $e) {
             $this->getLogger()->exception($e);
@@ -434,6 +434,7 @@ class CacheService extends AbstractService
      * @param ProductCollection $collection
      * @param array $ids
      * @param Store $store
+     * @throws Exception
      */
     public function markProductsAsDeletedByDiff(ProductCollection $collection, array $ids, Store $store)
     {
@@ -453,11 +454,14 @@ class CacheService extends AbstractService
         }
 
         // Flag the rest of the ids as deleted
-        $deleted = $this->cacheRepository->markProductsAsDeleted($uniqueIds, $store);
+        $cachedCollection = $this->nostoCacheCollectionFactory->create()
+            ->addProductIdsFilter($uniqueIds)
+            ->addStoreFilter($store);
+        $this->cacheRepository->markProductsAsDeleted($cachedCollection);
         $this->getLogger()->info(
             sprintf(
                 'Marked %d indexed products as deleted for store %s',
-                $deleted,
+                $cachedCollection->getSize(),
                 $store->getName()
             )
         );
@@ -501,14 +505,13 @@ class CacheService extends AbstractService
 
     /**
      * @param Store $store
-     * @param array $ids
-     * @return NostoIndexCollection
+     * @return CacheCollection
      */
     private function getDeletedCollection(Store $store)
     {
-        $collection = $this->nostoIndexCollectionFactory->create()
+        $collection = $this->nostoCacheCollectionFactory->create()
             ->addFieldToSelect('*')
-            ->addDeletedFilter()
+            ->addIsDeletedFilter()
             ->addStoreFilter($store);
         return $collection;
     }

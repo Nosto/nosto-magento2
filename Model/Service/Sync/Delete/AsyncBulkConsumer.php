@@ -74,7 +74,6 @@ class AsyncBulkConsumer extends AbstractBulkConsumer
         );
     }
 
-
     /**
      * @inheritdoc
      * @throws \Nosto\Exception\MemoryOutOfBoundsException

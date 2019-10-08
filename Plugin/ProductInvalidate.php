@@ -42,7 +42,7 @@ use Magento\Framework\Indexer\IndexerRegistry;
 use Magento\Framework\Model\AbstractModel;
 use Nosto\Tagging\Model\Indexer\Invalidate as IndexerInvalidate;
 use Nosto\Tagging\Model\Product\Repository as NostoProductRepository;
-use Nosto\Tagging\Model\Service\Indexer\IndexService as IndexerService;
+use Nosto\Tagging\Model\Service\Cache\CacheService;
 
 class ProductInvalidate
 {
@@ -52,8 +52,8 @@ class ProductInvalidate
     /** @var IndexerInvalidate  */
     private $indexerInvalidate;
 
-    /** @var IndexerService  */
-    private $indexerService;
+    /** @var CacheService  */
+    private $cacheService;
 
     /** @var NostoProductRepository  */
     private $nostoProductRepository;
@@ -61,18 +61,18 @@ class ProductInvalidate
     /**
      * ProductInvalidate constructor.
      * @param IndexerRegistry $indexerRegistry
-     * @param IndexerService $indexerService
+     * @param CacheService $cacheService
      * @param IndexerInvalidate $indexerInvalidate
      */
     public function __construct(
         IndexerRegistry $indexerRegistry,
-        IndexerService $indexerService,
+        CacheService $cacheService,
         IndexerInvalidate $indexerInvalidate,
         NostoProductRepository $nostoProductRepository
     )
     {
         $this->indexerRegistry = $indexerRegistry;
-        $this->indexerService = $indexerService;
+        $this->cacheService = $cacheService;
         $this->indexerInvalidate = $indexerInvalidate;
         $this->nostoProductRepository = $nostoProductRepository;
     }
@@ -103,6 +103,7 @@ class ProductInvalidate
      * @param Closure $proceed
      * @param AbstractModel $product
      * @return mixed
+     * @suppress PhanTypeMismatchArgument
      */
     public function aroundDelete(
         MagentoResourceProduct $productResource,
@@ -112,12 +113,12 @@ class ProductInvalidate
         $mageIndexer = $this->indexerRegistry->get(IndexerInvalidate::INDEXER_ID);
         if (!$mageIndexer->isScheduled()) {
             $productIds = $this->nostoProductRepository->resolveParentProductIds($product);
-            if (empty($productIds) && $this->indexerService->canBuildBundleProduct($product)) {
+            if (empty($productIds) && $this->cacheService->canBuildProduct($product)) {
                 $productResource->addCommitCallback(function () use ($product) {
                     $this->indexerInvalidate->executeRow($product->getId());
                 });
             }
-            if (is_array($productIds)) {
+            if (is_array($productIds) && !empty($productIds)) {
                 $productResource->addCommitCallback(function () use ($productIds) {
                     $this->indexerInvalidate->executeList($productIds);
                 });

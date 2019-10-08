@@ -48,9 +48,12 @@ use Nosto\Tagging\Model\Product\Cache;
 use Nosto\Tagging\Model\ResourceModel\Product\Cache as CacheResource;
 use Nosto\Tagging\Model\ResourceModel\Product\Cache\CacheCollection;
 use Nosto\Tagging\Model\ResourceModel\Product\Cache\CacheCollectionFactory;
+use Nosto\Tagging\Util\PagingIterator;
 
 class CacheRepository implements ProductCacheRepositoryInterface
 {
+    const DELETE_PRODUCT_BATCH = 100;
+
     /** @var CacheCollectionFactory  */
     private $cacheCollectionFactory;
 
@@ -227,27 +230,22 @@ class CacheRepository implements ProductCacheRepositoryInterface
     }
 
     /**
-     * Marks products as deleted by given product ids and store
+     * Marks products as deleted by given cached product collection
      *
-     * @param array $ids
-     * @param Store $store
-     * @return int
+     * @param CacheCollection $collection
+     * @throws \Nosto\NostoException
      */
-    public function markProductsAsDeleted(array $ids, Store $store)
+    public function markProductsAsDeleted(CacheCollection $collection)
     {
-        $collection = $this->cacheCollectionFactory->create();
-        $connection = $collection->getConnection();
-        return $connection->update(
-            $collection->getMainTable(),
-            [
-                Cache::IS_DELETED => Cache::DB_VALUE_BOOLEAN_TRUE,
-                Cache::UPDATED_AT => $this->magentoTimeZone->date()->format('Y-m-d H:i:s')
-            ],
-            [
-                sprintf('%s IN (?)', Cache::PRODUCT_ID) => array_unique($ids),
-                sprintf('%s=?', Cache::STORE_ID) => $store->getId()
-            ]
-        );
+        $collection->setPageSize(self::DELETE_PRODUCT_BATCH);
+        $iterator = new PagingIterator($collection);
+        foreach ($iterator as $page) {
+            /** @var Cache $cachedProduct */
+            foreach ($page as $cachedProduct) {
+                $cachedProduct->setIsDeleted(true);
+                $this->save($cachedProduct); // @codingStandardsIgnoreLine
+            }
+        }
     }
 
     /**

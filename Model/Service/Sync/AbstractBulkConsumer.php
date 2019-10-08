@@ -117,7 +117,6 @@ abstract class AbstractBulkConsumer implements BulkConsumerInterface
     /**
      * @param array $productIds
      * @param string $storeId
-     * @return mixed
      */
     abstract public function doOperation(array $productIds, string $storeId);
 }

@@ -86,7 +86,6 @@ class AsyncBulkConsumer extends AbstractBulkConsumer
         );
     }
 
-
     /**
      * @inheritdoc
      * @throws \Nosto\Exception\MemoryOutOfBoundsException
@@ -95,7 +94,7 @@ class AsyncBulkConsumer extends AbstractBulkConsumer
     public function doOperation(array $productIds, string $storeId)
     {
         $store = $this->nostoScopeHelper->getStore($storeId);
-        $outOfSyncCollection = $this->cacheRepository->getByProductIdsAndStoreId($productIds, $storeId);
+        $outOfSyncCollection = $this->cacheRepository->getByProductIdsAndStoreId($productIds, (int) $storeId);
         $this->syncService->syncIndexedProducts($outOfSyncCollection, $store);
     }
 }
