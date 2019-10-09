@@ -41,16 +41,8 @@ use InvalidArgumentException;
 use Magento\Framework\EntityManager\EntityManager;
 use Magento\Framework\Json\Helper\Data as JsonHelper;
 use Nosto\Tagging\Logger\Logger;
-use Nosto\Tagging\Model\Product\Cache\CacheRepository;
-use Nosto\Tagging\Model\Service\Sync\SyncService as NostoSyncService;
-use Nosto\Tagging\Helper\Scope as NostoScopeHelper;
 
-/**
- * Asynchronous Bulk Consumer
- *
- * Class AsyncBulkConsumer
- */
-class AsyncBulkConsumer
+abstract class AbstractBulkConsumer implements BulkConsumerInterface
 {
     /** @var Logger */
     private $logger;
@@ -58,41 +50,22 @@ class AsyncBulkConsumer
     /** @var JsonHelper */
     private $jsonHelper;
 
-    /** @var CacheRepository */
-    private $cacheRepository;
-
-    /** @var NostoSyncService */
-    private $nostoSyncService;
-
-    /** @var NostoScopeHelper */
-    private $nostoScopeHelper;
-
     /** @var EntityManager */
     private $entityManager;
 
     /**
-     * AsyncBulkConsumer constructor.
-     *
+     * AbstractBulkConsumer constructor.
      * @param Logger $logger
      * @param JsonHelper $jsonHelper
-     * @param CacheRepository $cacheRepository
-     * @param NostoSyncService $nostoSyncService
-     * @param NostoScopeHelper $nostoScopeHelper
      * @param EntityManager $entityManager
      */
     public function __construct(
         Logger $logger,
         JsonHelper $jsonHelper,
-        CacheRepository $cacheRepository,
-        NostoSyncService $nostoSyncService,
-        NostoScopeHelper $nostoScopeHelper,
         EntityManager $entityManager
     ) {
         $this->logger = $logger;
         $this->jsonHelper = $jsonHelper;
-        $this->cacheRepository = $cacheRepository;
-        $this->nostoSyncService = $nostoSyncService;
-        $this->nostoScopeHelper = $nostoScopeHelper;
         $this->entityManager = $entityManager;
     }
 
@@ -122,10 +95,7 @@ class AsyncBulkConsumer
         $productIds = $unserializedData['product_ids'];
         $storeId = $unserializedData['store_id'];
         try {
-            $store = $this->nostoScopeHelper->getStore($storeId);
-            $outOfSyncCollection = $this->cacheRepository->getByProductIdsAndStoreId($productIds, $storeId);
-            $this->nostoSyncService->syncIndexedProducts($outOfSyncCollection, $store);
-            $this->nostoSyncService->syncDeletedProducts($store);
+            $this->doOperation($productIds, $storeId);
             if (!is_array($operation)) {
                 $operation->setStatus(
                     \Magento\AsynchronousOperations\Api\Data\OperationInterface::STATUS_TYPE_COMPLETE
@@ -139,8 +109,14 @@ class AsyncBulkConsumer
                 $operation->setStatus(
                     \Magento\AsynchronousOperations\Api\Data\OperationInterface::STATUS_TYPE_NOT_RETRIABLY_FAILED
                 )->setErrorCode($e->getCode())
-                ->setResultMessage($message);
+                    ->setResultMessage($message);
             }
         }
     }
+
+    /**
+     * @param array $productIds
+     * @param string $storeId
+     */
+    abstract public function doOperation(array $productIds, string $storeId);
 }

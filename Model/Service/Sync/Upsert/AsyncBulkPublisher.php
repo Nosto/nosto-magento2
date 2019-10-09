@@ -33,17 +33,34 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
-namespace Nosto\Tagging\Model\Service\Sync;
 
-use Magento\Store\Model\Store;
-use Nosto\Tagging\Model\ResourceModel\Product\Cache\CacheCollection;
+namespace Nosto\Tagging\Model\Service\Sync\Upsert;
 
-interface BulkSyncInterface
+use Nosto\Tagging\Model\Service\Sync\AbstractBulkPublisher;
+
+// @codingStandardsIgnoreFile
+class AsyncBulkPublisher extends AbstractBulkPublisher
 {
-    /**
-     * @param CacheCollection $collection
-     * @param Store $store
-     * @return void
-     */
-    public function execute(CacheCollection $collection, Store $store);
+    const NOSTO_SYNC_MESSAGE_QUEUE = 'nosto_product_sync.update';
+    const BULK_SIZE = 100;
+
+    public function getTopicName(): string
+    {
+        return self::NOSTO_SYNC_MESSAGE_QUEUE;
+    }
+
+    public function getBulkSize(): int
+    {
+        return self::BULK_SIZE;
+    }
+
+    public function getBulkDescription(): string
+    {
+        return sprintf('Sync %d Nosto products', 2);
+    }
+
+    public function getMetaData(): string
+    {
+        return 'Sync Nosto products';
+    }
 }

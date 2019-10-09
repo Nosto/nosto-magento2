@@ -64,8 +64,9 @@ use Nosto\Tagging\Model\ResourceModel\Magento\Product\CollectionFactory as Produ
 use Nosto\Tagging\Model\ResourceModel\Product\Cache\CacheCollection;
 use Nosto\Tagging\Model\ResourceModel\Product\Cache\CacheCollectionFactory;
 use Nosto\Tagging\Model\Service\AbstractService;
+use Nosto\Tagging\Model\Service\Sync\Upsert\AsyncBulkPublisher as ProductUpsertBulkPublisher;
+use Nosto\Tagging\Model\Service\Sync\Delete\AsyncBulkPublisher as ProductDeleteBulkPublisher;
 use Nosto\Tagging\Model\Service\Product\ComparatorInterface;
-use Nosto\Tagging\Model\Service\Sync\BulkSyncInterface;
 use Nosto\Tagging\Util\PagingIterator;
 use Nosto\Tagging\Util\Serializer\ProductSerializer;
 use Nosto\Types\Product\ProductInterface as NostoProductInterface;
@@ -112,8 +113,11 @@ class CacheService extends AbstractService
     /** @var array */
     private $invalidatedProducts = [];
 
-    /** @var BulkSyncInterface */
-    private $syncBulkPublisher;
+    /** @var ProductUpsertBulkPublisher */
+    private $productUpsertBulkPublisher;
+
+    /** @var ProductDeleteBulkPublisher */
+    private $productDeleteBulkPublisher;
 
     /** @var ProductSerializer */
     private $productSerializer;
@@ -122,7 +126,7 @@ class CacheService extends AbstractService
     private $productComparator;
 
     /**
-     * Index constructor.
+     * CacheService constructor.
      * @param CacheRepository $cacheRepository
      * @param CacheBuilder $indexBuilder
      * @param ProductRepository $productRepository
@@ -135,7 +139,8 @@ class CacheService extends AbstractService
      * @param ProductCollectionFactory $productCollectionFactory
      * @param TimezoneInterface $magentoTimeZone
      * @param NostoDataHelper $nostoDataHelper
-     * @param BulkSyncInterface $syncBulkPublisher
+     * @param ProductUpsertBulkPublisher $productUpsertBulkPublisher
+     * @param ProductDeleteBulkPublisher $productDeleteBulkPublisher
      * @param ProductSerializer $productSerializer
      * @param ComparatorInterface $productComparator
      */
@@ -152,7 +157,8 @@ class CacheService extends AbstractService
         ProductCollectionFactory $productCollectionFactory,
         TimezoneInterface $magentoTimeZone,
         NostoDataHelper $nostoDataHelper,
-        BulkSyncInterface $syncBulkPublisher,
+        ProductUpsertBulkPublisher $productUpsertBulkPublisher,
+        ProductDeleteBulkPublisher $productDeleteBulkPublisher,
         ProductSerializer $productSerializer,
         ComparatorInterface $productComparator
     ) {
@@ -167,7 +173,8 @@ class CacheService extends AbstractService
         $this->nostoProductRepository = $nostoProductRepository;
         $this->productCollectionFactory = $productCollectionFactory;
         $this->magentoTimeZone = $magentoTimeZone;
-        $this->syncBulkPublisher = $syncBulkPublisher;
+        $this->productUpsertBulkPublisher = $productUpsertBulkPublisher;
+        $this->productDeleteBulkPublisher = $productDeleteBulkPublisher;
         $this->productSerializer = $productSerializer;
         $this->productComparator = $productComparator;
     }
@@ -303,7 +310,7 @@ class CacheService extends AbstractService
      * @param ProductInterface $product
      * @return bool
      */
-    private function canBuildProduct(ProductInterface $product)
+    public function canBuildProduct(ProductInterface $product)
     {
         if ($product->getTypeId() === Type::TYPE_BUNDLE && empty($product->getOptions())) {
             return false;
@@ -326,7 +333,9 @@ class CacheService extends AbstractService
         $dirtyCollection = $this->getDirtyCollection($store, $ids);
         $this->rebuildDirtyProducts($dirtyCollection, $store);
         $outOfSyncCollection = $this->getOutOfSyncCollection($store, $ids);
-        $this->syncBulkPublisher->execute($outOfSyncCollection, $store);
+        $this->productUpsertBulkPublisher->execute($outOfSyncCollection, $store);
+        $deletedCollection = $this->getDeletedCollection($store);
+        $this->productDeleteBulkPublisher->execute($deletedCollection, $store);
     }
 
     /**
@@ -425,6 +434,7 @@ class CacheService extends AbstractService
      * @param ProductCollection $collection
      * @param array $ids
      * @param Store $store
+     * @throws Exception
      */
     public function markProductsAsDeletedByDiff(ProductCollection $collection, array $ids, Store $store)
     {
@@ -444,11 +454,14 @@ class CacheService extends AbstractService
         }
 
         // Flag the rest of the ids as deleted
-        $deleted = $this->cacheRepository->markProductsAsDeleted($uniqueIds, $store);
+        $cachedCollection = $this->nostoCacheCollectionFactory->create()
+            ->addProductIdsFilter($uniqueIds)
+            ->addStoreFilter($store);
+        $this->cacheRepository->markAsDeleted($cachedCollection);
         $this->getLogger()->info(
             sprintf(
                 'Marked %d indexed products as deleted for store %s',
-                $deleted,
+                $cachedCollection->getSize(),
                 $store->getName()
             )
         );
@@ -487,6 +500,19 @@ class CacheService extends AbstractService
         if (!empty($ids)) {
             $collection->addIdsFilter($ids);
         }
+        return $collection;
+    }
+
+    /**
+     * @param Store $store
+     * @return CacheCollection
+     */
+    private function getDeletedCollection(Store $store)
+    {
+        $collection = $this->nostoCacheCollectionFactory->create()
+            ->addFieldToSelect('*')
+            ->addIsDeletedFilter()
+            ->addStoreFilter($store);
         return $collection;
     }
 
