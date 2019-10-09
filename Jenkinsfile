@@ -42,7 +42,7 @@ pipeline {
 
     stage('Phan Analysis') {
       steps {
-        sh "composer create-project magento/community-edition magento"
+        sh "composer create-project magento/community-edition=2.3.2 magento"
         sh "cd magento && composer config minimum-stability dev"
         sh "cd magento && composer config prefer-stable true"
         script {
