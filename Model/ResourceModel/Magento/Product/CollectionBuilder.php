@@ -71,7 +71,6 @@ class CollectionBuilder
         $this->collection = $productCollectionFactory->create();
         $this->productCollectionFactory = $productCollectionFactory;
         $this->productVisibility = $productVisibility;
-
     }
 
     /**
