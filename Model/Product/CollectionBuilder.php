@@ -47,10 +47,18 @@ use Nosto\Tagging\Model\ResourceModel\Magento\Product\CollectionBuilder as Produ
 use Nosto\Tagging\Model\Service\Product\ProductServiceInterface;
 use Traversable;
 
+/**
+ * A builder class for building collection containing Nosto products
+ */
 class CollectionBuilder
 {
+    /** @var ProductCollectionBuilder */
     private $productCollectionBuilder;
+
+    /** @var ProductServiceInterface */
     private $productServiceInterface;
+
+    /** @var NostoLogger */
     private $logger;
 
     /**

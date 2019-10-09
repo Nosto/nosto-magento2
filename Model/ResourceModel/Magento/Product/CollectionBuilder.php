@@ -47,13 +47,10 @@ use Nosto\Tagging\Model\ResourceModel\Magento\Product\CollectionFactory as Produ
  */
 class CollectionBuilder
 {
-    /**
-     * @var ProductVisibility
-     */
+    /** @var ProductVisibility */
     private $productVisibility;
-    /**
-     * @var Collection
-     */
+
+    /** @var Collection */
     private $collection;
 
     /** @var CollectionFactory */
