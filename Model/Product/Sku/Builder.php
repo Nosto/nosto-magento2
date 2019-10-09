@@ -49,19 +49,22 @@ use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Product\BuilderTrait;
 use Nosto\Tagging\Model\Service\Stock\StockService;
 use Nosto\Types\Product\ProductInterface;
+use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
 
 class Builder
 {
     use BuilderTrait {
         BuilderTrait::__construct as builderTraitConstruct; // @codingStandardsIgnoreLine
     }
-    private $nostoDataHelper;
+
+    /** @var NostoPriceHelper */
     private $nostoPriceHelper;
+
+    /** @var ManagerInterface */
     private $eventManager;
-    private $logger;
+
+    /** @var CurrencyHelper */
     private $nostoCurrencyHelper;
-    private $nostoStockHelper;
-    private $stockService;
 
     /**
      * @param NostoHelperData $nostoHelperData
@@ -79,9 +82,7 @@ class Builder
         CurrencyHelper $nostoCurrencyHelper,
         StockService $stockService
     ) {
-        $this->nostoDataHelper = $nostoHelperData;
         $this->nostoPriceHelper = $priceHelper;
-        $this->logger = $logger;
         $this->eventManager = $eventManager;
         $this->nostoCurrencyHelper = $nostoCurrencyHelper;
         $this->builderTraitConstruct(
@@ -89,7 +90,6 @@ class Builder
             $stockService,
             $logger
         );
-        $this->stockService = $stockService;
     }
 
     /**
@@ -130,28 +130,28 @@ class Builder
                 $store
             );
             $nostoSku->setListPrice($listPrice);
-            $gtinAttribute = $this->nostoDataHelper->getGtinAttribute($store);
+            $gtinAttribute = $this->getDataHelper()->getGtinAttribute($store);
             if ($product->hasData($gtinAttribute)) {
                 $nostoSku->setGtin($product->getData($gtinAttribute));
             }
 
-            if ($this->nostoDataHelper->isCustomFieldsEnabled()) {
+            if ($this->getDataHelper()->isCustomFieldsEnabled()) {
                 foreach ($attributes as $attribute) {
                     try {
                         $code = $attribute->getProductAttribute()->getAttributeCode();
                         $nostoSku->addCustomField($code, $product->getAttributeText($code));
                     } catch (Exception $e) {
-                        $this->logger->exception($e);
+                        $this->getLogger()->exception($e);
                     }
                 }
                 //load user defined attributes from attribute set
                 $nostoSku->setCustomFields($this->buildCustomFields($product, $store));
             }
-            if ($this->nostoDataHelper->isInventoryTaggingEnabled($store)) {
-                $nostoSku->setInventoryLevel($this->stockService->getQuantity($product));
+            if ($this->getDataHelper()->isInventoryTaggingEnabled($store)) {
+                $nostoSku->setInventoryLevel($this->getStockService()->getQuantity($product));
             }
         } catch (Exception $e) {
-            $this->logger->exception($e);
+            $this->getLogger()->exception($e);
         }
 
         $this->eventManager->dispatch('nosto_sku_load_after', ['sku' => $nostoSku, 'magentoProduct' => $product]);

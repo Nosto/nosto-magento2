@@ -213,4 +213,28 @@ trait BuilderTrait
     {
         return $this->stockService->isInStock($product, $store);
     }
+
+    /**
+     * @return StockService
+     */
+    public function getStockService()
+    {
+        return $this->stockService;
+    }
+
+    /**
+     * @return NostoLogger
+     */
+    public function getLogger()
+    {
+        return $this->logger;
+    }
+
+    /**
+     * @return NostoHelperData
+     */
+    public function getDataHelper()
+    {
+        return $this->nostoDataHelper;
+    }
 }

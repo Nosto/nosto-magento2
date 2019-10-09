@@ -37,12 +37,9 @@
 namespace Nosto\Tagging\Model\Product;
 
 use Exception;
-use Magento\Catalog\Api\CategoryRepositoryInterface;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\Product\Gallery\ReadHandler as GalleryReadHandler;
-use Magento\Eav\Api\AttributeSetRepositoryInterface;
 use Magento\Framework\Event\ManagerInterface;
-use Magento\Review\Model\ReviewFactory;
 use Magento\Store\Model\Store;
 use Nosto\NostoException;
 use Nosto\Object\ModelFilter;
@@ -68,13 +65,11 @@ class Builder
     }
 
     const CUSTOMIZED_TAGS = ['tag1', 'tag2', 'tag3'];
-    private $nostoDataHelper;
     private $nostoPriceHelper;
     private $nostoCategoryBuilder;
     private $nostoStockHelper;
     private $galleryReadHandler;
     private $eventManager;
-    private $logger;
     private $reviewFactory;
     private $urlBuilder;
     private $skuCollection;
@@ -85,7 +80,6 @@ class Builder
     private $categoryRepository;
     private $attributeSetRepository;
     private $nostoRatingHelper;
-    private $stockService;
 
     /**
      * Builder constructor.
@@ -95,11 +89,8 @@ class Builder
      * @param NostoCategoryBuilder $categoryBuilder
      * @param StockService $stockService
      * @param NostoSkuCollection $skuCollection
-     * @param CategoryRepositoryInterface $categoryRepository
-     * @param AttributeSetRepositoryInterface $attributeSetRepository
      * @param NostoLogger $logger
      * @param ManagerInterface $eventManager
-     * @param ReviewFactory $reviewFactory
      * @param GalleryReadHandler $galleryReadHandler
      * @param NostoUrlBuilder $urlBuilder
      * @param CurrencyHelper $nostoCurrencyHelper
@@ -114,11 +105,8 @@ class Builder
         NostoCategoryBuilder $categoryBuilder,
         StockService $stockService,
         NostoSkuCollection $skuCollection,
-        CategoryRepositoryInterface $categoryRepository,
-        AttributeSetRepositoryInterface $attributeSetRepository,
         NostoLogger $logger,
         ManagerInterface $eventManager,
-        ReviewFactory $reviewFactory,
         GalleryReadHandler $galleryReadHandler,
         NostoUrlBuilder $urlBuilder,
         CurrencyHelper $nostoCurrencyHelper,
@@ -127,14 +115,9 @@ class Builder
         NostoVariationHelper $nostoVariationHelper,
         NostoRating $nostoRatingHelper
     ) {
-        $this->nostoDataHelper = $nostoHelperData;
         $this->nostoPriceHelper = $priceHelper;
         $this->nostoCategoryBuilder = $categoryBuilder;
-        $this->categoryRepository = $categoryRepository;
-        $this->attributeSetRepository = $attributeSetRepository;
-        $this->logger = $logger;
         $this->eventManager = $eventManager;
-        $this->reviewFactory = $reviewFactory;
         $this->galleryReadHandler = $galleryReadHandler;
         $this->urlBuilder = $urlBuilder;
         $this->skuCollection = $skuCollection;
@@ -148,7 +131,6 @@ class Builder
         $this->priceVariationCollection = $priceVariationCollection;
         $this->nostoVariationHelper = $nostoVariationHelper;
         $this->nostoRatingHelper = $nostoRatingHelper;
-        $this->stockService = $stockService;
     }
 
     /**
@@ -191,7 +173,7 @@ class Builder
                         $store
                     )->getCode()
                 );
-            } elseif ($this->nostoDataHelper->isPricingVariationEnabled($store)) {
+            } elseif ($this->getDataHelper()->isPricingVariationEnabled($store)) {
                 $nostoProduct->setVariationId(
                     $this->nostoVariationHelper->getDefaultVariationCode()
                 );
@@ -199,8 +181,8 @@ class Builder
 
             $nostoProduct->setAvailability($this->buildAvailability($product, $store));
             $nostoProduct->setCategories($this->nostoCategoryBuilder->buildCategories($product, $store));
-            if ($this->nostoDataHelper->isInventoryTaggingEnabled($store)) {
-                $inventoryLevel = $this->stockService->getQuantity($product);
+            if ($this->getDataHelper()->isInventoryTaggingEnabled($store)) {
+                $inventoryLevel = $this->getStockService()->getQuantity($product);
                 $nostoProduct->setInventoryLevel($inventoryLevel);
             }
             $rating = $this->nostoRatingHelper->getRatings($product, $store);
@@ -208,10 +190,10 @@ class Builder
                 $nostoProduct->setRatingValue($rating->getRating());
                 $nostoProduct->setReviewCount($rating->getReviewCount());
             }
-            if ($this->nostoDataHelper->isAltimgTaggingEnabled($store)) {
+            if ($this->getDataHelper()->isAltimgTaggingEnabled($store)) {
                 $nostoProduct->setAlternateImageUrls($this->buildAlternativeImages($product, $store));
             }
-            if ($this->nostoDataHelper->isVariationTaggingEnabled($store)) {
+            if ($this->getDataHelper()->isVariationTaggingEnabled($store)) {
                 $nostoProduct->setSkus($this->skuCollection->build($product, $store));
             }
             $descriptions = [];
@@ -224,15 +206,15 @@ class Builder
             if (!empty($descriptions)) {
                 $nostoProduct->setDescription(implode(' ', $descriptions));
             }
-            $brandAttribute = $this->nostoDataHelper->getBrandAttribute($store);
+            $brandAttribute = $this->getDataHelper()->getBrandAttribute($store);
             if ($product->hasData($brandAttribute)) {
                 $nostoProduct->setBrand($this->getAttributeValue($product, $brandAttribute));
             }
-            $marginAttribute = $this->nostoDataHelper->getMarginAttribute($store);
+            $marginAttribute = $this->getDataHelper()->getMarginAttribute($store);
             if ($product->hasData($marginAttribute)) {
                 $nostoProduct->setSupplierCost($this->getAttributeValue($product, $marginAttribute));
             }
-            $gtinAttribute = $this->nostoDataHelper->getGtinAttribute($store);
+            $gtinAttribute = $this->getDataHelper()->getGtinAttribute($store);
             if ($product->hasData($gtinAttribute)) {
                 $nostoProduct->setGtin($this->getAttributeValue($product, $gtinAttribute));
             }
@@ -246,14 +228,14 @@ class Builder
             $this->amendAttributeTags($product, $nostoProduct, $store);
 
             // When using customer group price variations, set the variations
-            if ($this->nostoDataHelper->isPricingVariationEnabled($store)
-                && $this->nostoDataHelper->isMultiCurrencyDisabled($store)
+            if ($this->getDataHelper()->isPricingVariationEnabled($store)
+                && $this->getDataHelper()->isMultiCurrencyDisabled($store)
             ) {
                 $nostoProduct->setVariations(
                     $this->priceVariationCollection->build($product, $nostoProduct, $store)
                 );
             }
-            if ($this->nostoDataHelper->isTagDatePublishedEnabled($store)) {
+            if ($this->getDataHelper()->isTagDatePublishedEnabled($store)) {
                 $nostoProduct->setDatePublished($product->getCreatedAt());
             }
 
@@ -273,7 +255,7 @@ class Builder
                 )->getCode()
             );
         } catch (Exception $e) {
-            $this->logger->exception($e);
+            $this->getLogger()->exception($e);
         }
         $this->eventManager->dispatch(
             'nosto_product_load_after',
@@ -322,7 +304,7 @@ class Builder
     {
         $attributes = [];
         foreach (self::CUSTOMIZED_TAGS as $tag) {
-            $tagAttributes = $this->nostoDataHelper->getTagAttributes($tag, $store);
+            $tagAttributes = $this->getDataHelper()->getTagAttributes($tag, $store);
             if (!$tagAttributes) {
                 continue;
             }
@@ -347,7 +329,7 @@ class Builder
     private function amendAttributeTags(Product $product, NostoProduct $nostoProduct, Store $store)
     {
         foreach (self::CUSTOMIZED_TAGS as $tag) {
-            $attributes = $this->nostoDataHelper->getTagAttributes($tag, $store);
+            $attributes = $this->getDataHelper()->getTagAttributes($tag, $store);
             if (!$attributes) {
                 continue;
             }
@@ -372,7 +354,7 @@ class Builder
                             throw new NostoException('Method add' . $tag . ' is not defined.');
                     }
                 } catch (Exception $e) {
-                    $this->logger->exception($e);
+                    $this->getLogger()->exception($e);
                 }
             }
         }
@@ -388,12 +370,13 @@ class Builder
     private function buildAvailability(Product $product, Store $store)
     {
         $availability = ProductInterface::OUT_OF_STOCK;
+        $isInStock = $this->isInStock($product, $store);
         if (!$product->isVisibleInSiteVisibility()
-            || !$this->isAvailabeInStore($product, $store)
+            || (!$this->isAvailabeInStore($product, $store) && $isInStock)
         ) {
             $availability = ProductInterface::INVISIBLE;
-        } elseif ($product->isAvailable()
-            && $this->isInStock($product, $store)
+        } elseif ($isInStock
+            && $product->isAvailable()
         ) {
             $availability = ProductInterface::IN_STOCK;
         }
@@ -434,7 +417,7 @@ class Builder
             $tags[] = ProductInterface::ADD_TO_CART;
         }
 
-        if ($this->nostoDataHelper->isLowStockIndicationEnabled($store)
+        if ($this->getDataHelper()->isLowStockIndicationEnabled($store)
             && $this->lowStockHelper->build($product)
         ) {
             $tags[] = ProductInterface::LOW_STOCK;
