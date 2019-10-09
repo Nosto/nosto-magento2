@@ -51,9 +51,6 @@
             <!-- sku -->
             <table name="catalog_product_super_link" entity_column="product_id" />
 
-            <!-- reviews -->
-            <table name="rating_option_vote_aggregated" entity_column="entity_pk_value" />
-
             <!-- inventory level -->
             <table name="cataloginventory_stock_item" entity_column="product_id" />
 
