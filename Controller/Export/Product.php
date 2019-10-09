@@ -39,7 +39,6 @@ namespace Nosto\Tagging\Controller\Export;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\Controller\Result\Raw as RawResult;
 use Magento\Store\Model\Store;
-use Nosto\Helper\SerializationHelper;
 use Nosto\NostoException;
 use Nosto\Object\AbstractCollection;
 use Nosto\Object\Product\Product as NostoProduct;
@@ -47,7 +46,7 @@ use Nosto\Object\Product\ProductCollection;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Model\Product\CollectionBuilder;
-use Nosto\Tagging\Model\Service\Sync\SyncService as NostoSyncService;
+use Nosto\Tagging\Model\Service\Sync\Upsert\SyncService;
 
 /**
  * Product export controller used to export product history to Nosto in order to
@@ -63,24 +62,22 @@ class Product extends Base
     /** @var CollectionBuilder  */
     private $nostoCollectionBuilder;
 
-    /** @var NostoSyncService */
+    /** @var SyncService */
     private $nostoSyncService;
 
     /**
-     * Constructor.
-     *
      * @param Context $context
      * @param NostoHelperScope $nostoHelperScope
      * @param NostoHelperAccount $nostoHelperAccount
      * @param CollectionBuilder $collectionBuilder
-     * @param NostoSyncService $nostoSyncService
+     * @param SyncService $nostoSyncService
      */
     public function __construct(
         Context $context,
         NostoHelperScope $nostoHelperScope,
         NostoHelperAccount $nostoHelperAccount,
         CollectionBuilder $collectionBuilder,
-        NostoSyncService $nostoSyncService
+        SyncService $nostoSyncService
     ) {
         parent::__construct($context, $nostoHelperScope, $nostoHelperAccount);
 
