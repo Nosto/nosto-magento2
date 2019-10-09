@@ -38,56 +38,35 @@ namespace Nosto\Tagging\Model\Product;
 
 use Exception;
 use Magento\Catalog\Model\Product;
-use Magento\Catalog\Model\Product\Visibility as ProductVisibility;
-use Magento\Catalog\Model\ResourceModel\Product\Collection as ProductCollection;
-use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductCollectionFactory;
-use Magento\Sales\Api\Data\EntityInterface;
 use Magento\Store\Model\Store;
 use Nosto\NostoException;
 use Nosto\Object\Product\ProductCollection as NostoProductCollection;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
+use Nosto\Tagging\Model\ResourceModel\Magento\Product\Collection as ProductCollection;
+use Nosto\Tagging\Model\ResourceModel\Magento\Product\CollectionBuilder as ProductCollectionBuilder;
 use Nosto\Tagging\Model\Service\Product\ProductServiceInterface;
 use Traversable;
 
-class Collection
+class CollectionBuilder
 {
-    private $productCollectionFactory;
-    private $productVisibility;
+    private $productCollectionBuilder;
     private $productServiceInterface;
     private $logger;
 
     /**
      * Collection constructor.
-     * @param ProductCollectionFactory $productCollectionFactory
-     * @param ProductVisibility $productVisibility
+     * @param ProductCollectionBuilder $productCollectionBuilder
      * @param ProductServiceInterface $productServiceInterface
      * @param NostoLogger $logger
      */
     public function __construct(
-        ProductCollectionFactory $productCollectionFactory,
-        ProductVisibility $productVisibility,
+        ProductCollectionBuilder $productCollectionBuilder,
         ProductServiceInterface $productServiceInterface,
         NostoLogger $logger
     ) {
-        $this->productCollectionFactory = $productCollectionFactory;
-        $this->productVisibility = $productVisibility;
+        $this->productCollectionBuilder = $productCollectionBuilder;
         $this->productServiceInterface = $productServiceInterface;
         $this->logger = $logger;
-    }
-
-    /**
-     * @param Store $store
-     * @return ProductCollection
-     */
-    public function getCollection(Store $store)
-    {
-        /** @var ProductCollection $collection */
-        $collection = $this->productCollectionFactory->create();
-        $collection->setVisibility($this->productVisibility->getVisibleInSiteIds());
-        $collection->addAttributeToFilter('status', ['eq' => '1']);
-        $collection->addStoreFilter($store->getId());
-        $collection->addAttributeToSelect('*');
-        return $collection;
     }
 
     /**
@@ -98,9 +77,10 @@ class Collection
      */
     public function buildSingle(Store $store, $id)
     {
-        $collection = $this->getCollection($store);
-        $collection->addFieldToFilter(EntityInterface::ENTITY_ID, $id);
-        return $this->build($store, $collection);
+        return $this->load(
+            $store,
+            $this->productCollectionBuilder->buildSingle($store, $id)
+        );
     }
 
     /**
@@ -112,11 +92,10 @@ class Collection
      */
     public function buildMany(Store $store, $limit = 100, $offset = 0)
     {
-        $collection = $this->getCollection($store);
-        $currentPage = ($offset / $limit) + 1;
-        $collection->getSelect()->limitPage($currentPage, $limit);
-        $collection->setOrder(EntityInterface::CREATED_AT, $collection::SORT_ORDER_DESC);
-        return $this->build($store, $collection);
+        return $this->load(
+            $store,
+            $this->productCollectionBuilder->buildMany($store, $limit, $offset)
+        );
     }
 
     /**
@@ -125,18 +104,18 @@ class Collection
      * @return NostoProductCollection
      * @throws NostoException
      */
-    private function build(Store $store, $collection)
+    private function load(Store $store, $collection)
     {
         /** @var ProductCollection $collection */
         $products = new NostoProductCollection();
-        $items = $collection->loadData();
+        $items = $collection->getItems();
         if ($items instanceof Traversable === false && !is_array($items)) {
             throw new NostoException(
                 sprintf('Invalid collection type %s for product export', get_class($collection))
             );
         }
+        /** @var Product $product */
         foreach ($items as $product) {
-            /** @var Product $product */
             try {
                 $nostoProduct = $this->productServiceInterface->getProduct(
                     $product,
