@@ -103,7 +103,7 @@ class DeleteService extends AbstractService
     public function syncDeletedProducts(array $productIds, Store $store)
     {
         try {
-            $this->purgeDeletedProducts($productIds, $store);
+            $this->purgeDeletedFromCache($productIds, $store);
             $this->getLogger()->info(
                 sprintf(
                     'Removed products from index for store %s',
@@ -123,7 +123,7 @@ class DeleteService extends AbstractService
      * @throws MemoryOutOfBoundsException
      * @throws NostoException
      */
-    public function deleteIndexedProducts(NostoCacheCollection $collection, Store $store)
+    public function deleteFromCache(NostoCacheCollection $collection, Store $store)
     {
         if ($collection->getSize() === 0) {
             return;
@@ -167,13 +167,13 @@ class DeleteService extends AbstractService
      * @throws MemoryOutOfBoundsException
      * @throws NostoException
      */
-    public function purgeDeletedProducts(array $productIds, Store $store)
+    public function purgeDeletedFromCache(array $productIds, Store $store)
     {
         $collection = $this->nostoCacheCollectionFactory->create()
             ->addFieldToSelect('*')
             ->addProductIdsFilter($productIds)
             ->addIsDeletedFilter()
             ->addStoreFilter($store);
-        $this->deleteIndexedProducts($collection, $store);
+        $this->deleteFromCache($collection, $store);
     }
 }

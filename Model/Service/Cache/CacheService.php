@@ -457,7 +457,7 @@ class CacheService extends AbstractService
         $cachedCollection = $this->nostoCacheCollectionFactory->create()
             ->addProductIdsFilter($uniqueIds)
             ->addStoreFilter($store);
-        $this->cacheRepository->markProductsAsDeleted($cachedCollection);
+        $this->cacheRepository->markAsDeleted($cachedCollection);
         $this->getLogger()->info(
             sprintf(
                 'Marked %d indexed products as deleted for store %s',

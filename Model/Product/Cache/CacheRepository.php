@@ -235,7 +235,7 @@ class CacheRepository implements ProductCacheRepositoryInterface
      * @param CacheCollection $collection
      * @throws \Nosto\NostoException
      */
-    public function markProductsAsDeleted(CacheCollection $collection)
+    public function markAsDeleted(CacheCollection $collection)
     {
         $collection->setPageSize(self::DELETE_PRODUCT_BATCH);
         $iterator = new PagingIterator($collection);
@@ -243,7 +243,7 @@ class CacheRepository implements ProductCacheRepositoryInterface
             /** @var Cache $cachedProduct */
             foreach ($page as $cachedProduct) {
                 $cachedProduct->setIsDeleted(true);
-                $this->save($cachedProduct); // @codingStandardsIgnoreLine
+                    $this->save($cachedProduct); // @codingStandardsIgnoreLine
             }
         }
     }
