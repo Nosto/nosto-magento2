@@ -122,8 +122,8 @@ class CollectionBuilder
                 sprintf('Invalid collection type %s for product export', get_class($collection))
             );
         }
-        /** @var Product $product */
         foreach ($items as $product) {
+            /** @var Product $product */
             try {
                 $nostoProduct = $this->productServiceInterface->getProduct(
                     $product,

@@ -65,7 +65,6 @@ class CollectionBuilder
         ProductCollectionFactory $productCollectionFactory,
         ProductVisibility $productVisibility
     ) {
-        $this->collection = $productCollectionFactory->create();
         $this->productCollectionFactory = $productCollectionFactory;
         $this->productVisibility = $productVisibility;
     }
@@ -190,9 +189,20 @@ class CollectionBuilder
      */
     public function reset()
     {
+        return $this->init();
+    }
+
+    /**
+     * Initializes the collection
+     *
+     * @return $this
+     */
+    public function init()
+    {
         $this->collection = $this->productCollectionFactory->create();
         return $this;
     }
+
     /**
      * Initializes the collection with store filter and defaults
      *
