@@ -49,9 +49,8 @@ use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Product\Cache\CacheRepository;
 use Nosto\Tagging\Model\ResourceModel\Product\Cache\CacheCollection;
 use Nosto\Tagging\Model\Service\AbstractService;
+use Nosto\Tagging\Model\Service\Product\ProductSerializerInterface;
 use Nosto\Tagging\Util\PagingIterator;
-
-use Nosto\Tagging\Util\Serializer\ProductSerializer;
 
 class SyncService extends AbstractService
 {
@@ -72,7 +71,7 @@ class SyncService extends AbstractService
     /** @var NostoDataHelper */
     private $nostoDataHelper;
 
-    /** @var ProductSerializer */
+    /** @var ProductSerializerInterface */
     private $productSerializer;
 
     /**
@@ -82,7 +81,7 @@ class SyncService extends AbstractService
      * @param NostoHelperUrl $nostoHelperUrl
      * @param NostoLogger $logger
      * @param NostoDataHelper $nostoDataHelper
-     * @param ProductSerializer $productSerializer
+     * @param ProductSerializerInterface $productSerializer
      */
     public function __construct(
         CacheRepository $cacheRepository,
@@ -90,7 +89,7 @@ class SyncService extends AbstractService
         NostoHelperUrl $nostoHelperUrl,
         NostoLogger $logger,
         NostoDataHelper $nostoDataHelper,
-        ProductSerializer $productSerializer
+        ProductSerializerInterface $productSerializer
     ) {
         parent::__construct($nostoDataHelper, $logger);
         $this->cacheRepository = $cacheRepository;

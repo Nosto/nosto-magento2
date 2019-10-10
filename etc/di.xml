@@ -40,8 +40,8 @@
     <preference for="Nosto\Tagging\Api\Data\ProductQueueSearchResultsInterface" type="Nosto\Tagging\Model\Product\QueueSearchResults"/>
     <preference for="Nosto\Tagging\Model\Service\Product\ProductServiceInterface" type="Nosto\Tagging\Model\Service\Product\DefaultProductService"/>
     <preference for="Nosto\Tagging\Model\Service\Stock\Provider\StockProviderInterface" type="Nosto\Tagging\Model\Service\Stock\Provider\CachingStockProvider"/>
-    <preference for="Nosto\Tagging\Util\Serializer\SerializerInterface" type="Nosto\Tagging\Util\Serializer\DefaultSerializer"/>
-    <preference for="Nosto\Tagging\Model\Service\Product\ComparatorInterface" type="Nosto\Tagging\Model\Service\Product\DefaultComparator"/>
+    <preference for="Nosto\Tagging\Model\Service\Product\ProductSerializerInterface" type="Nosto\Tagging\Model\Service\Product\DefaultProductSerializer"/>
+    <preference for="Nosto\Tagging\Model\Service\Product\ProductComparatorInterface" type="Nosto\Tagging\Model\Service\Product\DefaultProductComparator"/>
     <preference for="Symfony\Component\Console\Input\InputInterface" type="Symfony\Component\Console\Input\ArgvInput\Proxy"/>
     <preference for="Nosto\Tagging\Model\Mview\ChangeLogInterface" type="Nosto\Tagging\Model\Mview\ChangeLog"/>
     <preference for="Nosto\Tagging\Model\Mview\MviewInterface" type="Nosto\Tagging\Model\Mview\Mview"/>

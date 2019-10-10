@@ -33,51 +33,22 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
-
-namespace Nosto\Tagging\Util\Serializer;
+namespace Nosto\Tagging\Model\Service\Product;
 
 use Nosto\Object\Product\Product;
+use Nosto\Types\Product\ProductInterface;
 
-/**
- * Default class for serializing and deserializing objects
- */
-class ProductSerializer
+interface ProductSerializerInterface
 {
     /**
-     * @var SerializerInterface
-     */
-    private $serializer;
-
-    /**
-     * Constructor
-     * @param SerializerInterface $serializer
-     */
-    public function __construct(
-        SerializerInterface $serializer
-    ) {
-        $this->serializer = $serializer;
-    }
-
-    /**
-     * Builds Nosto product from string
-     *
-     * @param string $data
-     * @return Product
-     */
-    public function fromString($data)
-    {
-        /** @noinspection PhpIncompatibleReturnTypeInspection */
-        return $this->serializer->deserialize($data, Product::class);
-    }
-
-    /**
-     * Serializes Nosto product to string
-     *
-     * @param Product $product
+     * @param ProductInterface $product
      * @return string
      */
-    public function toString(Product $product)
-    {
-        return $this->serializer->serialize($product);
-    }
+    public function toString(ProductInterface $product);
+
+    /**
+     * @param string $data
+     * @return Product|null
+     */
+    public function fromString($data);
 }

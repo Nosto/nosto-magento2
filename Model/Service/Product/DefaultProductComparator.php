@@ -34,29 +34,22 @@
  *
  */
 
-namespace Nosto\Tagging\Util\Serializer;
+namespace Nosto\Tagging\Model\Service\Product;
 
-/**
- * Default class for serializing and deserializing objects
- */
-class DefaultSerializer implements SerializerInterface
+use Nosto\Helper\SerializationHelper;
+use Nosto\Tagging\Util\StringUtil;
+use Nosto\Types\Product\ProductInterface;
+
+class DefaultProductComparator implements ProductComparatorInterface
 {
     /**
-     * @param mixed|object $object
-     * @return mixed|string
+     * @inheritDoc
      */
-    public function serialize($object)
+    public function isEqual(ProductInterface $product1, ProductInterface $product2)
     {
-        return serialize($object);  // @codingStandardsIgnoreLine
-    }
+        $product1string = StringUtil::stripWhitespaceAndLinebreaks(SerializationHelper::serialize($product1));
+        $product2string = StringUtil::stripWhitespaceAndLinebreaks(SerializationHelper::serialize($product2));
 
-    /**
-     * @param string $data
-     * @param string $class
-     * @return mixed|object
-     */
-    public function deserialize($data, $class)
-    {
-        return unserialize($data, [$class]); // @codingStandardsIgnoreLine
+        return $product1string === $product2string;
     }
 }

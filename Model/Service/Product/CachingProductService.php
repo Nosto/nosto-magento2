@@ -42,7 +42,6 @@ use Magento\Store\Api\Data\StoreInterface;
 use Nosto\Tagging\Logger\Logger;
 use Nosto\Tagging\Model\Product\Cache\CacheRepository;
 use Nosto\Tagging\Model\Service\Cache\CacheService;
-use Nosto\Tagging\Util\Serializer\ProductSerializer;
 use Nosto\Types\Product\ProductInterface as NostoProductInterface;
 
 class CachingProductService implements ProductServiceInterface
@@ -57,7 +56,7 @@ class CachingProductService implements ProductServiceInterface
     /** @var CacheService */
     private $nostoCacheService;
 
-    /** @var ProductSerializer */
+    /** @var ProductSerializerInterface */
     private $productSerializer;
 
     /**
@@ -65,13 +64,13 @@ class CachingProductService implements ProductServiceInterface
      * @param CacheRepository $nostoCacheRepository
      * @param Logger $nostoLogger
      * @param CacheService $nostoCacheService
-     * @param ProductSerializer $productSerializer
+     * @param ProductSerializerInterface $productSerializer
      */
     public function __construct(
         CacheRepository $nostoCacheRepository,
         Logger $nostoLogger,
         CacheService $nostoCacheService,
-        ProductSerializer $productSerializer
+        ProductSerializerInterface $productSerializer
     ) {
         $this->nostoCacheRepository = $nostoCacheRepository;
         $this->nostoLogger = $nostoLogger;

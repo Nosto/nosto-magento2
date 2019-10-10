@@ -36,21 +36,27 @@
 
 namespace Nosto\Tagging\Model\Service\Product;
 
-use Nosto\Helper\SerializationHelper;
-use Nosto\Tagging\Model\Service\Product\ComparatorInterface;
-use Nosto\Tagging\Util\StringUtil;
+use Nosto\Object\Product\Product;
 use Nosto\Types\Product\ProductInterface;
 
-class DefaultComparator implements ComparatorInterface
+/**
+ * Default class for serializing and deserializing objects
+ */
+class DefaultProductSerializer implements ProductSerializerInterface
 {
     /**
      * @inheritDoc
      */
-    public function isEqual(ProductInterface $product1, ProductInterface $product2)
+    public function fromString($data)
     {
-        $product1string = StringUtil::stripWhitespaceAndLinebreaks(SerializationHelper::serialize($product1));
-        $product2string = StringUtil::stripWhitespaceAndLinebreaks(SerializationHelper::serialize($product2));
+        return unserialize($data, [Product::class]); // @codingStandardsIgnoreLine
+    }
 
-        return $product1string === $product2string;
+    /**
+     * @inheritDoc
+     */
+    public function toString(ProductInterface $product)
+    {
+        return serialize($product);  // @codingStandardsIgnoreLine
     }
 }
