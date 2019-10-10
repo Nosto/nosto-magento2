@@ -37,7 +37,6 @@
 namespace Nosto\Tagging\Block;
 
 use Exception;
-use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Catalog\Block\Product\Context;
 use Magento\Catalog\Block\Product\View;
@@ -50,6 +49,7 @@ use Magento\Framework\Stdlib\StringUtils;
 use Magento\Framework\Url\EncoderInterface as UrlEncoder;
 use Nosto\Helper\DateHelper;
 use Nosto\Helper\PriceHelper;
+use Nosto\Object\Product\Product as NostoProduct;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Model\Category\Builder as NostoCategoryBuilder;
@@ -131,7 +131,7 @@ class Product extends View
     /**
      * Returns the Nosto product DTO.
      *
-     * @return ProductInterface
+     * @return NostoProduct
      * @throws Exception
      */
     public function getAbstractObject()

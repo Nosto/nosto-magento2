@@ -45,7 +45,7 @@ interface ProductServiceInterface
     /**
      * @param ProductInterface $product
      * @param StoreInterface $store
-     * @return NostoProduct|NostoProductInterface|null
+     * @return NostoProduct|null
      */
     public function getProduct(ProductInterface $product, StoreInterface $store);
 }
