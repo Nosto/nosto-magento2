@@ -37,7 +37,7 @@
 namespace Nosto\Tagging\Model\Product;
 
 use Exception;
-use Magento\Catalog\Model\Product;
+use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Store\Model\Store;
 use Nosto\NostoException;
 use Nosto\Object\Product\ProductCollection as NostoProductCollection;
@@ -123,7 +123,7 @@ class CollectionBuilder
             );
         }
         foreach ($items as $product) {
-            /** @var Product $product */
+            /** @var ProductInterface $product */
             try {
                 $nostoProduct = $this->productServiceInterface->getProduct(
                     $product,
