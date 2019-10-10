@@ -46,13 +46,12 @@ use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Data as NostoDataHelper;
 use Nosto\Tagging\Helper\Url as NostoHelperUrl;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
-use Nosto\Tagging\Util\Serializer\ProductSerializer;
-use Nosto\Tagging\Util\PagingIterator;
 use Nosto\Tagging\Model\Product\Cache\CacheRepository;
 use Nosto\Tagging\Model\ResourceModel\Product\Cache\CacheCollection;
-use Nosto\Tagging\Model\ResourceModel\Product\Cache\CacheCollectionFactory;
-
 use Nosto\Tagging\Model\Service\AbstractService;
+use Nosto\Tagging\Util\PagingIterator;
+
+use Nosto\Tagging\Util\Serializer\ProductSerializer;
 
 class SyncService extends AbstractService
 {
@@ -70,9 +69,6 @@ class SyncService extends AbstractService
     /** @var NostoHelperUrl */
     private $nostoHelperUrl;
 
-    /** @var CacheCollectionFactory */
-    private $nostoCacheCollectionFactory;
-
     /** @var NostoDataHelper */
     private $nostoDataHelper;
 
@@ -85,7 +81,6 @@ class SyncService extends AbstractService
      * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoHelperUrl $nostoHelperUrl
      * @param NostoLogger $logger
-     * @param CacheCollectionFactory $nostoCacheCollectionFactory
      * @param NostoDataHelper $nostoDataHelper
      * @param ProductSerializer $productSerializer
      */
@@ -94,7 +89,6 @@ class SyncService extends AbstractService
         NostoHelperAccount $nostoHelperAccount,
         NostoHelperUrl $nostoHelperUrl,
         NostoLogger $logger,
-        CacheCollectionFactory $nostoCacheCollectionFactory,
         NostoDataHelper $nostoDataHelper,
         ProductSerializer $productSerializer
     ) {
@@ -102,7 +96,6 @@ class SyncService extends AbstractService
         $this->cacheRepository = $cacheRepository;
         $this->nostoHelperAccount = $nostoHelperAccount;
         $this->nostoHelperUrl = $nostoHelperUrl;
-        $this->nostoCacheCollectionFactory = $nostoCacheCollectionFactory;
         $this->nostoDataHelper = $nostoDataHelper;
         $this->productSerializer = $productSerializer;
     }

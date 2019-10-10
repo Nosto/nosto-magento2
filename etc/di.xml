@@ -145,7 +145,7 @@
             </argument>
         </arguments>
     </type>
-    <type name="Nosto\Tagging\Model\Product\Collection">
+    <type name="Nosto\Tagging\Model\Product\CollectionBuilder">
         <arguments>
             <argument name="productServiceInterface" xsi:type="object">
                 Nosto\Tagging\Model\Service\Product\CachingProductService
