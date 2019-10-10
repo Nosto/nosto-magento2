@@ -41,6 +41,7 @@ use Magento\Catalog\Model\Product;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable\Attribute as ConfigurableAttribute;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Store\Model\Store;
+use Magento\Store\Model\StoreManagerInterface;
 use Nosto\Object\Product\Sku as NostoSku;
 use Nosto\Tagging\Helper\Currency as CurrencyHelper;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
@@ -79,7 +80,8 @@ class Builder
         NostoLogger $logger,
         ManagerInterface $eventManager,
         CurrencyHelper $nostoCurrencyHelper,
-        StockService $stockService
+        StockService $stockService,
+        StoreManagerInterface $storeManager
     ) {
         $this->nostoPriceHelper = $priceHelper;
         $this->eventManager = $eventManager;
@@ -87,7 +89,8 @@ class Builder
         $this->builderTraitConstruct(
             $nostoHelperData,
             $stockService,
-            $logger
+            $logger,
+            $storeManager
         );
     }
 

@@ -57,6 +57,7 @@ use Nosto\Tagging\Model\Product\Url\Builder as NostoUrlBuilder;
 use Nosto\Tagging\Model\Product\Variation\Collection as PriceVariationCollection;
 use Nosto\Tagging\Model\Service\Stock\StockService;
 use Nosto\Types\Product\ProductInterface;
+use Magento\Store\Model\StoreManagerInterface;
 
 class Builder
 {
@@ -97,6 +98,7 @@ class Builder
      * @param PriceVariationCollection $priceVariationCollection
      * @param NostoVariationHelper $nostoVariationHelper
      * @param NostoRating $nostoRatingHelper
+     * @param StoreManagerInterface $storeManager
      */
     public function __construct(
         NostoHelperData $nostoHelperData,
@@ -112,7 +114,8 @@ class Builder
         LowStockHelper $lowStockHelper,
         PriceVariationCollection $priceVariationCollection,
         NostoVariationHelper $nostoVariationHelper,
-        NostoRating $nostoRatingHelper
+        NostoRating $nostoRatingHelper,
+        StoreManagerInterface $storeManager
     ) {
         $this->nostoPriceHelper = $priceHelper;
         $this->nostoCategoryBuilder = $categoryBuilder;
@@ -125,7 +128,8 @@ class Builder
         $this->builderTraitConstruct(
             $nostoHelperData,
             $stockService,
-            $logger
+            $logger,
+            $storeManager
         );
         $this->priceVariationCollection = $priceVariationCollection;
         $this->nostoVariationHelper = $nostoVariationHelper;
