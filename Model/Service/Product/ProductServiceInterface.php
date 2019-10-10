@@ -36,15 +36,15 @@
 namespace Nosto\Tagging\Model\Service\Product;
 
 use Magento\Catalog\Api\Data\ProductInterface;
+use Magento\Catalog\Model\Product;
 use Magento\Store\Api\Data\StoreInterface;
-use Nosto\Object\Product\Product as NostoProduct;
 
 interface ProductServiceInterface
 {
     /**
      * @param ProductInterface $product
      * @param StoreInterface $store
-     * @return ProductInterface|NostoProduct|null
+     * @return ProductInterface|Product|null
      */
     public function getProduct(ProductInterface $product, StoreInterface $store);
 }

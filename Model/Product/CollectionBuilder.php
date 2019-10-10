@@ -38,6 +38,7 @@ namespace Nosto\Tagging\Model\Product;
 
 use Exception;
 use Magento\Catalog\Api\Data\ProductInterface;
+use Magento\Catalog\Model\Product;
 use Magento\Store\Model\Store;
 use Nosto\NostoException;
 use Nosto\Object\Product\ProductCollection as NostoProductCollection;
@@ -116,14 +117,14 @@ class CollectionBuilder
     {
         /** @var ProductCollection $collection */
         $products = new NostoProductCollection();
-        $items = $collection->getItems();
+        $items = $collection->load();
         if ($items instanceof Traversable === false && !is_array($items)) {
             throw new NostoException(
                 sprintf('Invalid collection type %s for product export', get_class($collection))
             );
         }
         foreach ($items as $product) {
-            /** @var ProductInterface $product */
+            /** @var Product $product */
             try {
                 $nostoProduct = $this->productServiceInterface->getProduct(
                     $product,
