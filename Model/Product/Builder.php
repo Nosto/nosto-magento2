@@ -37,9 +37,12 @@
 namespace Nosto\Tagging\Model\Product;
 
 use Exception;
+use Magento\Catalog\Api\CategoryRepositoryInterface;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\Product\Gallery\ReadHandler as GalleryReadHandler;
+use Magento\Eav\Api\AttributeSetRepositoryInterface;
 use Magento\Framework\Event\ManagerInterface;
+use Magento\Review\Model\ReviewFactory;
 use Magento\Store\Model\Store;
 use Nosto\NostoException;
 use Nosto\Object\ModelFilter;
@@ -98,6 +101,7 @@ class Builder
      * @param PriceVariationCollection $priceVariationCollection
      * @param NostoVariationHelper $nostoVariationHelper
      * @param NostoRating $nostoRatingHelper
+     * @param StoreManagerInterface $storeManager
      */
     public function __construct(
         NostoHelperData $nostoHelperData,
@@ -113,7 +117,8 @@ class Builder
         LowStockHelper $lowStockHelper,
         PriceVariationCollection $priceVariationCollection,
         NostoVariationHelper $nostoVariationHelper,
-        NostoRating $nostoRatingHelper
+        NostoRating $nostoRatingHelper,
+        StoreManagerInterface $storeManager
     ) {
         $this->nostoPriceHelper = $priceHelper;
         $this->nostoCategoryBuilder = $categoryBuilder;
@@ -372,7 +377,7 @@ class Builder
         $availability = ProductInterface::OUT_OF_STOCK;
         $isInStock = $this->isInStock($product, $store);
         if (!$product->isVisibleInSiteVisibility()
-            || (!$this->isAvailabeInStore($product, $store) && $isInStock)
+           || (!$this->isAvailableInStore($product, $store) && $isInStock)
         ) {
             $availability = ProductInterface::INVISIBLE;
         } elseif ($isInStock

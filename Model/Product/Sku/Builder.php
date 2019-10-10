@@ -49,7 +49,6 @@ use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Product\BuilderTrait;
 use Nosto\Tagging\Model\Service\Stock\StockService;
 use Nosto\Types\Product\ProductInterface;
-use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
 
 class Builder
 {
@@ -104,7 +103,7 @@ class Builder
         Store $store,
         $attributes
     ) {
-        if (!$this->isAvailabeInStore($product, $store)) {
+        if (!$this->isAvailableInStore($product, $store)) {
             return null;
         }
 

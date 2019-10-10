@@ -197,9 +197,12 @@ trait BuilderTrait
      * @param Store $store
      * @return bool
      */
-    public function isAvailabeInStore(Product $product, Store $store)
+    public function isAvailableInStore(Product $product, Store $store)
     {
-        return in_array($store->getId(), $product->getStoreIds());
+        if ($this->storeManager->isSingleStoreMode()) {
+            return $product->isAvailable();
+        }
+        return in_array($store->getId(), $product->getStoreIds(), false);
     }
 
     /**
