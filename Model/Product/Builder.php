@@ -37,12 +37,9 @@
 namespace Nosto\Tagging\Model\Product;
 
 use Exception;
-use Magento\Catalog\Api\CategoryRepositoryInterface;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\Product\Gallery\ReadHandler as GalleryReadHandler;
-use Magento\Eav\Api\AttributeSetRepositoryInterface;
 use Magento\Framework\Event\ManagerInterface;
-use Magento\Review\Model\ReviewFactory;
 use Magento\Store\Model\Store;
 use Nosto\NostoException;
 use Nosto\Object\ModelFilter;
@@ -73,7 +70,6 @@ class Builder
     private $nostoStockHelper;
     private $galleryReadHandler;
     private $eventManager;
-    private $reviewFactory;
     private $urlBuilder;
     private $skuCollection;
     private $nostoCurrencyHelper;
@@ -101,7 +97,6 @@ class Builder
      * @param PriceVariationCollection $priceVariationCollection
      * @param NostoVariationHelper $nostoVariationHelper
      * @param NostoRating $nostoRatingHelper
-     * @param StoreManagerInterface $storeManager
      */
     public function __construct(
         NostoHelperData $nostoHelperData,
@@ -117,8 +112,7 @@ class Builder
         LowStockHelper $lowStockHelper,
         PriceVariationCollection $priceVariationCollection,
         NostoVariationHelper $nostoVariationHelper,
-        NostoRating $nostoRatingHelper,
-        StoreManagerInterface $storeManager
+        NostoRating $nostoRatingHelper
     ) {
         $this->nostoPriceHelper = $priceHelper;
         $this->nostoCategoryBuilder = $categoryBuilder;

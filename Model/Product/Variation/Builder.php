@@ -187,9 +187,7 @@ class Builder
 
         // If no tier prices, there's no customer group pricing for this product
         // or it's higher than final price with catalog price rule discount
-        $finalPrice = $this->nostoPriceHelper->getProductPrice($product, $store);
-
-        return $finalPrice;
+        return $this->nostoPriceHelper->getProductPrice($product, $store);
     }
 
     /**
@@ -199,7 +197,6 @@ class Builder
      * @param Group $group
      * @param Store $store
      * @return MageProduct
-     * @throws NoSuchEntityException
      */
     public function getMinPriceSku(Product $product, Group $group, Store $store)
     {

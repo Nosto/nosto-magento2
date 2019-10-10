@@ -47,7 +47,7 @@ class CacheSearchResults extends SearchResult implements ProductCacheSearchResul
      */
     public function getFirstItem()
     {
-        if ($this->getTotalCount() == 0) {
+        if ($this->getTotalCount() === 0) {
             return null;
         }
 
