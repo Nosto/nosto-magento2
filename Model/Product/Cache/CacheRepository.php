@@ -42,6 +42,7 @@ use Magento\Framework\Model\AbstractModel;
 use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
 use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\Store;
+use Nosto\NostoException;
 use Nosto\Tagging\Api\Data\ProductCacheInterface;
 use Nosto\Tagging\Api\ProductCacheRepositoryInterface;
 use Nosto\Tagging\Model\Product\Cache;
@@ -233,7 +234,7 @@ class CacheRepository implements ProductCacheRepositoryInterface
      * Marks products as deleted by given cached product collection
      *
      * @param CacheCollection $collection
-     * @throws \Nosto\NostoException
+     * @throws NostoException
      */
     public function markAsDeleted(CacheCollection $collection)
     {
@@ -243,7 +244,7 @@ class CacheRepository implements ProductCacheRepositoryInterface
             /** @var Cache $cachedProduct */
             foreach ($page as $cachedProduct) {
                 $cachedProduct->setIsDeleted(true);
-                    $this->save($cachedProduct); // @codingStandardsIgnoreLine
+                $this->save($cachedProduct); // @codingStandardsIgnoreLine
             }
         }
     }

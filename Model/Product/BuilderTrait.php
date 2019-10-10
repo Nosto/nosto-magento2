@@ -42,6 +42,7 @@ use Magento\Catalog\Model\ResourceModel\Eav\Attribute\Interceptor;
 use Magento\Eav\Model\Entity\Attribute\AbstractAttribute;
 use Magento\Framework\Phrase;
 use Magento\Store\Model\Store;
+use Magento\Store\Model\StoreManagerInterface;
 use Nosto\Helper\ArrayHelper;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
@@ -59,19 +60,25 @@ trait BuilderTrait
     /** @var StockService */
     private $stockService;
 
+    /** @var StoreManagerInterface */
+    private $storeManager;
+
     /**
      * @param NostoHelperData $nostoHelperData
      * @param StockService $stockService
      * @param NostoLogger $logger
+     * @param StoreManagerInterface $storeManager
      */
     public function __construct(
         NostoHelperData $nostoHelperData,
         StockService $stockService,
-        NostoLogger $logger
+        NostoLogger $logger,
+        StoreManagerInterface $storeManager
     ) {
         $this->nostoDataHelper = $nostoHelperData;
         $this->stockService = $stockService;
         $this->logger = $logger;
+        $this->storeManager = $storeManager;
     }
 
     /**
@@ -197,9 +204,12 @@ trait BuilderTrait
      * @param Store $store
      * @return bool
      */
-    public function isAvailabeInStore(Product $product, Store $store)
+    public function isAvailableInStore(Product $product, Store $store)
     {
-        return in_array($store->getId(), $product->getStoreIds());
+        if ($this->storeManager->isSingleStoreMode()) {
+            return $product->isAvailable();
+        }
+        return in_array($store->getId(), $product->getStoreIds(), false);
     }
 
     /**
@@ -212,5 +222,29 @@ trait BuilderTrait
     public function isInStock(Product $product, Store $store)
     {
         return $this->stockService->isInStock($product, $store);
+    }
+
+    /**
+     * @return StockService
+     */
+    public function getStockService()
+    {
+        return $this->stockService;
+    }
+
+    /**
+     * @return NostoLogger
+     */
+    public function getLogger()
+    {
+        return $this->logger;
+    }
+
+    /**
+     * @return NostoHelperData
+     */
+    public function getDataHelper()
+    {
+        return $this->nostoDataHelper;
     }
 }

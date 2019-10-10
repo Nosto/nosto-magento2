@@ -45,8 +45,8 @@ use Nosto\Tagging\Model\ResourceModel\Product\Cache as CacheResource;
 
 class Cache extends AbstractModel implements ProductCacheInterface
 {
-    const DB_VALUE_BOOLEAN_TRUE = "1";
-    const DB_VALUE_BOOLEAN_FALSE = "0";
+    const DB_VALUE_BOOLEAN_TRUE = '1';
+    const DB_VALUE_BOOLEAN_FALSE = '0';
 
     /**
      * @inheritdoc
