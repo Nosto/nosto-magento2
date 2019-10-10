@@ -33,19 +33,54 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
-namespace Nosto\Tagging\Model\Service\Product;
 
-use Magento\Catalog\Api\Data\ProductInterface;
-use Magento\Store\Api\Data\StoreInterface;
-use Nosto\Object\Product\Product as NostoProduct;
-use Nosto\Types\Product\ProductInterface as NostoProductInterface;
+namespace Nosto\Tagging\Model\Service\Sync\Delete;
 
-interface ProductServiceInterface
+use Nosto\Tagging\Model\Service\Sync\AbstractBulkConsumer;
+use Nosto\Tagging\Helper\Scope as NostoHelperScope;
+use Magento\Framework\EntityManager\EntityManager;
+use Magento\Framework\Json\Helper\Data as JsonHelper;
+use Nosto\Tagging\Logger\Logger;
+
+class AsyncBulkConsumer extends AbstractBulkConsumer
 {
+    /** @var DeleteService */
+    private $deleteService;
+
+    /** @var NostoHelperScope */
+    private $nostoHelperScope;
+
     /**
-     * @param ProductInterface $product
-     * @param StoreInterface $store
-     * @return NostoProduct|null
+     * AsyncBulkConsumer constructor.
+     * @param DeleteService $deleteService
+     * @param NostoHelperScope $nostoHelperScope
+     * @param JsonHelper $jsonHelper
+     * @param EntityManager $entityManager
+     * @param Logger $logger
      */
-    public function getProduct(ProductInterface $product, StoreInterface $store);
+    public function __construct(
+        DeleteService $deleteService,
+        NostoHelperScope $nostoHelperScope,
+        JsonHelper $jsonHelper,
+        EntityManager $entityManager,
+        Logger $logger
+    ) {
+        $this->deleteService = $deleteService;
+        $this->nostoHelperScope = $nostoHelperScope;
+        parent::__construct(
+            $logger,
+            $jsonHelper,
+            $entityManager
+        );
+    }
+
+    /**
+     * @inheritdoc
+     * @throws \Nosto\Exception\MemoryOutOfBoundsException
+     */
+    public function doOperation(array $productIds, string $storeId)
+    {
+        $store = $this->nostoHelperScope->getStore($storeId);
+        $this->deleteService->syncDeletedProducts($productIds, $store);
+    }
 }

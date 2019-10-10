@@ -41,31 +41,40 @@ use Magento\Catalog\Model\ResourceModel\Product as MagentoResourceProduct;
 use Magento\Framework\Indexer\IndexerRegistry;
 use Magento\Framework\Model\AbstractModel;
 use Nosto\Tagging\Model\Indexer\Invalidate as IndexerInvalidate;
+use Nosto\Tagging\Model\Product\Repository as NostoProductRepository;
+use Nosto\Tagging\Model\Service\Cache\CacheService;
 
 class ProductInvalidate
 {
-    /**
-     * @var IndexerRegistry
-     */
+    /** @var IndexerRegistry  */
     private $indexerRegistry;
 
-    /**
-     * @var IndexerInvalidate
-     */
+    /** @var IndexerInvalidate  */
     private $indexerInvalidate;
 
+    /** @var CacheService  */
+    private $cacheService;
+
+    /** @var NostoProductRepository  */
+    private $nostoProductRepository;
+
     /**
-     * Product Observer constructor
+     * ProductInvalidate constructor.
      * @param IndexerRegistry $indexerRegistry
+     * @param CacheService $cacheService
      * @param IndexerInvalidate $indexerInvalidate
      */
     public function __construct(
         IndexerRegistry $indexerRegistry,
-        IndexerInvalidate $indexerInvalidate
+        CacheService $cacheService,
+        IndexerInvalidate $indexerInvalidate,
+        NostoProductRepository $nostoProductRepository
     )
     {
         $this->indexerRegistry = $indexerRegistry;
+        $this->cacheService = $cacheService;
         $this->indexerInvalidate = $indexerInvalidate;
+        $this->nostoProductRepository = $nostoProductRepository;
     }
 
     /**
@@ -84,6 +93,36 @@ class ProductInvalidate
             $productResource->addCommitCallback(function () use ($product) {
                 $this->indexerInvalidate->executeRow($product->getId());
             });
+        }
+
+        return $proceed($product);
+    }
+
+    /**
+     * @param MagentoResourceProduct $productResource
+     * @param Closure $proceed
+     * @param AbstractModel $product
+     * @return mixed
+     * @suppress PhanTypeMismatchArgument
+     */
+    public function aroundDelete(
+        MagentoResourceProduct $productResource,
+        Closure $proceed,
+        AbstractModel $product
+    ) {
+        $mageIndexer = $this->indexerRegistry->get(IndexerInvalidate::INDEXER_ID);
+        if (!$mageIndexer->isScheduled()) {
+            $productIds = $this->nostoProductRepository->resolveParentProductIds($product);
+            if (empty($productIds) && $this->cacheService->canBuildProduct($product)) {
+                $productResource->addCommitCallback(function () use ($product) {
+                    $this->indexerInvalidate->executeRow($product->getId());
+                });
+            }
+            if (is_array($productIds) && !empty($productIds)) {
+                $productResource->addCommitCallback(function () use ($productIds) {
+                    $this->indexerInvalidate->executeList($productIds);
+                });
+            }
         }
 
         return $proceed($product);

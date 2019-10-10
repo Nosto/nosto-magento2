@@ -34,37 +34,31 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Service\Sync;
+namespace Nosto\Tagging\Model\Service\Sync\Delete;
 
 use Exception;
 use Magento\Store\Model\Store;
 use Nosto\Exception\MemoryOutOfBoundsException;
 use Nosto\NostoException;
+use Nosto\Tagging\Model\Product\Cache\CacheRepository;
 use Nosto\Object\Signup\Account as NostoSignupAccount;
-use Nosto\Operation\DeleteProduct;
-use Nosto\Operation\UpsertProduct;
-use Nosto\Tagging\Api\Data\ProductCacheInterface;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
-use Nosto\Tagging\Helper\Data as NostoDataHelper;
+use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Url as NostoHelperUrl;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
-use Nosto\Tagging\Model\Product\Cache as NostoProductIndex;
-use Nosto\Tagging\Model\Product\Cache\CacheRepository;
-use Nosto\Tagging\Model\ResourceModel\Product\Cache\CacheCollection;
-use Nosto\Tagging\Model\ResourceModel\Product\Cache\CacheCollectionFactory;
-use Nosto\Tagging\Model\Service\AbstractService;
+use Nosto\Operation\DeleteProduct;
+use Nosto\Tagging\Model\Product\Cache as NostoProductCache;
+use Nosto\Tagging\Model\ResourceModel\Product\Cache\CacheCollection as NostoCacheCollection;
+use Nosto\Tagging\Model\ResourceModel\Product\Cache\CacheCollectionFactory as NostoCacheCollectionFactory;
 use Nosto\Tagging\Util\PagingIterator;
-use Nosto\Tagging\Util\Serializer\ProductSerializer;
+use Nosto\Tagging\Model\Service\AbstractService;
 
-class SyncService extends AbstractService
+class DeleteService extends AbstractService
 {
-    const API_BATCH_SIZE = 50;
-    const PRODUCT_DELETION_BATCH_SIZE = 100;
-    const BENCHMARK_SYNC_NAME = 'nosto_product_sync';
-    const BENCHMARK_SYNC_BREAKPOINT = 1;
+
     const BENCHMARK_DELETE_NAME = 'nosto_product_delete';
     const BENCHMARK_DELETE_BREAKPOINT = 1;
-    const RESPONSE_TIMEOUT = 60;
+    const PRODUCT_DELETION_BATCH_SIZE = 100;
 
     /** @var CacheRepository */
     private $cacheRepository;
@@ -75,111 +69,41 @@ class SyncService extends AbstractService
     /** @var NostoHelperUrl */
     private $nostoHelperUrl;
 
-    /** @var CacheCollectionFactory */
+    /** @var NostoCacheCollectionFactory */
     private $nostoCacheCollectionFactory;
 
-    /** @var NostoDataHelper */
-    private $nostoDataHelper;
-
-    /** @var ProductSerializer */
-    private $productSerializer;
-
     /**
-     * Index constructor.
+     * DeleteService constructor.
      * @param CacheRepository $cacheRepository
      * @param NostoHelperAccount $nostoHelperAccount
+     * @param NostoHelperData $nostoHelperData
      * @param NostoHelperUrl $nostoHelperUrl
      * @param NostoLogger $logger
-     * @param CacheCollectionFactory $nostoCacheCollectionFactory
-     * @param NostoDataHelper $nostoDataHelper
-     * @param ProductSerializer $productSerializer
+     * @param NostoCacheCollectionFactory $nostoCacheCollectionFactory
      */
     public function __construct(
         CacheRepository $cacheRepository,
         NostoHelperAccount $nostoHelperAccount,
+        NostoHelperData $nostoHelperData,
         NostoHelperUrl $nostoHelperUrl,
         NostoLogger $logger,
-        CacheCollectionFactory $nostoCacheCollectionFactory,
-        NostoDataHelper $nostoDataHelper,
-        ProductSerializer $productSerializer
+        NostoCacheCollectionFactory $nostoCacheCollectionFactory
     ) {
-        parent::__construct($nostoDataHelper, $logger);
         $this->cacheRepository = $cacheRepository;
         $this->nostoHelperAccount = $nostoHelperAccount;
         $this->nostoHelperUrl = $nostoHelperUrl;
         $this->nostoCacheCollectionFactory = $nostoCacheCollectionFactory;
-        $this->nostoDataHelper = $nostoDataHelper;
-        $this->productSerializer = $productSerializer;
-    }
-
-    /**
-     * @param CacheCollection $collection
-     * @param Store $store
-     * @throws NostoException
-     * @throws MemoryOutOfBoundsException
-     */
-    public function syncIndexedProducts(CacheCollection $collection, Store $store)
-    {
-        if (!$this->nostoDataHelper->isProductUpdatesEnabled($store)) {
-            $this->getLogger()->info(
-                'Nosto product sync is disabled - skipping upserting products to Nosto'
-            );
-            return;
-        }
-        $account = $this->nostoHelperAccount->findAccount($store);
-        $this->startBenchmark(self::BENCHMARK_SYNC_NAME, self::BENCHMARK_SYNC_BREAKPOINT);
-
-        $collection->setPageSize(self::API_BATCH_SIZE);
-        $iterator = new PagingIterator($collection);
-
-        /** @var CacheCollection $page */
-        foreach ($iterator as $page) {
-            $this->checkMemoryConsumption('product sync');
-            $op = new UpsertProduct($account, $this->nostoHelperUrl->getActiveDomain($store));
-            $op->setResponseTimeout(self::RESPONSE_TIMEOUT);
-            /** @var ProductCacheInterface $productIndex */
-            foreach ($page as $productIndex) {
-                $productData = $productIndex->getProductData();
-                if (empty($productData) && !$productIndex->getIsDirty()) {
-                    throw new NostoException(
-                        'Something is wrong in the nosto product index table.
-                        Product do not have data nor is marked as dirty'
-                    );
-                }
-                if (empty($productData)) {
-                    continue; // Do not sync products with null data
-                }
-                $this->getLogger()->debug(
-                    sprintf('Upserting product "%s"', $productIndex->getProductId()),
-                    ['store' => $productIndex->getStoreId()]
-                );
-                $op->addProduct(
-                    $this->productSerializer->fromString(
-                        $productData
-                    )
-                );
-            }
-            try {
-                $this->getLogger()->debug('Upserting batch');
-                $op->upsert();
-                $this->cacheRepository->markAsInSyncCurrentItemsByStore($page, $store);
-                $this->tickBenchmark(self::BENCHMARK_SYNC_NAME);
-            } catch (Exception $upsertException) {
-                $this->getLogger()->exception($upsertException);
-            }
-        }
-
-        $this->logBenchmarkSummary(self::BENCHMARK_SYNC_NAME, $store);
+        parent::__construct($nostoHelperData, $logger);
     }
 
     /**
      * @param Store $store
      * @throws MemoryOutOfBoundsException
      */
-    public function syncDeletedProducts(Store $store)
+    public function syncDeletedProducts(array $productIds, Store $store)
     {
         try {
-            $this->purgeDeletedProducts($store);
+            $this->purgeDeletedFromCache($productIds, $store);
             $this->getLogger()->info(
                 sprintf(
                     'Removed products from index for store %s',
@@ -192,28 +116,14 @@ class SyncService extends AbstractService
     }
 
     /**
-     * @param int[] $productIds
-     * @param Store $store
-     * @return void
-     */
-    public function markAsInSyncByProductIdsAndStoreId(array $productIds, Store $store)
-    {
-        try {
-            $this->cacheRepository->markAsInSync($productIds, $store);
-        } catch (Exception $e) {
-            $this->getLogger()->exception($e);
-        }
-    }
-
-    /**
      * Discontinues products in Nosto and removes indexed products from Nosto product index
      *
-     * @param CacheCollection $collection
+     * @param NostoCacheCollection $collection
      * @param Store $store
      * @throws MemoryOutOfBoundsException
      * @throws NostoException
      */
-    public function deleteIndexedProducts(CacheCollection $collection, Store $store)
+    public function deleteFromCache(NostoCacheCollection $collection, Store $store)
     {
         if ($collection->getSize() === 0) {
             return;
@@ -226,17 +136,17 @@ class SyncService extends AbstractService
         $collection->setPageSize(self::PRODUCT_DELETION_BATCH_SIZE);
         $iterator = new PagingIterator($collection);
 
-        /** @var CacheCollection $page */
+        /** @var NostoCacheCollection $page */
         foreach ($iterator as $page) {
             $this->checkMemoryConsumption('product delete');
             $ids = [];
-            /* @var $indexedProduct NostoProductIndex */
-            foreach ($page as $indexedProduct) {
-                $ids[] = $indexedProduct->getProductId();
+            /* @var $cachedProduct NostoProductCache */
+            foreach ($page as $cachedProduct) {
+                $ids[] = $cachedProduct->getProductId();
             }
             try {
                 $op = new DeleteProduct($account, $this->nostoHelperUrl->getActiveDomain($store));
-                $op->setResponseTimeout(self::RESPONSE_TIMEOUT);
+                $op->setResponseTimeout(30);
                 $op->setProductIds($ids);
                 $op->delete(); // @codingStandardsIgnoreLine
                 $this->cacheRepository->deleteCurrentItemsByStore($page, $store);
@@ -257,12 +167,13 @@ class SyncService extends AbstractService
      * @throws MemoryOutOfBoundsException
      * @throws NostoException
      */
-    public function purgeDeletedProducts(Store $store)
+    public function purgeDeletedFromCache(array $productIds, Store $store)
     {
         $collection = $this->nostoCacheCollectionFactory->create()
             ->addFieldToSelect('*')
+            ->addProductIdsFilter($productIds)
             ->addIsDeletedFilter()
             ->addStoreFilter($store);
-        $this->deleteIndexedProducts($collection, $store);
+        $this->deleteFromCache($collection, $store);
     }
 }

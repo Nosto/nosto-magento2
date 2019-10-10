@@ -33,19 +33,18 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
-namespace Nosto\Tagging\Model\Service\Product;
 
-use Magento\Catalog\Api\Data\ProductInterface;
-use Magento\Store\Api\Data\StoreInterface;
-use Nosto\Object\Product\Product as NostoProduct;
-use Nosto\Types\Product\ProductInterface as NostoProductInterface;
+namespace Nosto\Tagging\Model\Service\Sync;
 
-interface ProductServiceInterface
+use Magento\Store\Model\Store;
+use Nosto\Tagging\Model\ResourceModel\Product\Cache\CacheCollection;
+
+interface BulkPublisherInterface
 {
     /**
-     * @param ProductInterface $product
-     * @param StoreInterface $store
-     * @return NostoProduct|null
+     * @param CacheCollection $collection
+     * @param Store $store
+     * @return void
      */
-    public function getProduct(ProductInterface $product, StoreInterface $store);
+    public function execute(CacheCollection $collection, Store $store);
 }

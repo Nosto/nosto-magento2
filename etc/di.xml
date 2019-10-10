@@ -42,7 +42,6 @@
     <preference for="Nosto\Tagging\Model\Service\Stock\Provider\StockProviderInterface" type="Nosto\Tagging\Model\Service\Stock\Provider\CachingStockProvider"/>
     <preference for="Nosto\Tagging\Util\Serializer\SerializerInterface" type="Nosto\Tagging\Util\Serializer\DefaultSerializer"/>
     <preference for="Nosto\Tagging\Model\Service\Product\ComparatorInterface" type="Nosto\Tagging\Model\Service\Product\DefaultComparator"/>
-    <preference for="Nosto\Tagging\Model\Service\Sync\BulkSyncInterface" type="Nosto\Tagging\Model\Service\Sync\AsyncBulkPublisher"/>
     <preference for="Symfony\Component\Console\Input\InputInterface" type="Symfony\Component\Console\Input\ArgvInput\Proxy"/>
     <preference for="Nosto\Tagging\Model\Mview\ChangeLogInterface" type="Nosto\Tagging\Model\Mview\ChangeLog"/>
     <preference for="Nosto\Tagging\Model\Mview\MviewInterface" type="Nosto\Tagging\Model\Mview\Mview"/>
@@ -146,7 +145,7 @@
             </argument>
         </arguments>
     </type>
-    <type name="Nosto\Tagging\Model\Product\Collection">
+    <type name="Nosto\Tagging\Model\Product\CollectionBuilder">
         <arguments>
             <argument name="productServiceInterface" xsi:type="object">
                 Nosto\Tagging\Model\Service\Product\CachingProductService
@@ -191,6 +190,20 @@
         <arguments>
             <argument name="intervalHours" xsi:type="number">4</argument>
             <argument name="productLimit" xsi:type="number">1000</argument>
+        </arguments>
+    </type>
+    <type name="Nosto\Tagging\Model\Service\Sync\Upsert\AsyncBulkPublisher">
+        <arguments>
+            <argument name="asyncBulkConsumer" xsi:type="object" shared="false">
+                Nosto\Tagging\Model\Service\Sync\Upsert\AsyncBulkConsumer
+            </argument>
+        </arguments>
+    </type>
+    <type name="Nosto\Tagging\Model\Service\Sync\Delete\AsyncBulkPublisher">
+        <arguments>
+            <argument name="asyncBulkConsumer" xsi:type="object" shared="false">
+                Nosto\Tagging\Model\Service\Sync\Delete\AsyncBulkConsumer
+            </argument>
         </arguments>
     </type>
 </config>

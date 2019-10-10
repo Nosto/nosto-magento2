@@ -33,19 +33,19 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
-namespace Nosto\Tagging\Model\Service\Product;
 
-use Magento\Catalog\Api\Data\ProductInterface;
-use Magento\Store\Api\Data\StoreInterface;
-use Nosto\Object\Product\Product as NostoProduct;
-use Nosto\Types\Product\ProductInterface as NostoProductInterface;
+namespace Nosto\Tagging\Model\Service\Sync;
 
-interface ProductServiceInterface
+use Exception;
+
+interface BulkConsumerInterface
 {
     /**
-     * @param ProductInterface $product
-     * @param StoreInterface $store
-     * @return NostoProduct|null
+     * Processing operation for product sync
+     *
+     * @param array|\Magento\AsynchronousOperations\Api\Data\OperationInterface $operation
+     * @return void
+     * @throws Exception
      */
-    public function getProduct(ProductInterface $product, StoreInterface $store);
+    public function processOperation($operation);
 }

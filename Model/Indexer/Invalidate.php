@@ -46,7 +46,7 @@ use Nosto\Tagging\Model\Indexer\Dimensions\Invalidate\ModeSwitcher as Invalidate
 use Nosto\Tagging\Model\Indexer\Dimensions\ModeSwitcherInterface;
 use Nosto\Tagging\Model\Indexer\Dimensions\StoreDimensionProvider;
 use Nosto\Tagging\Model\ResourceModel\Magento\Product\Collection as ProductCollection;
-use Nosto\Tagging\Model\ResourceModel\Magento\Product\CollectionFactory as ProductCollectionFactory;
+use Nosto\Tagging\Model\ResourceModel\Magento\Product\CollectionBuilder;
 use Nosto\Tagging\Model\Service\Cache\CacheService;
 use Nosto\Tagging\Model\Service\Indexer\IndexerStatusServiceInterface;
 use Symfony\Component\Console\Input\InputInterface;
@@ -64,8 +64,8 @@ class Invalidate extends AbstractIndexer
     /** @var CacheService */
     private $nostoServiceIndex;
 
-    /** @var ProductCollectionFactory */
-    private $productCollectionFactory;
+    /** @var CollectionBuilder */
+    private $productCollectionBuilder;
 
     /** @var InvalidateModeSwitcher */
     private $modeSwitcher;
@@ -75,7 +75,7 @@ class Invalidate extends AbstractIndexer
      * @param NostoHelperScope $nostoHelperScope
      * @param CacheService $nostoCacheService
      * @param NostoLogger $logger
-     * @param ProductCollectionFactory $productCollectionFactory
+     * @param CollectionBuilder $productCollectionBuilder
      * @param InvalidateModeSwitcher $modeSwitcher
      * @param StoreDimensionProvider $dimensionProvider
      * @param Emulation $storeEmulation
@@ -87,7 +87,7 @@ class Invalidate extends AbstractIndexer
         NostoHelperScope $nostoHelperScope,
         CacheService $nostoCacheService,
         NostoLogger $logger,
-        ProductCollectionFactory $productCollectionFactory,
+        CollectionBuilder $productCollectionBuilder,
         InvalidateModeSwitcher $modeSwitcher,
         StoreDimensionProvider $dimensionProvider,
         Emulation $storeEmulation,
@@ -96,7 +96,7 @@ class Invalidate extends AbstractIndexer
         IndexerStatusServiceInterface $indexerStatusService
     ) {
         $this->nostoServiceIndex = $nostoCacheService;
-        $this->productCollectionFactory = $productCollectionFactory;
+        $this->productCollectionBuilder = $productCollectionBuilder;
         $this->modeSwitcher = $modeSwitcher;
         parent::__construct(
             $nostoHelperScope,
@@ -125,7 +125,6 @@ class Invalidate extends AbstractIndexer
     {
         $productCollection = $this->getCollection($store, $ids);
         $this->nostoServiceIndex->invalidateOrCreate($productCollection, $store);
-
         if (!empty($ids)) {
             //In case for this specific set of ids
             //there are more entries of products in the indexer table than the magento product collection
@@ -154,13 +153,12 @@ class Invalidate extends AbstractIndexer
      */
     public function getCollection(Store $store, array $ids = [])
     {
-        $collection = $this->productCollectionFactory->create();
-        $collection->setStore($store);
+        $this->productCollectionBuilder->initDefault($store);
         if (!empty($ids)) {
-            $collection->addIdsToFilter($ids);
+            $this->productCollectionBuilder->withIds($ids);
         } else {
-            $collection->addActiveAndVisibleFilter();
+            $this->productCollectionBuilder->withDefaultVisibility();
         }
-        return $collection;
+        return $this->productCollectionBuilder->build();
     }
 }

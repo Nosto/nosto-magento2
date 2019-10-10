@@ -33,19 +33,33 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
-namespace Nosto\Tagging\Model\Service\Product;
 
-use Magento\Catalog\Api\Data\ProductInterface;
-use Magento\Store\Api\Data\StoreInterface;
-use Nosto\Object\Product\Product as NostoProduct;
-use Nosto\Types\Product\ProductInterface as NostoProductInterface;
+namespace Nosto\Tagging\Model\Service\Sync\Delete;
 
-interface ProductServiceInterface
+use Nosto\Tagging\Model\Service\Sync\AbstractBulkPublisher;
+
+class AsyncBulkPublisher extends AbstractBulkPublisher
 {
-    /**
-     * @param ProductInterface $product
-     * @param StoreInterface $store
-     * @return NostoProduct|null
-     */
-    public function getProduct(ProductInterface $product, StoreInterface $store);
+    const NOSTO_DELETE_MESSAGE_QUEUE = 'nosto_product_sync.delete';
+    const BULK_SIZE = 100;
+
+    public function getTopicName(): string
+    {
+        return self::NOSTO_DELETE_MESSAGE_QUEUE;
+    }
+
+    public function getBulkSize(): int
+    {
+        return self::BULK_SIZE;
+    }
+
+    public function getBulkDescription(): string
+    {
+        return sprintf('Delete %d Nosto products', 2);
+    }
+
+    public function getMetaData(): string
+    {
+        return 'Delete Nosto products';
+    }
 }

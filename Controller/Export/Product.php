@@ -45,8 +45,8 @@ use Nosto\Object\Product\Product as NostoProduct;
 use Nosto\Object\Product\ProductCollection;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
-use Nosto\Tagging\Model\Product\Collection as NostoProductCollection;
-use Nosto\Tagging\Model\Service\Sync\SyncService as NostoSyncService;
+use Nosto\Tagging\Model\Product\CollectionBuilder;
+use Nosto\Tagging\Model\Service\Sync\Upsert\SyncService;
 
 /**
  * Product export controller used to export product history to Nosto in order to
@@ -59,31 +59,29 @@ class Product extends Base
 {
     const PARAM_PREVIEW = 'preview';
 
-    /** @var NostoProductCollection */
-    private $nostoProductCollection;
+    /** @var CollectionBuilder  */
+    private $nostoCollectionBuilder;
 
-    /** @var NostoSyncService */
+    /** @var SyncService */
     private $nostoSyncService;
 
     /**
-     * Constructor.
-     *
      * @param Context $context
      * @param NostoHelperScope $nostoHelperScope
      * @param NostoHelperAccount $nostoHelperAccount
-     * @param NostoProductCollection $nostoProductCollection
-     * @param NostoSyncService $nostoSyncService
+     * @param CollectionBuilder $collectionBuilder
+     * @param SyncService $nostoSyncService
      */
     public function __construct(
         Context $context,
         NostoHelperScope $nostoHelperScope,
         NostoHelperAccount $nostoHelperAccount,
-        NostoProductCollection $nostoProductCollection,
-        NostoSyncService $nostoSyncService
+        CollectionBuilder $collectionBuilder,
+        SyncService $nostoSyncService
     ) {
         parent::__construct($context, $nostoHelperScope, $nostoHelperAccount);
 
-        $this->nostoProductCollection = $nostoProductCollection;
+        $this->nostoCollectionBuilder = $collectionBuilder;
         $this->nostoSyncService = $nostoSyncService;
     }
 
@@ -96,7 +94,7 @@ class Product extends Base
      */
     public function buildExportCollection(Store $store, $limit = 100, $offset = 0)
     {
-        return $this->nostoProductCollection->buildMany($store, $limit, $offset);
+        return $this->nostoCollectionBuilder->buildMany($store, $limit, $offset);
     }
 
     /**
@@ -107,7 +105,7 @@ class Product extends Base
      */
     public function buildSingleExportCollection(Store $store, $id)
     {
-        return $this->nostoProductCollection->buildSingle($store, $id);
+        return $this->nostoCollectionBuilder->buildSingle($store, $id);
     }
 
     /**
