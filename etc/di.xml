@@ -98,13 +98,6 @@
     <type name="Magento\Sales\Api\OrderRepositoryInterface">
         <plugin name="order_repository_nosto" type="Nosto\Tagging\Plugin\Sales\OrderRepository" />
     </type>
-    <type name="Nosto\Tagging\Model\Product\Repository">
-        <arguments>
-            <argument name="productRepository" xsi:type="object">
-                Magento\Catalog\Model\ProductRepository\Proxy
-            </argument>
-        </arguments>
-    </type>
     <type name="Nosto\Tagging\Model\Product\Service">
         <arguments>
             <argument name="nostoHelperAccount" xsi:type="object">Nosto\Tagging\Helper\Account\Proxy</argument>
