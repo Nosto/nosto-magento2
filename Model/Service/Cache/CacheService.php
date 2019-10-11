@@ -64,11 +64,11 @@ use Nosto\Tagging\Model\ResourceModel\Magento\Product\CollectionFactory as Produ
 use Nosto\Tagging\Model\ResourceModel\Product\Cache\CacheCollection;
 use Nosto\Tagging\Model\ResourceModel\Product\Cache\CacheCollectionFactory;
 use Nosto\Tagging\Model\Service\AbstractService;
+use Nosto\Tagging\Model\Service\Product\ProductSerializerInterface;
 use Nosto\Tagging\Model\Service\Sync\Upsert\AsyncBulkPublisher as ProductUpsertBulkPublisher;
 use Nosto\Tagging\Model\Service\Sync\Delete\AsyncBulkPublisher as ProductDeleteBulkPublisher;
-use Nosto\Tagging\Model\Service\Product\ComparatorInterface;
+use Nosto\Tagging\Model\Service\Product\ProductComparatorInterface;
 use Nosto\Tagging\Util\PagingIterator;
-use Nosto\Tagging\Util\Serializer\ProductSerializer;
 use Nosto\Types\Product\ProductInterface as NostoProductInterface;
 
 class CacheService extends AbstractService
@@ -119,10 +119,10 @@ class CacheService extends AbstractService
     /** @var ProductDeleteBulkPublisher */
     private $productDeleteBulkPublisher;
 
-    /** @var ProductSerializer */
+    /** @var ProductSerializerInterface */
     private $productSerializer;
 
-    /** @var ComparatorInterface */
+    /** @var ProductComparatorInterface */
     private $productComparator;
 
     /**
@@ -141,8 +141,8 @@ class CacheService extends AbstractService
      * @param NostoDataHelper $nostoDataHelper
      * @param ProductUpsertBulkPublisher $productUpsertBulkPublisher
      * @param ProductDeleteBulkPublisher $productDeleteBulkPublisher
-     * @param ProductSerializer $productSerializer
-     * @param ComparatorInterface $productComparator
+     * @param ProductSerializerInterface $productSerializer
+     * @param ProductComparatorInterface $productComparator
      */
     public function __construct(
         CacheRepository $cacheRepository,
@@ -159,8 +159,8 @@ class CacheService extends AbstractService
         NostoDataHelper $nostoDataHelper,
         ProductUpsertBulkPublisher $productUpsertBulkPublisher,
         ProductDeleteBulkPublisher $productDeleteBulkPublisher,
-        ProductSerializer $productSerializer,
-        ComparatorInterface $productComparator
+        ProductSerializerInterface $productSerializer,
+        ProductComparatorInterface $productComparator
     ) {
         parent::__construct($nostoDataHelper, $logger);
         $this->cacheRepository = $cacheRepository;

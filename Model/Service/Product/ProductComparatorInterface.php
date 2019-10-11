@@ -37,7 +37,7 @@ namespace Nosto\Tagging\Model\Service\Product;
 
 use Nosto\Types\Product\ProductInterface;
 
-interface ComparatorInterface
+interface ProductComparatorInterface
 {
     /**
      * @param ProductInterface $product1

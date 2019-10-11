@@ -129,7 +129,6 @@ class Invalidate extends AbstractIndexer
             //In case for this specific set of ids
             //there are more entries of products in the indexer table than the magento product collection
             //it means that some products were deleted
-            $ids = array_unique($ids);
             $idsSize = count($ids);
             $collectionSize = $productCollection->getSize();
             if ($idsSize > $collectionSize) {
