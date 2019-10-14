@@ -68,7 +68,7 @@ class UpgradeSchema extends Core implements UpgradeSchemaInterface
             );
         }
 
-        if (version_compare($fromVersion, '4.0.0-beta', '<')) {
+        if (version_compare($fromVersion, '4.0.0-rc.1', '<')) {
             $this->createProductCacheTable($setup);
             if ($connection->isTableExists(self::PRODUCT_QUEUE_TABLE)) {
                 $connection->dropTable(self::PRODUCT_QUEUE_TABLE);
