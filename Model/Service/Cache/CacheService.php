@@ -188,6 +188,7 @@ class CacheService extends AbstractService
      * @param ProductCollection $collection
      * @param Store $store
      * @throws NostoException
+     * @throws MemoryOutOfBoundsException
      * @throws Exception
      */
     public function invalidateOrCreate(ProductCollection $collection, Store $store)
@@ -201,6 +202,7 @@ class CacheService extends AbstractService
 
         /** @var ProductCollection $page */
         foreach ($iterator as $page) {
+            $this->checkMemoryConsumption('product invalidate');
             /** @var Product $item */
             foreach ($page->getItems() as $item) {
                 $this->invalidateOrCreateProductOrParent($item, $store);
@@ -436,6 +438,7 @@ class CacheService extends AbstractService
      * @param ProductCollection $collection
      * @param array $ids
      * @param Store $store
+     * @throws MemoryOutOfBoundsException
      * @throws Exception
      */
     public function markProductsAsDeletedByDiff(ProductCollection $collection, array $ids, Store $store)
@@ -447,6 +450,7 @@ class CacheService extends AbstractService
         /** @var ProductCollection $page */
         foreach ($iterator as $page) {
             /** @var Product $product */
+            $this->checkMemoryConsumption('mark product as deleted');
             foreach ($page->getItems() as $product) {
                 $key = array_search($product->getId(), $uniqueIds, false);
                 if (is_numeric($key)) {

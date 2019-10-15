@@ -36,9 +36,11 @@
 
 namespace Nosto\Tagging\Model\Indexer;
 
+use Exception;
 use Magento\Indexer\Model\ProcessManager;
 use Magento\Store\Model\App\Emulation;
 use Magento\Store\Model\Store;
+use Nosto\Exception\MemoryOutOfBoundsException;
 use Nosto\NostoException;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
@@ -120,11 +122,16 @@ class Invalidate extends AbstractIndexer
     /**
      * @inheritdoc
      * @throws NostoException
+     * @throws Exception
      */
     public function doIndex(Store $store, array $ids = [])
     {
         $productCollection = $this->getCollection($store, $ids);
-        $this->nostoServiceIndex->invalidateOrCreate($productCollection, $store);
+        try {
+            $this->nostoServiceIndex->invalidateOrCreate($productCollection, $store);
+        } catch (MemoryOutOfBoundsException $e) {
+            $this->nostoLogger->error($e->getMessage());
+        }
         if (!empty($ids)) {
             //In case for this specific set of ids
             //there are more entries of products in the indexer table than the magento product collection
@@ -132,7 +139,11 @@ class Invalidate extends AbstractIndexer
             $idsSize = count($ids);
             $collectionSize = $productCollection->getSize();
             if ($idsSize > $collectionSize) {
-                $this->nostoServiceIndex->markProductsAsDeletedByDiff($productCollection, $ids, $store);
+                try {
+                    $this->nostoServiceIndex->markProductsAsDeletedByDiff($productCollection, $ids, $store);
+                } catch (MemoryOutOfBoundsException $e) {
+                    $this->nostoLogger->error($e->getMessage());
+                }
             }
         }
     }
