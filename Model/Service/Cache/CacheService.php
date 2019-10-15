@@ -41,6 +41,7 @@ use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\Product\Type;
 use Magento\Catalog\Model\ProductRepository;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
 use Magento\Store\Api\Data\StoreInterface;
@@ -323,6 +324,7 @@ class CacheService extends AbstractService
      * @param array $ids
      * @throws NostoException
      * @throws MemoryOutOfBoundsException
+     * @throws LocalizedException
      */
     public function generateProductsInStore(Store $store, array $ids = [])
     {
