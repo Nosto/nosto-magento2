@@ -148,7 +148,7 @@
     <type name="Magento\Indexer\Console\Command\IndexerSetDimensionsModeCommand">
         <arguments>
             <argument name="dimensionSwitchers" xsi:type="array">
-                <item name="nosto_index_product_data_sync" xsi:type="object">
+                <item name="nosto_index_product_data" xsi:type="object">
                     Nosto\Tagging\Model\Indexer\Dimensions\Data\ModeSwitcher
                 </item>
                 <item name="nosto_index_product_invalidate" xsi:type="object">
@@ -160,7 +160,7 @@
     <type name="Magento\Indexer\Console\Command\IndexerShowDimensionsModeCommand">
         <arguments>
             <argument name="indexers" xsi:type="array">
-                <item name="nosto_index_product_data_sync" xsi:type="string">nosto_index_product_data_sync</item>
+                <item name="nosto_index_product_data" xsi:type="string">nosto_index_product_data</item>
                 <item name="nosto_index_product_invalidate" xsi:type="string">nosto_index_product_invalidate</item>
             </argument>
         </arguments>
