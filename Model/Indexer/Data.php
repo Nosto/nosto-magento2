@@ -119,10 +119,6 @@ class Data extends AbstractIndexer
      */
     public function doIndex(Store $store, array $ids = [])
     {
-        try {
-            $this->nostoCacheService->generateProductsInStore($store, $ids);
-        } catch (NostoException $e) {
-            $this->nostoLogger->error($e->getMessage());
-        }
+        $this->nostoCacheService->generateProductsInStore($store, $ids);
     }
 }
