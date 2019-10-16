@@ -126,6 +126,7 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
      *
      * @param Store $store
      * @param array $ids
+     * @throws Exception
      */
     abstract public function doIndex(Store $store, array $ids = []);
 
@@ -264,7 +265,6 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
         }
 
         $storeId = $dimensions[StoreDimensionProvider::DIMENSION_NAME]->getValue();
-        $this->storeEmulator->startEnvironmentEmulation((int)$storeId);
         $store = $this->nostoHelperScope->getStore($storeId);
         $benchmarkName = sprintf('STORE-DIMENSION-%s', $store->getCode());
         Benchmark::getInstance()->startInstrumentation($benchmarkName, 0);
@@ -273,8 +273,14 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
         if ($entityIds !== null) {
             $ids = iterator_to_array($entityIds);
         }
-
-        $this->doIndex($store, $ids);
+        $this->storeEmulator->startEnvironmentEmulation((int)$storeId);
+        try {
+            $this->doIndex($store, $ids);
+        } catch (Exception $e) {
+            $this->nostoLogger->error($e->getMessage());
+        } finally {
+            $this->storeEmulator->stopEnvironmentEmulation();
+        }
 
         Benchmark::getInstance()->stopInstrumentation($benchmarkName);
         $duration = Benchmark::getInstance()->getElapsed($benchmarkName);
@@ -285,7 +291,6 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
                 round($duration, 2)
             )
         );
-        $this->storeEmulator->stopEnvironmentEmulation();
     }
 
     /**
