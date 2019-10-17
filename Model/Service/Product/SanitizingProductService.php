@@ -66,7 +66,9 @@ class SanitizingProductService implements ProductServiceInterface
             $product,
             $store
         );
-        /** @noinspection PhpUnhandledExceptionInspection */
-        return $nostoProduct->sanitize();
+        if ($nostoProduct !== null) {
+            return $nostoProduct->sanitize();
+        }
+        return null;
     }
 }
