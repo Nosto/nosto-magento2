@@ -36,9 +36,11 @@
 
 namespace Nosto\Tagging\Model\Indexer;
 
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Indexer\Model\ProcessManager;
 use Magento\Store\Model\App\Emulation;
 use Magento\Store\Model\Store;
+use Nosto\Exception\MemoryOutOfBoundsException;
 use Nosto\NostoException;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
@@ -119,6 +121,14 @@ class Data extends AbstractIndexer
      */
     public function doIndex(Store $store, array $ids = [])
     {
-        $this->nostoCacheService->generateProductsInStore($store, $ids);
+        try {
+            $this->nostoCacheService->generateProductsInStore($store, $ids);
+        } catch (MemoryOutOfBoundsException $e) {
+            $this->nostoLogger->error($e->getMessage());
+        } catch (NostoException $e) {
+            $this->nostoLogger->error($e->getMessage());
+        } catch (LocalizedException $e) {
+            $this->nostoLogger->error($e->getMessage());
+        }
     }
 }

@@ -41,6 +41,7 @@ use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\Product\Type;
 use Magento\Catalog\Model\ProductRepository;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
 use Magento\Store\Api\Data\StoreInterface;
@@ -187,6 +188,7 @@ class CacheService extends AbstractService
      * @param ProductCollection $collection
      * @param Store $store
      * @throws NostoException
+     * @throws MemoryOutOfBoundsException
      * @throws Exception
      */
     public function invalidateOrCreate(ProductCollection $collection, Store $store)
@@ -200,6 +202,7 @@ class CacheService extends AbstractService
 
         /** @var ProductCollection $page */
         foreach ($iterator as $page) {
+            $this->checkMemoryConsumption('product invalidate');
             /** @var Product $item */
             foreach ($page->getItems() as $item) {
                 $this->invalidateOrCreateProductOrParent($item, $store);
@@ -323,6 +326,7 @@ class CacheService extends AbstractService
      * @param array $ids
      * @throws NostoException
      * @throws MemoryOutOfBoundsException
+     * @throws LocalizedException
      */
     public function generateProductsInStore(Store $store, array $ids = [])
     {
@@ -434,6 +438,7 @@ class CacheService extends AbstractService
      * @param ProductCollection $collection
      * @param array $ids
      * @param Store $store
+     * @throws MemoryOutOfBoundsException
      * @throws Exception
      */
     public function markProductsAsDeletedByDiff(ProductCollection $collection, array $ids, Store $store)
@@ -445,6 +450,7 @@ class CacheService extends AbstractService
         /** @var ProductCollection $page */
         foreach ($iterator as $page) {
             /** @var Product $product */
+            $this->checkMemoryConsumption('mark product as deleted');
             foreach ($page->getItems() as $product) {
                 $key = array_search($product->getId(), $uniqueIds, false);
                 if (is_numeric($key)) {
