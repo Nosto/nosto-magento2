@@ -56,7 +56,7 @@ use Symfony\Component\Console\Input\InputInterface;
  */
 class Data extends AbstractIndexer
 {
-    const INDEXER_ID = 'nosto_index_product_data_sync';
+    const INDEXER_ID = 'nosto_index_product_data';
 
     /** @var CacheService */
     private $nostoCacheService;

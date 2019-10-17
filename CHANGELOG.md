@@ -1,11 +1,17 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
-### not released
-
-### 3.9.0 (beta)
+### 4.0.0-rc1 (pre-release)
+* Introduce cache for Nosto product data to speedup the product tagging added to the product pages
+* Introduce Nosto product data change detection to avoid redundant API calls to Nosto
+* Utilize bulk operations for product updates
+* Add support for indexing in parallel mode
+* Cleanup the change log database tables after indexer run
+* Prevent full reindex on `setup:upgrade`
 * Remove category personalization features (separate plug-in)
 * Use graphql for sending order confirmations and order status updates
 * Speedup the SKU price lookups by using price index table (catalog_product_index_price)
+* Speedup the inventory level lookups by using `StockRegistryProvider`
+* Add constraint for minimum supported Magento version (2.2.6)
 
 ### 3.8.7
 * Fix product availability when in single store mode

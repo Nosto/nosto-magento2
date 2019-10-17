@@ -42,7 +42,7 @@ use Magento\Framework\App\Config\ConfigResource\ConfigInterface;
 
 class ModeSwitcherConfiguration
 {
-    const XML_PATH_PRODUCT_DATA_DIMENSIONS_MODE = 'indexer/nosto_index_product_data_sync/dimensions_mode';
+    const XML_PATH_PRODUCT_DATA_DIMENSIONS_MODE = 'indexer/nosto_index_product_data/dimensions_mode';
 
     /**
      * ConfigInterface

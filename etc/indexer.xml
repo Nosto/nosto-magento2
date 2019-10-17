@@ -38,7 +38,7 @@
         <title>Nosto Product Data Invalidator</title>
         <description>Flags updated products as dirty</description>
     </indexer>
-    <indexer id="nosto_index_product_data_sync" view_id="nosto_index_product_data_sync" class="Nosto\Tagging\Model\Indexer\Data">
+    <indexer id="nosto_index_product_data" view_id="nosto_index_product_data" class="Nosto\Tagging\Model\Indexer\Data">
         <title>Nosto Product Index Data </title>
         <description>Generates the Nosto product data and sends via API</description>
     </indexer>
