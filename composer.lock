@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "770cafc2e5e60ce479f9f173e19df5cf",
+    "content-hash": "1e143948220c70ddd411ad99c91742fb",
     "packages": [
         {
             "name": "colinmollenhour/credis",
@@ -145,12 +145,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/composer/composer.git",
-                "reference": "34a32c31b4cc46cb4505af87d19957d2f6cab49b"
+                "reference": "f753c15664c24d95bb64bd99ddc32cb01d1e32b8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/composer/composer/zipball/34a32c31b4cc46cb4505af87d19957d2f6cab49b",
-                "reference": "34a32c31b4cc46cb4505af87d19957d2f6cab49b",
+                "url": "https://api.github.com/repos/composer/composer/zipball/f753c15664c24d95bb64bd99ddc32cb01d1e32b8",
+                "reference": "f753c15664c24d95bb64bd99ddc32cb01d1e32b8",
                 "shasum": ""
             },
             "require": {
@@ -186,7 +186,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.9-dev"
+                    "dev-master": "1.10-dev"
                 }
             },
             "autoload": {
@@ -217,7 +217,7 @@
                 "dependency",
                 "package"
             ],
-            "time": "2019-09-28T09:26:11+00:00"
+            "time": "2019-10-06T20:15:11+00:00"
         },
         {
             "name": "composer/semver",
@@ -663,16 +663,16 @@
         },
         {
             "name": "nosto/php-sdk",
-            "version": "4.0.0",
+            "version": "4.0.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Nosto/nosto-php-sdk.git",
-                "reference": "8822b2056b279d8d4627fa12ddd34ae656824004"
+                "reference": "ca4b3a1f7fa1bb07d9a89d453edc2735f0fe5367"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Nosto/nosto-php-sdk/zipball/8822b2056b279d8d4627fa12ddd34ae656824004",
-                "reference": "8822b2056b279d8d4627fa12ddd34ae656824004",
+                "url": "https://api.github.com/repos/Nosto/nosto-php-sdk/zipball/ca4b3a1f7fa1bb07d9a89d453edc2735f0fe5367",
+                "reference": "ca4b3a1f7fa1bb07d9a89d453edc2735f0fe5367",
                 "shasum": ""
             },
             "require": {
@@ -708,7 +708,7 @@
                 "BSD-3-Clause"
             ],
             "description": "PHP SDK for developing Nosto modules for e-commerce platforms",
-            "time": "2019-08-09T12:20:15+00:00"
+            "time": "2019-10-15T13:55:52+00:00"
         },
         {
             "name": "oyejorge/less.php",
@@ -825,12 +825,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpseclib/phpseclib.git",
-                "reference": "d8b827528213a8d22c763583fc8ab84516983c63"
+                "reference": "cf8a7ef7159c5d06d986e082000ac35fb8b57280"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpseclib/phpseclib/zipball/d8b827528213a8d22c763583fc8ab84516983c63",
-                "reference": "d8b827528213a8d22c763583fc8ab84516983c63",
+                "url": "https://api.github.com/repos/phpseclib/phpseclib/zipball/cf8a7ef7159c5d06d986e082000ac35fb8b57280",
+                "reference": "cf8a7ef7159c5d06d986e082000ac35fb8b57280",
                 "shasum": ""
             },
             "require": {
@@ -909,7 +909,7 @@
                 "x.509",
                 "x509"
             ],
-            "time": "2019-09-28T18:03:14+00:00"
+            "time": "2019-10-06T00:56:28+00:00"
         },
         {
             "name": "psr/container",
@@ -917,12 +917,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-fig/container.git",
-                "reference": "014d250daebff39eba15ba990eeb2a140798e77c"
+                "reference": "fc1bc363ecf887921e3897c7b1dad3587ae154eb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-fig/container/zipball/014d250daebff39eba15ba990eeb2a140798e77c",
-                "reference": "014d250daebff39eba15ba990eeb2a140798e77c",
+                "url": "https://api.github.com/repos/php-fig/container/zipball/fc1bc363ecf887921e3897c7b1dad3587ae154eb",
+                "reference": "fc1bc363ecf887921e3897c7b1dad3587ae154eb",
                 "shasum": ""
             },
             "require": {
@@ -958,7 +958,7 @@
                 "container-interop",
                 "psr"
             ],
-            "time": "2018-12-29T15:36:03+00:00"
+            "time": "2019-10-04T14:07:35+00:00"
         },
         {
             "name": "psr/http-message",
@@ -2618,12 +2618,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zend-uri.git",
-                "reference": "b511ac0047a5b90ffa4903f8f3d66c326eab8ae0"
+                "reference": "e5710f8f275c1d4ee31632f8390a83ad3978cd8f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/zendframework/zend-uri/zipball/b511ac0047a5b90ffa4903f8f3d66c326eab8ae0",
-                "reference": "b511ac0047a5b90ffa4903f8f3d66c326eab8ae0",
+                "url": "https://api.github.com/repos/zendframework/zend-uri/zipball/e5710f8f275c1d4ee31632f8390a83ad3978cd8f",
+                "reference": "e5710f8f275c1d4ee31632f8390a83ad3978cd8f",
                 "shasum": ""
             },
             "require": {
@@ -2657,7 +2657,7 @@
                 "uri",
                 "zf"
             ],
-            "time": "2019-02-28T20:01:10+00:00"
+            "time": "2019-10-07T13:39:44+00:00"
         },
         {
             "name": "zendframework/zend-validator",
@@ -6145,7 +6145,8 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=7.0.0"
+        "php": ">=7.0.0",
+        "ext-json": "*"
     },
     "platform-dev": {
         "php": ">=7.1.0"
