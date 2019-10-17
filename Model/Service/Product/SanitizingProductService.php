@@ -39,7 +39,6 @@ namespace Nosto\Tagging\Model\Service\Product;
 use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Store\Api\Data\StoreInterface;
 use Nosto\Object\Product\Product;
-use Nosto\Tagging\Model\Service\Product\ProductServiceInterface as NostoProductService;
 
 class SanitizingProductService implements ProductServiceInterface
 {
@@ -51,7 +50,7 @@ class SanitizingProductService implements ProductServiceInterface
      * @param ProductServiceInterface $nostoProductService
      */
     public function __construct(
-        NostoProductService $nostoProductService
+        ProductServiceInterface $nostoProductService
     ) {
         $this->nostoProductService = $nostoProductService;
     }
@@ -66,7 +65,9 @@ class SanitizingProductService implements ProductServiceInterface
             $product,
             $store
         );
-        /** @noinspection PhpUnhandledExceptionInspection */
-        return $nostoProduct->sanitize();
+        if ($nostoProduct !== null) {
+            return $nostoProduct->sanitize();
+        }
+        return null;
     }
 }
