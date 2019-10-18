@@ -65,10 +65,10 @@ use Nosto\Tagging\Model\ResourceModel\Magento\Product\CollectionFactory as Produ
 use Nosto\Tagging\Model\ResourceModel\Product\Cache\CacheCollection;
 use Nosto\Tagging\Model\ResourceModel\Product\Cache\CacheCollectionFactory;
 use Nosto\Tagging\Model\Service\AbstractService;
-use Nosto\Tagging\Model\Service\Product\ProductSerializerInterface;
-use Nosto\Tagging\Model\Service\Sync\Upsert\AsyncBulkPublisher as ProductUpsertBulkPublisher;
-use Nosto\Tagging\Model\Service\Sync\Delete\AsyncBulkPublisher as ProductDeleteBulkPublisher;
 use Nosto\Tagging\Model\Service\Product\ProductComparatorInterface;
+use Nosto\Tagging\Model\Service\Product\ProductSerializerInterface;
+use Nosto\Tagging\Model\Service\Sync\Delete\AsyncBulkPublisher as ProductDeleteBulkPublisher;
+use Nosto\Tagging\Model\Service\Sync\Upsert\AsyncBulkPublisher as ProductUpsertBulkPublisher;
 use Nosto\Tagging\Util\PagingIterator;
 use Nosto\Types\Product\ProductInterface as NostoProductInterface;
 
@@ -398,6 +398,20 @@ class CacheService extends AbstractService
             );
             $store = $this->nostoHelperScope->getStore($productIndex->getStoreId());
             $nostoProduct = $this->nostoProductBuilder->build($magentoProduct, $store);
+            // We must remove the cache entry if product building returns null. This could happen if somebody
+            // for example uses the model filter or the building fails for some reason.
+            if ($nostoProduct === null) {
+                $this->getLogger()->debug(
+                    sprintf(
+                        'Product id %s for store %s could not be built. Removing entry #%d from cache',
+                        $productIndex->getId(),
+                        $store->getCode(),
+                        $productIndex->getId()
+                    )
+                );
+                $this->cacheRepository->delete($productIndex);
+                return null;
+            }
             $nostoCachedProduct = $this->productSerializer->fromString(
                 $productIndex->getProductData()
             );

@@ -152,7 +152,6 @@ class Builder
             'nosto_product_load_before',
             ['product' => $nostoProduct, 'magentoProduct' => $product, 'modelFilter' => $modelFilter]
         );
-
         if (!$modelFilter->isValid()) {
             return null;
         }
