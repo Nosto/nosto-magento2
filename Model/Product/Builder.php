@@ -158,7 +158,7 @@ class Builder
         if (!$modelFilter->isValid()) {
             throw new FilteredProductException(
                 sprintf(
-                'Product id %d did not pass pre-build model filter for store %s',
+                    'Product id %d did not pass pre-build model filter for store %s',
                     $product->getId(),
                     $store->getCode()
                 )
