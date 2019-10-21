@@ -55,7 +55,6 @@ use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Indexer\Data as NostoIndexerData;
 use Nosto\Tagging\Model\Indexer\Invalidate as NostoIndexerInvalidate;
-use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
 use Nosto\Tagging\Model\Product\Cache as NostoProductIndex;
 use Nosto\Tagging\Model\Product\Cache\CacheBuilder;
 use Nosto\Tagging\Model\Product\Cache\CacheRepository;
@@ -67,6 +66,7 @@ use Nosto\Tagging\Model\ResourceModel\Product\Cache\CacheCollectionFactory;
 use Nosto\Tagging\Model\Service\AbstractService;
 use Nosto\Tagging\Model\Service\Product\ProductComparatorInterface;
 use Nosto\Tagging\Model\Service\Product\ProductSerializerInterface;
+use Nosto\Tagging\Model\Service\Product\ProductServiceInterface;
 use Nosto\Tagging\Model\Service\Sync\Delete\AsyncBulkPublisher as ProductDeleteBulkPublisher;
 use Nosto\Tagging\Model\Service\Sync\Upsert\AsyncBulkPublisher as ProductUpsertBulkPublisher;
 use Nosto\Tagging\Util\PagingIterator;
@@ -89,9 +89,6 @@ class CacheService extends AbstractService
 
     /** @var ProductRepository */
     private $productRepository;
-
-    /** @var NostoProductBuilder */
-    private $nostoProductBuilder;
 
     /** @var NostoHelperScope */
     private $nostoHelperScope;
@@ -126,12 +123,14 @@ class CacheService extends AbstractService
     /** @var ProductComparatorInterface */
     private $productComparator;
 
+    /** @var ProductServiceInterface */
+    private $productService;
+
     /**
      * CacheService constructor.
      * @param CacheRepository $cacheRepository
      * @param CacheBuilder $indexBuilder
      * @param ProductRepository $productRepository
-     * @param NostoProductBuilder $nostoProductBuilder
      * @param NostoHelperScope $nostoHelperScope
      * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoLogger $logger
@@ -144,12 +143,12 @@ class CacheService extends AbstractService
      * @param ProductDeleteBulkPublisher $productDeleteBulkPublisher
      * @param ProductSerializerInterface $productSerializer
      * @param ProductComparatorInterface $productComparator
+     * @param ProductServiceInterface $productService
      */
     public function __construct(
         CacheRepository $cacheRepository,
         CacheBuilder $indexBuilder,
         ProductRepository $productRepository,
-        NostoProductBuilder $nostoProductBuilder,
         NostoHelperScope $nostoHelperScope,
         NostoHelperAccount $nostoHelperAccount,
         NostoLogger $logger,
@@ -161,13 +160,13 @@ class CacheService extends AbstractService
         ProductUpsertBulkPublisher $productUpsertBulkPublisher,
         ProductDeleteBulkPublisher $productDeleteBulkPublisher,
         ProductSerializerInterface $productSerializer,
-        ProductComparatorInterface $productComparator
+        ProductComparatorInterface $productComparator,
+        ProductServiceInterface $productService
     ) {
         parent::__construct($nostoDataHelper, $logger);
         $this->cacheRepository = $cacheRepository;
         $this->indexBuilder = $indexBuilder;
         $this->productRepository = $productRepository;
-        $this->nostoProductBuilder = $nostoProductBuilder;
         $this->nostoHelperScope = $nostoHelperScope;
         $this->nostoHelperAccount = $nostoHelperAccount;
         $this->nostoCacheCollectionFactory = $nostoCacheCollectionFactory;
@@ -178,6 +177,7 @@ class CacheService extends AbstractService
         $this->productDeleteBulkPublisher = $productDeleteBulkPublisher;
         $this->productSerializer = $productSerializer;
         $this->productComparator = $productComparator;
+        $this->productService = $productService;
     }
 
     /**
@@ -396,19 +396,11 @@ class CacheService extends AbstractService
                 $productIndex->getProductId(),
                 $productIndex->getStoreId()
             );
-            $store = $this->nostoHelperScope->getStore($productIndex->getStoreId());
-            $nostoProduct = $this->nostoProductBuilder->build($magentoProduct, $store);
-            // We must remove the cache entry if product building returns null. This could happen if somebody
-            // for example uses the model filter or the building fails for some reason.
+            $nostoProduct = $this->productService->getProduct(
+                $magentoProduct,
+                $this->nostoHelperScope->getStore($productIndex->getStoreId())
+            );
             if ($nostoProduct === null) {
-                $this->getLogger()->debug(
-                    sprintf(
-                        'Product id %s for store %s could not be built. Removing entry #%d from cache',
-                        $productIndex->getId(),
-                        $store->getCode(),
-                        $productIndex->getId()
-                    )
-                );
                 $this->cacheRepository->delete($productIndex);
                 return null;
             }

@@ -41,6 +41,8 @@ use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\Product\Gallery\ReadHandler as GalleryReadHandler;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Store\Model\Store;
+use Nosto\Exception\FilteredProductException;
+use Nosto\Exception\NonBuildableProductException;
 use Nosto\NostoException;
 use Nosto\Object\ModelFilter;
 use Nosto\Object\Product\Product as NostoProduct;
@@ -139,8 +141,9 @@ class Builder
     /**
      * @param Product $product
      * @param Store $store
-     * @return NostoProduct|null
-     * @throws Exception
+     * @return NostoProduct
+     * @throws FilteredProductException
+     * @throws NonBuildableProductException
      */
     public function build(
         Product $product,
@@ -153,14 +156,19 @@ class Builder
             ['product' => $nostoProduct, 'magentoProduct' => $product, 'modelFilter' => $modelFilter]
         );
         if (!$modelFilter->isValid()) {
-            return null;
+            throw new FilteredProductException(
+                sprintf(
+                'Product id %d did not pass pre-build model filter for store %s',
+                    $product->getId(),
+                    $store->getCode()
+                )
+            );
         }
         try {
             $nostoProduct->setUrl($this->urlBuilder->getUrlInStore($product, $store));
             $nostoProduct->setProductId((string)$product->getId());
             $nostoProduct->setName($product->getName());
             $nostoProduct->setImageUrl($this->buildImageUrl($product, $store));
-
             $price = $this->nostoCurrencyHelper->convertToTaggingPrice(
                 $this->nostoPriceHelper->getProductFinalDisplayPrice(
                     $product,
@@ -168,7 +176,6 @@ class Builder
                 ),
                 $store
             );
-
             if ($this->nostoCurrencyHelper->exchangeRatesInUse($store)) {
                 $nostoProduct->setVariationId(
                     $this->nostoCurrencyHelper->getTaggingCurrency(
@@ -180,7 +187,6 @@ class Builder
                     $this->nostoVariationHelper->getDefaultVariationCode()
                 );
             }
-
             $nostoProduct->setAvailability($this->buildAvailability($product, $store));
             $nostoProduct->setCategories($this->nostoCategoryBuilder->buildCategories($product, $store));
             if ($this->getDataHelper()->isInventoryTaggingEnabled($store)) {
@@ -257,7 +263,7 @@ class Builder
                 )->getCode()
             );
         } catch (Exception $e) {
-            $this->getLogger()->exception($e);
+            throw new NonBuildableProductException($e->getMessage());
         }
         $this->eventManager->dispatch(
             'nosto_product_load_after',
@@ -265,7 +271,13 @@ class Builder
         );
 
         if (!$modelFilter->isValid()) {
-            return null;
+            throw new FilteredProductException(
+                sprintf(
+                    'Product id %d did not pass post-build model filter for store %s',
+                    $product->getId(),
+                    $store->getCode()
+                )
+            );
         }
         return $nostoProduct;
     }

@@ -41,7 +41,10 @@ use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Model\Product;
 use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\Store;
+use Nosto\Exception\FilteredProductException;
+use Nosto\Exception\NonBuildableProductException;
 use Nosto\Object\Product\Product as NostoProduct;
+use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
 
 class DefaultProductService implements ProductServiceInterface
@@ -50,14 +53,20 @@ class DefaultProductService implements ProductServiceInterface
     /** @var NostoProductBuilder */
     private $nostoProductBuilder;
 
+    /** @var NostoLogger */
+    private $logger;
+
     /**
      * DefaultProductService constructor.
      * @param NostoProductBuilder $nostoProductBuilder
+     * @param NostoLogger $logger
      */
     public function __construct(
-        NostoProductBuilder $nostoProductBuilder
+        NostoProductBuilder $nostoProductBuilder,
+        NostoLogger $logger
     ) {
         $this->nostoProductBuilder = $nostoProductBuilder;
+        $this->logger = $logger;
     }
 
     /**
@@ -71,9 +80,19 @@ class DefaultProductService implements ProductServiceInterface
     {
         /** @var Product $product */
         /** @var Store $store */
-        return $this->nostoProductBuilder->build(
-            $product,
-            $store
-        );
+        try {
+            return $this->nostoProductBuilder->build($product, $store);
+        } catch (NonBuildableProductException $e) {
+            $this->logger->exception($e);
+            return null;
+        } catch (FilteredProductException $e) {
+            $this->logger->debug(
+                sprintf(
+                    'Product filtered out with message: %s',
+                    $e->getMessage()
+                )
+            );
+            return null;
+        }
     }
 }
