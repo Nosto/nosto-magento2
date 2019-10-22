@@ -37,27 +37,23 @@
 
 namespace Nosto\Tagging\Cron;
 
+use DateInterval;
+use DateTime;
 use Exception;
 use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
-use Magento\Store\Model\Store;
 use Nosto\Tagging\Helper\Account as NostoAccountHelper;
 use Nosto\Tagging\Logger\Logger;
 use Nosto\Tagging\Model\Product\Cache\CacheRepository;
-use Nosto\Tagging\Model\ResourceModel\Product\Cache\CacheCollection;
-use Nosto\Tagging\Model\ResourceModel\Product\Cache\CacheCollectionFactory;
 
 /**
  * Cronjob class that periodically invalidates Nosto indexed data for each of the store views
  *
  * @package Nosto\Tagging\Cron
  */
-class Invalidate
+class InvalidateCron
 {
     /** @var Logger */
     protected $logger;
-
-    /** @var CacheCollectionFactory */
-    private $cacheCollectionFactory;
 
     /** @var NostoAccountHelper */
     private $nostoAccountHelper;
@@ -78,7 +74,6 @@ class Invalidate
      * Invalidate constructor.
      *
      * @param Logger $logger
-     * @param CacheCollectionFactory $cacheCollectionFactory
      * @param CacheRepository $cacheRepository
      * @param NostoAccountHelper $nostoAccountHelper
      * @param TimezoneInterface $timezoneInterface
@@ -87,7 +82,6 @@ class Invalidate
      */
     public function __construct(
         Logger $logger,
-        CacheCollectionFactory $cacheCollectionFactory,
         CacheRepository $cacheRepository,
         NostoAccountHelper $nostoAccountHelper,
         TimezoneInterface $timezoneInterface,
@@ -95,7 +89,6 @@ class Invalidate
         $productLimit
     ) {
         $this->logger = $logger;
-        $this->cacheCollectionFactory = $cacheCollectionFactory;
         $this->cacheRepository = $cacheRepository;
         $this->nostoAccountHelper = $nostoAccountHelper;
         $this->timezoneInterface = $timezoneInterface;
@@ -112,15 +105,25 @@ class Invalidate
         if (!$this->productLimit || !is_numeric($this->productLimit)) {
             $this->logger->debug(
                 sprintf(
-                    'Product limit for invalidate cron is set to %s. Not invalidating any products.',
+                    'Product limit for invalidate cache cron is set to %s. Not invalidating any products.',
                     $this->productLimit
                 )
             );
             return;
         }
         $stores = $this->nostoAccountHelper->getStoresWithNosto();
+        $this->logger->debug(
+            sprintf(
+                'Starting to invalidate product cache - Nosto is installed for %d stores',
+                count($stores)
+            )
+        );
         foreach ($stores as $store) {
-            $productCacheCollection = $this->getCollection($store);
+            $productCacheCollection = $this->cacheRepository->getByLastUpdatedAndStore(
+                $store,
+                $this->getTimeOffset(),
+                $this->productLimit
+            );
             $updatedCount = $this->cacheRepository->markAsIsDirtyItemsByStore($productCacheCollection, $store);
             $this->logger->debug(
                 sprintf(
@@ -132,37 +135,17 @@ class Invalidate
                     $this->intervalHours
                 )
             );
-
         }
     }
 
     /**
-     * @param Store $store
-     * @return CacheCollection
-     * @throws Exception
-     */
-    private function getCollection(Store $store)
-    {
-        return $this->cacheCollectionFactory->create()
-            ->addFieldToSelect('*')
-            ->addFieldToFilter(
-                'updated_at',
-                ['lteq' => $this->getTimeOffset()]
-            )
-            ->addStoreFilter($store)
-            ->orderBy('updated_at', 'ASC')
-            ->limitResults($this->productLimit);
-    }
-
-    /**
-     * @return string
+     * @return DateTime
      * @throws Exception
      */
     private function getTimeOffset()
     {
         return $this->timezoneInterface
             ->date()
-            ->modify('-' . $this->intervalHours . ' hours')
-            ->format('Y-m-d H:i:s');
+            ->sub(new DateInterval(sprintf('PT%dH', $this->intervalHours)));
     }
 }

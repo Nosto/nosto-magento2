@@ -366,4 +366,23 @@ class CacheRepository implements ProductCacheRepositoryInterface
         $product->setUpdatedAt($this->magentoTimeZone->date());
         $this->save($product);
     }
+
+    /**
+     * @param Store $store
+     * @param \DateTime $updatedBefore
+     * @param int $limit
+     * @return CacheCollection
+     */
+    public function getByLastUpdatedAndStore(Store $store, \DateTime $updatedBefore, $limit)
+    {
+        return $this->cacheCollectionFactory->create()
+            ->addFieldToSelect('*')
+            ->addFieldToFilter(
+                'updated_at',
+                ['lteq' => $updatedBefore->format('Y-m-d H:i:s')]
+            )
+            ->addStoreFilter($store)
+            ->orderBy('updated_at', 'ASC')
+            ->limitResults($limit);
+    }
 }

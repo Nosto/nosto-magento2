@@ -186,7 +186,7 @@
             </argument>
         </arguments>
     </type>
-    <type name="Nosto\Tagging\Cron\Invalidate">
+    <type name="Nosto\Tagging\Cron\InvalidateCron">
         <arguments>
             <argument name="intervalHours" xsi:type="number">4</argument>
             <argument name="productLimit" xsi:type="number">1000</argument>

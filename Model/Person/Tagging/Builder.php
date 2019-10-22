@@ -153,6 +153,7 @@ class Builder extends PersonBuilder
             /** @var $person Customer */
             return $person;
         } catch (Exception $e) {
+            $this->logger->exception($e);
             return null;
         }
     }

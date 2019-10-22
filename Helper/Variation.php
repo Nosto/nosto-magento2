@@ -45,6 +45,7 @@ use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
+use Nosto\Tagging\Logger\Logger;
 
 /**
  * Variation helper
@@ -52,21 +53,28 @@ use Magento\Framework\Exception\NoSuchEntityException;
  */
 class Variation extends AbstractHelper
 {
+    const DEFAULT_CUSTOMER_GROUP_ID = GroupManagement::NOT_LOGGED_IN_ID;
+
+    /** @var GroupRepository */
     private $groupRepository;
 
-    const DEFAULT_CUSTOMER_GROUP_ID = GroupManagement::NOT_LOGGED_IN_ID;
+    /** @var Logger */
+    private $logger;
 
     /**
      * Variation constructor.
      * @param Context $context
      * @param GroupRepository $groupRepository
+     * @param Logger $logger
      */
     public function __construct(
         Context $context,
-        GroupRepository $groupRepository
+        GroupRepository $groupRepository,
+        Logger $logger
     ) {
         parent::__construct($context);
         $this->groupRepository = $groupRepository;
+        $this->logger = $logger;
     }
 
     /**
@@ -116,6 +124,7 @@ class Variation extends AbstractHelper
                 return true;
             }
         } catch (Exception $e) {
+            $this->logger->exception($e);
             return false;
         }
 

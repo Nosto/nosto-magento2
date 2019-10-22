@@ -3,12 +3,12 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Cron:etc/crontab.xsd">
     <group id="default">
-        <job name="nosto_exchange_rates" instance="Nosto\Tagging\Cron\Rates" method="execute">
+        <job name="nosto_exchange_rates" instance="Nosto\Tagging\Cron\RatesCron" method="execute">
             <schedule>4 * * * *</schedule>
         </job>
     </group>
     <group id="nosto_invalidate_indexer_group">
-        <job name="nosto_invalidate_data" instance="Nosto\Tagging\Cron\Invalidate" method="execute">
+        <job name="nosto_invalidate_data" instance="Nosto\Tagging\Cron\InvalidateCron" method="execute">
             <schedule>0 * * * *</schedule>
         </job>
     </group>
