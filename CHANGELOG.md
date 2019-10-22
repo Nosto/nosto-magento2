@@ -1,5 +1,10 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 4.0.0-rc2 (pre-release)
+* Add null checks for product data before trying to unserialize the data
+* Check the memory consumption in indexers and exit gracefully if the process starts to run out of PHP memory limit
+* Improve the error handling in product data generation
+
 ### 4.0.0-rc1 (pre-release)
 * Introduce cache for Nosto product data to speedup the product tagging added to the product pages
 * Introduce Nosto product data change detection to avoid redundant API calls to Nosto
