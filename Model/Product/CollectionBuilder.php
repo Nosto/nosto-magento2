@@ -57,7 +57,7 @@ class CollectionBuilder
     private $productCollectionBuilder;
 
     /** @var ProductServiceInterface */
-    private $productServiceInterface;
+    private $productService;
 
     /** @var NostoLogger */
     private $logger;
@@ -65,16 +65,16 @@ class CollectionBuilder
     /**
      * Collection constructor.
      * @param ProductCollectionBuilder $productCollectionBuilder
-     * @param ProductServiceInterface $productServiceInterface
+     * @param ProductServiceInterface $productService
      * @param NostoLogger $logger
      */
     public function __construct(
         ProductCollectionBuilder $productCollectionBuilder,
-        ProductServiceInterface $productServiceInterface,
+        ProductServiceInterface $productService,
         NostoLogger $logger
     ) {
         $this->productCollectionBuilder = $productCollectionBuilder;
-        $this->productServiceInterface = $productServiceInterface;
+        $this->productService = $productService;
         $this->logger = $logger;
     }
 
@@ -126,7 +126,7 @@ class CollectionBuilder
         foreach ($items as $product) {
             /** @var Product $product */
             try {
-                $nostoProduct = $this->productServiceInterface->getProduct(
+                $nostoProduct = $this->productService->getProduct(
                     $product,
                     $store
                 );

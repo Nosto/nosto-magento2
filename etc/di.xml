@@ -131,16 +131,23 @@
             </argument>
         </arguments>
     </type>
+    <type name="Nosto\Tagging\Model\Service\Cache">
+        <arguments>
+            <argument name="productService" xsi:type="object">
+                Nosto\Tagging\Model\Service\Product\DefaultProductService
+            </argument>
+        </arguments>
+    </type>
     <type name="Nosto\Tagging\Block\Product">
         <arguments>
-            <argument name="productServiceInterface" xsi:type="object">
+            <argument name="productService" xsi:type="object">
                 Nosto\Tagging\Model\Service\Product\SanitizingProductService
             </argument>
         </arguments>
     </type>
     <type name="Nosto\Tagging\Model\Product\CollectionBuilder">
         <arguments>
-            <argument name="productServiceInterface" xsi:type="object">
+            <argument name="productService" xsi:type="object">
                 Nosto\Tagging\Model\Service\Product\CachingProductService
             </argument>
         </arguments>

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1e143948220c70ddd411ad99c91742fb",
+    "content-hash": "d497a3a895f7346c5d8cf623c0ad412a",
     "packages": [
         {
             "name": "colinmollenhour/credis",
@@ -145,12 +145,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/composer/composer.git",
-                "reference": "f753c15664c24d95bb64bd99ddc32cb01d1e32b8"
+                "reference": "45d616c447ab3626bd93d304a8a78e7e2938f6b7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/composer/composer/zipball/f753c15664c24d95bb64bd99ddc32cb01d1e32b8",
-                "reference": "f753c15664c24d95bb64bd99ddc32cb01d1e32b8",
+                "url": "https://api.github.com/repos/composer/composer/zipball/45d616c447ab3626bd93d304a8a78e7e2938f6b7",
+                "reference": "45d616c447ab3626bd93d304a8a78e7e2938f6b7",
                 "shasum": ""
             },
             "require": {
@@ -217,7 +217,7 @@
                 "dependency",
                 "package"
             ],
-            "time": "2019-10-06T20:15:11+00:00"
+            "time": "2019-10-21T09:12:08+00:00"
         },
         {
             "name": "composer/semver",
@@ -663,16 +663,16 @@
         },
         {
             "name": "nosto/php-sdk",
-            "version": "4.0.4",
+            "version": "4.0.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Nosto/nosto-php-sdk.git",
-                "reference": "ca4b3a1f7fa1bb07d9a89d453edc2735f0fe5367"
+                "reference": "2ab950096328a24cc31d87803f52aaab8474e115"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Nosto/nosto-php-sdk/zipball/ca4b3a1f7fa1bb07d9a89d453edc2735f0fe5367",
-                "reference": "ca4b3a1f7fa1bb07d9a89d453edc2735f0fe5367",
+                "url": "https://api.github.com/repos/Nosto/nosto-php-sdk/zipball/2ab950096328a24cc31d87803f52aaab8474e115",
+                "reference": "2ab950096328a24cc31d87803f52aaab8474e115",
                 "shasum": ""
             },
             "require": {
@@ -708,7 +708,7 @@
                 "BSD-3-Clause"
             ],
             "description": "PHP SDK for developing Nosto modules for e-commerce platforms",
-            "time": "2019-10-15T13:55:52+00:00"
+            "time": "2019-10-21T11:33:57+00:00"
         },
         {
             "name": "oyejorge/less.php",
@@ -825,12 +825,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpseclib/phpseclib.git",
-                "reference": "cf8a7ef7159c5d06d986e082000ac35fb8b57280"
+                "reference": "0e9b752f56b8e584a94394075852a51d34a6ef82"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpseclib/phpseclib/zipball/cf8a7ef7159c5d06d986e082000ac35fb8b57280",
-                "reference": "cf8a7ef7159c5d06d986e082000ac35fb8b57280",
+                "url": "https://api.github.com/repos/phpseclib/phpseclib/zipball/0e9b752f56b8e584a94394075852a51d34a6ef82",
+                "reference": "0e9b752f56b8e584a94394075852a51d34a6ef82",
                 "shasum": ""
             },
             "require": {
@@ -909,7 +909,7 @@
                 "x.509",
                 "x509"
             ],
-            "time": "2019-10-06T00:56:28+00:00"
+            "time": "2019-10-20T19:00:41+00:00"
         },
         {
             "name": "psr/container",
@@ -1899,12 +1899,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zend-eventmanager.git",
-                "reference": "8110c6bc0b67c5ab84a4fdae8e89b5abd672b16d"
+                "reference": "3ad808d60d0df54e16440a71fb9c8a33988e4d78"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/zendframework/zend-eventmanager/zipball/8110c6bc0b67c5ab84a4fdae8e89b5abd672b16d",
-                "reference": "8110c6bc0b67c5ab84a4fdae8e89b5abd672b16d",
+                "url": "https://api.github.com/repos/zendframework/zend-eventmanager/zipball/3ad808d60d0df54e16440a71fb9c8a33988e4d78",
+                "reference": "3ad808d60d0df54e16440a71fb9c8a33988e4d78",
                 "shasum": ""
             },
             "require": {
@@ -1945,7 +1945,7 @@
                 "events",
                 "zf2"
             ],
-            "time": "2019-08-31T14:24:22+00:00"
+            "time": "2019-10-18T07:10:41+00:00"
         },
         {
             "name": "zendframework/zend-filter",

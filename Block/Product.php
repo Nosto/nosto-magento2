@@ -70,7 +70,7 @@ class Product extends View
     private $categoryBuilder;
 
     /** @var ProductServiceInterface */
-    private $productServiceInterface;
+    private $productService;
 
     /**
      * Constructor.
@@ -88,7 +88,7 @@ class Product extends View
      * @param NostoCategoryBuilder $categoryBuilder the category meta model builder.
      * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoHelperScope $nostoHelperScope
-     * @param ProductServiceInterface $productServiceInterface
+     * @param ProductServiceInterface $productService
      * @param array $data optional data.
      * @SuppressWarnings(PHPMD.ExcessiveParameterList)
      */
@@ -106,7 +106,7 @@ class Product extends View
         NostoCategoryBuilder $categoryBuilder,
         NostoHelperAccount $nostoHelperAccount,
         NostoHelperScope $nostoHelperScope,
-        ProductServiceInterface $productServiceInterface,
+        ProductServiceInterface $productService,
         array $data = []
     ) {
         parent::__construct(
@@ -125,7 +125,7 @@ class Product extends View
 
         $this->taggingConstruct($nostoHelperAccount, $nostoHelperScope);
         $this->categoryBuilder = $categoryBuilder;
-        $this->productServiceInterface = $productServiceInterface;
+        $this->productService = $productService;
     }
 
     /**
@@ -136,7 +136,7 @@ class Product extends View
      */
     public function getAbstractObject()
     {
-        return $this->productServiceInterface->getProduct(
+        return $this->productService->getProduct(
             $this->getProduct(),
             $this->nostoHelperScope->getStore()
         );
