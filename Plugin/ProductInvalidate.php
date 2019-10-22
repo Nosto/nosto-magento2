@@ -40,7 +40,7 @@ use Closure;
 use Magento\Catalog\Model\ResourceModel\Product as MagentoResourceProduct;
 use Magento\Framework\Indexer\IndexerRegistry;
 use Magento\Framework\Model\AbstractModel;
-use Nosto\Tagging\Model\Indexer\Invalidate as IndexerInvalidate;
+use Nosto\Tagging\Model\Indexer\InvalidateIndexer as IndexerInvalidate;
 use Nosto\Tagging\Model\Product\Repository as NostoProductRepository;
 use Nosto\Tagging\Model\Service\Cache\CacheService;
 

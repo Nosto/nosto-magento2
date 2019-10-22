@@ -40,7 +40,7 @@ use Closure;
 use Magento\Catalog\Model\ResourceModel\Product as MagentoResourceProduct;
 use Magento\Framework\Indexer\IndexerRegistry;
 use Magento\Framework\Model\AbstractModel;
-use Nosto\Tagging\Model\Indexer\Data as IndexerData;
+use Nosto\Tagging\Model\Indexer\DataIndexer as IndexerData;
 use Nosto\Tagging\Model\ResourceModel\Product\Cache;
 
 class ProductData
