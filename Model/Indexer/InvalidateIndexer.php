@@ -59,7 +59,7 @@ use Symfony\Component\Console\Input\InputInterface;
  * and setting the `is_dirty` value in `nosto_product_index` table
  * @package Nosto\Tagging\Model\Indexer
  */
-class Invalidate extends AbstractIndexer
+class InvalidateIndexer extends AbstractIndexer
 {
     const INDEXER_ID = 'nosto_index_product_invalidate';
 

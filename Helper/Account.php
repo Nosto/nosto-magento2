@@ -219,7 +219,7 @@ class Account extends AbstractHelper
             try {
                 $account = new NostoSignupAccount($accountName);
             } catch (NostoException $e) {
-                throw new RuntimeException();
+                throw new RuntimeException($e->getMessage());
             }
             /** @noinspection PhpUndefinedMethodInspection */
             $tokens = json_decode(

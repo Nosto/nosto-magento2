@@ -47,7 +47,7 @@ use Nosto\Tagging\Model\Rates\Service as NostoRatesService;
  *
  * @package Nosto\Tagging\Cron
  */
-class Rates
+class RatesCron
 {
     protected $logger;
     private $nostoRatesService;

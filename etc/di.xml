@@ -172,21 +172,21 @@
             </argument>
         </arguments>
     </type>
-    <type name="Nosto\Tagging\Model\Indexer\Data">
+    <type name="Nosto\Tagging\Model\Indexer\DataIndexer">
         <arguments>
             <argument name="dimensionProvider" xsi:type="object" shared="false">
                 Nosto\Tagging\Model\Indexer\Dimensions\StoreDimensionProvider
             </argument>
         </arguments>
     </type>
-    <type name="Nosto\Tagging\Model\Indexer\Invalidate">
+    <type name="Nosto\Tagging\Model\Indexer\InvalidateIndexer">
         <arguments>
             <argument name="dimensionProvider" xsi:type="object" shared="false">
                 Nosto\Tagging\Model\Indexer\Dimensions\StoreDimensionProvider
             </argument>
         </arguments>
     </type>
-    <type name="Nosto\Tagging\Cron\Invalidate">
+    <type name="Nosto\Tagging\Cron\InvalidateCron">
         <arguments>
             <argument name="intervalHours" xsi:type="number">4</argument>
             <argument name="productLimit" xsi:type="number">1000</argument>

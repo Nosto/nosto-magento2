@@ -54,7 +54,7 @@ use Symfony\Component\Console\Input\InputInterface;
 /**
  * An indexer for Nosto product sync
  */
-class Data extends AbstractIndexer
+class DataIndexer extends AbstractIndexer
 {
     const INDEXER_ID = 'nosto_index_product_data';
 
