@@ -36,9 +36,11 @@
 
 namespace Nosto\Tagging\Helper;
 
+use Exception;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 use Magento\Catalog\Model\Product;
+use Magento\Framework\DataObject;
 use Magento\Framework\Registry;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Magento\Store\Model\Store;
@@ -136,7 +138,7 @@ class Ratings extends AbstractHelper
 
                     /** @noinspection PhpUndefinedMethodInspection */
                     $ratings = $this->ratingsFactory->create()->getRichSnippet();
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     $this->resetRegistryProduct();
                     $this->logger->exception($e);
                     return null;
@@ -176,15 +178,33 @@ class Ratings extends AbstractHelper
      */
     private function buildRatingValue(Product $product, Store $store)
     {
-        /** @noinspection PhpUndefinedMethodInspection */
-        if (!$product->getRatingSummary()) {
-            $this->reviewFactory->create()->getEntitySummary($product, $store->getId());
-        }
-
-        /** @noinspection PhpUndefinedMethodInspection */
-        if ($product->getRatingSummary()->getReviewsCount() > 0) {
+        try {
             /** @noinspection PhpUndefinedMethodInspection */
-            return round($product->getRatingSummary()->getRatingSummary() / 20, 1);
+            if (!$product->getRatingSummary()) {
+                $this->reviewFactory->create()->getEntitySummary($product, $store->getId());
+            }
+            /** @noinspection PhpUndefinedMethodInspection */
+            $ratingSummary = $product->getRatingSummary();
+            $ratingValue = null;
+            // As of Magento 2.3.3 rating summary returns directly the sum of ratings rather
+            // than DataObject
+            if ($ratingSummary instanceof DataObject) {
+                /** @noinspection PhpUndefinedMethodInspection */
+                if ($ratingSummary->getReviewsCount() > 0
+                    /** @noinspection PhpUndefinedMethodInspection */
+                    && $ratingSummary->getRatingSummary() > 0
+                ) {
+                    /** @noinspection PhpUndefinedMethodInspection */
+                    $ratingValue = $ratingSummary->getRatingSummary();
+                }
+            } elseif (is_numeric($ratingSummary)) {
+                $ratingValue = $ratingSummary;
+            }
+            if ($ratingValue !== null) {
+                return (float)round($ratingValue / 20, 1);
+            }
+        } catch (Exception $e) {
+            $this->logger->exception($e);
         }
 
         return null;
@@ -200,17 +220,30 @@ class Ratings extends AbstractHelper
      */
     private function buildReviewCount(Product $product, Store $store)
     {
-        /** @noinspection PhpUndefinedMethodInspection */
-        if (!$product->getRatingSummary()) {
-            $this->reviewFactory->create()->getEntitySummary($product, $store->getId());
-        }
-
-        /** @noinspection PhpUndefinedMethodInspection */
-        if ($product->getRatingSummary()->getReviewsCount() > 0) {
+        try {
             /** @noinspection PhpUndefinedMethodInspection */
-            return $product->getRatingSummary()->getReviewsCount();
+            if (!$product->getRatingSummary()) {
+                $this->reviewFactory->create()->getEntitySummary($product, $store->getId());
+            }
+            /** @noinspection PhpUndefinedMethodInspection */
+            $ratingSummary = $product->getRatingSummary();
+            // As of Magento 2.3.3 rating summary returns directly the amount of
+            // than DataObject
+            if ($ratingSummary instanceof DataObject) {
+                /** @noinspection PhpUndefinedMethodInspection */
+                if ($ratingSummary->getReviewsCount() > 0) {
+                    /** @noinspection PhpUndefinedMethodInspection */
+                    return (int)$ratingSummary->getReviewsCount();
+                }
+            /** @noinspection PhpUndefinedMethodInspection */
+            } elseif (is_numeric($product->getReviewsCount())) {
+                /** @noinspection PhpUndefinedMethodInspection */
+                return (int)$product->getReviewsCount();
+            }
+            return null;
+        } catch (Exception $e) {
+            $this->logger->exception($e);
         }
-
         return null;
     }
 

@@ -1,5 +1,8 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 3.8.8
+* Fix the compatilibity issue with Magento 2.3.3 in ratings & reviews building 
+
 ### 3.8.7
 * Fix product availability when in single store mode
 
