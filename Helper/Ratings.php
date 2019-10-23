@@ -227,21 +227,20 @@ class Ratings extends AbstractHelper
             }
             /** @noinspection PhpUndefinedMethodInspection */
             $ratingSummary = $product->getRatingSummary();
-            $reviewCount = null;
             // As of Magento 2.3.3 rating summary returns directly the amount of
             // than DataObject
             if ($ratingSummary instanceof DataObject) {
                 /** @noinspection PhpUndefinedMethodInspection */
                 if ($ratingSummary->getReviewsCount() > 0) {
                     /** @noinspection PhpUndefinedMethodInspection */
-                    $reviewCount = $ratingSummary->getReviewsCount();
+                    return (int)$ratingSummary->getReviewsCount();
                 }
             /** @noinspection PhpUndefinedMethodInspection */
             } elseif (is_numeric($product->getReviewsCount())) {
                 /** @noinspection PhpUndefinedMethodInspection */
-                $reviewCount = (int)$product->getReviewsCount();
+                return (int)$product->getReviewsCount();
             }
-            return $reviewCount;
+            return null;
         } catch (Exception $e) {
             $this->logger->exception($e);
         }
