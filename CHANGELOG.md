@@ -1,5 +1,8 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 4.0.0-rc3 (pre-release)
+* Amend fixes from 3.8.8 (Magento 2.3.3 compatibility)
+
 ### 4.0.0-rc2 (pre-release)
 * Add null checks for product data before trying to unserialize the data
 * Check the memory consumption in indexers and exit gracefully if the process starts to run out of PHP memory limit
