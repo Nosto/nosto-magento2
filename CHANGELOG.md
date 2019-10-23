@@ -5,6 +5,9 @@ All notable changes to this project will be documented in this file. This projec
 * Use graphql for sending order confirmations and order status updates
 * Speedup the SKU price lookups by using price index table (catalog_product_index_price)
 
+### 3.8.8
+* Fix the compatilibity issue with Magento 2.3.3 in ratings & reviews building 
+
 ### 3.8.7
 * Fix product availability when in single store mode
 
