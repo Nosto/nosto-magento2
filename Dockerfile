@@ -90,7 +90,7 @@ RUN        service mysql start && \
            cd /var/www/html && \
            composer config --global repositories.0 composer https://repo.magento.com && \
            composer config --global http-basic.repo.magento.com $repouser $repopass && \
-           composer create-project magento/community-edition && \
+           composer create-project magento/community-edition:2.3.2 && \
            cd community-edition && \
            composer update && \
            composer config --unset minimum-stability && \
