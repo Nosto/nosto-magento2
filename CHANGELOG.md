@@ -18,6 +18,9 @@ All notable changes to this project will be documented in this file. This projec
 * Speedup the inventory level lookups by using `StockRegistryProvider`
 * Add constraint for minimum supported Magento version (2.2.6)
 
+### 3.8.8
+* Fix the compatilibity issue with Magento 2.3.3 in ratings & reviews building 
+
 ### 3.8.7
 * Fix product availability when in single store mode
 
