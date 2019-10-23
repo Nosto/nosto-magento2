@@ -183,6 +183,7 @@ class Ratings extends AbstractHelper
             if (!$product->getRatingSummary()) {
                 $this->reviewFactory->create()->getEntitySummary($product, $store->getId());
             }
+            /** @noinspection PhpUndefinedMethodInspection */
             $ratingSummary = $product->getRatingSummary();
             $ratingValue = null;
             // As of Magento 2.3.3 rating summary returns directly the sum of ratings rather
@@ -193,9 +194,10 @@ class Ratings extends AbstractHelper
                     /** @noinspection PhpUndefinedMethodInspection */
                     && $ratingSummary->getRatingSummary() > 0
                 ) {
+                    /** @noinspection PhpUndefinedMethodInspection */
                     $ratingValue = $ratingSummary->getRatingSummary();
                 }
-            } elseif(is_numeric($ratingSummary)) {
+            } elseif (is_numeric($ratingSummary)) {
                 $ratingValue = $ratingSummary;
             }
             if ($ratingValue !== null) {
@@ -223,6 +225,7 @@ class Ratings extends AbstractHelper
             if (!$product->getRatingSummary()) {
                 $this->reviewFactory->create()->getEntitySummary($product, $store->getId());
             }
+            /** @noinspection PhpUndefinedMethodInspection */
             $ratingSummary = $product->getRatingSummary();
             $reviewCount = null;
             // As of Magento 2.3.3 rating summary returns directly the amount of
@@ -230,9 +233,12 @@ class Ratings extends AbstractHelper
             if ($ratingSummary instanceof DataObject) {
                 /** @noinspection PhpUndefinedMethodInspection */
                 if ($ratingSummary->getReviewsCount() > 0) {
+                    /** @noinspection PhpUndefinedMethodInspection */
                     $reviewCount = $ratingSummary->getReviewsCount();
                 }
-            } elseif(is_numeric($product->getReviewsCount())) {
+            /** @noinspection PhpUndefinedMethodInspection */
+            } elseif (is_numeric($product->getReviewsCount())) {
+                /** @noinspection PhpUndefinedMethodInspection */
                 $reviewCount = (int)$product->getReviewsCount();
             }
             return $reviewCount;
