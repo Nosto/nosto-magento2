@@ -80,7 +80,7 @@ class Builder
     {
         $categories = [];
         foreach ($product->getCategoryCollection() as $category) {
-            $categoryString = $this->buildFromProduct($category);
+            $categoryString = $this->build($category);
             if (!empty($categoryString)) {
                 $categories[] = $categoryString;
             }
