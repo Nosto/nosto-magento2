@@ -2,7 +2,7 @@
   "name": "nosto/module-nostotagging",
   "description": "Increase your conversion rate and average order value by delivering your customers personalized product recommendations throughout their shopping journey.",
   "type": "magento2-module",
-  "version": "3.8.8",
+  "version": "3.9.0",
   "require-dev": {
     "php": ">=7.1.0",
     "phan/phan": "0.8.8",
@@ -36,7 +36,7 @@
   ],
   "minimum-stability": "dev",
   "require": {
-    "nosto/php-sdk": "3.15.0",
+    "nosto/php-sdk": "4.0.*",
     "php": ">=7.0.0"
   },
   "repositories": [
@@ -71,6 +71,16 @@
   "scripts": {
     "validate-archive": [
       "php ./vendor/magento/marketplace-tools/validate_m2_package.php $@"
+    ],
+    "unit-tests": [
+      "/bin/cp dev/tests/integration/phpunit.xml ../../../dev/tests/integration/",
+      "/bin/cp dev/tests/integration/etc/install-config-mysql.php ../../../dev/tests/integration/etc/",
+      "docker-compose -f dev/tests/docker-compose.yml up -d",
+      "php ../../../vendor/phpunit/phpunit/phpunit --configuration ../../../dev/tests/Integration/phpunit.xml ../../../vendor/nosto/module-nostotagging/Test/Integration --testdox",
+      "docker-compose -f dev/tests/docker-compose.yml stop"
     ]
+  },
+  "config": {
+    "process-timeout":0
   }
 }

@@ -1,5 +1,10 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 3.9.0
+* Remove category personalization features (separate plug-in)
+* Use graphql for sending order confirmations and order status updates
+* Speedup the SKU price lookups by using price index table (catalog_product_index_price)
+
 ### 3.8.8
 * Fix the compatilibity issue with Magento 2.3.3 in ratings & reviews building 
 

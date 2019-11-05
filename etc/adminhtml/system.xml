@@ -189,7 +189,7 @@
                     </comment>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
-                <field id="indexer_memory" translate="label comment" type="select" sortOrder="100"
+                <field id="indexer_memory" translate="label comment" type="select" sortOrder="110"
                        showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Indexer Memory</label>
                     <comment>
@@ -197,20 +197,19 @@
                     </comment>
                     <source_model>Nosto\Tagging\Model\Config\Source\Memory</source_model>
                 </field>
-                <field id="category_sorting" translate="label comment" type="select" sortOrder="100"
-                       showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Category sorting (experimental)</label>
-                    <comment>
-                        <![CDATA[Experimental feature. Might be removed in future releases. Contact Nosto for further details.]]>
-                    </comment>
-                    <source_model>Nosto\Tagging\Model\Config\Source\CategorySorting</source_model>
-                    <frontend_model>Nosto\Tagging\Model\Config\Frontend\CategorySorting</frontend_model>
-                </field>
-                <field id="tag_date_published" translate="label comment" type="select" sortOrder="100"
+                <field id="tag_date_published" translate="label comment" type="select" sortOrder="130"
                        showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Add product published date to tagging</label>
                     <comment>
                         <![CDATA[Set this yes if you want to tag the date a product has been added to Magento's catalog]]>
+                    </comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="track_multi_channel_orders" translate="label comment" type="select" sortOrder="140"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Track orders from multiple channels</label>
+                    <comment>
+                        <![CDATA[Set this yes if you want to track multi-channel orders]]>
                     </comment>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>

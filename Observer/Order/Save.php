@@ -41,7 +41,9 @@ use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Indexer\IndexerRegistry;
 use Magento\Framework\Module\Manager as ModuleManager;
 use Magento\Sales\Model\Order;
-use Nosto\Operation\OrderConfirm;
+use Magento\Store\Model\Store;
+use Nosto\Operation\Order\OrderCreate as NostoOrderCreate;
+use Nosto\Operation\Order\OrderStatus as NostoOrderUpdate;
 use Nosto\Request\Http\HttpRequest;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
@@ -51,8 +53,12 @@ use Nosto\Tagging\Model\Customer\Customer as NostoCustomer;
 use Nosto\Tagging\Model\Customer\Repository as CustomerRepository;
 use Nosto\Tagging\Model\Indexer\Product\Indexer;
 use Nosto\Tagging\Model\Order\Builder as NostoOrderBuilder;
+use Nosto\Tagging\Model\Order\Status\Builder as NostoOrderStatusBuilder;
 use Nosto\Object\Order\Order as NostoOrder;
 use Nosto\Tagging\Helper\Url as NostoHelperUrl;
+use Nosto\Util\Time as NostoTimeUtil;
+use Nosto\Types\Signup\AccountInterface;
+use Magento\Customer\Api\CustomerRepositoryInterface as MagentoCustomerRepository;
 
 /**
  * Class Save
@@ -69,12 +75,13 @@ class Save implements ObserverInterface
     private $nostoHelperScope;
     private $indexer;
     private $nostoHelperUrl;
+    private $magentoCustomerRepository;
+    private $orderStatusBuilder;
     private static $sent = [];
 
     /** @noinspection PhpUndefinedClassInspection */
     /**
-     * Constructor.
-     *
+     * Save constructor.
      * @param NostoHelperData $nostoHelperData
      * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoHelperScope $nostoHelperScope
@@ -82,8 +89,10 @@ class Save implements ObserverInterface
      * @param ModuleManager $moduleManager
      * @param CustomerRepository $customerRepository
      * @param NostoOrderBuilder $orderBuilder
+     * @param NostoOrderStatusBuilder $orderStatusBuilder
      * @param IndexerRegistry $indexerRegistry
      * @param NostoHelperUrl $nostoHelperUrl
+     * @param MagentoCustomerRepository $magentoCustomerRepository
      */
     public function __construct(
         NostoHelperData $nostoHelperData,
@@ -94,18 +103,22 @@ class Save implements ObserverInterface
         /** @noinspection PhpUndefinedClassInspection */
         CustomerRepository $customerRepository,
         NostoOrderBuilder $orderBuilder,
+        NostoOrderStatusBuilder $orderStatusBuilder,
         IndexerRegistry $indexerRegistry,
-        NostoHelperUrl $nostoHelperUrl
+        NostoHelperUrl $nostoHelperUrl,
+        MagentoCustomerRepository $magentoCustomerRepository
     ) {
         $this->nostoHelperData = $nostoHelperData;
         $this->nostoHelperAccount = $nostoHelperAccount;
         $this->logger = $logger;
         $this->moduleManager = $moduleManager;
         $this->nostoOrderBuilder = $orderBuilder;
+        $this->orderStatusBuilder = $orderStatusBuilder;
         $this->customerRepository = $customerRepository;
         $this->indexer = $indexerRegistry->get(Indexer::INDEXER_ID);
         $this->nostoHelperScope = $nostoHelperScope;
         $this->nostoHelperUrl = $nostoHelperUrl;
+        $this->magentoCustomerRepository = $magentoCustomerRepository;
     }
 
     /**
@@ -135,34 +148,21 @@ class Save implements ObserverInterface
                 return;
             }
             $store = $order->getStore();
-            $nostoOrder = $this->nostoOrderBuilder->build($order);
             $nostoAccount = $this->nostoHelperAccount->findAccount(
                 $store
             );
             if ($nostoAccount !== null) {
-                $quoteId = $order->getQuoteId();
-                /** @var NostoCustomer $nostoCustomer */
-                $nostoCustomer = $this->customerRepository
-                    ->getOneByQuoteId($quoteId);
-                $nostoCustomerId = null;
-                if ($nostoCustomer instanceof NostoCustomer) {
-                    $nostoCustomerId = $nostoCustomer->getNostoId();
+                //Check if order is new or updated
+                if ($order->getState() === Order::STATE_NEW &&
+                    NostoTimeUtil::isUpdatedEqualToCreated(
+                        $order->getCreatedAt(),
+                        $order->getUpdatedAt()
+                    )
+                ) {
+                    $this->sendNewOrder($order, $nostoAccount, $store);
+                } else {
+                    $this->sendOrderStatusUpdated($order, $nostoAccount);
                 }
-                $orderService = new OrderConfirm($nostoAccount, $this->nostoHelperUrl->getActiveDomain($store));
-                try {
-                    $orderService->send($nostoOrder, $nostoCustomerId);
-                } catch (\Exception $e) {
-                    $this->logger->error(
-                        sprintf(
-                            'Failed to save order with quote #%s for customer #%s.
-                        Message was: %s',
-                            $quoteId,
-                            (string)$nostoCustomerId,
-                            $e->getMessage()
-                        )
-                    );
-                }
-                $this->handleInventoryLevelUpdate($nostoOrder);
                 self::$sent[] = $order->getId();
             }
         }
@@ -187,6 +187,110 @@ class Save implements ObserverInterface
                 }
                 $this->indexer->reindexList($productIds);
             }
+        }
+    }
+
+    /**
+     * @param Order $order
+     * @return string|null
+     */
+    private function getCustomerReference(Order $order)
+    {
+        $customerId = $order->getCustomerId();
+        $nostoCustomerId = null;
+        try {
+            $magentoCustomer = $this->magentoCustomerRepository->getById($customerId);
+            // Get the value of `customer_reference`
+            $customerReferenceAttribute = $magentoCustomer->getCustomAttribute(
+                NostoHelperData::NOSTO_CUSTOMER_REFERENCE_ATTRIBUTE_NAME
+            );
+            if ($customerReferenceAttribute !== null) {
+                $nostoCustomerId = $customerReferenceAttribute->getValue();
+            }
+        } catch (\Exception $e) {
+            $this->logger->exception($e);
+        }
+        return $nostoCustomerId;
+    }
+
+    /**
+     * Send new order to Nosto
+     *
+     * @param Order $order
+     * @param AccountInterface $nostoAccount
+     * @param Store $store
+     */
+    private function sendNewOrder(Order $order, AccountInterface $nostoAccount, Store $store)
+    {
+        /** @var NostoCustomer $nostoCustomer */
+        $nostoCustomer = $this->customerRepository
+            ->getOneByQuoteId($order->getQuoteId());
+        $nostoCustomerId = null;
+        $nostoCutomerIdentifier = NostoOrderCreate::IDENTIFIER_BY_CID;
+        if ($nostoCustomer instanceof NostoCustomer) {
+            $nostoCustomerId = $nostoCustomer->getNostoId();
+        }
+        // If the id is still null, fetch the `customer_reference`
+        if ($nostoCustomerId === null &&
+            $this->nostoHelperData->isMultiChannelOrderTrackingEnabled($store)
+        ) {
+            $nostoCustomerId = $this->getCustomerReference($order);
+            $nostoCutomerIdentifier = NostoOrderCreate::IDENTIFIER_BY_REF;
+        }
+        $nostoOrder = $this->nostoOrderBuilder->build($order);
+        if ($nostoCustomerId !== null) {
+            try {
+                $orderService = new NostoOrderCreate(
+                    $nostoOrder,
+                    $nostoAccount,
+                    $nostoCutomerIdentifier,
+                    $nostoCustomerId,
+                    $this->nostoHelperUrl->getActiveDomain($store)
+                );
+                $orderService->execute();
+            } catch (\Exception $e) {
+                $this->logger->error(
+                    sprintf(
+                        'Failed to save order with quote #%s for customer #%s.
+                            Message was: %s',
+                        $order->getQuoteId(),
+                        (string)$nostoCustomerId,
+                        $e->getMessage()
+                    )
+                );
+            }
+        } else {
+            $this->logger->warn(
+                sprintf(
+                    'Could not resolve Nosto customer id for order #%s',
+                    $order->getQuoteId()
+                )
+            );
+        }
+        $this->handleInventoryLevelUpdate($nostoOrder);
+    }
+
+    /**
+     * Send updated order status to Nosto
+     *
+     * @param Order $order
+     * @param AccountInterface $nostoAccount
+     */
+    private function sendOrderStatusUpdated(Order $order, AccountInterface $nostoAccount)
+    {
+        try {
+            $orderStatus = $this->orderStatusBuilder->build($order);
+            $orderService = new NostoOrderUpdate($nostoAccount, $orderStatus);
+            $orderService->execute();
+        } catch (\Exception $e) {
+            $this->logger->error(
+                sprintf(
+                    'Failed to update order with quote #%s.
+                        Message was: %s',
+                    $order->getQuoteId(),
+                    $e->getMessage()
+                )
+            );
         }
     }
 }

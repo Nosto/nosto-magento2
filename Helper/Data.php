@@ -139,16 +139,15 @@ class Data extends AbstractHelper
      */
     const XML_PATH_INDEXER_MEMORY = 'nosto/flags/indexer_memory';
 
-    /**
-
-     * Path to the configuration object that stores category sorting
-     */
-    const XML_PATH_CATEGORY_SORTING = 'nosto/flags/category_sorting';
-
     /*
      * Path to the configuration object for tagging the date a product has beed added to Magento's catalog
      */
     const XML_PATH_TAG_DATE_PUBLISHED = 'nosto/flags/tag_date_published';
+
+    /**
+     * Path to the configuration object that stores customer reference
+     */
+    const XML_PATH_TRACK_MULTI_CHANNEL_ORDERS = 'nosto/flags/track_multi_channel_orders';
 
     /**
      * Path to the configuration object for pricing variations
@@ -429,14 +428,14 @@ class Data extends AbstractHelper
     }
 
     /**
-     * Returns if category sorting is enabled
+     * Returns if orders want to be tracked from various channels
      *
-     * @param StoreInterface|null $store the store model or null.
-     * @return bool the configuration value
+     * @param StoreInterface|null $store
+     * @return bool
      */
-    public function isCategorySortingEnabled(StoreInterface $store = null)
+    public function isMultiChannelOrderTrackingEnabled(StoreInterface $store = null)
     {
-        return (bool)$this->getStoreConfig(self::XML_PATH_CATEGORY_SORTING, $store);
+        return (bool)$this->getStoreConfig(self::XML_PATH_TRACK_MULTI_CHANNEL_ORDERS, $store);
     }
 
     /**

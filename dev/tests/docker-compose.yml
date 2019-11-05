@@ -1,0 +1,18 @@
+db:
+  image: mysql:5.7
+  hostname: m2testdb
+  container_name: magento2_test_db
+  environment:
+    MYSQL_DATABASE: 'magento2_integration_tests'
+    MYSQL_USER: 'user'
+    MYSQL_PASSWORD: 'password'
+    MYSQL_ROOT_PASSWORD: 'password'
+  ports:
+    - "3336:3306"
+mq:
+  image: rabbitmq:3.7
+  hostname: m2testmq
+  container_name: magento2_test_mq
+  ports:
+    - "15672:15672"
+    - "5672:5672"

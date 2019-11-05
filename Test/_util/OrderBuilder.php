@@ -34,60 +34,46 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Config\Source;
+namespace Nosto\Tagging\Test\_util;
 
-use Magento\Framework\Phrase;
-use Magento\Backend\Block\Template\Context;
-use Magento\Framework\App\Request\Http;
-use Magento\Config\Block\System\Config\Form\Field;
-use Nosto\Tagging\Helper\CategorySorting as NostoHelperSorting;
-use Magento\Framework\Data\OptionSourceInterface;
+use Magento\Catalog\Api\OrderRepositoryInterface;
+use Magento\Sales\Model\Order;
+use Magento\Framework\ObjectManagerInterface;
 
-class CategorySorting extends Field implements OptionSourceInterface
+final class OrderBuilder implements BuilderInterface
 {
+    const DEFAULT_ORDER_INCREMENT_ID = '000000001';
 
-    /** @var NostoHelperSorting */
-    private $nostoHelperSorting;
+    /* @var Order */
+    private $order;
 
-    /** @var Http $request */
-    private $request;
+    /* @var ObjectManagerInterface */
+    private $objectManager;
 
     /**
-     * CategorySorting constructor.
-     * @param Http $request
-     * @param NostoHelperSorting $nostoHelperSorting
-     * @param Context $context
-     * @param array $data
+     * OrderBuilder constructor.
+     * @param ObjectManagerInterface $objectManager
      */
-    public function __construct(
-        Http $request,
-        NostoHelperSorting $nostoHelperSorting,
-        Context $context,
-        array $data = []
-    ) {
-        $this->nostoHelperSorting = $nostoHelperSorting;
-        $this->request = $request;
-        parent::__construct($context, $data);
+    public function __construct(ObjectManagerInterface $objectManager)
+    {
+        $this->objectManager = $objectManager;
+        $this->order = $objectManager->create(Order::class);
     }
 
     /**
-     * @return array
+     * @return $this
      */
-    public function toOptionArray()
+    public function defaultOrder()
     {
-        $id = (int)$this->request->getParam('store');
+        $this->order->loadByIncrementId(self::DEFAULT_ORDER_INCREMENT_ID);
+        return $this;
+    }
 
-        if ($this->nostoHelperSorting->canUseCategorySorting($id)) {
-            $options = [
-                ['value' => '1', 'label' => new Phrase('Yes')],
-                ['value' => '0', 'label' => new Phrase('No')],
-            ];
-        } else {
-            $options = [
-                ['value' => '0', 'label' => new Phrase('No (missing tokens)')]
-            ];
-        }
-
-        return $options;
+    /**
+     * @return Order
+     */
+    public function build()
+    {
+        return $this->order;
     }
 }

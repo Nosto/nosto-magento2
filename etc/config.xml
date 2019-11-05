@@ -23,8 +23,8 @@
                 <send_add_to_cart_event>0</send_add_to_cart_event>
                 <send_customer_data>1</send_customer_data>
                 <indexer_memory>50</indexer_memory>
-                <category_sorting>0</category_sorting>
                 <tag_date_published>0</tag_date_published>
+                <track_multi_channel_orders>1</track_multi_channel_orders>
             </flags>
             <multicurrency>
                 <method>undefined</method>

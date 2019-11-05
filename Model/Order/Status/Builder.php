@@ -34,54 +34,70 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Config\Frontend;
+namespace Nosto\Tagging\Model\Order\Status;
 
-use Magento\Config\Block\System\Config\Form\Field;
-use Magento\Framework\Data\Form\Element\AbstractElement;
-use Magento\Backend\Block\Template\Context;
-use Magento\Framework\App\Request\Http;
-use Nosto\Tagging\Helper\CategorySorting as NostoHelperSorting;
+use Nosto\Object\Order\GraphQL\OrderStatus as NostoOrderStatus;
+use Magento\Sales\Model\Order;
+use Nosto\Tagging\Logger\Logger as NostoLogger;
+use Magento\Sales\Model\Order\Payment;
+use Nosto\NostoException;
+use Magento\Framework\Event\ManagerInterface;
 
-class CategorySorting extends Field
+class Builder
 {
+    const ORDER_NUMBER_PREFIX = 'M2_';
 
-    /** @var NostoHelperSorting */
-    private $nostoHelperSorting;
+    /** @var NostoLogger  */
+    private $logger;
 
-    /** @var Http $request */
-    public $request;
+    /** @var ManagerInterface  */
+    private $eventManager;
 
     /**
-     * CategorySorting constructor.
-     * @param Http $request
-     * @param NostoHelperSorting $nostoHelperSorting
-     * @param Context $context
-     * @param array $data
+     * Builder constructor.
+     * @param ManagerInterface $eventManager
+     * @param NostoLogger $logger
      */
     public function __construct(
-        Http $request,
-        NostoHelperSorting $nostoHelperSorting,
-        Context $context,
-        array $data = []
+        ManagerInterface $eventManager,
+        NostoLogger $logger
     ) {
-        $this->request = $request;
-        $this->nostoHelperSorting = $nostoHelperSorting;
-        parent::__construct($context, $data);
+        $this->logger = $logger;
+        $this->eventManager = $eventManager;
     }
 
     /**
-     * Disable input if APPS token is not found
-     *
-     * @param AbstractElement $element
-     * @return string
+     * @param Order $order
+     * @return NostoOrderStatus|null
      */
-    protected function _getElementHtml(AbstractElement $element) //@codingStandardsIgnoreLine
+    public function build(Order $order)
     {
-        $id = (int)$this->request->getParam('store');
-        if (!$this->nostoHelperSorting->canUseCategorySorting($id)) {
-            $element->setReadonly(true, true);
-        }
+        $orderNumber = self::ORDER_NUMBER_PREFIX.''.$order->getId();
+        $orderStatus = $order->getStatus();
+        $updatedAt = $order->getUpdatedAt();
+        try {
+            if ($order->getPayment() instanceof Payment) {
+                $paymentProvider = $order->getPayment()->getMethod();
+            } else {
+                throw new NostoException('Order has no payment associated');
+            }
 
-        return parent::_getElementHtml($element);
+            $nostoOrderStatus = new NostoOrderStatus(
+                $orderNumber,
+                $orderStatus,
+                $paymentProvider,
+                $updatedAt
+            );
+
+            $this->eventManager->dispatch(
+                'nosto_order_status_load_after',
+                ['order' => $nostoOrderStatus, 'magentoOrder' => $order]
+            );
+
+            return $nostoOrderStatus;
+        } catch (\Exception $e) {
+            $this->logger->exception($e);
+        }
+        return null;
     }
 }

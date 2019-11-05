@@ -50,12 +50,12 @@ RUN         groupadd -r plugins -g 113 && \
 
 # Add php-7.1 Source List
 RUN         apt-get -y -qq install lsb-release ca-certificates wget
-RUN         wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg
+RUN         wget -4 -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg
 RUN         sh -c 'echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/php.list'
 RUN         apt-get -y -qq update
 
 # Install all core dependencies required for setting up Apache and PHP at least
-RUN         apt-get -y -qq install unzip wget libfreetype6-dev libjpeg-dev \
+RUN         apt-get -y -qq install unzip libfreetype6-dev libjpeg-dev \
             libmcrypt-dev libreadline-dev libpng-dev libicu-dev default-mysql-client \
             libmcrypt-dev libxml2-dev libxslt1-dev vim nano git tree curl \
             supervisor ca-certificates && \
