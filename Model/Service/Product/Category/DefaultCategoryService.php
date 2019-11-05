@@ -34,19 +34,20 @@
  *
  */
 
-namespace Nosto\Tagging\Model\CategoryString;
+namespace Nosto\Tagging\Model\Service\Product\Category;
 
 use Exception;
 use Magento\Catalog\Api\CategoryRepositoryInterface;
+use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Model\Category;
-use Magento\Catalog\Model\Product;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\Exception\NoSuchEntityException;
-use Magento\Store\Model\Store;
+use Magento\Store\Api\Data\StoreInterface;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 
-class Builder
+class DefaultCategoryService implements CategoryServiceInterface
 {
+
     private $logger;
     private $categoryRepository;
     private $eventManager;
@@ -67,15 +68,19 @@ class Builder
     }
 
     /**
-     * @param Product $product
-     * @param Store $store
+     * Get Nosto Product
+     * If is not indexed or dirty, rebuilds, saves product to the indexed table
+     * and returns NostoProduct from indexed product
+     *
+     * @param ProductInterface $product
+     * @param StoreInterface $store
      * @return array
      */
-    public function buildCategories(Product $product, Store $store)
+    public function getCategories(ProductInterface $product, StoreInterface $store)
     {
         $categories = [];
         foreach ($product->getCategoryCollection() as $category) {
-            $categoryString = $this->build($category, $store);
+            $categoryString = $this->getCategory($category, $store);
             if (!empty($categoryString)) {
                 $categories[] = $categoryString;
             }
@@ -85,11 +90,9 @@ class Builder
     }
 
     /**
-     * @param Category $category
-     * @param Store $store
-     * @return null|string
+     * @inheritDoc
      */
-    public function build(Category $category, Store $store)
+    public function getCategory(Category $category, StoreInterface $store)
     {
         $nostoCategory = '';
         try {
