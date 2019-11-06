@@ -35,10 +35,9 @@
  */
 namespace Nosto\Tagging\Model\Service\Product\Category;
 
-use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Model\Category;
+use Magento\Catalog\Model\Product;
 use Magento\Store\Api\Data\StoreInterface;
-
 
 interface CategoryServiceInterface
 {
@@ -46,9 +45,9 @@ interface CategoryServiceInterface
     public function getCategory(Category $category, StoreInterface $store);
 
     /**
-     * @param ProductInterface $product
+     * @param Product $product
      * @param StoreInterface $store
      * @return array
      */
-    public function getCategories(ProductInterface $product, StoreInterface $store);
+    public function getCategories(Product $product, StoreInterface $store);
 }

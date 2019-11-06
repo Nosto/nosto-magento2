@@ -36,8 +36,8 @@
 
 namespace Nosto\Tagging\Model\Service\Product\Category;
 
-use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Model\Category;
+use Magento\Catalog\Model\Product;
 use Magento\Store\Api\Data\StoreInterface;
 use Nosto\Tagging\Logger\Logger;
 
@@ -86,7 +86,7 @@ class CachingCategoryService implements CategoryServiceInterface
     /**
      * @inheritDoc
      */
-    public function getCategories(ProductInterface $product, StoreInterface $store)
+    public function getCategories(Product $product, StoreInterface $store)
     {
         return $this->categoryService->getCategories($product, $store);
     }

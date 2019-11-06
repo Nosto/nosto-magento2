@@ -38,8 +38,8 @@ namespace Nosto\Tagging\Model\Service\Product\Category;
 
 use Exception;
 use Magento\Catalog\Api\CategoryRepositoryInterface;
-use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Model\Category;
+use Magento\Catalog\Model\Product;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Store\Api\Data\StoreInterface;
@@ -72,11 +72,11 @@ class DefaultCategoryService implements CategoryServiceInterface
      * If is not indexed or dirty, rebuilds, saves product to the indexed table
      * and returns NostoProduct from indexed product
      *
-     * @param ProductInterface $product
+     * @param Product $product
      * @param StoreInterface $store
      * @return array
      */
-    public function getCategories(ProductInterface $product, StoreInterface $store)
+    public function getCategories(Product $product, StoreInterface $store)
     {
         $categories = [];
         foreach ($product->getCategoryCollection() as $category) {
