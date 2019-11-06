@@ -80,7 +80,7 @@ class Builder
     {
         $categories = [];
         foreach ($product->getCategoryCollection() as $category) {
-            $categoryString = $this->build($category);
+            $categoryString = $this->build($category, $store);
             if (!empty($categoryString)) {
                 $categories[] = $categoryString;
             }
@@ -89,7 +89,7 @@ class Builder
         return $categories;
     }
 
-    public function build(Category $category, Store $store = null)
+    public function build(Category $category, Store $store)
     {
         $nostoCategory = '';
         try {
@@ -103,6 +103,7 @@ class Builder
             $categories = $this->categoryCollectionFactory->create()
                 ->addAttributeToSelect('*')
                 ->addAttributeToFilter('entity_id', $categoryIds)
+                ->setStore($store->getId())
                 ->setOrder('entity_id', 'ASC');
             foreach ($categories as $cat) {
                 if ($cat instanceof Category
