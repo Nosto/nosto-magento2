@@ -77,6 +77,7 @@ class Collection
      * @param Store $store
      * @return SkuCollection
      * @throws \Exception
+     * @suppress PhanUndeclaredMethod
      */
     public function build(Product $product, Store $store)
     {
