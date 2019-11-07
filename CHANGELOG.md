@@ -1,5 +1,8 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 3.10.0
+* Speed-up product build operation
+
 ### 3.9.0
 * Remove category personalization features (separate plug-in)
 * Use graphql for sending order confirmations and order status updates
