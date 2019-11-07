@@ -323,11 +323,11 @@ class CacheService extends AbstractService
     }
 
     /**
-     * @param Product $product
+     * @param ProductInterface $product
      * @return bool
      * @suppress PhanUndeclaredMethod
      */
-    private function hasBundleProductOptions(Product $product)
+    private function hasBundleProductOptions(ProductInterface $product)
     {
         /** @var BundleType $typeInstance */
         $typeInstance = $product->getTypeInstance();
