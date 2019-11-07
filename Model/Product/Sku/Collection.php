@@ -77,13 +77,16 @@ class Collection
      * @param Store $store
      * @return SkuCollection
      * @throws \Exception
+     * @suppress PhanUndeclaredMethod
      */
     public function build(Product $product, Store $store)
     {
         $skuCollection = new SkuCollection();
         if ($product->getTypeId() === ConfigurableType::TYPE_CODE) {
             $attributes = $this->configurableType->getConfigurableAttributes($product);
-            $usedProducts = $this->nostoProductRepository->getSkus($product);
+            /** @var ConfigurableType $productTypeInstance */
+            $productTypeInstance = $product->getTypeInstance();
+            $usedProducts = $productTypeInstance->getUsedProducts($product);
             /** @var Product $product */
             foreach ($usedProducts as $usedProduct) {
                 /** @var Product $usedProduct */
