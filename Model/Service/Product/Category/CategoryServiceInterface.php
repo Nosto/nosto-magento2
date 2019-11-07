@@ -41,13 +41,17 @@ use Magento\Store\Api\Data\StoreInterface;
 
 interface CategoryServiceInterface
 {
-
+    /**
+     * @param Category $category
+     * @param StoreInterface $store
+     * @return null|string
+     */
     public function getCategory(Category $category, StoreInterface $store);
 
     /**
      * @param Product $product
      * @param StoreInterface $store
-     * @return Category[]
+     * @return array
      */
     public function getCategories(Product $product, StoreInterface $store);
 }

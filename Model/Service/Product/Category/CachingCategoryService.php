@@ -70,6 +70,9 @@ class CachingCategoryService implements CategoryServiceInterface
         $this->categoryService = $categoryService;
     }
 
+    /**
+     * @inheritDoc
+     */
     public function getCategory(Category $category, StoreInterface $store)
     {
         if (!isset($this->cache[$store->getId()])) {
