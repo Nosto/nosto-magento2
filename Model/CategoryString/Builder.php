@@ -38,6 +38,7 @@ namespace Nosto\Tagging\Model\CategoryString;
 
 use Magento\Catalog\Api\CategoryRepositoryInterface;
 use Magento\Catalog\Model\Category;
+use Magento\Catalog\Model\ResourceModel\Category\CollectionFactory;
 use Magento\Store\Model\Store;
 use Magento\Catalog\Model\Product;
 use Magento\Framework\Event\ManagerInterface;
@@ -48,19 +49,24 @@ class Builder
 {
     private $logger;
     private $categoryRepository;
+    private $categoryCollectionFactory;
     private $eventManager;
 
     /**
+     * Builder constructor.
      * @param CategoryRepositoryInterface $categoryRepository
+     * @param CollectionFactory $categoryCollectionFactory
      * @param NostoLogger $logger
      * @param ManagerInterface $eventManager
      */
     public function __construct(
         CategoryRepositoryInterface $categoryRepository,
+        CollectionFactory $categoryCollectionFactory,
         NostoLogger $logger,
         ManagerInterface $eventManager
     ) {
         $this->categoryRepository = $categoryRepository;
+        $this->categoryCollectionFactory = $categoryCollectionFactory;
         $this->logger = $logger;
         $this->eventManager = $eventManager;
     }
@@ -83,29 +89,28 @@ class Builder
         return $categories;
     }
 
-    /**
-     * @param Category $category
-     * @param Store $store
-     * @return null|string
-     */
     public function build(Category $category, Store $store)
     {
         $nostoCategory = '';
         try {
             $data = [];
+            $categoryIds = [];
             $path = $category->getPath();
-            $storeId = $store->getId();
             foreach (explode('/', $path) as $categoryId) {
-                try {
-                    $category = $this->categoryRepository->get($categoryId, $storeId);
-                } catch (NoSuchEntityException $noSuchEntityException) {
-                    continue;
-                }
-                if ($category instanceof Category
-                    && $category->getLevel() > 1
-                    && !empty($category->getName())
+                $categoryIds[] = $categoryId;
+            }
+
+            $categories = $this->categoryCollectionFactory->create()
+                ->addAttributeToSelect('*')
+                ->addAttributeToFilter('entity_id', $categoryIds)
+                ->setStore($store->getId())
+                ->setOrder('entity_id', 'ASC');
+            foreach ($categories as $cat) {
+                if ($cat instanceof Category
+                    && $cat->getLevel() > 1
+                    && !empty($cat->getName())
                 ) {
-                    $data[] = $category->getName();
+                    $data[] = $cat->getName();
                 }
             }
             $nostoCategory = count($data) ? '/' . implode('/', $data) : '';
