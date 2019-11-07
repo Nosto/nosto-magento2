@@ -47,7 +47,7 @@ interface CategoryServiceInterface
     /**
      * @param Product $product
      * @param StoreInterface $store
-     * @return array
+     * @return Category[]
      */
     public function getCategories(Product $product, StoreInterface $store);
 }
