@@ -1,7 +1,10 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
 ### 3.10.0
-* Speed-up product build operation
+* Speed-up sku collection building by using native magento method to fetch configurable product SKU's
+* Speed-up category name building by using Magento's category collection
+
+Credits also goes to `Ivan Chepurnyi` (https://github.com/IvanChepurnyi) for his performance improvement feedback
 
 ### 3.9.0
 * Remove category personalization features (separate plug-in)
