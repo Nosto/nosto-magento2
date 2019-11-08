@@ -52,7 +52,7 @@ use Nosto\Tagging\Helper\Price as NostoPriceHelper;
 use Nosto\Tagging\Helper\Ratings as NostoRating;
 use Nosto\Tagging\Helper\Variation as NostoVariationHelper;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
-use Nosto\Tagging\Model\CategoryString\Builder as NostoCategoryBuilder;
+use Nosto\Tagging\Model\Service\Product\Category\CategoryServiceInterface as NostoCategoryService;
 use Nosto\Tagging\Model\Product\Sku\Collection as NostoSkuCollection;
 use Nosto\Tagging\Model\Product\Tags\LowStock as LowStockHelper;
 use Nosto\Tagging\Model\Product\Url\Builder as NostoUrlBuilder;
@@ -69,7 +69,6 @@ class Builder
 
     const CUSTOMIZED_TAGS = ['tag1', 'tag2', 'tag3'];
     private $nostoPriceHelper;
-    private $nostoCategoryBuilder;
     private $nostoStockHelper;
     private $galleryReadHandler;
     private $eventManager;
@@ -82,13 +81,14 @@ class Builder
     private $categoryRepository;
     private $attributeSetRepository;
     private $nostoRatingHelper;
+    private $nostoCategoryService;
 
     /**
      * Builder constructor.
      *
      * @param NostoHelperData $nostoHelperData
      * @param NostoPriceHelper $priceHelper
-     * @param NostoCategoryBuilder $categoryBuilder
+     * @param NostoCategoryService $nostoCategoryService
      * @param StockService $stockService
      * @param NostoSkuCollection $skuCollection
      * @param NostoLogger $logger
@@ -105,7 +105,7 @@ class Builder
     public function __construct(
         NostoHelperData $nostoHelperData,
         NostoPriceHelper $priceHelper,
-        NostoCategoryBuilder $categoryBuilder,
+        NostoCategoryService $nostoCategoryService,
         StockService $stockService,
         NostoSkuCollection $skuCollection,
         NostoLogger $logger,
@@ -120,7 +120,6 @@ class Builder
         StoreManagerInterface $storeManager
     ) {
         $this->nostoPriceHelper = $priceHelper;
-        $this->nostoCategoryBuilder = $categoryBuilder;
         $this->eventManager = $eventManager;
         $this->galleryReadHandler = $galleryReadHandler;
         $this->urlBuilder = $urlBuilder;
@@ -136,6 +135,7 @@ class Builder
         $this->priceVariationCollection = $priceVariationCollection;
         $this->nostoVariationHelper = $nostoVariationHelper;
         $this->nostoRatingHelper = $nostoRatingHelper;
+        $this->nostoCategoryService = $nostoCategoryService;
     }
 
     /**
@@ -188,7 +188,7 @@ class Builder
                 );
             }
             $nostoProduct->setAvailability($this->buildAvailability($product, $store));
-            $nostoProduct->setCategories($this->nostoCategoryBuilder->buildCategories($product, $store));
+            $nostoProduct->setCategories($this->nostoCategoryService->getCategories($product, $store));
             if ($this->getDataHelper()->isInventoryTaggingEnabled($store)) {
                 $inventoryLevel = $this->getStockService()->getQuantity($product);
                 $nostoProduct->setInventoryLevel($inventoryLevel);

@@ -37,6 +37,7 @@
 namespace Nosto\Tagging\Model\Service\Cache;
 
 use Exception;
+use Magento\Bundle\Model\Product\Type as BundleType;
 use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\Product\Type;
@@ -315,10 +316,22 @@ class CacheService extends AbstractService
      */
     public function canBuildProduct(ProductInterface $product)
     {
-        if ($product->getTypeId() === Type::TYPE_BUNDLE && empty($product->getOptions())) {
+        if ($product->getTypeId() === Type::TYPE_BUNDLE && $this->hasBundleProductOptions($product)) {
             return false;
         }
         return true;
+    }
+
+    /**
+     * @param ProductInterface $product
+     * @return bool
+     * @suppress PhanUndeclaredMethod
+     */
+    private function hasBundleProductOptions(ProductInterface $product)
+    {
+        /** @var BundleType $typeInstance */
+        $typeInstance = $product->getTypeInstance();
+        return empty($typeInstance->getOptionsIds($product));
     }
 
     /**
