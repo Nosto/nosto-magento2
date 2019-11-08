@@ -2,6 +2,7 @@ All notable changes to this project will be documented in this file. This projec
 
 ### 4.0.0-rc4 (unreleased)
 * Amend fixes from [3.10.0](###3.10.0) (SKU collection building speed)
+* Add a caching layer for storing already built category strings
 
 ### 4.0.0-rc3 (pre-release)
 * Amend fixes from [3.8.8](###3.8.8) (Magento 2.3.3 compatibility)
