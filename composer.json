@@ -2,7 +2,7 @@
   "name": "nosto/module-nostotagging",
   "description": "Increase your conversion rate and average order value by delivering your customers personalized product recommendations throughout their shopping journey.",
   "type": "magento2-module",
-  "version": "4.0.0-rc4",
+  "version": "4.0.0-rc5",
   "require-dev": {
     "php": ">=7.1.0",
     "phan/phan": "0.8.8",

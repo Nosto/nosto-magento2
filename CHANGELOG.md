@@ -20,6 +20,9 @@ All notable changes to this project will be documented in this file. This projec
 * Cleanup the change log database tables after indexer run
 * Prevent full reindex on `setup:upgrade`
 
+### 3.10.1
+* Fix an issue with sending order confirmations via API when customer details could not be resolved
+
 ### 3.10.0
 * Speed-up sku collection building by using native magento method to fetch configurable product SKU's
 * Speed-up category name building by using Magento's category collection
