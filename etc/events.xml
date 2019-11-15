@@ -58,4 +58,7 @@
     <event name="customer_save_before">
         <observer name="nosto_customer_save_after" instance="Nosto\Tagging\Observer\Customer\Save" />
     </event>
+    <event name="catalog_block_product_list_collection">
+        <observer name="nosto_cookie_predispatch" instance="Nosto\Tagging\Observer\App\Action\Action"/>
+    </event>
 </config>
