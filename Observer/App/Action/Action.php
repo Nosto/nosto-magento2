@@ -79,13 +79,17 @@ class Action implements ObserverInterface
     public function execute(Observer $observer)
     {
         $cookieValue = $this->cookieManager->getCookie(Customer::COOKIE_NAME);
-        if (empty($cookieValue)) {
+        $cookieValueHttp = $this->cookieManager->getCookie(Customer::HTTP_COOKIE_NAME);
+
+        if (empty($cookieValue) || ($cookieValue === $cookieValueHttp)) {
             return;
         }
+        // In case 2c.cId changes on the client side, we should update 2c.cId.http
         $cookieMetadata = new PublicCookieMetadata();
         $cookieMetadata->setDuration(3600 * 24 * (365 * 2)); // 2 Years
+        $cookieMetadata->setHttpOnly(true);
         $this->cookieManager->setPublicCookie(
-            Customer::COOKIE_NAME,
+            Customer::HTTP_COOKIE_NAME,
             $cookieValue,
             $cookieMetadata
         );

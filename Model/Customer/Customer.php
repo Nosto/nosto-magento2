@@ -49,6 +49,11 @@ class Customer extends AbstractModel implements CustomerInterface
     const COOKIE_NAME = '2c_cId';
 
     /**
+     * Name of cookie used for Webkit's ITP prevention
+     */
+    const HTTP_COOKIE_NAME = '2c.cId.http';
+
+    /**
      * @inheritdoc
      */
     public function getCustomerId()
