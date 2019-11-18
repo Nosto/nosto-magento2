@@ -40,61 +40,83 @@ use Magento\Framework\App\Response\Http as HttpResponse;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Exception\InputException;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Stdlib\Cookie\CookieSizeLimitReachedException;
 use Magento\Framework\Stdlib\Cookie\FailureToSendException;
 use Magento\Framework\Stdlib\CookieManagerInterface;
 use Nosto\Tagging\Model\Customer\Customer;
 use Magento\Framework\Stdlib\Cookie\PublicCookieMetadata;
+use Magento\Store\Model\StoreManagerInterface;
+use Nosto\Tagging\Logger\Logger;
 
 class Action implements ObserverInterface
 {
-    /**
-     * @var HttpResponse $response
-     */
+    /** @var HttpResponse $response */
     private $response;
-    /**
-     * @var CookieManagerInterface
-     */
+
+    /** @var CookieManagerInterface */
     private $cookieManager;
+
+    /** @var StoreManagerInterface */
+    private $storeManager;
+
+    /** @var Logger */
+    private $logger;
 
     /**
      * Action constructor.
      * @param HttpResponse $response
      * @param CookieManagerInterface $cookieManager
+     * @param StoreManagerInterface $storeManager
+     * @param Logger $logger
      */
     public function __construct(
         HttpResponse $response,
-        CookieManagerInterface $cookieManager
+        CookieManagerInterface $cookieManager,
+        StoreManagerInterface $storeManager,
+        Logger $logger
     ) {
         $this->response = $response;
         $this->cookieManager = $cookieManager;
+        $this->storeManager = $storeManager;
+        $this->logger = $logger;
     }
 
     /**
      * @param Observer $observer
-     * @throws InputException
      * @throws CookieSizeLimitReachedException
      * @throws FailureToSendException
+     * @throws InputException
      */
     public function execute(Observer $observer) // @codingStandardsIgnoreLine
     {
         $cookieValue = $this->cookieManager->getCookie(Customer::COOKIE_NAME);
         $cookieValueHttp = $this->cookieManager->getCookie(Customer::HTTP_COOKIE_NAME);
-
-        if (empty($cookieValue) || ($cookieValue === $cookieValueHttp)) {
+        if ((empty($cookieValue) && empty($cookieValueHttp)) || ($cookieValue === $cookieValueHttp)) {
             return;
         }
         $cookieMetadata = new PublicCookieMetadata();
         $cookieMetadata->setDuration(3600 * 24 * (365 * 2)); // 2 Years
-
-        if (empty($cookieValueHttp)) {
+        try {
+            if ($this->storeManager->getStore()->isFrontUrlSecure()) {
+                $cookieMetadata->setSecure(true);
+            }
+        } catch (NoSuchEntityException $e) {
+            $this->logger->error(
+                sprintf(
+                    'Could not get store while setting cookie. Message was %s',
+                    $e->getMessage()
+                )
+            );
+        }
+        if (!empty($cookieValue) && $cookieValueHttp !== $cookieValue) {
             $cookieMetadata->setHttpOnly(true);
             $this->cookieManager->setPublicCookie(
                 Customer::HTTP_COOKIE_NAME_SET,
                 $cookieValue,
                 $cookieMetadata
             );
-        } elseif ($cookieValue !== $cookieValueHttp) {
+        } elseif (!empty($cookieValueHttp)) {
             // In case 2c.cId changes on the client side, means that the cookie has been deleted.
             // We should update 2c.cId with 2c.cId.http
             $cookieMetadata->setHttpOnly(false);
