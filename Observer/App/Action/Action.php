@@ -76,7 +76,7 @@ class Action implements ObserverInterface
      * @throws CookieSizeLimitReachedException
      * @throws FailureToSendException
      */
-    public function execute(Observer $observer)
+    public function execute(Observer $observer) // @codingStandardsIgnoreLine
     {
         $cookieValue = $this->cookieManager->getCookie(Customer::COOKIE_NAME);
         $cookieValueHttp = $this->cookieManager->getCookie(Customer::HTTP_COOKIE_NAME);
