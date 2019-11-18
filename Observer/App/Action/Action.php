@@ -87,6 +87,7 @@ class Action implements ObserverInterface
      * @throws CookieSizeLimitReachedException
      * @throws FailureToSendException
      * @throws InputException
+     * @suppress PhanUndeclaredMethod
      */
     public function execute(Observer $observer) // @codingStandardsIgnoreLine
     {
