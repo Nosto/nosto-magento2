@@ -79,6 +79,9 @@ class Action implements ObserverInterface
     public function execute(Observer $observer)
     {
         $cookieValue = $this->cookieManager->getCookie(Customer::COOKIE_NAME);
+        if (empty($cookieValue)) {
+            return;
+        }
         $cookieMetadata = new PublicCookieMetadata();
         $cookieMetadata->setDuration(3600 * 24 * (365 * 2)); // 2 Years
         $this->cookieManager->setPublicCookie(
