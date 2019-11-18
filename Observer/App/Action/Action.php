@@ -84,14 +84,25 @@ class Action implements ObserverInterface
         if (empty($cookieValue) || ($cookieValue === $cookieValueHttp)) {
             return;
         }
-        // In case 2c.cId changes on the client side, we should update 2c.cId.http
         $cookieMetadata = new PublicCookieMetadata();
         $cookieMetadata->setDuration(3600 * 24 * (365 * 2)); // 2 Years
-        $cookieMetadata->setHttpOnly(true);
-        $this->cookieManager->setPublicCookie(
-            Customer::HTTP_COOKIE_NAME,
-            $cookieValue,
-            $cookieMetadata
-        );
+
+        if (empty($cookieValueHttp)) {
+            $cookieMetadata->setHttpOnly(true);
+            $this->cookieManager->setPublicCookie(
+                Customer::HTTP_COOKIE_NAME_SET,
+                $cookieValue,
+                $cookieMetadata
+            );
+        } elseif ($cookieValue !== $cookieValueHttp) {
+            // In case 2c.cId changes on the client side, means that the cookie has been deleted.
+            // We should update 2c.cId with 2c.cId.http
+            $cookieMetadata->setHttpOnly(false);
+            $this->cookieManager->setPublicCookie(
+                Customer::COOKIE_NAME_SET,
+                $cookieValueHttp,
+                $cookieMetadata
+            );
+        }
     }
 }

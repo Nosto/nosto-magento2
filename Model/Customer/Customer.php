@@ -49,9 +49,21 @@ class Customer extends AbstractModel implements CustomerInterface
     const COOKIE_NAME = '2c_cId';
 
     /**
+     * Name of cookie that holds Nosto visitor id dot separated
+     * PHP Can't set if uses underscores.
+     */
+    const COOKIE_NAME_SET = '2c.cId';
+
+    /**
      * Name of cookie used for Webkit's ITP prevention
      */
-    const HTTP_COOKIE_NAME = '2c.cId.http';
+    const HTTP_COOKIE_NAME = '2c_cId_http';
+
+    /**
+     * Name of cookie used for Webkit's ITP prevention
+     * PHP Can't set if underscores are used.
+     */
+    const HTTP_COOKIE_NAME_SET = '2c.cId.http';
 
     /**
      * @inheritdoc
