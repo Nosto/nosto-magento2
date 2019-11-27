@@ -38,16 +38,22 @@ namespace Nosto\Tagging\Model\Service\Stock\Provider;
  */
 
 use Magento\Catalog\Model\Product;
+use Magento\CatalogInventory\Api\Data\StockStatusInterface;
 use Magento\Store\Model\Website;
 
 class CachingStockProvider implements StockProviderInterface
 {
-    use CachingStockTrait {
-        CachingStockTrait::__construct as private __stockCacheTraitConstruct;
-    }
-
     /** @var StockProviderInterface */
     private $stockProvider;
+
+    /** @var array */
+    private $quantityCache = [];
+
+    /** @var array */
+    private $inStockCache = [];
+
+    /** @var int */
+    private $maxCacheSize;
 
     /**
      * CachingStockProvider constructor.
@@ -58,8 +64,8 @@ class CachingStockProvider implements StockProviderInterface
         StockProviderInterface $stockProvider,
         $maxCacheSize
     ) {
-        $this->__stockCacheTraitConstruct($maxCacheSize);
         $this->stockProvider = $stockProvider;
+        $this->maxCacheSize = $maxCacheSize;
     }
 
     /**
@@ -93,7 +99,6 @@ class CachingStockProvider implements StockProviderInterface
      */
     public function getQuantitiesByIds(array $productIds, Website $website)
     {
-        // TODO: double check that the caching logic works
         $quantities = [];
         $nonCachedQuantities = [];
         foreach ($productIds as $productId) {
@@ -111,5 +116,85 @@ class CachingStockProvider implements StockProviderInterface
             }
         }
         return $quantities;
+    }
+
+    /**
+     * @param Product $product
+     * @param Website $website
+     * @param $inStock
+     */
+    private function saveToInStockCache(Product $product, Website $website, $inStock)
+    {
+        if (empty($this->inStockCache[$website->getId()])) {
+            $this->inStockCache[$website->getId()] = [];
+        }
+        $this->inStockCache[$website->getId()][$product->getId()] = $inStock;
+        $count = count($this->inStockCache[$website->getId()]);
+        $offset = $count-$this->maxCacheSize;
+        if ($offset > 0) {
+            $this->inStockCache = array_slice($this->inStockCache[$website->getId()], $offset, $this->maxCacheSize, true);
+        }
+    }
+
+    /**
+     * @param Product $product
+     * @param Website $website
+     * @return StockStatusInterface|null
+     */
+    private function getIsInStockFromCache(Product $product, Website $website)
+    {
+        if (!isset($this->inStockCache[$website->getId()][$product->getId()])) {
+            return null;
+        }
+        return $this->inStockCache[$website->getId()][$product->getId()];
+    }
+
+    /**
+     * @param $productId
+     * @param Website $website
+     * @param $quantity
+     */
+    private function saveQuantityToCache($productId, Website $website, $quantity)
+    {
+        if (empty($this->quantityCache[$website->getId()])) {
+            $this->quantityCache[$website->getId()] = [];
+        }
+        $this->quantityCache[$website->getId()][$productId] = $quantity;
+        $count = count($this->quantityCache);
+        $offset = $count-$this->maxCacheSize;
+        if ($offset > 0) {
+            $this->quantityCache = array_slice($this->quantityCache, $offset, $this->maxCacheSize, true);
+        }
+    }
+
+    /**
+     * @param int $productId
+     * @return StockStatusInterface|null
+     */
+    private function getQuantityFromCache($productId, Website $website)
+    {
+        if (!isset($this->quantityCache[$website->getId()][$productId])) {
+            return null;
+        }
+        return $this->quantityCache[$website->getId()][$productId];
+    }
+
+    /**
+     * @param Product $product
+     * @param Website $website
+     * @return bool
+     */
+    private function existsInStockCache(Product $product, Website $website)
+    {
+        return isset($this->inStockCache[$website->getId()][$product->getId()]);
+    }
+
+    /**
+     * @param $productId
+     * @return bool
+     */
+    private function existsInQuantityCache($productId, Website $website)
+    {
+        return isset($this->quantityCache[$website->getId()][$productId]);
     }
 }
