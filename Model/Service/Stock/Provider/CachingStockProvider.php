@@ -143,7 +143,7 @@ class CachingStockProvider implements StockProviderInterface
     /**
      * @param Product $product
      * @param Website $website
-     * @return bool
+     * @return bool|null
      */
     private function getIsInStockFromCache(Product $product, Website $website)
     {

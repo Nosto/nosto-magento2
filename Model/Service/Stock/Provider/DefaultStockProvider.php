@@ -59,7 +59,7 @@ class DefaultStockProvider implements StockProviderInterface
      */
     public function getAvailableQuantity(Product $product, Website $website)
     {
-        return $this->stockRegistryProvider->getStockItem($product->getId(), $website->getWebsiteId())->getQty();
+        return (int)$this->stockRegistryProvider->getStockItem($product->getId(), $website->getWebsiteId())->getQty();
     }
 
     /**
