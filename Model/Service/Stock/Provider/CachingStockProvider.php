@@ -38,7 +38,6 @@ namespace Nosto\Tagging\Model\Service\Stock\Provider;
  */
 
 use Magento\Catalog\Model\Product;
-use Magento\CatalogInventory\Api\Data\StockStatusInterface;
 use Magento\Store\Model\Website;
 
 class CachingStockProvider implements StockProviderInterface
@@ -132,14 +131,19 @@ class CachingStockProvider implements StockProviderInterface
         $count = count($this->inStockCache[$website->getId()]);
         $offset = $count-$this->maxCacheSize;
         if ($offset > 0) {
-            $this->inStockCache = array_slice($this->inStockCache[$website->getId()], $offset, $this->maxCacheSize, true);
+            $this->inStockCache = array_slice(
+                $this->inStockCache[$website->getId()],
+                $offset,
+                $this->maxCacheSize,
+                true
+            );
         }
     }
 
     /**
      * @param Product $product
      * @param Website $website
-     * @return StockStatusInterface|null
+     * @return bool
      */
     private function getIsInStockFromCache(Product $product, Website $website)
     {
@@ -169,7 +173,7 @@ class CachingStockProvider implements StockProviderInterface
 
     /**
      * @param int $productId
-     * @return StockStatusInterface|null
+     * @return int|null
      */
     private function getQuantityFromCache($productId, Website $website)
     {

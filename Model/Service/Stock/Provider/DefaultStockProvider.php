@@ -45,18 +45,13 @@ class DefaultStockProvider implements StockProviderInterface
 {
     private $stockRegistryProvider;
 
+    /**
+     * DefaultStockProvider constructor.
+     * @param StockRegistryProvider $stockRegistryProvider
+     */
     public function __construct(StockRegistryProvider $stockRegistryProvider)
     {
         $this->stockRegistryProvider = $stockRegistryProvider;
-    }
-
-    /**
-     * @param array $ids
-     * @return StockStatusInterface[]
-     */
-    private function getStockStatuses(array $ids)
-    {
-        return $this->stockRegistryProvider->getStockStatuses($ids)->getItems();
     }
 
     /**
@@ -72,7 +67,7 @@ class DefaultStockProvider implements StockProviderInterface
      */
     public function isInStock(Product $product, Website $website)
     {
-        return $this->stockRegistryProvider->getStockItem(
+        return (bool)$this->stockRegistryProvider->getStockItem(
             $product->getId(),
             $website->getWebsiteId()
         )->getIsInStock();
@@ -84,11 +79,20 @@ class DefaultStockProvider implements StockProviderInterface
     public function getQuantitiesByIds(array $productIds, Website $website)
     {
         $quantities = [];
-        $stockItems = $this->getStockStatuses($productIds);
+        $stockItems = $this->getStockStatuses($productIds, $website);
         /* @var Product $product */
         foreach ($stockItems as $stockItem) {
             $quantities[$stockItem->getProductId()] = $stockItem->getQty();
         }
         return $quantities;
+    }
+
+    /**
+     * @param array $ids
+     * @return StockStatusInterface[]
+     */
+    private function getStockStatuses(array $ids, Website $website)
+    {
+        return $this->stockRegistryProvider->getStockStatuses($ids, $website->getId())->getItems();
     }
 }
