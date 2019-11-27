@@ -190,7 +190,7 @@ class Builder
             $nostoProduct->setAvailability($this->buildAvailability($product, $store));
             $nostoProduct->setCategories($this->nostoCategoryService->getCategories($product, $store));
             if ($this->getDataHelper()->isInventoryTaggingEnabled($store)) {
-                $inventoryLevel = $this->getStockService()->getQuantity($product);
+                $inventoryLevel = $this->getStockService()->getQuantity($product, $store);
                 $nostoProduct->setInventoryLevel($inventoryLevel);
             }
             $rating = $this->nostoRatingHelper->getRatings($product, $store);

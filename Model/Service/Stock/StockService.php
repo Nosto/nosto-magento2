@@ -40,8 +40,11 @@ use Magento\Bundle\Model\Product\Type as Bundled;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\Product\Type as ProductType;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\GroupedProduct\Model\Product\Type\Grouped;
 use Magento\Store\Model\Store;
+use Magento\Store\Model\Website;
+use Nosto\Tagging\Logger\Logger;
 use Nosto\Tagging\Model\Service\Stock\Provider\StockProviderInterface;
 
 /**
@@ -49,17 +52,24 @@ use Nosto\Tagging\Model\Service\Stock\Provider\StockProviderInterface;
  */
 class StockService
 {
+    /** @var StockProviderInterface */
     private $stockProvider;
+
+    /** @var Logger */
+    private $logger;
 
     /**
      * Constructor.
      *
      * @param StockProviderInterface $stockProvider
+     * @param Logger $nostoLogger
      */
     public function __construct(
-        StockProviderInterface $stockProvider
+        StockProviderInterface $stockProvider,
+        Logger $nostoLogger
     ) {
         $this->stockProvider = $stockProvider;
+        $this->logger = $nostoLogger;
     }
 
     /**
@@ -67,13 +77,24 @@ class StockService
      * the sum of associated products will be calculated.
      *
      * @param Product $product
+     * @param Store $store
      * @return int
      * @suppress PhanUndeclaredMethod
      * @suppress PhanDeprecatedFunction
      */
-    public function getQuantity(Product $product)
+    public function getQuantity(Product $product, Store $store)
     {
         $qty = 0;
+        try {
+            $website = $store->getWebsite();
+        } catch (NoSuchEntityException $e) {
+            $this->logger->exception($e);
+            return 0;
+        }
+        if ($website instanceof Website === false) {
+            $this->logger->error('Could not resolve website when resolving quantity');
+            return 0;
+        }
         switch ($product->getTypeId()) {
             case ProductType::TYPE_BUNDLE:
                 /** @var Bundled $productType */
@@ -87,13 +108,13 @@ class StockService
                         }
                     }
                 }
-                $qty = $this->getMinQty($productIds);
+                $qty = $this->getMinQty($productIds, $website);
                 break;
             case Grouped::TYPE_CODE:
                 $productType = $product->getTypeInstance();
                 if ($productType instanceof Grouped) {
-                    $products = $productType->getAssociatedProductIds($product);
-                    $qty = $this->getMinQty($products);
+                    $productIds = $productType->getAssociatedProductIds($product);
+                    $qty = $this->getMinQty($productIds, $website);
                 }
                 break;
             case Configurable::TYPE_CODE:
@@ -103,11 +124,11 @@ class StockService
                     if (isset($productIds[0]) && is_array($productIds[0])) {
                         $productIds = $productIds[0];
                     }
-                    $qty = $this->getQtySum($productIds);
+                    $qty = $this->getQtySum($productIds, $website);
                 }
                 break;
             default:
-                $qty += $this->stockProvider->getStockStatus($product->getId())->getQty();
+                $qty += $this->stockProvider->getAvailableQuantity($product, $website);
                 break;
         }
 
@@ -118,17 +139,13 @@ class StockService
      * Searches the minimum quantity from the products collection
      *
      * @param int[] $productIds
+     * @param Website $website
      * @return int|mixed
      */
-    private function getMinQty(array $productIds)
+    private function getMinQty(array $productIds, Website $website)
     {
-        $quantities = [];
-        $stockItems = $this->stockProvider->getStockStatuses($productIds);
+        $quantities = $this->stockProvider->getQuantitiesByIds($productIds, $website);
         $minQty = 0;
-        /* @var Product $product */
-        foreach ($stockItems as $stockItem) {
-            $quantities[] = $stockItem->getQty();
-        }
         if (!empty($quantities)) {
             rsort($quantities, SORT_NUMERIC);
             $minQty = array_pop($quantities);
@@ -142,12 +159,12 @@ class StockService
      * @param int[] $productIds
      * @return int
      */
-    private function getQtySum($productIds)
+    private function getQtySum($productIds, Website $website)
     {
         $qty = 0;
-        $stockItems = $this->stockProvider->getStockStatuses($productIds);
-        foreach ($stockItems as $item) {
-            $qty += $item->getQty();
+        $quantities = $this->stockProvider->getQuantitiesByIds($productIds, $website);
+        foreach ($quantities as $quantity) {
+            $qty += $quantity;
         }
         return $qty;
     }
@@ -161,9 +178,14 @@ class StockService
      */
     public function isInStock(Product $product, Store $store)
     {
-        return (bool)$this->stockProvider->getStockItem(
-            $product->getId(),
-            $store->getWebsiteId()
-        )->getIsInStock();
+        try {
+            return (bool)$this->stockProvider->isInStock(
+                $product,
+                $store->getWebsite()
+            );
+        } catch (NoSuchEntityException $e) {
+            $this->logger->exception($e);
+            return false;
+        }
     }
 }

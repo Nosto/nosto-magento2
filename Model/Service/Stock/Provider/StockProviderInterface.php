@@ -37,28 +37,29 @@ namespace Nosto\Tagging\Model\Service\Stock\Provider;
  *
  */
 
-use Magento\CatalogInventory\Api\Data\StockItemInterface;
-use Magento\CatalogInventory\Api\Data\StockStatusInterface;
+use Magento\Catalog\Model\Product;
+use Magento\Store\Model\Website;
 
 interface StockProviderInterface
 {
+    /**
+     * @param Product $product
+     * @param Website $website
+     * @return int|null
+     */
+    public function getAvailableQuantity(Product $product, Website $website);
 
     /**
-     * @param int[] $ids array of product ids
-     * @return StockStatusInterface[]
+     * @param Product $product
+     * @param Website $website
+     * @return bool
      */
-    public function getStockStatuses(array $ids);
+    public function isInStock(Product $product, Website $website);
 
     /**
-     * @param int $id Product id
-     * @return StockStatusInterface
+     * @param array $productIds
+     * @param Website $website
+     * @return null|array ['productId1' => 4, 'productId2' => 2, ...]
      */
-    public function getStockStatus($id);
-
-    /**
-     * @param int $id
-     * @param int $websiteId
-     * @return StockItemInterface
-     */
-    public function getStockItem($id, $websiteId);
+    public function getQuantitiesByIds(array $productIds, Website $website);
 }

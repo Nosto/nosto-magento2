@@ -37,15 +37,17 @@ namespace Nosto\Tagging\Model\Service\Stock\Provider;
  *
  */
 
-use Magento\CatalogInventory\Api\Data\StockItemInterface;
-use Magento\CatalogInventory\Api\Data\StockStatusInterface;
+use Magento\Catalog\Model\Product;
+use Magento\Store\Model\Website;
 
 class CachingStockProvider implements StockProviderInterface
 {
-    private $quantityCache = [];
-    private $inStockCache = [];
+    use CachingStockTrait {
+        CachingStockTrait::__construct as private __stockCacheTraitConstruct;
+    }
+
+    /** @var StockProviderInterface */
     private $stockProvider;
-    private $maxCacheSize;
 
     /**
      * CachingStockProvider constructor.
@@ -56,129 +58,58 @@ class CachingStockProvider implements StockProviderInterface
         StockProviderInterface $stockProvider,
         $maxCacheSize
     ) {
+        $this->__stockCacheTraitConstruct($maxCacheSize);
         $this->stockProvider = $stockProvider;
-        $this->maxCacheSize = $maxCacheSize;
     }
 
     /**
      * @inheritDoc
      */
-    public function getStockStatuses(array $ids)
+    public function getAvailableQuantity(Product $product, Website $website)
     {
-        $lookups = [];
-        $cachedIds = array_filter($ids, [$this, 'existsInQuantityCache']);
-        $notInArray = array_diff($ids, $cachedIds);
-        foreach ($cachedIds as $id) {
-            $lookups[] = $this->getQtyFromCache($id);
+        if ($this->existsInQuantityCache($product->getId(), $website)) {
+            return $this->getQuantityFromCache($product->getId(), $website);
         }
-        $fromQty = $this->stockProvider->getStockStatuses($notInArray);
-        /** @var StockStatusInterface $item */
-        foreach ($fromQty as $item) {
-            $lookups[] = $item;
-            $this->saveQtyToCache($item);
-        }
-        return $lookups;
+        $quantity = $this->stockProvider->getAvailableQuantity($product, $website);
+        $this->saveQuantityToCache($product->getId(), $website, $quantity);
+        return $quantity;
     }
 
     /**
      * @inheritDoc
      */
-    public function getStockStatus($id)
+    public function isInStock(Product $product, Website $website)
     {
-        if ($this->existsInQuantityCache($id)) {
-            return $this->getQtyFromCache($id);
+        if ($this->existsInStockCache($product, $website)) {
+            return $this->getIsInStockFromCache($product, $website);
         }
-        $item = $this->stockProvider->getStockStatus($id);
-        $this->saveQtyToCache($item);
-        return $item;
+        $inStock = $this->stockProvider->isInStock($product, $website);
+        $this->saveToInStockCache($product, $website, $inStock);
+        return $inStock;
     }
 
     /**
      * @inheritDoc
      */
-    public function getStockItem($id, $websiteId)
+    public function getQuantitiesByIds(array $productIds, Website $website)
     {
-        if ($this->existsInStockCache($id, $websiteId)) {
-            return $this->getIsInStockFromCache($id, $websiteId);
+        // TODO: double check that the caching logic works
+        $quantities = [];
+        $nonCachedQuantities = [];
+        foreach ($productIds as $productId) {
+            if ($this->existsInQuantityCache($productId, $website)) {
+                $quantities[] = $this->getQuantityFromCache($productId, $website);
+            } else {
+                $nonCachedQuantities[] = $productId;
+            }
         }
-        $item = $this->stockProvider->getStockItem($id, $websiteId);
-        $this->saveToInStockCache($item, $websiteId);
-        return $item;
-    }
-
-    /**
-     * @param int $productId
-     * @return StockStatusInterface|null
-     */
-    private function getQtyFromCache($productId)
-    {
-        if (!isset($this->quantityCache[$productId])) {
-            return null;
+        if (!empty($nonCachedQuantities)) {
+            $lookedUpQuantities = $this->stockProvider->getQuantitiesByIds($nonCachedQuantities, $website);
+            foreach ($lookedUpQuantities as $productId => $quantity) {
+                $quantities[$productId] = $quantity;
+                $this->saveQuantityToCache($productId, $website, $quantity);
+            }
         }
-        return $this->quantityCache[$productId];
-    }
-
-    /**
-     * @param StockItemInterface $item
-     * @param $websiteId
-     */
-    private function saveToInStockCache(StockItemInterface $item, $websiteId)
-    {
-        if (empty($this->inStockCache[$websiteId])) {
-            $this->inStockCache[$websiteId] = [];
-        }
-        $this->inStockCache[$websiteId][$item->getProductId()] = $item;
-        $count = count($this->inStockCache);
-        $offset = $count-$this->maxCacheSize;
-        if ($offset > 0) {
-            $this->inStockCache = array_slice($this->inStockCache, $offset, $this->maxCacheSize, true);
-        }
-
-        $this->inStockCache = array_slice($this->inStockCache, 0, $this->maxCacheSize);
-    }
-
-    /**
-     * @param int $productId
-     * @param $websiteId
-     * @return StockStatusInterface|null
-     */
-    private function getIsInStockFromCache($productId, $websiteId)
-    {
-        if (!isset($this->inStockCache[$websiteId][$productId])) {
-            return null;
-        }
-        return $this->inStockCache[$websiteId][$productId];
-    }
-
-    /**
-     * @param StockStatusInterface $item
-     */
-    private function saveQtyToCache(StockStatusInterface $item)
-    {
-        $this->quantityCache[$item->getProductId()] = $item;
-        $count = count($this->quantityCache);
-        $offset = $count-$this->maxCacheSize;
-        if ($offset > 0) {
-            $this->quantityCache = array_slice($this->quantityCache, $offset, $this->maxCacheSize, true);
-        }
-    }
-
-    /**
-     * @param $productId
-     * @param $websiteId
-     * @return bool
-     */
-    private function existsInStockCache($productId, $websiteId)
-    {
-        return isset($this->inStockCache[$websiteId][$productId]);
-    }
-
-    /**
-     * @param $productId
-     * @return bool
-     */
-    private function existsInQuantityCache($productId)
-    {
-        return isset($this->quantityCache[$productId]);
+        return $quantities;
     }
 }

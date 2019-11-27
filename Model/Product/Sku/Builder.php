@@ -150,7 +150,7 @@ class Builder
                 $nostoSku->setCustomFields($this->buildCustomFields($product, $store));
             }
             if ($this->getDataHelper()->isInventoryTaggingEnabled($store)) {
-                $nostoSku->setInventoryLevel($this->getStockService()->getQuantity($product));
+                $nostoSku->setInventoryLevel($this->getStockService()->getQuantity($product, $store));
             }
         } catch (Exception $e) {
             $this->getLogger()->exception($e);
