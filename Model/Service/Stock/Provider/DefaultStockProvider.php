@@ -1,4 +1,4 @@
-<?php /** @noinspection PhpUnused */
+<?php
 
 /**
  * Copyright (c) 2019, Nosto Solutions Ltd
@@ -74,8 +74,7 @@ class DefaultStockProvider implements StockProviderInterface
      */
     public function getAvailableQuantity(
         Product $product,
-        /** @noinspection PhpUnusedParameterInspection */
-        Website $website
+        Website $website // @codingStandardsIgnoreLine
     ) {
         return (int)$this->getStockItem($product)->getQty();
     }
@@ -85,8 +84,7 @@ class DefaultStockProvider implements StockProviderInterface
      */
     public function isInStock(
         Product $product,
-        /** @noinspection PhpUnusedParameterInspection */
-        Website $website
+        Website $website // @codingStandardsIgnoreLine
     ) {
         return (bool)$this->getStockItem($product)->getIsInStock();
     }
@@ -112,7 +110,7 @@ class DefaultStockProvider implements StockProviderInterface
     private function getStockStatuses(
         array $ids,
         /** @noinspection PhpUnusedParameterInspection */
-        Website $website
+        Website $website // @codingStandardsIgnoreLine
     ): array {
         return $this->stockRegistryProvider->getStockStatuses(
             $ids,
