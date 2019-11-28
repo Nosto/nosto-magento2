@@ -72,9 +72,9 @@ class DefaultStockProvider implements StockProviderInterface
     /**
      * @inheritDoc
      */
-    public function getAvailableQuantity(
+    public function getAvailableQuantity(// @codingStandardsIgnoreLine
         Product $product,
-        Website $website // @codingStandardsIgnoreLine
+        Website $website
     ) {
         return (int)$this->getStockItem($product)->getQty();
     }
@@ -82,9 +82,9 @@ class DefaultStockProvider implements StockProviderInterface
     /**
      * @inheritDoc
      */
-    public function isInStock(
+    public function isInStock(// @codingStandardsIgnoreLine
         Product $product,
-        Website $website // @codingStandardsIgnoreLine
+        Website $website
     ) {
         return (bool)$this->getStockItem($product)->getIsInStock();
     }
@@ -107,10 +107,10 @@ class DefaultStockProvider implements StockProviderInterface
      * @param array $ids
      * @return StockStatusInterface[]
      */
-    private function getStockStatuses(
+    private function getStockStatuses(// @codingStandardsIgnoreLine
         array $ids,
         /** @noinspection PhpUnusedParameterInspection */
-        Website $website // @codingStandardsIgnoreLine
+        Website $website
     ): array {
         return $this->stockRegistryProvider->getStockStatuses(
             $ids,
