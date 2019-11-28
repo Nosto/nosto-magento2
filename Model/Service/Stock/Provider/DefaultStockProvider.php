@@ -38,8 +38,8 @@
 namespace Nosto\Tagging\Model\Service\Stock\Provider;
 
 use Magento\Catalog\Model\Product;
-use Magento\CatalogInventory\Api\Data\StockStatusInterface;
 use Magento\CatalogInventory\Api\Data\StockItemInterface;
+use Magento\CatalogInventory\Api\Data\StockStatusInterface;
 use Magento\Store\Model\Website;
 
 class DefaultStockProvider implements StockProviderInterface
@@ -71,19 +71,23 @@ class DefaultStockProvider implements StockProviderInterface
 
     /**
      * @inheritDoc
-     * @noinspection PhpUnusedParameterInspection
      */
-    public function getAvailableQuantity(Product $product, Website $website)
-    {
+    public function getAvailableQuantity(
+        Product $product,
+        /** @noinspection PhpUnusedParameterInspection */
+        Website $website
+    ) {
         return (int)$this->getStockItem($product)->getQty();
     }
 
     /**
      * @inheritDoc
-     * @noinspection PhpUnusedParameterInspection
      */
-    public function isInStock(Product $product, Website $website)
-    {
+    public function isInStock(
+        Product $product,
+        /** @noinspection PhpUnusedParameterInspection */
+        Website $website
+    ) {
         return (bool)$this->getStockItem($product)->getIsInStock();
     }
 
@@ -104,10 +108,12 @@ class DefaultStockProvider implements StockProviderInterface
     /**
      * @param array $ids
      * @return StockStatusInterface[]
-     * @noinspection PhpUnusedParameterInspection
      */
-    private function getStockStatuses(array $ids, Website $website)
-    {
+    private function getStockStatuses(
+        array $ids,
+        /** @noinspection PhpUnusedParameterInspection */
+        Website $website
+    ): array {
         return $this->stockRegistryProvider->getStockStatuses(
             $ids,
             StockRegistryProvider::DEFAULT_STOCK_SCOPE

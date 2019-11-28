@@ -154,7 +154,7 @@ class CachingStockProvider implements StockProviderInterface
     }
 
     /**
-     * @param string $productId
+     * @param int $productId
      * @param Website $website
      * @param int $quantity
      */
@@ -172,7 +172,7 @@ class CachingStockProvider implements StockProviderInterface
     }
 
     /**
-     * @param string $productId
+     * @param int $productId
      * @param Website $website
      * @return int|null
      */
@@ -195,7 +195,7 @@ class CachingStockProvider implements StockProviderInterface
     }
 
     /**
-     * @param string $productId
+     * @param int $productId
      * @param Website $website
      * @return bool
      */
