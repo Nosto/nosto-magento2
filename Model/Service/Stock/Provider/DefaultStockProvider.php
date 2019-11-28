@@ -39,6 +39,7 @@ namespace Nosto\Tagging\Model\Service\Stock\Provider;
 
 use Magento\Catalog\Model\Product;
 use Magento\CatalogInventory\Api\Data\StockStatusInterface;
+use Magento\CatalogInventory\Api\Data\StockItemInterface;
 use Magento\Store\Model\Website;
 
 class DefaultStockProvider implements StockProviderInterface
@@ -55,11 +56,25 @@ class DefaultStockProvider implements StockProviderInterface
     }
 
     /**
+     * Returns stock item from the default source
+     *
+     * @param Product $product
+     * @return StockItemInterface
+     */
+    private function getStockItem(Product $product)
+    {
+        return $this->stockRegistryProvider->getStockItem(
+            $product->getId(),
+            StockRegistryProvider::DEFAULT_STOCK_SCOPE
+        );
+    }
+
+    /**
      * @inheritDoc
      */
     public function getAvailableQuantity(Product $product, Website $website)
     {
-        return (int)$this->stockRegistryProvider->getStockItem($product->getId(), $website->getWebsiteId())->getQty();
+        return (int)$this->getStockItem($product)->getQty();
     }
 
     /**
@@ -67,10 +82,7 @@ class DefaultStockProvider implements StockProviderInterface
      */
     public function isInStock(Product $product, Website $website)
     {
-        return (bool)$this->stockRegistryProvider->getStockItem(
-            $product->getId(),
-            $website->getWebsiteId()
-        )->getIsInStock();
+        return (bool)$this->getStockItem($product)->getIsInStock();
     }
 
     /**
@@ -93,6 +105,6 @@ class DefaultStockProvider implements StockProviderInterface
      */
     private function getStockStatuses(array $ids, Website $website)
     {
-        return $this->stockRegistryProvider->getStockStatuses($ids, $website->getId())->getItems();
+        return $this->stockRegistryProvider->getStockStatuses($ids, StockRegistryProvider::DEFAULT_STOCK_SCOPE)->getItems();
     }
 }
