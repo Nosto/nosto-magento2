@@ -120,7 +120,7 @@ class CachingStockProvider implements StockProviderInterface
     /**
      * @param Product $product
      * @param Website $website
-     * @param $inStock
+     * @param bool $inStock
      */
     private function saveToInStockCache(Product $product, Website $website, $inStock)
     {
@@ -131,7 +131,7 @@ class CachingStockProvider implements StockProviderInterface
         $count = count($this->inStockCache[$website->getId()]);
         $offset = $count-$this->maxCacheSize;
         if ($offset > 0) {
-            $this->inStockCache = array_slice(
+            $this->inStockCache[$website->getId()] = array_slice(
                 $this->inStockCache[$website->getId()],
                 $offset,
                 $this->maxCacheSize,
