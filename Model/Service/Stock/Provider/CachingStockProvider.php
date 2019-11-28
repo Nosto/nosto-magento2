@@ -1,7 +1,5 @@
 <?php /** @noinspection PhpUnused */
 
-namespace Nosto\Tagging\Model\Service\Stock\Provider;
-
 /**
  * Copyright (c) 2019, Nosto Solutions Ltd
  * All rights reserved.
@@ -36,6 +34,8 @@ namespace Nosto\Tagging\Model\Service\Stock\Provider;
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
+
+namespace Nosto\Tagging\Model\Service\Stock\Provider;
 
 use Magento\Catalog\Model\Product;
 use Magento\Store\Model\Website;
@@ -154,9 +154,9 @@ class CachingStockProvider implements StockProviderInterface
     }
 
     /**
-     * @param $productId
+     * @param string $productId
      * @param Website $website
-     * @param $quantity
+     * @param int $quantity
      */
     private function saveQuantityToCache($productId, Website $website, $quantity)
     {
@@ -172,7 +172,8 @@ class CachingStockProvider implements StockProviderInterface
     }
 
     /**
-     * @param int $productId
+     * @param string $productId
+     * @param Website $website
      * @return int|null
      */
     private function getQuantityFromCache($productId, Website $website)
@@ -194,7 +195,7 @@ class CachingStockProvider implements StockProviderInterface
     }
 
     /**
-     * @param $productId
+     * @param string $productId
      * @return bool
      */
     private function existsInQuantityCache($productId, Website $website)

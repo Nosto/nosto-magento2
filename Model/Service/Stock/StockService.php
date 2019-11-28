@@ -157,6 +157,7 @@ class StockService
      * Sums quantities for all product ids in array
      *
      * @param int[] $productIds
+     * @param Website $website
      * @return int
      */
     private function getQtySum($productIds, Website $website)

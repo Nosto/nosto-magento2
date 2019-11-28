@@ -71,6 +71,7 @@ class DefaultStockProvider implements StockProviderInterface
 
     /**
      * @inheritDoc
+     * @noinspection PhpUnusedParameterInspection
      */
     public function getAvailableQuantity(Product $product, Website $website)
     {
@@ -79,6 +80,7 @@ class DefaultStockProvider implements StockProviderInterface
 
     /**
      * @inheritDoc
+     * @noinspection PhpUnusedParameterInspection
      */
     public function isInStock(Product $product, Website $website)
     {
@@ -102,9 +104,13 @@ class DefaultStockProvider implements StockProviderInterface
     /**
      * @param array $ids
      * @return StockStatusInterface[]
+     * @noinspection PhpUnusedParameterInspection
      */
     private function getStockStatuses(array $ids, Website $website)
     {
-        return $this->stockRegistryProvider->getStockStatuses($ids, StockRegistryProvider::DEFAULT_STOCK_SCOPE)->getItems();
+        return $this->stockRegistryProvider->getStockStatuses(
+            $ids,
+            StockRegistryProvider::DEFAULT_STOCK_SCOPE
+        )->getItems();
     }
 }
