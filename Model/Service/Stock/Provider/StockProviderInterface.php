@@ -45,7 +45,7 @@ interface StockProviderInterface
     /**
      * @param Product $product
      * @param Website $website
-     * @return int|null
+     * @return int
      */
     public function getAvailableQuantity(Product $product, Website $website);
 
@@ -59,7 +59,7 @@ interface StockProviderInterface
     /**
      * @param array $productIds
      * @param Website $website
-     * @return null|array ['productId1' => 4, 'productId2' => 2, ...]
+     * @return array ['productId1' => 4, 'productId2' => 2, ...]
      */
     public function getQuantitiesByIds(array $productIds, Website $website);
 }

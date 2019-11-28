@@ -196,6 +196,7 @@ class CachingStockProvider implements StockProviderInterface
 
     /**
      * @param string $productId
+     * @param Website $website
      * @return bool
      */
     private function existsInQuantityCache($productId, Website $website)
