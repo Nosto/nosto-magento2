@@ -109,6 +109,7 @@ class Indexer implements IndexerActionInterface, MviewActionInterface
             $pageNumber = 1;
             do {
                 $productCollection = $this->getCollection();
+                $productCollection->setPageSize(self::BATCH_SIZE);
                 $productCollection->setCurPage($pageNumber);
                 $this->logger->logWithMemoryConsumption(
                     sprintf('Indexing from executeFull, remaining pages: %d', $lastPage - $pageNumber)
