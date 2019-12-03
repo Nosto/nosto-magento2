@@ -1,5 +1,8 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 3.10.2
+* Fix an issue where the indexer page size was not set properly (Credit goes to `Deepak Upadhyay` (https://github.com/dupadhyay3))
+
 ### 3.10.1
 * Fix an issue with sending order confirmations via API when customer details could not be resolved
 
