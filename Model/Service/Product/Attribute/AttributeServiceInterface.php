@@ -33,57 +33,46 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
+namespace Nosto\Tagging\Model\Service\Product\Attribute;
 
-namespace Nosto\Tagging\Model\Service\Product\Category;
-
-use Magento\Catalog\Model\Category;
 use Magento\Catalog\Model\Product;
+use Magento\Catalog\Model\ResourceModel\Eav\Attribute;
 use Magento\Store\Api\Data\StoreInterface;
-use Nosto\Tagging\Logger\Logger;
 
-class CachingCategoryService implements CategoryServiceInterface
+interface AttributeServiceInterface
 {
     /**
-     * @var CategoryServiceInterface
+     * @param Product $product
+     * @param StoreInterface $store
+     * @return array ['attributeCode1' => 'value1', 'attributeCode2' => 'value2', ...]
      */
-    private $categoryService;
+    public function getAttributes(Product $product, StoreInterface $store): array;
 
     /**
-     * @var array
+     * Returns the default (user defined & visible in frontend) attributes for the given product
+     *
+     * @param Product $category
+     * @return array ['attributeCode1', 'attributeCode2', ...]
      */
-    private $cache = [];
+    public function getDefaultAttributesForProduct(Product $product): array;
 
     /**
-     * Index constructor.
-     * @param CategoryServiceInterface $categoryService
+     * Resolves "textual" product attribute value.
+     * If value is an array containing scalar values the array will be imploded
+     * using comma as glue.
+     *
+     * @param Product $product
+     * @param Attribute $store
+     * @return bool|float|int|null|string
      */
-    public function __construct(
-        CategoryServiceInterface $categoryService
-    ) {
-        $this->categoryService = $categoryService;
-    }
+    public function getAttributeValue(Product $product, Attribute $store);
 
     /**
-     * @inheritDoc
+     * Resolves "textual" product attribute value by attribute code.
+     *
+     * @param Product $product
+     * @param string $attributeCode
+     * @return bool|float|int|null|string
      */
-    public function getCategory(Category $category, StoreInterface $store)
-    {
-        if (!isset($this->cache[$store->getId()])) {
-            $this->cache[$store->getId()] = [];
-        }
-
-        if (!isset($this->cache[$store->getId()][$category->getId()])) {
-            $slug = $this->categoryService->getCategory($category, $store);
-            $this->cache[$store->getId()][$category->getId()] = $slug;
-        }
-        return $this->cache[$store->getId()][$category->getId()];
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getCategories(Product $product, StoreInterface $store)
-    {
-        return $this->categoryService->getCategories($product, $store);
-    }
+    public function getAttributeValueByAttributeCode(Product $product, $attributeCode);
 }

@@ -41,6 +41,7 @@ use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\Product\Gallery\ReadHandler as GalleryReadHandler;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Store\Model\Store;
+use Magento\Store\Model\StoreManagerInterface;
 use Nosto\Exception\FilteredProductException;
 use Nosto\Exception\NonBuildableProductException;
 use Nosto\NostoException;
@@ -52,14 +53,14 @@ use Nosto\Tagging\Helper\Price as NostoPriceHelper;
 use Nosto\Tagging\Helper\Ratings as NostoRating;
 use Nosto\Tagging\Helper\Variation as NostoVariationHelper;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
-use Nosto\Tagging\Model\Service\Product\Category\CategoryServiceInterface as NostoCategoryService;
 use Nosto\Tagging\Model\Product\Sku\Collection as NostoSkuCollection;
 use Nosto\Tagging\Model\Product\Tags\LowStock as LowStockHelper;
 use Nosto\Tagging\Model\Product\Url\Builder as NostoUrlBuilder;
 use Nosto\Tagging\Model\Product\Variation\Collection as PriceVariationCollection;
+use Nosto\Tagging\Model\Service\Product\Attribute\AttributeServiceInterface;
+use Nosto\Tagging\Model\Service\Product\Category\CategoryServiceInterface;
 use Nosto\Tagging\Model\Service\Stock\StockService;
 use Nosto\Types\Product\ProductInterface;
-use Magento\Store\Model\StoreManagerInterface;
 
 class Builder
 {
@@ -68,27 +69,49 @@ class Builder
     }
 
     const CUSTOMIZED_TAGS = ['tag1', 'tag2', 'tag3'];
+
+    /** @var NostoPriceHelper */
     private $nostoPriceHelper;
-    private $nostoStockHelper;
+
+    /** @var GalleryReadHandler */
     private $galleryReadHandler;
+
+    /** @var ManagerInterface */
     private $eventManager;
+
+    /** @var NostoUrlBuilder */
     private $urlBuilder;
+
+    /** @var NostoSkuCollection */
     private $skuCollection;
+
+    /** @var CurrencyHelper */
     private $nostoCurrencyHelper;
+
+    /** @var LowStockHelper */
     private $lowStockHelper;
+
+    /** @var PriceVariationCollection */
     private $priceVariationCollection;
+
+    /** @var NostoVariationHelper */
     private $nostoVariationHelper;
-    private $categoryRepository;
-    private $attributeSetRepository;
+
+    /** @var NostoRating */
     private $nostoRatingHelper;
+
+    /** @var CategoryServiceInterface */
     private $nostoCategoryService;
+
+    /** @var AttributeServiceInterface */
+    private $attributeService;
 
     /**
      * Builder constructor.
      *
      * @param NostoHelperData $nostoHelperData
      * @param NostoPriceHelper $priceHelper
-     * @param NostoCategoryService $nostoCategoryService
+     * @param CategoryServiceInterface $nostoCategoryService
      * @param StockService $stockService
      * @param NostoSkuCollection $skuCollection
      * @param NostoLogger $logger
@@ -105,7 +128,7 @@ class Builder
     public function __construct(
         NostoHelperData $nostoHelperData,
         NostoPriceHelper $priceHelper,
-        NostoCategoryService $nostoCategoryService,
+        CategoryServiceInterface $nostoCategoryService,
         StockService $stockService,
         NostoSkuCollection $skuCollection,
         NostoLogger $logger,
@@ -117,7 +140,8 @@ class Builder
         PriceVariationCollection $priceVariationCollection,
         NostoVariationHelper $nostoVariationHelper,
         NostoRating $nostoRatingHelper,
-        StoreManagerInterface $storeManager
+        StoreManagerInterface $storeManager,
+        AttributeServiceInterface $attributeService
     ) {
         $this->nostoPriceHelper = $priceHelper;
         $this->eventManager = $eventManager;
@@ -130,7 +154,8 @@ class Builder
             $nostoHelperData,
             $stockService,
             $logger,
-            $storeManager
+            $storeManager,
+            $attributeService
         );
         $this->priceVariationCollection = $priceVariationCollection;
         $this->nostoVariationHelper = $nostoVariationHelper;
@@ -216,17 +241,32 @@ class Builder
             }
             $brandAttribute = $this->getDataHelper()->getBrandAttribute($store);
             if ($product->hasData($brandAttribute)) {
-                $nostoProduct->setBrand($this->getAttributeValue($product, $brandAttribute));
+                $nostoProduct->setBrand(
+                    $this->attributeService->getAttributeValueByAttributeCode(
+                        $product,
+                        $brandAttribute
+                    )
+                );
             }
             $marginAttribute = $this->getDataHelper()->getMarginAttribute($store);
             if ($product->hasData($marginAttribute)) {
-                $nostoProduct->setSupplierCost($this->getAttributeValue($product, $marginAttribute));
+                $nostoProduct->setSupplierCost(
+                    $this->attributeService->getAttributeValueByAttributeCode(
+                        $product,
+                        $marginAttribute
+                    )
+                );
             }
             $gtinAttribute = $this->getDataHelper()->getGtinAttribute($store);
             if ($product->hasData($gtinAttribute)) {
-                $nostoProduct->setGtin($this->getAttributeValue($product, $gtinAttribute));
+                $nostoProduct->setGtin(
+                    $this->attributeService->getAttributeValueByAttributeCode(
+                        $product,
+                        $gtinAttribute
+                    )
+                );
             }
-            if (($tags = $this->buildTags($product, $store)) !== []) {
+            if (($tags = $this->buildDefaultTags($product, $store)) !== []) {
                 $nostoProduct->setTag1($tags);
             }
 
@@ -291,45 +331,7 @@ class Builder
      */
     private function getCustomFieldsWithAttributes(Product $product, Store $store)
     {
-        $customFields = $this->buildCustomFields($product, $store);
-        $attributes = $this->getAttributesFromAllTags($store);
-        if (!$attributes) {
-            return $customFields;
-        }
-        foreach ($product->getAttributes() as $key => $productAttribute) {
-            if (in_array($key, $attributes, false)) {
-                $attributeValue = $this->getAttributeValue($product, $key);
-                if ($attributeValue === null || $attributeValue === '') {
-                    continue;
-                }
-                $customFields[$key] = $attributeValue;
-            }
-        }
-        return $customFields;
-    }
-
-    /**
-     * Returns unique selected attributes from all tags
-     *
-     * @param Store $store
-     * @return array
-     */
-    private function getAttributesFromAllTags(Store $store)
-    {
-        $attributes = [];
-        foreach (self::CUSTOMIZED_TAGS as $tag) {
-            $tagAttributes = $this->getDataHelper()->getTagAttributes($tag, $store);
-            if (!$tagAttributes) {
-                continue;
-            }
-            foreach ($tagAttributes as $productAttribute) {
-                $attributes[] = $productAttribute;
-            }
-        }
-        if ($attributes) {
-            return array_unique($attributes);
-        }
-        return [];
+        return $this->buildCustomFields($product, $store);
     }
 
     /**
@@ -339,36 +341,33 @@ class Builder
      * @param Product $product the magento product model.
      * @param NostoProduct $nostoProduct nosto product object
      * @param Store $store the store model.
+     * @throws NostoException
      */
     private function amendAttributeTags(Product $product, NostoProduct $nostoProduct, Store $store)
     {
+        $attributeValues = $this->attributeService->getAttributes($product, $store);
         foreach (self::CUSTOMIZED_TAGS as $tag) {
-            $attributes = $this->getDataHelper()->getTagAttributes($tag, $store);
-            if (!$attributes) {
+            $configuredTagAttributes = $this->getDataHelper()->getTagAttributes($tag, $store);
+            if (empty($configuredTagAttributes)) {
                 continue;
             }
-            foreach ($attributes as $productAttribute) {
-                try {
-                    $attributeValue = $this->getAttributeValue($product, $productAttribute);
-                    if (empty($attributeValue)) {
-                        continue;
-                    }
-
-                    switch ($tag) {
-                        case 'tag1':
-                            $nostoProduct->addTag1(sprintf('%s:%s', $productAttribute, $attributeValue));
-                            break;
-                        case 'tag2':
-                            $nostoProduct->addTag2(sprintf('%s:%s', $productAttribute, $attributeValue));
-                            break;
-                        case 'tag3':
-                            $nostoProduct->addTag3(sprintf('%s:%s', $productAttribute, $attributeValue));
-                            break;
-                        default:
-                            throw new NostoException('Method add' . $tag . ' is not defined.');
-                    }
-                } catch (Exception $e) {
-                    $this->getLogger()->exception($e);
+            foreach ($configuredTagAttributes as $configuredTagAttribute) {
+                if (!isset($attributeValues[$configuredTagAttribute])) {
+                    continue;
+                }
+                $value = $attributeValues[$configuredTagAttribute];
+                switch ($tag) {
+                    case 'tag1':
+                        $nostoProduct->addTag1(sprintf('%s:%s', $configuredTagAttribute, $value));
+                        break;
+                    case 'tag2':
+                        $nostoProduct->addTag2(sprintf('%s:%s', $configuredTagAttribute, $value));
+                        break;
+                    case 'tag3':
+                        $nostoProduct->addTag3(sprintf('%s:%s', $configuredTagAttribute, $value));
+                        break;
+                    default:
+                        throw new NostoException('Method add' . $tag . ' is not defined.');
                 }
             }
         }
@@ -423,7 +422,7 @@ class Builder
      * @param Store $store
      * @return array
      */
-    public function buildTags(Product $product, Store $store)
+    public function buildDefaultTags(Product $product, Store $store)
     {
         $tags = [];
 

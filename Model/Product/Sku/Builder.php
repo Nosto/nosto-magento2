@@ -48,6 +48,7 @@ use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Price as NostoPriceHelper;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Product\BuilderTrait;
+use Nosto\Tagging\Model\Service\Product\Attribute\AttributeServiceInterface;
 use Nosto\Tagging\Model\Service\Stock\StockService;
 use Nosto\Types\Product\ProductInterface;
 
@@ -81,7 +82,8 @@ class Builder
         ManagerInterface $eventManager,
         CurrencyHelper $nostoCurrencyHelper,
         StockService $stockService,
-        StoreManagerInterface $storeManager
+        StoreManagerInterface $storeManager,
+        AttributeServiceInterface $attributeService
     ) {
         $this->nostoPriceHelper = $priceHelper;
         $this->eventManager = $eventManager;
@@ -90,7 +92,8 @@ class Builder
             $nostoHelperData,
             $stockService,
             $logger,
-            $storeManager
+            $storeManager,
+            $attributeService
         );
     }
 
