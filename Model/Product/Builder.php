@@ -239,6 +239,16 @@ class Builder
             if (!empty($descriptions)) {
                 $nostoProduct->setDescription(implode(' ', $descriptions));
             }
+            if (($tags = $this->buildDefaultTags($product, $store)) !== []) {
+                $nostoProduct->setTag1($tags);
+            }
+
+            $nostoProduct->setCustomFields($this->getCustomFieldsWithAttributes($product, $store));
+
+            // Update customised Tag1, Tag2 and Tag3
+            $this->amendAttributeTags($product, $nostoProduct, $store);
+
+
             $brandAttribute = $this->getDataHelper()->getBrandAttribute($store);
             if ($product->hasData($brandAttribute)) {
                 $nostoProduct->setBrand(
@@ -266,15 +276,6 @@ class Builder
                     )
                 );
             }
-            if (($tags = $this->buildDefaultTags($product, $store)) !== []) {
-                $nostoProduct->setTag1($tags);
-            }
-
-            $nostoProduct->setCustomFields($this->getCustomFieldsWithAttributes($product, $store));
-
-            // Update customised Tag1, Tag2 and Tag3
-            $this->amendAttributeTags($product, $nostoProduct, $store);
-
             // When using customer group price variations, set the variations
             if ($this->getDataHelper()->isPricingVariationEnabled($store)
                 && $this->getDataHelper()->isMultiCurrencyDisabled($store)

@@ -102,33 +102,6 @@ class DefaultAttributeService implements AttributeServiceInterface
     /**
      * @inheritDoc
      */
-    public function getAttributeValue(Product $product, Attribute $attribute)
-    {
-        $value = null;
-        try {
-            $abstractFrontend = $attribute->getFrontend();
-            $frontendValue = $abstractFrontend->getValue($product);
-            if (is_array($frontendValue) && !empty($frontendValue)
-                && ArrayHelper::onlyScalarValues($frontendValue)
-            ) {
-                $value = implode(',', $frontendValue);
-            } elseif (is_scalar($frontendValue)) {
-                $value = $frontendValue;
-            } elseif ($frontendValue instanceof Phrase) {
-                $value = (string)$frontendValue;
-            }
-        } catch (Exception $e) {
-            $this->logger->exception($e);
-        }
-        if (is_scalar($value) && $value !== '' && $value !== false) {
-            return $value;
-        }
-        return null;
-    }
-
-    /**
-     * @inheritDoc
-     */
     public function getAttributeValueByAttributeCode(Product $product, $attributeCode)
     {
         $attributes = $product->getAttributes(); // This result is cached by Magento
@@ -139,12 +112,14 @@ class DefaultAttributeService implements AttributeServiceInterface
     }
 
     /**
-     * @inheritDoc
+     * Returns the default (user defined & visible in frontend) attributes for the given product
+     *
+     * @param Product $category
+     * @return array ['attributeCode1', 'attributeCode2', ...]
      */
-    public function getDefaultAttributesForProduct(Product $product): array
+    private function getDefaultAttributesForProduct(Product $product): array
     {
-        // All attributes configured in this attribute set
-        $configuredAttributes = $product->getTypeInstance()->getSetAttributes($product); // This returns all possible attributes for the product type
+        $configuredAttributes = $product->getAttributes();
         $attributes = [];
         /** @var Attribute $attribute */
         foreach ($configuredAttributes as $attributeCode => $attribute) {
@@ -167,7 +142,7 @@ class DefaultAttributeService implements AttributeServiceInterface
      * @param Store $store
      * @return array
      */
-    private function getAttributesForTags(StoreInterface $store): array
+    private function getAttributesForTags(StoreInterface $store)
     {
         $attributes = [];
         foreach (Builder::CUSTOMIZED_TAGS as $tag) {
@@ -183,5 +158,38 @@ class DefaultAttributeService implements AttributeServiceInterface
             return array_unique($attributes);
         }
         return [];
+    }
+
+    /**
+     * Resolves "textual" product attribute value.
+     * If value is an array containing scalar values the array will be imploded
+     * using comma as glue.
+     *
+     * @param Product $product
+     * @param Attribute $store
+     * @return bool|float|int|null|string
+     */
+    private function getAttributeValue(Product $product, Attribute $attribute)
+    {
+        $value = null;
+        try {
+            $abstractFrontend = $attribute->getFrontend();
+            $frontendValue = $abstractFrontend->getValue($product);
+            if (is_array($frontendValue) && !empty($frontendValue)
+                && ArrayHelper::onlyScalarValues($frontendValue)
+            ) {
+                $value = implode(',', $frontendValue);
+            } elseif (is_scalar($frontendValue)) {
+                $value = $frontendValue;
+            } elseif ($frontendValue instanceof Phrase) {
+                $value = (string)$frontendValue;
+            }
+        } catch (Exception $e) {
+            $this->logger->exception($e);
+        }
+        if (is_scalar($value) && $value !== '' && $value !== false) {
+            return $value;
+        }
+        return null;
     }
 }

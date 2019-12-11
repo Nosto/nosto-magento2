@@ -49,25 +49,6 @@ interface AttributeServiceInterface
     public function getAttributes(Product $product, StoreInterface $store): array;
 
     /**
-     * Returns the default (user defined & visible in frontend) attributes for the given product
-     *
-     * @param Product $category
-     * @return array ['attributeCode1', 'attributeCode2', ...]
-     */
-    public function getDefaultAttributesForProduct(Product $product): array;
-
-    /**
-     * Resolves "textual" product attribute value.
-     * If value is an array containing scalar values the array will be imploded
-     * using comma as glue.
-     *
-     * @param Product $product
-     * @param Attribute $store
-     * @return bool|float|int|null|string
-     */
-    public function getAttributeValue(Product $product, Attribute $store);
-
-    /**
      * Resolves "textual" product attribute value by attribute code.
      *
      * @param Product $product
