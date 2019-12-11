@@ -46,7 +46,7 @@ class CachingAttributeService implements AttributeServiceInterface
     /** @var array */
     private $productAttributeCache = [];
 
-    /** @var AttributeServiceInterface */
+    /** @var array */
     private $singleAttributeCache = [];
 
     /** @var AttributeServiceInterface */
@@ -56,9 +56,9 @@ class CachingAttributeService implements AttributeServiceInterface
     private $maxCachedProducts;
 
     /**
-     * DefaultAttributeService constructor.
-     * @param NostoHelperData $nostoHelperData
-     * @param Logger $logger
+     * CachingAttributeService constructor.
+     * @param AttributeServiceInterface $attributeService
+     * @param $maxCachedProducts
      */
     public function __construct(
         AttributeServiceInterface $attributeService,
@@ -140,7 +140,6 @@ class CachingAttributeService implements AttributeServiceInterface
         $productId = $product->getId();
         return $this->productAttributeCache[$storeId][$productId][$attributeCode] ?? null;
     }
-
 
     /**
      * Keeps the cache sizes within the given limits

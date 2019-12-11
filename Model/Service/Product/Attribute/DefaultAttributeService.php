@@ -42,6 +42,7 @@ use Magento\Catalog\Model\ResourceModel\Eav\Attribute;
 use Magento\Framework\Phrase;
 use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\Store;
+use Magento\Tests\NamingConvention\true\mixed;
 use Nosto\Helper\ArrayHelper;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
@@ -52,7 +53,7 @@ class DefaultAttributeService implements AttributeServiceInterface
     /** @var NostoHelperData */
     private $nostoHelperData;
 
-    /** @var NostoHelperData */
+    /** @var NostoLogger */
     private $logger;
 
     /**
@@ -114,7 +115,7 @@ class DefaultAttributeService implements AttributeServiceInterface
     /**
      * Returns the default (user defined & visible in frontend) attributes for the given product
      *
-     * @param Product $category
+     * @param Product $product
      * @return array ['attributeCode1', 'attributeCode2', ...]
      */
     private function getDefaultAttributesForProduct(Product $product): array
@@ -139,7 +140,7 @@ class DefaultAttributeService implements AttributeServiceInterface
     /**
      * Returns unique selected attributes from all tags
      *
-     * @param Store $store
+     * @param StoreInterface $store
      * @return array
      */
     private function getAttributesForTags(StoreInterface $store)
@@ -166,8 +167,8 @@ class DefaultAttributeService implements AttributeServiceInterface
      * using comma as glue.
      *
      * @param Product $product
-     * @param Attribute $store
-     * @return bool|float|int|null|string
+     * @param Attribute $attribute
+     * @return mixed
      */
     private function getAttributeValue(Product $product, Attribute $attribute)
     {
@@ -187,9 +188,6 @@ class DefaultAttributeService implements AttributeServiceInterface
         } catch (Exception $e) {
             $this->logger->exception($e);
         }
-        if (is_scalar($value) && $value !== '' && $value !== false) {
-            return $value;
-        }
-        return null;
+        return $value;
     }
 }
