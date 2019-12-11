@@ -39,10 +39,9 @@ namespace Nosto\Tagging\Model\Service\Product\Attribute;
 use Exception;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\ResourceModel\Eav\Attribute;
+use Magento\Eav\Model\Entity\Attribute\AbstractAttribute;
 use Magento\Framework\Phrase;
 use Magento\Store\Api\Data\StoreInterface;
-use Magento\Store\Model\Store;
-use Magento\Tests\NamingConvention\true\mixed;
 use Nosto\Helper\ArrayHelper;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
@@ -81,7 +80,6 @@ class DefaultAttributeService implements AttributeServiceInterface
         // Default attributes
         $defaultAttributes = $this->getDefaultAttributesForProduct($product);
         $attributes = [];
-        /** @var Attribute $attribute */
         foreach ($configuredAttributes as $attributeCode => $attribute) {
             if (!in_array($attributeCode, $attributesForTags, true)
                 && !in_array($attributeCode, $defaultAttributes, true)
@@ -106,8 +104,8 @@ class DefaultAttributeService implements AttributeServiceInterface
     public function getAttributeValueByAttributeCode(Product $product, $attributeCode)
     {
         $attributes = $product->getAttributes(); // This result is cached by Magento
-        if (isset($attributes[$attributeCode]) && $attributes[$attributeCode] instanceof Attribute) {
-            /** @var Attribute $attributes[$attributeCode] */
+        if (isset($attributes[$attributeCode]) && $attributes[$attributeCode] instanceof AbstractAttribute) {
+            /** @var AbstractAttribute $attributes[$attributeCode] */
             return $this->getAttributeValue($product, $attributes[$attributeCode]);
         }
     }
@@ -167,10 +165,10 @@ class DefaultAttributeService implements AttributeServiceInterface
      * using comma as glue.
      *
      * @param Product $product
-     * @param Attribute $attribute
-     * @return mixed
+     * @param AbstractAttribute $attribute
+     * @return bool|float|int|string|null
      */
-    private function getAttributeValue(Product $product, Attribute $attribute)
+    private function getAttributeValue(Product $product, AbstractAttribute $attribute)
     {
         $value = null;
         try {
