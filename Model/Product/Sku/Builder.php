@@ -153,7 +153,8 @@ class Builder
                     }
                 }
                 //load user defined attributes from attribute set
-                $nostoSku->setCustomFields($this->attributeService->getAttributesForCustomFields($product, $store));
+                // TODO: check if we need to fetch some additional attributes
+                // $nostoSku->setCustomFields($this->attributeService->getAttributesForCustomFields($product, $store));
             }
             if ($this->getDataHelper()->isInventoryTaggingEnabled($store)) {
                 $nostoSku->setInventoryLevel($this->getStockService()->getQuantity($product));
