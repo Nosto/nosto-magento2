@@ -33,62 +33,27 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
+namespace Nosto\Tagging\Model\Service\Product\Attribute;
 
-namespace Nosto\Tagging\Model\Config\Source;
-
+use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\ResourceModel\Eav\Attribute;
-use Magento\Catalog\Model\ResourceModel\Product\Attribute\Collection;
-use Magento\Framework\Data\OptionSourceInterface;
-use Nosto\Tagging\Model\Service\Product\Attribute\AttributeProviderInterface;
+use Magento\Catalog\Model\ResourceModel\Product\Attribute\Collection as AttributeCollection;
 
-/**
- * Abstract option array class to generate a list of selectable options that allows the merchant to
- * choose an attribute for for the specified tagging fields requirements.
- *
- * @package Nosto\Tagging\Model\Config\Source
- */
-abstract class Selector implements OptionSourceInterface
+interface AttributeProviderInterface
 {
-    /** @var AttributeProviderInterface */
-    private $attributeProvider;
-
     /**
-     * Selector constructor.
-     * @param AttributeProviderInterface $attributeProvider
-     */
-    public function __construct(
-        AttributeProviderInterface $attributeProvider
-    ) {
-        $this->attributeProvider = $attributeProvider;
-    }
-
-    /**
-     * Returns all available product attributes
+     * Returns a collection of attributes that are possible to be added either
+     * into the custom fields or tags in Nosto product.
      *
-     * @return array
+     * @return AttributeCollection|null
      */
-    public function toOptionArray()
-    {
-        $collection = $this->attributeProvider->getSelectableAttributesForNosto();
-        if ($collection === null) {
-            return [];
-        }
-        $this->filterCollection($collection);
+    public function getSelectableAttributesForNosto();
 
-        $options = $this->isNullable() ? [['value' => 0, 'label' => 'None']] : [];
-
-        /** @var Attribute $attribute */
-        foreach ($collection->load() as $attribute) {
-            $options[] = [
-                'value' => $attribute->getAttributeCode(),
-                'label' => $attribute->getFrontend()->getLabel(),
-            ];
-        }
-
-        return $options;
-    }
-
-    abstract public function filterCollection(Collection $collection);
-
-    abstract public function isNullable();
+    /**
+     * Returns a collection of attributes filtered by the give attribute codes.
+     *
+     * @param array $attributeCodes a list of attribute codes
+     * @return AttributeCollection|null
+     */
+    public function getAttributesByAttributeCodes(array $attributeCodes);
 }

@@ -100,7 +100,7 @@ trait BuilderTrait
             return [];
         }
 
-        return $this->attributeService->getAttributes($product, $store);
+        return $this->attributeService->getAttributesForCustomFields($product, $store);
     }
 
     /**

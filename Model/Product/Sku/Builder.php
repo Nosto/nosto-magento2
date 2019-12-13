@@ -140,17 +140,20 @@ class Builder
                 $nostoSku->setGtin($product->getData($gtinAttribute));
             }
 
-            if ($this->getDataHelper()->isCustomFieldsEnabled()) {
+            if ($this->getDataHelper()->isCustomFieldsEnabled($store)) {
                 foreach ($attributes as $attribute) {
                     try {
                         $code = $attribute->getProductAttribute()->getAttributeCode();
-                        $nostoSku->addCustomField($code, $product->getAttributeText($code));
+                        $nostoSku->addCustomField(
+                            $code,
+                            $this->attributeService->getAttributeValueByAttributeCode($product, $code)
+                        );
                     } catch (Exception $e) {
                         $this->getLogger()->exception($e);
                     }
                 }
                 //load user defined attributes from attribute set
-                $nostoSku->setCustomFields($this->buildCustomFields($product, $store));
+                $nostoSku->setCustomFields($this->attributeService->getAttributesForCustomFields($product, $store));
             }
             if ($this->getDataHelper()->isInventoryTaggingEnabled($store)) {
                 $nostoSku->setInventoryLevel($this->getStockService()->getQuantity($product));

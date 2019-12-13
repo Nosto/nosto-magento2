@@ -1,5 +1,8 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 4.0.0-rc6 (pre-release)
+* Introduce caching attribute service for looking up the product attribute values
+
 ### 4.0.0-rc5 (pre-release)
 * Amend fixes from [3.10.1](###3.10.1) (null check for customer)
 

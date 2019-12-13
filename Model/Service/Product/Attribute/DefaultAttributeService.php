@@ -38,137 +38,16 @@ namespace Nosto\Tagging\Model\Service\Product\Attribute;
 
 use Exception;
 use Magento\Catalog\Model\Product;
-use Magento\Catalog\Model\ResourceModel\Eav\Attribute;
 use Magento\Eav\Model\Entity\Attribute\AbstractAttribute;
 use Magento\Framework\Phrase;
-use Magento\Store\Api\Data\StoreInterface;
 use Nosto\Helper\ArrayHelper;
-use Nosto\Tagging\Helper\Data as NostoHelperData;
-use Nosto\Tagging\Logger\Logger as NostoLogger;
-use Nosto\Tagging\Model\Product\Builder;
 
-class DefaultAttributeService implements AttributeServiceInterface
+class DefaultAttributeService extends AbstractAttributeService
 {
-    /** @var NostoHelperData */
-    private $nostoHelperData;
-
-    /** @var NostoLogger */
-    private $logger;
-
-    /**
-     * DefaultAttributeService constructor.
-     * @param NostoHelperData $nostoHelperData
-     * @param NostoLogger $logger
-     */
-    public function __construct(
-        NostoHelperData $nostoHelperData,
-        NostoLogger $logger
-    ) {
-        $this->nostoHelperData = $nostoHelperData;
-        $this->logger = $logger;
-    }
-
     /**
      * @inheritDoc
      */
-    public function getAttributes(Product $product, StoreInterface $store): array
-    {
-        // All attributes configured in this attribute set
-        $configuredAttributes = $product->getAttributes(); // This returns all possible attributes for the product type
-        // Attributes that should be used in tagging
-        $attributesForTags = $this->getAttributesForTags($store);
-        // Default attributes
-        $defaultAttributes = $this->getDefaultAttributesForProduct($product);
-        $attributes = [];
-        foreach ($configuredAttributes as $attributeCode => $attribute) {
-            if (!in_array($attributeCode, $attributesForTags, true)
-                && !in_array($attributeCode, $defaultAttributes, true)
-            ) {
-                continue;
-            }
-            try {
-                $attributeValue = $this->getAttributeValue($product, $attribute);
-                if ($attributeValue !== null) {
-                    $attributes[$attribute->getAttributeCode()] = $attributeValue;
-                }
-            } catch (Exception $e) {
-                $this->logger->exception($e);
-            }
-        }
-        return $attributes;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getAttributeValueByAttributeCode(Product $product, $attributeCode)
-    {
-        $attributes = $product->getAttributes(); // This result is cached by Magento
-        if (isset($attributes[$attributeCode]) && $attributes[$attributeCode] instanceof AbstractAttribute) {
-            /** @var AbstractAttribute $attributes[$attributeCode] */
-            return $this->getAttributeValue($product, $attributes[$attributeCode]);
-        }
-    }
-
-    /**
-     * Returns the default (user defined & visible in frontend) attributes for the given product
-     *
-     * @param Product $product
-     * @return array ['attributeCode1', 'attributeCode2', ...]
-     */
-    private function getDefaultAttributesForProduct(Product $product): array
-    {
-        $configuredAttributes = $product->getAttributes();
-        $attributes = [];
-        /** @var Attribute $attribute */
-        foreach ($configuredAttributes as $attributeCode => $attribute) {
-            try {
-                if ($attribute->getIsUserDefined()
-                    && ($attribute->getIsVisibleOnFront() || $attribute->getIsFilterable())
-                ) {
-                    $attributes[] = $attribute->getAttributeCode();
-                }
-            } catch (Exception $e) {
-                $this->logger->exception($e);
-            }
-        }
-        return $attributes;
-    }
-
-    /**
-     * Returns unique selected attributes from all tags
-     *
-     * @param StoreInterface $store
-     * @return array
-     */
-    private function getAttributesForTags(StoreInterface $store)
-    {
-        $attributes = [];
-        foreach (Builder::CUSTOMIZED_TAGS as $tag) {
-            $tagAttributes = $this->nostoHelperData->getTagAttributes($tag, $store);
-            if (!$tagAttributes) {
-                continue;
-            }
-            foreach ($tagAttributes as $productAttribute) {
-                $attributes[] = $productAttribute;
-            }
-        }
-        if ($attributes) {
-            return array_unique($attributes);
-        }
-        return [];
-    }
-
-    /**
-     * Resolves "textual" product attribute value.
-     * If value is an array containing scalar values the array will be imploded
-     * using comma as glue.
-     *
-     * @param Product $product
-     * @param AbstractAttribute $attribute
-     * @return bool|float|int|string|null
-     */
-    private function getAttributeValue(Product $product, AbstractAttribute $attribute)
+    public function getAttributeValue(Product $product, AbstractAttribute $attribute)
     {
         $value = null;
         try {
@@ -184,8 +63,20 @@ class DefaultAttributeService implements AttributeServiceInterface
                 $value = (string)$frontendValue;
             }
         } catch (Exception $e) {
-            $this->logger->exception($e);
+            $this->getLogger()->exception($e);
         }
         return $value;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getAttributeValueByAttributeCode(Product $product, $attributeCode)
+    {
+        $attributes = $product->getAttributes(); // This result is cached by Magento
+        if (isset($attributes[$attributeCode]) && $attributes[$attributeCode] instanceof AbstractAttribute) {
+            /** @var AbstractAttribute $attributes[$attributeCode] */
+            return $this->getAttributeValue($product, $attributes[$attributeCode]);
+        }
     }
 }

@@ -223,6 +223,9 @@ class Builder
                 $nostoProduct->setRatingValue($rating->getRating());
                 $nostoProduct->setReviewCount($rating->getReviewCount());
             }
+            $nostoProduct->setCustomFields($this->getCustomFieldsWithAttributes($product, $store));
+            // Update customised Tag1, Tag2 and Tag3
+            $this->amendAttributeTags($product, $nostoProduct, $store);
             if ($this->getDataHelper()->isAltimgTaggingEnabled($store)) {
                 $nostoProduct->setAlternateImageUrls($this->buildAlternativeImages($product, $store));
             }
@@ -242,9 +245,6 @@ class Builder
             if (($tags = $this->buildDefaultTags($product, $store)) !== []) {
                 $nostoProduct->setTag1($tags);
             }
-            $nostoProduct->setCustomFields($this->getCustomFieldsWithAttributes($product, $store));
-            // Update customised Tag1, Tag2 and Tag3
-            $this->amendAttributeTags($product, $nostoProduct, $store);
             $brandAttribute = $this->getDataHelper()->getBrandAttribute($store);
             if ($product->hasData($brandAttribute)) {
                 $nostoProduct->setBrand(
@@ -328,7 +328,11 @@ class Builder
      */
     private function getCustomFieldsWithAttributes(Product $product, Store $store)
     {
-        return $this->buildCustomFields($product, $store);
+        if (!$this->nostoDataHelper->isCustomFieldsEnabled($store)) {
+            return [];
+        }
+        // Note that for main product the attributes are the same for custom fields & tags
+        return $this->attributeService->getAttributesForTags($product, $store);
     }
 
     /**
@@ -342,7 +346,7 @@ class Builder
      */
     private function amendAttributeTags(Product $product, NostoProduct $nostoProduct, Store $store)
     {
-        $attributeValues = $this->attributeService->getAttributes($product, $store);
+        $attributeValues = $this->attributeService->getAttributesForTags($product, $store);
         foreach (self::CUSTOMIZED_TAGS as $tag) {
             $configuredTagAttributes = $this->getDataHelper()->getTagAttributes($tag, $store);
             if (empty($configuredTagAttributes)) {
