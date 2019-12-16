@@ -45,6 +45,7 @@ use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Product\Repository as NostoProductRepository;
 use Nosto\Tagging\Model\Product\Sku\Builder as NostoSkuBuilder;
 use Nosto\Types\Product\SkuInterface;
+use Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable\Attribute\Collection as ConfigurableAttributeCollection; // @codingStandardsIgnoreLine
 
 class Collection
 {
@@ -83,7 +84,7 @@ class Collection
     {
         $skuCollection = new SkuCollection();
         if ($product->getTypeId() === ConfigurableType::TYPE_CODE) {
-            $attributes = $this->configurableType->getConfigurableAttributes($product);
+            $configurableAttributes = $this->getConfigurableAttributes($product);
             /** @var ConfigurableType $productTypeInstance */
             $productTypeInstance = $product->getTypeInstance();
             $usedProducts = $productTypeInstance->getUsedProducts($product);
@@ -91,14 +92,24 @@ class Collection
             foreach ($usedProducts as $usedProduct) {
                 /** @var Product $usedProduct */
                 if (!$usedProduct->isDisabled()) {
-                    $sku = $this->nostoSkuBuilder->build($usedProduct, $store, $attributes);
+                    $sku = $this->nostoSkuBuilder->build($usedProduct, $store, $configurableAttributes);
                     if ($sku instanceof SkuInterface) {
                         $skuCollection->append($sku);
                     }
                 }
             }
         }
-
         return $skuCollection;
+    }
+
+    /**
+     * @param Product $product
+     * @return ConfigurableAttributeCollection
+     */
+    public function getConfigurableAttributes(Product $product)
+    {
+        /* @var ConfigurableAttributeCollection $attributes */
+        $attributes = $this->configurableType->getConfigurableAttributes($product);
+        return $attributes;
     }
 }

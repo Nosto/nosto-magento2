@@ -332,7 +332,7 @@ class Builder
             return [];
         }
         // Note that for main product the attributes are the same for custom fields & tags
-        return $this->attributeService->getAttributesForTags($product, $store);
+        return $this->attributeService->getAttributesForCustomFields($product, $store);
     }
 
     /**

@@ -36,13 +36,13 @@
 namespace Nosto\Tagging\Model\Service\Product\Attribute;
 
 use Magento\Catalog\Model\Product;
-use Magento\Catalog\Model\ResourceModel\Eav\Attribute;
-use Magento\Sales\Test\Block\Adminhtml\Order\Create\Store;
 use Magento\Store\Api\Data\StoreInterface;
 
 interface AttributeServiceInterface
 {
     /**
+     * Returns that attributes to be used in Nosto product tags.
+     *
      * @param Product $product
      * @param StoreInterface $store
      * @return array ['attributeCode1' => 'value1', 'attributeCode2' => 'value2', ...]
@@ -50,6 +50,8 @@ interface AttributeServiceInterface
     public function getAttributesForTags(Product $product, StoreInterface $store): array;
 
     /**
+     * Returns the attributes to be used in custom fields.
+     *
      * @param Product $product
      * @param StoreInterface $store
      * @return array ['attributeCode1' => 'value1', 'attributeCode2' => 'value2', ...]
@@ -64,5 +66,4 @@ interface AttributeServiceInterface
      * @return bool|float|int|null|string
      */
     public function getAttributeValueByAttributeCode(Product $product, $attributeCode);
-
 }

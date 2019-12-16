@@ -88,22 +88,6 @@ trait BuilderTrait
     }
 
     /**
-     * Tag the custom attributes
-     *
-     * @param Product $product
-     * @param Store $store
-     * @return array
-     */
-    public function buildCustomFields(Product $product, Store $store)
-    {
-        if (!$this->nostoDataHelper->isCustomFieldsEnabled($store)) {
-            return [];
-        }
-
-        return $this->attributeService->getAttributesForCustomFields($product, $store);
-    }
-
-    /**
      * @param Product $product
      * @param Store $store
      * @return string|null

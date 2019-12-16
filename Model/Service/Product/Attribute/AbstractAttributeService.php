@@ -44,6 +44,7 @@ use Magento\Store\Api\Data\StoreInterface;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Product\Builder;
+use Magento\ConfigurableProduct\Model\Product\Type\Configurable\Attribute as ConfigurableAttribute;
 
 abstract class AbstractAttributeService implements AttributeServiceInterface
 {
@@ -72,11 +73,9 @@ abstract class AbstractAttributeService implements AttributeServiceInterface
     }
 
     /**
-     * @param Product $product
-     * @param AbstractAttribute[] $attributes
-     * @return array
+     * @inheritDoc
      */
-    private function getAttributesByArray(Product $product, $attributes): array
+    private function getAttributesByArray(Product $product, array $attributes): array
     {
         $attributesAndValues = [];
         foreach ($attributes as $attribute) {
@@ -107,22 +106,17 @@ abstract class AbstractAttributeService implements AttributeServiceInterface
     }
 
     /**
-     * Returns attributes for custom fields
+     * Note that this returns the same attributes than getAttributesForTags
      *
-     * @param Product $product
-     * @param StoreInterface $store
-     * @return array
+     * @inheritDoc
      */
     public function getAttributesForCustomFields(Product $product, StoreInterface $store): array
     {
-        return $this->getAttributesByArray(
-            $product,
-            $this->getDefaultAttributesForProduct($product)
-        );
+        return $this->getAttributesForTags($product, $store);
     }
 
     /**
-     * Returns the default (user defined & visible in frontend) attributes for the given product
+     * Returns the default (user defined & visible in frontend) attributes for the given product.
      *
      * @param Product $product
      * @return AbstractAttribute[]

@@ -51,6 +51,7 @@ use Nosto\Tagging\Model\Product\BuilderTrait;
 use Nosto\Tagging\Model\Service\Product\Attribute\AttributeServiceInterface;
 use Nosto\Tagging\Model\Service\Stock\StockService;
 use Nosto\Types\Product\ProductInterface;
+use Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable\Attribute\Collection as ConfigurableAttributeCollection; // @codingStandardsIgnoreLine
 
 class Builder
 {
@@ -107,7 +108,7 @@ class Builder
     public function build(
         Product $product,
         Store $store,
-        $attributes
+        ConfigurableAttributeCollection $attributes
     ) {
         if (!$this->isAvailableInStore($product, $store)) {
             return null;
@@ -152,9 +153,6 @@ class Builder
                         $this->getLogger()->exception($e);
                     }
                 }
-                //load user defined attributes from attribute set
-                // TODO: check if we need to fetch some additional attributes
-                // $nostoSku->setCustomFields($this->attributeService->getAttributesForCustomFields($product, $store));
             }
             if ($this->getDataHelper()->isInventoryTaggingEnabled($store)) {
                 $nostoSku->setInventoryLevel($this->getStockService()->getQuantity($product));
