@@ -57,9 +57,10 @@ abstract class AbstractAttributeService implements AttributeServiceInterface
     private $attributeProvider;
 
     /**
-     * DefaultAttributeService constructor.
+     * AbstractAttributeService constructor.
      * @param NostoHelperData $nostoHelperData
      * @param NostoLogger $logger
+     * @param AttributeProviderInterface $attributeProvider
      */
     public function __construct(
         NostoHelperData $nostoHelperData,
