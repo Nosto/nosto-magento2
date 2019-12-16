@@ -101,7 +101,7 @@ class Builder
     /**
      * @param Product $product
      * @param Store $store
-     * @param ConfigurableAttribute[] $attributes
+     * @param ConfigurableAttributeCollection $attributes
      * @return NostoSku|null
      * @throws Exception
      */
