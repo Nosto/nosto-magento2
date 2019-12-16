@@ -160,6 +160,9 @@ abstract class AbstractAttributeService implements AttributeServiceInterface
         }
         $configuredAttributes = array_unique($configuredAttributes);
         $attributeCollection = $this->attributeProvider->getAttributesByAttributeCodes($configuredAttributes);
+        if ($attributeCollection === null) {
+            return [];
+        }
         foreach ($attributeCollection as $code => $productAttribute) {
             if (!in_array($code, $configuredAttributes, true)) {
                 $attributes[$code] = $productAttribute;
