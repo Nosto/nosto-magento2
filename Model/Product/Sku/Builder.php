@@ -69,12 +69,15 @@ class Builder
     private $nostoCurrencyHelper;
 
     /**
+     * Builder constructor.
      * @param NostoHelperData $nostoHelperData
      * @param NostoPriceHelper $priceHelper
      * @param NostoLogger $logger
      * @param ManagerInterface $eventManager
      * @param CurrencyHelper $nostoCurrencyHelper
      * @param StockService $stockService
+     * @param StoreManagerInterface $storeManager
+     * @param AttributeServiceInterface $attributeService
      */
     public function __construct(
         NostoHelperData $nostoHelperData,
