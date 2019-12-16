@@ -80,7 +80,7 @@ abstract class AbstractAttributeService implements AttributeServiceInterface
         foreach ($attributes as $attribute) {
             try {
                 $attributeValue = $this->getAttributeValue($product, $attribute);
-                if ($attributeValue !== null) {
+                if ($attributeValue !== null && $attributeValue !== false) {
                     $attributesAndValues[$attribute->getAttributeCode()] = $attributeValue;
                 }
             } catch (Exception $e) {
