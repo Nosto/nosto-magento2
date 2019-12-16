@@ -35,8 +35,6 @@
  */
 namespace Nosto\Tagging\Model\Service\Product\Attribute;
 
-use Magento\Catalog\Model\Product;
-use Magento\Catalog\Model\ResourceModel\Eav\Attribute;
 use Magento\Catalog\Model\ResourceModel\Product\Attribute\Collection as AttributeCollection;
 
 interface AttributeProviderInterface

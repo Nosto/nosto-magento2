@@ -44,7 +44,6 @@ use Magento\Store\Api\Data\StoreInterface;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Product\Builder;
-use Magento\ConfigurableProduct\Model\Product\Type\Configurable\Attribute as ConfigurableAttribute;
 
 abstract class AbstractAttributeService implements AttributeServiceInterface
 {

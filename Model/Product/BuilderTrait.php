@@ -36,14 +36,9 @@
 
 namespace Nosto\Tagging\Model\Product;
 
-use Exception;
 use Magento\Catalog\Model\Product;
-use Magento\Catalog\Model\ResourceModel\Eav\Attribute\Interceptor;
-use Magento\Eav\Model\Entity\Attribute\AbstractAttribute;
-use Magento\Framework\Phrase;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
-use Nosto\Helper\ArrayHelper;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Service\Product\Attribute\AttributeServiceInterface;
@@ -68,10 +63,12 @@ trait BuilderTrait
     private $attributeService;
 
     /**
+     * BuilderTrait constructor.
      * @param NostoHelperData $nostoHelperData
      * @param StockService $stockService
      * @param NostoLogger $logger
      * @param StoreManagerInterface $storeManager
+     * @param AttributeServiceInterface $attributeService
      */
     public function __construct(
         NostoHelperData $nostoHelperData,

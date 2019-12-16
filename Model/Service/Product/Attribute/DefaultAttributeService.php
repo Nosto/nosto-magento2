@@ -78,5 +78,6 @@ class DefaultAttributeService extends AbstractAttributeService
             /** @var AbstractAttribute $attributes[$attributeCode] */
             return $this->getAttributeValue($product, $attributes[$attributeCode]);
         }
+        return null;
     }
 }

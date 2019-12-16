@@ -77,7 +77,6 @@ class DefaultAttributeProvider implements AttributeProviderInterface
         try {
             $entity = $this->eavConfig->getEntityType(Product::ENTITY);
             /** @var AttributeCollection $collection */
-            /** @noinspection PhpUndefinedMethodInspection */
             $collection = $this->attributeCollectionFactory->create();
             $collection->setEntityTypeFilter($entity->getId());
             $collection->addFieldToFilter('attribute_code', [
@@ -110,6 +109,9 @@ class DefaultAttributeProvider implements AttributeProviderInterface
      */
     public function getAttributesByAttributeCodes(array $attributeCodes)
     {
+        if (empty($attributeCodes)) {
+            return null;
+        }
         $collection = $this->getSelectableAttributesForNosto();
         if ($collection !== null) {
             $collection->addFieldToFilter('attribute_code', $attributeCodes);

@@ -55,7 +55,10 @@ class CachingAttributeService extends AbstractAttributeService
 
     /**
      * CachingAttributeService constructor.
+     * @param NostoHelperData $nostoHelperData
+     * @param NostoLogger $logger
      * @param AttributeServiceInterface $attributeService
+     * @param AttributeProviderInterface $attributeProvider
      * @param $maxCachedProducts
      */
     public function __construct(
@@ -75,8 +78,8 @@ class CachingAttributeService extends AbstractAttributeService
      *
      * @param Product $product
      * @param StoreInterface $store
-     * @param $attributeCode
-     * @param $value
+     * @param string $attributeCode
+     * @param bool|float|int|null|string $value
      */
     private function saveAttributeToCache(Product $product, StoreInterface $store, $attributeCode, $value)
     {
@@ -99,7 +102,7 @@ class CachingAttributeService extends AbstractAttributeService
      * @param Product $product
      * @param StoreInterface $store
      * @param $attributeCode
-     * @return |null
+     * @return bool|float|int|null|string
      */
     private function getAttributeFromCacheByAttributeCode(Product $product, StoreInterface $store, $attributeCode)
     {
@@ -113,7 +116,7 @@ class CachingAttributeService extends AbstractAttributeService
      *
      * @param Product $product
      * @param StoreInterface $store
-     * @param $attributeCode
+     * @param string $attributeCode
      * @return bool
      */
     private function isAttributeCached(Product $product, StoreInterface $store, $attributeCode): bool
