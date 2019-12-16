@@ -108,7 +108,6 @@ class Builder
 
     /**
      * Builder constructor.
-     *
      * @param NostoHelperData $nostoHelperData
      * @param NostoPriceHelper $priceHelper
      * @param CategoryServiceInterface $nostoCategoryService
@@ -124,6 +123,7 @@ class Builder
      * @param NostoVariationHelper $nostoVariationHelper
      * @param NostoRating $nostoRatingHelper
      * @param StoreManagerInterface $storeManager
+     * @param AttributeServiceInterface $attributeService
      */
     public function __construct(
         NostoHelperData $nostoHelperData,
