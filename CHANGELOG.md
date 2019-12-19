@@ -23,6 +23,12 @@ All notable changes to this project will be documented in this file. This projec
 * Cleanup the change log database tables after indexer run
 * Prevent full reindex on `setup:upgrade`
 
+### 3.10.3
+* Fix an issue where product url contains the category breadcrumbs if shortest url is not first entry in database table
+
+### 3.10.2
+* Fix an issue where the indexer page size was not set properly (Credit goes to `Deepak Upadhyay` (https://github.com/dupadhyay3))
+
 ### 3.10.1
 * Fix an issue with sending order confirmations via API when customer details could not be resolved
 
