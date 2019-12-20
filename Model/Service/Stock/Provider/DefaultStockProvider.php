@@ -1,4 +1,4 @@
-<?php /** @noinspection PhpUnused */
+<?php
 
 /**
  * Copyright (c) 2019, Nosto Solutions Ltd
@@ -37,30 +37,34 @@
 
 namespace Nosto\Tagging\Model\Service\Stock\Provider;
 
+use Magento\Catalog\Model\Product;
+use Magento\CatalogInventory\Api\Data\StockItemInterface;
+use Magento\CatalogInventory\Api\Data\StockStatusInterface;
+use Magento\Store\Model\Website;
+
 class DefaultStockProvider implements StockProviderInterface
 {
     private $stockRegistryProvider;
 
+    /**
+     * DefaultStockProvider constructor.
+     * @param StockRegistryProvider $stockRegistryProvider
+     */
     public function __construct(StockRegistryProvider $stockRegistryProvider)
     {
         $this->stockRegistryProvider = $stockRegistryProvider;
     }
 
     /**
-     * @inheritDoc
+     * Returns stock item from the default source
+     *
+     * @param Product $product
+     * @return StockItemInterface
      */
-    public function getStockStatuses(array $ids)
+    private function getStockItem(Product $product)
     {
-        return $this->stockRegistryProvider->getStockStatuses($ids)->getItems();
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getStockStatus($id)
-    {
-        return $this->stockRegistryProvider->getStockStatus(
-            $id,
+        return $this->stockRegistryProvider->getStockItem(
+            $product->getId(),
             StockRegistryProvider::DEFAULT_STOCK_SCOPE
         );
     }
@@ -68,8 +72,49 @@ class DefaultStockProvider implements StockProviderInterface
     /**
      * @inheritDoc
      */
-    public function getStockItem($id, $websiteId)
+    public function getAvailableQuantity(// @codingStandardsIgnoreLine
+        Product $product,
+        Website $website
+    ) {
+        return (int)$this->getStockItem($product)->getQty();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function isInStock(// @codingStandardsIgnoreLine
+        Product $product,
+        Website $website
+    ) {
+        return (bool)$this->getStockItem($product)->getIsInStock();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getQuantitiesByIds(array $productIds, Website $website)
     {
-        return $this->stockRegistryProvider->getStockItem($id, $websiteId);
+        $quantities = [];
+        $stockItems = $this->getStockStatuses($productIds, $website);
+        /* @var Product $product */
+        foreach ($stockItems as $stockItem) {
+            $quantities[$stockItem->getProductId()] = $stockItem->getQty();
+        }
+        return $quantities;
+    }
+
+    /**
+     * @param array $ids
+     * @return StockStatusInterface[]
+     */
+    private function getStockStatuses(// @codingStandardsIgnoreLine
+        array $ids,
+        /** @noinspection PhpUnusedParameterInspection */
+        Website $website
+    ): array {
+        return $this->stockRegistryProvider->getStockStatuses(
+            $ids,
+            StockRegistryProvider::DEFAULT_STOCK_SCOPE
+        )->getItems();
     }
 }
