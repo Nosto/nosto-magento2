@@ -1,8 +1,5 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
-### 3.10.3
-* Fix an issue where product url contains the category breadcrumbs if shortest url is not first entry in database table
-
 ### 3.10.2
 * Fix an issue where the indexer page size was not set properly (Credit goes to `Deepak Upadhyay` (https://github.com/dupadhyay3))
 
