@@ -93,7 +93,7 @@ class Builder extends DataObject
             UrlRewrite::STORE_ID => $store->getId(),
         ];
         $productRequestPath = $product->getData('request_path');
-        if ($productRequestPath !== null) {
+        if (!empty($productRequestPath)) {
             $filterData[UrlRewrite::REQUEST_PATH] = $productRequestPath;
         }
         $rewrite = $this->urlFinder->findOneByData($filterData);
