@@ -38,8 +38,8 @@ namespace Nosto\Tagging\Model\Order\Buyer;
 
 use Magento\Sales\Api\Data\OrderAddressInterface;
 use Magento\Sales\Model\Order;
-use Nosto\Object\AbstractPerson;
-use Nosto\Object\Order\Buyer;
+use Nosto\Model\AbstractPerson;
+use Nosto\Model\Order\Buyer;
 use Nosto\Tagging\Model\Person\Builder as PersonBuilder;
 
 /**

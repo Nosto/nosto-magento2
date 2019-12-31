@@ -41,7 +41,7 @@ use Magento\Checkout\Helper\Cart as CartHelper;
 use Magento\Customer\CustomerData\SectionSourceInterface;
 use Magento\Framework\Stdlib\CookieManagerInterface;
 use Magento\Quote\Model\Quote;
-use Nosto\Object\Cart\LineItem;
+use Nosto\Model\Cart\LineItem;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Cart\Builder as NostoCartBuilder;

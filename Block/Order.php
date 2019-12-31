@@ -92,7 +92,7 @@ class Order extends Success
     /**
      * Returns the Nosto order meta-data model.
      *
-     * @return \Nosto\Object\Order\Order the order meta data model.
+     * @return \Nosto\Model\Order\Order the order meta data model.
      */
     public function getAbstractObject()
     {

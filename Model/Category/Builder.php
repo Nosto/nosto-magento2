@@ -40,7 +40,7 @@ use Exception;
 use Magento\Catalog\Model\Category;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Store\Model\Store;
-use Nosto\Object\Category as NostoCategory;
+use Nosto\Model\Category as NostoCategory;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Service\Product\Category\CategoryServiceInterface as NostoCategoryService;
 

@@ -39,7 +39,7 @@ namespace Nosto\Tagging\Model\User;
 use Exception;
 use Magento\Backend\Model\Auth\Session;
 use Magento\Framework\Event\ManagerInterface;
-use Nosto\Object\User;
+use Nosto\Model\User;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 
 class Builder

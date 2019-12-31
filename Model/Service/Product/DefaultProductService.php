@@ -43,7 +43,7 @@ use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\Store;
 use Nosto\Exception\FilteredProductException;
 use Nosto\Exception\NonBuildableProductException;
-use Nosto\Object\Product\Product as NostoProduct;
+use Nosto\Model\Product\Product as NostoProduct;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
 

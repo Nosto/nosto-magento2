@@ -41,7 +41,7 @@ use Magento\Framework\Event\ManagerInterface;
 use Magento\Sales\Model\Order;
 use Magento\Sales\Model\Order\Payment;
 use Nosto\NostoException;
-use Nosto\Object\Order\GraphQL\OrderStatus as NostoOrderStatus;
+use Nosto\Model\Order\GraphQL\OrderStatus as NostoOrderStatus;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 
 class Builder

@@ -39,7 +39,7 @@ namespace Nosto\Tagging\Model\Meta\Account\Billing;
 use Exception;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Store\Model\Store;
-use Nosto\Object\Signup\Billing;
+use Nosto\Model\Signup\Billing;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 
 class Builder
