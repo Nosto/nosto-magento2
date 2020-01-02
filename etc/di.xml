@@ -83,6 +83,11 @@
             </argument>
         </arguments>
     </type>
+    <type name="Nosto\Tagging\Console\Command\NostoRebuildInvalidProductData">
+        <arguments>
+            <argument name="productDataCron" xsi:type="object">Nosto\Tagging\Cron\ProductDataCron\Proxy</argument>
+        </arguments>
+    </type>
     <type name="Magento\Framework\Console\CommandList">
         <arguments>
             <argument name="commands" xsi:type="array">
@@ -94,6 +99,9 @@
                 </item>
                 <item name="nosto_generate_customer_reference_command" xsi:type="object">
                     Nosto\Tagging\Console\Command\NostoGenerateCustomerReferenceCommand
+                </item>
+                <item name="nosto_rebuild_invalid_product_data" xsi:type="object">
+                    Nosto\Tagging\Console\Command\NostoRebuildInvalidProductData
                 </item>
             </argument>
         </arguments>
@@ -166,7 +174,7 @@
     <type name="Nosto\Tagging\Model\Product\CollectionBuilder">
         <arguments>
             <argument name="productService" xsi:type="object">
-                Nosto\Tagging\Model\Service\Product\CachingProductService
+                Nosto\Tagging\Model\Service\Product\DefaultProductService
             </argument>
         </arguments>
     </type>
@@ -208,6 +216,23 @@
         <arguments>
             <argument name="intervalHours" xsi:type="number">4</argument>
             <argument name="productLimit" xsi:type="number">1000</argument>
+        </arguments>
+    </type>
+    <type name="Nosto\Tagging\Cron\ProductDataCron">
+        <arguments>
+            <argument name="nostoAccountHelper" xsi:type="object">
+                Nosto\Tagging\Helper\Account\Proxy
+            </argument>
+            <argument name="nostoDataHelper" xsi:type="object">
+                Nosto\Tagging\Helper\Data\Proxy
+            </argument>
+            <argument name="cacheRepository" xsi:type="object">
+                Nosto\Tagging\Model\Product\Cache\CacheRepository\Proxy
+            </argument>
+            <argument name="cacheService" xsi:type="object">
+                Nosto\Tagging\Model\Service\Cache\CacheService\Proxy
+            </argument>
+            <argument name="batchSize" xsi:type="number">1000</argument>
         </arguments>
     </type>
     <type name="Nosto\Tagging\Model\Service\Sync\Upsert\AsyncBulkPublisher">

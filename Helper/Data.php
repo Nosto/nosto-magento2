@@ -145,6 +145,11 @@ class Data extends AbstractHelper
     const XML_PATH_TRACK_MULTI_CHANNEL_ORDERS = 'nosto/flags/track_multi_channel_orders';
 
     /**
+     * Path to the configuration object that stores the product data build configuration (cron / indexer)
+     */
+    const XML_PATH_PRODUCT_DATA_BUILD_IN_CRON = 'nosto/flags/product_data_build_in_cron';
+
+    /**
      * Path to the configuration object for pricing variations
      */
     const XML_PATH_PRICING_VARIATION = 'nosto/multicurrency/pricing_variation';
@@ -420,6 +425,17 @@ class Data extends AbstractHelper
     public function isMultiChannelOrderTrackingEnabled(StoreInterface $store = null)
     {
         return (bool)$this->getStoreConfig(self::XML_PATH_TRACK_MULTI_CHANNEL_ORDERS, $store);
+    }
+
+    /**
+     * Returns if product data should be built in cron
+     *
+     * @param StoreInterface|null $store
+     * @return bool
+     */
+    public function isProductDataBuildInCronEnabled(StoreInterface $store = null)
+    {
+        return (bool)$this->getStoreConfig(self::XML_PATH_PRODUCT_DATA_BUILD_IN_CRON, $store);
     }
 
     /**

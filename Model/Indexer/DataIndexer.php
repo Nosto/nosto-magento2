@@ -42,6 +42,7 @@ use Magento\Store\Model\App\Emulation;
 use Magento\Store\Model\Store;
 use Nosto\Exception\MemoryOutOfBoundsException;
 use Nosto\NostoException;
+use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Indexer\Dimensions\Data\ModeSwitcher as DataModeSwitcher;
@@ -64,6 +65,9 @@ class DataIndexer extends AbstractIndexer
     /** @var DataModeSwitcher */
     private $modeSwitcher;
 
+    /** @var NostoHelperData */
+    private $nostoHelperData;
+
     /**
      * Data constructor.
      * @param CacheService $nostoCacheService
@@ -75,6 +79,7 @@ class DataIndexer extends AbstractIndexer
      * @param ProcessManager $processManager
      * @param InputInterface $input
      * @param IndexerStatusServiceInterface $indexerStatusService
+     * @param NostoHelperData $onostoHelperData
      */
     public function __construct(
         CacheService $nostoCacheService,
@@ -85,10 +90,12 @@ class DataIndexer extends AbstractIndexer
         Emulation $storeEmulation,
         ProcessManager $processManager,
         InputInterface $input,
-        IndexerStatusServiceInterface $indexerStatusService
+        IndexerStatusServiceInterface $indexerStatusService,
+        NostoHelperData $onostoHelperData
     ) {
         $this->nostoCacheService = $nostoCacheService;
         $this->modeSwitcher = $dataModeSwitcher;
+        $this->nostoHelperData = $onostoHelperData;
         parent::__construct(
             $nostoHelperScope,
             $logger,
@@ -121,6 +128,15 @@ class DataIndexer extends AbstractIndexer
      */
     public function doIndex(Store $store, array $ids = [])
     {
+        if ($this->nostoHelperData->isProductDataBuildInCronEnabled($store)) {
+            $this->nostoLogger->debug(
+                sprintf(
+                    'Product data build is defined to be ran in cron for store %s',
+                    $store->getCode()
+                )
+            );
+            return;
+        }
         try {
             $this->nostoCacheService->generateProductsInStore($store, $ids);
         } catch (MemoryOutOfBoundsException $e) {
