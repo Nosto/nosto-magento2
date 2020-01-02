@@ -33,62 +33,37 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
+namespace Nosto\Tagging\Model\Service\Product\Attribute;
 
-namespace Nosto\Tagging\Model\Config\Source;
+use Magento\Catalog\Model\Product;
+use Magento\Store\Api\Data\StoreInterface;
 
-use Magento\Catalog\Model\ResourceModel\Eav\Attribute;
-use Magento\Catalog\Model\ResourceModel\Product\Attribute\Collection;
-use Magento\Framework\Data\OptionSourceInterface;
-use Nosto\Tagging\Model\Service\Product\Attribute\AttributeProviderInterface;
-
-/**
- * Abstract option array class to generate a list of selectable options that allows the merchant to
- * choose an attribute for for the specified tagging fields requirements.
- *
- * @package Nosto\Tagging\Model\Config\Source
- */
-abstract class Selector implements OptionSourceInterface
+interface AttributeServiceInterface
 {
-    /** @var AttributeProviderInterface */
-    private $attributeProvider;
-
     /**
-     * Selector constructor.
-     * @param AttributeProviderInterface $attributeProvider
-     */
-    public function __construct(
-        AttributeProviderInterface $attributeProvider
-    ) {
-        $this->attributeProvider = $attributeProvider;
-    }
-
-    /**
-     * Returns all available product attributes
+     * Returns that attributes to be used in Nosto product tags.
      *
-     * @return array
+     * @param Product $product
+     * @param StoreInterface $store
+     * @return array ['attributeCode1' => 'value1', 'attributeCode2' => 'value2', ...]
      */
-    public function toOptionArray()
-    {
-        $collection = $this->attributeProvider->getSelectableAttributesForNosto();
-        if ($collection === null) {
-            return [];
-        }
-        $this->filterCollection($collection);
+    public function getAttributesForTags(Product $product, StoreInterface $store): array;
 
-        $options = $this->isNullable() ? [['value' => 0, 'label' => 'None']] : [];
+    /**
+     * Returns the attributes to be used in custom fields.
+     *
+     * @param Product $product
+     * @param StoreInterface $store
+     * @return array ['attributeCode1' => 'value1', 'attributeCode2' => 'value2', ...]
+     */
+    public function getAttributesForCustomFields(Product $product, StoreInterface $store): array;
 
-        /** @var Attribute $attribute */
-        foreach ($collection->load() as $attribute) {
-            $options[] = [
-                'value' => $attribute->getAttributeCode(),
-                'label' => $attribute->getFrontend()->getLabel(),
-            ];
-        }
-
-        return $options;
-    }
-
-    abstract public function filterCollection(Collection $collection);
-
-    abstract public function isNullable();
+    /**
+     * Resolves "textual" product attribute value by attribute code.
+     *
+     * @param Product $product
+     * @param string $attributeCode
+     * @return bool|float|int|null|string
+     */
+    public function getAttributeValueByAttributeCode(Product $product, $attributeCode);
 }

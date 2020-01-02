@@ -43,10 +43,6 @@ use Nosto\Tagging\Logger\Logger;
 
 class CachingCategoryService implements CategoryServiceInterface
 {
-
-    /** @var Logger */
-    private $nostoLogger;
-
     /**
      * @var CategoryServiceInterface
      */
@@ -59,14 +55,11 @@ class CachingCategoryService implements CategoryServiceInterface
 
     /**
      * Index constructor.
-     * @param Logger $nostoLogger
      * @param CategoryServiceInterface $categoryService
      */
     public function __construct(
-        Logger $nostoLogger,
         CategoryServiceInterface $categoryService
     ) {
-        $this->nostoLogger = $nostoLogger;
         $this->categoryService = $categoryService;
     }
 

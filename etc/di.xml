@@ -39,6 +39,8 @@
     <preference for="Magento\Framework\Stdlib\CookieManagerInterface" type="Magento\Framework\Stdlib\Cookie\PhpCookieManager"/>
     <preference for="Nosto\Tagging\Api\Data\ProductQueueSearchResultsInterface" type="Nosto\Tagging\Model\Product\QueueSearchResults"/>
     <preference for="Nosto\Tagging\Model\Service\Product\Category\CategoryServiceInterface" type="Nosto\Tagging\Model\Service\Product\Category\CachingCategoryService"/>
+    <preference for="Nosto\Tagging\Model\Service\Product\Attribute\AttributeServiceInterface" type="Nosto\Tagging\Model\Service\Product\Attribute\CachingAttributeService"/>
+    <preference for="Nosto\Tagging\Model\Service\Product\Attribute\AttributeProviderInterface" type="Nosto\Tagging\Model\Service\Product\Attribute\DefaultAttributeProvider"/>
     <preference for="Nosto\Tagging\Model\Service\Product\ProductServiceInterface" type="Nosto\Tagging\Model\Service\Product\DefaultProductService"/>
     <preference for="Nosto\Tagging\Model\Service\Stock\Provider\StockProviderInterface" type="Nosto\Tagging\Model\Service\Stock\Provider\CachingStockProvider"/>
     <preference for="Nosto\Tagging\Model\Service\Product\ProductSerializerInterface" type="Nosto\Tagging\Model\Service\Product\DefaultProductSerializer"/>
@@ -108,6 +110,14 @@
     <type name="Nosto\Tagging\Helper\Customer">
         <arguments>
             <argument name="customerSession" xsi:type="object">Magento\Customer\Model\Session\Proxy</argument>
+        </arguments>
+    </type>
+    <type name="Nosto\Tagging\Model\Service\Product\Attribute\CachingAttributeService">
+        <arguments>
+            <argument name="attributeService" xsi:type="object">
+                Nosto\Tagging\Model\Service\Product\Attribute\DefaultAttributeService
+            </argument>
+            <argument name="maxCachedProducts" xsi:type="number">100</argument>
         </arguments>
     </type>
     <type name="Nosto\Tagging\Model\Service\Stock\Provider\CachingStockProvider">

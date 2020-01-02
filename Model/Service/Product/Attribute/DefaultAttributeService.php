@@ -34,61 +34,50 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Config\Source;
+namespace Nosto\Tagging\Model\Service\Product\Attribute;
 
-use Magento\Catalog\Model\ResourceModel\Eav\Attribute;
-use Magento\Catalog\Model\ResourceModel\Product\Attribute\Collection;
-use Magento\Framework\Data\OptionSourceInterface;
-use Nosto\Tagging\Model\Service\Product\Attribute\AttributeProviderInterface;
+use Exception;
+use Magento\Catalog\Model\Product;
+use Magento\Eav\Model\Entity\Attribute\AbstractAttribute;
+use Magento\Framework\Phrase;
+use Nosto\Helper\ArrayHelper;
 
-/**
- * Abstract option array class to generate a list of selectable options that allows the merchant to
- * choose an attribute for for the specified tagging fields requirements.
- *
- * @package Nosto\Tagging\Model\Config\Source
- */
-abstract class Selector implements OptionSourceInterface
+class DefaultAttributeService extends AbstractAttributeService
 {
-    /** @var AttributeProviderInterface */
-    private $attributeProvider;
-
     /**
-     * Selector constructor.
-     * @param AttributeProviderInterface $attributeProvider
+     * @inheritDoc
      */
-    public function __construct(
-        AttributeProviderInterface $attributeProvider
-    ) {
-        $this->attributeProvider = $attributeProvider;
-    }
-
-    /**
-     * Returns all available product attributes
-     *
-     * @return array
-     */
-    public function toOptionArray()
+    public function getAttributeValue(Product $product, AbstractAttribute $attribute)
     {
-        $collection = $this->attributeProvider->getSelectableAttributesForNosto();
-        if ($collection === null) {
-            return [];
+        $value = null;
+        try {
+            $abstractFrontend = $attribute->getFrontend();
+            $frontendValue = $abstractFrontend->getValue($product);
+            if (is_array($frontendValue) && !empty($frontendValue)
+                && ArrayHelper::onlyScalarValues($frontendValue)
+            ) {
+                $value = implode(',', $frontendValue);
+            } elseif (is_scalar($frontendValue)) {
+                $value = $frontendValue;
+            } elseif ($frontendValue instanceof Phrase) {
+                $value = (string)$frontendValue;
+            }
+        } catch (Exception $e) {
+            $this->getLogger()->exception($e);
         }
-        $this->filterCollection($collection);
-
-        $options = $this->isNullable() ? [['value' => 0, 'label' => 'None']] : [];
-
-        /** @var Attribute $attribute */
-        foreach ($collection->load() as $attribute) {
-            $options[] = [
-                'value' => $attribute->getAttributeCode(),
-                'label' => $attribute->getFrontend()->getLabel(),
-            ];
-        }
-
-        return $options;
+        return $value;
     }
 
-    abstract public function filterCollection(Collection $collection);
-
-    abstract public function isNullable();
+    /**
+     * @inheritDoc
+     */
+    public function getAttributeValueByAttributeCode(Product $product, $attributeCode)
+    {
+        $attributes = $product->getAttributes(); // This result is cached by Magento
+        if (isset($attributes[$attributeCode]) && $attributes[$attributeCode] instanceof AbstractAttribute) {
+            /** @var AbstractAttribute $attributes[$attributeCode] */
+            return $this->getAttributeValue($product, $attributes[$attributeCode]);
+        }
+        return null;
+    }
 }
