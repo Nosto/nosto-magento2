@@ -118,6 +118,14 @@ class ProductDataCron
             }
             $productCollection = $this->cacheRepository->getOutOfSyncInStore($store);
             $productCollection->setPageSize($this->batchSize);
+            $this->logger->info(
+                sprintf(
+                    'Starting to rebuild %d dirty products in a cron job with batch size %d for store %s',
+                    $productCollection->getSize(),
+                    $this->batchSize,
+                    $store->getCode()
+                )
+            );
             $iterator = new PagingIterator($productCollection);
             foreach ($iterator as $page) {
                 $ids = $page->toArray([Cache::ID])['items'];
@@ -131,6 +139,12 @@ class ProductDataCron
                     $this->logger->error($e->getMessage());
                 }
             }
+            $this->logger->info(
+                sprintf(
+                    'Finished rebuild for store %s',
+                    $store->getCode()
+                )
+            );
         }
         $this->logger->debug('Product data cron ran');
     }
