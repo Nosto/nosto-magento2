@@ -99,7 +99,6 @@ class NostoRebuildInvalidProductData extends Command
             $io->success('Nosto product data rebuild manually');
         } catch (\Exception $e) {
             $io->error(sprintf('An error occurred - message was %s', $e->getMessage()));
-            return;
         }
     }
 

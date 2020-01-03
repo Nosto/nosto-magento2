@@ -135,16 +135,16 @@ class DataIndexer extends AbstractIndexer
                     $store->getCode()
                 )
             );
-            return;
-        }
-        try {
-            $this->nostoCacheService->generateProductsInStore($store, $ids);
-        } catch (MemoryOutOfBoundsException $e) {
-            $this->nostoLogger->error($e->getMessage());
-        } catch (NostoException $e) {
-            $this->nostoLogger->error($e->getMessage());
-        } catch (LocalizedException $e) {
-            $this->nostoLogger->error($e->getMessage());
+        } else {
+            try {
+                $this->nostoCacheService->generateProductsInStore($store, $ids);
+            } catch (MemoryOutOfBoundsException $e) {
+                $this->nostoLogger->error($e->getMessage());
+            } catch (NostoException $e) {
+                $this->nostoLogger->error($e->getMessage());
+            } catch (LocalizedException $e) {
+                $this->nostoLogger->error($e->getMessage());
+            }
         }
     }
 }
