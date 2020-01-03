@@ -174,7 +174,7 @@
     <type name="Nosto\Tagging\Model\Product\CollectionBuilder">
         <arguments>
             <argument name="productService" xsi:type="object">
-                Nosto\Tagging\Model\Service\Product\DefaultProductService
+                Nosto\Tagging\Model\Service\Product\CachingProductService
             </argument>
         </arguments>
     </type>
