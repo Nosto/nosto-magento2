@@ -26,6 +26,9 @@ All notable changes to this project will be documented in this file. This projec
 * Cleanup the change log database tables after indexer run
 * Prevent full reindex on `setup:upgrade`
 
+### 3.10.4
+* Bump SDK version to 4.0.10 to fix OrderStatus Handlers throwing exceptions
+
 ### 3.10.3
 * Fix an issue where product url contains the category breadcrumbs if shortest url is not first entry in database table
 
