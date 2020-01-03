@@ -124,6 +124,18 @@ class CacheRepository implements ProductCacheRepositoryInterface
     }
 
     /**
+     * @param Store $store
+     * @return CacheCollection
+     */
+    public function getOutOfSyncInStore(Store $store)
+    {
+        /* @var CacheCollection $collection */
+        return $this->cacheCollectionFactory->create()
+            ->addOutOfSyncFilter()
+            ->addStoreFilter($store);
+    }
+
+    /**
      * @inheritdoc
      */
     public function getTotalDirty(Store $store)

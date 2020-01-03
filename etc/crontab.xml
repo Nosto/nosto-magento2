@@ -12,4 +12,9 @@
             <schedule>0 * * * *</schedule>
         </job>
     </group>
+    <group id="nosto_rebuild_product_data_group">
+        <job name="nosto_rebuild_product_data" instance="Nosto\Tagging\Cron\ProductDataCron" method="execute">
+            <schedule>*/5 * * * *</schedule>
+        </job>
+    </group>
 </config>
