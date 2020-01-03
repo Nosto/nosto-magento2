@@ -2,6 +2,8 @@ All notable changes to this project will be documented in this file. This projec
 
 ### 4.0.0-rc6 (pre-release)
 * Introduce caching attribute service for looking up the product attribute values
+* Introduce possibility to run the product data generation in a cron job
+* Amend fixes from [3.10.2](###3.10.2), [3.10.3](###3.10.3) and [3.10.4](###3.10.4) 
 
 ### 4.0.0-rc5 (pre-release)
 * Amend fixes from [3.10.1](###3.10.1) (null check for customer)
