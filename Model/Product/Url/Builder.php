@@ -91,8 +91,11 @@ class Builder extends DataObject
             UrlRewrite::ENTITY_ID => $product->getId(),
             UrlRewrite::ENTITY_TYPE => ProductUrlRewriteGenerator::ENTITY_TYPE,
             UrlRewrite::STORE_ID => $store->getId(),
-            UrlRewrite::REQUEST_PATH => $product->getData('request_path')
         ];
+        $productRequestPath = $product->getData('request_path');
+        if (!empty($productRequestPath)) {
+            $filterData[UrlRewrite::REQUEST_PATH] = $productRequestPath;
+        }
         $rewrite = $this->urlFinder->findOneByData($filterData);
         if ($rewrite) {
             $routeParams['_direct'] = $rewrite->getRequestPath();
