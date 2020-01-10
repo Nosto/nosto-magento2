@@ -1,7 +1,7 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
 
-### 4.0.0-rc7 (not released)
+### 4.0.0-rc7 (pre-release)
 * Amend fixes from [3.10.5](###3.10.5)
 
 ### 4.0.0-rc6 (pre-release)
