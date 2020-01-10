@@ -46,8 +46,14 @@ use Zend_Validate_Exception;
 
 abstract class CoreData
 {
+
+    /** @var CustomerSetupFactory */
     private $customerSetupFactory;
+
+    /** @var AttributeSetFactory */
     private $attributeSetFactory;
+
+    private $customerReferenceForms = ['adminhtml_customer'];
 
     /**
      * CoreData constructor.
@@ -69,15 +75,15 @@ abstract class CoreData
      */
     public function addCustomerReference(ModuleDataSetupInterface $setup)
     {
-        $customerSetup = $this->customerSetupFactory->create(['setup' => $setup]);
+        $customerEavSetup = $this->customerSetupFactory->create(['setup' => $setup]);
 
-        $customerEntity = $customerSetup->getEavConfig()->getEntityType(Customer::ENTITY);
+        $customerEntity = $customerEavSetup->getEavConfig()->getEntityType(Customer::ENTITY);
         $attributeSetId = (int)$customerEntity->getDefaultAttributeSetId();
 
         $attributeSet = $this->attributeSetFactory->create();
         $attributeGroupId = $attributeSet->getDefaultGroupId($attributeSetId);
 
-        $customerSetup->addAttribute(
+        $customerEavSetup->addAttribute(
             Customer::ENTITY,
             NostoHelperData::NOSTO_CUSTOMER_REFERENCE_ATTRIBUTE_NAME,
             [
@@ -94,7 +100,7 @@ abstract class CoreData
             ]
         );
 
-        $attribute = $customerSetup->getEavConfig()->getAttribute(
+        $attribute = $customerEavSetup->getEavConfig()->getAttribute(
             Customer::ENTITY,
             NostoHelperData::NOSTO_CUSTOMER_REFERENCE_ATTRIBUTE_NAME
         );
@@ -103,12 +109,33 @@ abstract class CoreData
             [
                 'attribute_set_id' => $attributeSetId,
                 'attribute_group_id' => $attributeGroupId,
-                'used_in_forms' => ['adminhtml_customer', 'customer_account_edit'],
+                'used_in_forms' => $this->customerReferenceForms,
             ]
         );
 
         /** @noinspection PhpUnhandledExceptionInspection */
         /** @noinspection PhpDeprecationInspection */
+        $attribute->save();
+    }
+
+    /**
+     * Sets the attribute Nosto customer reference to be only editable in admin
+     *
+     * @param ModuleDataSetupInterface $setup
+     * @throws LocalizedException
+     */
+    public function alterCustomerReferenceNonEditable(ModuleDataSetupInterface $setup)
+    {
+        $customerSetup = $this->customerSetupFactory->create(['setup' => $setup]);
+        $attribute = $customerSetup->getEavConfig()->getAttribute(
+            Customer::ENTITY,
+            NostoHelperData::NOSTO_CUSTOMER_REFERENCE_ATTRIBUTE_NAME
+        );
+        $attribute->addData(
+            [
+                'used_in_forms' => $this->customerReferenceForms
+            ]
+        );
         $attribute->save();
     }
 }

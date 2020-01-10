@@ -92,9 +92,11 @@ class UpgradeData extends CoreData implements UpgradeDataInterface
         if (version_compare($fromVersion, '3.1.0', '<=')) {
             $this->insertStoreDomain();
         }
-
         if (version_compare($fromVersion, '3.6.0', '<=')) {
             $this->addCustomerReference($setup);
+        }
+        if (version_compare($fromVersion, '3.10.4', '<=')) {
+            $this->alterCustomerReferenceNonEditable($setup);
         }
     }
 

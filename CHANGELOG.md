@@ -1,5 +1,9 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+
+### 4.0.0-rc7 (not released)
+* Amend fixes from [3.10.5](###3.10.5)
+
 ### 4.0.0-rc6 (pre-release)
 * Introduce caching attribute service for looking up the product attribute values
 * Introduce possibility to run the product data generation in a cron job
@@ -27,6 +31,9 @@ All notable changes to this project will be documented in this file. This projec
 * Add support for indexing in parallel mode
 * Cleanup the change log database tables after indexer run
 * Prevent full reindex on `setup:upgrade`
+
+### 3.10.5
+* Hide Nosto customer reference for registered customers in account edit view
 
 ### 3.10.4
 * Bump SDK version to 4.0.10 to fix OrderStatus Handlers throwing exceptions
