@@ -38,14 +38,14 @@ namespace Nosto\Tagging\Setup;
 
 use Magento\Customer\Setup\CustomerSetupFactory;
 use Magento\Eav\Model\Entity\Attribute\SetFactory as AttributeSetFactory;
+use Magento\Framework\App\Config\Storage\WriterInterface;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Setup\ModuleContextInterface;
 use Magento\Framework\Setup\ModuleDataSetupInterface;
 use Magento\Framework\Setup\UpgradeDataInterface;
+use Magento\Store\Model\ScopeInterface;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Url as NostoHelperUrl;
-use Magento\Framework\App\Config\Storage\WriterInterface;
-use Magento\Store\Model\ScopeInterface;
-use Magento\Framework\Exception\LocalizedException;
 
 class UpgradeData extends CoreData implements UpgradeDataInterface
 {
@@ -91,9 +91,11 @@ class UpgradeData extends CoreData implements UpgradeDataInterface
         if (version_compare($fromVersion, '3.1.0', '<=')) {
             $this->insertStoreDomain();
         }
-
         if (version_compare($fromVersion, '3.6.0', '<=')) {
             $this->addCustomerReference($setup);
+        }
+        if (version_compare($fromVersion, '3.10.4', '<=')) {
+            $this->alterCustomerReferenceNonEditable($setup);
         }
     }
 
