@@ -56,7 +56,6 @@ use Nosto\Tagging\Model\Order\Builder as NostoOrderBuilder;
 use Nosto\Tagging\Model\Order\Status\Builder as NostoOrderStatusBuilder;
 use Nosto\Object\Order\Order as NostoOrder;
 use Nosto\Tagging\Helper\Url as NostoHelperUrl;
-use Nosto\Util\Time as NostoTimeUtil;
 use Nosto\Types\Signup\AccountInterface;
 use Magento\Customer\Api\CustomerRepositoryInterface as MagentoCustomerRepository;
 
