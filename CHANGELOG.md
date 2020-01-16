@@ -1,5 +1,11 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 3.10.5
+* Hide Nosto customer reference for registered customers in account edit view
+
+### 3.10.4
+* Bump SDK version to 4.0.10 to fix OrderStatus Handlers throwing exceptions
+
 ### 3.10.3
 * Fix an issue where product url contains the category breadcrumbs if shortest url is not first entry in database table
 
