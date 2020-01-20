@@ -58,7 +58,6 @@ use Nosto\Tagging\Model\Indexer\InvalidateIndexer as InvalidateIndexer;
 use Nosto\Tagging\Model\Order\Builder as NostoOrderBuilder;
 use Nosto\Tagging\Model\Order\Status\Builder as NostoOrderStatusBuilder;
 use Nosto\Types\Signup\AccountInterface;
-use Nosto\Util\Time as NostoTimeUtil;
 
 /**
  * Class Save
@@ -149,12 +148,7 @@ class Save implements ObserverInterface
             );
             if ($nostoAccount !== null) {
                 //Check if order is new or updated
-                if ($order->getState() === Order::STATE_NEW &&
-                    NostoTimeUtil::isUpdatedEqualToCreated(
-                        $order->getCreatedAt(),
-                        $order->getUpdatedAt()
-                    )
-                ) {
+                if ($order->getState() === Order::STATE_NEW) {
                     $this->sendNewOrder($order, $nostoAccount, $store);
                 } else {
                     $this->sendOrderStatusUpdated($order, $nostoAccount);
