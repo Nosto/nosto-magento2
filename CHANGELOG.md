@@ -1,8 +1,8 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
-
 # not released
 * Remove logic for sending cart updates to Nosto from server side
+* Generate customer reference for all registered customers automatically during setup upgrade
 
 ### 4.0.0-rc7 (pre-release)
 * Amend fixes from [3.10.5](###3.10.5)
