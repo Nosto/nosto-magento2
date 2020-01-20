@@ -49,9 +49,12 @@ class InstallData extends CoreData implements InstallDataInterface
      * @param ModuleContextInterface $context
      * @throws LocalizedException
      * @throws Zend_Validate_Exception
+     * @throws \Magento\Framework\Exception\AlreadyExistsException
+     * @throws \Nosto\NostoException
      */
     public function install(ModuleDataSetupInterface $setup, ModuleContextInterface $context) // @codingStandardsIgnoreLine
     {
         $this->addCustomerReference($setup);
+        $this->populateCustomerReference();
     }
 }
