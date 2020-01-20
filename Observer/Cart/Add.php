@@ -172,23 +172,6 @@ class Add implements ObserverInterface
                 } else {
                     $this->logger->info('Headers sent already. Cannot set the cookie.');
                 }
-
-                if ($this->nostoHelperData->isSendAddToCartEventEnabled()) {
-                    //use the message way
-                    $quote = $quoteItem->getQuote();
-                    if ($quote instanceof Quote) {
-                        $nostoCart = $this->nostoCartBuilder->build(
-                            $quote,
-                            $store
-                        );
-                        $cartUpdate->setCart($nostoCart);
-                    } else {
-                        $this->logger->info('Cannot find quote from the event.');
-                    }
-
-                    $cartOperation = new CartOperation($nostoAccount);
-                    $cartOperation->updateCart($cartUpdate, $nostoCustomerId, $nostoAccount->getName());
-                }
             }
         } catch (Exception $e) {
             $this->logger->exception($e);

@@ -19,7 +19,6 @@
                 <inventory_tagging>0</inventory_tagging>
                 <product_updates>1</product_updates>
                 <low_stock_indication>0</low_stock_indication>
-                <send_add_to_cart_event>0</send_add_to_cart_event>
                 <send_customer_data>1</send_customer_data>
                 <indexer_memory>50</indexer_memory>
                 <tag_date_published>0</tag_date_published>
