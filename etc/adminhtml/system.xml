@@ -175,13 +175,6 @@
                     </comment>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
-                <field id="send_add_to_cart_event" translate="label comment" type="select" sortOrder="80"
-                       showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Real-time cart updates to Nosto</label>
-                    <comment><![CDATA[Set this to no if you don't want to send real-time cart updates to Nosto via API]]>
-                    </comment>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                </field>
                 <field id="send_customer_data" translate="label comment" type="select" sortOrder="90"
                        showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Send Customer Data To Nosto</label>
