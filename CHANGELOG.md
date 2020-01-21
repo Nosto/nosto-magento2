@@ -1,39 +1,21 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
-# not released
-* Remove logic for sending cart updates to Nosto from server side
-* Generate customer reference for all registered customers automatically during setup upgrade
-
-### 4.0.0-rc7 (pre-release)
-* Amend fixes from [3.10.5](###3.10.5)
-
-### 4.0.0-rc6 (pre-release)
-* Introduce caching attribute service for looking up the product attribute values
-* Introduce possibility to run the product data generation in a cron job
-* Amend fixes from [3.10.2](###3.10.2), [3.10.3](###3.10.3) and [3.10.4](###3.10.4) 
-
-### 4.0.0-rc5 (pre-release)
-* Amend fixes from [3.10.1](###3.10.1) (null check for customer)
-
-### 4.0.0-rc4 (pre-release)
-* Amend fixes from [3.10.0](###3.10.0) (SKU collection building speed)
-* Add a caching layer for storing already built category strings
-
-### 4.0.0-rc3 (pre-release)
-* Amend fixes from [3.8.8](###3.8.8) (Magento 2.3.3 compatibility)
-
-### 4.0.0-rc2 (pre-release)
-* Add null checks for product data before trying to unserialize the data
-* Check the memory consumption in indexers and exit gracefully if the process starts to run out of PHP memory limit
-* Improve the error handling in product data generation
-
-### 4.0.0-rc1 (pre-release)
+# 4.0.0
+**New features (performance improvements)**
 * Introduce cache for Nosto product data to speedup the product tagging added to the product pages
 * Introduce Nosto product data change detection to avoid redundant API calls to Nosto
 * Utilize bulk operations for product updates
 * Add support for indexing in parallel mode
-* Cleanup the change log database tables after indexer run
-* Prevent full reindex on `setup:upgrade`
+* Introduce caching for building product attribute values
+* Introduce caching layer for building categories
+
+**Bug fixes and improvements**
+* Generate customer reference for all registered customers automatically during setup upgrade
+* Cleanup the change log database table after indexer run
+* Prevent redundant full reindex on Nosto indexers when running `setup:upgrade`
+
+**Removed features / functionalities**
+* Remove logic for sending cart updates to Nosto from server side
 
 ### 3.10.5
 * Hide Nosto customer reference for registered customers in account edit view
