@@ -175,7 +175,7 @@ abstract class CoreData
                         NostoHelperData::NOSTO_CUSTOMER_REFERENCE_ATTRIBUTE_NAME,
                         CustomerUtil::generateCustomerReference($customer)
                     );
-                    $this->customerResource->save($customer);
+                    $this->customerResource->save($customer); // @codingStandardsIgnoreLine
                 }
             }
         }
