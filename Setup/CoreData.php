@@ -37,11 +37,16 @@
 namespace Nosto\Tagging\Setup;
 
 use Magento\Customer\Model\Customer;
+use Magento\Customer\Model\CustomerFactory;
+use Magento\Customer\Model\ResourceModel\Customer as CustomerResource;
+use Magento\Customer\Model\ResourceModel\Customer\CollectionFactory as CustomerCollectionFactory;
 use Magento\Customer\Setup\CustomerSetupFactory;
 use Magento\Eav\Model\Entity\Attribute\SetFactory as AttributeSetFactory;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Setup\ModuleDataSetupInterface;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
+use Nosto\Tagging\Util\Customer as CustomerUtil;
+use Nosto\Tagging\Util\PagingIterator;
 use Zend_Validate_Exception;
 
 abstract class CoreData
@@ -55,17 +60,29 @@ abstract class CoreData
 
     private $customerReferenceForms = ['adminhtml_customer'];
 
+    /** @var CustomerFactory */
+    private $customerCollectionFactory;
+
+    /** @var CustomerResource */
+    private $customerResource;
+
     /**
      * CoreData constructor.
      * @param CustomerSetupFactory $customerSetupFactory
      * @param AttributeSetFactory $attributeSetFactory
+     * @param CustomerCollectionFactory $customerCollectionFactory
+     * @param CustomerResource $customerResource
      */
     public function __construct(
         CustomerSetupFactory $customerSetupFactory,
-        AttributeSetFactory $attributeSetFactory
+        AttributeSetFactory $attributeSetFactory,
+        CustomerCollectionFactory $customerCollectionFactory,
+        CustomerResource $customerResource
     ) {
         $this->customerSetupFactory = $customerSetupFactory;
         $this->attributeSetFactory = $attributeSetFactory;
+        $this->customerCollectionFactory = $customerCollectionFactory;
+        $this->customerResource = $customerResource;
     }
 
     /**
@@ -137,5 +154,30 @@ abstract class CoreData
             ]
         );
         $attribute->save();
+    }
+
+    /**
+     * @throws LocalizedException
+     * @throws \Magento\Framework\Exception\AlreadyExistsException
+     * @throws \Nosto\NostoException
+     */
+    public function populateCustomerReference()
+    {
+        $customerCollection = $this->customerCollectionFactory->create()
+        ->addAttributeToSelect('*')
+        ->setPageSize(1000);
+        $iterator = new PagingIterator($customerCollection);
+        /* @var Customer $customer */
+        foreach ($iterator as $page) {
+            foreach ($page as $customer) {
+                if (!$customer->getCustomAttribute(NostoHelperData::NOSTO_CUSTOMER_REFERENCE_ATTRIBUTE_NAME)) {
+                    $customer->setData(
+                        NostoHelperData::NOSTO_CUSTOMER_REFERENCE_ATTRIBUTE_NAME,
+                        CustomerUtil::generateCustomerReference($customer)
+                    );
+                    $this->customerResource->save($customer); // @codingStandardsIgnoreLine
+                }
+            }
+        }
     }
 }

@@ -36,6 +36,8 @@
 
 namespace Nosto\Tagging\Setup;
 
+use Magento\Customer\Model\ResourceModel\Customer as CustomerResource;
+use Magento\Customer\Model\ResourceModel\Customer\CollectionFactory as CustomerCollectionFactory;
 use Magento\Customer\Setup\CustomerSetupFactory;
 use Magento\Eav\Model\Entity\Attribute\SetFactory as AttributeSetFactory;
 use Magento\Framework\App\Config\Storage\WriterInterface;
@@ -44,6 +46,7 @@ use Magento\Framework\Setup\ModuleContextInterface;
 use Magento\Framework\Setup\ModuleDataSetupInterface;
 use Magento\Framework\Setup\UpgradeDataInterface;
 use Magento\Store\Model\ScopeInterface;
+use Nosto\NostoException;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Url as NostoHelperUrl;
 use Zend_Validate_Exception;
@@ -66,18 +69,27 @@ class UpgradeData extends CoreData implements UpgradeDataInterface
      * @param WriterInterface $appConfig
      * @param CustomerSetupFactory $customerSetupFactory
      * @param AttributeSetFactory $attributeSetFactory
+     * @param CustomerCollectionFactory $customerCollectionFactory
+     * @param CustomerResource $customerResource
      */
     public function __construct(
         NostoHelperAccount $nostoHelperAccount,
         NostoHelperUrl $nostoHelperUrl,
         WriterInterface $appConfig,
         CustomerSetupFactory $customerSetupFactory,
-        AttributeSetFactory $attributeSetFactory
+        AttributeSetFactory $attributeSetFactory,
+        CustomerCollectionFactory $customerCollectionFactory,
+        CustomerResource $customerResource
     ) {
         $this->nostoHelperAccount = $nostoHelperAccount;
         $this->nostoHelperUrl = $nostoHelperUrl;
         $this->config = $appConfig;
-        parent::__construct($customerSetupFactory, $attributeSetFactory);
+        parent::__construct(
+            $customerSetupFactory,
+            $attributeSetFactory,
+            $customerCollectionFactory,
+            $customerResource
+        );
     }
 
     /**
@@ -85,6 +97,7 @@ class UpgradeData extends CoreData implements UpgradeDataInterface
      * @param ModuleContextInterface $context
      * @throws LocalizedException
      * @throws Zend_Validate_Exception
+     * @throws NostoException
      */
     public function upgrade(ModuleDataSetupInterface $setup, ModuleContextInterface $context) // @codingStandardsIgnoreLine
     {
@@ -97,6 +110,9 @@ class UpgradeData extends CoreData implements UpgradeDataInterface
         }
         if (version_compare($fromVersion, '3.10.4', '<=')) {
             $this->alterCustomerReferenceNonEditable($setup);
+        }
+        if (version_compare($fromVersion, '3.10.5', '<=')) {
+            $this->populateCustomerReference();
         }
     }
 
