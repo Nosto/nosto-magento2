@@ -1,4 +1,6 @@
 <?php
+/** @noinspection DuplicatedCode */
+
 /**
  * Copyright (c) 2019, Nosto Solutions Ltd
  * All rights reserved.
@@ -36,8 +38,8 @@
 
 namespace Nosto\Tagging\Model\Order\Item;
 
-use Nosto\Tagging\Model\Item\Configurable as ConfigurableItem;
 use Magento\Sales\Model\Order\Item;
+use Nosto\Tagging\Model\Item\Configurable as ConfigurableItem;
 
 class Configurable extends ConfigurableItem
 {

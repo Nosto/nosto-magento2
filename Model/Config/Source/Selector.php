@@ -36,13 +36,10 @@
 
 namespace Nosto\Tagging\Model\Config\Source;
 
-use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\ResourceModel\Eav\Attribute;
 use Magento\Catalog\Model\ResourceModel\Product\Attribute\Collection;
-use Magento\Catalog\Model\ResourceModel\Product\Attribute\CollectionFactory as AttributeCollectionFactory;
-use Magento\Eav\Model\Config;
-use Magento\Framework\Exception\LocalizedException;
-use Magento\Framework\Option\ArrayInterface;
+use Magento\Framework\Data\OptionSourceInterface;
+use Nosto\Tagging\Model\Service\Product\Attribute\AttributeProviderInterface;
 
 /**
  * Abstract option array class to generate a list of selectable options that allows the merchant to
@@ -50,55 +47,32 @@ use Magento\Framework\Option\ArrayInterface;
  *
  * @package Nosto\Tagging\Model\Config\Source
  */
-abstract class Selector implements ArrayInterface
+abstract class Selector implements OptionSourceInterface
 {
-    private $attributeCollectionFactory;
-    private $eavConfig;
+    /** @var AttributeProviderInterface */
+    private $attributeProvider;
 
     /**
-     * Image constructor.
-     * @param AttributeCollectionFactory $attributeCollectionFactory
-     * @param Config $eavConfig
+     * Selector constructor.
+     * @param AttributeProviderInterface $attributeProvider
      */
     public function __construct(
-        AttributeCollectionFactory $attributeCollectionFactory,
-        Config $eavConfig
+        AttributeProviderInterface $attributeProvider
     ) {
-        $this->attributeCollectionFactory = $attributeCollectionFactory;
-        $this->eavConfig = $eavConfig;
+        $this->attributeProvider = $attributeProvider;
     }
 
     /**
      * Returns all available product attributes
      *
      * @return array
-     * @throws LocalizedException
      */
     public function toOptionArray()
     {
-        $entity = $this->eavConfig->getEntityType(Product::ENTITY);
-        /** @var \Magento\Catalog\Model\ResourceModel\Product\Attribute\Collection $collection */
-        /** @noinspection PhpUndefinedMethodInspection */
-        $collection = $this->attributeCollectionFactory->create();
-        $collection->setEntityTypeFilter($entity->getId());
-        $collection->addFieldToFilter('attribute_code', [
-            'nin' => [
-                'name',
-                'category_ids',
-                'has_options',
-                'image_label',
-                'old_id',
-                'url_key',
-                'url_path',
-                'small_image_label',
-                'thumbnail_label',
-                'required_options',
-                'tier_price',
-                'meta_title',
-                'media_gallery',
-                'gallery'
-            ]
-        ]);
+        $collection = $this->attributeProvider->getSelectableAttributesForNosto();
+        if ($collection === null) {
+            return [];
+        }
         $this->filterCollection($collection);
 
         $options = $this->isNullable() ? [['value' => 0, 'label' => 'None']] : [];

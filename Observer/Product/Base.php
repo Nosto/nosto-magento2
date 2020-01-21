@@ -36,65 +36,70 @@
 
 namespace Nosto\Tagging\Observer\Product;
 
+use Exception;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\ProductRepository;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
+use Magento\Framework\Indexer\IndexerInterface;
 use Magento\Framework\Indexer\IndexerRegistry;
 use Magento\Framework\Module\Manager as ModuleManager;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
-use Nosto\Tagging\Model\Indexer\Product\Indexer;
-use Nosto\Tagging\Model\Product\Service as NostoProductService;
+use Nosto\Tagging\Model\Indexer\InvalidateIndexer as InvalidateIndexer;
 
 abstract class Base implements ObserverInterface
 {
+    /** @var ModuleManager $moduleManager */
     public $moduleManager;
-    public $productService;
+
+    /** @var ProductRepository $productRepository */
     public $productRepository;
+
+    /** @var NostoHelperData $dataHelper */
     public $dataHelper;
+
+    /** @var IndexerInterface  */
     public $indexer;
 
+    /** @var InvalidateIndexer $invalidateIndex */
+    public $indexerInvalidate;
+
     /**
-     * Constructor.
-     *
+     * Base constructor.
      * @param ModuleManager $moduleManager
-     * @param NostoProductService $productService
      * @param ProductRepository $productRepository
      * @param NostoHelperData $dataHelper
      * @param IndexerRegistry $indexerRegistry
+     * @param InvalidateIndexer $indexerInvalidate
      */
     public function __construct(
         ModuleManager $moduleManager,
-        NostoProductService $productService,
         ProductRepository $productRepository,
         NostoHelperData $dataHelper,
-        IndexerRegistry $indexerRegistry
+        IndexerRegistry $indexerRegistry,
+        InvalidateIndexer $indexerInvalidate
     ) {
-        $this->productService = $productService;
         $this->moduleManager = $moduleManager;
         $this->productRepository = $productRepository;
         $this->dataHelper = $dataHelper;
-        $this->indexer = $indexerRegistry->get(Indexer::INDEXER_ID);
+        $this->indexer = $indexerRegistry->get(InvalidateIndexer::INDEXER_ID);
+        $this->indexerInvalidate = $indexerInvalidate;
     }
 
     /**
-     * Event handler for the "catalog_product_save_after" and  event.
-     * Sends a product update API call to Nosto.
-     *
      * @param Observer $observer
-     * @return void
-     * @throws \Exception
+     * @throws Exception
      */
     public function execute(Observer $observer)
     {
         if ($this->moduleManager->isEnabled(NostoHelperData::MODULE_NAME)
             && !$this->indexer->isScheduled()
         ) {
-            /* @var \Magento\Catalog\Model\Product $product */
+            /* @var Product $product */
             $product = $this->extractProduct($observer);
 
             if ($product instanceof Product && $product->getId()) {
-                $this->productService->update([$product]);
+                $this->indexerInvalidate->executeRow($product->getId());
             }
         }
     }

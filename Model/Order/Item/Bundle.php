@@ -36,8 +36,8 @@
 
 namespace Nosto\Tagging\Model\Order\Item;
 
-use Nosto\Tagging\Model\Item\Bundle as BundleItem;
 use Magento\Sales\Model\Order\Item;
+use Nosto\Tagging\Model\Item\Bundle as BundleItem;
 
 class Bundle extends BundleItem
 {

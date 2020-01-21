@@ -135,4 +135,12 @@ abstract class Base extends Action
         }
         return $result;
     }
+
+    /**
+     * @return NostoHelperScope
+     */
+    public function getNostoHelperScope(): NostoHelperScope
+    {
+        return $this->nostoHelperScope;
+    }
 }

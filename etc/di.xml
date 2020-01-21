@@ -38,8 +38,22 @@
         xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
     <preference for="Magento\Framework\Stdlib\CookieManagerInterface" type="Magento\Framework\Stdlib\Cookie\PhpCookieManager"/>
     <preference for="Nosto\Tagging\Api\Data\ProductQueueSearchResultsInterface" type="Nosto\Tagging\Model\Product\QueueSearchResults"/>
+    <preference for="Nosto\Tagging\Model\Service\Product\Category\CategoryServiceInterface" type="Nosto\Tagging\Model\Service\Product\Category\CachingCategoryService"/>
+    <preference for="Nosto\Tagging\Model\Service\Product\Attribute\AttributeServiceInterface" type="Nosto\Tagging\Model\Service\Product\Attribute\CachingAttributeService"/>
+    <preference for="Nosto\Tagging\Model\Service\Product\Attribute\AttributeProviderInterface" type="Nosto\Tagging\Model\Service\Product\Attribute\DefaultAttributeProvider"/>
+    <preference for="Nosto\Tagging\Model\Service\Product\ProductServiceInterface" type="Nosto\Tagging\Model\Service\Product\DefaultProductService"/>
+    <preference for="Nosto\Tagging\Model\Service\Stock\Provider\StockProviderInterface" type="Nosto\Tagging\Model\Service\Stock\Provider\CachingStockProvider"/>
+    <preference for="Nosto\Tagging\Model\Service\Product\ProductSerializerInterface" type="Nosto\Tagging\Model\Service\Product\DefaultProductSerializer"/>
+    <preference for="Nosto\Tagging\Model\Service\Product\ProductComparatorInterface" type="Nosto\Tagging\Model\Service\Product\DefaultProductComparator"/>
+    <preference for="Symfony\Component\Console\Input\InputInterface" type="Symfony\Component\Console\Input\ArgvInput\Proxy"/>
+    <preference for="Nosto\Tagging\Model\Mview\ChangeLogInterface" type="Nosto\Tagging\Model\Mview\ChangeLog"/>
+    <preference for="Nosto\Tagging\Model\Mview\MviewInterface" type="Nosto\Tagging\Model\Mview\Mview"/>
+    <preference for="Nosto\Tagging\Model\Service\Indexer\IndexerStatusServiceInterface" type="Nosto\Tagging\Model\Service\Indexer\IndexerStatusService"/>
     <type name="Magento\Catalog\Model\ResourceModel\Product">
-        <plugin name="nostoProductIndexer" type="Nosto\Tagging\Model\Indexer\Product\Observer"/>
+        <plugin name="nostoProductObserverInvalidate" type="Nosto\Tagging\Plugin\ProductInvalidate"/>
+    </type>
+    <type name="Nosto\Tagging\Model\ResourceModel\Product\Cache">
+        <plugin name="nostoProductObserverData" type="Nosto\Tagging\Plugin\ProductData"/>
     </type>
     <type name="Nosto\Tagging\Console\Command\NostoAccountConnectCommand">
         <arguments>
@@ -69,22 +83,31 @@
             </argument>
         </arguments>
     </type>
+    <type name="Nosto\Tagging\Console\Command\NostoRebuildInvalidProductData">
+        <arguments>
+            <argument name="productDataCron" xsi:type="object">Nosto\Tagging\Cron\ProductDataCron\Proxy</argument>
+        </arguments>
+    </type>
     <type name="Magento\Framework\Console\CommandList">
         <arguments>
             <argument name="commands" xsi:type="array">
-                <item name="nosto_account_connect_command" xsi:type="object">Nosto\Tagging\Console\Command\NostoAccountConnectCommand</item>
-                <item name="nosto_account_remove_command" xsi:type="object">Nosto\Tagging\Console\Command\NostoAccountRemoveCommand</item>
-                <item name="nosto_generate_customer_reference_command" xsi:type="object">Nosto\Tagging\Console\Command\NostoGenerateCustomerReferenceCommand</item>
+                <item name="nosto_account_connect_command" xsi:type="object">
+                    Nosto\Tagging\Console\Command\NostoAccountConnectCommand
+                </item>
+                <item name="nosto_account_remove_command" xsi:type="object">
+                    Nosto\Tagging\Console\Command\NostoAccountRemoveCommand
+                </item>
+                <item name="nosto_generate_customer_reference_command" xsi:type="object">
+                    Nosto\Tagging\Console\Command\NostoGenerateCustomerReferenceCommand
+                </item>
+                <item name="nosto_rebuild_invalid_product_data" xsi:type="object">
+                    Nosto\Tagging\Console\Command\NostoRebuildInvalidProductData
+                </item>
             </argument>
         </arguments>
     </type>
     <type name="Magento\Sales\Api\OrderRepositoryInterface">
         <plugin name="order_repository_nosto" type="Nosto\Tagging\Plugin\Sales\OrderRepository" />
-    </type>
-    <type name="Nosto\Tagging\Model\Product\Repository">
-        <arguments>
-            <argument name="productRepository" xsi:type="object">Magento\Catalog\Model\ProductRepository\Proxy</argument>
-        </arguments>
     </type>
     <type name="Nosto\Tagging\Model\Product\Service">
         <arguments>
@@ -92,14 +115,138 @@
             <argument name="nostoHelperData" xsi:type="object">Nosto\Tagging\Helper\Data\Proxy</argument>
         </arguments>
     </type>
-    <type name="Nosto\Tagging\Model\Indexer\Product\Indexer">
-        <arguments>
-            <argument name="nostoHelperAccount" xsi:type="object">Nosto\Tagging\Helper\Account\Proxy</argument>
-        </arguments>
-    </type>
     <type name="Nosto\Tagging\Helper\Customer">
         <arguments>
             <argument name="customerSession" xsi:type="object">Magento\Customer\Model\Session\Proxy</argument>
+        </arguments>
+    </type>
+    <type name="Nosto\Tagging\Model\Service\Product\Attribute\CachingAttributeService">
+        <arguments>
+            <argument name="attributeService" xsi:type="object">
+                Nosto\Tagging\Model\Service\Product\Attribute\DefaultAttributeService
+            </argument>
+            <argument name="maxCachedProducts" xsi:type="number">100</argument>
+        </arguments>
+    </type>
+    <type name="Nosto\Tagging\Model\Service\Stock\Provider\CachingStockProvider">
+        <arguments>
+            <argument name="stockProvider" xsi:type="object">
+                Nosto\Tagging\Model\Service\Stock\Provider\DefaultStockProvider
+            </argument>
+            <argument name="maxCacheSize" xsi:type="number">1000</argument>
+        </arguments>
+    </type>
+    <type name="Nosto\Tagging\Model\Service\Product\Category\CachingCategoryService">
+        <arguments>
+            <argument name="categoryService" xsi:type="object">
+                Nosto\Tagging\Model\Service\Product\Category\DefaultCategoryService
+            </argument>
+        </arguments>
+    </type>
+    <type name="Nosto\Tagging\Model\Service\Product\CachingProductService">
+        <arguments>
+            <argument name="nostoProductService" xsi:type="object">
+                Nosto\Tagging\Model\Service\Product\DefaultProductService
+            </argument>
+        </arguments>
+    </type>
+    <type name="Nosto\Tagging\Model\Service\Product\SanitizingProductService">
+        <arguments>
+            <argument name="nostoProductService" xsi:type="object">
+                Nosto\Tagging\Model\Service\Product\CachingProductService
+            </argument>
+        </arguments>
+    </type>
+    <type name="Nosto\Tagging\Model\Service\Cache">
+        <arguments>
+            <argument name="productService" xsi:type="object">
+                Nosto\Tagging\Model\Service\Product\DefaultProductService
+            </argument>
+        </arguments>
+    </type>
+    <type name="Nosto\Tagging\Block\Product">
+        <arguments>
+            <argument name="productService" xsi:type="object">
+                Nosto\Tagging\Model\Service\Product\SanitizingProductService
+            </argument>
+        </arguments>
+    </type>
+    <type name="Nosto\Tagging\Model\Product\CollectionBuilder">
+        <arguments>
+            <argument name="productService" xsi:type="object">
+                Nosto\Tagging\Model\Service\Product\CachingProductService
+            </argument>
+        </arguments>
+    </type>
+    <type name="Magento\Indexer\Console\Command\IndexerSetDimensionsModeCommand">
+        <arguments>
+            <argument name="dimensionSwitchers" xsi:type="array">
+                <item name="nosto_index_product_data" xsi:type="object">
+                    Nosto\Tagging\Model\Indexer\Dimensions\Data\ModeSwitcher
+                </item>
+                <item name="nosto_index_product_invalidate" xsi:type="object">
+                    Nosto\Tagging\Model\Indexer\Dimensions\Invalidate\ModeSwitcher
+                </item>
+            </argument>
+        </arguments>
+    </type>
+    <type name="Magento\Indexer\Console\Command\IndexerShowDimensionsModeCommand">
+        <arguments>
+            <argument name="indexers" xsi:type="array">
+                <item name="nosto_index_product_data" xsi:type="string">nosto_index_product_data</item>
+                <item name="nosto_index_product_invalidate" xsi:type="string">nosto_index_product_invalidate</item>
+            </argument>
+        </arguments>
+    </type>
+    <type name="Nosto\Tagging\Model\Indexer\DataIndexer">
+        <arguments>
+            <argument name="dimensionProvider" xsi:type="object" shared="false">
+                Nosto\Tagging\Model\Indexer\Dimensions\StoreDimensionProvider
+            </argument>
+        </arguments>
+    </type>
+    <type name="Nosto\Tagging\Model\Indexer\InvalidateIndexer">
+        <arguments>
+            <argument name="dimensionProvider" xsi:type="object" shared="false">
+                Nosto\Tagging\Model\Indexer\Dimensions\StoreDimensionProvider
+            </argument>
+        </arguments>
+    </type>
+    <type name="Nosto\Tagging\Cron\InvalidateCron">
+        <arguments>
+            <argument name="intervalHours" xsi:type="number">4</argument>
+            <argument name="productLimit" xsi:type="number">1000</argument>
+        </arguments>
+    </type>
+    <type name="Nosto\Tagging\Cron\ProductDataCron">
+        <arguments>
+            <argument name="nostoAccountHelper" xsi:type="object">
+                Nosto\Tagging\Helper\Account\Proxy
+            </argument>
+            <argument name="nostoDataHelper" xsi:type="object">
+                Nosto\Tagging\Helper\Data\Proxy
+            </argument>
+            <argument name="cacheRepository" xsi:type="object">
+                Nosto\Tagging\Model\Product\Cache\CacheRepository\Proxy
+            </argument>
+            <argument name="cacheService" xsi:type="object">
+                Nosto\Tagging\Model\Service\Cache\CacheService\Proxy
+            </argument>
+            <argument name="batchSize" xsi:type="number">1000</argument>
+        </arguments>
+    </type>
+    <type name="Nosto\Tagging\Model\Service\Sync\Upsert\AsyncBulkPublisher">
+        <arguments>
+            <argument name="asyncBulkConsumer" xsi:type="object" shared="false">
+                Nosto\Tagging\Model\Service\Sync\Upsert\AsyncBulkConsumer
+            </argument>
+        </arguments>
+    </type>
+    <type name="Nosto\Tagging\Model\Service\Sync\Delete\AsyncBulkPublisher">
+        <arguments>
+            <argument name="asyncBulkConsumer" xsi:type="object" shared="false">
+                Nosto\Tagging\Model\Service\Sync\Delete\AsyncBulkConsumer
+            </argument>
         </arguments>
     </type>
 </config>

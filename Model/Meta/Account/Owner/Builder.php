@@ -36,6 +36,7 @@
 
 namespace Nosto\Tagging\Model\Meta\Account\Owner;
 
+use Exception;
 use Magento\Backend\Model\Auth\Session;
 use Magento\Framework\Event\ManagerInterface;
 use Nosto\Object\Signup\Owner;
@@ -76,7 +77,7 @@ class Builder
                 $owner->setLastName($user->getLastName());
                 $owner->setEmail($user->getEmail());
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->exception($e);
         }
 

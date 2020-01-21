@@ -36,17 +36,16 @@
 
 namespace Nosto\Tagging\Model\System\Message\Notification;
 
-use Nosto\Tagging\Helper\Account as NostoHelperAccount;
-use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Magento\Framework\Notification\MessageInterface;
 use Magento\Framework\Phrase;
+use Nosto\Tagging\Helper\Account as NostoHelperAccount;
+use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 
 class InvalidAccount implements MessageInterface
 {
     private $nostoHelperScope;
     private $nostoHelperAccount;
     private $message;
-    private $urlBuilder;
 
     /**
      * Messages constructor.

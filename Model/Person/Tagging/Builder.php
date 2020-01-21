@@ -36,18 +36,20 @@
 
 namespace Nosto\Tagging\Model\Person\Tagging;
 
+use DateTime;
+use Exception;
+use Magento\Customer\Api\CustomerRepositoryInterface;
+use Magento\Customer\Api\Data\CustomerInterface;
+use Magento\Customer\Api\GroupRepositoryInterface as GroupRepository;
 use Magento\Customer\Helper\Session\CurrentCustomer;
 use Magento\Framework\Event\ManagerInterface as EventManager;
-use Nosto\Object\Customer;
-use Magento\Customer\Api\Data\CustomerInterface;
-use Nosto\Tagging\Helper\Data as NostoHelperData;
-use Nosto\Tagging\Model\Email\Repository as NostoEmailRepository;
-use Nosto\Tagging\Model\Person\Builder as PersonBuilder;
-use Magento\Customer\Api\GroupRepositoryInterface as GroupRepository;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
-use Magento\Customer\Api\CustomerRepositoryInterface;
+use Nosto\Object\Customer;
+use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
+use Nosto\Tagging\Model\Email\Repository as NostoEmailRepository;
+use Nosto\Tagging\Model\Person\Builder as PersonBuilder;
 use Nosto\Tagging\Util\Customer as CustomerUtil;
 
 /**
@@ -116,7 +118,7 @@ class Builder extends PersonBuilder
         $customer->setCustomerReference($customerReference);
         $customer->setGender($gender);
         if ($dateOfBirth !== null) {
-            $customer->setDateOfBirth(\DateTime::createFromFormat('Y-m-d', $dateOfBirth));
+            $customer->setDateOfBirth(DateTime::createFromFormat('Y-m-d', $dateOfBirth));
         }
 
         return $customer;
@@ -150,7 +152,8 @@ class Builder extends PersonBuilder
             );
             /** @var $person Customer */
             return $person;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
+            $this->logger->exception($e);
             return null;
         }
     }
@@ -212,7 +215,7 @@ class Builder extends PersonBuilder
                 return $customerReference;
             }
             return $customerReference->getValue();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->exception($e);
         }
 

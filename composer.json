@@ -2,7 +2,7 @@
   "name": "nosto/module-nostotagging",
   "description": "Increase your conversion rate and average order value by delivering your customers personalized product recommendations throughout their shopping journey.",
   "type": "magento2-module",
-  "version": "3.10.5",
+  "version": "4.0.0-rc7",
   "require-dev": {
     "php": ">=7.1.0",
     "phan/phan": "0.8.8",
@@ -13,7 +13,6 @@
     "magento-ecg/coding-standard": "2.*",
     "magento/marketplace-eqp": "1.*",
     "magento/marketplace-tools": "dev-master",
-    "magento/framework": "*",
     "magento/module-catalog": "*",
     "magento/module-sales": "101.0.0",
     "magento/module-sales-inventory": "100.2.0",
@@ -29,15 +28,20 @@
     "magento/zendframework1": "*"
   },
   "suggest": {
-    "magento/product-community-edition": "2.*"
+    "magento/product-community-edition": "2.*",
+    "yotpo/module-review": "^2.9",
+    "ext-newrelic": "*",
+    "ext-code": "*"
   },
   "license": [
     "OSL-3.0"
   ],
   "minimum-stability": "dev",
   "require": {
-    "nosto/php-sdk": "4.0.*",
-    "php": ">=7.0.0"
+    "nosto/php-sdk": "^4.0.5",
+    "php": ">=7.0.0",
+    "ext-json": "*",
+    "magento/framework": ">=101.0.6|~102.0"
   },
   "repositories": [
     {
@@ -71,13 +75,6 @@
   "scripts": {
     "validate-archive": [
       "php ./vendor/magento/marketplace-tools/validate_m2_package.php $@"
-    ],
-    "unit-tests": [
-      "/bin/cp dev/tests/integration/phpunit.xml ../../../dev/tests/integration/",
-      "/bin/cp dev/tests/integration/etc/install-config-mysql.php ../../../dev/tests/integration/etc/",
-      "docker-compose -f dev/tests/docker-compose.yml up -d",
-      "php ../../../vendor/phpunit/phpunit/phpunit --configuration ../../../dev/tests/Integration/phpunit.xml ../../../vendor/nosto/module-nostotagging/Test/Integration --testdox",
-      "docker-compose -f dev/tests/docker-compose.yml stop"
     ]
   },
   "config": {

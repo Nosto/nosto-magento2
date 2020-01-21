@@ -36,6 +36,8 @@
 
 namespace Nosto\Tagging\Helper;
 
+use Throwable;
+
 /**
  * New Relic wrapper utility
  */
@@ -54,9 +56,9 @@ class NewRelic
     /**
      * Reports an exception to new relic
      *
-     * @param \Throwable $throwable
+     * @param Throwable $throwable
      */
-    public static function reportException(\Throwable $throwable)
+    public static function reportException(Throwable $throwable)
     {
         if (self::newRelicAvailable()) {
             newrelic_notice_error($throwable->getMessage(), $throwable);

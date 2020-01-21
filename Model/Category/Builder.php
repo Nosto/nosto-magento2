@@ -36,33 +36,34 @@
 
 namespace Nosto\Tagging\Model\Category;
 
+use Exception;
 use Magento\Catalog\Model\Category;
-use Magento\Store\Model\Store;
 use Magento\Framework\Event\ManagerInterface;
-use Nosto\Tagging\Logger\Logger as NostoLogger;
+use Magento\Store\Model\Store;
 use Nosto\Object\Category as NostoCategory;
-use Nosto\Tagging\Model\CategoryString\Builder as NostoCategoryString;
+use Nosto\Tagging\Logger\Logger as NostoLogger;
+use Nosto\Tagging\Model\Service\Product\Category\CategoryServiceInterface as NostoCategoryService;
 
 class Builder
 {
     private $logger;
     private $eventManager;
-    private $nostoCategoryString;
+    private $nostoCategoryService;
 
     /**
      * Builder constructor.
      * @param NostoLogger $logger
      * @param ManagerInterface $eventManager
-     * @param NostoCategoryString $nostoCategoryString
+     * @param NostoCategoryService $nostoCategoryService
      */
     public function __construct(
         NostoLogger $logger,
         ManagerInterface $eventManager,
-        NostoCategoryString $nostoCategoryString
+        NostoCategoryService $nostoCategoryService
     ) {
-        $this->nostoCategoryString = $nostoCategoryString;
         $this->logger = $logger;
         $this->eventManager = $eventManager;
+        $this->nostoCategoryService = $nostoCategoryService;
     }
 
     /**
@@ -81,10 +82,10 @@ class Builder
             $nostoCategory->setUrl($category->getUrl());
             $nostoCategory->setVisibleInMenu($this->getCategoryVisibleInMenu($category));
             $nostoCategory->setCategoryString(
-                $this->nostoCategoryString->build($category, $store)
+                $this->nostoCategoryService->getCategory($category, $store)
             );
             $nostoCategory->setName($category->getName());
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->exception($e);
         }
         if (empty($nostoCategory)) {

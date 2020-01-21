@@ -36,6 +36,7 @@
 
 namespace Nosto\Tagging\Observer\Customer;
 
+use Magento\Customer\Model\Data\Customer;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Module\Manager as ModuleManager;
@@ -62,6 +63,8 @@ class Save implements ObserverInterface
     public function execute(Observer $observer)
     {
         if ($this->moduleManger->isEnabled(NostoHelperData::MODULE_NAME)) {
+            /** @var Customer $customer */
+            /** @noinspection PhpUndefinedMethodInspection */
             $customer = $observer->getCustomer();
             $customerReference = $customer->getCustomAttribute(
                 NostoHelperData::NOSTO_CUSTOMER_REFERENCE_ATTRIBUTE_NAME

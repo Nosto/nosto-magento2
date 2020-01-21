@@ -36,10 +36,10 @@
 
 namespace Nosto\Tagging\Util;
 
+use Magento\Framework\Api\Search\SearchResult;
 use Magento\Framework\Api\SearchCriteriaInterface;
 use Magento\Framework\App\ResourceConnection\SourceProviderInterface;
 use Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection;
-use Magento\Framework\Api\Search\SearchResult;
 
 class Repository
 {

@@ -40,9 +40,9 @@ use Exception;
 use Magento\Store\Model\Store;
 use Nosto\Operation\SyncRates;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
-use Nosto\Tagging\Model\Rates\Builder as NostoExchangeRatesBuilder;
-use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Helper\Currency as NostoHelperCurrency;
+use Nosto\Tagging\Logger\Logger as NostoLogger;
+use Nosto\Tagging\Model\Rates\Builder as NostoExchangeRatesBuilder;
 
 class Service
 {

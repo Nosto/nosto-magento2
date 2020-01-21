@@ -36,10 +36,11 @@
 
 namespace Nosto\Tagging\Block\Adminhtml\Account;
 
+use Exception;
 use Magento\Backend\Block\Template as BlockTemplate;
 use Magento\Backend\Block\Template\Context as BlockContext;
-use Nosto\Tagging\Helper\Url as NostoHelperUrl;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
+use Nosto\Tagging\Helper\Url as NostoHelperUrl;
 
 class Config extends BlockTemplate
 {
@@ -78,7 +79,7 @@ class Config extends BlockTemplate
         try {
             $store = $this->nostoHelperScope->getSelectedStore($this->getRequest());
             return $this->urlHelper->getAdminNostoConfigurationUrl($store);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error($e->getMessage());
         }
         return '';

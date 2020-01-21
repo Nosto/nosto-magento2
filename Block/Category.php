@@ -39,10 +39,10 @@ namespace Nosto\Tagging\Block;
 use Magento\Framework\Registry;
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Element\Template\Context;
-use Nosto\Tagging\Model\Category\Builder as NostoCategoryBuilder;
-use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Object\Category as NostoCategory;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
+use Nosto\Tagging\Helper\Scope as NostoHelperScope;
+use Nosto\Tagging\Model\Category\Builder as NostoCategoryBuilder;
 
 /**
  * Category block used for outputting meta-data on the stores category pages.
@@ -80,8 +80,9 @@ class Category extends Template
      *
      * @param Context $context
      * @param Registry $registry
-     * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoCategoryBuilder $categoryBuilder
+     * @param NostoHelperScope $nostoHelperScope
+     * @param NostoHelperAccount $nostoHelperAccount
      * @param array $data
      */
     public function __construct(

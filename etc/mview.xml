@@ -34,7 +34,7 @@
   ~
   -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Mview/etc/mview.xsd">
-    <view id="nosto_product_sync" class="Nosto\Tagging\Model\Indexer\Product\Indexer" group="indexer">
+    <view id="nosto_index_product_invalidate" class="Nosto\Tagging\Model\Indexer\InvalidateIndexer" group="indexer">
         <subscriptions>
             <!-- basic product information -->
             <table name="catalog_product_entity" entity_column="entity_id" />
@@ -51,9 +51,6 @@
             <!-- sku -->
             <table name="catalog_product_super_link" entity_column="product_id" />
 
-            <!-- reviews -->
-            <table name="rating_option_vote_aggregated" entity_column="entity_pk_value" />
-
             <!-- inventory level -->
             <table name="cataloginventory_stock_item" entity_column="product_id" />
 
@@ -66,6 +63,12 @@
 
             <!-- website -->
             <table name="catalog_product_website" entity_column="product_id" />
+        </subscriptions>
+    </view>
+    <view id="nosto_index_product_data" class="Nosto\Tagging\Model\Indexer\DataIndexer" group="indexer">
+        <subscriptions>
+            <!-- basic product information -->
+            <table name="nosto_tagging_product_cache" entity_column="id" />
         </subscriptions>
     </view>
 </config>

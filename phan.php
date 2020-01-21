@@ -38,25 +38,39 @@ return [
     'backward_compatibility_checks' => false,
     'signature-compatibility' => true,
     'progress-bar' => true,
+    'simplify_ast' => false,
+    'dead_code_detection' => false,
     'exclude_file_regex' => '@^vendor/.*/(tests|test|Tests|Test)/@',
     'directory_list' => [
         'Api',
         'Block',
+        'Console',
         'Controller',
+        'Cron',
         'CustomerData',
-        'Model',
         'Helper',
-        'Observer',
         'Logger',
+        'Model',
+        'Observer',
+        'Plugin',
         'Util',
         'vendor/vlucas',
         'vendor/nosto/php-sdk',
         'vendor/phpseclib',
         'vendor/magento',
+        '../../../lib/internal', // When Running Locally
+        'magento/lib/internal', // When Running On CI
         'vendor/monolog',
         'vendor/zendframework',
         'vendor/psr',
-        'magento/generated'
+        'magento/generated', // When Running On CI
+        '../../../generated', // When Running Locally
+        '../../../app/code/Magento/AsynchronousOperations', // When Running Locally
+        'magento/app/code/Magento/AsynchronousOperations', // When Running on CI
+        'vendor/symfony/console',
+        'magento/generated',
+        '../../../app/code/Magento/Store', // When Running Locally
+        'magento/app/code/Magento/Store' // When Running on CI
     ],
     'exclude_file_list' => [
         'vendor/magento/zendframework1/library/Zend/Validate/Hostname/Biz.php',
@@ -66,7 +80,11 @@ return [
     ],
     'exclude_analysis_directory_list' => [
         'vendor/',
-        'magento/'
+        'magento/',
+        '../../../lib/internal',
+        '../../../generated',
+        '../../../app/',
+        'magento/app/code/Magento/AsynchronousOperations'
     ],
     'suppress_issue_types' => [
         'PhanParamSignatureMismatch',

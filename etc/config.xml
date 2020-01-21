@@ -18,13 +18,12 @@
                 <rating_tagging>1</rating_tagging>
                 <inventory_tagging>0</inventory_tagging>
                 <product_updates>1</product_updates>
-                <full_reindex>1</full_reindex>
                 <low_stock_indication>0</low_stock_indication>
-                <send_add_to_cart_event>0</send_add_to_cart_event>
                 <send_customer_data>1</send_customer_data>
                 <indexer_memory>50</indexer_memory>
                 <tag_date_published>0</tag_date_published>
                 <track_multi_channel_orders>1</track_multi_channel_orders>
+                <product_data_build_in_cron>0</product_data_build_in_cron>
             </flags>
             <multicurrency>
                 <method>undefined</method>

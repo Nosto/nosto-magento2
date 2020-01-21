@@ -1,5 +1,40 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+# not released
+* Remove logic for sending cart updates to Nosto from server side
+* Generate customer reference for all registered customers automatically during setup upgrade
+
+### 4.0.0-rc7 (pre-release)
+* Amend fixes from [3.10.5](###3.10.5)
+
+### 4.0.0-rc6 (pre-release)
+* Introduce caching attribute service for looking up the product attribute values
+* Introduce possibility to run the product data generation in a cron job
+* Amend fixes from [3.10.2](###3.10.2), [3.10.3](###3.10.3) and [3.10.4](###3.10.4) 
+
+### 4.0.0-rc5 (pre-release)
+* Amend fixes from [3.10.1](###3.10.1) (null check for customer)
+
+### 4.0.0-rc4 (pre-release)
+* Amend fixes from [3.10.0](###3.10.0) (SKU collection building speed)
+* Add a caching layer for storing already built category strings
+
+### 4.0.0-rc3 (pre-release)
+* Amend fixes from [3.8.8](###3.8.8) (Magento 2.3.3 compatibility)
+
+### 4.0.0-rc2 (pre-release)
+* Add null checks for product data before trying to unserialize the data
+* Check the memory consumption in indexers and exit gracefully if the process starts to run out of PHP memory limit
+* Improve the error handling in product data generation
+
+### 4.0.0-rc1 (pre-release)
+* Introduce cache for Nosto product data to speedup the product tagging added to the product pages
+* Introduce Nosto product data change detection to avoid redundant API calls to Nosto
+* Utilize bulk operations for product updates
+* Add support for indexing in parallel mode
+* Cleanup the change log database tables after indexer run
+* Prevent full reindex on `setup:upgrade`
+
 ### 3.10.5
 * Hide Nosto customer reference for registered customers in account edit view
 
@@ -25,6 +60,8 @@ Credits also goes to `Ivan Chepurnyi` (https://github.com/IvanChepurnyi) for his
 * Remove category personalization features (separate plug-in)
 * Use graphql for sending order confirmations and order status updates
 * Speedup the SKU price lookups by using price index table (catalog_product_index_price)
+* Speedup the inventory level lookups by using `StockRegistryProvider`
+* Add constraint for minimum supported Magento version (2.2.6)
 
 ### 3.8.8
 * Fix the compatibility issue with Magento 2.3.3 in ratings & reviews building 

@@ -34,7 +34,9 @@
  *
  */
 
-/** @var \Nosto\Tagging\Block\Addtocart $this */
+use Nosto\Tagging\Block\Addtocart;
+
+/** @var Addtocart $this */
 ?>
 <form action="<?php echo $this->getSubmitUrl() ?>" method="post" id="nosto_addtocart_form">
     <?php echo $this->getBlockHtml('formkey') ?>

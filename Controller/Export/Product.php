@@ -37,13 +37,16 @@
 namespace Nosto\Tagging\Controller\Export;
 
 use Magento\Framework\App\Action\Context;
+use Magento\Framework\Controller\Result\Raw as RawResult;
 use Magento\Store\Model\Store;
 use Nosto\NostoException;
 use Nosto\Object\AbstractCollection;
+use Nosto\Object\Product\Product as NostoProduct;
 use Nosto\Object\Product\ProductCollection;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
-use Nosto\Tagging\Model\Product\Collection as NostoProductCollection;
+use Nosto\Tagging\Model\Product\CollectionBuilder;
+use Nosto\Tagging\Model\Service\Sync\Upsert\SyncService;
 
 /**
  * Product export controller used to export product history to Nosto in order to
@@ -54,26 +57,32 @@ use Nosto\Tagging\Model\Product\Collection as NostoProductCollection;
  */
 class Product extends Base
 {
-    private $nostoProductCollection;
+    const PARAM_PREVIEW = 'preview';
+
+    /** @var CollectionBuilder  */
+    private $nostoCollectionBuilder;
+
+    /** @var SyncService */
+    private $nostoSyncService;
 
     /**
-     * Constructor.
-     *
      * @param Context $context
      * @param NostoHelperScope $nostoHelperScope
      * @param NostoHelperAccount $nostoHelperAccount
-     * @param NostoProductCollection $nostoProductCollection
+     * @param CollectionBuilder $collectionBuilder
+     * @param SyncService $nostoSyncService
      */
     public function __construct(
         Context $context,
-        /** @noinspection PhpUndefinedClassInspection */
         NostoHelperScope $nostoHelperScope,
         NostoHelperAccount $nostoHelperAccount,
-        NostoProductCollection $nostoProductCollection
+        CollectionBuilder $collectionBuilder,
+        SyncService $nostoSyncService
     ) {
         parent::__construct($context, $nostoHelperScope, $nostoHelperAccount);
 
-        $this->nostoProductCollection = $nostoProductCollection;
+        $this->nostoCollectionBuilder = $collectionBuilder;
+        $this->nostoSyncService = $nostoSyncService;
     }
 
     /**
@@ -85,7 +94,7 @@ class Product extends Base
      */
     public function buildExportCollection(Store $store, $limit = 100, $offset = 0)
     {
-        return $this->nostoProductCollection->buildMany($store, $limit, $offset);
+        return $this->nostoCollectionBuilder->buildMany($store, $limit, $offset);
     }
 
     /**
@@ -96,6 +105,26 @@ class Product extends Base
      */
     public function buildSingleExportCollection(Store $store, $id)
     {
-        return $this->nostoProductCollection->buildSingle($store, $id);
+        return $this->nostoCollectionBuilder->buildSingle($store, $id);
+    }
+
+    /**
+     * @param AbstractCollection $collection
+     * @return RawResult
+     */
+    public function export(AbstractCollection $collection)
+    {
+        $result = parent::export($collection);
+        $preview = $this->getRequest()->getParam(self::PARAM_PREVIEW, false);
+        if ($preview === false) {
+            $store = $this->getNostoHelperScope()->getStore();
+            $productIds = [];
+            /* @var $item NostoProduct */
+            foreach ($collection as $item) {
+                $productIds[] = $item->getProductId();
+            }
+            $this->nostoSyncService->markAsInSyncByProductIdsAndStoreId($productIds, $store);
+        }
+        return $result;
     }
 }

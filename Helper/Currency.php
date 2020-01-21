@@ -36,6 +36,7 @@
 
 namespace Nosto\Tagging\Helper;
 
+use Exception;
 use Magento\Directory\Model\Currency as MagentoCurrency;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
@@ -71,7 +72,7 @@ class Currency extends AbstractHelper
      * @param float $basePrice The price of a product in base currency
      * @param Store $store
      * @return float
-     * @throws \Exception
+     * @throws Exception
      */
     public function convertToTaggingPrice($basePrice, Store $store)
     {

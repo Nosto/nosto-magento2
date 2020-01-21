@@ -36,6 +36,8 @@
 
 namespace Nosto\Tagging\Api\Data;
 
+use DateTime;
+
 interface CustomerInterface
 {
     const CUSTOMER_ID = 'customer_id';
@@ -74,14 +76,14 @@ interface CustomerInterface
     /**
      * Get created at time
      *
-     * @return \DateTime
+     * @return DateTime
      */
     public function getCreatedAt();
 
     /**
      * Get updated at time
      *
-     * @return \DateTime
+     * @return DateTime
      */
     public function getUpdatedAt();
 
@@ -118,18 +120,18 @@ interface CustomerInterface
     /**
      * Set created at time
      *
-     * @param \DateTime $createdAt
+     * @param DateTime $createdAt
      * @return self
      */
-    public function setCreatedAt(\DateTime $createdAt);
+    public function setCreatedAt(DateTime $createdAt);
 
     /**
      * Set updated at time
      *
-     * @param \DateTime $updatedAt
+     * @param DateTime $updatedAt
      * @return self
      */
-    public function setUpdatedAt(\DateTime $updatedAt);
+    public function setUpdatedAt(DateTime $updatedAt);
 
     /**
      * Set restore cart hash

@@ -36,11 +36,13 @@
 
 namespace Nosto\Tagging\Observer\Cart;
 
+use Exception;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Module\Manager as ModuleManager;
-use Magento\Framework\Stdlib\CookieManagerInterface;
 use Magento\Framework\Stdlib\Cookie\CookieMetadataFactory;
+use Magento\Framework\Stdlib\CookieManagerInterface;
+use Magento\Quote\Model\Quote;
 use Magento\Quote\Model\Quote\Item;
 use Nosto\Helper\SerializationHelper;
 use Nosto\Object\Event\Cart\Update;
@@ -170,25 +172,8 @@ class Add implements ObserverInterface
                 } else {
                     $this->logger->info('Headers sent already. Cannot set the cookie.');
                 }
-
-                if ($this->nostoHelperData->isSendAddToCartEventEnabled()) {
-                    //use the message way
-                    $quote = $quoteItem->getQuote();
-                    if ($quote instanceof \Magento\Quote\Model\Quote) {
-                        $nostoCart = $this->nostoCartBuilder->build(
-                            $quote,
-                            $store
-                        );
-                        $cartUpdate->setCart($nostoCart);
-                    } else {
-                        $this->logger->info('Cannot find quote from the event.');
-                    }
-
-                    $cartOperation = new CartOperation($nostoAccount);
-                    $cartOperation->updateCart($cartUpdate, $nostoCustomerId, $nostoAccount->getName());
-                }
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->exception($e);
         }
     }

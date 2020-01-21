@@ -37,15 +37,15 @@
 namespace Nosto\Tagging\Helper;
 
 use Exception;
+use Magento\Catalog\Model\Product;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
-use Magento\Catalog\Model\Product;
 use Magento\Framework\DataObject;
 use Magento\Framework\Registry;
-use Nosto\Tagging\Helper\Data as NostoHelperData;
-use Magento\Store\Model\Store;
-use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Magento\Review\Model\ReviewFactory;
+use Magento\Store\Model\Store;
+use Nosto\Tagging\Helper\Data as NostoHelperData;
+use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Product\Ratings as ProductRatings;
 
 /**
@@ -235,7 +235,7 @@ class Ratings extends AbstractHelper
                     /** @noinspection PhpUndefinedMethodInspection */
                     return (int)$ratingSummary->getReviewsCount();
                 }
-            /** @noinspection PhpUndefinedMethodInspection */
+                /** @noinspection PhpUndefinedMethodInspection */
             } elseif (is_numeric($product->getReviewsCount())) {
                 /** @noinspection PhpUndefinedMethodInspection */
                 return (int)$product->getReviewsCount();

@@ -36,6 +36,8 @@
 
 namespace Nosto\Tagging\Helper;
 
+use Exception;
+use Magento\Bundle\Model\Option;
 use Magento\Bundle\Model\Product\Price as BundlePrice;
 use Magento\Bundle\Model\Product\Type as BundleType;
 use Magento\Catalog\Helper\Data as CatalogHelper;
@@ -46,12 +48,12 @@ use Magento\Customer\Model\GroupManagement;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
 use Magento\GroupedProduct\Model\Product\Type\Grouped as GroupedType;
 use Magento\Store\Model\Store;
 use Magento\Tax\Helper\Data as TaxHelper;
 use Magento\Tax\Model\Config as TaxConfig;
-use Magento\Framework\Exception\NoSuchEntityException;
 use Nosto\Tagging\Model\Product\Repository as NostoProductRepository;
 
 /**
@@ -160,7 +162,7 @@ class Price extends AbstractHelper
                     }
                     try {
                         $currentRulePrice = $this->priceRuleFactory->create()->getRulePrice($date, $wid, $gid, $pid);
-                    } catch (\Exception $e) {
+                    } catch (Exception $e) {
                         $currentRulePrice = $product->getFinalPrice();
                     }
                     if (is_numeric($currentRulePrice)) {
@@ -291,7 +293,7 @@ class Price extends AbstractHelper
             $allOptional = true;
             $minPrices = [];
             $requiredMinPrices = [];
-            /** @var \Magento\Bundle\Model\Option $option */
+            /** @var Option $option */
             foreach ($options as $option) {
                 $selectionMinPrice = null;
                 $optionSelections = $option->getSelections();

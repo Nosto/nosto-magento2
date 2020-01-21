@@ -36,13 +36,14 @@
 
 namespace Nosto\Tagging\Controller\Checkout\Cart;
 
+use Exception;
 use Magento\Catalog\Api\Data\ProductInterface;
-use Magento\Catalog\Model\Product;
-use Magento\Catalog\Model\ResourceModel\Product as ProductResourceModel;
 use Magento\Catalog\Api\ProductRepositoryInterface;
+use Magento\Catalog\Model\Product;
+use Magento\Catalog\Model\ResourceModel\Eav\Attribute as MageAttribute;
+use Magento\Catalog\Model\ResourceModel\Product as ProductResourceModel;
 use Magento\Checkout\Controller\Cart\Add as MageAdd;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable as ConfigurableType;
-use Magento\Catalog\Model\ResourceModel\Eav\Attribute as MageAttribute;
 use Magento\Store\Model\StoreManager;
 
 /**
@@ -158,7 +159,7 @@ class Add
             }
             $storeId = $store->getId();
             return $this->productRepository->getById($productId, false, $storeId);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return null;
         }
     }

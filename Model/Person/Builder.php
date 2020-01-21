@@ -36,11 +36,11 @@
 
 namespace Nosto\Tagging\Model\Person;
 
+use Magento\Framework\Event\ManagerInterface as EventManager;
 use Nosto\Object\AbstractPerson;
 use Nosto\Object\ModelFilter;
-use Nosto\Tagging\Model\Email\Repository as NostoEmailRepository;
-use Magento\Framework\Event\ManagerInterface as EventManager;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
+use Nosto\Tagging\Model\Email\Repository as NostoEmailRepository;
 
 abstract class Builder
 {
@@ -80,6 +80,7 @@ abstract class Builder
      * @param string|null $phone
      * @param string|null $postCode
      * @param string|null $country
+     * @param string|null $customerGroup
      * @param string|null $dateOfBirth
      * @param string|null $gender
      * @param string|null $customerReference

@@ -36,18 +36,16 @@
 
 namespace Nosto\Tagging\Model\Customer;
 
+use Exception;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\Api\SearchCriteriaInterface;
 use Magento\Framework\Exception\AlreadyExistsException;
 use Nosto\Tagging\Api\CustomerRepositoryInterface;
 use Nosto\Tagging\Api\Data\CustomerInterface;
-use Nosto\Tagging\Model\RepositoryTrait;
+use Nosto\Tagging\Model\Customer\Customer as NostoCustomer;
 use Nosto\Tagging\Model\ResourceModel\Customer as CustomerResource;
 use Nosto\Tagging\Model\ResourceModel\Customer\CollectionFactory as CustomerCollectionFactory;
 use Nosto\Tagging\Util\Repository as RepositoryUtil;
-use /** @noinspection PhpUnusedAliasInspection */
-    Nosto\Tagging\Model\Customer\CustomerSearchResults;
-use Nosto\Tagging\Model\Customer\Customer as NostoCustomer;
 
 /**
  * Class Repository
@@ -86,7 +84,7 @@ class Repository implements CustomerRepositoryInterface
      * @param CustomerInterface $customer
      *
      * @return CustomerInterface
-     * @throws \Exception
+     * @throws Exception
      * @throws AlreadyExistsException
      *
      * @suppress PhanTypeMismatchArgument
@@ -111,13 +109,14 @@ class Repository implements CustomerRepositoryInterface
     public function getOneByNostoIdAndQuoteId($nostoId, $quoteId)
     {
         $searchCriteria = $this->searchCriteriaBuilder
-            ->addFilter(CustomerInterface::NOSTO_ID, $nostoId, 'eq')
-            ->addFilter(CustomerInterface::QUOTE_ID, $quoteId, 'eq')
+            ->addFilter(CustomerInterface::NOSTO_ID, $nostoId)
+            ->addFilter(CustomerInterface::QUOTE_ID, $quoteId)
             ->setPageSize(1)
             ->setCurrentPage(1)
             ->create();
 
         $items = $this->search($searchCriteria)->getItems();
+        /** @noinspection LoopWhichDoesNotLoopInspection */
         foreach ($items as $customer) {
             return $customer;
         }
@@ -136,12 +135,13 @@ class Repository implements CustomerRepositoryInterface
     public function getOneByQuoteId($quoteId)
     {
         $searchCriteria = $this->searchCriteriaBuilder
-            ->addFilter(NostoCustomer::QUOTE_ID, $quoteId, 'eq')
+            ->addFilter(NostoCustomer::QUOTE_ID, $quoteId)
             ->setPageSize(1)
             ->setCurrentPage(1)
             ->create();
 
         $items = $this->search($searchCriteria)->getItems();
+        /** @noinspection LoopWhichDoesNotLoopInspection */
         foreach ($items as $customer) {
             /** @var CustomerInterface $customer */
             return $customer;
@@ -161,12 +161,13 @@ class Repository implements CustomerRepositoryInterface
     public function getOneByRestoreCartHash($hash)
     {
         $searchCriteria = $this->searchCriteriaBuilder
-            ->addFilter(CustomerInterface::RESTORE_CART_HASH, $hash, 'eq')
+            ->addFilter(CustomerInterface::RESTORE_CART_HASH, $hash)
             ->setPageSize(1)
             ->setCurrentPage(1)
             ->create();
 
         $items = $this->search($searchCriteria)->getItems();
+        /** @noinspection LoopWhichDoesNotLoopInspection */
         foreach ($items as $customer) {
             return $customer;
         }
@@ -186,6 +187,7 @@ class Repository implements CustomerRepositoryInterface
         /** @noinspection PhpUndefinedMethodInspection */
         $searchResults = $this->customerSearchResultsFactory->create();
 
+        /** @noinspection PhpIncompatibleReturnTypeInspection */
         return RepositoryUtil::search(
             $collection,
             $searchCriteria,
