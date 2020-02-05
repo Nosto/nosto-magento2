@@ -12,7 +12,6 @@
     "phing/phing": "2.*",
     "magento-ecg/coding-standard": "2.*",
     "magento/marketplace-eqp": "1.*",
-    "magento/marketplace-tools": "dev-master",
     "magento/module-catalog": "*",
     "magento/module-sales": "101.0.0",
     "magento/module-sales-inventory": "100.2.0",
@@ -47,18 +46,6 @@
     {
       "type": "composer",
       "url": "https://repo.magento.com/"
-    },
-    {
-      "type": "package",
-      "package": {
-        "name": "magento/marketplace-tools",
-        "version": "dev-master",
-        "source": {
-          "url": "https://github.com/magento/marketplace-tools",
-          "type": "git",
-          "reference": "origin/master"
-        }
-      }
     }
   ],
   "autoload": {
@@ -71,11 +58,6 @@
   },
   "archive": {
     "exclude": ["Jenkinsfile", "Dockerfile", ".DS_STORE", ".idea", ".phan", ".docker", "ruleset.xml", "phan.*", ".gitignore", "build.xml", ".github", "supervisord.conf", "entrypoint.sh"]
-  },
-  "scripts": {
-    "validate-archive": [
-      "php ./vendor/magento/marketplace-tools/validate_m2_package.php $@"
-    ]
   },
   "config": {
     "process-timeout":0
