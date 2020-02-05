@@ -12,7 +12,6 @@
     "phing/phing": "2.*",
     "magento-ecg/coding-standard": "2.*",
     "magento/marketplace-eqp": "1.*",
-    "magento/marketplace-tools": "dev-master",
     "magento/module-catalog": "*",
     "magento/module-sales": "101.0.0",
     "magento/module-sales-inventory": "100.2.0",
