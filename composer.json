@@ -46,18 +46,6 @@
     {
       "type": "composer",
       "url": "https://repo.magento.com/"
-    },
-    {
-      "type": "package",
-      "package": {
-        "name": "magento/marketplace-tools",
-        "version": "dev-master",
-        "source": {
-          "url": "https://github.com/magento/marketplace-tools",
-          "type": "git",
-          "reference": "origin/master"
-        }
-      }
     }
   ],
   "autoload": {
