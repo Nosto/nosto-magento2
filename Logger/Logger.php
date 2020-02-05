@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2019, Nosto Solutions Ltd
+ * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,7 +29,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <contact@nosto.com>
- * @copyright 2019 Nosto Solutions Ltd
+ * @copyright 2020 Nosto Solutions Ltd
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
@@ -39,15 +39,16 @@ namespace Nosto\Tagging\Logger;
 use Monolog\Logger as MonologLogger;
 use Nosto\Tagging\Helper\NewRelic;
 use Nosto\Util\Memory;
+use Throwable;
 
 class Logger extends MonologLogger
 {
     /**
      * Logs an exception and sends it to New relic if available
-     * @param \Throwable $exception
+     * @param Throwable $exception
      * @return bool
      */
-    public function exception(\Throwable $exception)
+    public function exception(Throwable $exception)
     {
         NewRelic::reportException($exception);
         return parent::error($exception->__toString());
@@ -61,7 +62,7 @@ class Logger extends MonologLogger
      */
     public function logWithMemoryConsumption($message)
     {
-        return parent::addInfo(
+        return parent::debug(
             sprintf(
                 '%s [mem usage: %sM / %s] [realmem: %sM]',
                 $message,

@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2019, Nosto Solutions Ltd
+ * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,19 +29,20 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <contact@nosto.com>
- * @copyright 2019 Nosto Solutions Ltd
+ * @copyright 2020 Nosto Solutions Ltd
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
 
 namespace Nosto\Tagging\Helper;
 
+use Exception;
+use Magento\Framework\App\Cache\Frontend\Pool;
 use Magento\Framework\App\Cache\StateInterface;
 use Magento\Framework\App\Cache\TypeListInterface;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 use Magento\PageCache\Model\Cache\Type;
-use Magento\Framework\App\Cache\Frontend\Pool;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 
 /**
@@ -106,13 +107,13 @@ class Cache extends AbstractHelper
 
     /**
      * Flush all cache types
-     * @return null
      */
     public function flushCache()
     {
         try {
             $caches = $this->typeList->getTypes();
             foreach ($caches as $cache) {
+                /** @noinspection PhpUndefinedMethodInspection */
                 $id = $cache->getId();
                 $this->typeList->cleanType($id);
             }
@@ -120,7 +121,7 @@ class Cache extends AbstractHelper
             foreach ($this->cacheFrontendPool as $cacheFrontend) {
                 $cacheFrontend->getBackend()->clean();
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->exception($e);
         }
     }

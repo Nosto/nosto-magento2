@@ -101,13 +101,13 @@
 
     <target name="marketplacevalidation" depends="build">
         <exec executable="php" dir="./vendor/magento/marketplace-tools/">
-            <arg value="validate_m2_package.php"></arg>
-            <arg value="${builddest}/${packagename}"></arg>
+            <arg value="validate_m2_package.php"/>
+            <arg value="${builddest}/${packagename}"/>
         </exec>
     </target>
 
     <target name="dist" depends="validate, build">
-        <phingcall target="marketplacevalidation"></phingcall>
+        <phingcall target="marketplacevalidation"/>
         <echo msg="All done"/>
     </target>
 </project>

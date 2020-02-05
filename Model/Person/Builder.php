@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2019, Nosto Solutions Ltd
+ * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,18 +29,18 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <contact@nosto.com>
- * @copyright 2019 Nosto Solutions Ltd
+ * @copyright 2020 Nosto Solutions Ltd
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
 
 namespace Nosto\Tagging\Model\Person;
 
+use Magento\Framework\Event\ManagerInterface as EventManager;
 use Nosto\Object\AbstractPerson;
 use Nosto\Object\ModelFilter;
-use Nosto\Tagging\Model\Email\Repository as NostoEmailRepository;
-use Magento\Framework\Event\ManagerInterface as EventManager;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
+use Nosto\Tagging\Model\Email\Repository as NostoEmailRepository;
 
 abstract class Builder
 {
@@ -80,6 +80,7 @@ abstract class Builder
      * @param string|null $phone
      * @param string|null $postCode
      * @param string|null $country
+     * @param string|null $customerGroup
      * @param string|null $dateOfBirth
      * @param string|null $gender
      * @param string|null $customerReference

@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2019, Nosto Solutions Ltd
+ * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,17 +29,67 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <contact@nosto.com>
- * @copyright 2019 Nosto Solutions Ltd
+ * @copyright 2020 Nosto Solutions Ltd
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
 
 namespace Nosto\Tagging\Model\Item;
 
+use InvalidArgumentException;
 use Magento\Catalog\Model\Product\Type;
+use Magento\Catalog\Model\ResourceModel\Eav\Attribute;
+use Magento\Framework\App\ObjectManager;
+use Magento\Quote\Model\Quote\Item;
+use Magento\Sales\Model\Order\Item as SalesItem;
+use Throwable;
 
 class Simple
 {
+    /**
+     * @param SalesItem|Item $item
+     * @param $parentIds
+     * @return string|null
+     */
+    public static function buildName($item, $parentIds)
+    {
+        if (!$item instanceof Item && !$item instanceof SalesItem) {
+            throw new InvalidArgumentException(
+                'item should be instance of Magento\Quote\Model\Quote\Item or Magento\Sales\Model\Order\Item'
+            );
+        }
+        $name = $item->getName();
+        $optNames = [];
+        $objectManager = ObjectManager::getInstance();
+        // If the product has a configurable parent, we assume we should tag
+        // the parent. If there are many parent IDs, we are safer to tag the
+        // products own name alone.
+        if (count($parentIds) === 1) {
+            try {
+                $attributes = $item->getBuyRequest()->getData('super_attribute');
+                if (is_array($attributes)) {
+                    foreach ($attributes as $id => $value) {
+                        /** @var Attribute $attribute */
+                        $attribute = $objectManager->get(Attribute::class)->load($id); // @codingStandardsIgnoreLine
+                        $label = $attribute->getSource()->getOptionText($value);
+                        if (!empty($label)) {
+                            $optNames[] = $label;
+                        }
+                    }
+                }
+            } catch (Throwable $e) {
+                // If the item name building fails, it's not crucial
+                // No need to handle the exception in any specific way
+                unset($e);
+            }
+        }
+
+        if (!empty($optNames)) {
+            $name .= ' (' . implode(', ', $optNames) . ')';
+        }
+        return $name;
+    }
+
     /**
      * Returns the product type for simple item
      *

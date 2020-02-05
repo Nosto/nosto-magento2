@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2019, Nosto Solutions Ltd
+ * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,7 +29,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <contact@nosto.com>
- * @copyright 2019 Nosto Solutions Ltd
+ * @copyright 2020 Nosto Solutions Ltd
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
@@ -37,82 +37,51 @@
 namespace Nosto\Tagging\Model\Product;
 
 use Magento\Catalog\Model\Product;
-use Magento\CatalogInventory\Api\StockRegistryInterface;
-use Magento\Eav\Model\Entity\Attribute\AbstractAttribute;
-use Magento\Framework\Exception\NoSuchEntityException;
-use Magento\Framework\Phrase;
 use Magento\Store\Model\Store;
+use Magento\Store\Model\StoreManagerInterface;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
+use Nosto\Tagging\Model\Service\Product\Attribute\AttributeServiceInterface;
+use Nosto\Tagging\Model\Service\Stock\StockService;
 use Nosto\Tagging\Util\Url as UrlUtil;
-use Nosto\Helper\ArrayHelper;
-use Magento\Store\Model\StoreManagerInterface;
 
 trait BuilderTrait
 {
-    private $nostoDataHelperTrait;
-    private $loggerTrait;
-    private $stockRegistry;
+    /** @var NostoHelperData */
+    private $nostoDataHelper;
+
+    /** @var NostoLogger */
+    private $logger;
+
+    /** @var StockService */
+    private $stockService;
+
+    /** @var StoreManagerInterface */
     private $storeManager;
 
+    /** @var AttributeServiceInterface */
+    private $attributeService;
+
     /**
+     * BuilderTrait constructor.
      * @param NostoHelperData $nostoHelperData
-     * @param StockRegistryInterface $stockRegistry
+     * @param StockService $stockService
      * @param NostoLogger $logger
      * @param StoreManagerInterface $storeManager
+     * @param AttributeServiceInterface $attributeService
      */
     public function __construct(
         NostoHelperData $nostoHelperData,
-        StockRegistryInterface $stockRegistry,
+        StockService $stockService,
         NostoLogger $logger,
-        StoreManagerInterface $storeManager
+        StoreManagerInterface $storeManager,
+        AttributeServiceInterface $attributeService
     ) {
-        $this->nostoDataHelperTrait = $nostoHelperData;
-        $this->stockRegistry = $stockRegistry;
-        $this->loggerTrait = $logger;
+        $this->nostoDataHelper = $nostoHelperData;
+        $this->stockService = $stockService;
+        $this->logger = $logger;
         $this->storeManager = $storeManager;
-    }
-
-    /**
-     * Tag the custom attributes
-     *
-     * @param Product $product
-     * @param Store $store
-     * @return array
-     */
-    public function buildCustomFields(Product $product, Store $store)
-    {
-        $customFields = [];
-
-        if (!$this->nostoDataHelperTrait->isCustomFieldsEnabled($store)) {
-            return $customFields;
-        }
-
-        $attributes = $product->getTypeInstance()->getSetAttributes($product);
-        /** @var AbstractAttribute $attribute */
-        foreach ($attributes as $attribute) {
-            /** @var \Magento\Catalog\Model\ResourceModel\Eav\Attribute\Interceptor $attribute */
-            try {
-                //tag user defined attributes that are visible or filterable
-                if ($attribute->getIsUserDefined()
-                    && ($attribute->getIsVisibleOnFront() || $attribute->getIsFilterable())
-                ) {
-                    $attributeCode = $attribute->getAttributeCode();
-                    //if data is null, do not try to get the value
-                    //because the label could be "No" even the value is null
-                    if ($product->getData($attributeCode) !== null) {
-                        $attributeValue = $this->getAttributeValue($product, $attributeCode);
-                        if (is_scalar($attributeValue) && $attributeValue !== '' && $attributeValue !== false) {
-                            $customFields[$attributeCode] = $attributeValue;
-                        }
-                    }
-                }
-            } catch (\Exception $e) {
-                $this->loggerTrait->exception($e);
-            }
-        }
-
-        return $customFields;
+        $this->attributeService = $attributeService;
     }
 
     /**
@@ -122,7 +91,7 @@ trait BuilderTrait
      */
     public function buildImageUrl(Product $product, Store $store)
     {
-        $primary = $this->nostoDataHelperTrait->getProductImageVersion($store);
+        $primary = $this->nostoDataHelper->getProductImageVersion($store);
         $secondary = 'image'; // The "base" image.
         $media = $product->getMediaAttributeValues();
 
@@ -142,40 +111,6 @@ trait BuilderTrait
         );
     }
 
-
-    /**
-     * Resolves "textual" product attribute value
-     *
-     * @param Product $product
-     * @param $attribute
-     * @return bool|float|int|null|string
-     */
-    public function getAttributeValue(Product $product, $attribute)
-    {
-        $value = null;
-        try {
-            $attributes = $product->getAttributes();
-            if (isset($attributes[$attribute])) {
-                $attributeObject = $attributes[$attribute];
-                $frontend = $attributeObject->getFrontend();
-                $frontendValue = $frontend->getValue($product);
-                if (is_array($frontendValue) && !empty($frontendValue)
-                    && ArrayHelper::onlyScalarValues($frontendValue)
-                ) {
-                    $value = implode(',', $frontendValue);
-                } elseif (is_scalar($frontendValue)) {
-                    $value = $frontendValue;
-                } elseif ($frontendValue instanceof Phrase) {
-                    $value = (string)$frontendValue;
-                }
-            }
-        } catch (\Exception $e) {
-            $this->loggerTrait->exception($e);
-        }
-
-        return $value;
-    }
-
     /**
      * Finalizes product image urls, stips off "pub/" directory if applicable
      *
@@ -185,7 +120,7 @@ trait BuilderTrait
      */
     public function finalizeImageUrl($url, Store $store)
     {
-        if ($this->nostoDataHelperTrait->getRemovePubDirectoryFromProductImageUrl($store)) {
+        if ($this->nostoDataHelper->getRemovePubDirectoryFromProductImageUrl($store)) {
             return UrlUtil::removePubFromUrl($url);
         }
 
@@ -214,15 +149,30 @@ trait BuilderTrait
      */
     public function isInStock(Product $product, Store $store)
     {
-        try {
-            $stockItem = $this->stockRegistry->getStockItem(
-                $product->getId(),
-                $store->getWebsiteId()
-            );
-            return (bool)$stockItem->getIsInStock();
-        } catch (NoSuchEntityException $e) {
-            $this->loggerTrait->exception($e);
-            return false;
-        }
+        return $this->stockService->isInStock($product, $store);
+    }
+
+    /**
+     * @return StockService
+     */
+    public function getStockService()
+    {
+        return $this->stockService;
+    }
+
+    /**
+     * @return NostoLogger
+     */
+    public function getLogger()
+    {
+        return $this->logger;
+    }
+
+    /**
+     * @return NostoHelperData
+     */
+    public function getDataHelper()
+    {
+        return $this->nostoDataHelper;
     }
 }

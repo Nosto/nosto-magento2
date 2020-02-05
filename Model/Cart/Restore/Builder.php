@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2019, Nosto Solutions Ltd
+ * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,23 +29,25 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <contact@nosto.com>
- * @copyright 2019 Nosto Solutions Ltd
+ * @copyright 2020 Nosto Solutions Ltd
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
 
 namespace Nosto\Tagging\Model\Cart\Restore;
 
+use Exception;
 use Magento\Framework\Encryption\EncryptorInterface;
-use Magento\Quote\Model\Quote;
-use Magento\Store\Model\Store;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Stdlib\CookieManagerInterface;
 use Magento\Framework\Stdlib\DateTime\DateTime;
+use Magento\Quote\Model\Quote;
+use Magento\Store\Model\Store;
 use Nosto\Tagging\Api\Data\CustomerInterface;
-use Nosto\Tagging\Model\Customer\Customer as NostoCustomer;
-use Nosto\Tagging\Model\Customer\CustomerFactory as NostoCustomerFactory;
 use Nosto\Tagging\Helper\Url as NostoHelperUrl;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
+use Nosto\Tagging\Model\Customer\Customer as NostoCustomer;
+use Nosto\Tagging\Model\Customer\CustomerFactory as NostoCustomerFactory;
 use Nosto\Tagging\Model\Customer\Repository as NostoCustomerRepository;
 
 class Builder
@@ -90,6 +92,7 @@ class Builder
      * @param Quote $quote
      * @param Store $store
      * @return string|null
+     * @throws NoSuchEntityException
      */
     public function build(Quote $quote, Store $store)
     {
@@ -127,7 +130,7 @@ class Builder
             }
             $nostoCustomer->setUpdatedAt($this->getNow());
         } else {
-            /** @var \Nosto\Tagging\Model\Customer\Customer $nostoCustomer*/
+            /** @var NostoCustomer $nostoCustomer*/
             /** @noinspection PhpUndefinedMethodInspection */
             $nostoCustomer = $this->nostoCustomerFactory->create();
             $nostoCustomer->setQuoteId($quote->getId());
@@ -139,7 +142,7 @@ class Builder
             $nostoCustomer = $this->nostoCustomerRepository->save($nostoCustomer);
 
             return $nostoCustomer;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->exception($e);
         }
 
@@ -178,6 +181,7 @@ class Builder
      * @param string $hash
      * @param Store $store
      * @return string the restore cart URL
+     * @throws NoSuchEntityException
      */
     private function generateRestoreCartUrl($hash, Store $store)
     {

@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2019, Nosto Solutions Ltd
+ * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,36 +29,35 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <contact@nosto.com>
- * @copyright 2019 Nosto Solutions Ltd
+ * @copyright 2020 Nosto Solutions Ltd
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
 
 namespace Nosto\Tagging\Observer\Order;
 
+use Exception;
+use Magento\Customer\Api\CustomerRepositoryInterface as MagentoCustomerRepository;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Indexer\IndexerRegistry;
 use Magento\Framework\Module\Manager as ModuleManager;
 use Magento\Sales\Model\Order;
 use Magento\Store\Model\Store;
+use Nosto\Object\Order\Order as NostoOrder;
 use Nosto\Operation\Order\OrderCreate as NostoOrderCreate;
 use Nosto\Operation\Order\OrderStatus as NostoOrderUpdate;
 use Nosto\Request\Http\HttpRequest;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
-use Nosto\Tagging\Helper\Scope as NostoHelperScope;
+use Nosto\Tagging\Helper\Url as NostoHelperUrl;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Customer\Customer as NostoCustomer;
 use Nosto\Tagging\Model\Customer\Repository as CustomerRepository;
-use Nosto\Tagging\Model\Indexer\Product\Indexer;
+use Nosto\Tagging\Model\Indexer\InvalidateIndexer as InvalidateIndexer;
 use Nosto\Tagging\Model\Order\Builder as NostoOrderBuilder;
 use Nosto\Tagging\Model\Order\Status\Builder as NostoOrderStatusBuilder;
-use Nosto\Object\Order\Order as NostoOrder;
-use Nosto\Tagging\Helper\Url as NostoHelperUrl;
-use Nosto\Util\Time as NostoTimeUtil;
 use Nosto\Types\Signup\AccountInterface;
-use Magento\Customer\Api\CustomerRepositoryInterface as MagentoCustomerRepository;
 
 /**
  * Class Save
@@ -72,7 +71,6 @@ class Save implements ObserverInterface
     private $nostoOrderBuilder;
     private $moduleManager;
     private $customerRepository;
-    private $nostoHelperScope;
     private $indexer;
     private $nostoHelperUrl;
     private $magentoCustomerRepository;
@@ -84,7 +82,6 @@ class Save implements ObserverInterface
      * Save constructor.
      * @param NostoHelperData $nostoHelperData
      * @param NostoHelperAccount $nostoHelperAccount
-     * @param NostoHelperScope $nostoHelperScope
      * @param NostoLogger $logger
      * @param ModuleManager $moduleManager
      * @param CustomerRepository $customerRepository
@@ -97,7 +94,6 @@ class Save implements ObserverInterface
     public function __construct(
         NostoHelperData $nostoHelperData,
         NostoHelperAccount $nostoHelperAccount,
-        NostoHelperScope $nostoHelperScope,
         NostoLogger $logger,
         ModuleManager $moduleManager,
         /** @noinspection PhpUndefinedClassInspection */
@@ -115,8 +111,7 @@ class Save implements ObserverInterface
         $this->nostoOrderBuilder = $orderBuilder;
         $this->orderStatusBuilder = $orderStatusBuilder;
         $this->customerRepository = $customerRepository;
-        $this->indexer = $indexerRegistry->get(Indexer::INDEXER_ID);
-        $this->nostoHelperScope = $nostoHelperScope;
+        $this->indexer = $indexerRegistry->get(InvalidateIndexer::INDEXER_ID);
         $this->nostoHelperUrl = $nostoHelperUrl;
         $this->magentoCustomerRepository = $magentoCustomerRepository;
     }
@@ -153,12 +148,7 @@ class Save implements ObserverInterface
             );
             if ($nostoAccount !== null) {
                 //Check if order is new or updated
-                if ($order->getState() === Order::STATE_NEW &&
-                    NostoTimeUtil::isUpdatedEqualToCreated(
-                        $order->getCreatedAt(),
-                        $order->getUpdatedAt()
-                    )
-                ) {
+                if ($order->getState() === Order::STATE_NEW) {
                     $this->sendNewOrder($order, $nostoAccount, $store);
                 } else {
                     $this->sendOrderStatusUpdated($order, $nostoAccount);
@@ -207,7 +197,7 @@ class Save implements ObserverInterface
             if ($customerReferenceAttribute !== null) {
                 $nostoCustomerId = $customerReferenceAttribute->getValue();
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->exception($e);
         }
         return $nostoCustomerId;
@@ -226,7 +216,7 @@ class Save implements ObserverInterface
         $nostoCustomer = $this->customerRepository
             ->getOneByQuoteId($order->getQuoteId());
         $nostoCustomerId = null;
-        $nostoCutomerIdentifier = NostoOrderCreate::IDENTIFIER_BY_CID;
+        $nostoCustomerIdentifier = NostoOrderCreate::IDENTIFIER_BY_CID;
         if ($nostoCustomer instanceof NostoCustomer) {
             $nostoCustomerId = $nostoCustomer->getNostoId();
         }
@@ -235,7 +225,7 @@ class Save implements ObserverInterface
             $this->nostoHelperData->isMultiChannelOrderTrackingEnabled($store)
         ) {
             $nostoCustomerId = $this->getCustomerReference($order);
-            $nostoCutomerIdentifier = NostoOrderCreate::IDENTIFIER_BY_REF;
+            $nostoCustomerIdentifier = NostoOrderCreate::IDENTIFIER_BY_REF;
         }
         $nostoOrder = $this->nostoOrderBuilder->build($order);
         if ($nostoCustomerId !== null) {
@@ -243,12 +233,12 @@ class Save implements ObserverInterface
                 $orderService = new NostoOrderCreate(
                     $nostoOrder,
                     $nostoAccount,
-                    $nostoCutomerIdentifier,
+                    $nostoCustomerIdentifier,
                     $nostoCustomerId,
                     $this->nostoHelperUrl->getActiveDomain($store)
                 );
                 $orderService->execute();
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $this->logger->error(
                     sprintf(
                         'Failed to save order with quote #%s for customer #%s.
@@ -282,7 +272,7 @@ class Save implements ObserverInterface
             $orderStatus = $this->orderStatusBuilder->build($order);
             $orderService = new NostoOrderUpdate($nostoAccount, $orderStatus);
             $orderService->execute();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error(
                 sprintf(
                     'Failed to update order with quote #%s.

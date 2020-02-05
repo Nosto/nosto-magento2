@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2019, Nosto Solutions Ltd
+ * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,17 +29,18 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <contact@nosto.com>
- * @copyright 2019 Nosto Solutions Ltd
+ * @copyright 2020 Nosto Solutions Ltd
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
 
 namespace Nosto\Tagging\Setup;
 
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Setup\InstallDataInterface;
 use Magento\Framework\Setup\ModuleContextInterface;
 use Magento\Framework\Setup\ModuleDataSetupInterface;
-use Magento\Framework\Exception\LocalizedException;
+use Zend_Validate_Exception;
 
 class InstallData extends CoreData implements InstallDataInterface
 {
@@ -47,10 +48,13 @@ class InstallData extends CoreData implements InstallDataInterface
      * @param ModuleDataSetupInterface $setup
      * @param ModuleContextInterface $context
      * @throws LocalizedException
-     * @throws \Zend_Validate_Exception
+     * @throws Zend_Validate_Exception
+     * @throws \Magento\Framework\Exception\AlreadyExistsException
+     * @throws \Nosto\NostoException
      */
     public function install(ModuleDataSetupInterface $setup, ModuleContextInterface $context) // @codingStandardsIgnoreLine
     {
         $this->addCustomerReference($setup);
+        $this->populateCustomerReference();
     }
 }

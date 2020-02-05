@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2019, Nosto Solutions Ltd
+ * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,7 +29,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <contact@nosto.com>
- * @copyright 2019 Nosto Solutions Ltd
+ * @copyright 2020 Nosto Solutions Ltd
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
@@ -37,8 +37,8 @@
 namespace Nosto\Tagging\Plugin\Sales;
 
 use Magento\Framework\Event\ManagerInterface;
-use Magento\Sales\Api\OrderRepositoryInterface;
 use Magento\Sales\Api\Data\OrderInterface;
+use Magento\Sales\Api\OrderRepositoryInterface;
 use Magento\Sales\Model\Order;
 
 class OrderRepository
@@ -63,8 +63,11 @@ class OrderRepository
      * @param OrderInterface|Order $order
      * @return OrderInterface
      */
-    public function afterSave(OrderRepositoryInterface $subject, OrderInterface $order)
-    {
+    public function afterSave(
+        /** @noinspection PhpUnusedParameterInspection */
+        OrderRepositoryInterface $subject,
+        OrderInterface $order
+    ) {
         $this->eventManager->dispatch('nosto_sales_save_after', ['order' => $order]);
         return $order;
     }

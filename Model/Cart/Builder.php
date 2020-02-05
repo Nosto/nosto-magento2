@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2019, Nosto Solutions Ltd
+ * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,20 +29,21 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <contact@nosto.com>
- * @copyright 2019 Nosto Solutions Ltd
+ * @copyright 2020 Nosto Solutions Ltd
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
 
 namespace Nosto\Tagging\Model\Cart;
 
+use Exception;
 use Magento\Catalog\Model\Product;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Quote\Model\Quote;
 use Magento\Store\Model\Store;
 use Nosto\Object\Cart\Cart;
-use Nosto\Tagging\Model\Cart\Item\Builder as NostoCartItemBuilder;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
+use Nosto\Tagging\Model\Cart\Item\Builder as NostoCartItemBuilder;
 
 class Builder
 {
@@ -85,7 +86,7 @@ class Builder
                     );
                     $nostoCart->addItem($cartItem);
                 }
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $this->logger->exception($e);
             }
         }

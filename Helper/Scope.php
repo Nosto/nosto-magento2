@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2019, Nosto Solutions Ltd
+ * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,7 +29,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <contact@nosto.com>
- * @copyright 2019 Nosto Solutions Ltd
+ * @copyright 2020 Nosto Solutions Ltd
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
@@ -39,11 +39,16 @@ namespace Nosto\Tagging\Helper;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 use Magento\Framework\App\RequestInterface;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Exception\NotFoundException;
 use Magento\Framework\Phrase;
+use Magento\Store\Api\Data\StoreInterface;
+use Magento\Store\Api\Data\WebsiteInterface;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Store\Model\Website;
+use Nosto\Tagging\Model\Service\Store\MissingStoreException;
 
 class Scope extends AbstractHelper
 {
@@ -63,19 +68,23 @@ class Scope extends AbstractHelper
     }
 
     /**
-     * @param null|string|bool|int|\Magento\Store\Api\Data\StoreInterface $storeId
-     * @return \Magento\Store\Model\Store
+     * @param null|string|bool|int|StoreInterface $storeId
+     * @return Store
      */
     public function getStore($storeId = null)
     {
-        /** @noinspection PhpIncompatibleReturnTypeInspection */
-        return $this->storeManager->getStore($storeId);
+        try {
+            /** @noinspection PhpIncompatibleReturnTypeInspection */
+            return $this->storeManager->getStore($storeId);
+        } catch (NoSuchEntityException $e) {
+            throw new MissingStoreException($e);
+        }
     }
 
     /**
      * @param bool $withDefault
      * @param bool $codeKey
-     * @return \Magento\Store\Model\Store[]
+     * @return Store[]
      */
     public function getStores($withDefault = false, $codeKey = false)
     {
@@ -119,6 +128,18 @@ class Scope extends AbstractHelper
     {
         /** @noinspection PhpIncompatibleReturnTypeInspection */
         return $this->storeManager->getWebsites($withDefault, $codeKey);
+    }
+
+    /**
+     * Get specified website
+     *
+     * @param null|bool|int|string|WebsiteInterface $websiteId
+     * @return WebsiteInterface|Website
+     * @throws LocalizedException
+     */
+    public function getWebsite($websiteId)
+    {
+        return $this->storeManager->getWebsite($websiteId);
     }
 
     /**

@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2019, Nosto Solutions Ltd
+ * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,12 +29,14 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <contact@nosto.com>
- * @copyright 2019 Nosto Solutions Ltd
+ * @copyright 2020 Nosto Solutions Ltd
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
 
 namespace Nosto\Tagging\Api\Data;
+
+use DateTime;
 
 interface CustomerInterface
 {
@@ -74,14 +76,14 @@ interface CustomerInterface
     /**
      * Get created at time
      *
-     * @return \DateTime
+     * @return DateTime
      */
     public function getCreatedAt();
 
     /**
      * Get updated at time
      *
-     * @return \DateTime
+     * @return DateTime
      */
     public function getUpdatedAt();
 
@@ -118,18 +120,18 @@ interface CustomerInterface
     /**
      * Set created at time
      *
-     * @param \DateTime $createdAt
+     * @param DateTime $createdAt
      * @return self
      */
-    public function setCreatedAt(\DateTime $createdAt);
+    public function setCreatedAt(DateTime $createdAt);
 
     /**
      * Set updated at time
      *
-     * @param \DateTime $updatedAt
+     * @param DateTime $updatedAt
      * @return self
      */
-    public function setUpdatedAt(\DateTime $updatedAt);
+    public function setUpdatedAt(DateTime $updatedAt);
 
     /**
      * Set restore cart hash

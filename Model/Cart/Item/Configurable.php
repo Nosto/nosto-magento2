@@ -1,6 +1,6 @@
-<?php
+<?php /** @noinspection DuplicatedCode */
 /**
- * Copyright (c) 2019, Nosto Solutions Ltd
+ * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,15 +29,15 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <contact@nosto.com>
- * @copyright 2019 Nosto Solutions Ltd
+ * @copyright 2020 Nosto Solutions Ltd
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
 
 namespace Nosto\Tagging\Model\Cart\Item;
 
-use Nosto\Tagging\Model\Item\Configurable as ConfigurableItem;
 use Magento\Quote\Model\Quote\Item;
+use Nosto\Tagging\Model\Item\Configurable as ConfigurableItem;
 
 class Configurable extends ConfigurableItem
 {

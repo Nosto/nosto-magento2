@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2019, Nosto Solutions Ltd
+ * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,19 +29,20 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <contact@nosto.com>
- * @copyright 2019 Nosto Solutions Ltd
+ * @copyright 2020 Nosto Solutions Ltd
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
 
 namespace Nosto\Tagging\Model\Cart\Item;
 
+use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Model\Product;
-use Magento\Quote\Model\Quote\Item;
-use Nosto\Tagging\Model\Item\Grouped as GroupedItem;
 use Magento\Catalog\Model\ProductRepository;
 use Magento\Framework\Exception\NoSuchEntityException;
-use Magento\Catalog\Api\Data\ProductInterface;
+use Magento\Quote\Model\Quote\Item;
+use Nosto\Tagging\Model\Item\Grouped as GroupedItem;
+use Throwable;
 
 class Grouped extends GroupedItem
 {
@@ -78,7 +79,7 @@ class Grouped extends GroupedItem
                     return $itemParentName . ' - ' . $name;
                 }
             }
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             // If the item name building fails, it's not crucial
             // No need to handle the exception in any specific way
             unset($e);

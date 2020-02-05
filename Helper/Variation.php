@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2019, Nosto Solutions Ltd
+ * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,22 +29,23 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <contact@nosto.com>
- * @copyright 2019 Nosto Solutions Ltd
+ * @copyright 2020 Nosto Solutions Ltd
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
 
 namespace Nosto\Tagging\Helper;
 
-use Magento\Customer\Api\GroupRepositoryInterface as GroupRepository;
-use Magento\Framework\App\Helper\AbstractHelper;
-use Magento\Customer\Model\GroupManagement;
-use Magento\Customer\Model\Data\Group;
-use Magento\Store\Model\Store;
+use Exception;
 use Magento\Customer\Api\Data\GroupInterface;
+use Magento\Customer\Api\GroupRepositoryInterface as GroupRepository;
+use Magento\Customer\Model\Data\Group;
+use Magento\Customer\Model\GroupManagement;
+use Magento\Framework\App\Helper\AbstractHelper;
+use Magento\Framework\App\Helper\Context;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
-use Magento\Customer\Model\Customer;
+use Nosto\Tagging\Logger\Logger;
 
 /**
  * Variation helper
@@ -52,17 +53,28 @@ use Magento\Customer\Model\Customer;
  */
 class Variation extends AbstractHelper
 {
+    const DEFAULT_CUSTOMER_GROUP_ID = GroupManagement::NOT_LOGGED_IN_ID;
+
+    /** @var GroupRepository */
     private $groupRepository;
 
-    const DEFAULT_CUSTOMER_GROUP_ID = GroupManagement::NOT_LOGGED_IN_ID;
+    /** @var Logger */
+    private $logger;
 
     /**
      * Variation constructor.
+     * @param Context $context
      * @param GroupRepository $groupRepository
+     * @param Logger $logger
      */
-    public function __construct(GroupRepository $groupRepository)
-    {
+    public function __construct(
+        Context $context,
+        GroupRepository $groupRepository,
+        Logger $logger
+    ) {
+        parent::__construct($context);
         $this->groupRepository = $groupRepository;
+        $this->logger = $logger;
     }
 
     /**
@@ -111,7 +123,8 @@ class Variation extends AbstractHelper
             if ($code === $this->getDefaultVariationCode()) {
                 return true;
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
+            $this->logger->exception($e);
             return false;
         }
 

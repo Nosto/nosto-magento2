@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2019, Nosto Solutions Ltd
+ * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,18 +29,20 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <contact@nosto.com>
- * @copyright 2019 Nosto Solutions Ltd
+ * @copyright 2020 Nosto Solutions Ltd
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
 
 namespace Nosto\Tagging\Helper;
 
-use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Customer\Api\GroupRepositoryInterface as GroupRepository;
 use Magento\Customer\Model\Session as CustomerSession;
+use Magento\Framework\App\Helper\AbstractHelper;
+use Magento\Framework\App\Helper\Context;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
+use Nosto\Tagging\Logger\Logger;
 
 /**
  * Customer helper
@@ -51,34 +53,47 @@ class Customer extends AbstractHelper
 
     private $customerSession;
     private $groupRepository;
+    private $logger;
 
     /**
      * Customer constructor.
      *
+     * @param Context $context
+     * @param Logger $logger
      * @param CustomerSession $customerSession
      * @param GroupRepository $groupRepository
      */
     public function __construct(
+        Context $context,
+        Logger $logger,
         CustomerSession $customerSession, // @codingStandardsIgnoreLine
         GroupRepository $groupRepository
     ) {
+        parent::__construct($context);
         $this->customerSession = $customerSession;
         $this->groupRepository = $groupRepository;
+        $this->logger = $logger;
     }
 
     /**
      * @return string
-     * @throws LocalizedException
-     * @throws NoSuchEntityException
      */
     public function getGroupCode()
     {
-        $customerGroupId = $this->getGroupId();
-        if ($customerGroupId) {
-            $group = $this->groupRepository->getById($customerGroupId);
-            return $group->getCode();
+        try {
+            $customerGroupId = $this->getGroupId();
+            if ($customerGroupId) {
+                $group = $this->groupRepository->getById($customerGroupId);
+                return $group->getCode();
+            }
+            return $this->groupRepository->getById(Variation::DEFAULT_CUSTOMER_GROUP_ID)->getCode();
+        } catch (NoSuchEntityException $e) {
+            $this->logger->exception($e);
+            return 'missing';
+        } catch (LocalizedException $e) {
+            $this->logger->exception($e);
+            return 'missing';
         }
-        return $this->groupRepository->getById(Variation::DEFAULT_CUSTOMER_GROUP_ID)->getCode();
     }
 
     /**

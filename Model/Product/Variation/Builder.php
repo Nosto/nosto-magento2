@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2019, Nosto Solutions Ltd
+ * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,29 +29,31 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <contact@nosto.com>
- * @copyright 2019 Nosto Solutions Ltd
+ * @copyright 2020 Nosto Solutions Ltd
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
 
 namespace Nosto\Tagging\Model\Product\Variation;
 
+use Exception;
+use Magento\Catalog\Api\Data\ProductTierPriceInterfaceFactory as PriceFactory;
 use Magento\Catalog\Model\Product;
+use Magento\Catalog\Model\Product as MageProduct;
+use Magento\CatalogRule\Model\ResourceModel\Rule as RuleResourceModel;
+use Magento\ConfigurableProduct\Model\Product\Type\Configurable as ConfigurableType;
+use Magento\Customer\Model\Data\Group;
 use Magento\Framework\Event\ManagerInterface;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Exception\NoSuchEntityException;
+use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
 use Magento\Store\Model\Store;
-use Nosto\Helper\PriceHelper;
+use Nosto\Object\Product\Product as NostoProduct;
 use Nosto\Object\Product\Variation;
 use Nosto\Tagging\Helper\Currency as CurrencyHelper;
 use Nosto\Tagging\Helper\Price as NostoPriceHelper;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
-use Magento\Customer\Model\Data\Group;
-use Magento\Catalog\Api\Data\ProductTierPriceInterfaceFactory as PriceFactory;
-use Nosto\Object\Product\Product as NostoProduct;
-use Magento\CatalogRule\Model\ResourceModel\Rule as RuleResourceModel;
 use Nosto\Tagging\Model\Product\Repository as NostoProductRepository;
-use Magento\ConfigurableProduct\Model\Product\Type\Configurable as ConfigurableType;
-use Magento\Catalog\Model\Product as MageProduct;
-use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
 
 class Builder
 {
@@ -97,8 +99,7 @@ class Builder
 
     /**
      * @param Product $product
-     * @param NostoProduct $
-     * @param $nostoProduct
+     * @param NostoProduct $nostoProduct
      * @param Store $store
      * @param Group $group
      * @return Variation
@@ -123,7 +124,7 @@ class Builder
             );
             $variation->setListPrice($listPrice);
             $variation->setPriceCurrencyCode($nostoProduct->getPriceCurrencyCode());
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->exception($e);
         }
 
@@ -140,7 +141,10 @@ class Builder
     /**
      * @param Product $product
      * @param Group $group
+     * @param Store $store
      * @return float
+     * @throws LocalizedException
+     * @throws NoSuchEntityException
      */
     private function getLowestVariationPrice(Product $product, Group $group, Store $store)
     {
@@ -183,9 +187,7 @@ class Builder
 
         // If no tier prices, there's no customer group pricing for this product
         // or it's higher than final price with catalog price rule discount
-        $finalPrice = $this->nostoPriceHelper->getProductPrice($product, $store);
-
-        return $finalPrice;
+        return $this->nostoPriceHelper->getProductPrice($product, $store);
     }
 
     /**

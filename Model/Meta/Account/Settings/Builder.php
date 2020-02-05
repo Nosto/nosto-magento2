@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2019, Nosto Solutions Ltd
+ * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,23 +29,25 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <contact@nosto.com>
- * @copyright 2019 Nosto Solutions Ltd
+ * @copyright 2020 Nosto Solutions Ltd
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
 
 namespace Nosto\Tagging\Model\Meta\Account\Settings;
 
+use Exception;
 use Magento\Framework\Event\ManagerInterface;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\UrlInterface;
 use Magento\Store\Model\Store;
 use Nosto\Object\Settings;
 use Nosto\Request\Http\HttpRequest;
 use Nosto\Tagging\Helper\Currency as NostoHelperCurrency;
-use Nosto\Tagging\Model\Meta\Account\Settings\Currencies\Builder as NostoCurrenciesBuilder;
-use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Helper\Data as NostoDataHelper;
 use Nosto\Tagging\Helper\Variation as NostoVariationHelper;
+use Nosto\Tagging\Logger\Logger as NostoLogger;
+use Nosto\Tagging\Model\Meta\Account\Settings\Currencies\Builder as NostoCurrenciesBuilder;
 
 class Builder
 {
@@ -101,7 +103,7 @@ class Builder
                 $settings->setDefaultVariantId($this->nostoVariationHelper->getDefaultVariationCode());
             }
             $settings->setCurrencies($this->nostoCurrenciesBuilder->build($store));
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->exception($e);
         }
 
@@ -137,6 +139,7 @@ class Builder
      *
      * @param Store $store the store for which to build the common name
      * @return string the complete common name of the store
+     * @throws NoSuchEntityException
      */
     private static function buildTitle(Store $store)
     {

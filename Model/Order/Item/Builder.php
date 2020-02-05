@@ -1,6 +1,6 @@
-<?php
+<?php /** @noinspection DuplicatedCode */
 /**
- * Copyright (c) 2019, Nosto Solutions Ltd
+ * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,7 +29,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <contact@nosto.com>
- * @copyright 2019 Nosto Solutions Ltd
+ * @copyright 2020 Nosto Solutions Ltd
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
@@ -38,15 +38,16 @@ namespace Nosto\Tagging\Model\Order\Item;
 
 use Exception;
 use Magento\Catalog\Model\Product\Type;
+use Magento\Catalog\Model\ProductRepository;
 use Magento\Framework\Event\ManagerInterface;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Sales\Model\Order\Item;
 use Nosto\Object\Cart\LineItem;
-use Magento\Framework\Exception\LocalizedException;
+use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Item\Downloadable;
 use Nosto\Tagging\Model\Item\Giftcard;
 use Nosto\Tagging\Model\Item\Virtual;
-use Magento\Catalog\Model\ProductRepository;
-use Nosto\Tagging\Logger\Logger as NostoLogger;
+use Throwable;
 
 class Builder
 {
@@ -174,7 +175,7 @@ class Builder
                 if (!empty($attributes) && count($parentIds) === 1) {
                     return $parentIds[0];
                 }
-            } catch (\Throwable $e) {
+            } catch (Throwable $e) {
                 $this->logger->exception($e);
             }
         }

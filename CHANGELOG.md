@@ -1,5 +1,22 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+# 4.0.0
+**New features (performance improvements)**
+* Introduce cache for Nosto product data to speedup the product tagging added to the product pages
+* Introduce Nosto product data change detection to avoid redundant API calls to Nosto
+* Utilize bulk operations for product updates
+* Add support for indexing in parallel mode
+* Introduce caching for building product attribute values
+* Introduce caching layer for building categories
+
+**Bug fixes and improvements**
+* Generate customer reference for all registered customers automatically during setup upgrade
+* Cleanup the change log database table after indexer run
+* Prevent redundant full reindex on Nosto indexers when running `setup:upgrade`
+
+**Removed features / functionalities**
+* Remove logic for sending cart updates to Nosto from server side
+
 ### 3.10.5
 * Hide Nosto customer reference for registered customers in account edit view
 
@@ -25,6 +42,8 @@ Credits also goes to `Ivan Chepurnyi` (https://github.com/IvanChepurnyi) for his
 * Remove category personalization features (separate plug-in)
 * Use graphql for sending order confirmations and order status updates
 * Speedup the SKU price lookups by using price index table (catalog_product_index_price)
+* Speedup the inventory level lookups by using `StockRegistryProvider`
+* Add constraint for minimum supported Magento version (2.2.6)
 
 ### 3.8.8
 * Fix the compatibility issue with Magento 2.3.3 in ratings & reviews building 

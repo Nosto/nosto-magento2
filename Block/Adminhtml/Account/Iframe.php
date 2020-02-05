@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2019, Nosto Solutions Ltd
+ * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,25 +29,25 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <contact@nosto.com>
- * @copyright 2019 Nosto Solutions Ltd
+ * @copyright 2020 Nosto Solutions Ltd
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
 
 namespace Nosto\Tagging\Block\Adminhtml\Account;
 
+use Exception;
 use Magento\Backend\Block\Template as BlockTemplate;
 use Magento\Backend\Block\Template\Context as BlockContext;
 use Magento\Backend\Model\Auth\Session;
 use Magento\Framework\Exception\NotFoundException;
-use Magento\Store\Model\Store;
 use Nosto\Mixins\IframeTrait;
 use Nosto\Nosto;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
+use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Meta\Account\Iframe\Builder as NostoIframeMetaBuilder;
 use Nosto\Tagging\Model\User\Builder as NostoCurrentUserBuilder;
-use Nosto\Tagging\Logger\Logger as NostoLogger;
 
 /**
  * Iframe block for displaying the Nosto account management iframe.
@@ -79,6 +79,7 @@ class Iframe extends BlockTemplate
      * @param NostoIframeMetaBuilder $iframeMetaBuilder
      * @param NostoCurrentUserBuilder $nostoCurrentUserBuilder
      * @param NostoHelperScope $nostoHelperScope
+     * @param NostoLogger $logger
      * @param array $data
      */
     public function __construct(
@@ -169,7 +170,7 @@ class Iframe extends BlockTemplate
         try {
             $store = $this->nostoHelperScope->getSelectedStore($this->getRequest());
             return $this->nostoIframeMetaBuilder->build($store);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->exception($e);
         }
 
@@ -192,7 +193,7 @@ class Iframe extends BlockTemplate
         try {
             $store = $this->nostoHelperScope->getSelectedStore($this->getRequest());
             return $this->nostoHelperAccount->findAccount($store);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->exception($e);
         }
 

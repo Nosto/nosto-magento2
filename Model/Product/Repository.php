@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2019, Nosto Solutions Ltd
+ * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,7 +29,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <contact@nosto.com>
- * @copyright 2019 Nosto Solutions Ltd
+ * @copyright 2020 Nosto Solutions Ltd
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
@@ -84,6 +84,7 @@ class Repository
      * @param FilterGroupBuilder $filterGroupBuilder
      * @param ConfigurableType $configurableType
      * @param ProductVisibility $productVisibility
+     * @param NostoSkuResource $nostoSkuResource
      */
     public function __construct(
         ProductRepository $productRepository,
@@ -121,36 +122,6 @@ class Repository
     }
 
     /**
-     * Gets products that have scheduled pricing active
-     *
-     * @return ProductSearchResultsInterface
-     * @suppress PhanTypeMismatchArgument
-     * @throws \Exception
-     */
-    public function getWithActivePricingSchedule()
-    {
-        $today = new \DateTime('now'); // @codingStandardsIgnoreLine
-        $filterEndDateGreater = $this->filterBuilder
-            ->setField('special_to_date')
-            ->setValue($today->format('Y-m-d ' . '00:00:00'))
-            ->setConditionType('gt')
-            ->create();
-        $filterEndDateNotSet = $this->filterBuilder
-            ->setField('special_to_date')
-            ->setValue(['null' => true])
-            ->setConditionType('eq')
-            ->create();
-
-        $filterGroup = $this->filterGroupBuilder->setFilters([$filterEndDateGreater, $filterEndDateNotSet])->create();
-
-        $searchCriteria = $this->searchCriteriaBuilder
-            ->setFilterGroups([$filterGroup])
-            ->addFilter('special_from_date', $today->format('Y-m-d') . ' 00:00:00', 'gte')
-            ->create();
-        return $this->productRepository->getList($searchCriteria);
-    }
-
-    /**
      * Gets a product that is active in a given Store
      *
      * @return Product|null
@@ -181,7 +152,7 @@ class Repository
         $product = $this->productRepository->getList($searchCriteria)->setTotalCount(1);
 
         foreach ($product->getItems() as $item) {
-            /** @var \Magento\Catalog\Model\Product $item */
+            /** @var Product $item */
             return $item;
         }
         return null;
@@ -206,7 +177,6 @@ class Repository
             );
             $this->saveParentIdsToCache($product, $parentProductIds);
         }
-
         return $parentProductIds;
     }
 
@@ -215,7 +185,6 @@ class Repository
      *
      * @param Product $product
      * @return array
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function getSkus(Product $product)
     {
@@ -265,17 +234,6 @@ class Repository
     }
 
     /**
-     * Get parent ids from cache. Return null if the cache is not available
-     *
-     * @param $productId
-     * @return string[]|null
-     */
-    private function getParentIdsFromCacheByProductId($productId)
-    {
-        return $this->parentProductIdCache[$productId] ?? null;
-    }
-
-    /**
      * Saves the parents product ids to internal cache to avoid redundant
      * database queries
      *
@@ -288,24 +246,11 @@ class Repository
     }
 
     /**
-     * Saves the parents product ids to internal cache to avoid redundant
-     * database queries
-     *
-     * @param $productId
-     * @param string[] $parentProductIds
-     */
-    private function saveParentIdsToCacheByProductId($productId, $parentProductIds)
-    {
-        $this->parentProductIdCache[$productId] = $parentProductIds;
-    }
-
-    /**
      * Gets the variations / SKUs of configurable product as an associative array.
      *
      * @param Product $product
      * @param Store $store
      * @return array
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function getSkusAsArray(Product $product, Store $store)
     {

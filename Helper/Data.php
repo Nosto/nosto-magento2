@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2019, Nosto Solutions Ltd
+ * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,19 +29,19 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <contact@nosto.com>
- * @copyright 2019 Nosto Solutions Ltd
+ * @copyright 2020 Nosto Solutions Ltd
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
 
 namespace Nosto\Tagging\Helper;
 
+use Magento\Framework\App\Cache\Manager as CacheManager;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\Config\Storage\WriterInterface;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 use Magento\Framework\App\ProductMetadataInterface;
-use Magento\Framework\App\Cache\Manager as CacheManager;
 use Magento\Framework\AppInterface;
 use Magento\Framework\Module\ModuleListInterface;
 use Magento\Store\Api\Data\StoreInterface;
@@ -110,19 +110,9 @@ class Data extends AbstractHelper
     const XML_PATH_INVENTORY_TAGGING = 'nosto/flags/inventory_tagging';
 
     /**
-     * Path to the configuration object that stores the preference to full reindex
-     */
-    const XML_PATH_FULL_REINDEX = 'nosto/flags/full_reindex';
-
-    /**
      * Path to the configuration object that stores the preference for real time product updates
      */
     const XML_PATH_PRODUCT_UPDATES = 'nosto/flags/product_updates';
-
-    /**
-     * Path to store config for send add to cart event to nosto
-     */
-    const XML_PATH_SEND_ADD_TO_CART_EVENT = 'nosto/flags/send_add_to_cart_event';
 
     /**
      * Path to store config for sending customer data to Nosto or not
@@ -148,6 +138,11 @@ class Data extends AbstractHelper
      * Path to the configuration object that stores customer reference
      */
     const XML_PATH_TRACK_MULTI_CHANNEL_ORDERS = 'nosto/flags/track_multi_channel_orders';
+
+    /**
+     * Path to the configuration object that stores the product data build configuration (cron / indexer)
+     */
+    const XML_PATH_PRODUCT_DATA_BUILD_IN_CRON = 'nosto/flags/product_data_build_in_cron';
 
     /**
      * Path to the configuration object for pricing variations
@@ -384,17 +379,6 @@ class Data extends AbstractHelper
     }
 
     /**
-     * Returns true if full reindex is enable
-     *
-     * @param StoreInterface|null $store the store model or null.
-     * @return bool the configuration value
-     */
-    public function isFullReindexEnabled(StoreInterface $store = null)
-    {
-        return (bool)$this->getStoreConfig(self::XML_PATH_FULL_REINDEX, $store);
-    }
-
-    /**
      * Returns if real time product updates are enabled from the configuration table
      *
      * @param StoreInterface|null $store the store model or null.
@@ -403,17 +387,6 @@ class Data extends AbstractHelper
     public function isProductUpdatesEnabled(StoreInterface $store = null)
     {
         return (bool)$this->getStoreConfig(self::XML_PATH_PRODUCT_UPDATES, $store);
-    }
-
-    /**
-     * Returns if real time cart updates are enabled from the configuration table
-     *
-     * @param StoreInterface|null $store the store model or null.
-     * @return bool the configuration value
-     */
-    public function isSendAddToCartEventEnabled(StoreInterface $store = null)
-    {
-        return (bool)$this->getStoreConfig(self::XML_PATH_SEND_ADD_TO_CART_EVENT, $store);
     }
 
     /**
@@ -439,6 +412,17 @@ class Data extends AbstractHelper
     }
 
     /**
+     * Returns if product data should be built in cron
+     *
+     * @param StoreInterface|null $store
+     * @return bool
+     */
+    public function isProductDataBuildInCronEnabled(StoreInterface $store = null)
+    {
+        return (bool)$this->getStoreConfig(self::XML_PATH_PRODUCT_DATA_BUILD_IN_CRON, $store);
+    }
+
+    /**
      * Returns if low stock indication should be tagged
      *
      * @param StoreInterface|null $store the store model or null.
@@ -453,7 +437,7 @@ class Data extends AbstractHelper
      * Returns maximum percentage of PHP available memory that indexer should use
      *
      * @param StoreInterface|null $store the store model or null.
-     * @return bool the configuration value
+     * @return int the configuration value
      */
     public function getIndexerMemory(StoreInterface $store = null)
     {

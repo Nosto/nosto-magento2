@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2019, Nosto Solutions Ltd
+ * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,7 +29,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <contact@nosto.com>
- * @copyright 2019 Nosto Solutions Ltd
+ * @copyright 2020 Nosto Solutions Ltd
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
@@ -37,12 +37,13 @@
 namespace Nosto\Tagging\Model\Product\Variation;
 
 use Magento\Catalog\Model\Product;
-use Magento\Customer\Model\GroupManagement;
-use Magento\Store\Model\Store;
-use Nosto\Nosto;
-use Nosto\Object\Product\VariationCollection;
-use Nosto\Object\Product\Product as NostoProduct;
 use Magento\Customer\Api\GroupRepositoryInterface as GroupRepository;
+use Magento\Customer\Model\Data\Group;
+use Magento\Customer\Model\GroupManagement;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\Store\Model\Store;
+use Nosto\Object\Product\Product as NostoProduct;
+use Nosto\Object\Product\VariationCollection;
 use Nosto\Tagging\Model\Product\Variation\Builder as VariationBuilder;
 
 class Collection
@@ -57,6 +58,7 @@ class Collection
      * @param Builder $nostoVariationBuilder
      * @param GroupManagement $customerGroupManager
      * @param GroupRepository $groupRepository
+     * @param Builder $variationBuilder
      */
     public function __construct(
         Builder $nostoVariationBuilder,
@@ -72,8 +74,10 @@ class Collection
 
     /**
      * @param Product $product
+     * @param NostoProduct $nostoProduct
      * @param Store $store
      * @return VariationCollection
+     * @throws LocalizedException
      * @suppress PhanTypeMismatchArgument
      */
     public function build(Product $product, NostoProduct $nostoProduct, Store $store)
@@ -86,7 +90,7 @@ class Collection
             if ($group->getCode() === (string)$nostoProduct->getVariationId()) {
                 continue;
             }
-            /** @var \Magento\Customer\Model\Data\Group $group */
+            /** @var Group $group */
             $collection->append(
                 $this->variationBuilder->build(
                     $product,

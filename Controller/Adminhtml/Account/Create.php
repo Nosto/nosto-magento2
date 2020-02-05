@@ -1,6 +1,6 @@
-<?php
+<?php /** @noinspection PhpMissingParentConstructorInspection */
 /**
- * Copyright (c) 2019, Nosto Solutions Ltd
+ * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,13 +29,14 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <contact@nosto.com>
- * @copyright 2019 Nosto Solutions Ltd
+ * @copyright 2020 Nosto Solutions Ltd
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
 
 namespace Nosto\Tagging\Controller\Adminhtml\Account;
 
+use Exception;
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\Controller\Result\Json;
 use Magento\Framework\Exception\LocalizedException;
@@ -43,16 +44,18 @@ use Nosto\Helper\IframeHelper;
 use Nosto\Nosto;
 use Nosto\NostoException;
 use Nosto\Operation\AccountSignup;
-use Nosto\Tagging\Helper\Cache as NostoHelperCache;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
+use Nosto\Tagging\Helper\Cache as NostoHelperCache;
 use Nosto\Tagging\Helper\Currency as NostoCurrencyHelper;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
+use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Meta\Account\Builder as NostoSignupBuilder;
 use Nosto\Tagging\Model\Meta\Account\Iframe\Builder as NostoIframeMetaBuilder;
 use Nosto\Tagging\Model\Meta\Account\Owner\Builder as NostoOwnerBuilder;
 use Nosto\Tagging\Model\Rates\Service as NostoRatesService;
 use Nosto\Tagging\Model\User\Builder as NostoCurrentUserBuilder;
-use Nosto\Tagging\Logger\Logger as NostoLogger;
+use Zend_Validate;
+use Zend_Validate_Exception;
 
 class Create extends Base
 {
@@ -116,7 +119,7 @@ class Create extends Base
     /**
      * @return Json
      * @throws LocalizedException
-     * @throws \Zend_Validate_Exception
+     * @throws Zend_Validate_Exception
      * @suppress PhanTypeMismatchArgument
      * @SuppressWarnings(PHPMD.CyclomaticComplexity
      * @throws \Zend_Validate_Exception
@@ -138,7 +141,7 @@ class Create extends Base
                 $emailAddress = $this->_request->getParam('email');
                 $accountOwner = $this->nostoOwnerBuilder->build();
                 if ($accountOwner->getEmail() !== $emailAddress) {
-                    if (\Zend_Validate::is($emailAddress, 'EmailAddress')) {
+                    if (Zend_Validate::is($emailAddress, 'EmailAddress')) {
                         $accountOwner->setFirstName(null);
                         $accountOwner->setLastName(null);
                         $accountOwner->setEmail($emailAddress);
@@ -167,12 +170,12 @@ class Create extends Base
                         ]
                     );
 
-                    // Note that we will send the exhange rates even if the multi currency
+                    // Note that we will send the exchange rates even if the multi currency
                     // is not set. This is mostly for debugging purposes.
                     if ($this->nostoCurrencyHelper->getCurrencyCount($store) > 1) {
                         try {
                             $this->nostoRatesService->update($store);
-                        } catch (\Exception $e) {
+                        } catch (Exception $e) {
                             $this->logger->exception($e);
                         }
                     }

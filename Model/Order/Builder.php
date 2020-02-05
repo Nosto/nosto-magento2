@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2019, Nosto Solutions Ltd
+ * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,29 +29,31 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <contact@nosto.com>
- * @copyright 2019 Nosto Solutions Ltd
+ * @copyright 2020 Nosto Solutions Ltd
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
 
 namespace Nosto\Tagging\Model\Order;
 
+use DateTime;
+use DateTimeInterface;
 use Exception;
-use Nosto\NostoException;
 use Magento\Catalog\Model\Product;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\Phrase;
 use Magento\Sales\Model\Order;
 use Magento\Sales\Model\Order\Item;
+use Magento\Sales\Model\Order\Payment;
 use Magento\SalesRule\Model\RuleFactory as SalesRuleFactory;
+use Nosto\NostoException;
 use Nosto\Object\Cart\LineItem;
 use Nosto\Object\Order\Buyer;
 use Nosto\Object\Order\Order as NostoOrder;
 use Nosto\Object\Order\OrderStatus;
-use Nosto\Tagging\Model\Order\Item\Builder as NostoOrderItemBuilder;
-use Nosto\Tagging\Model\Order\Buyer\Builder as NostoBuyerBuilder;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
-use Magento\Sales\Model\Order\Payment;
+use Nosto\Tagging\Model\Order\Buyer\Builder as NostoBuyerBuilder;
+use Nosto\Tagging\Model\Order\Item\Builder as NostoOrderItemBuilder;
 
 class Builder
 {
@@ -101,8 +103,8 @@ class Builder
             $nostoOrder->setExternalOrderRef($order->getRealOrderId());
             $orderCreated = $order->getCreatedAt();
             if (is_string($orderCreated)) {
-                $orderCreatedDate = \DateTime::createFromFormat('Y-m-d H:i:s', $orderCreated);
-                if ($orderCreatedDate instanceof \DateTimeInterface) {
+                $orderCreatedDate = DateTime::createFromFormat('Y-m-d H:i:s', $orderCreated);
+                if ($orderCreatedDate instanceof DateTimeInterface) {
                     $nostoOrder->setCreatedAt($orderCreatedDate);
                 }
             }
@@ -203,7 +205,7 @@ class Builder
                 'Discount (%s)',
                 implode(', ', $appliedRules)
             );
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $discountTxt = 'Discount (error)';
         }
 

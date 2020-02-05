@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2019, Nosto Solutions Ltd
+ * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,14 +29,14 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <contact@nosto.com>
- * @copyright 2019 Nosto Solutions Ltd
+ * @copyright 2020 Nosto Solutions Ltd
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
 
-/** @noinspection PhpDeprecationInspection */
 namespace Nosto\Tagging\Block;
 
+use Exception;
 use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Catalog\Block\Product\Context;
 use Magento\Catalog\Block\Product\View;
@@ -49,10 +49,11 @@ use Magento\Framework\Stdlib\StringUtils;
 use Magento\Framework\Url\EncoderInterface as UrlEncoder;
 use Nosto\Helper\DateHelper;
 use Nosto\Helper\PriceHelper;
+use Nosto\Object\Product\Product as NostoProduct;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Model\Category\Builder as NostoCategoryBuilder;
-use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
+use Nosto\Tagging\Model\Service\Product\ProductServiceInterface;
 
 /**
  * Product block used for outputting meta-data on the stores product pages.
@@ -65,8 +66,11 @@ class Product extends View
         TaggingTrait::__construct as taggingConstruct; // @codingStandardsIgnoreLine
     }
 
-    private $nostoProductBuilder;
+    /** @var NostoCategoryBuilder */
     private $categoryBuilder;
+
+    /** @var ProductServiceInterface */
+    private $productService;
 
     /**
      * Constructor.
@@ -81,10 +85,10 @@ class Product extends View
      * @param Session $customerSession the user session.
      * @param ProductRepositoryInterface $productRepository th product repository.
      * @param PriceCurrencyInterface $priceCurrency the price currency.
-     * @param NostoProductBuilder $nostoProductBuilder the product meta model builder.
      * @param NostoCategoryBuilder $categoryBuilder the category meta model builder.
      * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoHelperScope $nostoHelperScope
+     * @param ProductServiceInterface $productService
      * @param array $data optional data.
      * @SuppressWarnings(PHPMD.ExcessiveParameterList)
      */
@@ -99,10 +103,10 @@ class Product extends View
         Session $customerSession,
         ProductRepositoryInterface $productRepository,
         PriceCurrencyInterface $priceCurrency,
-        NostoProductBuilder $nostoProductBuilder,
         NostoCategoryBuilder $categoryBuilder,
         NostoHelperAccount $nostoHelperAccount,
         NostoHelperScope $nostoHelperScope,
+        ProductServiceInterface $productService,
         array $data = []
     ) {
         parent::__construct(
@@ -120,23 +124,21 @@ class Product extends View
         );
 
         $this->taggingConstruct($nostoHelperAccount, $nostoHelperScope);
-        $this->nostoProductBuilder = $nostoProductBuilder;
         $this->categoryBuilder = $categoryBuilder;
+        $this->productService = $productService;
     }
 
     /**
      * Returns the Nosto product DTO.
      *
-     * @return \Nosto\Object\Product\Product the product meta data model.
-     * @throws \Exception
+     * @return NostoProduct
+     * @throws Exception
      */
     public function getAbstractObject()
     {
-        $store = $this->nostoHelperScope->getStore();
-        return $this->nostoProductBuilder->build(
+        return $this->productService->getProduct(
             $this->getProduct(),
-            $store,
-            NostoProductBuilder::NOSTO_SCOPE_TAGGING
+            $this->nostoHelperScope->getStore()
         );
     }
 

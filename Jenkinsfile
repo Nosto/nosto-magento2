@@ -27,20 +27,22 @@ pipeline {
         catchError {
           sh "./vendor/bin/phpcs --standard=ruleset.xml --report=checkstyle --report-file=chkphpcs.xml || true"
         }
+        archiveArtifacts 'chkphpcs.xml'
       }
     }
 
     stage('Mess Detection') {
       steps {
         catchError {
-          sh "./vendor/bin/phpmd . xml codesize,naming,unusedcode,controversial,design --exclude vendor,var,build,tests --reportfile phpmd.xml || true"
+          sh "./vendor/bin/phpmd . xml codesize,naming,unusedcode,controversial,design --exclude vendor,var,build,tests --reportfile pmdphpmd.xml || true"
         }
+        archiveArtifacts 'pmdphpmd.xml'
       }
     }
 
     stage('Phan Analysis') {
       steps {
-        sh "composer create-project magento/community-edition:2.3.2 magento"
+        sh "composer create-project magento/community-edition=2.3.2 magento"
         sh "cd magento && composer config minimum-stability dev"
         sh "cd magento && composer config prefer-stable true"
         script {
@@ -53,8 +55,9 @@ pipeline {
         sh "cd magento && bin/magento module:enable --all"
         sh "cd magento && bin/magento setup:di:compile"
         catchError {
-          sh "./vendor/bin/phan --config-file=phan.php --output-mode=checkstyle --output=chkphan.xml || true"
+          sh "./vendor/bin/phan --config-file=phan.php --output-mode=checkstyle --output=chkphan.xml --processes=4 || true"
         }
+        archiveArtifacts 'chkphan.xml'
       }
     }
 

@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2019, Nosto Solutions Ltd
+ * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,22 +29,24 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <contact@nosto.com>
- * @copyright 2019 Nosto Solutions Ltd
+ * @copyright 2020 Nosto Solutions Ltd
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
 
 namespace Nosto\Tagging\Model\Product\Sku;
 
+use Exception;
 use Magento\Catalog\Model\Product;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable as ConfigurableType;
+use Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable\Attribute\Collection
+    as ConfigurableAttributeCollection;
 use Magento\Store\Model\Store;
 use Nosto\Object\Product\SkuCollection;
-use Nosto\Tagging\Model\Product\Sku\Builder as NostoSkuBuilder;
-use Nosto\Tagging\Model\Product\Repository as NostoProductRepository;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
+use Nosto\Tagging\Model\Product\Repository as NostoProductRepository;
+use Nosto\Tagging\Model\Product\Sku\Builder as NostoSkuBuilder;
 use Nosto\Types\Product\SkuInterface;
-use Nosto\NostoException;
 
 class Collection
 {
@@ -76,14 +78,14 @@ class Collection
      * @param Product $product
      * @param Store $store
      * @return SkuCollection
-     * @throws \Exception
+     * @throws Exception
      * @suppress PhanUndeclaredMethod
      */
     public function build(Product $product, Store $store)
     {
         $skuCollection = new SkuCollection();
         if ($product->getTypeId() === ConfigurableType::TYPE_CODE) {
-            $attributes = $this->configurableType->getConfigurableAttributes($product);
+            $configurableAttributes = $this->getConfigurableAttributes($product);
             /** @var ConfigurableType $productTypeInstance */
             $productTypeInstance = $product->getTypeInstance();
             $usedProducts = $productTypeInstance->getUsedProducts($product);
@@ -91,18 +93,24 @@ class Collection
             foreach ($usedProducts as $usedProduct) {
                 /** @var Product $usedProduct */
                 if (!$usedProduct->isDisabled()) {
-                    try {
-                        $sku = $this->nostoSkuBuilder->build($usedProduct, $store, $attributes);
-                        if ($sku instanceof SkuInterface) {
-                            $skuCollection->append($sku);
-                        }
-                    } catch (NostoException $e) {
-                        $this->logger->exception($e);
+                    $sku = $this->nostoSkuBuilder->build($usedProduct, $store, $configurableAttributes);
+                    if ($sku instanceof SkuInterface) {
+                        $skuCollection->append($sku);
                     }
                 }
             }
         }
-
         return $skuCollection;
+    }
+
+    /**
+     * @param Product $product
+     * @return ConfigurableAttributeCollection
+     */
+    public function getConfigurableAttributes(Product $product)
+    {
+        /* @var ConfigurableAttributeCollection $attributes */
+        $attributes = $this->configurableType->getConfigurableAttributes($product);
+        return $attributes;
     }
 }

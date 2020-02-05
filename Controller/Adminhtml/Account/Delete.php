@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2019, Nosto Solutions Ltd
+ * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,21 +29,22 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <contact@nosto.com>
- * @copyright 2019 Nosto Solutions Ltd
+ * @copyright 2020 Nosto Solutions Ltd
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
 
 namespace Nosto\Tagging\Controller\Adminhtml\Account;
 
+use Exception;
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\Controller\Result\Json;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Phrase;
 use Nosto\Helper\IframeHelper;
 use Nosto\Nosto;
-use Nosto\Tagging\Helper\Cache as NostoHelperCache;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
+use Nosto\Tagging\Helper\Cache as NostoHelperCache;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Model\Meta\Account\Iframe\Builder as NostoIframeMetaBuilder;
 use Nosto\Tagging\Model\User\Builder as NostoCurrentUserBuilder;
@@ -58,6 +59,7 @@ class Delete extends Base
     private $nostoHelperScope;
     private $nostoHelperCache;
 
+    /** @noinspection PhpMissingParentConstructorInspection */
     /**
      * @param Context $context
      * @param NostoHelperAccount $nostoHelperAccount
@@ -88,7 +90,7 @@ class Delete extends Base
 
     /**
      * @return Json
-     * @throws \Exception
+     * @throws Exception
      */
     public function execute()
     {

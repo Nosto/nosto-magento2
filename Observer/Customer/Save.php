@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2019, Nosto Solutions Ltd
+ * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,13 +29,14 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <contact@nosto.com>
- * @copyright 2019 Nosto Solutions Ltd
+ * @copyright 2020 Nosto Solutions Ltd
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
 
 namespace Nosto\Tagging\Observer\Customer;
 
+use Magento\Customer\Model\Data\Customer;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Module\Manager as ModuleManager;
@@ -62,6 +63,8 @@ class Save implements ObserverInterface
     public function execute(Observer $observer)
     {
         if ($this->moduleManger->isEnabled(NostoHelperData::MODULE_NAME)) {
+            /** @var Customer $customer */
+            /** @noinspection PhpUndefinedMethodInspection */
             $customer = $observer->getCustomer();
             $customerReference = $customer->getCustomAttribute(
                 NostoHelperData::NOSTO_CUSTOMER_REFERENCE_ATTRIBUTE_NAME

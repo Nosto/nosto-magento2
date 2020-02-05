@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2019, Nosto Solutions Ltd
+ * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,23 +29,24 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <contact@nosto.com>
- * @copyright 2019 Nosto Solutions Ltd
+ * @copyright 2020 Nosto Solutions Ltd
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
 
 namespace Nosto\Tagging\CustomerData;
 
+use Exception;
 use Magento\Checkout\Helper\Cart as CartHelper;
 use Magento\Customer\CustomerData\SectionSourceInterface;
 use Magento\Framework\Stdlib\CookieManagerInterface;
 use Magento\Quote\Model\Quote;
 use Nosto\Object\Cart\LineItem;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
-use Nosto\Tagging\Model\Cart\Builder as NostoCartBuilder;
-use Nosto\Tagging\Model\Customer\Customer as NostoCustomer;
-use Nosto\Tagging\Model\Cart\Restore\Builder as NostoRestoreCartUrlBuilder;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
+use Nosto\Tagging\Model\Cart\Builder as NostoCartBuilder;
+use Nosto\Tagging\Model\Cart\Restore\Builder as NostoRestoreCartUrlBuilder;
+use Nosto\Tagging\Model\Customer\Customer as NostoCustomer;
 
 class CartTagging extends HashedTagging implements SectionSourceInterface
 {
@@ -123,7 +124,7 @@ class CartTagging extends HashedTagging implements SectionSourceInterface
             try {
                 $data['restore_cart_url'] = $this->nostoRestoreCartUrlBuilder
                     ->build($this->getQuote(), $store);
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $this->logger->exception($e);
             }
         }
