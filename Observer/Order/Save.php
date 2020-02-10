@@ -164,9 +164,10 @@ class Save implements ObserverInterface
     }
 
     /**
+     * Detects if the order is new (the first time the order is saved)
      *
      * @param Order $order
-     * @return string|null
+     * @return bool
      */
     public function isNewOrder(Order $order)
     {
