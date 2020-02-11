@@ -1,5 +1,8 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+# 4.0.1
+* Make the new order detection more fault tolerant by comparing also updated at and created at timestamps
+
 # 4.0.0
 **New features (performance improvements)**
 * Introduce cache for Nosto product data to speedup the product tagging added to the product pages

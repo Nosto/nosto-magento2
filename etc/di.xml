@@ -88,6 +88,11 @@
             <argument name="productDataCron" xsi:type="object">Nosto\Tagging\Cron\ProductDataCron\Proxy</argument>
         </arguments>
     </type>
+    <type name="Nosto\Tagging\Observer\Order\Save">
+        <arguments>
+            <argument name="intervalForNew" xsi:type="number">1</argument>
+        </arguments>
+    </type>
     <type name="Magento\Framework\Console\CommandList">
         <arguments>
             <argument name="commands" xsi:type="array">

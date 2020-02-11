@@ -36,6 +36,7 @@
 
 namespace Nosto\Tagging\Observer\Order;
 
+use DateTime;
 use Exception;
 use Magento\Customer\Api\CustomerRepositoryInterface as MagentoCustomerRepository;
 use Magento\Framework\Event\Observer;
@@ -76,6 +77,7 @@ class Save implements ObserverInterface
     private $magentoCustomerRepository;
     private $orderStatusBuilder;
     private static $sent = [];
+    private $intervalForNew;
 
     /** @noinspection PhpUndefinedClassInspection */
     /**
@@ -90,6 +92,7 @@ class Save implements ObserverInterface
      * @param IndexerRegistry $indexerRegistry
      * @param NostoHelperUrl $nostoHelperUrl
      * @param MagentoCustomerRepository $magentoCustomerRepository
+     * @param int $intervalForNew
      */
     public function __construct(
         NostoHelperData $nostoHelperData,
@@ -102,7 +105,8 @@ class Save implements ObserverInterface
         NostoOrderStatusBuilder $orderStatusBuilder,
         IndexerRegistry $indexerRegistry,
         NostoHelperUrl $nostoHelperUrl,
-        MagentoCustomerRepository $magentoCustomerRepository
+        MagentoCustomerRepository $magentoCustomerRepository,
+        $intervalForNew
     ) {
         $this->nostoHelperData = $nostoHelperData;
         $this->nostoHelperAccount = $nostoHelperAccount;
@@ -114,6 +118,7 @@ class Save implements ObserverInterface
         $this->indexer = $indexerRegistry->get(InvalidateIndexer::INDEXER_ID);
         $this->nostoHelperUrl = $nostoHelperUrl;
         $this->magentoCustomerRepository = $magentoCustomerRepository;
+        $this->intervalForNew = $intervalForNew;
     }
 
     /**
@@ -148,13 +153,32 @@ class Save implements ObserverInterface
             );
             if ($nostoAccount !== null) {
                 //Check if order is new or updated
-                if ($order->getState() === Order::STATE_NEW) {
+                if ($this->isNewOrder($order)) {
                     $this->sendNewOrder($order, $nostoAccount, $store);
                 } else {
                     $this->sendOrderStatusUpdated($order, $nostoAccount);
                 }
                 self::$sent[] = $order->getId();
             }
+        }
+    }
+
+    /**
+     * Detects if the order is new (the first time the order is saved)
+     *
+     * @param Order $order
+     * @return bool
+     */
+    public function isNewOrder(Order $order)
+    {
+        try {
+            $updated = new DateTime($order->getUpdatedAt());
+            $created = new DateTime($order->getCreatedAt());
+            $diff = $updated->getTimestamp() - $created->getTimestamp();
+            return $order->getState() === Order::STATE_NEW && $diff <= $this->intervalForNew;
+        } catch (\Exception $e) {
+            $this->logger->exception($e);
+            return true;
         }
     }
 
