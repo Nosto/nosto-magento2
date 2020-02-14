@@ -16,6 +16,7 @@ All notable changes to this project will be documented in this file. This projec
 * Generate customer reference for all registered customers automatically during setup upgrade
 * Cleanup the change log database table after indexer run
 * Prevent redundant full reindex on Nosto indexers when running `setup:upgrade`
+* Fix GTIN attribute being set with margin value 
 
 **Removed features / functionalities**
 * Remove logic for sending cart updates to Nosto from server side
