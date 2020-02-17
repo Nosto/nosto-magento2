@@ -49,6 +49,7 @@ use Magento\Store\Model\ScopeInterface;
 use Nosto\NostoException;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Url as NostoHelperUrl;
+use Nosto\Tagging\Logger\Logger;
 use Zend_Validate_Exception;
 
 class UpgradeData extends CoreData implements UpgradeDataInterface
@@ -71,6 +72,7 @@ class UpgradeData extends CoreData implements UpgradeDataInterface
      * @param AttributeSetFactory $attributeSetFactory
      * @param CustomerCollectionFactory $customerCollectionFactory
      * @param CustomerResource $customerResource
+     * @param Logger $logger
      */
     public function __construct(
         NostoHelperAccount $nostoHelperAccount,
@@ -79,7 +81,8 @@ class UpgradeData extends CoreData implements UpgradeDataInterface
         CustomerSetupFactory $customerSetupFactory,
         AttributeSetFactory $attributeSetFactory,
         CustomerCollectionFactory $customerCollectionFactory,
-        CustomerResource $customerResource
+        CustomerResource $customerResource,
+        Logger $logger
     ) {
         $this->nostoHelperAccount = $nostoHelperAccount;
         $this->nostoHelperUrl = $nostoHelperUrl;
@@ -88,7 +91,8 @@ class UpgradeData extends CoreData implements UpgradeDataInterface
             $customerSetupFactory,
             $attributeSetFactory,
             $customerCollectionFactory,
-            $customerResource
+            $customerResource,
+            $logger
         );
     }
 
