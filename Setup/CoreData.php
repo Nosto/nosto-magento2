@@ -48,6 +48,7 @@ use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Util\Customer as CustomerUtil;
 use Nosto\Tagging\Util\PagingIterator;
 use Zend_Validate_Exception;
+use Nosto\Tagging\Logger\Logger;
 
 abstract class CoreData
 {
@@ -66,23 +67,29 @@ abstract class CoreData
     /** @var CustomerResource */
     private $customerResource;
 
+    /** @var Logger */
+    private $logger;
+
     /**
      * CoreData constructor.
      * @param CustomerSetupFactory $customerSetupFactory
      * @param AttributeSetFactory $attributeSetFactory
      * @param CustomerCollectionFactory $customerCollectionFactory
      * @param CustomerResource $customerResource
+     * @param Logger $logger
      */
     public function __construct(
         CustomerSetupFactory $customerSetupFactory,
         AttributeSetFactory $attributeSetFactory,
         CustomerCollectionFactory $customerCollectionFactory,
-        CustomerResource $customerResource
+        CustomerResource $customerResource,
+        Logger $logger
     ) {
         $this->customerSetupFactory = $customerSetupFactory;
         $this->attributeSetFactory = $attributeSetFactory;
         $this->customerCollectionFactory = $customerCollectionFactory;
         $this->customerResource = $customerResource;
+        $this->logger = $logger;
     }
 
     /**
@@ -175,7 +182,11 @@ abstract class CoreData
                         NostoHelperData::NOSTO_CUSTOMER_REFERENCE_ATTRIBUTE_NAME,
                         CustomerUtil::generateCustomerReference($customer)
                     );
-                    $this->customerResource->save($customer); // @codingStandardsIgnoreLine
+                    try {
+                        $this->customerResource->save($customer); // @codingStandardsIgnoreLine
+                    } catch (\Exception $e) {
+                        $this->logger->exception($e);
+                    }
                 }
             }
         }
