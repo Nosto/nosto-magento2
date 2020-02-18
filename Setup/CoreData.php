@@ -36,6 +36,7 @@
 
 namespace Nosto\Tagging\Setup;
 
+use Exception;
 use Magento\Customer\Model\Customer;
 use Magento\Customer\Model\CustomerFactory;
 use Magento\Customer\Model\ResourceModel\Customer as CustomerResource;
@@ -171,20 +172,23 @@ abstract class CoreData
     public function populateCustomerReference()
     {
         $customerCollection = $this->customerCollectionFactory->create()
-        ->addAttributeToSelect('*')
+        ->addAttributeToSelect(NostoHelperData::NOSTO_CUSTOMER_REFERENCE_ATTRIBUTE_NAME)
         ->setPageSize(1000);
         $iterator = new PagingIterator($customerCollection);
         /* @var Customer $customer */
         foreach ($iterator as $page) {
             foreach ($page as $customer) {
-                if (!$customer->getCustomAttribute(NostoHelperData::NOSTO_CUSTOMER_REFERENCE_ATTRIBUTE_NAME)) {
+                if (!$customer->getData(NostoHelperData::NOSTO_CUSTOMER_REFERENCE_ATTRIBUTE_NAME)) {
                     $customer->setData(
                         NostoHelperData::NOSTO_CUSTOMER_REFERENCE_ATTRIBUTE_NAME,
                         CustomerUtil::generateCustomerReference($customer)
                     );
                     try {
-                        $this->customerResource->save($customer); // @codingStandardsIgnoreLine
-                    } catch (\Exception $e) {
+                        $this->customerResource->saveAttribute(
+                            $customer,
+                            NostoHelperData::NOSTO_CUSTOMER_REFERENCE_ATTRIBUTE_NAME
+                        );
+                    } catch (Exception $e) {
                         $this->logger->exception($e);
                     }
                 }

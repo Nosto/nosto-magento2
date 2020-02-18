@@ -1,5 +1,8 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+# 4.0.3
+* `setup:upgrade` for customer now saves only customer reference instead of entire customer object
+
 # 4.0.2
 * Fix an issue where setup:upgrade could crash if customer migration is faulty
 
