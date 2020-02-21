@@ -39,20 +39,27 @@ namespace Nosto\Tagging\Model\Service\Product;
 use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Store\Api\Data\StoreInterface;
 use Nosto\Object\Product\Product;
+use Nosto\Tagging\Logger\Logger;
 
 class SanitizingProductService implements ProductServiceInterface
 {
     /** @var ProductServiceInterface */
     private $nostoProductService;
 
+    /** @var Logger */
+    private $logger;
+
     /**
      * DefaultProductService constructor.
      * @param ProductServiceInterface $nostoProductService
+     * @param Logger $logger
      */
     public function __construct(
-        ProductServiceInterface $nostoProductService
+        ProductServiceInterface $nostoProductService,
+        Logger $logger
     ) {
         $this->nostoProductService = $nostoProductService;
+        $this->logger = $logger;
     }
 
     /**
@@ -66,7 +73,11 @@ class SanitizingProductService implements ProductServiceInterface
             $store
         );
         if ($nostoProduct !== null) {
-            return $nostoProduct->sanitize();
+            try {
+                return $nostoProduct->sanitize();
+            } catch (\Exception $e) {
+                $this->logger->exception($e);
+            }
         }
         return null;
     }
