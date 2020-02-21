@@ -179,7 +179,7 @@ class UpgradeData extends CoreData implements UpgradeDataInterface
                         $nullableIds[] = $cachedProduct->getId();
                     }
                 }
-                if (count($canBeConverted) > 0) {
+                if (!empty($cachedProduct)) {
                     $convertSql = sprintf(
                         'UPDATE %s SET %s = TO_BASE64(%s) WHERE %s IN(%s)',
                         CacheResource::TABLE_NAME,
@@ -188,9 +188,9 @@ class UpgradeData extends CoreData implements UpgradeDataInterface
                         Cache::ID,
                         implode(',', $canBeConverted)
                     );
-                    $connection->query($convertSql);
+                    $connection->query($convertSql); // @codingStandardsIgnoreLine
                 }
-                if (count($nullableIds) > 0) {
+                if (!empty($nullableIds)) {
                     $setNullSql = sprintf(
                         'UPDATE %s SET %s = NULL, %s=1 WHERE %s IN(%s)',
                         CacheResource::TABLE_NAME,
@@ -199,7 +199,7 @@ class UpgradeData extends CoreData implements UpgradeDataInterface
                         Cache::ID,
                         implode(',', $nullableIds)
                     );
-                    $connection->query($setNullSql);
+                    $connection->query($setNullSql);  // @codingStandardsIgnoreLine
                 }
             }
         } catch (\Exception $e) {
