@@ -1,7 +1,7 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
 # 4.0.4
-* Store cahced Nosto product data as a base64 encoded string in database to avoid problems with character sets and collation
+* Store cached Nosto product data as a base64 encoded string in database to avoid problems with character sets and collation
 * Alter the type of cached product to be longtext to allow saving large product data sets
 
 # 4.0.3
