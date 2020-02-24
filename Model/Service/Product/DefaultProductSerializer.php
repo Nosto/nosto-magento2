@@ -49,7 +49,7 @@ class DefaultProductSerializer implements ProductSerializerInterface
      */
     public function fromString($data)
     {
-        return unserialize($data, [Product::class]); // @codingStandardsIgnoreLine
+        return unserialize(base64_decode($data), [Product::class]); // @codingStandardsIgnoreLine
     }
 
     /**
@@ -57,6 +57,6 @@ class DefaultProductSerializer implements ProductSerializerInterface
      */
     public function toString(ProductInterface $product)
     {
-        return serialize($product);  // @codingStandardsIgnoreLine
+        return base64_encode(serialize($product));  // @codingStandardsIgnoreLine
     }
 }
