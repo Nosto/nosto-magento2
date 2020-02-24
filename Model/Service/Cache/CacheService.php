@@ -417,9 +417,14 @@ class CacheService extends AbstractService
                 $this->cacheRepository->delete($productIndex);
                 return null;
             }
-            $nostoCachedProduct = $this->productSerializer->fromString(
-                $productIndex->getProductData()
-            );
+            try {
+                $nostoCachedProduct = $this->productSerializer->fromString(
+                    $productIndex->getProductData()
+                );
+            } catch (\Exception $e) {
+                $this->getLogger()->exception($e);
+                $nostoCachedProduct = null;
+            }
             if ($nostoCachedProduct instanceof NostoProductInterface === false ||
                 (
                     $nostoProduct instanceof NostoProductInterface

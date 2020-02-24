@@ -1,5 +1,9 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+# 4.0.4
+* Store cached Nosto product data as a base64 encoded string in database to avoid problems with character sets and collations
+* Alter the type of cached product to be longtext to allow saving large product data sets
+
 # 4.0.3
 * `setup:upgrade` for customer now saves only customer reference instead of entire customer object
 

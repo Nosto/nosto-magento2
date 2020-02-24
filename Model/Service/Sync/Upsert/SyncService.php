@@ -140,11 +140,15 @@ class SyncService extends AbstractService
                     sprintf('Upserting product "%s"', $productIndex->getProductId()),
                     ['store' => $productIndex->getStoreId()]
                 );
-                $op->addProduct(
-                    $this->productSerializer->fromString(
-                        $productData
-                    )
-                );
+                try {
+                    $op->addProduct(
+                        $this->productSerializer->fromString(
+                            $productData
+                        )
+                    );
+                } catch (\Exception $e) {
+                    $this->getLogger()->exception($e);
+                }
             }
             try {
                 $this->getLogger()->debug('Upserting batch');
