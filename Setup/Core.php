@@ -46,7 +46,7 @@ use Nosto\Tagging\Model\ResourceModel\Product\Cache as CacheResource;
 
 abstract class Core
 {
-    const PRODUCT_DATA_MAX_LENGHT = '32M';
+    const PRODUCT_DATA_MAX_LENGTH = '32M';
 
     /**
      * Creates a table for mapping Nosto customer to Magento's cart & orders
