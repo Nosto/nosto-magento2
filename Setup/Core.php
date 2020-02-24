@@ -195,7 +195,7 @@ abstract class Core
             ->addColumn(
                 ProductCacheInterface::PRODUCT_DATA,
                 Table::TYPE_TEXT,
-                self::PRODUCT_DATA_MAX_LENGHT,
+                self::PRODUCT_DATA_MAX_LENGTH,
                 [
                     'nullable' => true,
                     'unsigned' => true,

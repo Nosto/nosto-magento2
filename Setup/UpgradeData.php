@@ -179,31 +179,53 @@ class UpgradeData extends CoreData implements UpgradeDataInterface
                         $nullableIds[] = $cachedProduct->getId();
                     }
                 }
-                if (!empty($cachedProduct)) {
-                    $convertSql = sprintf(
-                        'UPDATE %s SET %s = TO_BASE64(%s) WHERE %s IN(%s)',
-                        CacheResource::TABLE_NAME,
-                        Cache::PRODUCT_DATA,
-                        Cache::PRODUCT_DATA,
-                        Cache::ID,
-                        implode(',', $canBeConverted)
-                    );
-                    $connection->query($convertSql); // @codingStandardsIgnoreLine
-                }
-                if (!empty($nullableIds)) {
-                    $setNullSql = sprintf(
-                        'UPDATE %s SET %s = NULL, %s=1 WHERE %s IN(%s)',
-                        CacheResource::TABLE_NAME,
-                        Cache::PRODUCT_DATA,
-                        Cache::IS_DIRTY,
-                        Cache::ID,
-                        implode(',', $nullableIds)
-                    );
-                    $connection->query($setNullSql);  // @codingStandardsIgnoreLine
-                }
+                $this->base64EncodeByIds($connection, $canBeConverted);
+                $this->nullifyProductDataByIds($connection, $nullableIds);
             }
         } catch (\Exception $e) {
             $this->getLogger()->exception($e);
+        }
+    }
+
+    /**
+     * Converts product data to base64 encdoded string for the given entity ids
+     *
+     * @param AdapterInterface $connection
+     * @param array $ids
+     */
+    private function base64EncodeByIds(AdapterInterface $connection, array $ids)
+    {
+        if (!empty($ids)) {
+            $convertSql = sprintf(
+                'UPDATE %s SET %s = TO_BASE64(%s) WHERE %s IN(%s)',
+                CacheResource::TABLE_NAME,
+                Cache::PRODUCT_DATA,
+                Cache::PRODUCT_DATA,
+                Cache::ID,
+                implode(',', $ids)
+            );
+            $connection->query($convertSql); // @codingStandardsIgnoreLine
+        }
+    }
+
+    /**
+     * Sets product data to NULL & marks the cached products are dirty for the given entity ids
+     *
+     * @param AdapterInterface $connection
+     * @param array $ids
+     */
+    private function nullifyProductDataByIds(AdapterInterface $connection, array $ids)
+    {
+        if (!empty($ids)) {
+            $setNullSql = sprintf(
+                'UPDATE %s SET %s = NULL, %s=1 WHERE %s IN(%s)',
+                CacheResource::TABLE_NAME,
+                Cache::PRODUCT_DATA,
+                Cache::IS_DIRTY,
+                Cache::ID,
+                implode(',', $ids)
+            );
+            $connection->query($setNullSql); // @codingStandardsIgnoreLine
         }
     }
 }

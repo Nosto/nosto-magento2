@@ -97,7 +97,7 @@ class UpgradeSchema extends Core implements UpgradeSchemaInterface
             Cache::PRODUCT_DATA,
             [
                 'type' => Table::TYPE_TEXT,
-                'length' => self::PRODUCT_DATA_MAX_LENGHT,
+                'length' => self::PRODUCT_DATA_MAX_LENGTH,
                 'nullable' => true,
                 'comment' => 'Product data'
             ]
