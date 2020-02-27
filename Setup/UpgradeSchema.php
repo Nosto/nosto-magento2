@@ -44,6 +44,7 @@ use Nosto\Tagging\Api\Data\CustomerInterface;
 use Nosto\Tagging\Model\Product\Cache;
 use Nosto\Tagging\Model\ResourceModel\Customer;
 use Nosto\Tagging\Model\ResourceModel\Product\Cache as CacheResource;
+use Zend_Db_Exception;
 
 class UpgradeSchema extends Core implements UpgradeSchemaInterface
 {
@@ -51,6 +52,7 @@ class UpgradeSchema extends Core implements UpgradeSchemaInterface
 
     /**
      * {@inheritdoc}
+     * @throws Zend_Db_Exception
      */
     public function upgrade(SchemaSetupInterface $setup, ModuleContextInterface $context)
     {
@@ -62,7 +64,9 @@ class UpgradeSchema extends Core implements UpgradeSchemaInterface
         if (version_compare($fromVersion, '4.0.3', '<=')) {
             $this->productCacheDataToLongtext($setup);
         }
-
+        if (version_compare($fromVersion, '4.0.4', '<=')) {
+            $this->createProductCacheTable($setup);
+        }
         $setup->endSetup();
     }
 
