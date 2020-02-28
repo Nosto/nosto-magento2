@@ -36,21 +36,37 @@
 
 namespace Nosto\Tagging\Setup;
 
+use Exception;
 use Magento\Framework\DB\Ddl\Table;
 use Magento\Framework\Setup\ModuleContextInterface;
 use Magento\Framework\Setup\SchemaSetupInterface;
 use Magento\Framework\Setup\UpgradeSchemaInterface;
 use Nosto\Tagging\Api\Data\CustomerInterface;
+use Nosto\Tagging\Logger\Logger;
 use Nosto\Tagging\Model\Product\Cache;
 use Nosto\Tagging\Model\ResourceModel\Customer;
 use Nosto\Tagging\Model\ResourceModel\Product\Cache as CacheResource;
+use Zend_Db_Exception;
 
 class UpgradeSchema extends Core implements UpgradeSchemaInterface
 {
     const PRODUCT_QUEUE_TABLE = 'nosto_tagging_product_queue';
 
+    /** @var Logger $loger */
+    private $loger;
+
+    /**
+     * UpgradeSchema constructor.
+     * @param Logger $loger
+     */
+    public function __construct(Logger $loger)
+    {
+        $this->loger = $loger;
+    }
+
     /**
      * {@inheritdoc}
+     * @throws Zend_Db_Exception
      */
     public function upgrade(SchemaSetupInterface $setup, ModuleContextInterface $context)
     {
@@ -59,10 +75,16 @@ class UpgradeSchema extends Core implements UpgradeSchemaInterface
         if (version_compare($fromVersion, '2.1.0', '<')) {
             $this->addRestoreCartHash($setup);
         }
+        if (version_compare($fromVersion, '4.0.0', '<=')) {
+            try {
+                $this->createProductCacheTable($setup);
+            } catch (Exception $e) {
+                $this->loger->exception($e);
+            }
+        }
         if (version_compare($fromVersion, '4.0.3', '<=')) {
             $this->productCacheDataToLongtext($setup);
         }
-
         $setup->endSetup();
     }
 
