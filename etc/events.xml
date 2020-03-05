@@ -43,12 +43,6 @@
     <event name="nosto_sales_save_after">
         <observer name="nosto_order_confirmation" instance="Nosto\Tagging\Observer\Order\Save"/>
     </event>
-    <event name="review_save_after">
-        <observer name="nosto_review_save_after" instance="Nosto\Tagging\Observer\Product\Review"/>
-    </event>
-    <event name="review_delete_after">
-        <observer name="nosto_review_delete_after" instance="Nosto\Tagging\Observer\Product\Review"/>
-    </event>
     <event name="checkout_cart_product_add_after">
         <observer name="nosto_checkout_cart_product_add_after" instance="Nosto\Tagging\Observer\Cart\Add"/>
     </event>
