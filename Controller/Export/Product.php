@@ -46,7 +46,6 @@ use Nosto\Object\Product\ProductCollection;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Model\Product\CollectionBuilder;
-use Nosto\Tagging\Model\Service\Sync\Upsert\SyncService;
 
 /**
  * Product export controller used to export product history to Nosto in order to
@@ -62,27 +61,21 @@ class Product extends Base
     /** @var CollectionBuilder  */
     private $nostoCollectionBuilder;
 
-    /** @var SyncService */
-    private $nostoSyncService;
-
     /**
      * @param Context $context
      * @param NostoHelperScope $nostoHelperScope
      * @param NostoHelperAccount $nostoHelperAccount
      * @param CollectionBuilder $collectionBuilder
-     * @param SyncService $nostoSyncService
      */
     public function __construct(
         Context $context,
         NostoHelperScope $nostoHelperScope,
         NostoHelperAccount $nostoHelperAccount,
-        CollectionBuilder $collectionBuilder,
-        SyncService $nostoSyncService
+        CollectionBuilder $collectionBuilder
     ) {
         parent::__construct($context, $nostoHelperScope, $nostoHelperAccount);
 
         $this->nostoCollectionBuilder = $collectionBuilder;
-        $this->nostoSyncService = $nostoSyncService;
     }
 
     /**
@@ -123,7 +116,6 @@ class Product extends Base
             foreach ($collection as $item) {
                 $productIds[] = $item->getProductId();
             }
-            $this->nostoSyncService->markAsInSyncByProductIdsAndStoreId($productIds, $store);
         }
         return $result;
     }

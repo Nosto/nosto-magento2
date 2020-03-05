@@ -67,8 +67,6 @@ use Nosto\Tagging\Model\Service\AbstractService;
 use Nosto\Tagging\Model\Service\Product\ProductComparatorInterface;
 use Nosto\Tagging\Model\Service\Product\ProductSerializerInterface;
 use Nosto\Tagging\Model\Service\Product\ProductServiceInterface;
-use Nosto\Tagging\Model\Service\Sync\Delete\AsyncBulkPublisher as ProductDeleteBulkPublisher;
-use Nosto\Tagging\Model\Service\Sync\Upsert\AsyncBulkPublisher as ProductUpsertBulkPublisher;
 use Nosto\Tagging\Util\PagingIterator;
 use Nosto\Types\Product\ProductInterface as NostoProductInterface;
 
@@ -111,12 +109,6 @@ class CacheService extends AbstractService
     /** @var array */
     private $invalidatedProducts = [];
 
-    /** @var ProductUpsertBulkPublisher */
-    private $productUpsertBulkPublisher;
-
-    /** @var ProductDeleteBulkPublisher */
-    private $productDeleteBulkPublisher;
-
     /** @var ProductSerializerInterface */
     private $productSerializer;
 
@@ -139,8 +131,6 @@ class CacheService extends AbstractService
      * @param ProductCollectionFactory $productCollectionFactory
      * @param TimezoneInterface $magentoTimeZone
      * @param NostoDataHelper $nostoDataHelper
-     * @param ProductUpsertBulkPublisher $productUpsertBulkPublisher
-     * @param ProductDeleteBulkPublisher $productDeleteBulkPublisher
      * @param ProductSerializerInterface $productSerializer
      * @param ProductComparatorInterface $productComparator
      * @param ProductServiceInterface $productService
@@ -157,8 +147,6 @@ class CacheService extends AbstractService
         ProductCollectionFactory $productCollectionFactory,
         TimezoneInterface $magentoTimeZone,
         NostoDataHelper $nostoDataHelper,
-        ProductUpsertBulkPublisher $productUpsertBulkPublisher,
-        ProductDeleteBulkPublisher $productDeleteBulkPublisher,
         ProductSerializerInterface $productSerializer,
         ProductComparatorInterface $productComparator,
         ProductServiceInterface $productService
@@ -173,8 +161,6 @@ class CacheService extends AbstractService
         $this->nostoProductRepository = $nostoProductRepository;
         $this->productCollectionFactory = $productCollectionFactory;
         $this->magentoTimeZone = $magentoTimeZone;
-        $this->productUpsertBulkPublisher = $productUpsertBulkPublisher;
-        $this->productDeleteBulkPublisher = $productDeleteBulkPublisher;
         $this->productSerializer = $productSerializer;
         $this->productComparator = $productComparator;
         $this->productService = $productService;
@@ -292,27 +278,6 @@ class CacheService extends AbstractService
         /** @var BundleType $typeInstance */
         $typeInstance = $product->getTypeInstance();
         return empty($typeInstance->getOptionsIds($product));
-    }
-
-    /**
-     * @param Store $store
-     * @param array $ids
-     * @throws NostoException
-     * @throws MemoryOutOfBoundsException
-     * @throws LocalizedException
-     */
-    public function generateProductsInStore(Store $store, array $ids = [])
-    {
-        $account = $this->nostoHelperAccount->findAccount($store);
-        if ($account === null) {
-            throw new NostoException(sprintf('Store view %s does not have Nosto installed', $store->getName()));
-        }
-        $dirtyCollection = $this->getDirtyCollection($store, $ids);
-        $this->rebuildDirtyProducts($dirtyCollection, $store);
-        $outOfSyncCollection = $this->getOutOfSyncCollection($store, $ids);
-        $this->productUpsertBulkPublisher->execute($outOfSyncCollection, $store);
-        $deletedCollection = $this->getDeletedCollection($store);
-        $this->productDeleteBulkPublisher->execute($deletedCollection, $store);
     }
 
     /**
