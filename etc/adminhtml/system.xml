@@ -206,14 +206,6 @@
                     </comment>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
-                <field id="product_data_build_in_cron" translate="label comment" type="select" sortOrder="150"
-                       showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Build product data cache in cron</label>
-                    <comment>
-                        <![CDATA[Set this yes if you want the cached product data to be built in a cron job instead of in Magento indexer]]>
-                    </comment>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                </field>
             </group>
             <group id="attributes" translate="label" type="text" sortOrder="40" showInDefault="1"
                    showInWebsite="1" showInStore="1">

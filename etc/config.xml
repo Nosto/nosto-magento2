@@ -58,7 +58,6 @@
                 <indexer_memory>50</indexer_memory>
                 <tag_date_published>0</tag_date_published>
                 <track_multi_channel_orders>1</track_multi_channel_orders>
-                <product_data_build_in_cron>0</product_data_build_in_cron>
             </flags>
             <multicurrency>
                 <method>undefined</method>
