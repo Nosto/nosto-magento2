@@ -55,7 +55,6 @@ use Nosto\Tagging\Helper\Data as NostoDataHelper;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Indexer\DataIndexer as NostoIndexerData;
-use Nosto\Tagging\Model\Indexer\InvalidateIndexer as NostoIndexerInvalidate;
 use Nosto\Tagging\Model\Product\Cache as NostoProductIndex;
 use Nosto\Tagging\Model\Product\Cache\CacheBuilder;
 use Nosto\Tagging\Model\Product\Cache\CacheRepository;
@@ -179,45 +178,6 @@ class CacheService extends AbstractService
         $this->productSerializer = $productSerializer;
         $this->productComparator = $productComparator;
         $this->productService = $productService;
-    }
-
-    /**
-     * Handles only the first step of indexing
-     * Create one if row does not exits
-     * Else set row to dirty
-     *
-     * @param ProductCollection $collection
-     * @param Store $store
-     * @throws NostoException
-     * @throws MemoryOutOfBoundsException
-     * @throws Exception
-     */
-    public function invalidateOrCreate(ProductCollection $collection, Store $store)
-    {
-        $this->startBenchmark(
-            self::BENCHMARK_NAME_INVALIDATE,
-            self::BENCHMARK_BREAKPOINT_INVALIDATE
-        );
-        $collection->setPageSize(self::PRODUCT_DATA_BATCH_SIZE);
-        $iterator = new PagingIterator($collection);
-
-        /** @var ProductCollection $page */
-        foreach ($iterator as $page) {
-            $this->checkMemoryConsumption('product invalidate');
-            /** @var Product $item */
-            foreach ($page->getItems() as $item) {
-                $this->invalidateOrCreateProductOrParent($item, $store);
-                $this->tickBenchmark(self::BENCHMARK_NAME_INVALIDATE);
-            }
-            $this->getLogger()->info(sprintf(
-                '"%s" has processed by %d/%d for store "%s"',
-                NostoIndexerInvalidate::INDEXER_ID,
-                $iterator->getCurrentPageNumber(),
-                $iterator->getLastPageNumber(),
-                $store->getCode()
-            ));
-        }
-        $this->logBenchmarkSummary(self::BENCHMARK_NAME_INVALIDATE, $store);
     }
 
     /**

@@ -48,13 +48,6 @@
     <preference for="Symfony\Component\Console\Input\InputInterface" type="Symfony\Component\Console\Input\ArgvInput\Proxy"/>
     <preference for="Nosto\Tagging\Model\Mview\ChangeLogInterface" type="Nosto\Tagging\Model\Mview\ChangeLog"/>
     <preference for="Nosto\Tagging\Model\Mview\MviewInterface" type="Nosto\Tagging\Model\Mview\Mview"/>
-    <preference for="Nosto\Tagging\Model\Service\Indexer\IndexerStatusServiceInterface" type="Nosto\Tagging\Model\Service\Indexer\IndexerStatusService"/>
-    <type name="Magento\Catalog\Model\ResourceModel\Product">
-        <plugin name="nostoProductObserverInvalidate" type="Nosto\Tagging\Plugin\ProductInvalidate"/>
-    </type>
-    <type name="Nosto\Tagging\Model\ResourceModel\Product\Cache">
-        <plugin name="nostoProductObserverData" type="Nosto\Tagging\Plugin\ProductData"/>
-    </type>
     <type name="Nosto\Tagging\Console\Command\NostoAccountConnectCommand">
         <arguments>
             <argument name="nostoHelperAccount" xsi:type="object">Nosto\Tagging\Helper\Account\Proxy</argument>

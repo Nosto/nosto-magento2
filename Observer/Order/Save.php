@@ -41,7 +41,6 @@ use Exception;
 use Magento\Customer\Api\CustomerRepositoryInterface as MagentoCustomerRepository;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
-use Magento\Framework\Indexer\IndexerRegistry;
 use Magento\Framework\Module\Manager as ModuleManager;
 use Magento\Sales\Model\Order;
 use Magento\Store\Model\Store;
@@ -55,7 +54,6 @@ use Nosto\Tagging\Helper\Url as NostoHelperUrl;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Customer\Customer as NostoCustomer;
 use Nosto\Tagging\Model\Customer\Repository as CustomerRepository;
-use Nosto\Tagging\Model\Indexer\InvalidateIndexer as InvalidateIndexer;
 use Nosto\Tagging\Model\Order\Builder as NostoOrderBuilder;
 use Nosto\Tagging\Model\Order\Status\Builder as NostoOrderStatusBuilder;
 use Nosto\Types\Signup\AccountInterface;
@@ -72,7 +70,6 @@ class Save implements ObserverInterface
     private $nostoOrderBuilder;
     private $moduleManager;
     private $customerRepository;
-    private $indexer;
     private $nostoHelperUrl;
     private $magentoCustomerRepository;
     private $orderStatusBuilder;
@@ -89,10 +86,9 @@ class Save implements ObserverInterface
      * @param CustomerRepository $customerRepository
      * @param NostoOrderBuilder $orderBuilder
      * @param NostoOrderStatusBuilder $orderStatusBuilder
-     * @param IndexerRegistry $indexerRegistry
      * @param NostoHelperUrl $nostoHelperUrl
      * @param MagentoCustomerRepository $magentoCustomerRepository
-     * @param int $intervalForNew
+     * @param $intervalForNew
      */
     public function __construct(
         NostoHelperData $nostoHelperData,
@@ -103,7 +99,6 @@ class Save implements ObserverInterface
         CustomerRepository $customerRepository,
         NostoOrderBuilder $orderBuilder,
         NostoOrderStatusBuilder $orderStatusBuilder,
-        IndexerRegistry $indexerRegistry,
         NostoHelperUrl $nostoHelperUrl,
         MagentoCustomerRepository $magentoCustomerRepository,
         $intervalForNew
@@ -115,7 +110,6 @@ class Save implements ObserverInterface
         $this->nostoOrderBuilder = $orderBuilder;
         $this->orderStatusBuilder = $orderStatusBuilder;
         $this->customerRepository = $customerRepository;
-        $this->indexer = $indexerRegistry->get(InvalidateIndexer::INDEXER_ID);
         $this->nostoHelperUrl = $nostoHelperUrl;
         $this->magentoCustomerRepository = $magentoCustomerRepository;
         $this->intervalForNew = $intervalForNew;
@@ -179,28 +173,6 @@ class Save implements ObserverInterface
         } catch (\Exception $e) {
             $this->logger->exception($e);
             return true;
-        }
-    }
-
-    /**
-     * Handles the inventory level update to Nosto
-     *
-     * @param NostoOrder $nostoOrder
-     */
-    private function handleInventoryLevelUpdate(NostoOrder $nostoOrder)
-    {
-        //update inventory level
-        if (!$this->indexer->isScheduled() && $this->nostoHelperData->isInventoryTaggingEnabled()) {
-            $items = $nostoOrder->getPurchasedItems();
-            if ($items) {
-                $productIds = [];
-                foreach ($items as $item) {
-                    if ($item->getProductId() !== '-1') {
-                        $productIds[] = $item->getProductId();
-                    }
-                }
-                $this->indexer->reindexList($productIds);
-            }
         }
     }
 
