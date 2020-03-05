@@ -183,14 +183,6 @@
             </argument>
         </arguments>
     </type>
-    <type name="Magento\Indexer\Console\Command\IndexerShowDimensionsModeCommand">
-        <arguments>
-            <argument name="indexers" xsi:type="array">
-                <item name="nosto_index_product_data" xsi:type="string">nosto_index_product_data</item>
-                <item name="nosto_index_product_invalidate" xsi:type="string">nosto_index_product_invalidate</item>
-            </argument>
-        </arguments>
-    </type>
     <type name="Nosto\Tagging\Cron\InvalidateCron">
         <arguments>
             <argument name="intervalHours" xsi:type="number">4</argument>
