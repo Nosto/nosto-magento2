@@ -143,13 +143,6 @@
     <type name="Nosto\Tagging\Model\Service\Product\SanitizingProductService">
         <arguments>
             <argument name="nostoProductService" xsi:type="object">
-                Nosto\Tagging\Model\Service\Product\CachingProductService
-            </argument>
-        </arguments>
-    </type>
-    <type name="Nosto\Tagging\Model\Service\Cache">
-        <arguments>
-            <argument name="productService" xsi:type="object">
                 Nosto\Tagging\Model\Service\Product\DefaultProductService
             </argument>
         </arguments>
@@ -164,7 +157,7 @@
     <type name="Nosto\Tagging\Model\Product\CollectionBuilder">
         <arguments>
             <argument name="productService" xsi:type="object">
-                Nosto\Tagging\Model\Service\Product\CachingProductService
+                Nosto\Tagging\Model\Service\Product\DefaultProductService
             </argument>
         </arguments>
     </type>
