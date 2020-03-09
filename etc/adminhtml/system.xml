@@ -140,34 +140,6 @@
                     </comment>
                     <source_model>Nosto\Tagging\Model\Config\Source\Ratings</source_model>
                 </field>
-
-                <field id="inventory_tagging" translate="label comment" type="select" sortOrder="40"
-                       showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Enable Inventory Levels</label>
-                    <comment><![CDATA[Enable tagging inventory level data for use in recommendations.
-                        <strong style="color:red">Warning!</strong> Enabling variation data
-                        tagging may minutely impact performance.]]>
-                    </comment>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                </field>
-                <field id="product_updates" translate="label comment" type="select" sortOrder="50"
-                       showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Product Updates via API</label>
-                    <comment><![CDATA[Enable product updates via API for keeping the catalog in sync.
-                        <strong style="color:red">Warning!</strong> Disabling this feature may
-                        lead to products with incorrect pricing and availability data to be displayed
-                        in recommendations.]]>
-                    </comment>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                </field>
-                <field id="full_reindex" translate="label comment" type="select" sortOrder="60"
-                       showInDefault="1" showInWebsite="0" showInStore="0">
-                    <label>Indexer full reindex</label>
-                    <comment><![CDATA[Enable full reindex for reindex all products to nosto by running
-                     the magento indexer:reindex command]]>
-                    </comment>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                </field>
                 <field id="low_stock_indication" translate="label comment" type="select" sortOrder="70"
                        showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Enable Low Stock Indication</label>
@@ -181,14 +153,6 @@
                     <comment><![CDATA[Set this to no if you don't want to send customer data to Nosto]]>
                     </comment>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                </field>
-                <field id="indexer_memory" translate="label comment" type="select" sortOrder="110"
-                       showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Indexer Memory</label>
-                    <comment>
-                        <![CDATA[Percentage of total PHP available memory that Nosto indexer is allowed to use]]>
-                    </comment>
-                    <source_model>Nosto\Tagging\Model\Config\Source\Memory</source_model>
                 </field>
                 <field id="tag_date_published" translate="label comment" type="select" sortOrder="130"
                        showInDefault="1" showInWebsite="1" showInStore="1">
@@ -264,11 +228,6 @@
                        showInDefault="0" showInWebsite="0" showInStore="1">
                     <label>Account Details and Tokens</label>
                     <frontend_model>Nosto\Tagging\Block\Adminhtml\Form\Field\Tokens</frontend_model>
-                </field>
-                <field id="nosto_indexers_info" translate="label comment" type="text" sortOrder="30"
-                       showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Product Data Status</label>
-                    <frontend_model>Nosto\Tagging\Block\Adminhtml\Form\Field\Indexers</frontend_model>
                 </field>
             </group>
         </section>

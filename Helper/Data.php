@@ -110,11 +110,6 @@ class Data extends AbstractHelper
     const XML_PATH_INVENTORY_TAGGING = 'nosto/flags/inventory_tagging';
 
     /**
-     * Path to the configuration object that stores the preference for real time product updates
-     */
-    const XML_PATH_PRODUCT_UPDATES = 'nosto/flags/product_updates';
-
-    /**
      * Path to store config for sending customer data to Nosto or not
      */
     const XML_PATH_SEND_CUSTOMER_DATA = 'nosto/flags/send_customer_data';
@@ -123,11 +118,6 @@ class Data extends AbstractHelper
      * Path to the configuration object that stores the preference for low stock tagging
      */
     const XML_PATH_LOW_STOCK_INDICATION = 'nosto/flags/low_stock_indication';
-
-    /**
-     * Path to the configuration object that stores the percentage of PHP available memory for indexer
-     */
-    const XML_PATH_INDEXER_MEMORY = 'nosto/flags/indexer_memory';
 
     /*
      * Path to the configuration object for tagging the date a product has beed added to Magento's catalog
@@ -374,17 +364,6 @@ class Data extends AbstractHelper
     }
 
     /**
-     * Returns if real time product updates are enabled from the configuration table
-     *
-     * @param StoreInterface|null $store the store model or null.
-     * @return bool the configuration value
-     */
-    public function isProductUpdatesEnabled(StoreInterface $store = null)
-    {
-        return (bool)$this->getStoreConfig(self::XML_PATH_PRODUCT_UPDATES, $store);
-    }
-
-    /**
      * Returns if customer data should be send to Nosto
      *
      * @param StoreInterface|null $store the store model or null.
@@ -415,17 +394,6 @@ class Data extends AbstractHelper
     public function isLowStockIndicationEnabled(StoreInterface $store = null)
     {
         return (bool)$this->getStoreConfig(self::XML_PATH_LOW_STOCK_INDICATION, $store);
-    }
-
-    /**
-     * Returns maximum percentage of PHP available memory that indexer should use
-     *
-     * @param StoreInterface|null $store the store model or null.
-     * @return int the configuration value
-     */
-    public function getIndexerMemory(StoreInterface $store = null)
-    {
-        return $this->getStoreConfig(self::XML_PATH_INDEXER_MEMORY, $store);
     }
 
     /**
