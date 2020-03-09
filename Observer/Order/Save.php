@@ -253,7 +253,6 @@ class Save implements ObserverInterface
                 )
             );
         }
-        $this->handleInventoryLevelUpdate($nostoOrder);
     }
 
     /**
