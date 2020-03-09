@@ -43,8 +43,4 @@
         <observer name="nosto_update_exchange_rates_observer"
                   instance="Nosto\Tagging\Observer\Rates\Update"/>
     </event>
-    <event name="admin_system_config_changed_section_nosto">
-        <observer name="nosto_update_admin_settings_changed_observer"
-                  instance="Nosto\Tagging\Observer\Adminhtml\Config"/>
-    </event>
 </config>
