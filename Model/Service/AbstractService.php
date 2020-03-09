@@ -67,27 +67,6 @@ abstract class AbstractService
     }
 
     /**
-     * Throws new memory out of bounds exception if the memory
-     * consumption is higher than configured amount
-     *
-     * @param string $serviceName
-     * @throws MemoryOutOfBoundsException
-     */
-    public function checkMemoryConsumption($serviceName)
-    {
-        $maxMemPercentage = $this->nostoDataHelper->getIndexerMemory();
-        if (NostoMemUtil::getPercentageUsedMem() >= $maxMemPercentage) {
-            throw new MemoryOutOfBoundsException(
-                sprintf(
-                    'Memory Out Of Bounds Error: Memory used by %s is over %d%% allowed',
-                    $serviceName,
-                    $maxMemPercentage
-                )
-            );
-        }
-    }
-
-    /**
      * @param string $name
      * @param int $breakpoint
      */
