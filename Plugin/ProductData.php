@@ -40,7 +40,7 @@ use Closure;
 use Magento\Catalog\Model\ResourceModel\Product as MagentoResourceProduct;
 use Magento\Framework\Indexer\IndexerRegistry;
 use Magento\Framework\Model\AbstractModel;
-use Nosto\Tagging\Model\Indexer\DataIndexer as IndexerData;
+use Nosto\Tagging\Model\Indexer\QueueIndexer as QueueIndexer;
 use Nosto\Tagging\Model\ResourceModel\Product\Cache;
 
 class ProductData
@@ -51,9 +51,9 @@ class ProductData
     private $indexerRegistry;
 
     /**
-     * @var IndexerData
+     * @var QueueIndexer
      */
-    private $indexerData;
+    private $queueIndexer;
 
     /**
      * @var MagentoResourceProduct
@@ -64,16 +64,16 @@ class ProductData
      * Product Observer constructor
      * @param MagentoResourceProduct $magentoResourceProduct
      * @param IndexerRegistry $indexerRegistry
-     * @param IndexerData $indexerData
+     * @param QueueIndexer $indexerData
      */
     public function __construct(
         MagentoResourceProduct $magentoResourceProduct,
         IndexerRegistry $indexerRegistry,
-        IndexerData $indexerData
+        QueueIndexer $indexerData
     )
     {
         $this->indexerRegistry = $indexerRegistry;
-        $this->indexerData = $indexerData;
+        $this->queueIndexer = $indexerData;
         $this->magentoResourceProduct = $magentoResourceProduct;
     }
 
@@ -89,10 +89,11 @@ class ProductData
         Closure $proceed,
         AbstractModel $product
     ) {
-        $mageIndexer = $this->indexerRegistry->get(IndexerData::INDEXER_ID);
+        $mageIndexer = $this->indexerRegistry->get(QueueIndexer::INDEXER_ID);
         if (!$mageIndexer->isScheduled()) {
             $this->magentoResourceProduct->addCommitCallback(function () use ($product) {
-                $this->indexerData->executeRow($product->getId());
+                //ToDo - we could throw this into the mqueue directly
+                $this->queueIndexer->executeRow($product->getId());
             });
         }
 

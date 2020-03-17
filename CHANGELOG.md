@@ -1,5 +1,8 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+# not released
+* Speedup the product indexing processing by using product update queue & move the product building to message queues
+
 # 4.0.5
 * Fix an issue where product cache table was not created during upgrade
 

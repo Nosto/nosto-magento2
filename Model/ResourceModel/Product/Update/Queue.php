@@ -34,29 +34,27 @@
  *
  */
 
-namespace Nosto\Tagging\Setup;
+namespace Nosto\Tagging\Model\ResourceModel\Product\Update;
 
-use Magento\Framework\Setup\InstallSchemaInterface;
-use Magento\Framework\Setup\ModuleContextInterface;
-use Magento\Framework\Setup\SchemaSetupInterface;
+use Magento\Framework\Model\ResourceModel\Db\AbstractDb;
+use Nosto\Tagging\Api\Data\ProductCacheInterface;
+use Nosto\Tagging\Api\Data\ProductUpdateQueueInterface;
 
-class InstallSchema extends Core implements InstallSchemaInterface
+/**
+ * Class Queue
+ */
+class Queue extends AbstractDb
 {
+    protected $_serializableFields = [ProductUpdateQueueInterface::PRODUCT_IDS => [null, []]];
+
+    const TABLE_NAME = 'nosto_tagging_product_update_queue';
     /**
-     * Installs DB schema for Nosto Tagging module
+     * Initialize resource model
      *
-     * @param SchemaSetupInterface $setup
-     * @param ModuleContextInterface $context
      * @return void
      */
-    public function install(// @codingStandardsIgnoreLine
-        SchemaSetupInterface $setup,
-        ModuleContextInterface $context
-    ) {
-        $setup->startSetup();
-        $this->createCustomerTable($setup);
-        $this->createProductCacheTable($setup);
-        $this->createProductUpdateQueue($setup);
-        $setup->endSetup();
+    public function _construct()
+    {
+        $this->_init(self::TABLE_NAME, ProductUpdateQueueInterface::ID);
     }
 }

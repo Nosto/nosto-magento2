@@ -41,8 +41,10 @@ use Magento\Framework\DB\Ddl\Table;
 use Magento\Framework\Setup\SchemaSetupInterface;
 use Nosto\Tagging\Api\Data\CustomerInterface;
 use Nosto\Tagging\Api\Data\ProductCacheInterface;
+use Nosto\Tagging\Api\Data\ProductUpdateQueueInterface;
 use Nosto\Tagging\Model\ResourceModel\Customer;
 use Nosto\Tagging\Model\ResourceModel\Product\Cache as CacheResource;
+use Nosto\Tagging\Model\ResourceModel\Product\Update\Queue;
 
 abstract class Core
 {
@@ -223,6 +225,82 @@ abstract class Core
                 ),
                 [ProductCacheInterface::PRODUCT_ID, ProductCacheInterface::STORE_ID],
                 ['type' => AdapterInterface::INDEX_TYPE_UNIQUE]
+            );
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $setup->getConnection()->createTable($table);
+    }
+
+    /**
+     * Creates a product update queue table for Nosto product data
+     *
+     * @param SchemaSetupInterface $setup
+     * @throws \Zend_Db_Exception
+     */
+    public function createProductUpdateQueue(SchemaSetupInterface $setup)
+    {
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $table = $setup->getConnection()
+            ->newTable($setup->getTable(Queue::TABLE_NAME))
+            ->addColumn(
+                ProductUpdateQueueInterface::ID,
+                Table::TYPE_INTEGER,
+                null,
+                [
+                    'auto_increment' => true,
+                    'nullable' => false,
+                    'identity' => true,
+                    'primary' => true,
+                    'unsigned' => true,
+                ],
+                'ID'
+            )
+            ->addColumn(
+                ProductUpdateQueueInterface::STORE_ID,
+                Table::TYPE_SMALLINT,
+                null,
+                [
+                    'nullable' => false,
+                    'unsigned' => true,
+                ],
+                'Store ID'
+            )
+            ->addColumn(
+                ProductUpdateQueueInterface::PRODUCT_IDS,
+                Table::TYPE_TEXT,
+                self::PRODUCT_DATA_MAX_LENGTH,
+                [
+                    'nullable' => true,
+                    'unsigned' => true,
+                ],
+                'Product data'
+            )
+            ->addColumn(
+                ProductUpdateQueueInterface::STATUS,
+                Table::TYPE_TEXT,
+                10,
+                ['nullable' => false],
+                'Processing status'
+            )
+            ->addColumn(
+                ProductUpdateQueueInterface::CREATED_AT,
+                Table::TYPE_DATETIME,
+                null,
+                ['nullable' => false],
+                'Creation Time'
+            )
+            ->addColumn(
+                ProductUpdateQueueInterface::STARTED_AT,
+                Table::TYPE_DATETIME,
+                null,
+                ['nullable' => true],
+                'Started at Time'
+            )
+            ->addColumn(
+                ProductUpdateQueueInterface::COMPLETED_AT,
+                Table::TYPE_DATETIME,
+                null,
+                ['nullable' => true],
+                'Completed at Time'
             );
         /** @noinspection PhpUnhandledExceptionInspection */
         $setup->getConnection()->createTable($table);

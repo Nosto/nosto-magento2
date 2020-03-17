@@ -40,7 +40,7 @@ use Closure;
 use Magento\Catalog\Model\ResourceModel\Product as MagentoResourceProduct;
 use Magento\Framework\Indexer\IndexerRegistry;
 use Magento\Framework\Model\AbstractModel;
-use Nosto\Tagging\Model\Indexer\InvalidateIndexer as IndexerInvalidate;
+use Nosto\Tagging\Model\Indexer\QueueIndexer as QueueIndexer;
 use Nosto\Tagging\Model\Product\Repository as NostoProductRepository;
 use Nosto\Tagging\Model\Service\Cache\CacheService;
 
@@ -49,8 +49,8 @@ class ProductInvalidate
     /** @var IndexerRegistry  */
     private $indexerRegistry;
 
-    /** @var IndexerInvalidate  */
-    private $indexerInvalidate;
+    /** @var QueueIndexer  */
+    private $queueIndexer;
 
     /** @var CacheService  */
     private $cacheService;
@@ -62,18 +62,18 @@ class ProductInvalidate
      * ProductInvalidate constructor.
      * @param IndexerRegistry $indexerRegistry
      * @param CacheService $cacheService
-     * @param IndexerInvalidate $indexerInvalidate
+     * @param QueueIndexer $indexerInvalidate
      */
     public function __construct(
         IndexerRegistry $indexerRegistry,
         CacheService $cacheService,
-        IndexerInvalidate $indexerInvalidate,
+        QueueIndexer $indexerInvalidate,
         NostoProductRepository $nostoProductRepository
     )
     {
         $this->indexerRegistry = $indexerRegistry;
         $this->cacheService = $cacheService;
-        $this->indexerInvalidate = $indexerInvalidate;
+        $this->queueIndexer = $indexerInvalidate;
         $this->nostoProductRepository = $nostoProductRepository;
     }
 
@@ -88,10 +88,10 @@ class ProductInvalidate
         Closure $proceed,
         AbstractModel $product
     ) {
-        $mageIndexer = $this->indexerRegistry->get(IndexerInvalidate::INDEXER_ID);
+        $mageIndexer = $this->indexerRegistry->get(QueueIndexer::INDEXER_ID);
         if (!$mageIndexer->isScheduled()) {
             $productResource->addCommitCallback(function () use ($product) {
-                $this->indexerInvalidate->executeRow($product->getId());
+                $this->queueIndexer->executeRow($product->getId());
             });
         }
 
@@ -110,17 +110,17 @@ class ProductInvalidate
         Closure $proceed,
         AbstractModel $product
     ) {
-        $mageIndexer = $this->indexerRegistry->get(IndexerInvalidate::INDEXER_ID);
+        $mageIndexer = $this->indexerRegistry->get(QueueIndexer::INDEXER_ID);
         if (!$mageIndexer->isScheduled()) {
             $productIds = $this->nostoProductRepository->resolveParentProductIds($product);
             if (empty($productIds) && $this->cacheService->canBuildProduct($product)) {
                 $productResource->addCommitCallback(function () use ($product) {
-                    $this->indexerInvalidate->executeRow($product->getId());
+                    $this->queueIndexer->executeRow($product->getId());
                 });
             }
             if (is_array($productIds) && !empty($productIds)) {
                 $productResource->addCommitCallback(function () use ($productIds) {
-                    $this->indexerInvalidate->executeList($productIds);
+                    $this->queueIndexer->executeList($productIds);
                 });
             }
         }

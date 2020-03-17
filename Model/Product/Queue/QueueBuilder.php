@@ -34,29 +34,55 @@
  *
  */
 
-namespace Nosto\Tagging\Setup;
+namespace Nosto\Tagging\Model\Product\Queue;
 
-use Magento\Framework\Setup\InstallSchemaInterface;
-use Magento\Framework\Setup\ModuleContextInterface;
-use Magento\Framework\Setup\SchemaSetupInterface;
+use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
+use Magento\Store\Api\Data\StoreInterface;
+use Nosto\Tagging\Api\Data\ProductUpdateQueueInterface;
+use Nosto\Tagging\Model\Product\Update\Queue as QueueModel;
+use Nosto\Tagging\Model\Product\Update\QueueFactory;
 
-class InstallSchema extends Core implements InstallSchemaInterface
+/**
+ * Class QueueBuilder
+ */
+class QueueBuilder
 {
+    /** @var QueueFactory  */
+    private $queueFactory;
+
+    /** @var NostoProductBuilder */
+    private $nostoProductBuilder;
+
+    /** @var TimezoneInterface */
+    private $magentoTimeZone;
+
     /**
-     * Installs DB schema for Nosto Tagging module
-     *
-     * @param SchemaSetupInterface $setup
-     * @param ModuleContextInterface $context
-     * @return void
+     * Builder constructor.
+     * @param QueueFactory $queueFactory
+     * @param TimezoneInterface $magentoTimeZone
      */
-    public function install(// @codingStandardsIgnoreLine
-        SchemaSetupInterface $setup,
-        ModuleContextInterface $context
+    public function __construct(
+        QueueFactory $queueFactory,
+        TimezoneInterface $magentoTimeZone
     ) {
-        $setup->startSetup();
-        $this->createCustomerTable($setup);
-        $this->createProductCacheTable($setup);
-        $this->createProductUpdateQueue($setup);
-        $setup->endSetup();
+        $this->queueFactory = $queueFactory;
+        $this->magentoTimeZone = $magentoTimeZone;
+    }
+
+    /**
+     * @param StoreInterface $store
+     * @param array $productIds
+     * @return QueueModel
+     */
+    public function build(
+        StoreInterface $store,
+        array $productIds
+    ) {
+        $queueModel = $this->queueFactory->create();
+        $queueModel->setProductIds($productIds);
+        $queueModel->setCreatedAt($this->magentoTimeZone->date());
+        $queueModel->setStore($store);
+        $queueModel->setStatus(ProductUpdateQueueInterface::STATUS_VALUE_NEW);
+        return $queueModel;
     }
 }

@@ -34,7 +34,7 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Service\Cache;
+namespace Nosto\Tagging\Model\Service\Update;
 
 use Exception;
 use Magento\Bundle\Model\Product\Type as BundleType;
@@ -45,7 +45,6 @@ use Magento\Catalog\Model\ProductRepository;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
-use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\Store;
 use Nosto\Exception\MemoryOutOfBoundsException;
 use Nosto\NostoException;
@@ -56,7 +55,8 @@ use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Product\Cache as NostoProductIndex;
 use Nosto\Tagging\Model\Product\Cache\CacheBuilder;
-use Nosto\Tagging\Model\Product\Cache\CacheRepository;
+use Nosto\Tagging\Model\Product\Queue\QueueBuilder;
+use Nosto\Tagging\Model\Product\Queue\QueueRepository;
 use Nosto\Tagging\Model\Product\Repository as NostoProductRepository;
 use Nosto\Tagging\Model\ResourceModel\Magento\Product\Collection as ProductCollection;
 use Nosto\Tagging\Model\ResourceModel\Magento\Product\CollectionFactory as ProductCollectionFactory;
@@ -71,20 +71,19 @@ use Nosto\Tagging\Model\Service\Sync\Upsert\AsyncBulkPublisher as ProductUpsertB
 use Nosto\Tagging\Util\PagingIterator;
 use Nosto\Types\Product\ProductInterface as NostoProductInterface;
 
-class CacheService extends AbstractService
+/**
+ * Class QueueService
+ */
+class QueueService extends AbstractService
 {
-    const PRODUCT_DATA_BATCH_SIZE = 100;
-    const PRODUCT_DELETION_BATCH_SIZE = 100;
-    const BENCHMARK_BREAKPOINT_INVALIDATE = 100;
-    const BENCHMARK_BREAKPOINT_REBUILD = 10;
-    const BENCHMARK_NAME_INVALIDATE = 'nosto_index_invalidate';
-    const BENCHMARK_NAME_REBUILD = 'nosto_index_rebuild';
+    const PRODUCTID_BATCH_SIZE = 1000;
+    const PRODUCT_DELETION_BATCH_SIZE = 1000;
 
-    /** @var CacheRepository */
-    private $cacheRepository;
+    /** @var QueueRepository  */
+    private $queueRepository;
 
-    /** @var CacheBuilder */
-    private $indexBuilder;
+    /** @var QueueBuilder */
+    private $queueBuilder;
 
     /** @var ProductRepository */
     private $productRepository;
@@ -127,8 +126,8 @@ class CacheService extends AbstractService
 
     /**
      * CacheService constructor.
-     * @param CacheRepository $cacheRepository
-     * @param CacheBuilder $indexBuilder
+     * @param QueueRepository $queueRepository
+     * @param CacheBuilder $queueBuilder
      * @param ProductRepository $productRepository
      * @param NostoHelperScope $nostoHelperScope
      * @param NostoHelperAccount $nostoHelperAccount
@@ -145,8 +144,8 @@ class CacheService extends AbstractService
      * @param ProductServiceInterface $productService
      */
     public function __construct(
-        CacheRepository $cacheRepository,
-        CacheBuilder $indexBuilder,
+        QueueRepository $queueRepository,
+        QueueBuilder $queueBuilder,
         ProductRepository $productRepository,
         NostoHelperScope $nostoHelperScope,
         NostoHelperAccount $nostoHelperAccount,
@@ -163,8 +162,8 @@ class CacheService extends AbstractService
         ProductServiceInterface $productService
     ) {
         parent::__construct($nostoDataHelper, $logger);
-        $this->cacheRepository = $cacheRepository;
-        $this->indexBuilder = $indexBuilder;
+        $this->queueRepository = $queueRepository;
+        $this->queueBuilder = $queueBuilder;
         $this->productRepository = $productRepository;
         $this->nostoHelperScope = $nostoHelperScope;
         $this->nostoHelperAccount = $nostoHelperAccount;
@@ -180,92 +179,57 @@ class CacheService extends AbstractService
     }
 
     /**
-     * Handles only the first step of indexing
-     * Create one if row does not exits
-     * Else set row to dirty
+     * Sets the products into the update queue
      *
      * @param ProductCollection $collection
      * @param Store $store
      * @throws NostoException
-     * @throws MemoryOutOfBoundsException
      * @throws Exception
      */
-    public function invalidateOrCreate(ProductCollection $collection, Store $store)
+    public function addCollectionToQueue(ProductCollection $collection, Store $store)
     {
-        $this->startBenchmark(
-            self::BENCHMARK_NAME_INVALIDATE,
-            self::BENCHMARK_BREAKPOINT_INVALIDATE
-        );
-        $collection->setPageSize(self::PRODUCT_DATA_BATCH_SIZE);
+        $collection->setPageSize(self::PRODUCTID_BATCH_SIZE);
         $iterator = new PagingIterator($collection);
 
         /** @var ProductCollection $page */
         foreach ($iterator as $page) {
-            $this->checkMemoryConsumption('product invalidate');
-            /** @var Product $item */
-            foreach ($page->getItems() as $item) {
-                $this->invalidateOrCreateProductOrParent($item, $store);
-                $this->tickBenchmark(self::BENCHMARK_NAME_INVALIDATE);
+            $queueEntry = $this->queueBuilder->build(
+                $store,
+                $this->toParentProructIds($page)
+            );
+            if (count($queueEntry->getProductIds()) > 0) {
+                $this->queueRepository->save($queueEntry);
             }
-            $this->getLogger()->info(sprintf(
-                '"%s" has processed by %d/%d for store "%s"',
-                self::class,
-                $iterator->getCurrentPageNumber(),
-                $iterator->getLastPageNumber(),
-                $store->getCode()
-            ));
         }
-        $this->logBenchmarkSummary(self::BENCHMARK_NAME_INVALIDATE, $store);
     }
 
     /**
-     * @param Product $product
-     * @param Store $store
+     * @param ProductCollection $collection
+     * @return array
      * @throws NostoException
      */
-    public function invalidateOrCreateProductOrParent(Product $product, Store $store)
+    private function toParentProructIds(ProductCollection $collection)
     {
-        $parents = $this->nostoProductRepository->resolveParentProductIds($product);
-
-        //Products has no parents and Index product itself
-        if (empty($parents)) {
-            $this->updateOrCreateDirtyEntity($product, $store);
-            $this->invalidatedProducts[] = $product->getId();
-            return;
-        }
-
-        //Loop through product parents and Index the parents
-        if (is_array($parents)) {
-            $this->invalidateOrCreateParents($parents, $store);
-            return;
-        }
-
-        throw new NostoException('Could not index product with id: ' . $product->getId());
-    }
-
-    /**
-     * @param array $ids
-     * @param Store $store
-     * @throws NostoException
-     */
-    private function invalidateOrCreateParents(array $ids, Store $store)
-    {
+        $productIds = [];
         /** @var ProductCollection $collection */
-        $collection = $this->productCollectionFactory->create();
-        $collection->addIdsToFilter($ids);
-        $collection->setPageSize(self::PRODUCT_DATA_BATCH_SIZE);
+        $collection->setPageSize(self::PRODUCTID_BATCH_SIZE);
         $iterator = new PagingIterator($collection);
 
         /** @var ProductCollection $page */
         foreach ($iterator as $page) {
             /** @var ProductInterface $product */
             foreach ($page->getItems() as $product) {
-                if ($this->hasParentBeenInvalidated($product->getId()) === false) {
-                    $this->updateOrCreateDirtyEntity($product, $store);
-                    $this->invalidatedProducts[] = $product->getId();
+                $parents = $this->nostoProductRepository->resolveParentProductIds($product);
+                if (!empty($parents)) {
+                    foreach ($parents as $id) {
+                        $productIds[] = $id;
+                    }
+                } else {
+                    $productIds[] = $product->getId();
                 }
             }
         }
+        return array_unique($productIds);
     }
 
     /**
@@ -278,31 +242,6 @@ class CacheService extends AbstractService
             return true;
         }
         return false;
-    }
-
-    /**
-     * @param ProductInterface $product
-     * @param StoreInterface $store
-     * @return void
-     */
-    public function updateOrCreateDirtyEntity(ProductInterface $product, StoreInterface $store)
-    {
-        if (!$this->canBuildProduct($product)) {
-            $this->getLogger()
-                ->debug(sprintf('Product %s cannot be processed by Nosto', $product->getId()));
-            return;
-        }
-        $indexedProduct = $this->cacheRepository->getByProductIdAndStoreId($product->getId(), $store->getId());
-        try {
-            if ($indexedProduct === null) { // Creates Index Product
-                $indexedProduct = $this->indexBuilder->build($product, $store);
-            }
-            $indexedProduct->setIsDirty(true);
-            $indexedProduct->setUpdatedAt($this->magentoTimeZone->date());
-            $this->cacheRepository->save($indexedProduct);
-        } catch (Exception $e) {
-            $this->getLogger()->exception($e);
-        }
     }
 
     /**
@@ -346,6 +285,7 @@ class CacheService extends AbstractService
             throw new NostoException(sprintf('Store view %s does not have Nosto installed', $store->getName()));
         }
         $dirtyCollection = $this->getDirtyCollection($store, $ids);
+        $this->rebuildDirtyProducts($dirtyCollection, $store);
         $outOfSyncCollection = $this->getOutOfSyncCollection($store, $ids);
         $this->productUpsertBulkPublisher->execute($outOfSyncCollection, $store);
         $deletedCollection = $this->getDeletedCollection($store);
@@ -381,7 +321,7 @@ class CacheService extends AbstractService
             }
             $this->getLogger()->info(sprintf(
                 '"%s" has processed by %d/%d for store "%s"',
-                self::class,
+                NostoIndexerData::INDEXER_ID,
                 $iterator->getCurrentPageNumber(),
                 $iterator->getLastPageNumber(),
                 $store->getCode()
@@ -411,7 +351,7 @@ class CacheService extends AbstractService
                 $this->nostoHelperScope->getStore($productIndex->getStoreId())
             );
             if ($nostoProduct === null) {
-                $this->cacheRepository->delete($productIndex);
+                $this->queueRepository->delete($productIndex);
                 return null;
             }
             try {
@@ -443,7 +383,7 @@ class CacheService extends AbstractService
                 );
             }
             $productIndex->setIsDirty(false);
-            $this->cacheRepository->save($productIndex);
+            $this->queueRepository->save($productIndex);
             return $productIndex;
         } catch (Exception $e) {
             $this->getLogger()->exception($e);
@@ -484,7 +424,7 @@ class CacheService extends AbstractService
         $cachedCollection = $this->nostoCacheCollectionFactory->create()
             ->addProductIdsFilter($uniqueIds)
             ->addStoreFilter($store);
-        $this->cacheRepository->markAsDeleted($cachedCollection);
+        $this->queueRepository->markAsDeleted($cachedCollection);
         $this->getLogger()->info(
             sprintf(
                 'Marked %d indexed products as deleted for store %s',

@@ -34,29 +34,34 @@
  *
  */
 
-namespace Nosto\Tagging\Setup;
+namespace Nosto\Tagging\Api;
 
-use Magento\Framework\Setup\InstallSchemaInterface;
-use Magento\Framework\Setup\ModuleContextInterface;
-use Magento\Framework\Setup\SchemaSetupInterface;
+use Magento\Catalog\Api\Data\ProductInterface;
+use Magento\Store\Api\Data\StoreInterface;
+use Magento\Store\Model\Store;
+use Nosto\Tagging\Api\Data\ProductCacheInterface;
+use Nosto\Tagging\Api\Data\ProductUpdateQueueInterface;
 
-class InstallSchema extends Core implements InstallSchemaInterface
+interface ProductUpdateQueueRepositoryInterface
 {
     /**
-     * Installs DB schema for Nosto Tagging module
+     * Save Queue entry
      *
-     * @param SchemaSetupInterface $setup
-     * @param ModuleContextInterface $context
-     * @return void
+     * @param ProductUpdateQueueInterface $entry
+     * @return ProductUpdateQueueInterface
      */
-    public function install(// @codingStandardsIgnoreLine
-        SchemaSetupInterface $setup,
-        ModuleContextInterface $context
-    ) {
-        $setup->startSetup();
-        $this->createCustomerTable($setup);
-        $this->createProductCacheTable($setup);
-        $this->createProductUpdateQueue($setup);
-        $setup->endSetup();
-    }
+    public function save(ProductUpdateQueueInterface $entry);
+
+    /**
+     * Delete productIndex
+     *
+     * @param ProductUpdateQueueInterface $entry
+     */
+    public function delete(ProductUpdateQueueInterface $entry);
+
+    /**
+     * @param StoreInterface $store
+     * @return ProductCacheInterface|null
+     */
+    public function getByStore(StoreInterface $store);
 }
