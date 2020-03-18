@@ -37,7 +37,6 @@
 namespace Nosto\Tagging\Model\ResourceModel\Product\Update;
 
 use Magento\Framework\Model\ResourceModel\Db\AbstractDb;
-use Nosto\Tagging\Api\Data\ProductCacheInterface;
 use Nosto\Tagging\Api\Data\ProductUpdateQueueInterface;
 
 /**

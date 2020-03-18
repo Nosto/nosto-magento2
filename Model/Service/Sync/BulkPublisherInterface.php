@@ -42,9 +42,9 @@ use Nosto\Tagging\Model\ResourceModel\Product\Cache\CacheCollection;
 interface BulkPublisherInterface
 {
     /**
-     * @param CacheCollection $collection
-     * @param Store $store
+     * @param int $storeId
+     * @param array $productIds
      * @return void
      */
-    public function execute(CacheCollection $collection, Store $store);
+    public function execute($storeId, $productIds = []);
 }

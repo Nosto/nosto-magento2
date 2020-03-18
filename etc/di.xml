@@ -37,7 +37,6 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
     <preference for="Magento\Framework\Stdlib\CookieManagerInterface" type="Magento\Framework\Stdlib\Cookie\PhpCookieManager"/>
-    <preference for="Nosto\Tagging\Api\Data\ProductQueueSearchResultsInterface" type="Nosto\Tagging\Model\Product\QueueSearchResults"/>
     <preference for="Nosto\Tagging\Model\Service\Product\Category\CategoryServiceInterface" type="Nosto\Tagging\Model\Service\Product\Category\CachingCategoryService"/>
     <preference for="Nosto\Tagging\Model\Service\Product\Attribute\AttributeServiceInterface" type="Nosto\Tagging\Model\Service\Product\Attribute\CachingAttributeService"/>
     <preference for="Nosto\Tagging\Model\Service\Product\Attribute\AttributeProviderInterface" type="Nosto\Tagging\Model\Service\Product\Attribute\DefaultAttributeProvider"/>
@@ -49,6 +48,7 @@
     <preference for="Nosto\Tagging\Model\Mview\ChangeLogInterface" type="Nosto\Tagging\Model\Mview\ChangeLog"/>
     <preference for="Nosto\Tagging\Model\Mview\MviewInterface" type="Nosto\Tagging\Model\Mview\Mview"/>
     <preference for="Nosto\Tagging\Model\Service\Indexer\IndexerStatusServiceInterface" type="Nosto\Tagging\Model\Service\Indexer\IndexerStatusService"/>
+    <preference for="Nosto\Tagging\Model\Service\Sync\BulkPublisherInterface" type="Nosto\Tagging\Model\Service\Sync\Upsert\AsyncBulkPublisher"/>
     <type name="Magento\Catalog\Model\ResourceModel\Product">
         <plugin name="nostoProductObserverInvalidate" type="Nosto\Tagging\Plugin\ProductInvalidate"/>
     </type>

@@ -65,4 +65,10 @@
             <table name="catalog_product_website" entity_column="product_id" />
         </subscriptions>
     </view>
+    <view id="nosto_index_product_queue_processor" class="Nosto\Tagging\Model\Indexer\QueueProcessorIndexer" group="indexer">
+        <subscriptions>
+            <!-- basic product information -->
+            <table name="nosto_tagging_product_update_queue" entity_column="id" />
+        </subscriptions>
+    </view>
 </config>

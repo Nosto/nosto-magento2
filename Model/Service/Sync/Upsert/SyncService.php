@@ -41,17 +41,21 @@ use Magento\Store\Model\Store;
 use Nosto\Exception\MemoryOutOfBoundsException;
 use Nosto\NostoException;
 use Nosto\Operation\UpsertProduct;
-use Nosto\Tagging\Api\Data\ProductCacheInterface;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Data as NostoDataHelper;
 use Nosto\Tagging\Helper\Url as NostoHelperUrl;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Product\Cache\CacheRepository;
-use Nosto\Tagging\Model\ResourceModel\Product\Cache\CacheCollection;
+use Nosto\Tagging\Model\ResourceModel\Magento\Product\Collection as ProductCollection;
 use Nosto\Tagging\Model\Service\AbstractService;
 use Nosto\Tagging\Model\Service\Product\ProductSerializerInterface;
+use Nosto\Tagging\Model\Service\Product\ProductServiceInterface;
 use Nosto\Tagging\Util\PagingIterator;
+use Magento\Catalog\Model\Product;
 
+/**
+ * Class SyncService
+ */
 class SyncService extends AbstractService
 {
     const API_BATCH_SIZE = 50;
@@ -74,25 +78,28 @@ class SyncService extends AbstractService
     /** @var ProductSerializerInterface */
     private $productSerializer;
 
+    /** @var ProductServiceInterface */
+    private $productService;
+
     /**
      * Index constructor.
-     * @param CacheRepository $cacheRepository
      * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoHelperUrl $nostoHelperUrl
      * @param NostoLogger $logger
      * @param NostoDataHelper $nostoDataHelper
+     * @param ProductServiceInterface $productService
      * @param ProductSerializerInterface $productSerializer
      */
     public function __construct(
-        CacheRepository $cacheRepository,
         NostoHelperAccount $nostoHelperAccount,
         NostoHelperUrl $nostoHelperUrl,
         NostoLogger $logger,
         NostoDataHelper $nostoDataHelper,
+        ProductServiceInterface $productService,
         ProductSerializerInterface $productSerializer
     ) {
         parent::__construct($nostoDataHelper, $logger);
-        $this->cacheRepository = $cacheRepository;
+        $this->productService = $productService;
         $this->nostoHelperAccount = $nostoHelperAccount;
         $this->nostoHelperUrl = $nostoHelperUrl;
         $this->nostoDataHelper = $nostoDataHelper;
@@ -100,12 +107,12 @@ class SyncService extends AbstractService
     }
 
     /**
-     * @param CacheCollection $collection
+     * @param ProductCollection $collection
      * @param Store $store
-     * @throws NostoException
      * @throws MemoryOutOfBoundsException
+     * @throws NostoException
      */
-    public function syncIndexedProducts(CacheCollection $collection, Store $store)
+    public function syncProducts(ProductCollection $collection, Store $store)
     {
         if (!$this->nostoDataHelper->isProductUpdatesEnabled($store)) {
             $this->getLogger()->info(
@@ -119,33 +126,24 @@ class SyncService extends AbstractService
         $collection->setPageSize(self::API_BATCH_SIZE);
         $iterator = new PagingIterator($collection);
 
-        /** @var CacheCollection $page */
+        /** @var ProductCollection $page */
         foreach ($iterator as $page) {
             $this->checkMemoryConsumption('product sync');
             $op = new UpsertProduct($account, $this->nostoHelperUrl->getActiveDomain($store));
             $op->setResponseTimeout(self::RESPONSE_TIMEOUT);
-            /** @var ProductCacheInterface $productIndex */
-            foreach ($page as $productIndex) {
-                $productData = $productIndex->getProductData();
-                if (empty($productData) && !$productIndex->getIsDirty()) {
-                    throw new NostoException(
-                        'Something is wrong in the nosto product index table.
-                        Product do not have data nor is marked as dirty'
-                    );
-                }
-                if (empty($productData)) {
-                    continue; // Do not sync products with null data
+            /** @var Product $product */
+            foreach ($page as $product) {
+                $nostoProduct = $this->productService->getProduct($product, $store);
+                if ($nostoProduct === null) {
+                    throw new NostoException('Could not get product from the product service.');
                 }
                 $this->getLogger()->debug(
-                    sprintf('Upserting product "%s"', $productIndex->getProductId()),
-                    ['store' => $productIndex->getStoreId()]
+                    sprintf('Upserting product "%s"', $product->getProductId()),
+                    ['store' => $product->getStoreId()]
                 );
                 try {
-                    $op->addProduct(
-                        $this->productSerializer->fromString(
-                            $productData
-                        )
-                    );
+                    $op->addProduct($nostoProduct);
+                    // TODO: Add cache update logic here if the flag is here
                 } catch (\Exception $e) {
                     $this->getLogger()->exception($e);
                 }
@@ -153,7 +151,6 @@ class SyncService extends AbstractService
             try {
                 $this->getLogger()->debug('Upserting batch');
                 $op->upsert();
-                $this->cacheRepository->markAsInSyncCurrentItemsByStore($page, $store);
                 $this->tickBenchmark(self::BENCHMARK_SYNC_NAME);
             } catch (Exception $upsertException) {
                 $this->getLogger()->exception($upsertException);
@@ -161,19 +158,5 @@ class SyncService extends AbstractService
         }
 
         $this->logBenchmarkSummary(self::BENCHMARK_SYNC_NAME, $store);
-    }
-
-    /**
-     * @param int[] $productIds
-     * @param Store $store
-     * @return void
-     */
-    public function markAsInSyncByProductIdsAndStoreId(array $productIds, Store $store)
-    {
-        try {
-            $this->cacheRepository->markAsInSync($productIds, $store);
-        } catch (Exception $e) {
-            $this->getLogger()->exception($e);
-        }
     }
 }

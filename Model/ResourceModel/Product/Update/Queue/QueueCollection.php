@@ -36,10 +36,8 @@
 
 namespace Nosto\Tagging\Model\ResourceModel\Product\Update\Queue;
 
-use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection;
 use Magento\Store\Api\Data\StoreInterface;
-use Nosto\Tagging\Api\Data\ProductCacheInterface;
 use Nosto\Tagging\Api\Data\ProductUpdateQueueInterface;
 use Nosto\Tagging\Model\Product\Update\Queue;
 use Nosto\Tagging\Model\ResourceModel\Product\Update\Queue as QueueResource;
@@ -97,6 +95,19 @@ class QueueCollection extends AbstractCollection
         );
     }
 
+    /**
+     * Filters collection by status
+     *
+     * @param string $status
+     * @return QueueCollection
+     */
+    public function addStatusFilter($status)
+    {
+        return $this->addFieldToFilter(
+            ProductUpdateQueueInterface::STATUS,
+            ['eq' => $status]
+        );
+    }
 
     /**
      * Filters collection by id (primary key)
@@ -134,6 +145,21 @@ class QueueCollection extends AbstractCollection
     public function orderBy($field, $sort)
     {
         $this->getSelect()->order($field . ' ' . $sort);
+        return $this;
+    }
+
+    /**
+     * Deserialize fields
+     *
+     * @return QueueCollection
+     */
+    protected function _afterLoad()
+    {
+        parent::_afterLoad();
+        foreach ($this->getItems() as $item) {
+            $this->getResource()->unserializeFields($item);
+            $item->setDataChanges(false);
+        }
         return $this;
     }
 }

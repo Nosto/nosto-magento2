@@ -40,6 +40,9 @@ use DateTime;
 use Magento\Catalog\Api\Data\ProductInterface as MagentoProductInterface;
 use Magento\Store\Api\Data\StoreInterface;
 
+/**
+ * Interface ProductUpdateQueueInterface
+ */
 interface ProductUpdateQueueInterface
 {
     const ID = 'id';

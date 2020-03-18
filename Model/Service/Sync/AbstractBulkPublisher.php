@@ -38,13 +38,11 @@ namespace Nosto\Tagging\Model\Service\Sync;
 
 use Exception;
 use Magento\Authorization\Model\UserContextInterface;
+use Magento\Framework\App\ObjectManager;
 use Magento\Framework\DataObject\IdentityGeneratorInterface;
 use Magento\Framework\Exception\LocalizedException;
-use Magento\Framework\Serialize\SerializerInterface;
-use Magento\Store\Model\Store;
-use Nosto\Tagging\Model\ResourceModel\Product\Cache\CacheCollection;
-use Magento\Framework\App\ObjectManager;
 use Magento\Framework\Module\Manager;
+use Magento\Framework\Serialize\SerializerInterface;
 use Nosto\Tagging\Logger\Logger;
 
 abstract class AbstractBulkPublisher implements BulkPublisherInterface
@@ -77,7 +75,7 @@ abstract class AbstractBulkPublisher implements BulkPublisherInterface
      * @param Manager $manager
      * @param Logger $logger
      */
-    public function __construct( // @codingStandardsIgnoreLine
+    public function __construct(// @codingStandardsIgnoreLine
         IdentityGeneratorInterface $identityService,
         SerializerInterface $serializer,
         BulkConsumerInterface $asyncBulkConsumer,
@@ -102,10 +100,11 @@ abstract class AbstractBulkPublisher implements BulkPublisherInterface
      * @inheritDoc
      * @throws LocalizedException
      */
-    public function execute(CacheCollection $collection, Store $store)
+    public function execute($storeId, $productIds = [])
     {
-        $productIds = $collection->walk('getProductId');
-        $this->publishCollectionToQueue($store->getId(), $productIds);
+        if (!empty($productIds)) {
+            $this->publishCollectionToQueue($storeId, $productIds);
+        }
     }
 
     /**
@@ -161,6 +160,8 @@ abstract class AbstractBulkPublisher implements BulkPublisherInterface
      */
     private function canUseAsyncOperations(): bool
     {
+        //TODO - remove me
+        return false;
         if ($this->manager->isEnabled('Magento_AsynchronousOperations')) {
             return true;
         }
