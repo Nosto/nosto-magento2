@@ -46,9 +46,7 @@ interface ProductCacheInterface
     const PRODUCT_ID = 'product_id';
     const CREATED_AT = 'created_at';
     const UPDATED_AT = 'updated_at';
-    const IN_SYNC = 'in_sync';
     const IS_DIRTY = 'is_dirty';
-    const IS_DELETED = 'is_deleted';
     const STORE_ID = 'store_id';
     const PRODUCT_DATA = 'product_data';
 
@@ -81,25 +79,11 @@ interface ProductCacheInterface
     public function getUpdatedAt();
 
     /**
-     * Get in sync
-     *
-     * @return boolean
-     */
-    public function getInSync();
-
-    /**
      * Get is dirty
      *
      * @return boolean
      */
     public function getIsDirty();
-
-    /**
-     * Get is deleted
-     *
-     * @return boolean
-     */
-    public function getIsDeleted();
 
     /**
      * Get store id
@@ -132,28 +116,12 @@ interface ProductCacheInterface
     public function setProductId($productId);
 
     /**
-     * Set in sync
-     *
-     * @param boolean $inSync
-     * @return self
-     */
-    public function setInSync($inSync);
-
-    /**
      * Set is dirty to false or true
      *
      * @param boolean $isDirty
      * @return self
      */
     public function setIsDirty($isDirty);
-
-    /**
-     * Set is deleted to false or true
-     *
-     * @param boolean $isDeleted
-     * @return self
-     */
-    public function setIsDeleted($isDeleted);
 
     /**
      * Set store id

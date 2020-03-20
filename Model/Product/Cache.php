@@ -67,14 +67,6 @@ class Cache extends AbstractModel implements ProductCacheInterface
     /**
      * @inheritdoc
      */
-    public function getInSync()
-    {
-        return $this->getData(self::IN_SYNC);
-    }
-
-    /**
-     * @inheritdoc
-     */
     public function getIsDirty()
     {
         return $this->getData(self::IS_DIRTY);
@@ -151,14 +143,6 @@ class Cache extends AbstractModel implements ProductCacheInterface
     /**
      * @inheritdoc
      */
-    public function setInSync($inSync)
-    {
-        return $this->setData(self::IN_SYNC, $this->convertToDatabaseBoolean($inSync));
-    }
-
-    /**
-     * @inheritdoc
-     */
     public function setIsDirty($isDirty)
     {
         return $this->setData(self::IS_DIRTY, $this->convertToDatabaseBoolean($isDirty));
@@ -194,25 +178,6 @@ class Cache extends AbstractModel implements ProductCacheInterface
     public function setMagentoProduct(MagentoProductInterface $product)
     {
         return $this->setProductId($product->getId());
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getIsDeleted()
-    {
-        return $this->getData(self::IS_DELETED);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function setIsDeleted($isDeleted)
-    {
-        return $this->setData(
-            self::IS_DELETED,
-            $this->convertToDatabaseBoolean($isDeleted)
-        );
     }
 
     /**

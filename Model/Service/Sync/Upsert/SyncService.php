@@ -37,6 +37,7 @@
 namespace Nosto\Tagging\Model\Service\Sync\Upsert;
 
 use Exception;
+use Magento\Catalog\Model\Product;
 use Magento\Store\Model\Store;
 use Nosto\Exception\MemoryOutOfBoundsException;
 use Nosto\NostoException;
@@ -45,13 +46,11 @@ use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Data as NostoDataHelper;
 use Nosto\Tagging\Helper\Url as NostoHelperUrl;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
-use Nosto\Tagging\Model\Product\Cache\CacheRepository;
 use Nosto\Tagging\Model\ResourceModel\Magento\Product\Collection as ProductCollection;
 use Nosto\Tagging\Model\Service\AbstractService;
-use Nosto\Tagging\Model\Service\Product\ProductSerializerInterface;
+use Nosto\Tagging\Model\Service\Cache\CacheService;
 use Nosto\Tagging\Model\Service\Product\ProductServiceInterface;
 use Nosto\Tagging\Util\PagingIterator;
-use Magento\Catalog\Model\Product;
 
 /**
  * Class SyncService
@@ -63,9 +62,6 @@ class SyncService extends AbstractService
     const BENCHMARK_SYNC_BREAKPOINT = 1;
     const RESPONSE_TIMEOUT = 60;
 
-    /** @var CacheRepository */
-    private $cacheRepository;
-
     /** @var NostoHelperAccount */
     private $nostoHelperAccount;
 
@@ -75,11 +71,11 @@ class SyncService extends AbstractService
     /** @var NostoDataHelper */
     private $nostoDataHelper;
 
-    /** @var ProductSerializerInterface */
-    private $productSerializer;
-
     /** @var ProductServiceInterface */
     private $productService;
+
+    /** @var CacheService */
+    private $cacheService;
 
     /**
      * Index constructor.
@@ -88,7 +84,7 @@ class SyncService extends AbstractService
      * @param NostoLogger $logger
      * @param NostoDataHelper $nostoDataHelper
      * @param ProductServiceInterface $productService
-     * @param ProductSerializerInterface $productSerializer
+     * @param CacheService $cacheService
      */
     public function __construct(
         NostoHelperAccount $nostoHelperAccount,
@@ -96,14 +92,14 @@ class SyncService extends AbstractService
         NostoLogger $logger,
         NostoDataHelper $nostoDataHelper,
         ProductServiceInterface $productService,
-        ProductSerializerInterface $productSerializer
+        CacheService $cacheService
     ) {
         parent::__construct($nostoDataHelper, $logger);
         $this->productService = $productService;
         $this->nostoHelperAccount = $nostoHelperAccount;
         $this->nostoHelperUrl = $nostoHelperUrl;
         $this->nostoDataHelper = $nostoDataHelper;
-        $this->productSerializer = $productSerializer;
+        $this->cacheService = $cacheService;
     }
 
     /**
@@ -143,7 +139,7 @@ class SyncService extends AbstractService
                 );
                 try {
                     $op->addProduct($nostoProduct);
-                    // TODO: Add cache update logic here if the flag is here
+                    $this->cacheService->upsert($nostoProduct, $store);
                 } catch (\Exception $e) {
                     $this->getLogger()->exception($e);
                 }

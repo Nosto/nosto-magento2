@@ -147,11 +147,20 @@ abstract class AbstractService
             $this->nostoLogger->exception($e);
         }
     }
+
     /**
      * @return NostoLogger
      */
     public function getLogger()
     {
         return $this->nostoLogger;
+    }
+
+    /**
+     * @return NostoDataHelper
+     */
+    public function getDataHelper()
+    {
+        return $this->nostoDataHelper;
     }
 }

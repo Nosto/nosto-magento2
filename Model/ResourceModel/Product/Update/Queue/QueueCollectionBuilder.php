@@ -84,7 +84,7 @@ class QueueCollectionBuilder
     }
 
     /**
-     * Sets the filter to only new (unprocessed)
+     * Sets the filter to only done (completed) queue entries
      *
      * @return $this
      */
@@ -95,14 +95,27 @@ class QueueCollectionBuilder
     }
 
     /**
-     * Sets filter for only given product ids
+     * Sets the filter to only entries completed before given date time
      *
-     * @param array $ids
+     * @param int $hrs
+     * @return $this
+     * @throws \Exception
+     */
+    public function withCompletedHrsAgo(int $hrs)
+    {
+        $date = new \DateTime(-$hrs);
+        $this->collection->addCompletedBeforeFilter($date);
+        return $this->withStatusCompleted();
+    }
+
+    /**
+     * Sets the filter to only new (unprocessed)
+     *
      * @return $this
      */
-    public function withIds(array $ids)
+    public function withStatusCompleted()
     {
-        $this->collection->addIdsToFilter($ids);
+        $this->collection->addStatusFilter(ProductUpdateQueueInterface::STATUS_VALUE_DONE);
         return $this;
     }
 
@@ -176,20 +189,5 @@ class QueueCollectionBuilder
             ->reset()
             ->withStore($store)
             ->setSort(EntityInterface::CREATED_AT, $this->collection::SORT_ORDER_DESC);
-    }
-
-    /**
-     * Builds and returns the collection with single item (if found)
-     *
-     * @param Store $store
-     * @param $id
-     * @return QueueCollection
-     */
-    public function buildSingle(Store $store, $id)
-    {
-        return $this
-            ->initDefault($store)
-            ->withIds([$id])
-            ->build();
     }
 }

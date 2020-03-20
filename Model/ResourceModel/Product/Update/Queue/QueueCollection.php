@@ -110,6 +110,20 @@ class QueueCollection extends AbstractCollection
     }
 
     /**
+     * Filters collection by completed by
+     *
+     * @param \DateTimeInterface $dateTime
+     * @return QueueCollection
+     */
+    public function addCompletedBeforeFilter(\DateTimeInterface $dateTime)
+    {
+        return $this->addFieldToFilter(
+            ProductUpdateQueueInterface::COMPLETED_AT,
+            ['lteq' => $dateTime->format('Y-m-d H:i:s')]
+        );
+    }
+
+    /**
      * Filters collection by id (primary key)
      *
      * @param int $indexId

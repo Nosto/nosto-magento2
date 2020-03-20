@@ -36,12 +36,14 @@
 
 namespace Nosto\Tagging\Model\Service\Update;
 
+use Magento\Framework\Exception\AlreadyExistsException;
 use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
 use Nosto\Tagging\Api\Data\ProductUpdateQueueInterface;
 use Nosto\Tagging\Helper\Data as NostoDataHelper;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Product\Queue\QueueRepository;
 use Nosto\Tagging\Model\ResourceModel\Product\Update\Queue\QueueCollection;
+use Nosto\Tagging\Model\ResourceModel\Product\Update\Queue\QueueCollectionBuilder;
 use Nosto\Tagging\Model\Service\AbstractService;
 use Nosto\Tagging\Model\Service\Sync\BulkPublisherInterface;
 
@@ -50,8 +52,7 @@ use Nosto\Tagging\Model\Service\Sync\BulkPublisherInterface;
  */
 class QueueProcessorService extends AbstractService
 {
-    const PRODUCTID_BATCH_SIZE = 1000;
-    const PRODUCT_DELETION_BATCH_SIZE = 1000;
+    const CLEANUP_INTERVAL_HRS = 4;
 
     /** @var BulkPublisherInterface */
     private $bulkPublisher;
@@ -62,24 +63,30 @@ class QueueProcessorService extends AbstractService
     /** @var TimezoneInterface */
     private $magentoTimeZone;
 
+    /** @var QueueCollectionBuilder */
+    private $queueCollectionBuilder;
+
     /**
      * @param NostoLogger $logger
      * @param NostoDataHelper $nostoDataHelper
      * @param BulkPublisherInterface $bulkPublisher
      * @param QueueRepository $queueRepository
      * @param TimezoneInterface $magentoTimeZone
+     * @param QueueCollectionBuilder $queueCollectionBuilder
      */
     public function __construct(
         NostoLogger $logger,
         NostoDataHelper $nostoDataHelper,
         BulkPublisherInterface $bulkPublisher,
         QueueRepository $queueRepository,
-        TimezoneInterface $magentoTimeZone
+        TimezoneInterface $magentoTimeZone,
+        QueueCollectionBuilder $queueCollectionBuilder
     ) {
         parent::__construct($nostoDataHelper, $logger);
         $this->bulkPublisher = $bulkPublisher;
         $this->queueRepository = $queueRepository;
         $this->magentoTimeZone = $magentoTimeZone;
+        $this->queueCollectionBuilder = $queueCollectionBuilder;
     }
 
     /**
@@ -107,7 +114,7 @@ class QueueProcessorService extends AbstractService
     {
         $merged = [];
         /* @var ProductUpdateQueueInterface $queueEntry */
-        foreach ($collection->getItems() as $queueEntry) {
+        foreach ($collection as $queueEntry) {
             if (!isset($merged[$queueEntry->getStoreId()])) {
                 $merged[$queueEntry->getStoreId()] = [];
             }
@@ -129,7 +136,11 @@ class QueueProcessorService extends AbstractService
         foreach ($collection as $queueEntry) {
             $queueEntry->setStartedAt($this->magentoTimeZone->date());
             $queueEntry->setStatus(ProductUpdateQueueInterface::STATUS_VALUE_PROCESSING);
-            $this->queueRepository->save($queueEntry);
+            try {
+                $this->queueRepository->save($queueEntry);
+            } catch (AlreadyExistsException $e) {
+                $this->getLogger()->exception($e);
+            }
         }
     }
 
@@ -144,8 +155,33 @@ class QueueProcessorService extends AbstractService
         foreach ($collection as $queueEntry) {
             $queueEntry->setCompletedAt($this->magentoTimeZone->date());
             $queueEntry->setStatus(ProductUpdateQueueInterface::STATUS_VALUE_DONE);
-            $this->queueRepository->save($queueEntry);
+            try {
+                $this->queueRepository->save($queueEntry);
+            } catch (AlreadyExistsException $e) {
+                $this->getLogger()->exception($e);
+            }
         }
-        // TODO: remove old rows from the table - say 6hrs old
+        $this->cleanupUpdateQueue();
+    }
+
+    /**
+     * Cleans up completed entries from the queue table
+     */
+    private function cleanupUpdateQueue()
+    {
+        try {
+            $processed = $this->queueCollectionBuilder
+                ->withCompletedHrsAgo(self::CLEANUP_INTERVAL_HRS)
+                ->build();
+            $this->getLogger()->debug(sprintf(
+                'Cleaning up %d completed entries from update queue',
+                $processed->count()
+            ));
+            foreach ($processed as $queueItem) {
+                $this->queueRepository->delete($queueItem);
+            }
+        } catch (\Exception $e) {
+            $this->getLogger()->exception($e);
+        }
     }
 }

@@ -36,8 +36,8 @@
 
 namespace Nosto\Tagging\Model\Product\Queue;
 
+use Magento\Framework\Exception\AlreadyExistsException;
 use Magento\Framework\Model\AbstractModel;
-use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
 use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\Store;
 use Nosto\Tagging\Api\Data\ProductUpdateQueueInterface;
@@ -46,34 +46,29 @@ use Nosto\Tagging\Model\ResourceModel\Product\Update\Queue as QueueResource;
 use Nosto\Tagging\Model\ResourceModel\Product\Update\Queue\QueueCollection;
 use Nosto\Tagging\Model\ResourceModel\Product\Update\Queue\QueueCollectionFactory;
 
+/**
+ * Class QueueRepository
+ */
 class QueueRepository implements ProductUpdateQueueRepositoryInterface
 {
-    const DELETE_PRODUCT_BATCH = 100;
-
-    /** @var QueueCollectionFactory\  */
+    /** @var QueueCollectionFactory  */
     private $queueCollectionFactory;
 
     /** @var QueueResource  */
     private $queueResource;
-
-    /** @var TimezoneInterface */
-    private $magentoTimeZone;
 
     /**
      * IndexRepository constructor.
      *
      * @param QueueResource $cacheResource
      * @param QueueCollectionFactory $cacheCollectionFactory
-     * @param TimezoneInterface $magentoTimeZone
      */
     public function __construct(
         QueueResource $cacheResource,
-        QueueCollectionFactory $cacheCollectionFactory,
-        TimezoneInterface $magentoTimeZone
+        QueueCollectionFactory $cacheCollectionFactory
     ) {
         $this->queueResource = $cacheResource;
         $this->queueCollectionFactory = $cacheCollectionFactory;
-        $this->magentoTimeZone = $magentoTimeZone;
     }
 
     /**
@@ -103,8 +98,8 @@ class QueueRepository implements ProductUpdateQueueRepositoryInterface
     }
 
     /**
-     * @param Store $store
-     * @return CacheCollection
+     * @param StoreInterface $store
+     * @return QueueCollection
      */
     public function getByStore(StoreInterface $store)
     {
@@ -115,6 +110,7 @@ class QueueRepository implements ProductUpdateQueueRepositoryInterface
 
     /**
      * @inheritDoc
+     * @throws AlreadyExistsException
      */
     public function save(ProductUpdateQueueInterface $entry)
     {
@@ -125,6 +121,7 @@ class QueueRepository implements ProductUpdateQueueRepositoryInterface
 
     /**
      * @inheritDoc
+     * @throws \Exception
      */
     public function delete(ProductUpdateQueueInterface $entry)
     {

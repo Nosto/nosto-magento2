@@ -115,6 +115,11 @@ class Data extends AbstractHelper
     const XML_PATH_PRODUCT_UPDATES = 'nosto/flags/product_updates';
 
     /**
+     * Path to the configuration object that stores the preference for product caching
+     */
+    const XML_PATH_PRODUCT_CACHING = 'nosto/flags/product_caching';
+
+    /**
      * Path to store config for sending customer data to Nosto or not
      */
     const XML_PATH_SEND_CUSTOMER_DATA = 'nosto/flags/send_customer_data';
@@ -138,11 +143,6 @@ class Data extends AbstractHelper
      * Path to the configuration object that stores customer reference
      */
     const XML_PATH_TRACK_MULTI_CHANNEL_ORDERS = 'nosto/flags/track_multi_channel_orders';
-
-    /**
-     * Path to the configuration object that stores the product data build configuration (cron / indexer)
-     */
-    const XML_PATH_PRODUCT_DATA_BUILD_IN_CRON = 'nosto/flags/product_data_build_in_cron';
 
     /**
      * Path to the configuration object for pricing variations
@@ -390,6 +390,17 @@ class Data extends AbstractHelper
     }
 
     /**
+     * Returns if Nosto product data caching
+     *
+     * @param StoreInterface|null $store the store model or null.
+     * @return bool the configuration value
+     */
+    public function isProductCachingEnabled(StoreInterface $store = null)
+    {
+        return (bool)$this->getStoreConfig(self::XML_PATH_PRODUCT_UPDATES, $store);
+    }
+
+    /**
      * Returns if customer data should be send to Nosto
      *
      * @param StoreInterface|null $store the store model or null.
@@ -409,17 +420,6 @@ class Data extends AbstractHelper
     public function isMultiChannelOrderTrackingEnabled(StoreInterface $store = null)
     {
         return (bool)$this->getStoreConfig(self::XML_PATH_TRACK_MULTI_CHANNEL_ORDERS, $store);
-    }
-
-    /**
-     * Returns if product data should be built in cron
-     *
-     * @param StoreInterface|null $store
-     * @return bool
-     */
-    public function isProductDataBuildInCronEnabled(StoreInterface $store = null)
-    {
-        return (bool)$this->getStoreConfig(self::XML_PATH_PRODUCT_DATA_BUILD_IN_CRON, $store);
     }
 
     /**

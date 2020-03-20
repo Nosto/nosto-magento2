@@ -73,20 +73,4 @@ interface ProductCacheRepositoryInterface
      * @return ProductCacheInterface|null
      */
     public function getByProductIdAndStoreId(int $productId, int $storeId);
-
-    /**
-     * Return total amount of products marked as out of sync
-     *
-     * @param Store $store
-     * @return int
-     */
-    public function getTotalOutOfSync(Store $store);
-
-    /**
-     * Return total amount of products marked as dirty
-     *
-     * @param Store $store
-     * @return int
-     */
-    public function getTotalDirty(Store $store);
 }

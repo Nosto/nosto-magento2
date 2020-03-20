@@ -36,13 +36,13 @@
 
 namespace Nosto\Tagging\Model\Service\Sync\Upsert;
 
-use Nosto\Tagging\Model\Service\Sync\AbstractBulkConsumer;
-use Nosto\Tagging\Helper\Scope as NostoScopeHelper;
-use Nosto\Tagging\Model\Product\Cache\CacheRepository;
 use Magento\Framework\EntityManager\EntityManager;
 use Magento\Framework\Json\Helper\Data as JsonHelper;
-use Nosto\Tagging\Model\ResourceModel\Magento\Product\CollectionFactory;
+use Nosto\Tagging\Helper\Scope as NostoScopeHelper;
 use Nosto\Tagging\Logger\Logger;
+use Nosto\Tagging\Model\Product\Cache\CacheRepository;
+use Nosto\Tagging\Model\ResourceModel\Magento\Product\CollectionFactory;
+use Nosto\Tagging\Model\Service\Sync\AbstractBulkConsumer;
 
 /**
  * Asynchronous Bulk Consumer
@@ -64,7 +64,7 @@ class AsyncBulkConsumer extends AbstractBulkConsumer
      * AsyncBulkConsumer constructor.
      * @param SyncService $syncService
      * @param NostoScopeHelper $nostoScopeHelper
-     * @param CacheRepository $cacheRepository
+     * @param CollectionFactory $collectionFactory
      * @param JsonHelper $jsonHelper
      * @param EntityManager $entityManager
      * @param Logger $logger
