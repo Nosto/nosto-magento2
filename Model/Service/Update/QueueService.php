@@ -78,11 +78,13 @@ class QueueService extends AbstractService
         QueueRepository $queueRepository,
         QueueBuilder $queueBuilder,
         NostoLogger $logger,
-        NostoDataHelper $nostoDataHelper
+        NostoDataHelper $nostoDataHelper,
+        NostoProductRepository $nostoProductRepository
     ) {
         parent::__construct($nostoDataHelper, $logger);
         $this->queueRepository = $queueRepository;
         $this->queueBuilder = $queueBuilder;
+        $this->nostoProductRepository = $nostoProductRepository;
     }
 
     /**

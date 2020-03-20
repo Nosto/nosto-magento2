@@ -40,7 +40,6 @@ use Exception;
 use Magento\Indexer\Model\ProcessManager;
 use Magento\Store\Model\App\Emulation;
 use Magento\Store\Model\Store;
-use Nosto\Exception\MemoryOutOfBoundsException;
 use Nosto\NostoException;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
@@ -126,22 +125,10 @@ class QueueIndexer extends AbstractIndexer
      */
     public function doIndex(Store $store, array $ids = [])
     {
-        $productCollection = $this->getCollection($store, $ids);
-        $this->queueService->addCollectionToQueue($productCollection, $store);
-        if (!empty($ids)) {
-            //In case for this specific set of ids
-            //there are more entries of products in the indexer table than the magento product collection
-            //it means that some products were deleted
-            $idsSize = count($ids);
-            $collectionSize = $productCollection->getSize();
-            if ($idsSize > $collectionSize) {
-                try {
-                    $this->queueService->markProductsAsDeletedByDiff($productCollection, $ids, $store);
-                } catch (MemoryOutOfBoundsException $e) {
-                    $this->nostoLogger->error($e->getMessage());
-                }
-            }
-        }
+        $this->queueService->addCollectionToQueue(
+            $this->getCollection($store, $ids),
+            $store
+        );
     }
 
     /**
@@ -157,7 +144,7 @@ class QueueIndexer extends AbstractIndexer
      * @param array $ids
      * @return ProductCollection
      */
-    public function getCollection(Store $store, array $ids = [])
+    public function getCollection(Store $store, array $ids = []): ProductCollection
     {
         $this->productCollectionBuilder->initDefault($store);
         if (!empty($ids)) {

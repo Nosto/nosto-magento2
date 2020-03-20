@@ -127,22 +127,9 @@ class QueueProcessorIndexer extends AbstractIndexer
      */
     public function doIndex(Store $store, array $ids = [])
     {
-        $queueCollection = $this->getCollection($store);
-        $this->queueProcessorService->processQueueCollection($queueCollection);
-        if (!empty($ids)) {
-            // TODO: this need to be thought through
-            //there are more entries of products in the indexer table than the magento product collection
-            //it means that some products were deleted
-            $idsSize = count($ids);
-            $collectionSize = $queueCollection->getSize();
-            if ($idsSize > $collectionSize) {
-                try {
-                    $this->queueProcessorService->markProductsAsDeletedByDiff($queueCollection, $ids, $store);
-                } catch (MemoryOutOfBoundsException $e) {
-                    $this->nostoLogger->error($e->getMessage());
-                }
-            }
-        }
+        $this->queueProcessorService->processQueueCollection(
+            $this->getCollection($store)
+        );
     }
 
     /**
@@ -155,7 +142,6 @@ class QueueProcessorIndexer extends AbstractIndexer
 
     /**
      * @param Store $store
-     * @param array $ids
      * @return QueueCollection
      */
     public function getCollection(Store $store)
