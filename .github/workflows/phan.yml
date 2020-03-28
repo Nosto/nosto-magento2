@@ -23,6 +23,7 @@ jobs:
         php-version: '7.2'
         tools: composer, pecl
         extensions: ast
+        coverage: none
 
       #https://github.com/actions/cache/blob/master/examples.md#php---composer
     - name: Cache composer packages
