@@ -142,7 +142,10 @@ jobs:
     ############################################################################
 
     - name: Build archive using composer
-      run: composer archive --format=zip --file=${GITHUB_SHA::8}
+      run: |
+        composer archive --format=zip --file=${GITHUB_SHA::8}
+        pwd
+        ls -lah
 
     - name: Archive code coverage results
       uses: actions/upload-artifact@v1
