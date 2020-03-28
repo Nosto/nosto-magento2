@@ -16,10 +16,10 @@ jobs:
         php-version: '7.1'
         tools: composer, pecl
 
-    - name: AST
+    - name: Install AST extension
       run: sudo pecl install -f ast
 
-    - name: Update Dependencies
+    - name: Update project dependencies
       env:
         REPO_USR: ${{ secrets.REPO_USR }}
         REPO_PSW: ${{ secrets.REPO_PSW }}
