@@ -142,7 +142,7 @@ jobs:
     ############################################################################
 
     - name: Build archive using composer
-      run: composer archive --format=zip --file=archive.zip
+      run: composer archive --format=zip --file=archive
 
     - name: Archive code coverage results
       uses: actions/upload-artifact@v1
