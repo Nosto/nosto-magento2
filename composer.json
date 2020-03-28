@@ -4,7 +4,6 @@
   "type": "magento2-module",
   "version": "4.0.5",
   "require-dev": {
-    "php": ">=7.1.0",
     "phan/phan": "0.8.8",
     "phpmd/phpmd": "^2.5",
     "sebastian/phpcpd": "*",
