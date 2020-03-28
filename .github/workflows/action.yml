@@ -17,7 +17,7 @@ jobs:
         tools: composer
 
     - name: AST
-      run: pecl install -f ast
+      run: php -v
 
     - name: Update Dependencies
       env:
