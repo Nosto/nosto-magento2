@@ -16,8 +16,8 @@ jobs:
       uses: shivammathur/setup-php@v2
       with:
         php-version: '7.2'
-        tools: composer
-        extensions: ast, pecl
+        tools: composer, pecl
+        extensions: ast
         coverage: none
 
     - name: Install AST extension
