@@ -61,6 +61,7 @@ jobs:
         mkdir phan
         cd phan
         composer create-project magento/community-edition=2.3.2 magento
+        cd magento
         ls -lah
         composer config minimum-stability dev
         composer config prefer-stable true
