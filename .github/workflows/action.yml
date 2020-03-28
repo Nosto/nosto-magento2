@@ -28,10 +28,6 @@ jobs:
         composer config http-basic.repo.magento.com "$REPO_USR" "$REPO_PSW"
         composer install --prefer-dist --no-progress --no-suggest
 
-    - name: Code Sniffer
-      run: ./vendor/bin/phpcs --standard=ruleset.xml --report=checkstyle --report-file=chkphpcs.xml
-      continue-on-error: true
-
   phpcs:
     name: Code Sniffer
     needs: build
