@@ -151,4 +151,4 @@ jobs:
       uses: actions/upload-artifact@v1
       with:
         name: composer-zip-archive
-        path: ${GITHUB_SHA::8}.zip
+        path: ${{ GITHUB_SHA::8 }}.zip
