@@ -65,9 +65,7 @@ jobs:
       with:
         php-version: '7.1'
         tools: composer, pecl
-
-    - name: Install AST extension
-      run: sudo pecl install -f ast
+        extensions: ast
 
       #https://github.com/actions/cache/blob/master/examples.md#php---composer
     - name: Cache composer packages
@@ -113,9 +111,7 @@ jobs:
       with:
         php-version: '7.1'
         tools: composer, pecl
-
-    - name: Install AST extension
-      run: sudo pecl install -f ast
+        extensions: ast
 
       #https://github.com/actions/cache/blob/master/examples.md#php---composer
     - name: Cache composer packages
