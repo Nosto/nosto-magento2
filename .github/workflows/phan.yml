@@ -1,0 +1,44 @@
+name: Phan
+
+on: [push]
+
+jobs:
+
+  phan:
+    name: Phan Analysis
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+
+    ############################################################################
+    - name: Set up PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '7.1'
+        tools: composer, pecl
+
+    - name: Install AST extension
+      run: sudo pecl install -f ast
+
+      #https://github.com/actions/cache/blob/master/examples.md#php---composer
+    - name: Cache composer packages
+      id: composer-cache
+      run: |
+        composer config cache-files-dir
+        echo "::set-output name=dir::$(composer config cache-files-dir)"
+    - uses: actions/cache@v1
+      with:
+        path: ${{ steps.composer-cache.outputs.dir }}
+        key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-composer-
+
+    - name: Update project dependencies
+      env:
+        REPO_USR: ${{ secrets.REPO_USR }}
+        REPO_PSW: ${{ secrets.REPO_PSW }}
+      run: |
+        composer config repositories.0 composer https://repo.magento.com
+        composer config http-basic.repo.magento.com "$REPO_USR" "$REPO_PSW"
+        composer install --prefer-dist --no-progress --no-suggest
+    ############################################################################
