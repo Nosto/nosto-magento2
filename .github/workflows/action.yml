@@ -44,17 +44,17 @@ jobs:
         composer install --prefer-dist --no-progress --no-suggest
     ############################################################################
 
-      - name: Run the sniffer
-        run: |
-          ./vendor/bin/phpcs --config-set ignore_errors_on_exit 1
-          ./vendor/bin/phpcs --config-set ignore_warnings_on_exit 1
-          ./vendor/bin/phpcs --standard=ruleset.xml --report=checkstyle --report-file=chkphpcs.xml
+    - name: Run the sniffer
+      run: |
+        ./vendor/bin/phpcs --config-set ignore_errors_on_exit 1
+        ./vendor/bin/phpcs --config-set ignore_warnings_on_exit 1
+        ./vendor/bin/phpcs --standard=ruleset.xml --report=checkstyle --report-file=chkphpcs.xml
 
-      - name: Archive code sniffing results
-        uses: actions/upload-artifact@v1
-        with:
-          name: phpcs-xml-result
-          path: chkphpcs.xml
+    - name: Archive code sniffing results
+      uses: actions/upload-artifact@v1
+      with:
+        name: phpcs-xml-result
+        path: chkphpcs.xml
 
   phpmd:
     name: Mess Detect
@@ -62,35 +62,35 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     ############################################################################
-      - name: Set up PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '7.1'
-          tools: composer, pecl
+    - name: Set up PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '7.1'
+        tools: composer, pecl
 
-      - name: Install AST extension
-        run: sudo pecl install -f ast
+    - name: Install AST extension
+      run: sudo pecl install -f ast
 
-        #https://github.com/actions/cache/blob/master/examples.md#php---composer
-      - name: Cache composer packages
-        id: composer-cache
-        run: |
-          echo "::set-output name=dir::$(composer config cache-files-dir)"
-      - uses: actions/cache@v1
-        with:
-          path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-composer-
+      #https://github.com/actions/cache/blob/master/examples.md#php---composer
+    - name: Cache composer packages
+      id: composer-cache
+      run: |
+        echo "::set-output name=dir::$(composer config cache-files-dir)"
+    - uses: actions/cache@v1
+      with:
+        path: ${{ steps.composer-cache.outputs.dir }}
+        key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-composer-
 
-      - name: Update project dependencies
-        env:
-          REPO_USR: ${{ secrets.REPO_USR }}
-          REPO_PSW: ${{ secrets.REPO_PSW }}
-        run: |
-          composer config repositories.0 composer https://repo.magento.com
-          composer config http-basic.repo.magento.com "$REPO_USR" "$REPO_PSW"
-          composer install --prefer-dist --no-progress --no-suggest
+    - name: Update project dependencies
+      env:
+        REPO_USR: ${{ secrets.REPO_USR }}
+        REPO_PSW: ${{ secrets.REPO_PSW }}
+      run: |
+        composer config repositories.0 composer https://repo.magento.com
+        composer config http-basic.repo.magento.com "$REPO_USR" "$REPO_PSW"
+        composer install --prefer-dist --no-progress --no-suggest
     ############################################################################
 
       - name: Run the mess detector
@@ -108,42 +108,42 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     ############################################################################
-      - name: Set up PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '7.1'
-          tools: composer, pecl
+    - name: Set up PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '7.1'
+        tools: composer, pecl
 
-      - name: Install AST extension
-        run: sudo pecl install -f ast
+    - name: Install AST extension
+      run: sudo pecl install -f ast
 
-        #https://github.com/actions/cache/blob/master/examples.md#php---composer
-      - name: Cache composer packages
-        id: composer-cache
-        run: |
-          echo "::set-output name=dir::$(composer config cache-files-dir)"
-      - uses: actions/cache@v1
-        with:
-          path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-composer-
+      #https://github.com/actions/cache/blob/master/examples.md#php---composer
+    - name: Cache composer packages
+      id: composer-cache
+      run: |
+        echo "::set-output name=dir::$(composer config cache-files-dir)"
+    - uses: actions/cache@v1
+      with:
+        path: ${{ steps.composer-cache.outputs.dir }}
+        key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-composer-
 
-      - name: Update project dependencies
-        env:
-          REPO_USR: ${{ secrets.REPO_USR }}
-          REPO_PSW: ${{ secrets.REPO_PSW }}
-        run: |
-          composer config repositories.0 composer https://repo.magento.com
-          composer config http-basic.repo.magento.com "$REPO_USR" "$REPO_PSW"
-          composer install --prefer-dist --no-progress --no-suggest
+    - name: Update project dependencies
+      env:
+        REPO_USR: ${{ secrets.REPO_USR }}
+        REPO_PSW: ${{ secrets.REPO_PSW }}
+      run: |
+        composer config repositories.0 composer https://repo.magento.com
+        composer config http-basic.repo.magento.com "$REPO_USR" "$REPO_PSW"
+        composer install --prefer-dist --no-progress --no-suggest
     ############################################################################
 
-      - name: Build archive using composer
-        run: composer archive --format=zip --file=${GITHUB_SHA::8}
+    - name: Build archive using composer
+      run: composer archive --format=zip --file=${GITHUB_SHA::8}
 
-      - name: Archive code coverage results
-        uses: actions/upload-artifact@v1
-        with:
-          name: composer-zip-archive
-          path: ${GITHUB_SHA::8}.zip
+    - name: Archive code coverage results
+      uses: actions/upload-artifact@v1
+      with:
+        name: composer-zip-archive
+        path: ${GITHUB_SHA::8}.zip
