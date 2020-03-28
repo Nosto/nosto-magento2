@@ -74,6 +74,7 @@ jobs:
     - name: Run Phan analysis
       id: phan-analysis
       run: ./vendor/bin/phan --config-file=phan.php --output-mode=checkstyle --output=chkphan.xml --processes=4
+      continue-on-error: true
 
     - name: Archive static analysis results
       uses: actions/upload-artifact@v1
