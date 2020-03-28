@@ -58,17 +58,11 @@ jobs:
     - name: Install Magento
       id: install-magento
       run: |
-        export
-        mkdir phan
-        cd phan
-        composer create-project magento/community-edition=2.3.2 magento
-        cd magento
-        composer config minimum-stability dev
-        composer config prefer-stable true
-        composer require --no-update nosto/module-nostotagging:dev-${GITHUB_HEAD_REF}#${GITHUB_SHA}
-        composer update --no-dev
-        bin/magento module:enable --all
-        bin/magento setup:di:compile
+        echo "Pull request's base branch is: ${GITHUB_BRANCH}"
+        echo "Pull request's base branch is: ${GITHUB_OTHER}"
+      env:
+        GITHUB_BRANCH: ${{ github.base_ref }}
+        GITHUB_OTHER: ${{ github.event.pull_request.head.ref }}
 
     - name: Run Phan analysis
       id: phan-analysis
