@@ -60,9 +60,11 @@ jobs:
       run: |
         echo "Pull request's base branch is: ${GITHUB_BRANCH}"
         echo "Pull request's base branch is: ${GITHUB_OTHER}"
+        echo "Pull request's base branch is: ${GITHUB_POOP}"
       env:
         GITHUB_BRANCH: ${{ github.base_ref }}
         GITHUB_OTHER: ${{ github.event.pull_request.head.ref }}
+        GITHUB_POOP: ${{ GITHUB_REF##*/ }}
 
     - name: Run Phan analysis
       id: phan-analysis
