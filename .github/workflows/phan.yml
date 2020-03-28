@@ -49,6 +49,10 @@ jobs:
         composer install --prefer-dist --no-progress --no-suggest
     ############################################################################
 
+    - name: Remove HHVM
+      id: remove-hhvm
+      run: sudo apt remove hhvm
+
     - name: Install Magento
       id: install-magento
       run: |
