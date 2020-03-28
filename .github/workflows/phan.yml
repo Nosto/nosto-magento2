@@ -48,3 +48,25 @@ jobs:
         composer config http-basic.repo.magento.com "$REPO_USR" "$REPO_PSW"
         composer install --prefer-dist --no-progress --no-suggest
     ############################################################################
+
+    - name: Install Magento
+      id: install-magento
+      run: |
+        mkdir phan
+        cd phan
+        composer create-project magento/community-edition=2.3.2 magento
+        ls -lah
+        composer config minimum-stability dev
+        composer config prefer-stable true
+        bin/magento module:enable --all
+        bin/magento setup:di:compile
+
+    - name: Run Phan analysis
+      id: phan-analysis
+      run: ./vendor/bin/phan --config-file=phan.php --output-mode=checkstyle --output=chkphan.xml --processes=4
+
+    - name: Archive static analysis results
+      uses: actions/upload-artifact@v1
+      with:
+        name: phan-analysis-results
+        path: chkphan.xml
