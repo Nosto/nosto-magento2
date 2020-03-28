@@ -24,19 +24,6 @@ jobs:
         tools: composer, pecl
         extensions: ast
 
-      #https://github.com/actions/cache/blob/master/examples.md#php---composer
-    - name: Cache composer packages
-      id: composer-cache
-      run: |
-        composer config cache-files-dir
-        echo "::set-output name=dir::$(composer config cache-files-dir)"
-    - uses: actions/cache@v1
-      with:
-        path: ${{ steps.composer-cache.outputs.dir }}
-        key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-composer-
-
     - name: Update project dependencies
       env:
         REPO_USR: ${{ secrets.REPO_USR }}
