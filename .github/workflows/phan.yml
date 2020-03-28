@@ -8,11 +8,6 @@ jobs:
     name: Phan Analysis
     runs-on: ubuntu-latest
 
-    #https://help.github.com/en/actions/configuring-and-managing-workflows/about-service-containers#creating-service-containers
-    services:
-      mysql:
-        image: mysql
-
     steps:
     - uses: actions/checkout@v1
 
