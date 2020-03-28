@@ -29,11 +29,13 @@ jobs:
         composer install --prefer-dist --no-progress --no-suggest
 
     - name: Code Sniffer
-      run: |
-        pwd
-        ls
-        ./vendor/bin/phpcs
-        ./vendor/bin/phpmd
+      run: ./vendor/bin/phpcs --standard=ruleset.xml --report=checkstyle --report-file=chkphpcs.xml
+
+    - name: Code Sniffer
+      run: ./vendor/bin/phpcs --standard=ruleset.xml --report=checkstyle --report-file=chkphpcs.xml
+
+    - name: Mess Detect
+      run: ./vendor/bin/phpmd . xml codesize,naming,unusedcode,controversial,design --exclude vendor,var,build,tests --reportfile pmdphpmd.xml
 
     - name: Package
       run: composer archive --format=zip --file=${GITHUB_SHA::8}
