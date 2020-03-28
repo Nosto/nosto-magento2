@@ -4,7 +4,7 @@ on: [push]
 
 jobs:
   build:
-
+    name: Setup
     runs-on: ubuntu-latest
 
     steps:
@@ -41,5 +41,7 @@ jobs:
     - name: Mess Detect
       run: ./vendor/bin/phpmd . xml codesize,naming,unusedcode,controversial,design --exclude vendor,var,build,tests --reportfile pmdphpmd.xml --ignore-violations-on-exit
 
+  package:
     - name: Package
+      needs: build
       run: composer archive --format=zip --file=${GITHUB_SHA::8}
