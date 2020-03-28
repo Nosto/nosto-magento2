@@ -7,7 +7,7 @@ jobs:
   phan:
     name: Phan Analysis
     runs-on: ubuntu-latest
-    
+
     steps:
     - uses: actions/checkout@v1
 
@@ -17,8 +17,11 @@ jobs:
       with:
         php-version: '7.2'
         tools: composer
-        extensions: ast
+        extensions: ast, pecl
         coverage: none
+
+    - name: Install AST extension
+      run: sudo pecl install -f ast
 
       #https://github.com/actions/cache/blob/master/examples.md#php---composer
     - name: Cache composer packages
