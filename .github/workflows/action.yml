@@ -14,12 +14,11 @@ jobs:
       uses: shivammathur/setup-php@v2
       with:
         php-version: '7.4'
-        tools: pecl
-        extensions: xdebug-beta
+        tools: composer
+        extensions: ast
 
     - name: Update Dependencies
       run: |
-        composer validate
         composer config repositories.0 composer https://repo.magento.com
         composer config http-basic.repo.magento.com $REPO_USR $REPO_PSW
         composer install --prefer-dist --no-progress --no-suggest
