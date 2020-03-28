@@ -6,23 +6,22 @@
   "require-dev": {
     "phpmd/phpmd": "^2.5",
     "sebastian/phpcpd": "*",
-    "phpdocumentor/reflection-docblock": "3.0.0",
     "phing/phing": "2.*",
     "magento-ecg/coding-standard": "2.*",
-    "magento/marketplace-eqp": "1.*",
-    "magento/module-catalog": "*",
-    "magento/module-sales": "101.0.0",
-    "magento/module-sales-inventory": "100.2.0",
-    "magento/module-sales-rule": "101.0.0",
-    "magento/module-store": "100.2.0",
-    "magento/module-configurable-product": "100.2.0",
-    "magento/module-directory": "100.2.0",
-    "magento/module-bundle": "100.2.0",
-    "magento/module-search": "100.2.0",
-    "magento/module-catalog-search": "100.2.0",
-    "magento/module-quote": "101.0.0",
-    "magento/module-review": "100.2.0",
-    "magento/zendframework1": "*"
+    "magento/marketplace-eqp": "*",
+    "magento/module-catalog": "103.0.4",
+    "magento/module-sales": "102.0.4",
+    "magento/module-sales-inventory": "100.3.4",
+    "magento/module-sales-rule": "101.1.4",
+    "magento/module-store": "101.0.4",
+    "magento/module-configurable-product": "100.3.4",
+    "magento/module-directory": "100.3.4",
+    "magento/module-bundle": "100.3.4",
+    "magento/module-search": "101.0.4",
+    "magento/module-catalog-search": "101.0.4",
+    "magento/module-quote": "101.1.4",
+    "magento/module-review": "100.3.4",
+    "magento/zendframework1": "1.14.3"
   },
   "suggest": {
     "magento/product-community-edition": "2.*",
@@ -33,13 +32,12 @@
   "license": [
     "OSL-3.0"
   ],
-  "minimum-stability": "dev",
   "require": {
     "nosto/php-sdk": "^4.0.5",
     "php": ">=7.0.0",
     "ext-json": "*",
     "magento/framework": ">=101.0.6|~102.0",
-    "phan/phan": "0.9.0"
+    "phan/phan": "2.6"
   },
   "repositories": [
     {
