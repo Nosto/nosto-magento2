@@ -49,6 +49,8 @@ jobs:
         composer install --prefer-dist --no-progress --no-suggest
     ############################################################################
 
+    # Not removing HHVM will lead to the following error:
+    # > Installation request for hhvm 4.49.0 -> satisfiable by hhvm[4.49.0].
     - name: Remove HHVM
       id: remove-hhvm
       run: sudo apt remove hhvm
