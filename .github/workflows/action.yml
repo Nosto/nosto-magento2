@@ -18,10 +18,11 @@ jobs:
         extensions: xdebug-beta
 
     - name: Update Dependencies
-      run: composer validate
-      run: composer config repositories.0 composer https://repo.magento.com
-      run: composer config http-basic.repo.magento.com $REPO_USR $REPO_PSW
-      run: composer install --prefer-dist --no-progress --no-suggest
+      run: |
+        composer validate
+        composer config repositories.0 composer https://repo.magento.com
+        composer config http-basic.repo.magento.com $REPO_USR $REPO_PSW
+        composer install --prefer-dist --no-progress --no-suggest
 
     - name: Build with Maven
       run: ls
