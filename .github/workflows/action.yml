@@ -24,6 +24,7 @@ jobs:
     - name: Cache composer packages
       id: composer-cache
       run: |
+        composer config cache-files-dir
         echo "::set-output name=dir::$(composer config cache-files-dir)"
     - uses: actions/cache@v1
       with:
@@ -58,6 +59,8 @@ jobs:
     name: Mess Detect
     runs-on: ubuntu-latest
     steps:
+    - uses: actions/checkout@v1
+
     ############################################################################
     - name: Set up PHP
       uses: shivammathur/setup-php@v2
@@ -72,6 +75,7 @@ jobs:
     - name: Cache composer packages
       id: composer-cache
       run: |
+        composer config cache-files-dir
         echo "::set-output name=dir::$(composer config cache-files-dir)"
     - uses: actions/cache@v1
       with:
@@ -103,6 +107,8 @@ jobs:
     name: Package
     runs-on: ubuntu-latest
     steps:
+    - uses: actions/checkout@v1
+
     ############################################################################
     - name: Set up PHP
       uses: shivammathur/setup-php@v2
@@ -118,8 +124,6 @@ jobs:
       id: composer-cache
       run: |
         echo "::set-output name=dir::$(composer config cache-files-dir)"
-        pwd
-        composer config cache-files-dir
     - uses: actions/cache@v1
       with:
         path: ${{ steps.composer-cache.outputs.dir }}
