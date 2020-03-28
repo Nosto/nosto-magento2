@@ -13,7 +13,7 @@ jobs:
     - name: Set up PHP
       uses: shivammathur/setup-php@v2
       with:
-        php-version: '7.4'
+        php-version: '7.2'
         tools: composer
         extensions: ast
 
@@ -26,5 +26,5 @@ jobs:
         composer config http-basic.repo.magento.com "$REPO_USR" "$REPO_PSW"
         composer install --prefer-dist --no-progress --no-suggest
 
-    - name: Build with Maven
+    - name: Code Sniffer
       run: ls
