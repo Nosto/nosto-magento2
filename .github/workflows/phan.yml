@@ -64,7 +64,7 @@ jobs:
       env:
         GITHUB_BRANCH: ${{ github.base_ref }}
         GITHUB_OTHER: ${{ github.event.pull_request.head.ref }}
-        GITHUB_POOP: ${{ GITHUB_REF##*/ }}
+        GITHUB_POOP: ${ GITHUB_REF##*/ }
 
     - name: Run Phan analysis
       id: phan-analysis
