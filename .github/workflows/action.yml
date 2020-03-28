@@ -29,4 +29,6 @@ jobs:
         composer install --prefer-dist --no-progress --no-suggest
 
     - name: Code Sniffer
-      run: ls
+      run: |
+        pwd
+        ls
