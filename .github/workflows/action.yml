@@ -19,6 +19,7 @@ jobs:
     - name: Install AST extension
       run: sudo pecl install -f ast
 
+      #https://github.com/actions/cache/blob/master/examples.md#php---composer
     - name: Cache composer packages
       id: composer-cache
       run: |
