@@ -35,6 +35,7 @@ jobs:
   phpcs:
     name: Code Sniffer
     needs: build
+    runs-on: ubuntu-latest
     steps:
       - name: Run the sniffer
         run: |
@@ -45,6 +46,7 @@ jobs:
   phpmd:
     name: Mess Detect
     needs: build
+    runs-on: ubuntu-latest
     steps:
       - name: Run the mess detector
         run: ./vendor/bin/phpmd . xml codesize,naming,unusedcode,controversial,design --exclude vendor,var,build,tests --reportfile pmdphpmd.xml --ignore-violations-on-exit
@@ -52,6 +54,7 @@ jobs:
   package:
     name: Package
     needs: build
+    runs-on: ubuntu-latest
     steps:
       - name: Build archive using composer
         run: composer archive --format=zip --file=${GITHUB_SHA::8}
