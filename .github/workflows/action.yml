@@ -33,19 +33,19 @@ jobs:
       continue-on-error: true
 
   phpcs:
-    - name: Code Sniffer
-      needs: build
-      run: |
-        ./vendor/bin/phpcs --config-set ignore_errors_on_exit 1
-        ./vendor/bin/phpcs --config-set ignore_warnings_on_exit 1
-        ./vendor/bin/phpcs --standard=ruleset.xml --report=checkstyle --report-file=chkphpcs.xml
+    name: Code Sniffer
+    needs: build
+    run: |
+      ./vendor/bin/phpcs --config-set ignore_errors_on_exit 1
+      ./vendor/bin/phpcs --config-set ignore_warnings_on_exit 1
+      ./vendor/bin/phpcs --standard=ruleset.xml --report=checkstyle --report-file=chkphpcs.xml
 
   phpmd:
-    - name: Mess Detect
-      needs: build
-      run: ./vendor/bin/phpmd . xml codesize,naming,unusedcode,controversial,design --exclude vendor,var,build,tests --reportfile pmdphpmd.xml --ignore-violations-on-exit
+    name: Mess Detect
+    needs: build
+    run: ./vendor/bin/phpmd . xml codesize,naming,unusedcode,controversial,design --exclude vendor,var,build,tests --reportfile pmdphpmd.xml --ignore-violations-on-exit
 
   package:
-    - name: Package
-      needs: build
-      run: composer archive --format=zip --file=${GITHUB_SHA::8}
+    name: Package
+    needs: build
+    run: composer archive --format=zip --file=${GITHUB_SHA::8}
