@@ -23,7 +23,7 @@ jobs:
         REPO_PSW: ${{ secrets.REPO_PSW }}
       run: |
         composer config repositories.0 composer https://repo.magento.com
-        composer config http-basic.repo.magento.com $REPO_USR" "$REPO_PSW"
+        composer config http-basic.repo.magento.com "$REPO_USR" "$REPO_PSW"
         composer install --prefer-dist --no-progress --no-suggest
 
     - name: Build with Maven
