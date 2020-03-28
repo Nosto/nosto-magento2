@@ -30,12 +30,16 @@ jobs:
 
     - name: Code Sniffer
       run: ./vendor/bin/phpcs --standard=ruleset.xml --report=checkstyle --report-file=chkphpcs.xml
+      continue-on-error: true
 
     - name: Code Sniffer
-      run: ./vendor/bin/phpcs --standard=ruleset.xml --report=checkstyle --report-file=chkphpcs.xml
+      run: |
+        ./vendor/bin/phpcs --config-set ignore_errors_on_exit 1
+        ./vendor/bin/phpcs --config-set ignore_warnings_on_exit 1
+        ./vendor/bin/phpcs --standard=ruleset.xml --report=checkstyle --report-file=chkphpcs.xml
 
     - name: Mess Detect
-      run: ./vendor/bin/phpmd . xml codesize,naming,unusedcode,controversial,design --exclude vendor,var,build,tests --reportfile pmdphpmd.xml
+      run: ./vendor/bin/phpmd . xml codesize,naming,unusedcode,controversial,design --exclude vendor,var,build,tests --reportfile pmdphpmd.xml --ignore-violations-on-exit
 
     - name: Package
       run: composer archive --format=zip --file=${GITHUB_SHA::8}
