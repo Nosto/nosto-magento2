@@ -15,7 +15,9 @@ jobs:
       with:
         php-version: '7.1'
         tools: composer
-        extensions: ast
+
+    - name: AST
+      run: pecl install -f ast
 
     - name: Update Dependencies
       env:
