@@ -16,4 +16,4 @@ jobs:
         tools: pecl
         extensions: xdebug-beta
     - name: Build with Maven
-      run: phing
+      run: ls
