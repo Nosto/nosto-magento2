@@ -54,6 +54,10 @@ jobs:
         name: phpcs-xml-result
         path: chkphpcs.xml
 
+    - name: Report annotations
+      id: report-annotations
+      run: ./libs/bin/cs2pr chkphpcs.xml
+
   phpmd:
     name: Mess Detect
     runs-on: ubuntu-latest
@@ -101,6 +105,10 @@ jobs:
         name: phpmd-xml-result
         path: pmdphpmd.xml
 
+    - name: Report annotations
+      id: report-annotations
+      run: ./libs/bin/cs2pr pmdphpmd.xml
+
   package:
     name: Package
     runs-on: ubuntu-latest
@@ -141,7 +149,7 @@ jobs:
     - name: Build archive using composer
       run: composer archive --format=zip --file=archive
 
-    - name: Archive code coverage results
+    - name: Archive built arhive
       uses: actions/upload-artifact@v1
       with:
         name: composer-zip-archive

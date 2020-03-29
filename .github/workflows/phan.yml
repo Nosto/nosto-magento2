@@ -85,3 +85,7 @@ jobs:
       with:
         name: phan-analysis-results
         path: chkphan.xml
+
+    - name: Report annotations
+      id: report-annotations
+      run: ./libs/bin/cs2pr chkphan.xml
