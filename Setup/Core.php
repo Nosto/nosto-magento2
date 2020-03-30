@@ -165,16 +165,6 @@ abstract class Core
                 'Store ID'
             )
             ->addColumn(
-                ProductCacheInterface::IN_SYNC,
-                Table::TYPE_BOOLEAN,
-                null,
-                [
-                    'nullable' => false,
-                    'unsigned' => true,
-                ],
-                'In Sync'
-            )
-            ->addColumn(
                 ProductCacheInterface::IS_DIRTY,
                 Table::TYPE_BOOLEAN,
                 null,
@@ -183,16 +173,6 @@ abstract class Core
                     'unsigned' => true,
                 ],
                 'Is Dirty'
-            )
-            ->addColumn(
-                ProductCacheInterface::IS_DELETED,
-                Table::TYPE_BOOLEAN,
-                null,
-                [
-                    'nullable' => false,
-                    'unsigned' => true,
-                ],
-                'Is Deleted'
             )
             ->addColumn(
                 ProductCacheInterface::PRODUCT_DATA,
