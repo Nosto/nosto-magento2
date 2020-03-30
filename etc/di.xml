@@ -85,7 +85,7 @@
     </type>
     <type name="Nosto\Tagging\Console\Command\NostoRebuildInvalidProductData">
         <arguments>
-            <argument name="productDataCron" xsi:type="object">Nosto\Tagging\Cron\ProductDataCron\Proxy</argument>
+            <argument name="productDataCron" xsi:type="object">Nosto\Tagging\Cron\ProductDataCron</argument>
         </arguments>
     </type>
     <type name="Nosto\Tagging\Observer\Order\Save">
