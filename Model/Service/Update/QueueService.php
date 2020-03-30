@@ -38,7 +38,6 @@ namespace Nosto\Tagging\Model\Service\Update;
 
 use Exception;
 use Magento\Catalog\Api\Data\ProductInterface;
-use Magento\Catalog\Model\Product;
 use Magento\Store\Model\Store;
 use Nosto\NostoException;
 use Nosto\Tagging\Helper\Data as NostoDataHelper;
@@ -73,6 +72,7 @@ class QueueService extends AbstractService
      * @param QueueBuilder $queueBuilder
      * @param NostoLogger $logger
      * @param NostoDataHelper $nostoDataHelper
+     * @param NostoProductRepository $nostoProductRepository
      */
     public function __construct(
         QueueRepository $queueRepository,

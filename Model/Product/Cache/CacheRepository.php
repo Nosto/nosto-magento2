@@ -38,6 +38,7 @@ namespace Nosto\Tagging\Model\Product\Cache;
 
 use Exception;
 use Magento\Catalog\Api\Data\ProductInterface;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Model\AbstractModel;
 use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
 use Magento\Store\Api\Data\StoreInterface;
@@ -180,25 +181,19 @@ class CacheRepository implements ProductCacheRepositoryInterface
     }
 
     /**
-     * Deletes current indexed products in store
+     * Deletes cached products by product ids
      *
-     * @param CacheCollection $collection
-     * @param Store $store
+     * @param array $productIds
      * @return int number of deleted rows
+     * @throws LocalizedException
      */
-    public function deleteCurrentItemsByStore(CacheCollection $collection, Store $store)
+    public function deleteByProductIds(array $productIds)
     {
-        $indexIds = [];
-        /* @var Cache $item */
-        foreach ($collection->getItems() as $item) {
-            $indexIds[] = $item->getId();
-        }
-        $connection = $collection->getConnection();
+        $connection = $this->cacheResource->getConnection();
         return $connection->delete(
-            $collection->getMainTable(),
+            $this->cacheResource->getMainTable(),
             [
-                sprintf('%s IN (?)', Cache::ID) => array_unique($indexIds),
-                sprintf('%s=?', Cache::STORE_ID) => $store->getId()
+                sprintf('%s IN (?)', Cache::PRODUCT_ID) => array_unique($productIds)
             ]
         );
     }

@@ -38,14 +38,19 @@ namespace Nosto\Tagging\Model\Service\Update;
 
 use Magento\Framework\Exception\AlreadyExistsException;
 use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
+use Nosto\Exception\MemoryOutOfBoundsException;
+use Nosto\NostoException;
 use Nosto\Tagging\Api\Data\ProductUpdateQueueInterface;
 use Nosto\Tagging\Helper\Data as NostoDataHelper;
+use Nosto\Tagging\Helper\Scope;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Product\Queue\QueueRepository;
+use Nosto\Tagging\Model\Product\Repository as NostoProductRepository;
 use Nosto\Tagging\Model\ResourceModel\Product\Update\Queue\QueueCollection;
 use Nosto\Tagging\Model\ResourceModel\Product\Update\Queue\QueueCollectionBuilder;
 use Nosto\Tagging\Model\Service\AbstractService;
 use Nosto\Tagging\Model\Service\Sync\BulkPublisherInterface;
+use Nosto\Tagging\Model\Service\Sync\Delete\DeleteService;
 
 /**
  * Class QueueService
@@ -55,7 +60,7 @@ class QueueProcessorService extends AbstractService
     const CLEANUP_INTERVAL_HRS = 4;
 
     /** @var BulkPublisherInterface */
-    private $bulkPublisher;
+    private $upsertBulkPublisher;
 
     /** @var QueueRepository */
     private $queueRepository;
@@ -66,40 +71,62 @@ class QueueProcessorService extends AbstractService
     /** @var QueueCollectionBuilder */
     private $queueCollectionBuilder;
 
+    /** @var NostoProductRepository */
+    private $productRepository;
+
+    /** @var Scope */
+    private $scopeHelper;
+
+    /** @var DeleteService */
+    private $deleteService;
+
     /**
      * @param NostoLogger $logger
      * @param NostoDataHelper $nostoDataHelper
-     * @param BulkPublisherInterface $bulkPublisher
+     * @param BulkPublisherInterface $upsertBulkPublisher
      * @param QueueRepository $queueRepository
      * @param TimezoneInterface $magentoTimeZone
      * @param QueueCollectionBuilder $queueCollectionBuilder
+     * @param NostoProductRepository $nostoProductRepository
+     * @param Scope $scopeHelper
+     * @param DeleteService $deleteService
      */
     public function __construct(
         NostoLogger $logger,
         NostoDataHelper $nostoDataHelper,
-        BulkPublisherInterface $bulkPublisher,
+        BulkPublisherInterface $upsertBulkPublisher,
         QueueRepository $queueRepository,
         TimezoneInterface $magentoTimeZone,
-        QueueCollectionBuilder $queueCollectionBuilder
+        QueueCollectionBuilder $queueCollectionBuilder,
+        NostoProductRepository $nostoProductRepository,
+        Scope $scopeHelper,
+        DeleteService $deleteService
     ) {
         parent::__construct($nostoDataHelper, $logger);
-        $this->bulkPublisher = $bulkPublisher;
+        $this->upsertBulkPublisher = $upsertBulkPublisher;
         $this->queueRepository = $queueRepository;
         $this->magentoTimeZone = $magentoTimeZone;
         $this->queueCollectionBuilder = $queueCollectionBuilder;
+        $this->productRepository = $nostoProductRepository;
+        $this->scopeHelper = $scopeHelper;
+        $this->deleteService = $deleteService;
     }
 
     /**
      * Processes a collection of queue entries
      * - merges product ids from queue entries within the same store
      * @param QueueCollection $collection
+     * @throws MemoryOutOfBoundsException
+     * @throws NostoException
      */
     public function processQueueCollection(QueueCollection $collection)
     {
         $this->notifyStartProcessing($collection);
         $merged = $this->mergeQueues($collection);
         foreach ($merged as $storeId => $productIds) {
-            $this->bulkPublisher->execute($storeId, $productIds);
+            $deleted = $this->findDeletedProducts($productIds);
+            $this->upsertBulkPublisher->execute($storeId, array_diff($productIds, $deleted));
+            $this->deleteService->delete($productIds, $this->scopeHelper->getStore($storeId));
         }
         $this->notifyEndProcessing($collection);
     }
@@ -123,6 +150,30 @@ class QueueProcessorService extends AbstractService
             }
         }
         return $merged;
+    }
+
+    /**
+     * Returns the product ids that are no longer present in the db
+     *
+     * @param array $productIds
+     * @return array
+     */
+    private function findDeletedProducts(array $productIds)
+    {
+        $present = [];
+        $removed = [];
+        $results = $this->productRepository->getByIds($productIds);
+        //TODO - needs to be in paginated collection to avoid memory hogging
+        foreach ($results->getItems() as $item) {
+            $id = $item->getId();
+            $present[$id] = $id;
+        }
+        foreach ($productIds as $productId) {
+            if (!isset($present[$productId])) {
+                $removed[] = $productId;
+            }
+        }
+        return $removed;
     }
 
     /**
