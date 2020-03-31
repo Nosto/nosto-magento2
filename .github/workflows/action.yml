@@ -56,7 +56,7 @@ jobs:
 
     - name: Report annotations
       id: report-annotations
-      run: ./libs/bin/cs2pr chkphpcs.xml
+      run: ./vendor/bin/cs2pr chkphpcs.xml
 
   phpmd:
     name: Mess Detect
