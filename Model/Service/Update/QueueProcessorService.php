@@ -45,12 +45,13 @@ use Nosto\Tagging\Helper\Data as NostoDataHelper;
 use Nosto\Tagging\Helper\Scope;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Product\Queue\QueueRepository;
-use Nosto\Tagging\Model\Product\Repository as NostoProductRepository;
+use Nosto\Tagging\Model\ResourceModel\Magento\Product\CollectionBuilder;
 use Nosto\Tagging\Model\ResourceModel\Product\Update\Queue\QueueCollection;
 use Nosto\Tagging\Model\ResourceModel\Product\Update\Queue\QueueCollectionBuilder;
 use Nosto\Tagging\Model\Service\AbstractService;
 use Nosto\Tagging\Model\Service\Sync\BulkPublisherInterface;
-use Nosto\Tagging\Model\Service\Sync\Delete\DeleteService;
+use Nosto\Tagging\Util\PagingIterator;
+
 
 /**
  * Class QueueService
@@ -71,45 +72,44 @@ class QueueProcessorService extends AbstractService
     /** @var QueueCollectionBuilder */
     private $queueCollectionBuilder;
 
-    /** @var NostoProductRepository */
-    private $productRepository;
+    /** @var BulkPublisherInterface */
+    private $deleteBulkPublisher;
+
+    /** @var CollectionBuilder */
+    private $productCollectionBuilder;
 
     /** @var Scope */
     private $scopeHelper;
-
-    /** @var DeleteService */
-    private $deleteService;
 
     /**
      * @param NostoLogger $logger
      * @param NostoDataHelper $nostoDataHelper
      * @param BulkPublisherInterface $upsertBulkPublisher
+     * @param BulkPublisherInterface $deleteBulkPublisher
      * @param QueueRepository $queueRepository
      * @param TimezoneInterface $magentoTimeZone
      * @param QueueCollectionBuilder $queueCollectionBuilder
-     * @param NostoProductRepository $nostoProductRepository
-     * @param Scope $scopeHelper
-     * @param DeleteService $deleteService
+     * @param CollectionBuilder $productCollectionBuilder
      */
     public function __construct(
         NostoLogger $logger,
         NostoDataHelper $nostoDataHelper,
         BulkPublisherInterface $upsertBulkPublisher,
+        BulkPublisherInterface $deleteBulkPublisher,
         QueueRepository $queueRepository,
         TimezoneInterface $magentoTimeZone,
         QueueCollectionBuilder $queueCollectionBuilder,
-        NostoProductRepository $nostoProductRepository,
-        Scope $scopeHelper,
-        DeleteService $deleteService
+        CollectionBuilder $productCollectionBuilder,
+        Scope $scopeHelper
     ) {
         parent::__construct($nostoDataHelper, $logger);
         $this->upsertBulkPublisher = $upsertBulkPublisher;
+        $this->deleteBulkPublisher = $deleteBulkPublisher;
         $this->queueRepository = $queueRepository;
         $this->magentoTimeZone = $magentoTimeZone;
         $this->queueCollectionBuilder = $queueCollectionBuilder;
-        $this->productRepository = $nostoProductRepository;
+        $this->productCollectionBuilder = $productCollectionBuilder;
         $this->scopeHelper = $scopeHelper;
-        $this->deleteService = $deleteService;
     }
 
     /**
@@ -124,9 +124,9 @@ class QueueProcessorService extends AbstractService
         $this->notifyStartProcessing($collection);
         $merged = $this->mergeQueues($collection);
         foreach ($merged as $storeId => $productIds) {
-            $deleted = $this->findDeletedProducts($productIds);
+            $deleted = $this->findDeletedProducts($productIds, $storeId);
             $this->upsertBulkPublisher->execute($storeId, array_diff($productIds, $deleted));
-            $this->deleteService->delete($productIds, $this->scopeHelper->getStore($storeId));
+            $this->deleteBulkPublisher->execute($storeId, $deleted);
         }
         $this->notifyEndProcessing($collection);
     }
@@ -158,15 +158,27 @@ class QueueProcessorService extends AbstractService
      * @param array $productIds
      * @return array
      */
-    private function findDeletedProducts(array $productIds)
+    private function findDeletedProducts(array $productIds, $storeId)
     {
         $present = [];
         $removed = [];
-        $results = $this->productRepository->getByIds($productIds);
         //TODO - needs to be in paginated collection to avoid memory hogging
-        foreach ($results->getItems() as $item) {
-            $id = $item->getId();
-            $present[$id] = $id;
+        $store = $this->scopeHelper->getStore($storeId);
+        $collection = $this->productCollectionBuilder->initDefault($store)
+            ->withIds($productIds)
+            ->build();
+        $collection->setPageSize(100);
+        try {
+            $iterator = new PagingIterator($collection);
+        } catch (NostoException $e) {
+            $this->getLogger()->exception($e);
+            return [];
+        }
+        foreach ($iterator as $page) {
+            foreach ($page->getItems() as $item) {
+                $id = $item->getId();
+                $present[$id] = $id;
+            }
         }
         foreach ($productIds as $productId) {
             if (!isset($present[$productId])) {
