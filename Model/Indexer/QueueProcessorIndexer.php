@@ -127,9 +127,8 @@ class QueueProcessorIndexer extends AbstractIndexer
      */
     public function doIndex(Store $store, array $ids = [])
     {
-        $this->queueProcessorService->processQueueCollection(
-            $this->getCollection($store)
-        );
+        $collection = $this->getCollection($store);
+        $this->queueProcessorService->processQueueCollection($collection);
     }
 
     /**
@@ -146,7 +145,7 @@ class QueueProcessorIndexer extends AbstractIndexer
      */
     public function getCollection(Store $store)
     {
-        // Always process all entries per store - this way the merging is more efficient
+        // Always fetch all unprocessed entries per store - this way the merging is more efficient
         return  $this->queueCollectionBuilder
             ->initDefault($store)
             ->withStatusNew()

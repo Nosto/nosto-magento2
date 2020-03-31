@@ -50,10 +50,10 @@
     <preference for="Nosto\Tagging\Model\Service\Indexer\IndexerStatusServiceInterface" type="Nosto\Tagging\Model\Service\Indexer\IndexerStatusService"/>
     <preference for="Nosto\Tagging\Model\Service\Sync\BulkPublisherInterface" type="Nosto\Tagging\Model\Service\Sync\Upsert\AsyncBulkPublisher"/>
     <type name="Magento\Catalog\Model\ResourceModel\Product">
-        <plugin name="nostoProductObserverInvalidate" type="Nosto\Tagging\Plugin\ProductInvalidate"/>
+        <plugin name="nostoProductObserverUpdate" type="Nosto\Tagging\Plugin\ProductUpdate"/>
     </type>
-    <type name="Nosto\Tagging\Model\ResourceModel\Product\Cache">
-        <plugin name="nostoProductObserverData" type="Nosto\Tagging\Plugin\ProductData"/>
+    <type name="Nosto\Tagging\Model\ResourceModel\Product\Update\Queue">
+        <plugin name="nostoProductQueueObserverUpdate" type="Nosto\Tagging\Plugin\ProductQueueUpdate"/>
     </type>
     <type name="Nosto\Tagging\Console\Command\NostoAccountConnectCommand">
         <arguments>
@@ -215,6 +215,16 @@
         <arguments>
             <argument name="productService" xsi:type="object" shared="false">
                 Nosto\Tagging\Model\Service\Product\CachingProductService
+            </argument>
+        </arguments>
+    </type>
+    <type name="Nosto\Tagging\Model\Service\Update\QueueProcessorService">
+        <arguments>
+            <argument name="upsertBulkPublisher" xsi:type="object" shared="false">
+                Nosto\Tagging\Model\Service\Sync\Upsert\AsyncBulkPublisher
+            </argument>
+            <argument name="deleteBulkPublisher" xsi:type="object" shared="false">
+                Nosto\Tagging\Model\Service\Sync\Delete\AsyncBulkPublisher
             </argument>
         </arguments>
     </type>

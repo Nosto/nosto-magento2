@@ -54,8 +54,7 @@ use Nosto\Tagging\Util\PagingIterator;
  */
 class QueueService extends AbstractService
 {
-    const PRODUCTID_BATCH_SIZE = 1000;
-    const PRODUCT_DELETION_BATCH_SIZE = 1000;
+    const PRODUCTID_BATCH_SIZE = 1000; // How many products do we add into one queue batch
 
     /** @var QueueRepository  */
     private $queueRepository;

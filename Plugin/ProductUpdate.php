@@ -41,60 +41,92 @@ use Magento\Catalog\Model\ResourceModel\Product as MagentoResourceProduct;
 use Magento\Framework\Indexer\IndexerRegistry;
 use Magento\Framework\Model\AbstractModel;
 use Nosto\Tagging\Model\Indexer\QueueIndexer as QueueIndexer;
-use Nosto\Tagging\Model\ResourceModel\Product\Cache;
+use Nosto\Tagging\Model\Product\Repository as NostoProductRepository;
+use Nosto\Tagging\Model\Service\Cache\CacheService;
 
-class ProductData
+/**
+ * Plugin for product updates
+ * @package Nosto\Tagging\Plugin
+ */
+class ProductUpdate
 {
-    /**
-     * @var IndexerRegistry
-     */
+    /** @var IndexerRegistry  */
     private $indexerRegistry;
 
-    /**
-     * @var QueueIndexer
-     */
+    /** @var QueueIndexer  */
     private $queueIndexer;
 
-    /**
-     * @var MagentoResourceProduct
-     */
-    private $magentoResourceProduct;
+    /** @var CacheService  */
+    private $cacheService;
+
+    /** @var NostoProductRepository  */
+    private $nostoProductRepository;
 
     /**
-     * Product Observer constructor
-     * @param MagentoResourceProduct $magentoResourceProduct
+     * ProductInvalidate constructor.
      * @param IndexerRegistry $indexerRegistry
-     * @param QueueIndexer $indexerData
+     * @param CacheService $cacheService
+     * @param QueueIndexer $indexerInvalidate
+     * @param NostoProductRepository $nostoProductRepository
      */
     public function __construct(
-        MagentoResourceProduct $magentoResourceProduct,
         IndexerRegistry $indexerRegistry,
-        QueueIndexer $indexerData
-    )
-    {
+        CacheService $cacheService,
+        QueueIndexer $indexerInvalidate,
+        NostoProductRepository $nostoProductRepository
+    ) {
         $this->indexerRegistry = $indexerRegistry;
-        $this->queueIndexer = $indexerData;
-        $this->magentoResourceProduct = $magentoResourceProduct;
+        $this->cacheService = $cacheService;
+        $this->queueIndexer = $indexerInvalidate;
+        $this->nostoProductRepository = $nostoProductRepository;
     }
 
     /**
-     * @param Cache $cache
+     * @param MagentoResourceProduct $productResource
      * @param Closure $proceed
      * @param AbstractModel $product
      * @return mixed
      */
     public function aroundSave(
-        /** @noinspection PhpUnusedParameterInspection */
-        Cache $cache,
+        MagentoResourceProduct $productResource,
         Closure $proceed,
         AbstractModel $product
     ) {
         $mageIndexer = $this->indexerRegistry->get(QueueIndexer::INDEXER_ID);
         if (!$mageIndexer->isScheduled()) {
-            $this->magentoResourceProduct->addCommitCallback(function () use ($product) {
-                //ToDo - we could throw this into the mqueue directly
+            $productResource->addCommitCallback(function () use ($product) {
                 $this->queueIndexer->executeRow($product->getId());
             });
+        }
+
+        return $proceed($product);
+    }
+
+    /**
+     * @param MagentoResourceProduct $productResource
+     * @param Closure $proceed
+     * @param AbstractModel $product
+     * @return mixed
+     * @suppress PhanTypeMismatchArgument
+     */
+    public function aroundDelete(
+        MagentoResourceProduct $productResource,
+        Closure $proceed,
+        AbstractModel $product
+    ) {
+        $mageIndexer = $this->indexerRegistry->get(QueueIndexer::INDEXER_ID);
+        if (!$mageIndexer->isScheduled()) {
+            $productIds = $this->nostoProductRepository->resolveParentProductIds($product);
+            if (empty($productIds) && $this->cacheService->canBuildProduct($product)) {
+                $productResource->addCommitCallback(function () use ($product) {
+                    $this->queueIndexer->executeRow($product->getId());
+                });
+            }
+            if (is_array($productIds) && !empty($productIds)) {
+                $productResource->addCommitCallback(function () use ($productIds) {
+                    $this->queueIndexer->executeList($productIds);
+                });
+            }
         }
 
         return $proceed($product);

@@ -121,6 +121,10 @@ class QueueProcessorService extends AbstractService
      */
     public function processQueueCollection(QueueCollection $collection)
     {
+        if ($collection->getSize() === 0) {
+            $this->getLogger()->debug('No uprocessed queue entries in the update queue');
+            return;
+        }
         $this->notifyStartProcessing($collection);
         $merged = $this->mergeQueues($collection);
         foreach ($merged as $storeId => $productIds) {
@@ -140,6 +144,7 @@ class QueueProcessorService extends AbstractService
     private function mergeQueues(QueueCollection $collection)
     {
         $merged = [];
+        //TODO - add some limits to batching
         /* @var ProductUpdateQueueInterface $queueEntry */
         foreach ($collection as $queueEntry) {
             if (!isset($merged[$queueEntry->getStoreId()])) {
@@ -162,7 +167,6 @@ class QueueProcessorService extends AbstractService
     {
         $present = [];
         $removed = [];
-        //TODO - needs to be in paginated collection to avoid memory hogging
         $store = $this->scopeHelper->getStore($storeId);
         $collection = $this->productCollectionBuilder->initDefault($store)
             ->withIds($productIds)
@@ -185,6 +189,7 @@ class QueueProcessorService extends AbstractService
                 $removed[] = $productId;
             }
         }
+
         return $removed;
     }
 

@@ -37,20 +37,24 @@
 namespace Nosto\Tagging\Plugin;
 
 use Closure;
-use Magento\Catalog\Model\ResourceModel\Product as MagentoResourceProduct;
 use Magento\Framework\Indexer\IndexerRegistry;
 use Magento\Framework\Model\AbstractModel;
-use Nosto\Tagging\Model\Indexer\QueueIndexer as QueueIndexer;
+use Nosto\Tagging\Model\Indexer\QueueProcessorIndexer;
 use Nosto\Tagging\Model\Product\Repository as NostoProductRepository;
+use Nosto\Tagging\Model\ResourceModel\Product\Update\Queue as QueueResource;
 use Nosto\Tagging\Model\Service\Cache\CacheService;
 
-class ProductInvalidate
+/**
+ * Plugin for product updates
+ * @package Nosto\Tagging\Plugin
+ */
+class ProductQueueUpdate
 {
     /** @var IndexerRegistry  */
     private $indexerRegistry;
 
-    /** @var QueueIndexer  */
-    private $queueIndexer;
+    /** @var QueueProcessorIndexer  */
+    private $queueProcessorIndexer;
 
     /** @var CacheService  */
     private $cacheService;
@@ -61,70 +65,34 @@ class ProductInvalidate
     /**
      * ProductInvalidate constructor.
      * @param IndexerRegistry $indexerRegistry
-     * @param CacheService $cacheService
-     * @param QueueIndexer $indexerInvalidate
+     * @param QueueProcessorIndexer $queueProcessorIndexer
      */
     public function __construct(
         IndexerRegistry $indexerRegistry,
-        CacheService $cacheService,
-        QueueIndexer $indexerInvalidate,
-        NostoProductRepository $nostoProductRepository
-    )
-    {
+        QueueProcessorIndexer $queueProcessorIndexer
+    ) {
         $this->indexerRegistry = $indexerRegistry;
-        $this->cacheService = $cacheService;
-        $this->queueIndexer = $indexerInvalidate;
-        $this->nostoProductRepository = $nostoProductRepository;
+        $this->queueProcessorIndexer = $queueProcessorIndexer;
     }
 
     /**
-     * @param MagentoResourceProduct $productResource
+     * @param QueueResource $queueResource
      * @param Closure $proceed
-     * @param AbstractModel $product
+     * @param AbstractModel $queue
      * @return mixed
      */
     public function aroundSave(
-        MagentoResourceProduct $productResource,
+        QueueResource $queueResource,
         Closure $proceed,
-        AbstractModel $product
+        AbstractModel $queue
     ) {
-        $mageIndexer = $this->indexerRegistry->get(QueueIndexer::INDEXER_ID);
+        $mageIndexer = $this->indexerRegistry->get(QueueProcessorIndexer::INDEXER_ID);
         if (!$mageIndexer->isScheduled()) {
-            $productResource->addCommitCallback(function () use ($product) {
-                $this->queueIndexer->executeRow($product->getId());
+            $queueResource->addCommitCallback(function () use ($queue) {
+                $this->queueProcessorIndexer->executeRow($queue->getId());
             });
         }
 
-        return $proceed($product);
-    }
-
-    /**
-     * @param MagentoResourceProduct $productResource
-     * @param Closure $proceed
-     * @param AbstractModel $product
-     * @return mixed
-     * @suppress PhanTypeMismatchArgument
-     */
-    public function aroundDelete(
-        MagentoResourceProduct $productResource,
-        Closure $proceed,
-        AbstractModel $product
-    ) {
-        $mageIndexer = $this->indexerRegistry->get(QueueIndexer::INDEXER_ID);
-        if (!$mageIndexer->isScheduled()) {
-            $productIds = $this->nostoProductRepository->resolveParentProductIds($product);
-            if (empty($productIds) && $this->cacheService->canBuildProduct($product)) {
-                $productResource->addCommitCallback(function () use ($product) {
-                    $this->queueIndexer->executeRow($product->getId());
-                });
-            }
-            if (is_array($productIds) && !empty($productIds)) {
-                $productResource->addCommitCallback(function () use ($productIds) {
-                    $this->queueIndexer->executeList($productIds);
-                });
-            }
-        }
-
-        return $proceed($product);
+        return $proceed($queue);
     }
 }

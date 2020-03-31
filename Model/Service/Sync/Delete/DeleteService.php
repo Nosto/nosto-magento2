@@ -69,9 +69,6 @@ class DeleteService extends AbstractService
     /** @var NostoHelperUrl */
     private $nostoHelperUrl;
 
-    /** @var NostoCacheCollectionFactory */
-    private $nostoCacheCollectionFactory;
-
     /**
      * DeleteService constructor.
      * @param CacheRepository $cacheRepository
@@ -79,20 +76,17 @@ class DeleteService extends AbstractService
      * @param NostoHelperData $nostoHelperData
      * @param NostoHelperUrl $nostoHelperUrl
      * @param NostoLogger $logger
-     * @param NostoCacheCollectionFactory $nostoCacheCollectionFactory
      */
     public function __construct(
         CacheRepository $cacheRepository,
         NostoHelperAccount $nostoHelperAccount,
         NostoHelperData $nostoHelperData,
         NostoHelperUrl $nostoHelperUrl,
-        NostoLogger $logger,
-        NostoCacheCollectionFactory $nostoCacheCollectionFactory
+        NostoLogger $logger
     ) {
         $this->cacheRepository = $cacheRepository;
         $this->nostoHelperAccount = $nostoHelperAccount;
         $this->nostoHelperUrl = $nostoHelperUrl;
-        $this->nostoCacheCollectionFactory = $nostoCacheCollectionFactory;
         parent::__construct($nostoHelperData, $logger);
     }
 
@@ -121,7 +115,9 @@ class DeleteService extends AbstractService
                 $op->setResponseTimeout(30);
                 $op->setProductIds($ids);
                 $op->delete(); // @codingStandardsIgnoreLine
-                $this->cacheRepository->deleteByProductIds($ids);
+                if ($this->getDataHelper()->isProductCachingEnabled($store)) {
+                    $this->cacheRepository->deleteByProductIds($ids);
+                }
                 $this->tickBenchmark(self::BENCHMARK_DELETE_NAME);
             } catch (Exception $e) {
                 $this->getLogger()->exception($e);
