@@ -107,7 +107,7 @@ jobs:
 
     - name: Report annotations
       id: report-annotations
-      run: ./libs/bin/cs2pr pmdphpmd.xml
+      run: ./vendor/bin/pmd2pr pmdphpmd.xml
 
   package:
     name: Package

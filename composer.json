@@ -21,7 +21,8 @@
     "magento/module-catalog-search": "101.0.4",
     "magento/module-quote": "101.1.4",
     "magento/module-review": "100.3.4",
-    "magento/zendframework1": "1.14.3"
+    "magento/zendframework1": "1.14.3",
+    "mridang/pmd-annotations": "^0.0.2"
   },
   "suggest": {
     "magento/product-community-edition": "2.*",
