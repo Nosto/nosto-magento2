@@ -22,9 +22,6 @@ jobs:
     - name: Install AST extension
       run: sudo pecl install -f ast
 
-    - name: Install JQ tool
-      run: sudo apt-get install jq
-
       #https://github.com/actions/cache/blob/master/examples.md#php---composer
     - name: Cache composer packages
       id: composer-cache
@@ -76,10 +73,6 @@ jobs:
       run: ./vendor/bin/phan --config-file=phan.php --output-mode=checkstyle --output=chkphan.xml --processes=4
       continue-on-error: true
 
-    - name: Report annotations
-      id: report-annotations
-      run: jq --version
-
     - name: Archive static analysis results
       uses: actions/upload-artifact@v1
       with:
@@ -88,4 +81,4 @@ jobs:
 
     - name: Report annotations
       id: report-annotations
-      run: ./libs/bin/cs2pr chkphan.xml
+      run: ./vendor/bin/cs2pr chkphan.xml
