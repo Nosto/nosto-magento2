@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c66bf357e0d18e136f8c4bcbe2535664",
+    "content-hash": "051648252a19539418a39ec757928050",
     "packages": [
         {
             "name": "colinmollenhour/credis",
@@ -6323,6 +6323,42 @@
                 "standards"
             ],
             "time": "2020-01-30T22:20:29+00:00"
+        },
+        {
+            "name": "staabm/annotate-pull-request-from-checkstyle",
+            "version": "1.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/staabm/annotate-pull-request-from-checkstyle.git",
+                "reference": "7d3bcdf21e4b30b14c8ca0a7ef39f4b856d3fbfb"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/staabm/annotate-pull-request-from-checkstyle/zipball/7d3bcdf21e4b30b14c8ca0a7ef39f4b856d3fbfb",
+                "reference": "7d3bcdf21e4b30b14c8ca0a7ef39f4b856d3fbfb",
+                "shasum": ""
+            },
+            "require": {
+                "ext-simplexml": "*",
+                "php": "^7.0"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^2.16.1"
+            },
+            "bin": [
+                "cs2pr"
+            ],
+            "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Markus Staab"
+                }
+            ],
+            "time": "2020-02-26T08:24:03+00:00"
         },
         {
             "name": "symfony/config",
