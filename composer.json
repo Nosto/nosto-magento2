@@ -23,7 +23,8 @@
     "magento/module-review": "100.3.4",
     "magento/zendframework1": "1.14.3",
     "mridang/pmd-annotations": "^0.0.2",
-    "staabm/annotate-pull-request-from-checkstyle": "^1.1"
+    "staabm/annotate-pull-request-from-checkstyle": "^1.1",
+    "magento/magento-coding-standard": "^5.0"
   },
   "suggest": {
     "magento/product-community-edition": "2.*",
