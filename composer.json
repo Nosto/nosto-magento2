@@ -7,7 +7,7 @@
     "phpmd/phpmd": "^2.5",
     "sebastian/phpcpd": "*",
     "phing/phing": "2.*",
-    "magento-ecg/coding-standard": "2.*",
+    "magento-ecg/coding-standard": "3.*",
     "magento/marketplace-eqp": "*",
     "magento/module-catalog": "103.0.4",
     "magento/module-sales": "102.0.4",
