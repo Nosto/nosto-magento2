@@ -127,10 +127,16 @@ class QueueProcessorService extends AbstractService
         }
         $this->notifyStartProcessing($collection);
         $merged = $this->mergeQueues($collection);
-        foreach ($merged as $storeId => $productIds) {
-            $deleted = $this->findDeletedProducts($productIds, $storeId);
-            $this->upsertBulkPublisher->execute($storeId, array_diff($productIds, $deleted));
-            $this->deleteBulkPublisher->execute($storeId, $deleted);
+        foreach ($merged as $storeId => $actions) {
+            foreach ($actions as $action => $productIds) {
+                switch ($action) {
+                    case ProductUpdateQueueInterface::ACTION_VALUE_UPSERT:
+                        $this->upsertBulkPublisher->execute($storeId, $productIds);
+                        break;
+                    case ProductUpdateQueueInterface::ACTION_VALUE_DELETE:
+                        $this->deleteBulkPublisher->execute($storeId, $productIds);
+                }
+            }
         }
         $this->notifyEndProcessing($collection);
     }
@@ -148,49 +154,16 @@ class QueueProcessorService extends AbstractService
         /* @var ProductUpdateQueueInterface $queueEntry */
         foreach ($collection as $queueEntry) {
             if (!isset($merged[$queueEntry->getStoreId()])) {
-                $merged[$queueEntry->getStoreId()] = [];
+                $merged[$queueEntry->getStoreId()] = [
+                    ProductUpdateQueueInterface::ACTION_VALUE_UPSERT => [],
+                    ProductUpdateQueueInterface::ACTION_VALUE_DELETE => []
+                ];
             }
             foreach ($queueEntry->getProductIds() as $productId) {
-                $merged[$queueEntry->getStoreId()][$productId] = $productId;
+                $merged[$queueEntry->getStoreId()][$queueEntry->getAction()][$productId] = $productId;
             }
         }
         return $merged;
-    }
-
-    /**
-     * Returns the product ids that are no longer present in the db
-     *
-     * @param array $productIds
-     * @return array
-     */
-    private function findDeletedProducts(array $productIds, $storeId)
-    {
-        $present = [];
-        $removed = [];
-        $store = $this->scopeHelper->getStore($storeId);
-        $collection = $this->productCollectionBuilder->initDefault($store)
-            ->withIds($productIds)
-            ->build();
-        $collection->setPageSize(100);
-        try {
-            $iterator = new PagingIterator($collection);
-        } catch (NostoException $e) {
-            $this->getLogger()->exception($e);
-            return [];
-        }
-        foreach ($iterator as $page) {
-            foreach ($page->getItems() as $item) {
-                $id = $item->getId();
-                $present[$id] = $id;
-            }
-        }
-        foreach ($productIds as $productId) {
-            if (!isset($present[$productId])) {
-                $removed[] = $productId;
-            }
-        }
-
-        return $removed;
     }
 
     /**

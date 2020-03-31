@@ -52,6 +52,8 @@ interface ProductUpdateQueueInterface
     const STORE_ID = 'store_id';
     const PRODUCT_IDS = 'product_ids';
     const ACTION = 'action';
+    const ACTION_VALUE_UPSERT = 'upsert';
+    const ACTION_VALUE_DELETE = 'delete';
     const STATUS = 'status';
     const STATUS_VALUE_NEW = 'new';
     const STATUS_VALUE_PROCESSING = 'processing';
@@ -105,6 +107,13 @@ interface ProductUpdateQueueInterface
      * @return string
      */
     public function getStatus();
+
+    /**
+     * Get the queue action
+     *
+     * @return string
+     */
+    public function getAction();
 
     /**
      * Set id
@@ -165,4 +174,10 @@ interface ProductUpdateQueueInterface
      * @return self
      */
     public function setStatus($status);
+
+    /**
+     * @param string $action
+     * @return self
+     */
+    public function setAction($action);
 }

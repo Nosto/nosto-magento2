@@ -50,6 +50,22 @@ class Queue extends AbstractModel implements ProductUpdateQueueInterface
     /**
      * @inheritDoc
      */
+    public function getAction()
+    {
+        return $this->getData(self::ACTION);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setAction($action)
+    {
+        return $this->setData(self::ACTION, $action);
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function getStatus()
     {
         return $this->getData(self::STATUS);

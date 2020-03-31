@@ -38,6 +38,7 @@ namespace Nosto\Tagging\Model\Service\Update;
 
 use Exception;
 use Magento\Catalog\Api\Data\ProductInterface;
+use Magento\Framework\Exception\AlreadyExistsException;
 use Magento\Store\Model\Store;
 use Nosto\NostoException;
 use Nosto\Tagging\Helper\Data as NostoDataHelper;
@@ -94,16 +95,38 @@ class QueueService extends AbstractService
      * @throws NostoException
      * @throws Exception
      */
-    public function addCollectionToQueue(ProductCollection $collection, Store $store)
+    public function addCollectionToUpsertQueue(ProductCollection $collection, Store $store)
     {
         $collection->setPageSize(self::PRODUCTID_BATCH_SIZE);
         $iterator = new PagingIterator($collection);
 
         /** @var ProductCollection $page */
         foreach ($iterator as $page) {
-            $queueEntry = $this->queueBuilder->build(
+            $queueEntry = $this->queueBuilder->buildForUpsert(
                 $store,
                 $this->toParentProructIds($page)
+            );
+            if (count($queueEntry->getProductIds()) > 0) {
+                $this->queueRepository->save($queueEntry);
+            }
+        }
+    }
+
+    /**
+     * Sets the product ids into the delete queue
+     *
+     * @param $productIds
+     * @param Store $store
+     * @throws AlreadyExistsException
+     */
+    public function addIdsToDeleteQueue($productIds, Store $store)
+    {
+        $batchedIds = array_chunk($productIds, self::PRODUCTID_BATCH_SIZE);
+        /** @var ProductCollection $page */
+        foreach ($batchedIds as $idBatch) {
+            $queueEntry = $this->queueBuilder->buildForDeletion(
+                $store,
+                $idBatch
             );
             if (count($queueEntry->getProductIds()) > 0) {
                 $this->queueRepository->save($queueEntry);

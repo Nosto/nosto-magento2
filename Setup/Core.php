@@ -262,6 +262,13 @@ abstract class Core
                 'Processing status'
             )
             ->addColumn(
+                ProductUpdateQueueInterface::ACTION,
+                Table::TYPE_TEXT,
+                10,
+                ['nullable' => false],
+                'Action'
+            )
+            ->addColumn(
                 ProductUpdateQueueInterface::CREATED_AT,
                 Table::TYPE_DATETIME,
                 null,

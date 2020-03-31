@@ -85,4 +85,32 @@ class QueueBuilder
         $queueModel->setStatus(ProductUpdateQueueInterface::STATUS_VALUE_NEW);
         return $queueModel;
     }
+
+    /**
+     * @param StoreInterface $store
+     * @param array $productIds
+     * @return QueueModel
+     */
+    public function buildForUpsert(
+        StoreInterface $store,
+        array $productIds
+    ) {
+        $queueModel = $this->build($store, $productIds);
+        $queueModel->setAction(ProductUpdateQueueInterface::ACTION_VALUE_UPSERT);
+        return $queueModel;
+    }
+
+    /**
+     * @param StoreInterface $store
+     * @param array $productIds
+     * @return QueueModel
+     */
+    public function buildForDeletion(
+        StoreInterface $store,
+        array $productIds
+    ) {
+        $queueModel = $this->build($store, $productIds);
+        $queueModel->setAction(ProductUpdateQueueInterface::ACTION_VALUE_DELETE);
+        return $queueModel;
+    }
 }
