@@ -55,6 +55,6 @@ use Nosto\Tagging\Block\Embed;
 ?>
 <?php if ($this->getNostoScriptUrl()) : ?>
     <script type="text/javascript"
-            src="<?php echo $this->getNostoScriptUrl(); ?>"
+            src="<?= $this->getNostoScriptUrl(); ?>"
             async></script>
 <?php endif; ?>

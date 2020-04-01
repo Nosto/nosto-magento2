@@ -38,8 +38,8 @@ use Nosto\Tagging\Block\Addtocart;
 
 /** @var Addtocart $this */
 ?>
-<form action="<?php echo $this->getSubmitUrl() ?>" method="post" id="nosto_addtocart_form">
-    <?php echo $this->getBlockHtml('formkey') ?>
+<form action="<?= $this->getSubmitUrl() ?>" method="post" id="nosto_addtocart_form">
+    <?= $this->getBlockHtml('formkey') ?>
     <input type="hidden" name="qty" value="1">
     <input type="hidden" name="product">
 </form>

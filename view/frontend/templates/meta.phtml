@@ -55,6 +55,6 @@ use Nosto\Tagging\Block\Meta;
 ?>
 
 <!-- Nosto Meta Tags -->
-<meta name="nosto-version" content="<?php echo $this->escapeHtml($this->getModuleVersion()); ?>">
-<meta name="nosto-unique-id" content="<?php echo $this->escapeHtml($this->getInstallationId()); ?>">
-<meta name="nosto-language" content="<?php echo $this->escapeHtml($this->getLanguageCode()); ?>">
+<meta name="nosto-version" content="<?= $this->escapeHtml($this->getModuleVersion()); ?>">
+<meta name="nosto-unique-id" content="<?= $this->escapeHtml($this->getInstallationId()); ?>">
+<meta name="nosto-language" content="<?= $this->escapeHtml($this->getLanguageCode()); ?>">
