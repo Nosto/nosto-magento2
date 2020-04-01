@@ -63,7 +63,6 @@ jobs:
         bin/magento module:enable --all
         bin/magento setup:di:compile
         cd ..
-        cp -r magento/lib/internal vendor/magento/
         cp -r magento/generated vendor/magento/
         rm -rf magento
       env:
