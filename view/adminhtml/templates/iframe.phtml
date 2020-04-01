@@ -41,7 +41,7 @@
 
 <!--suppress HtmlDeprecatedAttribute -->
 <iframe id="nosto_iframe"
-        src='<?= $block->getIframeUrl(); ?>'
+        src='<?= $block->escapeUrl($block->getIframeUrl()); ?>'
         width='100%'
         frameborder='0'
         scrolling='no'

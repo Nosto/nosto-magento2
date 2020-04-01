@@ -58,7 +58,7 @@
     <?php $accountDetails =  $block->getAccountDetails(); ?>
     <?php if ($accountDetails === null) : ?>
         <div>
-            <?= __('There is no account connected') ?>
+            <?= $block->escapeHtml(__('There is no account connected')) ?>
         </div>
     <?php else: ?>
         <table>
@@ -69,7 +69,7 @@
                 <td class="token-container" style="padding: 2.2rem 1.5rem 1rem 1.5rem;">
                   <label>
                     <input type="text" readonly
-                        value = "<?= $accountDetails->getName(); ?>"
+                        value = "<?= $block->escapeHtml($accountDetails->getName()); ?>"
                     />
                   </label>
                 </td>
@@ -77,12 +77,12 @@
         <?php foreach ($accountDetails->getTokens() as $token): ?>
             <tr>
                 <td class="token-title">
-                    <?= $token->getName() ?> Token
+                    <?= $block->escapeHtml($token->getName()) ?> Token
                 </td>
                 <td class="token-container" style="padding: 2.2rem 1.5rem 1rem 1.5rem;">
                   <label>
                     <input type="text" readonly style="width:100%; word-wrap:break-word;"
-                        value="<?= $token->getValue() ?>"
+                        value="<?= $block->escapeHtml($token->getValue()) ?>"
                     />
                   </label>
                 </td>
