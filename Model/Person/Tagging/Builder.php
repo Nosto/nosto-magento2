@@ -54,7 +54,6 @@ use Nosto\Tagging\Util\Customer as CustomerUtil;
 
 /**
  * Builder class for buyer
- * @package Nosto\Tagging\Model\Order\Buyer
  */
 class Builder extends PersonBuilder
 {

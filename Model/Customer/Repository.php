@@ -49,7 +49,6 @@ use Nosto\Tagging\Util\Repository as RepositoryUtil;
 
 /**
  * Class Repository
- * @package Nosto\Tagging\Model\Customer
  */
 class Repository implements CustomerRepositoryInterface
 {

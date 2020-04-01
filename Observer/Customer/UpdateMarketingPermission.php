@@ -51,7 +51,6 @@ use Nosto\Tagging\Logger\Logger as NostoLogger;
 
 /**
  * Class UpdateMarketingPermission
- * @package Nosto\Tagging\Observer\Customer
  */
 class UpdateMarketingPermission implements ObserverInterface
 {

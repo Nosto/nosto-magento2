@@ -58,7 +58,6 @@ use Nosto\Tagging\Model\Customer\Customer as NostoCustomer;
 
 /**
  * Class Add
- * @package Nosto\Tagging\Observer
  */
 class Add implements ObserverInterface
 {

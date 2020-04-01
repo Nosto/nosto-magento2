@@ -47,7 +47,6 @@ use Nosto\Tagging\Helper\Variation as NostoHelperVariation;
  * Nosto JS stub block
  *
  * @category Nosto
- * @package  Nosto_Tagging
  * @author   Nosto Solutions Ltd <magento@nosto.com>
  */
 class Stub extends Template

@@ -47,8 +47,6 @@ use Nosto\Tagging\Model\Product\Cache\CacheRepository;
 
 /**
  * Cronjob class that periodically invalidates Nosto indexed data for each of the store views
- *
- * @package Nosto\Tagging\Cron
  */
 class InvalidateCron
 {

@@ -62,7 +62,6 @@ use Nosto\Types\Signup\AccountInterface;
 
 /**
  * Class Save
- * @package Nosto\Tagging\Observer
  */
 class Save implements ObserverInterface
 {

@@ -48,7 +48,6 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 /**
  * Class NostoRebuildInvalidProductData
  * This command is mainly for debugging purposes - the cron job should do the trick
- * @package Nosto\Tagging\Console\Command
  */
 class NostoRebuildInvalidProductData extends Command
 {

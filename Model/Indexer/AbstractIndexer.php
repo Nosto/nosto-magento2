@@ -61,7 +61,6 @@ use UnexpectedValueException;
 
 /**
  * Class AbstractIndexer
- * @package Nosto\Tagging\Model\Indexer
  */
 abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerActionInterface, MviewActionInterface
 {

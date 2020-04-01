@@ -47,8 +47,6 @@ use Nosto\Tagging\Model\Meta\Account\Settings\Service as NostoSettingsService;
 /**
  * Observer to update the account settings for each of the store views if the module is enabled and
  * an account exists for the store view.
- *
- * @package Nosto\Tagging\Observer\Settings
  */
 class Update implements ObserverInterface
 {
