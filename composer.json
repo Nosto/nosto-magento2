@@ -8,7 +8,6 @@
     "sebastian/phpcpd": "*",
     "phing/phing": "2.*",
     "magento-ecg/coding-standard": "3.*",
-    "magento/marketplace-eqp": "*",
     "magento/module-catalog": "103.0.4",
     "magento/module-sales": "102.0.4",
     "magento/module-sales-inventory": "100.3.4",
