@@ -62,8 +62,7 @@ return [
         'vendor/zendframework',
         'vendor/psr',
         'vendor/symfony/console',
-        'magento/generated',
-        'magento/internal'
+        'magento/generated'
     ],
     'exclude_file_list' => [
         'vendor/magento/zendframework1/library/Zend/Validate/Hostname/Biz.php',
