@@ -43,7 +43,6 @@ use Magento\Review\Model\Review as ReviewModel;
 /**
  * Product update model for Reviews and Ratings
  *
- * @category Nosto
  * @author   Nosto Solutions Ltd <magento@nosto.com>
  */
 class Review extends Base

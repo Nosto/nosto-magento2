@@ -47,9 +47,6 @@ use Nosto\Tagging\Model\ResourceModel\Customer as CustomerResource;
 use Nosto\Tagging\Model\ResourceModel\Customer\CollectionFactory as CustomerCollectionFactory;
 use Nosto\Tagging\Util\Repository as RepositoryUtil;
 
-/**
- * Class Repository
- */
 class Repository implements CustomerRepositoryInterface
 {
     private $searchCriteriaBuilder;

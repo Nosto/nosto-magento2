@@ -60,9 +60,6 @@ use Nosto\Tagging\Model\Order\Builder as NostoOrderBuilder;
 use Nosto\Tagging\Model\Order\Status\Builder as NostoOrderStatusBuilder;
 use Nosto\Types\Signup\AccountInterface;
 
-/**
- * Class Save
- */
 class Save implements ObserverInterface
 {
     private $nostoHelperData;

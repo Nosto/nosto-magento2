@@ -56,9 +56,6 @@ use Nosto\Tagging\Model\Cart\Builder as NostoCartBuilder;
 use Nosto\Tagging\Model\Cart\Item\Builder as NostoCartItemBuilder;
 use Nosto\Tagging\Model\Customer\Customer as NostoCustomer;
 
-/**
- * Class Add
- */
 class Add implements ObserverInterface
 {
     private $nostoHelperData;
