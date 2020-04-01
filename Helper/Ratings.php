@@ -255,6 +255,7 @@ class Ratings extends AbstractHelper
     public function canUseYotpo()
     {
         if ($this->moduleManager->isEnabled('Yotpo_Yotpo') &&
+            // phpcs:ignore
             class_exists('Yotpo\Yotpo\Helper\RichSnippets') &&
             method_exists($this->ratingsFactory->create(), 'getRichSnippet')
         ) {
