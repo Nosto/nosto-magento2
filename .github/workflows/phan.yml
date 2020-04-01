@@ -54,8 +54,6 @@ jobs:
     - name: Install Magento
       id: install-magento
       run: |
-        mkdir phan
-        cd phan
         composer create-project magento/community-edition=2.3.2 magento
         cd magento
         composer config minimum-stability dev
@@ -64,14 +62,13 @@ jobs:
         composer update --no-dev
         bin/magento module:enable --all
         bin/magento setup:di:compile
+        cd ..
       env:
         GITHUB_BRANCH: ${{ github.base_ref }}
 
     - name: Run Phan analysis
       id: phan-analysis
       run: |
-        ls -lah
-        ls magento/
         ./vendor/bin/phan --config-file=phan.php --output-mode=checkstyle --output=chkphan.xml --processes=4
       continue-on-error: true
 
