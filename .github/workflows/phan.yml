@@ -54,7 +54,6 @@ jobs:
     - name: Install Magento
       id: install-magento
       run: |
-        export
         mkdir phan
         cd phan
         composer create-project magento/community-edition=2.3.2 magento
@@ -70,7 +69,10 @@ jobs:
 
     - name: Run Phan analysis
       id: phan-analysis
-      run: ./vendor/bin/phan --config-file=phan.php --output-mode=checkstyle --output=chkphan.xml --processes=4
+      run: |
+        ls -lah
+        ls magento/
+        ./vendor/bin/phan --config-file=phan.php --output-mode=checkstyle --output=chkphan.xml --processes=4
       continue-on-error: true
 
     - name: Archive static analysis results
