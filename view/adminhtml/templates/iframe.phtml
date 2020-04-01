@@ -41,9 +41,9 @@
 
 <!--suppress HtmlDeprecatedAttribute -->
 <iframe id="nosto_iframe"
-        src='<?= $this->getIframeUrl(); ?>'
+        src='<?= $block->getIframeUrl(); ?>'
         width='100%'
         frameborder='0'
         scrolling='no'
         style="min-height: 600px;"
-        data-mage-init='<?= json_encode($this->getIframeConfig()); ?>'></iframe>
+        data-mage-init='<?= json_encode($block->getIframeConfig()); ?>'></iframe>

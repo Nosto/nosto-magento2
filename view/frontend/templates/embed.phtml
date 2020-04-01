@@ -53,8 +53,8 @@ use Nosto\Tagging\Block\Embed;
 
 /** @var Embed $this */
 ?>
-<?php if ($this->getNostoScriptUrl()) : ?>
+<?php if ($block->getNostoScriptUrl()) : ?>
     <script type="text/javascript"
-            src="<?= $this->getNostoScriptUrl(); ?>"
+            src="<?= $block->getNostoScriptUrl(); ?>"
             async></script>
 <?php endif; ?>

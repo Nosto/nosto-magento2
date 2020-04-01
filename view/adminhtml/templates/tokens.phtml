@@ -55,7 +55,7 @@
     }
 </style>
 <fieldset>
-    <?php $accountDetails =  $this->getAccountDetails(); ?>
+    <?php $accountDetails =  $block->getAccountDetails(); ?>
     <?php if ($accountDetails === null) : ?>
         <div>
             <?= __('There is no account connected') ?>
