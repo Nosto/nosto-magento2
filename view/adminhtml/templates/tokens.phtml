@@ -56,7 +56,7 @@
 </style>
 <fieldset>
     <?php $accountDetails =  $block->getAccountDetails(); ?>
-    <?php if ($accountDetails === null) : ?>
+    <?php if ($accountDetails === null): ?>
         <div>
             <?= $block->escapeHtml(__('There is no account connected')) ?>
         </div>
@@ -64,7 +64,7 @@
         <table>
             <tr>
                 <td class="token-title">
-                    <?= __('Account ID'); ?>
+                    <?= $block->escapeHtml(__('Account ID')); ?>
                 </td>
                 <td class="token-container" style="padding: 2.2rem 1.5rem 1rem 1.5rem;">
                   <label>
