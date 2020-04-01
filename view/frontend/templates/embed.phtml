@@ -51,9 +51,9 @@ use Nosto\Tagging\Block\Embed;
  * Please see a reference guide such as https://github.com/Nosto/nosto-magento2/wiki
  */
 
-/** @var Embed $this */
+/** @var Embed $block */
 ?>
-<?php if ($block->getNostoScriptUrl()) : ?>
+<?php if ($block->getNostoScriptUrl()): ?>
     <script type="text/javascript"
             src="<?= $block->getNostoScriptUrl(); ?>"
             async></script>

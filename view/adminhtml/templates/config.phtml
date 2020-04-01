@@ -37,10 +37,10 @@
 use Nosto\Tagging\Block\Adminhtml\Account\Config;
 
 /**
- * @var Config $this
+ * @var Config $block
  */
 ?>
 
-<button id="nosto_config_link" title="Configuration" style="float: right;" type="button" class="action- scalable primary" onclick="window.open('<?= $block->getConfigurationUrl(); ?>');">
+<button id="nosto_config_link" title="Configuration" style="float: right;" type="button" class="action- scalable primary" onclick="window.open('<?= $block->escapeUrl($block->getConfigurationUrl()) ?>');">
     <span>Configuration</span>
 </button>

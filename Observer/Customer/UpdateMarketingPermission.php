@@ -49,9 +49,6 @@ use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 
-/**
- * Class UpdateMarketingPermission
- */
 class UpdateMarketingPermission implements ObserverInterface
 {
     private $nostoHelperData;
