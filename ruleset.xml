@@ -53,6 +53,7 @@
     <rule ref="./vendor/magento-ecg/coding-standard/EcgM2">
     </rule>
     <rule ref="./vendor/magento/magento-coding-standard/Magento2">
+        <exclude name="Magento2.Functions.StaticFunction"/>
         <exclude name="Generic.Metrics.CyclomaticComplexity"/>
     </rule>
 </ruleset>
