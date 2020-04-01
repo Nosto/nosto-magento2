@@ -39,8 +39,7 @@ namespace Nosto\Tagging\Model\Product\Sku;
 use Exception;
 use Magento\Catalog\Model\Product;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable as ConfigurableType;
-use Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable\Attribute\Collection
-    as ConfigurableAttributeCollection;
+use Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable\Attribute\Collection as ConfigurableAttributeCollection;
 use Magento\Store\Model\Store;
 use Nosto\Object\Product\SkuCollection;
 use Nosto\Tagging\Logger\Logger as NostoLogger;

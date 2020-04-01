@@ -38,14 +38,14 @@ namespace Nosto\Tagging\Model\Service\Sync;
 
 use Exception;
 use Magento\Authorization\Model\UserContextInterface;
+use Magento\Framework\App\ObjectManager;
 use Magento\Framework\DataObject\IdentityGeneratorInterface;
 use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Module\Manager;
 use Magento\Framework\Serialize\SerializerInterface;
 use Magento\Store\Model\Store;
-use Nosto\Tagging\Model\ResourceModel\Product\Cache\CacheCollection;
-use Magento\Framework\App\ObjectManager;
-use Magento\Framework\Module\Manager;
 use Nosto\Tagging\Logger\Logger;
+use Nosto\Tagging\Model\ResourceModel\Product\Cache\CacheCollection;
 
 abstract class AbstractBulkPublisher implements BulkPublisherInterface
 {

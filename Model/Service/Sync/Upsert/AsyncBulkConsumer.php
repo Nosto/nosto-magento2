@@ -36,12 +36,12 @@
 
 namespace Nosto\Tagging\Model\Service\Sync\Upsert;
 
-use Nosto\Tagging\Model\Service\Sync\AbstractBulkConsumer;
-use Nosto\Tagging\Helper\Scope as NostoScopeHelper;
-use Nosto\Tagging\Model\Product\Cache\CacheRepository;
 use Magento\Framework\EntityManager\EntityManager;
 use Magento\Framework\Json\Helper\Data as JsonHelper;
+use Nosto\Tagging\Helper\Scope as NostoScopeHelper;
 use Nosto\Tagging\Logger\Logger;
+use Nosto\Tagging\Model\Product\Cache\CacheRepository;
+use Nosto\Tagging\Model\Service\Sync\AbstractBulkConsumer;
 
 /**
  * Asynchronous Bulk Consumer

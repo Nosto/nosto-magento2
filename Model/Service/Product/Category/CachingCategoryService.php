@@ -39,7 +39,6 @@ namespace Nosto\Tagging\Model\Service\Product\Category;
 use Magento\Catalog\Model\Category;
 use Magento\Catalog\Model\Product;
 use Magento\Store\Api\Data\StoreInterface;
-use Nosto\Tagging\Logger\Logger;
 
 class CachingCategoryService implements CategoryServiceInterface
 {
