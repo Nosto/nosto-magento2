@@ -145,45 +145,47 @@ class Create extends Base
                         $accountOwner->setFirstName(null);
                         $accountOwner->setLastName(null);
                         $accountOwner->setEmail($emailAddress);
-                    } else {
-                        throw new NostoException('Invalid email address ' . $emailAddress);
-                    }
-                }
 
-                $signupParams = $this->nostoSignupBuilder->build(
-                    $store,
-                    $accountOwner,
-                    $signupDetails
-                );
-                $operation = new AccountSignup($signupParams);
-                $account = $operation->create();
+                        $signupParams = $this->nostoSignupBuilder->build(
+                            $store,
+                            $accountOwner,
+                            $signupDetails
+                        );
+                        $operation = new AccountSignup($signupParams);
+                        $account = $operation->create();
 
-                if ($this->nostoHelperAccount->saveAccount($account, $store)) {
-                    $response['success'] = true;
-                    $response['redirect_url'] = IframeHelper::getUrl(
-                        $this->nostoIframeMetaBuilder->build($store),
-                        $account,
-                        $this->nostoCurrentUserBuilder->build(),
-                        [
-                            'message_type' => Nosto::TYPE_SUCCESS,
-                            'message_code' => Nosto::CODE_ACCOUNT_CREATE,
-                        ]
-                    );
+                        if ($this->nostoHelperAccount->saveAccount($account, $store)) {
+                            $response['success'] = true;
+                            $response['redirect_url'] = IframeHelper::getUrl(
+                                $this->nostoIframeMetaBuilder->build($store),
+                                $account,
+                                $this->nostoCurrentUserBuilder->build(),
+                                [
+                                    'message_type' => Nosto::TYPE_SUCCESS,
+                                    'message_code' => Nosto::CODE_ACCOUNT_CREATE,
+                                ]
+                            );
 
-                    // Note that we will send the exchange rates even if the multi currency
-                    // is not set. This is mostly for debugging purposes.
-                    if ($this->nostoCurrencyHelper->getCurrencyCount($store) > 1) {
-                        try {
-                            $this->nostoRatesService->update($store);
-                        } catch (Exception $e) {
-                            $this->logger->exception($e);
+                            // Note that we will send the exchange rates even if the multi currency
+                            // is not set. This is mostly for debugging purposes.
+                            if ($this->nostoCurrencyHelper->getCurrencyCount($store) > 1) {
+                                try {
+                                    $this->nostoRatesService->update($store);
+                                } catch (Exception $e) {
+                                    $this->logger->exception($e);
+                                }
+                            }
+
+                            //invalidate page cache and layout cache
+                            $this->nostoHelperCache->invalidatePageCache();
+                            $this->nostoHelperCache->invalidateLayoutCache();
                         }
+                    } else {
+                        $this->logger->exception(new NostoException('Invalid email address ' . $emailAddress));
+                        $messageText = 'Invalid email address ' . $emailAddress;
                     }
-
-                    //invalidate page cache and layout cache
-                    $this->nostoHelperCache->invalidatePageCache();
-                    $this->nostoHelperCache->invalidateLayoutCache();
                 }
+                
             } catch (NostoException $e) {
                 $this->logger->exception($e);
                 $messageText = $e->getMessage();
