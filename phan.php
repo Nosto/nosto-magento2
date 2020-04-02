@@ -75,5 +75,9 @@ return [
     ],
     'suppress_issue_types' => [
         'PhanParamSignatureMismatch',
+    ],
+    "color_issue_messages_if_supported" => true,
+    'plugins' => [
+      'vendor/drenso/phan-extensions/Plugin/DocComment/InlineVarPlugin.php'
     ]
 ];

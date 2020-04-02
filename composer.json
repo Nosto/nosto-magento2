@@ -25,7 +25,8 @@
     "mridang/pmd-annotations": "^0.0.2",
     "staabm/annotate-pull-request-from-checkstyle": "^1.1",
     "magento/magento-coding-standard": "^5.0",
-    "magento/module-asynchronous-operations": "^100.3"
+    "magento/module-asynchronous-operations": "^100.3",
+    "drenso/phan-extensions": "^2.5"
   },
   "suggest": {
     "magento/product-community-edition": "2.*",

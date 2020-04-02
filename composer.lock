@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ff9dddc9329e1a7f0e34541c34449f16",
+    "content-hash": "7eb166c8419d7e94062c4af4c6bb3663",
     "packages": [
         {
             "name": "colinmollenhour/credis",
@@ -3571,6 +3571,50 @@
         }
     ],
     "packages-dev": [
+        {
+            "name": "drenso/phan-extensions",
+            "version": "v2.5.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Drenso/PhanExtensions.git",
+                "reference": "cedef1c214c259bfaab0652256abf931b00c2781"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Drenso/PhanExtensions/zipball/cedef1c214c259bfaab0652256abf931b00c2781",
+                "reference": "cedef1c214c259bfaab0652256abf931b00c2781",
+                "shasum": ""
+            },
+            "require-dev": {
+                "phan/phan": "~1|~2"
+            },
+            "type": "project",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Bob van de Vijver",
+                    "email": "bob@drenso.nl"
+                },
+                {
+                    "name": "Tobias Feijten",
+                    "email": "tobias@drenso.nl"
+                }
+            ],
+            "description": "This project contains several extensions (stubs/plugins) to be used with Phan for static PHP analysis",
+            "homepage": "https://github.com/Drenso/PhanExtensions",
+            "keywords": [
+                "phan",
+                "plugin",
+                "plugins",
+                "stub",
+                "stubs",
+                "symfony"
+            ],
+            "time": "2019-05-31T15:22:44+00:00"
+        },
         {
             "name": "magento-ecg/coding-standard",
             "version": "3.1",
