@@ -231,8 +231,7 @@ class NostoAccountConnectCommand extends Command
         $emailToken = $input->getOption(Token::API_EMAIL . self::TOKEN_SUFFIX);
         if (!$emailToken && $this->isInteractive) {
             $emailToken = $io->ask(
-                'Enter Email Token (Optional): ',
-                false
+                'Enter Email Token (Optional): '
             );
         }
         if ($emailToken) {
@@ -241,8 +240,7 @@ class NostoAccountConnectCommand extends Command
         $appsToken = $input->getOption(Token::API_GRAPHQL . self::TOKEN_SUFFIX);
         if (!$appsToken && $this->isInteractive) {
             $appsToken = $io->ask(
-                'Enter Apps Token (Optional): ',
-                false
+                'Enter Apps Token (Optional): '
             );
         }
         if ($appsToken) {

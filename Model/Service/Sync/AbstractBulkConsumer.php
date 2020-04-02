@@ -76,6 +76,7 @@ abstract class AbstractBulkConsumer implements BulkConsumerInterface
      * @return void
      * @throws Exception
      * @suppress PhanUndeclaredClassConstant
+     * @noinspection PhpFullyQualifiedNameUsageInspection
      */
     public function processOperation($operation)
     {
@@ -104,6 +105,7 @@ abstract class AbstractBulkConsumer implements BulkConsumerInterface
             }
         } catch (Exception $e) {
             $this->logger->critical($e->getMessage());
+            /** @phan-suppress-next-line PhanTypeMismatchArgument */
             $message = __('Something went wrong when syncing products to Nosto. Check log for details.');
             if (!is_array($operation)) {
                 $operation->setStatus(

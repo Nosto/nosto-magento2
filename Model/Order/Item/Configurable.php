@@ -50,7 +50,7 @@ class Configurable extends ConfigurableItem
      */
     public static function buildItemName(Item $item)
     {
-        $name = $item->getName();
+        $name = $item->getName() ?: '';
         $optNames = [];
         $opts = $item->getProductOptionByCode('attributes_info');
         if (is_array($opts)) {

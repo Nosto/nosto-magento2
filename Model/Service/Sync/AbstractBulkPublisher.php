@@ -104,6 +104,7 @@ abstract class AbstractBulkPublisher implements BulkPublisherInterface
      */
     public function execute(CacheCollection $collection, Store $store)
     {
+        /** @phan-suppress-next-line PhanUndeclaredFunctionInCallable */
         $productIds = $collection->walk('getProductId');
         $this->publishCollectionToQueue($store->getId(), $productIds);
     }
@@ -120,6 +121,7 @@ abstract class AbstractBulkPublisher implements BulkPublisherInterface
     ) {
         $productIdsChunks = array_chunk($productIds, $this->getBulkSize());
         $bulkUuid = $this->identityService->generateId();
+        /** @phan-suppress-next-line PhanTypeMismatchArgument */
         $bulkDescription = __('Sync ' . count($productIds) . ' Nosto products');
         $operationsData = [];
         foreach ($productIdsChunks as $productIdsChunk) {
@@ -144,9 +146,8 @@ abstract class AbstractBulkPublisher implements BulkPublisherInterface
                 UserContextInterface::USER_TYPE_INTEGRATION
             );
             if (!$result) {
-                throw new LocalizedException(
-                    __('Something went wrong while processing the request.')
-                );
+                /** @phan-suppress-next-line PhanTypeMismatchArgument */
+                throw new LocalizedException(__('Something went wrong while processing the request.'));
             }
         } else {
             foreach ($operationsData as $operationData) {

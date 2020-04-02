@@ -56,14 +56,6 @@ class Tokens extends Field
     public $request;
 
     /** @noinspection PhpMissingParentConstructorInspection */
-    /**
-     * Tokens constructor.
-     * @param Context $context
-     * @param array $data
-     * @param Http $request
-     * @param NostoHelperScope $nostoHelperScope
-     * @param NostoHelperAccount $nostoHelperAccount
-     */
     public function __construct(
         Context $context,
         Http $request,
