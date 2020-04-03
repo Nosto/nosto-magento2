@@ -149,6 +149,7 @@ class Product extends View
      */
     public function getNostoCategory()
     {
+        /** @phan-suppress-next-line PhanDeprecatedFunction */
         $category = $this->_coreRegistry->registry('current_category');
         $store = $this->nostoHelperScope->getStore();
         return $category !== null ? $this->categoryBuilder->build($category, $store) : null;

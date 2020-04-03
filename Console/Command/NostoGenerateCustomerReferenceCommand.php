@@ -94,6 +94,7 @@ class NostoGenerateCustomerReferenceCommand extends Command
             $customers = $customerCollection->getItems();
             /** @var CustomerInterface $customer */
             foreach ($customers as $customer) {
+                /** @phan-suppress-next-line PhanTypeMismatchArgument */
                 $customerReference = CustomerUtil::generateCustomerReference($customer);
                 $customer->setData(
                     NostoHelperData::NOSTO_CUSTOMER_REFERENCE_ATTRIBUTE_NAME,
