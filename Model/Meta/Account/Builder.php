@@ -92,9 +92,8 @@ class Builder
     /**
      * @param Store $store
      * @param $accountOwner
-     * @param $signupDetails
+     * @param \stdClass $signupDetails
      * @return Signup
-     * @throws NostoException
      */
     public function build(Store $store, $accountOwner, $signupDetails)
     {

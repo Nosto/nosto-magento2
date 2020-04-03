@@ -51,8 +51,8 @@ class CacheSearchResults extends SearchResult implements ProductCacheSearchResul
             return null;
         }
 
-        /** @var ProductCacheInterface[] $items */
+        /** @var ProductCacheInterface[]|null $items */
         $items = $this->getItems();
-        return current($items);
+        return $items ? reset($items) : null;
     }
 }

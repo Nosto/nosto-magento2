@@ -135,6 +135,7 @@ class Create extends Base
         $messageText = null;
         if ($store !== null) {
             try {
+                /** @var \stdClass $signupDetails */
                 $signupDetails = $this->_request->getParam('details');
                 if (!empty($signupDetails)) {
                     $signupDetails = json_decode($signupDetails, true);

@@ -194,7 +194,7 @@ class Builder
                 $ruleIds = explode(',', $item->getAppliedRuleIds());
                 foreach ($ruleIds as $ruleId) {
                     /** @noinspection PhpDeprecationInspection */
-                    $rule = $this->salesRuleFactory->create()->load($ruleId); // @codingStandardsIgnoreLine
+                    $rule = $this->salesRuleFactory->create()->load((int)$ruleId); // @codingStandardsIgnoreLine
                     $appliedRules[$ruleId] = $rule->getName();
                 }
             }

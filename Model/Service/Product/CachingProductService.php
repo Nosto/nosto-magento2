@@ -95,6 +95,9 @@ class CachingProductService implements ProductServiceInterface
             if ($cachedProduct === null) {
                 $this->nostoCacheService->updateOrCreateDirtyEntity($product, $store);
                 $cachedProduct = $this->nostoCacheRepository->getOneByProductAndStore($product, $store);
+                if ($cachedProduct === null) {
+                    return null;
+                }
             }
             //If it is dirty rebuild the product data
             if ($cachedProduct->getIsDirty()) {

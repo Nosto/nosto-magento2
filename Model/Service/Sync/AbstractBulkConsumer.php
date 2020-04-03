@@ -81,7 +81,6 @@ abstract class AbstractBulkConsumer implements BulkConsumerInterface
     public function processOperation($operation)
     {
         $errorCode = null;
-        $message = null;
         if (is_array($operation)) {
             $serializedData = $operation['data']['serialized_data'];
         } elseif ($operation instanceof \Magento\AsynchronousOperations\Api\Data\OperationInterface) {
@@ -98,6 +97,7 @@ abstract class AbstractBulkConsumer implements BulkConsumerInterface
         try {
             $this->doOperation($productIds, $storeId);
             if (!is_array($operation)) {
+                $message = __('Something went wrong when syncing products to Nosto. Check log for details.');
                 $operation->setStatus(
                     \Magento\AsynchronousOperations\Api\Data\OperationInterface::STATUS_TYPE_COMPLETE
                 )->setResultMessage($message);

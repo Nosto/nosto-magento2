@@ -195,6 +195,8 @@ class Save implements ObserverInterface
                         $productIds[] = $item->getProductId();
                     }
                 }
+
+                /** @phan-suppress-next-line PhanDeprecatedFunction */
                 $this->indexer->reindexList($productIds);
             }
         }

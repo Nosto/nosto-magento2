@@ -111,13 +111,9 @@ class Repository implements CustomerRepositoryInterface
             ->setCurrentPage(1)
             ->create();
 
+        /** @var CustomerInterface[]|nullZ $items */
         $items = $this->search($searchCriteria)->getItems();
-        /** @noinspection LoopWhichDoesNotLoopInspection */
-        foreach ($items as $customer) {
-            return $customer;
-        }
-
-        return null;
+        return $items ? reset($items) : null;
     }
 
     /**
@@ -136,14 +132,9 @@ class Repository implements CustomerRepositoryInterface
             ->setCurrentPage(1)
             ->create();
 
+        /** @var CustomerInterface[]|null $items */
         $items = $this->search($searchCriteria)->getItems();
-        /** @noinspection LoopWhichDoesNotLoopInspection */
-        foreach ($items as $customer) {
-            /** @var CustomerInterface $customer */
-            return $customer;
-        }
-
-        return null;
+        return $items ? reset($items) : null;
     }
 
     /**
@@ -162,13 +153,9 @@ class Repository implements CustomerRepositoryInterface
             ->setCurrentPage(1)
             ->create();
 
+        /** @var CustomerInterface[]|null $items */
         $items = $this->search($searchCriteria)->getItems();
-        /** @noinspection LoopWhichDoesNotLoopInspection */
-        foreach ($items as $customer) {
-            return $customer;
-        }
-
-        return null;
+        return $items ? reset($items) : null;
     }
 
     /**
@@ -178,9 +165,7 @@ class Repository implements CustomerRepositoryInterface
      */
     public function search(SearchCriteriaInterface $searchCriteria)
     {
-        /** @noinspection PhpUndefinedMethodInspection */
         $collection = $this->customerCollectionFactory->create();
-        /** @noinspection PhpUndefinedMethodInspection */
         $searchResults = $this->customerSearchResultsFactory->create();
 
         /** @noinspection PhpIncompatibleReturnTypeInspection */

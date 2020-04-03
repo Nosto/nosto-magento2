@@ -119,7 +119,7 @@ class Product extends Base
         if ($preview === false) {
             $store = $this->getNostoHelperScope()->getStore();
             $productIds = [];
-            /* @var $item NostoProduct */
+            /** @var NostoProduct $item */
             foreach ($collection as $item) {
                 $productIds[] = $item->getProductId();
             }

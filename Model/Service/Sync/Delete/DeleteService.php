@@ -140,7 +140,7 @@ class DeleteService extends AbstractService
         foreach ($iterator as $page) {
             $this->checkMemoryConsumption('product delete');
             $ids = [];
-            /* @var $cachedProduct NostoProductCache */
+            /** @var NostoProductCache $cachedProduct */
             foreach ($page as $cachedProduct) {
                 $ids[] = $cachedProduct->getProductId();
             }
