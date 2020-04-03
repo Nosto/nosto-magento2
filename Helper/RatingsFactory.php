@@ -56,10 +56,11 @@ class RatingsFactory
 
     /**
      * @return RichSnippets
+     * @suppress PhanUndeclaredTypeReturnType
      */
     public function create()
     {
         /** @phan-suppress-next-line PhanUndeclaredTypeReturnType */
-        return $this->objectManager->create('Yotpo\Yotpo\Helper\RichSnippets'); // @codingStandardsIgnoreLine
+        return $this->objectManager->create('Yotpo\Yotpo\Helper\RichSnippets');
     }
 }

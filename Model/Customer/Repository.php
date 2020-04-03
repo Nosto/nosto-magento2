@@ -111,9 +111,11 @@ class Repository implements CustomerRepositoryInterface
             ->setCurrentPage(1)
             ->create();
 
-        /** @var CustomerInterface[]|nullZ $items */
+        /** @var CustomerInterface[]|null $items */
         $items = $this->search($searchCriteria)->getItems();
-        return $items ? reset($items) : null;
+        /** @var CustomerInterface|null $item */
+        $item = $items ? reset($items) : null;
+        return $item;
     }
 
     /**
@@ -134,7 +136,9 @@ class Repository implements CustomerRepositoryInterface
 
         /** @var CustomerInterface[]|null $items */
         $items = $this->search($searchCriteria)->getItems();
-        return $items ? reset($items) : null;
+        /** @var CustomerInterface|null $item */
+        $item = $items ? reset($items) : null;
+        return $item;
     }
 
     /**
@@ -155,7 +159,9 @@ class Repository implements CustomerRepositoryInterface
 
         /** @var CustomerInterface[]|null $items */
         $items = $this->search($searchCriteria)->getItems();
-        return $items ? reset($items) : null;
+        /** @var CustomerInterface|null $item */
+        $item = $items ? reset($items) : null;
+        return $item;
     }
 
     /**

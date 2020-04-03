@@ -97,6 +97,7 @@ abstract class AbstractBulkConsumer implements BulkConsumerInterface
         try {
             $this->doOperation($productIds, $storeId);
             if (!is_array($operation)) {
+                /** @phan-suppress-next-line PhanTypeMismatchArgument */
                 $message = __('Something went wrong when syncing products to Nosto. Check log for details.');
                 $operation->setStatus(
                     \Magento\AsynchronousOperations\Api\Data\OperationInterface::STATUS_TYPE_COMPLETE
