@@ -160,7 +160,9 @@ jobs:
 
     - name: Report annotations
       id: report-annotations
-      run: ./vendor/bin/cs2pr phdpcpd.xml
+      run: |
+        composer install mridang/cpd-annotations
+        ./vendor/bin/cpd2pr phdpcpd.xml
 
   package:
     name: Package
