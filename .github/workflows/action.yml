@@ -97,7 +97,7 @@ jobs:
     ############################################################################
 
     - name: Run the mess detector
-      run: ./vendor/bin/phpmd . xml codesize,naming,unusedcode,controversial,design --exclude vendor,var,build,tests,.phan --reportfile pmdphpmd.xml --ignore-violations-on-exit
+      run: ./vendor/bin/phpmd . xml codesize,naming,unusedcode,controversial,design --exclude vendor,var,build,tests --reportfile pmdphpmd.xml --ignore-violations-on-exit
 
     - name: Archive mess detection results
       uses: actions/upload-artifact@v1
@@ -107,62 +107,7 @@ jobs:
 
     - name: Report annotations
       id: report-annotations
-      run: ./vendor/bin/pmd2pr pmdphpmd.xml
-
-  phpcpd:
-    name: Copy-Paste Detect
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v1
-
-    ############################################################################
-    - name: Set up PHP
-      uses: shivammathur/setup-php@v2
-      with:
-        php-version: '7.2'
-        tools: composer
-        extensions: ast
-        coverage: none
-
-      #https://github.com/actions/cache/blob/master/examples.md#php---composer
-    - name: Cache composer packages
-      id: composer-cache
-      run: |
-        composer config cache-files-dir
-        echo "::set-output name=dir::$(composer config cache-files-dir)"
-    - uses: actions/cache@v1
-      with:
-        path: ${{ steps.composer-cache.outputs.dir }}
-        key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-composer-
-
-    - name: Update project dependencies
-      env:
-        REPO_USR: ${{ secrets.REPO_USR }}
-        REPO_PSW: ${{ secrets.REPO_PSW }}
-      run: |
-        composer config repositories.0 composer https://repo.magento.com
-        composer config http-basic.repo.magento.com "$REPO_USR" "$REPO_PSW"
-        composer install --prefer-dist --no-progress --no-suggest
-    ############################################################################
-
-      #https://github.com/sebastianbergmann/phpcpd/issues/148
-    - name: Run the copy-paste detector
-      run: ./vendor/bin/phpcpd --exclude=.phan --exclude=vendor --exclude=build --log-pmd=phdpcpd.xml .
-      continue-on-error: true
-
-    - name: Archive copy-paste detection results
-      uses: actions/upload-artifact@v1
-      with:
-        name: phdpcpd-xml-result
-        path: phdpcpd.xml
-
-    - name: Report annotations
-      id: report-annotations
-      run: |
-        composer require mridang/cpd-annotations
-        ./vendor/bin/cpd2pr phdpcpd.xml
+      run: ./vendor/bin/pmd2pr --graceful-warnings pmdphpmd.xml
 
   package:
     name: Package
@@ -204,7 +149,7 @@ jobs:
     - name: Build archive using composer
       run: composer archive --format=zip --file=archive
 
-    - name: Archive built package
+    - name: Archive built arhive
       uses: actions/upload-artifact@v1
       with:
         name: composer-zip-archive
