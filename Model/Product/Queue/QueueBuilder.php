@@ -83,6 +83,7 @@ class QueueBuilder
         $queueModel->setCreatedAt($this->magentoTimeZone->date());
         $queueModel->setStore($store);
         $queueModel->setStatus(ProductUpdateQueueInterface::STATUS_VALUE_NEW);
+        $queueModel->setProductIdCount(count($productIds));
         return $queueModel;
     }
 

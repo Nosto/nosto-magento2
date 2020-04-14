@@ -216,6 +216,8 @@
             <argument name="productService" xsi:type="object" shared="false">
                 Nosto\Tagging\Model\Service\Product\CachingProductService
             </argument>
+            <argument name="apiBatchSize" xsi:type="number">50</argument>
+            <argument name="apiTimeout" xsi:type="number">60</argument>
         </arguments>
     </type>
     <type name="Nosto\Tagging\Model\Service\Update\QueueProcessorService">
@@ -226,6 +228,11 @@
             <argument name="deleteBulkPublisher" xsi:type="object" shared="false">
                 Nosto\Tagging\Model\Service\Sync\Delete\AsyncBulkPublisher
             </argument>
+        </arguments>
+    </type>
+    <type name="Nosto\Tagging\Model\Service\Update\QueueService">
+        <arguments>
+            <argument name="batchSize" xsi:type="number">500</argument>
         </arguments>
     </type>
 </config>

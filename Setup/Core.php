@@ -269,6 +269,16 @@ abstract class Core
                 'Action'
             )
             ->addColumn(
+                ProductUpdateQueueInterface::PRODUCT_ID_COUNT,
+                Table::TYPE_INTEGER,
+                null,
+                [
+                    'nullable' => false,
+                    'unsigned' => true,
+                ],
+                'The amount of product ids in an entry'
+            )
+            ->addColumn(
                 ProductUpdateQueueInterface::CREATED_AT,
                 Table::TYPE_DATETIME,
                 null,

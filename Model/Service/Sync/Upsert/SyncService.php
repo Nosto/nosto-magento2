@@ -57,8 +57,7 @@ use Nosto\Tagging\Util\PagingIterator;
  */
 class SyncService extends AbstractService
 {
-    const API_BATCH_SIZE = 50;
-    const BENCHMARK_SYNC_NAME = 'nosto_product_sync';
+    const BENCHMARK_SYNC_NAME = 'nosto_product_upsert';
     const BENCHMARK_SYNC_BREAKPOINT = 1;
     const RESPONSE_TIMEOUT = 60;
 
@@ -77,6 +76,12 @@ class SyncService extends AbstractService
     /** @var CacheService */
     private $cacheService;
 
+    /** @var int */
+    private $apiBatchSize;
+
+    /** @var int */
+    private $apiTimeout;
+
     /**
      * Index constructor.
      * @param NostoHelperAccount $nostoHelperAccount
@@ -85,6 +90,8 @@ class SyncService extends AbstractService
      * @param NostoDataHelper $nostoDataHelper
      * @param ProductServiceInterface $productService
      * @param CacheService $cacheService
+     * @param $apiBatchSize
+     * @param $apiTimeout
      */
     public function __construct(
         NostoHelperAccount $nostoHelperAccount,
@@ -92,7 +99,9 @@ class SyncService extends AbstractService
         NostoLogger $logger,
         NostoDataHelper $nostoDataHelper,
         ProductServiceInterface $productService,
-        CacheService $cacheService
+        CacheService $cacheService,
+        $apiBatchSize,
+        $apiTimeout
     ) {
         parent::__construct($nostoDataHelper, $logger);
         $this->productService = $productService;
@@ -100,6 +109,8 @@ class SyncService extends AbstractService
         $this->nostoHelperUrl = $nostoHelperUrl;
         $this->nostoDataHelper = $nostoDataHelper;
         $this->cacheService = $cacheService;
+        $this->apiBatchSize = $apiBatchSize;
+        $this->apiTimeout = $apiTimeout;
     }
 
     /**
@@ -119,24 +130,22 @@ class SyncService extends AbstractService
         $account = $this->nostoHelperAccount->findAccount($store);
         $this->startBenchmark(self::BENCHMARK_SYNC_NAME, self::BENCHMARK_SYNC_BREAKPOINT);
 
-        $collection->setPageSize(self::API_BATCH_SIZE);
+        $collection->setPageSize($this->apiBatchSize);
         $iterator = new PagingIterator($collection);
 
         /** @var ProductCollection $page */
         foreach ($iterator as $page) {
+            $productIdsInBatch = [];
             $this->checkMemoryConsumption('product sync');
             $op = new UpsertProduct($account, $this->nostoHelperUrl->getActiveDomain($store));
             $op->setResponseTimeout(self::RESPONSE_TIMEOUT);
             /** @var Product $product */
             foreach ($page as $product) {
+                $productIdsInBatch[] = $product->getId();
                 $nostoProduct = $this->productService->getProduct($product, $store);
                 if ($nostoProduct === null) {
                     throw new NostoException('Could not get product from the product service.');
                 }
-                $this->getLogger()->debug(
-                    sprintf('Upserting product "%s"', $product->getProductId()),
-                    ['store' => $product->getStoreId()]
-                );
                 try {
                     $op->addProduct($nostoProduct);
                     $this->cacheService->upsert($nostoProduct, $store);
@@ -145,7 +154,14 @@ class SyncService extends AbstractService
                 }
             }
             try {
-                $this->getLogger()->debug('Upserting batch');
+                $this->getLogger()->debug(
+                    sprintf(
+                        'Upserting batch of %d (%s) - API timeout is set to %d seconds',
+                        $this->apiBatchSize,
+                        implode(',', $productIdsInBatch),
+                        $this->apiTimeout
+                    )
+                );
                 $op->upsert();
                 $this->tickBenchmark(self::BENCHMARK_SYNC_NAME);
             } catch (Exception $upsertException) {

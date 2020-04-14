@@ -51,6 +51,7 @@ interface ProductUpdateQueueInterface
     const COMPLETED_AT = 'completed_at';
     const STORE_ID = 'store_id';
     const PRODUCT_IDS = 'product_ids';
+    const PRODUCT_ID_COUNT = 'product_id_count';
     const ACTION = 'action';
     const ACTION_VALUE_UPSERT = 'upsert';
     const ACTION_VALUE_DELETE = 'delete';
@@ -114,6 +115,13 @@ interface ProductUpdateQueueInterface
      * @return string
      */
     public function getAction();
+
+    /**
+     * Get the count of product ids in entry
+     *
+     * @return int
+     */
+    public function getProductIdCount();
 
     /**
      * Set id
@@ -180,4 +188,10 @@ interface ProductUpdateQueueInterface
      * @return self
      */
     public function setAction($action);
+
+    /**
+     * @param int $count
+     * @return self
+     */
+    public function setProductIdCount($count);
 }

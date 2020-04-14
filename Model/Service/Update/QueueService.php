@@ -55,8 +55,6 @@ use Nosto\Tagging\Util\PagingIterator;
  */
 class QueueService extends AbstractService
 {
-    const PRODUCTID_BATCH_SIZE = 1000; // How many products do we add into one queue batch
-
     /** @var QueueRepository  */
     private $queueRepository;
 
@@ -66,6 +64,9 @@ class QueueService extends AbstractService
     /** @var NostoProductRepository $nostoProductRepository */
     private $nostoProductRepository;
 
+    /** @var int $batchSize */
+    private $batchSize;
+
     /**
      * CacheService constructor.
      * @param QueueRepository $queueRepository
@@ -73,18 +74,21 @@ class QueueService extends AbstractService
      * @param NostoLogger $logger
      * @param NostoDataHelper $nostoDataHelper
      * @param NostoProductRepository $nostoProductRepository
+     * @param int $batchSize
      */
     public function __construct(
         QueueRepository $queueRepository,
         QueueBuilder $queueBuilder,
         NostoLogger $logger,
         NostoDataHelper $nostoDataHelper,
-        NostoProductRepository $nostoProductRepository
+        NostoProductRepository $nostoProductRepository,
+        $batchSize
     ) {
         parent::__construct($nostoDataHelper, $logger);
         $this->queueRepository = $queueRepository;
         $this->queueBuilder = $queueBuilder;
         $this->nostoProductRepository = $nostoProductRepository;
+        $this->batchSize = $batchSize;
     }
 
     /**
@@ -97,9 +101,17 @@ class QueueService extends AbstractService
      */
     public function addCollectionToUpsertQueue(ProductCollection $collection, Store $store)
     {
-        $collection->setPageSize(self::PRODUCTID_BATCH_SIZE);
+        $collection->setPageSize($this->batchSize);
         $iterator = new PagingIterator($collection);
-
+        $this->getLogger()->info(
+            sprintf(
+                'Adding %d products to queue for store %s - batch size is %s, total amount of pages %d',
+                $collection->getSize(),
+                $store->getCode(),
+                $this->batchSize,
+                $iterator->getLastPageNumber()
+            )
+        );
         /** @var ProductCollection $page */
         foreach ($iterator as $page) {
             $queueEntry = $this->queueBuilder->buildForUpsert(
@@ -121,7 +133,7 @@ class QueueService extends AbstractService
      */
     public function addIdsToDeleteQueue($productIds, Store $store)
     {
-        $batchedIds = array_chunk($productIds, self::PRODUCTID_BATCH_SIZE);
+        $batchedIds = array_chunk($productIds, $this->batchSize);
         /** @var ProductCollection $page */
         foreach ($batchedIds as $idBatch) {
             $queueEntry = $this->queueBuilder->buildForDeletion(
@@ -142,22 +154,15 @@ class QueueService extends AbstractService
     private function toParentProructIds(ProductCollection $collection)
     {
         $productIds = [];
-        /** @var ProductCollection $collection */
-        $collection->setPageSize(self::PRODUCTID_BATCH_SIZE);
-        $iterator = new PagingIterator($collection);
-
-        /** @var ProductCollection $page */
-        foreach ($iterator as $page) {
-            /** @var ProductInterface $product */
-            foreach ($page->getItems() as $product) {
-                $parents = $this->nostoProductRepository->resolveParentProductIds($product);
-                if (!empty($parents)) {
-                    foreach ($parents as $id) {
-                        $productIds[] = $id;
-                    }
-                } else {
-                    $productIds[] = $product->getId();
+        /** @var ProductInterface $product */
+        foreach ($collection->getItems() as $product) {
+            $parents = $this->nostoProductRepository->resolveParentProductIds($product);
+            if (!empty($parents)) {
+                foreach ($parents as $id) {
+                    $productIds[] = $id;
                 }
+            } else {
+                $productIds[] = $product->getId();
             }
         }
         return array_unique($productIds);
