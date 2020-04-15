@@ -37,7 +37,6 @@
 namespace Nosto\Tagging\Model\Indexer\Dimensions;
 
 use Magento\Framework\App\Config\ScopeConfigInterface;
-use Nosto\Tagging\Model\Indexer\Dimensions\StoreDimensionProvider;
 
 abstract class AbstractDimensionModeConfiguration
 {

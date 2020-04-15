@@ -46,10 +46,10 @@ use Magento\Eav\Model\Entity\Attribute\SetFactory as AttributeSetFactory;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Setup\ModuleDataSetupInterface;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
+use Nosto\Tagging\Logger\Logger;
 use Nosto\Tagging\Util\Customer as CustomerUtil;
 use Nosto\Tagging\Util\PagingIterator;
 use Zend_Validate_Exception;
-use Nosto\Tagging\Logger\Logger;
 
 abstract class CoreData
 {

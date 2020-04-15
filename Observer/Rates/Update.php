@@ -47,8 +47,6 @@ use Nosto\Tagging\Model\Rates\Service as NostoRatesService;
 /**
  * Observer to update the exchange rates for each of the store views if the module is enabled and
  * an account exists for the store view.
- *
- * @package Nosto\Tagging\Observer\Rates
  */
 class Update implements ObserverInterface
 {

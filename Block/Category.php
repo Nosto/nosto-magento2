@@ -108,6 +108,7 @@ class Category extends Template
      */
     private function getNostoCategory()
     {
+        /** @phan-suppress-next-line PhanDeprecatedFunction */
         $category = $this->registry->registry('current_category');
         $store = $this->nostoHelperScope->getStore();
         if ($category) {

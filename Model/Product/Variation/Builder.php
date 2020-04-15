@@ -244,6 +244,7 @@ class Builder
                 $minPriceSku['price'] = $skuPrice;
             }
         }
+        /** @phan-suppress-next-line PhanTypePossiblyInvalidDimOffset */
         return $minPriceSku['sku'];
     }
 }

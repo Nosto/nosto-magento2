@@ -51,8 +51,6 @@ use Nosto\Tagging\Util\PagingIterator;
 
 /**
  * Cronjob class that rebuilds the product index
- *
- * @package Nosto\Tagging\Cron
  */
 class ProductDataCron
 {

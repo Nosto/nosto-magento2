@@ -36,11 +36,11 @@
 
 namespace Nosto\Tagging\Model\Service\Sync\Delete;
 
-use Nosto\Tagging\Model\Service\Sync\AbstractBulkConsumer;
-use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Magento\Framework\EntityManager\EntityManager;
 use Magento\Framework\Json\Helper\Data as JsonHelper;
+use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Logger\Logger;
+use Nosto\Tagging\Model\Service\Sync\AbstractBulkConsumer;
 
 class AsyncBulkConsumer extends AbstractBulkConsumer
 {

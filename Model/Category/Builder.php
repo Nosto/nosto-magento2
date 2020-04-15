@@ -69,7 +69,7 @@ class Builder
     /**
      * @param Category $category
      * @param Store $store
-     * @return null|string
+     * @return NostoCategory|null
      */
     public function build(Category $category, Store $store)
     {

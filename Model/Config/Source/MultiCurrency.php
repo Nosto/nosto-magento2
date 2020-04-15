@@ -43,8 +43,6 @@ use Nosto\Tagging\Helper\Data;
 /**
  * Option array class to generate a list of selectable options that allows the merchant to choose
  * any image attribute for his image tag.
- *
- * @package Nosto\Tagging\Model\Config\Source
  */
 class MultiCurrency implements OptionSourceInterface
 {

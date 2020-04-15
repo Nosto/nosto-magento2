@@ -46,7 +46,6 @@ use Nosto\Tagging\Logger\Logger;
 
 /**
  * Customer helper
- * @package Nosto\Tagging\Helper
  */
 class Customer extends AbstractHelper
 {

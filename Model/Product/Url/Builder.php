@@ -56,8 +56,6 @@ use Nosto\Tagging\Helper\Data as NostoDataHelper;
  * There's no clean way of changing this behaviour without modifying the core so this class contains
  * code from \Magento\Catalog\Model\Product\Url which now always uses the frontend version of the
  * Magento\Framework\UrlInterface class.
- *
- * @package Nosto\Tagging\Model\Product\Url
  */
 class Builder extends DataObject
 {

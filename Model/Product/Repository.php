@@ -52,8 +52,6 @@ use Nosto\Tagging\Model\ResourceModel\Sku as NostoSkuResource;
 
 /**
  * Repository wrapper class for fetching products
- *
- * @package Nosto\Tagging\Model\Product
  */
 class Repository
 {

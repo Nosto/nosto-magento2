@@ -50,8 +50,6 @@ use Nosto\Tagging\Model\ResourceModel\Product\Cache\CacheCollection;
 
 /**
  * Observer to mark all indexed products as dirty if settings have changed
- *
- * @package Nosto\Tagging\Observer\Adminhtml
  */
 class Config implements ObserverInterface
 {
