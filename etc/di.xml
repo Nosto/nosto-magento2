@@ -220,6 +220,11 @@
             <argument name="apiTimeout" xsi:type="number">60</argument>
         </arguments>
     </type>
+    <type name="Nosto\Tagging\Model\Service\Sync\Delete\DeleteService">
+        <arguments>
+            <argument name="deleteBatchSize" xsi:type="number">100</argument>
+        </arguments>
+    </type>
     <type name="Nosto\Tagging\Model\Service\Update\QueueProcessorService">
         <arguments>
             <argument name="upsertBulkPublisher" xsi:type="object" shared="false">

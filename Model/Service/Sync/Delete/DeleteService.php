@@ -69,6 +69,9 @@ class DeleteService extends AbstractService
     /** @var NostoHelperUrl */
     private $nostoHelperUrl;
 
+    /** @var int */
+    private $deleteBatchSize;
+
     /**
      * DeleteService constructor.
      * @param CacheRepository $cacheRepository
@@ -82,11 +85,13 @@ class DeleteService extends AbstractService
         NostoHelperAccount $nostoHelperAccount,
         NostoHelperData $nostoHelperData,
         NostoHelperUrl $nostoHelperUrl,
-        NostoLogger $logger
+        NostoLogger $logger,
+        $deleteBatchSize
     ) {
         $this->cacheRepository = $cacheRepository;
         $this->nostoHelperAccount = $nostoHelperAccount;
         $this->nostoHelperUrl = $nostoHelperUrl;
+        $this->deleteBatchSize = $deleteBatchSize;
         parent::__construct($nostoHelperData, $logger);
     }
 
@@ -95,7 +100,6 @@ class DeleteService extends AbstractService
      *
      * @param array $productIds
      * @param Store $store
-     * @throws MemoryOutOfBoundsException
      * @throws NostoException
      */
     public function delete(array $productIds, Store $store)
@@ -108,7 +112,15 @@ class DeleteService extends AbstractService
             throw new NostoException(sprintf('Store view %s does not have Nosto installed', $store->getName()));
         }
         $this->startBenchmark(self::BENCHMARK_DELETE_NAME, self::BENCHMARK_DELETE_BREAKPOINT);
-        $productIdBatches = array_chunk($productIds, self::PRODUCT_DELETION_BATCH_SIZE);
+        $productIdBatches = array_chunk($productIds, $this->deleteBatchSize);
+        $this->logDebugWithStore(
+            sprintf(
+                'Deleting total of %d products in batches of %d',
+                count($productIds),
+                count($productIdBatches)
+            ),
+            $store
+        );
         foreach ($productIdBatches as $ids) {
             try {
                 $op = new DeleteProduct($account, $this->nostoHelperUrl->getActiveDomain($store));

@@ -38,15 +38,12 @@ namespace Nosto\Tagging\Model\Service\Update;
 
 use Magento\Framework\Exception\AlreadyExistsException;
 use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
-use Nosto\Exception\MemoryOutOfBoundsException;
-use Nosto\NostoException;
+use Magento\Store\Model\Store;
 use Nosto\Tagging\Api\Data\ProductUpdateQueueInterface;
 use Nosto\Tagging\Helper\Data as NostoDataHelper;
-use Nosto\Tagging\Helper\Scope;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Product\Queue\QueueRepository;
 use Nosto\Tagging\Model\Product\Update\Queue;
-use Nosto\Tagging\Model\ResourceModel\Magento\Product\CollectionBuilder;
 use Nosto\Tagging\Model\ResourceModel\Product\Update\Queue\QueueCollection;
 use Nosto\Tagging\Model\ResourceModel\Product\Update\Queue\QueueCollectionBuilder;
 use Nosto\Tagging\Model\Service\AbstractService;
@@ -114,16 +111,17 @@ class QueueProcessorService extends AbstractService
      * Processes a collection of queue entries
      * - merges product ids from queue entries within the same store
      * @param QueueCollection $collection
+     * @param Store $store
      */
-    public function processQueueCollection(QueueCollection $collection)
+    public function processQueueCollection(QueueCollection $collection, Store $store)
     {
         if ($collection->getSize() === 0) {
-            $this->getLogger()->debug('No uprocessed queue entries in the update queue');
+            $this->logInfoWithStore('No uprocessed queue entries in the update queue', $store);
             return;
         }
-        $this->capCollection($collection);
-        $this->notifyStartProcessing($collection);
-        $merged = $this->mergeQueues($collection);
+        $this->capCollection($collection, $store);
+        $this->notifyStartProcessing($collection, $store);
+        $merged = $this->mergeQueues($collection, $store);
         foreach ($merged as $storeId => $actions) {
             foreach ($actions as $action => $productIds) {
                 switch ($action) {
@@ -135,34 +133,53 @@ class QueueProcessorService extends AbstractService
                 }
             }
         }
-        $this->notifyEndProcessing($collection);
+        $this->notifyEndProcessing($collection, $store);
     }
 
     /**
      * Caps the collection to the max amount of products in one batch
      *
      * @param QueueCollection $collection
+     * @param Store $store
      */
-    private function capCollection(QueueCollection $collection)
+    private function capCollection(QueueCollection $collection, Store $store)
     {
+        $originalSize = $collection->count();
         $productIdCount = 0;
+        $leftIds = 0;
         /** @var Queue $entry */
         foreach ($collection as $key => $entry) {
             if ($productIdCount > $this->maxProductsInBatch) {
+                $leftIds += $entry->getProductIdCount();
                 $collection->removeItemByKey($key);
             }
             $productIdCount += $entry->getProductIdCount();
         }
+        $sizeAfterCap = $collection->count();
+        if ($sizeAfterCap < $originalSize) {
+            $this->logDebugWithStore(
+                sprintf(
+                    'QueueCollection capped from %d to %d - %d non-unique product ids remain in the queue',
+                    $originalSize,
+                    $sizeAfterCap,
+                    $leftIds
+                ),
+                $store
+            );
+        }
     }
+
     /**
      * Merges productIds from QueueCollection into an array containing only unique product ids per store
      *
      * @param QueueCollection $collection
+     * @param Store $store
      * @return array
      */
-    private function mergeQueues(QueueCollection $collection)
+    private function mergeQueues(QueueCollection $collection, Store $store)
     {
         $merged = [];
+        $totalCount = 0;
         /* @var ProductUpdateQueueInterface $queueEntry */
         foreach ($collection as $queueEntry) {
             if (!isset($merged[$queueEntry->getStoreId()])) {
@@ -171,10 +188,25 @@ class QueueProcessorService extends AbstractService
                     ProductUpdateQueueInterface::ACTION_VALUE_DELETE => []
                 ];
             }
+            $totalCount += $queueEntry->getProductIdCount();
             foreach ($queueEntry->getProductIds() as $productId) {
                 $merged[$queueEntry->getStoreId()][$queueEntry->getAction()][$productId] = $productId;
             }
         }
+        $mergedCount = 0;
+        foreach ($merged as $storeId => $arr) {
+            foreach ($arr as $method => $ids) {
+                $mergedCount += count($ids);
+            }
+        }
+        $this->logDebugWithStore(
+            sprintf(
+                'Merged total of %d product ids into %d',
+                $totalCount,
+                $mergedCount
+            ),
+            $store
+        );
         return $merged;
     }
 
@@ -182,9 +214,17 @@ class QueueProcessorService extends AbstractService
      * Sets the timestamp for started at & updates the status to be processing
      *
      * @param QueueCollection $collection
+     * @param Store $store
      */
-    private function notifyStartProcessing(QueueCollection $collection)
+    private function notifyStartProcessing(QueueCollection $collection, Store $store)
     {
+        $this->logDebugWithStore(
+            sprintf(
+                'Started processing %d of queue entires',
+                $collection->getSize()
+            ),
+            $store
+        );
         /* @var ProductUpdateQueueInterface $queueEntry */
         foreach ($collection as $queueEntry) {
             $queueEntry->setStartedAt($this->magentoTimeZone->date());
@@ -197,7 +237,7 @@ class QueueProcessorService extends AbstractService
      *
      * @param QueueCollection $collection
      */
-    private function notifyEndProcessing(QueueCollection $collection)
+    private function notifyEndProcessing(QueueCollection $collection, Store $store)
     {
         /* @var ProductUpdateQueueInterface $queueEntry */
         foreach ($collection as $queueEntry) {
@@ -209,25 +249,34 @@ class QueueProcessorService extends AbstractService
                 $this->getLogger()->exception($e);
             }
         }
-        $this->cleanupUpdateQueue();
+        $this->cleanupUpdateQueue($store);
+        $this->logDebugWithStore(
+            sprintf(
+                'Processed %d of queue entires',
+                $collection->getSize()
+            ),
+            $store
+        );
     }
 
     /**
      * Cleans up completed entries from the queue table
+     * @param Store $store
      */
-    private function cleanupUpdateQueue()
+    private function cleanupUpdateQueue(Store $store)
     {
         try {
             $processed = $this->queueCollectionBuilder
                 ->init()
                 ->withCompletedHrsAgo($this->cleanupInterval)
                 ->build();
-            $this->getLogger()->debug(
+            $this->logDebugWithStore(
                 sprintf(
                     'Cleaning up %d entries from update queue completed %d < hours ago',
                     $processed->count(),
                     $this->cleanupInterval
-                )
+                ),
+                $store
             );
             foreach ($processed as $queueItem) {
                 $this->queueRepository->delete($queueItem);

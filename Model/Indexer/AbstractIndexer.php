@@ -136,7 +136,7 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
     abstract public function getIndexerId(): string;
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      * @throws Exception
      */
     public function executeFull()
@@ -149,7 +149,7 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      * @throws Exception
      */
     public function executeList(array $ids)
@@ -158,7 +158,7 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      * @throws Exception
      */
     public function executeRow($id)
@@ -169,7 +169,7 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      * @throws Exception
      */
     public function execute($ids)

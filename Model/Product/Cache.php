@@ -49,7 +49,7 @@ class Cache extends AbstractModel implements ProductCacheInterface
     const DB_VALUE_BOOLEAN_FALSE = '0';
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function getId()
     {
@@ -57,7 +57,7 @@ class Cache extends AbstractModel implements ProductCacheInterface
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function getProductId()
     {
@@ -65,7 +65,7 @@ class Cache extends AbstractModel implements ProductCacheInterface
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function getIsDirty()
     {
@@ -73,7 +73,7 @@ class Cache extends AbstractModel implements ProductCacheInterface
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function getStoreId()
     {
@@ -81,7 +81,7 @@ class Cache extends AbstractModel implements ProductCacheInterface
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function getProductData()
     {
@@ -93,7 +93,7 @@ class Cache extends AbstractModel implements ProductCacheInterface
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function getCreatedAt()
     {
@@ -109,7 +109,7 @@ class Cache extends AbstractModel implements ProductCacheInterface
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function setId($id)
     {
@@ -117,7 +117,7 @@ class Cache extends AbstractModel implements ProductCacheInterface
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function setProductId($productId)
     {
@@ -125,7 +125,7 @@ class Cache extends AbstractModel implements ProductCacheInterface
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function setCreatedAt(DateTime $createdAt)
     {
@@ -141,7 +141,7 @@ class Cache extends AbstractModel implements ProductCacheInterface
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function setIsDirty($isDirty)
     {
@@ -149,7 +149,7 @@ class Cache extends AbstractModel implements ProductCacheInterface
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function setStoreId($storeId)
     {
@@ -157,7 +157,7 @@ class Cache extends AbstractModel implements ProductCacheInterface
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function setProductData($productData)
     {

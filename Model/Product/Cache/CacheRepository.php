@@ -83,7 +83,7 @@ class CacheRepository implements ProductCacheRepositoryInterface
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function getOneByProductAndStore(ProductInterface $product, StoreInterface $store)
     {
@@ -98,7 +98,7 @@ class CacheRepository implements ProductCacheRepositoryInterface
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function getById($id)
     {
@@ -111,7 +111,7 @@ class CacheRepository implements ProductCacheRepositoryInterface
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function getByIds(array $ids)
     {
@@ -124,7 +124,7 @@ class CacheRepository implements ProductCacheRepositoryInterface
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function getByProductIdAndStoreId(int $productId, int $storeId)
     {

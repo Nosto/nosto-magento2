@@ -94,7 +94,7 @@ class ActiveVariationTagging implements SectionSourceInterface
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function getSectionData()
     {

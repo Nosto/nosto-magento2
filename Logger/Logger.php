@@ -72,16 +72,48 @@ class Logger extends MonologLogger
     }
 
     /**
-     * Logs a message along with the memory consumption
+     * Logs a debug level message with given source class info
      *
      * @param $message
      * @param array $context
      * @param object $sourceClass
      * @return bool
      */
-    public function debugWithSource($message, $context, $sourceClass)
+    public function debugWithSource($message, array $context, $sourceClass)
+    {
+        return $this->logWithSource($message, $context, $sourceClass, 'debug');
+    }
+
+    /**
+     * Logs an info level message with given source class info
+     *
+     * @param $message
+     * @param array $context
+     * @param object $sourceClass
+     * @return bool
+     */
+    public function infoWithSource($message, array $context, $sourceClass)
+    {
+        return $this->logWithSource($message, $context, $sourceClass, 'info');
+    }
+
+    /**
+     * @param $message
+     * @param $context
+     * @param $sourceClass
+     * @param $level
+     * @return bool
+     */
+    private function logWithSource($message, $context, $sourceClass, $level)
     {
         $context['sourceClass'] = get_class($sourceClass);
-        return $this->debug($message, $context);
+        switch ($level) {
+            case 'info':
+                return $this->info($message, $context);
+            break;
+            default:
+                return $this->debug($message, $context);
+            break;
+        }
     }
 }

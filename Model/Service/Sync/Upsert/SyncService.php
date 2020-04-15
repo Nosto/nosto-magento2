@@ -59,7 +59,6 @@ class SyncService extends AbstractService
 {
     const BENCHMARK_SYNC_NAME = 'nosto_product_upsert';
     const BENCHMARK_SYNC_BREAKPOINT = 1;
-    const RESPONSE_TIMEOUT = 60;
 
     /** @var NostoHelperAccount */
     private $nostoHelperAccount;
@@ -122,8 +121,9 @@ class SyncService extends AbstractService
     public function syncProducts(ProductCollection $collection, Store $store)
     {
         if (!$this->nostoDataHelper->isProductUpdatesEnabled($store)) {
-            $this->getLogger()->info(
-                'Nosto product sync is disabled - skipping upserting products to Nosto'
+            $this->logDebugWithStore(
+                'Nosto product sync is disabled - skipping upserting products to Nosto',
+                $store
             );
             return;
         }
@@ -138,7 +138,7 @@ class SyncService extends AbstractService
             $productIdsInBatch = [];
             $this->checkMemoryConsumption('product sync');
             $op = new UpsertProduct($account, $this->nostoHelperUrl->getActiveDomain($store));
-            $op->setResponseTimeout(self::RESPONSE_TIMEOUT);
+            $op->setResponseTimeout($this->apiTimeout);
             /** @var Product $product */
             foreach ($page as $product) {
                 $productIdsInBatch[] = $product->getId();
@@ -154,13 +154,14 @@ class SyncService extends AbstractService
                 }
             }
             try {
-                $this->getLogger()->debug(
+                $this->logDebugWithStore(
                     sprintf(
                         'Upserting batch of %d (%s) - API timeout is set to %d seconds',
                         $this->apiBatchSize,
                         implode(',', $productIdsInBatch),
                         $this->apiTimeout
-                    )
+                    ),
+                    $store
                 );
                 $op->upsert();
                 $this->tickBenchmark(self::BENCHMARK_SYNC_NAME);
@@ -168,7 +169,6 @@ class SyncService extends AbstractService
                 $this->getLogger()->exception($upsertException);
             }
         }
-
         $this->logBenchmarkSummary(self::BENCHMARK_SYNC_NAME, $store);
     }
 }

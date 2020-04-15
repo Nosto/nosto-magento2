@@ -103,14 +103,16 @@ class QueueService extends AbstractService
     {
         $collection->setPageSize($this->batchSize);
         $iterator = new PagingIterator($collection);
-        $this->getLogger()->info(
+        $this->getLogger()->debugWithSource(
             sprintf(
                 'Adding %d products to queue for store %s - batch size is %s, total amount of pages %d',
                 $collection->getSize(),
                 $store->getCode(),
                 $this->batchSize,
                 $iterator->getLastPageNumber()
-            )
+            ),
+            ['storeId' => $store->getId()],
+            $this
         );
         /** @var ProductCollection $page */
         foreach ($iterator as $page) {

@@ -117,7 +117,7 @@ class ProductUpdate
         $mageIndexer = $this->indexerRegistry->get(QueueIndexer::INDEXER_ID);
         if (!$mageIndexer->isScheduled()) {
             $productIds = $this->nostoProductRepository->resolveParentProductIds($product);
-            if (empty($productIds) && $this->cacheService->canBuildProduct($product)) {
+            if (empty($productIds)) {
                 $productResource->addCommitCallback(function () use ($product) {
                     $this->queueIndexer->executeRow($product->getId());
                 });

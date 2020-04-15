@@ -72,7 +72,7 @@ class QueueRepository implements ProductUpdateQueueRepositoryInterface
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function getById($id)
     {
@@ -85,7 +85,7 @@ class QueueRepository implements ProductUpdateQueueRepositoryInterface
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function getTotalCount(Store $store)
     {

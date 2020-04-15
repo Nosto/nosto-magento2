@@ -92,7 +92,7 @@ class Builder extends PersonBuilder
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      * @return Customer
      */
     public function buildObject(

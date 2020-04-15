@@ -114,7 +114,7 @@ class QueueProcessorIndexer extends AbstractIndexer
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function getModeSwitcher(): ModeSwitcherInterface
     {
@@ -122,7 +122,7 @@ class QueueProcessorIndexer extends AbstractIndexer
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      * @throws Exception
      */
     public function doIndex(Store $store, array $ids = [])
@@ -132,11 +132,11 @@ class QueueProcessorIndexer extends AbstractIndexer
         }
         self::$processingStores[] = $store->getId();
         $collection = $this->getCollection($store);
-        $this->queueProcessorService->processQueueCollection($collection);
+        $this->queueProcessorService->processQueueCollection($collection, $store);
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function getIndexerId(): string
     {

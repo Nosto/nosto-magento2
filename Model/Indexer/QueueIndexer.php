@@ -112,7 +112,7 @@ class QueueIndexer extends AbstractIndexer
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function getModeSwitcher(): ModeSwitcherInterface
     {
@@ -120,7 +120,7 @@ class QueueIndexer extends AbstractIndexer
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      * @throws NostoException
      * @throws Exception
      */
@@ -165,7 +165,7 @@ class QueueIndexer extends AbstractIndexer
         }
     }
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function getIndexerId(): string
     {

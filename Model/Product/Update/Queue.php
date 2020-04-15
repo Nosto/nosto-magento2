@@ -112,7 +112,7 @@ class Queue extends AbstractModel implements ProductUpdateQueueInterface
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function getId()
     {
@@ -120,7 +120,7 @@ class Queue extends AbstractModel implements ProductUpdateQueueInterface
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function getStoreId()
     {
@@ -128,7 +128,7 @@ class Queue extends AbstractModel implements ProductUpdateQueueInterface
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function getCreatedAt()
     {
@@ -136,7 +136,7 @@ class Queue extends AbstractModel implements ProductUpdateQueueInterface
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function getStartedAt()
     {
@@ -144,7 +144,7 @@ class Queue extends AbstractModel implements ProductUpdateQueueInterface
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function getCompletedAt()
     {
@@ -152,7 +152,7 @@ class Queue extends AbstractModel implements ProductUpdateQueueInterface
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function setId($id)
     {
@@ -160,7 +160,7 @@ class Queue extends AbstractModel implements ProductUpdateQueueInterface
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function setCreatedAt(DateTime $createdAt)
     {
@@ -168,7 +168,7 @@ class Queue extends AbstractModel implements ProductUpdateQueueInterface
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function setStartedAt(DateTime $startedAt)
     {
@@ -176,7 +176,7 @@ class Queue extends AbstractModel implements ProductUpdateQueueInterface
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function setCompletedAt(DateTime $completedAt)
     {
@@ -184,7 +184,7 @@ class Queue extends AbstractModel implements ProductUpdateQueueInterface
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function setStoreId($storeId)
     {

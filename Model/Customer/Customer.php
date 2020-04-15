@@ -49,7 +49,7 @@ class Customer extends AbstractModel implements CustomerInterface
     const COOKIE_NAME = '2c_cId';
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function getCustomerId()
     {
@@ -57,7 +57,7 @@ class Customer extends AbstractModel implements CustomerInterface
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function getQuoteId()
     {
@@ -65,7 +65,7 @@ class Customer extends AbstractModel implements CustomerInterface
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function getNostoId()
     {
@@ -73,7 +73,7 @@ class Customer extends AbstractModel implements CustomerInterface
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function getCreatedAt()
     {
@@ -81,7 +81,7 @@ class Customer extends AbstractModel implements CustomerInterface
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function getUpdatedAt()
     {
@@ -89,7 +89,7 @@ class Customer extends AbstractModel implements CustomerInterface
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function setCustomerId($customerId)
     {
@@ -97,7 +97,7 @@ class Customer extends AbstractModel implements CustomerInterface
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function setQuoteId($quoteId)
     {
@@ -105,7 +105,7 @@ class Customer extends AbstractModel implements CustomerInterface
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function setNostoId($nostoId)
     {
@@ -113,7 +113,7 @@ class Customer extends AbstractModel implements CustomerInterface
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function setCreatedAt(DateTime $createdAt)
     {
@@ -121,7 +121,7 @@ class Customer extends AbstractModel implements CustomerInterface
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function setUpdatedAt(DateTime $updatedAt)
     {
@@ -139,7 +139,7 @@ class Customer extends AbstractModel implements CustomerInterface
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function getRestoreCartHash()
     {
@@ -147,7 +147,7 @@ class Customer extends AbstractModel implements CustomerInterface
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function setRestoreCartHash($restoreCartHash)
     {

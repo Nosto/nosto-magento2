@@ -77,7 +77,7 @@ class AsyncBulkConsumer extends AbstractBulkConsumer
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      * @param array $productIds
      * @param string $storeId
      * @throws MemoryOutOfBoundsException

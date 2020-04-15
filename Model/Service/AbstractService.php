@@ -163,4 +163,52 @@ abstract class AbstractService
     {
         return $this->nostoDataHelper;
     }
+
+    /**
+     * Shortcut for logging debug messages
+     *
+     * @param string $message
+     * @param array $context
+     */
+    public function logDebug($message, $context = [])
+    {
+        $this->getLogger()->debugWithSource($message, $context, $this);
+    }
+
+    /**
+     * Shortcut for logging info messages
+     *
+     * @param string $message
+     * @param array $context
+     */
+    public function logInfo($message, array $context = [])
+    {
+        $this->getLogger()->infoWithSource($message, $context, $this);
+    }
+
+    /**
+     * Shortcut for logging debug messages with store id
+     *
+     * @param string $message
+     * @param Store $store
+     * @param array $context
+     */
+    public function logDebugWithStore($message, Store $store, array $context = [])
+    {
+        $context['storeId'] = $store->getId();
+        $this->logDebug($message, $context);
+    }
+
+    /**
+     * Shortcut for logging info messages with store id
+     *
+     * @param string $message
+     * @param Store $store
+     * @param array $context
+     */
+    public function logInfoWithStore($message, Store $store, array $context = [])
+    {
+        $context['storeId'] = $store->getId();
+        $this->logInfo($message, $context);
+    }
 }

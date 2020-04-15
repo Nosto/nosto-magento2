@@ -65,7 +65,7 @@ class CustomerTagging extends HashedTagging implements SectionSourceInterface
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function getSectionData()
     {

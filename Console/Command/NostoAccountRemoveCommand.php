@@ -114,7 +114,7 @@ class NostoAccountRemoveCommand extends Command
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     public function execute(InputInterface $input, OutputInterface $output)
     {
