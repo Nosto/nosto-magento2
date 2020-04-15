@@ -39,8 +39,6 @@ namespace Nosto\Tagging\Model\ResourceModel\Product\Update\Queue;
 use Magento\Sales\Api\Data\EntityInterface;
 use Magento\Store\Model\Store;
 use Nosto\Tagging\Api\Data\ProductUpdateQueueInterface;
-use Nosto\Tagging\Api\ProductUpdateQueueRepositoryInterface;
-use Nosto\Tagging\Model\ResourceModel\Product\Update\Queue\QueueCollectionFactory;
 
 /**
  * A builder class for building update queue collection with the most common filters
@@ -103,7 +101,9 @@ class QueueCollectionBuilder
      */
     public function withCompletedHrsAgo(int $hrs)
     {
-        $date = new \DateTime(-$hrs);
+        $date = new \DateTime('now');
+        $interval = new \DateInterval('PT' . $hrs . 'H');
+        $date->sub($interval);
         $this->collection->addCompletedBeforeFilter($date);
         return $this->withStatusCompleted();
     }
@@ -116,6 +116,17 @@ class QueueCollectionBuilder
     public function withStatusCompleted()
     {
         $this->collection->addStatusFilter(ProductUpdateQueueInterface::STATUS_VALUE_DONE);
+        return $this;
+    }
+
+    /**
+     * Sets the filter to only for given ids
+     *
+     * @return $this
+     */
+    public function withIds(array $ids)
+    {
+        $this->collection->addIdsFilter($ids);
         return $this;
     }
 
@@ -188,6 +199,6 @@ class QueueCollectionBuilder
         return $this
             ->reset()
             ->withStore($store)
-            ->setSort(EntityInterface::CREATED_AT, $this->collection::SORT_ORDER_DESC);
+            ->setSort(EntityInterface::CREATED_AT, $this->collection::SORT_ORDER_ASC);
     }
 }

@@ -45,21 +45,18 @@ use Nosto\Tagging\Helper\Data as NostoDataHelper;
 use Nosto\Tagging\Helper\Scope;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Product\Queue\QueueRepository;
+use Nosto\Tagging\Model\Product\Update\Queue;
 use Nosto\Tagging\Model\ResourceModel\Magento\Product\CollectionBuilder;
 use Nosto\Tagging\Model\ResourceModel\Product\Update\Queue\QueueCollection;
 use Nosto\Tagging\Model\ResourceModel\Product\Update\Queue\QueueCollectionBuilder;
 use Nosto\Tagging\Model\Service\AbstractService;
 use Nosto\Tagging\Model\Service\Sync\BulkPublisherInterface;
-use Nosto\Tagging\Util\PagingIterator;
-
 
 /**
  * Class QueueService
  */
 class QueueProcessorService extends AbstractService
 {
-    const CLEANUP_INTERVAL_HRS = 4;
-
     /** @var BulkPublisherInterface */
     private $upsertBulkPublisher;
 
@@ -75,11 +72,11 @@ class QueueProcessorService extends AbstractService
     /** @var BulkPublisherInterface */
     private $deleteBulkPublisher;
 
-    /** @var CollectionBuilder */
-    private $productCollectionBuilder;
+    /** @var int */
+    private $maxProductsInBatch;
 
-    /** @var Scope */
-    private $scopeHelper;
+    /** @var int */
+    private $cleanupInterval;
 
     /**
      * @param NostoLogger $logger
@@ -89,7 +86,8 @@ class QueueProcessorService extends AbstractService
      * @param QueueRepository $queueRepository
      * @param TimezoneInterface $magentoTimeZone
      * @param QueueCollectionBuilder $queueCollectionBuilder
-     * @param CollectionBuilder $productCollectionBuilder
+     * @param $maxProductsInBatch
+     * @param $cleanUpInterval
      */
     public function __construct(
         NostoLogger $logger,
@@ -99,8 +97,8 @@ class QueueProcessorService extends AbstractService
         QueueRepository $queueRepository,
         TimezoneInterface $magentoTimeZone,
         QueueCollectionBuilder $queueCollectionBuilder,
-        CollectionBuilder $productCollectionBuilder,
-        Scope $scopeHelper
+        $maxProductsInBatch,
+        $cleanUpInterval
     ) {
         parent::__construct($nostoDataHelper, $logger);
         $this->upsertBulkPublisher = $upsertBulkPublisher;
@@ -108,16 +106,14 @@ class QueueProcessorService extends AbstractService
         $this->queueRepository = $queueRepository;
         $this->magentoTimeZone = $magentoTimeZone;
         $this->queueCollectionBuilder = $queueCollectionBuilder;
-        $this->productCollectionBuilder = $productCollectionBuilder;
-        $this->scopeHelper = $scopeHelper;
+        $this->maxProductsInBatch = $maxProductsInBatch;
+        $this->cleanupInterval = $cleanUpInterval;
     }
 
     /**
      * Processes a collection of queue entries
      * - merges product ids from queue entries within the same store
      * @param QueueCollection $collection
-     * @throws MemoryOutOfBoundsException
-     * @throws NostoException
      */
     public function processQueueCollection(QueueCollection $collection)
     {
@@ -125,6 +121,7 @@ class QueueProcessorService extends AbstractService
             $this->getLogger()->debug('No uprocessed queue entries in the update queue');
             return;
         }
+        $this->capCollection($collection);
         $this->notifyStartProcessing($collection);
         $merged = $this->mergeQueues($collection);
         foreach ($merged as $storeId => $actions) {
@@ -142,6 +139,22 @@ class QueueProcessorService extends AbstractService
     }
 
     /**
+     * Caps the collection to the max amount of products in one batch
+     *
+     * @param QueueCollection $collection
+     */
+    private function capCollection(QueueCollection $collection)
+    {
+        $productIdCount = 0;
+        /** @var Queue $entry */
+        foreach ($collection as $key => $entry) {
+            if ($productIdCount > $this->maxProductsInBatch) {
+                $collection->removeItemByKey($key);
+            }
+            $productIdCount += $entry->getProductIdCount();
+        }
+    }
+    /**
      * Merges productIds from QueueCollection into an array containing only unique product ids per store
      *
      * @param QueueCollection $collection
@@ -150,7 +163,6 @@ class QueueProcessorService extends AbstractService
     private function mergeQueues(QueueCollection $collection)
     {
         $merged = [];
-        //TODO - add some limits to batching
         /* @var ProductUpdateQueueInterface $queueEntry */
         foreach ($collection as $queueEntry) {
             if (!isset($merged[$queueEntry->getStoreId()])) {
@@ -177,11 +189,6 @@ class QueueProcessorService extends AbstractService
         foreach ($collection as $queueEntry) {
             $queueEntry->setStartedAt($this->magentoTimeZone->date());
             $queueEntry->setStatus(ProductUpdateQueueInterface::STATUS_VALUE_PROCESSING);
-            try {
-                $this->queueRepository->save($queueEntry);
-            } catch (AlreadyExistsException $e) {
-                $this->getLogger()->exception($e);
-            }
         }
     }
 
@@ -212,12 +219,16 @@ class QueueProcessorService extends AbstractService
     {
         try {
             $processed = $this->queueCollectionBuilder
-                ->withCompletedHrsAgo(self::CLEANUP_INTERVAL_HRS)
+                ->init()
+                ->withCompletedHrsAgo($this->cleanupInterval)
                 ->build();
-            $this->getLogger()->debug(sprintf(
-                'Cleaning up %d completed entries from update queue',
-                $processed->count()
-            ));
+            $this->getLogger()->debug(
+                sprintf(
+                    'Cleaning up %d entries from update queue completed %d < hours ago',
+                    $processed->count(),
+                    $this->cleanupInterval
+                )
+            );
             foreach ($processed as $queueItem) {
                 $this->queueRepository->delete($queueItem);
             }

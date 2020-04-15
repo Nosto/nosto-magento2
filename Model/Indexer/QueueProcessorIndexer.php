@@ -40,8 +40,6 @@ use Exception;
 use Magento\Indexer\Model\ProcessManager;
 use Magento\Store\Model\App\Emulation;
 use Magento\Store\Model\Store;
-use Nosto\Exception\MemoryOutOfBoundsException;
-use Nosto\NostoException;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Indexer\Dimensions\Invalidate\ModeSwitcher as InvalidateModeSwitcher;
@@ -64,6 +62,8 @@ use Symfony\Component\Console\Input\InputInterface;
 class QueueProcessorIndexer extends AbstractIndexer
 {
     const INDEXER_ID = 'nosto_index_product_queue_processor';
+
+    private static $processingStores = [];
 
     /** @var QueueProcessorService */
     private $queueProcessorService;
@@ -127,6 +127,10 @@ class QueueProcessorIndexer extends AbstractIndexer
      */
     public function doIndex(Store $store, array $ids = [])
     {
+        if (in_array($store->getId(), self::$processingStores, true)) {
+            return;
+        }
+        self::$processingStores[] = $store->getId();
         $collection = $this->getCollection($store);
         $this->queueProcessorService->processQueueCollection($collection);
     }
@@ -141,12 +145,14 @@ class QueueProcessorIndexer extends AbstractIndexer
 
     /**
      * @param Store $store
+     * @param array $ids
      * @return QueueCollection
      */
     public function getCollection(Store $store)
     {
-        // Always fetch all unprocessed entries per store - this way the merging is more efficient
-        return  $this->queueCollectionBuilder
+        // Fetch always all queue entries having status new.
+        // It makes the merging of queues more efficient.
+        return $this->queueCollectionBuilder
             ->initDefault($store)
             ->withStatusNew()
             ->build();

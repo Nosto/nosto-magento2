@@ -51,7 +51,7 @@ class Logger extends MonologLogger
     public function exception(Throwable $exception)
     {
         NewRelic::reportException($exception);
-        return parent::error($exception->__toString());
+        return $this->error($exception->__toString());
     }
 
     /**
@@ -62,14 +62,26 @@ class Logger extends MonologLogger
      */
     public function logWithMemoryConsumption($message)
     {
-        return parent::debug(
-            sprintf(
-                '%s [mem usage: %sM / %s] [realmem: %sM]',
-                $message,
-                Memory::getConsumption(),
-                Memory::getTotalMemoryLimit(),
-                Memory::getRealConsumption()
-            )
-        );
+        return $this->debug(sprintf(
+            '%s [mem usage: %sM / %s] [realmem: %sM]',
+            $message,
+            Memory::getConsumption(),
+            Memory::getTotalMemoryLimit(),
+            Memory::getRealConsumption()
+        ));
+    }
+
+    /**
+     * Logs a message along with the memory consumption
+     *
+     * @param $message
+     * @param array $context
+     * @param object $sourceClass
+     * @return bool
+     */
+    public function debugWithSource($message, $context, $sourceClass)
+    {
+        $context['sourceClass'] = get_class($sourceClass);
+        return $this->debug($message, $context);
     }
 }
