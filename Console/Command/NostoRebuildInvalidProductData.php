@@ -96,8 +96,10 @@ class NostoRebuildInvalidProductData extends Command
             $this->handleArea();
             $this->productDataCron->execute();
             $io->success('Nosto product data rebuild manually');
+            return 0;
         } catch (\Exception $e) {
             $io->error(sprintf('An error occurred - message was %s', $e->getMessage()));
+            return 1;
         }
     }
 

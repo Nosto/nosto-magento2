@@ -103,8 +103,10 @@ class NostoGenerateCustomerReferenceCommand extends Command
                 $customer->save();
             }
             $io->success('Operation finished with success');
+            return 0;
         } catch (Exception $e) {
             $io->error($e->getMessage());
+            return 1;
         }
     }
 }

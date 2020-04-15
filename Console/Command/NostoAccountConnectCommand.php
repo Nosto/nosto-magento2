@@ -149,11 +149,14 @@ class NostoAccountConnectCommand extends Command
             $tokens = $this->getTokensFromInput($input, $io);
             if ($this->updateNostoTokens($tokens, $accountId, $io, $scopeCode)) {
                 $io->success('Tokens successfully Configured');
+                return 0;
             } else {
                 $io->error('Could not complete operation');
+                return 1;
             }
         } catch (NostoException $e) {
             $io->error('An error occurred');
+            return 1;
         }
     }
 
