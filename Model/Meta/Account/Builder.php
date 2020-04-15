@@ -91,7 +91,7 @@ class Builder
     /**
      * @param Store $store
      * @param $accountOwner
-     * @param \stdClass $signupDetails
+     * @param \stdClass|array $signupDetails
      * @return Signup
      */
     public function build(Store $store, $accountOwner, $signupDetails)

@@ -135,7 +135,7 @@ class Create extends Base
         $messageText = null;
         if ($store !== null) {
             try {
-                /** @var \stdClass $signupDetails */
+                /** @var string $signupDetails */
                 $signupDetails = $this->_request->getParam('details');
                 if (!empty($signupDetails)) {
                     $signupDetails = json_decode($signupDetails, true);
@@ -148,7 +148,7 @@ class Create extends Base
                         $accountOwner->setFirstName(null);
                         $accountOwner->setLastName(null);
                         $accountOwner->setEmail($emailAddress);
-
+                        /** @var array $signupDetails */
                         $signupParams = $this->nostoSignupBuilder->build(
                             $store,
                             $accountOwner,
