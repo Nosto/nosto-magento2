@@ -64,6 +64,7 @@ class DefaultProductService implements ProductServiceInterface
     /**
      * DefaultProductService constructor.
      * @param NostoProductBuilder $nostoProductBuilder
+     * @param ProductRepository $productRepository
      * @param NostoLogger $logger
      */
     public function __construct(

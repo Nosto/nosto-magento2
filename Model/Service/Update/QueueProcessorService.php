@@ -115,12 +115,20 @@ class QueueProcessorService extends AbstractService
      */
     public function processQueueCollection(QueueCollection $collection, Store $store)
     {
-        if ($collection->getSize() === 0) {
+        $initialCollectionlSize = $collection->getSize();
+        $this->logDebugWithStore(
+            sprintf(
+                'Started processing %d of queue entires',
+                $initialCollectionlSize
+            ),
+            $store
+        );
+        if ($initialCollectionlSize === 0) {
             $this->logInfoWithStore('No uprocessed queue entries in the update queue', $store);
             return;
         }
         $this->capCollection($collection, $store);
-        $this->notifyStartProcessing($collection, $store);
+        $this->setStatusToProcessing($collection, $store);
         $merged = $this->mergeQueues($collection, $store);
         foreach ($merged as $storeId => $actions) {
             foreach ($actions as $action => $productIds) {
@@ -133,7 +141,15 @@ class QueueProcessorService extends AbstractService
                 }
             }
         }
-        $this->notifyEndProcessing($collection, $store);
+        $this->setStatusToDone($collection, $store);
+        $this->cleanupUpdateQueue($store);
+        $this->logDebugWithStore(
+            sprintf(
+                'Processed %d of queue entires',
+                $collection->count()
+            ),
+            $store
+        );
     }
 
     /**
@@ -216,15 +232,8 @@ class QueueProcessorService extends AbstractService
      * @param QueueCollection $collection
      * @param Store $store
      */
-    private function notifyStartProcessing(QueueCollection $collection, Store $store)
+    private function setStatusToProcessing(QueueCollection $collection, Store $store)
     {
-        $this->logDebugWithStore(
-            sprintf(
-                'Started processing %d of queue entires',
-                $collection->getSize()
-            ),
-            $store
-        );
         /* @var ProductUpdateQueueInterface $queueEntry */
         foreach ($collection as $queueEntry) {
             $queueEntry->setStartedAt($this->magentoTimeZone->date());
@@ -237,7 +246,7 @@ class QueueProcessorService extends AbstractService
      *
      * @param QueueCollection $collection
      */
-    private function notifyEndProcessing(QueueCollection $collection, Store $store)
+    private function setStatusToDone(QueueCollection $collection, Store $store)
     {
         /* @var ProductUpdateQueueInterface $queueEntry */
         foreach ($collection as $queueEntry) {
@@ -249,14 +258,6 @@ class QueueProcessorService extends AbstractService
                 $this->getLogger()->exception($e);
             }
         }
-        $this->cleanupUpdateQueue($store);
-        $this->logDebugWithStore(
-            sprintf(
-                'Processed %d of queue entires',
-                $collection->getSize()
-            ),
-            $store
-        );
     }
 
     /**

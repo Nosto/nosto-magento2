@@ -214,7 +214,7 @@
     <type name="Nosto\Tagging\Model\Service\Sync\Upsert\SyncService">
         <arguments>
             <argument name="productService" xsi:type="object" shared="false">
-                Nosto\Tagging\Model\Service\Product\CachingProductService
+                Nosto\Tagging\Model\Service\Product\DefaultProductService
             </argument>
             <argument name="apiBatchSize" xsi:type="number">50</argument>
             <argument name="apiTimeout" xsi:type="number">60</argument>

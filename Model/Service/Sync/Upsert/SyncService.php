@@ -149,6 +149,7 @@ class SyncService extends AbstractService
                 try {
                     $op->addProduct($nostoProduct);
                     $this->cacheService->upsert($nostoProduct, $store);
+                    $this->tickBenchmark(self::BENCHMARK_SYNC_NAME);
                 } catch (\Exception $e) {
                     $this->getLogger()->exception($e);
                 }
@@ -164,11 +165,10 @@ class SyncService extends AbstractService
                     $store
                 );
                 $op->upsert();
-                $this->tickBenchmark(self::BENCHMARK_SYNC_NAME);
             } catch (Exception $upsertException) {
                 $this->getLogger()->exception($upsertException);
             }
         }
-        $this->logBenchmarkSummary(self::BENCHMARK_SYNC_NAME, $store);
+        $this->logBenchmarkSummary(self::BENCHMARK_SYNC_NAME, $store, $this);
     }
 }

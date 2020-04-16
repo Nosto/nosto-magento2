@@ -129,20 +129,25 @@ abstract class AbstractService
      *
      * @param string $name
      * @param Store $store
+     * @param object|null $sourceClass
      */
-    public function logBenchmarkSummary(string $name, Store $store)
+    public function logBenchmarkSummary($name, Store $store, $sourceClass = null)
     {
         try {
             Benchmark::getInstance()->stopInstrumentation($name);
-            $this->nostoLogger->logWithMemoryConsumption(sprintf(
-                'Summary of processing %s for store %s. Total amount of iterations %d'
-                . ', single iteration took on avg %f sec, total time was %f sec',
-                $name,
-                $store->getName(),
-                Benchmark::getInstance()->getTickCount($name),
-                Benchmark::getInstance()->getAvgTickTime($name),
-                Benchmark::getInstance()->getTotalTime($name)
-            ));
+            $this->nostoLogger->logWithMemoryConsumption(
+                sprintf(
+                    'Summary of processing %s for store %s. Total amount of iterations %d'
+                    . ', single iteration took on avg %f sec, total time was %f sec',
+                    $name,
+                    $store->getName(),
+                    Benchmark::getInstance()->getTickCount($name),
+                    Benchmark::getInstance()->getAvgTickTime($name),
+                    Benchmark::getInstance()->getTotalTime($name)
+                ),
+                $store,
+                $sourceClass
+            );
         } catch (NostoException $e) {
             $this->nostoLogger->exception($e);
         }
