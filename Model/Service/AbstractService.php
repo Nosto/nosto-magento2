@@ -41,6 +41,7 @@ use Magento\Store\Model\Store;
 use Nosto\Exception\MemoryOutOfBoundsException;
 use Nosto\NostoException;
 use Nosto\Tagging\Helper\Data as NostoDataHelper;
+use Nosto\Tagging\Helper\Account as NostoAccountHelper;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Util\Benchmark;
 use Nosto\Util\Memory as NostoMemUtil;
@@ -53,6 +54,9 @@ abstract class AbstractService
     /** @var NostoLogger */
     private $nostoLogger;
 
+    /** @var NostoAccountHelper */
+    private $nostoAccountHelper;
+
     /**
      * AbstractService constructor.
      * @param NostoDataHelper $nostoDataHelper
@@ -60,10 +64,12 @@ abstract class AbstractService
      */
     public function __construct(
         NostoDataHelper $nostoDataHelper,
+        NostoAccountHelper $nostoAccountHelper,
         NostoLogger $nostoLogger
     ) {
         $this->nostoDataHelper = $nostoDataHelper;
         $this->nostoLogger = $nostoLogger;
+        $this->nostoAccountHelper = $nostoAccountHelper;
     }
 
     /**
@@ -167,6 +173,14 @@ abstract class AbstractService
     public function getDataHelper()
     {
         return $this->nostoDataHelper;
+    }
+
+    /**
+     * @return NostoAccountHelper
+     */
+    public function getAccountHelper()
+    {
+        return $this->nostoAccountHelper;
     }
 
     /**

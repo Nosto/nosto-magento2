@@ -41,6 +41,7 @@ use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Framework\Exception\AlreadyExistsException;
 use Magento\Store\Model\Store;
 use Nosto\NostoException;
+use Nosto\Tagging\Helper\Account as NostoAccountHelper;
 use Nosto\Tagging\Helper\Data as NostoDataHelper;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Product\Queue\QueueBuilder;
@@ -73,6 +74,7 @@ class QueueService extends AbstractService
      * @param QueueBuilder $queueBuilder
      * @param NostoLogger $logger
      * @param NostoDataHelper $nostoDataHelper
+     * @param NostoAccountHelper $nostoAccountHelper
      * @param NostoProductRepository $nostoProductRepository
      * @param int $batchSize
      */
@@ -81,10 +83,11 @@ class QueueService extends AbstractService
         QueueBuilder $queueBuilder,
         NostoLogger $logger,
         NostoDataHelper $nostoDataHelper,
+        NostoAccountHelper $nostoAccountHelper,
         NostoProductRepository $nostoProductRepository,
         $batchSize
     ) {
-        parent::__construct($nostoDataHelper, $logger);
+        parent::__construct($nostoDataHelper, $nostoAccountHelper, $logger);
         $this->queueRepository = $queueRepository;
         $this->queueBuilder = $queueBuilder;
         $this->nostoProductRepository = $nostoProductRepository;
@@ -101,6 +104,10 @@ class QueueService extends AbstractService
      */
     public function addCollectionToUpsertQueue(ProductCollection $collection, Store $store)
     {
+        if ($this->getAccountHelper()->findAccount($store) === null) {
+            $this->logDebugWithStore('No nosto account found for the store', $store);
+            return;
+        }
         $collection->setPageSize($this->batchSize);
         $iterator = new PagingIterator($collection);
         $this->getLogger()->debugWithSource(
@@ -135,6 +142,10 @@ class QueueService extends AbstractService
      */
     public function addIdsToDeleteQueue($productIds, Store $store)
     {
+        if ($this->getAccountHelper()->findAccount($store) === null) {
+            $this->logDebugWithStore('No nosto account found for the store', $store);
+            return;
+        }
         $batchedIds = array_chunk($productIds, $this->batchSize);
         /** @var ProductCollection $page */
         foreach ($batchedIds as $idBatch) {

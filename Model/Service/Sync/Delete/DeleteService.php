@@ -92,7 +92,7 @@ class DeleteService extends AbstractService
         $this->nostoHelperAccount = $nostoHelperAccount;
         $this->nostoHelperUrl = $nostoHelperUrl;
         $this->deleteBatchSize = $deleteBatchSize;
-        parent::__construct($nostoHelperData, $logger);
+        parent::__construct($nostoHelperData, $nostoHelperAccount, $logger);
     }
 
     /**

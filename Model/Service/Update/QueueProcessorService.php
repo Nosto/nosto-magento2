@@ -40,6 +40,7 @@ use Magento\Framework\Exception\AlreadyExistsException;
 use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
 use Magento\Store\Model\Store;
 use Nosto\Tagging\Api\Data\ProductUpdateQueueInterface;
+use Nosto\Tagging\Helper\Account as NostoAccountHelper;
 use Nosto\Tagging\Helper\Data as NostoDataHelper;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Product\Queue\QueueRepository;
@@ -78,6 +79,7 @@ class QueueProcessorService extends AbstractService
     /**
      * @param NostoLogger $logger
      * @param NostoDataHelper $nostoDataHelper
+     * @param NostoAccountHelper $nostoAccountHelper
      * @param BulkPublisherInterface $upsertBulkPublisher
      * @param BulkPublisherInterface $deleteBulkPublisher
      * @param QueueRepository $queueRepository
@@ -89,6 +91,7 @@ class QueueProcessorService extends AbstractService
     public function __construct(
         NostoLogger $logger,
         NostoDataHelper $nostoDataHelper,
+        NostoAccountHelper $nostoAccountHelper,
         BulkPublisherInterface $upsertBulkPublisher,
         BulkPublisherInterface $deleteBulkPublisher,
         QueueRepository $queueRepository,
@@ -97,7 +100,7 @@ class QueueProcessorService extends AbstractService
         $maxProductsInBatch,
         $cleanUpInterval
     ) {
-        parent::__construct($nostoDataHelper, $logger);
+        parent::__construct($nostoDataHelper, $nostoAccountHelper, $logger);
         $this->upsertBulkPublisher = $upsertBulkPublisher;
         $this->deleteBulkPublisher = $deleteBulkPublisher;
         $this->queueRepository = $queueRepository;

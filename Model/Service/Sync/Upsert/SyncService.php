@@ -102,7 +102,7 @@ class SyncService extends AbstractService
         $apiBatchSize,
         $apiTimeout
     ) {
-        parent::__construct($nostoDataHelper, $logger);
+        parent::__construct($nostoDataHelper, $nostoHelperAccount, $logger);
         $this->productService = $productService;
         $this->nostoHelperAccount = $nostoHelperAccount;
         $this->nostoHelperUrl = $nostoHelperUrl;

@@ -37,6 +37,7 @@
 namespace Nosto\Tagging\Model\Indexer;
 
 use Exception;
+use Magento\Framework\Exception\AlreadyExistsException;
 use Magento\Indexer\Model\ProcessManager;
 use Magento\Store\Model\App\Emulation;
 use Magento\Store\Model\Store;
@@ -139,7 +140,7 @@ class QueueIndexer extends AbstractIndexer
      * @param array $givenIds
      * @param Store $store
      * @throws NostoException
-     * @throws \Magento\Framework\Exception\AlreadyExistsException
+     * @throws AlreadyExistsException
      */
     private function handleDeletedProducts(ProductCollection $existingCollection, Store $store, array $givenIds)
     {
