@@ -63,8 +63,6 @@ class QueueProcessorIndexer extends AbstractIndexer
 {
     const INDEXER_ID = 'nosto_index_product_queue_processor';
 
-    private static $processingStores = [];
-
     /** @var QueueProcessorService */
     private $queueProcessorService;
 
@@ -127,10 +125,6 @@ class QueueProcessorIndexer extends AbstractIndexer
      */
     public function doIndex(Store $store, array $ids = [])
     {
-        if (in_array($store->getId(), self::$processingStores, true)) {
-            return;
-        }
-        self::$processingStores[] = $store->getId();
         $collection = $this->getCollection($store);
         $this->queueProcessorService->processQueueCollection($collection, $store);
     }

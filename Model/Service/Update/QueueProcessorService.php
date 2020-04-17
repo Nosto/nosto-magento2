@@ -127,7 +127,7 @@ class QueueProcessorService extends AbstractService
             $store
         );
         if ($initialCollectionlSize === 0) {
-            $this->logInfoWithStore('No uprocessed queue entries in the update queue', $store);
+            $this->logInfoWithStore('No uprocessed queue entries in the update queue for the store', $store);
             return;
         }
         $this->capCollection($collection, $store);
