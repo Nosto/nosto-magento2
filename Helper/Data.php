@@ -397,7 +397,7 @@ class Data extends AbstractHelper
      */
     public function isProductCachingEnabled(StoreInterface $store = null)
     {
-        return (bool)$this->getStoreConfig(self::XML_PATH_PRODUCT_UPDATES, $store);
+        return (bool)$this->getStoreConfig(self::XML_PATH_PRODUCT_CACHING, $store);
     }
 
     /**

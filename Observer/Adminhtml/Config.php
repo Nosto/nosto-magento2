@@ -158,12 +158,6 @@ class Config implements ObserverInterface
 
             $indexer = $this->indexerRegistry->get(QueueIndexer::INDEXER_ID);
             if (!$indexer->isScheduled()) {
-                $this->logger->info(
-                    sprintf(
-                        '',
-                        $store->getName()
-                    )
-                );
                 $this->logger->infoWithSource(
                     'Not performing full Nosto reindex as the indexer is not scheduled',
                     ['storeId' => $store->getId()],

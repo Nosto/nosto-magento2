@@ -40,9 +40,8 @@ use Closure;
 use Magento\Catalog\Model\ResourceModel\Product as MagentoResourceProduct;
 use Magento\Framework\Indexer\IndexerRegistry;
 use Magento\Framework\Model\AbstractModel;
-use Nosto\Tagging\Model\Indexer\QueueIndexer as QueueIndexer;
+use Nosto\Tagging\Model\Indexer\QueueIndexer;
 use Nosto\Tagging\Model\Product\Repository as NostoProductRepository;
-use Nosto\Tagging\Model\Service\Cache\CacheService;
 
 /**
  * Plugin for product updates
@@ -62,7 +61,6 @@ class ProductUpdate
     /**
      * ProductInvalidate constructor.
      * @param IndexerRegistry $indexerRegistry
-     * @param CacheService $cacheService
      * @param QueueIndexer $queueIndexer
      * @param NostoProductRepository $nostoProductRepository
      */

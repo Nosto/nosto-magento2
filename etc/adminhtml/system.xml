@@ -210,7 +210,7 @@
                        showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Cache product data for Nosto</label>
                     <comment>
-                        <![CDATA[Set this to "Yes" if you want the Nosto product data to be cached in table. This will speedup product tagging on product pages especially for complex products.]]>
+                        <![CDATA[Set this to "Yes" if you want the Nosto product data to be cached in a database table. This will speedup product tagging on product pages especially for complex products.]]>
                     </comment>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>

@@ -36,7 +36,6 @@
 
 namespace Nosto\Tagging\Model\Product\Cache;
 
-use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
 use Magento\Store\Api\Data\StoreInterface;
 use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
