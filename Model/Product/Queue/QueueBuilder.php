@@ -79,7 +79,7 @@ class QueueBuilder
         array $productIds
     ) {
         $queueModel = $this->queueFactory->create();
-        $queueModel->setProductIds($productIds);
+        $queueModel->setProductIds(array_values($productIds));
         $queueModel->setCreatedAt($this->magentoTimeZone->date());
         $queueModel->setStore($store);
         $queueModel->setStatus(ProductUpdateQueueInterface::STATUS_VALUE_NEW);
