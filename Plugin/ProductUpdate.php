@@ -56,9 +56,6 @@ class ProductUpdate
     /** @var QueueIndexer  */
     private $queueIndexer;
 
-    /** @var CacheService  */
-    private $cacheService;
-
     /** @var NostoProductRepository  */
     private $nostoProductRepository;
 
@@ -66,18 +63,16 @@ class ProductUpdate
      * ProductInvalidate constructor.
      * @param IndexerRegistry $indexerRegistry
      * @param CacheService $cacheService
-     * @param QueueIndexer $indexerInvalidate
+     * @param QueueIndexer $queueIndexer
      * @param NostoProductRepository $nostoProductRepository
      */
     public function __construct(
         IndexerRegistry $indexerRegistry,
-        CacheService $cacheService,
-        QueueIndexer $indexerInvalidate,
+        QueueIndexer $queueIndexer,
         NostoProductRepository $nostoProductRepository
     ) {
         $this->indexerRegistry = $indexerRegistry;
-        $this->cacheService = $cacheService;
-        $this->queueIndexer = $indexerInvalidate;
+        $this->queueIndexer = $queueIndexer;
         $this->nostoProductRepository = $nostoProductRepository;
     }
 
