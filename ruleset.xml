@@ -48,17 +48,12 @@
     <exclude-pattern>*.js</exclude-pattern>
     <exclude-pattern>*.css</exclude-pattern>
     <config name="installed_paths"
-            value="vendor/magento-ecg/coding-standard/,vendor/magento/marketplace-eqp/"/>
+            value="./vendor/magento-ecg/coding-standard/EcgM2,./vendor/magento/magento-coding-standard/Magento2"/>
     <description>The Magento coding standard.</description>
     <rule ref="./vendor/magento-ecg/coding-standard/EcgM2">
-        <exclude name="Ecg.PHP.PrivateClassMember"/>
-        <exclude name="Ecg.Performance.Loop"/>
-        <exclude name="Ecg.Classes.ObjectInstantiation"/>
     </rule>
-    <rule ref="./vendor/magento/marketplace-eqp/MEQP2">
-        <exclude name="Squiz.PHP.CommentedOutCode"/>
+    <rule ref="./vendor/magento/magento-coding-standard/Magento2">
+        <exclude name="Magento2.Functions.StaticFunction"/>
         <exclude name="Generic.Metrics.CyclomaticComplexity"/>
-        <exclude name="MEQP2.Classes.ObjectInstantiation"/>
-        <exclude name="MEQP2.Classes.PublicNonInterfaceMethods"/>
     </rule>
 </ruleset>

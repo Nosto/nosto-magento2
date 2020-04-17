@@ -39,9 +39,6 @@ namespace Nosto\Tagging\Model\Config\Source;
 use Magento\Framework\Data\OptionSourceInterface;
 use Magento\Framework\Phrase;
 
-/**
- * @package Nosto\Tagging\Model\Config\Source
- */
 class Memory implements OptionSourceInterface
 {
     /**

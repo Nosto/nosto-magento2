@@ -181,6 +181,7 @@ class Ratings extends AbstractHelper
         try {
             /** @noinspection PhpUndefinedMethodInspection */
             if (!$product->getRatingSummary()) {
+                /** @phan-suppress-next-line PhanDeprecatedFunction */
                 $this->reviewFactory->create()->getEntitySummary($product, $store->getId());
             }
             /** @noinspection PhpUndefinedMethodInspection */
@@ -223,6 +224,7 @@ class Ratings extends AbstractHelper
         try {
             /** @noinspection PhpUndefinedMethodInspection */
             if (!$product->getRatingSummary()) {
+                /** @phan-suppress-next-line PhanDeprecatedFunction */
                 $this->reviewFactory->create()->getEntitySummary($product, $store->getId());
             }
             /** @noinspection PhpUndefinedMethodInspection */
@@ -255,6 +257,7 @@ class Ratings extends AbstractHelper
     public function canUseYotpo()
     {
         if ($this->moduleManager->isEnabled('Yotpo_Yotpo') &&
+            // phpcs:ignore
             class_exists('Yotpo\Yotpo\Helper\RichSnippets') &&
             method_exists($this->ratingsFactory->create(), 'getRichSnippet')
         ) {
@@ -281,11 +284,15 @@ class Ratings extends AbstractHelper
      */
     private function setRegistryProduct(Product $product)
     {
+        /** @phan-suppress-next-line PhanDeprecatedFunction */
         $this->originalProduct = $this->registry->registry(self::CURRENT_PRODUCT);
         if ($this->originalProduct !== null) {
+            /** @phan-suppress-next-line PhanDeprecatedFunction */
             $this->registry->unregister(self::CURRENT_PRODUCT);
+            /** @phan-suppress-next-line PhanDeprecatedFunction */
             $this->registry->register(self::CURRENT_PRODUCT, $product);
         } else {
+            /** @phan-suppress-next-line PhanDeprecatedFunction */
             $this->registry->register(self::CURRENT_PRODUCT, $product);
         }
     }
@@ -295,7 +302,9 @@ class Ratings extends AbstractHelper
      */
     private function resetRegistryProduct()
     {
+        /** @phan-suppress-next-line PhanDeprecatedFunction */
         $this->registry->unregister(self::CURRENT_PRODUCT);
+        /** @phan-suppress-next-line PhanDeprecatedFunction */
         $this->registry->register(self::CURRENT_PRODUCT, $this->originalProduct);
     }
 }

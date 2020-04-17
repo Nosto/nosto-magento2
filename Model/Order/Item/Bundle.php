@@ -50,7 +50,7 @@ class Bundle extends BundleItem
      */
     public static function buildItemName(Item $item)
     {
-        $name = $item->getName();
+        $name = $item->getName() ?: '';
         $optNames = [];
         $opts = $item->getProductOptionByCode('bundle_options');
         if (is_array($opts)) {

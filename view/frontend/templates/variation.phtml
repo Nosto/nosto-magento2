@@ -54,6 +54,7 @@
  * Magento's KnockoutJS logic.
  *
  * @see \Nosto\Tagging\CustomerData\ActiveVariationTagging
+ * @phpcs:disable Generic.Files.LineLength
  */
 ?>
 <!-- Nosto Variation Tagging -->
@@ -66,5 +67,9 @@
     <!-- /ko -->
 </div>
 <script type="text/x-magento-init">
-{"[data-role=nosto-variation-tagging]": {"Magento_Ui/js/core/app": <?php /* @escapeNotVerified */ echo $block->getJsLayout();?>}}
+{
+  "[data-role=nosto-variation-tagging]": {
+    "Magento_Ui/js/core/app": <?= /* @escapeNotVerified */ $block->getJsLayout();?>
+  }
+}
 </script>

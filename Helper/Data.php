@@ -561,15 +561,15 @@ class Data extends AbstractHelper
      * Returns the version number of the platform the e-commerce installation
      *
      * @return string the platforms's version
-     * @suppress PhanUndeclaredConstant
+     * @suppress PhanUndeclaredConstantOfClass
+     * @noinspection PhpUndefinedClassConstantInspection
      */
     public function getPlatformVersion()
     {
         $version = 'unknown';
         if ($this->productMetaData->getVersion()) {
             $version = $this->productMetaData->getVersion();
-        } /** @noinspection PhpUndefinedClassConstantInspection */ elseif (defined(AppInterface::VERSION)) {
-            /** @noinspection PhpUndefinedClassConstantInspection */
+        } elseif (defined(AppInterface::VERSION)) {
             $version = AppInterface::VERSION;
         }
         return $version;

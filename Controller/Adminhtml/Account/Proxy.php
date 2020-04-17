@@ -40,9 +40,6 @@ use Magento\Backend\App\Action\Context;
 use Magento\Backend\Model\Auth\Session;
 use Magento\Framework\Controller\Result\Redirect;
 
-/**
- *
- */
 class Proxy extends Base
 {
     const ADMIN_RESOURCE = 'Nosto_Tagging::system_nosto_account';

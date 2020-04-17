@@ -58,7 +58,6 @@ use Symfony\Component\Console\Input\InputInterface;
  * Class Invalidate
  * This class is responsible for listening to product changes
  * and setting the `is_dirty` value in `nosto_product_index` table
- * @package Nosto\Tagging\Model\Indexer
  */
 class QueueIndexer extends AbstractIndexer
 {

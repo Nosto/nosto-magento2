@@ -35,15 +35,15 @@
  */
 
 /**
- * @var \Nosto\Tagging\Block\Adminhtml\Account\Iframe $this
+ * @var \Nosto\Tagging\Block\Adminhtml\Account\Iframe $block
  */
 ?>
 
 <!--suppress HtmlDeprecatedAttribute -->
 <iframe id="nosto_iframe"
-        src='<?php echo $this->getIframeUrl(); ?>'
+        src='<?= $block->escapeUrl($block->getIframeUrl()); ?>'
         width='100%'
         frameborder='0'
         scrolling='no'
         style="min-height: 600px;"
-        data-mage-init='<?php echo json_encode($this->getIframeConfig()); ?>'></iframe>
+        data-mage-init='<?=$block->escapeHtml(json_encode($block->getIframeConfig()));?>'></iframe>

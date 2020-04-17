@@ -143,9 +143,7 @@ abstract class AbstractBulkPublisher implements BulkPublisherInterface
                 UserContextInterface::USER_TYPE_INTEGRATION
             );
             if (!$result) {
-                throw new LocalizedException(
-                    __('Something went wrong while processing the request.')
-                );
+                throw new LocalizedException(__('Something went wrong while processing the request.'));
             }
         } else {
             foreach ($operationsData as $operationData) {

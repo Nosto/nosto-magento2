@@ -44,8 +44,6 @@ use Nosto\Tagging\Model\Rates\Service as NostoRatesService;
 /**
  * Cronjob class that periodically updates exchange-rates to Nosto for each of the store views,
  * provided that multiple-currencies are configured for that store view.
- *
- * @package Nosto\Tagging\Cron
  */
 class RatesCron
 {

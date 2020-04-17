@@ -3,6 +3,9 @@ All notable changes to this project will be documented in this file. This projec
 # not released
 * Refactor the indexing logic to use batched queues
 
+# 4.0.6
+* Fix issue with non-generated proxy classes during di compilation 
+
 # 4.0.5
 * Fix an issue where product cache table was not created during upgrade
 

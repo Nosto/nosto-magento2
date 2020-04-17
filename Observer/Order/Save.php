@@ -60,10 +60,6 @@ use Nosto\Tagging\Model\Order\Builder as NostoOrderBuilder;
 use Nosto\Tagging\Model\Order\Status\Builder as NostoOrderStatusBuilder;
 use Nosto\Types\Signup\AccountInterface;
 
-/**
- * Class Save
- * @package Nosto\Tagging\Observer
- */
 class Save implements ObserverInterface
 {
     private $nostoHelperData;
@@ -199,6 +195,8 @@ class Save implements ObserverInterface
                         $productIds[] = $item->getProductId();
                     }
                 }
+
+                /** @phan-suppress-next-line PhanDeprecatedFunction */
                 $this->indexer->reindexList($productIds);
             }
         }

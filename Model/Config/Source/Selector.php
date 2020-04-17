@@ -44,8 +44,6 @@ use Nosto\Tagging\Model\Service\Product\Attribute\AttributeProviderInterface;
 /**
  * Abstract option array class to generate a list of selectable options that allows the merchant to
  * choose an attribute for for the specified tagging fields requirements.
- *
- * @package Nosto\Tagging\Model\Config\Source
  */
 abstract class Selector implements OptionSourceInterface
 {

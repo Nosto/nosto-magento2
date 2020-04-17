@@ -41,8 +41,6 @@ use Magento\Newsletter\Model\Subscriber;
 
 /**
  * Repository wrapper / helper class for fetching marketing permission related items
- *
- * @package Nosto\Tagging\Model\Email
  */
 class Repository
 {
