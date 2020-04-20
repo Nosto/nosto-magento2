@@ -51,9 +51,6 @@ use Nosto\Tagging\Model\ResourceModel\Magento\Product\Collection as ProductColle
 use Nosto\Tagging\Model\Service\AbstractService;
 use Nosto\Tagging\Util\PagingIterator;
 
-/**
- * Class QueueService
- */
 class QueueService extends AbstractService
 {
     /** @var QueueRepository  */
@@ -127,8 +124,8 @@ class QueueService extends AbstractService
                 $store,
                 $this->toParentProructIds($page)
             );
-            if (count($queueEntry->getProductIds()) > 0) {
-                $this->queueRepository->save($queueEntry);
+            if (!empty($queueEntry->getProductIds())) {
+                $this->queueRepository->save($queueEntry); // @codingStandardsIgnoreLine
             }
         }
     }
@@ -153,8 +150,8 @@ class QueueService extends AbstractService
                 $store,
                 $idBatch
             );
-            if (count($queueEntry->getProductIds()) > 0) {
-                $this->queueRepository->save($queueEntry);
+            if (!empty($queueEntry->getProductIds())) {
+                $this->queueRepository->save($queueEntry); // @codingStandardsIgnoreLine
             }
         }
     }

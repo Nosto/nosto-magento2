@@ -42,9 +42,6 @@ use Magento\Store\Api\Data\StoreInterface;
 use Nosto\Tagging\Api\Data\ProductUpdateQueueInterface;
 use Nosto\Tagging\Model\ResourceModel\Product\Update\Queue as QueueResource;
 
-/**
- * Class Queue
- */
 class Queue extends AbstractModel implements ProductUpdateQueueInterface
 {
     /**

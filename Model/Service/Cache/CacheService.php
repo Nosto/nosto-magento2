@@ -48,9 +48,6 @@ use Nosto\Tagging\Model\Service\AbstractService;
 use Nosto\Tagging\Model\Service\Product\ProductSerializerInterface;
 use Nosto\Types\Product\ProductInterface as NostoProductInterface;
 
-/**
- * Class CacheService
- */
 class CacheService extends AbstractService
 {
     /** @var CacheRepository */

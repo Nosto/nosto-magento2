@@ -46,9 +46,6 @@ use Nosto\Tagging\Model\ResourceModel\Product\Update\Queue as QueueResource;
 use Nosto\Tagging\Model\ResourceModel\Product\Update\Queue\QueueCollection;
 use Nosto\Tagging\Model\ResourceModel\Product\Update\Queue\QueueCollectionFactory;
 
-/**
- * Class QueueRepository
- */
 class QueueRepository implements ProductUpdateQueueRepositoryInterface
 {
     /** @var QueueCollectionFactory  */

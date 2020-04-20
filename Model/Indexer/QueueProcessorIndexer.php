@@ -57,7 +57,6 @@ use Symfony\Component\Console\Input\InputInterface;
  * Class Invalidate
  * This class is responsible for listening to product changes
  * and setting the `is_dirty` value in `nosto_product_index` table
- * @package Nosto\Tagging\Model\Indexer
  */
 class QueueProcessorIndexer extends AbstractIndexer
 {
@@ -73,11 +72,11 @@ class QueueProcessorIndexer extends AbstractIndexer
     private $modeSwitcher;
 
     /**
-     * Invalidate constructor.
+     * QueueProcessorIndexer constructor.
      * @param NostoHelperScope $nostoHelperScope
-     * @param QueueService $queueProcessorService
+     * @param QueueProcessorService $queueProcessorService
      * @param NostoLogger $logger
-     * @param CollectionBuilder $queueCollectionBuilder
+     * @param QueueCollectionBuilder $queueCollectionBuilder
      * @param InvalidateModeSwitcher $modeSwitcher
      * @param StoreDimensionProvider $dimensionProvider
      * @param Emulation $storeEmulation
@@ -123,6 +122,7 @@ class QueueProcessorIndexer extends AbstractIndexer
      * @inheritDoc
      * @throws Exception
      */
+    // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter
     public function doIndex(Store $store, array $ids = [])
     {
         $collection = $this->getCollection($store);

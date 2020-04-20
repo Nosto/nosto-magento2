@@ -45,9 +45,6 @@ use Nosto\Tagging\Model\Service\Cache\CacheService;
 use Nosto\Types\Product\ProductInterface as NostoProductInterface;
 use Nosto\Tagging\Helper\Data as NostoDataHelper;
 
-/**
- * Class CachingProductService
- */
 class CachingProductService implements ProductServiceInterface
 {
 

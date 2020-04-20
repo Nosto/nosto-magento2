@@ -42,9 +42,6 @@ use Nosto\Tagging\Api\Data\ProductUpdateQueueInterface;
 use Nosto\Tagging\Model\Product\Update\Queue;
 use Nosto\Tagging\Model\ResourceModel\Product\Update\Queue as QueueResource;
 
-/**
- * Class QueueCollection
- */
 class QueueCollection extends AbstractCollection
 {
     /**

@@ -52,9 +52,6 @@ use Nosto\Tagging\Model\Service\Cache\CacheService;
 use Nosto\Tagging\Model\Service\Product\ProductServiceInterface;
 use Nosto\Tagging\Util\PagingIterator;
 
-/**
- * Class SyncService
- */
 class SyncService extends AbstractService
 {
     const BENCHMARK_SYNC_NAME = 'nosto_product_upsert';

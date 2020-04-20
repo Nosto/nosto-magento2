@@ -42,9 +42,6 @@ use Nosto\Tagging\Api\Data\ProductUpdateQueueInterface;
 use Nosto\Tagging\Model\Product\Update\Queue as QueueModel;
 use Nosto\Tagging\Model\Product\Update\QueueFactory;
 
-/**
- * Class QueueBuilder
- */
 class QueueBuilder
 {
     /** @var QueueFactory  */

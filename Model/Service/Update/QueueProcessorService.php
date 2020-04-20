@@ -131,7 +131,7 @@ class QueueProcessorService extends AbstractService
             return;
         }
         $this->capCollection($collection, $store);
-        $this->setStatusToProcessing($collection, $store);
+        $this->setStatusToProcessing($collection);
         $merged = $this->mergeQueues($collection, $store);
         foreach ($merged as $storeId => $actions) {
             foreach ($actions as $action => $productIds) {
@@ -144,11 +144,12 @@ class QueueProcessorService extends AbstractService
                 }
             }
         }
-        $this->setStatusToDone($collection, $store);
+        $this->setStatusToDone($collection);
         $this->cleanupUpdateQueue($store);
         $this->logDebugWithStore(
             sprintf(
                 'Processed %d of queue entires',
+                // phpcs:ignore
                 $collection->count()
             ),
             $store
@@ -163,6 +164,7 @@ class QueueProcessorService extends AbstractService
      */
     private function capCollection(QueueCollection $collection, Store $store)
     {
+        // phpcs:ignore
         $originalSize = $collection->count();
         $productIdCount = 0;
         $leftIds = 0;
@@ -174,6 +176,7 @@ class QueueProcessorService extends AbstractService
             }
             $productIdCount += $entry->getProductIdCount();
         }
+        // phpcs:ignore
         $sizeAfterCap = $collection->count();
         if ($sizeAfterCap < $originalSize) {
             $this->logDebugWithStore(
@@ -215,6 +218,7 @@ class QueueProcessorService extends AbstractService
         $mergedCount = 0;
         foreach ($merged as $storeId => $arr) {
             foreach ($arr as $method => $ids) {
+                // phpcs:ignore
                 $mergedCount += count($ids);
             }
         }
@@ -233,9 +237,8 @@ class QueueProcessorService extends AbstractService
      * Sets the timestamp for started at & updates the status to be processing
      *
      * @param QueueCollection $collection
-     * @param Store $store
      */
-    private function setStatusToProcessing(QueueCollection $collection, Store $store)
+    private function setStatusToProcessing(QueueCollection $collection)
     {
         /* @var ProductUpdateQueueInterface $queueEntry */
         foreach ($collection as $queueEntry) {
@@ -249,13 +252,14 @@ class QueueProcessorService extends AbstractService
      *
      * @param QueueCollection $collection
      */
-    private function setStatusToDone(QueueCollection $collection, Store $store)
+    private function setStatusToDone(QueueCollection $collection)
     {
         /* @var ProductUpdateQueueInterface $queueEntry */
         foreach ($collection as $queueEntry) {
             $queueEntry->setCompletedAt($this->magentoTimeZone->date());
             $queueEntry->setStatus(ProductUpdateQueueInterface::STATUS_VALUE_DONE);
             try {
+                // phpcs:ignore
                 $this->queueRepository->save($queueEntry);
             } catch (AlreadyExistsException $e) {
                 $this->getLogger()->exception($e);
@@ -283,6 +287,7 @@ class QueueProcessorService extends AbstractService
                 $store
             );
             foreach ($processed as $queueItem) {
+                // phpcs:ignore
                 $this->queueRepository->delete($queueItem);
             }
         } catch (\Exception $e) {
