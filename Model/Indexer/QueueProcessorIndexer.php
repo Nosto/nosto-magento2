@@ -45,12 +45,10 @@ use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Indexer\Dimensions\Invalidate\ModeSwitcher as InvalidateModeSwitcher;
 use Nosto\Tagging\Model\Indexer\Dimensions\ModeSwitcherInterface;
 use Nosto\Tagging\Model\Indexer\Dimensions\StoreDimensionProvider;
-use Nosto\Tagging\Model\ResourceModel\Magento\Product\CollectionBuilder;
 use Nosto\Tagging\Model\ResourceModel\Product\Update\Queue\QueueCollection;
 use Nosto\Tagging\Model\ResourceModel\Product\Update\Queue\QueueCollectionBuilder;
 use Nosto\Tagging\Model\Service\Indexer\IndexerStatusServiceInterface;
 use Nosto\Tagging\Model\Service\Update\QueueProcessorService;
-use Nosto\Tagging\Model\Service\Update\QueueService;
 use Symfony\Component\Console\Input\InputInterface;
 
 /**
@@ -139,7 +137,6 @@ class QueueProcessorIndexer extends AbstractIndexer
 
     /**
      * @param Store $store
-     * @param array $ids
      * @return QueueCollection
      */
     public function getCollection(Store $store)

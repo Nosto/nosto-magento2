@@ -136,8 +136,8 @@ class QueueIndexer extends AbstractIndexer
 
     /**
      * @param ProductCollection $existingCollection
-     * @param array $givenIds
      * @param Store $store
+     * @param array $givenIds
      * @throws NostoException
      * @throws AlreadyExistsException
      */

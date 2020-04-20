@@ -327,8 +327,8 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
     /**
      * Shortcut method for logging debug
      *
-     * @param $message
-     * @param null $storeId
+     * @param string $message
+     * @param int|string|null $storeId
      */
     private function logDebug($message, $storeId = null)
     {
@@ -338,8 +338,8 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
     /**
      * Shortcut method for logging info
      *
-     * @param $message
-     * @param null $storeId
+     * @param string $message
+     * @param int|string|null $storeId
      */
     private function logInfo($message, $storeId = null)
     {
@@ -349,9 +349,9 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
     /**
      * Shortcut method for logging indexer related messages
      *
-     * @param $message
-     * @param $level
-     * @param null $storeId
+     * @param string $message
+     * @param string $level
+     * @param int|string|null $storeId
      */
     private function log($message, $level, $storeId = null)
     {

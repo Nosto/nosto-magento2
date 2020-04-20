@@ -43,14 +43,12 @@ use Magento\Framework\Model\AbstractModel;
 use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
 use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\Store;
-use Nosto\NostoException;
 use Nosto\Tagging\Api\Data\ProductCacheInterface;
 use Nosto\Tagging\Api\ProductCacheRepositoryInterface;
 use Nosto\Tagging\Model\Product\Cache;
 use Nosto\Tagging\Model\ResourceModel\Product\Cache as CacheResource;
 use Nosto\Tagging\Model\ResourceModel\Product\Cache\CacheCollection;
 use Nosto\Tagging\Model\ResourceModel\Product\Cache\CacheCollectionFactory;
-use Nosto\Tagging\Util\PagingIterator;
 
 class CacheRepository implements ProductCacheRepositoryInterface
 {

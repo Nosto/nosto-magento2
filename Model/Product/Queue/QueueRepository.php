@@ -71,19 +71,6 @@ class QueueRepository implements ProductUpdateQueueRepositoryInterface
     /**
      * @inheritDoc
      */
-    public function getById($id)
-    {
-        $collection = $this->queueCollectionFactory->create()
-            ->addFieldToSelect('*')
-            ->addIdFilter($id)
-            ->setPageSize(1)
-            ->setCurPage(1);
-        return $collection->getOneOrNull();
-    }
-
-    /**
-     * @inheritDoc
-     */
     public function getTotalCount(Store $store)
     {
         /* @var QueueCollection $collection */

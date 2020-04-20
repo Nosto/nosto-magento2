@@ -38,7 +38,6 @@ namespace Nosto\Tagging\Api;
 
 use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Store\Api\Data\StoreInterface;
-use Magento\Store\Model\Store;
 use Nosto\Tagging\Api\Data\ProductCacheInterface;
 
 interface ProductCacheRepositoryInterface
