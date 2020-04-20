@@ -37,7 +37,6 @@
 namespace Nosto\Tagging\Model\Product\Queue;
 
 use Magento\Framework\Exception\AlreadyExistsException;
-use Magento\Framework\Model\AbstractModel;
 use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\Store;
 use Nosto\Tagging\Api\Data\ProductUpdateQueueInterface;
@@ -93,24 +92,23 @@ class QueueRepository implements ProductUpdateQueueRepositoryInterface
     }
 
     /**
-     * @inheritDoc
+     * @param ProductUpdateQueueInterface $entry
+     * @return ProductUpdateQueueInterface|QueueResource
      * @throws AlreadyExistsException
-     * @suppress PhanTypeMismatchArgument
      */
     public function save(ProductUpdateQueueInterface $entry)
     {
-        /** @noinspection PhpParamsInspection */
+        /** @phan-suppress-next-line PhanTypeMismatchArgument */
         return $this->queueResource->save($entry);
     }
 
     /**
-     * @inheritDoc
+     * @param ProductUpdateQueueInterface $entry
      * @throws \Exception
-     * @suppress PhanTypeMismatchArgument
      */
     public function delete(ProductUpdateQueueInterface $entry)
     {
-        /** @noinspection PhpParamsInspection */
+        /** @phan-suppress-next-line PhanTypeMismatchArgument */
         $this->queueResource->delete($entry);
     }
 }

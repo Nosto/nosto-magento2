@@ -119,6 +119,7 @@ abstract class AbstractBulkPublisher implements BulkPublisherInterface
     ) {
         $productIdsChunks = array_chunk($productIds, $this->getBulkSize());
         $bulkUuid = $this->identityService->generateId();
+        /** @phan-suppress-next-line PhanTypeMismatchArgument */
         $bulkDescription = __('Sync ' . count($productIds) . ' Nosto products');
         $operationsData = [];
         foreach ($productIdsChunks as $productIdsChunk) {

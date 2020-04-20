@@ -166,6 +166,7 @@ class QueueService extends AbstractService
         $productIds = [];
         /** @var ProductInterface $product */
         foreach ($collection->getItems() as $product) {
+            /** @phan-suppress-next-line PhanTypeMismatchArgument */
             $parents = $this->nostoProductRepository->resolveParentProductIds($product);
             if (!empty($parents)) {
                 foreach ($parents as $id) {
