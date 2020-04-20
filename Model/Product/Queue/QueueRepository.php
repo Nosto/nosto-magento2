@@ -95,22 +95,22 @@ class QueueRepository implements ProductUpdateQueueRepositoryInterface
     /**
      * @inheritDoc
      * @throws AlreadyExistsException
+     * @suppress PhanTypeMismatchArgument
      */
     public function save(ProductUpdateQueueInterface $entry)
     {
         /** @noinspection PhpParamsInspection */
-        /** @var AbstractModel $entry */
         return $this->queueResource->save($entry);
     }
 
     /**
      * @inheritDoc
      * @throws \Exception
+     * @suppress PhanTypeMismatchArgument
      */
     public function delete(ProductUpdateQueueInterface $entry)
     {
         /** @noinspection PhpParamsInspection */
-        /** @var AbstractModel $entry */
         $this->queueResource->delete($entry);
     }
 }

@@ -143,6 +143,7 @@ abstract class AbstractBulkPublisher implements BulkPublisherInterface
                 UserContextInterface::USER_TYPE_INTEGRATION
             );
             if (!$result) {
+                /** @phan-suppress-next-line PhanTypeMismatchArgument */
                 throw new LocalizedException(__('Something went wrong while processing the request.'));
             }
         } else {

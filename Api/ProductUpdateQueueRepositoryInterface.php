@@ -37,7 +37,6 @@
 namespace Nosto\Tagging\Api;
 
 use Magento\Store\Api\Data\StoreInterface;
-use Nosto\Tagging\Api\Data\ProductCacheInterface;
 use Nosto\Tagging\Api\Data\ProductUpdateQueueInterface;
 
 interface ProductUpdateQueueRepositoryInterface
@@ -59,7 +58,7 @@ interface ProductUpdateQueueRepositoryInterface
 
     /**
      * @param StoreInterface $store
-     * @return ProductCacheInterface|null
+     * @return ProductUpdateQueueInterface|null
      */
     public function getByStore(StoreInterface $store);
 }

@@ -36,9 +36,6 @@
 
 namespace Nosto\Tagging\Model\Service\Sync;
 
-use Magento\Store\Model\Store;
-use Nosto\Tagging\Model\ResourceModel\Product\Cache\CacheCollection;
-
 interface BulkPublisherInterface
 {
     /**

@@ -47,9 +47,6 @@ class QueueBuilder
     /** @var QueueFactory  */
     private $queueFactory;
 
-    /** @var NostoProductBuilder */
-    private $nostoProductBuilder;
-
     /** @var TimezoneInterface */
     private $magentoTimeZone;
 
