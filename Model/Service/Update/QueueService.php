@@ -122,7 +122,7 @@ class QueueService extends AbstractService
         foreach ($iterator as $page) {
             $queueEntry = $this->queueBuilder->buildForUpsert(
                 $store,
-                $this->toParentProructIds($page)
+                $this->toParentProductIds($page)
             );
             if (!empty($queueEntry->getProductIds())) {
                 $this->queueRepository->save($queueEntry); // @codingStandardsIgnoreLine
@@ -159,9 +159,8 @@ class QueueService extends AbstractService
     /**
      * @param ProductCollection $collection
      * @return array
-     * @throws NostoException
      */
-    private function toParentProructIds(ProductCollection $collection)
+    private function toParentProductIds(ProductCollection $collection)
     {
         $productIds = [];
         /** @var ProductInterface $product */

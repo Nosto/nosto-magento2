@@ -352,6 +352,7 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
      * @param string $message
      * @param string $level
      * @param int|string|null $storeId
+     * @return bool
      */
     private function log($message, $level, $storeId = null)
     {
@@ -359,13 +360,9 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
         if ($storeId !== null) {
             $logContext['storeId'] = $storeId;
         }
-        switch ($level) {
-            case 'info':
-                $this->nostoLogger->info($message, $logContext);
-                break;
-            default:
-                $this->nostoLogger->debugWithSource($message, $logContext, $this);
-                break;
+        if ($level === 'info') {
+            return $this->nostoLogger->info($message, $logContext);
         }
+        return $this->nostoLogger->debugWithSource($message, $logContext, $this);
     }
 }

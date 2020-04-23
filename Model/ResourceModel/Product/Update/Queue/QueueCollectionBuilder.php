@@ -122,6 +122,7 @@ class QueueCollectionBuilder
     /**
      * Sets the filter to only for given ids
      *
+     * @param array $ids
      * @return $this
      */
     public function withIds(array $ids)

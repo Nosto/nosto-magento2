@@ -116,11 +116,12 @@ class DefaultProductService implements ProductServiceInterface
      */
     private function reloadProduct(ProductInterface $product, StoreInterface $store)
     {
-        return $this->productRepository->getById(
+        $product1 = $this->productRepository->getById(
             $product->getId(),
             false,
             $store->getId(),
-            true
+            false
         );
+        return $product1;
     }
 }

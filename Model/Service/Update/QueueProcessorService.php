@@ -118,16 +118,16 @@ class QueueProcessorService extends AbstractService
      */
     public function processQueueCollection(QueueCollection $collection, Store $store)
     {
-        $initialCollectionlSize = $collection->getSize();
+        $initialCollectionSize = $collection->getSize();
         $this->logDebugWithStore(
             sprintf(
-                'Started processing %d of queue entires',
-                $initialCollectionlSize
+                'Started processing %d of queue entries',
+                $initialCollectionSize
             ),
             $store
         );
-        if ($initialCollectionlSize === 0) {
-            $this->logInfoWithStore('No uprocessed queue entries in the update queue for the store', $store);
+        if ($initialCollectionSize === 0) {
+            $this->logInfoWithStore('No unprocessed queue entries in the update queue for the store', $store);
             return;
         }
         $this->capCollection($collection, $store);
@@ -135,12 +135,10 @@ class QueueProcessorService extends AbstractService
         $merged = $this->mergeQueues($collection, $store);
         foreach ($merged as $storeId => $actions) {
             foreach ($actions as $action => $productIds) {
-                switch ($action) {
-                    case ProductUpdateQueueInterface::ACTION_VALUE_UPSERT:
-                        $this->upsertBulkPublisher->execute($storeId, $productIds);
-                        break;
-                    case ProductUpdateQueueInterface::ACTION_VALUE_DELETE:
-                        $this->deleteBulkPublisher->execute($storeId, $productIds);
+                if ($action === ProductUpdateQueueInterface::ACTION_VALUE_UPSERT) {
+                    $this->upsertBulkPublisher->execute($storeId, $productIds);
+                } else {
+                    $this->deleteBulkPublisher->execute($storeId, $productIds);
                 }
             }
         }
@@ -148,7 +146,7 @@ class QueueProcessorService extends AbstractService
         $this->cleanupUpdateQueue($store);
         $this->logDebugWithStore(
             sprintf(
-                'Processed %d of queue entires',
+                'Processed %d of queue entries',
                 // phpcs:ignore
                 $collection->count()
             ),

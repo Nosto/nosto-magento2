@@ -118,13 +118,9 @@ class Logger extends MonologLogger
     private function logWithSource($message, $context, $sourceClass, $level)
     {
         $context['sourceClass'] = get_class($sourceClass);
-        switch ($level) {
-            case 'info':
-                return $this->info($message, $context);
-            break;
-            default:
-                return $this->debug($message, $context);
-            break;
+        if ($level === 'info') {
+            return $this->info($message, $context);
         }
+        return $this->debug($message, $context);
     }
 }

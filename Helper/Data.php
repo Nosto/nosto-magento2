@@ -401,7 +401,7 @@ class Data extends AbstractHelper
     }
 
     /**
-     * Returns if customer data should be send to Nosto
+     * Returns if customer data should be sent to Nosto
      *
      * @param StoreInterface|null $store the store model or null.
      * @return bool the configuration value

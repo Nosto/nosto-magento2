@@ -74,6 +74,7 @@ class DeleteService extends AbstractService
      * @param NostoHelperData $nostoHelperData
      * @param NostoHelperUrl $nostoHelperUrl
      * @param NostoLogger $logger
+     * @param $deleteBatchSize
      */
     public function __construct(
         CacheRepository $cacheRepository,
