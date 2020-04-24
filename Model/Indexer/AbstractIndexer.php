@@ -145,7 +145,10 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
             $this->doWork();
             $this->logInfo('Finished full reindex');
         } else {
-            $this->logInfo('Full reindex is disabled in Nosto module settings');
+            $this->logInfo(
+                'Full reindex is disabled in Nosto module settings'
+                . ' or indexer is being called from setup:upgrade'
+            );
         }
     }
 
