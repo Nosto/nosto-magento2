@@ -51,10 +51,10 @@ use Nosto\Tagging\Block\Meta;
  * Please see a reference guide such as https://github.com/Nosto/nosto-magento2/wiki
  */
 
-/** @var Meta $this */
+/** @var Meta $block */
 ?>
 
 <!-- Nosto Meta Tags -->
-<meta name="nosto-version" content="<?php echo $this->escapeHtml($this->getModuleVersion()); ?>">
-<meta name="nosto-unique-id" content="<?php echo $this->escapeHtml($this->getInstallationId()); ?>">
-<meta name="nosto-language" content="<?php echo $this->escapeHtml($this->getLanguageCode()); ?>">
+<meta name="nosto-version" content="<?= $block->escapeHtml($block->getModuleVersion()); ?>">
+<meta name="nosto-unique-id" content="<?= $block->escapeHtml($block->getInstallationId()); ?>">
+<meta name="nosto-language" content="<?= $block->escapeHtml($block->getLanguageCode()); ?>">

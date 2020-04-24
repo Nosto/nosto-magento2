@@ -349,8 +349,8 @@ class Url extends AbstractHelper
      *
      * @param Store $store the store to get the url for.
      * @param string $currentUrl restore cart url
-     * @throws /Zend_Uri_Exception When the given $currentUrl is invalid
      * @return string cart url.
+     * @throws \Zend_Uri_Exception
      */
     public function getUrlCart(Store $store, $currentUrl)
     {

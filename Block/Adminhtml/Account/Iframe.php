@@ -163,7 +163,7 @@ class Iframe extends BlockTemplate
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function getIframe()
     {
@@ -178,7 +178,7 @@ class Iframe extends BlockTemplate
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function getUser()
     {
@@ -186,7 +186,7 @@ class Iframe extends BlockTemplate
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function getAccount()
     {

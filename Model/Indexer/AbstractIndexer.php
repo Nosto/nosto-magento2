@@ -61,7 +61,6 @@ use UnexpectedValueException;
 
 /**
  * Class AbstractIndexer
- * @package Nosto\Tagging\Model\Indexer
  */
 abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerActionInterface, MviewActionInterface
 {
@@ -136,25 +135,25 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
     abstract public function getIndexerId(): string;
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      * @throws Exception
      */
     public function executeFull()
     {
         if ($this->allowFullExecution() === true) {
-            $indexerId = $this->getIndexerId();
-            $message = sprintf(
-                'Begin a full reindex for indexer "%s"',
-                $indexerId
-            );
-            $this->nostoLogger->info($message);
+            $this->logInfo('Begin a full reindex');
             $this->doWork();
-            $this->nostoLogger->info('Finished full reindex');
+            $this->logInfo('Finished full reindex');
+        } else {
+            $this->logInfo(
+                'Full reindex is disabled in Nosto module settings'
+                . ' or indexer is being called from setup:upgrade'
+            );
         }
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      * @throws Exception
      */
     public function executeList(array $ids)
@@ -163,41 +162,33 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      * @throws Exception
      */
     public function executeRow($id)
     {
-        $indexerId = $this->getIndexerId();
-        $message = sprintf(
-            'Begin a row reindex for indexer "%s" for "%s"',
-            $indexerId,
-            $id
-        );
-        $this->nostoLogger->info($message);
+        $this->logInfo('Begin a row reindex');
         $this->execute([$id]);
-        $this->nostoLogger->info('Finished row reindex');
+        $this->logInfo('Finished row reindex');
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      * @throws Exception
      */
     public function execute($ids)
     {
-        $indexerId = $this->getIndexerId();
         $idCount = count($ids);
         $totalEntries = $this->getTotalCLRows();
         $message = sprintf(
-            'Begin a partial reindex for indexer "%s" for "%d ids. ' .
-            'Total number of entries in CL table: "%s"',
-            $indexerId,
+            'Begin a partial reindex for total of %d ids. ' .
+            'Total number of entries in CL table: %d',
             $idCount,
             $totalEntries
         );
-        $this->nostoLogger->info($message);
+        $this->logInfo($message);
         $this->doWork($ids);
-        $this->nostoLogger->info('Finished partial reindex');
+        $this->logInfo('Finished partial reindex');
     }
 
     /**
@@ -208,7 +199,7 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
     {
         $userFunctions = [];
         $mode = $this->getModeSwitcher()->getMode();
-        $this->nostoLogger->info(sprintf('Indexing by mode "%s"', $mode));
+        $this->logDebug(sprintf('Indexing by mode "%s"', $mode));
         switch ($mode) {
             case DimensionModeConfiguration::DIMENSION_NONE:
                 /** @var Dimension[] $dimension */
@@ -263,12 +254,17 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
         if (count($dimensions) > 1 || !isset($dimensions[StoreDimensionProvider::DIMENSION_NAME])) {
             throw new InvalidArgumentException('Indexer "' . $this->getIndexerId() . '" support only Store dimension');
         }
-
         $storeId = $dimensions[StoreDimensionProvider::DIMENSION_NAME]->getValue();
         $store = $this->nostoHelperScope->getStore($storeId);
         $benchmarkName = sprintf('STORE-DIMENSION-%s', $store->getCode());
         Benchmark::getInstance()->startInstrumentation($benchmarkName, 0);
-        $this->nostoLogger->info(sprintf('[START] Processing dimension: "%s"', $store->getCode()));
+        $this->logDebug(
+            sprintf(
+                '[START] Processing dimension: "%s"',
+                $store->getCode()
+            ),
+            $storeId
+        );
         $ids = [];
         if ($entityIds !== null) {
             $ids = iterator_to_array($entityIds);
@@ -281,15 +277,15 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
         } finally {
             $this->storeEmulator->stopEnvironmentEmulation();
         }
-
         Benchmark::getInstance()->stopInstrumentation($benchmarkName);
         $duration = Benchmark::getInstance()->getElapsed($benchmarkName);
-        $this->nostoLogger->info(
+        $this->logDebug(
             sprintf(
                 '[END] Finished processing dimension: "%s", (%f)',
                 $store->getCode(),
                 round($duration, 2)
-            )
+            ),
+            $storeId
         );
     }
 
@@ -308,16 +304,11 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
     {
         $benchmarkName = sprintf('CHANGELOG-CLEANUP-%s', $this->getIndexerId());
         Benchmark::getInstance()->startInstrumentation($benchmarkName, 0);
-        $this->nostoLogger->debug(
-            sprintf(
-                'Cleaning up the CL tables for indexer %s',
-                $this->getIndexerId()
-            )
-        );
+        $this->logDebug('Cleaning up the CL tables');
         $this->indexerStatusService->clearProcessedChangelog($this->getIndexerId());
         Benchmark::getInstance()->stopInstrumentation($benchmarkName);
         $duration = round(Benchmark::getInstance()->getElapsed($benchmarkName), 4);
-        $this->nostoLogger->debug(
+        $this->logDebug(
             sprintf(
                 'Cleanup took %f secs. Rows left in changelog table %d. Cleanup up until version #%d',
                 $duration,
@@ -334,5 +325,47 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
     private function getTotalCLRows()
     {
         return $this->indexerStatusService->getTotalChangelogCount($this->getIndexerId());
+    }
+
+    /**
+     * Shortcut method for logging debug
+     *
+     * @param string $message
+     * @param int|string|null $storeId
+     */
+    private function logDebug($message, $storeId = null)
+    {
+        $this->log($message, 'debug', $storeId);
+    }
+
+    /**
+     * Shortcut method for logging info
+     *
+     * @param string $message
+     * @param int|string|null $storeId
+     */
+    private function logInfo($message, $storeId = null)
+    {
+        $this->log($message, 'info', $storeId);
+    }
+
+    /**
+     * Shortcut method for logging indexer related messages
+     *
+     * @param string $message
+     * @param string $level
+     * @param int|string|null $storeId
+     * @return bool
+     */
+    private function log($message, $level, $storeId = null)
+    {
+        $logContext = ['indexerId' => $this->getIndexerId()];
+        if ($storeId !== null) {
+            $logContext['storeId'] = $storeId;
+        }
+        if ($level === 'info') {
+            return $this->nostoLogger->info($message, $logContext);
+        }
+        return $this->nostoLogger->debugWithSource($message, $logContext, $this);
     }
 }

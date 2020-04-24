@@ -41,8 +41,6 @@ use Magento\Catalog\Model\ResourceModel\Product\Attribute\Collection;
 /**
  * Option array class to generate a list of selectable options that allows the merchant to choose
  * any attribute for his GTIN tag.
- *
- * @package Nosto\Tagging\Model\Config\Source
  */
 class Gtin extends Selector
 {

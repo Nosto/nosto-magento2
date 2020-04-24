@@ -132,18 +132,15 @@ class Price extends AbstractHelper
         switch ($product->getTypeId()) {
             // Get the bundle product "from" price.
             case BundleType::TYPE_CODE:
-                $price = $this->getBundleProductPrice($product, $finalPrice, $inclTax, $store);
-                break;
+                return $this->getBundleProductPrice($product, $finalPrice, $inclTax, $store);
 
             // Get the grouped product "minimal" price.
             case GroupedType::TYPE_CODE:
-                $price = $this->getGroupedProductPrice($product, $finalPrice, $inclTax);
-                break;
+                return $this->getGroupedProductPrice($product, $finalPrice, $inclTax);
 
             // We will use the SKU that has the lowest final price
             case ConfigurableType::TYPE_CODE:
-                $price = $this->getConfigurableProductPrice($product, $finalPrice, $inclTax, $store);
-                break;
+                return $this->getConfigurableProductPrice($product, $finalPrice, $inclTax, $store);
 
             default:
                 $date = $this->localeDate->scopeDate();
@@ -175,10 +172,8 @@ class Price extends AbstractHelper
                 if ($inclTax) {
                     $price = $this->addTaxes($product, $store, $price);
                 }
-                break;
+                return $price;
         }
-
-        return $price;
     }
 
     /**

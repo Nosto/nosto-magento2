@@ -49,7 +49,7 @@ class Cache extends AbstractModel implements ProductCacheInterface
     const DB_VALUE_BOOLEAN_FALSE = '0';
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function getId()
     {
@@ -57,7 +57,7 @@ class Cache extends AbstractModel implements ProductCacheInterface
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function getProductId()
     {
@@ -65,15 +65,7 @@ class Cache extends AbstractModel implements ProductCacheInterface
     }
 
     /**
-     * @inheritdoc
-     */
-    public function getInSync()
-    {
-        return $this->getData(self::IN_SYNC);
-    }
-
-    /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function getIsDirty()
     {
@@ -81,7 +73,7 @@ class Cache extends AbstractModel implements ProductCacheInterface
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function getStoreId()
     {
@@ -89,7 +81,7 @@ class Cache extends AbstractModel implements ProductCacheInterface
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function getProductData()
     {
@@ -101,7 +93,7 @@ class Cache extends AbstractModel implements ProductCacheInterface
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function getCreatedAt()
     {
@@ -117,7 +109,7 @@ class Cache extends AbstractModel implements ProductCacheInterface
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function setId($id)
     {
@@ -125,7 +117,7 @@ class Cache extends AbstractModel implements ProductCacheInterface
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function setProductId($productId)
     {
@@ -133,7 +125,7 @@ class Cache extends AbstractModel implements ProductCacheInterface
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function setCreatedAt(DateTime $createdAt)
     {
@@ -149,15 +141,7 @@ class Cache extends AbstractModel implements ProductCacheInterface
     }
 
     /**
-     * @inheritdoc
-     */
-    public function setInSync($inSync)
-    {
-        return $this->setData(self::IN_SYNC, $this->convertToDatabaseBoolean($inSync));
-    }
-
-    /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function setIsDirty($isDirty)
     {
@@ -165,7 +149,7 @@ class Cache extends AbstractModel implements ProductCacheInterface
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function setStoreId($storeId)
     {
@@ -173,7 +157,7 @@ class Cache extends AbstractModel implements ProductCacheInterface
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function setProductData($productData)
     {
@@ -194,25 +178,6 @@ class Cache extends AbstractModel implements ProductCacheInterface
     public function setMagentoProduct(MagentoProductInterface $product)
     {
         return $this->setProductId($product->getId());
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getIsDeleted()
-    {
-        return $this->getData(self::IS_DELETED);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function setIsDeleted($isDeleted)
-    {
-        return $this->setData(
-            self::IS_DELETED,
-            $this->convertToDatabaseBoolean($isDeleted)
-        );
     }
 
     /**

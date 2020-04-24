@@ -36,13 +36,13 @@
 
 namespace Nosto\Tagging\Model\Product\Cache;
 
-use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
 use Magento\Store\Api\Data\StoreInterface;
 use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
 use Nosto\Tagging\Model\Product\BuilderTrait;
 use Nosto\Tagging\Model\Product\Cache as CacheModel;
 use Nosto\Tagging\Model\Product\CacheFactory;
+use Nosto\Types\Product\ProductInterface as NostoProductInterface;
 
 class CacheBuilder
 {
@@ -73,19 +73,18 @@ class CacheBuilder
     }
 
     /**
-     * @param ProductInterface $product
+     * @param NostoProductInterface $product
      * @param StoreInterface $store
      * @return CacheModel
      */
     public function build(
-        ProductInterface $product,
+        NostoProductInterface $product,
         StoreInterface $store
     ) {
         $productIndex = $this->cacheFactory->create();
-        $productIndex->setProductId($product->getId());
+        $productIndex->setProductId($product->getProductId());
         $productIndex->setCreatedAt($this->magentoTimeZone->date());
-        $productIndex->setInSync(false);
-        $productIndex->setIsDirty(true);
+        $productIndex->setIsDirty(false);
         $productIndex->setUpdatedAt($this->magentoTimeZone->date());
         $productIndex->setStore($store);
         return $productIndex;

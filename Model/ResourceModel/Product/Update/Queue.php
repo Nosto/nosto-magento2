@@ -34,68 +34,23 @@
  *
  */
 
-namespace Nosto\Tagging\Plugin;
+namespace Nosto\Tagging\Model\ResourceModel\Product\Update;
 
-use Closure;
-use Magento\Catalog\Model\ResourceModel\Product as MagentoResourceProduct;
-use Magento\Framework\Indexer\IndexerRegistry;
-use Magento\Framework\Model\AbstractModel;
-use Nosto\Tagging\Model\Indexer\DataIndexer as IndexerData;
-use Nosto\Tagging\Model\ResourceModel\Product\Cache;
+use Magento\Framework\Model\ResourceModel\Db\AbstractDb;
+use Nosto\Tagging\Api\Data\ProductUpdateQueueInterface;
 
-class ProductData
+class Queue extends AbstractDb
 {
-    /**
-     * @var IndexerRegistry
-     */
-    private $indexerRegistry;
+    protected $_serializableFields = [ProductUpdateQueueInterface::PRODUCT_IDS => [[], []]];
 
+    const TABLE_NAME = 'nosto_tagging_product_update_queue';
     /**
-     * @var IndexerData
+     * Initialize resource model
+     *
+     * @return void
      */
-    private $indexerData;
-
-    /**
-     * @var MagentoResourceProduct
-     */
-    private $magentoResourceProduct;
-
-    /**
-     * Product Observer constructor
-     * @param MagentoResourceProduct $magentoResourceProduct
-     * @param IndexerRegistry $indexerRegistry
-     * @param IndexerData $indexerData
-     */
-    public function __construct(
-        MagentoResourceProduct $magentoResourceProduct,
-        IndexerRegistry $indexerRegistry,
-        IndexerData $indexerData
-    )
+    public function _construct()
     {
-        $this->indexerRegistry = $indexerRegistry;
-        $this->indexerData = $indexerData;
-        $this->magentoResourceProduct = $magentoResourceProduct;
-    }
-
-    /**
-     * @param Cache $cache
-     * @param Closure $proceed
-     * @param AbstractModel $product
-     * @return mixed
-     */
-    public function aroundSave(
-        /** @noinspection PhpUnusedParameterInspection */
-        Cache $cache,
-        Closure $proceed,
-        AbstractModel $product
-    ) {
-        $mageIndexer = $this->indexerRegistry->get(IndexerData::INDEXER_ID);
-        if (!$mageIndexer->isScheduled()) {
-            $this->magentoResourceProduct->addCommitCallback(function () use ($product) {
-                $this->indexerData->executeRow($product->getId());
-            });
-        }
-
-        return $proceed($product);
+        $this->_init(self::TABLE_NAME, ProductUpdateQueueInterface::ID);
     }
 }

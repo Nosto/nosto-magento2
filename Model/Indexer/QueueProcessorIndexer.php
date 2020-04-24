@@ -40,44 +40,41 @@ use Exception;
 use Magento\Indexer\Model\ProcessManager;
 use Magento\Store\Model\App\Emulation;
 use Magento\Store\Model\Store;
-use Nosto\Exception\MemoryOutOfBoundsException;
-use Nosto\NostoException;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Indexer\Dimensions\Invalidate\ModeSwitcher as InvalidateModeSwitcher;
 use Nosto\Tagging\Model\Indexer\Dimensions\ModeSwitcherInterface;
 use Nosto\Tagging\Model\Indexer\Dimensions\StoreDimensionProvider;
-use Nosto\Tagging\Model\ResourceModel\Magento\Product\Collection as ProductCollection;
-use Nosto\Tagging\Model\ResourceModel\Magento\Product\CollectionBuilder;
-use Nosto\Tagging\Model\Service\Cache\CacheService;
+use Nosto\Tagging\Model\ResourceModel\Product\Update\Queue\QueueCollection;
+use Nosto\Tagging\Model\ResourceModel\Product\Update\Queue\QueueCollectionBuilder;
 use Nosto\Tagging\Model\Service\Indexer\IndexerStatusServiceInterface;
+use Nosto\Tagging\Model\Service\Update\QueueProcessorService;
 use Symfony\Component\Console\Input\InputInterface;
 
 /**
  * Class Invalidate
  * This class is responsible for listening to product changes
  * and setting the `is_dirty` value in `nosto_product_index` table
- * @package Nosto\Tagging\Model\Indexer
  */
-class InvalidateIndexer extends AbstractIndexer
+class QueueProcessorIndexer extends AbstractIndexer
 {
-    const INDEXER_ID = 'nosto_index_product_invalidate';
+    const INDEXER_ID = 'nosto_index_product_queue_processor';
 
-    /** @var CacheService */
-    private $nostoServiceIndex;
+    /** @var QueueProcessorService */
+    private $queueProcessorService;
 
-    /** @var CollectionBuilder */
-    private $productCollectionBuilder;
+    /** @var QueueCollectionBuilder */
+    private $queueCollectionBuilder;
 
     /** @var InvalidateModeSwitcher */
     private $modeSwitcher;
 
     /**
-     * Invalidate constructor.
+     * QueueProcessorIndexer constructor.
      * @param NostoHelperScope $nostoHelperScope
-     * @param CacheService $nostoCacheService
+     * @param QueueProcessorService $queueProcessorService
      * @param NostoLogger $logger
-     * @param CollectionBuilder $productCollectionBuilder
+     * @param QueueCollectionBuilder $queueCollectionBuilder
      * @param InvalidateModeSwitcher $modeSwitcher
      * @param StoreDimensionProvider $dimensionProvider
      * @param Emulation $storeEmulation
@@ -87,9 +84,9 @@ class InvalidateIndexer extends AbstractIndexer
      */
     public function __construct(
         NostoHelperScope $nostoHelperScope,
-        CacheService $nostoCacheService,
+        QueueProcessorService $queueProcessorService,
         NostoLogger $logger,
-        CollectionBuilder $productCollectionBuilder,
+        QueueCollectionBuilder $queueCollectionBuilder,
         InvalidateModeSwitcher $modeSwitcher,
         StoreDimensionProvider $dimensionProvider,
         Emulation $storeEmulation,
@@ -97,8 +94,8 @@ class InvalidateIndexer extends AbstractIndexer
         InputInterface $input,
         IndexerStatusServiceInterface $indexerStatusService
     ) {
-        $this->nostoServiceIndex = $nostoCacheService;
-        $this->productCollectionBuilder = $productCollectionBuilder;
+        $this->queueProcessorService = $queueProcessorService;
+        $this->queueCollectionBuilder = $queueCollectionBuilder;
         $this->modeSwitcher = $modeSwitcher;
         parent::__construct(
             $nostoHelperScope,
@@ -112,7 +109,7 @@ class InvalidateIndexer extends AbstractIndexer
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function getModeSwitcher(): ModeSwitcherInterface
     {
@@ -120,36 +117,18 @@ class InvalidateIndexer extends AbstractIndexer
     }
 
     /**
-     * @inheritdoc
-     * @throws NostoException
+     * @inheritDoc
      * @throws Exception
      */
+    // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter
     public function doIndex(Store $store, array $ids = [])
     {
-        $productCollection = $this->getCollection($store, $ids);
-        try {
-            $this->nostoServiceIndex->invalidateOrCreate($productCollection, $store);
-        } catch (MemoryOutOfBoundsException $e) {
-            $this->nostoLogger->error($e->getMessage());
-        }
-        if (!empty($ids)) {
-            //In case for this specific set of ids
-            //there are more entries of products in the indexer table than the magento product collection
-            //it means that some products were deleted
-            $idsSize = count($ids);
-            $collectionSize = $productCollection->getSize();
-            if ($idsSize > $collectionSize) {
-                try {
-                    $this->nostoServiceIndex->markProductsAsDeletedByDiff($productCollection, $ids, $store);
-                } catch (MemoryOutOfBoundsException $e) {
-                    $this->nostoLogger->error($e->getMessage());
-                }
-            }
-        }
+        $collection = $this->getCollection($store);
+        $this->queueProcessorService->processQueueCollection($collection, $store);
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function getIndexerId(): string
     {
@@ -158,17 +137,15 @@ class InvalidateIndexer extends AbstractIndexer
 
     /**
      * @param Store $store
-     * @param array $ids
-     * @return ProductCollection
+     * @return QueueCollection
      */
-    public function getCollection(Store $store, array $ids = [])
+    public function getCollection(Store $store)
     {
-        $this->productCollectionBuilder->initDefault($store);
-        if (!empty($ids)) {
-            $this->productCollectionBuilder->withIds($ids);
-        } else {
-            $this->productCollectionBuilder->withDefaultVisibility();
-        }
-        return $this->productCollectionBuilder->build();
+        // Fetch always all queue entries having status new.
+        // It makes the merging of queues more efficient.
+        return $this->queueCollectionBuilder
+            ->initDefault($store)
+            ->withStatusNew()
+            ->build();
     }
 }

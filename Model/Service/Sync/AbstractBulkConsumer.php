@@ -76,11 +76,11 @@ abstract class AbstractBulkConsumer implements BulkConsumerInterface
      * @return void
      * @throws Exception
      * @suppress PhanUndeclaredClassConstant
+     * @noinspection PhpFullyQualifiedNameUsageInspection
      */
     public function processOperation($operation)
     {
         $errorCode = null;
-        $message = null;
         if (is_array($operation)) {
             $serializedData = $operation['data']['serialized_data'];
         } elseif ($operation instanceof \Magento\AsynchronousOperations\Api\Data\OperationInterface) {
@@ -97,6 +97,8 @@ abstract class AbstractBulkConsumer implements BulkConsumerInterface
         try {
             $this->doOperation($productIds, $storeId);
             if (!is_array($operation)) {
+                /** @phan-suppress-next-line PhanTypeMismatchArgument */
+                $message = __('Something went wrong when syncing products to Nosto. Check log for details.');
                 $operation->setStatus(
                     \Magento\AsynchronousOperations\Api\Data\OperationInterface::STATUS_TYPE_COMPLETE
                 )->setResultMessage($message);
@@ -104,6 +106,7 @@ abstract class AbstractBulkConsumer implements BulkConsumerInterface
             }
         } catch (Exception $e) {
             $this->logger->critical($e->getMessage());
+            /** @phan-suppress-next-line PhanTypeMismatchArgument */
             $message = __('Something went wrong when syncing products to Nosto. Check log for details.');
             if (!is_array($operation)) {
                 $operation->setStatus(

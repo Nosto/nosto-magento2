@@ -54,7 +54,6 @@ use Nosto\Tagging\Util\Customer as CustomerUtil;
 
 /**
  * Builder class for buyer
- * @package Nosto\Tagging\Model\Order\Buyer
  */
 class Builder extends PersonBuilder
 {
@@ -92,7 +91,7 @@ class Builder extends PersonBuilder
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      * @return Customer
      */
     public function buildObject(

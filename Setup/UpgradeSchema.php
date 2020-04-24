@@ -65,7 +65,7 @@ class UpgradeSchema extends Core implements UpgradeSchemaInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      * @throws Zend_Db_Exception
      */
     public function upgrade(SchemaSetupInterface $setup, ModuleContextInterface $context)
@@ -84,6 +84,13 @@ class UpgradeSchema extends Core implements UpgradeSchemaInterface
         }
         if (version_compare($fromVersion, '4.0.3', '<=')) {
             $this->productCacheDataToLongtext($setup);
+        }
+        if (version_compare($fromVersion, '5.0.0', '<')) {
+            try {
+                $this->createProductUpdateQueue($setup);
+            } catch (Exception $e) {
+                $this->loger->exception($e);
+            }
         }
         $setup->endSetup();
     }

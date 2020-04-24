@@ -92,18 +92,6 @@ class CacheCollection extends AbstractCollection
     }
 
     /**
-     * Filters collection for items that are either dirty or out of sync with Nosto
-     * @return CacheCollection
-     */
-    public function addOutOfSyncOrIsDirtyFilter()
-    {
-        return $this->addFieldToFilter(
-            [ProductCacheInterface::IN_SYNC, ProductCacheInterface::IS_DIRTY],
-            [Cache::DB_VALUE_BOOLEAN_FALSE, Cache::DB_VALUE_BOOLEAN_TRUE]
-        );
-    }
-
-    /**
      * Filters collection for items that are dirty
      *
      * @return CacheCollection
@@ -166,45 +154,6 @@ class CacheCollection extends AbstractCollection
         return $this->addFieldToFilter(
             ProductCacheInterface::ID,
             ['eq' => $indexId]
-        );
-    }
-
-    /**
-     * Filters collection for items that out of sync
-     *
-     * @return CacheCollection
-     */
-    public function addOutOfSyncFilter()
-    {
-        return $this->addFieldToFilter(
-            ProductCacheInterface::IN_SYNC,
-            ['eq' => Cache::DB_VALUE_BOOLEAN_FALSE]
-        );
-    }
-
-    /**
-     * Filters collection for only products that are not marked as deleted
-     *
-     * @return CacheCollection
-     */
-    public function addNotDeletedFilter()
-    {
-        return $this->addFieldToFilter(
-            ProductCacheInterface::IS_DELETED,
-            ['eq' => Cache::DB_VALUE_BOOLEAN_FALSE]
-        );
-    }
-
-    /**
-     * Filters collection for only products that are marked as deleted
-     *
-     * @return CacheCollection
-     */
-    public function addIsDeletedFilter()
-    {
-        return $this->addFieldToFilter(
-            ProductCacheInterface::IS_DELETED,
-            ['eq' => Cache::DB_VALUE_BOOLEAN_TRUE]
         );
     }
 

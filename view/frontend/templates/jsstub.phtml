@@ -48,7 +48,7 @@
  * recommendations.
  * Please see a reference guide such as https://github.com/Nosto/nosto-magento2/wiki
  *
- * @var Nosto\Tagging\Block\Stub $this
+ * @var Nosto\Tagging\Block\Stub $block
  */
 ?>
 <!-- Nosto Javascript Stub -->
@@ -58,7 +58,7 @@
         window[name] = window[name] || function (cb) {
             (window[name].q = window[name].q || []).push(cb);
         };
-        <?php if ($this->isRecoAutoloadDisabled()): ?>
+        <?php if ($block->isRecoAutoloadDisabled()): ?>
         window[name](function(api){
             api.setAutoLoad(false);
         });

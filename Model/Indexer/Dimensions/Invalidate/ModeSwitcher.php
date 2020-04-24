@@ -66,7 +66,7 @@ class ModeSwitcher implements ModeSwitcherInterface
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function getDimensionModes(): DimensionModes
     {
@@ -79,7 +79,7 @@ class ModeSwitcher implements ModeSwitcherInterface
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function switchMode(string $currentMode, string $previousMode) // @codingStandardsIgnoreLine
     {

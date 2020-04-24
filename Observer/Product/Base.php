@@ -45,7 +45,7 @@ use Magento\Framework\Indexer\IndexerInterface;
 use Magento\Framework\Indexer\IndexerRegistry;
 use Magento\Framework\Module\Manager as ModuleManager;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
-use Nosto\Tagging\Model\Indexer\InvalidateIndexer as InvalidateIndexer;
+use Nosto\Tagging\Model\Indexer\QueueIndexer as QueueIndexer;
 
 abstract class Base implements ObserverInterface
 {
@@ -61,8 +61,8 @@ abstract class Base implements ObserverInterface
     /** @var IndexerInterface  */
     public $indexer;
 
-    /** @var InvalidateIndexer $invalidateIndex */
-    public $indexerInvalidate;
+    /** @var QueueIndexer $queueIndexer */
+    public $queueIndexer;
 
     /**
      * Base constructor.
@@ -70,20 +70,20 @@ abstract class Base implements ObserverInterface
      * @param ProductRepository $productRepository
      * @param NostoHelperData $dataHelper
      * @param IndexerRegistry $indexerRegistry
-     * @param InvalidateIndexer $indexerInvalidate
+     * @param QueueIndexer $indexerInvalidate
      */
     public function __construct(
         ModuleManager $moduleManager,
         ProductRepository $productRepository,
         NostoHelperData $dataHelper,
         IndexerRegistry $indexerRegistry,
-        InvalidateIndexer $indexerInvalidate
+        QueueIndexer $indexerInvalidate
     ) {
         $this->moduleManager = $moduleManager;
         $this->productRepository = $productRepository;
         $this->dataHelper = $dataHelper;
-        $this->indexer = $indexerRegistry->get(InvalidateIndexer::INDEXER_ID);
-        $this->indexerInvalidate = $indexerInvalidate;
+        $this->indexer = $indexerRegistry->get(QueueIndexer::INDEXER_ID);
+        $this->queueIndexer = $indexerInvalidate;
     }
 
     /**
@@ -99,7 +99,7 @@ abstract class Base implements ObserverInterface
             $product = $this->extractProduct($observer);
 
             if ($product instanceof Product && $product->getId()) {
-                $this->indexerInvalidate->executeRow($product->getId());
+                $this->queueIndexer->executeRow($product->getId());
             }
         }
     }

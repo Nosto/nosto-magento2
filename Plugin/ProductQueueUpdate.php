@@ -34,36 +34,57 @@
  *
  */
 
-/**
- * @var $this Nosto\Tagging\Block\Adminhtml\Form\Field\Indexers
- */
-?>
+namespace Nosto\Tagging\Plugin;
 
-<fieldset>
-        <table>
-            <tr>
-                <td>
-                    <?= __('Products Marked As Dirty') ?>
-                </td>
-                <td>
-                    <label>
-                        <input type="text" readonly
-                               value = "<?= $this->getAmountDirtyProducts() ?>"
-                        />
-                    </label>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <?= __('Products Out Of Sync') ?>
-                </td>
-                <td>
-                    <label>
-                        <input type="text" readonly
-                               value = "<?= $this->getAmountOutOfSyncProducts() ?>"
-                        />
-                    </label>
-                </td>
-            </tr>
-        </table>
-</fieldset>
+use Closure;
+use Magento\Framework\Indexer\IndexerRegistry;
+use Magento\Framework\Model\AbstractModel;
+use Nosto\Tagging\Model\Indexer\QueueProcessorIndexer;
+use Nosto\Tagging\Model\ResourceModel\Product\Update\Queue as QueueResource;
+
+/**
+ * Plugin for product updates
+ * @package Nosto\Tagging\Plugin
+ */
+class ProductQueueUpdate
+{
+    /** @var IndexerRegistry  */
+    private $indexerRegistry;
+
+    /** @var QueueProcessorIndexer  */
+    private $queueProcessorIndexer;
+
+    /**
+     * ProductInvalidate constructor.
+     * @param IndexerRegistry $indexerRegistry
+     * @param QueueProcessorIndexer $queueProcessorIndexer
+     */
+    public function __construct(
+        IndexerRegistry $indexerRegistry,
+        QueueProcessorIndexer $queueProcessorIndexer
+    ) {
+        $this->indexerRegistry = $indexerRegistry;
+        $this->queueProcessorIndexer = $queueProcessorIndexer;
+    }
+
+    /**
+     * @param QueueResource $queueResource
+     * @param Closure $proceed
+     * @param AbstractModel $queue
+     * @return mixed
+     */
+    public function aroundSave(
+        QueueResource $queueResource,
+        Closure $proceed,
+        AbstractModel $queue
+    ) {
+        $mageIndexer = $this->indexerRegistry->get(QueueProcessorIndexer::INDEXER_ID);
+        if (!$mageIndexer->isScheduled()) {
+            $queueResource->addCommitCallback(function () use ($queue) {
+                $this->queueProcessorIndexer->executeRow($queue->getId());
+            });
+        }
+
+        return $proceed($queue);
+    }
+}

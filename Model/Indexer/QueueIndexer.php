@@ -36,66 +36,70 @@
 
 namespace Nosto\Tagging\Model\Indexer;
 
-use Magento\Framework\Exception\LocalizedException;
+use Exception;
+use Magento\Framework\Exception\AlreadyExistsException;
 use Magento\Indexer\Model\ProcessManager;
 use Magento\Store\Model\App\Emulation;
 use Magento\Store\Model\Store;
-use Nosto\Exception\MemoryOutOfBoundsException;
 use Nosto\NostoException;
-use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
-use Nosto\Tagging\Model\Indexer\Dimensions\Data\ModeSwitcher as DataModeSwitcher;
+use Nosto\Tagging\Model\Indexer\Dimensions\Invalidate\ModeSwitcher as InvalidateModeSwitcher;
 use Nosto\Tagging\Model\Indexer\Dimensions\ModeSwitcherInterface;
 use Nosto\Tagging\Model\Indexer\Dimensions\StoreDimensionProvider;
-use Nosto\Tagging\Model\Service\Cache\CacheService;
+use Nosto\Tagging\Model\ResourceModel\Magento\Product\Collection as ProductCollection;
+use Nosto\Tagging\Model\ResourceModel\Magento\Product\CollectionBuilder;
 use Nosto\Tagging\Model\Service\Indexer\IndexerStatusServiceInterface;
+use Nosto\Tagging\Model\Service\Update\QueueService;
+use Nosto\Tagging\Util\PagingIterator;
 use Symfony\Component\Console\Input\InputInterface;
 
 /**
- * An indexer for Nosto product sync
+ * Class Invalidate
+ * This class is responsible for listening to product changes
+ * and setting the `is_dirty` value in `nosto_product_index` table
  */
-class DataIndexer extends AbstractIndexer
+class QueueIndexer extends AbstractIndexer
 {
-    const INDEXER_ID = 'nosto_index_product_data';
+    const INDEXER_ID = 'nosto_index_product_queue';
 
-    /** @var CacheService */
-    private $nostoCacheService;
+    /** @var QueueService */
+    private $queueService;
 
-    /** @var DataModeSwitcher */
+    /** @var CollectionBuilder */
+    private $productCollectionBuilder;
+
+    /** @var InvalidateModeSwitcher */
     private $modeSwitcher;
 
-    /** @var NostoHelperData */
-    private $nostoHelperData;
-
     /**
-     * Data constructor.
-     * @param CacheService $nostoCacheService
+     * Invalidate constructor.
      * @param NostoHelperScope $nostoHelperScope
-     * @param DataModeSwitcher $dataModeSwitcher
+     * @param QueueService $queueService
      * @param NostoLogger $logger
+     * @param CollectionBuilder $productCollectionBuilder
+     * @param InvalidateModeSwitcher $modeSwitcher
      * @param StoreDimensionProvider $dimensionProvider
      * @param Emulation $storeEmulation
      * @param ProcessManager $processManager
      * @param InputInterface $input
      * @param IndexerStatusServiceInterface $indexerStatusService
-     * @param NostoHelperData $onostoHelperData
      */
     public function __construct(
-        CacheService $nostoCacheService,
         NostoHelperScope $nostoHelperScope,
-        DataModeSwitcher $dataModeSwitcher,
+        QueueService $queueService,
         NostoLogger $logger,
+        CollectionBuilder $productCollectionBuilder,
+        InvalidateModeSwitcher $modeSwitcher,
         StoreDimensionProvider $dimensionProvider,
         Emulation $storeEmulation,
         ProcessManager $processManager,
         InputInterface $input,
-        IndexerStatusServiceInterface $indexerStatusService,
-        NostoHelperData $onostoHelperData
+        IndexerStatusServiceInterface $indexerStatusService
     ) {
-        $this->nostoCacheService = $nostoCacheService;
-        $this->modeSwitcher = $dataModeSwitcher;
-        $this->nostoHelperData = $onostoHelperData;
+        $this->queueService = $queueService;
+        $this->productCollectionBuilder = $productCollectionBuilder;
+        $this->modeSwitcher = $modeSwitcher;
         parent::__construct(
             $nostoHelperScope,
             $logger,
@@ -108,7 +112,7 @@ class DataIndexer extends AbstractIndexer
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function getModeSwitcher(): ModeSwitcherInterface
     {
@@ -116,7 +120,52 @@ class DataIndexer extends AbstractIndexer
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
+     * @throws NostoException
+     * @throws Exception
+     */
+    public function doIndex(Store $store, array $ids = [])
+    {
+        $collection = $this->getCollection($store, $ids);
+        $this->queueService->addCollectionToUpsertQueue(
+            $collection,
+            $store
+        );
+        $this->handleDeletedProducts($collection, $store, $ids);
+    }
+
+    /**
+     * @param ProductCollection $existingCollection
+     * @param Store $store
+     * @param array $givenIds
+     * @throws NostoException
+     * @throws AlreadyExistsException
+     */
+    private function handleDeletedProducts(ProductCollection $existingCollection, Store $store, array $givenIds)
+    {
+        if (!empty($givenIds)) {
+            $existingCollection->setPageSize(1000);
+            $iterator = new PagingIterator($existingCollection);
+            $present = [];
+            foreach ($iterator as $page) {
+                foreach ($page->getItems() as $item) {
+                    $id = $item->getId();
+                    $present[$id] = $id;
+                }
+            }
+            $removed = [];
+            foreach ($givenIds as $productId) {
+                if (!isset($present[$productId])) {
+                    $removed[] = $productId;
+                }
+            }
+            if (count($removed) > 0) {
+                $this->queueService->addIdsToDeleteQueue($removed, $store);
+            }
+        }
+    }
+    /**
+     * @inheritDoc
      */
     public function getIndexerId(): string
     {
@@ -124,27 +173,18 @@ class DataIndexer extends AbstractIndexer
     }
 
     /**
-     * @inheritdoc
+     * @param Store $store
+     * @param array $ids
+     * @return ProductCollection
      */
-    public function doIndex(Store $store, array $ids = [])
+    public function getCollection(Store $store, array $ids = []): ProductCollection
     {
-        if ($this->nostoHelperData->isProductDataBuildInCronEnabled($store)) {
-            $this->nostoLogger->debug(
-                sprintf(
-                    'Product data build is defined to be ran in cron for store %s',
-                    $store->getCode()
-                )
-            );
+        $this->productCollectionBuilder->initDefault($store);
+        if (!empty($ids)) {
+            $this->productCollectionBuilder->withIds($ids);
         } else {
-            try {
-                $this->nostoCacheService->generateProductsInStore($store, $ids);
-            } catch (MemoryOutOfBoundsException $e) {
-                $this->nostoLogger->error($e->getMessage());
-            } catch (NostoException $e) {
-                $this->nostoLogger->error($e->getMessage());
-            } catch (LocalizedException $e) {
-                $this->nostoLogger->error($e->getMessage());
-            }
+            $this->productCollectionBuilder->withDefaultVisibility();
         }
+        return $this->productCollectionBuilder->build();
     }
 }

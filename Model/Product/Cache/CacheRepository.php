@@ -38,18 +38,17 @@ namespace Nosto\Tagging\Model\Product\Cache;
 
 use Exception;
 use Magento\Catalog\Api\Data\ProductInterface;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Model\AbstractModel;
 use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
 use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\Store;
-use Nosto\NostoException;
 use Nosto\Tagging\Api\Data\ProductCacheInterface;
 use Nosto\Tagging\Api\ProductCacheRepositoryInterface;
 use Nosto\Tagging\Model\Product\Cache;
 use Nosto\Tagging\Model\ResourceModel\Product\Cache as CacheResource;
 use Nosto\Tagging\Model\ResourceModel\Product\Cache\CacheCollection;
 use Nosto\Tagging\Model\ResourceModel\Product\Cache\CacheCollectionFactory;
-use Nosto\Tagging\Util\PagingIterator;
 
 class CacheRepository implements ProductCacheRepositoryInterface
 {
@@ -59,7 +58,7 @@ class CacheRepository implements ProductCacheRepositoryInterface
     private $cacheCollectionFactory;
 
     /** @var CacheResource  */
-    private $indexResource;
+    private $cacheResource;
 
     /** @var TimezoneInterface */
     private $magentoTimeZone;
@@ -76,13 +75,13 @@ class CacheRepository implements ProductCacheRepositoryInterface
         CacheCollectionFactory $cacheCollectionFactory,
         TimezoneInterface $magentoTimeZone
     ) {
-        $this->indexResource = $cacheResource;
+        $this->cacheResource = $cacheResource;
         $this->cacheCollectionFactory = $cacheCollectionFactory;
         $this->magentoTimeZone = $magentoTimeZone;
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function getOneByProductAndStore(ProductInterface $product, StoreInterface $store)
     {
@@ -97,7 +96,7 @@ class CacheRepository implements ProductCacheRepositoryInterface
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function getById($id)
     {
@@ -110,46 +109,7 @@ class CacheRepository implements ProductCacheRepositoryInterface
     }
 
     /**
-     * @inheritdoc
-     */
-    public function getTotalOutOfSync(Store $store)
-    {
-        /* @var CacheCollection $collection */
-        $collection = $this->cacheCollectionFactory->create();
-        $collection->addOutOfSyncFilter();
-        if ((int)$store->getId() !== 0) {
-            $collection->addStoreFilter($store);
-        }
-        return $collection->getSize();
-    }
-
-    /**
-     * @param Store $store
-     * @return CacheCollection
-     */
-    public function getOutOfSyncInStore(Store $store)
-    {
-        /* @var CacheCollection $collection */
-        return $this->cacheCollectionFactory->create()
-            ->addOutOfSyncFilter()
-            ->addStoreFilter($store);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getTotalDirty(Store $store)
-    {
-        /* @var CacheCollection $collection */
-        $collection = $this->cacheCollectionFactory->create();
-        $collection->addIsDirtyFilter();
-        if ((int)$store->getId() !== 0) {
-            $collection->addStoreFilter($store);
-        }
-        return $collection->getSize();
-    }
-    /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function getByIds(array $ids)
     {
@@ -162,7 +122,7 @@ class CacheRepository implements ProductCacheRepositoryInterface
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function getByProductIdAndStoreId(int $productId, int $storeId)
     {
@@ -202,7 +162,7 @@ class CacheRepository implements ProductCacheRepositoryInterface
     {
         /** @noinspection PhpParamsInspection */
         /** @var AbstractModel $productIndex */
-        return $this->indexResource->save($productIndex);
+        return $this->cacheResource->save($productIndex);
     }
 
     /**
@@ -215,100 +175,23 @@ class CacheRepository implements ProductCacheRepositoryInterface
     {
         /** @noinspection PhpParamsInspection */
         /** @var AbstractModel $productIndex */
-        $this->indexResource->delete($productIndex);
+        $this->cacheResource->delete($productIndex);
     }
 
     /**
-     * Marks products as deleted by given product ids and store
+     * Deletes cached products by product ids
      *
      * @param array $productIds
-     * @param Store $store
-     * @return int
-     */
-    public function markAsInSync(array $productIds, Store $store)
-    {
-        $collection = $this->cacheCollectionFactory->create();
-        $connection = $collection->getConnection();
-        return $connection->update(
-            $collection->getMainTable(),
-            [
-                Cache::IN_SYNC => Cache::DB_VALUE_BOOLEAN_TRUE,
-                Cache::UPDATED_AT => $this->magentoTimeZone->date()->format('Y-m-d H:i:s')
-            ],
-            [
-                sprintf('%s IN (?)', Cache::PRODUCT_ID) => array_unique($productIds),
-                sprintf('%s=?', Cache::STORE_ID) => $store->getId()
-            ]
-        );
-    }
-
-    /**
-     * Marks products as deleted by given cached product collection
-     *
-     * @param CacheCollection $collection
-     * @throws NostoException
-     */
-    public function markAsDeleted(CacheCollection $collection)
-    {
-        $collection->setPageSize(self::DELETE_PRODUCT_BATCH);
-        $iterator = new PagingIterator($collection);
-        foreach ($iterator as $page) {
-            /** @var Cache $cachedProduct */
-            foreach ($page as $cachedProduct) {
-                $cachedProduct->setIsDeleted(true);
-                $this->save($cachedProduct); // @codingStandardsIgnoreLine
-            }
-        }
-    }
-
-    /**
-     * Deletes current indexed products in store
-     *
-     * @param CacheCollection $collection
-     * @param Store $store
      * @return int number of deleted rows
+     * @throws LocalizedException
      */
-    public function deleteCurrentItemsByStore(CacheCollection $collection, Store $store)
+    public function deleteByProductIds(array $productIds)
     {
-        $indexIds = [];
-        /* @var Cache $item */
-        foreach ($collection->getItems() as $item) {
-            $indexIds[] = $item->getId();
-        }
-        $connection = $collection->getConnection();
+        $connection = $this->cacheResource->getConnection();
         return $connection->delete(
-            $collection->getMainTable(),
+            $this->cacheResource->getMainTable(),
             [
-                sprintf('%s IN (?)', Cache::ID) => array_unique($indexIds),
-                sprintf('%s=?', Cache::STORE_ID) => $store->getId()
-            ]
-        );
-    }
-
-    /**
-     * Marks current items in collection as in_sync
-     *
-     * @param CacheCollection $collection
-     * @param Store $store
-     * @return int
-     */
-    public function markAsInSyncCurrentItemsByStore(CacheCollection $collection, Store $store)
-    {
-        $indexIds = [];
-        /* @var Cache $item */
-        foreach ($collection->getItems() as $item) {
-            $indexIds[] = $item->getId();
-        }
-        $connection = $collection->getConnection();
-        return $connection->update(
-            $collection->getMainTable(),
-            [
-                Cache::IN_SYNC => Cache::DB_VALUE_BOOLEAN_TRUE,
-                Cache::UPDATED_AT => $this->magentoTimeZone->date()->format('Y-m-d H:i:s')
-            ],
-            [
-                sprintf('%s IN (?)', Cache::ID) => array_unique($indexIds),
-                sprintf('%s=?', Cache::STORE_ID) => $store->getId()
+                sprintf('%s IN (?)', Cache::PRODUCT_ID) => array_unique($productIds)
             ]
         );
     }

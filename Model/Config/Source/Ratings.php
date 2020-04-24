@@ -44,8 +44,6 @@ use Nosto\Tagging\Helper\Ratings as NostoRatingsHelper;
 /**
  * Option array class to generate a list of selectable options that allows the merchant to choose
  * the provider for the ratings and reviews.
- *
- * @package Nosto\Tagging\Model\Config\Source
  */
 class Ratings implements OptionSourceInterface
 {

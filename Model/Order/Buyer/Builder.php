@@ -44,12 +44,11 @@ use Nosto\Tagging\Model\Person\Builder as PersonBuilder;
 
 /**
  * Builder class for buyer
- * @package Nosto\Tagging\Model\Order\Buyer
  */
 class Builder extends PersonBuilder
 {
     /**
-     * @inheritdoc
+     * @inheritDoc
      * @return Buyer
      */
     public function buildObject( // @codingStandardsIgnoreLine
