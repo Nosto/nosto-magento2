@@ -120,7 +120,7 @@ class DefaultProductService implements ProductServiceInterface
             $product->getId(),
             false,
             $store->getId(),
-            false
+            true
         );
     }
 }
