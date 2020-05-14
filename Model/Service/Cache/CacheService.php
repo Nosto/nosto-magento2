@@ -37,85 +37,116 @@
 namespace Nosto\Tagging\Model\Service\Cache;
 
 use Exception;
+use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
 use Magento\Store\Api\Data\StoreInterface;
+use Nosto\Object\Product\Product;
 use Nosto\Tagging\Helper\Account as NostoAccountHelper;
 use Nosto\Tagging\Helper\Data as NostoDataHelper;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
-use Nosto\Tagging\Model\Product\Cache\CacheBuilder;
-use Nosto\Tagging\Model\Product\Cache\CacheRepository;
+use Nosto\Tagging\Model\Cache\Type\ProductDataInterface;
 use Nosto\Tagging\Model\Service\AbstractService;
 use Nosto\Tagging\Model\Service\Product\ProductSerializerInterface;
 use Nosto\Types\Product\ProductInterface as NostoProductInterface;
 
 class CacheService extends AbstractService
 {
-    /** @var CacheRepository */
-    private $cacheRepository;
-
-    /** @var CacheBuilder */
-    private $cacheBuilder;
-
     /** @var TimezoneInterface */
     private $magentoTimeZone;
 
     /** @var ProductSerializerInterface */
     private $productSerializer;
 
+    /** @var ProductDataInterface */
+    private $productDataCache;
+
     /**
      * CacheService constructor.
-     * @param CacheRepository $cacheRepository
-     * @param CacheBuilder $cacheBuilder
      * @param NostoLogger $logger
      * @param TimezoneInterface $magentoTimeZone
      * @param NostoDataHelper $nostoDataHelper
      * @param NostoAccountHelper $nostoAccountHelper
      * @param ProductSerializerInterface $productSerializer
+     * @param ProductDataInterface $productDataCache
      */
     public function __construct(
-        CacheRepository $cacheRepository,
-        CacheBuilder $cacheBuilder,
         NostoLogger $logger,
         TimezoneInterface $magentoTimeZone,
         NostoDataHelper $nostoDataHelper,
         NostoAccountHelper $nostoAccountHelper,
-        ProductSerializerInterface $productSerializer
+        ProductSerializerInterface $productSerializer,
+        ProductDataInterface $productDataCache
     ) {
         parent::__construct($nostoDataHelper, $nostoAccountHelper, $logger);
-        $this->cacheRepository = $cacheRepository;
-        $this->cacheBuilder = $cacheBuilder;
         $this->magentoTimeZone = $magentoTimeZone;
         $this->productSerializer = $productSerializer;
+        $this->productDataCache = $productDataCache;
     }
 
     /**
-     * @param NostoProductInterface $product
+     * @param NostoProductInterface $nostoProduct
      * @param StoreInterface $store
      */
-    public function upsert(NostoProductInterface $product, StoreInterface $store)
+    public function upsert(NostoProductInterface $nostoProduct, StoreInterface $store)
     {
-        if (!$this->getDataHelper()->isProductCachingEnabled($store)) {
-            return;
-        }
-        $cachedProduct = $this->cacheRepository->getByProductIdAndStoreId($product->getProductId(), $store->getId());
         try {
-            if ($cachedProduct === null) { // Creates Index Product
-                $cachedProduct = $this->cacheBuilder->build($product, $store);
-            }
-            try {
-                $cachedProduct->setProductData(
-                    $this->productSerializer->toString(
-                        $product
-                    )
-                );
-            } catch (\Exception $e) {
-                $this->getLogger()->exception($e);
-                $nostoCachedProduct = null;
-            }
-            $cachedProduct->setUpdatedAt($this->magentoTimeZone->date());
-            $this->cacheRepository->save($cachedProduct);
+            $serializedNostoProduct = $this->productSerializer->toString($nostoProduct);
+            $this->productDataCache->save(
+                $serializedNostoProduct,
+                $this->generateCacheKey($nostoProduct->getProductId(), $store->getId())
+            );
         } catch (Exception $e) {
             $this->getLogger()->exception($e);
         }
+    }
+
+    /**
+     * @param ProductInterface $product
+     * @param StoreInterface $store
+     * @return Product|null
+     */
+    public function get(ProductInterface $product, StoreInterface $store)
+    {
+        return $this->getById($product->getId(), $store->getId());
+    }
+
+    /**
+     * @param StoreInterface $store
+     * @param array $productIds
+     */
+    public function removeByProductIds(StoreInterface $store, array $productIds)
+    {
+        $storeId = $store->getId();
+        foreach ($productIds as $productId) {
+            $this->productDataCache->remove(
+                $this->generateCacheKey($productId, $storeId)
+            );
+        }
+    }
+
+    /**
+     * @param int $productId
+     * @param int $storeId
+     * @return Product|null
+     */
+    private function getById($productId, $storeId)
+    {
+        $cachedProduct = $this->productDataCache->load($this->generateCacheKey($productId, $storeId));
+        return $cachedProduct ? $this->productSerializer->fromString($cachedProduct) : null;
+    }
+
+    /**
+     * @param int $productId
+     * @param int $storeId
+     * @return string
+     */
+    private function generateCacheKey($productId, $storeId)
+    {
+        return sprintf(
+            '%s-%d-%d',
+            $this->productDataCache->getTag(),
+            $productId,
+            $storeId
+        );
     }
 }

@@ -45,8 +45,8 @@ use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Url as NostoHelperUrl;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
-use Nosto\Tagging\Model\Product\Cache\CacheRepository;
 use Nosto\Tagging\Model\Service\AbstractService;
+use Nosto\Tagging\Model\Service\Cache\CacheService;
 
 class DeleteService extends AbstractService
 {
@@ -55,8 +55,8 @@ class DeleteService extends AbstractService
     const BENCHMARK_DELETE_BREAKPOINT = 1;
     const PRODUCT_DELETION_BATCH_SIZE = 100;
 
-    /** @var CacheRepository */
-    private $cacheRepository;
+    /** @var CacheService */
+    private $cacheService;
 
     /** @var NostoHelperAccount */
     private $nostoHelperAccount;
@@ -69,7 +69,7 @@ class DeleteService extends AbstractService
 
     /**
      * DeleteService constructor.
-     * @param CacheRepository $cacheRepository
+     * @param CacheService $cacheService
      * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoHelperData $nostoHelperData
      * @param NostoHelperUrl $nostoHelperUrl
@@ -77,14 +77,14 @@ class DeleteService extends AbstractService
      * @param $deleteBatchSize
      */
     public function __construct(
-        CacheRepository $cacheRepository,
+        CacheService $cacheService,
         NostoHelperAccount $nostoHelperAccount,
         NostoHelperData $nostoHelperData,
         NostoHelperUrl $nostoHelperUrl,
         NostoLogger $logger,
         $deleteBatchSize
     ) {
-        $this->cacheRepository = $cacheRepository;
+        $this->cacheService = $cacheService;
         $this->nostoHelperAccount = $nostoHelperAccount;
         $this->nostoHelperUrl = $nostoHelperUrl;
         $this->deleteBatchSize = $deleteBatchSize;
@@ -123,15 +123,12 @@ class DeleteService extends AbstractService
                 $op->setResponseTimeout(30);
                 $op->setProductIds($ids);
                 $op->delete(); // @codingStandardsIgnoreLine
-                if ($this->getDataHelper()->isProductCachingEnabled($store)) {
-                    $this->cacheRepository->deleteByProductIds($ids);
-                }
+                $this->cacheService->removeByProductIds($store, $ids);
                 $this->tickBenchmark(self::BENCHMARK_DELETE_NAME);
             } catch (Exception $e) {
                 $this->getLogger()->exception($e);
             }
         }
-
         $this->logBenchmarkSummary(self::BENCHMARK_DELETE_NAME, $store);
     }
 }

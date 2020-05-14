@@ -115,11 +115,6 @@ class Data extends AbstractHelper
     const XML_PATH_PRODUCT_UPDATES = 'nosto/flags/product_updates';
 
     /**
-     * Path to the configuration object that stores the preference for product caching
-     */
-    const XML_PATH_PRODUCT_CACHING = 'nosto/flags/product_caching';
-
-    /**
      * Path to store config for sending customer data to Nosto or not
      */
     const XML_PATH_SEND_CUSTOMER_DATA = 'nosto/flags/send_customer_data';
@@ -387,17 +382,6 @@ class Data extends AbstractHelper
     public function isProductUpdatesEnabled(StoreInterface $store = null)
     {
         return (bool)$this->getStoreConfig(self::XML_PATH_PRODUCT_UPDATES, $store);
-    }
-
-    /**
-     * Returns if Nosto product data caching
-     *
-     * @param StoreInterface|null $store the store model or null.
-     * @return bool the configuration value
-     */
-    public function isProductCachingEnabled(StoreInterface $store = null)
-    {
-        return (bool)$this->getStoreConfig(self::XML_PATH_PRODUCT_CACHING, $store);
     }
 
     /**
