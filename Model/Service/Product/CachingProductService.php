@@ -94,7 +94,7 @@ class CachingProductService implements ProductServiceInterface
             //In case the product is not present in cache
             if ($nostoProduct === null) {
                 $nostoProduct = $this->defaultProductService->getProduct($product, $store);
-                $this->nostoCacheService->upsert($nostoProduct, $store);
+                $this->nostoCacheService->save($nostoProduct, $store);
             }
             return $nostoProduct;
         } catch (Exception $e) {

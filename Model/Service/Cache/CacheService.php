@@ -87,7 +87,7 @@ class CacheService extends AbstractService
      * @param NostoProductInterface $nostoProduct
      * @param StoreInterface $store
      */
-    public function upsert(NostoProductInterface $nostoProduct, StoreInterface $store)
+    public function save(NostoProductInterface $nostoProduct, StoreInterface $store)
     {
         try {
             $serializedNostoProduct = $this->productSerializer->toString($nostoProduct);
