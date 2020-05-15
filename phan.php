@@ -71,7 +71,8 @@ return [
         'vendor/magento/zendframework1/library/Zend/Validate/Hostname/Jp.php',
     ],
     'exclude_analysis_directory_list' => [
-        'vendor/'
+        'vendor/',
+        'magento/generated'
     ],
     'suppress_issue_types' => [
         'PhanParamSignatureMismatch',
