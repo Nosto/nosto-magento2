@@ -40,10 +40,8 @@ use Magento\Framework\DB\Adapter\AdapterInterface;
 use Magento\Framework\DB\Ddl\Table;
 use Magento\Framework\Setup\SchemaSetupInterface;
 use Nosto\Tagging\Api\Data\CustomerInterface;
-use Nosto\Tagging\Api\Data\ProductCacheInterface;
 use Nosto\Tagging\Api\Data\ProductUpdateQueueInterface;
 use Nosto\Tagging\Model\ResourceModel\Customer;
-use Nosto\Tagging\Model\ResourceModel\Product\Cache as CacheResource;
 use Nosto\Tagging\Model\ResourceModel\Product\Update\Queue;
 
 abstract class Core
@@ -116,96 +114,6 @@ abstract class Core
                 ['type' => AdapterInterface::INDEX_TYPE_UNIQUE]
             )
             ->setComment('Nosto customer and order mapping');
-        /** @noinspection PhpUnhandledExceptionInspection */
-        $setup->getConnection()->createTable($table);
-    }
-
-    /**
-     * Creates a cache table for Nosto product data
-     *
-     * @param SchemaSetupInterface $setup
-     * @throws \Zend_Db_Exception
-     */
-    public function createProductCacheTable(SchemaSetupInterface $setup)
-    {
-        /** @noinspection PhpUnhandledExceptionInspection */
-        $table = $setup->getConnection()
-            ->newTable($setup->getTable(CacheResource::TABLE_NAME))
-            ->addColumn(
-                ProductCacheInterface::ID,
-                Table::TYPE_INTEGER,
-                null,
-                [
-                    'auto_increment' => true,
-                    'nullable' => false,
-                    'identity' => true,
-                    'primary' => true,
-                    'unsigned' => true,
-                ],
-                'ID'
-            )
-            ->addColumn(
-                ProductCacheInterface::PRODUCT_ID,
-                Table::TYPE_INTEGER,
-                null,
-                [
-                    'nullable' => false,
-                    'unsigned' => true,
-                ],
-                'Product ID'
-            )
-            ->addColumn(
-                ProductCacheInterface::STORE_ID,
-                Table::TYPE_SMALLINT,
-                null,
-                [
-                    'nullable' => false,
-                    'unsigned' => true,
-                ],
-                'Store ID'
-            )
-            ->addColumn(
-                ProductCacheInterface::IS_DIRTY,
-                Table::TYPE_BOOLEAN,
-                null,
-                [
-                    'nullable' => false,
-                    'unsigned' => true,
-                ],
-                'Is Dirty'
-            )
-            ->addColumn(
-                ProductCacheInterface::PRODUCT_DATA,
-                Table::TYPE_TEXT,
-                self::PRODUCT_DATA_MAX_LENGTH,
-                [
-                    'nullable' => true,
-                    'unsigned' => true,
-                ],
-                'Product data'
-            )
-            ->addColumn(
-                ProductCacheInterface::CREATED_AT,
-                Table::TYPE_DATETIME,
-                null,
-                ['nullable' => false],
-                'Creation Time'
-            )
-            ->addColumn(
-                ProductCacheInterface::UPDATED_AT,
-                Table::TYPE_DATETIME,
-                null,
-                ['nullable' => true],
-                'Updated Time'
-            )
-            ->addIndex(
-                $setup->getIdxName(
-                    CacheResource::TABLE_NAME,
-                    [ProductCacheInterface::PRODUCT_ID, ProductCacheInterface::STORE_ID]
-                ),
-                [ProductCacheInterface::PRODUCT_ID, ProductCacheInterface::STORE_ID],
-                ['type' => AdapterInterface::INDEX_TYPE_UNIQUE]
-            );
         /** @noinspection PhpUnhandledExceptionInspection */
         $setup->getConnection()->createTable($table);
     }

@@ -56,15 +56,15 @@ class QueueRepository implements ProductUpdateQueueRepositoryInterface
     /**
      * IndexRepository constructor.
      *
-     * @param QueueResource $cacheResource
-     * @param QueueCollectionFactory $cacheCollectionFactory
+     * @param QueueResource $queueResource
+     * @param QueueCollectionFactory $queueCollectionFactory
      */
     public function __construct(
-        QueueResource $cacheResource,
-        QueueCollectionFactory $cacheCollectionFactory
+        QueueResource $queueResource,
+        QueueCollectionFactory $queueCollectionFactory
     ) {
-        $this->queueResource = $cacheResource;
-        $this->queueCollectionFactory = $cacheCollectionFactory;
+        $this->queueResource = $queueResource;
+        $this->queueCollectionFactory = $queueCollectionFactory;
     }
 
     /**

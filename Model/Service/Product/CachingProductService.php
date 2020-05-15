@@ -40,7 +40,6 @@ use Exception;
 use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Store\Api\Data\StoreInterface;
 use Nosto\Tagging\Logger\Logger;
-use Nosto\Tagging\Model\Product\Cache\CacheRepository;
 use Nosto\Tagging\Model\Service\Cache\CacheService;
 use Nosto\Types\Product\ProductInterface as NostoProductInterface;
 use Nosto\Tagging\Helper\Data as NostoDataHelper;
