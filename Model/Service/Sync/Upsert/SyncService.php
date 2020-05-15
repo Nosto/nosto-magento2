@@ -145,6 +145,7 @@ class SyncService extends AbstractService
                 }
                 try {
                     $op->addProduct($nostoProduct);
+                    // phpcs:ignore
                     $this->cacheService->save($nostoProduct, $store);
                     $this->tickBenchmark(self::BENCHMARK_SYNC_NAME);
                 } catch (\Exception $e) {
