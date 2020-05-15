@@ -71,7 +71,7 @@ jobs:
     - name: Run Phan analysis
       id: phan-analysis
       run: |
-        ./vendor/bin/phan --config-file=phan.php --output-mode=checkstyle --output=chkphan.xml --processes=4
+        php -d memory_limit=-1 ./vendor/bin/phan --config-file=phan.php --output-mode=checkstyle --output=chkphan.xml --processes=4
       continue-on-error: true
 
     - name: Archive static analysis results
