@@ -15,12 +15,12 @@ jobs:
     - name: Set up PHP
       uses: shivammathur/setup-php@v2
       with:
-        php-version: '7.2'
+        php-version: '7.2.29'
         tools: composer, prestissimo, pecl
         coverage: none
 
     - name: Install AST extension
-      run: sudo pecl install ast
+      run: sudo pecl install -f ast
 
       #https://github.com/actions/cache/blob/master/examples.md#php---composer
     - name: Cache composer packages
