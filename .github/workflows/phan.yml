@@ -20,7 +20,7 @@ jobs:
         coverage: none
 
     - name: Install AST extension
-      run: sudo pecl install -f ast
+      run: sudo pecl install ast
 
       #https://github.com/actions/cache/blob/master/examples.md#php---composer
     - name: Cache composer packages
@@ -71,7 +71,7 @@ jobs:
     - name: Run Phan analysis
       id: phan-analysis
       run: |
-        php -d memory_limit=-1 ./vendor/bin/phan --config-file=phan.php --output-mode=checkstyle --output=chkphan.xml --processes=4
+        ./vendor/bin/phan --config-file=phan.php --output-mode=checkstyle --output=chkphan.xml --processes=4
       continue-on-error: true
 
     - name: Archive static analysis results
