@@ -160,7 +160,6 @@ abstract class AbstractBulkPublisher implements BulkPublisherInterface
      */
     private function canUseAsyncOperations(): bool
     {
-        return false; //TODO - remove me - DO NOT COMMIT THIS
         if ($this->manager->isEnabled('Magento_AsynchronousOperations')) {
             return true;
         }

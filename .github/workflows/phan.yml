@@ -61,14 +61,14 @@ jobs:
         bin/magento setup:di:compile
         cd ..
         cp -r magento/generated vendor/magento/
-     # rm -rf magento
+        rm -rf magento
       env:
         GITHUB_BRANCH: ${{ github.base_ref }}
 
     - name: Run Phan analysis
       id: phan-analysis
       run: |
-        ./vendor/bin/phan --config-file=phan.php --output-mode=checkstyle --output=chkphan.xml --processes=4
+        ./vendor/bin/phan --config-file=phan.php --output-mode=checkstyle --output=chkphan.xml
       continue-on-error: true
 
     - name: Archive static analysis results
