@@ -61,7 +61,7 @@ jobs:
         bin/magento setup:di:compile
         cd ..
         cp -r magento/generated vendor/magento/
-        rm -rf magento
+     # rm -rf magento
       env:
         GITHUB_BRANCH: ${{ github.base_ref }}
 
