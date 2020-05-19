@@ -18,11 +18,8 @@ jobs:
         php-version: '7.2'
         tools: composer, prestissimo, pecl
         coverage: none
+        extensions: ast
 
-    - name: Install AST extension
-      run: sudo pecl install -f ast
-
-      #https://github.com/actions/cache/blob/master/examples.md#php---composer
     - name: Cache composer packages
       id: composer-cache
       run: |
@@ -64,7 +61,7 @@ jobs:
         bin/magento setup:di:compile
         cd ..
         cp -r magento/generated vendor/magento/
-        rm -rf magento
+     # rm -rf magento
       env:
         GITHUB_BRANCH: ${{ github.base_ref }}
 
