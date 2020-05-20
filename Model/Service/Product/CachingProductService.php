@@ -42,7 +42,6 @@ use Magento\Store\Api\Data\StoreInterface;
 use Nosto\Tagging\Logger\Logger;
 use Nosto\Tagging\Model\Service\Cache\CacheService;
 use Nosto\Types\Product\ProductInterface as NostoProductInterface;
-use Nosto\Tagging\Helper\Data as NostoDataHelper;
 
 class CachingProductService implements ProductServiceInterface
 {
@@ -55,26 +54,20 @@ class CachingProductService implements ProductServiceInterface
     /** @var ProductServiceInterface */
     private $defaultProductService;
 
-    /** @var NostoDataHelper */
-    private $nostoDataHelper;
-
     /**
      * Index constructor.
      * @param Logger $nostoLogger
      * @param CacheService $nostoCacheService
      * @param ProductServiceInterface $defaultProductService
-     * @param NostoDataHelper $dataHelper
      */
     public function __construct(
         Logger $nostoLogger,
         CacheService $nostoCacheService,
-        ProductServiceInterface $defaultProductService,
-        NostoDataHelper $dataHelper
+        ProductServiceInterface $defaultProductService
     ) {
         $this->nostoLogger = $nostoLogger;
         $this->nostoCacheService = $nostoCacheService;
         $this->defaultProductService = $defaultProductService;
-        $this->nostoDataHelper = $dataHelper;
     }
 
     /**
