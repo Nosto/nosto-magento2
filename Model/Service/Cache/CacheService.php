@@ -38,7 +38,6 @@ namespace Nosto\Tagging\Model\Service\Cache;
 
 use Exception;
 use Magento\Catalog\Api\Data\ProductInterface;
-use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
 use Magento\Store\Api\Data\StoreInterface;
 use Nosto\Object\Product\Product;
 use Nosto\Tagging\Helper\Account as NostoAccountHelper;
@@ -51,8 +50,6 @@ use Nosto\Types\Product\ProductInterface as NostoProductInterface;
 
 class CacheService extends AbstractService
 {
-    /** @var TimezoneInterface */
-    private $magentoTimeZone;
 
     /** @var ProductSerializerInterface */
     private $productSerializer;
@@ -63,7 +60,6 @@ class CacheService extends AbstractService
     /**
      * CacheService constructor.
      * @param NostoLogger $logger
-     * @param TimezoneInterface $magentoTimeZone
      * @param NostoDataHelper $nostoDataHelper
      * @param NostoAccountHelper $nostoAccountHelper
      * @param ProductSerializerInterface $productSerializer
@@ -71,14 +67,12 @@ class CacheService extends AbstractService
      */
     public function __construct(
         NostoLogger $logger,
-        TimezoneInterface $magentoTimeZone,
         NostoDataHelper $nostoDataHelper,
         NostoAccountHelper $nostoAccountHelper,
         ProductSerializerInterface $productSerializer,
         ProductDataInterface $productDataCache
     ) {
         parent::__construct($nostoDataHelper, $nostoAccountHelper, $logger);
-        $this->magentoTimeZone = $magentoTimeZone;
         $this->productSerializer = $productSerializer;
         $this->productDataCache = $productDataCache;
     }
