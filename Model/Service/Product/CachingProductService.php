@@ -96,7 +96,7 @@ class CachingProductService implements ProductServiceInterface
                 $this->nostoCacheService->updateOrCreateDirtyEntity($product, $store);
                 $cachedProduct = $this->nostoCacheRepository->getOneByProductAndStore($product, $store);
             }
-            // Double check that we where able to generate & save the cached product
+            // Double check that we are able to generate & save the cached product
             if ($cachedProduct == null) {
                 $this->nostoLogger->debug(
                     sprintf(
