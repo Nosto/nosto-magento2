@@ -272,6 +272,15 @@ class Builder
                     )
                 );
             }
+            $googleCategoryAttr = $this->getDataHelper()->getGoogleCategoryAttribute($store);
+            if ($product->hasData($googleCategoryAttr)) {
+                $nostoProduct->setGoogleCategory(
+                    $this->attributeService->getAttributeValueByAttributeCode(
+                        $product,
+                        $googleCategoryAttr
+                    )
+                );
+            }
             // When using customer group price variations, set the variations
             if ($this->getDataHelper()->isPricingVariationEnabled($store)
                 && $this->getDataHelper()->isMultiCurrencyDisabled($store)

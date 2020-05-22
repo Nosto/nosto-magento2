@@ -85,6 +85,11 @@ class Data extends AbstractHelper
     const XML_PATH_GTIN_ATTRIBUTE = 'nosto/optional/gtin';
 
     /**
+     * Path to the configuration object that store's the google_category attribute
+     */
+    const XML_PATH_GOOGLE_CATEGORY_ATTRIBUTE = 'nosto/optional/google_category';
+
+    /**
      * Path to the configuration object that stores the preference to tag variation data
      */
     const XML_PATH_VARIATION_TAGGING = 'nosto/flags/variation_tagging';
@@ -304,6 +309,17 @@ class Data extends AbstractHelper
     public function getGtinAttribute(StoreInterface $store = null)
     {
         return $this->getStoreConfig(self::XML_PATH_GTIN_ATTRIBUTE, $store);
+    }
+
+    /**
+     * Returns the value of the selected google category attribute from the configuration table
+     *
+     * @param StoreInterface|null $store the store model or null.
+     * @return string the configuration value
+     */
+    public function getGoogleCategoryAttribute(StoreInterface $store = null)
+    {
+        return $this->getStoreConfig(self::XML_PATH_GOOGLE_CATEGORY_ATTRIBUTE, $store);
     }
 
     /**
