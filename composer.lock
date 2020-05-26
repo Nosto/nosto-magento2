@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "bcaf662ee478c0faf2b26215094446ef",
+    "content-hash": "eda69508c2f276d179826aacabcfd387",
     "packages": [
         {
             "name": "colinmollenhour/credis",
@@ -2260,16 +2260,16 @@
         },
         {
             "name": "nosto/php-sdk",
-            "version": "dev-develop",
+            "version": "5.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Nosto/nosto-php-sdk.git",
-                "reference": "3cd2f9d295ce315bb53f15bcf3f96964632a1738"
+                "reference": "a376d8fa477878322e86e12b1bfdcc1fdce1dcf1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Nosto/nosto-php-sdk/zipball/3cd2f9d295ce315bb53f15bcf3f96964632a1738",
-                "reference": "3cd2f9d295ce315bb53f15bcf3f96964632a1738",
+                "url": "https://api.github.com/repos/Nosto/nosto-php-sdk/zipball/a376d8fa477878322e86e12b1bfdcc1fdce1dcf1",
+                "reference": "a376d8fa477878322e86e12b1bfdcc1fdce1dcf1",
                 "shasum": ""
             },
             "require": {
@@ -2308,7 +2308,7 @@
                 "BSD-3-Clause"
             ],
             "description": "PHP SDK for developing Nosto modules for e-commerce platforms",
-            "time": "2020-05-26T07:15:18+00:00"
+            "time": "2020-05-26T11:04:11+00:00"
         },
         {
             "name": "phpoption/phpoption",
@@ -7246,9 +7246,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "nosto/php-sdk": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
