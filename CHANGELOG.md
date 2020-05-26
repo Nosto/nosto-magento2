@@ -1,5 +1,8 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+# not released
+* Add google category as customisable attribute
+
 # 4.0.6
 * Fix issue with non-generated proxy classes during di compilation 
 
