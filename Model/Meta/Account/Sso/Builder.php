@@ -39,7 +39,7 @@ namespace Nosto\Tagging\Model\Meta\Account\Sso;
 use Exception;
 use Magento\Backend\Model\Auth\Session;
 use Magento\Framework\Event\ManagerInterface;
-use Nosto\Object\Signup\Owner;
+use Nosto\Model\Signup\Owner;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 
 class Builder

@@ -41,7 +41,7 @@ use Magento\Sales\Model\Order;
 use Magento\Sales\Model\ResourceModel\Order\CollectionFactory as OrderCollectionFactory;
 use Magento\Store\Model\Store;
 use Nosto\NostoException;
-use Nosto\Object\Order\OrderCollection;
+use Nosto\Model\Order\OrderCollection;
 use Nosto\Tagging\Model\Order\Builder as NostoOrderBuilder;
 use Traversable;
 

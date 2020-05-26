@@ -42,7 +42,7 @@ use Magento\Framework\Controller\Result\Raw;
 use Magento\Framework\Controller\ResultFactory;
 use Magento\Store\Model\Store;
 use Nosto\Helper\ExportHelper;
-use Nosto\Object\AbstractCollection;
+use Nosto\Model\AbstractCollection;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 

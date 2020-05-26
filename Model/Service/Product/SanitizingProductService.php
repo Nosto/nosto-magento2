@@ -38,8 +38,8 @@ namespace Nosto\Tagging\Model\Service\Product;
 
 use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Store\Api\Data\StoreInterface;
-use Nosto\Object\Product\Product;
 use Nosto\Tagging\Logger\Logger;
+use Nosto\Model\Product\Product;
 
 class SanitizingProductService implements ProductServiceInterface
 {

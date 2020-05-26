@@ -36,7 +36,7 @@
 
 namespace Nosto\Tagging\Model\Service\Product;
 
-use Nosto\Object\Product\Product;
+use Nosto\Model\Product\Product;
 use Nosto\Types\Product\ProductInterface;
 
 /**

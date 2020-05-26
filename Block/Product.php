@@ -49,7 +49,7 @@ use Magento\Framework\Stdlib\StringUtils;
 use Magento\Framework\Url\EncoderInterface as UrlEncoder;
 use Nosto\Helper\DateHelper;
 use Nosto\Helper\PriceHelper;
-use Nosto\Object\Product\Product as NostoProduct;
+use Nosto\Model\Product\Product as NostoProduct;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Model\Category\Builder as NostoCategoryBuilder;

@@ -37,7 +37,7 @@
 namespace Nosto\Tagging\Console\Command;
 
 use Nosto\NostoException;
-use Nosto\Object\Signup\Account as NostoSignupAccount;
+use Nosto\Model\Signup\Account as NostoSignupAccount;
 use Nosto\Request\Api\Token;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;

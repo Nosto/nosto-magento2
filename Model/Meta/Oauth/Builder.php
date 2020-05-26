@@ -42,7 +42,7 @@ use Magento\Framework\Locale\ResolverInterface;
 use Magento\Framework\Url;
 use Magento\Store\Model\Store;
 use Nosto\OAuth;
-use Nosto\Object\Signup\Account;
+use Nosto\Model\Signup\Account;
 use Nosto\Request\Api\Token;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Logger\Logger as NostoLogger;

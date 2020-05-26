@@ -41,8 +41,8 @@ use Magento\Directory\Model\Currency;
 use Magento\Directory\Model\CurrencyFactory;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Store\Model\Store;
-use Nosto\Object\ExchangeRate;
-use Nosto\Object\ExchangeRateCollection;
+use Nosto\Model\ExchangeRate;
+use Nosto\Model\ExchangeRateCollection;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 
 class Builder

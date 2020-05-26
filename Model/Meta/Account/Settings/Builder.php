@@ -41,7 +41,7 @@ use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\UrlInterface;
 use Magento\Store\Model\Store;
-use Nosto\Object\Settings;
+use Nosto\Model\Settings;
 use Nosto\Request\Http\HttpRequest;
 use Nosto\Tagging\Helper\Currency as NostoHelperCurrency;
 use Nosto\Tagging\Helper\Data as NostoDataHelper;

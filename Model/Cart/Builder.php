@@ -41,7 +41,7 @@ use Magento\Catalog\Model\Product;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Quote\Model\Quote;
 use Magento\Store\Model\Store;
-use Nosto\Object\Cart\Cart;
+use Nosto\Model\Cart\Cart;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Cart\Item\Builder as NostoCartItemBuilder;
 

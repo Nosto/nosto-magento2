@@ -42,7 +42,7 @@ use Magento\Catalog\Model\Product\Type;
 use Magento\Catalog\Model\ProductRepository;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Quote\Model\Quote\Item;
-use Nosto\Object\Cart\LineItem;
+use Nosto\Model\Cart\LineItem;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Item\Downloadable;
 use Nosto\Tagging\Model\Item\Giftcard;
