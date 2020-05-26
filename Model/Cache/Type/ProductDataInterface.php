@@ -34,27 +34,11 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Product\Cache;
+namespace Nosto\Tagging\Model\Cache\Type;
 
-use Magento\Framework\Api\Search\SearchResult;
-use Nosto\Tagging\Api\Data\ProductCacheInterface;
-use Nosto\Tagging\Api\Data\ProductCacheSearchResultsInterface;
+use Magento\Framework\Cache\FrontendInterface;
 
-class CacheSearchResults extends SearchResult implements ProductCacheSearchResultsInterface // @codingStandardsIgnoreLine
+interface ProductDataInterface extends FrontendInterface
 {
-    /**
-     * @return ProductCacheInterface|null
-     */
-    public function getFirstItem()
-    {
-        if ($this->getTotalCount() === 0) {
-            return null;
-        }
-
-        /** @var ProductCacheInterface[]|null $items */
-        $items = $this->getItems();
-        /** @var ProductCacheInterface|null $item */
-        $item = $items ? reset($items) : null;
-        return $item;
-    }
+    public function getTag();
 }

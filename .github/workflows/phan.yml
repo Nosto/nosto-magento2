@@ -18,11 +18,8 @@ jobs:
         php-version: '7.2'
         tools: composer, prestissimo, pecl
         coverage: none
+        extensions: ast
 
-    - name: Install AST extension
-      run: sudo pecl install -f ast
-
-      #https://github.com/actions/cache/blob/master/examples.md#php---composer
     - name: Cache composer packages
       id: composer-cache
       run: |
@@ -71,7 +68,7 @@ jobs:
     - name: Run Phan analysis
       id: phan-analysis
       run: |
-        ./vendor/bin/phan --config-file=phan.php --output-mode=checkstyle --output=chkphan.xml --processes=4
+        ./vendor/bin/phan --config-file=phan.php --output-mode=checkstyle --output=chkphan.xml
       continue-on-error: true
 
     - name: Archive static analysis results

@@ -34,42 +34,31 @@
  *
  */
 
-namespace Nosto\Tagging\Api;
+namespace Nosto\Tagging\Model\Cache\Type;
 
-use Magento\Catalog\Api\Data\ProductInterface;
-use Magento\Store\Api\Data\StoreInterface;
-use Nosto\Tagging\Api\Data\ProductCacheInterface;
+use Magento\Framework\App\Cache\Type\FrontendPool;
+use Magento\Framework\Cache\Frontend\Decorator\TagScope;
 
-interface ProductCacheRepositoryInterface
+class ProductData extends TagScope implements ProductDataInterface
 {
     /**
-     * Save Queue entry
-     *
-     * @param ProductCacheInterface $productIndex
-     * @return ProductCacheInterface
+     * Cache type code unique among all cache types
      */
-    public function save(ProductCacheInterface $productIndex);
+    const TYPE_IDENTIFIER = 'nosto_product_cache';
 
     /**
-     * Delete productIndex
-     *
-     * @param ProductCacheInterface $productIndex
+     * The tag name that limits the cache cleaning scope within a particular tag
      */
-    public function delete(ProductCacheInterface $productIndex);
+    const CACHE_TAG = 'NOSTO_PRODUCT';
 
     /**
-     * Returns entry by product and store
-     *
-     * @param ProductInterface $product
-     * @param StoreInterface $store
-     * @return ProductCacheInterface|null
+     * @param FrontendPool $cacheFrontendPool
      */
-    public function getOneByProductAndStore(ProductInterface $product, StoreInterface $store);
-
-    /**
-     * @param int $productId
-     * @param int $storeId
-     * @return ProductCacheInterface|null
-     */
-    public function getByProductIdAndStoreId(int $productId, int $storeId);
+    public function __construct(FrontendPool $cacheFrontendPool)
+    {
+        parent::__construct(
+            $cacheFrontendPool->get(self::TYPE_IDENTIFIER),
+            self::CACHE_TAG
+        );
+    }
 }

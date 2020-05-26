@@ -45,7 +45,6 @@ use Nosto\Tagging\Api\Data\CustomerInterface;
 use Nosto\Tagging\Logger\Logger;
 use Nosto\Tagging\Model\Product\Cache;
 use Nosto\Tagging\Model\ResourceModel\Customer;
-use Nosto\Tagging\Model\ResourceModel\Product\Cache as CacheResource;
 use Zend_Db_Exception;
 
 class UpgradeSchema extends Core implements UpgradeSchemaInterface
@@ -75,16 +74,6 @@ class UpgradeSchema extends Core implements UpgradeSchemaInterface
         if (version_compare($fromVersion, '2.1.0', '<')) {
             $this->addRestoreCartHash($setup);
         }
-        if (version_compare($fromVersion, '4.0.0', '<=')) {
-            try {
-                $this->createProductCacheTable($setup);
-            } catch (Exception $e) {
-                $this->loger->exception($e);
-            }
-        }
-        if (version_compare($fromVersion, '4.0.3', '<=')) {
-            $this->productCacheDataToLongtext($setup);
-        }
         if (version_compare($fromVersion, '5.0.0', '<')) {
             try {
                 $this->createProductUpdateQueue($setup);
@@ -110,25 +99,6 @@ class UpgradeSchema extends Core implements UpgradeSchemaInterface
                 'nullable' => true,
                 'comment' => 'Restore cart hash',
                 'length' => CustomerInterface::NOSTO_TAGGING_RESTORE_CART_ATTRIBUTE_LENGTH
-            ]
-        );
-    }
-
-    /**
-     * Changes the product_data column to be longtext for Nosto product cache
-     *
-     * @param SchemaSetupInterface $setup
-     */
-    private function productCacheDataToLongtext(SchemaSetupInterface $setup)
-    {
-        $setup->getConnection()->modifyColumn(
-            $setup->getTable(CacheResource::TABLE_NAME),
-            Cache::PRODUCT_DATA,
-            [
-                'type' => Table::TYPE_TEXT,
-                'length' => self::PRODUCT_DATA_MAX_LENGTH,
-                'nullable' => true,
-                'comment' => 'Product data'
             ]
         );
     }

@@ -49,6 +49,7 @@
     <preference for="Nosto\Tagging\Model\Mview\MviewInterface" type="Nosto\Tagging\Model\Mview\Mview"/>
     <preference for="Nosto\Tagging\Model\Service\Indexer\IndexerStatusServiceInterface" type="Nosto\Tagging\Model\Service\Indexer\IndexerStatusService"/>
     <preference for="Nosto\Tagging\Model\Service\Sync\BulkPublisherInterface" type="Nosto\Tagging\Model\Service\Sync\Upsert\AsyncBulkPublisher"/>
+    <preference for="Nosto\Tagging\Model\Cache\Type\ProductDataInterface" type="Nosto\Tagging\Model\Cache\Type\ProductData" />
     <type name="Magento\Catalog\Model\ResourceModel\Product">
         <plugin name="nostoProductObserverUpdate" type="Nosto\Tagging\Plugin\ProductUpdate"/>
     </type>
