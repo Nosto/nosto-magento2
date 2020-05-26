@@ -102,6 +102,14 @@
                     </comment>
                     <source_model>Nosto\Tagging\Model\Config\Source\Gtin</source_model>
                 </field>
+                <field id="google_category" translate="label comment" type="select" sortOrder="40"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Google Category</label>
+                    <comment>Select the attribute that you would like to use as your Google Category
+                        attribute.
+                    </comment>
+                    <source_model>Nosto\Tagging\Model\Config\Source\GoogleCategory</source_model>
+                </field>
             </group>
             <group id="flags" translate="label" type="text" sortOrder="30" showInDefault="1"
                    showInWebsite="1" showInStore="1">
