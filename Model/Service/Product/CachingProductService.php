@@ -110,6 +110,16 @@ class CachingProductService implements ProductServiceInterface
             //If it is dirty rebuild the product data
             if ($cachedProduct->getIsDirty()) {
                 $cachedProduct = $this->nostoCacheService->rebuildDirtyProduct($cachedProduct);
+                if ($cachedProduct == null) {
+                    $this->nostoLogger->debug(
+                        sprintf(
+                            'Unable to rebuild dirty cache entry for product #%s for store %s',
+                            $product->getId(),
+                            $store->getCode()
+                        )
+                    );
+                    return null;
+                }
             }
             //Check that we actually got serializable data
             $productData = $cachedProduct->getProductData();
