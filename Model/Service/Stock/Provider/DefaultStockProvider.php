@@ -41,18 +41,27 @@ use Magento\Catalog\Model\Product;
 use Magento\CatalogInventory\Api\Data\StockItemInterface;
 use Magento\CatalogInventory\Api\Data\StockStatusInterface;
 use Magento\Store\Model\Website;
+use Nosto\Tagging\Model\ResourceModel\Sku as NostoSkuResource;
 
 class DefaultStockProvider implements StockProviderInterface
 {
+    /** @var StockRegistryProvider */
     private $stockRegistryProvider;
+
+    /** @var NostoSkuResource */
+    private $skuResource;
 
     /**
      * DefaultStockProvider constructor.
      * @param StockRegistryProvider $stockRegistryProvider
+     * @param NostoSkuResource $skuResource
      */
-    public function __construct(StockRegistryProvider $stockRegistryProvider)
-    {
+    public function __construct(
+        StockRegistryProvider $stockRegistryProvider,
+        NostoSkuResource $skuResource
+    ) {
         $this->stockRegistryProvider = $stockRegistryProvider;
+        $this->skuResource = $skuResource;
     }
 
     /**
@@ -105,6 +114,7 @@ class DefaultStockProvider implements StockProviderInterface
 
     /**
      * @param array $ids
+     * @param Website $website
      * @return StockStatusInterface[]
      */
     private function getStockStatuses(// @codingStandardsIgnoreLine
@@ -116,5 +126,13 @@ class DefaultStockProvider implements StockProviderInterface
             $ids,
             StockRegistryProvider::DEFAULT_STOCK_SCOPE
         )->getItems();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getInStockProductsByIdsAsArray(array $productIds, Website $website)
+    {
+        return $this->skuResource->getSkusByIds($website, $productIds);
     }
 }

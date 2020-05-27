@@ -96,4 +96,11 @@ interface StockProviderInterface
      * @return array ['productId1' => 4, 'productId2' => 2, ...]
      */
     public function getQuantitiesByIds(array $productIds, Website $website);
+
+    /**
+     * @param array $productIds
+     * @param Website $website
+     * @return array
+     */
+    public function getInStockProductsByIdsAsArray(array $productIds, Website $website);
 }

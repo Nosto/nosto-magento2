@@ -51,6 +51,9 @@ class CachingStockProvider implements StockProviderInterface
     /** @var array */
     private $inStockCache = [];
 
+    /** @var array */
+    private $productDataCache = [];
+
     /** @var int */
     private $maxCacheSize;
 
@@ -202,5 +205,70 @@ class CachingStockProvider implements StockProviderInterface
     private function existsInQuantityCache($productId, Website $website)
     {
         return isset($this->quantityCache[$website->getId()][$productId]);
+    }
+
+    /**
+     * @param int $productId
+     * @param Website $website
+     * @return bool
+     */
+    private function existsInProductDataCache($productId, Website $website)
+    {
+        return isset($this->productDataCache[$website->getId()][$productId]);
+    }
+
+    public function getInStockProductsByIdsAsArray(array $productIds, Website $website)
+    {
+        $productData = [];
+        $nonCached = [];
+        foreach ($productIds as $productId) {
+            if ($this->existsInProductDataCache($productId, $website)) {
+                $productData[$productId] = $this->getInStockProductsFromCache($productId, $website);
+            } else {
+                $nonCached[] = $productId;
+            }
+        }
+        if (!empty($nonCached)) {
+            $lookedUpData = $this->stockProvider->getInStockProductsByIdsAsArray($nonCached, $website);
+            foreach ($lookedUpData as $data) {
+                if (is_array($data) && isset($data['entity_id'])) {
+                    $productId = $data['entity_id'];
+                    $productData[$productId] = $data;
+                    $this->saveProductDataToCache($productId, $website, $data);
+                }
+            }
+        }
+        return $productData;
+    }
+
+    /**
+     * @param int $productId
+     * @param Website $website
+     * @return int|null
+     */
+    private function getInStockProductsFromCache($productId, Website $website)
+    {
+        if (!isset($this->productDataCache[$website->getId()][$productId])) {
+            return null;
+        }
+        return $this->productDataCache[$website->getId()][$productId];
+    }
+
+    /**
+     * @param int $productId
+     * @param Website $website
+     * @param $productData
+     */
+    private function saveProductDataToCache($productId, Website $website, $productData)
+    {
+        if (empty($this->productDataCache[$website->getId()])) {
+            $this->productDataCache[$website->getId()] = [];
+        }
+        $this->productDataCache[$website->getId()][$productId] = $productData;
+        $count = count($this->productDataCache);
+        $offset = $count-$this->maxCacheSize;
+        if ($offset > 0) {
+            $this->productDataCache = array_slice($this->productDataCache, $offset, $this->maxCacheSize, true);
+        }
     }
 }

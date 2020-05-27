@@ -47,8 +47,9 @@ use Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable as
 use Magento\Framework\Api\FilterBuilder;
 use Magento\Framework\Api\Search\FilterGroupBuilder;
 use Magento\Framework\Api\SearchCriteriaBuilder;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Store\Model\Store;
-use Nosto\Tagging\Model\ResourceModel\Sku as NostoSkuResource;
+use Nosto\Tagging\Model\Service\Stock\Provider\StockProviderInterface;
 
 /**
  * Repository wrapper class for fetching products
@@ -68,7 +69,7 @@ class Repository
     private $filterBuilder;
     private $configurableType;
     private $productVisibility;
-    private $nostoSkuResource;
+    private $stockProvider;
 
     /**
      * Constructor to instantiating the reindex command. This constructor uses proxy classes for
@@ -84,7 +85,7 @@ class Repository
      * @param FilterGroupBuilder $filterGroupBuilder
      * @param ConfigurableType $configurableType
      * @param ProductVisibility $productVisibility
-     * @param NostoSkuResource $nostoSkuResource
+     * @param StockProviderInterface $stockProvider
      */
     public function __construct(
         ProductRepository $productRepository,
@@ -94,7 +95,7 @@ class Repository
         FilterGroupBuilder $filterGroupBuilder,
         ConfigurableType $configurableType,
         ProductVisibility $productVisibility,
-        NostoSkuResource $nostoSkuResource
+        StockProviderInterface $stockProvider
     ) {
         $this->productRepository = $productRepository;
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;
@@ -103,7 +104,7 @@ class Repository
         $this->filterBuilder = $filterBuilder;
         $this->configurableType = $configurableType;
         $this->productVisibility = $productVisibility;
-        $this->nostoSkuResource = $nostoSkuResource;
+        $this->stockProvider = $stockProvider;
     }
 
     /**
@@ -251,9 +252,10 @@ class Repository
      * @param Product $product
      * @param Store $store
      * @return array
+     * @throws NoSuchEntityException
      */
     public function getSkusAsArray(Product $product, Store $store)
     {
-        return $this->nostoSkuResource->getSkusByIds($store, $this->getSkuIds($product));
+        return $this->stockProvider->getInStockProductsByIdsAsArray($this->getSkuIds($product), $store->getWebsite());
     }
 }

@@ -38,7 +38,7 @@ namespace Nosto\Tagging\Model\ResourceModel;
 
 use Magento\Catalog\Model\ResourceModel\Product as ProductResource;
 use Magento\Customer\Model\GroupManagement;
-use Magento\Store\Model\Store;
+use Magento\Store\Model\Website;
 
 class Sku extends ProductResource
 {
@@ -48,13 +48,13 @@ class Sku extends ProductResource
     /**
      * Fetches prices for the SKUs
      *
-     * @param Store $store
+     * @param Website $website
      * @param array $skuIds
      * @return array
      * @suppress PhanTypeMismatchArgument
      */
     public function getSkusByIds(
-        Store $store,
+        Website $website,
         array $skuIds
     ): array {
         $gid = (string)GroupManagement::NOT_LOGGED_IN_ID;
@@ -64,8 +64,7 @@ class Sku extends ProductResource
                 ["ciss" => $this->_resource->getTableName(self::CATALOG_INVENTORY_STOCK_STATUS_TABLE)],
                 "cpip.entity_id=ciss.product_id"
             )
-            ->where("ciss.stock_status = ?", 1)
-            ->where("cpip.website_id = ?", $store->getWebsiteId())
+            ->where("cpip.website_id = ?", $website->getId())
             ->where("cpip.entity_id IN(?)", $skuIds)
             ->where("cpip.customer_group_id = ?", $gid);
 
