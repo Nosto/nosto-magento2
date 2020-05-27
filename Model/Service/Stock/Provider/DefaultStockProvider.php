@@ -133,6 +133,6 @@ class DefaultStockProvider implements StockProviderInterface
      */
     public function getInStockProductsByIdsAsArray(array $productIds, Website $website)
     {
-        return $this->skuResource->getSkusByIds($website, $productIds);
+        return $this->skuResource->getInStockSkuPricesByIds($website, $productIds);
     }
 }
