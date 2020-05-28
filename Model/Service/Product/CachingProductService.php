@@ -99,12 +99,45 @@ class CachingProductService implements ProductServiceInterface
                     return null;
                 }
             }
+            // Double check that we are able to generate & save the cached product
+            if ($cachedProduct == null) {
+                $this->nostoLogger->debug(
+                    sprintf(
+                        'Unable to build and save cache entry for product #%s for store %s',
+                        $product->getId(),
+                        $store->getCode()
+                    )
+                );
+                return null;
+            }
             //If it is dirty rebuild the product data
             if ($cachedProduct->getIsDirty()) {
                 $cachedProduct = $this->nostoCacheService->rebuildDirtyProduct($cachedProduct);
+                if ($cachedProduct == null) {
+                    $this->nostoLogger->debug(
+                        sprintf(
+                            'Unable to rebuild dirty cache entry for product #%s for store %s',
+                            $product->getId(),
+                            $store->getCode()
+                        )
+                    );
+                    return null;
+                }
+            }
+            //Check that we actually got serializable data
+            $productData = $cachedProduct->getProductData();
+            if ($productData == null) {
+                $this->nostoLogger->debug(
+                    sprintf(
+                        'Unable to serialize product data for product #%s for store %s the data is null',
+                        $product->getId(),
+                        $store->getCode()
+                    )
+                );
+                return null;
             }
             return $this->productSerializer->fromString(
-                $cachedProduct->getProductData()
+                $productData
             );
         } catch (Exception $e) {
             $this->nostoLogger->exception($e);

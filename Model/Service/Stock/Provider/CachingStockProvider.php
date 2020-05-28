@@ -51,6 +51,9 @@ class CachingStockProvider implements StockProviderInterface
     /** @var array */
     private $inStockCache = [];
 
+    /** @var array */
+    private $productIdSkuCache = [];
+
     /** @var int */
     private $maxCacheSize;
 
@@ -202,5 +205,67 @@ class CachingStockProvider implements StockProviderInterface
     private function existsInQuantityCache($productId, Website $website)
     {
         return isset($this->quantityCache[$website->getId()][$productId]);
+    }
+
+    /**
+     * @param int $productId
+     * @param Website $website
+     * @return bool
+     */
+    private function existsInProductDataCache($productId, Website $website)
+    {
+        return isset($this->productIdSkuCache[$website->getId()][$productId]);
+    }
+
+    public function getInStockSkusByIds(array $productIds, Website $website)
+    {
+        $productData = [];
+        $nonCached = [];
+        foreach ($productIds as $productId) {
+            if ($this->existsInProductDataCache($productId, $website)) {
+                $productData[$productId] = $this->getInStockProductsFromCache($productId, $website);
+            } else {
+                $nonCached[] = $productId;
+            }
+        }
+        if (!empty($nonCached)) {
+            $lookedUpData = $this->stockProvider->getInStockSkusByIds($nonCached, $website);
+            foreach ($lookedUpData as $productId => $sku) {
+                $productData[$productId] = $sku;
+                $this->saveSkuToCache($productId, $website, $sku);
+            }
+        }
+        return $productData;
+    }
+
+    /**
+     * @param int $productId
+     * @param Website $website
+     * @return int|null
+     */
+    private function getInStockProductsFromCache($productId, Website $website)
+    {
+        if (!isset($this->productIdSkuCache[$website->getId()][$productId])) {
+            return null;
+        }
+        return $this->productIdSkuCache[$website->getId()][$productId];
+    }
+
+    /**
+     * @param int $productId
+     * @param Website $website
+     * @param string $sku
+     */
+    private function saveSkuToCache($productId, Website $website, $sku)
+    {
+        if (empty($this->productIdSkuCache[$website->getId()])) {
+            $this->productIdSkuCache[$website->getId()] = [];
+        }
+        $this->productIdSkuCache[$website->getId()][$productId] = $sku;
+        $count = count($this->productIdSkuCache);
+        $offset = $count-$this->maxCacheSize;
+        if ($offset > 0) {
+            $this->productIdSkuCache = array_slice($this->productIdSkuCache, $offset, $this->maxCacheSize, true);
+        }
     }
 }

@@ -65,4 +65,13 @@ class Collection extends MagentoProductCollection
     {
         return $this->addAttributeToFilter($this->getIdFieldName(), ['in', $ids]);
     }
+
+    /**
+     * @param array $skus
+     * @return Collection
+     */
+    public function addSkuFilter(array $skus)
+    {
+        return $this->addAttributeToFilter('sku', ['in', $skus]);
+    }
 }

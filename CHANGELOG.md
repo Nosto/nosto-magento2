@@ -2,6 +2,16 @@ All notable changes to this project will be documented in this file. This projec
 
 # not released
 * Add google category as customisable attribute
+* Change the namespaces to comply with PHP SDK 5.0.0
+
+# 4.0.9
+* Fix an issue with configurable product prices not being set when using MSI  
+
+# 4.0.8
+* Add null guard for caching product service in case the product data building fails for dirty product
+
+# 4.0.7
+* Handle empty / invalid product cache entries and possible failures in product data building gracefully
 
 # 4.0.6
 * Fix issue with non-generated proxy classes during di compilation 
