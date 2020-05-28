@@ -100,7 +100,7 @@ interface StockProviderInterface
     /**
      * @param array $productIds
      * @param Website $website
-     * @return array
+     * @return array an array of in stock skus having the product id as key ['1' => 'SKUSTRING-1']
      */
-    public function getInStockProductsByIdsAsArray(array $productIds, Website $website);
+    public function getInStockSkusByIds(array $productIds, Website $website);
 }

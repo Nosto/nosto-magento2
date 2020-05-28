@@ -49,6 +49,7 @@ use Magento\Framework\Api\Search\FilterGroupBuilder;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Store\Model\Store;
+use Nosto\Tagging\Model\ResourceModel\Sku;
 use Nosto\Tagging\Model\Service\Stock\Provider\StockProviderInterface;
 
 /**
@@ -70,6 +71,7 @@ class Repository
     private $configurableType;
     private $productVisibility;
     private $stockProvider;
+    private $skuResource;
 
     /**
      * Constructor to instantiating the reindex command. This constructor uses proxy classes for
@@ -95,7 +97,8 @@ class Repository
         FilterGroupBuilder $filterGroupBuilder,
         ConfigurableType $configurableType,
         ProductVisibility $productVisibility,
-        StockProviderInterface $stockProvider
+        StockProviderInterface $stockProvider,
+        Sku $skuResource
     ) {
         $this->productRepository = $productRepository;
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;
@@ -105,6 +108,7 @@ class Repository
         $this->configurableType = $configurableType;
         $this->productVisibility = $productVisibility;
         $this->stockProvider = $stockProvider;
+        $this->skuResource = $skuResource;
     }
 
     /**
@@ -256,6 +260,7 @@ class Repository
      */
     public function getSkusAsArray(Product $product, Store $store)
     {
-        return $this->stockProvider->getInStockProductsByIdsAsArray($this->getSkuIds($product), $store->getWebsite());
+        $inStockProductsByIds = $this->stockProvider->getInStockSkusByIds($this->getSkuIds($product), $store->getWebsite());
+        return $this->skuResource->getSkuPricesByIds($store->getWebsite(), array_keys($inStockProductsByIds));
     }
 }

@@ -47,25 +47,6 @@ class Sku extends ProductResource
     const CATALOG_INVENTORY_STOCK_STATUS_TABLE = "cataloginventory_stock_status";
 
     /**
-     * Fetches prices for the SKUs that are in stock
-     *
-     * @param Website $website
-     * @param array $skuIds
-     * @return array
-     * @suppress PhanTypeMismatchArgument
-     */
-    public function getInStockSkuPricesByIds(
-        Website $website,
-        array $skuIds
-    ): array {
-        $select = $this->buildSelect($website, $skuIds)->joinInner(
-            ["ciss" => $this->_resource->getTableName(self::CATALOG_INVENTORY_STOCK_STATUS_TABLE)],
-            "cpip.entity_id=ciss.product_id"
-        );
-        return $this->_resource->getConnection()->fetchAll($select); // @codingStandardsIgnoreLine
-    }
-
-    /**
      * Fetches prices for the SKUs regardless if they are in stock or not
      *
      * @param Website $website
@@ -82,7 +63,7 @@ class Sku extends ProductResource
     }
 
     /**
-     * Fetches prices for the SKUs regardless if they are in stock or not
+     * Builder for the select statement
      *
      * @param Website $website
      * @param array $skuIds
