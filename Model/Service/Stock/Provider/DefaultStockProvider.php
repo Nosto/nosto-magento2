@@ -130,7 +130,7 @@ class DefaultStockProvider implements StockProviderInterface
         $skus = [];
         /** @var Status $stockItem */
         foreach ($stockItems as $stockItem) {
-            if ($stockItem->getStockStatus() == 1) {
+            if ($stockItem->getStockStatus() == StockStatusInterface::STATUS_IN_STOCK) {
                 $skus[$stockItem->getProductId()] = $stockItem->getSku();
             }
         }
