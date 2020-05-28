@@ -1,5 +1,8 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+# 4.0.9
+* Fix an issue with configurable product prices not being set when using MSI  
+
 # 4.0.8
 * Add null guard for caching product service in case the product data building fails for dirty product
 

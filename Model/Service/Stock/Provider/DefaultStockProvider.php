@@ -40,18 +40,21 @@ namespace Nosto\Tagging\Model\Service\Stock\Provider;
 use Magento\Catalog\Model\Product;
 use Magento\CatalogInventory\Api\Data\StockItemInterface;
 use Magento\CatalogInventory\Api\Data\StockStatusInterface;
+use Magento\CatalogInventory\Model\Stock\Status;
 use Magento\Store\Model\Website;
 
 class DefaultStockProvider implements StockProviderInterface
 {
+    /** @var StockRegistryProvider */
     private $stockRegistryProvider;
 
     /**
      * DefaultStockProvider constructor.
      * @param StockRegistryProvider $stockRegistryProvider
      */
-    public function __construct(StockRegistryProvider $stockRegistryProvider)
-    {
+    public function __construct(
+        StockRegistryProvider $stockRegistryProvider
+    ) {
         $this->stockRegistryProvider = $stockRegistryProvider;
     }
 
@@ -96,7 +99,6 @@ class DefaultStockProvider implements StockProviderInterface
     {
         $quantities = [];
         $stockItems = $this->getStockStatuses($productIds, $website);
-        /* @var Product $product */
         foreach ($stockItems as $stockItem) {
             $quantities[$stockItem->getProductId()] = $stockItem->getQty();
         }
@@ -105,6 +107,7 @@ class DefaultStockProvider implements StockProviderInterface
 
     /**
      * @param array $ids
+     * @param Website $website
      * @return StockStatusInterface[]
      */
     private function getStockStatuses(// @codingStandardsIgnoreLine
@@ -116,5 +119,21 @@ class DefaultStockProvider implements StockProviderInterface
             $ids,
             StockRegistryProvider::DEFAULT_STOCK_SCOPE
         )->getItems();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getInStockSkusByIds(array $productIds, Website $website)
+    {
+        $stockItems = $this->getStockStatuses($productIds, $website);
+        $skus = [];
+        /** @var Status $stockItem */
+        foreach ($stockItems as $stockItem) {
+            if ($stockItem->getStockStatus() == StockStatusInterface::STATUS_IN_STOCK) {
+                $skus[$stockItem->getProductId()] = $stockItem->getSku();
+            }
+        }
+        return $skus;
     }
 }

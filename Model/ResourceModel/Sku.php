@@ -38,7 +38,8 @@ namespace Nosto\Tagging\Model\ResourceModel;
 
 use Magento\Catalog\Model\ResourceModel\Product as ProductResource;
 use Magento\Customer\Model\GroupManagement;
-use Magento\Store\Model\Store;
+use Magento\Framework\DB\Select;
+use Magento\Store\Model\Website;
 
 class Sku extends ProductResource
 {
@@ -46,29 +47,35 @@ class Sku extends ProductResource
     const CATALOG_INVENTORY_STOCK_STATUS_TABLE = "cataloginventory_stock_status";
 
     /**
-     * Fetches prices for the SKUs
+     * Fetches prices for the SKUs regardless if they are in stock or not
      *
-     * @param Store $store
+     * @param Website $website
      * @param array $skuIds
      * @return array
      * @suppress PhanTypeMismatchArgument
      */
-    public function getSkusByIds(
-        Store $store,
+    public function getSkuPricesByIds(
+        Website $website,
         array $skuIds
     ): array {
+        $select = $this->buildSelect($website, $skuIds);
+        return $this->_resource->getConnection()->fetchAll($select); // @codingStandardsIgnoreLine
+    }
+
+    /**
+     * Builder for the select statement
+     *
+     * @param Website $website
+     * @param array $skuIds
+     * @return Select
+     */
+    public function buildSelect(Website $website, array $skuIds): Select
+    {
         $gid = (string)GroupManagement::NOT_LOGGED_IN_ID;
-        $select = $this->_resource->getConnection()->select()
+        return $this->_resource->getConnection()->select()
             ->from(["cpip" => $this->_resource->getTableName(self::CATALOG_PRODUCT_PRICE_INDEX_TABLE)])
-            ->joinInner(
-                ["ciss" => $this->_resource->getTableName(self::CATALOG_INVENTORY_STOCK_STATUS_TABLE)],
-                "cpip.entity_id=ciss.product_id"
-            )
-            ->where("ciss.stock_status = ?", 1)
-            ->where("cpip.website_id = ?", $store->getWebsiteId())
+            ->where("cpip.website_id = ?", $website->getId())
             ->where("cpip.entity_id IN(?)", $skuIds)
             ->where("cpip.customer_group_id = ?", $gid);
-
-        return $this->_resource->getConnection()->fetchAll($select); // @codingStandardsIgnoreLine
     }
 }
