@@ -1,7 +1,7 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
-# not released
-* Refactor the indexing logic to use batched queues
+# 5.0.0
+* Refactor the indexing logic to use batched queues & decouple the caching logic from product updates
 * Use Magento's built-in caching logic for caching Nosto product data 
 * Add google category as customisable attribute
 * Change the namespaces to comply with PHP SDK 5.0.0
