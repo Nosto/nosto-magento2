@@ -34,68 +34,31 @@
  *
  */
 
-namespace Nosto\Tagging\Plugin;
+namespace Nosto\Tagging\Api;
 
-use Closure;
-use Magento\Catalog\Model\ResourceModel\Product as MagentoResourceProduct;
-use Magento\Framework\Indexer\IndexerRegistry;
-use Magento\Framework\Model\AbstractModel;
-use Nosto\Tagging\Model\Indexer\DataIndexer as IndexerData;
-use Nosto\Tagging\Model\ResourceModel\Product\Cache;
+use Magento\Store\Api\Data\StoreInterface;
+use Nosto\Tagging\Api\Data\ProductUpdateQueueInterface;
 
-class ProductData
+interface ProductUpdateQueueRepositoryInterface
 {
     /**
-     * @var IndexerRegistry
+     * Save Queue entry
+     *
+     * @param ProductUpdateQueueInterface $entry
+     * @return ProductUpdateQueueInterface
      */
-    private $indexerRegistry;
+    public function save(ProductUpdateQueueInterface $entry);
 
     /**
-     * @var IndexerData
+     * Delete productIndex
+     *
+     * @param ProductUpdateQueueInterface $entry
      */
-    private $indexerData;
+    public function delete(ProductUpdateQueueInterface $entry);
 
     /**
-     * @var MagentoResourceProduct
+     * @param StoreInterface $store
+     * @return ProductUpdateQueueInterface|null
      */
-    private $magentoResourceProduct;
-
-    /**
-     * Product Observer constructor
-     * @param MagentoResourceProduct $magentoResourceProduct
-     * @param IndexerRegistry $indexerRegistry
-     * @param IndexerData $indexerData
-     */
-    public function __construct(
-        MagentoResourceProduct $magentoResourceProduct,
-        IndexerRegistry $indexerRegistry,
-        IndexerData $indexerData
-    )
-    {
-        $this->indexerRegistry = $indexerRegistry;
-        $this->indexerData = $indexerData;
-        $this->magentoResourceProduct = $magentoResourceProduct;
-    }
-
-    /**
-     * @param Cache $cache
-     * @param Closure $proceed
-     * @param AbstractModel $product
-     * @return mixed
-     */
-    public function aroundSave(
-        /** @noinspection PhpUnusedParameterInspection */
-        Cache $cache,
-        Closure $proceed,
-        AbstractModel $product
-    ) {
-        $mageIndexer = $this->indexerRegistry->get(IndexerData::INDEXER_ID);
-        if (!$mageIndexer->isScheduled()) {
-            $this->magentoResourceProduct->addCommitCallback(function () use ($product) {
-                $this->indexerData->executeRow($product->getId());
-            });
-        }
-
-        return $proceed($product);
-    }
+    public function getByStore(StoreInterface $store);
 }

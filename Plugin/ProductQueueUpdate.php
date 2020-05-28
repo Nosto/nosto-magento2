@@ -34,31 +34,57 @@
  *
  */
 
-namespace Nosto\Tagging\Api\Data;
+namespace Nosto\Tagging\Plugin;
 
-use Magento\Framework\Data\SearchResultInterface;
+use Closure;
+use Magento\Framework\Indexer\IndexerRegistry;
+use Magento\Framework\Model\AbstractModel;
+use Nosto\Tagging\Model\Indexer\QueueProcessorIndexer;
+use Nosto\Tagging\Model\ResourceModel\Product\Update\Queue as QueueResource;
 
-interface ProductCacheSearchResultsInterface extends SearchResultInterface
+/**
+ * Plugin for product updates
+ * @package Nosto\Tagging\Plugin
+ */
+class ProductQueueUpdate
 {
-    /**
-     * Get items from search results
-     *
-     * @return ProductCacheInterface[]
-     */
-    public function getItems();
+    /** @var IndexerRegistry  */
+    private $indexerRegistry;
+
+    /** @var QueueProcessorIndexer  */
+    private $queueProcessorIndexer;
 
     /**
-     * Get first item from search results
-     *
-     * @return ProductCacheInterface
+     * ProductInvalidate constructor.
+     * @param IndexerRegistry $indexerRegistry
+     * @param QueueProcessorIndexer $queueProcessorIndexer
      */
-    public function getFirstItem();
+    public function __construct(
+        IndexerRegistry $indexerRegistry,
+        QueueProcessorIndexer $queueProcessorIndexer
+    ) {
+        $this->indexerRegistry = $indexerRegistry;
+        $this->queueProcessorIndexer = $queueProcessorIndexer;
+    }
 
     /**
-     * Set items for search results
-     *
-     * @param ProductCacheInterface[] $items
-     * @return $this
+     * @param QueueResource $queueResource
+     * @param Closure $proceed
+     * @param AbstractModel $queue
+     * @return mixed
      */
-    public function setItems(array $items);
+    public function aroundSave(
+        QueueResource $queueResource,
+        Closure $proceed,
+        AbstractModel $queue
+    ) {
+        $mageIndexer = $this->indexerRegistry->get(QueueProcessorIndexer::INDEXER_ID);
+        if (!$mageIndexer->isScheduled()) {
+            $queueResource->addCommitCallback(function () use ($queue) {
+                $this->queueProcessorIndexer->executeRow($queue->getId());
+            });
+        }
+
+        return $proceed($queue);
+    }
 }

@@ -40,42 +40,34 @@ use Exception;
 use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Store\Api\Data\StoreInterface;
 use Nosto\Tagging\Logger\Logger;
-use Nosto\Tagging\Model\Product\Cache\CacheRepository;
 use Nosto\Tagging\Model\Service\Cache\CacheService;
 use Nosto\Types\Product\ProductInterface as NostoProductInterface;
 
 class CachingProductService implements ProductServiceInterface
 {
-
-    /** @var CacheRepository */
-    private $nostoCacheRepository;
-
     /** @var Logger */
     private $nostoLogger;
 
     /** @var CacheService */
     private $nostoCacheService;
 
-    /** @var ProductSerializerInterface */
-    private $productSerializer;
+    /** @var ProductServiceInterface */
+    private $defaultProductService;
 
     /**
      * Index constructor.
-     * @param CacheRepository $nostoCacheRepository
      * @param Logger $nostoLogger
      * @param CacheService $nostoCacheService
-     * @param ProductSerializerInterface $productSerializer
+     * @param ProductServiceInterface $defaultProductService
      */
     public function __construct(
-        CacheRepository $nostoCacheRepository,
         Logger $nostoLogger,
         CacheService $nostoCacheService,
-        ProductSerializerInterface $productSerializer
+        ProductServiceInterface $defaultProductService
     ) {
-        $this->nostoCacheRepository = $nostoCacheRepository;
         $this->nostoLogger = $nostoLogger;
         $this->nostoCacheService = $nostoCacheService;
-        $this->productSerializer = $productSerializer;
+        $this->defaultProductService = $defaultProductService;
     }
 
     /**
@@ -90,55 +82,13 @@ class CachingProductService implements ProductServiceInterface
     public function getProduct(ProductInterface $product, StoreInterface $store)
     {
         try {
-            $cachedProduct = $this->nostoCacheRepository->getOneByProductAndStore($product, $store);
-            //In case the product is not present in the index table
-            if ($cachedProduct === null) {
-                $this->nostoCacheService->updateOrCreateDirtyEntity($product, $store);
-                $cachedProduct = $this->nostoCacheRepository->getOneByProductAndStore($product, $store);
-                if ($cachedProduct === null) {
-                    return null;
-                }
+            $nostoProduct = $this->nostoCacheService->get($product, $store);
+            //In case the product is not present in cache
+            if ($nostoProduct === null) {
+                $nostoProduct = $this->defaultProductService->getProduct($product, $store);
+                $this->nostoCacheService->save($nostoProduct, $store);
             }
-            // Double check that we are able to generate & save the cached product
-            if ($cachedProduct == null) {
-                $this->nostoLogger->debug(
-                    sprintf(
-                        'Unable to build and save cache entry for product #%s for store %s',
-                        $product->getId(),
-                        $store->getCode()
-                    )
-                );
-                return null;
-            }
-            //If it is dirty rebuild the product data
-            if ($cachedProduct->getIsDirty()) {
-                $cachedProduct = $this->nostoCacheService->rebuildDirtyProduct($cachedProduct);
-                if ($cachedProduct == null) {
-                    $this->nostoLogger->debug(
-                        sprintf(
-                            'Unable to rebuild dirty cache entry for product #%s for store %s',
-                            $product->getId(),
-                            $store->getCode()
-                        )
-                    );
-                    return null;
-                }
-            }
-            //Check that we actually got serializable data
-            $productData = $cachedProduct->getProductData();
-            if ($productData == null) {
-                $this->nostoLogger->debug(
-                    sprintf(
-                        'Unable to serialize product data for product #%s for store %s the data is null',
-                        $product->getId(),
-                        $store->getCode()
-                    )
-                );
-                return null;
-            }
-            return $this->productSerializer->fromString(
-                $productData
-            );
+            return $nostoProduct;
         } catch (Exception $e) {
             $this->nostoLogger->exception($e);
             return null;

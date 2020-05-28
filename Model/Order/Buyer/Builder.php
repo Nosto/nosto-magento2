@@ -48,7 +48,7 @@ use Nosto\Tagging\Model\Person\Builder as PersonBuilder;
 class Builder extends PersonBuilder
 {
     /**
-     * @inheritdoc
+     * @inheritDoc
      * @return Buyer
      */
     public function buildObject( // @codingStandardsIgnoreLine

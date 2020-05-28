@@ -34,27 +34,31 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Product\Cache;
+namespace Nosto\Tagging\Model\Cache\Type;
 
-use Magento\Framework\Api\Search\SearchResult;
-use Nosto\Tagging\Api\Data\ProductCacheInterface;
-use Nosto\Tagging\Api\Data\ProductCacheSearchResultsInterface;
+use Magento\Framework\App\Cache\Type\FrontendPool;
+use Magento\Framework\Cache\Frontend\Decorator\TagScope;
 
-class CacheSearchResults extends SearchResult implements ProductCacheSearchResultsInterface // @codingStandardsIgnoreLine
+class ProductData extends TagScope implements ProductDataInterface
 {
     /**
-     * @return ProductCacheInterface|null
+     * Cache type code unique among all cache types
      */
-    public function getFirstItem()
-    {
-        if ($this->getTotalCount() === 0) {
-            return null;
-        }
+    const TYPE_IDENTIFIER = 'nosto_product_cache';
 
-        /** @var ProductCacheInterface[]|null $items */
-        $items = $this->getItems();
-        /** @var ProductCacheInterface|null $item */
-        $item = $items ? reset($items) : null;
-        return $item;
+    /**
+     * The tag name that limits the cache cleaning scope within a particular tag
+     */
+    const CACHE_TAG = 'NOSTO_PRODUCT';
+
+    /**
+     * @param FrontendPool $cacheFrontendPool
+     */
+    public function __construct(FrontendPool $cacheFrontendPool)
+    {
+        parent::__construct(
+            $cacheFrontendPool->get(self::TYPE_IDENTIFIER),
+            self::CACHE_TAG
+        );
     }
 }

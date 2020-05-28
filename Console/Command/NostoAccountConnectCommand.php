@@ -83,7 +83,7 @@ class NostoAccountConnectCommand extends Command
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     protected function configure()
     {
@@ -134,7 +134,7 @@ class NostoAccountConnectCommand extends Command
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {

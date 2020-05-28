@@ -37,20 +37,27 @@
 namespace Nosto\Tagging\Api\Data;
 
 use DateTime;
-use Magento\Catalog\Api\Data\ProductInterface as MagentoProductInterface;
 use Magento\Store\Api\Data\StoreInterface;
 
-interface ProductCacheInterface
+/**
+ * Interface ProductUpdateQueueInterface
+ */
+interface ProductUpdateQueueInterface
 {
     const ID = 'id';
-    const PRODUCT_ID = 'product_id';
     const CREATED_AT = 'created_at';
-    const UPDATED_AT = 'updated_at';
-    const IN_SYNC = 'in_sync';
-    const IS_DIRTY = 'is_dirty';
-    const IS_DELETED = 'is_deleted';
+    const STARTED_AT = 'started_at';
+    const COMPLETED_AT = 'completed_at';
     const STORE_ID = 'store_id';
-    const PRODUCT_DATA = 'product_data';
+    const PRODUCT_IDS = 'product_ids';
+    const PRODUCT_ID_COUNT = 'product_id_count';
+    const ACTION = 'action';
+    const ACTION_VALUE_UPSERT = 'upsert';
+    const ACTION_VALUE_DELETE = 'delete';
+    const STATUS = 'status';
+    const STATUS_VALUE_NEW = 'new';
+    const STATUS_VALUE_PROCESSING = 'processing';
+    const STATUS_VALUE_DONE = 'done';
 
     /**
      * Get row id
@@ -60,13 +67,6 @@ interface ProductCacheInterface
     public function getId();
 
     /**
-     * Get product id
-     *
-     * @return int|null
-     */
-    public function getProductId();
-
-    /**
      * Get created at time
      *
      * @return DateTime
@@ -74,32 +74,18 @@ interface ProductCacheInterface
     public function getCreatedAt();
 
     /**
-     * Get updated at time
+     * Get started at time
      *
      * @return DateTime
      */
-    public function getUpdatedAt();
+    public function getStartedAt();
 
     /**
-     * Get in sync
+     * Get completed at time
      *
-     * @return boolean
+     * @return DateTime
      */
-    public function getInSync();
-
-    /**
-     * Get is dirty
-     *
-     * @return boolean
-     */
-    public function getIsDirty();
-
-    /**
-     * Get is deleted
-     *
-     * @return boolean
-     */
-    public function getIsDeleted();
+    public function getCompletedAt();
 
     /**
      * Get store id
@@ -113,7 +99,28 @@ interface ProductCacheInterface
      *
      * @return string|null
      */
-    public function getProductData();
+    public function getProductIds();
+
+    /**
+     * Get the queue status
+     *
+     * @return string
+     */
+    public function getStatus();
+
+    /**
+     * Get the queue action
+     *
+     * @return string
+     */
+    public function getAction();
+
+    /**
+     * Get the count of product ids in entry
+     *
+     * @return int
+     */
+    public function getProductIdCount();
 
     /**
      * Set id
@@ -126,34 +133,10 @@ interface ProductCacheInterface
     /**
      * Set product id
      *
-     * @param int $productId
+     * @param array $productIds
      * @return self
      */
-    public function setProductId($productId);
-
-    /**
-     * Set in sync
-     *
-     * @param boolean $inSync
-     * @return self
-     */
-    public function setInSync($inSync);
-
-    /**
-     * Set is dirty to false or true
-     *
-     * @param boolean $isDirty
-     * @return self
-     */
-    public function setIsDirty($isDirty);
-
-    /**
-     * Set is deleted to false or true
-     *
-     * @param boolean $isDeleted
-     * @return self
-     */
-    public function setIsDeleted($isDeleted);
+    public function setProductIds(array $productIds);
 
     /**
      * Set store id
@@ -164,14 +147,6 @@ interface ProductCacheInterface
     public function setStoreId($storeId);
 
     /**
-     * Set product data
-     *
-     * @param string $productData
-     * @return self
-     */
-    public function setProductData($productData);
-
-    /**
      * Set created at time
      *
      * @param DateTime $createdAt
@@ -180,22 +155,42 @@ interface ProductCacheInterface
     public function setCreatedAt(DateTime $createdAt);
 
     /**
-     * Set updated at time
+     * Set started at time
      *
-     * @param DateTime $updatedAt
+     * @param DateTime $startedAt
      * @return self
      */
-    public function setUpdatedAt(DateTime $updatedAt);
+    public function setStartedAt(DateTime $startedAt);
 
     /**
-     * @param MagentoProductInterface $product
+     * Set completed at time
+     *
+     * @param DateTime $completedAt
      * @return self
      */
-    public function setMagentoProduct(MagentoProductInterface $product);
+    public function setCompletedAt(DateTime $completedAt);
 
     /**
      * @param StoreInterface $store
      * @return self
      */
     public function setStore(StoreInterface $store);
+
+    /**
+     * @param string $status
+     * @return self
+     */
+    public function setStatus($status);
+
+    /**
+     * @param string $action
+     * @return self
+     */
+    public function setAction($action);
+
+    /**
+     * @param int $count
+     * @return self
+     */
+    public function setProductIdCount($count);
 }

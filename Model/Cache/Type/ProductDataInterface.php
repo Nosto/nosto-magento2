@@ -34,36 +34,11 @@
  *
  */
 
-/**
- * @var $block Nosto\Tagging\Block\Adminhtml\Form\Field\Indexers
- */
-?>
+namespace Nosto\Tagging\Model\Cache\Type;
 
-<fieldset>
-        <table>
-            <tr>
-                <td>
-                    <?= $block->escapeHtml(__('Products Marked As Dirty')) ?>
-                </td>
-                <td>
-                    <label>
-                        <input type="text" readonly
-                               value = "<?= $block->escapeHtml($block->getAmountDirtyProducts()) ?>"
-                        />
-                    </label>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <?= $block->escapeHtml(__('Products Out Of Sync')) ?>
-                </td>
-                <td>
-                    <label>
-                        <input type="text" readonly
-                               value = "<?= $block->escapeHtml($block->getAmountOutOfSyncProducts()) ?>"
-                        />
-                    </label>
-                </td>
-            </tr>
-        </table>
-</fieldset>
+use Magento\Framework\Cache\FrontendInterface;
+
+interface ProductDataInterface extends FrontendInterface
+{
+    public function getTag();
+}

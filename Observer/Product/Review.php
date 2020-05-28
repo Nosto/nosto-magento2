@@ -48,7 +48,7 @@ use Magento\Review\Model\Review as ReviewModel;
 class Review extends Base
 {
     /**
-     * @inheritdoc
+     * @inheritDoc
      * @throws NoSuchEntityException
      */
     public function extractProduct(Observer $observer)
