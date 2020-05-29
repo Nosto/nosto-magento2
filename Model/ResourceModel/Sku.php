@@ -75,6 +75,7 @@ class Sku extends ProductResource
         return $this->_resource->getConnection()->select()
             ->from(["cpip" => $this->_resource->getTableName(self::CATALOG_PRODUCT_PRICE_INDEX_TABLE)])
             ->where("cpip.website_id = ?", $website->getId())
+            /** @phan-suppress-next-line PhanTypeMismatchArgument */
             ->where("cpip.entity_id IN(?)", $skuIds)
             ->where("cpip.customer_group_id = ?", $gid);
     }
