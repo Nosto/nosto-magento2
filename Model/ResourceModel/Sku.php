@@ -58,6 +58,9 @@ class Sku extends ProductResource
         Website $website,
         array $skuIds
     ): array {
+        if (empty($skuIds)) {
+            return [];
+        }
         $select = $this->buildSelect($website, $skuIds);
         return $this->_resource->getConnection()->fetchAll($select); // @codingStandardsIgnoreLine
     }
