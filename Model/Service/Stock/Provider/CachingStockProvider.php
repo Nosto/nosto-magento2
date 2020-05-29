@@ -218,20 +218,23 @@ class CachingStockProvider implements StockProviderInterface
         return isset($this->productIdsInStockCache[$website->getId()][$cacheKey]);
     }
 
+    /**
+     * @inheritDoc
+     */
     public function getInStockProductIds(array $productIds, Website $website)
     {
         if ($this->existsInProductDataCache($productIds, $website)) {
             return $this->getInStockProductsFromCache($productIds, $website);
         }
-        $lookedUpData = $this->stockProvider->getInStockProductIds($productIds, $website);
-        $this->saveToProductIdsInStockCache($productIds, $website, $lookedUpData);
-        return $lookedUpData;
+        $lookedUpProductIds = $this->stockProvider->getInStockProductIds($productIds, $website);
+        $this->saveToProductIdsInStockCache($productIds, $website, $lookedUpProductIds);
+        return $lookedUpProductIds;
     }
 
     /**
      * @param array $productIds
      * @param Website $website
-     * @return int|null
+     * @return array|null
      */
     private function getInStockProductsFromCache(array $productIds, Website $website)
     {
