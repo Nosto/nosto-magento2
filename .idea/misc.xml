@@ -1,0 +1,434 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="FUSUsageTrigger">
+    <session id="1083166744">
+      <usages-collector id="statistics.php.composer.actions">
+        <counts>
+          <entry key="diagnose_from_ComposerEditorNotificationPanel.ExtraActions" value="1" />
+          <entry key="init_from_ScopeViewPopup" value="1" />
+          <entry key="install_from_ComposerEditorNotificationPanel" value="6" />
+          <entry key="self-update_from_ComposerEditorNotificationPanel.ExtraActions" value="1" />
+          <entry key="updateAll_from_ComposerEditorNotificationPanel" value="3" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.php.composer.command.options" />
+    </session>
+  </component>
+  <component name="JavaScriptSettings">
+    <option name="languageLevel" value="ES5" />
+  </component>
+  <component name="PhpEntryPointsManager">
+    <entry_point>
+      <entry_point TYPE="phpNamespace" FQNAME="\Nosto\Tagging\Block" />
+      <entry_point TYPE="phpMethod" FQNAME="\Nosto\Tagging\Block\Addtocart __construct" />
+      <entry_point TYPE="phpMethod" FQNAME="\Nosto\Tagging\Block\Category __construct" />
+      <entry_point TYPE="phpMethod" FQNAME="\Nosto\Tagging\Block\Element __construct" />
+      <entry_point TYPE="phpMethod" FQNAME="\Nosto\Tagging\Block\Knockout __construct" />
+      <entry_point TYPE="phpMethod" FQNAME="\Nosto\Tagging\Block\Meta __construct" />
+      <entry_point TYPE="phpMethod" FQNAME="\Nosto\Tagging\Block\PageType __construct" />
+      <entry_point TYPE="phpMethod" FQNAME="\Nosto\Tagging\Block\Search __construct" />
+      <entry_point TYPE="phpMethod" FQNAME="\Nosto\Tagging\Block\Stub __construct" />
+      <entry_point TYPE="phpMethod" FQNAME="\Nosto\Tagging\Block\TaggingTrait __construct" />
+      <entry_point TYPE="phpMethod" FQNAME="\Nosto\Tagging\Block\Variation __construct" />
+      <entry_point TYPE="phpMethod" FQNAME="\Nosto\Tagging\Block\TaggingTrait _toHtml" />
+      <entry_point TYPE="phpClass" FQNAME="\Nosto\Tagging\Block\Addtocart" />
+      <entry_point TYPE="phpClass" FQNAME="\Nosto\Tagging\Block\Category" />
+      <entry_point TYPE="phpClass" FQNAME="\Nosto\Tagging\Block\Element" />
+      <entry_point TYPE="phpMethod" FQNAME="\Nosto\Tagging\Block\Embed __construct" />
+      <entry_point TYPE="phpClass" FQNAME="\Nosto\Tagging\Block\Embed" />
+      <entry_point TYPE="phpMethod" FQNAME="\Nosto\Tagging\Block\Order formatNostoDate" />
+      <entry_point TYPE="phpMethod" FQNAME="\Nosto\Tagging\Block\Product formatNostoDate" />
+      <entry_point TYPE="phpMethod" FQNAME="\Nosto\Tagging\Block\Order formatNostoPrice" />
+      <entry_point TYPE="phpMethod" FQNAME="\Nosto\Tagging\Block\Product formatNostoPrice" />
+      <entry_point TYPE="phpMethod" FQNAME="\Nosto\Tagging\Block\Addtocart getAbstractObject" />
+      <entry_point TYPE="phpMethod" FQNAME="\Nosto\Tagging\Block\Category getAbstractObject" />
+      <entry_point TYPE="phpMethod" FQNAME="\Nosto\Tagging\Block\Element getAbstractObject" />
+      <entry_point TYPE="phpMethod" FQNAME="\Nosto\Tagging\Block\Embed getAbstractObject" />
+      <entry_point TYPE="phpMethod" FQNAME="\Nosto\Tagging\Block\Meta getAbstractObject" />
+      <entry_point TYPE="phpMethod" FQNAME="\Nosto\Tagging\Block\Order getAbstractObject" />
+      <entry_point TYPE="phpMethod" FQNAME="\Nosto\Tagging\Block\PageType getAbstractObject" />
+      <entry_point TYPE="phpMethod" FQNAME="\Nosto\Tagging\Block\Product getAbstractObject" />
+      <entry_point TYPE="phpMethod" FQNAME="\Nosto\Tagging\Block\Search getAbstractObject" />
+      <entry_point TYPE="phpMethod" FQNAME="\Nosto\Tagging\Block\Stub getAbstractObject" />
+      <entry_point TYPE="phpMethod" FQNAME="\Nosto\Tagging\Block\Variation getAbstractObject" />
+      <entry_point TYPE="phpMethod" FQNAME="\Nosto\Tagging\Block\Element getElementId" />
+      <entry_point TYPE="phpMethod" FQNAME="\Nosto\Tagging\Block\Meta getInstallationId" />
+      <entry_point TYPE="phpMethod" FQNAME="\Nosto\Tagging\Block\Knockout getJsLayout" />
+      <entry_point TYPE="phpMethod" FQNAME="\Nosto\Tagging\Block\Meta getLanguageCode" />
+      <entry_point TYPE="phpMethod" FQNAME="\Nosto\Tagging\Block\Meta getModuleVersion" />
+      <entry_point TYPE="phpMethod" FQNAME="\Nosto\Tagging\Block\Product getNostoCategory" />
+      <entry_point TYPE="phpMethod" FQNAME="\Nosto\Tagging\Block\TaggingTrait getNostoHelperAccount" />
+      <entry_point TYPE="phpMethod" FQNAME="\Nosto\Tagging\Block\Addtocart getSubmitUrl" />
+      <entry_point TYPE="phpMethod" FQNAME="\Nosto\Tagging\Block\Knockout getTemplate" />
+      <entry_point TYPE="phpMethod" FQNAME="\Nosto\Tagging\Block\Product hasMultipleCurrencies" />
+      <entry_point TYPE="phpMethod" FQNAME="\Nosto\Tagging\Block\Variation hasMultipleCurrencies" />
+      <entry_point TYPE="phpMethod" FQNAME="\Nosto\Tagging\Block\Stub isRecoAutoloadDisabled" />
+      <entry_point TYPE="phpClass" FQNAME="\Nosto\Tagging\Block\Knockout" />
+      <entry_point TYPE="phpClass" FQNAME="\Nosto\Tagging\Block\Meta" />
+      <entry_point TYPE="phpMethod" FQNAME="\Nosto\Tagging\Block\Order __construct" />
+      <entry_point TYPE="phpClass" FQNAME="\Nosto\Tagging\Block\Order" />
+      <entry_point TYPE="phpClass" FQNAME="\Nosto\Tagging\Block\PageType" />
+      <entry_point TYPE="phpMethod" FQNAME="\Nosto\Tagging\Block\Product __construct" />
+      <entry_point TYPE="phpClass" FQNAME="\Nosto\Tagging\Block\Product" />
+      <entry_point TYPE="phpClass" FQNAME="\Nosto\Tagging\Block\Search" />
+      <entry_point TYPE="phpClass" FQNAME="\Nosto\Tagging\Block\Stub" />
+      <entry_point TYPE="phpClass" FQNAME="\Nosto\Tagging\Block\TaggingTrait" />
+      <entry_point TYPE="phpClass" FQNAME="\Nosto\Tagging\Block\Variation" />
+      <entry_point TYPE="phpNamespace" FQNAME="\Nosto\Tagging\Controller\Export" />
+      <entry_point TYPE="phpMethod" FQNAME="\Nosto\Tagging\Controller\Export\Order __construct" />
+      <entry_point TYPE="phpMethod" FQNAME="\Nosto\Tagging\Controller\Export\Product __construct" />
+      <entry_point TYPE="phpClass" FQNAME="\Nosto\Tagging\Controller\Export\Base" />
+      <entry_point TYPE="phpMethod" FQNAME="\Nosto\Tagging\Controller\Export\Order buildExportCollection" />
+      <entry_point TYPE="phpMethod" FQNAME="\Nosto\Tagging\Controller\Export\Product buildExportCollection" />
+      <entry_point TYPE="phpMethod" FQNAME="\Nosto\Tagging\Controller\Export\Order buildSingleExportCollection" />
+      <entry_point TYPE="phpMethod" FQNAME="\Nosto\Tagging\Controller\Export\Product buildSingleExportCollection" />
+      <entry_point TYPE="phpMethod" FQNAME="\Nosto\Tagging\Controller\Export\Base execute" />
+      <entry_point TYPE="phpMethod" FQNAME="\Nosto\Tagging\Controller\Export\Product export" />
+      <entry_point TYPE="phpClass" FQNAME="\Nosto\Tagging\Controller\Export\Order" />
+      <entry_point TYPE="phpClass" FQNAME="\Nosto\Tagging\Controller\Export\Product" />
+      <entry_point TYPE="phpMethod" FQNAME="\Nosto\Tagging\Controller\Frontend\Cart __construct" />
+      <entry_point TYPE="phpMethod" FQNAME="\Nosto\Tagging\Plugin\ProductData __construct" />
+      <entry_point TYPE="phpMethod" FQNAME="\Nosto\Tagging\Setup\CoreData __construct" />
+      <entry_point TYPE="phpNamespace" FQNAME="\Nosto\Tagging\Observer\Adminhtml" />
+      <entry_point TYPE="phpNamespace" FQNAME="\Nosto\Tagging\Observer\Cart" />
+      <entry_point TYPE="phpNamespace" FQNAME="\Nosto\Tagging\Observer\Customer" />
+      <entry_point TYPE="phpNamespace" FQNAME="\Nosto\Tagging\Observer\Order" />
+      <entry_point TYPE="phpNamespace" FQNAME="\Nosto\Tagging\Observer\Product" />
+      <entry_point TYPE="phpNamespace" FQNAME="\Nosto\Tagging\Observer\Rates" />
+      <entry_point TYPE="phpNamespace" FQNAME="\Nosto\Tagging\Observer\Settings" />
+      <entry_point TYPE="phpMethod" FQNAME="\Nosto\Tagging\Observer\Adminhtml\Config __construct" />
+      <entry_point TYPE="phpMethod" FQNAME="\Nosto\Tagging\Observer\Cart\Add __construct" />
+      <entry_point TYPE="phpMethod" FQNAME="\Nosto\Tagging\Observer\Customer\Save __construct" />
+      <entry_point TYPE="phpMethod" FQNAME="\Nosto\Tagging\Observer\Customer\UpdateMarketingPermission __construct" />
+      <entry_point TYPE="phpMethod" FQNAME="\Nosto\Tagging\Observer\Order\Save __construct" />
+      <entry_point TYPE="phpMethod" FQNAME="\Nosto\Tagging\Observer\Product\Base __construct" />
+      <entry_point TYPE="phpMethod" FQNAME="\Nosto\Tagging\Observer\Rates\Update __construct" />
+      <entry_point TYPE="phpMethod" FQNAME="\Nosto\Tagging\Observer\Settings\Update __construct" />
+      <entry_point TYPE="phpClass" FQNAME="\Nosto\Tagging\Observer\Cart\Add" />
+      <entry_point TYPE="phpClass" FQNAME="\Nosto\Tagging\Observer\Product\Base" />
+      <entry_point TYPE="phpClass" FQNAME="\Nosto\Tagging\Observer\Adminhtml\Config" />
+      <entry_point TYPE="phpMethod" FQNAME="\Nosto\Tagging\Observer\Adminhtml\Config execute" />
+      <entry_point TYPE="phpMethod" FQNAME="\Nosto\Tagging\Observer\Cart\Add execute" />
+      <entry_point TYPE="phpMethod" FQNAME="\Nosto\Tagging\Observer\Customer\Save execute" />
+      <entry_point TYPE="phpMethod" FQNAME="\Nosto\Tagging\Observer\Customer\UpdateMarketingPermission execute" />
+      <entry_point TYPE="phpMethod" FQNAME="\Nosto\Tagging\Observer\Order\Save execute" />
+      <entry_point TYPE="phpMethod" FQNAME="\Nosto\Tagging\Observer\Product\Base execute" />
+      <entry_point TYPE="phpMethod" FQNAME="\Nosto\Tagging\Observer\Rates\Update execute" />
+      <entry_point TYPE="phpMethod" FQNAME="\Nosto\Tagging\Observer\Settings\Update execute" />
+      <entry_point TYPE="phpMethod" FQNAME="\Nosto\Tagging\Observer\Product\Review extractProduct" />
+      <entry_point TYPE="phpClass" FQNAME="\Nosto\Tagging\Observer\Product\Review" />
+      <entry_point TYPE="phpClass" FQNAME="\Nosto\Tagging\Observer\Customer\Save" />
+      <entry_point TYPE="phpClass" FQNAME="\Nosto\Tagging\Observer\Order\Save" />
+      <entry_point TYPE="phpClass" FQNAME="\Nosto\Tagging\Observer\Rates\Update" />
+      <entry_point TYPE="phpClass" FQNAME="\Nosto\Tagging\Observer\Settings\Update" />
+      <entry_point TYPE="phpClass" FQNAME="\Nosto\Tagging\Observer\Customer\UpdateMarketingPermission" />
+      <entry_point TYPE="phpNamespace" FQNAME="\Nosto\Tagging\Plugin" />
+      <entry_point TYPE="phpNamespace" FQNAME="\Nosto\Tagging\Plugin\Sales" />
+      <entry_point TYPE="phpNamespace" FQNAME="\Nosto\Tagging\Setup" />
+      <entry_point TYPE="phpNamespace" FQNAME="\Nosto\Tagging\Test\_util" />
+      <entry_point TYPE="phpNamespace" FQNAME="\Nosto\Tagging\Test\Integration" />
+      <entry_point TYPE="phpMethod" FQNAME="\Nosto\Tagging\Plugin\ProductInvalidate __construct" />
+      <entry_point TYPE="phpMethod" FQNAME="\Nosto\Tagging\Plugin\Sales\OrderRepository __construct" />
+      <entry_point TYPE="phpMethod" FQNAME="\Nosto\Tagging\Setup\UpgradeData __construct" />
+      <entry_point TYPE="phpMethod" FQNAME="\Nosto\Tagging\Plugin\Sales\OrderRepository afterSave" />
+      <entry_point TYPE="phpMethod" FQNAME="\Nosto\Tagging\Plugin\ProductData aroundSave" />
+      <entry_point TYPE="phpMethod" FQNAME="\Nosto\Tagging\Plugin\ProductInvalidate aroundSave" />
+      <entry_point TYPE="phpMethod" FQNAME="\Nosto\Tagging\Test\_util\BuilderInterface build" />
+      <entry_point TYPE="phpClass" FQNAME="\Nosto\Tagging\Test\_util\BuilderInterface" />
+      <entry_point TYPE="phpMethod" FQNAME="\Nosto\Tagging\Test\Integration\FixturesTrait fixtureLoadSimpleProduct" />
+      <entry_point TYPE="phpClass" FQNAME="\Nosto\Tagging\Test\Integration\FixturesTrait" />
+      <entry_point TYPE="phpMethod" FQNAME="\Nosto\Tagging\Setup\InstallData install" />
+      <entry_point TYPE="phpMethod" FQNAME="\Nosto\Tagging\Setup\InstallSchema install" />
+      <entry_point TYPE="phpClass" FQNAME="\Nosto\Tagging\Setup\InstallData" />
+      <entry_point TYPE="phpClass" FQNAME="\Nosto\Tagging\Setup\InstallSchema" />
+      <entry_point TYPE="phpClass" FQNAME="\Nosto\Tagging\Plugin\Sales\OrderRepository" />
+      <entry_point TYPE="phpClass" FQNAME="\Nosto\Tagging\Plugin\ProductData" />
+      <entry_point TYPE="phpClass" FQNAME="\Nosto\Tagging\Plugin\ProductInvalidate" />
+      <entry_point TYPE="phpMethod" FQNAME="\Nosto\Tagging\Setup\UpgradeData upgrade" />
+      <entry_point TYPE="phpMethod" FQNAME="\Nosto\Tagging\Setup\UpgradeSchema upgrade" />
+      <entry_point TYPE="phpClass" FQNAME="\Nosto\Tagging\Setup\UpgradeData" />
+      <entry_point TYPE="phpClass" FQNAME="\Nosto\Tagging\Setup\UpgradeSchema" />
+      <entry_point TYPE="phpMethod" FQNAME="\Nosto\Tagging\Model\Service\Stock\StockService __construct" />
+    </entry_point>
+    <pattern value="\Nosto\Tagging\Block\Addtocart" member="__construct" />
+    <pattern value="\Nosto\Tagging\Block\Category" member="__construct" />
+    <pattern value="\Nosto\Tagging\Block\Element" member="__construct" />
+    <pattern value="\Nosto\Tagging\Block\Knockout" member="__construct" />
+    <pattern value="\Nosto\Tagging\Block\Meta" member="__construct" />
+    <pattern value="\Nosto\Tagging\Block\PageType" member="__construct" />
+    <pattern value="\Nosto\Tagging\Block\Search" member="__construct" />
+    <pattern value="\Nosto\Tagging\Block\Stub" member="__construct" />
+    <pattern value="\Nosto\Tagging\Block\TaggingTrait" member="__construct" />
+    <pattern value="\Nosto\Tagging\Block\Variation" member="__construct" />
+    <pattern value="\Nosto\Tagging\Block\TaggingTrait" member="_toHtml" />
+    <pattern value="\Nosto\Tagging\Block\Addtocart" />
+    <pattern value="\Nosto\Tagging\Block\Category" />
+    <pattern value="\Nosto\Tagging\Block\Element" />
+    <pattern value="\Nosto\Tagging\Block\Embed" member="__construct" />
+    <pattern value="\Nosto\Tagging\Block\Embed" />
+    <pattern value="\Nosto\Tagging\Block\Order" member="formatNostoDate" />
+    <pattern value="\Nosto\Tagging\Block\Product" member="formatNostoDate" />
+    <pattern value="\Nosto\Tagging\Block\Order" member="formatNostoPrice" />
+    <pattern value="\Nosto\Tagging\Block\Product" member="formatNostoPrice" />
+    <pattern value="\Nosto\Tagging\Block\Addtocart" member="getAbstractObject" />
+    <pattern value="\Nosto\Tagging\Block\Category" member="getAbstractObject" />
+    <pattern value="\Nosto\Tagging\Block\Element" member="getAbstractObject" />
+    <pattern value="\Nosto\Tagging\Block\Embed" member="getAbstractObject" />
+    <pattern value="\Nosto\Tagging\Block\Meta" member="getAbstractObject" />
+    <pattern value="\Nosto\Tagging\Block\Order" member="getAbstractObject" />
+    <pattern value="\Nosto\Tagging\Block\PageType" member="getAbstractObject" />
+    <pattern value="\Nosto\Tagging\Block\Product" member="getAbstractObject" />
+    <pattern value="\Nosto\Tagging\Block\Search" member="getAbstractObject" />
+    <pattern value="\Nosto\Tagging\Block\Stub" member="getAbstractObject" />
+    <pattern value="\Nosto\Tagging\Block\Variation" member="getAbstractObject" />
+    <pattern value="\Nosto\Tagging\Block\Element" member="getElementId" />
+    <pattern value="\Nosto\Tagging\Block\Meta" member="getInstallationId" />
+    <pattern value="\Nosto\Tagging\Block\Knockout" member="getJsLayout" />
+    <pattern value="\Nosto\Tagging\Block\Meta" member="getLanguageCode" />
+    <pattern value="\Nosto\Tagging\Block\Meta" member="getModuleVersion" />
+    <pattern value="\Nosto\Tagging\Block\Product" member="getNostoCategory" />
+    <pattern value="\Nosto\Tagging\Block\TaggingTrait" member="getNostoHelperAccount" />
+    <pattern value="\Nosto\Tagging\Block\Addtocart" member="getSubmitUrl" />
+    <pattern value="\Nosto\Tagging\Block\Knockout" member="getTemplate" />
+    <pattern value="\Nosto\Tagging\Block\Product" member="hasMultipleCurrencies" />
+    <pattern value="\Nosto\Tagging\Block\Variation" member="hasMultipleCurrencies" />
+    <pattern value="\Nosto\Tagging\Block\Stub" member="isRecoAutoloadDisabled" />
+    <pattern value="\Nosto\Tagging\Block\Knockout" />
+    <pattern value="\Nosto\Tagging\Block\Meta" />
+    <pattern value="\Nosto\Tagging\Block\Order" member="__construct" />
+    <pattern value="\Nosto\Tagging\Block\Order" />
+    <pattern value="\Nosto\Tagging\Block\PageType" />
+    <pattern value="\Nosto\Tagging\Block\Product" member="__construct" />
+    <pattern value="\Nosto\Tagging\Block\Product" />
+    <pattern value="\Nosto\Tagging\Block\Search" />
+    <pattern value="\Nosto\Tagging\Block\Stub" />
+    <pattern value="\Nosto\Tagging\Block\TaggingTrait" />
+    <pattern value="\Nosto\Tagging\Block\Variation" />
+    <pattern value="\Nosto\Tagging\Controller\Export\Order" member="__construct" />
+    <pattern value="\Nosto\Tagging\Controller\Export\Product" member="__construct" />
+    <pattern value="\Nosto\Tagging\Controller\Export\Base" />
+    <pattern value="\Nosto\Tagging\Controller\Export\Order" member="buildExportCollection" />
+    <pattern value="\Nosto\Tagging\Controller\Export\Product" member="buildExportCollection" />
+    <pattern value="\Nosto\Tagging\Controller\Export\Order" member="buildSingleExportCollection" />
+    <pattern value="\Nosto\Tagging\Controller\Export\Product" member="buildSingleExportCollection" />
+    <pattern value="\Nosto\Tagging\Controller\Export\Base" member="execute" />
+    <pattern value="\Nosto\Tagging\Controller\Export\Product" member="export" />
+    <pattern value="\Nosto\Tagging\Controller\Export\Order" />
+    <pattern value="\Nosto\Tagging\Controller\Export\Product" />
+    <pattern value="\Nosto\Tagging\Controller\Frontend\Cart" member="__construct" />
+    <pattern value="\Nosto\Tagging\Plugin\ProductData" member="__construct" />
+    <pattern value="\Nosto\Tagging\Setup\CoreData" member="__construct" />
+    <pattern value="\Nosto\Tagging\Observer\Adminhtml\Config" member="__construct" />
+    <pattern value="\Nosto\Tagging\Observer\Cart\Add" member="__construct" />
+    <pattern value="\Nosto\Tagging\Observer\Customer\Save" member="__construct" />
+    <pattern value="\Nosto\Tagging\Observer\Customer\UpdateMarketingPermission" member="__construct" />
+    <pattern value="\Nosto\Tagging\Observer\Order\Save" member="__construct" />
+    <pattern value="\Nosto\Tagging\Observer\Product\Base" member="__construct" />
+    <pattern value="\Nosto\Tagging\Observer\Rates\Update" member="__construct" />
+    <pattern value="\Nosto\Tagging\Observer\Settings\Update" member="__construct" />
+    <pattern value="\Nosto\Tagging\Observer\Cart\Add" />
+    <pattern value="\Nosto\Tagging\Observer\Product\Base" />
+    <pattern value="\Nosto\Tagging\Observer\Adminhtml\Config" />
+    <pattern value="\Nosto\Tagging\Observer\Adminhtml\Config" member="execute" />
+    <pattern value="\Nosto\Tagging\Observer\Cart\Add" member="execute" />
+    <pattern value="\Nosto\Tagging\Observer\Customer\Save" member="execute" />
+    <pattern value="\Nosto\Tagging\Observer\Customer\UpdateMarketingPermission" member="execute" />
+    <pattern value="\Nosto\Tagging\Observer\Order\Save" member="execute" />
+    <pattern value="\Nosto\Tagging\Observer\Product\Base" member="execute" />
+    <pattern value="\Nosto\Tagging\Observer\Rates\Update" member="execute" />
+    <pattern value="\Nosto\Tagging\Observer\Settings\Update" member="execute" />
+    <pattern value="\Nosto\Tagging\Observer\Product\Review" member="extractProduct" />
+    <pattern value="\Nosto\Tagging\Observer\Product\Review" />
+    <pattern value="\Nosto\Tagging\Observer\Customer\Save" />
+    <pattern value="\Nosto\Tagging\Observer\Order\Save" />
+    <pattern value="\Nosto\Tagging\Observer\Rates\Update" />
+    <pattern value="\Nosto\Tagging\Observer\Settings\Update" />
+    <pattern value="\Nosto\Tagging\Observer\Customer\UpdateMarketingPermission" />
+    <pattern value="\Nosto\Tagging\Plugin\ProductInvalidate" member="__construct" />
+    <pattern value="\Nosto\Tagging\Plugin\Sales\OrderRepository" member="__construct" />
+    <pattern value="\Nosto\Tagging\Setup\UpgradeData" member="__construct" />
+    <pattern value="\Nosto\Tagging\Plugin\Sales\OrderRepository" member="afterSave" />
+    <pattern value="\Nosto\Tagging\Plugin\ProductData" member="aroundSave" />
+    <pattern value="\Nosto\Tagging\Plugin\ProductInvalidate" member="aroundSave" />
+    <pattern value="\Nosto\Tagging\Test\_util\BuilderInterface" member="build" />
+    <pattern value="\Nosto\Tagging\Test\_util\BuilderInterface" />
+    <pattern value="\Nosto\Tagging\Test\Integration\FixturesTrait" member="fixtureLoadSimpleProduct" />
+    <pattern value="\Nosto\Tagging\Test\Integration\FixturesTrait" />
+    <pattern value="\Nosto\Tagging\Setup\InstallData" member="install" />
+    <pattern value="\Nosto\Tagging\Setup\InstallSchema" member="install" />
+    <pattern value="\Nosto\Tagging\Setup\InstallData" />
+    <pattern value="\Nosto\Tagging\Setup\InstallSchema" />
+    <pattern value="\Nosto\Tagging\Plugin\Sales\OrderRepository" />
+    <pattern value="\Nosto\Tagging\Plugin\ProductData" />
+    <pattern value="\Nosto\Tagging\Plugin\ProductInvalidate" />
+    <pattern value="\Nosto\Tagging\Setup\UpgradeData" member="upgrade" />
+    <pattern value="\Nosto\Tagging\Setup\UpgradeSchema" member="upgrade" />
+    <pattern value="\Nosto\Tagging\Setup\UpgradeData" />
+    <pattern value="\Nosto\Tagging\Setup\UpgradeSchema" />
+    <pattern value="\Nosto\Tagging\Model\Service\Stock\StockService" member="__construct" />
+  </component>
+  <component name="ProjectResources">
+    <resource url="urn:magento:framework-message-queue:etc/consumer.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/framework-message-queue/etc/consumer.xsd" />
+    <resource url="urn:magento:framework-message-queue:etc/publisher.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/framework-message-queue/etc/publisher.xsd" />
+    <resource url="urn:magento:framework-message-queue:etc/queue.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/framework-message-queue/etc/queue.xsd" />
+    <resource url="urn:magento:framework-message-queue:etc/queue_base.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/framework-message-queue/etc/queue_base.xsd" />
+    <resource url="urn:magento:framework-message-queue:etc/topology.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/framework-message-queue/etc/topology.xsd" />
+    <resource url="urn:magento:framework:Acl/etc/acl.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/framework/Acl/etc/acl.xsd" />
+    <resource url="urn:magento:framework:Api/etc/extension_attributes.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/framework/Api/etc/extension_attributes.xsd" />
+    <resource url="urn:magento:framework:App/etc/resources.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/framework/App/etc/resources.xsd" />
+    <resource url="urn:magento:framework:App/etc/routes.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/framework/App/etc/routes.xsd" />
+    <resource url="urn:magento:framework:Cache/etc/cache.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/framework/Cache/etc/cache.xsd" />
+    <resource url="urn:magento:framework:Communication/etc/communication.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/framework/Communication/etc/communication.xsd" />
+    <resource url="urn:magento:framework:Config/etc/theme.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/framework/Config/etc/theme.xsd" />
+    <resource url="urn:magento:framework:Config/etc/view.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/framework/Config/etc/view.xsd" />
+    <resource url="urn:magento:framework:Data/etc/argument/types.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/framework/Data/etc/argument/types.xsd" />
+    <resource url="urn:magento:framework:DataObject/etc/fieldset.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/framework/DataObject/etc/fieldset.xsd" />
+    <resource url="urn:magento:framework:Event/etc/events.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/framework/Event/etc/events.xsd" />
+    <resource url="urn:magento:framework:Indexer/etc/indexer.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/framework/Indexer/etc/indexer.xsd" />
+    <resource url="urn:magento:framework:Module/etc/module.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/framework/Module/etc/module.xsd" />
+    <resource url="urn:magento:framework:Mview/etc/mview.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/framework/Mview/etc/mview.xsd" />
+    <resource url="urn:magento:framework:ObjectManager/etc/config.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/framework/ObjectManager/etc/config.xsd" />
+    <resource url="urn:magento:framework:Search/etc/requests.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/framework/Search/etc/requests.xsd" />
+    <resource url="urn:magento:framework:Search/etc/search_engine.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/framework/Search/etc/search_engine.xsd" />
+    <resource url="urn:magento:framework:Search/etc/search_request.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/framework/Search/etc/search_request.xsd" />
+    <resource url="urn:magento:framework:Setup/Declaration/Schema/etc/constraints/constraint.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/framework/Setup/Declaration/Schema/etc/constraints/constraint.xsd" />
+    <resource url="urn:magento:framework:Setup/Declaration/Schema/etc/constraints/foreign.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/framework/Setup/Declaration/Schema/etc/constraints/foreign.xsd" />
+    <resource url="urn:magento:framework:Setup/Declaration/Schema/etc/constraints/primary.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/framework/Setup/Declaration/Schema/etc/constraints/primary.xsd" />
+    <resource url="urn:magento:framework:Setup/Declaration/Schema/etc/constraints/unique.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/framework/Setup/Declaration/Schema/etc/constraints/unique.xsd" />
+    <resource url="urn:magento:framework:Setup/Declaration/Schema/etc/index.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/framework/Setup/Declaration/Schema/etc/index.xsd" />
+    <resource url="urn:magento:framework:Setup/Declaration/Schema/etc/name.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/framework/Setup/Declaration/Schema/etc/name.xsd" />
+    <resource url="urn:magento:framework:Setup/Declaration/Schema/etc/operations.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/framework/Setup/Declaration/Schema/etc/operations.xsd" />
+    <resource url="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/framework/Setup/Declaration/Schema/etc/schema.xsd" />
+    <resource url="urn:magento:framework:Setup/Declaration/Schema/etc/types/binaries/blob.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/framework/Setup/Declaration/Schema/etc/types/binaries/blob.xsd" />
+    <resource url="urn:magento:framework:Setup/Declaration/Schema/etc/types/binaries/longblob.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/framework/Setup/Declaration/Schema/etc/types/binaries/longblob.xsd" />
+    <resource url="urn:magento:framework:Setup/Declaration/Schema/etc/types/binaries/mediumblob.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/framework/Setup/Declaration/Schema/etc/types/binaries/mediumblob.xsd" />
+    <resource url="urn:magento:framework:Setup/Declaration/Schema/etc/types/binaries/varbinary.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/framework/Setup/Declaration/Schema/etc/types/binaries/varbinary.xsd" />
+    <resource url="urn:magento:framework:Setup/Declaration/Schema/etc/types/boolean.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/framework/Setup/Declaration/Schema/etc/types/boolean.xsd" />
+    <resource url="urn:magento:framework:Setup/Declaration/Schema/etc/types/column.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/framework/Setup/Declaration/Schema/etc/types/column.xsd" />
+    <resource url="urn:magento:framework:Setup/Declaration/Schema/etc/types/datetime/date.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/framework/Setup/Declaration/Schema/etc/types/datetime/date.xsd" />
+    <resource url="urn:magento:framework:Setup/Declaration/Schema/etc/types/datetime/datetime.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/framework/Setup/Declaration/Schema/etc/types/datetime/datetime.xsd" />
+    <resource url="urn:magento:framework:Setup/Declaration/Schema/etc/types/datetime/default.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/framework/Setup/Declaration/Schema/etc/types/datetime/default.xsd" />
+    <resource url="urn:magento:framework:Setup/Declaration/Schema/etc/types/datetime/timestamp.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/framework/Setup/Declaration/Schema/etc/types/datetime/timestamp.xsd" />
+    <resource url="urn:magento:framework:Setup/Declaration/Schema/etc/types/integers/biginteger.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/framework/Setup/Declaration/Schema/etc/types/integers/biginteger.xsd" />
+    <resource url="urn:magento:framework:Setup/Declaration/Schema/etc/types/integers/integer.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/framework/Setup/Declaration/Schema/etc/types/integers/integer.xsd" />
+    <resource url="urn:magento:framework:Setup/Declaration/Schema/etc/types/integers/smallinteger.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/framework/Setup/Declaration/Schema/etc/types/integers/smallinteger.xsd" />
+    <resource url="urn:magento:framework:Setup/Declaration/Schema/etc/types/integers/tinyinteger.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/framework/Setup/Declaration/Schema/etc/types/integers/tinyinteger.xsd" />
+    <resource url="urn:magento:framework:Setup/Declaration/Schema/etc/types/real/decimal.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/framework/Setup/Declaration/Schema/etc/types/real/decimal.xsd" />
+    <resource url="urn:magento:framework:Setup/Declaration/Schema/etc/types/real/double.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/framework/Setup/Declaration/Schema/etc/types/real/double.xsd" />
+    <resource url="urn:magento:framework:Setup/Declaration/Schema/etc/types/real/float.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/framework/Setup/Declaration/Schema/etc/types/real/float.xsd" />
+    <resource url="urn:magento:framework:Setup/Declaration/Schema/etc/types/texts/longtext.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/framework/Setup/Declaration/Schema/etc/types/texts/longtext.xsd" />
+    <resource url="urn:magento:framework:Setup/Declaration/Schema/etc/types/texts/mediumtext.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/framework/Setup/Declaration/Schema/etc/types/texts/mediumtext.xsd" />
+    <resource url="urn:magento:framework:Setup/Declaration/Schema/etc/types/texts/text.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/framework/Setup/Declaration/Schema/etc/types/texts/text.xsd" />
+    <resource url="urn:magento:framework:Setup/Declaration/Schema/etc/types/texts/varchar.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/framework/Setup/Declaration/Schema/etc/types/texts/varchar.xsd" />
+    <resource url="urn:magento:framework:Validator/etc/validation.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/framework/Validator/etc/validation.xsd" />
+    <resource url="urn:magento:framework:View/Layout/etc/body.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/framework/View/Layout/etc/body.xsd" />
+    <resource url="urn:magento:framework:View/Layout/etc/elements.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/framework/View/Layout/etc/elements.xsd" />
+    <resource url="urn:magento:framework:View/Layout/etc/head.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/framework/View/Layout/etc/head.xsd" />
+    <resource url="urn:magento:framework:View/Layout/etc/html.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/framework/View/Layout/etc/html.xsd" />
+    <resource url="urn:magento:framework:View/Layout/etc/layout_generic.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/framework/View/Layout/etc/layout_generic.xsd" />
+    <resource url="urn:magento:framework:View/Layout/etc/page_configuration.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/framework/View/Layout/etc/page_configuration.xsd" />
+    <resource url="urn:magento:framework:View/Layout/etc/page_layout.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/framework/View/Layout/etc/page_layout.xsd" />
+    <resource url="urn:magento:framework:View/Layout/etc/page_types.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/framework/View/Layout/etc/page_types.xsd" />
+    <resource url="urn:magento:framework:View/PageLayout/etc/layouts.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/framework/View/PageLayout/etc/layouts.xsd" />
+    <resource url="urn:magento:module:Klarna_Core:etc/klarna.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/klarna/module-core/etc/klarna.xsd" />
+    <resource url="urn:magento:module:Magento_Analytics:etc/analytics.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-analytics/etc/analytics.xsd" />
+    <resource url="urn:magento:module:Magento_Analytics:etc/reports.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-analytics/etc/reports.xsd" />
+    <resource url="urn:magento:module:Magento_Backend:etc/menu.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-backend/etc/menu.xsd" />
+    <resource url="urn:magento:module:Magento_Catalog:etc/catalog_attributes.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-catalog/etc/catalog_attributes.xsd" />
+    <resource url="urn:magento:module:Magento_Catalog:etc/product_options.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-catalog/etc/product_options.xsd" />
+    <resource url="urn:magento:module:Magento_Catalog:etc/product_options_merged.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-catalog/etc/product_options_merged.xsd" />
+    <resource url="urn:magento:module:Magento_Catalog:etc/product_types.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-catalog/etc/product_types.xsd" />
+    <resource url="urn:magento:module:Magento_Catalog:etc/product_types_base.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-catalog/etc/product_types_base.xsd" />
+    <resource url="urn:magento:module:Magento_Catalog:etc/product_types_merged.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-catalog/etc/product_types_merged.xsd" />
+    <resource url="urn:magento:module:Magento_Config:etc/system_file.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-config/etc/system_file.xsd" />
+    <resource url="urn:magento:module:Magento_Config:etc/system_include.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-config/etc/system_include.xsd" />
+    <resource url="urn:magento:module:Magento_Cron:etc/cron_groups.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-cron/etc/cron_groups.xsd" />
+    <resource url="urn:magento:module:Magento_Cron:etc/crontab.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-cron/etc/crontab.xsd" />
+    <resource url="urn:magento:module:Magento_Customer:etc/address_formats.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-customer/etc/address_formats.xsd" />
+    <resource url="urn:magento:module:Magento_Customer:etc/sections.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-customer/etc/sections.xsd" />
+    <resource url="urn:magento:module:Magento_Directory:etc/zip_codes.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-directory/etc/zip_codes.xsd" />
+    <resource url="urn:magento:module:Magento_Eav:etc/eav_attributes.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-eav/etc/eav_attributes.xsd" />
+    <resource url="urn:magento:module:Magento_Elasticsearch:etc/esconfig.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-elasticsearch/etc/esconfig.xsd" />
+    <resource url="urn:magento:module:Magento_Email:etc/email_templates.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-email/etc/email_templates.xsd" />
+    <resource url="urn:magento:module:Magento_ImportExport:etc/export.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-import-export/etc/export.xsd" />
+    <resource url="urn:magento:module:Magento_ImportExport:etc/export_merged.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-import-export/etc/export_merged.xsd" />
+    <resource url="urn:magento:module:Magento_ImportExport:etc/import.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-import-export/etc/import.xsd" />
+    <resource url="urn:magento:module:Magento_ImportExport:etc/import_merged.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-import-export/etc/import_merged.xsd" />
+    <resource url="urn:magento:module:Magento_Integration:etc/integration/integration.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-integration/etc/integration/integration.xsd" />
+    <resource url="urn:magento:module:Magento_Integration:etc/integration/integration_base.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-integration/etc/integration/integration_base.xsd" />
+    <resource url="urn:magento:module:Magento_Payment:etc/error_mapping.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-payment/etc/error_mapping.xsd" />
+    <resource url="urn:magento:module:Magento_Payment:etc/payment.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-payment/etc/payment.xsd" />
+    <resource url="urn:magento:module:Magento_Paypal:etc/rules.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-paypal/etc/rules.xsd" />
+    <resource url="urn:magento:module:Magento_Persistent:etc/./persistent.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-persistent/etc/./persistent.xsd" />
+    <resource url="urn:magento:module:Magento_Sales:etc/pdf.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-sales/etc/pdf.xsd" />
+    <resource url="urn:magento:module:Magento_Sales:etc/pdf_file.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-sales/etc/pdf_file.xsd" />
+    <resource url="urn:magento:module:Magento_Sales:etc/sales.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-sales/etc/sales.xsd" />
+    <resource url="urn:magento:module:Magento_Signifyd:etc/signifyd_payment_mapping.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-signifyd/etc/signifyd_payment_mapping.xsd" />
+    <resource url="urn:magento:module:Magento_Store:etc/config.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-store/etc/config.xsd" />
+    <resource url="urn:magento:module:Magento_Ui:etc/data_source.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-ui/etc/data_source.xsd" />
+    <resource url="urn:magento:module:Magento_Ui:etc/ui_components.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-ui/etc/ui_components.xsd" />
+    <resource url="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-ui/etc/ui_configuration.xsd" />
+    <resource url="urn:magento:module:Magento_Ui:etc/ui_definition.map.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-ui/etc/ui_definition.map.xsd" />
+    <resource url="urn:magento:module:Magento_Ui:etc/ui_definition.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-ui/etc/ui_definition.xsd" />
+    <resource url="urn:magento:module:Magento_Ui:view/base/ui_component/etc/definition/action.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-ui/view/base/ui_component/etc/definition/action.xsd" />
+    <resource url="urn:magento:module:Magento_Ui:view/base/ui_component/etc/definition/actionDelete.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-ui/view/base/ui_component/etc/definition/actionDelete.xsd" />
+    <resource url="urn:magento:module:Magento_Ui:view/base/ui_component/etc/definition/actions.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-ui/view/base/ui_component/etc/definition/actions.xsd" />
+    <resource url="urn:magento:module:Magento_Ui:view/base/ui_component/etc/definition/actionsColumn.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-ui/view/base/ui_component/etc/definition/actionsColumn.xsd" />
+    <resource url="urn:magento:module:Magento_Ui:view/base/ui_component/etc/definition/bookmark.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-ui/view/base/ui_component/etc/definition/bookmark.xsd" />
+    <resource url="urn:magento:module:Magento_Ui:view/base/ui_component/etc/definition/boolean.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-ui/view/base/ui_component/etc/definition/boolean.xsd" />
+    <resource url="urn:magento:module:Magento_Ui:view/base/ui_component/etc/definition/button.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-ui/view/base/ui_component/etc/definition/button.xsd" />
+    <resource url="urn:magento:module:Magento_Ui:view/base/ui_component/etc/definition/checkbox.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-ui/view/base/ui_component/etc/definition/checkbox.xsd" />
+    <resource url="urn:magento:module:Magento_Ui:view/base/ui_component/etc/definition/checkboxset.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-ui/view/base/ui_component/etc/definition/checkboxset.xsd" />
+    <resource url="urn:magento:module:Magento_Ui:view/base/ui_component/etc/definition/colorPicker.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-ui/view/base/ui_component/etc/definition/colorPicker.xsd" />
+    <resource url="urn:magento:module:Magento_Ui:view/base/ui_component/etc/definition/column.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-ui/view/base/ui_component/etc/definition/column.xsd" />
+    <resource url="urn:magento:module:Magento_Ui:view/base/ui_component/etc/definition/columns.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-ui/view/base/ui_component/etc/definition/columns.xsd" />
+    <resource url="urn:magento:module:Magento_Ui:view/base/ui_component/etc/definition/columnsControls.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-ui/view/base/ui_component/etc/definition/columnsControls.xsd" />
+    <resource url="urn:magento:module:Magento_Ui:view/base/ui_component/etc/definition/component.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-ui/view/base/ui_component/etc/definition/component.xsd" />
+    <resource url="urn:magento:module:Magento_Ui:view/base/ui_component/etc/definition/container.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-ui/view/base/ui_component/etc/definition/container.xsd" />
+    <resource url="urn:magento:module:Magento_Ui:view/base/ui_component/etc/definition/dataProvider.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-ui/view/base/ui_component/etc/definition/dataProvider.xsd" />
+    <resource url="urn:magento:module:Magento_Ui:view/base/ui_component/etc/definition/dataSource.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-ui/view/base/ui_component/etc/definition/dataSource.xsd" />
+    <resource url="urn:magento:module:Magento_Ui:view/base/ui_component/etc/definition/date.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-ui/view/base/ui_component/etc/definition/date.xsd" />
+    <resource url="urn:magento:module:Magento_Ui:view/base/ui_component/etc/definition/dynamicRows.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-ui/view/base/ui_component/etc/definition/dynamicRows.xsd" />
+    <resource url="urn:magento:module:Magento_Ui:view/base/ui_component/etc/definition/email.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-ui/view/base/ui_component/etc/definition/email.xsd" />
+    <resource url="urn:magento:module:Magento_Ui:view/base/ui_component/etc/definition/exportButton.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-ui/view/base/ui_component/etc/definition/exportButton.xsd" />
+    <resource url="urn:magento:module:Magento_Ui:view/base/ui_component/etc/definition/field.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-ui/view/base/ui_component/etc/definition/field.xsd" />
+    <resource url="urn:magento:module:Magento_Ui:view/base/ui_component/etc/definition/fieldset.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-ui/view/base/ui_component/etc/definition/fieldset.xsd" />
+    <resource url="urn:magento:module:Magento_Ui:view/base/ui_component/etc/definition/file.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-ui/view/base/ui_component/etc/definition/file.xsd" />
+    <resource url="urn:magento:module:Magento_Ui:view/base/ui_component/etc/definition/fileUploader.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-ui/view/base/ui_component/etc/definition/fileUploader.xsd" />
+    <resource url="urn:magento:module:Magento_Ui:view/base/ui_component/etc/definition/filterRange.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-ui/view/base/ui_component/etc/definition/filterRange.xsd" />
+    <resource url="urn:magento:module:Magento_Ui:view/base/ui_component/etc/definition/filters.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-ui/view/base/ui_component/etc/definition/filters.xsd" />
+    <resource url="urn:magento:module:Magento_Ui:view/base/ui_component/etc/definition/form.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-ui/view/base/ui_component/etc/definition/form.xsd" />
+    <resource url="urn:magento:module:Magento_Ui:view/base/ui_component/etc/definition/hidden.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-ui/view/base/ui_component/etc/definition/hidden.xsd" />
+    <resource url="urn:magento:module:Magento_Ui:view/base/ui_component/etc/definition/htmlContent.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-ui/view/base/ui_component/etc/definition/htmlContent.xsd" />
+    <resource url="urn:magento:module:Magento_Ui:view/base/ui_component/etc/definition/imageUploader.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-ui/view/base/ui_component/etc/definition/imageUploader.xsd" />
+    <resource url="urn:magento:module:Magento_Ui:view/base/ui_component/etc/definition/inlineEditing.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-ui/view/base/ui_component/etc/definition/inlineEditing.xsd" />
+    <resource url="urn:magento:module:Magento_Ui:view/base/ui_component/etc/definition/input.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-ui/view/base/ui_component/etc/definition/input.xsd" />
+    <resource url="urn:magento:module:Magento_Ui:view/base/ui_component/etc/definition/insertForm.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-ui/view/base/ui_component/etc/definition/insertForm.xsd" />
+    <resource url="urn:magento:module:Magento_Ui:view/base/ui_component/etc/definition/insertListing.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-ui/view/base/ui_component/etc/definition/insertListing.xsd" />
+    <resource url="urn:magento:module:Magento_Ui:view/base/ui_component/etc/definition/listing.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-ui/view/base/ui_component/etc/definition/listing.xsd" />
+    <resource url="urn:magento:module:Magento_Ui:view/base/ui_component/etc/definition/listingToolbar.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-ui/view/base/ui_component/etc/definition/listingToolbar.xsd" />
+    <resource url="urn:magento:module:Magento_Ui:view/base/ui_component/etc/definition/massaction.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-ui/view/base/ui_component/etc/definition/massaction.xsd" />
+    <resource url="urn:magento:module:Magento_Ui:view/base/ui_component/etc/definition/modal.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-ui/view/base/ui_component/etc/definition/modal.xsd" />
+    <resource url="urn:magento:module:Magento_Ui:view/base/ui_component/etc/definition/multiline.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-ui/view/base/ui_component/etc/definition/multiline.xsd" />
+    <resource url="urn:magento:module:Magento_Ui:view/base/ui_component/etc/definition/multiselect.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-ui/view/base/ui_component/etc/definition/multiselect.xsd" />
+    <resource url="urn:magento:module:Magento_Ui:view/base/ui_component/etc/definition/nav.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-ui/view/base/ui_component/etc/definition/nav.xsd" />
+    <resource url="urn:magento:module:Magento_Ui:view/base/ui_component/etc/definition/number.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-ui/view/base/ui_component/etc/definition/number.xsd" />
+    <resource url="urn:magento:module:Magento_Ui:view/base/ui_component/etc/definition/paging.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-ui/view/base/ui_component/etc/definition/paging.xsd" />
+    <resource url="urn:magento:module:Magento_Ui:view/base/ui_component/etc/definition/price.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-ui/view/base/ui_component/etc/definition/price.xsd" />
+    <resource url="urn:magento:module:Magento_Ui:view/base/ui_component/etc/definition/radioset.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-ui/view/base/ui_component/etc/definition/radioset.xsd" />
+    <resource url="urn:magento:module:Magento_Ui:view/base/ui_component/etc/definition/select.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-ui/view/base/ui_component/etc/definition/select.xsd" />
+    <resource url="urn:magento:module:Magento_Ui:view/base/ui_component/etc/definition/selectionsColumn.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-ui/view/base/ui_component/etc/definition/selectionsColumn.xsd" />
+    <resource url="urn:magento:module:Magento_Ui:view/base/ui_component/etc/definition/tab.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-ui/view/base/ui_component/etc/definition/tab.xsd" />
+    <resource url="urn:magento:module:Magento_Ui:view/base/ui_component/etc/definition/text.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-ui/view/base/ui_component/etc/definition/text.xsd" />
+    <resource url="urn:magento:module:Magento_Ui:view/base/ui_component/etc/definition/textarea.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-ui/view/base/ui_component/etc/definition/textarea.xsd" />
+    <resource url="urn:magento:module:Magento_Ui:view/base/ui_component/etc/definition/ui_component.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-ui/view/base/ui_component/etc/definition/ui_component.xsd" />
+    <resource url="urn:magento:module:Magento_Ui:view/base/ui_component/etc/definition/ui_settings.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-ui/view/base/ui_component/etc/definition/ui_settings.xsd" />
+    <resource url="urn:magento:module:Magento_Ui:view/base/ui_component/etc/definition/urlInput.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-ui/view/base/ui_component/etc/definition/urlInput.xsd" />
+    <resource url="urn:magento:module:Magento_Ui:view/base/ui_component/etc/definition/wysiwyg.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-ui/view/base/ui_component/etc/definition/wysiwyg.xsd" />
+    <resource url="urn:magento:module:Magento_Webapi:etc/webapi.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-webapi/etc/webapi.xsd" />
+    <resource url="urn:magento:module:Magento_Webapi:etc/webapi_base.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-webapi/etc/webapi_base.xsd" />
+    <resource url="urn:magento:module:Magento_WebapiAsync:etc/webapi_async.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-webapi-async/etc/webapi_async.xsd" />
+    <resource url="urn:magento:module:Magento_Widget:etc/types.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-widget/etc/types.xsd" />
+    <resource url="urn:magento:module:Magento_Widget:etc/widget.xsd" location="/Applications/MAMP/htdocs/magento/2.3/vendor/magento/module-widget/etc/widget.xsd" />
+  </component>
+</project>
