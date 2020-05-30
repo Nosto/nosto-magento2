@@ -215,8 +215,7 @@ class Account extends AbstractHelper
      */
     public function findAccount(Store $store)
     {
-        /** @noinspection PhpUndefinedMethodInspection */
-        $accountName = $store->getConfig(self::XML_PATH_ACCOUNT);
+		$accountName = $store->getConfig(self::XML_PATH_ACCOUNT);
 
         if ($accountName !== null) {
             try {
@@ -224,8 +223,7 @@ class Account extends AbstractHelper
             } catch (NostoException $e) {
                 throw new RuntimeException($e->getMessage());
             }
-            /** @noinspection PhpUndefinedMethodInspection */
-            $tokens = json_decode(
+			$tokens = json_decode(
                 $store->getConfig(self::XML_PATH_TOKENS),
                 true
             );

@@ -40,6 +40,7 @@ use Exception;
 use Magento\Backend\Block\Template as BlockTemplate;
 use Magento\Backend\Block\Template\Context as BlockContext;
 use Magento\Backend\Model\Auth\Session;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NotFoundException;
 use Nosto\Mixins\IframeTrait;
 use Nosto\Nosto;
@@ -130,18 +131,17 @@ class Iframe extends BlockTemplate
             $this->backendAuthSession->setData('nosto_message', null);
         }
 
-        $url = $this->buildURL($params);
-
-        return $url;
+		return $this->buildURL($params);
     }
 
-    /**
-     * Returns the config for the Nosto iframe JS component.
-     * This config can be converted into JSON in the view file.
-     *
-     * @return array the config.
-     * @throws NotFoundException
-     */
+	/**
+	 * Returns the config for the Nosto iframe JS component.
+	 * This config can be converted into JSON in the view file.
+	 *
+	 * @return array the config.
+	 * @throws NotFoundException
+	 * @throws LocalizedException
+	 */
     public function getIframeConfig()
     {
         $store = $this->nostoHelperScope->getSelectedStore($this->getRequest());

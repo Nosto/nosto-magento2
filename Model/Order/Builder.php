@@ -60,14 +60,12 @@ class Builder
     const ORDER_NUMBER_PREFIX = 'M2_';
 
     private $logger;
-    /** @noinspection PhpUndefinedClassInspection */
-    private $salesRuleFactory;
+	private $salesRuleFactory;
     private $nostoOrderItemBuilder;
     private $eventManager;
     private $buyerBuilder;
 
-    /** @noinspection PhpUndefinedClassInspection */
-    /**
+	/**
      * @param NostoLogger $logger
      * @param SalesRuleFactory $salesRuleFactory
      * @param NostoOrderItemBuilder $nostoOrderItemBuilder
@@ -76,8 +74,7 @@ class Builder
      */
     public function __construct(
         NostoLogger $logger,
-        /** @noinspection PhpUndefinedClassInspection */
-        SalesRuleFactory $salesRuleFactory,
+		SalesRuleFactory $salesRuleFactory,
         NostoOrderItemBuilder $nostoOrderItemBuilder,
         ManagerInterface $eventManager,
         NostoBuyerBuilder $buyerBuilder

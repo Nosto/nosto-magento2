@@ -95,15 +95,13 @@ class Builder extends PersonBuilder
         $customerFirstname = $order->getCustomerFirstname() ? (string)$order->getCustomerFirstname() : '';
         $customerLastname = $order->getCustomerLastname() ? (string)$order->getCustomerLastname() : '';
         $customerEmail = $order->getCustomerEmail() ? (string)$order->getCustomerEmail(): '';
-        $buyer = $this->build(
-            $customerFirstname,
-            $customerLastname,
-            $customerEmail,
-            $telephone,
-            $postcode,
-            $countryId
-        );
-
-        return $buyer;
+		return $this->build(
+			$customerFirstname,
+			$customerLastname,
+			$customerEmail,
+			$telephone,
+			$postcode,
+			$countryId
+		);
     }
 }

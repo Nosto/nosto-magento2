@@ -138,14 +138,14 @@ class Builder
         return $variation;
     }
 
-    /**
-     * @param Product $product
-     * @param Group $group
-     * @param Store $store
-     * @return float
-     * @throws LocalizedException
-     * @throws NoSuchEntityException
-     */
+	/**
+	 * @param Product $product
+	 * @param Group $group
+	 * @param Store $store
+	 * @return float
+	 * @throws LocalizedException
+	 * @throws NoSuchEntityException
+	 */
     private function getLowestVariationPrice(Product $product, Group $group, Store $store)
     {
         // If product is configurable, the parent has no customer group price. Get SKU with lowest price
@@ -190,14 +190,15 @@ class Builder
         return $this->nostoPriceHelper->getProductPrice($product, $store);
     }
 
-    /**
-     * Returns the SKU|Product object with the lowest price.
-     *
-     * @param MageProduct $product
-     * @param Group $group
-     * @param Store $store
-     * @return MageProduct
-     */
+	/**
+	 * Returns the SKU|Product object with the lowest price.
+	 *
+	 * @param MageProduct $product
+	 * @param Group $group
+	 * @param Store $store
+	 * @return MageProduct
+	 * @throws NoSuchEntityException
+	 */
     public function getMinPriceSku(Product $product, Group $group, Store $store)
     {
         $minPriceSku = [];

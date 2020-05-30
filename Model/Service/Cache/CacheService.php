@@ -252,8 +252,7 @@ class CacheService extends AbstractService
      */
     private function invalidateOrCreateParents(array $ids, Store $store)
     {
-        /** @var ProductCollection $collection */
-        $collection = $this->productCollectionFactory->create();
+		$collection = $this->productCollectionFactory->create();
         $collection->addIdsToFilter($ids);
         $collection->setPageSize(self::PRODUCT_DATA_BATCH_SIZE);
         $iterator = new PagingIterator($collection);
@@ -539,11 +538,10 @@ class CacheService extends AbstractService
      */
     private function getDeletedCollection(Store $store)
     {
-        $collection = $this->nostoCacheCollectionFactory->create()
-            ->addFieldToSelect('*')
-            ->addIsDeletedFilter()
-            ->addStoreFilter($store);
-        return $collection;
+		return $this->nostoCacheCollectionFactory->create()
+			->addFieldToSelect('*')
+			->addIsDeletedFilter()
+			->addStoreFilter($store);
     }
 
     /**

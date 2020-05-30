@@ -58,8 +58,7 @@ class CartTagging extends HashedTagging implements SectionSourceInterface
     private $nostoCartBuilder;
     private $nostoRestoreCartUrlBuilder;
 
-    /** @noinspection PhpUndefinedClassInspection */
-    /**
+	/**
      * @param CartHelper $cartHelper
      * @param CookieManagerInterface $cookieManager
      * @param NostoLogger $logger
@@ -73,8 +72,7 @@ class CartTagging extends HashedTagging implements SectionSourceInterface
         NostoLogger $logger,
         NostoCartBuilder $nostoCartBuilder,
         NostoHelperScope $nostoScopeHelper,
-        /** @noinspection PhpUndefinedClassInspection */
-        NostoRestoreCartUrlBuilder $nostoRestoreCartUrlBuilder
+		NostoRestoreCartUrlBuilder $nostoRestoreCartUrlBuilder
     ) {
         $this->cartHelper = $cartHelper;
         $this->logger = $logger;

@@ -61,7 +61,8 @@ class NewRelic
     public static function reportException(Throwable $throwable)
     {
         if (self::newRelicAvailable()) {
-            newrelic_notice_error($throwable->getMessage(), $throwable);
+			/** @noinspection PhpComposerExtensionStubsInspection */
+			newrelic_notice_error($throwable->getMessage(), $throwable);
         }
     }
 }

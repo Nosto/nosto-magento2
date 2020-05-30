@@ -130,9 +130,7 @@ class Builder
             }
             $nostoCustomer->setUpdatedAt($this->getNow());
         } else {
-            /** @var NostoCustomer $nostoCustomer*/
-            /** @noinspection PhpUndefinedMethodInspection */
-            $nostoCustomer = $this->nostoCustomerFactory->create();
+			$nostoCustomer = $this->nostoCustomerFactory->create();
             $nostoCustomer->setQuoteId($quote->getId());
             $nostoCustomer->setNostoId($nostoCustomerId);
             $nostoCustomer->setCreatedAt($this->getNow());

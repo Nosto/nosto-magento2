@@ -97,10 +97,7 @@ class CacheRepository implements ProductCacheRepositoryInterface
         return $collection->getOneOrNull();
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function getById($id)
+	public function getById($id)
     {
         $collection = $this->cacheCollectionFactory->create()
             ->addFieldToSelect('*')
@@ -149,10 +146,8 @@ class CacheRepository implements ProductCacheRepositoryInterface
         }
         return $collection->getSize();
     }
-    /**
-     * @inheritdoc
-     */
-    public function getByIds(array $ids)
+
+	public function getByIds(array $ids)
     {
         $collection = $this->cacheCollectionFactory->create()
             ->addFieldToSelect('*')
@@ -201,8 +196,7 @@ class CacheRepository implements ProductCacheRepositoryInterface
      */
     public function save(ProductCacheInterface $productIndex)
     {
-        /** @noinspection PhpParamsInspection */
-        /** @var AbstractModel $productIndex */
+		/** @var AbstractModel $productIndex */
         return $this->indexResource->save($productIndex);
     }
 
@@ -214,8 +208,7 @@ class CacheRepository implements ProductCacheRepositoryInterface
      */
     public function delete(ProductCacheInterface $productIndex)
     {
-        /** @noinspection PhpParamsInspection */
-        /** @var AbstractModel $productIndex */
+		/** @var AbstractModel $productIndex */
         $this->indexResource->delete($productIndex);
     }
 
@@ -243,12 +236,13 @@ class CacheRepository implements ProductCacheRepositoryInterface
         );
     }
 
-    /**
-     * Marks products as deleted by given cached product collection
-     *
-     * @param CacheCollection $collection
-     * @throws NostoException
-     */
+	/**
+	 * Marks products as deleted by given cached product collection
+	 *
+	 * @param CacheCollection $collection
+	 * @throws NostoException
+	 * @throws Exception
+	 */
     public function markAsDeleted(CacheCollection $collection)
     {
         $collection->setPageSize(self::DELETE_PRODUCT_BATCH);

@@ -60,9 +60,7 @@ class Collection
 
     public function getCollection(Store $store)
     {
-        /** @var \Magento\Sales\Model\ResourceModel\Order\Collection $collection */
-        /** @noinspection PhpUndefinedMethodInspection */
-        $collection = $this->orderCollectionFactory->create();
+		$collection = $this->orderCollectionFactory->create();
         $collection->addAttributeToFilter('store_id', ['eq' => $store->getId()]);
         $collection->addAttributeToSelect('*');
         return $collection;

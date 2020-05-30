@@ -137,7 +137,8 @@ class Builder extends PersonBuilder
             $gender = $this->getGenderName($customer);
             $customerReference = $this->getCustomerReference($currentCustomer);
 
-            $person = $this->build(
+			/** @var $person Customer */
+            return $this->build(
                 $customer->getFirstname(),
                 $customer->getLastname(),
                 $customer->getEmail(),
@@ -149,8 +150,6 @@ class Builder extends PersonBuilder
                 $gender,
                 $customerReference
             );
-            /** @var $person Customer */
-            return $person;
         } catch (Exception $e) {
             $this->logger->exception($e);
             return null;

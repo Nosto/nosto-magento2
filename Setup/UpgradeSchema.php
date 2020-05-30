@@ -64,10 +64,11 @@ class UpgradeSchema extends Core implements UpgradeSchemaInterface
         $this->loger = $loger;
     }
 
-    /**
-     * {@inheritdoc}
-     * @throws Zend_Db_Exception
-     */
+	/**
+	 * {@inheritdoc}
+	 * @param SchemaSetupInterface $setup
+	 * @param ModuleContextInterface $context
+	 */
     public function upgrade(SchemaSetupInterface $setup, ModuleContextInterface $context)
     {
         $setup->startSetup();

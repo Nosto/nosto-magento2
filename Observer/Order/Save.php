@@ -75,8 +75,7 @@ class Save implements ObserverInterface
     private static $sent = [];
     private $intervalForNew;
 
-    /** @noinspection PhpUndefinedClassInspection */
-    /**
+	/**
      * Save constructor.
      * @param NostoHelperData $nostoHelperData
      * @param NostoHelperAccount $nostoHelperAccount
@@ -95,8 +94,7 @@ class Save implements ObserverInterface
         NostoHelperAccount $nostoHelperAccount,
         NostoLogger $logger,
         ModuleManager $moduleManager,
-        /** @noinspection PhpUndefinedClassInspection */
-        CustomerRepository $customerRepository,
+		CustomerRepository $customerRepository,
         NostoOrderBuilder $orderBuilder,
         NostoOrderStatusBuilder $orderStatusBuilder,
         IndexerRegistry $indexerRegistry,

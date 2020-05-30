@@ -72,10 +72,7 @@ abstract class AbstractAttributeService implements AttributeServiceInterface
         $this->attributeProvider = $attributeProvider;
     }
 
-    /**
-     * @inheritDoc
-     */
-    private function getAttributesByArray(Product $product, array $attributes): array
+	private function getAttributesByArray(Product $product, array $attributes): array
     {
         $attributesAndValues = [];
         foreach ($attributes as $attribute) {

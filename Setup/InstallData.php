@@ -50,9 +50,8 @@ class InstallData extends CoreData implements InstallDataInterface
      * @param ModuleDataSetupInterface $setup
      * @param ModuleContextInterface $context
      * @throws LocalizedException
-     * @throws Zend_Validate_Exception
-     * @throws AlreadyExistsException
      * @throws NostoException
+     * @throws Zend_Validate_Exception
      */
     public function install(ModuleDataSetupInterface $setup, ModuleContextInterface $context) // @codingStandardsIgnoreLine
     {

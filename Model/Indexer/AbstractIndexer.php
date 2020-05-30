@@ -199,10 +199,11 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
         $this->nostoLogger->info('Finished partial reindex');
     }
 
-    /**
-     * @param array $ids
-     * @suppress PhanTypeMismatchArgument
-     */
+	/**
+	 * @param array $ids
+	 * @throws Exception
+	 * @suppress PhanTypeMismatchArgument
+	 */
     public function doWork(array $ids = [])
     {
         $userFunctions = [];
@@ -300,9 +301,10 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
         return IndexerUtil::isCalledFromSetupUpgrade($this->input) === false;
     }
 
-    /**
-     * Clears the CL tables
-     */
+	/**
+	 * Clears the CL tables
+	 * @throws Exception
+	 */
     private function clearProcessedChangelog()
     {
         $benchmarkName = sprintf('CHANGELOG-CLEANUP-%s', $this->getIndexerId());

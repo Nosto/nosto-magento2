@@ -64,7 +64,7 @@ class DefaultStockProvider implements StockProviderInterface
      * @param Product $product
      * @return StockItemInterface
      */
-    private function getStockItem(Product $product)
+    public function getStockItem(Product $product)
     {
         return $this->stockRegistryProvider->getStockItem(
             $product->getId(),
@@ -110,10 +110,9 @@ class DefaultStockProvider implements StockProviderInterface
      * @param Website $website
      * @return StockStatusInterface[]
      */
-    private function getStockStatuses(// @codingStandardsIgnoreLine
+    public function getStockStatuses(// @codingStandardsIgnoreLine
         array $ids,
-        /** @noinspection PhpUnusedParameterInspection */
-        Website $website
+		Website $website
     ): array {
         return $this->stockRegistryProvider->getStockStatuses(
             $ids,

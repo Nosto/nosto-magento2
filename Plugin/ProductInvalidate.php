@@ -58,12 +58,13 @@ class ProductInvalidate
     /** @var NostoProductRepository  */
     private $nostoProductRepository;
 
-    /**
-     * ProductInvalidate constructor.
-     * @param IndexerRegistry $indexerRegistry
-     * @param CacheService $cacheService
-     * @param IndexerInvalidate $indexerInvalidate
-     */
+	/**
+	 * ProductInvalidate constructor.
+	 * @param IndexerRegistry $indexerRegistry
+	 * @param CacheService $cacheService
+	 * @param IndexerInvalidate $indexerInvalidate
+	 * @param NostoProductRepository $nostoProductRepository
+	 */
     public function __construct(
         IndexerRegistry $indexerRegistry,
         CacheService $cacheService,

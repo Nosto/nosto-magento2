@@ -77,8 +77,7 @@ class DefaultAttributeProvider implements AttributeProviderInterface
     {
         try {
             $entity = $this->eavConfig->getEntityType(Product::ENTITY);
-            /** @var AttributeCollection $collection */
-            $collection = $this->attributeCollectionFactory->create();
+			$collection = $this->attributeCollectionFactory->create();
             $collection->setEntityTypeFilter($entity->getId());
             $collection->addFieldToFilter('attribute_code', [
                 'nin' => [

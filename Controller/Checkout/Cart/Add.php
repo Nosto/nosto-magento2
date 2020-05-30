@@ -44,6 +44,7 @@ use Magento\Catalog\Model\ResourceModel\Eav\Attribute as MageAttribute;
 use Magento\Catalog\Model\ResourceModel\Product as ProductResourceModel;
 use Magento\Checkout\Controller\Cart\Add as MageAdd;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable as ConfigurableType;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Store\Model\StoreManager;
 
 /**
@@ -78,15 +79,15 @@ class Add
         $this->productResourceModel = $productResourceModel;
     }
 
-    /**
-     * Method executed before magento's native add to cart controller
-     * Checks if request has product attributes and set them before
-     * returning to Magento's controller
-     *
-     * @param MageAdd $add
-     * @param callable $proceed
-     * @return mixed
-     */
+	/**
+	 * Method executed before magento's native add to cart controller
+	 * Checks if request has product attributes and set them before
+	 * returning to Magento's controller
+	 *
+	 * @param MageAdd $add
+	 * @param callable $proceed
+	 * @return mixed
+	 */
     public function aroundExecute(MageAdd $add, callable $proceed)
     {
         $params = $add->getRequest()->getParams();
@@ -117,14 +118,14 @@ class Add
         return $proceed();
     }
 
-    /**
-     * Returns an array with a list of super_attributes for a parent product and his SKU
-     *
-     * @param Product $product
-     * @param Product $skuProduct
-     * @param ConfigurableType $configurableType
-     * @return array
-     */
+	/**
+	 * Returns an array with a list of super_attributes for a parent product and his SKU
+	 *
+	 * @param Product $product
+	 * @param Product $skuProduct
+	 * @param ConfigurableType $configurableType
+	 * @return array
+	 */
     private function getAttributeOptions(Product $product, Product $skuProduct, ConfigurableType $configurableType)
     {
         $configurableAttributes = $configurableType->getConfigurableAttributesAsArray($product);

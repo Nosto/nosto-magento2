@@ -145,12 +145,13 @@ abstract class CoreData
         $attribute->save();
     }
 
-    /**
-     * Sets the attribute Nosto customer reference to be only editable in admin
-     *
-     * @param ModuleDataSetupInterface $setup
-     * @throws LocalizedException
-     */
+	/**
+	 * Sets the attribute Nosto customer reference to be only editable in admin
+	 *
+	 * @param ModuleDataSetupInterface $setup
+	 * @throws LocalizedException
+	 * @throws Exception
+	 */
     public function alterCustomerReferenceNonEditable(ModuleDataSetupInterface $setup)
     {
         $customerSetup = $this->customerSetupFactory->create(['setup' => $setup]);
@@ -166,11 +167,10 @@ abstract class CoreData
         $attribute->save();
     }
 
-    /**
-     * @throws LocalizedException
-     * @throws AlreadyExistsException
-     * @throws NostoException
-     */
+	/**
+	 * @throws LocalizedException
+	 * @throws NostoException
+	 */
     public function populateCustomerReference()
     {
         $customerCollection = $this->customerCollectionFactory->create()

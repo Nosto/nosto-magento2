@@ -39,16 +39,18 @@ namespace Nosto\Tagging\Setup;
 use Magento\Framework\Setup\InstallSchemaInterface;
 use Magento\Framework\Setup\ModuleContextInterface;
 use Magento\Framework\Setup\SchemaSetupInterface;
+use Zend_Db_Exception;
 
 class InstallSchema extends Core implements InstallSchemaInterface
 {
-    /**
-     * Installs DB schema for Nosto Tagging module
-     *
-     * @param SchemaSetupInterface $setup
-     * @param ModuleContextInterface $context
-     * @return void
-     */
+	/**
+	 * Installs DB schema for Nosto Tagging module
+	 *
+	 * @param SchemaSetupInterface $setup
+	 * @param ModuleContextInterface $context
+	 * @return void
+	 * @throws Zend_Db_Exception
+	 */
     public function install(// @codingStandardsIgnoreLine
         SchemaSetupInterface $setup,
         ModuleContextInterface $context
