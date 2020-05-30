@@ -41,6 +41,7 @@ use Magento\Framework\Indexer\DimensionProviderInterface;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
 use Nosto\Tagging\Helper\Account;
+use Traversable;
 
 class StoreDimensionProvider implements DimensionProviderInterface
 {
@@ -77,7 +78,7 @@ class StoreDimensionProvider implements DimensionProviderInterface
     /**
      * @inheritdoc
      */
-    public function getIterator(): \Traversable
+    public function getIterator(): Traversable
     {
         foreach ($this->storeManager->getStores() as $store) {
             // instanceof check for Phan

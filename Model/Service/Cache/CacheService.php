@@ -421,7 +421,7 @@ class CacheService extends AbstractService
                 $nostoCachedProduct = $this->productSerializer->fromString(
                     $productIndex->getProductData()
                 );
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $this->getLogger()->exception($e);
                 $nostoCachedProduct = null;
             }

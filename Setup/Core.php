@@ -43,6 +43,7 @@ use Nosto\Tagging\Api\Data\CustomerInterface;
 use Nosto\Tagging\Api\Data\ProductCacheInterface;
 use Nosto\Tagging\Model\ResourceModel\Customer;
 use Nosto\Tagging\Model\ResourceModel\Product\Cache as CacheResource;
+use Zend_Db_Exception;
 
 abstract class Core
 {
@@ -52,7 +53,7 @@ abstract class Core
      * Creates a table for mapping Nosto customer to Magento's cart & orders
      *
      * @param SchemaSetupInterface $setup
-     * @throws \Zend_Db_Exception
+     * @throws Zend_Db_Exception
      */
     public function createCustomerTable(SchemaSetupInterface $setup)
     {
@@ -122,7 +123,7 @@ abstract class Core
      * Creates a cache table for Nosto product data
      *
      * @param SchemaSetupInterface $setup
-     * @throws \Zend_Db_Exception
+     * @throws Zend_Db_Exception
      */
     public function createProductCacheTable(SchemaSetupInterface $setup)
     {

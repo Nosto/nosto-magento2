@@ -146,7 +146,7 @@ class SyncService extends AbstractService
                             $productData
                         )
                     );
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     $this->getLogger()->exception($e);
                 }
             }

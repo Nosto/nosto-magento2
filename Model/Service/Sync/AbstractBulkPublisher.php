@@ -37,8 +37,10 @@
 namespace Nosto\Tagging\Model\Service\Sync;
 
 use Exception;
+use Magento\AsynchronousOperations\Api\Data\OperationInterfaceFactory;
 use Magento\Authorization\Model\UserContextInterface;
 use Magento\Framework\App\ObjectManager;
+use Magento\Framework\Bulk\BulkManagementInterface;
 use Magento\Framework\DataObject\IdentityGeneratorInterface;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Module\Manager;
@@ -51,10 +53,10 @@ abstract class AbstractBulkPublisher implements BulkPublisherInterface
 {
     const STATUS_TYPE_OPEN = 4; //\Magento\Framework\Bulk\OperationInterface::STATUS_TYPE_OPEN;
 
-    /** @var \Magento\Framework\Bulk\BulkManagementInterface|null */
+    /** @var BulkManagementInterface|null */
     private $bulkManagement;
 
-    /** @var \Magento\AsynchronousOperations\Api\Data\OperationInterfaceFactory|null */
+    /** @var OperationInterfaceFactory|null */
     private $operationFactory;
 
     /** @var IdentityGeneratorInterface */
@@ -90,9 +92,9 @@ abstract class AbstractBulkPublisher implements BulkPublisherInterface
         $this->manager = $manager;
         try {
             $this->bulkManagement = ObjectManager::getInstance()
-                ->get(\Magento\Framework\Bulk\BulkManagementInterface::class);
+                ->get(BulkManagementInterface::class);
             $this->operationFactory = ObjectManager::getInstance()
-                ->get(\Magento\AsynchronousOperations\Api\Data\OperationInterfaceFactory::class);
+                ->get(OperationInterfaceFactory::class);
         } catch (Exception $e) {
             $logger->debug('Module Magento_AsynchronousOperations not available');
         }

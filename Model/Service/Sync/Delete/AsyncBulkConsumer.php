@@ -38,6 +38,7 @@ namespace Nosto\Tagging\Model\Service\Sync\Delete;
 
 use Magento\Framework\EntityManager\EntityManager;
 use Magento\Framework\Json\Helper\Data as JsonHelper;
+use Nosto\Exception\MemoryOutOfBoundsException;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Logger\Logger;
 use Nosto\Tagging\Model\Service\Sync\AbstractBulkConsumer;
@@ -76,7 +77,7 @@ class AsyncBulkConsumer extends AbstractBulkConsumer
 
     /**
      * @inheritdoc
-     * @throws \Nosto\Exception\MemoryOutOfBoundsException
+     * @throws MemoryOutOfBoundsException
      */
     public function doOperation(array $productIds, string $storeId)
     {

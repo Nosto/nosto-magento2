@@ -36,6 +36,7 @@
 
 namespace Nosto\Tagging\Model\Product\Cache;
 
+use DateTime;
 use Exception;
 use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Framework\Model\AbstractModel;
@@ -381,11 +382,11 @@ class CacheRepository implements ProductCacheRepositoryInterface
 
     /**
      * @param Store $store
-     * @param \DateTime $updatedBefore
+     * @param DateTime $updatedBefore
      * @param int $limit
      * @return CacheCollection
      */
-    public function getByLastUpdatedAndStore(Store $store, \DateTime $updatedBefore, $limit)
+    public function getByLastUpdatedAndStore(Store $store, DateTime $updatedBefore, $limit)
     {
         return $this->cacheCollectionFactory->create()
             ->addFieldToSelect('*')

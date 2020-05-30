@@ -54,6 +54,7 @@ use Nosto\Tagging\Helper\Data as NostoDataHelper;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Product\Repository as ProductRepository;
 use Nosto\Tagging\Model\Product\Url\Builder as NostoUrlBuilder;
+use Zend_Uri_Exception;
 use Zend_Uri_Http;
 
 /**
@@ -247,7 +248,7 @@ class Url extends AbstractHelper
                     $url
                 );
             }
-            
+
             return $this->addNostoDebugParamToUrl($url);
         }
 
@@ -350,7 +351,7 @@ class Url extends AbstractHelper
      * @param Store $store the store to get the url for.
      * @param string $currentUrl restore cart url
      * @return string cart url.
-     * @throws \Zend_Uri_Exception
+     * @throws Zend_Uri_Exception
      */
     public function getUrlCart(Store $store, $currentUrl)
     {

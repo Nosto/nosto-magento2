@@ -36,10 +36,12 @@
 
 namespace Nosto\Tagging\Setup;
 
+use Magento\Framework\Exception\AlreadyExistsException;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Setup\InstallDataInterface;
 use Magento\Framework\Setup\ModuleContextInterface;
 use Magento\Framework\Setup\ModuleDataSetupInterface;
+use Nosto\NostoException;
 use Zend_Validate_Exception;
 
 class InstallData extends CoreData implements InstallDataInterface
@@ -49,8 +51,8 @@ class InstallData extends CoreData implements InstallDataInterface
      * @param ModuleContextInterface $context
      * @throws LocalizedException
      * @throws Zend_Validate_Exception
-     * @throws \Magento\Framework\Exception\AlreadyExistsException
-     * @throws \Nosto\NostoException
+     * @throws AlreadyExistsException
+     * @throws NostoException
      */
     public function install(ModuleDataSetupInterface $setup, ModuleContextInterface $context) // @codingStandardsIgnoreLine
     {

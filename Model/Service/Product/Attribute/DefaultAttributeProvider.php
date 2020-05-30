@@ -36,6 +36,7 @@
 
 namespace Nosto\Tagging\Model\Service\Product\Attribute;
 
+use Exception;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\ResourceModel\Product\Attribute\Collection as AttributeCollection;
 use Magento\Catalog\Model\ResourceModel\Product\Attribute\CollectionFactory as AttributeCollectionFactory;
@@ -98,7 +99,7 @@ class DefaultAttributeProvider implements AttributeProviderInterface
                 ]
             ]);
             return $collection;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->exception($e);
             return null;
         }

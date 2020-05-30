@@ -36,6 +36,7 @@
 
 namespace Nosto\Tagging\Setup;
 
+use Exception;
 use Magento\Customer\Model\ResourceModel\Customer as CustomerResource;
 use Magento\Customer\Model\ResourceModel\Customer\CollectionFactory as CustomerCollectionFactory;
 use Magento\Customer\Setup\CustomerSetupFactory;
@@ -175,14 +176,14 @@ class UpgradeData extends CoreData implements UpgradeDataInterface
                     try {
                         unserialize($cachedProduct->getProductData(), [Product::class]); // @codingStandardsIgnoreLine
                         $canBeConverted[] = $cachedProduct->getId();
-                    } catch (\Exception $e) {
+                    } catch (Exception $e) {
                         $nullableIds[] = $cachedProduct->getId();
                     }
                 }
                 $this->base64EncodeByIds($connection, $canBeConverted);
                 $this->nullifyProductDataByIds($connection, $nullableIds);
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->getLogger()->exception($e);
         }
     }

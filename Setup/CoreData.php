@@ -43,8 +43,10 @@ use Magento\Customer\Model\ResourceModel\Customer as CustomerResource;
 use Magento\Customer\Model\ResourceModel\Customer\CollectionFactory as CustomerCollectionFactory;
 use Magento\Customer\Setup\CustomerSetupFactory;
 use Magento\Eav\Model\Entity\Attribute\SetFactory as AttributeSetFactory;
+use Magento\Framework\Exception\AlreadyExistsException;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Setup\ModuleDataSetupInterface;
+use Nosto\NostoException;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Logger\Logger;
 use Nosto\Tagging\Util\Customer as CustomerUtil;
@@ -166,8 +168,8 @@ abstract class CoreData
 
     /**
      * @throws LocalizedException
-     * @throws \Magento\Framework\Exception\AlreadyExistsException
-     * @throws \Nosto\NostoException
+     * @throws AlreadyExistsException
+     * @throws NostoException
      */
     public function populateCustomerReference()
     {

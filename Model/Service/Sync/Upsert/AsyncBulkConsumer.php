@@ -38,6 +38,8 @@ namespace Nosto\Tagging\Model\Service\Sync\Upsert;
 
 use Magento\Framework\EntityManager\EntityManager;
 use Magento\Framework\Json\Helper\Data as JsonHelper;
+use Nosto\Exception\MemoryOutOfBoundsException;
+use Nosto\NostoException;
 use Nosto\Tagging\Helper\Scope as NostoScopeHelper;
 use Nosto\Tagging\Logger\Logger;
 use Nosto\Tagging\Model\Product\Cache\CacheRepository;
@@ -88,8 +90,8 @@ class AsyncBulkConsumer extends AbstractBulkConsumer
 
     /**
      * @inheritdoc
-     * @throws \Nosto\Exception\MemoryOutOfBoundsException
-     * @throws \Nosto\NostoException
+     * @throws MemoryOutOfBoundsException
+     * @throws NostoException
      */
     public function doOperation(array $productIds, string $storeId)
     {
