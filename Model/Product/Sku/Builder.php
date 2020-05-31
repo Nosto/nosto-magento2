@@ -42,14 +42,12 @@ use Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable\At
     as ConfigurableAttributeCollection;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Store\Model\Store;
-use Magento\Store\Model\StoreManagerInterface;
 use Nosto\Model\Product\Sku as NostoSku;
 use Nosto\Tagging\Helper\Currency as CurrencyHelper;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Price as NostoPriceHelper;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Product\BuilderTrait;
-use Nosto\Tagging\Model\Service\Product\Attribute\AttributeServiceInterface;
 use Nosto\Tagging\Model\Service\Stock\StockService;
 use Nosto\Types\Product\ProductInterface;
 
@@ -70,26 +68,17 @@ class Builder
     /** @var CurrencyHelper */
     private $nostoCurrencyHelper;
 
-    /**
-     * Builder constructor.
-     * @param NostoHelperData $nostoHelperData
-     * @param NostoPriceHelper $priceHelper
-     * @param NostoLogger $logger
-     * @param ManagerInterface $eventManager
-     * @param CurrencyHelper $nostoCurrencyHelper
-     * @param StockService $stockService
-     * @param StoreManagerInterface $storeManager
-     * @param AttributeServiceInterface $attributeService
-     */
+	/**
+	 * Builder constructor.
+	 * @param NostoHelperData $nostoHelperData
+	 * @param NostoPriceHelper $priceHelper
+	 * @param NostoLogger $logger
+	 * @param ManagerInterface $eventManager
+	 * @param CurrencyHelper $nostoCurrencyHelper
+	 * @param StockService $stockService
+	 */
     public function __construct(
-        NostoHelperData $nostoHelperData,
-        NostoPriceHelper $priceHelper,
-        NostoLogger $logger,
-        ManagerInterface $eventManager,
-        CurrencyHelper $nostoCurrencyHelper,
-        StockService $stockService,
-        StoreManagerInterface $storeManager,
-        AttributeServiceInterface $attributeService
+		NostoHelperData $nostoHelperData, NostoPriceHelper $priceHelper, NostoLogger $logger, ManagerInterface $eventManager, CurrencyHelper $nostoCurrencyHelper, StockService $stockService
     ) {
         $this->nostoPriceHelper = $priceHelper;
         $this->eventManager = $eventManager;
@@ -97,9 +86,7 @@ class Builder
         $this->builderTraitConstruct(
             $nostoHelperData,
             $stockService,
-            $logger,
-            $storeManager,
-            $attributeService
+            $logger
         );
     }
 

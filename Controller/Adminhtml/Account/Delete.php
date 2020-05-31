@@ -59,8 +59,7 @@ class Delete extends Base
     private $nostoHelperScope;
     private $nostoHelperCache;
 
-    /** @noinspection PhpMissingParentConstructorInspection */
-    /**
+	/**
      * @param Context $context
      * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoIframeMetaBuilder $nostoIframeMetaBuilder
@@ -68,7 +67,8 @@ class Delete extends Base
      * @param NostoHelperScope $nostoHelperScope
      * @param NostoHelperCache $nostoHelperCache
      * @param Json $result
-     */
+	 * @noinspection PhpMissingParentConstructorInspection
+	 */
     public function __construct(
         Context $context,
         NostoHelperAccount $nostoHelperAccount,

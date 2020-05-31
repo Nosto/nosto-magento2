@@ -40,111 +40,111 @@ define([
 ], function ($) {
     'use strict';
 
-    var TYPE_NEW_ACCOUNT = 'newAccount',
-        TYPE_CONNECT_ACCOUNT = 'connectAccount',
-        TYPE_SYNC_ACCOUNT = 'syncAccount',
-        TYPE_REMOVE_ACCOUNT = 'removeAccount';
+	const TYPE_NEW_ACCOUNT = 'newAccount',
+		TYPE_CONNECT_ACCOUNT = 'connectAccount',
+		TYPE_SYNC_ACCOUNT = 'syncAccount',
+		TYPE_REMOVE_ACCOUNT = 'removeAccount';
 
-    /**
-     * @type {Object}
-     */
-    var settings = {
-        origin: '',
-        xhrParams: {},
-        urls: {
-            createAccount: '',
-            connectAccount: '',
-            syncAccount: '',
-            deleteAccount: ''
-        },
-        element: null
-    };
+	/**
+	 * @type {Object}
+	 */
+	const settings = {
+		origin: '',
+		xhrParams: {},
+		urls: {
+			createAccount: '',
+			connectAccount: '',
+			syncAccount: '',
+			deleteAccount: ''
+		},
+		element: null
+	};
 
-    /**
-     * Window.postMessage() event handler for catching messages from nosto.
-     *
-     * Supported messages must come from nosto.com and be formatted according
-     * to the following example:
-     *
-     * '[Nosto]{ 'type': 'the message action', 'params': {} }'
-     *
-     * @param {Object} event
-     */
-    var receiveMessage = function (event) {
-        // If the message does not start with '[Nosto]', then it is not for us.
-        if (('' + event.data).substr(0, 7) !== '[Nosto]') {
-            return;
-        }
+	/**
+	 * Window.postMessage() event handler for catching messages from nosto.
+	 *
+	 * Supported messages must come from nosto.com and be formatted according
+	 * to the following example:
+	 *
+	 * '[Nosto]{ 'type': 'the message action', 'params': {} }'
+	 *
+	 * @param {Object} event
+	 */
+	const receiveMessage = function (event) {
+		// If the message does not start with '[Nosto]', then it is not for us.
+		if (('' + event.data).substr(0, 7) !== '[Nosto]') {
+			return;
+		}
 
-        // Check the origin to prevent cross-site scripting.
-        var originRegexp = new RegExp(settings.origin);
-        if (!originRegexp.test(event.origin)) {
-            console.warn('Requested URL does not matches iframe origin');
-            return;
-        }
+		// Check the origin to prevent cross-site scripting.
+		const originRegexp = new RegExp(settings.origin);
+		if (!originRegexp.test(event.origin)) {
+			console.warn('Requested URL does not matches iframe origin');
+			return;
+		}
 
-        var json = ('' + event.data).substr(7);
-        var data = JSON.parse(json);
+		const json = ('' + event.data).substr(7);
+		const data = JSON.parse(json);
 
-        /**
-         * @param {{redirect_url:string, success}} response
-         */
-        switch (data.type) {
-            case TYPE_NEW_ACCOUNT:
-                var post_data = {email: data.params.email};
-                if (data.params.details) {
-                    post_data.details = JSON.stringify(data.params.details);
-                }
-                xhr(settings.urls.createAccount, {
-                    data: post_data,
-                    success: function (response) {
-                        if (response.redirect_url) {
-                            settings.element.src = response.redirect_url;
-                        }
-                    }
-                });
-                break;
+		/**
+		 * @param {{redirect_url:string, success}} response
+		 */
+		switch (data.type) {
+			case TYPE_NEW_ACCOUNT:
+				const post_data = {email: data.params.email};
+				if (data.params.details) {
+					post_data.details = JSON.stringify(data.params.details);
+				}
+				xhr(settings.urls.createAccount, {
+					data: post_data,
+					success: function (response) {
+						if (response.redirect_url) {
+							settings.element.src = response.redirect_url;
+						}
+					}
+				});
+				break;
 
-            case TYPE_CONNECT_ACCOUNT:
-                xhr(settings.urls.connectAccount, {
-                    success: function (response) {
-                        if (response.success && response.redirect_url) {
-                            window.location.href = response.redirect_url;
-                        } else if (!response.success && response.redirect_url) {
-                            settings.element.src = response.redirect_url;
-                        }
-                    }
-                });
-                break;
+			case TYPE_CONNECT_ACCOUNT:
+				xhr(settings.urls.connectAccount, {
+					success: function (response) {
+						if (response.success && response.redirect_url) {
+							window.location.href = response.redirect_url;
+						} else if (!response.success && response.redirect_url) {
+							settings.element.src = response.redirect_url;
+						}
+					}
+				});
+				break;
 
-            case TYPE_SYNC_ACCOUNT:
-                xhr(settings.urls.syncAccount, {
-                    success: function (response) {
-                        if (response.success && response.redirect_url) {
-                            window.location.href = response.redirect_url;
-                        } else if (!response.success && response.redirect_url) {
-                            settings.element.src = response.redirect_url;
-                        }
-                    }
-                });
-                break;
+			case TYPE_SYNC_ACCOUNT:
+				xhr(settings.urls.syncAccount, {
+					success: function (response) {
+						if (response.success && response.redirect_url) {
+							window.location.href = response.redirect_url;
+						} else if (!response.success && response.redirect_url) {
+							settings.element.src = response.redirect_url;
+						}
+					}
+				});
+				break;
 
-            case TYPE_REMOVE_ACCOUNT:
-                xhr(settings.urls.deleteAccount, {
-                    success: function (response) {
-                        if (response.success && response.redirect_url) {
-                            settings.element.src = response.redirect_url;
-                        }
-                    }
-                });
-                break;
+			case TYPE_REMOVE_ACCOUNT:
+				xhr(settings.urls.deleteAccount, {
+					success: function (response) {
+						if (response.success && response.redirect_url) {
+							settings.element.src = response.redirect_url;
+						}
+					}
+				});
+				break;
 
-            default:
-                throw new Error("Nosto: invalid postMessage `type`.");
-        }
-    };
+			default:
+				throw new Error("Nosto: invalid postMessage `type`.");
+		}
+	};
 
-    /**
+	/**
      * Creates a new XMLHttpRequest.
      *
      * Usage example:
@@ -159,15 +159,15 @@ define([
      * @param {Object} params optional params.
      */
     function xhr(url, params) {
-        var options = extendObject({
-            method: "POST",
-            async: true,
-            data: {}
-        }, params);
-        // Always add the Magento form_key property for request authorization.
+			const options = extendObject({
+				method: "POST",
+				async: true,
+				data: {}
+			}, params);
+			// Always add the Magento form_key property for request authorization.
         options.data.form_key = window.FORM_KEY;
-        var oReq = new XMLHttpRequest();
-        if (typeof options.success === "function") {
+			const oReq = new XMLHttpRequest();
+			if (typeof options.success === "function") {
             oReq.addEventListener("load", function (e) {
                 options.success(JSON.parse(e.target.response));
             }, false);
@@ -186,7 +186,7 @@ define([
      * @returns {Object}
      */
     function extendObject(obj1, obj2) {
-        for (var key in obj2) {
+        for (let key in obj2) {
             if (obj2.hasOwnProperty(key)) {
                 obj1[key] = obj2[key];
             }
@@ -201,8 +201,8 @@ define([
      * @returns {string} the built query string.
      */
     function buildQueryString(params) {
-        var queryString = "";
-        for (var key in params) {
+			let queryString = "";
+			for (let key in params) {
             if (params.hasOwnProperty(key)) {
                 if (queryString !== "") {
                     queryString += "&";

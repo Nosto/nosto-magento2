@@ -44,7 +44,6 @@ use Magento\Store\Model\Website;
 class Sku extends ProductResource
 {
     const CATALOG_PRODUCT_PRICE_INDEX_TABLE = "catalog_product_index_price";
-    const CATALOG_INVENTORY_STOCK_STATUS_TABLE = "cataloginventory_stock_status";
 
     /**
      * Fetches prices for the SKUs regardless if they are in stock or not

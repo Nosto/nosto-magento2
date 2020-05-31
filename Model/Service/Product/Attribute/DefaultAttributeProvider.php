@@ -38,7 +38,6 @@ namespace Nosto\Tagging\Model\Service\Product\Attribute;
 
 use Exception;
 use Magento\Catalog\Model\Product;
-use Magento\Catalog\Model\ResourceModel\Product\Attribute\Collection as AttributeCollection;
 use Magento\Catalog\Model\ResourceModel\Product\Attribute\CollectionFactory as AttributeCollectionFactory;
 use Magento\Eav\Model\Config;
 use Nosto\Tagging\Logger\Logger;

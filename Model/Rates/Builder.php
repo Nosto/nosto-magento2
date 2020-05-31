@@ -37,7 +37,6 @@
 namespace Nosto\Tagging\Model\Rates;
 
 use Exception;
-use Magento\Directory\Model\Currency;
 use Magento\Directory\Model\CurrencyFactory;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Store\Model\Store;

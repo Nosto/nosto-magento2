@@ -61,7 +61,7 @@ class Indexers extends Field
      * @param CacheRepository $cacheRepository
      * @param NostoHelperScope $nostoHelperScope
      * @param array $data
-     */
+	 */
     public function __construct(
         Context $context,
         Http $request,

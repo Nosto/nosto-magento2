@@ -41,15 +41,15 @@ define([
     'use strict';
 
     //noinspection SpellCheckingInspection
-    var form = $('#nosto_addtocart_form').catalogAddToCart({});
-    var Recobuy = {};
-    Recobuy.addProductToCart = function (productId, element, quantity) {
+	const form = $('#nosto_addtocart_form').catalogAddToCart({});
+	const Recobuy = {};
+	Recobuy.addProductToCart = function (productId, element, quantity) {
         quantity = quantity || 1;
-        var productData = {
-            "productId" : productId,
-            'skuId' : productId
-        };
-        Recobuy.addSkuToCart(productData, element, quantity);
+			const productData = {
+				"productId": productId,
+				'skuId': productId
+			};
+			Recobuy.addSkuToCart(productData, element, quantity);
     };
 
     // Products must be and array of objects [{'productId': '123', 'skuId': '321'}, {...}]
@@ -66,17 +66,18 @@ define([
     Recobuy.addSkuToCart = function (product, element, quantity) {
         quantity = quantity || 1;
         if (typeof element === 'object' && element) {
-            var slotId = this.resolveContextSlotId(element);
-            if (slotId) {
+					const slotId = this.resolveContextSlotId(element);
+					if (slotId) {
                 nostojs(function (api) {
-                    api.recommendedProductAddedToCart(product.productId, slotId);
+                    // noinspection JSUnresolvedFunction
+									api.recommendedProductAddedToCart(product.productId, slotId);
                 });
             }
         }
 
         form.find('input[name="product"]').val(product.productId);
-        var productSku = document.createElement("input");
-        productSku.setAttribute("type", "hidden");
+			const productSku = document.createElement("input");
+			productSku.setAttribute("type", "hidden");
         productSku.setAttribute("name", 'sku');
         productSku.setAttribute("value", product.skuId);
         form.append(productSku);
@@ -84,12 +85,12 @@ define([
         form.find('input[name="qty"]').val(quantity);
         form.catalogAddToCart('ajaxSubmit', form);
     };
-    
+
     Recobuy.resolveContextSlotId = function (element) {
-        var m = 20;
-        var n = 0;
-        var e = element;
-        while (typeof e.parentElement !== "undefined" && e.parentElement) {
+			const m = 20;
+			let n = 0;
+			let e = element;
+			while (typeof e.parentElement !== "undefined" && e.parentElement) {
             ++n;
             e = e.parentElement;
             if (e.getAttribute('class') === 'nosto_element' && e.getAttribute('id')) {

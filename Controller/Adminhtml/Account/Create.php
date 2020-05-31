@@ -1,4 +1,4 @@
-<?php /** @noinspection PhpMissingParentConstructorInspection */
+<?php
 /**
  * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
@@ -86,7 +86,8 @@ class Create extends Base
      * @param NostoCurrencyHelper $nostoCurrencyHelper
      * @param NostoHelperCache $nostoHelperCache
      * @SuppressWarnings(PHPMD.ExcessiveParameterList)
-     */
+	 * @noinspection PhpMissingParentConstructorInspection
+	 */
     public function __construct(
         Context $context,
         NostoHelperAccount $nostoHelperAccount,
@@ -188,7 +189,7 @@ class Create extends Base
                         $messageText = 'Invalid email address ' . $emailAddress;
                     }
                 }
-                
+
             } catch (NostoException $e) {
                 $this->logger->exception($e);
                 $messageText = $e->getMessage();

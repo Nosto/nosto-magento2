@@ -40,7 +40,6 @@ use Exception;
 use Magento\Backend\Helper\Data as BackendDataHelper;
 use Magento\Catalog\Model\Category;
 use Magento\Catalog\Model\Product;
-use Magento\Catalog\Model\ResourceModel\Category\Collection;
 use Magento\Catalog\Model\ResourceModel\Category\CollectionFactory as CategoryCollectionFactory;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
@@ -78,19 +77,9 @@ class Url extends AbstractHelper
     const MAGENTO_URL_PARAMETER_STORE = '___store';
 
     /**
-     * The SID (session id) parameter in Magento URLs
-     */
-    const MAGENTO_URL_PARAMETER_SID = 'SID';
-
-    /**
      * The array option key for scope in Magento's URLs
      */
     const MAGENTO_URL_OPTION_SCOPE = '_scope';
-
-    /**
-     * The array option key for using secure URLs in Magento
-     */
-    const MAGENTO_URL_OPTION_SECURE = '_secure';
 
     /**
      * The array option key for store to url in Magento's URLs

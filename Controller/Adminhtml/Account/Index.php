@@ -51,12 +51,12 @@ class Index extends Base
     private $resultPageFactory;
     private $nostoHelperScope;
 
-    /** @noinspection PhpMissingParentConstructorInspection */
-    /**
+	/**
      * @param Context $context
      * @param PageFactory $resultPageFactory
      * @param NostoHelperScope $nostoHelperScope
-     */
+	 * @noinspection PhpMissingParentConstructorInspection
+	 */
     public function __construct(
         Context $context,
         PageFactory $resultPageFactory,

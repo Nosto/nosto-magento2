@@ -46,7 +46,6 @@ use Nosto\Tagging\Logger\Logger;
 use Nosto\Tagging\Model\Product\Cache;
 use Nosto\Tagging\Model\ResourceModel\Customer;
 use Nosto\Tagging\Model\ResourceModel\Product\Cache as CacheResource;
-use Zend_Db_Exception;
 
 class UpgradeSchema extends Core implements UpgradeSchemaInterface
 {

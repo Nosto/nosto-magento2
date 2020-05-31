@@ -229,7 +229,9 @@ class Ratings extends AbstractHelper
             // As of Magento 2.3.3 rating summary returns directly the amount of
             // than DataObject
             if ($ratingSummary instanceof DataObject) {
+				/** @noinspection PhpPossiblePolymorphicInvocationInspection */
 				if ($ratingSummary->getReviewsCount() > 0) {
+					/** @noinspection PhpPossiblePolymorphicInvocationInspection */
 					return (int)$ratingSummary->getReviewsCount();
                 }
 			} elseif (is_numeric($product->getReviewsCount())) {

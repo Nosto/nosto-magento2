@@ -36,14 +36,14 @@
 define([
     'uiComponent',
     'Magento_Customer/js/customer-data',
-    'nostojs',
-    'jquery'
-], function (Component, customerData, nostojs, $) {
+    'nostojs'
+], function (Component, customerData, nostojs) {
     'use strict';
 
     return Component.extend({
         initialize: function () {
-            this._super();
+            // noinspection JSUnresolvedFunction
+					this._super();
             //noinspection JSUnusedGlobalSymbols
             this.cartTagging = customerData.get('cart-tagging');
         },
@@ -55,10 +55,11 @@ define([
                 && data.index >= data.total_count
                 && typeof nostojs === 'function') {
                 nostojs(function (api) {
-                    $('#nosto_cart_tagging')
-                        .removeClass('nosto_cart_hidden')
-                        .addClass('nosto_cart');
-                    api.resendCartTagging("nosto_cart_tagging");
+                	const element = document.querySelector("#nosto_cart_tagging");
+									element.classList.remove('nosto_cart_hidden');
+									element.classList.add('nosto_cart');
+                    // noinspection JSUnresolvedFunction
+									api.resendCartTagging("nosto_cart_tagging");
                 });
             }
         }

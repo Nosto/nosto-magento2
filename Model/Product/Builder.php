@@ -41,7 +41,6 @@ use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\Product\Gallery\ReadHandler as GalleryReadHandler;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Store\Model\Store;
-use Magento\Store\Model\StoreManagerInterface;
 use Nosto\Exception\FilteredProductException;
 use Nosto\Exception\NonBuildableProductException;
 use Nosto\NostoException;
@@ -106,42 +105,25 @@ class Builder
     /** @var AttributeServiceInterface */
     private $attributeService;
 
-    /**
-     * Builder constructor.
-     * @param NostoHelperData $nostoHelperData
-     * @param NostoPriceHelper $priceHelper
-     * @param CategoryServiceInterface $nostoCategoryService
-     * @param StockService $stockService
-     * @param NostoSkuCollection $skuCollection
-     * @param NostoLogger $logger
-     * @param ManagerInterface $eventManager
-     * @param GalleryReadHandler $galleryReadHandler
-     * @param NostoUrlBuilder $urlBuilder
-     * @param CurrencyHelper $nostoCurrencyHelper
-     * @param LowStockHelper $lowStockHelper
-     * @param PriceVariationCollection $priceVariationCollection
-     * @param NostoVariationHelper $nostoVariationHelper
-     * @param NostoRating $nostoRatingHelper
-     * @param StoreManagerInterface $storeManager
-     * @param AttributeServiceInterface $attributeService
-     */
+	/**
+	 * Builder constructor.
+	 * @param NostoHelperData $nostoHelperData
+	 * @param NostoPriceHelper $priceHelper
+	 * @param CategoryServiceInterface $nostoCategoryService
+	 * @param StockService $stockService
+	 * @param NostoSkuCollection $skuCollection
+	 * @param NostoLogger $logger
+	 * @param ManagerInterface $eventManager
+	 * @param GalleryReadHandler $galleryReadHandler
+	 * @param NostoUrlBuilder $urlBuilder
+	 * @param CurrencyHelper $nostoCurrencyHelper
+	 * @param LowStockHelper $lowStockHelper
+	 * @param PriceVariationCollection $priceVariationCollection
+	 * @param NostoVariationHelper $nostoVariationHelper
+	 * @param NostoRating $nostoRatingHelper
+	 */
     public function __construct(
-        NostoHelperData $nostoHelperData,
-        NostoPriceHelper $priceHelper,
-        CategoryServiceInterface $nostoCategoryService,
-        StockService $stockService,
-        NostoSkuCollection $skuCollection,
-        NostoLogger $logger,
-        ManagerInterface $eventManager,
-        GalleryReadHandler $galleryReadHandler,
-        NostoUrlBuilder $urlBuilder,
-        CurrencyHelper $nostoCurrencyHelper,
-        LowStockHelper $lowStockHelper,
-        PriceVariationCollection $priceVariationCollection,
-        NostoVariationHelper $nostoVariationHelper,
-        NostoRating $nostoRatingHelper,
-        StoreManagerInterface $storeManager,
-        AttributeServiceInterface $attributeService
+		NostoHelperData $nostoHelperData, NostoPriceHelper $priceHelper, CategoryServiceInterface $nostoCategoryService, StockService $stockService, NostoSkuCollection $skuCollection, NostoLogger $logger, ManagerInterface $eventManager, GalleryReadHandler $galleryReadHandler, NostoUrlBuilder $urlBuilder, CurrencyHelper $nostoCurrencyHelper, LowStockHelper $lowStockHelper, PriceVariationCollection $priceVariationCollection, NostoVariationHelper $nostoVariationHelper, NostoRating $nostoRatingHelper
     ) {
         $this->nostoPriceHelper = $priceHelper;
         $this->eventManager = $eventManager;
@@ -153,9 +135,7 @@ class Builder
         $this->builderTraitConstruct(
             $nostoHelperData,
             $stockService,
-            $logger,
-            $storeManager,
-            $attributeService
+            $logger
         );
         $this->priceVariationCollection = $priceVariationCollection;
         $this->nostoVariationHelper = $nostoVariationHelper;

@@ -15,7 +15,7 @@
     </session>
   </component>
   <component name="JavaScriptSettings">
-    <option name="languageLevel" value="ES5" />
+    <option name="languageLevel" value="ES6" />
   </component>
   <component name="PhpEntryPointsManager">
     <entry_point>
