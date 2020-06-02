@@ -2,8 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9094e788-7210-4bb7-9b9e-17cf223e4755" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/LICENSE_AFL.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Model/Mview/ChangeLog.php" beforeDir="false" afterPath="$PROJECT_DIR$/Model/Mview/ChangeLog.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -253,7 +252,7 @@
       <workItem from="1590909520207" duration="4720000" />
       <workItem from="1590937811419" duration="596000" />
       <workItem from="1590938435948" duration="1284000" />
-      <workItem from="1591088683908" duration="21000" />
+      <workItem from="1591088683908" duration="524000" />
     </task>
     <servers />
   </component>
@@ -303,5 +302,9 @@
       <screen x="0" y="23" width="1440" height="877" />
     </state>
     <state x="420" y="218" width="600" height="486" key="find.popup/0.23.1440.877@0.23.1440.877" timestamp="1590939784616" />
+    <state x="385" y="213" width="670" height="676" key="search.everywhere.popup" timestamp="1591090047823">
+      <screen x="0" y="23" width="1440" height="877" />
+    </state>
+    <state x="385" y="213" width="670" height="676" key="search.everywhere.popup/0.23.1440.877@0.23.1440.877" timestamp="1591090047823" />
   </component>
 </project>
