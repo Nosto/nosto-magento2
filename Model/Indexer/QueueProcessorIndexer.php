@@ -42,7 +42,7 @@ use Magento\Store\Model\App\Emulation;
 use Magento\Store\Model\Store;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
-use Nosto\Tagging\Model\Indexer\Dimensions\Invalidate\ModeSwitcher as InvalidateModeSwitcher;
+use Nosto\Tagging\Model\Indexer\Dimensions\QueueProcessor\ModeSwitcher as QueueProcessorModeSwitcher;
 use Nosto\Tagging\Model\Indexer\Dimensions\ModeSwitcherInterface;
 use Nosto\Tagging\Model\Indexer\Dimensions\StoreDimensionProvider;
 use Nosto\Tagging\Model\ResourceModel\Product\Update\Queue\QueueCollection;
@@ -66,7 +66,7 @@ class QueueProcessorIndexer extends AbstractIndexer
     /** @var QueueCollectionBuilder */
     private $queueCollectionBuilder;
 
-    /** @var InvalidateModeSwitcher */
+    /** @var QueueProcessorModeSwitcher */
     private $modeSwitcher;
 
     /**
@@ -75,7 +75,7 @@ class QueueProcessorIndexer extends AbstractIndexer
      * @param QueueProcessorService $queueProcessorService
      * @param NostoLogger $logger
      * @param QueueCollectionBuilder $queueCollectionBuilder
-     * @param InvalidateModeSwitcher $modeSwitcher
+     * @param QueueProcessorModeSwitcher $modeSwitcher
      * @param StoreDimensionProvider $dimensionProvider
      * @param Emulation $storeEmulation
      * @param ProcessManager $processManager
@@ -87,7 +87,7 @@ class QueueProcessorIndexer extends AbstractIndexer
         QueueProcessorService $queueProcessorService,
         NostoLogger $logger,
         QueueCollectionBuilder $queueCollectionBuilder,
-        InvalidateModeSwitcher $modeSwitcher,
+        QueueProcessorModeSwitcher $modeSwitcher,
         StoreDimensionProvider $dimensionProvider,
         Emulation $storeEmulation,
         ProcessManager $processManager,

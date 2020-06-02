@@ -173,7 +173,10 @@
         <arguments>
             <argument name="dimensionSwitchers" xsi:type="array">
                 <item name="nosto_index_product_queue" xsi:type="object">
-                    Nosto\Tagging\Model\Indexer\Dimensions\Data\ModeSwitcher
+                    Nosto\Tagging\Model\Indexer\Dimensions\Queue\ModeSwitcher
+                </item>
+                <item name="nosto_index_product_queue_processor" xsi:type="object">
+                    Nosto\Tagging\Model\Indexer\Dimensions\QueueProcessor\ModeSwitcher
                 </item>
             </argument>
         </arguments>
@@ -181,7 +184,8 @@
     <type name="Magento\Indexer\Console\Command\IndexerShowDimensionsModeCommand">
         <arguments>
             <argument name="indexers" xsi:type="array">
-                <item name="nosto_index_product_queue" xsi:type="string">nosto_index_product_data</item>
+                <item name="nosto_index_product_queue" xsi:type="string">nosto_index_product_queue</item>
+                <item name="nosto_index_product_queue_processor" xsi:type="string">nosto_index_product_queue_processor</item>
             </argument>
         </arguments>
     </type>
@@ -192,10 +196,11 @@
             </argument>
         </arguments>
     </type>
-    <type name="Nosto\Tagging\Cron\InvalidateCron">
+    <type name="Nosto\Tagging\Model\Indexer\QueueProcesssorIndexer">
         <arguments>
-            <argument name="intervalHours" xsi:type="number">4</argument>
-            <argument name="productLimit" xsi:type="number">1000</argument>
+            <argument name="dimensionProvider" xsi:type="object" shared="false">
+                Nosto\Tagging\Model\Indexer\Dimensions\StoreDimensionProvider
+            </argument>
         </arguments>
     </type>
     <type name="Nosto\Tagging\Model\Service\Sync\Upsert\AsyncBulkPublisher">

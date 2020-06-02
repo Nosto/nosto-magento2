@@ -34,7 +34,7 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Indexer\Dimensions\Invalidate;
+namespace Nosto\Tagging\Model\Indexer\Dimensions\Queue;
 
 use InvalidArgumentException;
 use Magento\Framework\App\Cache\TypeListInterface;
@@ -42,7 +42,7 @@ use Magento\Framework\App\Config\ConfigResource\ConfigInterface;
 
 class ModeSwitcherConfiguration
 {
-    const XML_PATH_PRODUCT_INVALIDATE_DIMENSIONS_MODE = 'indexer/nosto_index_product_invalidate/dimensions_mode';
+    const XML_PATH_PRODUCT_QUEUE_DIMENSIONS_MODE = 'indexer/nosto_index_product_queue/dimensions_mode';
 
     /**
      * ConfigInterface
@@ -80,7 +80,7 @@ class ModeSwitcherConfiguration
      */
     public function saveMode(string $mode)
     {
-        $this->configWriter->saveConfig(self::XML_PATH_PRODUCT_INVALIDATE_DIMENSIONS_MODE, $mode);
+        $this->configWriter->saveConfig(self::XML_PATH_PRODUCT_QUEUE_DIMENSIONS_MODE, $mode);
         $this->cacheTypeList->cleanType('config');
     }
 }
