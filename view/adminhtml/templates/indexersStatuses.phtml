@@ -40,30 +40,30 @@
 ?>
 
 <fieldset>
-        <table>
-            <tr>
-                <td>
-                    <?= $block->escapeHtml(__('Products Marked As Dirty')) ?>
-                </td>
-                <td>
-                    <label>
-                        <input type="text" readonly
-                               value = "<?= $block->escapeHtml($block->getAmountDirtyProducts()) ?>"
-                        />
-                    </label>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <?= $block->escapeHtml(__('Products Out Of Sync')) ?>
-                </td>
-                <td>
-                    <label>
-                        <input type="text" readonly
-                               value = "<?= $block->escapeHtml($block->getAmountOutOfSyncProducts()) ?>"
-                        />
-                    </label>
-                </td>
-            </tr>
-        </table>
+  <table>
+    <tr>
+      <td>
+          <?= $block->escapeHtml(__('Products Marked As Dirty')) ?>
+      </td>
+      <td>
+        <label>
+          <input type="text" readonly
+                 value="<?= $block->escapeHtml($block->getAmountDirtyProducts()) ?>"
+          />
+        </label>
+      </td>
+    </tr>
+    <tr>
+      <td>
+          <?= $block->escapeHtml(__('Products Out Of Sync')) ?>
+      </td>
+      <td>
+        <label>
+          <input type="text" readonly
+                 value="<?= $block->escapeHtml($block->getAmountOutOfSyncProducts()) ?>"
+          />
+        </label>
+      </td>
+    </tr>
+  </table>
 </fieldset>

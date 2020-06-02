@@ -46,32 +46,31 @@ use Nosto\Tagging\Model\Service\Cache\CacheService;
 
 class ProductInvalidate
 {
-    /** @var IndexerRegistry  */
+    /** @var IndexerRegistry */
     private $indexerRegistry;
 
-    /** @var IndexerInvalidate  */
+    /** @var IndexerInvalidate */
     private $indexerInvalidate;
 
-    /** @var CacheService  */
+    /** @var CacheService */
     private $cacheService;
 
-    /** @var NostoProductRepository  */
+    /** @var NostoProductRepository */
     private $nostoProductRepository;
 
-	/**
-	 * ProductInvalidate constructor.
-	 * @param IndexerRegistry $indexerRegistry
-	 * @param CacheService $cacheService
-	 * @param IndexerInvalidate $indexerInvalidate
-	 * @param NostoProductRepository $nostoProductRepository
-	 */
+    /**
+     * ProductInvalidate constructor.
+     * @param IndexerRegistry $indexerRegistry
+     * @param CacheService $cacheService
+     * @param IndexerInvalidate $indexerInvalidate
+     * @param NostoProductRepository $nostoProductRepository
+     */
     public function __construct(
         IndexerRegistry $indexerRegistry,
         CacheService $cacheService,
         IndexerInvalidate $indexerInvalidate,
         NostoProductRepository $nostoProductRepository
-    )
-    {
+    ) {
         $this->indexerRegistry = $indexerRegistry;
         $this->cacheService = $cacheService;
         $this->indexerInvalidate = $indexerInvalidate;

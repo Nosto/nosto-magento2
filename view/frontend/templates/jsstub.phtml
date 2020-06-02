@@ -53,15 +53,15 @@
 ?>
 <!--suppress JSUnresolvedVariable -->
 <script type="text/javascript">
-    (function () {
-			const name = "nostojs";
-			window[name] = window[name] || function (cb) {
-            (window[name].q = window[name].q || []).push(cb);
-        };
-        <?php if ($block->isRecoAutoloadDisabled()): ?>
-        window[name](function(api){
-            api.setAutoLoad(false);
-        });
-        <?php endif; ?>
-    })();
+  (function () {
+    const name = "nostojs";
+    window[name] = window[name] || function (cb) {
+      (window[name].q = window[name].q || []).push(cb);
+    };
+      <?php if ($block->isRecoAutoloadDisabled()): ?>
+    window[name](function (api) {
+      api.setAutoLoad(false);
+    });
+      <?php endif; ?>
+  })();
 </script>

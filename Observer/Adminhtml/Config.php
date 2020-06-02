@@ -56,19 +56,19 @@ class Config implements ObserverInterface
     const WEBSITE_SCOPE_KEY = 'website';
     const STORE_SCOPE_KEY = 'store';
 
-    /** @var NostoLogger  */
+    /** @var NostoLogger */
     private $logger;
 
-    /** @var ModuleManager  */
+    /** @var ModuleManager */
     private $moduleManager;
 
-    /** @var NostoHelperScope  */
+    /** @var NostoHelperScope */
     private $nostoHelperScope;
 
-    /** @var NostoAccountHelper  */
+    /** @var NostoAccountHelper */
     private $nostoAccountHelper;
 
-    /** @var CacheCollection  */
+    /** @var CacheCollection */
     private $cacheCollection;
 
     /** @var CacheRepository */

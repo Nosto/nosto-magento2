@@ -66,7 +66,7 @@ class Order extends Base
      */
     public function __construct(
         Context $context,
-		NostoHelperScope $nostoHelperScope,
+        NostoHelperScope $nostoHelperScope,
         NostoHelperAccount $nostoHelperAccount,
         NostoOrderCollection $nostoOrderCollection
     ) {

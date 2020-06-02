@@ -71,23 +71,23 @@ class Repository
     private $stockProvider;
     private $skuResource;
 
-	/**
-	 * Constructor to instantiating the reindex command. This constructor uses proxy classes for
-	 * two of the Nosto objects to prevent introspection of constructor parameters when the DI
-	 * compile command is run.
-	 * Not using the proxy classes will lead to a "Area code not set" exception being thrown in the
-	 * compile phase.
-	 *
-	 * @param ProductRepository $productRepository
-	 * @param SearchCriteriaBuilder $searchCriteriaBuilder
-	 * @param ConfigurableProduct $configurableProduct
-	 * @param FilterBuilder $filterBuilder
-	 * @param FilterGroupBuilder $filterGroupBuilder
-	 * @param ConfigurableType $configurableType
-	 * @param ProductVisibility $productVisibility
-	 * @param StockProviderInterface $stockProvider
-	 * @param Sku $skuResource
-	 */
+    /**
+     * Constructor to instantiating the reindex command. This constructor uses proxy classes for
+     * two of the Nosto objects to prevent introspection of constructor parameters when the DI
+     * compile command is run.
+     * Not using the proxy classes will lead to a "Area code not set" exception being thrown in the
+     * compile phase.
+     *
+     * @param ProductRepository $productRepository
+     * @param SearchCriteriaBuilder $searchCriteriaBuilder
+     * @param ConfigurableProduct $configurableProduct
+     * @param FilterBuilder $filterBuilder
+     * @param FilterGroupBuilder $filterGroupBuilder
+     * @param ConfigurableType $configurableType
+     * @param ProductVisibility $productVisibility
+     * @param StockProviderInterface $stockProvider
+     * @param Sku $skuResource
+     */
     public function __construct(
         ProductRepository $productRepository,
         SearchCriteriaBuilder $searchCriteriaBuilder,

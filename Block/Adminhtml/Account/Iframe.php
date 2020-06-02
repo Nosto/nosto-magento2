@@ -58,6 +58,7 @@ use Nosto\Tagging\Model\User\Builder as NostoCurrentUserBuilder;
 class Iframe extends BlockTemplate
 {
     use IframeTrait;
+
     const IFRAME_VERSION = 1;
 
     private $nostoHelperAccount;
@@ -127,17 +128,17 @@ class Iframe extends BlockTemplate
             $this->backendAuthSession->setData('nosto_message', null);
         }
 
-		return $this->buildURL($params);
+        return $this->buildURL($params);
     }
 
-	/**
-	 * Returns the config for the Nosto iframe JS component.
-	 * This config can be converted into JSON in the view file.
-	 *
-	 * @return array the config.
-	 * @throws NotFoundException
-	 * @throws LocalizedException
-	 */
+    /**
+     * Returns the config for the Nosto iframe JS component.
+     * This config can be converted into JSON in the view file.
+     *
+     * @return array the config.
+     * @throws NotFoundException
+     * @throws LocalizedException
+     */
     public function getIframeConfig()
     {
         $store = $this->nostoHelperScope->getSelectedStore($this->getRequest());

@@ -96,7 +96,7 @@ class AsyncBulkConsumer extends AbstractBulkConsumer
     public function doOperation(array $productIds, string $storeId)
     {
         $store = $this->nostoScopeHelper->getStore($storeId);
-        $outOfSyncCollection = $this->cacheRepository->getByProductIdsAndStoreId($productIds, (int) $storeId);
+        $outOfSyncCollection = $this->cacheRepository->getByProductIdsAndStoreId($productIds, (int)$storeId);
         $this->syncService->syncIndexedProducts($outOfSyncCollection, $store);
     }
 }

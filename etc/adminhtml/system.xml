@@ -68,7 +68,8 @@
                 <field id="store_code_to_url" translate="label comment" type="select" sortOrder="80"
                        showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Add Store Code to Nosto Urls</label>
-                    <comment><![CDATA[Set this to no if you have configured different URLs or domains for each store or if you are only using single store view.]]>
+                    <comment>
+                        <![CDATA[Set this to no if you have configured different URLs or domains for each store or if you are only using single store view.]]>
                     </comment>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
@@ -256,7 +257,8 @@
                 <field id="method" translate="label comment" type="select" sortOrder="10"
                        showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Multi currency setup</label>
-                    <comment>Set this to "Exchange rates" if your store uses Magento's exchange rates. If the store view uses only one currency set this to "Single currency". If you have a custom pricing handling set this to "Disabled" and Nosto will not try to do any currency conversions.
+                    <comment>Set this to "Exchange rates" if your store uses Magento's exchange rates. If the store view uses only one currency set this to
+                        "Single currency". If you have a custom pricing handling set this to "Disabled" and Nosto will not try to do any currency conversions.
                     </comment>
                     <source_model>Nosto\Tagging\Model\Config\Source\MultiCurrency</source_model>
                     <backend_model>Nosto\Tagging\Model\Config\Backend\MultiCurrency</backend_model>

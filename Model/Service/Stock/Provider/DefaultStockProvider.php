@@ -112,7 +112,7 @@ class DefaultStockProvider implements StockProviderInterface
      */
     public function getStockStatuses(// @codingStandardsIgnoreLine
         array $ids,
-		Website $website
+        Website $website
     ): array {
         return $this->stockRegistryProvider->getStockStatuses(
             $ids,

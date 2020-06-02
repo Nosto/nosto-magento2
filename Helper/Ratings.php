@@ -53,7 +53,7 @@ use Nosto\Tagging\Model\Product\Ratings as ProductRatings;
  */
 class Ratings extends AbstractHelper
 {
-    const REVIEW_COUNT= 'reviews_count';
+    const REVIEW_COUNT = 'reviews_count';
     const AVERAGE_SCORE = 'average_score';
     const CURRENT_PRODUCT = 'current_product';
 
@@ -136,7 +136,7 @@ class Ratings extends AbstractHelper
                 try {
                     $this->setRegistryProduct($product);
 
-					$ratings = $this->ratingsFactory->create()->getRichSnippet();
+                    $ratings = $this->ratingsFactory->create()->getRichSnippet();
                 } catch (Exception $e) {
                     $this->resetRegistryProduct();
                     $this->logger->exception($e);
@@ -174,8 +174,8 @@ class Ratings extends AbstractHelper
      * @param Product $product the product whose rating value to fetch
      * @param Store $store the store scope in which to fetch the rating
      * @return float|null the normalized rating value of the product
-	 * @noinspection PhpPossiblePolymorphicInvocationInspection
-	 */
+     * @noinspection PhpPossiblePolymorphicInvocationInspection
+     */
     private function buildRatingValue(Product $product, Store $store)
     {
         try {
@@ -190,10 +190,10 @@ class Ratings extends AbstractHelper
             // As of Magento 2.3.3 rating summary returns directly the sum of ratings rather
             // than DataObject
             if ($ratingSummary instanceof DataObject) {
-				if ($ratingSummary->getReviewsCount() > 0
-					&& $ratingSummary->getRatingSummary() > 0
+                if ($ratingSummary->getReviewsCount() > 0
+                    && $ratingSummary->getRatingSummary() > 0
                 ) {
-					$ratingValue = $ratingSummary->getRatingSummary();
+                    $ratingValue = $ratingSummary->getRatingSummary();
                 }
             } elseif (is_numeric($ratingSummary)) {
                 $ratingValue = $ratingSummary;
@@ -229,12 +229,12 @@ class Ratings extends AbstractHelper
             // As of Magento 2.3.3 rating summary returns directly the amount of
             // than DataObject
             if ($ratingSummary instanceof DataObject) {
-				/** @noinspection PhpPossiblePolymorphicInvocationInspection */
-				if ($ratingSummary->getReviewsCount() > 0) {
-					/** @noinspection PhpPossiblePolymorphicInvocationInspection */
-					return (int)$ratingSummary->getReviewsCount();
+                /** @noinspection PhpPossiblePolymorphicInvocationInspection */
+                if ($ratingSummary->getReviewsCount() > 0) {
+                    /** @noinspection PhpPossiblePolymorphicInvocationInspection */
+                    return (int)$ratingSummary->getReviewsCount();
                 }
-			} elseif (is_numeric($product->getReviewsCount())) {
+            } elseif (is_numeric($product->getReviewsCount())) {
                 /** @noinspection PhpUndefinedMethodInspection */
                 return (int)$product->getReviewsCount();
             }

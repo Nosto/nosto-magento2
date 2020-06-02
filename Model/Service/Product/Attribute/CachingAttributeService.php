@@ -135,7 +135,7 @@ class CachingAttributeService extends AbstractAttributeService
     {
         $storeId = $store->getId();
         /* Product attribute cache slicing */
-        $productCacheOffset = count($this->productAttributeCache[$storeId])-$this->maxCachedProducts;
+        $productCacheOffset = count($this->productAttributeCache[$storeId]) - $this->maxCachedProducts;
         if ($productCacheOffset > 0) {
             $this->productAttributeCache[$storeId] = array_slice(
                 $this->productAttributeCache[$storeId],

@@ -60,7 +60,7 @@ class Ratings
         $this->reviewCount = (int)$reviewCount;
     }
 
-	public function getRating()
+    public function getRating()
     {
         return $this->rating;
     }

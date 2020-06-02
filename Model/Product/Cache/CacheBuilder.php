@@ -50,7 +50,7 @@ class CacheBuilder
         BuilderTrait::__construct as builderTraitConstruct; // @codingStandardsIgnoreLine
     }
 
-    /** @var CacheFactory  */
+    /** @var CacheFactory */
     private $cacheFactory;
 
     /** @var NostoProductBuilder */

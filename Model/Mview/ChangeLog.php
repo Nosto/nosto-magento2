@@ -41,19 +41,19 @@ use Magento\Framework\Mview\View\Changelog as MagentoChangelog;
 
 class ChangeLog extends MagentoChangelog implements ChangeLogInterface
 {
-	/**
-	 * @inheritDoc
-	 * @throws Exception
-	 */
+    /**
+     * @inheritDoc
+     * @throws Exception
+     */
     public function getTotalRows()
     {
         $changelogTableName = $this->resource->getTableName($this->getName());
         if ($this->connection->isTableExists($changelogTableName)) {
             $select = $this->connection->select() // @codingStandardsIgnoreLine
-                ->from( // @codingStandardsIgnoreLine
-                    $changelogTableName,
-                    'COUNT(*)'
-                );
+            ->from( // @codingStandardsIgnoreLine
+                $changelogTableName,
+                'COUNT(*)'
+            );
 
             return (int)$this->connection->fetchOne($select);
         }

@@ -54,14 +54,14 @@ class Indexers extends Field
     /** @var NostoHelperScope $nostoHelperScope */
     public $nostoHelperScope;
 
-	/**
+    /**
      * Indexers block constructor.
      * @param Context $context
      * @param Http $request
      * @param CacheRepository $cacheRepository
      * @param NostoHelperScope $nostoHelperScope
      * @param array $data
-	 */
+     */
     public function __construct(
         Context $context,
         Http $request,
@@ -81,7 +81,7 @@ class Indexers extends Field
      */
     public function getAmountDirtyProducts()
     {
-        $id = (int) $this->request->getParam('store');
+        $id = (int)$this->request->getParam('store');
         $store = $this->nostoHelperScope->getStore($id);
         return $this->cacheRepository->getTotalDirty($store);
     }
@@ -92,7 +92,7 @@ class Indexers extends Field
      */
     public function getAmountOutOfSyncProducts()
     {
-        $id = (int) $this->request->getParam('store');
+        $id = (int)$this->request->getParam('store');
         $store = $this->nostoHelperScope->getStore($id);
         return $this->cacheRepository->getTotalOutOfSync($store);
     }

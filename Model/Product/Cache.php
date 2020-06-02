@@ -226,6 +226,7 @@ class Cache extends AbstractModel implements ProductCacheInterface
         }
         return self::DB_VALUE_BOOLEAN_TRUE;
     }
+
     /**
      * Initialize resource model
      *

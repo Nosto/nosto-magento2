@@ -70,8 +70,7 @@ class ProductData
         MagentoResourceProduct $magentoResourceProduct,
         IndexerRegistry $indexerRegistry,
         IndexerData $indexerData
-    )
-    {
+    ) {
         $this->indexerRegistry = $indexerRegistry;
         $this->indexerData = $indexerData;
         $this->magentoResourceProduct = $magentoResourceProduct;

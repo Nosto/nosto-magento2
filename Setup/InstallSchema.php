@@ -43,14 +43,14 @@ use Zend_Db_Exception;
 
 class InstallSchema extends Core implements InstallSchemaInterface
 {
-	/**
-	 * Installs DB schema for Nosto Tagging module
-	 *
-	 * @param SchemaSetupInterface $setup
-	 * @param ModuleContextInterface $context
-	 * @return void
-	 * @throws Zend_Db_Exception
-	 */
+    /**
+     * Installs DB schema for Nosto Tagging module
+     *
+     * @param SchemaSetupInterface $setup
+     * @param ModuleContextInterface $context
+     * @return void
+     * @throws Zend_Db_Exception
+     */
     public function install(// @codingStandardsIgnoreLine
         SchemaSetupInterface $setup,
         ModuleContextInterface $context

@@ -72,7 +72,7 @@ abstract class AbstractAttributeService implements AttributeServiceInterface
         $this->attributeProvider = $attributeProvider;
     }
 
-	private function getAttributesByArray(Product $product, array $attributes): array
+    private function getAttributesByArray(Product $product, array $attributes): array
     {
         $attributesAndValues = [];
         foreach ($attributes as $attribute) {
@@ -176,6 +176,7 @@ abstract class AbstractAttributeService implements AttributeServiceInterface
     {
         return $this->logger;
     }
+
     /**
      * Resolves "textual" product attribute value.
      * If value is an array containing scalar values the array will be imploded

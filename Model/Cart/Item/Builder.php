@@ -1,4 +1,5 @@
 <?php /** @noinspection DuplicatedCode */
+
 /**
  * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
@@ -93,7 +94,7 @@ class Builder
         $cartItem = new LineItem();
         $cartItem->setPriceCurrencyCode($currencyCode);
         $cartItem->setProductId($this->buildItemId($item));
-        $cartItem->setQuantity((int) $item->getQty());
+        $cartItem->setQuantity((int)$item->getQty());
         $cartItem->setSkuId($this->buildSkuId($item));
         $productType = $item->getProductType();
         // Set default name - this will be overwritten below if matching

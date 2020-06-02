@@ -62,15 +62,17 @@
      data-bind="scope: 'variationTagging'"
      data-role="nosto-variation-tagging"
 >
-    <!-- ko if: variationTagging().active_variation -->
-    <span class="nosto_variation_dynamic" data-bind="text: variationTagging().active_variation, afterRender: reloadRecommendations"></span>
-    <!-- /ko -->
+  <!-- ko if: variationTagging().active_variation -->
+  <span class="nosto_variation_dynamic" data-bind="text: variationTagging().active_variation, afterRender: reloadRecommendations"></span>
+  <!-- /ko -->
 </div>
 <!--suppress JSUnresolvedVariable -->
 <script type="text/x-magento-init">
 {
   "[data-role=nosto-variation-tagging]": {
-    "Magento_Ui/js/core/app": <?= /* @escapeNotVerified */ $block->getJsLayout();?>
+    "Magento_Ui/js/core/app": <?= /* @escapeNotVerified */
+    $block->getJsLayout(); ?>
   }
 }
+
 </script>

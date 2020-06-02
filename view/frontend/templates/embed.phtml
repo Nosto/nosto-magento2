@@ -54,8 +54,8 @@ use Nosto\Tagging\Block\Embed;
 /** @var Embed $block */
 ?>
 <?php if ($block->getNostoScriptUrl()): ?>
-    <!--suppress JSUnresolvedVariable -->
-	<script type="text/javascript"
-            src="<?= $block->escapeUrl($block->getNostoScriptUrl()); ?>"
-            async></script>
+  <!--suppress JSUnresolvedVariable -->
+  <script type="text/javascript"
+          src="<?= $block->escapeUrl($block->getNostoScriptUrl()); ?>"
+          async></script>
 <?php endif; ?>

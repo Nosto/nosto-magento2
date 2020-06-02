@@ -144,13 +144,13 @@ abstract class CoreData
         $attribute->save();
     }
 
-	/**
-	 * Sets the attribute Nosto customer reference to be only editable in admin
-	 *
-	 * @param ModuleDataSetupInterface $setup
-	 * @throws LocalizedException
-	 * @throws Exception
-	 */
+    /**
+     * Sets the attribute Nosto customer reference to be only editable in admin
+     *
+     * @param ModuleDataSetupInterface $setup
+     * @throws LocalizedException
+     * @throws Exception
+     */
     public function alterCustomerReferenceNonEditable(ModuleDataSetupInterface $setup)
     {
         $customerSetup = $this->customerSetupFactory->create(['setup' => $setup]);
@@ -166,15 +166,15 @@ abstract class CoreData
         $attribute->save();
     }
 
-	/**
-	 * @throws LocalizedException
-	 * @throws NostoException
-	 */
+    /**
+     * @throws LocalizedException
+     * @throws NostoException
+     */
     public function populateCustomerReference()
     {
         $customerCollection = $this->customerCollectionFactory->create()
-        ->addAttributeToSelect(NostoHelperData::NOSTO_CUSTOMER_REFERENCE_ATTRIBUTE_NAME)
-        ->setPageSize(1000);
+            ->addAttributeToSelect(NostoHelperData::NOSTO_CUSTOMER_REFERENCE_ATTRIBUTE_NAME)
+            ->setPageSize(1000);
         $iterator = new PagingIterator($customerCollection);
         /* @var Customer $customer */
         foreach ($iterator as $page) {

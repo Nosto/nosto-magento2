@@ -34,32 +34,32 @@
  */
 
 define([
-    'uiComponent',
-    'Magento_Customer/js/customer-data',
-    'nostojs'
+  'uiComponent',
+  'Magento_Customer/js/customer-data',
+  'nostojs'
 ], function (Component, customerData, nostojs) {
-    'use strict';
+  'use strict';
 
-    // noinspection JSUnusedGlobalSymbols
-	return Component.extend({
-        initialize: function () {
-            // noinspection JSUnresolvedFunction
-					this._super();
-            //noinspection JSUnusedGlobalSymbols
-            this.variationTagging = customerData.get('active-variation-tagging');
-        },
-        reloadRecommendations: function () {
-            // Remove the static variation if it exists - it should not but as a safeguard we rename the class
-						const element = document.querySelector(".nosto_variation");
-						element.classList.remove('nosto_variation');
-						element.classList.add('nosto_variation_static');
-						document.querySelector(".nosto_variation_dynamic").classList.add("nosto_variation")
-            if (typeof nostojs === 'function') {
-                nostojs(function (api) {
-                    // noinspection JSUnresolvedFunction
-									api.loadRecommendations();
-                });
-            }
-        }
-    });
+  // noinspection JSUnusedGlobalSymbols
+  return Component.extend({
+    initialize: function () {
+      // noinspection JSUnresolvedFunction
+      this._super();
+      //noinspection JSUnusedGlobalSymbols
+      this.variationTagging = customerData.get('active-variation-tagging');
+    },
+    reloadRecommendations: function () {
+      // Remove the static variation if it exists - it should not but as a safeguard we rename the class
+      const element = document.querySelector(".nosto_variation");
+      element.classList.remove('nosto_variation');
+      element.classList.add('nosto_variation_static');
+      document.querySelector(".nosto_variation_dynamic").classList.add("nosto_variation")
+      if (typeof nostojs === 'function') {
+        nostojs(function (api) {
+          // noinspection JSUnresolvedFunction
+          api.loadRecommendations();
+        });
+      }
+    }
+  });
 });

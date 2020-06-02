@@ -39,7 +39,7 @@
         <description>Flags updated products as dirty</description>
     </indexer>
     <indexer id="nosto_index_product_data" view_id="nosto_index_product_data" class="Nosto\Tagging\Model\Indexer\DataIndexer">
-        <title>Nosto Product Index Data </title>
+        <title>Nosto Product Index Data</title>
         <description>Generates the Nosto product data and sends via API</description>
     </indexer>
 </config>

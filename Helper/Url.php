@@ -135,7 +135,7 @@ class Url extends AbstractHelper
     private $nostoUrlBuilder;
     private $logger;
 
-	/**
+    /**
      * Constructor.
      *
      * @param Context $context the context.
@@ -150,7 +150,7 @@ class Url extends AbstractHelper
     public function __construct(
         Context $context,
         ProductRepository $productRepository,
-		CategoryCollectionFactory $categoryCollectionFactory,
+        CategoryCollectionFactory $categoryCollectionFactory,
         NostoDataHelper $nostoDataHelper,
         UrlBuilder $urlBuilder,
         /** @noinspection PhpDeprecationInspection */
@@ -218,7 +218,7 @@ class Url extends AbstractHelper
     public function getPreviewUrlCategory(Store $store)
     {
         $rootCatId = (int)$store->getRootCategoryId();
-		$collection = $this->categoryCollectionFactory->create();
+        $collection = $this->categoryCollectionFactory->create();
         $collection->addAttributeToFilter('is_active', ['eq' => 1]);
         $collection->addAttributeToFilter('path', ['like' => "1/$rootCatId/%"]);
         $collection->setCurPage(1);
@@ -330,15 +330,15 @@ class Url extends AbstractHelper
         return $this->addNostoDebugParamToUrl($url);
     }
 
-	/**
-	 * Gets the absolute URL to the current store view cart page.
-	 *
-	 * @param Store $store the store to get the url for.
-	 * @param string $currentUrl restore cart url
-	 * @return string cart url.
-	 * @throws Zend_Uri_Exception
-	 * @throws NoSuchEntityException
-	 */
+    /**
+     * Gets the absolute URL to the current store view cart page.
+     *
+     * @param Store $store the store to get the url for.
+     * @param string $currentUrl restore cart url
+     * @return string cart url.
+     * @throws Zend_Uri_Exception
+     * @throws NoSuchEntityException
+     */
     public function getUrlCart(Store $store, $currentUrl)
     {
         $zendHttp = Zend_Uri_Http::fromString($currentUrl);
@@ -371,12 +371,12 @@ class Url extends AbstractHelper
      */
     public function getUrlOptionsWithNoSid(Store $store)
     {
-		return [
-			self::MAGENTO_URL_OPTION_SCOPE_TO_URL => $this->nostoDataHelper->getStoreCodeToUrl($store),
-			self::MAGENTO_URL_OPTION_NOSID => true,
-			self::MAGENTO_URL_OPTION_LINK_TYPE => self::$urlType,
-			self::MAGENTO_URL_OPTION_SCOPE => $store->getCode(),
-		];
+        return [
+            self::MAGENTO_URL_OPTION_SCOPE_TO_URL => $this->nostoDataHelper->getStoreCodeToUrl($store),
+            self::MAGENTO_URL_OPTION_NOSID => true,
+            self::MAGENTO_URL_OPTION_LINK_TYPE => self::$urlType,
+            self::MAGENTO_URL_OPTION_SCOPE => $store->getCode(),
+        ];
     }
 
     /**

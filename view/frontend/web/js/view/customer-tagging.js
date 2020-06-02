@@ -34,29 +34,29 @@
  */
 
 define([
-    'uiComponent',
-    'Magento_Customer/js/customer-data',
-    'nostojs'
+  'uiComponent',
+  'Magento_Customer/js/customer-data',
+  'nostojs'
 ], function (Component, customerData, nostojs) {
-    'use strict';
+  'use strict';
 
-    return Component.extend({
-        initialize: function () {
-            // noinspection JSUnresolvedFunction
-					this._super();
-            //noinspection JSUnusedGlobalSymbols
-            this.customerTagging = customerData.get('customer-tagging');
-        },
-        sendTagging: function () {
-            if (typeof nostojs === 'function') {
-                nostojs(function (api) {
-										const element = document.querySelector("#nosto_customer_tagging");
-										element.classList.remove('nosto_customer_hidden');
-										element.classList.add('nosto_customer');
-                    // noinspection JSUnresolvedFunction
-									api.resendCustomerTagging('nosto_customer_tagging');
-                });
-            }
-        }
-    });
+  return Component.extend({
+    initialize: function () {
+      // noinspection JSUnresolvedFunction
+      this._super();
+      //noinspection JSUnusedGlobalSymbols
+      this.customerTagging = customerData.get('customer-tagging');
+    },
+    sendTagging: function () {
+      if (typeof nostojs === 'function') {
+        nostojs(function (api) {
+          const element = document.querySelector("#nosto_customer_tagging");
+          element.classList.remove('nosto_customer_hidden');
+          element.classList.add('nosto_customer');
+          // noinspection JSUnresolvedFunction
+          api.resendCustomerTagging('nosto_customer_tagging');
+        });
+      }
+    }
+  });
 });

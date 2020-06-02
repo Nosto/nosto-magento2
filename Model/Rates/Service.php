@@ -102,7 +102,7 @@ class Service
             }
 
             try {
-				$this->logger->info(
+                $this->logger->info(
                     sprintf('Found %d currencies for store ', count($rates->getRates()))
                 );
                 $service = new SyncRates($account);

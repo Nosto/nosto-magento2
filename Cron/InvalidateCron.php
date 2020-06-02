@@ -126,7 +126,7 @@ class InvalidateCron
             $this->logger->debug(
                 sprintf(
                     'Invalidated (set dirty) %d products for store %s by invalidate cron.' .
-                            ' Product limit is %d and interval is %d',
+                    ' Product limit is %d and interval is %d',
                     $updatedCount,
                     $store->getCode(),
                     $this->productLimit,

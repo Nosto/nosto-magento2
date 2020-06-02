@@ -75,7 +75,7 @@ class Save implements ObserverInterface
     private static $sent = [];
     private $intervalForNew;
 
-	/**
+    /**
      * Save constructor.
      * @param NostoHelperData $nostoHelperData
      * @param NostoHelperAccount $nostoHelperAccount
@@ -94,7 +94,7 @@ class Save implements ObserverInterface
         NostoHelperAccount $nostoHelperAccount,
         NostoLogger $logger,
         ModuleManager $moduleManager,
-		CustomerRepository $customerRepository,
+        CustomerRepository $customerRepository,
         NostoOrderBuilder $orderBuilder,
         NostoOrderStatusBuilder $orderStatusBuilder,
         IndexerRegistry $indexerRegistry,

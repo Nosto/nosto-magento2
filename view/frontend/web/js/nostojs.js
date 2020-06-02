@@ -34,10 +34,10 @@
  */
 
 define([], function () {
-    //noinspection AmdModulesDependencies
-    if (typeof nostojs === 'function') {
-        return nostojs;
-    } else if (typeof window['nostojs'] === 'function') {
-        return window['nostojs'];
-    }
+  //noinspection AmdModulesDependencies
+  if (typeof nostojs === 'function') {
+    return nostojs;
+  } else if (typeof window['nostojs'] === 'function') {
+    return window['nostojs'];
+  }
 });

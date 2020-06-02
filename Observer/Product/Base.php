@@ -58,7 +58,7 @@ abstract class Base implements ObserverInterface
     /** @var NostoHelperData $dataHelper */
     public $dataHelper;
 
-    /** @var IndexerInterface  */
+    /** @var IndexerInterface */
     public $indexer;
 
     /** @var InvalidateIndexer $invalidateIndex */

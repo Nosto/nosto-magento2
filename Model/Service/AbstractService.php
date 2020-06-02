@@ -147,6 +147,7 @@ abstract class AbstractService
             $this->nostoLogger->exception($e);
         }
     }
+
     /**
      * @return NostoLogger
      */

@@ -57,7 +57,7 @@ abstract class Core
      */
     public function createCustomerTable(SchemaSetupInterface $setup)
     {
-		$table = $setup->getConnection()
+        $table = $setup->getConnection()
             ->newTable($setup->getTable(Customer::TABLE_NAME))
             ->addColumn(
                 CustomerInterface::CUSTOMER_ID,
@@ -114,7 +114,7 @@ abstract class Core
                 ['type' => AdapterInterface::INDEX_TYPE_UNIQUE]
             )
             ->setComment('Nosto customer and order mapping');
-		$setup->getConnection()->createTable($table);
+        $setup->getConnection()->createTable($table);
     }
 
     /**
@@ -125,7 +125,7 @@ abstract class Core
      */
     public function createProductCacheTable(SchemaSetupInterface $setup)
     {
-		$table = $setup->getConnection()
+        $table = $setup->getConnection()
             ->newTable($setup->getTable(CacheResource::TABLE_NAME))
             ->addColumn(
                 ProductCacheInterface::ID,
@@ -222,6 +222,6 @@ abstract class Core
                 [ProductCacheInterface::PRODUCT_ID, ProductCacheInterface::STORE_ID],
                 ['type' => AdapterInterface::INDEX_TYPE_UNIQUE]
             );
-		$setup->getConnection()->createTable($table);
+        $setup->getConnection()->createTable($table);
     }
 }

@@ -199,11 +199,11 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
         $this->nostoLogger->info('Finished partial reindex');
     }
 
-	/**
-	 * @param array $ids
-	 * @throws Exception
-	 * @suppress PhanTypeMismatchArgument
-	 */
+    /**
+     * @param array $ids
+     * @throws Exception
+     * @suppress PhanTypeMismatchArgument
+     */
     public function doWork(array $ids = [])
     {
         $userFunctions = [];
@@ -221,14 +221,14 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
                 }
                 break;
             case DimensionModeConfiguration::DIMENSION_STORE:
-                /** @var Dimension[] $dimension  */
+                /** @var Dimension[] $dimension */
                 foreach ($this->dimensionProvider->getIterator() as $dimension) {
                     /** @suppress PhanTypeMismatchArgument */
                     $userFunctions[] = function () use ($dimension, $ids) {
                         $this->executeByDimensions($dimension, new ArrayIterator($ids));
                     };
                 }
-                /** @var Traversable $userFunctions  */
+                /** @var Traversable $userFunctions */
                 $this->getProcessManager()->execute($userFunctions);
                 break;
             default:
@@ -246,7 +246,7 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
      */
     private function getProcessManager()
     {
-        if ($this->processManager ===  null) {
+        if ($this->processManager === null) {
             $this->processManager = ObjectManager::getInstance()->get(
                 ProcessManager::class
             );
@@ -301,10 +301,10 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
         return IndexerUtil::isCalledFromSetupUpgrade($this->input) === false;
     }
 
-	/**
-	 * Clears the CL tables
-	 * @throws Exception
-	 */
+    /**
+     * Clears the CL tables
+     * @throws Exception
+     */
     private function clearProcessedChangelog()
     {
         $benchmarkName = sprintf('CHANGELOG-CLEANUP-%s', $this->getIndexerId());

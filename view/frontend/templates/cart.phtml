@@ -45,22 +45,24 @@
 <div class="nosto_cart_hidden" style="display:none" data-bind="scope: 'cartTagging'"
      data-role="nosto-cart-tagging"
      id="nosto_cart_tagging">
-    <span class="hcid" data-bind="text: cartTagging().hcid"></span>
-    <span class="restore_link" data-bind="text: cartTagging().restore_cart_url"></span>
-    <!-- ko if: cartTagging().itemCount > 0 -->
-    <!-- ko foreach: {data: cartTagging().items, afterRender: sendTagging } -->
-    <div class="line_item">
-        <span class="product_id" data-bind="text: $data.product_id"></span>
-        <span class="sku_id" data-bind="text: $data.sku_id"></span>
-        <span class="quantity" data-bind="text: $data.quantity"></span>
-        <span class="name" data-bind="text: $data.name"></span>
-        <span class="unit_price" data-bind="text: $data.unit_price"></span>
-        <span class="price_currency_code" data-bind="text: $data.price_currency_code"></span>
-    </div>
-    <!-- /ko -->
-    <!-- /ko -->
+  <span class="hcid" data-bind="text: cartTagging().hcid"></span>
+  <span class="restore_link" data-bind="text: cartTagging().restore_cart_url"></span>
+  <!-- ko if: cartTagging().itemCount > 0 -->
+  <!-- ko foreach: {data: cartTagging().items, afterRender: sendTagging } -->
+  <div class="line_item">
+    <span class="product_id" data-bind="text: $data.product_id"></span>
+    <span class="sku_id" data-bind="text: $data.sku_id"></span>
+    <span class="quantity" data-bind="text: $data.quantity"></span>
+    <span class="name" data-bind="text: $data.name"></span>
+    <span class="unit_price" data-bind="text: $data.unit_price"></span>
+    <span class="price_currency_code" data-bind="text: $data.price_currency_code"></span>
+  </div>
+  <!-- /ko -->
+  <!-- /ko -->
 </div>
 <!--suppress JSUnresolvedVariable -->
 <script type="text/x-magento-init">
-{"[data-role=nosto-cart-tagging]": {"Magento_Ui/js/core/app": <?= /* @escapeNotVerified */ $block->getJsLayout(); ?>}}
+{"[data-role=nosto-cart-tagging]": {"Magento_Ui/js/core/app": <?= /* @escapeNotVerified */
+    $block->getJsLayout(); ?>}}
+
 </script>

@@ -85,8 +85,8 @@ class Builder extends PersonBuilder
     {
         $address = $order->getBillingAddress();
         $telephone = null;
-        $postcode  = null;
-        $countryId =  null;
+        $postcode = null;
+        $countryId = null;
         if ($address instanceof OrderAddressInterface) {
             $telephone = $address->getTelephone() ? (string)$address->getTelephone() : null;
             $postcode = $address->getPostcode() ? (string)$address->getPostcode() : null;
@@ -94,14 +94,14 @@ class Builder extends PersonBuilder
         }
         $customerFirstname = $order->getCustomerFirstname() ? (string)$order->getCustomerFirstname() : '';
         $customerLastname = $order->getCustomerLastname() ? (string)$order->getCustomerLastname() : '';
-        $customerEmail = $order->getCustomerEmail() ? (string)$order->getCustomerEmail(): '';
-		return $this->build(
-			$customerFirstname,
-			$customerLastname,
-			$customerEmail,
-			$telephone,
-			$postcode,
-			$countryId
-		);
+        $customerEmail = $order->getCustomerEmail() ? (string)$order->getCustomerEmail() : '';
+        return $this->build(
+            $customerFirstname,
+            $customerLastname,
+            $customerEmail,
+            $telephone,
+            $postcode,
+            $countryId
+        );
     }
 }

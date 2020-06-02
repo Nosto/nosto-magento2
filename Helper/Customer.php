@@ -95,11 +95,11 @@ class Customer extends AbstractHelper
         }
     }
 
-	/**
-	 * @return int|null
-	 * @throws LocalizedException
-	 * @throws NoSuchEntityException
-	 */
+    /**
+     * @return int|null
+     * @throws LocalizedException
+     * @throws NoSuchEntityException
+     */
     public function getGroupId()
     {
         $groupId = $this->customerSession->getCustomerGroupId();

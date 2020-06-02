@@ -34,34 +34,34 @@
  */
 
 define([
-    'uiComponent',
-    'Magento_Customer/js/customer-data',
-    'nostojs'
+  'uiComponent',
+  'Magento_Customer/js/customer-data',
+  'nostojs'
 ], function (Component, customerData, nostojs) {
-    'use strict';
+  'use strict';
 
-    return Component.extend({
-        initialize: function () {
-            // noinspection JSUnresolvedFunction
-					this._super();
-            //noinspection JSUnusedGlobalSymbols
-            this.cartTagging = customerData.get('cart-tagging');
-        },
-        sendTagging: function (elements, data) {
-            //noinspection JSUnresolvedVariable
-            if (
-                typeof data !== "undefined"
-                && data.total_count > 0
-                && data.index >= data.total_count
-                && typeof nostojs === 'function') {
-                nostojs(function (api) {
-                	const element = document.querySelector("#nosto_cart_tagging");
-									element.classList.remove('nosto_cart_hidden');
-									element.classList.add('nosto_cart');
-                    // noinspection JSUnresolvedFunction
-									api.resendCartTagging("nosto_cart_tagging");
-                });
-            }
-        }
-    });
+  return Component.extend({
+    initialize: function () {
+      // noinspection JSUnresolvedFunction
+      this._super();
+      //noinspection JSUnusedGlobalSymbols
+      this.cartTagging = customerData.get('cart-tagging');
+    },
+    sendTagging: function (elements, data) {
+      //noinspection JSUnresolvedVariable
+      if (
+        typeof data !== "undefined"
+        && data.total_count > 0
+        && data.index >= data.total_count
+        && typeof nostojs === 'function') {
+        nostojs(function (api) {
+          const element = document.querySelector("#nosto_cart_tagging");
+          element.classList.remove('nosto_cart_hidden');
+          element.classList.add('nosto_cart');
+          // noinspection JSUnresolvedFunction
+          api.resendCartTagging("nosto_cart_tagging");
+        });
+      }
+    }
+  });
 });

@@ -96,11 +96,11 @@ class DeleteService extends AbstractService
         parent::__construct($nostoHelperData, $logger);
     }
 
-	/**
-	 * @param array $productIds
-	 * @param Store $store
-	 * @throws MemoryOutOfBoundsException
-	 */
+    /**
+     * @param array $productIds
+     * @param Store $store
+     * @throws MemoryOutOfBoundsException
+     */
     public function syncDeletedProducts(array $productIds, Store $store)
     {
         try {
@@ -160,15 +160,15 @@ class DeleteService extends AbstractService
         $this->logBenchmarkSummary(self::BENCHMARK_DELETE_NAME, $store);
     }
 
-	/**
-	 * Fetches deleted products from the product index, sends those to Nosto
-	 * and deletes the deleted rows from database
-	 *
-	 * @param array $productIds
-	 * @param Store $store
-	 * @throws MemoryOutOfBoundsException
-	 * @throws NostoException
-	 */
+    /**
+     * Fetches deleted products from the product index, sends those to Nosto
+     * and deletes the deleted rows from database
+     *
+     * @param array $productIds
+     * @param Store $store
+     * @throws MemoryOutOfBoundsException
+     * @throws NostoException
+     */
     public function purgeDeletedFromCache(array $productIds, Store $store)
     {
         $collection = $this->nostoCacheCollectionFactory->create()

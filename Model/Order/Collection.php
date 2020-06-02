@@ -60,7 +60,7 @@ class Collection
 
     public function getCollection(Store $store)
     {
-		$collection = $this->orderCollectionFactory->create();
+        $collection = $this->orderCollectionFactory->create();
         $collection->addAttributeToFilter('store_id', ['eq' => $store->getId()]);
         $collection->addAttributeToSelect('*');
         return $collection;

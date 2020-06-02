@@ -68,17 +68,17 @@ class Builder
     /** @var CurrencyHelper */
     private $nostoCurrencyHelper;
 
-	/**
-	 * Builder constructor.
-	 * @param NostoHelperData $nostoHelperData
-	 * @param NostoPriceHelper $priceHelper
-	 * @param NostoLogger $logger
-	 * @param ManagerInterface $eventManager
-	 * @param CurrencyHelper $nostoCurrencyHelper
-	 * @param StockService $stockService
-	 */
+    /**
+     * Builder constructor.
+     * @param NostoHelperData $nostoHelperData
+     * @param NostoPriceHelper $priceHelper
+     * @param NostoLogger $logger
+     * @param ManagerInterface $eventManager
+     * @param CurrencyHelper $nostoCurrencyHelper
+     * @param StockService $stockService
+     */
     public function __construct(
-		NostoHelperData $nostoHelperData, NostoPriceHelper $priceHelper, NostoLogger $logger, ManagerInterface $eventManager, CurrencyHelper $nostoCurrencyHelper, StockService $stockService
+        NostoHelperData $nostoHelperData, NostoPriceHelper $priceHelper, NostoLogger $logger, ManagerInterface $eventManager, CurrencyHelper $nostoCurrencyHelper, StockService $stockService
     ) {
         $this->nostoPriceHelper = $priceHelper;
         $this->eventManager = $eventManager;

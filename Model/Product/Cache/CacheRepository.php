@@ -56,10 +56,10 @@ class CacheRepository implements ProductCacheRepositoryInterface
 {
     const DELETE_PRODUCT_BATCH = 100;
 
-    /** @var CacheCollectionFactory  */
+    /** @var CacheCollectionFactory */
     private $cacheCollectionFactory;
 
-    /** @var CacheResource  */
+    /** @var CacheResource */
     private $indexResource;
 
     /** @var TimezoneInterface */
@@ -97,7 +97,7 @@ class CacheRepository implements ProductCacheRepositoryInterface
         return $collection->getOneOrNull();
     }
 
-	public function getById($id)
+    public function getById($id)
     {
         $collection = $this->cacheCollectionFactory->create()
             ->addFieldToSelect('*')
@@ -147,7 +147,7 @@ class CacheRepository implements ProductCacheRepositoryInterface
         return $collection->getSize();
     }
 
-	public function getByIds(array $ids)
+    public function getByIds(array $ids)
     {
         $collection = $this->cacheCollectionFactory->create()
             ->addFieldToSelect('*')
@@ -196,7 +196,7 @@ class CacheRepository implements ProductCacheRepositoryInterface
      */
     public function save(ProductCacheInterface $productIndex)
     {
-		/** @var AbstractModel $productIndex */
+        /** @var AbstractModel $productIndex */
         return $this->indexResource->save($productIndex);
     }
 
@@ -208,7 +208,7 @@ class CacheRepository implements ProductCacheRepositoryInterface
      */
     public function delete(ProductCacheInterface $productIndex)
     {
-		/** @var AbstractModel $productIndex */
+        /** @var AbstractModel $productIndex */
         $this->indexResource->delete($productIndex);
     }
 
@@ -236,13 +236,13 @@ class CacheRepository implements ProductCacheRepositoryInterface
         );
     }
 
-	/**
-	 * Marks products as deleted by given cached product collection
-	 *
-	 * @param CacheCollection $collection
-	 * @throws NostoException
-	 * @throws Exception
-	 */
+    /**
+     * Marks products as deleted by given cached product collection
+     *
+     * @param CacheCollection $collection
+     * @throws NostoException
+     * @throws Exception
+     */
     public function markAsDeleted(CacheCollection $collection)
     {
         $collection->setPageSize(self::DELETE_PRODUCT_BATCH);

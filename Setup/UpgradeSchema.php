@@ -63,11 +63,11 @@ class UpgradeSchema extends Core implements UpgradeSchemaInterface
         $this->loger = $loger;
     }
 
-	/**
-	 * {@inheritdoc}
-	 * @param SchemaSetupInterface $setup
-	 * @param ModuleContextInterface $context
-	 */
+    /**
+     * {@inheritdoc}
+     * @param SchemaSetupInterface $setup
+     * @param ModuleContextInterface $context
+     */
     public function upgrade(SchemaSetupInterface $setup, ModuleContextInterface $context)
     {
         $setup->startSetup();

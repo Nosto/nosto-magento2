@@ -132,7 +132,7 @@ class CachingStockProvider implements StockProviderInterface
         }
         $this->inStockCache[$website->getId()][$product->getId()] = $inStock;
         $count = count($this->inStockCache[$website->getId()]);
-        $offset = $count-$this->maxCacheSize;
+        $offset = $count - $this->maxCacheSize;
         if ($offset > 0) {
             $this->inStockCache[$website->getId()] = array_slice(
                 $this->inStockCache[$website->getId()],
@@ -168,7 +168,7 @@ class CachingStockProvider implements StockProviderInterface
         }
         $this->quantityCache[$website->getId()][$productId] = $quantity;
         $count = count($this->quantityCache);
-        $offset = $count-$this->maxCacheSize;
+        $offset = $count - $this->maxCacheSize;
         if ($offset > 0) {
             $this->quantityCache = array_slice($this->quantityCache, $offset, $this->maxCacheSize, true);
         }
@@ -263,7 +263,7 @@ class CachingStockProvider implements StockProviderInterface
         }
         $this->productIdSkuCache[$website->getId()][$productId] = $sku;
         $count = count($this->productIdSkuCache);
-        $offset = $count-$this->maxCacheSize;
+        $offset = $count - $this->maxCacheSize;
         if ($offset > 0) {
             $this->productIdSkuCache = array_slice($this->productIdSkuCache, $offset, $this->maxCacheSize, true);
         }

@@ -105,25 +105,25 @@ class Builder
     /** @var AttributeServiceInterface */
     private $attributeService;
 
-	/**
-	 * Builder constructor.
-	 * @param NostoHelperData $nostoHelperData
-	 * @param NostoPriceHelper $priceHelper
-	 * @param CategoryServiceInterface $nostoCategoryService
-	 * @param StockService $stockService
-	 * @param NostoSkuCollection $skuCollection
-	 * @param NostoLogger $logger
-	 * @param ManagerInterface $eventManager
-	 * @param GalleryReadHandler $galleryReadHandler
-	 * @param NostoUrlBuilder $urlBuilder
-	 * @param CurrencyHelper $nostoCurrencyHelper
-	 * @param LowStockHelper $lowStockHelper
-	 * @param PriceVariationCollection $priceVariationCollection
-	 * @param NostoVariationHelper $nostoVariationHelper
-	 * @param NostoRating $nostoRatingHelper
-	 */
+    /**
+     * Builder constructor.
+     * @param NostoHelperData $nostoHelperData
+     * @param NostoPriceHelper $priceHelper
+     * @param CategoryServiceInterface $nostoCategoryService
+     * @param StockService $stockService
+     * @param NostoSkuCollection $skuCollection
+     * @param NostoLogger $logger
+     * @param ManagerInterface $eventManager
+     * @param GalleryReadHandler $galleryReadHandler
+     * @param NostoUrlBuilder $urlBuilder
+     * @param CurrencyHelper $nostoCurrencyHelper
+     * @param LowStockHelper $lowStockHelper
+     * @param PriceVariationCollection $priceVariationCollection
+     * @param NostoVariationHelper $nostoVariationHelper
+     * @param NostoRating $nostoRatingHelper
+     */
     public function __construct(
-		NostoHelperData $nostoHelperData, NostoPriceHelper $priceHelper, CategoryServiceInterface $nostoCategoryService, StockService $stockService, NostoSkuCollection $skuCollection, NostoLogger $logger, ManagerInterface $eventManager, GalleryReadHandler $galleryReadHandler, NostoUrlBuilder $urlBuilder, CurrencyHelper $nostoCurrencyHelper, LowStockHelper $lowStockHelper, PriceVariationCollection $priceVariationCollection, NostoVariationHelper $nostoVariationHelper, NostoRating $nostoRatingHelper
+        NostoHelperData $nostoHelperData, NostoPriceHelper $priceHelper, CategoryServiceInterface $nostoCategoryService, StockService $stockService, NostoSkuCollection $skuCollection, NostoLogger $logger, ManagerInterface $eventManager, GalleryReadHandler $galleryReadHandler, NostoUrlBuilder $urlBuilder, CurrencyHelper $nostoCurrencyHelper, LowStockHelper $lowStockHelper, PriceVariationCollection $priceVariationCollection, NostoVariationHelper $nostoVariationHelper, NostoRating $nostoRatingHelper
     ) {
         $this->nostoPriceHelper = $priceHelper;
         $this->eventManager = $eventManager;
@@ -375,7 +375,7 @@ class Builder
         $availability = ProductInterface::OUT_OF_STOCK;
         $isInStock = $this->isInStock($product, $store);
         if (!$product->isVisibleInSiteVisibility()
-           || (!$this->isAvailableInStore($product, $store) && $isInStock)
+            || (!$this->isAvailableInStore($product, $store) && $isInStock)
         ) {
             $availability = ProductInterface::INVISIBLE;
         } elseif ($isInStock

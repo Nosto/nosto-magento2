@@ -59,10 +59,10 @@ class Product extends Base
 {
     const PARAM_PREVIEW = 'preview';
 
-    /** @var CollectionBuilder  */
+    /** @var CollectionBuilder */
     private $nostoCollectionBuilder;
 
-    /** @var SyncService */
+    /** @var SyncService  */
     private $nostoSyncService;
 
     /**
