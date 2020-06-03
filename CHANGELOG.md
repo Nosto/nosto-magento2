@@ -1,8 +1,12 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
-# not released
+# 5.0.0
+* Refactor the indexing logic to use batched queues & decouple the caching logic from product updates
+* Use Magento's built-in caching logic for caching Nosto product data 
 * Add google category as customisable attribute
 * Change the namespaces to comply with PHP SDK 5.0.0
+* Add check for an empty array before trying to get min price for bundled product price
+* Remove mview subscription / trigger to catalog_product_entity_media_gallery
 
 # 4.0.9
 * Fix an issue with configurable product prices not being set when using MSI  

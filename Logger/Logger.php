@@ -36,6 +36,7 @@
 
 namespace Nosto\Tagging\Logger;
 
+use Magento\Store\Model\Store;
 use Monolog\Logger as MonologLogger;
 use Nosto\Tagging\Helper\NewRelic;
 use Nosto\Util\Memory;
@@ -51,25 +52,75 @@ class Logger extends MonologLogger
     public function exception(Throwable $exception)
     {
         NewRelic::reportException($exception);
-        return parent::error($exception->__toString());
+        return $this->error($exception->__toString());
     }
 
     /**
      * Logs a message along with the memory consumption
      *
      * @param $message
+     * @param Store|null $store
+     * @param null $sourceClass
      * @return bool
      */
-    public function logWithMemoryConsumption($message)
+    public function logWithMemoryConsumption($message, Store $store = null, $sourceClass = null)
     {
-        return parent::debug(
-            sprintf(
-                '%s [mem usage: %sM / %s] [realmem: %sM]',
-                $message,
-                Memory::getConsumption(),
-                Memory::getTotalMemoryLimit(),
-                Memory::getRealConsumption()
-            )
+        $msg = sprintf(
+            '%s [mem usage: %sM / %s] [realmem: %sM]',
+            $message,
+            Memory::getConsumption(),
+            Memory::getTotalMemoryLimit(),
+            Memory::getRealConsumption()
         );
+        $context = [];
+        if ($store) {
+            $context['storeId'] = $store->getId();
+        }
+        if (is_object($sourceClass)) {
+            return $this->debugWithSource($message, $context, $sourceClass);
+        }
+        return $this->debug($msg, $context);
+    }
+
+    /**
+     * Logs a debug level message with given source class info
+     *
+     * @param $message
+     * @param array $context
+     * @param object $sourceClass
+     * @return bool
+     */
+    public function debugWithSource($message, array $context, $sourceClass)
+    {
+        return $this->logWithSource($message, $context, $sourceClass, 'debug');
+    }
+
+    /**
+     * Logs an info level message with given source class info
+     *
+     * @param $message
+     * @param array $context
+     * @param object $sourceClass
+     * @return bool
+     */
+    public function infoWithSource($message, array $context, $sourceClass)
+    {
+        return $this->logWithSource($message, $context, $sourceClass, 'info');
+    }
+
+    /**
+     * @param $message
+     * @param $context
+     * @param $sourceClass
+     * @param $level
+     * @return bool
+     */
+    private function logWithSource($message, $context, $sourceClass, $level)
+    {
+        $context['sourceClass'] = get_class($sourceClass);
+        if ($level === 'info') {
+            return $this->info($message, $context);
+        }
+        return $this->debug($message, $context);
     }
 }

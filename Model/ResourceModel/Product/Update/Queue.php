@@ -34,53 +34,23 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Indexer\Dimensions\Invalidate;
+namespace Nosto\Tagging\Model\ResourceModel\Product\Update;
 
-use InvalidArgumentException;
-use Magento\Framework\App\Cache\TypeListInterface;
-use Magento\Framework\App\Config\ConfigResource\ConfigInterface;
+use Magento\Framework\Model\ResourceModel\Db\AbstractDb;
+use Nosto\Tagging\Api\Data\ProductUpdateQueueInterface;
 
-class ModeSwitcherConfiguration
+class Queue extends AbstractDb
 {
-    const XML_PATH_PRODUCT_INVALIDATE_DIMENSIONS_MODE = 'indexer/nosto_index_product_invalidate/dimensions_mode';
+    protected $_serializableFields = [ProductUpdateQueueInterface::PRODUCT_IDS => [[], []]];
 
+    const TABLE_NAME = 'nosto_tagging_product_update_queue';
     /**
-     * ConfigInterface
+     * Initialize resource model
      *
-     * @var ConfigInterface
-     */
-    private $configWriter;
-
-    /**
-     * TypeListInterface
-     *
-     * @var TypeListInterface
-     */
-    private $cacheTypeList;
-
-    /**
-     * ModeSwitcherConfiguration constructor.
-     * @param ConfigInterface $configWriter
-     * @param TypeListInterface $cacheTypeList
-     */
-    public function __construct(
-        ConfigInterface $configWriter,
-        TypeListInterface $cacheTypeList
-    ) {
-        $this->configWriter = $configWriter;
-        $this->cacheTypeList = $cacheTypeList;
-    }
-
-    /**
-     * Save switcher mode and invalidate reindex.
-     *
-     * @param string $mode
      * @return void
-     * @throws InvalidArgumentException
      */
-    public function saveMode(string $mode)
+    public function _construct()
     {
-        $this->configWriter->saveConfig(self::XML_PATH_PRODUCT_INVALIDATE_DIMENSIONS_MODE, $mode);
-        $this->cacheTypeList->cleanType('config');
+        $this->_init(self::TABLE_NAME, ProductUpdateQueueInterface::ID);
     }
 }

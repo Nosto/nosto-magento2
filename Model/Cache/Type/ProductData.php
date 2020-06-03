@@ -1,4 +1,4 @@
-<?php /** @noinspection DuplicatedCode */
+<?php
 /**
  * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
@@ -34,63 +34,31 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Indexer\Dimensions\Data;
+namespace Nosto\Tagging\Model\Cache\Type;
 
-use Magento\Indexer\Model\DimensionMode;
-use Magento\Indexer\Model\DimensionModes;
-use Nosto\Tagging\Model\Indexer\Dimensions\ModeSwitcherInterface;
+use Magento\Framework\App\Cache\Type\FrontendPool;
+use Magento\Framework\Cache\Frontend\Decorator\TagScope;
 
-class ModeSwitcher implements ModeSwitcherInterface
+class ProductData extends TagScope implements ProductDataInterface
 {
     /**
-     * @var DimensionModeConfiguration
+     * Cache type code unique among all cache types
      */
-    private $dimensionModeConfiguration;
+    const TYPE_IDENTIFIER = 'nosto_product_cache';
 
     /**
-     * @var ModeSwitcherConfiguration
+     * The tag name that limits the cache cleaning scope within a particular tag
      */
-    private $modeSwitcherConfiguration;
+    const CACHE_TAG = 'NOSTO_PRODUCT';
 
     /**
-     * ModeSwitcher constructor.
-     * @param DimensionModeConfiguration $dimensionModeConfiguration
-     * @param ModeSwitcherConfiguration $modeSwitcherConfiguration
+     * @param FrontendPool $cacheFrontendPool
      */
-    public function __construct(
-        DimensionModeConfiguration $dimensionModeConfiguration,
-        ModeSwitcherConfiguration $modeSwitcherConfiguration
-    ) {
-        $this->dimensionModeConfiguration = $dimensionModeConfiguration;
-        $this->modeSwitcherConfiguration = $modeSwitcherConfiguration;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getDimensionModes(): DimensionModes
+    public function __construct(FrontendPool $cacheFrontendPool)
     {
-        $dimensionsList = [];
-        foreach ($this->dimensionModeConfiguration->getDimensionModes() as $dimension => $modes) {
-            $dimensionsList[] = new DimensionMode($dimension, $modes);
-        }
-
-        return new DimensionModes($dimensionsList);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function switchMode(string $currentMode, string $previousMode) // @codingStandardsIgnoreLine
-    {
-        $this->modeSwitcherConfiguration->saveMode($currentMode);
-    }
-
-    /**
-     * @return string
-     */
-    public function getMode(): string
-    {
-        return $this->dimensionModeConfiguration->getCurrentMode();
+        parent::__construct(
+            $cacheFrontendPool->get(self::TYPE_IDENTIFIER),
+            self::CACHE_TAG
+        );
     }
 }

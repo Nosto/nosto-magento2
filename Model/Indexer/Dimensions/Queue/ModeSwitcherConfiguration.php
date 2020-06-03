@@ -34,31 +34,53 @@
  *
  */
 
-namespace Nosto\Tagging\Api\Data;
+namespace Nosto\Tagging\Model\Indexer\Dimensions\Queue;
 
-use Magento\Framework\Data\SearchResultInterface;
+use InvalidArgumentException;
+use Magento\Framework\App\Cache\TypeListInterface;
+use Magento\Framework\App\Config\ConfigResource\ConfigInterface;
 
-interface ProductCacheSearchResultsInterface extends SearchResultInterface
+class ModeSwitcherConfiguration
 {
-    /**
-     * Get items from search results
-     *
-     * @return ProductCacheInterface[]
-     */
-    public function getItems();
+    const XML_PATH_PRODUCT_QUEUE_DIMENSIONS_MODE = 'indexer/nosto_index_product_queue/dimensions_mode';
 
     /**
-     * Get first item from search results
+     * ConfigInterface
      *
-     * @return ProductCacheInterface
+     * @var ConfigInterface
      */
-    public function getFirstItem();
+    private $configWriter;
 
     /**
-     * Set items for search results
+     * TypeListInterface
      *
-     * @param ProductCacheInterface[] $items
-     * @return $this
+     * @var TypeListInterface
      */
-    public function setItems(array $items);
+    private $cacheTypeList;
+
+    /**
+     * ModeSwitcherConfiguration constructor.
+     * @param ConfigInterface $configWriter
+     * @param TypeListInterface $cacheTypeList
+     */
+    public function __construct(
+        ConfigInterface $configWriter,
+        TypeListInterface $cacheTypeList
+    ) {
+        $this->configWriter = $configWriter;
+        $this->cacheTypeList = $cacheTypeList;
+    }
+
+    /**
+     * Save switcher mode and invalidate reindex.
+     *
+     * @param string $mode
+     * @return void
+     * @throws InvalidArgumentException
+     */
+    public function saveMode(string $mode)
+    {
+        $this->configWriter->saveConfig(self::XML_PATH_PRODUCT_QUEUE_DIMENSIONS_MODE, $mode);
+        $this->cacheTypeList->cleanType('config');
+    }
 }

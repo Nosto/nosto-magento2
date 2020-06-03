@@ -47,7 +47,7 @@ class InstallSchema extends Core implements InstallSchemaInterface
      *
      * @param SchemaSetupInterface $setup
      * @param ModuleContextInterface $context
-     * @return void
+     * @throws \Zend_Db_Exception
      */
     public function install(// @codingStandardsIgnoreLine
         SchemaSetupInterface $setup,
@@ -55,7 +55,7 @@ class InstallSchema extends Core implements InstallSchemaInterface
     ) {
         $setup->startSetup();
         $this->createCustomerTable($setup);
-        $this->createProductCacheTable($setup);
+        $this->createProductUpdateQueue($setup);
         $setup->endSetup();
     }
 }
