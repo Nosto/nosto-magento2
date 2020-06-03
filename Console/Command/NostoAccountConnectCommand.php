@@ -37,7 +37,7 @@
 namespace Nosto\Tagging\Console\Command;
 
 use Nosto\NostoException;
-use Nosto\Object\Signup\Account as NostoSignupAccount;
+use Nosto\Model\Signup\Account as NostoSignupAccount;
 use Nosto\Request\Api\Token;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
@@ -83,7 +83,7 @@ class NostoAccountConnectCommand extends Command
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     protected function configure()
     {
@@ -134,7 +134,7 @@ class NostoAccountConnectCommand extends Command
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
@@ -149,11 +149,14 @@ class NostoAccountConnectCommand extends Command
             $tokens = $this->getTokensFromInput($input, $io);
             if ($this->updateNostoTokens($tokens, $accountId, $io, $scopeCode)) {
                 $io->success('Tokens successfully Configured');
+                return 0;
             } else {
                 $io->error('Could not complete operation');
+                return 1;
             }
         } catch (NostoException $e) {
             $io->error('An error occurred');
+            return 1;
         }
     }
 
@@ -231,8 +234,7 @@ class NostoAccountConnectCommand extends Command
         $emailToken = $input->getOption(Token::API_EMAIL . self::TOKEN_SUFFIX);
         if (!$emailToken && $this->isInteractive) {
             $emailToken = $io->ask(
-                'Enter Email Token (Optional): ',
-                false
+                'Enter Email Token (Optional): '
             );
         }
         if ($emailToken) {
@@ -241,8 +243,7 @@ class NostoAccountConnectCommand extends Command
         $appsToken = $input->getOption(Token::API_GRAPHQL . self::TOKEN_SUFFIX);
         if (!$appsToken && $this->isInteractive) {
             $appsToken = $io->ask(
-                'Enter Apps Token (Optional): ',
-                false
+                'Enter Apps Token (Optional): '
             );
         }
         if ($appsToken) {

@@ -40,7 +40,7 @@ use Magento\Backend\Block\Template\Context;
 use Magento\Config\Block\System\Config\Form\Field;
 use Magento\Framework\App\Request\Http;
 use Magento\Framework\Data\Form\Element\AbstractElement;
-use Nosto\Object\Signup\Account as SignupAccount;
+use Nosto\Model\Signup\Account as SignupAccount;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 
@@ -55,14 +55,13 @@ class Tokens extends Field
     /** @var Http $request */
     public $request;
 
-    /** @noinspection PhpMissingParentConstructorInspection */
     /**
      * Tokens constructor.
      * @param Context $context
-     * @param array $data
      * @param Http $request
      * @param NostoHelperScope $nostoHelperScope
      * @param NostoHelperAccount $nostoHelperAccount
+     * @param array $data
      */
     public function __construct(
         Context $context,

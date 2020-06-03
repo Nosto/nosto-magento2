@@ -1,5 +1,13 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+# 5.0.0
+* Refactor the indexing logic to use batched queues & decouple the caching logic from product updates
+* Use Magento's built-in caching logic for caching Nosto product data 
+* Add google category as customisable attribute
+* Change the namespaces to comply with PHP SDK 5.0.0
+* Add check for an empty array before trying to get min price for bundled product price
+* Remove mview subscription / trigger to catalog_product_entity_media_gallery
+
 # 4.0.9
 * Fix an issue with configurable product prices not being set when using MSI  
 
@@ -41,6 +49,7 @@ All notable changes to this project will be documented in this file. This projec
 * Generate customer reference for all registered customers automatically during setup upgrade
 * Cleanup the change log database table after indexer run
 * Prevent redundant full reindex on Nosto indexers when running `setup:upgrade`
+* Fix GTIN attribute being set with margin value 
 
 **Removed features / functionalities**
 * Remove logic for sending cart updates to Nosto from server side

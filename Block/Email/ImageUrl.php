@@ -38,7 +38,7 @@ namespace Nosto\Tagging\Block\Email;
 
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Element\Template\Context;
-use Nosto\Object\Email\ImageUrl as NostoImageUrl;
+use Nosto\Model\Email\ImageUrl as NostoImageUrl;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Logger\Logger as NostoLogger;

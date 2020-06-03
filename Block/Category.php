@@ -39,7 +39,7 @@ namespace Nosto\Tagging\Block;
 use Magento\Framework\Registry;
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Element\Template\Context;
-use Nosto\Object\Category as NostoCategory;
+use Nosto\Model\Category as NostoCategory;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Model\Category\Builder as NostoCategoryBuilder;
@@ -108,6 +108,7 @@ class Category extends Template
      */
     private function getNostoCategory()
     {
+        /** @phan-suppress-next-line PhanDeprecatedFunction */
         $category = $this->registry->registry('current_category');
         $store = $this->nostoHelperScope->getStore();
         if ($category) {

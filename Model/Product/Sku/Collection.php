@@ -42,7 +42,7 @@ use Magento\ConfigurableProduct\Model\Product\Type\Configurable as ConfigurableT
 use Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable\Attribute\Collection
     as ConfigurableAttributeCollection;
 use Magento\Store\Model\Store;
-use Nosto\Object\Product\SkuCollection;
+use Nosto\Model\Product\SkuCollection;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Product\Repository as NostoProductRepository;
 use Nosto\Tagging\Model\Product\Sku\Builder as NostoSkuBuilder;

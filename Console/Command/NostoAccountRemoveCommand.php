@@ -114,7 +114,7 @@ class NostoAccountRemoveCommand extends Command
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     public function execute(InputInterface $input, OutputInterface $output)
     {
@@ -127,8 +127,10 @@ class NostoAccountRemoveCommand extends Command
 
         if ($this->removeNostoAccount($io, $scopeCode)) {
             $io->success('Nosto account removed successfully');
+            return 0;
         } else {
             $io->error('Could not complete operation');
+            return 1;
         }
     }
 

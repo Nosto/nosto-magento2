@@ -38,7 +38,7 @@ namespace Nosto\Tagging\Block;
 
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Element\Template\Context;
-use Nosto\Object\MarkupableString;
+use Nosto\Model\MarkupableString;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Currency as NostoHelperCurrency;
 use Nosto\Tagging\Helper\Customer as NostoHelperCustomer;

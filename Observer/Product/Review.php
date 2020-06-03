@@ -43,14 +43,12 @@ use Magento\Review\Model\Review as ReviewModel;
 /**
  * Product update model for Reviews and Ratings
  *
- * @category Nosto
- * @package  Nosto_Tagging
  * @author   Nosto Solutions Ltd <magento@nosto.com>
  */
 class Review extends Base
 {
     /**
-     * @inheritdoc
+     * @inheritDoc
      * @throws NoSuchEntityException
      */
     public function extractProduct(Observer $observer)

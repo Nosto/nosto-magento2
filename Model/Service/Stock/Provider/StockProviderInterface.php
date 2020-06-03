@@ -77,6 +77,8 @@ use Magento\Store\Model\Website;
 interface StockProviderInterface
 {
     /**
+     * Gets the available quantity for a product in the given website
+     *
      * @param Product $product
      * @param Website $website
      * @return int
@@ -84,6 +86,8 @@ interface StockProviderInterface
     public function getAvailableQuantity(Product $product, Website $website);
 
     /**
+     * Checks the availability for a product in the given website
+     *
      * @param Product $product
      * @param Website $website
      * @return bool
@@ -91,6 +95,9 @@ interface StockProviderInterface
     public function isInStock(Product $product, Website $website);
 
     /**
+     * Returns an array of product ids and quantities in stock for the website
+     * for each product id
+     *
      * @param array $productIds
      * @param Website $website
      * @return array ['productId1' => 4, 'productId2' => 2, ...]
@@ -98,9 +105,11 @@ interface StockProviderInterface
     public function getQuantitiesByIds(array $productIds, Website $website);
 
     /**
+     * Checks and returns which of the given product ids are in stock
+     *
      * @param array $productIds
      * @param Website $website
-     * @return array an array of in stock skus having the product id as key ['1' => 'SKUSTRING-1']
+     * @return array an array of in stock productIds ['1','2', etc.]
      */
-    public function getInStockSkusByIds(array $productIds, Website $website);
+    public function getInStockProductIds(array $productIds, Website $website);
 }

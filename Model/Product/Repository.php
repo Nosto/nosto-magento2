@@ -54,8 +54,6 @@ use Nosto\Tagging\Model\Service\Stock\Provider\StockProviderInterface;
 
 /**
  * Repository wrapper class for fetching products
- *
- * @package Nosto\Tagging\Model\Product
  */
 class Repository
 {
@@ -260,7 +258,10 @@ class Repository
      */
     public function getSkusAsArray(Product $product, Store $store)
     {
-        $inStockProductsByIds = $this->stockProvider->getInStockSkusByIds($this->getSkuIds($product), $store->getWebsite());
-        return $this->skuResource->getSkuPricesByIds($store->getWebsite(), array_keys($inStockProductsByIds));
+        $inStockProductsByIds = $this->stockProvider->getInStockProductIds(
+            $this->getSkuIds($product),
+            $store->getWebsite()
+        );
+        return $this->skuResource->getSkuPricesByIds($store->getWebsite(), $inStockProductsByIds);
     }
 }

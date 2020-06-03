@@ -42,7 +42,7 @@ use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Locale\ResolverInterface;
 use Magento\Store\Model\Store;
 use Nosto\NostoException;
-use Nosto\Object\Iframe;
+use Nosto\Model\Iframe;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Url as NostoHelperUrl;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
@@ -88,31 +88,26 @@ class Builder
     public function build(Store $store)
     {
         $metaData = new Iframe();
-
-        try {
-            $metaData->setUniqueId($this->nostoHelperData->getInstallationId());
-            $lang = substr($this->localeResolver->getLocale(), 0, 2);
-            $metaData->setLanguageIsoCode($lang);
-            $lang = substr($store->getConfig('general/locale/code'), 0, 2);
-            $metaData->setLanguageIsoCodeShop($lang);
-            if ($this->backendAuthSession->getUser()) {
-                $metaData->setEmail($this->backendAuthSession->getUser()->getEmail());
-            } else {
-                throw new NostoException('Could not get user from Backend Auth Session');
-            }
-            $metaData->setPlatform('magento');
-            $metaData->setShopName($store->getName());
-            $metaData->setUniqueId($this->nostoHelperData->getInstallationId());
-            $metaData->setVersionPlatform($this->nostoHelperData->getPlatformVersion());
-            $metaData->setVersionModule($this->nostoHelperData->getModuleVersion());
-            $metaData->setPreviewUrlProduct($this->nostoHelperUrl->getPreviewUrlProduct($store));
-            $metaData->setPreviewUrlCategory($this->nostoHelperUrl->getPreviewUrlCategory($store));
-            $metaData->setPreviewUrlSearch($this->nostoHelperUrl->getPreviewUrlSearch($store));
-            $metaData->setPreviewUrlCart($this->nostoHelperUrl->getPreviewUrlCart($store));
-            $metaData->setPreviewUrlFront($this->nostoHelperUrl->getPreviewUrlFront($store));
-        } catch (NostoException $e) {
-            $this->logger->exception($e);
+        $metaData->setUniqueId($this->nostoHelperData->getInstallationId());
+        $lang = substr($this->localeResolver->getLocale(), 0, 2);
+        $metaData->setLanguageIsoCode($lang);
+        $lang = substr($store->getConfig('general/locale/code'), 0, 2);
+        $metaData->setLanguageIsoCodeShop($lang);
+        if ($this->backendAuthSession->getUser()) {
+            $metaData->setEmail($this->backendAuthSession->getUser()->getEmail());
+        } else {
+            $this->logger->exception(new NostoException('Could not get user from Backend Auth Session'));
         }
+        $metaData->setPlatform('magento');
+        $metaData->setShopName($store->getName());
+        $metaData->setUniqueId($this->nostoHelperData->getInstallationId());
+        $metaData->setVersionPlatform($this->nostoHelperData->getPlatformVersion());
+        $metaData->setVersionModule($this->nostoHelperData->getModuleVersion());
+        $metaData->setPreviewUrlProduct($this->nostoHelperUrl->getPreviewUrlProduct($store));
+        $metaData->setPreviewUrlCategory($this->nostoHelperUrl->getPreviewUrlCategory($store));
+        $metaData->setPreviewUrlSearch($this->nostoHelperUrl->getPreviewUrlSearch($store));
+        $metaData->setPreviewUrlCart($this->nostoHelperUrl->getPreviewUrlCart($store));
+        $metaData->setPreviewUrlFront($this->nostoHelperUrl->getPreviewUrlFront($store));
 
         $this->eventManager->dispatch('nosto_iframe_load_after', ['iframe' => $metaData]);
 

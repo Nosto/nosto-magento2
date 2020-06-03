@@ -37,8 +37,8 @@
 namespace Nosto\Tagging\Model\Person;
 
 use Magento\Framework\Event\ManagerInterface as EventManager;
-use Nosto\Object\AbstractPerson;
-use Nosto\Object\ModelFilter;
+use Nosto\Model\AbstractPerson;
+use Nosto\Model\ModelFilter;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Model\Email\Repository as NostoEmailRepository;
 

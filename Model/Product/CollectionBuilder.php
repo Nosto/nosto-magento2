@@ -37,11 +37,10 @@
 namespace Nosto\Tagging\Model\Product;
 
 use Exception;
-use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Model\Product;
 use Magento\Store\Model\Store;
 use Nosto\NostoException;
-use Nosto\Object\Product\ProductCollection as NostoProductCollection;
+use Nosto\Model\Product\ProductCollection as NostoProductCollection;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\ResourceModel\Magento\Product\Collection as ProductCollection;
 use Nosto\Tagging\Model\ResourceModel\Magento\Product\CollectionBuilder as ProductCollectionBuilder;

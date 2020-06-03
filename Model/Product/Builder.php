@@ -45,8 +45,8 @@ use Magento\Store\Model\StoreManagerInterface;
 use Nosto\Exception\FilteredProductException;
 use Nosto\Exception\NonBuildableProductException;
 use Nosto\NostoException;
-use Nosto\Object\ModelFilter;
-use Nosto\Object\Product\Product as NostoProduct;
+use Nosto\Model\ModelFilter;
+use Nosto\Model\Product\Product as NostoProduct;
 use Nosto\Tagging\Helper\Currency as CurrencyHelper;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Price as NostoPriceHelper;
@@ -269,6 +269,15 @@ class Builder
                     $this->attributeService->getAttributeValueByAttributeCode(
                         $product,
                         $gtinAttribute
+                    )
+                );
+            }
+            $googleCategoryAttr = $this->getDataHelper()->getGoogleCategoryAttribute($store);
+            if ($product->hasData($googleCategoryAttr)) {
+                $nostoProduct->setGoogleCategory(
+                    $this->attributeService->getAttributeValueByAttributeCode(
+                        $product,
+                        $googleCategoryAttr
                     )
                 );
             }

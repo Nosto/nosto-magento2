@@ -49,7 +49,6 @@ use Nosto\Tagging\Logger\Logger;
 
 /**
  * Variation helper
- * @package Nosto\Tagging\Helper
  */
 class Variation extends AbstractHelper
 {

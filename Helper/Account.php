@@ -40,11 +40,12 @@ use Exception;
 use Magento\Framework\App\Config\Storage\WriterInterface;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
+use Magento\Backend\Model\UrlInterface;
 use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\Store;
 use Nosto\NostoException;
-use Nosto\Object\Signup\Account as NostoSignupAccount;
-use Nosto\Object\User;
+use Nosto\Model\Signup\Account as NostoSignupAccount;
+use Nosto\Model\User;
 use Nosto\Operation\UninstallAccount;
 use Nosto\Request\Api\Token;
 use Nosto\Tagging\Helper\Data as NostoHelper;
@@ -87,12 +88,14 @@ class Account extends AbstractHelper
      * @param WriterInterface $appConfig
      * @param Scope $nostoHelperScope
      * @param Url $nostoHelperUrl
+     * @param UrlInterface $urlInterface
      */
     public function __construct(
         Context $context,
         WriterInterface $appConfig,
         NostoHelperScope $nostoHelperScope,
-        NostoHelperUrl $nostoHelperUrl
+        NostoHelperUrl $nostoHelperUrl,
+        UrlInterface $urlInterface
     ) {
         parent::__construct($context);
 
@@ -101,7 +104,7 @@ class Account extends AbstractHelper
         $this->logger = $context->getLogger();
         $this->nostoHelperScope = $nostoHelperScope;
         $this->nostoHelperUrl = $nostoHelperUrl;
-        $this->urlBuilder = $context->getUrlBuilder();
+        $this->urlBuilder = $urlInterface;
     }
 
     /**

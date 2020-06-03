@@ -43,7 +43,7 @@ use Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable\At
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
-use Nosto\Object\Product\Sku as NostoSku;
+use Nosto\Model\Product\Sku as NostoSku;
 use Nosto\Tagging\Helper\Currency as CurrencyHelper;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Price as NostoPriceHelper;

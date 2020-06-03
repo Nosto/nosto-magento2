@@ -45,7 +45,7 @@ use Magento\Customer\Helper\Session\CurrentCustomer;
 use Magento\Framework\Event\ManagerInterface as EventManager;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
-use Nosto\Object\Customer;
+use Nosto\Model\Customer;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Email\Repository as NostoEmailRepository;
@@ -54,7 +54,6 @@ use Nosto\Tagging\Util\Customer as CustomerUtil;
 
 /**
  * Builder class for buyer
- * @package Nosto\Tagging\Model\Order\Buyer
  */
 class Builder extends PersonBuilder
 {
@@ -92,7 +91,7 @@ class Builder extends PersonBuilder
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      * @return Customer
      */
     public function buildObject(

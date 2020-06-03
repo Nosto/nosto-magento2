@@ -47,10 +47,6 @@ use Nosto\Tagging\Model\ResourceModel\Customer as CustomerResource;
 use Nosto\Tagging\Model\ResourceModel\Customer\CollectionFactory as CustomerCollectionFactory;
 use Nosto\Tagging\Util\Repository as RepositoryUtil;
 
-/**
- * Class Repository
- * @package Nosto\Tagging\Model\Customer
- */
 class Repository implements CustomerRepositoryInterface
 {
     private $searchCriteriaBuilder;
@@ -115,13 +111,11 @@ class Repository implements CustomerRepositoryInterface
             ->setCurrentPage(1)
             ->create();
 
+        /** @var CustomerInterface[]|null $items */
         $items = $this->search($searchCriteria)->getItems();
-        /** @noinspection LoopWhichDoesNotLoopInspection */
-        foreach ($items as $customer) {
-            return $customer;
-        }
-
-        return null;
+        /** @var CustomerInterface|null $item */
+        $item = $items ? reset($items) : null;
+        return $item;
     }
 
     /**
@@ -140,14 +134,11 @@ class Repository implements CustomerRepositoryInterface
             ->setCurrentPage(1)
             ->create();
 
+        /** @var CustomerInterface[]|null $items */
         $items = $this->search($searchCriteria)->getItems();
-        /** @noinspection LoopWhichDoesNotLoopInspection */
-        foreach ($items as $customer) {
-            /** @var CustomerInterface $customer */
-            return $customer;
-        }
-
-        return null;
+        /** @var CustomerInterface|null $item */
+        $item = $items ? reset($items) : null;
+        return $item;
     }
 
     /**
@@ -166,13 +157,11 @@ class Repository implements CustomerRepositoryInterface
             ->setCurrentPage(1)
             ->create();
 
+        /** @var CustomerInterface[]|null $items */
         $items = $this->search($searchCriteria)->getItems();
-        /** @noinspection LoopWhichDoesNotLoopInspection */
-        foreach ($items as $customer) {
-            return $customer;
-        }
-
-        return null;
+        /** @var CustomerInterface|null $item */
+        $item = $items ? reset($items) : null;
+        return $item;
     }
 
     /**
@@ -182,9 +171,7 @@ class Repository implements CustomerRepositoryInterface
      */
     public function search(SearchCriteriaInterface $searchCriteria)
     {
-        /** @noinspection PhpUndefinedMethodInspection */
         $collection = $this->customerCollectionFactory->create();
-        /** @noinspection PhpUndefinedMethodInspection */
         $searchResults = $this->customerSearchResultsFactory->create();
 
         /** @noinspection PhpIncompatibleReturnTypeInspection */

@@ -1,0 +1,156 @@
+name: PHP CI
+
+on: [push]
+
+jobs:
+
+  phpcs:
+    name: Code Sniffer
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+
+    ############################################################################
+    - name: Set up PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '7.2'
+        tools: composer, prestissimo
+        extensions: ast
+        coverage: none
+
+      #https://github.com/actions/cache/blob/master/examples.md#php---composer
+    - name: Cache composer packages
+      id: composer-cache
+      run: |
+        composer config cache-files-dir
+        echo "::set-output name=dir::$(composer config cache-files-dir)"
+    - uses: actions/cache@v1
+      with:
+        path: ${{ steps.composer-cache.outputs.dir }}
+        key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-composer-
+
+    - name: Update project dependencies
+      env:
+        REPO_USR: ${{ secrets.REPO_USR }}
+        REPO_PSW: ${{ secrets.REPO_PSW }}
+      run: |
+        composer config repositories.0 composer https://repo.magento.com
+        composer config http-basic.repo.magento.com "$REPO_USR" "$REPO_PSW"
+        composer install --prefer-dist --no-progress --no-suggest
+    ############################################################################
+
+    - name: Run the sniffer
+      run: |
+        ./vendor/bin/phpcs --config-set ignore_errors_on_exit 1
+        ./vendor/bin/phpcs --config-set ignore_warnings_on_exit 1
+        ./vendor/bin/phpcs --standard=ruleset.xml --report=checkstyle --report-file=chkphpcs.xml
+
+    - name: Archive code sniffing results
+      uses: actions/upload-artifact@v1
+      with:
+        name: phpcs-xml-result
+        path: chkphpcs.xml
+
+    - name: Report annotations
+      id: report-annotations
+      run: ./vendor/bin/cs2pr chkphpcs.xml
+
+  phpmd:
+    name: Mess Detect
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+
+    ############################################################################
+    - name: Set up PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '7.2'
+        tools: composer, prestissimo
+        extensions: ast
+        coverage: none
+
+      #https://github.com/actions/cache/blob/master/examples.md#php---composer
+    - name: Cache composer packages
+      id: composer-cache
+      run: |
+        composer config cache-files-dir
+        echo "::set-output name=dir::$(composer config cache-files-dir)"
+    - uses: actions/cache@v1
+      with:
+        path: ${{ steps.composer-cache.outputs.dir }}
+        key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-composer-
+
+    - name: Update project dependencies
+      env:
+        REPO_USR: ${{ secrets.REPO_USR }}
+        REPO_PSW: ${{ secrets.REPO_PSW }}
+      run: |
+        composer config repositories.0 composer https://repo.magento.com
+        composer config http-basic.repo.magento.com "$REPO_USR" "$REPO_PSW"
+        composer install --prefer-dist --no-progress --no-suggest
+    ############################################################################
+
+    - name: Run the mess detector
+      run: ./vendor/bin/phpmd . xml codesize,naming,unusedcode,controversial,design --exclude vendor,var,build,tests --reportfile pmdphpmd.xml --ignore-violations-on-exit
+
+    - name: Archive mess detection results
+      uses: actions/upload-artifact@v1
+      with:
+        name: phpmd-xml-result
+        path: pmdphpmd.xml
+
+    - name: Report annotations
+      id: report-annotations
+      run: ./vendor/bin/pmd2pr --graceful-warnings pmdphpmd.xml
+
+  package:
+    name: Package
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+
+    ############################################################################
+    - name: Set up PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '7.2'
+        tools: composer, prestissimo
+        extensions: ast
+        coverage: none
+
+      #https://github.com/actions/cache/blob/master/examples.md#php---composer
+    - name: Cache composer packages
+      id: composer-cache
+      run: |
+        echo "::set-output name=dir::$(composer config cache-files-dir)"
+    - uses: actions/cache@v1
+      with:
+        path: ${{ steps.composer-cache.outputs.dir }}
+        key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-composer-
+
+    - name: Update project dependencies
+      env:
+        REPO_USR: ${{ secrets.REPO_USR }}
+        REPO_PSW: ${{ secrets.REPO_PSW }}
+      run: |
+        composer config repositories.0 composer https://repo.magento.com
+        composer config http-basic.repo.magento.com "$REPO_USR" "$REPO_PSW"
+        composer install --prefer-dist --no-progress --no-suggest
+    ############################################################################
+
+    - name: Build archive using composer
+      run: composer archive --format=zip --file=archive
+
+    - name: Archive built arhive
+      uses: actions/upload-artifact@v1
+      with:
+        name: composer-zip-archive
+        path: archive.zip

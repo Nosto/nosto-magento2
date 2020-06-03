@@ -65,7 +65,7 @@ class NostoGenerateCustomerReferenceCommand extends Command
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     public function configure()
     {
@@ -75,7 +75,7 @@ class NostoGenerateCustomerReferenceCommand extends Command
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     public function execute(InputInterface $input, OutputInterface $output)
     {
@@ -94,6 +94,7 @@ class NostoGenerateCustomerReferenceCommand extends Command
             $customers = $customerCollection->getItems();
             /** @var CustomerInterface $customer */
             foreach ($customers as $customer) {
+                /** @phan-suppress-next-line PhanTypeMismatchArgument */
                 $customerReference = CustomerUtil::generateCustomerReference($customer);
                 $customer->setData(
                     NostoHelperData::NOSTO_CUSTOMER_REFERENCE_ATTRIBUTE_NAME,
@@ -102,8 +103,10 @@ class NostoGenerateCustomerReferenceCommand extends Command
                 $customer->save();
             }
             $io->success('Operation finished with success');
+            return 0;
         } catch (Exception $e) {
             $io->error($e->getMessage());
+            return 1;
         }
     }
 }

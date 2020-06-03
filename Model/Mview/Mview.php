@@ -42,7 +42,6 @@ use Magento\Framework\Mview\View;
  * Class Mview
  * This dummy class is needed because Magento's ViewInterface is missing setId method
  * but it exists in the implementation class
- * @package Nosto\Tagging\Model\Mview
  */
 // @codingStandardsIgnoreFile
 class Mview extends View implements MviewInterface

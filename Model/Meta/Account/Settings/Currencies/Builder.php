@@ -42,7 +42,7 @@ use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\Locale\Bundle\DataBundle;
 use Magento\Framework\Locale\ResolverInterface as LocaleResolver;
 use Magento\Store\Model\Store;
-use Nosto\Object\Format;
+use Nosto\Model\Format;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 
 class Builder

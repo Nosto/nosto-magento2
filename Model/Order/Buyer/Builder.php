@@ -38,18 +38,17 @@ namespace Nosto\Tagging\Model\Order\Buyer;
 
 use Magento\Sales\Api\Data\OrderAddressInterface;
 use Magento\Sales\Model\Order;
-use Nosto\Object\AbstractPerson;
-use Nosto\Object\Order\Buyer;
+use Nosto\Model\AbstractPerson;
+use Nosto\Model\Order\Buyer;
 use Nosto\Tagging\Model\Person\Builder as PersonBuilder;
 
 /**
  * Builder class for buyer
- * @package Nosto\Tagging\Model\Order\Buyer
  */
 class Builder extends PersonBuilder
 {
     /**
-     * @inheritdoc
+     * @inheritDoc
      * @return Buyer
      */
     public function buildObject( // @codingStandardsIgnoreLine

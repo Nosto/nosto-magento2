@@ -42,11 +42,9 @@ use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Module\Manager as ModuleManager;
 use Magento\Framework\Stdlib\Cookie\CookieMetadataFactory;
 use Magento\Framework\Stdlib\CookieManagerInterface;
-use Magento\Quote\Model\Quote;
 use Magento\Quote\Model\Quote\Item;
 use Nosto\Helper\SerializationHelper;
-use Nosto\Object\Event\Cart\Update;
-use Nosto\Operation\CartOperation;
+use Nosto\Model\Event\Cart\Update;
 use Nosto\Request\Http\HttpRequest;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
@@ -56,10 +54,6 @@ use Nosto\Tagging\Model\Cart\Builder as NostoCartBuilder;
 use Nosto\Tagging\Model\Cart\Item\Builder as NostoCartItemBuilder;
 use Nosto\Tagging\Model\Customer\Customer as NostoCustomer;
 
-/**
- * Class Add
- * @package Nosto\Tagging\Observer
- */
 class Add implements ObserverInterface
 {
     private $nostoHelperData;

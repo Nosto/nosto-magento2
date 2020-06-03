@@ -50,7 +50,7 @@ class Bundle extends BundledItem
      */
     public static function buildItemName(Item $item)
     {
-        $name = $item->getName();
+        $name = $item->getName() ?: '';
         $optNames = [];
         $type = $item->getProduct()->getTypeInstance();
         $opts = $type->getOrderOptions($item->getProduct());

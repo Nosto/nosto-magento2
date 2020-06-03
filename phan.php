@@ -58,35 +58,32 @@ return [
         'vendor/nosto/php-sdk',
         'vendor/phpseclib',
         'vendor/magento',
-        '../../../lib/internal', // When Running Locally
-        'magento/lib/internal', // When Running On CI
         'vendor/monolog',
         'vendor/zendframework',
+        'vendor/laminas',
         'vendor/psr',
-        'magento/generated', // When Running On CI
-        '../../../generated', // When Running Locally
-        '../../../app/code/Magento/AsynchronousOperations', // When Running Locally
-        'magento/app/code/Magento/AsynchronousOperations', // When Running on CI
         'vendor/symfony/console',
-        'magento/generated',
-        '../../../app/code/Magento/Store', // When Running Locally
-        'magento/app/code/Magento/Store' // When Running on CI
+        'magento/generated'
     ],
     'exclude_file_list' => [
+        'vendor/magento/laminas/laminas-validator/src/Hostname/Biz.php',
+        'vendor/magento/laminas/laminas-validator/src/Hostname/Cn.php',
+        'vendor/magento/laminas/laminas-validator/src/Hostname/Com.php',
+        'vendor/magento/laminas/laminas-validator/src/Hostname/Jp.php',
         'vendor/magento/zendframework1/library/Zend/Validate/Hostname/Biz.php',
         'vendor/magento/zendframework1/library/Zend/Validate/Hostname/Cn.php',
         'vendor/magento/zendframework1/library/Zend/Validate/Hostname/Com.php',
         'vendor/magento/zendframework1/library/Zend/Validate/Hostname/Jp.php',
+
     ],
     'exclude_analysis_directory_list' => [
-        'vendor/',
-        'magento/',
-        '../../../lib/internal',
-        '../../../generated',
-        '../../../app/',
-        'magento/app/code/Magento/AsynchronousOperations'
+        'vendor/'
     ],
     'suppress_issue_types' => [
         'PhanParamSignatureMismatch',
+    ],
+    "color_issue_messages_if_supported" => true,
+    'plugins' => [
+      'vendor/drenso/phan-extensions/Plugin/DocComment/InlineVarPlugin.php'
     ]
 ];

@@ -42,8 +42,8 @@ use Magento\Customer\Model\Data\Group;
 use Magento\Customer\Model\GroupManagement;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Store\Model\Store;
-use Nosto\Object\Product\Product as NostoProduct;
-use Nosto\Object\Product\VariationCollection;
+use Nosto\Model\Product\Product as NostoProduct;
+use Nosto\Model\Product\VariationCollection;
 use Nosto\Tagging\Model\Product\Variation\Builder as VariationBuilder;
 
 class Collection
