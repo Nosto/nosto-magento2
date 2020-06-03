@@ -34,59 +34,54 @@
  *
  */
 
-namespace Nosto\Tagging\Api;
+namespace Nosto\Tagging\Model\Indexer\Dimensions\QueueProcessor;
 
-use Magento\Catalog\Api\Data\ProductInterface;
-use Magento\Store\Api\Data\StoreInterface;
-use Magento\Store\Model\Store;
-use Nosto\Tagging\Api\Data\ProductCacheInterface;
+use InvalidArgumentException;
+use Magento\Framework\App\Cache\TypeListInterface;
+use Magento\Framework\App\Config\ConfigResource\ConfigInterface;
 
-interface ProductCacheRepositoryInterface
+class ModeSwitcherConfiguration
 {
-    /**
-     * Save Queue entry
-     *
-     * @param ProductCacheInterface $productIndex
-     * @return ProductCacheInterface
-     */
-    public function save(ProductCacheInterface $productIndex);
+    // phpcs:ignore Generic.Files.LineLength
+    const XML_PATH_PRODUCT_QUEUE_PROCESSOR_DIMENSIONS_MODE = 'indexer/nosto_index_product_queue_processor/dimensions_mode';
 
     /**
-     * Delete productIndex
+     * ConfigInterface
      *
-     * @param ProductCacheInterface $productIndex
+     * @var ConfigInterface
      */
-    public function delete(ProductCacheInterface $productIndex);
+    private $configWriter;
 
     /**
-     * Returns entry by product and store
+     * TypeListInterface
      *
-     * @param ProductInterface $product
-     * @param StoreInterface $store
-     * @return ProductCacheInterface|null
+     * @var TypeListInterface
      */
-    public function getOneByProductAndStore(ProductInterface $product, StoreInterface $store);
+    private $cacheTypeList;
 
     /**
-     * @param int $productId
-     * @param int $storeId
-     * @return ProductCacheInterface|null
+     * ModeSwitcherConfiguration constructor.
+     * @param ConfigInterface $configWriter
+     * @param TypeListInterface $cacheTypeList
      */
-    public function getByProductIdAndStoreId(int $productId, int $storeId);
+    public function __construct(
+        ConfigInterface $configWriter,
+        TypeListInterface $cacheTypeList
+    ) {
+        $this->configWriter = $configWriter;
+        $this->cacheTypeList = $cacheTypeList;
+    }
 
     /**
-     * Return total amount of products marked as out of sync
+     * Save switcher mode and invalidate reindex.
      *
-     * @param Store $store
-     * @return int
+     * @param string $mode
+     * @return void
+     * @throws InvalidArgumentException
      */
-    public function getTotalOutOfSync(Store $store);
-
-    /**
-     * Return total amount of products marked as dirty
-     *
-     * @param Store $store
-     * @return int
-     */
-    public function getTotalDirty(Store $store);
+    public function saveMode(string $mode)
+    {
+        $this->configWriter->saveConfig(self::XML_PATH_PRODUCT_QUEUE_PROCESSOR_DIMENSIONS_MODE, $mode);
+        $this->cacheTypeList->cleanType('config');
+    }
 }

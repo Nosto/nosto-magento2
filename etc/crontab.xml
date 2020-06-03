@@ -42,14 +42,4 @@
             <schedule>4 * * * *</schedule>
         </job>
     </group>
-    <group id="nosto_invalidate_indexer_group">
-        <job name="nosto_invalidate_data" instance="Nosto\Tagging\Cron\InvalidateCron" method="execute">
-            <schedule>0 * * * *</schedule>
-        </job>
-    </group>
-    <group id="nosto_rebuild_product_data_group">
-        <job name="nosto_rebuild_product_data" instance="Nosto\Tagging\Cron\ProductDataCron" method="execute">
-            <schedule>*/5 * * * *</schedule>
-        </job>
-    </group>
 </config>

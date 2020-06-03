@@ -61,7 +61,7 @@ class Ratings
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function getRating()
     {

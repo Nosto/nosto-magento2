@@ -34,27 +34,57 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Product\Cache;
+namespace Nosto\Tagging\Plugin;
 
-use Magento\Framework\Api\Search\SearchResult;
-use Nosto\Tagging\Api\Data\ProductCacheInterface;
-use Nosto\Tagging\Api\Data\ProductCacheSearchResultsInterface;
+use Closure;
+use Magento\Framework\Indexer\IndexerRegistry;
+use Magento\Framework\Model\AbstractModel;
+use Nosto\Tagging\Model\Indexer\QueueProcessorIndexer;
+use Nosto\Tagging\Model\ResourceModel\Product\Update\Queue as QueueResource;
 
-class CacheSearchResults extends SearchResult implements ProductCacheSearchResultsInterface // @codingStandardsIgnoreLine
+/**
+ * Plugin for product updates
+ * @package Nosto\Tagging\Plugin
+ */
+class ProductQueueUpdate
 {
+    /** @var IndexerRegistry  */
+    private $indexerRegistry;
+
+    /** @var QueueProcessorIndexer  */
+    private $queueProcessorIndexer;
+
     /**
-     * @return ProductCacheInterface|null
+     * ProductInvalidate constructor.
+     * @param IndexerRegistry $indexerRegistry
+     * @param QueueProcessorIndexer $queueProcessorIndexer
      */
-    public function getFirstItem()
-    {
-        if ($this->getTotalCount() === 0) {
-            return null;
+    public function __construct(
+        IndexerRegistry $indexerRegistry,
+        QueueProcessorIndexer $queueProcessorIndexer
+    ) {
+        $this->indexerRegistry = $indexerRegistry;
+        $this->queueProcessorIndexer = $queueProcessorIndexer;
+    }
+
+    /**
+     * @param QueueResource $queueResource
+     * @param Closure $proceed
+     * @param AbstractModel $queue
+     * @return mixed
+     */
+    public function aroundSave(
+        QueueResource $queueResource,
+        Closure $proceed,
+        AbstractModel $queue
+    ) {
+        $mageIndexer = $this->indexerRegistry->get(QueueProcessorIndexer::INDEXER_ID);
+        if (!$mageIndexer->isScheduled()) {
+            $queueResource->addCommitCallback(function () use ($queue) {
+                $this->queueProcessorIndexer->executeRow($queue->getId());
+            });
         }
 
-        /** @var ProductCacheInterface[]|null $items */
-        $items = $this->getItems();
-        /** @var ProductCacheInterface|null $item */
-        $item = $items ? reset($items) : null;
-        return $item;
+        return $proceed($queue);
     }
 }

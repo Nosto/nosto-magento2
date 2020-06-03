@@ -1,4 +1,4 @@
-<?php /** @noinspection DuplicatedCode */
+<?php
 /**
  * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
@@ -34,63 +34,33 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Indexer\Dimensions\Invalidate;
+namespace Nosto\Tagging\Model\Indexer\Dimensions\Queue;
 
-use Magento\Indexer\Model\DimensionMode;
-use Magento\Indexer\Model\DimensionModes;
-use Nosto\Tagging\Model\Indexer\Dimensions\ModeSwitcherInterface;
+use Nosto\Tagging\Model\Indexer\Dimensions\AbstractDimensionModeConfiguration;
 
-class ModeSwitcher implements ModeSwitcherInterface
+class DimensionModeConfiguration extends AbstractDimensionModeConfiguration
 {
     /**
-     * @var DimensionModeConfiguration
+     * @var string
      */
-    private $dimensionModeConfiguration;
-
-    /**
-     * @var ModeSwitcherConfiguration
-     */
-    private $modeSwitcherConfiguration;
-
-    /**
-     * ModeSwitcher constructor.
-     * @param DimensionModeConfiguration $dimensionModeConfiguration
-     * @param ModeSwitcherConfiguration $modeSwitcherConfiguration
-     */
-    public function __construct(
-        DimensionModeConfiguration $dimensionModeConfiguration,
-        ModeSwitcherConfiguration $modeSwitcherConfiguration
-    ) {
-        $this->dimensionModeConfiguration = $dimensionModeConfiguration;
-        $this->modeSwitcherConfiguration = $modeSwitcherConfiguration;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getDimensionModes(): DimensionModes
-    {
-        $dimensionsList = [];
-        foreach ($this->dimensionModeConfiguration->getDimensionModes() as $dimension => $modes) {
-            $dimensionsList[] = new DimensionMode($dimension, $modes);
-        }
-
-        return new DimensionModes($dimensionsList);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function switchMode(string $currentMode, string $previousMode) // @codingStandardsIgnoreLine
-    {
-        $this->modeSwitcherConfiguration->saveMode($currentMode);
-    }
+    private $currentMode;
 
     /**
      * @return string
      */
-    public function getMode(): string
+    public function getCurrentMode(): string
     {
-        return $this->dimensionModeConfiguration->getCurrentMode();
+        if ($this->currentMode === null) {
+            $mode = $this->scopeConfig->getValue(
+                ModeSwitcherConfiguration::XML_PATH_PRODUCT_QUEUE_DIMENSIONS_MODE
+            );
+            if ($mode) {
+                $this->currentMode = $mode;
+            } else {
+                $this->currentMode = self::DIMENSION_NONE;
+            }
+        }
+
+        return $this->currentMode;
     }
 }

@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection DuplicatedCode */
 /**
  * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
@@ -34,60 +34,63 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Product\Cache;
+namespace Nosto\Tagging\Model\Indexer\Dimensions\QueueProcessor;
 
-use Magento\Catalog\Api\Data\ProductInterface;
-use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
-use Magento\Store\Api\Data\StoreInterface;
-use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
-use Nosto\Tagging\Model\Product\BuilderTrait;
-use Nosto\Tagging\Model\Product\Cache as CacheModel;
-use Nosto\Tagging\Model\Product\CacheFactory;
+use Magento\Indexer\Model\DimensionMode;
+use Magento\Indexer\Model\DimensionModes;
+use Nosto\Tagging\Model\Indexer\Dimensions\ModeSwitcherInterface;
 
-class CacheBuilder
+class ModeSwitcher implements ModeSwitcherInterface
 {
-    use BuilderTrait {
-        BuilderTrait::__construct as builderTraitConstruct; // @codingStandardsIgnoreLine
-    }
-
-    /** @var CacheFactory  */
-    private $cacheFactory;
-
-    /** @var NostoProductBuilder */
-    private $nostoProductBuilder;
-
-    /** @var TimezoneInterface */
-    private $magentoTimeZone;
+    /**
+     * @var DimensionModeConfiguration
+     */
+    private $dimensionModeConfiguration;
 
     /**
-     * Builder constructor.
-     * @param CacheFactory $NostoCacheFactory
-     * @param TimezoneInterface $magentoTimeZone
+     * @var ModeSwitcherConfiguration
+     */
+    private $modeSwitcherConfiguration;
+
+    /**
+     * ModeSwitcher constructor.
+     * @param DimensionModeConfiguration $dimensionModeConfiguration
+     * @param ModeSwitcherConfiguration $modeSwitcherConfiguration
      */
     public function __construct(
-        CacheFactory $NostoCacheFactory,
-        TimezoneInterface $magentoTimeZone
+        DimensionModeConfiguration $dimensionModeConfiguration,
+        ModeSwitcherConfiguration $modeSwitcherConfiguration
     ) {
-        $this->cacheFactory = $NostoCacheFactory;
-        $this->magentoTimeZone = $magentoTimeZone;
+        $this->dimensionModeConfiguration = $dimensionModeConfiguration;
+        $this->modeSwitcherConfiguration = $modeSwitcherConfiguration;
     }
 
     /**
-     * @param ProductInterface $product
-     * @param StoreInterface $store
-     * @return CacheModel
+     * @inheritDoc
      */
-    public function build(
-        ProductInterface $product,
-        StoreInterface $store
-    ) {
-        $productIndex = $this->cacheFactory->create();
-        $productIndex->setProductId($product->getId());
-        $productIndex->setCreatedAt($this->magentoTimeZone->date());
-        $productIndex->setInSync(false);
-        $productIndex->setIsDirty(true);
-        $productIndex->setUpdatedAt($this->magentoTimeZone->date());
-        $productIndex->setStore($store);
-        return $productIndex;
+    public function getDimensionModes(): DimensionModes
+    {
+        $dimensionsList = [];
+        foreach ($this->dimensionModeConfiguration->getDimensionModes() as $dimension => $modes) {
+            $dimensionsList[] = new DimensionMode($dimension, $modes);
+        }
+
+        return new DimensionModes($dimensionsList);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function switchMode(string $currentMode, string $previousMode) // @codingStandardsIgnoreLine
+    {
+        $this->modeSwitcherConfiguration->saveMode($currentMode);
+    }
+
+    /**
+     * @return string
+     */
+    public function getMode(): string
+    {
+        return $this->dimensionModeConfiguration->getCurrentMode();
     }
 }

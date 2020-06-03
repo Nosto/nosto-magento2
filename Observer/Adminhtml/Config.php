@@ -39,14 +39,14 @@ namespace Nosto\Tagging\Observer\Adminhtml;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Indexer\IndexerRegistry;
 use Magento\Framework\Module\Manager as ModuleManager;
 use Magento\Store\Model\Store;
 use Nosto\Tagging\Helper\Account as NostoAccountHelper;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
-use Nosto\Tagging\Model\Product\Cache\CacheRepository;
-use Nosto\Tagging\Model\ResourceModel\Product\Cache\CacheCollection;
+use Nosto\Tagging\Model\Indexer\QueueIndexer;
 
 /**
  * Observer to mark all indexed products as dirty if settings have changed
@@ -68,11 +68,11 @@ class Config implements ObserverInterface
     /** @var NostoAccountHelper  */
     private $nostoAccountHelper;
 
-    /** @var CacheCollection  */
-    private $cacheCollection;
+    /** var QueueIndexer */
+    private $queueIndexer;
 
-    /** @var CacheRepository */
-    private $cacheRepository;
+    /** @var IndexerRegistry */
+    private $indexerRegistry;
 
     /**
      * Config Constructor.
@@ -81,23 +81,23 @@ class Config implements ObserverInterface
      * @param ModuleManager $moduleManager
      * @param NostoHelperScope $nostoHelperScope
      * @param NostoAccountHelper $nostoAccountHelper
-     * @param CacheCollection $cacheCollection
-     * @param CacheRepository $cacheRepository
+     * @param IndexerRegistry $indexerRegistry
+     * @param QueueIndexer $queueIndexer
      */
     public function __construct(
         NostoLogger $logger,
         ModuleManager $moduleManager,
         NostoHelperScope $nostoHelperScope,
         NostoAccountHelper $nostoAccountHelper,
-        CacheCollection $cacheCollection,
-        CacheRepository $cacheRepository
+        IndexerRegistry $indexerRegistry,
+        QueueIndexer $queueIndexer
     ) {
         $this->logger = $logger;
         $this->moduleManager = $moduleManager;
         $this->nostoHelperScope = $nostoHelperScope;
         $this->nostoAccountHelper = $nostoAccountHelper;
-        $this->cacheCollection = $cacheCollection;
-        $this->cacheRepository = $cacheRepository;
+        $this->queueIndexer = $queueIndexer;
+        $this->indexerRegistry = $indexerRegistry;
     }
 
     /**
@@ -123,18 +123,18 @@ class Config implements ObserverInterface
         if (empty($storeRequest) && empty($websiteRequest)) { // Global scope
             $stores = $this->nostoHelperScope->getStores();
             foreach ($stores as $store) {
-                $this->markAllAsDirtyByStore($store);
+                $this->reindexAll($store);
             }
         } elseif (!empty($websiteRequest) && empty($storeRequest)) { // Website Level
             // Get stores from the website and mark them all as dirty
             $website = $this->nostoHelperScope->getWebsite($websiteRequest);
             $stores = $website->getStores();
             foreach ($stores as $store) {
-                $this->markAllAsDirtyByStore($store);
+                $this->reindexAll($store);
             }
         } else { // Store View Level
             $store = $this->nostoHelperScope->getStore($storeRequest);
-            $this->markAllAsDirtyByStore($store);
+            $this->reindexAll($store);
         }
     }
 
@@ -142,16 +142,32 @@ class Config implements ObserverInterface
      * Wrapper to log and mark all products as dirty after configuration has changed
      * @param Store $store
      */
-    private function markAllAsDirtyByStore(Store $store)
+    private function reindexAll(Store $store)
     {
         if ($this->nostoAccountHelper->nostoInstalledAndEnabled($store)) {
-            $this->logger->info(
+            $this->logger->infoWithSource(
                 sprintf(
                     'Nosto Settings updated, marking all indexed products as dirty for store %s',
                     $store->getName()
-                )
+                ),
+                ['storeId' => $store->getId()],
+                $this
             );
-            $this->cacheRepository->markAllAsDirtyByStore($store);
+
+            $indexer = $this->indexerRegistry->get(QueueIndexer::INDEXER_ID);
+            if (!$indexer->isScheduled()) {
+                $this->logger->infoWithSource(
+                    'Not performing full Nosto reindex as the indexer is not scheduled',
+                    ['storeId' => $store->getId()],
+                    $this
+                );
+            } else {
+                try {
+                    $this->queueIndexer->doIndex($store);
+                } catch (\Exception $e) {
+                    $this->logger->exception($e);
+                }
+            }
         }
     }
 }
