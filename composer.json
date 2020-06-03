@@ -31,10 +31,9 @@
     "drenso/phan-extensions": "^2.5"
   },
   "suggest": {
-    "magento/product-community-edition": "2.*",
-    "yotpo/module-review": "^2.9",
-    "ext-newrelic": "*",
-    "ext-code": "*"
+    "nosto/module-nostocmp": "Nosto Category Merchandising",
+    "nosto/module-nosto-msi": "Compatibility plugin between Nosto and Magento multi-source inventory",
+    "yotpo/module-review": "Yotpo Reviews extension for Magento 2" 
   },
   "license": [
     "OSL-3.0"
