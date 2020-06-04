@@ -34,60 +34,78 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Product\Cache;
+namespace Nosto\Tagging\Model\Product\Queue;
 
-use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
 use Magento\Store\Api\Data\StoreInterface;
-use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
-use Nosto\Tagging\Model\Product\BuilderTrait;
-use Nosto\Tagging\Model\Product\Cache as CacheModel;
-use Nosto\Tagging\Model\Product\CacheFactory;
+use Nosto\Tagging\Api\Data\ProductUpdateQueueInterface;
+use Nosto\Tagging\Model\Product\Update\Queue as QueueModel;
+use Nosto\Tagging\Model\Product\Update\QueueFactory;
 
-class CacheBuilder
+class QueueBuilder
 {
-    use BuilderTrait {
-        BuilderTrait::__construct as builderTraitConstruct; // @codingStandardsIgnoreLine
-    }
-
-    /** @var CacheFactory */
-    private $cacheFactory;
-
-    /** @var NostoProductBuilder */
-    private $nostoProductBuilder;
+    /** @var QueueFactory  */
+    private $queueFactory;
 
     /** @var TimezoneInterface */
     private $magentoTimeZone;
 
     /**
      * Builder constructor.
-     * @param CacheFactory $NostoCacheFactory
+     * @param QueueFactory $queueFactory
      * @param TimezoneInterface $magentoTimeZone
      */
     public function __construct(
-        CacheFactory $NostoCacheFactory,
+        QueueFactory $queueFactory,
         TimezoneInterface $magentoTimeZone
     ) {
-        $this->cacheFactory = $NostoCacheFactory;
+        $this->queueFactory = $queueFactory;
         $this->magentoTimeZone = $magentoTimeZone;
     }
 
     /**
-     * @param ProductInterface $product
      * @param StoreInterface $store
-     * @return CacheModel
+     * @param array $productIds
+     * @return QueueModel
      */
     public function build(
-        ProductInterface $product,
-        StoreInterface $store
+        StoreInterface $store,
+        array $productIds
     ) {
-        $productIndex = $this->cacheFactory->create();
-        $productIndex->setProductId($product->getId());
-        $productIndex->setCreatedAt($this->magentoTimeZone->date());
-        $productIndex->setInSync(false);
-        $productIndex->setIsDirty(true);
-        $productIndex->setUpdatedAt($this->magentoTimeZone->date());
-        $productIndex->setStore($store);
-        return $productIndex;
+        $queueModel = $this->queueFactory->create();
+        $queueModel->setProductIds(array_values($productIds));
+        $queueModel->setCreatedAt($this->magentoTimeZone->date());
+        $queueModel->setStore($store);
+        $queueModel->setStatus(ProductUpdateQueueInterface::STATUS_VALUE_NEW);
+        $queueModel->setProductIdCount(count($productIds));
+        return $queueModel;
+    }
+
+    /**
+     * @param StoreInterface $store
+     * @param array $productIds
+     * @return QueueModel
+     */
+    public function buildForUpsert(
+        StoreInterface $store,
+        array $productIds
+    ) {
+        $queueModel = $this->build($store, $productIds);
+        $queueModel->setAction(ProductUpdateQueueInterface::ACTION_VALUE_UPSERT);
+        return $queueModel;
+    }
+
+    /**
+     * @param StoreInterface $store
+     * @param array $productIds
+     * @return QueueModel
+     */
+    public function buildForDeletion(
+        StoreInterface $store,
+        array $productIds
+    ) {
+        $queueModel = $this->build($store, $productIds);
+        $queueModel->setAction(ProductUpdateQueueInterface::ACTION_VALUE_DELETE);
+        return $queueModel;
     }
 }

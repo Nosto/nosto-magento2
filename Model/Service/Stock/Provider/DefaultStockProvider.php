@@ -123,16 +123,16 @@ class DefaultStockProvider implements StockProviderInterface
     /**
      * @inheritDoc
      */
-    public function getInStockSkusByIds(array $productIds, Website $website)
+    public function getInStockProductIds(array $productIds, Website $website)
     {
         $stockItems = $this->getStockStatuses($productIds, $website);
-        $skus = [];
+        $inStockIds = [];
         /** @var Status $stockItem */
         foreach ($stockItems as $stockItem) {
             if ($stockItem->getStockStatus() == StockStatusInterface::STATUS_IN_STOCK) {
-                $skus[$stockItem->getProductId()] = $stockItem->getSku();
+                $inStockIds[] = $stockItem->getProductId();
             }
         }
-        return $skus;
+        return $inStockIds;
     }
 }

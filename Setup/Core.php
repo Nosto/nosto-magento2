@@ -40,10 +40,9 @@ use Magento\Framework\DB\Adapter\AdapterInterface;
 use Magento\Framework\DB\Ddl\Table;
 use Magento\Framework\Setup\SchemaSetupInterface;
 use Nosto\Tagging\Api\Data\CustomerInterface;
-use Nosto\Tagging\Api\Data\ProductCacheInterface;
+use Nosto\Tagging\Api\Data\ProductUpdateQueueInterface;
 use Nosto\Tagging\Model\ResourceModel\Customer;
-use Nosto\Tagging\Model\ResourceModel\Product\Cache as CacheResource;
-use Zend_Db_Exception;
+use Nosto\Tagging\Model\ResourceModel\Product\Update\Queue;
 
 abstract class Core
 {
@@ -53,10 +52,11 @@ abstract class Core
      * Creates a table for mapping Nosto customer to Magento's cart & orders
      *
      * @param SchemaSetupInterface $setup
-     * @throws Zend_Db_Exception
+     * @throws \Zend_Db_Exception
      */
     public function createCustomerTable(SchemaSetupInterface $setup)
     {
+        /** @noinspection PhpUnhandledExceptionInspection */
         $table = $setup->getConnection()
             ->newTable($setup->getTable(Customer::TABLE_NAME))
             ->addColumn(
@@ -114,21 +114,23 @@ abstract class Core
                 ['type' => AdapterInterface::INDEX_TYPE_UNIQUE]
             )
             ->setComment('Nosto customer and order mapping');
+        /** @noinspection PhpUnhandledExceptionInspection */
         $setup->getConnection()->createTable($table);
     }
 
     /**
-     * Creates a cache table for Nosto product data
+     * Creates a product update queue table for Nosto product data
      *
      * @param SchemaSetupInterface $setup
-     * @throws Zend_Db_Exception
+     * @throws \Zend_Db_Exception
      */
-    public function createProductCacheTable(SchemaSetupInterface $setup)
+    public function createProductUpdateQueue(SchemaSetupInterface $setup)
     {
+        /** @noinspection PhpUnhandledExceptionInspection */
         $table = $setup->getConnection()
-            ->newTable($setup->getTable(CacheResource::TABLE_NAME))
+            ->newTable($setup->getTable(Queue::TABLE_NAME))
             ->addColumn(
-                ProductCacheInterface::ID,
+                ProductUpdateQueueInterface::ID,
                 Table::TYPE_INTEGER,
                 null,
                 [
@@ -141,17 +143,7 @@ abstract class Core
                 'ID'
             )
             ->addColumn(
-                ProductCacheInterface::PRODUCT_ID,
-                Table::TYPE_INTEGER,
-                null,
-                [
-                    'nullable' => false,
-                    'unsigned' => true,
-                ],
-                'Product ID'
-            )
-            ->addColumn(
-                ProductCacheInterface::STORE_ID,
+                ProductUpdateQueueInterface::STORE_ID,
                 Table::TYPE_SMALLINT,
                 null,
                 [
@@ -161,37 +153,7 @@ abstract class Core
                 'Store ID'
             )
             ->addColumn(
-                ProductCacheInterface::IN_SYNC,
-                Table::TYPE_BOOLEAN,
-                null,
-                [
-                    'nullable' => false,
-                    'unsigned' => true,
-                ],
-                'In Sync'
-            )
-            ->addColumn(
-                ProductCacheInterface::IS_DIRTY,
-                Table::TYPE_BOOLEAN,
-                null,
-                [
-                    'nullable' => false,
-                    'unsigned' => true,
-                ],
-                'Is Dirty'
-            )
-            ->addColumn(
-                ProductCacheInterface::IS_DELETED,
-                Table::TYPE_BOOLEAN,
-                null,
-                [
-                    'nullable' => false,
-                    'unsigned' => true,
-                ],
-                'Is Deleted'
-            )
-            ->addColumn(
-                ProductCacheInterface::PRODUCT_DATA,
+                ProductUpdateQueueInterface::PRODUCT_IDS,
                 Table::TYPE_TEXT,
                 self::PRODUCT_DATA_MAX_LENGTH,
                 [
@@ -201,27 +163,51 @@ abstract class Core
                 'Product data'
             )
             ->addColumn(
-                ProductCacheInterface::CREATED_AT,
+                ProductUpdateQueueInterface::STATUS,
+                Table::TYPE_TEXT,
+                10,
+                ['nullable' => false],
+                'Processing status'
+            )
+            ->addColumn(
+                ProductUpdateQueueInterface::ACTION,
+                Table::TYPE_TEXT,
+                10,
+                ['nullable' => false],
+                'Action'
+            )
+            ->addColumn(
+                ProductUpdateQueueInterface::PRODUCT_ID_COUNT,
+                Table::TYPE_INTEGER,
+                null,
+                [
+                    'nullable' => false,
+                    'unsigned' => true,
+                ],
+                'The amount of product ids in an entry'
+            )
+            ->addColumn(
+                ProductUpdateQueueInterface::CREATED_AT,
                 Table::TYPE_DATETIME,
                 null,
                 ['nullable' => false],
                 'Creation Time'
             )
             ->addColumn(
-                ProductCacheInterface::UPDATED_AT,
+                ProductUpdateQueueInterface::STARTED_AT,
                 Table::TYPE_DATETIME,
                 null,
                 ['nullable' => true],
-                'Updated Time'
+                'Started at Time'
             )
-            ->addIndex(
-                $setup->getIdxName(
-                    CacheResource::TABLE_NAME,
-                    [ProductCacheInterface::PRODUCT_ID, ProductCacheInterface::STORE_ID]
-                ),
-                [ProductCacheInterface::PRODUCT_ID, ProductCacheInterface::STORE_ID],
-                ['type' => AdapterInterface::INDEX_TYPE_UNIQUE]
+            ->addColumn(
+                ProductUpdateQueueInterface::COMPLETED_AT,
+                Table::TYPE_DATETIME,
+                null,
+                ['nullable' => true],
+                'Completed at Time'
             );
+        /** @noinspection PhpUnhandledExceptionInspection */
         $setup->getConnection()->createTable($table);
     }
 }

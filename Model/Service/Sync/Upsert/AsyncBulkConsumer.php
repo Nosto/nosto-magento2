@@ -38,11 +38,9 @@ namespace Nosto\Tagging\Model\Service\Sync\Upsert;
 
 use Magento\Framework\EntityManager\EntityManager;
 use Magento\Framework\Json\Helper\Data as JsonHelper;
-use Nosto\Exception\MemoryOutOfBoundsException;
-use Nosto\NostoException;
 use Nosto\Tagging\Helper\Scope as NostoScopeHelper;
 use Nosto\Tagging\Logger\Logger;
-use Nosto\Tagging\Model\Product\Cache\CacheRepository;
+use Nosto\Tagging\Model\ResourceModel\Magento\Product\CollectionFactory;
 use Nosto\Tagging\Model\Service\Sync\AbstractBulkConsumer;
 
 /**
@@ -58,14 +56,14 @@ class AsyncBulkConsumer extends AbstractBulkConsumer
     /** @var NostoScopeHelper */
     private $nostoScopeHelper;
 
-    /** @var CacheRepository */
-    private $cacheRepository;
+    /** @var CollectionFactory */
+    private $collectionFactory;
 
     /**
      * AsyncBulkConsumer constructor.
      * @param SyncService $syncService
      * @param NostoScopeHelper $nostoScopeHelper
-     * @param CacheRepository $cacheRepository
+     * @param CollectionFactory $collectionFactory
      * @param JsonHelper $jsonHelper
      * @param EntityManager $entityManager
      * @param Logger $logger
@@ -73,14 +71,14 @@ class AsyncBulkConsumer extends AbstractBulkConsumer
     public function __construct(
         SyncService $syncService,
         NostoScopeHelper $nostoScopeHelper,
-        CacheRepository $cacheRepository,
+        CollectionFactory $collectionFactory,
         JsonHelper $jsonHelper,
         EntityManager $entityManager,
         Logger $logger
     ) {
         $this->syncService = $syncService;
         $this->nostoScopeHelper = $nostoScopeHelper;
-        $this->cacheRepository = $cacheRepository;
+        $this->collectionFactory = $collectionFactory;
         parent::__construct(
             $logger,
             $jsonHelper,
@@ -89,14 +87,16 @@ class AsyncBulkConsumer extends AbstractBulkConsumer
     }
 
     /**
-     * @inheritdoc
-     * @throws MemoryOutOfBoundsException
-     * @throws NostoException
+     * @inheritDoc
+     * @throws \Nosto\Exception\MemoryOutOfBoundsException
+     * @throws \Nosto\NostoException
      */
     public function doOperation(array $productIds, string $storeId)
     {
         $store = $this->nostoScopeHelper->getStore($storeId);
-        $outOfSyncCollection = $this->cacheRepository->getByProductIdsAndStoreId($productIds, (int)$storeId);
-        $this->syncService->syncIndexedProducts($outOfSyncCollection, $store);
+        $productCollection = $this->collectionFactory->create()
+            ->addIdsToFilter($productIds)
+            ->addStoreFilter($storeId);
+        $this->syncService->syncProducts($productCollection, $store);
     }
 }

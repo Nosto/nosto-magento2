@@ -34,31 +34,23 @@
  *
  */
 
-namespace Nosto\Tagging\Api\Data;
+namespace Nosto\Tagging\Model\ResourceModel\Product\Update;
 
-use Magento\Framework\Data\SearchResultInterface;
+use Magento\Framework\Model\ResourceModel\Db\AbstractDb;
+use Nosto\Tagging\Api\Data\ProductUpdateQueueInterface;
 
-interface ProductCacheSearchResultsInterface extends SearchResultInterface
+class Queue extends AbstractDb
 {
-    /**
-     * Get items from search results
-     *
-     * @return ProductCacheInterface[]
-     */
-    public function getItems();
+    protected $_serializableFields = [ProductUpdateQueueInterface::PRODUCT_IDS => [[], []]];
 
+    const TABLE_NAME = 'nosto_tagging_product_update_queue';
     /**
-     * Get first item from search results
+     * Initialize resource model
      *
-     * @return ProductCacheInterface
+     * @return void
      */
-    public function getFirstItem();
-
-    /**
-     * Set items for search results
-     *
-     * @param ProductCacheInterface[] $items
-     * @return $this
-     */
-    public function setItems(array $items);
+    public function _construct()
+    {
+        $this->_init(self::TABLE_NAME, ProductUpdateQueueInterface::ID);
+    }
 }

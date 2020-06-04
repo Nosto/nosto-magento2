@@ -60,15 +60,21 @@ return [
         'vendor/magento',
         'vendor/monolog',
         'vendor/zendframework',
+        'vendor/laminas',
         'vendor/psr',
         'vendor/symfony/console',
         'magento/generated'
     ],
     'exclude_file_list' => [
+        'vendor/magento/laminas/laminas-validator/src/Hostname/Biz.php',
+        'vendor/magento/laminas/laminas-validator/src/Hostname/Cn.php',
+        'vendor/magento/laminas/laminas-validator/src/Hostname/Com.php',
+        'vendor/magento/laminas/laminas-validator/src/Hostname/Jp.php',
         'vendor/magento/zendframework1/library/Zend/Validate/Hostname/Biz.php',
         'vendor/magento/zendframework1/library/Zend/Validate/Hostname/Cn.php',
         'vendor/magento/zendframework1/library/Zend/Validate/Hostname/Com.php',
         'vendor/magento/zendframework1/library/Zend/Validate/Hostname/Jp.php',
+
     ],
     'exclude_analysis_directory_list' => [
         'vendor/'

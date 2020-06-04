@@ -34,22 +34,54 @@
  *
  */
 
-namespace Nosto\Tagging\Model\ResourceModel\Product;
+namespace Nosto\Tagging\Model\Indexer\Dimensions\QueueProcessor;
 
-use Magento\Framework\Model\ResourceModel\Db\AbstractDb;
-use Nosto\Tagging\Api\Data\ProductCacheInterface;
+use InvalidArgumentException;
+use Magento\Framework\App\Cache\TypeListInterface;
+use Magento\Framework\App\Config\ConfigResource\ConfigInterface;
 
-class Cache extends AbstractDb
+class ModeSwitcherConfiguration
 {
-    const TABLE_NAME = 'nosto_tagging_product_cache';
+    // phpcs:ignore Generic.Files.LineLength
+    const XML_PATH_PRODUCT_QUEUE_PROCESSOR_DIMENSIONS_MODE = 'indexer/nosto_index_product_queue_processor/dimensions_mode';
 
     /**
-     * Initialize resource model
+     * ConfigInterface
      *
-     * @return void
+     * @var ConfigInterface
      */
-    public function _construct()
+    private $configWriter;
+
+    /**
+     * TypeListInterface
+     *
+     * @var TypeListInterface
+     */
+    private $cacheTypeList;
+
+    /**
+     * ModeSwitcherConfiguration constructor.
+     * @param ConfigInterface $configWriter
+     * @param TypeListInterface $cacheTypeList
+     */
+    public function __construct(
+        ConfigInterface $configWriter,
+        TypeListInterface $cacheTypeList
+    ) {
+        $this->configWriter = $configWriter;
+        $this->cacheTypeList = $cacheTypeList;
+    }
+
+    /**
+     * Save switcher mode and invalidate reindex.
+     *
+     * @param string $mode
+     * @return void
+     * @throws InvalidArgumentException
+     */
+    public function saveMode(string $mode)
     {
-        $this->_init(self::TABLE_NAME, ProductCacheInterface::ID);
+        $this->configWriter->saveConfig(self::XML_PATH_PRODUCT_QUEUE_PROCESSOR_DIMENSIONS_MODE, $mode);
+        $this->cacheTypeList->cleanType('config');
     }
 }

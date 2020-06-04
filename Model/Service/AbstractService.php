@@ -41,6 +41,7 @@ use Magento\Store\Model\Store;
 use Nosto\Exception\MemoryOutOfBoundsException;
 use Nosto\NostoException;
 use Nosto\Tagging\Helper\Data as NostoDataHelper;
+use Nosto\Tagging\Helper\Account as NostoAccountHelper;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Util\Benchmark;
 use Nosto\Util\Memory as NostoMemUtil;
@@ -53,6 +54,9 @@ abstract class AbstractService
     /** @var NostoLogger */
     private $nostoLogger;
 
+    /** @var NostoAccountHelper */
+    private $nostoAccountHelper;
+
     /**
      * AbstractService constructor.
      * @param NostoDataHelper $nostoDataHelper
@@ -60,10 +64,12 @@ abstract class AbstractService
      */
     public function __construct(
         NostoDataHelper $nostoDataHelper,
+        NostoAccountHelper $nostoAccountHelper,
         NostoLogger $nostoLogger
     ) {
         $this->nostoDataHelper = $nostoDataHelper;
         $this->nostoLogger = $nostoLogger;
+        $this->nostoAccountHelper = $nostoAccountHelper;
     }
 
     /**
@@ -129,20 +135,25 @@ abstract class AbstractService
      *
      * @param string $name
      * @param Store $store
+     * @param object|null $sourceClass
      */
-    public function logBenchmarkSummary(string $name, Store $store)
+    public function logBenchmarkSummary($name, Store $store, $sourceClass = null)
     {
         try {
             Benchmark::getInstance()->stopInstrumentation($name);
-            $this->nostoLogger->logWithMemoryConsumption(sprintf(
-                'Summary of processing %s for store %s. Total amount of iterations %d'
-                . ', single iteration took on avg %f sec, total time was %f sec',
-                $name,
-                $store->getName(),
-                Benchmark::getInstance()->getTickCount($name),
-                Benchmark::getInstance()->getAvgTickTime($name),
-                Benchmark::getInstance()->getTotalTime($name)
-            ));
+            $this->nostoLogger->logWithMemoryConsumption(
+                sprintf(
+                    'Summary of processing %s for store %s. Total amount of iterations %d'
+                    . ', single iteration took on avg %f sec, total time was %f sec',
+                    $name,
+                    $store->getName(),
+                    Benchmark::getInstance()->getTickCount($name),
+                    Benchmark::getInstance()->getAvgTickTime($name),
+                    Benchmark::getInstance()->getTotalTime($name)
+                ),
+                $store,
+                $sourceClass
+            );
         } catch (NostoException $e) {
             $this->nostoLogger->exception($e);
         }
@@ -154,5 +165,69 @@ abstract class AbstractService
     public function getLogger()
     {
         return $this->nostoLogger;
+    }
+
+    /**
+     * @return NostoDataHelper
+     */
+    public function getDataHelper()
+    {
+        return $this->nostoDataHelper;
+    }
+
+    /**
+     * @return NostoAccountHelper
+     */
+    public function getAccountHelper()
+    {
+        return $this->nostoAccountHelper;
+    }
+
+    /**
+     * Shortcut for logging debug messages
+     *
+     * @param string $message
+     * @param array $context
+     */
+    public function logDebug($message, $context = [])
+    {
+        $this->getLogger()->debugWithSource($message, $context, $this);
+    }
+
+    /**
+     * Shortcut for logging info messages
+     *
+     * @param string $message
+     * @param array $context
+     */
+    public function logInfo($message, array $context = [])
+    {
+        $this->getLogger()->infoWithSource($message, $context, $this);
+    }
+
+    /**
+     * Shortcut for logging debug messages with store id
+     *
+     * @param string $message
+     * @param Store $store
+     * @param array $context
+     */
+    public function logDebugWithStore($message, Store $store, array $context = [])
+    {
+        $context['storeId'] = $store->getId();
+        $this->logDebug($message, $context);
+    }
+
+    /**
+     * Shortcut for logging info messages with store id
+     *
+     * @param string $message
+     * @param Store $store
+     * @param array $context
+     */
+    public function logInfoWithStore($message, Store $store, array $context = [])
+    {
+        $context['storeId'] = $store->getId();
+        $this->logInfo($message, $context);
     }
 }

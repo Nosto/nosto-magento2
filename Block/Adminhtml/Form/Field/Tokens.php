@@ -55,6 +55,14 @@ class Tokens extends Field
     /** @var Http $request */
     public $request;
 
+    /**
+     * Tokens constructor.
+     * @param Context $context
+     * @param Http $request
+     * @param NostoHelperScope $nostoHelperScope
+     * @param NostoHelperAccount $nostoHelperAccount
+     * @param array $data
+     */
     public function __construct(
         Context $context,
         Http $request,
@@ -75,7 +83,7 @@ class Tokens extends Field
      */
     public function getAccountDetails()
     {
-        $id = (int)$this->request->getParam('store');
+        $id = (int) $this->request->getParam('store');
         $store = $this->nostoHelperScope->getStore($id);
         return $this->nostoHelperAccount->findAccount($store);
     }

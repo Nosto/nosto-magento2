@@ -34,59 +34,33 @@
  *
  */
 
-namespace Nosto\Tagging\Api;
+namespace Nosto\Tagging\Model\Indexer\Dimensions\QueueProcessor;
 
-use Magento\Catalog\Api\Data\ProductInterface;
-use Magento\Store\Api\Data\StoreInterface;
-use Magento\Store\Model\Store;
-use Nosto\Tagging\Api\Data\ProductCacheInterface;
+use Nosto\Tagging\Model\Indexer\Dimensions\AbstractDimensionModeConfiguration;
 
-interface ProductCacheRepositoryInterface
+class DimensionModeConfiguration extends AbstractDimensionModeConfiguration
 {
     /**
-     * Save Queue entry
-     *
-     * @param ProductCacheInterface $productIndex
-     * @return ProductCacheInterface
+     * @var string
      */
-    public function save(ProductCacheInterface $productIndex);
+    private $currentMode;
 
     /**
-     * Delete productIndex
-     *
-     * @param ProductCacheInterface $productIndex
+     * @return string
      */
-    public function delete(ProductCacheInterface $productIndex);
+    public function getCurrentMode(): string
+    {
+        if ($this->currentMode === null) {
+            $mode = $this->scopeConfig->getValue(
+                ModeSwitcherConfiguration::XML_PATH_PRODUCT_QUEUE_PROCESSOR_DIMENSIONS_MODE
+            );
+            if ($mode) {
+                $this->currentMode = $mode;
+            } else {
+                $this->currentMode = self::DIMENSION_NONE;
+            }
+        }
 
-    /**
-     * Returns entry by product and store
-     *
-     * @param ProductInterface $product
-     * @param StoreInterface $store
-     * @return ProductCacheInterface|null
-     */
-    public function getOneByProductAndStore(ProductInterface $product, StoreInterface $store);
-
-    /**
-     * @param int $productId
-     * @param int $storeId
-     * @return ProductCacheInterface|null
-     */
-    public function getByProductIdAndStoreId(int $productId, int $storeId);
-
-    /**
-     * Return total amount of products marked as out of sync
-     *
-     * @param Store $store
-     * @return int
-     */
-    public function getTotalOutOfSync(Store $store);
-
-    /**
-     * Return total amount of products marked as dirty
-     *
-     * @param Store $store
-     * @return int
-     */
-    public function getTotalDirty(Store $store);
+        return $this->currentMode;
+    }
 }

@@ -34,42 +34,94 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Customer;
+namespace Nosto\Tagging\Model\Product\Update;
 
 use DateTime;
 use Magento\Framework\Model\AbstractModel;
-use Nosto\Tagging\Api\Data\CustomerInterface;
-use Nosto\Tagging\Model\ResourceModel\Customer as NostoCustomer;
+use Magento\Store\Api\Data\StoreInterface;
+use Nosto\Tagging\Api\Data\ProductUpdateQueueInterface;
+use Nosto\Tagging\Model\ResourceModel\Product\Update\Queue as QueueResource;
 
-class Customer extends AbstractModel implements CustomerInterface
+class Queue extends AbstractModel implements ProductUpdateQueueInterface
 {
     /**
-     * Name of cookie that holds Nosto visitor id
-     */
-    const COOKIE_NAME = '2c_cId';
-
-    /**
      * @inheritDoc
      */
-    public function getCustomerId()
+    public function getProductIdCount()
     {
-        return $this->getData(self::CUSTOMER_ID);
+        return $this->getData(self::PRODUCT_ID_COUNT);
     }
 
     /**
      * @inheritDoc
      */
-    public function getQuoteId()
+    public function setProductIdCount($count)
     {
-        return $this->getData(self::QUOTE_ID);
+        return $this->setData(self::PRODUCT_ID_COUNT, $count);
     }
 
     /**
      * @inheritDoc
      */
-    public function getNostoId()
+    public function getAction()
     {
-        return $this->getData(self::NOSTO_ID);
+        return $this->getData(self::ACTION);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setAction($action)
+    {
+        return $this->setData(self::ACTION, $action);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getStatus()
+    {
+        return $this->getData(self::STATUS);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setStatus($status)
+    {
+        return $this->setData(self::STATUS, $status);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getProductIds()
+    {
+        return $this->getData(self::PRODUCT_IDS);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setProductIds(array $productIds)
+    {
+        return $this->setData(self::PRODUCT_IDS, $productIds);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getId()
+    {
+        return $this->getData(self::ID);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getStoreId()
+    {
+        return $this->getData(self::STORE_ID);
     }
 
     /**
@@ -83,33 +135,25 @@ class Customer extends AbstractModel implements CustomerInterface
     /**
      * @inheritDoc
      */
-    public function getUpdatedAt()
+    public function getStartedAt()
     {
-        return $this->getData(self::UPDATED_AT);
+        return $this->getData(self::STARTED_AT);
     }
 
     /**
      * @inheritDoc
      */
-    public function setCustomerId($customerId)
+    public function getCompletedAt()
     {
-        return $this->setData(self::CUSTOMER_ID, $customerId);
+        return $this->getData(self::COMPLETED_AT);
     }
 
     /**
      * @inheritDoc
      */
-    public function setQuoteId($quoteId)
+    public function setId($id)
     {
-        return $this->setData(self::QUOTE_ID, $quoteId);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function setNostoId($nostoId)
-    {
-        return $this->setData(self::NOSTO_ID, $nostoId);
+        return $this->setData(self::ID, $id);
     }
 
     /**
@@ -123,9 +167,33 @@ class Customer extends AbstractModel implements CustomerInterface
     /**
      * @inheritDoc
      */
-    public function setUpdatedAt(DateTime $updatedAt)
+    public function setStartedAt(DateTime $startedAt)
     {
-        return $this->setData(self::UPDATED_AT, $updatedAt);
+        return $this->setData(self::STARTED_AT, $startedAt);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setCompletedAt(DateTime $completedAt)
+    {
+        return $this->setData(self::COMPLETED_AT, $completedAt);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setStoreId($storeId)
+    {
+        return $this->setData(self::STORE_ID, $storeId);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setStore(StoreInterface $store)
+    {
+        return $this->setStoreId($store->getId());
     }
 
     /**
@@ -135,22 +203,6 @@ class Customer extends AbstractModel implements CustomerInterface
      */
     public function _construct()
     {
-        $this->_init(NostoCustomer::class);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getRestoreCartHash()
-    {
-        return $this->getData(self::RESTORE_CART_HASH);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function setRestoreCartHash($restoreCartHash)
-    {
-        return $this->setData(self::RESTORE_CART_HASH, $restoreCartHash);
+        $this->_init(QueueResource::class);
     }
 }

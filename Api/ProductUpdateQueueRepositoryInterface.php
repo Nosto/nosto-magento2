@@ -34,33 +34,31 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Indexer\Dimensions\Data;
+namespace Nosto\Tagging\Api;
 
-use Nosto\Tagging\Model\Indexer\Dimensions\AbstractDimensionModeConfiguration;
+use Magento\Store\Api\Data\StoreInterface;
+use Nosto\Tagging\Api\Data\ProductUpdateQueueInterface;
 
-class DimensionModeConfiguration extends AbstractDimensionModeConfiguration
+interface ProductUpdateQueueRepositoryInterface
 {
     /**
-     * @var string
+     * Save Queue entry
+     *
+     * @param ProductUpdateQueueInterface $entry
+     * @return ProductUpdateQueueInterface
      */
-    private $currentMode;
+    public function save(ProductUpdateQueueInterface $entry);
 
     /**
-     * @return string
+     * Delete productIndex
+     *
+     * @param ProductUpdateQueueInterface $entry
      */
-    public function getCurrentMode(): string
-    {
-        if ($this->currentMode === null) {
-            $mode = $this->scopeConfig->getValue(
-                ModeSwitcherConfiguration::XML_PATH_PRODUCT_DATA_DIMENSIONS_MODE
-            );
-            if ($mode) {
-                $this->currentMode = $mode;
-            } else {
-                $this->currentMode = self::DIMENSION_NONE;
-            }
-        }
+    public function delete(ProductUpdateQueueInterface $entry);
 
-        return $this->currentMode;
-    }
+    /**
+     * @param StoreInterface $store
+     * @return ProductUpdateQueueInterface|null
+     */
+    public function getByStore(StoreInterface $store);
 }

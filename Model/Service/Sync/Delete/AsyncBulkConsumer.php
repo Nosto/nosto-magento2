@@ -36,12 +36,13 @@
 
 namespace Nosto\Tagging\Model\Service\Sync\Delete;
 
+use Nosto\Exception\MemoryOutOfBoundsException;
+use Nosto\NostoException;
+use Nosto\Tagging\Model\Service\Sync\AbstractBulkConsumer;
+use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Magento\Framework\EntityManager\EntityManager;
 use Magento\Framework\Json\Helper\Data as JsonHelper;
-use Nosto\Exception\MemoryOutOfBoundsException;
-use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Logger\Logger;
-use Nosto\Tagging\Model\Service\Sync\AbstractBulkConsumer;
 
 class AsyncBulkConsumer extends AbstractBulkConsumer
 {
@@ -76,12 +77,15 @@ class AsyncBulkConsumer extends AbstractBulkConsumer
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
+     * @param array $productIds
+     * @param string $storeId
      * @throws MemoryOutOfBoundsException
+     * @throws NostoException
      */
     public function doOperation(array $productIds, string $storeId)
     {
         $store = $this->nostoHelperScope->getStore($storeId);
-        $this->deleteService->syncDeletedProducts($productIds, $store);
+        $this->deleteService->delete($productIds, $store);
     }
 }

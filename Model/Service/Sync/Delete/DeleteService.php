@@ -38,20 +38,15 @@ namespace Nosto\Tagging\Model\Service\Sync\Delete;
 
 use Exception;
 use Magento\Store\Model\Store;
-use Nosto\Exception\MemoryOutOfBoundsException;
+use Nosto\Model\Signup\Account as NostoSignupAccount;
 use Nosto\NostoException;
 use Nosto\Operation\DeleteProduct;
-use Nosto\Tagging\Model\Product\Cache\CacheRepository;
-use Nosto\Model\Signup\Account as NostoSignupAccount;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Url as NostoHelperUrl;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
-use Nosto\Tagging\Model\Product\Cache as NostoProductCache;
-use Nosto\Tagging\Model\ResourceModel\Product\Cache\CacheCollection as NostoCacheCollection;
-use Nosto\Tagging\Model\ResourceModel\Product\Cache\CacheCollectionFactory as NostoCacheCollectionFactory;
 use Nosto\Tagging\Model\Service\AbstractService;
-use Nosto\Tagging\Util\PagingIterator;
+use Nosto\Tagging\Model\Service\Cache\CacheService;
 
 class DeleteService extends AbstractService
 {
@@ -60,8 +55,8 @@ class DeleteService extends AbstractService
     const BENCHMARK_DELETE_BREAKPOINT = 1;
     const PRODUCT_DELETION_BATCH_SIZE = 100;
 
-    /** @var CacheRepository */
-    private $cacheRepository;
+    /** @var CacheService */
+    private $cacheService;
 
     /** @var NostoHelperAccount */
     private $nostoHelperAccount;
@@ -69,64 +64,43 @@ class DeleteService extends AbstractService
     /** @var NostoHelperUrl */
     private $nostoHelperUrl;
 
-    /** @var NostoCacheCollectionFactory */
-    private $nostoCacheCollectionFactory;
+    /** @var int */
+    private $deleteBatchSize;
 
     /**
      * DeleteService constructor.
-     * @param CacheRepository $cacheRepository
+     * @param CacheService $cacheService
      * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoHelperData $nostoHelperData
      * @param NostoHelperUrl $nostoHelperUrl
      * @param NostoLogger $logger
-     * @param NostoCacheCollectionFactory $nostoCacheCollectionFactory
+     * @param $deleteBatchSize
      */
     public function __construct(
-        CacheRepository $cacheRepository,
+        CacheService $cacheService,
         NostoHelperAccount $nostoHelperAccount,
         NostoHelperData $nostoHelperData,
         NostoHelperUrl $nostoHelperUrl,
         NostoLogger $logger,
-        NostoCacheCollectionFactory $nostoCacheCollectionFactory
+        $deleteBatchSize
     ) {
-        $this->cacheRepository = $cacheRepository;
+        $this->cacheService = $cacheService;
         $this->nostoHelperAccount = $nostoHelperAccount;
         $this->nostoHelperUrl = $nostoHelperUrl;
-        $this->nostoCacheCollectionFactory = $nostoCacheCollectionFactory;
-        parent::__construct($nostoHelperData, $logger);
-    }
-
-    /**
-     * @param array $productIds
-     * @param Store $store
-     * @throws MemoryOutOfBoundsException
-     */
-    public function syncDeletedProducts(array $productIds, Store $store)
-    {
-        try {
-            $this->purgeDeletedFromCache($productIds, $store);
-            $this->getLogger()->info(
-                sprintf(
-                    'Removed products from index for store %s',
-                    $store->getCode()
-                )
-            );
-        } catch (NostoException $e) {
-            $this->getLogger()->exception($e);
-        }
+        $this->deleteBatchSize = $deleteBatchSize;
+        parent::__construct($nostoHelperData, $nostoHelperAccount, $logger);
     }
 
     /**
      * Discontinues products in Nosto and removes indexed products from Nosto product index
      *
-     * @param NostoCacheCollection $collection
+     * @param array $productIds
      * @param Store $store
-     * @throws MemoryOutOfBoundsException
      * @throws NostoException
      */
-    public function deleteFromCache(NostoCacheCollection $collection, Store $store)
+    public function delete(array $productIds, Store $store)
     {
-        if ($collection->getSize() === 0) {
+        if (count($productIds) === 0) {
             return;
         }
         $account = $this->nostoHelperAccount->findAccount($store);
@@ -134,48 +108,27 @@ class DeleteService extends AbstractService
             throw new NostoException(sprintf('Store view %s does not have Nosto installed', $store->getName()));
         }
         $this->startBenchmark(self::BENCHMARK_DELETE_NAME, self::BENCHMARK_DELETE_BREAKPOINT);
-        $collection->setPageSize(self::PRODUCT_DELETION_BATCH_SIZE);
-        $iterator = new PagingIterator($collection);
-
-        /** @var NostoCacheCollection $page */
-        foreach ($iterator as $page) {
-            $this->checkMemoryConsumption('product delete');
-            $ids = [];
-            /** @var NostoProductCache $cachedProduct */
-            foreach ($page as $cachedProduct) {
-                $ids[] = $cachedProduct->getProductId();
-            }
+        $productIdBatches = array_chunk($productIds, $this->deleteBatchSize);
+        $this->logDebugWithStore(
+            sprintf(
+                'Deleting total of %d products in batches of %d',
+                count($productIds),
+                count($productIdBatches)
+            ),
+            $store
+        );
+        foreach ($productIdBatches as $ids) {
             try {
                 $op = new DeleteProduct($account, $this->nostoHelperUrl->getActiveDomain($store));
                 $op->setResponseTimeout(30);
                 $op->setProductIds($ids);
                 $op->delete(); // @codingStandardsIgnoreLine
-                $this->cacheRepository->deleteCurrentItemsByStore($page, $store);
+                $this->cacheService->removeByProductIds($store, $ids);
                 $this->tickBenchmark(self::BENCHMARK_DELETE_NAME);
             } catch (Exception $e) {
                 $this->getLogger()->exception($e);
             }
         }
-
         $this->logBenchmarkSummary(self::BENCHMARK_DELETE_NAME, $store);
-    }
-
-    /**
-     * Fetches deleted products from the product index, sends those to Nosto
-     * and deletes the deleted rows from database
-     *
-     * @param array $productIds
-     * @param Store $store
-     * @throws MemoryOutOfBoundsException
-     * @throws NostoException
-     */
-    public function purgeDeletedFromCache(array $productIds, Store $store)
-    {
-        $collection = $this->nostoCacheCollectionFactory->create()
-            ->addFieldToSelect('*')
-            ->addProductIdsFilter($productIds)
-            ->addIsDeletedFilter()
-            ->addStoreFilter($store);
-        $this->deleteFromCache($collection, $store);
     }
 }
