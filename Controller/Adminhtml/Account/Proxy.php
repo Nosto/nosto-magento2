@@ -46,11 +46,11 @@ class Proxy extends Base
     protected $_publicActions = ['proxy']; // @codingStandardsIgnoreLine
     private $backendAuthSession;
 
-	/**
+    /**
      * @param Context $context
      * @param Session $backendAuthSession
-	 * @noinspection PhpMissingParentConstructorInspection
-	 */
+     * @noinspection PhpMissingParentConstructorInspection
+     */
     public function __construct(
         Context $context,
         Session $backendAuthSession

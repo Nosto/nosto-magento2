@@ -49,13 +49,13 @@ class Connect extends Base
     private $oauthMetaBuilder;
     private $nostoHelperScope;
 
-	/**
+    /**
      * @param Context $context
      * @param NostoOauthBuilder $oauthMetaBuilder
      * @param NostoHelperScope $nostoHelperScope
      * @param Json $result
-	 * @noinspection PhpMissingParentConstructorInspection
-	 */
+     * @noinspection PhpMissingParentConstructorInspection
+     */
     public function __construct(
         Context $context,
         NostoOauthBuilder $oauthMetaBuilder,

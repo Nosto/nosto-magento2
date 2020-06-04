@@ -57,6 +57,7 @@ use Zend_Uri_Exception;
 /*
  * Controller class for handling cart restoration
  */
+
 class Cart extends Action
 {
     /**
@@ -105,11 +106,11 @@ class Cart extends Action
         $this->cartRepository = $cartRepository;
     }
 
-	/**
-	 * @return ResponseInterface|ResultInterface
-	 * @throws NoSuchEntityException
-	 * @throws Zend_Uri_Exception
-	 */
+    /**
+     * @return ResponseInterface|ResultInterface
+     * @throws NoSuchEntityException
+     * @throws Zend_Uri_Exception
+     */
     public function execute()
     {
         $store = $this->nostoScopeHelper->getStore();

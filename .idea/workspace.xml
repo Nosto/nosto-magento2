@@ -1,7 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="9094e788-7210-4bb7-9b9e-17cf223e4755" name="Default" comment="" />
+    <list default="true" id="9094e788-7210-4bb7-9b9e-17cf223e4755" name="Default" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Controller/Adminhtml/Account/Connect.php" beforeDir="false" afterPath="$PROJECT_DIR$/Controller/Adminhtml/Account/Connect.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Controller/Adminhtml/Account/Create.php" beforeDir="false" afterPath="$PROJECT_DIR$/Controller/Adminhtml/Account/Create.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Controller/Adminhtml/Account/Delete.php" beforeDir="false" afterPath="$PROJECT_DIR$/Controller/Adminhtml/Account/Delete.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Controller/Adminhtml/Account/Index.php" beforeDir="false" afterPath="$PROJECT_DIR$/Controller/Adminhtml/Account/Index.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Controller/Adminhtml/Account/Proxy.php" beforeDir="false" afterPath="$PROJECT_DIR$/Controller/Adminhtml/Account/Proxy.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Controller/Adminhtml/Account/Sync.php" beforeDir="false" afterPath="$PROJECT_DIR$/Controller/Adminhtml/Account/Sync.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Controller/Checkout/Cart/Add.php" beforeDir="false" afterPath="$PROJECT_DIR$/Controller/Checkout/Cart/Add.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Controller/Frontend/Cart.php" beforeDir="false" afterPath="$PROJECT_DIR$/Controller/Frontend/Cart.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CustomerData/CartTagging.php" beforeDir="false" afterPath="$PROJECT_DIR$/CustomerData/CartTagging.php" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -235,7 +246,7 @@
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.2275" />
     <property name="run.code.analysis.last.selected.profile" value="pCI" />
-    <property name="settings.editor.selected.configurable" value="project.scopes" />
+    <property name="settings.editor.selected.configurable" value="preferences.sourceCode.PHP" />
   </component>
   <component name="SvnConfiguration">
     <configuration />
@@ -250,7 +261,8 @@
       <workItem from="1590909520207" duration="4720000" />
       <workItem from="1590937811419" duration="596000" />
       <workItem from="1590938435948" duration="1284000" />
-      <workItem from="1591088683908" duration="1443000" />
+      <workItem from="1591088683908" duration="2015000" />
+      <workItem from="1591178064815" duration="895000" />
     </task>
     <servers />
   </component>
@@ -274,10 +286,10 @@
       <screen x="0" y="23" width="1440" height="877" />
     </state>
     <state x="526" y="150" key="#com.intellij.ide.util.MemberChooser/0.23.1440.877@0.23.1440.877" timestamp="1590907930329" />
-    <state x="468" y="323" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1" timestamp="1590909575546">
+    <state x="468" y="323" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1" timestamp="1591098063187">
       <screen x="0" y="23" width="1440" height="877" />
     </state>
-    <state x="468" y="323" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1/0.23.1440.877@0.23.1440.877" timestamp="1590909575546" />
+    <state x="468" y="323" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1/0.23.1440.877@0.23.1440.877" timestamp="1591098063187" />
     <state x="553" y="369" key="ComposerInitDialogKey" timestamp="1590838837966">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
@@ -287,19 +299,20 @@
     </state>
     <state x="349" y="156" width="778" height="587" key="NewModule_or_Project.wizard/0.0.1440.900@0.0.1440.900" timestamp="1590836909603" />
     <state x="349" y="175" key="NewModule_or_Project.wizard/0.23.1440.877@0.23.1440.877" timestamp="1590866985595" />
-    <state x="229" y="110" key="SettingsEditor" timestamp="1591088704116">
+    <state x="229" y="110" key="SettingsEditor" timestamp="1591098002174">
       <screen x="0" y="23" width="1440" height="877" />
     </state>
     <state x="229" y="89" key="SettingsEditor/0.0.1440.900@0.0.1440.900" timestamp="1590840995025" />
-    <state x="229" y="110" key="SettingsEditor/0.23.1440.877@0.23.1440.877" timestamp="1591088704116" />
+    <state x="229" y="110" key="SettingsEditor/0.23.1440.877@0.23.1440.877" timestamp="1591098002174" />
     <state x="602" y="313" width="419" height="297" key="cloudConfig.SelfSettingsDialog" timestamp="1590909558512">
       <screen x="0" y="23" width="1440" height="877" />
     </state>
     <state x="602" y="313" width="419" height="297" key="cloudConfig.SelfSettingsDialog/0.23.1440.877@0.23.1440.877" timestamp="1590909558512" />
-    <state x="420" y="218" width="600" height="486" key="find.popup" timestamp="1590939784616">
-      <screen x="0" y="23" width="1440" height="877" />
+    <state x="420" y="200" width="600" height="499" key="find.popup" timestamp="1591178105641">
+      <screen x="0" y="0" width="1440" height="900" />
     </state>
-    <state x="420" y="218" width="600" height="486" key="find.popup/0.23.1440.877@0.23.1440.877" timestamp="1590939784616" />
+    <state x="420" y="200" width="600" height="499" key="find.popup/0.0.1440.900@0.0.1440.900" timestamp="1591178105641" />
+    <state x="420" y="218" width="600" height="486" key="find.popup/0.23.1440.877@0.23.1440.877" timestamp="1591098035718" />
     <state x="385" y="213" width="670" height="676" key="search.everywhere.popup" timestamp="1591090047823">
       <screen x="0" y="23" width="1440" height="877" />
     </state>
