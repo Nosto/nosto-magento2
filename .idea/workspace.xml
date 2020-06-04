@@ -2,35 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9094e788-7210-4bb7-9b9e-17cf223e4755" name="Default" comment="">
-      <change afterPath="$PROJECT_DIR$/.env.bak" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/magento2plugin.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/magento2plugin.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Controller/Adminhtml/Account/Connect.php" beforeDir="false" afterPath="$PROJECT_DIR$/Controller/Adminhtml/Account/Connect.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Controller/Adminhtml/Account/Create.php" beforeDir="false" afterPath="$PROJECT_DIR$/Controller/Adminhtml/Account/Create.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Controller/Adminhtml/Account/Delete.php" beforeDir="false" afterPath="$PROJECT_DIR$/Controller/Adminhtml/Account/Delete.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Controller/Adminhtml/Account/Index.php" beforeDir="false" afterPath="$PROJECT_DIR$/Controller/Adminhtml/Account/Index.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Controller/Adminhtml/Account/Proxy.php" beforeDir="false" afterPath="$PROJECT_DIR$/Controller/Adminhtml/Account/Proxy.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Controller/Adminhtml/Account/Sync.php" beforeDir="false" afterPath="$PROJECT_DIR$/Controller/Adminhtml/Account/Sync.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Controller/Checkout/Cart/Add.php" beforeDir="false" afterPath="$PROJECT_DIR$/Controller/Checkout/Cart/Add.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Helper/Price.php" beforeDir="false" afterPath="$PROJECT_DIR$/Helper/Price.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Model/Cart/Restore/Builder.php" beforeDir="false" afterPath="$PROJECT_DIR$/Model/Cart/Restore/Builder.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Model/Meta/Account/Settings/Currencies/Builder.php" beforeDir="false" afterPath="$PROJECT_DIR$/Model/Meta/Account/Settings/Currencies/Builder.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Model/Product/Cache/CacheRepository.php" beforeDir="false" afterPath="$PROJECT_DIR$/Model/Product/Cache/CacheRepository.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Model/Product/Queue/QueueRepository.php" beforeDir="false" afterPath="$PROJECT_DIR$/Model/Product/Queue/QueueRepository.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Model/Product/Ratings.php" beforeDir="false" afterPath="$PROJECT_DIR$/Model/Product/Ratings.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Model/ResourceModel/Product/Update/Queue/QueueCollection.php" beforeDir="false" afterPath="$PROJECT_DIR$/Model/ResourceModel/Product/Update/Queue/QueueCollection.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Model/ResourceModel/Product/Update/Queue/QueueCollectionBuilder.php" beforeDir="false" afterPath="$PROJECT_DIR$/Model/ResourceModel/Product/Update/Queue/QueueCollectionBuilder.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Model/Service/AbstractService.php" beforeDir="false" afterPath="$PROJECT_DIR$/Model/Service/AbstractService.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Model/Service/Sync/AbstractBulkPublisher.php" beforeDir="false" afterPath="$PROJECT_DIR$/Model/Service/Sync/AbstractBulkPublisher.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Model/Service/Sync/Delete/AsyncBulkConsumer.php" beforeDir="false" afterPath="$PROJECT_DIR$/Model/Service/Sync/Delete/AsyncBulkConsumer.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Model/Service/Sync/Upsert/AsyncBulkConsumer.php" beforeDir="false" afterPath="$PROJECT_DIR$/Model/Service/Sync/Upsert/AsyncBulkConsumer.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Model/Service/Sync/Upsert/SyncService.php" beforeDir="false" afterPath="$PROJECT_DIR$/Model/Service/Sync/Upsert/SyncService.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Model/Service/Update/QueueProcessorService.php" beforeDir="false" afterPath="$PROJECT_DIR$/Model/Service/Update/QueueProcessorService.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Observer/Adminhtml/Config.php" beforeDir="false" afterPath="$PROJECT_DIR$/Observer/Adminhtml/Config.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Setup/Core.php" beforeDir="false" afterPath="$PROJECT_DIR$/Setup/Core.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Setup/InstallSchema.php" beforeDir="false" afterPath="$PROJECT_DIR$/Setup/InstallSchema.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Setup/UpgradeData.php" beforeDir="false" afterPath="$PROJECT_DIR$/Setup/UpgradeData.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Setup/UpgradeSchema.php" beforeDir="false" afterPath="$PROJECT_DIR$/Setup/UpgradeSchema.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/composer.json" beforeDir="false" afterPath="$PROJECT_DIR$/composer.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/composer.lock" beforeDir="false" afterPath="$PROJECT_DIR$/composer.lock" afterDir="false" />
     </list>
@@ -285,7 +257,7 @@
       <workItem from="1590938435948" duration="1284000" />
       <workItem from="1591088683908" duration="2015000" />
       <workItem from="1591178064815" duration="909000" />
-      <workItem from="1591263830089" duration="2155000" />
+      <workItem from="1591263830089" duration="3405000" />
     </task>
     <servers />
   </component>
