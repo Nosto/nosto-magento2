@@ -55,7 +55,6 @@ class Index extends Base
      * @param Context $context
      * @param PageFactory $resultPageFactory
      * @param NostoHelperScope $nostoHelperScope
-     * @noinspection PhpMissingParentConstructorInspection
      */
     public function __construct(
         Context $context,

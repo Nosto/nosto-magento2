@@ -2,96 +2,37 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9094e788-7210-4bb7-9b9e-17cf223e4755" name="Default" comment="">
-      <change afterPath="$PROJECT_DIR$/Model/Product/Queue/QueueRepository.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Model/ResourceModel/Product/Update/Queue/QueueCollectionBuilder.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Model/Service/Update/QueueProcessorService.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Model/Service/Update/QueueService.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.github/workflows/phan.yml" beforeDir="false" afterPath="$PROJECT_DIR$/.github/workflows/phan.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Api/Data/ProductCacheInterface.php" beforeDir="false" afterPath="$PROJECT_DIR$/Api/Data/ProductUpdateQueueInterface.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Api/Data/ProductCacheSearchResultsInterface.php" beforeDir="false" afterPath="$PROJECT_DIR$/Api/ProductUpdateQueueRepositoryInterface.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Api/ProductCacheRepositoryInterface.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Block/Adminhtml/Account/Iframe.php" beforeDir="false" afterPath="$PROJECT_DIR$/Block/Adminhtml/Account/Iframe.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Block/Adminhtml/Form/Field/Indexers.php" beforeDir="false" afterPath="$PROJECT_DIR$/Block/Adminhtml/Form/Field/Indexers.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Block/Adminhtml/Form/Field/Tokens.php" beforeDir="false" afterPath="$PROJECT_DIR$/Block/Adminhtml/Form/Field/Tokens.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CHANGELOG.md" beforeDir="false" afterPath="$PROJECT_DIR$/CHANGELOG.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Console/Command/NostoAccountConnectCommand.php" beforeDir="false" afterPath="$PROJECT_DIR$/Console/Command/NostoAccountConnectCommand.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Console/Command/NostoAccountRemoveCommand.php" beforeDir="false" afterPath="$PROJECT_DIR$/Console/Command/NostoAccountRemoveCommand.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Console/Command/NostoGenerateCustomerReferenceCommand.php" beforeDir="false" afterPath="$PROJECT_DIR$/Console/Command/NostoGenerateCustomerReferenceCommand.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Console/Command/NostoRebuildInvalidProductData.php" beforeDir="false" afterPath="$PROJECT_DIR$/Console/Command/NostoRebuildInvalidProductData.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Controller/Export/Product.php" beforeDir="false" afterPath="$PROJECT_DIR$/Controller/Export/Product.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Cron/InvalidateCron.php" beforeDir="false" afterPath="$PROJECT_DIR$/Cron/InvalidateCron.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Cron/ProductDataCron.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/CustomerData/ActiveVariationTagging.php" beforeDir="false" afterPath="$PROJECT_DIR$/CustomerData/ActiveVariationTagging.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CustomerData/CartTagging.php" beforeDir="false" afterPath="$PROJECT_DIR$/CustomerData/CartTagging.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CustomerData/CustomerTagging.php" beforeDir="false" afterPath="$PROJECT_DIR$/CustomerData/CustomerTagging.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Helper/Data.php" beforeDir="false" afterPath="$PROJECT_DIR$/Helper/Data.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.env.bak" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/magento2plugin.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/magento2plugin.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Controller/Adminhtml/Account/Connect.php" beforeDir="false" afterPath="$PROJECT_DIR$/Controller/Adminhtml/Account/Connect.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Controller/Adminhtml/Account/Create.php" beforeDir="false" afterPath="$PROJECT_DIR$/Controller/Adminhtml/Account/Create.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Controller/Adminhtml/Account/Delete.php" beforeDir="false" afterPath="$PROJECT_DIR$/Controller/Adminhtml/Account/Delete.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Controller/Adminhtml/Account/Index.php" beforeDir="false" afterPath="$PROJECT_DIR$/Controller/Adminhtml/Account/Index.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Controller/Adminhtml/Account/Proxy.php" beforeDir="false" afterPath="$PROJECT_DIR$/Controller/Adminhtml/Account/Proxy.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Controller/Adminhtml/Account/Sync.php" beforeDir="false" afterPath="$PROJECT_DIR$/Controller/Adminhtml/Account/Sync.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Controller/Checkout/Cart/Add.php" beforeDir="false" afterPath="$PROJECT_DIR$/Controller/Checkout/Cart/Add.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Helper/Price.php" beforeDir="false" afterPath="$PROJECT_DIR$/Helper/Price.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Logger/Logger.php" beforeDir="false" afterPath="$PROJECT_DIR$/Logger/Logger.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Model/Customer/Customer.php" beforeDir="false" afterPath="$PROJECT_DIR$/Model/Customer/Customer.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Model/Indexer/AbstractIndexer.php" beforeDir="false" afterPath="$PROJECT_DIR$/Model/Indexer/AbstractIndexer.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Model/Indexer/DataIndexer.php" beforeDir="false" afterPath="$PROJECT_DIR$/Model/Indexer/QueueProcessorIndexer.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Model/Indexer/Dimensions/Data/DimensionModeConfiguration.php" beforeDir="false" afterPath="$PROJECT_DIR$/Model/Indexer/Dimensions/Queue/DimensionModeConfiguration.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Model/Indexer/Dimensions/Data/ModeSwitcher.php" beforeDir="false" afterPath="$PROJECT_DIR$/Model/Indexer/Dimensions/Queue/ModeSwitcher.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Model/Indexer/Dimensions/Data/ModeSwitcherConfiguration.php" beforeDir="false" afterPath="$PROJECT_DIR$/Model/Indexer/Dimensions/Queue/ModeSwitcherConfiguration.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Model/Indexer/Dimensions/Invalidate/DimensionModeConfiguration.php" beforeDir="false" afterPath="$PROJECT_DIR$/Model/Indexer/Dimensions/QueueProcessor/DimensionModeConfiguration.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Model/Indexer/Dimensions/Invalidate/ModeSwitcher.php" beforeDir="false" afterPath="$PROJECT_DIR$/Model/Indexer/Dimensions/QueueProcessor/ModeSwitcher.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Model/Indexer/Dimensions/Invalidate/ModeSwitcherConfiguration.php" beforeDir="false" afterPath="$PROJECT_DIR$/Model/Indexer/Dimensions/QueueProcessor/ModeSwitcherConfiguration.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Model/Indexer/Dimensions/StoreDimensionProvider.php" beforeDir="false" afterPath="$PROJECT_DIR$/Model/Indexer/Dimensions/StoreDimensionProvider.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Model/Indexer/InvalidateIndexer.php" beforeDir="false" afterPath="$PROJECT_DIR$/Model/Indexer/QueueIndexer.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Model/Order/Buyer/Builder.php" beforeDir="false" afterPath="$PROJECT_DIR$/Model/Order/Buyer/Builder.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Model/Person/Tagging/Builder.php" beforeDir="false" afterPath="$PROJECT_DIR$/Model/Person/Tagging/Builder.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Model/Product/Cache.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Model/Product/Cache/CacheBuilder.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Model/Cart/Restore/Builder.php" beforeDir="false" afterPath="$PROJECT_DIR$/Model/Cart/Restore/Builder.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Model/Meta/Account/Settings/Currencies/Builder.php" beforeDir="false" afterPath="$PROJECT_DIR$/Model/Meta/Account/Settings/Currencies/Builder.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Model/Product/Cache/CacheRepository.php" beforeDir="false" afterPath="$PROJECT_DIR$/Model/Product/Cache/CacheRepository.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Model/Product/Cache/CacheSearchResults.php" beforeDir="false" afterPath="$PROJECT_DIR$/Model/Cache/Type/ProductData.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Model/Product/Queue/QueueBuilder.php" beforeDir="false" afterPath="$PROJECT_DIR$/Model/Product/Queue/QueueBuilder.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Model/Product/Queue/QueueRepository.php" beforeDir="false" afterPath="$PROJECT_DIR$/Model/Product/Queue/QueueRepository.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Model/Product/Ratings.php" beforeDir="false" afterPath="$PROJECT_DIR$/Model/Product/Ratings.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Model/Product/Repository.php" beforeDir="false" afterPath="$PROJECT_DIR$/Model/Product/Repository.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Model/Product/Update/Queue.php" beforeDir="false" afterPath="$PROJECT_DIR$/Model/Product/Update/Queue.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Model/ResourceModel/Product/Cache.php" beforeDir="false" afterPath="$PROJECT_DIR$/Model/Cache/Type/ProductDataInterface.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Model/ResourceModel/Product/Cache/CacheCollection.php" beforeDir="false" afterPath="$PROJECT_DIR$/Model/ResourceModel/Product/Update/Queue/QueueCollection.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Model/ResourceModel/Product/Update/Queue.php" beforeDir="false" afterPath="$PROJECT_DIR$/Model/ResourceModel/Product/Update/Queue.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Model/ResourceModel/Sku.php" beforeDir="false" afterPath="$PROJECT_DIR$/Model/ResourceModel/Sku.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Model/ResourceModel/Product/Update/Queue/QueueCollection.php" beforeDir="false" afterPath="$PROJECT_DIR$/Model/ResourceModel/Product/Update/Queue/QueueCollection.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Model/ResourceModel/Product/Update/Queue/QueueCollectionBuilder.php" beforeDir="false" afterPath="$PROJECT_DIR$/Model/ResourceModel/Product/Update/Queue/QueueCollectionBuilder.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Model/Service/AbstractService.php" beforeDir="false" afterPath="$PROJECT_DIR$/Model/Service/AbstractService.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Model/Service/Cache/CacheService.php" beforeDir="false" afterPath="$PROJECT_DIR$/Model/Service/Cache/CacheService.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Model/Service/Product/CachingProductService.php" beforeDir="false" afterPath="$PROJECT_DIR$/Model/Service/Product/CachingProductService.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Model/Service/Product/DefaultProductService.php" beforeDir="false" afterPath="$PROJECT_DIR$/Model/Service/Product/DefaultProductService.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Model/Service/Stock/Provider/CachingStockProvider.php" beforeDir="false" afterPath="$PROJECT_DIR$/Model/Service/Stock/Provider/CachingStockProvider.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Model/Service/Stock/Provider/DefaultStockProvider.php" beforeDir="false" afterPath="$PROJECT_DIR$/Model/Service/Stock/Provider/DefaultStockProvider.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Model/Service/Stock/Provider/StockProviderInterface.php" beforeDir="false" afterPath="$PROJECT_DIR$/Model/Service/Stock/Provider/StockProviderInterface.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Model/Service/Sync/AbstractBulkPublisher.php" beforeDir="false" afterPath="$PROJECT_DIR$/Model/Service/Sync/AbstractBulkPublisher.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Model/Service/Sync/BulkPublisherInterface.php" beforeDir="false" afterPath="$PROJECT_DIR$/Model/Service/Sync/BulkPublisherInterface.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Model/Service/Sync/Delete/AsyncBulkConsumer.php" beforeDir="false" afterPath="$PROJECT_DIR$/Model/Service/Sync/Delete/AsyncBulkConsumer.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Model/Service/Sync/Delete/AsyncBulkPublisher.php" beforeDir="false" afterPath="$PROJECT_DIR$/Model/Service/Sync/Delete/AsyncBulkPublisher.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Model/Service/Sync/Delete/DeleteService.php" beforeDir="false" afterPath="$PROJECT_DIR$/Model/Service/Sync/Delete/DeleteService.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Model/Service/Sync/Upsert/AsyncBulkConsumer.php" beforeDir="false" afterPath="$PROJECT_DIR$/Model/Service/Sync/Upsert/AsyncBulkConsumer.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Model/Service/Sync/Upsert/AsyncBulkPublisher.php" beforeDir="false" afterPath="$PROJECT_DIR$/Model/Service/Sync/Upsert/AsyncBulkPublisher.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Model/Service/Sync/Upsert/SyncService.php" beforeDir="false" afterPath="$PROJECT_DIR$/Model/Service/Sync/Upsert/SyncService.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Model/Service/Update/QueueProcessorService.php" beforeDir="false" afterPath="$PROJECT_DIR$/Model/Service/Update/QueueProcessorService.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Observer/Adminhtml/Config.php" beforeDir="false" afterPath="$PROJECT_DIR$/Observer/Adminhtml/Config.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Observer/Order/Save.php" beforeDir="false" afterPath="$PROJECT_DIR$/Observer/Order/Save.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Observer/Product/Base.php" beforeDir="false" afterPath="$PROJECT_DIR$/Observer/Product/Base.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Observer/Product/Review.php" beforeDir="false" afterPath="$PROJECT_DIR$/Observer/Product/Review.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Plugin/ProductData.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Plugin/ProductInvalidate.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Plugin/ProductQueueUpdate.php" beforeDir="false" afterPath="$PROJECT_DIR$/Plugin/ProductQueueUpdate.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Plugin/ProductUpdate.php" beforeDir="false" afterPath="$PROJECT_DIR$/Plugin/ProductUpdate.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Setup/Core.php" beforeDir="false" afterPath="$PROJECT_DIR$/Setup/Core.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Setup/InstallSchema.php" beforeDir="false" afterPath="$PROJECT_DIR$/Setup/InstallSchema.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Setup/UpgradeData.php" beforeDir="false" afterPath="$PROJECT_DIR$/Setup/UpgradeData.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Setup/UpgradeSchema.php" beforeDir="false" afterPath="$PROJECT_DIR$/Setup/UpgradeSchema.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Util/PagingIterator.php" beforeDir="false" afterPath="$PROJECT_DIR$/Util/PagingIterator.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/composer.json" beforeDir="false" afterPath="$PROJECT_DIR$/composer.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/composer.lock" beforeDir="false" afterPath="$PROJECT_DIR$/composer.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/etc/adminhtml/system.xml" beforeDir="false" afterPath="$PROJECT_DIR$/etc/adminhtml/system.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/etc/config.xml" beforeDir="false" afterPath="$PROJECT_DIR$/etc/config.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/etc/cron_groups.xml" beforeDir="false" afterPath="$PROJECT_DIR$/etc/cache.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/etc/crontab.xml" beforeDir="false" afterPath="$PROJECT_DIR$/etc/crontab.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/etc/di.xml" beforeDir="false" afterPath="$PROJECT_DIR$/etc/di.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/etc/indexer.xml" beforeDir="false" afterPath="$PROJECT_DIR$/etc/indexer.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/etc/module.xml" beforeDir="false" afterPath="$PROJECT_DIR$/etc/module.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/etc/mview.xml" beforeDir="false" afterPath="$PROJECT_DIR$/etc/mview.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/phan.php" beforeDir="false" afterPath="$PROJECT_DIR$/phan.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/view/adminhtml/templates/indexersStatuses.phtml" beforeDir="false" afterPath="$PROJECT_DIR$/view/adminhtml/templates/indexersStatuses.phtml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -316,6 +257,7 @@
     <option name="showMembers" value="true" />
   </component>
   <component name="PropertiesComponent">
+    <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
@@ -342,7 +284,8 @@
       <workItem from="1590937811419" duration="596000" />
       <workItem from="1590938435948" duration="1284000" />
       <workItem from="1591088683908" duration="2015000" />
-      <workItem from="1591178064815" duration="895000" />
+      <workItem from="1591178064815" duration="909000" />
+      <workItem from="1591263830089" duration="2155000" />
     </task>
     <servers />
   </component>
@@ -351,6 +294,9 @@
   </component>
   <component name="Vcs.Log.Tabs.Properties">
     <option name="oldMeFiltersMigrated" value="true" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
   </component>
   <component name="WindowStateProjectService">
     <state x="627" y="364" key="#Custom_Plugin_Repositories" timestamp="1590909442984">
@@ -366,9 +312,10 @@
       <screen x="0" y="23" width="1440" height="877" />
     </state>
     <state x="526" y="150" key="#com.intellij.ide.util.MemberChooser/0.23.1440.877@0.23.1440.877" timestamp="1590907930329" />
-    <state x="468" y="323" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1" timestamp="1591098063187">
-      <screen x="0" y="23" width="1440" height="877" />
+    <state x="468" y="308" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1" timestamp="1591264079914">
+      <screen x="0" y="0" width="1440" height="900" />
     </state>
+    <state x="468" y="308" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1/0.0.1440.900@0.0.1440.900" timestamp="1591264079914" />
     <state x="468" y="323" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1/0.23.1440.877@0.23.1440.877" timestamp="1591098063187" />
     <state x="553" y="369" key="ComposerInitDialogKey" timestamp="1590838837966">
       <screen x="0" y="0" width="1440" height="900" />

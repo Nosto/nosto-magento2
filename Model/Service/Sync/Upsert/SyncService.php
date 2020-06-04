@@ -148,7 +148,7 @@ class SyncService extends AbstractService
                     // phpcs:ignore
                     $this->cacheService->save($nostoProduct, $store);
                     $this->tickBenchmark(self::BENCHMARK_SYNC_NAME);
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     $this->getLogger()->exception($e);
                 }
             }
@@ -167,6 +167,6 @@ class SyncService extends AbstractService
                 $this->getLogger()->exception($upsertException);
             }
         }
-        $this->logBenchmarkSummary(self::BENCHMARK_SYNC_NAME, $store, $this);
+        $this->logBenchmarkSummary(self::BENCHMARK_SYNC_NAME, $store);
     }
 }
