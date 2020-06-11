@@ -31,7 +31,7 @@
     "drenso/phan-extensions": "^2.5"
   },
   "suggest": {
-    "nosto/module-nostocmp": "Nosto Category Merchandising",
+    "nosto/module-nostotagging-cmp": "Nosto Category Merchandising",
     "nosto/module-nosto-msi": "Compatibility plugin between Nosto and Magento multi-source inventory",
     "yotpo/module-review": "Yotpo Reviews extension for Magento 2" 
   },
