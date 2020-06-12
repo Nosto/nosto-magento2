@@ -1,5 +1,8 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+# 5.0.1
+* Fix an issue with configurable product prices being zero in Nosto product data when taxes are included in display prices
+
 # 5.0.0
 * Refactor the indexing logic to use batched queues & decouple the caching logic from product updates
 * Use Magento's built-in caching logic for caching Nosto product data 
