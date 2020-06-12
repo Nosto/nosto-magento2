@@ -400,14 +400,18 @@ class Price extends AbstractHelper
         }
         if ($inclTax === true) {
             if (!isset($minSku[self::KEY_SKU_PRODUCT_ID])) {
+                // Since print_r is discouraged we use this
+                $arrayContents = '';
+                foreach ($minSku as $key => $val) {
+                    $arrayContents .= sprintf('%s => %s, ', $key, $val);
+                }
                 throw new NostoException(
                     sprintf(
                         'No %s key in sku prices array. Array content: %s',
                         self::KEY_SKU_PRODUCT_ID,
-                        print_r($minSku, true)
+                        $arrayContents
                     )
                 );
-
             }
             $skuResult = $this->nostoProductRepository->getByIds([$minSku[self::KEY_SKU_PRODUCT_ID]]);
             $skuProducts = $skuResult->getItems();
