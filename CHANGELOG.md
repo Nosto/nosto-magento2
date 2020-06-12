@@ -1,5 +1,8 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+# 4.0.10
+* Fix an issue with configurable product prices being zero in Nosto product data when taxes are included in display prices
+
 # 4.0.9
 * Fix an issue with configurable product prices not being set when using MSI  
 
