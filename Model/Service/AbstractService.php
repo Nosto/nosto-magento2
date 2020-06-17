@@ -56,6 +56,7 @@ abstract class AbstractService
     /**
      * AbstractService constructor.
      * @param NostoDataHelper $nostoDataHelper
+     * @param NostoAccountHelper $nostoAccountHelper
      * @param NostoLogger $nostoLogger
      */
     public function __construct(

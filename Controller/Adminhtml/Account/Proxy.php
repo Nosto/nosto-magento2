@@ -49,7 +49,6 @@ class Proxy extends Base
     /**
      * @param Context $context
      * @param Session $backendAuthSession
-     * @noinspection PhpMissingParentConstructorInspection
      */
     public function __construct(
         Context $context,

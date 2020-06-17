@@ -34,16 +34,16 @@
  *
  */
 
-namespace Nosto\Tagging\Model\ResourceModel\Product\Cache;
+namespace Nosto\Tagging\Model\ResourceModel\Product\Update\Queue;
 
-use Magento\Catalog\Api\Data\ProductInterface;
+use DateTimeInterface;
 use Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection;
 use Magento\Store\Api\Data\StoreInterface;
-use Nosto\Tagging\Api\Data\ProductCacheInterface;
-use Nosto\Tagging\Model\Product\Cache;
-use Nosto\Tagging\Model\ResourceModel\Product\Cache as CacheResource;
+use Nosto\Tagging\Api\Data\ProductUpdateQueueInterface;
+use Nosto\Tagging\Model\Product\Update\Queue;
+use Nosto\Tagging\Model\ResourceModel\Product\Update\Queue as QueueResource;
 
-class CacheCollection extends AbstractCollection
+class QueueCollection extends AbstractCollection
 {
     /**
      * Define resource model
@@ -53,14 +53,14 @@ class CacheCollection extends AbstractCollection
     public function _construct()
     {
         $this->_init(
-            Cache::class,
-            CacheResource::class
+            Queue::class,
+            QueueResource::class
         );
     }
 
     /**
      * @param StoreInterface $store
-     * @return CacheCollection
+     * @return QueueCollection
      */
     public function addStoreFilter(StoreInterface $store)
     {
@@ -69,50 +69,13 @@ class CacheCollection extends AbstractCollection
 
     /**
      * @param array $ids
-     * @return CacheCollection
+     * @return QueueCollection
      */
     public function addIdsFilter(array $ids)
     {
         return $this->addFieldToFilter(
-            Cache::ID,
+            ProductUpdateQueueInterface::ID,
             ['in' => $ids]
-        );
-    }
-
-    /**
-     * @param array $ids
-     * @return CacheCollection
-     */
-    public function addProductIdsFilter(array $ids)
-    {
-        return $this->addFieldToFilter(
-            Cache::PRODUCT_ID,
-            ['in' => $ids]
-        );
-    }
-
-    /**
-     * Filters collection for items that are either dirty or out of sync with Nosto
-     * @return CacheCollection
-     */
-    public function addOutOfSyncOrIsDirtyFilter()
-    {
-        return $this->addFieldToFilter(
-            [ProductCacheInterface::IN_SYNC, ProductCacheInterface::IS_DIRTY],
-            [Cache::DB_VALUE_BOOLEAN_FALSE, Cache::DB_VALUE_BOOLEAN_TRUE]
-        );
-    }
-
-    /**
-     * Filters collection for items that are dirty
-     *
-     * @return CacheCollection
-     */
-    public function addIsDirtyFilter()
-    {
-        return $this->addFieldToFilter(
-            ProductCacheInterface::IS_DIRTY,
-            ['eq' => Cache::DB_VALUE_BOOLEAN_TRUE]
         );
     }
 
@@ -120,113 +83,63 @@ class CacheCollection extends AbstractCollection
      * Filters collection by store id
      *
      * @param int $storeId
-     * @return CacheCollection
+     * @return QueueCollection
      */
     public function addStoreIdFilter(int $storeId)
     {
         return $this->addFieldToFilter(
-            ProductCacheInterface::STORE_ID,
+            ProductUpdateQueueInterface::STORE_ID,
             ['eq' => $storeId]
         );
     }
 
     /**
-     * Filters collection by product id
+     * Filters collection by status
      *
-     * @param int $productId
-     * @return CacheCollection
+     * @param string $status
+     * @return QueueCollection
      */
-    public function addProductIdFilter(int $productId)
+    public function addStatusFilter($status)
     {
         return $this->addFieldToFilter(
-            ProductCacheInterface::PRODUCT_ID,
-            ['eq' => $productId]
+            ProductUpdateQueueInterface::STATUS,
+            ['eq' => $status]
         );
     }
 
     /**
-     * Filters collection by product
+     * Filters collection by completed by
      *
-     * @param ProductInterface $product
-     * @return CacheCollection
+     * @param DateTimeInterface $dateTime
+     * @return QueueCollection
      */
-    public function addProductFilter(ProductInterface $product)
+    public function addCompletedBeforeFilter(DateTimeInterface $dateTime)
     {
-        return $this->addProductIdFilter($product->getId());
+        return $this->addFieldToFilter(
+            ProductUpdateQueueInterface::COMPLETED_AT,
+            ['lteq' => $dateTime->format('Y-m-d H:i:s')]
+        );
     }
 
     /**
      * Filters collection by id (primary key)
      *
      * @param int $indexId
-     * @return CacheCollection
+     * @return QueueCollection
      */
     public function addIdFilter(int $indexId)
     {
         return $this->addFieldToFilter(
-            ProductCacheInterface::ID,
+            ProductUpdateQueueInterface::ID,
             ['eq' => $indexId]
         );
-    }
-
-    /**
-     * Filters collection for items that out of sync
-     *
-     * @return CacheCollection
-     */
-    public function addOutOfSyncFilter()
-    {
-        return $this->addFieldToFilter(
-            ProductCacheInterface::IN_SYNC,
-            ['eq' => Cache::DB_VALUE_BOOLEAN_FALSE]
-        );
-    }
-
-    /**
-     * Filters collection for only products that are not marked as deleted
-     *
-     * @return CacheCollection
-     */
-    public function addNotDeletedFilter()
-    {
-        return $this->addFieldToFilter(
-            ProductCacheInterface::IS_DELETED,
-            ['eq' => Cache::DB_VALUE_BOOLEAN_FALSE]
-        );
-    }
-
-    /**
-     * Filters collection for only products that are marked as deleted
-     *
-     * @return CacheCollection
-     */
-    public function addIsDeletedFilter()
-    {
-        return $this->addFieldToFilter(
-            ProductCacheInterface::IS_DELETED,
-            ['eq' => Cache::DB_VALUE_BOOLEAN_TRUE]
-        );
-    }
-
-    /**
-     * Returns the first item of the collection
-     * or null if the collection is empty
-     *
-     * @return ProductCacheInterface|null
-     * @suppress PhanTypeMismatchReturn
-     */
-    public function getOneOrNull()
-    {
-        $this->getSelect()->limit(1);
-        /** @noinspection PhpIncompatibleReturnTypeInspection */
-        return $this->getSize() > 0 ? $this->getLastItem() : null; // @codingStandardsIgnoreLine
     }
 
     /**
      * Sets a limit to this query
      *
      * @param int $limit
-     * @return CacheCollection
+     * @return QueueCollection
      */
     public function limitResults(int $limit)
     {
@@ -239,11 +152,27 @@ class CacheCollection extends AbstractCollection
      *
      * @param string $field
      * @param string $sort
-     * @return CacheCollection
+     * @return QueueCollection
      */
     public function orderBy($field, $sort)
     {
         $this->getSelect()->order($field . ' ' . $sort);
+        return $this;
+    }
+
+    /**
+     * Deserialize fields
+     *
+     * @return QueueCollection
+     */
+    protected function _afterLoad()
+    {
+        parent::_afterLoad();
+        foreach ($this->getItems() as $item) {
+            /** @phan-suppress-next-line PhanTypeMismatchArgument */
+            $this->getResource()->unserializeFields($item);
+            $item->setDataChanges(false);
+        }
         return $this;
     }
 }

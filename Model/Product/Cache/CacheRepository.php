@@ -46,7 +46,6 @@ use Magento\Store\Model\Store;
 use Nosto\NostoException;
 use Nosto\Tagging\Api\Data\ProductCacheInterface;
 use Nosto\Tagging\Api\ProductCacheRepositoryInterface;
-use Nosto\Tagging\Model\Product\Cache;
 use Nosto\Tagging\Model\ResourceModel\Product\Cache as CacheResource;
 use Nosto\Tagging\Model\ResourceModel\Product\Cache\CacheCollection;
 use Nosto\Tagging\Model\ResourceModel\Product\Cache\CacheCollectionFactory;
@@ -82,9 +81,6 @@ class CacheRepository implements ProductCacheRepositoryInterface
         $this->magentoTimeZone = $magentoTimeZone;
     }
 
-    /**
-     * @inheritdoc
-     */
     public function getOneByProductAndStore(ProductInterface $product, StoreInterface $store)
     {
         /* @var CacheCollection $collection */
@@ -107,9 +103,6 @@ class CacheRepository implements ProductCacheRepositoryInterface
         return $collection->getOneOrNull();
     }
 
-    /**
-     * @inheritdoc
-     */
     public function getTotalOutOfSync(Store $store)
     {
         /* @var CacheCollection $collection */
@@ -133,9 +126,6 @@ class CacheRepository implements ProductCacheRepositoryInterface
             ->addStoreFilter($store);
     }
 
-    /**
-     * @inheritdoc
-     */
     public function getTotalDirty(Store $store)
     {
         /* @var CacheCollection $collection */
@@ -157,9 +147,6 @@ class CacheRepository implements ProductCacheRepositoryInterface
         return $collection->getItems(); // @codingStandardsIgnoreLine
     }
 
-    /**
-     * @inheritdoc
-     */
     public function getByProductIdAndStoreId(int $productId, int $storeId)
     {
         /* @var CacheCollection $collection */

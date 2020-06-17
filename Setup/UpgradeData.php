@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
@@ -36,7 +37,6 @@
 
 namespace Nosto\Tagging\Setup;
 
-use Exception;
 use Magento\Customer\Model\ResourceModel\Customer as CustomerResource;
 use Magento\Customer\Model\ResourceModel\Customer\CollectionFactory as CustomerCollectionFactory;
 use Magento\Customer\Setup\CustomerSetupFactory;
@@ -49,14 +49,9 @@ use Magento\Framework\Setup\ModuleDataSetupInterface;
 use Magento\Framework\Setup\UpgradeDataInterface;
 use Magento\Store\Model\ScopeInterface;
 use Nosto\NostoException;
-use Nosto\Model\Product\Product;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Url as NostoHelperUrl;
 use Nosto\Tagging\Logger\Logger;
-use Nosto\Tagging\Model\Product\Cache;
-use Nosto\Tagging\Model\ResourceModel\Product\Cache as CacheResource;
-use Nosto\Tagging\Model\ResourceModel\Product\Cache\CacheCollectionFactory;
-use Nosto\Tagging\Util\PagingIterator;
 use Zend_Validate_Exception;
 
 class UpgradeData extends CoreData implements UpgradeDataInterface
@@ -70,9 +65,6 @@ class UpgradeData extends CoreData implements UpgradeDataInterface
     /** @var WriterInterface */
     private $config;
 
-    /** @var CacheCollectionFactory */
-    private $cacheCollectionFactory;
-
     /**
      * UpgradeData constructor.
      * @param NostoHelperAccount $nostoHelperAccount
@@ -82,7 +74,6 @@ class UpgradeData extends CoreData implements UpgradeDataInterface
      * @param AttributeSetFactory $attributeSetFactory
      * @param CustomerCollectionFactory $customerCollectionFactory
      * @param CustomerResource $customerResource
-     * @param CacheCollectionFactory $cacheCollectionFactory
      * @param Logger $logger
      */
     public function __construct(
@@ -93,13 +84,11 @@ class UpgradeData extends CoreData implements UpgradeDataInterface
         AttributeSetFactory $attributeSetFactory,
         CustomerCollectionFactory $customerCollectionFactory,
         CustomerResource $customerResource,
-        CacheCollectionFactory $cacheCollectionFactory,
         Logger $logger
     ) {
         $this->nostoHelperAccount = $nostoHelperAccount;
         $this->nostoHelperUrl = $nostoHelperUrl;
         $this->config = $appConfig;
-        $this->cacheCollectionFactory = $cacheCollectionFactory;
         parent::__construct(
             $customerSetupFactory,
             $attributeSetFactory,
@@ -131,9 +120,6 @@ class UpgradeData extends CoreData implements UpgradeDataInterface
         if (version_compare($fromVersion, '3.10.5', '<=')) {
             $this->populateCustomerReference();
         }
-        if (version_compare($fromVersion, '4.0.3', '<=')) {
-            $this->convertProductDataToBase64($setup->getConnection());
-        }
     }
 
     /**
@@ -155,57 +141,6 @@ class UpgradeData extends CoreData implements UpgradeDataInterface
                     $store->getId()
                 );
             }
-        }
-    }
-
-    /**
-     * Converts serialized product data to base64 encoded data to avoid charset & collation problems
-     *
-     * @param AdapterInterface $connection
-     */
-    public function convertProductDataToBase64(AdapterInterface $connection)
-    {
-        try {
-            $cachedProductCollection = $this->cacheCollectionFactory->create()->setPageSize(1000);
-            $iterator = new PagingIterator($cachedProductCollection);
-            foreach ($iterator as $page) {
-                $canBeConverted = [];
-                $nullableIds = [];
-                /* @var Cache $cachedProduct */
-                foreach ($page as $cachedProduct) {
-                    try {
-                        unserialize($cachedProduct->getProductData(), [Product::class]); // @codingStandardsIgnoreLine
-                        $canBeConverted[] = $cachedProduct->getId();
-                    } catch (Exception $e) {
-                        $nullableIds[] = $cachedProduct->getId();
-                    }
-                }
-                $this->base64EncodeByIds($connection, $canBeConverted);
-                $this->nullifyProductDataByIds($connection, $nullableIds);
-            }
-        } catch (Exception $e) {
-            $this->getLogger()->exception($e);
-        }
-    }
-
-    /**
-     * Converts product data to base64 encdoded string for the given entity ids
-     *
-     * @param AdapterInterface $connection
-     * @param array $ids
-     */
-    private function base64EncodeByIds(AdapterInterface $connection, array $ids)
-    {
-        if (!empty($ids)) {
-            $convertSql = sprintf(
-                'UPDATE %s SET %s = TO_BASE64(%s) WHERE %s IN(%s)',
-                CacheResource::TABLE_NAME,
-                Cache::PRODUCT_DATA,
-                Cache::PRODUCT_DATA,
-                Cache::ID,
-                implode(',', $ids)
-            );
-            $connection->query($convertSql); // @codingStandardsIgnoreLine
         }
     }
 

@@ -44,7 +44,6 @@ use Magento\Catalog\Model\ResourceModel\Eav\Attribute as MageAttribute;
 use Magento\Catalog\Model\ResourceModel\Product as ProductResourceModel;
 use Magento\Checkout\Controller\Cart\Add as MageAdd;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable as ConfigurableType;
-use Magento\Framework\Exception\LocalizedException;
 use Magento\Store\Model\StoreManager;
 
 /**

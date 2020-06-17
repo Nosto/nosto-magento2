@@ -37,30 +37,25 @@
 namespace Nosto\Tagging\Model\Service\Sync\Upsert;
 
 use Exception;
+use Magento\Catalog\Model\Product;
 use Magento\Store\Model\Store;
 use Nosto\Exception\MemoryOutOfBoundsException;
 use Nosto\NostoException;
 use Nosto\Operation\UpsertProduct;
-use Nosto\Tagging\Api\Data\ProductCacheInterface;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Data as NostoDataHelper;
 use Nosto\Tagging\Helper\Url as NostoHelperUrl;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
-use Nosto\Tagging\Model\Product\Cache\CacheRepository;
-use Nosto\Tagging\Model\ResourceModel\Product\Cache\CacheCollection;
+use Nosto\Tagging\Model\ResourceModel\Magento\Product\Collection as ProductCollection;
 use Nosto\Tagging\Model\Service\AbstractService;
-use Nosto\Tagging\Model\Service\Product\ProductSerializerInterface;
+use Nosto\Tagging\Model\Service\Cache\CacheService;
+use Nosto\Tagging\Model\Service\Product\ProductServiceInterface;
 use Nosto\Tagging\Util\PagingIterator;
 
 class SyncService extends AbstractService
 {
-    const API_BATCH_SIZE = 50;
-    const BENCHMARK_SYNC_NAME = 'nosto_product_sync';
+    const BENCHMARK_SYNC_NAME = 'nosto_product_upsert';
     const BENCHMARK_SYNC_BREAKPOINT = 1;
-    const RESPONSE_TIMEOUT = 60;
-
-    /** @var CacheRepository */
-    private $cacheRepository;
 
     /** @var NostoHelperAccount */
     private $nostoHelperAccount;
@@ -71,109 +66,107 @@ class SyncService extends AbstractService
     /** @var NostoDataHelper */
     private $nostoDataHelper;
 
-    /** @var ProductSerializerInterface */
-    private $productSerializer;
+    /** @var ProductServiceInterface */
+    private $productService;
+
+    /** @var CacheService */
+    private $cacheService;
+
+    /** @var int */
+    private $apiBatchSize;
+
+    /** @var int */
+    private $apiTimeout;
 
     /**
      * Index constructor.
-     * @param CacheRepository $cacheRepository
      * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoHelperUrl $nostoHelperUrl
      * @param NostoLogger $logger
      * @param NostoDataHelper $nostoDataHelper
-     * @param ProductSerializerInterface $productSerializer
+     * @param ProductServiceInterface $productService
+     * @param CacheService $cacheService
+     * @param $apiBatchSize
+     * @param $apiTimeout
      */
     public function __construct(
-        CacheRepository $cacheRepository,
         NostoHelperAccount $nostoHelperAccount,
         NostoHelperUrl $nostoHelperUrl,
         NostoLogger $logger,
         NostoDataHelper $nostoDataHelper,
-        ProductSerializerInterface $productSerializer
+        ProductServiceInterface $productService,
+        CacheService $cacheService,
+        $apiBatchSize,
+        $apiTimeout
     ) {
-        parent::__construct($nostoDataHelper, $logger);
-        $this->cacheRepository = $cacheRepository;
+        parent::__construct($nostoDataHelper, $nostoHelperAccount, $logger);
+        $this->productService = $productService;
         $this->nostoHelperAccount = $nostoHelperAccount;
         $this->nostoHelperUrl = $nostoHelperUrl;
         $this->nostoDataHelper = $nostoDataHelper;
-        $this->productSerializer = $productSerializer;
+        $this->cacheService = $cacheService;
+        $this->apiBatchSize = $apiBatchSize;
+        $this->apiTimeout = $apiTimeout;
     }
 
     /**
-     * @param CacheCollection $collection
+     * @param ProductCollection $collection
      * @param Store $store
-     * @throws NostoException
      * @throws MemoryOutOfBoundsException
+     * @throws NostoException
      */
-    public function syncIndexedProducts(CacheCollection $collection, Store $store)
+    public function syncProducts(ProductCollection $collection, Store $store)
     {
         if (!$this->nostoDataHelper->isProductUpdatesEnabled($store)) {
-            $this->getLogger()->info(
-                'Nosto product sync is disabled - skipping upserting products to Nosto'
+            $this->logDebugWithStore(
+                'Nosto product sync is disabled - skipping upserting products to Nosto',
+                $store
             );
             return;
         }
         $account = $this->nostoHelperAccount->findAccount($store);
         $this->startBenchmark(self::BENCHMARK_SYNC_NAME, self::BENCHMARK_SYNC_BREAKPOINT);
 
-        $collection->setPageSize(self::API_BATCH_SIZE);
+        $collection->setPageSize($this->apiBatchSize);
         $iterator = new PagingIterator($collection);
 
-        /** @var CacheCollection $page */
+        /** @var ProductCollection $page */
         foreach ($iterator as $page) {
+            $productIdsInBatch = [];
             $this->checkMemoryConsumption('product sync');
             $op = new UpsertProduct($account, $this->nostoHelperUrl->getActiveDomain($store));
-            $op->setResponseTimeout(self::RESPONSE_TIMEOUT);
-            /** @var ProductCacheInterface $productIndex */
-            foreach ($page as $productIndex) {
-                $productData = $productIndex->getProductData();
-                if (empty($productData) && !$productIndex->getIsDirty()) {
-                    throw new NostoException(
-                        'Something is wrong in the nosto product index table.
-                        Product do not have data nor is marked as dirty'
-                    );
+            $op->setResponseTimeout($this->apiTimeout);
+            /** @var Product $product */
+            foreach ($page as $product) {
+                $productIdsInBatch[] = $product->getId();
+                $nostoProduct = $this->productService->getProduct($product, $store);
+                if ($nostoProduct === null) {
+                    throw new NostoException('Could not get product from the product service.');
                 }
-                if (empty($productData)) {
-                    continue; // Do not sync products with null data
-                }
-                $this->getLogger()->debug(
-                    sprintf('Upserting product "%s"', $productIndex->getProductId()),
-                    ['store' => $productIndex->getStoreId()]
-                );
                 try {
-                    $op->addProduct(
-                        $this->productSerializer->fromString(
-                            $productData
-                        )
-                    );
+                    $op->addProduct($nostoProduct);
+                    // phpcs:ignore
+                    $this->cacheService->save($nostoProduct, $store);
+                    $this->tickBenchmark(self::BENCHMARK_SYNC_NAME);
                 } catch (Exception $e) {
                     $this->getLogger()->exception($e);
                 }
             }
             try {
-                $this->getLogger()->debug('Upserting batch');
+                $this->logDebugWithStore(
+                    sprintf(
+                        'Upserting batch of %d (%s) - API timeout is set to %d seconds',
+                        $this->apiBatchSize,
+                        implode(',', $productIdsInBatch),
+                        $this->apiTimeout
+                    ),
+                    $store
+                );
                 $op->upsert();
-                $this->cacheRepository->markAsInSyncCurrentItemsByStore($page, $store);
-                $this->tickBenchmark(self::BENCHMARK_SYNC_NAME);
             } catch (Exception $upsertException) {
                 $this->getLogger()->exception($upsertException);
             }
         }
-
         $this->logBenchmarkSummary(self::BENCHMARK_SYNC_NAME, $store);
-    }
-
-    /**
-     * @param int[] $productIds
-     * @param Store $store
-     * @return void
-     */
-    public function markAsInSyncByProductIdsAndStoreId(array $productIds, Store $store)
-    {
-        try {
-            $this->cacheRepository->markAsInSync($productIds, $store);
-        } catch (Exception $e) {
-            $this->getLogger()->exception($e);
-        }
     }
 }
