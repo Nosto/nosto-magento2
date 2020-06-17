@@ -43,7 +43,9 @@ use Magento\Framework\Setup\SchemaSetupInterface;
 use Magento\Framework\Setup\UpgradeSchemaInterface;
 use Nosto\Tagging\Api\Data\CustomerInterface;
 use Nosto\Tagging\Logger\Logger;
+use Nosto\Tagging\Model\Product\Cache;
 use Nosto\Tagging\Model\ResourceModel\Customer;
+use Zend_Db_Exception;
 
 class UpgradeSchema extends Core implements UpgradeSchemaInterface
 {
@@ -63,6 +65,7 @@ class UpgradeSchema extends Core implements UpgradeSchemaInterface
 
     /**
      * @inheritDoc
+     * @throws Zend_Db_Exception
      */
     public function upgrade(SchemaSetupInterface $setup, ModuleContextInterface $context)
     {

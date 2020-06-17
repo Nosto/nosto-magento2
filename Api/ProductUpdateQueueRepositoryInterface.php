@@ -34,36 +34,31 @@
  *
  */
 
-/**
- * @var $block Nosto\Tagging\Block\Adminhtml\Form\Field\Indexers
- */
-?>
+namespace Nosto\Tagging\Api;
 
-<fieldset>
-  <table>
-    <tr>
-      <td>
-          <?= $block->escapeHtml(__('Products Marked As Dirty')) ?>
-      </td>
-      <td>
-        <label>
-          <input type="text" readonly
-                 value="<?= $block->escapeHtml($block->getAmountDirtyProducts()) ?>"
-          />
-        </label>
-      </td>
-    </tr>
-    <tr>
-      <td>
-          <?= $block->escapeHtml(__('Products Out Of Sync')) ?>
-      </td>
-      <td>
-        <label>
-          <input type="text" readonly
-                 value="<?= $block->escapeHtml($block->getAmountOutOfSyncProducts()) ?>"
-          />
-        </label>
-      </td>
-    </tr>
-  </table>
-</fieldset>
+use Magento\Store\Api\Data\StoreInterface;
+use Nosto\Tagging\Api\Data\ProductUpdateQueueInterface;
+
+interface ProductUpdateQueueRepositoryInterface
+{
+    /**
+     * Save Queue entry
+     *
+     * @param ProductUpdateQueueInterface $entry
+     * @return ProductUpdateQueueInterface
+     */
+    public function save(ProductUpdateQueueInterface $entry);
+
+    /**
+     * Delete productIndex
+     *
+     * @param ProductUpdateQueueInterface $entry
+     */
+    public function delete(ProductUpdateQueueInterface $entry);
+
+    /**
+     * @param StoreInterface $store
+     * @return ProductUpdateQueueInterface|null
+     */
+    public function getByStore(StoreInterface $store);
+}

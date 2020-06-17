@@ -36,9 +36,6 @@
 
 namespace Nosto\Tagging\Model\ResourceModel\Product\Update\Queue;
 
-use DateInterval;
-use DateTime;
-use Exception;
 use Magento\Sales\Api\Data\EntityInterface;
 use Magento\Store\Model\Store;
 use Nosto\Tagging\Api\Data\ProductUpdateQueueInterface;
@@ -100,12 +97,12 @@ class QueueCollectionBuilder
      *
      * @param int $hrs
      * @return $this
-     * @throws Exception
+     * @throws \Exception
      */
     public function withCompletedHrsAgo(int $hrs)
     {
-        $date = new DateTime('now');
-        $interval = new DateInterval('PT' . $hrs . 'H');
+        $date = new \DateTime('now');
+        $interval = new \DateInterval('PT' . $hrs . 'H');
         $date->sub($interval);
         $this->collection->addCompletedBeforeFilter($date);
         return $this->withStatusCompleted();

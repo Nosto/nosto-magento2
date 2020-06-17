@@ -76,7 +76,7 @@ class StoreDimensionProvider implements DimensionProviderInterface
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function getIterator(): Traversable
     {

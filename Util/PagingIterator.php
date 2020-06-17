@@ -64,7 +64,7 @@ class PagingIterator implements \Iterator
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function current()
     {
@@ -72,7 +72,7 @@ class PagingIterator implements \Iterator
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function next()
     {
@@ -81,7 +81,7 @@ class PagingIterator implements \Iterator
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function key()
     {
@@ -89,7 +89,7 @@ class PagingIterator implements \Iterator
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function valid(): bool
     {
@@ -97,7 +97,7 @@ class PagingIterator implements \Iterator
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function rewind()
     {

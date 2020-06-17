@@ -1,4 +1,5 @@
-<?php
+<?php /** @noinspection DuplicatedCode */
+
 /**
  * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
@@ -34,27 +35,63 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Product\Cache;
+namespace Nosto\Tagging\Model\Indexer\Dimensions\QueueProcessor;
 
-use Magento\Framework\Api\Search\SearchResult;
-use Nosto\Tagging\Api\Data\ProductCacheInterface;
-use Nosto\Tagging\Api\Data\ProductCacheSearchResultsInterface;
+use Magento\Indexer\Model\DimensionMode;
+use Magento\Indexer\Model\DimensionModes;
+use Nosto\Tagging\Model\Indexer\Dimensions\ModeSwitcherInterface;
 
-class CacheSearchResults extends SearchResult implements ProductCacheSearchResultsInterface // @codingStandardsIgnoreLine
+class ModeSwitcher implements ModeSwitcherInterface
 {
     /**
-     * @return ProductCacheInterface|null
+     * @var DimensionModeConfiguration
      */
-    public function getFirstItem()
+    private $dimensionModeConfiguration;
+
+    /**
+     * @var ModeSwitcherConfiguration
+     */
+    private $modeSwitcherConfiguration;
+
+    /**
+     * ModeSwitcher constructor.
+     * @param DimensionModeConfiguration $dimensionModeConfiguration
+     * @param ModeSwitcherConfiguration $modeSwitcherConfiguration
+     */
+    public function __construct(
+        DimensionModeConfiguration $dimensionModeConfiguration,
+        ModeSwitcherConfiguration $modeSwitcherConfiguration
+    ) {
+        $this->dimensionModeConfiguration = $dimensionModeConfiguration;
+        $this->modeSwitcherConfiguration = $modeSwitcherConfiguration;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getDimensionModes(): DimensionModes
     {
-        if ($this->getTotalCount() === 0) {
-            return null;
+        $dimensionsList = [];
+        foreach ($this->dimensionModeConfiguration->getDimensionModes() as $dimension => $modes) {
+            $dimensionsList[] = new DimensionMode($dimension, $modes);
         }
 
-        /** @var ProductCacheInterface[]|null $items */
-        $items = $this->getItems();
-        /** @var ProductCacheInterface|null $item */
-        $item = $items ? reset($items) : null;
-        return $item;
+        return new DimensionModes($dimensionsList);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function switchMode(string $currentMode, string $previousMode) // @codingStandardsIgnoreLine
+    {
+        $this->modeSwitcherConfiguration->saveMode($currentMode);
+    }
+
+    /**
+     * @return string
+     */
+    public function getMode(): string
+    {
+        return $this->dimensionModeConfiguration->getCurrentMode();
     }
 }

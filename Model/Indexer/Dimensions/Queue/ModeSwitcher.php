@@ -35,7 +35,7 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Indexer\Dimensions\Invalidate;
+namespace Nosto\Tagging\Model\Indexer\Dimensions\Queue;
 
 use Magento\Indexer\Model\DimensionMode;
 use Magento\Indexer\Model\DimensionModes;
@@ -67,7 +67,7 @@ class ModeSwitcher implements ModeSwitcherInterface
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function getDimensionModes(): DimensionModes
     {
@@ -80,7 +80,7 @@ class ModeSwitcher implements ModeSwitcherInterface
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function switchMode(string $currentMode, string $previousMode) // @codingStandardsIgnoreLine
     {

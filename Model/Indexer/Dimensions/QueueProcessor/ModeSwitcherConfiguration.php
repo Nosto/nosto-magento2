@@ -34,33 +34,54 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Indexer\Dimensions\Data;
+namespace Nosto\Tagging\Model\Indexer\Dimensions\QueueProcessor;
 
-use Nosto\Tagging\Model\Indexer\Dimensions\AbstractDimensionModeConfiguration;
+use InvalidArgumentException;
+use Magento\Framework\App\Cache\TypeListInterface;
+use Magento\Framework\App\Config\ConfigResource\ConfigInterface;
 
-class DimensionModeConfiguration extends AbstractDimensionModeConfiguration
+class ModeSwitcherConfiguration
 {
-    /**
-     * @var string
-     */
-    private $currentMode;
+    // phpcs:ignore Generic.Files.LineLength
+    const XML_PATH_PRODUCT_QUEUE_PROCESSOR_DIMENSIONS_MODE = 'indexer/nosto_index_product_queue_processor/dimensions_mode';
 
     /**
-     * @return string
+     * ConfigInterface
+     *
+     * @var ConfigInterface
      */
-    public function getCurrentMode(): string
+    private $configWriter;
+
+    /**
+     * TypeListInterface
+     *
+     * @var TypeListInterface
+     */
+    private $cacheTypeList;
+
+    /**
+     * ModeSwitcherConfiguration constructor.
+     * @param ConfigInterface $configWriter
+     * @param TypeListInterface $cacheTypeList
+     */
+    public function __construct(
+        ConfigInterface $configWriter,
+        TypeListInterface $cacheTypeList
+    ) {
+        $this->configWriter = $configWriter;
+        $this->cacheTypeList = $cacheTypeList;
+    }
+
+    /**
+     * Save switcher mode and invalidate reindex.
+     *
+     * @param string $mode
+     * @return void
+     * @throws InvalidArgumentException
+     */
+    public function saveMode(string $mode)
     {
-        if ($this->currentMode === null) {
-            $mode = $this->scopeConfig->getValue(
-                ModeSwitcherConfiguration::XML_PATH_PRODUCT_DATA_DIMENSIONS_MODE
-            );
-            if ($mode) {
-                $this->currentMode = $mode;
-            } else {
-                $this->currentMode = self::DIMENSION_NONE;
-            }
-        }
-
-        return $this->currentMode;
+        $this->configWriter->saveConfig(self::XML_PATH_PRODUCT_QUEUE_PROCESSOR_DIMENSIONS_MODE, $mode);
+        $this->cacheTypeList->cleanType('config');
     }
 }

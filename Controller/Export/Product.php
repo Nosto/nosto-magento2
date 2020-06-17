@@ -37,16 +37,13 @@
 namespace Nosto\Tagging\Controller\Export;
 
 use Magento\Framework\App\Action\Context;
-use Magento\Framework\Controller\Result\Raw as RawResult;
 use Magento\Store\Model\Store;
-use Nosto\NostoException;
 use Nosto\Model\AbstractCollection;
-use Nosto\Model\Product\Product as NostoProduct;
 use Nosto\Model\Product\ProductCollection;
+use Nosto\NostoException;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Model\Product\CollectionBuilder;
-use Nosto\Tagging\Model\Service\Sync\Upsert\SyncService;
 
 /**
  * Product export controller used to export product history to Nosto in order to
@@ -59,30 +56,23 @@ class Product extends Base
 {
     const PARAM_PREVIEW = 'preview';
 
-    /** @var CollectionBuilder */
+    /** @var CollectionBuilder  */
     private $nostoCollectionBuilder;
-
-    /** @var SyncService  */
-    private $nostoSyncService;
 
     /**
      * @param Context $context
      * @param NostoHelperScope $nostoHelperScope
      * @param NostoHelperAccount $nostoHelperAccount
      * @param CollectionBuilder $collectionBuilder
-     * @param SyncService $nostoSyncService
      */
     public function __construct(
         Context $context,
         NostoHelperScope $nostoHelperScope,
         NostoHelperAccount $nostoHelperAccount,
-        CollectionBuilder $collectionBuilder,
-        SyncService $nostoSyncService
+        CollectionBuilder $collectionBuilder
     ) {
         parent::__construct($context, $nostoHelperScope, $nostoHelperAccount);
-
         $this->nostoCollectionBuilder = $collectionBuilder;
-        $this->nostoSyncService = $nostoSyncService;
     }
 
     /**
@@ -106,25 +96,5 @@ class Product extends Base
     public function buildSingleExportCollection(Store $store, $id)
     {
         return $this->nostoCollectionBuilder->buildSingle($store, $id);
-    }
-
-    /**
-     * @param AbstractCollection $collection
-     * @return RawResult
-     */
-    public function export(AbstractCollection $collection)
-    {
-        $result = parent::export($collection);
-        $preview = $this->getRequest()->getParam(self::PARAM_PREVIEW, false);
-        if ($preview === false) {
-            $store = $this->getNostoHelperScope()->getStore();
-            $productIds = [];
-            /** @var NostoProduct $item */
-            foreach ($collection as $item) {
-                $productIds[] = $item->getProductId();
-            }
-            $this->nostoSyncService->markAsInSyncByProductIdsAndStoreId($productIds, $store);
-        }
-        return $result;
     }
 }

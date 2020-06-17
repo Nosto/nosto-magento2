@@ -34,33 +34,11 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Indexer\Dimensions\Invalidate;
+namespace Nosto\Tagging\Model\Cache\Type;
 
-use Nosto\Tagging\Model\Indexer\Dimensions\AbstractDimensionModeConfiguration;
+use Magento\Framework\Cache\FrontendInterface;
 
-class DimensionModeConfiguration extends AbstractDimensionModeConfiguration
+interface ProductDataInterface extends FrontendInterface
 {
-    /**
-     * @var string
-     */
-    private $currentMode;
-
-    /**
-     * @return string
-     */
-    public function getCurrentMode(): string
-    {
-        if ($this->currentMode === null) {
-            $mode = $this->scopeConfig->getValue(
-                ModeSwitcherConfiguration::XML_PATH_PRODUCT_INVALIDATE_DIMENSIONS_MODE
-            );
-            if ($mode) {
-                $this->currentMode = $mode;
-            } else {
-                $this->currentMode = self::DIMENSION_NONE;
-            }
-        }
-
-        return $this->currentMode;
-    }
+    public function getTag();
 }

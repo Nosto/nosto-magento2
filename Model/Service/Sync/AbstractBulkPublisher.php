@@ -46,9 +46,7 @@ use Magento\Framework\DataObject\IdentityGeneratorInterface;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Module\Manager;
 use Magento\Framework\Serialize\SerializerInterface;
-use Magento\Store\Model\Store;
 use Nosto\Tagging\Logger\Logger;
-use Nosto\Tagging\Model\ResourceModel\Product\Cache\CacheCollection;
 
 abstract class AbstractBulkPublisher implements BulkPublisherInterface
 {
@@ -80,7 +78,7 @@ abstract class AbstractBulkPublisher implements BulkPublisherInterface
      * @param Manager $manager
      * @param Logger $logger
      */
-    public function __construct( // @codingStandardsIgnoreLine
+    public function __construct(// @codingStandardsIgnoreLine
         IdentityGeneratorInterface $identityService,
         SerializerInterface $serializer,
         BulkConsumerInterface $asyncBulkConsumer,
@@ -105,11 +103,11 @@ abstract class AbstractBulkPublisher implements BulkPublisherInterface
      * @inheritDoc
      * @throws LocalizedException
      */
-    public function execute(CacheCollection $collection, Store $store)
+    public function execute($storeId, $productIds = [])
     {
-        /** @phan-suppress-next-line PhanUndeclaredFunctionInCallable */
-        $productIds = $collection->walk('getProductId');
-        $this->publishCollectionToQueue($store->getId(), $productIds);
+        if (!empty($productIds)) {
+            $this->publishCollectionToQueue($storeId, $productIds);
+        }
     }
 
     /**

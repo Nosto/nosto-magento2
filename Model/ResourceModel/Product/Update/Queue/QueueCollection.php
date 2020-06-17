@@ -36,7 +36,6 @@
 
 namespace Nosto\Tagging\Model\ResourceModel\Product\Update\Queue;
 
-use DateTimeInterface;
 use Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection;
 use Magento\Store\Api\Data\StoreInterface;
 use Nosto\Tagging\Api\Data\ProductUpdateQueueInterface;
@@ -110,10 +109,10 @@ class QueueCollection extends AbstractCollection
     /**
      * Filters collection by completed by
      *
-     * @param DateTimeInterface $dateTime
+     * @param \DateTimeInterface $dateTime
      * @return QueueCollection
      */
-    public function addCompletedBeforeFilter(DateTimeInterface $dateTime)
+    public function addCompletedBeforeFilter(\DateTimeInterface $dateTime)
     {
         return $this->addFieldToFilter(
             ProductUpdateQueueInterface::COMPLETED_AT,

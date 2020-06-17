@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
@@ -39,8 +38,6 @@ namespace Nosto\Tagging\Model\Service\Sync\Upsert;
 
 use Magento\Framework\EntityManager\EntityManager;
 use Magento\Framework\Json\Helper\Data as JsonHelper;
-use Nosto\Exception\MemoryOutOfBoundsException;
-use Nosto\NostoException;
 use Nosto\Tagging\Helper\Scope as NostoScopeHelper;
 use Nosto\Tagging\Logger\Logger;
 use Nosto\Tagging\Model\ResourceModel\Magento\Product\CollectionFactory;
@@ -91,8 +88,8 @@ class AsyncBulkConsumer extends AbstractBulkConsumer
 
     /**
      * @inheritDoc
-     * @throws MemoryOutOfBoundsException
-     * @throws NostoException
+     * @throws \Nosto\Exception\MemoryOutOfBoundsException
+     * @throws \Nosto\NostoException
      */
     public function doOperation(array $productIds, string $storeId)
     {

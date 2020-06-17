@@ -55,6 +55,7 @@ use Magento\GroupedProduct\Model\Product\Type\Grouped as GroupedType;
 use Magento\Store\Model\Store;
 use Magento\Tax\Helper\Data as TaxHelper;
 use Magento\Tax\Model\Config as TaxConfig;
+use Nosto\NostoException;
 use Nosto\Tagging\Model\Product\Repository as NostoProductRepository;
 
 /**
@@ -67,6 +68,10 @@ class Price extends AbstractHelper
     private $localeDate;
     private $nostoProductRepository;
     private $taxHelper;
+
+    const KEY_SKU_FINAL_PRICE = 'final_price';
+    const KEY_SKU_PRICE = 'price';
+    const KEY_SKU_PRODUCT_ID = 'entity_id';
 
     /**
      * Constructor.
@@ -101,6 +106,7 @@ class Price extends AbstractHelper
      * @param Store $store
      * @return float
      * @throws LocalizedException
+     * @throws NostoException
      */
     public function getProductDisplayPrice(Product $product, Store $store)
     {
@@ -120,9 +126,11 @@ class Price extends AbstractHelper
      * @param bool $inclTax if tax is to be included.
      * @param bool $finalPrice if final price.
      * @return float
+     * @throws LocalizedException
+     * @throws NoSuchEntityException
+     * @throws NostoException
      * @suppress PhanTypeMismatchArgument
      * @suppress PhanDeprecatedFunction
-     * @throws LocalizedException
      */
     public function getProductPrice(// @codingStandardsIgnoreLine
         Product $product,
@@ -184,6 +192,7 @@ class Price extends AbstractHelper
      * @param Store $store
      * @return float
      * @throws LocalizedException
+     * @throws NostoException
      */
     public function getProductFinalDisplayPrice(Product $product, Store $store)
     {
@@ -269,6 +278,7 @@ class Price extends AbstractHelper
      * @param Store $store
      * @return array|float|int|mixed
      * @throws LocalizedException
+     * @throws NostoException
      */
     private function getBundleProductPrice(Product $product, $finalPrice, $inclTax, Store $store)
     {
@@ -313,7 +323,7 @@ class Price extends AbstractHelper
                 }
             }
             // If all products are optional use the price for the cheapest option
-            $price = $allOptional ? min($minPrices) : array_sum($requiredMinPrices);
+            $price = $allOptional && !empty($minPrices) ? min($minPrices) : array_sum($requiredMinPrices);
         }
         return $price;
     }
@@ -369,6 +379,7 @@ class Price extends AbstractHelper
      * @return float
      * @throws LocalizedException
      * @throws NoSuchEntityException
+     * @throws NostoException
      */
     private function getConfigurableProductPrice(Product $product, $finalPrice, $inclTax, Store $store)
     {
@@ -380,16 +391,30 @@ class Price extends AbstractHelper
         if (count($skuPrices) === 0) {
             return $price;
         }
-        $priceColumn = array_column($skuPrices, "final_price");
+        $priceColumn = array_column($skuPrices, self::KEY_SKU_FINAL_PRICE);
         array_multisort($priceColumn, SORT_ASC, $skuPrices);
         $minSku = reset($skuPrices);
-        if ($finalPrice && isset($minSku['final_price'])) {
-            $price = $minSku['final_price'];
-        } elseif (isset($minSku['final_price'])) {
-            $price = $minSku['price'];
+        if ($finalPrice && isset($minSku[self::KEY_SKU_FINAL_PRICE])) {
+            $price = $minSku[self::KEY_SKU_FINAL_PRICE];
+        } elseif (isset($minSku[self::KEY_SKU_PRICE])) {
+            $price = $minSku[self::KEY_SKU_PRICE];
         }
         if ($inclTax === true) {
-            $skuResult = $this->nostoProductRepository->getByIds([$minSku['product_id']]);
+            if (!isset($minSku[self::KEY_SKU_PRODUCT_ID])) {
+                // Since print_r is discouraged we use this
+                $arrayContents = '';
+                foreach ($minSku as $key => $val) {
+                    $arrayContents .= sprintf('%s => %s, ', $key, $val);
+                }
+                throw new NostoException(
+                    sprintf(
+                        'No %s key in sku prices array. Array content: %s',
+                        self::KEY_SKU_PRODUCT_ID,
+                        $arrayContents
+                    )
+                );
+            }
+            $skuResult = $this->nostoProductRepository->getByIds([$minSku[self::KEY_SKU_PRODUCT_ID]]);
             $skuProducts = $skuResult->getItems();
             $skuProduct = reset($skuProducts);
 

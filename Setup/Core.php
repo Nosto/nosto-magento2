@@ -43,7 +43,6 @@ use Nosto\Tagging\Api\Data\CustomerInterface;
 use Nosto\Tagging\Api\Data\ProductUpdateQueueInterface;
 use Nosto\Tagging\Model\ResourceModel\Customer;
 use Nosto\Tagging\Model\ResourceModel\Product\Update\Queue;
-use Zend_Db_Exception;
 
 abstract class Core
 {
@@ -53,10 +52,11 @@ abstract class Core
      * Creates a table for mapping Nosto customer to Magento's cart & orders
      *
      * @param SchemaSetupInterface $setup
-     * @throws Zend_Db_Exception
+     * @throws \Zend_Db_Exception
      */
     public function createCustomerTable(SchemaSetupInterface $setup)
     {
+        /** @noinspection PhpUnhandledExceptionInspection */
         $table = $setup->getConnection()
             ->newTable($setup->getTable(Customer::TABLE_NAME))
             ->addColumn(
@@ -114,6 +114,7 @@ abstract class Core
                 ['type' => AdapterInterface::INDEX_TYPE_UNIQUE]
             )
             ->setComment('Nosto customer and order mapping');
+        /** @noinspection PhpUnhandledExceptionInspection */
         $setup->getConnection()->createTable($table);
     }
 
@@ -121,10 +122,11 @@ abstract class Core
      * Creates a product update queue table for Nosto product data
      *
      * @param SchemaSetupInterface $setup
-     * @throws Zend_Db_Exception
+     * @throws \Zend_Db_Exception
      */
     public function createProductUpdateQueue(SchemaSetupInterface $setup)
     {
+        /** @noinspection PhpUnhandledExceptionInspection */
         $table = $setup->getConnection()
             ->newTable($setup->getTable(Queue::TABLE_NAME))
             ->addColumn(
@@ -205,6 +207,7 @@ abstract class Core
                 ['nullable' => true],
                 'Completed at Time'
             );
+        /** @noinspection PhpUnhandledExceptionInspection */
         $setup->getConnection()->createTable($table);
     }
 }

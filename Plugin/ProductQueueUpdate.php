@@ -34,53 +34,57 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Indexer\Dimensions\Invalidate;
+namespace Nosto\Tagging\Plugin;
 
-use InvalidArgumentException;
-use Magento\Framework\App\Cache\TypeListInterface;
-use Magento\Framework\App\Config\ConfigResource\ConfigInterface;
+use Closure;
+use Magento\Framework\Indexer\IndexerRegistry;
+use Magento\Framework\Model\AbstractModel;
+use Nosto\Tagging\Model\Indexer\QueueProcessorIndexer;
+use Nosto\Tagging\Model\ResourceModel\Product\Update\Queue as QueueResource;
 
-class ModeSwitcherConfiguration
+/**
+ * Plugin for product updates
+ * @package Nosto\Tagging\Plugin
+ */
+class ProductQueueUpdate
 {
-    const XML_PATH_PRODUCT_INVALIDATE_DIMENSIONS_MODE = 'indexer/nosto_index_product_invalidate/dimensions_mode';
+    /** @var IndexerRegistry  */
+    private $indexerRegistry;
+
+    /** @var QueueProcessorIndexer  */
+    private $queueProcessorIndexer;
 
     /**
-     * ConfigInterface
-     *
-     * @var ConfigInterface
-     */
-    private $configWriter;
-
-    /**
-     * TypeListInterface
-     *
-     * @var TypeListInterface
-     */
-    private $cacheTypeList;
-
-    /**
-     * ModeSwitcherConfiguration constructor.
-     * @param ConfigInterface $configWriter
-     * @param TypeListInterface $cacheTypeList
+     * ProductInvalidate constructor.
+     * @param IndexerRegistry $indexerRegistry
+     * @param QueueProcessorIndexer $queueProcessorIndexer
      */
     public function __construct(
-        ConfigInterface $configWriter,
-        TypeListInterface $cacheTypeList
+        IndexerRegistry $indexerRegistry,
+        QueueProcessorIndexer $queueProcessorIndexer
     ) {
-        $this->configWriter = $configWriter;
-        $this->cacheTypeList = $cacheTypeList;
+        $this->indexerRegistry = $indexerRegistry;
+        $this->queueProcessorIndexer = $queueProcessorIndexer;
     }
 
     /**
-     * Save switcher mode and invalidate reindex.
-     *
-     * @param string $mode
-     * @return void
-     * @throws InvalidArgumentException
+     * @param QueueResource $queueResource
+     * @param Closure $proceed
+     * @param AbstractModel $queue
+     * @return mixed
      */
-    public function saveMode(string $mode)
-    {
-        $this->configWriter->saveConfig(self::XML_PATH_PRODUCT_INVALIDATE_DIMENSIONS_MODE, $mode);
-        $this->cacheTypeList->cleanType('config');
+    public function aroundSave(
+        QueueResource $queueResource,
+        Closure $proceed,
+        AbstractModel $queue
+    ) {
+        $mageIndexer = $this->indexerRegistry->get(QueueProcessorIndexer::INDEXER_ID);
+        if (!$mageIndexer->isScheduled()) {
+            $queueResource->addCommitCallback(function () use ($queue) {
+                $this->queueProcessorIndexer->executeRow($queue->getId());
+            });
+        }
+
+        return $proceed($queue);
     }
 }

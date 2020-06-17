@@ -65,7 +65,7 @@ class NostoGenerateCustomerReferenceCommand extends Command
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     public function configure()
     {
@@ -75,7 +75,7 @@ class NostoGenerateCustomerReferenceCommand extends Command
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     public function execute(InputInterface $input, OutputInterface $output)
     {

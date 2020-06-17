@@ -34,67 +34,33 @@
  *
  */
 
-namespace Nosto\Tagging\Plugin;
+namespace Nosto\Tagging\Model\Indexer\Dimensions\Queue;
 
-use Closure;
-use Magento\Catalog\Model\ResourceModel\Product as MagentoResourceProduct;
-use Magento\Framework\Indexer\IndexerRegistry;
-use Magento\Framework\Model\AbstractModel;
-use Nosto\Tagging\Model\Indexer\DataIndexer as IndexerData;
-use Nosto\Tagging\Model\ResourceModel\Product\Cache;
+use Nosto\Tagging\Model\Indexer\Dimensions\AbstractDimensionModeConfiguration;
 
-class ProductData
+class DimensionModeConfiguration extends AbstractDimensionModeConfiguration
 {
     /**
-     * @var IndexerRegistry
+     * @var string
      */
-    private $indexerRegistry;
+    private $currentMode;
 
     /**
-     * @var IndexerData
+     * @return string
      */
-    private $indexerData;
-
-    /**
-     * @var MagentoResourceProduct
-     */
-    private $magentoResourceProduct;
-
-    /**
-     * Product Observer constructor
-     * @param MagentoResourceProduct $magentoResourceProduct
-     * @param IndexerRegistry $indexerRegistry
-     * @param IndexerData $indexerData
-     */
-    public function __construct(
-        MagentoResourceProduct $magentoResourceProduct,
-        IndexerRegistry $indexerRegistry,
-        IndexerData $indexerData
-    ) {
-        $this->indexerRegistry = $indexerRegistry;
-        $this->indexerData = $indexerData;
-        $this->magentoResourceProduct = $magentoResourceProduct;
-    }
-
-    /**
-     * @param Cache $cache
-     * @param Closure $proceed
-     * @param AbstractModel $product
-     * @return mixed
-     */
-    public function aroundSave(
-        /** @noinspection PhpUnusedParameterInspection */
-        Cache $cache,
-        Closure $proceed,
-        AbstractModel $product
-    ) {
-        $mageIndexer = $this->indexerRegistry->get(IndexerData::INDEXER_ID);
-        if (!$mageIndexer->isScheduled()) {
-            $this->magentoResourceProduct->addCommitCallback(function () use ($product) {
-                $this->indexerData->executeRow($product->getId());
-            });
+    public function getCurrentMode(): string
+    {
+        if ($this->currentMode === null) {
+            $mode = $this->scopeConfig->getValue(
+                ModeSwitcherConfiguration::XML_PATH_PRODUCT_QUEUE_DIMENSIONS_MODE
+            );
+            if ($mode) {
+                $this->currentMode = $mode;
+            } else {
+                $this->currentMode = self::DIMENSION_NONE;
+            }
         }
 
-        return $proceed($product);
+        return $this->currentMode;
     }
 }

@@ -83,7 +83,7 @@ class CartTagging extends HashedTagging implements SectionSourceInterface
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function getSectionData()
     {

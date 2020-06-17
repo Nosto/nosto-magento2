@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
@@ -49,9 +48,11 @@ use Magento\Framework\Setup\ModuleDataSetupInterface;
 use Magento\Framework\Setup\UpgradeDataInterface;
 use Magento\Store\Model\ScopeInterface;
 use Nosto\NostoException;
+use Nosto\Model\Product\Product;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Url as NostoHelperUrl;
 use Nosto\Tagging\Logger\Logger;
+use Nosto\Tagging\Util\PagingIterator;
 use Zend_Validate_Exception;
 
 class UpgradeData extends CoreData implements UpgradeDataInterface
