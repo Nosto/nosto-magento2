@@ -143,6 +143,9 @@ jobs:
       run: |
         composer config repositories.0 composer https://repo.magento.com
         composer config http-basic.repo.magento.com "$REPO_USR" "$REPO_PSW"
+        composer require --no-update nosto/module-nostotagging-cmp:@stable
+        composer require --no-update nosto/module-nosto-msi:@stable
+        composer require --no-update nosto/module-nosto-itp:@stable
         composer install --prefer-dist --no-progress --no-suggest
     ############################################################################
 
