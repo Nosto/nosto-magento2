@@ -50,6 +50,8 @@ use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Product\BuilderTrait;
 use Nosto\Tagging\Model\Service\Stock\StockService;
 use Nosto\Types\Product\ProductInterface;
+use Magento\Store\Model\StoreManagerInterface;
+use Nosto\Tagging\Model\Service\Product\Attribute\AttributeServiceInterface;
 
 // @codingStandardsIgnoreLine
 
@@ -76,9 +78,18 @@ class Builder
      * @param ManagerInterface $eventManager
      * @param CurrencyHelper $nostoCurrencyHelper
      * @param StockService $stockService
+     * @param StoreManagerInterface $storeManager
+     * @param AttributeServiceInterface $attributeService
      */
     public function __construct(
-        NostoHelperData $nostoHelperData, NostoPriceHelper $priceHelper, NostoLogger $logger, ManagerInterface $eventManager, CurrencyHelper $nostoCurrencyHelper, StockService $stockService
+        NostoHelperData $nostoHelperData,
+        NostoPriceHelper $priceHelper,
+        NostoLogger $logger,
+        ManagerInterface $eventManager,
+        CurrencyHelper $nostoCurrencyHelper,
+        StockService $stockService,
+        StoreManagerInterface $storeManager,
+        AttributeServiceInterface $attributeService
     ) {
         $this->nostoPriceHelper = $priceHelper;
         $this->eventManager = $eventManager;
@@ -86,7 +97,9 @@ class Builder
         $this->builderTraitConstruct(
             $nostoHelperData,
             $stockService,
-            $logger
+            $logger,
+            $storeManager,
+            $attributeService
         );
     }
 

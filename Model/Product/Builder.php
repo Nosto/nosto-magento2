@@ -60,6 +60,7 @@ use Nosto\Tagging\Model\Service\Product\Attribute\AttributeServiceInterface;
 use Nosto\Tagging\Model\Service\Product\Category\CategoryServiceInterface;
 use Nosto\Tagging\Model\Service\Stock\StockService;
 use Nosto\Types\Product\ProductInterface;
+use Magento\Store\Model\StoreManagerInterface;
 
 class Builder
 {
@@ -121,9 +122,26 @@ class Builder
      * @param PriceVariationCollection $priceVariationCollection
      * @param NostoVariationHelper $nostoVariationHelper
      * @param NostoRating $nostoRatingHelper
+     * @param StoreManagerInterface $storeManager
+     * @param AttributeServiceInterface $attributeService
      */
     public function __construct(
-        NostoHelperData $nostoHelperData, NostoPriceHelper $priceHelper, CategoryServiceInterface $nostoCategoryService, StockService $stockService, NostoSkuCollection $skuCollection, NostoLogger $logger, ManagerInterface $eventManager, GalleryReadHandler $galleryReadHandler, NostoUrlBuilder $urlBuilder, CurrencyHelper $nostoCurrencyHelper, LowStockHelper $lowStockHelper, PriceVariationCollection $priceVariationCollection, NostoVariationHelper $nostoVariationHelper, NostoRating $nostoRatingHelper
+        NostoHelperData $nostoHelperData,
+        NostoPriceHelper $priceHelper,
+        CategoryServiceInterface $nostoCategoryService,
+        StockService $stockService,
+        NostoSkuCollection $skuCollection,
+        NostoLogger $logger,
+        ManagerInterface $eventManager,
+        GalleryReadHandler $galleryReadHandler,
+        NostoUrlBuilder $urlBuilder,
+        CurrencyHelper $nostoCurrencyHelper,
+        LowStockHelper $lowStockHelper,
+        PriceVariationCollection $priceVariationCollection,
+        NostoVariationHelper $nostoVariationHelper,
+        NostoRating $nostoRatingHelper,
+        StoreManagerInterface $storeManager,
+        AttributeServiceInterface $attributeService
     ) {
         $this->nostoPriceHelper = $priceHelper;
         $this->eventManager = $eventManager;
@@ -135,7 +153,9 @@ class Builder
         $this->builderTraitConstruct(
             $nostoHelperData,
             $stockService,
-            $logger
+            $logger,
+            $storeManager,
+            $attributeService
         );
         $this->priceVariationCollection = $priceVariationCollection;
         $this->nostoVariationHelper = $nostoVariationHelper;
