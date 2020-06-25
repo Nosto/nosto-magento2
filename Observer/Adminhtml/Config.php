@@ -36,6 +36,7 @@
 
 namespace Nosto\Tagging\Observer\Adminhtml;
 
+use Exception;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Exception\LocalizedException;
@@ -164,7 +165,7 @@ class Config implements ObserverInterface
             } else {
                 try {
                     $this->queueIndexer->doIndex($store);
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     $this->logger->exception($e);
                 }
             }
