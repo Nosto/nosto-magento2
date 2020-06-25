@@ -42,7 +42,8 @@
   "require": {
     "nosto/php-sdk": "5.0.*",
     "php": ">=7.0.0",
-    "magento/framework": ">=101.0.6|~102.0"
+    "magento/framework": ">=101.0.6|~102.0",
+    "ext-json": "*"
   },
   "repositories": [
     {
@@ -59,7 +60,7 @@
     ]
   },
   "archive": {
-    "exclude": ["Jenkinsfile", "Dockerfile", ".DS_STORE", ".idea", ".phan", ".docker", "ruleset.xml", "phan.*", ".gitignore", "build.xml", ".github", "supervisord.conf", "entrypoint.sh", "/magento"]
+    "exclude": ["Dockerfile", ".DS_STORE", ".idea", ".phan", ".docker", "ruleset.xml", "phan.*", ".gitignore", "build.xml", ".github", "supervisord.conf", "entrypoint.sh", "/magento"]
   },
   "config": {
     "process-timeout":0
