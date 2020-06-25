@@ -86,7 +86,6 @@ class Create extends Base
      * @param NostoCurrencyHelper $nostoCurrencyHelper
      * @param NostoHelperCache $nostoHelperCache
      * @SuppressWarnings(PHPMD.ExcessiveParameterList)
-     * @noinspection PhpMissingParentConstructorInspection
      */
     public function __construct(
         Context $context,

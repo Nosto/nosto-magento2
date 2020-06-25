@@ -62,7 +62,6 @@ class Tokens extends Field
      * @param NostoHelperScope $nostoHelperScope
      * @param NostoHelperAccount $nostoHelperAccount
      * @param array $data
-     * @noinspection PhpMissingParentConstructorInspection
      */
     public function __construct(
         Context $context,
