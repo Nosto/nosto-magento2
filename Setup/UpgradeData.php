@@ -42,18 +42,15 @@ use Magento\Customer\Model\ResourceModel\Customer\CollectionFactory as CustomerC
 use Magento\Customer\Setup\CustomerSetupFactory;
 use Magento\Eav\Model\Entity\Attribute\SetFactory as AttributeSetFactory;
 use Magento\Framework\App\Config\Storage\WriterInterface;
-use Magento\Framework\DB\Adapter\AdapterInterface;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Setup\ModuleContextInterface;
 use Magento\Framework\Setup\ModuleDataSetupInterface;
 use Magento\Framework\Setup\UpgradeDataInterface;
 use Magento\Store\Model\ScopeInterface;
 use Nosto\NostoException;
-use Nosto\Model\Product\Product;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Url as NostoHelperUrl;
 use Nosto\Tagging\Logger\Logger;
-use Nosto\Tagging\Util\PagingIterator;
 use Zend_Validate_Exception;
 
 class UpgradeData extends CoreData implements UpgradeDataInterface
@@ -143,28 +140,6 @@ class UpgradeData extends CoreData implements UpgradeDataInterface
                     $store->getId()
                 );
             }
-        }
-    }
-
-    /**
-     * Sets product data to NULL & marks the cached products are dirty for the given entity ids
-     *
-     * @param AdapterInterface $connection
-     * @param array $ids
-     * @noinspection PhpUndefinedClassInspection
-     */
-    private function nullifyProductDataByIds(AdapterInterface $connection, array $ids)
-    {
-        if (!empty($ids)) {
-            $setNullSql = sprintf(
-                'UPDATE %s SET %s = NULL, %s=1 WHERE %s IN(%s)',
-                CacheResource::TABLE_NAME,
-                Cache::PRODUCT_DATA,
-                Cache::IS_DIRTY,
-                Cache::ID,
-                implode(',', $ids)
-            );
-            $connection->query($setNullSql); // @codingStandardsIgnoreLine
         }
     }
 }
