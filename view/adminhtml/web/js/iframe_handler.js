@@ -169,6 +169,7 @@ define([
     const oReq = new XMLHttpRequest();
     if (typeof options.success === "function") {
       oReq.addEventListener("load", function (e) {
+        // noinspection JSUnresolvedVariable
         options.success(JSON.parse(e.target.response));
       }, false);
     }
