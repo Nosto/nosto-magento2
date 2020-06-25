@@ -33,6 +33,7 @@
  *
  */
 
+// noinspection JSUnresolvedFunction
 define([
   'uiComponent',
   'Magento_Customer/js/customer-data',

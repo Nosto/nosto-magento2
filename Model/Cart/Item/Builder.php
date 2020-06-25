@@ -1,4 +1,4 @@
-<?php /** @noinspection DuplicatedCode */
+<?php
 
 /**
  * Copyright (c) 2020, Nosto Solutions Ltd

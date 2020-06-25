@@ -1,3 +1,4 @@
+/** @noinspection DuplicatedCode */
 /*
  * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
@@ -33,6 +34,7 @@
  *
  */
 
+// noinspection JSUnresolvedFunction
 define([
   'nostojs',
   'jquery',
@@ -75,6 +77,7 @@ define([
       }
     }
 
+    // noinspection JSUnresolvedFunction
     form.find('input[name="product"]').val(product.productId);
     const productSku = document.createElement("input");
     productSku.setAttribute("type", "hidden");
@@ -82,6 +85,7 @@ define([
     productSku.setAttribute("value", product.skuId);
     form.append(productSku);
 
+    // noinspection JSUnresolvedFunction
     form.find('input[name="qty"]').val(quantity);
     form.catalogAddToCart('ajaxSubmit', form);
   };

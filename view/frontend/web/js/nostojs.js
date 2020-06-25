@@ -33,6 +33,7 @@
  *
  */
 
+// noinspection JSUnresolvedFunction
 define([], function () {
   //noinspection AmdModulesDependencies
   if (typeof nostojs === 'function') {

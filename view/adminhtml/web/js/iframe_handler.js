@@ -34,6 +34,7 @@
  */
 
 /*jshint browser:true*/
+// noinspection JSUnresolvedFunction
 define([
   'jquery',
   'iframe_resizer'

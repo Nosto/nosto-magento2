@@ -1,4 +1,4 @@
-<?php /** @noinspection SqlNoDataSourceInspection */
+<?php
 
 /**
  * Copyright (c) 2020, Nosto Solutions Ltd
