@@ -80,7 +80,6 @@ class AsyncBulkConsumer extends AbstractBulkConsumer
      * @inheritDoc
      * @param array $productIds
      * @param string $storeId
-     * @throws MemoryOutOfBoundsException
      * @throws NostoException
      */
     public function doOperation(array $productIds, string $storeId)

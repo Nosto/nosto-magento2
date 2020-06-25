@@ -60,9 +60,6 @@ class Ratings
         $this->reviewCount = (int)$reviewCount;
     }
 
-    /**
-     * @inheritDoc
-     */
     public function getRating()
     {
         return $this->rating;

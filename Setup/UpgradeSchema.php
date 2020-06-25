@@ -65,7 +65,6 @@ class UpgradeSchema extends Core implements UpgradeSchemaInterface
 
     /**
      * @inheritDoc
-     * @throws Zend_Db_Exception
      */
     public function upgrade(SchemaSetupInterface $setup, ModuleContextInterface $context)
     {

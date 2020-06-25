@@ -68,12 +68,8 @@ class QueueRepository implements ProductUpdateQueueRepositoryInterface
         $this->queueCollectionFactory = $queueCollectionFactory;
     }
 
-    /**
-     * @inheritDoc
-     */
     public function getTotalCount(Store $store)
     {
-        /* @var QueueCollection $collection */
         $collection = $this->queueCollectionFactory->create();
         if ((int)$store->getId() !== 0) {
             $collection->addStoreFilter($store);
