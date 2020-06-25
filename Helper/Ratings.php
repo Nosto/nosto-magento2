@@ -136,6 +136,7 @@ class Ratings extends AbstractHelper
                 try {
                     $this->setRegistryProduct($product);
 
+                    /** @noinspection PhpUndefinedMethodInspection */
                     $ratings = $this->ratingsFactory->create()->getRichSnippet();
                 } catch (Exception $e) {
                     $this->resetRegistryProduct();
@@ -226,6 +227,8 @@ class Ratings extends AbstractHelper
             }
             /** @noinspection PhpUndefinedMethodInspection */
             $ratingSummary = $product->getRatingSummary();
+            /** @noinspection PhpUndefinedMethodInspection */
+            $reviewCount = $product->getReviewsCount();
             // As of Magento 2.3.3 rating summary returns directly the amount of
             // than DataObject
             if ($ratingSummary instanceof DataObject) {
@@ -234,9 +237,8 @@ class Ratings extends AbstractHelper
                     /** @noinspection PhpPossiblePolymorphicInvocationInspection */
                     return (int)$ratingSummary->getReviewsCount();
                 }
-            } elseif (is_numeric($product->getReviewsCount())) {
-                /** @noinspection PhpUndefinedMethodInspection */
-                return (int)$product->getReviewsCount();
+            } elseif (is_numeric($reviewCount)) {
+                return (int)$reviewCount;
             }
             return null;
         } catch (Exception $e) {

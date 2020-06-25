@@ -171,6 +171,7 @@ class QueueCollection extends AbstractCollection
         foreach ($this->getItems() as $item) {
             /** @phan-suppress-next-line PhanTypeMismatchArgument */
             $this->getResource()->unserializeFields($item);
+            /** @noinspection PhpPossiblePolymorphicInvocationInspection */
             $item->setDataChanges(false);
         }
         return $this;

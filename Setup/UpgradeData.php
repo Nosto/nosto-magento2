@@ -1,4 +1,5 @@
-<?php
+<?php /** @noinspection SqlNoDataSourceInspection */
+
 /**
  * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
@@ -150,6 +151,7 @@ class UpgradeData extends CoreData implements UpgradeDataInterface
      *
      * @param AdapterInterface $connection
      * @param array $ids
+     * @noinspection PhpUndefinedClassInspection
      */
     private function nullifyProductDataByIds(AdapterInterface $connection, array $ids)
     {
