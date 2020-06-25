@@ -92,6 +92,7 @@ class QueueRepository implements ProductUpdateQueueRepositoryInterface
      * @param ProductUpdateQueueInterface $entry
      * @return ProductUpdateQueueInterface|QueueResource
      * @throws AlreadyExistsException
+     * @noinspection PhpParamsInspection
      */
     public function save(ProductUpdateQueueInterface $entry)
     {
@@ -102,6 +103,7 @@ class QueueRepository implements ProductUpdateQueueRepositoryInterface
     /**
      * @param ProductUpdateQueueInterface $entry
      * @throws Exception
+     * @noinspection PhpParamsInspection
      */
     public function delete(ProductUpdateQueueInterface $entry)
     {

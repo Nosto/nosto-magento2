@@ -67,6 +67,7 @@ class Delete extends Base
      * @param NostoHelperScope $nostoHelperScope
      * @param NostoHelperCache $nostoHelperCache
      * @param Json $result
+     * @noinspection PhpMissingParentConstructorInspection
      */
     public function __construct(
         Context $context,

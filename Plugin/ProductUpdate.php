@@ -101,6 +101,7 @@ class ProductUpdate
      * @param AbstractModel $product
      * @return mixed
      * @suppress PhanTypeMismatchArgument
+     * @noinspection PhpParamsInspection
      */
     public function aroundDelete(
         MagentoResourceProduct $productResource,

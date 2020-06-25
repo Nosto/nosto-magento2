@@ -36,7 +36,6 @@
 
 namespace Nosto\Tagging\Model\Service\Sync\Delete;
 
-use Nosto\Exception\MemoryOutOfBoundsException;
 use Nosto\NostoException;
 use Nosto\Tagging\Model\Service\Sync\AbstractBulkConsumer;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
