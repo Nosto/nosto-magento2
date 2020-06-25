@@ -12,10 +12,6 @@
   </component>
   <component name="PhpIncludePathManager">
     <include_path>
-      <path value="/Applications/MAMP/htdocs/magento/2.3/app" />
-      <path value="/Applications/MAMP/htdocs/magento/2.3/vendor" />
-      <path value="/Applications/MAMP/htdocs/magento/2.3/vendor/nosto/php-sdk" />
-      <path value="/Applications/MAMP/htdocs/magento/2.3/generated" />
       <path value="$PROJECT_DIR$/vendor/magento/module-catalog-import-export" />
       <path value="$PROJECT_DIR$/vendor/magento/module-product-alert" />
       <path value="$PROJECT_DIR$/vendor/magento/module-catalog-url-rewrite" />
@@ -190,6 +186,9 @@
       <path value="$PROJECT_DIR$/vendor/symfony/polyfill-intl-idn" />
       <path value="$PROJECT_DIR$/vendor/symfony/polyfill-php72" />
       <path value="$PROJECT_DIR$/vendor/laminas/laminas-mail" />
+      <path value="$PROJECT_DIR$/vendor/magento/generated" />
+      <path value="$PROJECT_DIR$/vendor/symfony/polyfill-php73" />
+      <path value="$PROJECT_DIR$/vendor/symfony/polyfill-php80" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="7" />
