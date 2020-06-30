@@ -35,9 +35,10 @@
 
 // noinspection JSUnresolvedFunction
 define([], function () {
-  //noinspection AmdModulesDependencies
+  //noinspection AmdModulesDependencies,JSUnresolvedVariable
   if (typeof nostojs === 'function') {
-    return nostojs;
+      // noinspection JSUnresolvedVariable
+	  return nostojs;
   } else if (typeof window['nostojs'] === 'function') {
     return window['nostojs'];
   }
