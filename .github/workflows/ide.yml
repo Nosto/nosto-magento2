@@ -65,6 +65,7 @@ jobs:
         cd ..
         cp -r magento/generated vendor/magento/
         rm -rf magento
+        rm -rf vendor/bin
       env:
         GITHUB_BRANCH: ${{ github.base_ref }}
         REPO_USR: ${{ secrets.REPO_USR }}
