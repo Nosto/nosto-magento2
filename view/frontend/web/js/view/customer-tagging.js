@@ -42,6 +42,7 @@ define([
 ], function (Component, customerData, nostojs) {
   'use strict';
 
+  // noinspection JSCheckFunctionSignatures
   return Component.extend({
     initialize: function () {
       // noinspection JSUnresolvedFunction

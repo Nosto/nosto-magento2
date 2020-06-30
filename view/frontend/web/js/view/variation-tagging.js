@@ -42,7 +42,7 @@ define([
 ], function (Component, customerData, nostojs) {
   'use strict';
 
-  // noinspection JSUnusedGlobalSymbols
+  // noinspection JSUnusedGlobalSymbols,JSCheckFunctionSignatures
   return Component.extend({
     initialize: function () {
       // noinspection JSUnresolvedFunction

@@ -42,7 +42,7 @@ define([
 ], function (nostojs, $) {
   'use strict';
 
-  //noinspection SpellCheckingInspection
+  //noinspection SpellCheckingInspection, JSUnresolvedFunction
   const form = $('#nosto_addtocart_form').catalogAddToCart({});
   const Recobuy = {};
   Recobuy.addProductToCart = function (productId, element, quantity) {
@@ -87,6 +87,7 @@ define([
 
     // noinspection JSUnresolvedFunction
     form.find('input[name="qty"]').val(quantity);
+    // noinspection JSUnresolvedFunction
     form.catalogAddToCart('ajaxSubmit', form);
   };
 
