@@ -1,4 +1,4 @@
-version: '3'
+version: '3.2'
 
 services:
   # MariaDB container
@@ -32,12 +32,20 @@ services:
       - 80:80
     extra_hosts:
       my.dev.nos.to: 192.168.65.2
+
     volumes:
-      - ./:/var/www/html/magento2/app/code/Nosto/Tagging
-      - ./log/:/var/www/html/magento2/var/log/
+      - type: bind
+        source: .
+        target: /var/www/html/magento2/app/code/Nosto/Tagging
+      - type: bind
+        source: ./log
+        target: /var/www/html/magento2/var/log/
+      - type: bind
+        source: ./vendor/magento
+        target: /var/www/html/magento2/generated
     environment:
       PHP_DEBUGGER: null
-      # COMPOSER_AUTH={"http-basic":{"repo.magento.com":{"username":"","password":""}}}
+      COMPOSER_AUTH: "{\"http-basic\":{\"repo.magento.com\":{\"username\":\"\",\"password\":\"\"}}}"
       MYSQL_HOST: db_m2
       MYSQL_USER: root
       MYSQL_PASSWORD: root
@@ -62,3 +70,4 @@ services:
       NOSTO_WEB_HOOK_BASE_URL: https://my.dev.nos.to
       NOSTO_IFRAME_ORIGIN: https://my.dev.nos.to
       NOSTO_IFRAME_ORIGIN_REGEXP: .*
+
