@@ -4,16 +4,15 @@
 set -m
 
 if [ ! -f /var/www/html/magento2/.installed ]; then
+  cd /var/www/html/magento2/ || exit
+  composer require nosto/php-sdk:@stable
 
   until mysql -u${MYSQL_USER} -p${MYSQL_PASSWORD} -h${MYSQL_HOST}; do
     >&2 echo "MySQL is unavailable - sleeping"
     sleep 5
   done
-  cd /var/www/html/magento2/
-  composer require nosto/php-sdk:@stable
 
-  cd /var/www/html/magento2/bin
-    magento setup:install \
+  bin/magento setup:install \
       --timezone "Europe/Helsinki" \
       --currency "EUR" \
       --db-host "${MYSQL_HOST}" \
@@ -37,21 +36,9 @@ if [ ! -f /var/www/html/magento2/.installed ]; then
       --amqp-password="guest" \
       --amqp-virtualhost="/"
   
-  # The auth.json is needed to fetch the sample data packages from repo.magento.com
-  cp /root/.composer/auth.json /var/www/html/magento2/var/composer_home/
-  cd /var/www/html/magento2/
   chmod +x bin/magento
   bin/magento deploy:mode:set developer
 
-  # Install Sample Data
-  git clone https://github.com/magento/magento2-sample-data.git
-  M2_BRANCH="$(cat composer.json | jq -r '.version')"
-  cd magento2-sample-data
-  git checkout $M2_BRANCH
-  cd /var/www/html/magento2/
-  # Create Symlinks
-  php -f magento2-sample-data/dev/tools/build-sample-data.php -- --ce-source="$(pwd)"
-  
   bin/magento setup:upgrade
 
   # Set global / non-module related options
@@ -72,14 +59,14 @@ if [ ! -f /var/www/html/magento2/.installed ]; then
   # Indexer configuration
   bin/magento indexer:set-mode schedule
 
-  bin/magento cache:enable
+  bin/magento cache:clear
+#  bin/magento cache:enable
 
   touch pub/static/deployed_version.txt
   touch /var/www/html/magento2/.installed
-  chown -R www-data:www-data /var/www/html/magento2
 fi
 
 # Invoke the cron daemon
-cron &
+sudo cron &
 # Start apache
-apache2-foreground
+sudo apache2-foreground
