@@ -7,7 +7,7 @@ if [ ! -f /var/www/html/magento2/.installed ]; then
   cd /var/www/html/magento2/ || exit
   composer require nosto/php-sdk:@stable
 
-  until mysql -u${MYSQL_USER} -p${MYSQL_PASSWORD} -h${MYSQL_HOST}; do
+  until mysql -u"${MYSQL_USER}" -p"${MYSQL_PASSWORD}" -h"${MYSQL_HOST}"; do
     >&2 echo "MySQL is unavailable - sleeping"
     sleep 5
   done
@@ -59,7 +59,7 @@ if [ ! -f /var/www/html/magento2/.installed ]; then
   # Indexer configuration
   bin/magento indexer:set-mode schedule
 
-  bin/magento cache:clear
+  bin/magento cache:flush
 #  bin/magento cache:enable
 
   touch pub/static/deployed_version.txt
