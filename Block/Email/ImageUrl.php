@@ -78,6 +78,7 @@ class ImageUrl extends Template
      * Format the image url
      *
      * @return string
+     * @SuppressWarnings(PHPMD.CamelCaseMethodName)
      */
     public function _toHtml()
     {

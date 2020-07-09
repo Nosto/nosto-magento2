@@ -63,8 +63,8 @@ class Iframe extends BlockTemplate
 
     private $nostoHelperAccount;
     private $backendAuthSession;
-    private $nostoIframeMetaBuilder;
-    private $nostoCurrentUserBuilder;
+    private $iframeMetaBuilder;
+    private $currentUserBuilder;
     private $nostoHelperScope;
     private $logger;
 
@@ -75,7 +75,7 @@ class Iframe extends BlockTemplate
      * @param NostoHelperAccount $nostoHelperAccount the account helper.
      * @param Session $backendAuthSession
      * @param NostoIframeMetaBuilder $iframeMetaBuilder
-     * @param NostoCurrentUserBuilder $nostoCurrentUserBuilder
+     * @param NostoCurrentUserBuilder $currentUserBuilder
      * @param NostoHelperScope $nostoHelperScope
      * @param NostoLogger $logger
      * @param array $data
@@ -85,7 +85,7 @@ class Iframe extends BlockTemplate
         NostoHelperAccount $nostoHelperAccount,
         Session $backendAuthSession,
         NostoIframeMetaBuilder $iframeMetaBuilder,
-        NostoCurrentUserBuilder $nostoCurrentUserBuilder,
+        NostoCurrentUserBuilder $currentUserBuilder,
         NostoHelperScope $nostoHelperScope,
         NostoLogger $logger,
         array $data = []
@@ -94,8 +94,8 @@ class Iframe extends BlockTemplate
 
         $this->nostoHelperAccount = $nostoHelperAccount;
         $this->backendAuthSession = $backendAuthSession;
-        $this->nostoIframeMetaBuilder = $iframeMetaBuilder;
-        $this->nostoCurrentUserBuilder = $nostoCurrentUserBuilder;
+        $this->iframeMetaBuilder = $iframeMetaBuilder;
+        $this->currentUserBuilder = $currentUserBuilder;
         $this->nostoHelperScope = $nostoHelperScope;
         $this->logger = $logger;
     }
@@ -166,7 +166,7 @@ class Iframe extends BlockTemplate
     {
         try {
             $store = $this->nostoHelperScope->getSelectedStore($this->getRequest());
-            return $this->nostoIframeMetaBuilder->build($store);
+            return $this->iframeMetaBuilder->build($store);
         } catch (Exception $e) {
             $this->logger->exception($e);
         }
@@ -179,7 +179,7 @@ class Iframe extends BlockTemplate
      */
     public function getUser()
     {
-        return $this->nostoCurrentUserBuilder->build();
+        return $this->currentUserBuilder->build();
     }
 
     /**
