@@ -3,23 +3,32 @@ version: '3.2'
 services:
   # MariaDB container
   db_m2:
-    image: mariadb:10.0
+    build:
+      context: ./.docker/mariadb
+      dockerfile: ./Dockerfile
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: magento2_db
+    volumes:
+      - .docker/mysql_data:/var/lib/mysql:delegated
 
   # RabbitMQ container
   rabbitmq_m2:
-    image: rabbitmq:3.7
+    image: rabbitmq:3.7-management
     hostname: magento2.dev.nos.to # Your Magento 2 installation host
     container_name: rabbitmq_m2
     environment:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
     ports:
-      - "15672:15672"
-      - "5672:5672"
-  
+      - "15672:15672" # For management
+
+  # Elastic Search container
+  es_m2:
+    image: elasticsearch:6.8.4
+    environment:
+      discovery.type: single-node
+
   # Magento 2 container
   magento2:
     build:
@@ -28,11 +37,12 @@ services:
     links:
       - db_m2
       - rabbitmq_m2
+      - es_m2
     ports:
-      - 80:80
+      - 8081:80
+      - 9002:9002 #XDebug
     extra_hosts:
       my.dev.nos.to: 192.168.65.2
-
     volumes:
       - type: bind
         source: .
@@ -44,25 +54,16 @@ services:
         source: ./vendor/magento
         target: /var/www/html/magento2/generated
     environment:
-      PHP_DEBUGGER: null
       COMPOSER_AUTH: "{\"http-basic\":{\"repo.magento.com\":{\"username\":\"\",\"password\":\"\"}}}"
       MYSQL_HOST: db_m2
       MYSQL_USER: root
       MYSQL_PASSWORD: root
       MYSQL_DATABASE: magento2_db
       RABBITMQ_HOST: rabbitmq_m2
-      VIRTUAL_HOST: magento2.dev.nos.to
+      VIRTUAL_HOST: magento2.dev.nos.to:8081
+      ES_HOST: es_m2
       ADMIN_USER: admin
       ADMIN_PASSWORD: Admin12345
-      # CONNECT_NOSTO: null
-      # NOSTO_ACCOUNT_ID:
-      # SSO_TOKEN:
-      # PRODUCTS_TOKEN:
-      # SETTINGS_TOKEN:
-      # RATES_TOKEN:
-      # APPS_TOKEN:
-      # EMAIL_TOKEN:
-      # STORE_VIEW_SCOPE_CODE:
       # Use the env vars bellow to point to your local or staging play instance
       NOSTO_SERVER_URL: connect.my.dev.nos.to
       NOSTO_API_BASE_URL: http://host.docker.internal:9000/api
@@ -70,4 +71,4 @@ services:
       NOSTO_WEB_HOOK_BASE_URL: https://my.dev.nos.to
       NOSTO_IFRAME_ORIGIN: https://my.dev.nos.to
       NOSTO_IFRAME_ORIGIN_REGEXP: .*
-
+      XDEBUG_CONFIG: remote_host=host.docker.internal
