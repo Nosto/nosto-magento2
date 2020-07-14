@@ -3,7 +3,7 @@
 # Turn on monitor mode, required by job control
 set -m
 
-if [ ! -f /var/www/html/magento2/.installed ]; then
+if [ ! -f /var/www/html/magento2/app/code/Nosto/Tagging/.installed ]; then
   cd /var/www/html/magento2/ || exit
   composer config --global repos.packagist composer https://packagist.org
   composer require nosto/php-sdk:@stable
@@ -90,7 +90,7 @@ if [ ! -f /var/www/html/magento2/.installed ]; then
   bin/magento cache:flush
 
   touch pub/static/deployed_version.txt
-  touch /var/www/html/magento2/.installed
+  touch /var/www/html/magento2/app/code/Nosto/Tagging/.installed
 fi
 
 # Invoke the cron daemon

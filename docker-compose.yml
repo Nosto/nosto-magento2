@@ -9,8 +9,8 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: magento2_db
-    volumes:
-      - .docker/mysql_data:/var/lib/mysql:delegated
+#    volumes:
+#      - .docker/mysql_data:/var/lib/mysql:delegated
 
   # RabbitMQ container
   rabbitmq_m2:
@@ -71,4 +71,4 @@ services:
       NOSTO_WEB_HOOK_BASE_URL: https://my.dev.nos.to
       NOSTO_IFRAME_ORIGIN: https://my.dev.nos.to
       NOSTO_IFRAME_ORIGIN_REGEXP: .*
-      XDEBUG_CONFIG: remote_host=host.docker.internal
+      PHP_IDE_CONFIG: serverName=magento2.dev.nos.to:8081
