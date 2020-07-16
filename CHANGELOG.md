@@ -1,5 +1,8 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+# 5.0.2
+* Fix an issue where custom tags (tag1) were overridden by default tags
+  
 # 5.0.1
 * Fix an issue with configurable product prices being zero in Nosto product data when taxes are included in display prices
 

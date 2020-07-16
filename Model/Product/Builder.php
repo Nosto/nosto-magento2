@@ -225,7 +225,6 @@ class Builder
             }
             $nostoProduct->setCustomFields($this->getCustomFieldsWithAttributes($product, $store));
             // Update customised Tag1, Tag2 and Tag3
-            $this->amendAttributeTags($product, $nostoProduct, $store);
             if ($this->getDataHelper()->isAltimgTaggingEnabled($store)) {
                 $nostoProduct->setAlternateImageUrls($this->buildAlternativeImages($product, $store));
             }
@@ -245,6 +244,7 @@ class Builder
             if (($tags = $this->buildDefaultTags($product, $store)) !== []) {
                 $nostoProduct->setTag1($tags);
             }
+            $this->amendAttributeTags($product, $nostoProduct, $store);
             $brandAttribute = $this->getDataHelper()->getBrandAttribute($store);
             if ($product->hasData($brandAttribute)) {
                 $nostoProduct->setBrand(
