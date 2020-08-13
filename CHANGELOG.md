@@ -1,5 +1,8 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+# 5.0.3
+* Bump the PHP SDK version to be compatible with Nosto CMP module (no functional changes)
+
 # 5.0.2
 * Fix an issue where custom tags (tag1) were overridden by default tags
   
