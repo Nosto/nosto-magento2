@@ -264,4 +264,21 @@ class Repository
         );
         return $this->skuResource->getSkuPricesByIds($store->getWebsite(), $inStockProductsByIds);
     }
+
+    /**
+     * Loads (or reloads) Product object
+     * @param int $productId
+     * @param int $storeId
+     * @return ProductInterface|Product
+     * @throws NoSuchEntityException
+     */
+    public function reloadProduct($productId, $storeId)
+    {
+        return $this->productRepository->getById(
+            $productId,
+            false,
+            $storeId,
+            true
+        );
+    }
 }
