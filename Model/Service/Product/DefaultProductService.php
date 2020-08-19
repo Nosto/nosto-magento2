@@ -40,7 +40,6 @@ use Exception;
 use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\ProductRepository;
-use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\Store;
 use Nosto\Exception\FilteredProductException;
@@ -59,7 +58,7 @@ class DefaultProductService implements ProductServiceInterface
     /** @var NostoLogger */
     private $logger;
 
-    /** @var ProductRepository */
+    /** @var NostoProductRepository */
     private $nostoProductRepository;
 
     /**
