@@ -39,7 +39,6 @@ namespace Nosto\Tagging\Model\Service\Product;
 use Exception;
 use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Model\Product;
-use Magento\Catalog\Model\ProductRepository;
 use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\Store;
 use Nosto\Exception\FilteredProductException;
