@@ -39,7 +39,6 @@ namespace Nosto\Tagging\Model\Service\Product;
 use Exception;
 use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Model\Product;
-use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\Store;
 use Nosto\Exception\FilteredProductException;
@@ -47,7 +46,7 @@ use Nosto\Exception\NonBuildableProductException;
 use Nosto\Model\Product\Product as NostoProduct;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Product\Builder as NostoProductBuilder;
-use Magento\Catalog\Model\ProductRepository;
+use Nosto\Tagging\Model\Product\Repository as NostoProductRepository;
 
 class DefaultProductService implements ProductServiceInterface
 {
@@ -58,22 +57,22 @@ class DefaultProductService implements ProductServiceInterface
     /** @var NostoLogger */
     private $logger;
 
-    /** @var ProductRepository */
-    private $productRepository;
+    /** @var NostoProductRepository */
+    private $nostoProductRepository;
 
     /**
      * DefaultProductService constructor.
      * @param NostoProductBuilder $nostoProductBuilder
-     * @param ProductRepository $productRepository
+     * @param NostoProductRepository $nostoProductRepository
      * @param NostoLogger $logger
      */
     public function __construct(
         NostoProductBuilder $nostoProductBuilder,
-        ProductRepository $productRepository,
+        NostoProductRepository $nostoProductRepository,
         NostoLogger $logger
     ) {
         $this->nostoProductBuilder = $nostoProductBuilder;
-        $this->productRepository = $productRepository;
+        $this->nostoProductRepository = $nostoProductRepository;
         $this->logger = $logger;
     }
 
@@ -90,7 +89,10 @@ class DefaultProductService implements ProductServiceInterface
         /** @var Store $store */
         try {
             return $this->nostoProductBuilder->build(
-                $this->reloadProduct($product, $store),
+                $this->nostoProductRepository->reloadProduct(
+                    $product->getId(),
+                    $store->getId()
+                ),
                 $store
             );
         } catch (NonBuildableProductException $e) {
@@ -105,22 +107,5 @@ class DefaultProductService implements ProductServiceInterface
             );
             return null;
         }
-    }
-
-    /**
-     * Loads (or reloads) Product object
-     * @param ProductInterface $product
-     * @param StoreInterface $store
-     * @return ProductInterface|Product
-     * @throws NoSuchEntityException
-     */
-    private function reloadProduct(ProductInterface $product, StoreInterface $store)
-    {
-        return $this->productRepository->getById(
-            $product->getId(),
-            false,
-            $store->getId(),
-            true
-        );
     }
 }

@@ -1,5 +1,8 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+# 5.0.4
+* Fix an issue with incorrect prices when different base currencies are used in websites and taxes are included in display prices   
+
 # 5.0.3
 * Bump the PHP SDK version to be compatible with Nosto CMP module (no functional changes)
 
