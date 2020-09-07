@@ -414,10 +414,10 @@ class Price extends AbstractHelper
                     )
                 );
             }
-            $skuResult = $this->nostoProductRepository->getByIds([$minSku[self::KEY_SKU_PRODUCT_ID]]);
-            $skuProducts = $skuResult->getItems();
-            $skuProduct = reset($skuProducts);
-
+            $skuProduct = $this->nostoProductRepository->reloadProduct(
+                $minSku[self::KEY_SKU_PRODUCT_ID],
+                $store->getId()
+            );
             if ($skuProduct instanceof Product) {
                 $price = $this->getProductPrice($skuProduct, $store, true, $finalPrice);
             }

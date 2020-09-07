@@ -38,8 +38,6 @@
 namespace Nosto\Tagging\Model\Service\Sync;
 
 use Exception;
-use Magento\AsynchronousOperations\Api\Data\OperationInterfaceFactory;
-use Magento\Authorization\Model\UserContextInterface;
 use Magento\Framework\App\ObjectManager;
 use Magento\Framework\Bulk\BulkManagementInterface;
 use Magento\Framework\DataObject\IdentityGeneratorInterface;
@@ -143,8 +141,7 @@ abstract class AbstractBulkPublisher implements BulkPublisherInterface
             $result = $this->bulkManagement->scheduleBulk(
                 $bulkUuid,
                 $operations,
-                $bulkDescription,
-                UserContextInterface::USER_TYPE_INTEGRATION
+                $bulkDescription
             );
             if (!$result) {
                 /** @phan-suppress-next-line PhanTypeMismatchArgument */
