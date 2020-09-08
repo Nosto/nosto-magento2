@@ -45,7 +45,6 @@ use Magento\Customer\Helper\Session\CurrentCustomer;
 use Magento\Framework\Event\ManagerInterface as EventManager;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
-use Nosto\Model\AbstractPerson;
 use Nosto\Model\Customer;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
@@ -128,7 +127,8 @@ class Builder extends PersonBuilder
      * Builds person from the current session / logged in user
      *
      * @param CurrentCustomer $currentCustomer
-     * @return AbstractPerson|Customer|null
+     * @return \Nosto\Model\AbstractPerson|null
+     * @noinspection PhpFullyQualifiedNameUsageInspection
      */
     public function fromSession(CurrentCustomer $currentCustomer)
     {

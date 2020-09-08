@@ -136,7 +136,6 @@ class Ratings extends AbstractHelper
                 try {
                     $this->setRegistryProduct($product);
 
-                    /** @noinspection PhpUndefinedMethodInspection */
                     $ratings = $this->ratingsFactory->create()->getRichSnippet();
                 } catch (Exception $e) {
                     $this->resetRegistryProduct();

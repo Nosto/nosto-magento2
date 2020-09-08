@@ -98,7 +98,7 @@ class DefaultStockProvider implements StockProviderInterface
     public function getQuantitiesByIds(array $productIds, Website $website)
     {
         $quantities = [];
-        $stockItems = $this->getStockStatuses($productIds, $website);
+        $stockItems = $this->getStockStatuses($productIds);
         foreach ($stockItems as $stockItem) {
             $quantities[$stockItem->getProductId()] = $stockItem->getQty();
         }
@@ -107,13 +107,10 @@ class DefaultStockProvider implements StockProviderInterface
 
     /**
      * @param array $ids
-     * @param Website $website
      * @return StockStatusInterface[]
-     * @noinspection PhpUnusedParameterInspection
      */
     public function getStockStatuses(// @codingStandardsIgnoreLine
-        array $ids,
-        Website $website
+        array $ids
     ): array {
         return $this->stockRegistryProvider->getStockStatuses(
             $ids,
@@ -126,7 +123,7 @@ class DefaultStockProvider implements StockProviderInterface
      */
     public function getInStockProductIds(array $productIds, Website $website)
     {
-        $stockItems = $this->getStockStatuses($productIds, $website);
+        $stockItems = $this->getStockStatuses($productIds);
         $inStockIds = [];
         /** @var Status $stockItem */
         foreach ($stockItems as $stockItem) {

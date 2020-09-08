@@ -1,5 +1,4 @@
-<?php /** @noinspection PhpUndefinedNamespaceInspection */
-/** @noinspection PhpUndefinedClassInspection */
+<?php
 
 /**
  * Copyright (c) 2020, Nosto Solutions Ltd

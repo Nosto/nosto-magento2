@@ -38,7 +38,6 @@ namespace Nosto\Tagging\Model\Order\Buyer;
 
 use Magento\Sales\Api\Data\OrderAddressInterface;
 use Magento\Sales\Model\Order;
-use Nosto\Model\AbstractPerson;
 use Nosto\Model\Order\Buyer;
 use Nosto\Tagging\Model\Person\Builder as PersonBuilder;
 
@@ -78,8 +77,9 @@ class Builder extends PersonBuilder
      * Builds buyer from the order
      *
      * @param Order $order
-     * @return AbstractPerson|null
+     * @return \Nosto\Model\AbstractPerson|null
      * @suppress PhanTypeMismatchArgument
+     * @noinspection PhpFullyQualifiedNameUsageInspection
      */
     public function fromOrder(Order $order)
     {
