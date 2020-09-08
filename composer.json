@@ -27,7 +27,8 @@
     "magento/magento-coding-standard": "^5.0",
     "magento/module-asynchronous-operations": "^100.3",
     "phan/phan": "2.6",
-    "drenso/phan-extensions": "^2.5"
+    "drenso/phan-extensions": "^2.5",
+    "yotpo/module-review": "^2.9"
   },
   "suggest": {
     "magento/product-community-edition": "2.*",

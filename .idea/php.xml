@@ -198,6 +198,7 @@
       <path value="/Applications/MAMP/htdocs/magento/2.3/vendor/nosto/php-sdk" />
       <path value="/Applications/MAMP/htdocs/magento/2.3/generated" />
       <path value="$PROJECT_DIR$/vendor/graylog2/gelf-php" />
+      <path value="$PROJECT_DIR$/vendor/yotpo/module-review" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="7" />
