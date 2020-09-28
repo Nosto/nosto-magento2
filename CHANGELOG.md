@@ -1,5 +1,11 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+# 5.0.6
+* Add Content Security Policy (CSP) whitelist 
+
+# 5.0.5
+* Fix an issue where if deleted user with ID 1, the indexer will throw foreign keys constraints errors
+
 # 5.0.4
 * Fix an issue with incorrect prices when different base currencies are used in websites and taxes are included in display prices   
 
