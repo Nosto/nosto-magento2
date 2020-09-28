@@ -1,5 +1,8 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+# 5.0.6
+* Add Content Security Policy (CSP) whitelist 
+
 # 5.0.5
 * Fix an issue where if deleted user with ID 1, the indexer will throw foreign keys constraints errors
 
