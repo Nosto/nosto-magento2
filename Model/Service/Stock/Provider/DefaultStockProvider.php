@@ -75,7 +75,8 @@ class DefaultStockProvider implements StockProviderInterface
     /**
      * @inheritDoc
      */
-    public function getAvailableQuantity(// @codingStandardsIgnoreLine
+    // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter
+    public function getAvailableQuantity(
         Product $product,
         Website $website
     ) {
@@ -85,6 +86,7 @@ class DefaultStockProvider implements StockProviderInterface
     /**
      * @inheritDoc
      */
+    // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter
     public function isInStock(// @codingStandardsIgnoreLine
         Product $product,
         Website $website
@@ -95,6 +97,7 @@ class DefaultStockProvider implements StockProviderInterface
     /**
      * @inheritDoc
      */
+    // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter
     public function getQuantitiesByIds(array $productIds, Website $website)
     {
         $quantities = [];
@@ -121,6 +124,7 @@ class DefaultStockProvider implements StockProviderInterface
     /**
      * @inheritDoc
      */
+    // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter
     public function getInStockProductIds(array $productIds, Website $website)
     {
         $stockItems = $this->getStockStatuses($productIds);
