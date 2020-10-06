@@ -127,7 +127,7 @@ class Builder extends PersonBuilder
      * Builds person from the current session / logged in user
      *
      * @param CurrentCustomer $currentCustomer
-     * @return \Nosto\Model\AbstractPerson|null
+     * @return Customer|null
      * @noinspection PhpFullyQualifiedNameUsageInspection
      */
     public function fromSession(CurrentCustomer $currentCustomer)
