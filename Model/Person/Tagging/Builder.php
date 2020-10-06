@@ -138,7 +138,6 @@ class Builder extends PersonBuilder
             $gender = $this->getGenderName($customer);
             $customerReference = $this->getCustomerReference($currentCustomer);
 
-            /** @var $person Customer */
             return $this->build(
                 $customer->getFirstname(),
                 $customer->getLastname(),
