@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpFullyQualifiedNameUsageInspection */
 
 /**
  * Copyright (c) 2020, Nosto Solutions Ltd
