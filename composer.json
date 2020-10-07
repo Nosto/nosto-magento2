@@ -32,10 +32,7 @@
   },
   "suggest": {
     "magento/product-community-edition": "2.*",
-    "yotpo/module-review": "^2.9",
-    "ext-newrelic": "*",
-    "ext-code": "*",
-    "ext-json": "*"
+    "yotpo/module-review": "^2.9"
   },
   "license": [
     "OSL-3.0"

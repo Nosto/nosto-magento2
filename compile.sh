@@ -8,6 +8,7 @@ composer create-project magento/community-edition=2.3.2 .
 composer config minimum-stability dev
 composer config prefer-stable true
 composer require --no-update ${PROJECT_NAME}:dev-${BRANCH_NAME}
+composer require magento/module-asynchronous-operations:@stable
 composer update --no-dev
 bin/magento module:enable --all
 bin/magento setup:di:compile
