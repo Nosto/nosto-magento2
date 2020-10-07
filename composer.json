@@ -61,6 +61,6 @@
     "exclude": ["Dockerfile", ".DS_STORE", ".idea", ".phan", ".docker", "ruleset.xml", "phan.*", ".gitignore", "build.xml", ".github", "supervisord.conf", "entrypoint.sh", "/magento"]
   },
   "config": {
-    "process-timeout":0
+    "process-timeout":3600
   }
 }
