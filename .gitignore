@@ -7,3 +7,4 @@ pub
 bin
 phan.xml
 chk*xml
+output

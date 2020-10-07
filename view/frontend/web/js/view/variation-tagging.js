@@ -1,3 +1,4 @@
+/** @noinspection DuplicatedCode */
 /*
  * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
@@ -33,29 +34,34 @@
  *
  */
 
+// noinspection JSUnresolvedFunction
 define([
-    'uiComponent',
-    'Magento_Customer/js/customer-data',
-    'nostojs',
-    'jquery'
-], function (Component, customerData, nostojs, $) {
-    'use strict';
+  'uiComponent',
+  'Magento_Customer/js/customer-data',
+  'nostojs'
+], function (Component, customerData, nostojs) {
+  'use strict';
 
-    return Component.extend({
-        initialize: function () {
-            this._super();
-            //noinspection JSUnusedGlobalSymbols
-            this.variationTagging = customerData.get('active-variation-tagging');
-        },
-        reloadRecommendations: function () {
-            // Remove the static variation if it exists - it should not but as a safeguard we rename the class
-            $('.nosto_variation').removeClass('nosto_variation').addClass('nosto_variation_static');
-            $('.nosto_variation_dynamic').addClass('nosto_variation');
-            if (typeof nostojs === 'function') {
-                nostojs(function (api) {
-                    api.loadRecommendations();
-                });
-            }
-        }
-    });
+  // noinspection JSUnusedGlobalSymbols,JSCheckFunctionSignatures
+  return Component.extend({
+    initialize: function () {
+      // noinspection JSUnresolvedFunction
+      this._super();
+      //noinspection JSUnusedGlobalSymbols
+      this.variationTagging = customerData.get('active-variation-tagging');
+    },
+    reloadRecommendations: function () {
+      // Remove the static variation if it exists - it should not but as a safeguard we rename the class
+      const element = document.querySelector(".nosto_variation");
+      element.classList.remove('nosto_variation');
+      element.classList.add('nosto_variation_static');
+      document.querySelector(".nosto_variation_dynamic").classList.add("nosto_variation")
+      if (typeof nostojs === 'function') {
+        nostojs(function (api) {
+          // noinspection JSUnresolvedFunction
+          api.loadRecommendations();
+        });
+      }
+    }
+  });
 });

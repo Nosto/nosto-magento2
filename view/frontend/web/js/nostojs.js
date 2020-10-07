@@ -33,11 +33,13 @@
  *
  */
 
+// noinspection JSUnresolvedFunction
 define([], function () {
-    //noinspection AmdModulesDependencies
-    if (typeof nostojs === 'function') {
-        return nostojs;
-    } else if (typeof window['nostojs'] === 'function') {
-        return window['nostojs'];
-    }
+  //noinspection AmdModulesDependencies,JSUnresolvedVariable
+  if (typeof nostojs === 'function') {
+      // noinspection JSUnresolvedVariable
+	  return nostojs;
+  } else if (typeof window['nostojs'] === 'function') {
+    return window['nostojs'];
+  }
 });

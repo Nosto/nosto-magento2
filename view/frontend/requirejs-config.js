@@ -33,11 +33,11 @@
  *
  */
 
-var config = {
-    map: {
-        '*': {
-            nostojs: 'Nosto_Tagging/js/nostojs',
-            recobuy: 'Nosto_Tagging/js/recobuy'
-        }
+const config = {
+  map: {
+    '*': {
+      nostojs: 'Nosto_Tagging/js/nostojs',
+      recobuy: 'Nosto_Tagging/js/recobuy'
     }
+  }
 };

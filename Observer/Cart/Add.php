@@ -67,7 +67,6 @@ class Add implements ObserverInterface
     private $cookieMetadataFactory;
     const COOKIE_NAME = 'nosto.itemsAddedToCart';
 
-    /** @noinspection PhpUndefinedClassInspection */
     /**
      * Constructor.
      *

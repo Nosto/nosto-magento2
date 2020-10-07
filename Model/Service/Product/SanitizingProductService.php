@@ -36,6 +36,7 @@
 
 namespace Nosto\Tagging\Model\Service\Product;
 
+use Exception;
 use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Store\Api\Data\StoreInterface;
 use Nosto\Tagging\Logger\Logger;
@@ -75,7 +76,7 @@ class SanitizingProductService implements ProductServiceInterface
         if ($nostoProduct !== null) {
             try {
                 return $nostoProduct->sanitize();
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $this->logger->exception($e);
             }
         }

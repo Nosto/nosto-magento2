@@ -60,7 +60,6 @@ class Order extends Success
     private $nostoOrderBuilder;
     private $checkoutSession;
 
-    /** @noinspection PhpUndefinedClassInspection */
     /**
      * Constructor.
      *
@@ -74,7 +73,6 @@ class Order extends Success
      */
     public function __construct(
         Context $context,
-        /** @noinspection PhpUndefinedClassInspection */
         OrderFactory $orderFactory,
         NostoOrderBuilder $orderBuilder,
         Session $checkoutSession,

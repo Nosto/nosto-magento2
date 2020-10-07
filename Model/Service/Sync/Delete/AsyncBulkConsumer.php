@@ -36,7 +36,6 @@
 
 namespace Nosto\Tagging\Model\Service\Sync\Delete;
 
-use Nosto\Exception\MemoryOutOfBoundsException;
 use Nosto\NostoException;
 use Nosto\Tagging\Model\Service\Sync\AbstractBulkConsumer;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
@@ -80,7 +79,6 @@ class AsyncBulkConsumer extends AbstractBulkConsumer
      * @inheritDoc
      * @param array $productIds
      * @param string $storeId
-     * @throws MemoryOutOfBoundsException
      * @throws NostoException
      */
     public function doOperation(array $productIds, string $storeId)

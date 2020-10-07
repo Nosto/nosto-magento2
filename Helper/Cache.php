@@ -113,7 +113,6 @@ class Cache extends AbstractHelper
         try {
             $caches = $this->typeList->getTypes();
             foreach ($caches as $cache) {
-                /** @noinspection PhpUndefinedMethodInspection */
                 $id = $cache->getId();
                 $this->typeList->cleanType($id);
             }

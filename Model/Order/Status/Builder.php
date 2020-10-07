@@ -48,10 +48,10 @@ class Builder
 {
     const ORDER_NUMBER_PREFIX = 'M2_';
 
-    /** @var NostoLogger  */
+    /** @var NostoLogger */
     private $logger;
 
-    /** @var ManagerInterface  */
+    /** @var ManagerInterface */
     private $eventManager;
 
     /**
@@ -73,7 +73,7 @@ class Builder
      */
     public function build(Order $order)
     {
-        $orderNumber = self::ORDER_NUMBER_PREFIX.''.$order->getId();
+        $orderNumber = self::ORDER_NUMBER_PREFIX . '' . $order->getId();
         $orderStatus = $order->getStatus();
         $updatedAt = $order->getUpdatedAt();
         try {

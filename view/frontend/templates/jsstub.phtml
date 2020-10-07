@@ -51,17 +51,17 @@
  * @var Nosto\Tagging\Block\Stub $block
  */
 ?>
-<!-- Nosto Javascript Stub -->
+<!--suppress JSUnresolvedVariable, JSUnresolvedFunction -->
 <script type="text/javascript">
-    (function () {
-        var name = "nostojs";
-        window[name] = window[name] || function (cb) {
-            (window[name].q = window[name].q || []).push(cb);
-        };
-        <?php if ($block->isRecoAutoloadDisabled()): ?>
-        window[name](function(api){
-            api.setAutoLoad(false);
-        });
-        <?php endif; ?>
-    })();
+  (function () {
+    const name = "nostojs";
+    window[name] = window[name] || function (cb) {
+      (window[name].q = window[name].q || []).push(cb);
+    };
+      <?php if ($block->isRecoAutoloadDisabled()): ?>
+    window[name](function (api) {
+      api.setAutoLoad(false);
+    });
+      <?php endif; ?>
+  })();
 </script>

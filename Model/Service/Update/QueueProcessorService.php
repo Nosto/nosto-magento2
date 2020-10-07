@@ -36,6 +36,7 @@
 
 namespace Nosto\Tagging\Model\Service\Update;
 
+use Exception;
 use Magento\Framework\Exception\AlreadyExistsException;
 use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
 use Magento\Store\Model\Store;
@@ -288,7 +289,7 @@ class QueueProcessorService extends AbstractService
                 // phpcs:ignore
                 $this->queueRepository->delete($queueItem);
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->getLogger()->exception($e);
         }
     }

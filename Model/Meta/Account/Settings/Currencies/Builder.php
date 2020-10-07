@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
@@ -164,6 +165,7 @@ class Builder
     {
         return in_array($currencyCode, self::ZERO_DECIMAL_CURRENCIES);
     }
+
     /**
      * Returns true if symbol position is before the amount, false otherwise.
      *
