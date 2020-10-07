@@ -124,7 +124,7 @@ class Create extends Base
      * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      * @phpcs:disable Generic.Metrics.CyclomaticComplexity
      * @phpcs:disable Generic.Metrics.NestingLevel
-     * @throws \Zend_Validate_Exception
+     * @throws Zend_Validate_Exception
      */
     public function execute()
     {
