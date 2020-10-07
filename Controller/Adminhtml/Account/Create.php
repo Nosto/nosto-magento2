@@ -1,4 +1,4 @@
-<?php /** @noinspection PhpMissingParentConstructorInspection */
+<?php
 /**
  * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
@@ -121,7 +121,7 @@ class Create extends Base
      * @throws LocalizedException
      * @throws Zend_Validate_Exception
      * @suppress PhanTypeMismatchArgument
-     * @SuppressWarnings(PHPMD.CyclomaticComplexity
+     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      * @phpcs:disable Generic.Metrics.CyclomaticComplexity
      * @phpcs:disable Generic.Metrics.NestingLevel
      * @throws \Zend_Validate_Exception

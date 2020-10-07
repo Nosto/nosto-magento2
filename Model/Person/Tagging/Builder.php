@@ -128,7 +128,6 @@ class Builder extends PersonBuilder
      *
      * @param CurrentCustomer $currentCustomer
      * @return Customer|null
-     * @noinspection PhpFullyQualifiedNameUsageInspection
      */
     public function fromSession(CurrentCustomer $currentCustomer)
     {
@@ -138,6 +137,7 @@ class Builder extends PersonBuilder
             $gender = $this->getGenderName($customer);
             $customerReference = $this->getCustomerReference($currentCustomer);
 
+            /** @noinspection PhpIncompatibleReturnTypeInspection */
             return $this->build(
                 $customer->getFirstname(),
                 $customer->getLastname(),
