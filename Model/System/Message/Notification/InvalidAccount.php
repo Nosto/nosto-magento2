@@ -73,8 +73,7 @@ class InvalidAccount implements MessageInterface
      */
     public function getIdentity()
     {
-        //@codingStandardsIgnoreLine
-        return md5('Nosto_Account_Notification');
+        return sha1('Nosto_Account_Notification');
     }
 
     /**
