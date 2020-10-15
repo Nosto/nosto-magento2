@@ -38,7 +38,7 @@ namespace Nosto\Tagging\Model\Service\Product;
 
 use Nosto\Model\Product\Product;
 use Nosto\Types\Product\ProductInterface;
-use Nosto\Util\Serialize;
+use Nosto\Util\Base64Serialize;
 
 /**
  * Default class for serializing and deserializing objects
@@ -50,7 +50,7 @@ class DefaultProductSerializer implements ProductSerializerInterface
      */
     public function fromString($data)
     {
-        return Serialize::fromString(base64_decode($data), [Product::class]);
+        return Base64Serialize::fromString($data, [Product::class]);
     }
 
     /**
@@ -58,6 +58,6 @@ class DefaultProductSerializer implements ProductSerializerInterface
      */
     public function toString(ProductInterface $product)
     {
-        return base64_encode(Serialize::toString($product));
+        return Base64Serialize::toString($product);
     }
 }
