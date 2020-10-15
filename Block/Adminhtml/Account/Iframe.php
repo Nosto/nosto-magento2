@@ -40,6 +40,7 @@ use Exception;
 use Magento\Backend\Block\Template as BlockTemplate;
 use Magento\Backend\Block\Template\Context as BlockContext;
 use Magento\Backend\Model\Auth\Session;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NotFoundException;
 use Nosto\Mixins\IframeTrait;
 use Nosto\Nosto;
@@ -57,16 +58,13 @@ use Nosto\Tagging\Model\User\Builder as NostoCurrentUserBuilder;
 class Iframe extends BlockTemplate
 {
     use IframeTrait;
+
     const IFRAME_VERSION = 1;
 
-    /**
-     * Default iframe origin regexp for validating window.postMessage() calls.
-     */
-    const DEFAULT_IFRAME_ORIGIN_REGEXP = '(https:\/\/(.*)\.hub\.nosto\.com)|(https:\/\/my\.nosto\.com)';
     private $nostoHelperAccount;
     private $backendAuthSession;
-    private $nostoIframeMetaBuilder;
-    private $nostoCurrentUserBuilder;
+    private $iframeMetaBuilder;
+    private $currentUserBuilder;
     private $nostoHelperScope;
     private $logger;
 
@@ -77,7 +75,7 @@ class Iframe extends BlockTemplate
      * @param NostoHelperAccount $nostoHelperAccount the account helper.
      * @param Session $backendAuthSession
      * @param NostoIframeMetaBuilder $iframeMetaBuilder
-     * @param NostoCurrentUserBuilder $nostoCurrentUserBuilder
+     * @param NostoCurrentUserBuilder $currentUserBuilder
      * @param NostoHelperScope $nostoHelperScope
      * @param NostoLogger $logger
      * @param array $data
@@ -87,7 +85,7 @@ class Iframe extends BlockTemplate
         NostoHelperAccount $nostoHelperAccount,
         Session $backendAuthSession,
         NostoIframeMetaBuilder $iframeMetaBuilder,
-        NostoCurrentUserBuilder $nostoCurrentUserBuilder,
+        NostoCurrentUserBuilder $currentUserBuilder,
         NostoHelperScope $nostoHelperScope,
         NostoLogger $logger,
         array $data = []
@@ -96,8 +94,8 @@ class Iframe extends BlockTemplate
 
         $this->nostoHelperAccount = $nostoHelperAccount;
         $this->backendAuthSession = $backendAuthSession;
-        $this->nostoIframeMetaBuilder = $iframeMetaBuilder;
-        $this->nostoCurrentUserBuilder = $nostoCurrentUserBuilder;
+        $this->iframeMetaBuilder = $iframeMetaBuilder;
+        $this->currentUserBuilder = $currentUserBuilder;
         $this->nostoHelperScope = $nostoHelperScope;
         $this->logger = $logger;
     }
@@ -130,9 +128,7 @@ class Iframe extends BlockTemplate
             $this->backendAuthSession->setData('nosto_message', null);
         }
 
-        $url = $this->buildURL($params);
-
-        return $url;
+        return $this->buildURL($params);
     }
 
     /**
@@ -141,6 +137,7 @@ class Iframe extends BlockTemplate
      *
      * @return array the config.
      * @throws NotFoundException
+     * @throws LocalizedException
      */
     public function getIframeConfig()
     {
@@ -169,7 +166,7 @@ class Iframe extends BlockTemplate
     {
         try {
             $store = $this->nostoHelperScope->getSelectedStore($this->getRequest());
-            return $this->nostoIframeMetaBuilder->build($store);
+            return $this->iframeMetaBuilder->build($store);
         } catch (Exception $e) {
             $this->logger->exception($e);
         }
@@ -182,7 +179,7 @@ class Iframe extends BlockTemplate
      */
     public function getUser()
     {
-        return $this->nostoCurrentUserBuilder->build();
+        return $this->currentUserBuilder->build();
     }
 
     /**

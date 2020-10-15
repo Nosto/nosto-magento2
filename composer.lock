@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "90c36c0f4ec4751f41cb679dcb6015fd",
+    "content-hash": "0acb16e56ea8bd9f4167aefa99748aac",
     "packages": [
         {
             "name": "colinmollenhour/credis",
@@ -7957,6 +7957,41 @@
                 }
             ],
             "time": "2020-07-02T05:49:25+00:00"
+        },
+        {
+            "name": "yotpo/module-review",
+            "version": "2.9.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/YotpoLtd/magento2-module-yotpo-reviews.git",
+                "reference": "b9a56557ed8a9533b3f13ec54044d12d83e23b92"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/YotpoLtd/magento2-module-yotpo-reviews/zipball/b9a56557ed8a9533b3f13ec54044d12d83e23b92",
+                "reference": "b9a56557ed8a9533b3f13ec54044d12d83e23b92",
+                "shasum": ""
+            },
+            "require": {
+                "magento/framework": ">=101.0.0",
+                "php": "~5.6.0|^7.0"
+            },
+            "type": "magento2-module",
+            "autoload": {
+                "files": [
+                    "registration.php"
+                ],
+                "psr-4": {
+                    "Yotpo\\Yotpo\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "OSL-3.0",
+                "AFL-3.0"
+            ],
+            "description": "Yotpo Reviews extension for Magento2",
+            "time": "2019-11-14T09:42:06+00:00"
         }
     ],
     "aliases": [],
@@ -7968,8 +8003,6 @@
         "php": ">=7.0.0",
         "ext-json": "*"
     },
-    "platform-dev": {
-        "php": ">=7.1.0"
-    },
+    "platform-dev": [],
     "plugin-api-version": "1.1.0"
 }

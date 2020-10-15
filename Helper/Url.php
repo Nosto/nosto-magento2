@@ -40,11 +40,11 @@ use Exception;
 use Magento\Backend\Helper\Data as BackendDataHelper;
 use Magento\Catalog\Model\Category;
 use Magento\Catalog\Model\Product;
-use Magento\Catalog\Model\ResourceModel\Category\Collection;
 use Magento\Catalog\Model\ResourceModel\Category\CollectionFactory as CategoryCollectionFactory;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Url as UrlBuilder;
 use Magento\Framework\UrlInterface;
 use Magento\Store\Model\Store;
@@ -54,6 +54,7 @@ use Nosto\Tagging\Helper\Data as NostoDataHelper;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Product\Repository as ProductRepository;
 use Nosto\Tagging\Model\Product\Url\Builder as NostoUrlBuilder;
+use Zend_Uri_Exception;
 use Zend_Uri_Http;
 
 /**
@@ -76,19 +77,9 @@ class Url extends AbstractHelper
     const MAGENTO_URL_PARAMETER_STORE = '___store';
 
     /**
-     * The SID (session id) parameter in Magento URLs
-     */
-    const MAGENTO_URL_PARAMETER_SID = 'SID';
-
-    /**
      * The array option key for scope in Magento's URLs
      */
     const MAGENTO_URL_OPTION_SCOPE = '_scope';
-
-    /**
-     * The array option key for using secure URLs in Magento
-     */
-    const MAGENTO_URL_OPTION_SECURE = '_secure';
 
     /**
      * The array option key for store to url in Magento's URLs
@@ -144,7 +135,6 @@ class Url extends AbstractHelper
     private $nostoUrlBuilder;
     private $logger;
 
-    /** @noinspection PhpUndefinedClassInspection */
     /**
      * Constructor.
      *
@@ -160,7 +150,6 @@ class Url extends AbstractHelper
     public function __construct(
         Context $context,
         ProductRepository $productRepository,
-        /** @noinspection PhpUndefinedClassInspection */
         CategoryCollectionFactory $categoryCollectionFactory,
         NostoDataHelper $nostoDataHelper,
         UrlBuilder $urlBuilder,
@@ -229,9 +218,6 @@ class Url extends AbstractHelper
     public function getPreviewUrlCategory(Store $store)
     {
         $rootCatId = (int)$store->getRootCategoryId();
-        /** @noinspection PhpUndefinedClassInspection */
-        /** @var Collection $collection */
-        /** @noinspection PhpUndefinedMethodInspection */
         $collection = $this->categoryCollectionFactory->create();
         $collection->addAttributeToFilter('is_active', ['eq' => 1]);
         $collection->addAttributeToFilter('path', ['like' => "1/$rootCatId/%"]);
@@ -247,7 +233,7 @@ class Url extends AbstractHelper
                     $url
                 );
             }
-            
+
             return $this->addNostoDebugParamToUrl($url);
         }
 
@@ -350,7 +336,8 @@ class Url extends AbstractHelper
      * @param Store $store the store to get the url for.
      * @param string $currentUrl restore cart url
      * @return string cart url.
-     * @throws \Zend_Uri_Exception
+     * @throws Zend_Uri_Exception
+     * @throws NoSuchEntityException
      */
     public function getUrlCart(Store $store, $currentUrl)
     {
@@ -384,14 +371,12 @@ class Url extends AbstractHelper
      */
     public function getUrlOptionsWithNoSid(Store $store)
     {
-        $params = [
+        return [
             self::MAGENTO_URL_OPTION_SCOPE_TO_URL => $this->nostoDataHelper->getStoreCodeToUrl($store),
             self::MAGENTO_URL_OPTION_NOSID => true,
             self::MAGENTO_URL_OPTION_LINK_TYPE => self::$urlType,
             self::MAGENTO_URL_OPTION_SCOPE => $store->getCode(),
         ];
-
-        return $params;
     }
 
     /**

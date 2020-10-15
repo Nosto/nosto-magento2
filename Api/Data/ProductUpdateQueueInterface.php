@@ -127,6 +127,7 @@ interface ProductUpdateQueueInterface
      *
      * @param int $id
      * @return self
+     * @SuppressWarnings(PHPMD.ShortVariable)
      */
     public function setId($id);
 

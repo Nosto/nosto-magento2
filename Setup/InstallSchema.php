@@ -39,6 +39,7 @@ namespace Nosto\Tagging\Setup;
 use Magento\Framework\Setup\InstallSchemaInterface;
 use Magento\Framework\Setup\ModuleContextInterface;
 use Magento\Framework\Setup\SchemaSetupInterface;
+use Zend_Db_Exception;
 
 class InstallSchema extends Core implements InstallSchemaInterface
 {
@@ -47,7 +48,7 @@ class InstallSchema extends Core implements InstallSchemaInterface
      *
      * @param SchemaSetupInterface $setup
      * @param ModuleContextInterface $context
-     * @throws \Zend_Db_Exception
+     * @throws Zend_Db_Exception
      */
     public function install(// @codingStandardsIgnoreLine
         SchemaSetupInterface $setup,

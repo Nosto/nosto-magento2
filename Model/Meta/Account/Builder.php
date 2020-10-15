@@ -48,6 +48,7 @@ use Nosto\Tagging\Helper\Data as NostoDataHelper;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Meta\Account\Billing\Builder as NostoBillingBuilder;
 use Nosto\Tagging\Model\Meta\Account\Settings\Currencies\Builder as NostoCurrenciesBuilder;
+use stdClass;
 
 class Builder
 {
@@ -91,7 +92,7 @@ class Builder
     /**
      * @param Store $store
      * @param $accountOwner
-     * @param \stdClass|array $signupDetails
+     * @param stdClass|array $signupDetails
      * @return Signup
      */
     public function build(Store $store, $accountOwner, $signupDetails)

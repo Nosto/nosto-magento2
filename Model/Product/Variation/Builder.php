@@ -50,6 +50,7 @@ use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
 use Magento\Store\Model\Store;
 use Nosto\Model\Product\Product as NostoProduct;
 use Nosto\Model\Product\Variation;
+use Nosto\NostoException;
 use Nosto\Tagging\Helper\Currency as CurrencyHelper;
 use Nosto\Tagging\Helper\Price as NostoPriceHelper;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
@@ -144,7 +145,7 @@ class Builder
      * @param Store $store
      * @return float
      * @throws LocalizedException
-     * @throws NoSuchEntityException
+     * @throws NoSuchEntityException|NostoException
      */
     private function getLowestVariationPrice(Product $product, Group $group, Store $store)
     {

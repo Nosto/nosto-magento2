@@ -40,56 +40,57 @@
 ?>
 
 <style>
-    .token-container{
-        background: #f3f4f4;
-    }
-    .token-title{
-        color: #303030;
-        float: none;
-        font-size: 14px;
-        font-weight: 600;
-        padding-right: 30px;
-        text-align: right;
-        width: 33%;
-        text-transform: capitalize;
-    }
+  .token-container {
+    background: #f3f4f4;
+  }
+
+  .token-title {
+    color: #303030;
+    float: none;
+    font-size: 14px;
+    font-weight: 600;
+    padding-right: 30px;
+    text-align: right;
+    width: 33%;
+    text-transform: capitalize;
+  }
 </style>
 <fieldset>
-    <?php $accountDetails =  $block->getAccountDetails(); ?>
+    <?php $accountDetails = $block->getAccountDetails(); ?>
     <?php if ($accountDetails === null): ?>
-        <div>
-            <?= $block->escapeHtml(__('There is no account connected')) ?>
-        </div>
+      <div>
+          <?= $block->escapeHtml(__('There is no account connected')) ?>
+      </div>
     <?php else: ?>
-        <table>
+      <table>
+        <tr>
+          <td class="token-title">
+              <?= $block->escapeHtml(__('Account ID')); ?>
+          </td>
+          <td class="token-container" style="padding: 2.2rem 1.5rem 1rem 1.5rem;">
+            <label>
+              <input type="text" readonly
+                     value="<?= $block->escapeHtml($accountDetails->getName()); ?>"
+              />
+            </label>
+          </td>
+        </tr>
+          <?php foreach ($accountDetails->getTokens() as $token): ?>
             <tr>
-                <td class="token-title">
-                    <?= $block->escapeHtml(__('Account ID')); ?>
-                </td>
-                <td class="token-container" style="padding: 2.2rem 1.5rem 1rem 1.5rem;">
-                  <label>
-                    <input type="text" readonly
-                        value = "<?= $block->escapeHtml($accountDetails->getName()); ?>"
-                    />
-                  </label>
-                </td>
+              <td class="token-title">
+                  <?= $block->escapeHtml($token->getName()) ?> Token
+              </td>
+              <td class="token-container" style="padding: 2.2rem 1.5rem 1rem 1.5rem;">
+                <label>
+                  <input type="text" readonly style="width:100%; word-wrap:break-word;"
+                         value="<?= $block->escapeHtml($token->getValue()) ?>"
+                  />
+                </label>
+              </td>
             </tr>
-        <?php foreach ($accountDetails->getTokens() as $token): ?>
-            <tr>
-                <td class="token-title">
-                    <?= $block->escapeHtml($token->getName()) ?> Token
-                </td>
-                <td class="token-container" style="padding: 2.2rem 1.5rem 1rem 1.5rem;">
-                  <label>
-                    <input type="text" readonly style="width:100%; word-wrap:break-word;"
-                        value="<?= $block->escapeHtml($token->getValue()) ?>"
-                    />
-                  </label>
-                </td>
-            </tr>
-        <?php endforeach; ?>
+          <?php endforeach; ?>
 
-        </table>
+      </table>
     <?php endif; ?>
 
 </fieldset>

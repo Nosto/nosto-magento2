@@ -50,10 +50,10 @@ class Collection extends MagentoProductCollection
         return $this->addAttributeToSelect($this->getIdFieldName())
             ->addAttributeToFilter(
                 'status',
-                ['eq'=> Status::STATUS_ENABLED]
+                ['eq' => Status::STATUS_ENABLED]
             )->addAttributeToFilter(
                 'visibility',
-                ['neq'=> Visibility::VISIBILITY_NOT_VISIBLE]
+                ['neq' => Visibility::VISIBILITY_NOT_VISIBLE]
             );
     }
 

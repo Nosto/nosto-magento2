@@ -120,7 +120,7 @@ class NostoAccountConnectCommand extends Command
                 InputOption::VALUE_REQUIRED,
                 'Email token'
             )->addOption(
-                Token::API_GRAPHQL. self::TOKEN_SUFFIX,
+                Token::API_GRAPHQL . self::TOKEN_SUFFIX,
                 null,
                 InputOption::VALUE_REQUIRED,
                 'Apps Token'
@@ -186,8 +186,8 @@ class NostoAccountConnectCommand extends Command
                 $confirmOverride = $io->confirm(
                     'Local Nosto account found for this store view. Override tokens?',
                     false
-                ):
-               true;
+                ) :
+                true;
             if ($confirmOverride) {
                 $account->setTokens($tokens);
                 return $this->nostoHelperAccount->saveAccount($account, $store);

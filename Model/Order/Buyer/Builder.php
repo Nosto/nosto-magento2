@@ -38,7 +38,6 @@ namespace Nosto\Tagging\Model\Order\Buyer;
 
 use Magento\Sales\Api\Data\OrderAddressInterface;
 use Magento\Sales\Model\Order;
-use Nosto\Model\AbstractPerson;
 use Nosto\Model\Order\Buyer;
 use Nosto\Tagging\Model\Person\Builder as PersonBuilder;
 
@@ -78,15 +77,16 @@ class Builder extends PersonBuilder
      * Builds buyer from the order
      *
      * @param Order $order
-     * @return AbstractPerson|null
+     * @return \Nosto\Model\AbstractPerson|null
      * @suppress PhanTypeMismatchArgument
+     * @noinspection PhpFullyQualifiedNameUsageInspection
      */
     public function fromOrder(Order $order)
     {
         $address = $order->getBillingAddress();
         $telephone = null;
-        $postcode  = null;
-        $countryId =  null;
+        $postcode = null;
+        $countryId = null;
         if ($address instanceof OrderAddressInterface) {
             $telephone = $address->getTelephone() ? (string)$address->getTelephone() : null;
             $postcode = $address->getPostcode() ? (string)$address->getPostcode() : null;
@@ -94,8 +94,8 @@ class Builder extends PersonBuilder
         }
         $customerFirstname = $order->getCustomerFirstname() ? (string)$order->getCustomerFirstname() : '';
         $customerLastname = $order->getCustomerLastname() ? (string)$order->getCustomerLastname() : '';
-        $customerEmail = $order->getCustomerEmail() ? (string)$order->getCustomerEmail(): '';
-        $buyer = $this->build(
+        $customerEmail = $order->getCustomerEmail() ? (string)$order->getCustomerEmail() : '';
+        return $this->build(
             $customerFirstname,
             $customerLastname,
             $customerEmail,
@@ -103,7 +103,5 @@ class Builder extends PersonBuilder
             $postcode,
             $countryId
         );
-
-        return $buyer;
     }
 }

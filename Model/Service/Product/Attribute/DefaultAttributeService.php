@@ -75,7 +75,7 @@ class DefaultAttributeService extends AbstractAttributeService
     {
         $attributes = $product->getAttributes(); // This result is cached by Magento
         if (isset($attributes[$attributeCode]) && $attributes[$attributeCode] instanceof AbstractAttribute) {
-            /** @var AbstractAttribute $attributes[$attributeCode] */
+            /** @var AbstractAttribute $attributes [$attributeCode] */
             return $this->getAttributeValue($product, $attributes[$attributeCode]);
         }
         return null;

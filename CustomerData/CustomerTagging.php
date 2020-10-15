@@ -39,6 +39,7 @@ namespace Nosto\Tagging\CustomerData;
 use Magento\Customer\CustomerData\SectionSourceInterface;
 use Magento\Customer\Helper\Session\CurrentCustomer;
 use Magento\Framework\Stdlib\CookieManagerInterface;
+use Nosto\Model\Customer;
 use Nosto\Tagging\Model\Customer\Customer as NostoCustomer;
 use Nosto\Tagging\Model\Person\Tagging\Builder as NostoPersonBuilder;
 
@@ -65,7 +66,7 @@ class CustomerTagging extends HashedTagging implements SectionSourceInterface
     }
 
     /**
-     * @inheritDoc
+     * @return array
      */
     public function getSectionData()
     {
@@ -73,6 +74,7 @@ class CustomerTagging extends HashedTagging implements SectionSourceInterface
         if ($this->currentCustomer instanceof CurrentCustomer
             && $this->currentCustomer->getCustomerId()
         ) {
+            /** @var Customer $customer */
             $customer = $this->personBuilder->fromSession($this->currentCustomer);
             if ($customer === null) {
                 return [];

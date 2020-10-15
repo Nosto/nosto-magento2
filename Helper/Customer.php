@@ -97,6 +97,8 @@ class Customer extends AbstractHelper
 
     /**
      * @return int|null
+     * @throws LocalizedException
+     * @throws NoSuchEntityException
      */
     public function getGroupId()
     {

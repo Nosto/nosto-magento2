@@ -66,7 +66,6 @@ class Order extends Base
      */
     public function __construct(
         Context $context,
-        /** @noinspection PhpUndefinedClassInspection */
         NostoHelperScope $nostoHelperScope,
         NostoHelperAccount $nostoHelperAccount,
         NostoOrderCollection $nostoOrderCollection

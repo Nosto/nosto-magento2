@@ -113,7 +113,7 @@ class UpdateMarketingPermission implements ObserverInterface
                 continue;
             }
             $operation = new MarketingPermission($nostoAccount);
-            $isSubscribed = $subscriber->getSubscriberStatus() === Subscriber::STATUS_SUBSCRIBED ? true : false;
+            $isSubscribed = $subscriber->getSubscriberStatus() === Subscriber::STATUS_SUBSCRIBED;
             try {
                 $operation->update(
                     $subscriber->getSubscriberEmail(),

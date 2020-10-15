@@ -70,8 +70,8 @@ class Ratings implements OptionSourceInterface
         ];
 
         if ($this->nostoRatingsHelper->canUseYotpo()) {
-            $yotpo =  ['value' => Data::SETTING_VALUE_YOTPO_RATINGS, 'label' => new Phrase('Yotpo Ratings')];
-            $options[]= $yotpo;
+            $yotpo = ['value' => Data::SETTING_VALUE_YOTPO_RATINGS, 'label' => new Phrase('Yotpo Ratings')];
+            $options[] = $yotpo;
         }
 
         if ($this->nostoRatingsHelper->canUseMagentoRatingsAndReviews()) {

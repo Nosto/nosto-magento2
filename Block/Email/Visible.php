@@ -73,11 +73,12 @@ class Visible extends Template
      * Returns "" if current store view has nosto, otherwise 'style="display:none"'
      *
      * @return string
+     * @SuppressWarnings(PHPMD.CamelCaseMethodName)
      */
     public function _toHtml()
     {
         $store = $this->nostoHelperScope->getStore(true);
         $account = $this->nostoHelperAccount->findAccount($store);
-        return $account == null ? 'style="display:none"' : '';
+        return $account === null ? 'style="display:none"' : '';
     }
 }

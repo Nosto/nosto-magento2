@@ -1,4 +1,7 @@
 <?php /** @noinspection PhpUnhandledExceptionInspection */
+
+use Nosto\Tagging\Block\Adminhtml\Account\Iframe;
+
 /**
  * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
@@ -35,7 +38,7 @@
  */
 
 /**
- * @var \Nosto\Tagging\Block\Adminhtml\Account\Iframe $block
+ * @var Iframe $block
  */
 ?>
 
@@ -46,4 +49,4 @@
         frameborder='0'
         scrolling='no'
         style="min-height: 600px;"
-        data-mage-init='<?=$block->escapeHtml(json_encode($block->getIframeConfig()));?>'></iframe>
+        data-mage-init='<?= $block->escapeHtml(json_encode($block->getIframeConfig())); ?>'></iframe>

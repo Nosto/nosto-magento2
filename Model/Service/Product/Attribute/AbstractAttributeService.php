@@ -72,9 +72,6 @@ abstract class AbstractAttributeService implements AttributeServiceInterface
         $this->attributeProvider = $attributeProvider;
     }
 
-    /**
-     * @inheritDoc
-     */
     private function getAttributesByArray(Product $product, array $attributes): array
     {
         $attributesAndValues = [];
@@ -179,6 +176,7 @@ abstract class AbstractAttributeService implements AttributeServiceInterface
     {
         return $this->logger;
     }
+
     /**
      * Resolves "textual" product attribute value.
      * If value is an array containing scalar values the array will be imploded

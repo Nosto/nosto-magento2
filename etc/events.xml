@@ -56,6 +56,6 @@
         <observer name="nosto_newsletter_subscriber_save_after" instance="Nosto\Tagging\Observer\Customer\UpdateMarketingPermission"/>
     </event>
     <event name="customer_save_before">
-        <observer name="nosto_customer_save_after" instance="Nosto\Tagging\Observer\Customer\Save" />
+        <observer name="nosto_customer_save_after" instance="Nosto\Tagging\Observer\Customer\Save"/>
     </event>
 </config>
