@@ -40,6 +40,8 @@ use Exception;
 use Magento\Checkout\Model\Session;
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
+use Magento\Framework\App\ResponseInterface;
+use Magento\Framework\Controller\ResultInterface;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Module\Manager as ModuleManager;
 use Magento\Quote\Api\CartRepositoryInterface;
@@ -50,10 +52,12 @@ use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Helper\Url as NostoHelperUrl;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Customer\Repository as NostoCustomerRepository;
+use Zend_Uri_Exception;
 
 /*
  * Controller class for handling cart restoration
  */
+
 class Cart extends Action
 {
     /**
@@ -102,6 +106,11 @@ class Cart extends Action
         $this->cartRepository = $cartRepository;
     }
 
+    /**
+     * @return ResponseInterface|ResultInterface
+     * @throws NoSuchEntityException
+     * @throws Zend_Uri_Exception
+     */
     public function execute()
     {
         $store = $this->nostoScopeHelper->getStore();

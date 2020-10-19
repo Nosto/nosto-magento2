@@ -86,6 +86,8 @@ class Add
      * @param MageAdd $add
      * @param callable $proceed
      * @return mixed
+     * @throws Exception
+     * @noinspection PhpUnused
      */
     public function aroundExecute(MageAdd $add, callable $proceed)
     {
@@ -124,6 +126,7 @@ class Add
      * @param Product $skuProduct
      * @param ConfigurableType $configurableType
      * @return array
+     * @throws Exception
      */
     private function getAttributeOptions(Product $product, Product $skuProduct, ConfigurableType $configurableType)
     {

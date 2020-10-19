@@ -45,6 +45,7 @@ use Magento\Customer\Setup\CustomerSetupFactory;
 use Magento\Eav\Model\Entity\Attribute\SetFactory as AttributeSetFactory;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Setup\ModuleDataSetupInterface;
+use Nosto\NostoException;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Logger\Logger;
 use Nosto\Tagging\Util\Customer as CustomerUtil;
@@ -148,6 +149,7 @@ abstract class CoreData
      *
      * @param ModuleDataSetupInterface $setup
      * @throws LocalizedException
+     * @throws Exception
      */
     public function alterCustomerReferenceNonEditable(ModuleDataSetupInterface $setup)
     {
@@ -166,14 +168,13 @@ abstract class CoreData
 
     /**
      * @throws LocalizedException
-     * @throws \Magento\Framework\Exception\AlreadyExistsException
-     * @throws \Nosto\NostoException
+     * @throws NostoException
      */
     public function populateCustomerReference()
     {
         $customerCollection = $this->customerCollectionFactory->create()
-        ->addAttributeToSelect(NostoHelperData::NOSTO_CUSTOMER_REFERENCE_ATTRIBUTE_NAME)
-        ->setPageSize(1000);
+            ->addAttributeToSelect(NostoHelperData::NOSTO_CUSTOMER_REFERENCE_ATTRIBUTE_NAME)
+            ->setPageSize(1000);
         $iterator = new PagingIterator($customerCollection);
         /* @var Customer $customer */
         foreach ($iterator as $page) {

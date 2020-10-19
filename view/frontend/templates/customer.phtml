@@ -54,30 +54,35 @@
  * Magento's KnockoutJS logic.
  *
  * @see \Nosto\Tagging\CustomerData\CustomerTagging
+ * @var \Magento\Framework\View\Element\Template $block
+ * @noinspection PhpFullyQualifiedNameUsageInspection
  */
 ?>
 <!-- Nosto Customer Tagging -->
 <div id="nosto_customer_tagging" class="nosto_customer_hidden" style="display:none"
      data-bind="scope: 'customerTagging'"
      data-role="nosto-customer-tagging">
-    <!-- ko if: customerTagging().first_name -->
-    <!-- ko foreach: {data: customerTagging(), afterRender: sendTagging } -->
-    <span class="first_name" data-bind="text: $data.first_name"></span>
-    <span class="last_name" data-bind="text: $data.last_name"></span>
-    <span class="email" data-bind="text: $data.email"></span>
-    <span class="hcid" data-bind="text: $data.hcid"></span>
-    <span class="customer_reference" data-bind="text: $data.customer_reference"></span>
-    <span class="marketing_permission" data-bind="text: $data.marketing_permission"></span>
-    <span class="date_of_birth" data-bind="text: $data.date_of_birth"></span>
-    <span class="customer_group" data-bind="text: $data.customer_group"></span>
-    <span class="gender" data-bind="text: $data.gender"></span>
-    <!-- /ko -->
-    <!-- /ko -->
+  <!-- ko if: customerTagging().first_name -->
+  <!-- ko foreach: {data: customerTagging(), afterRender: sendTagging } -->
+  <span class="first_name" data-bind="text: $data.first_name"></span>
+  <span class="last_name" data-bind="text: $data.last_name"></span>
+  <span class="email" data-bind="text: $data.email"></span>
+  <span class="hcid" data-bind="text: $data.hcid"></span>
+  <span class="customer_reference" data-bind="text: $data.customer_reference"></span>
+  <span class="marketing_permission" data-bind="text: $data.marketing_permission"></span>
+  <span class="date_of_birth" data-bind="text: $data.date_of_birth"></span>
+  <span class="customer_group" data-bind="text: $data.customer_group"></span>
+  <span class="gender" data-bind="text: $data.gender"></span>
+  <!-- /ko -->
+  <!-- /ko -->
 </div>
+<!--suppress JSUnresolvedVariable -->
 <script type="text/x-magento-init">
 {
   "[data-role=nosto-customer-tagging]": {
-    "Magento_Ui/js/core/app": <?= /* @escapeNotVerified */ $block->getJsLayout(); ?>
+    "Magento_Ui/js/core/app": <?= /* @escapeNotVerified */
+    $block->getJsLayout(); ?>
   }
 }
+
 </script>

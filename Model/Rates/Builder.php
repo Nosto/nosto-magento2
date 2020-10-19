@@ -37,7 +37,6 @@
 namespace Nosto\Tagging\Model\Rates;
 
 use Exception;
-use Magento\Directory\Model\Currency;
 use Magento\Directory\Model\CurrencyFactory;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Store\Model\Store;
@@ -81,7 +80,6 @@ class Builder
             $currencyCodes = $store->getAvailableCurrencyCodes(true);
             $baseCurrencyCode = $store->getBaseCurrencyCode();
 
-            /** @var Currency $currencyModel */
             $currencyModel = $this->currencyFactory->create();
             $rates = $currencyModel->getCurrencyRates($baseCurrencyCode, $currencyCodes);
             foreach ($rates as $code => $rate) {

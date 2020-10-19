@@ -86,6 +86,7 @@ class Repository
      * @param ConfigurableType $configurableType
      * @param ProductVisibility $productVisibility
      * @param StockProviderInterface $stockProvider
+     * @param Sku $skuResource
      */
     public function __construct(
         ProductRepository $productRepository,

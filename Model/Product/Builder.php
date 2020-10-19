@@ -41,7 +41,6 @@ use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\Product\Gallery\ReadHandler as GalleryReadHandler;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Store\Model\Store;
-use Magento\Store\Model\StoreManagerInterface;
 use Nosto\Exception\FilteredProductException;
 use Nosto\Exception\NonBuildableProductException;
 use Nosto\NostoException;
@@ -61,6 +60,7 @@ use Nosto\Tagging\Model\Service\Product\Attribute\AttributeServiceInterface;
 use Nosto\Tagging\Model\Service\Product\Category\CategoryServiceInterface;
 use Nosto\Tagging\Model\Service\Stock\StockService;
 use Nosto\Types\Product\ProductInterface;
+use Magento\Store\Model\StoreManagerInterface;
 
 class Builder
 {
@@ -395,7 +395,7 @@ class Builder
         $availability = ProductInterface::OUT_OF_STOCK;
         $isInStock = $this->isInStock($product, $store);
         if (!$product->isVisibleInSiteVisibility()
-           || (!$this->isAvailableInStore($product, $store) && $isInStock)
+            || (!$this->isAvailableInStore($product, $store) && $isInStock)
         ) {
             $availability = ProductInterface::INVISIBLE;
         } elseif ($isInStock

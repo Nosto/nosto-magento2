@@ -57,6 +57,7 @@ use Nosto\Types\Signup\AccountInterface;
 class Index extends Action
 {
     use OauthTrait;
+
     private $logger;
     private $urlBuilder;
     private $nostoHelperAccount;
@@ -163,7 +164,7 @@ class Index extends Action
             }
         }
 
-        $success =  $this->nostoHelperAccount->saveAccount(
+        $success = $this->nostoHelperAccount->saveAccount(
             $account,
             $currentStore
         );

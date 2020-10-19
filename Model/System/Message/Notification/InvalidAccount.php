@@ -110,12 +110,12 @@ class InvalidAccount implements MessageInterface
 
         foreach ($invalidStores as $store) {
             $message .= 'It looks like you\'ve created Nosto account (<b>' . $store['nostoAccount'] . '</b>) '
-                .'for <b>' .$store['storedDomain']. '</b> '
-                .'and currently store\'s (<b>' . $store['storeName'] . '</b>) front page is '
-                .'<b>' . $store['currentDomain'] . '</b>.  '
-                .'It is not possible to share Nosto accounts across multiple domains.'
-                .'Please reset the Nosto settings, and create a new Nosto account, or connect to an existing account. '
-                .'<a href=" ' . $store['resetUrl'] . ' ">Reset Nosto settings</a> </br></br>';
+                . 'for <b>' . $store['storedDomain'] . '</b> '
+                . 'and currently store\'s (<b>' . $store['storeName'] . '</b>) front page is '
+                . '<b>' . $store['currentDomain'] . '</b>.  '
+                . 'It is not possible to share Nosto accounts across multiple domains.'
+                . 'Please reset the Nosto settings, and create a new Nosto account, or connect to an existing account. '
+                . '<a href=" ' . $store['resetUrl'] . ' ">Reset Nosto settings</a> </br></br>';
         }
 
         /** @phan-suppress-next-line PhanTypeMismatchArgument */
