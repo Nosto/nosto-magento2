@@ -1,5 +1,8 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+# 5.0.8
+* Bump dependencies to be compatible with Nosto CMP module  
+
 # 5.0.7
 * User serializer provided by the PHP SDK to keep the module compatible with Magento EQP  
 
