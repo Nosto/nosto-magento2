@@ -199,6 +199,14 @@
                     </comment>
                     <source_model>Nosto\Tagging\Model\Config\Source\Memory</source_model>
                 </field>
+                <field id="indexer_disabled_products" translate="label comment" type="select" sortOrder="120"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Index disabled products</label>
+                    <comment>
+                        <![CDATA[Include disabled products in full reindex. Advised when using Category Merchandising]]>
+                    </comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
                 <field id="tag_date_published" translate="label comment" type="select" sortOrder="130"
                        showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Add product published date to tagging</label>

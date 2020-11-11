@@ -45,16 +45,21 @@ class Collection extends MagentoProductCollection
     /**
      * @return Collection
      */
-    public function addActiveAndVisibleFilter()
+    public function addVisibleFilter()
     {
         return $this->addAttributeToSelect($this->getIdFieldName())
             ->addAttributeToFilter(
-                'status',
-                ['eq' => Status::STATUS_ENABLED]
-            )->addAttributeToFilter(
                 'visibility',
                 ['neq' => Visibility::VISIBILITY_NOT_VISIBLE]
             );
+    }
+
+    /**
+     * @return Collection
+     */
+    public function addActiveFilter()
+    {
+        return $this->addAttributeToFilter('status', ['eq' => Status::STATUS_ENABLED]);
     }
 
     /**

@@ -56,6 +56,7 @@
                 <low_stock_indication>0</low_stock_indication>
                 <send_customer_data>1</send_customer_data>
                 <indexer_memory>50</indexer_memory>
+                <indexer_disabled_products>0</indexer_disabled_products>
                 <tag_date_published>0</tag_date_published>
                 <track_multi_channel_orders>1</track_multi_channel_orders>
                 <product_caching>0</product_caching>

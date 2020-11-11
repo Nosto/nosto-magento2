@@ -41,6 +41,7 @@ use Magento\Sales\Api\Data\EntityInterface;
 use Magento\Store\Model\Store;
 use Nosto\Tagging\Model\ResourceModel\Magento\Product\Collection as ProductCollection;
 use Nosto\Tagging\Model\ResourceModel\Magento\Product\CollectionFactory as ProductCollectionFactory;
+use Nosto\Tagging\Helper\Data as NostoHelperData;
 
 /**
  * A builder class for building product collection with the most common filters
@@ -56,17 +57,23 @@ class CollectionBuilder
     /** @var CollectionFactory */
     private $productCollectionFactory;
 
+    /** @var NostoHelperData */
+    private $nostoHelperData;
+
     /**
      * Collection constructor.
      * @param ProductCollectionFactory $productCollectionFactory
      * @param ProductVisibility $productVisibility
+     * @param NostoHelperData $nostoHelperData
      */
     public function __construct(
         ProductCollectionFactory $productCollectionFactory,
-        ProductVisibility $productVisibility
+        ProductVisibility $productVisibility,
+        NostoHelperData $nostoHelperData
     ) {
         $this->productCollectionFactory = $productCollectionFactory;
         $this->productVisibility = $productVisibility;
+        $this->nostoHelperData = $nostoHelperData;
     }
 
     /**
@@ -89,13 +96,26 @@ class CollectionBuilder
     }
 
     /**
-     * Sets filter for only active products and globally visible products
+     * Sets filter for only globally visible products
      *
      * @return $this
      */
-    public function withOnlyActiveAndVisible()
+    public function withOnlyVisible()
     {
-        $this->collection->addActiveAndVisibleFilter();
+        $this->collection->addVisibleFilter();
+        return $this;
+    }
+
+    /**
+     * Sets filter for product status based on configuration
+     *
+     * @return $this
+     */
+    public function withConfiguredProductStatus(Store $store)
+    {
+        if (!$this->nostoHelperData->canIndexDisabledProducts($store)) {
+            $this->collection->addActiveFilter();
+        }
         return $this;
     }
 
@@ -178,9 +198,11 @@ class CollectionBuilder
      *
      * @return CollectionBuilder
      */
-    public function withDefaultVisibility()
+    public function withDefaultVisibility(Store $store)
     {
-        return $this->withOnlyVisibleInSites()->withOnlyActiveAndVisible();
+        return $this->withOnlyVisibleInSites()
+            ->withOnlyVisible()
+            ->withConfiguredProductStatus($store);
     }
 
     /**
@@ -231,7 +253,7 @@ class CollectionBuilder
         return $this
             ->initDefault($store)
             ->withIds([$id])
-            ->withDefaultVisibility()
+            ->withDefaultVisibility($store)
             ->build();
     }
 
@@ -249,7 +271,7 @@ class CollectionBuilder
         $currentPage = ($offset / $limit) + 1;
         return $this
             ->initDefault($store)
-            ->withDefaultVisibility()
+            ->withDefaultVisibility($store)
             ->setPageSize($limit)
             ->setCurrentPage($currentPage)
             ->build();
