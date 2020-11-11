@@ -109,6 +109,7 @@ class CollectionBuilder
     /**
      * Sets filter for product status based on configuration
      *
+     * @param Store $store
      * @return $this
      */
     public function withConfiguredProductStatus(Store $store)
@@ -193,9 +194,9 @@ class CollectionBuilder
     }
 
     /**
-     * Sets the default visibility. Calls self::withOnlyVisibleInSites()
-     * and self::withOnlyActiveAndVisible()
+     * Sets the default visibility and set active products filter based on configuration
      *
+     * @param Store $store
      * @return CollectionBuilder
      */
     public function withDefaultVisibility(Store $store)
