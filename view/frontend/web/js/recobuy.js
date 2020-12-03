@@ -60,6 +60,10 @@ define([
                 Recobuy.addSkuToCart(productObj, element, 1);
             });
         }
+        setTimeout(function(){
+            require('Magento_Customer/js/customer-data').reload(['cart', 'cart-tagging'], false)
+            console.log("Reloading")
+        }, 3000);
     };
 
     // Product object must have fields productId and skuId {'productId': '123', 'skuId': '321'}
