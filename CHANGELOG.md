@@ -1,5 +1,8 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+# 5.1.0
+* Fix addMultipleProductsToCart issue happening in M2 cloud
+
 # 5.0.8
 * Bump dependencies to be compatible with Nosto CMP module  
 
