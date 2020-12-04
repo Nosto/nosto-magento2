@@ -41,8 +41,7 @@ define([
 
     var Recobuy = {};
 
-    Recobuy.addProductToCart = function (productId, element, quantity) {
-        quantity = quantity || 1;
+    Recobuy.addProductToCart = function (productId, element, quantity = 1) {
         var productData = {
             productId : productId,
             skuId : productId,
