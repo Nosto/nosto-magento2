@@ -44,10 +44,11 @@ define([
     Recobuy.addProductToCart = function (productId, element, quantity) {
         quantity = quantity || 1;
         var productData = {
-            "productId" : productId,
-            'skuId' : productId
+            productId : productId,
+            skuId : productId,
+            quantity: quantity
         };
-        return Recobuy.addSkuToCart(productData, element, quantity);
+        return Recobuy.addSkuToCart(productData, element);
     };
 
     // Products must be and array of objects [{'productId': '123', 'skuId': '321'}, {...}]
@@ -72,14 +73,15 @@ define([
     }
 
     // Product object must have fields productId and skuId {'productId': '123', 'skuId': '321'}
-    Recobuy.addSkuToCart = function (product, element, quantity) {
+    Recobuy.addSkuToCart = function (product, element) {
 
-        quantity = quantity || 1;
-        var form = document.querySelector("#nosto_addtocart_form").getAttribute("action")
-        var formKey = document.getElementsByName("form_key")[0].value
+        var quantity = product.quantity || 1;
+        var url = document.querySelector("#nosto_addtocart_form").getAttribute("action")
+        var formKey = document.querySelector("#nosto_addtocart_form > input[name='form_key']").getAttribute("value")
+
 
         return new Promise(function (resolve, reject) {
-            $.post(form, {
+            $.post(url, {
                 form_key: formKey,
                 qty: quantity,
                 product: product.productId,
