@@ -35,60 +35,76 @@
 
 define([
     'nostojs',
-    'jquery',
-    'catalogAddToCart'
+    'jquery'
 ], function (nostojs, $) {
     'use strict';
 
-    //noinspection SpellCheckingInspection
-    var form = $('#nosto_addtocart_form').catalogAddToCart({});
     var Recobuy = {};
+
     Recobuy.addProductToCart = function (productId, element, quantity) {
         quantity = quantity || 1;
         var productData = {
             "productId" : productId,
             'skuId' : productId
         };
-        Recobuy.addSkuToCart(productData, element, quantity);
+        return Recobuy.addSkuToCart(productData, element, quantity);
     };
 
     // Products must be and array of objects [{'productId': '123', 'skuId': '321'}, {...}]
     // skuId is optional for simple products.
     Recobuy.addMultipleProductsToCart = function (products, element) {
         if (Array.isArray(products)) {
-            products.forEach(function (productObj) {
-                Recobuy.addSkuToCart(productObj, element, 1);
-            });
+            return Recobuy.recursiveAddProducts(products, element)
+        } else {
+            Promise.reject(new Error("Products is not type array"))
         }
-        setTimeout(function(){
-            require('Magento_Customer/js/customer-data').reload(['cart', 'cart-tagging'], false)
-            console.log("Reloading")
-        }, 3000);
     };
+
+    Recobuy.recursiveAddProducts = function (products, element) {
+        var length = products.length;
+        if (length === 0) {
+            return Promise.resolve();
+        }
+        return Recobuy.addSkuToCart(products[0], element, 1)
+            .then(function (res) {
+                return Recobuy.recursiveAddProducts(products.slice(1), element)
+            })
+    }
 
     // Product object must have fields productId and skuId {'productId': '123', 'skuId': '321'}
     Recobuy.addSkuToCart = function (product, element, quantity) {
+
         quantity = quantity || 1;
+        var form = document.querySelector("#nosto_addtocart_form").getAttribute("action")
+        var formKey = document.getElementsByName("form_key")[0].value
+
+        return new Promise(function (resolve, reject) {
+            $.post(form, {
+                form_key: formKey,
+                qty: quantity,
+                product: product.productId,
+                sku: product.skuId
+            }).done(function() {
+                Recobuy.sendCartEvent(element, product.productId)
+                return resolve()
+            }).fail(function () {
+                return reject()
+            })
+        })
+
+    };
+
+    Recobuy.sendCartEvent = function (element, productId) {
         if (typeof element === 'object' && element) {
             var slotId = this.resolveContextSlotId(element);
             if (slotId) {
                 nostojs(function (api) {
-                    api.recommendedProductAddedToCart(product.productId, slotId);
+                    api.recommendedProductAddedToCart(productId, slotId);
                 });
             }
         }
+    }
 
-        form.find('input[name="product"]').val(product.productId);
-        var productSku = document.createElement("input");
-        productSku.setAttribute("type", "hidden");
-        productSku.setAttribute("name", 'sku');
-        productSku.setAttribute("value", product.skuId);
-        form.append(productSku);
-
-        form.find('input[name="qty"]').val(quantity);
-        form.catalogAddToCart('ajaxSubmit', form);
-    };
-    
     Recobuy.resolveContextSlotId = function (element) {
         var m = 20;
         var n = 0;
