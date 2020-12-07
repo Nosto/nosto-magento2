@@ -54,22 +54,15 @@ define([
     // skuId is optional for simple products.
     Recobuy.addMultipleProductsToCart = function (products, element) {
         if (Array.isArray(products)) {
-            return Recobuy.recursiveAddProducts(products, element)
+            return products.reduce(function(acc, product) {
+                return acc.then(function() {
+                    return  Recobuy.addSkuToCart(product, element)
+                })
+            } , Promise.resolve())
         } else {
             Promise.reject(new Error("Products is not type array"))
         }
     };
-
-    Recobuy.recursiveAddProducts = function (products, element) {
-        var length = products.length;
-        if (length === 0) {
-            return Promise.resolve();
-        }
-        return Recobuy.addSkuToCart(products[0], element, 1)
-            .then(function (res) {
-                return Recobuy.recursiveAddProducts(products.slice(1), element)
-            })
-    }
 
     // Product object must have fields productId and skuId {'productId': '123', 'skuId': '321'}
     Recobuy.addSkuToCart = function (product, element) {
