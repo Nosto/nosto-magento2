@@ -42,15 +42,15 @@ use Exception;
 use Magento\Catalog\Model\Product;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\Phrase;
+use Magento\Sales\Api\Data\OrderPaymentInterface;
 use Magento\Sales\Model\Order;
 use Magento\Sales\Model\Order\Item;
-use Magento\Sales\Model\Order\Payment;
 use Magento\SalesRule\Model\RuleFactory as SalesRuleFactory;
-use Nosto\NostoException;
 use Nosto\Model\Cart\LineItem;
 use Nosto\Model\Order\Buyer;
 use Nosto\Model\Order\Order as NostoOrder;
 use Nosto\Model\Order\OrderStatus;
+use Nosto\NostoException;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Order\Buyer\Builder as NostoBuyerBuilder;
 use Nosto\Tagging\Model\Order\Item\Builder as NostoOrderItemBuilder;
@@ -108,7 +108,7 @@ class Builder
                     $nostoOrder->setCreatedAt($orderCreatedDate);
                 }
             }
-            if ($order->getPayment() instanceof Payment) {
+            if ($order->getPayment() instanceof OrderPaymentInterface) {
                 $nostoOrder->setPaymentProvider($order->getPayment()->getMethod());
             } else {
                 throw new NostoException('Order has no payment associated');
