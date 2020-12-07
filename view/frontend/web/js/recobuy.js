@@ -35,56 +35,70 @@
 
 define([
     'nostojs',
-    'jquery',
-    'catalogAddToCart'
+    'jquery'
 ], function (nostojs, $) {
     'use strict';
 
-    //noinspection SpellCheckingInspection
-    var form = $('#nosto_addtocart_form').catalogAddToCart({});
     var Recobuy = {};
-    Recobuy.addProductToCart = function (productId, element, quantity) {
-        quantity = quantity || 1;
+
+    Recobuy.addProductToCart = function (productId, element, quantity = 1) {
         var productData = {
-            "productId" : productId,
-            'skuId' : productId
+            productId : productId,
+            skuId : productId,
+            quantity: quantity
         };
-        Recobuy.addSkuToCart(productData, element, quantity);
+        return Recobuy.addSkuToCart(productData, element);
     };
 
     // Products must be and array of objects [{'productId': '123', 'skuId': '321'}, {...}]
     // skuId is optional for simple products.
     Recobuy.addMultipleProductsToCart = function (products, element) {
         if (Array.isArray(products)) {
-            products.forEach(function (productObj) {
-                Recobuy.addSkuToCart(productObj, element, 1);
-            });
+            return products.reduce(function(acc, product) {
+                return acc.then(function() {
+                    return  Recobuy.addSkuToCart(product, element)
+                })
+            } , Promise.resolve())
+        } else {
+            Promise.reject(new Error("Products is not type array"))
         }
     };
 
     // Product object must have fields productId and skuId {'productId': '123', 'skuId': '321'}
-    Recobuy.addSkuToCart = function (product, element, quantity) {
-        quantity = quantity || 1;
+    Recobuy.addSkuToCart = function (product, element) {
+
+        var quantity = product.quantity || 1;
+        var url = document.querySelector("#nosto_addtocart_form").getAttribute("action")
+        var formKey = document.querySelector("#nosto_addtocart_form > input[name='form_key']").getAttribute("value")
+
+
+        return new Promise(function (resolve, reject) {
+            $.post(url, {
+                form_key: formKey,
+                qty: quantity,
+                product: product.productId,
+                sku: product.skuId
+            }).done(function() {
+                Recobuy.sendCartEvent(element, product.productId)
+                return resolve()
+            }).fail(function () {
+                return reject()
+            })
+        })
+
+    };
+
+    Recobuy.sendCartEvent = function (element, productId) {
         if (typeof element === 'object' && element) {
             var slotId = this.resolveContextSlotId(element);
             if (slotId) {
                 nostojs(function (api) {
-                    api.recommendedProductAddedToCart(product.productId, slotId);
+                    api.recommendedProductAddedToCart(productId, slotId);
                 });
             }
         }
+    }
 
-        form.find('input[name="product"]').val(product.productId);
-        var productSku = document.createElement("input");
-        productSku.setAttribute("type", "hidden");
-        productSku.setAttribute("name", 'sku');
-        productSku.setAttribute("value", product.skuId);
-        form.append(productSku);
-
-        form.find('input[name="qty"]').val(quantity);
-        form.catalogAddToCart('ajaxSubmit', form);
-    };
-    
     Recobuy.resolveContextSlotId = function (element) {
         var m = 20;
         var n = 0;
