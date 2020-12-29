@@ -149,6 +149,7 @@ class QueueIndexer extends AbstractIndexer
             $present = [];
             foreach ($iterator as $page) {
                 foreach ($page->getItems() as $item) {
+                    /** @noinspection PhpPossiblePolymorphicInvocationInspection */
                     $id = $item->getId();
                     $present[$id] = $id;
                 }

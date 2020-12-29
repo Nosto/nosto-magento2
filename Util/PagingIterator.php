@@ -36,10 +36,11 @@
 
 namespace Nosto\Tagging\Util;
 
+use Iterator;
 use Magento\Framework\Data\Collection;
 use Nosto\NostoException;
 
-class PagingIterator implements \Iterator
+class PagingIterator implements Iterator
 {
     private $collection;
 

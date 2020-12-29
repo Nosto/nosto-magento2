@@ -28,13 +28,12 @@
     "magento/magento-coding-standard": "^5.0",
     "magento/module-asynchronous-operations": "^100.3",
     "phan/phan": "2.6",
-    "drenso/phan-extensions": "^2.5"
+    "drenso/phan-extensions": "^2.5",
+    "yotpo/module-review": "^2.9"
   },
   "suggest": {
     "magento/product-community-edition": "2.*",
-    "yotpo/module-review": "^2.9",
-    "ext-newrelic": "*",
-    "ext-code": "*"
+    "yotpo/module-review": "^2.9"
   },
   "license": [
     "OSL-3.0"
@@ -42,8 +41,8 @@
   "require": {
     "nosto/php-sdk": ">=5.3.4",
     "php": ">=7.0.0",
-    "ext-json": "*",
-    "magento/framework": ">=101.0.6|~102.0"
+    "magento/framework": ">=101.0.6|~102.0",
+    "ext-json": "*"
   },
   "repositories": [
     {
@@ -80,6 +79,10 @@
     ]
   },
   "config": {
-    "process-timeout":0
+    "process-timeout":3600
+  },
+  "scripts": {
+    "di:compile": "./compile.sh",
+    "ci:inspect": "./inspect.sh"
   }
 }

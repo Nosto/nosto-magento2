@@ -1,4 +1,4 @@
-<?php /** @noinspection PhpMissingParentConstructorInspection */
+<?php
 /**
  * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
@@ -121,10 +121,10 @@ class Create extends Base
      * @throws LocalizedException
      * @throws Zend_Validate_Exception
      * @suppress PhanTypeMismatchArgument
-     * @SuppressWarnings(PHPMD.CyclomaticComplexity
+     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      * @phpcs:disable Generic.Metrics.CyclomaticComplexity
      * @phpcs:disable Generic.Metrics.NestingLevel
-     * @throws \Zend_Validate_Exception
+     * @throws Zend_Validate_Exception
      */
     public function execute()
     {
@@ -143,52 +143,49 @@ class Create extends Base
 
                 $emailAddress = $this->_request->getParam('email');
                 $accountOwner = $this->nostoOwnerBuilder->build();
-                if ($accountOwner->getEmail() !== $emailAddress) {
-                    if (Zend_Validate::is($emailAddress, 'EmailAddress')) {
-                        $accountOwner->setFirstName(null);
-                        $accountOwner->setLastName(null);
-                        $accountOwner->setEmail($emailAddress);
-                        /** @var array $signupDetails */
-                        $signupParams = $this->nostoSignupBuilder->build(
-                            $store,
-                            $accountOwner,
-                            $signupDetails
+                if (Zend_Validate::is($emailAddress, 'EmailAddress')) {
+                    $accountOwner->setFirstName(null);
+                    $accountOwner->setLastName(null);
+                    $accountOwner->setEmail($emailAddress);
+                    /** @var array $signupDetails */
+                    $signupParams = $this->nostoSignupBuilder->build(
+                        $store,
+                        $accountOwner,
+                        $signupDetails
+                    );
+                    $operation = new AccountSignup($signupParams);
+                    $account = $operation->create();
+
+                    if ($this->nostoHelperAccount->saveAccount($account, $store)) {
+                        $response['success'] = true;
+                        $response['redirect_url'] = IframeHelper::getUrl(
+                            $this->nostoIframeMetaBuilder->build($store),
+                            $account,
+                            $this->nostoCurrentUserBuilder->build(),
+                            [
+                                'message_type' => Nosto::TYPE_SUCCESS,
+                                'message_code' => Nosto::CODE_ACCOUNT_CREATE,
+                            ]
                         );
-                        $operation = new AccountSignup($signupParams);
-                        $account = $operation->create();
 
-                        if ($this->nostoHelperAccount->saveAccount($account, $store)) {
-                            $response['success'] = true;
-                            $response['redirect_url'] = IframeHelper::getUrl(
-                                $this->nostoIframeMetaBuilder->build($store),
-                                $account,
-                                $this->nostoCurrentUserBuilder->build(),
-                                [
-                                    'message_type' => Nosto::TYPE_SUCCESS,
-                                    'message_code' => Nosto::CODE_ACCOUNT_CREATE,
-                                ]
-                            );
-
-                            // Note that we will send the exchange rates even if the multi currency
-                            // is not set. This is mostly for debugging purposes.
-                            if ($this->nostoCurrencyHelper->getCurrencyCount($store) > 1) {
-                                try {
-                                    $this->nostoRatesService->update($store);
-                                } catch (Exception $e) {
-                                    $this->logger->exception($e);
-                                }
+                        // Note that we will send the exchange rates even if the multi currency
+                        // is not set. This is mostly for debugging purposes.
+                        if ($this->nostoCurrencyHelper->getCurrencyCount($store) > 1) {
+                            try {
+                                $this->nostoRatesService->update($store);
+                            } catch (Exception $e) {
+                                $this->logger->exception($e);
                             }
-
-                            //invalidate page cache and layout cache
-                            $this->nostoHelperCache->invalidatePageCache();
-                            $this->nostoHelperCache->invalidateLayoutCache();
                         }
-                    } else {
-                        $this->logger->exception(new NostoException('Invalid email address ' . $emailAddress));
-                        $messageText = 'Invalid email address ' . $emailAddress;
+
+                        //invalidate page cache and layout cache
+                        $this->nostoHelperCache->invalidatePageCache();
+                        $this->nostoHelperCache->invalidateLayoutCache();
                     }
+                } else {
+                    $this->logger->exception(new NostoException('Invalid email address ' . $emailAddress));
+                    $messageText = 'Invalid email address ' . $emailAddress;
                 }
-                
             } catch (NostoException $e) {
                 $this->logger->exception($e);
                 $messageText = $e->getMessage();

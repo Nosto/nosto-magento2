@@ -75,7 +75,6 @@ class Save implements ObserverInterface
     private static $sent = [];
     private $intervalForNew;
 
-    /** @noinspection PhpUndefinedClassInspection */
     /**
      * Save constructor.
      * @param NostoHelperData $nostoHelperData
@@ -95,7 +94,6 @@ class Save implements ObserverInterface
         NostoHelperAccount $nostoHelperAccount,
         NostoLogger $logger,
         ModuleManager $moduleManager,
-        /** @noinspection PhpUndefinedClassInspection */
         CustomerRepository $customerRepository,
         NostoOrderBuilder $orderBuilder,
         NostoOrderStatusBuilder $orderStatusBuilder,
@@ -172,7 +170,7 @@ class Save implements ObserverInterface
             $created = new DateTime($order->getCreatedAt());
             $diff = $updated->getTimestamp() - $created->getTimestamp();
             return $order->getState() === Order::STATE_NEW && $diff <= $this->intervalForNew;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->exception($e);
             return true;
         }

@@ -96,10 +96,12 @@ class NostoGenerateCustomerReferenceCommand extends Command
             foreach ($customers as $customer) {
                 /** @phan-suppress-next-line PhanTypeMismatchArgument */
                 $customerReference = CustomerUtil::generateCustomerReference($customer);
+                /** @noinspection PhpUndefinedMethodInspection */
                 $customer->setData(
                     NostoHelperData::NOSTO_CUSTOMER_REFERENCE_ATTRIBUTE_NAME,
                     $customerReference
                 );
+                /** @noinspection PhpUndefinedMethodInspection */
                 $customer->save();
             }
             $io->success('Operation finished with success');

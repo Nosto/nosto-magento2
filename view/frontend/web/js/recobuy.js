@@ -1,3 +1,4 @@
+/** @noinspection DuplicatedCode */
 /*
  * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
@@ -33,6 +34,7 @@
  *
  */
 
+// noinspection JSUnresolvedFunction
 define([
     'nostojs',
     'jquery'

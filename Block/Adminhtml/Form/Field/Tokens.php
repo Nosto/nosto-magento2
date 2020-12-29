@@ -83,6 +83,7 @@ class Tokens extends Field
      */
     public function getAccountDetails()
     {
+        /** @SuppressWarnings(PHPMD.ShortVariable) */
         $id = (int) $this->request->getParam('store');
         $store = $this->nostoHelperScope->getStore($id);
         return $this->nostoHelperAccount->findAccount($store);
@@ -92,6 +93,8 @@ class Tokens extends Field
      * @param AbstractElement $element
      *
      * @return string
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @SuppressWarnings(PHPMD.CamelCaseMethodName)
      */
     protected function _getElementHtml(AbstractElement $element) //@codingStandardsIgnoreLine
     {
@@ -100,6 +103,7 @@ class Tokens extends Field
 
     /**
      * @return $this|Field
+     * @SuppressWarnings(PHPMD.CamelCaseMethodName)
      */
     protected function _prepareLayout() //@codingStandardsIgnoreLine
     {

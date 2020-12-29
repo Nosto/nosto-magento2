@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
@@ -130,8 +131,6 @@ class Builder
             }
             $nostoCustomer->setUpdatedAt($this->getNow());
         } else {
-            /** @var NostoCustomer $nostoCustomer*/
-            /** @noinspection PhpUndefinedMethodInspection */
             $nostoCustomer = $this->nostoCustomerFactory->create();
             $nostoCustomer->setQuoteId($quote->getId());
             $nostoCustomer->setNostoId($nostoCustomerId);

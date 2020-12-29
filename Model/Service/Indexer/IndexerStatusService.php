@@ -42,7 +42,7 @@ use Nosto\Tagging\Model\Mview\MviewInterface;
 
 class IndexerStatusService implements IndexerStatusServiceInterface
 {
-    /** @var IndexerRegistry  */
+    /** @var IndexerRegistry */
     private $indexerRegistry;
 
     /** @var ChangeLogInterface */

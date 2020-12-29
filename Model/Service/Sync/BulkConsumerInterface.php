@@ -37,13 +37,14 @@
 namespace Nosto\Tagging\Model\Service\Sync;
 
 use Exception;
+use Magento\AsynchronousOperations\Api\Data\OperationInterface;
 
 interface BulkConsumerInterface
 {
     /**
      * Processing operation for product sync
      *
-     * @param array|\Magento\AsynchronousOperations\Api\Data\OperationInterface $operation
+     * @param array|OperationInterface $operation
      * @return void
      * @throws Exception
      */
