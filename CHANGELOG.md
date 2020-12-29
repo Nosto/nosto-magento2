@@ -1,5 +1,17 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+# 5.1.2
+* Update PHP-SDK dependency version for better http exception logging
+
+# 5.1.1
+* Check that order payment is instance of payment interface
+
+# 5.1.0
+* Fix addMultipleProductsToCart issue happening in M2 cloud
+
+# 5.0.8
+* Bump dependencies to be compatible with Nosto CMP module  
+
 # 5.0.7
 * User serializer provided by the PHP SDK to keep the module compatible with Magento EQP  
 
