@@ -41,6 +41,7 @@ use Magento\Store\Model\Store;
 use Nosto\Exception\MemoryOutOfBoundsException;
 use Nosto\NostoException;
 use Nosto\Operation\UpsertProduct;
+use Nosto\Request\Http\Exception\AbstractHttpException;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Data as NostoDataHelper;
 use Nosto\Tagging\Helper\Url as NostoHelperUrl;
@@ -113,6 +114,7 @@ class SyncService extends AbstractService
      * @param Store $store
      * @throws MemoryOutOfBoundsException
      * @throws NostoException
+     * @throws AbstractHttpException
      */
     public function syncProducts(ProductCollection $collection, Store $store)
     {
