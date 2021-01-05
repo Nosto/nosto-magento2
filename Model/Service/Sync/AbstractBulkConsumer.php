@@ -88,7 +88,7 @@ abstract class AbstractBulkConsumer implements BulkConsumerInterface
             $serializedData = $operation->getSerializedData();
         } else {
             throw new InvalidArgumentException(
-                'Wrong type passed to AsyncBulkConsumer::processOperation. 
+                'Wrong type passed to AsyncBulkConsumer::processOperation.
                 Expected array|\Magento\AsynchronousOperations\Api\Data\OperationInterface.'
             );
         }
@@ -99,7 +99,7 @@ abstract class AbstractBulkConsumer implements BulkConsumerInterface
             $this->doOperation($productIds, $storeId);
             if (!is_array($operation)) {
                 /** @phan-suppress-next-line PhanTypeMismatchArgument */
-                $message = __('Something went wrong when syncing products to Nosto. Check log for details.');
+                $message = __('Success.');
                 $operation->setStatus(
                     \Magento\AsynchronousOperations\Api\Data\OperationInterface::STATUS_TYPE_COMPLETE
                 )->setResultMessage($message);
@@ -112,8 +112,8 @@ abstract class AbstractBulkConsumer implements BulkConsumerInterface
             if (!is_array($operation)) {
                 $operation->setStatus(
                     \Magento\AsynchronousOperations\Api\Data\OperationInterface::STATUS_TYPE_NOT_RETRIABLY_FAILED
-                )->setErrorCode($e->getCode())
-                    ->setResultMessage($message);
+                )->setResultMessage($message);
+                $this->entityManager->save($operation);
             }
         }
     }

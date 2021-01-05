@@ -143,29 +143,22 @@ class SyncService extends AbstractService
                 if ($nostoProduct === null) {
                     throw new NostoException('Could not get product from the product service.');
                 }
-                try {
-                    $op->addProduct($nostoProduct);
-                    // phpcs:ignore
-                    $this->cacheService->save($nostoProduct, $store);
-                    $this->tickBenchmark(self::BENCHMARK_SYNC_NAME);
-                } catch (Exception $e) {
-                    $this->getLogger()->exception($e);
-                }
+                $op->addProduct($nostoProduct);
+                // phpcs:ignore
+                $this->cacheService->save($nostoProduct, $store);
+                $this->tickBenchmark(self::BENCHMARK_SYNC_NAME);
             }
-            try {
-                $this->logDebugWithStore(
-                    sprintf(
-                        'Upserting batch of %d (%s) - API timeout is set to %d seconds',
-                        $this->apiBatchSize,
-                        implode(',', $productIdsInBatch),
-                        $this->apiTimeout
-                    ),
-                    $store
-                );
-                $op->upsert();
-            } catch (Exception $upsertException) {
-                $this->getLogger()->exception($upsertException);
-            }
+
+            $this->logDebugWithStore(
+                sprintf(
+                    'Upserting batch of %d (%s) - API timeout is set to %d seconds',
+                    $this->apiBatchSize,
+                    implode(',', $productIdsInBatch),
+                    $this->apiTimeout
+                ),
+                $store
+            );
+            $op->upsert();
         }
         $this->logBenchmarkSummary(self::BENCHMARK_SYNC_NAME, $store, $this);
     }
