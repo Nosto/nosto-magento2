@@ -123,7 +123,9 @@ abstract class AbstractBulkPublisher implements BulkPublisherInterface
     ) {
 
         if (!$this->canUseAsyncOperations()) {
-            $this->logger->critical("Module Magento_AsynchronousOperations not available. Aborting bulk publish operation");
+            $this->logger->critical(
+                "Module Magento_AsynchronousOperations not available. Aborting bulk publish operation"
+            );
             return;
         }
         $productIdsChunks = array_chunk($productIds, $this->getBulkSize());
