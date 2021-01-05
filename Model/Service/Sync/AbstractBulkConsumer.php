@@ -39,6 +39,7 @@ namespace Nosto\Tagging\Model\Service\Sync;
 
 use Exception;
 use InvalidArgumentException;
+use Magento\AsynchronousOperations\Api\Data\OperationInterface;
 use Magento\Framework\EntityManager\EntityManager;
 use Magento\Framework\Json\Helper\Data as JsonHelper;
 use Nosto\Tagging\Logger\Logger;
@@ -73,23 +74,20 @@ abstract class AbstractBulkConsumer implements BulkConsumerInterface
     /**
      * Processing operation for product sync
      *
-     * @param array|\Magento\AsynchronousOperations\Api\Data\OperationInterface $operation
+     * @param OperationInterface $operation
      * @return void
      * @throws Exception
      * @suppress PhanUndeclaredClassConstant
-     * @noinspection PhpFullyQualifiedNameUsageInspection
      */
     public function processOperation($operation)
     {
         $errorCode = null;
-        if (is_array($operation)) {
-            $serializedData = $operation['data']['serialized_data'];
-        } elseif ($operation instanceof \Magento\AsynchronousOperations\Api\Data\OperationInterface) {
+        if ($operation instanceof OperationInterface) {
             $serializedData = $operation->getSerializedData();
         } else {
             throw new InvalidArgumentException(
                 'Wrong type passed to AsyncBulkConsumer::processOperation.
-                Expected array|\Magento\AsynchronousOperations\Api\Data\OperationInterface.'
+                Expected \Magento\AsynchronousOperations\Api\Data\OperationInterface.'
             );
         }
         $unserializedData = $this->jsonHelper->jsonDecode($serializedData);
@@ -97,24 +95,19 @@ abstract class AbstractBulkConsumer implements BulkConsumerInterface
         $storeId = $unserializedData['store_id'];
         try {
             $this->doOperation($productIds, $storeId);
-            if (!is_array($operation)) {
-                /** @phan-suppress-next-line PhanTypeMismatchArgument */
-                $message = __('Success.');
-                $operation->setStatus(
-                    \Magento\AsynchronousOperations\Api\Data\OperationInterface::STATUS_TYPE_COMPLETE
-                )->setResultMessage($message);
-                $this->entityManager->save($operation);
-            }
+            /** @phan-suppress-next-line PhanTypeMismatchArgument */
+            $message = __('Success.');
+            $operation->setStatus(OperationInterface::STATUS_TYPE_COMPLETE)
+                ->setResultMessage($message);
+            $this->entityManager->save($operation);
         } catch (Exception $e) {
-            $this->logger->critical($e->getMessage());
+            $this->logger->critical(sprintf('Bulk uuid: %s. %s',$operation->getBulkUuid(), $e->getMessage()));
             /** @phan-suppress-next-line PhanTypeMismatchArgument */
             $message = __('Something went wrong when syncing products to Nosto. Check log for details.');
-            if (!is_array($operation)) {
-                $operation->setStatus(
-                    \Magento\AsynchronousOperations\Api\Data\OperationInterface::STATUS_TYPE_NOT_RETRIABLY_FAILED
-                )->setResultMessage($message);
-                $this->entityManager->save($operation);
-            }
+            $operation->setStatus(OperationInterface::STATUS_TYPE_NOT_RETRIABLY_FAILED)
+                ->setErrorCode($e->getCode())
+                ->setResultMessage($message);
+            $this->entityManager->save($operation);
         }
     }
 

@@ -44,7 +44,7 @@ interface BulkConsumerInterface
     /**
      * Processing operation for product sync
      *
-     * @param array|OperationInterface $operation
+     * @param OperationInterface $operation
      * @return void
      * @throws Exception
      */
