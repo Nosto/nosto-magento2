@@ -36,7 +36,6 @@
 
 namespace Nosto\Tagging\Model\Service\Sync\Upsert;
 
-use Exception;
 use Magento\Catalog\Model\Product;
 use Magento\Store\Model\Store;
 use Nosto\Exception\MemoryOutOfBoundsException;
