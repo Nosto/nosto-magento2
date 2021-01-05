@@ -41,12 +41,12 @@ define([
 ], function (nostojs, $) {
     'use strict';
 
-    var Recobuy = {};
+    const Recobuy = {};
 
     Recobuy.addProductToCart = function (productId, element, quantity = 1) {
-        var productData = {
-            productId : productId,
-            skuId : productId,
+        const productData = {
+            productId: productId,
+            skuId: productId,
             quantity: quantity
         };
         return Recobuy.addSkuToCart(productData, element);
@@ -69,12 +69,13 @@ define([
     // Product object must have fields productId and skuId {'productId': '123', 'skuId': '321'}
     Recobuy.addSkuToCart = function (product, element) {
 
-        var quantity = product.quantity || 1;
-        var url = document.querySelector("#nosto_addtocart_form").getAttribute("action")
-        var formKey = document.querySelector("#nosto_addtocart_form > input[name='form_key']").getAttribute("value")
+        const quantity = product.quantity || 1;
+        const url = document.querySelector("#nosto_addtocart_form").getAttribute("action");
+        const formKey = document.querySelector("#nosto_addtocart_form > input[name='form_key']").getAttribute("value");
 
 
         return new Promise(function (resolve, reject) {
+            // noinspection JSUnresolvedFunction
             $.post(url, {
                 form_key: formKey,
                 qty: quantity,
@@ -83,6 +84,7 @@ define([
             }).done(function() {
                 Recobuy.sendCartEvent(element, product.productId)
                 return resolve()
+                // noinspection JSUnresolvedFunction
             }).fail(function () {
                 return reject()
             })
@@ -92,9 +94,10 @@ define([
 
     Recobuy.sendCartEvent = function (element, productId) {
         if (typeof element === 'object' && element) {
-            var slotId = this.resolveContextSlotId(element);
+            const slotId = this.resolveContextSlotId(element);
             if (slotId) {
                 nostojs(function (api) {
+                    // noinspection JSUnresolvedFunction
                     api.recommendedProductAddedToCart(productId, slotId);
                 });
             }
@@ -102,9 +105,9 @@ define([
     }
 
     Recobuy.resolveContextSlotId = function (element) {
-        var m = 20;
-        var n = 0;
-        var e = element;
+        const m = 20;
+        let n = 0;
+        let e = element;
         while (typeof e.parentElement !== "undefined" && e.parentElement) {
             ++n;
             e = e.parentElement;

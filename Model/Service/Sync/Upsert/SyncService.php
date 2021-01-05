@@ -115,6 +115,7 @@ class SyncService extends AbstractService
      * @throws MemoryOutOfBoundsException
      * @throws NostoException
      * @throws AbstractHttpException
+     * @throws \Exception
      */
     public function syncProducts(ProductCollection $collection, Store $store)
     {
