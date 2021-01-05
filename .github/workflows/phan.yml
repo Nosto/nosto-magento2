@@ -15,8 +15,8 @@ jobs:
     - name: Set up PHP
       uses: shivammathur/setup-php@v2
       with:
-        php-version: '7.2'
-        tools: composer:v1, prestissimo, pecl
+        php-version: '7.3'
+        tools: composer, prestissimo, pecl
         coverage: none
         extensions: ast
 
