@@ -101,7 +101,7 @@ abstract class AbstractBulkConsumer implements BulkConsumerInterface
                 ->setResultMessage($message);
             $this->entityManager->save($operation);
         } catch (Exception $e) {
-            $this->logger->critical(sprintf('Bulk uuid: %s. %s',$operation->getBulkUuid(), $e->getMessage()));
+            $this->logger->critical(sprintf('Bulk uuid: %s. %s', $operation->getBulkUuid(), $e->getMessage()));
             /** @phan-suppress-next-line PhanTypeMismatchArgument */
             $message = __('Something went wrong when syncing products to Nosto. Check log for details.');
             $operation->setStatus(OperationInterface::STATUS_TYPE_NOT_RETRIABLY_FAILED)

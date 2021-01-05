@@ -67,6 +67,9 @@ abstract class AbstractBulkPublisher implements BulkPublisherInterface
     /** @var Manager */
     private $manager;
 
+    /** @var Logger */
+    private $logger;
+
     /**
      * AbstractBulkPublisher constructor.
      * @param IdentityGeneratorInterface $identityService
@@ -86,6 +89,7 @@ abstract class AbstractBulkPublisher implements BulkPublisherInterface
         $this->serializer = $serializer;
         $this->asyncBulkConsumer = $asyncBulkConsumer;
         $this->manager = $manager;
+        $this->logger = $logger;
         try {
             $this->bulkManagement = ObjectManager::getInstance()
                 ->get(\Magento\Framework\Bulk\BulkManagementInterface::class);
@@ -117,6 +121,11 @@ abstract class AbstractBulkPublisher implements BulkPublisherInterface
         $storeId,
         $productIds
     ) {
+
+        if (!$this->canUseAsyncOperations()) {
+            $this->logger->critical("Module Magento_AsynchronousOperations not available. Aborting bulk publish operation");
+            return;
+        }
         $productIdsChunks = array_chunk($productIds, $this->getBulkSize());
         $bulkUuid = $this->identityService->generateId();
         /** @phan-suppress-next-line PhanTypeMismatchArgument */
@@ -129,28 +138,22 @@ abstract class AbstractBulkPublisher implements BulkPublisherInterface
                 $bulkUuid
             );
         }
-        if ($this->canUseAsyncOperations()) {
-            $operations = [];
-            foreach ($operationsData as $operationData) {
-                $operations[] = $this->operationFactory->create($operationData);
-            }
-            if (empty($operations)) {
-                return;
-            }
-            $result = $this->bulkManagement->scheduleBulk(
-                $bulkUuid,
-                $operations,
-                $bulkDescription
-            );
-            if (!$result) {
-                /** @phan-suppress-next-line PhanTypeMismatchArgument */
-                throw new LocalizedException(__('Something went wrong while processing the request.'));
-            }
-        } else {
-            foreach ($operationsData as $operationData) {
-                $this->asyncBulkConsumer->processOperation($operationData);
-            }
+
+        $operations = [];
+        foreach ($operationsData as $operationData) {
+            $operations[] = $this->operationFactory->create($operationData);
+        }
+        if (empty($operations)) {
             return;
+        }
+        $result = $this->bulkManagement->scheduleBulk(
+            $bulkUuid,
+            $operations,
+            $bulkDescription
+        );
+        if (!$result) {
+            /** @phan-suppress-next-line PhanTypeMismatchArgument */
+            throw new LocalizedException(__('Something went wrong while processing the request.'));
         }
     }
 
