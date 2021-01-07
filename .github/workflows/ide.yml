@@ -15,8 +15,8 @@ jobs:
     - name: Set up PHP
       uses: shivammathur/setup-php@v2
       with:
-        php-version: '7.2'
-        tools: composer, prestissimo, pecl
+        php-version: '7.3'
+        tools: composer:v1, prestissimo, pecl
         coverage: none
 
     - name: Install AST extension
@@ -54,7 +54,7 @@ jobs:
     - name: Install Magento
       id: install-magento
       run: |
-        composer create-project magento/community-edition=2.3.2 magento
+        composer create-project magento/community-edition=2.4.1 magento
         cd magento
         composer config minimum-stability dev
         composer config prefer-stable true
