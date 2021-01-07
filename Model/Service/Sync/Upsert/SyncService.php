@@ -36,6 +36,7 @@
 
 namespace Nosto\Tagging\Model\Service\Sync\Upsert;
 
+use Exception;
 use Magento\Catalog\Model\Product;
 use Magento\Store\Model\Store;
 use Nosto\Exception\MemoryOutOfBoundsException;
@@ -115,7 +116,7 @@ class SyncService extends AbstractService
      * @throws MemoryOutOfBoundsException
      * @throws NostoException
      * @throws AbstractHttpException
-     * @throws \Exception
+     * @throws Exception
      */
     public function syncProducts(ProductCollection $collection, Store $store)
     {

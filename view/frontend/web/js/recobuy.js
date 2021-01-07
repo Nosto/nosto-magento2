@@ -62,6 +62,7 @@ define([
                 })
             } , Promise.resolve())
         } else {
+            // noinspection JSIgnoredPromiseFromCall
             Promise.reject(new Error("Products is not type array"))
         }
     };
