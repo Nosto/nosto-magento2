@@ -1,39 +1,43 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
-# 5.1.2
+### 5.2.0
+* Remove synchronous product indexing
+* Improve queue consumer message
+
+### 5.1.2
 * Update PHP-SDK dependency version for better http exception logging
 
-# 5.1.1
+### 5.1.1
 * Check that order payment is instance of payment interface
 
-# 5.1.0
+### 5.1.0
 * Fix addMultipleProductsToCart issue happening in M2 cloud
 
-# 5.0.8
+### 5.0.8
 * Bump dependencies to be compatible with Nosto CMP module  
 
-# 5.0.7
+### 5.0.7
 * User serializer provided by the PHP SDK to keep the module compatible with Magento EQP  
 
-# 5.0.6
+### 5.0.6
 * Add Content Security Policy (CSP) whitelist 
 
-# 5.0.5
+### 5.0.5
 * Fix an issue where if deleted user with ID 1, the indexer will throw foreign keys constraints errors
 
-# 5.0.4
+### 5.0.4
 * Fix an issue with incorrect prices when different base currencies are used in websites and taxes are included in display prices   
 
-# 5.0.3
+### 5.0.3
 * Bump the PHP SDK version to be compatible with Nosto CMP module (no functional changes)
 
-# 5.0.2
+### 5.0.2
 * Fix an issue where custom tags (tag1) were overridden by default tags
   
-# 5.0.1
+### 5.0.1
 * Fix an issue with configurable product prices being zero in Nosto product data when taxes are included in display prices
 
-# 5.0.0
+### 5.0.0
 * Refactor the indexing logic to use batched queues & decouple the caching logic from product updates
 * Use Magento's built-in caching logic for caching Nosto product data 
 * Add google category as customisable attribute
@@ -41,35 +45,35 @@ All notable changes to this project will be documented in this file. This projec
 * Add check for an empty array before trying to get min price for bundled product price
 * Remove mview subscription / trigger to catalog_product_entity_media_gallery
 
-# 4.0.9
+### 4.0.9
 * Fix an issue with configurable product prices not being set when using MSI  
 
-# 4.0.8
+### 4.0.8
 * Add null guard for caching product service in case the product data building fails for dirty product
 
-# 4.0.7
+### 4.0.7
 * Handle empty / invalid product cache entries and possible failures in product data building gracefully
 
-# 4.0.6
+### 4.0.6
 * Fix issue with non-generated proxy classes during di compilation 
 
-# 4.0.5
+### 4.0.5
 * Fix an issue where product cache table was not created during upgrade
 
-# 4.0.4
+### 4.0.4
 * Store cached Nosto product data as a base64 encoded string in database to avoid problems with character sets and collations
 * Alter the type of cached product to be longtext to allow saving large product data sets
 
-# 4.0.3
+### 4.0.3
 * `setup:upgrade` for customer now saves only customer reference instead of entire customer object
 
-# 4.0.2
+### 4.0.2
 * Fix an issue where setup:upgrade could crash if customer migration is faulty
 
-# 4.0.1
+### 4.0.1
 * Make the new order detection more fault tolerant by comparing also updated at and created at timestamps
 
-# 4.0.0
+### 4.0.0
 **New features (performance improvements)**
 * Introduce cache for Nosto product data to speedup the product tagging added to the product pages
 * Introduce Nosto product data change detection to avoid redundant API calls to Nosto
