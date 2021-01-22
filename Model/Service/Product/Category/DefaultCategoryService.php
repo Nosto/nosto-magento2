@@ -41,6 +41,7 @@ use Magento\Catalog\Api\CategoryRepositoryInterface;
 use Magento\Catalog\Model\Category;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\ResourceModel\Category\CollectionFactory;
+use Magento\Catalog\Model\ResourceModel\Category\Collection;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Store\Api\Data\StoreInterface;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
@@ -112,7 +113,7 @@ class DefaultCategoryService implements CategoryServiceInterface
                 ->addAttributeToSelect('*')
                 ->addAttributeToFilter('entity_id', $categoryIds)
                 ->setStore($store->getId())
-                ->setOrder('entity_id', 'ASC');
+                ->addAttributeToSort('level', Collection::SORT_ORDER_ASC);
             foreach ($categories as $cat) {
                 if ($cat instanceof Category
                     && $cat->getLevel() > 1
