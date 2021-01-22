@@ -1,5 +1,8 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 5.2.1
+* Sort categories inside breadcrumb based on their level
+
 ### 5.2.0
 * Remove synchronous product indexing
 * Improve queue consumer message
