@@ -48,6 +48,7 @@ return [
         'Controller',
         'Cron',
         'CustomerData',
+        'Exception',
         'Helper',
         'Logger',
         'Model',
