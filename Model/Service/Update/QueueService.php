@@ -38,9 +38,12 @@ namespace Nosto\Tagging\Model\Service\Update;
 
 use Exception;
 use Magento\Catalog\Api\Data\ProductInterface;
+use Magento\Catalog\Model\Product\Attribute\Source\Status;
+use Magento\Catalog\Model\Product\Visibility;
 use Magento\Framework\Exception\AlreadyExistsException;
 use Magento\Store\Model\Store;
 use Nosto\NostoException;
+use Nosto\Tagging\Exception\ParentProductDisabledException;
 use Nosto\Tagging\Helper\Account as NostoAccountHelper;
 use Nosto\Tagging\Helper\Data as NostoDataHelper;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
@@ -166,7 +169,12 @@ class QueueService extends AbstractService
         /** @var ProductInterface $product */
         foreach ($collection->getItems() as $product) {
             /** @phan-suppress-next-line PhanTypeMismatchArgument */
-            $parents = $this->nostoProductRepository->resolveParentProductIds($product);
+            try {
+                $parents = $this->nostoProductRepository->resolveParentProductIds($product);
+            } catch (ParentProductDisabledException $e) {
+                $this->getLogger()->debug($e->getMessage());
+                continue;
+            }
             if (!empty($parents)) {
                 foreach ($parents as $id) {
                     $productIds[] = $id;
