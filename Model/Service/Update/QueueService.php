@@ -38,8 +38,6 @@ namespace Nosto\Tagging\Model\Service\Update;
 
 use Exception;
 use Magento\Catalog\Api\Data\ProductInterface;
-use Magento\Catalog\Model\Product\Attribute\Source\Status;
-use Magento\Catalog\Model\Product\Visibility;
 use Magento\Framework\Exception\AlreadyExistsException;
 use Magento\Store\Model\Store;
 use Nosto\NostoException;
