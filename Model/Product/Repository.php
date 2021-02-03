@@ -214,7 +214,8 @@ class Repository
      * @param array $ids
      * @return array
      */
-    private function filterWithDefaultVisibility(array $ids) {
+    private function filterWithDefaultVisibility(array $ids)
+    {
         $this->productRepository->cleanCache();
         $searchCriteria = $this->searchCriteriaBuilder
             ->addFilter('entity_id', $ids, 'in')
