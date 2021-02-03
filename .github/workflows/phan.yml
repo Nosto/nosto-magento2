@@ -18,7 +18,7 @@ jobs:
         php-version: '7.3'
         tools: composer:v1, prestissimo, pecl
         coverage: none
-        extensions: ast, bcmath
+        extensions: ast, bcmath, gd
 
     - name: Cache composer packages
       id: composer-cache

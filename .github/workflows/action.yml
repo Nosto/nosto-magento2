@@ -16,7 +16,7 @@ jobs:
       with:
         php-version: '7.3'
         tools: composer, prestissimo
-        extensions: ast, bcmath
+        extensions: ast, bcmath, gd
         coverage: none
 
       #https://github.com/actions/cache/blob/master/examples.md#php---composer
@@ -70,7 +70,7 @@ jobs:
       with:
         php-version: '7.3'
         tools: composer, prestissimo
-        extensions: ast, bcmath
+        extensions: ast, bcmath, gd
         coverage: none
 
       #https://github.com/actions/cache/blob/master/examples.md#php---composer
@@ -121,7 +121,7 @@ jobs:
       with:
         php-version: '7.3'
         tools: composer, prestissimo
-        extensions: ast, bcmath
+        extensions: ast, bcmath, gd
         coverage: none
 
       #https://github.com/actions/cache/blob/master/examples.md#php---composer
