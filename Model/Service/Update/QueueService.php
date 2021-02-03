@@ -166,8 +166,8 @@ class QueueService extends AbstractService
         $productIds = [];
         /** @var ProductInterface $product */
         foreach ($collection->getItems() as $product) {
-            /** @phan-suppress-next-line PhanTypeMismatchArgument */
             try {
+                /** @phan-suppress-next-line PhanTypeMismatchArgument */
                 $parents = $this->nostoProductRepository->resolveParentProductIds($product);
             } catch (ParentProductDisabledException $e) {
                 $this->getLogger()->debug($e->getMessage());
