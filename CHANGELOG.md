@@ -1,5 +1,8 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 5.2.3
+* Pass correct product id when adding grouped product to cart
+
 ### 5.2.2
 * Fix bug where disabled parent product ids are added to reindex queue
 
