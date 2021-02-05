@@ -140,7 +140,7 @@ class Builder
         /** @var Item $parentItem */
         $parentItem = $item->getOptionByCode('product_type');
         if ($parentItem !== null) {
-            return $parentItem->getProduct()->getSku();
+            return (string) $parentItem->getProduct()->getId();
         }
         if ($item->getProductType() === Type::TYPE_SIMPLE) {
             try {
