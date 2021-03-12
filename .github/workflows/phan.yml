@@ -16,7 +16,7 @@ jobs:
       uses: shivammathur/setup-php@v2
       with:
         php-version: '7.3'
-        tools: composer:v1, prestissimo, pecl
+        tools: composer:v2, prestissimo, pecl
         coverage: none
         extensions: ast, bcmath, gd, pdo_mysql, zip, soap
 
@@ -42,16 +42,10 @@ jobs:
         composer install --prefer-dist --no-progress --no-suggest
     ############################################################################
 
-    # Not removing HHVM will lead to the following error:
-    # > Installation request for hhvm 4.49.0 -> satisfiable by hhvm[4.49.0].
-    - name: Remove HHVM
-      id: remove-hhvm
-      run: sudo apt remove hhvm
-
     - name: Install Magento
       id: install-magento
       run: |
-        composer create-project magento/community-edition=2.4.1 magento
+        composer create-project magento/community-edition=2.4.2 magento --no-dev
         cd magento
         composer config minimum-stability dev
         composer config prefer-stable true

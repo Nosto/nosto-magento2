@@ -1,5 +1,8 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 5.2.4
+* Fix order tagging rendering in case variation tags were missing
+
 ### 5.2.3
 * Pass correct product id when adding grouped product to cart
 

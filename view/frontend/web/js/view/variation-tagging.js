@@ -53,8 +53,10 @@ define([
     reloadRecommendations: function () {
       // Remove the static variation if it exists - it should not but as a safeguard we rename the class
       const element = document.querySelector(".nosto_variation");
-      element.classList.remove('nosto_variation');
-      element.classList.add('nosto_variation_static');
+      if (element) {
+        element.classList.remove('nosto_variation');
+        element.classList.add('nosto_variation_static');
+      }
       document.querySelector(".nosto_variation_dynamic").classList.add("nosto_variation")
       if (typeof nostojs === 'function') {
         nostojs(function (api) {
