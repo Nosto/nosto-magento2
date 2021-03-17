@@ -38,7 +38,7 @@
     <consumer name="nosto_product_sync.update"
               queue="nosto_product_sync.update"
               connection="db"
-              maxMessages="10"
+              maxMessages="20"
               consumerInstance="Magento\Framework\MessageQueue\Consumer"
               handler="Nosto\Tagging\Model\Service\Sync\Upsert\AsyncBulkConsumer::processOperation"/>
     <consumer name="nosto_product_sync.delete"
