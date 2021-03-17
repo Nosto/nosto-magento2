@@ -99,7 +99,6 @@ abstract class AbstractBulkConsumer implements BulkConsumerInterface
             $message = __('Success.');
             $operation->setStatus(OperationInterface::STATUS_TYPE_COMPLETE)
                 ->setResultMessage($message);
-            $this->entityManager->save($operation);
         } catch (Exception $e) {
             $this->logger->critical(sprintf('Bulk uuid: %s. %s', $operation->getBulkUuid(), $e->getMessage()));
             /** @phan-suppress-next-line PhanTypeMismatchArgument */
@@ -107,6 +106,7 @@ abstract class AbstractBulkConsumer implements BulkConsumerInterface
             $operation->setStatus(OperationInterface::STATUS_TYPE_NOT_RETRIABLY_FAILED)
                 ->setErrorCode($e->getCode())
                 ->setResultMessage($message);
+        } finally {
             $this->entityManager->save($operation);
         }
     }
