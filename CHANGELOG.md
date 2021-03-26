@@ -1,5 +1,8 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 5.2.6
+* Get the correct product data by emulating the store
+
 ### 5.2.5
 * Fix product update consumer running out of memory issue 
 
