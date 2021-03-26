@@ -42,6 +42,7 @@ use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Magento\Framework\EntityManager\EntityManager;
 use Magento\Framework\Json\Helper\Data as JsonHelper;
 use Nosto\Tagging\Logger\Logger;
+use Magento\Store\Model\App\Emulation;
 
 class AsyncBulkConsumer extends AbstractBulkConsumer
 {
@@ -57,6 +58,7 @@ class AsyncBulkConsumer extends AbstractBulkConsumer
      * @param NostoHelperScope $nostoHelperScope
      * @param JsonHelper $jsonHelper
      * @param EntityManager $entityManager
+     * @param Emulation $storeEmulation
      * @param Logger $logger
      */
     public function __construct(
@@ -64,6 +66,7 @@ class AsyncBulkConsumer extends AbstractBulkConsumer
         NostoHelperScope $nostoHelperScope,
         JsonHelper $jsonHelper,
         EntityManager $entityManager,
+        Emulation $storeEmulation,
         Logger $logger
     ) {
         $this->deleteService = $deleteService;
@@ -71,7 +74,8 @@ class AsyncBulkConsumer extends AbstractBulkConsumer
         parent::__construct(
             $logger,
             $jsonHelper,
-            $entityManager
+            $entityManager,
+            $storeEmulation
         );
     }
 

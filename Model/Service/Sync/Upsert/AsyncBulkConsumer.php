@@ -38,6 +38,7 @@ namespace Nosto\Tagging\Model\Service\Sync\Upsert;
 
 use Magento\Framework\EntityManager\EntityManager;
 use Magento\Framework\Json\Helper\Data as JsonHelper;
+use Magento\Store\Model\App\Emulation;
 use Nosto\Exception\MemoryOutOfBoundsException;
 use Nosto\NostoException;
 use Nosto\Tagging\Helper\Scope as NostoScopeHelper;
@@ -68,6 +69,7 @@ class AsyncBulkConsumer extends AbstractBulkConsumer
      * @param CollectionFactory $collectionFactory
      * @param JsonHelper $jsonHelper
      * @param EntityManager $entityManager
+     * @param Emulation $storeEmulation
      * @param Logger $logger
      */
     public function __construct(
@@ -76,6 +78,7 @@ class AsyncBulkConsumer extends AbstractBulkConsumer
         CollectionFactory $collectionFactory,
         JsonHelper $jsonHelper,
         EntityManager $entityManager,
+        Emulation $storeEmulation,
         Logger $logger
     ) {
         $this->syncService = $syncService;
@@ -84,7 +87,8 @@ class AsyncBulkConsumer extends AbstractBulkConsumer
         parent::__construct(
             $logger,
             $jsonHelper,
-            $entityManager
+            $entityManager,
+            $storeEmulation
         );
     }
 

@@ -42,6 +42,7 @@ use InvalidArgumentException;
 use Magento\AsynchronousOperations\Api\Data\OperationInterface;
 use Magento\Framework\EntityManager\EntityManager;
 use Magento\Framework\Json\Helper\Data as JsonHelper;
+use Magento\Store\Model\App\Emulation;
 use Nosto\Tagging\Logger\Logger;
 
 abstract class AbstractBulkConsumer implements BulkConsumerInterface
@@ -55,20 +56,26 @@ abstract class AbstractBulkConsumer implements BulkConsumerInterface
     /** @var EntityManager */
     private $entityManager;
 
+    /** @var Emulation */
+    private $storeEmulation;
+
     /**
      * AbstractBulkConsumer constructor.
      * @param Logger $logger
      * @param JsonHelper $jsonHelper
      * @param EntityManager $entityManager
+     * @param Emulation $storeEmulation
      */
     public function __construct(
         Logger $logger,
         JsonHelper $jsonHelper,
-        EntityManager $entityManager
+        EntityManager $entityManager,
+        Emulation $storeEmulation
     ) {
         $this->logger = $logger;
         $this->jsonHelper = $jsonHelper;
         $this->entityManager = $entityManager;
+        $this->storeEmulation = $storeEmulation;
     }
 
     /**
@@ -94,6 +101,7 @@ abstract class AbstractBulkConsumer implements BulkConsumerInterface
         $productIds = $unserializedData['product_ids'];
         $storeId = $unserializedData['store_id'];
         try {
+            $this->storeEmulation->startEnvironmentEmulation((int)$storeId);
             $this->doOperation($productIds, $storeId);
             /** @phan-suppress-next-line PhanTypeMismatchArgument */
             $message = __('Success.');
@@ -108,6 +116,7 @@ abstract class AbstractBulkConsumer implements BulkConsumerInterface
                 ->setResultMessage($message);
         } finally {
             $this->entityManager->save($operation);
+            $this->storeEmulation->stopEnvironmentEmulation();
         }
     }
 
