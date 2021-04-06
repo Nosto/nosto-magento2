@@ -39,7 +39,7 @@
  * Magento's KnockoutJS logic.
  *
  * @see \Nosto\Tagging\CustomerData\CartTagging
- * @var \Magento\Framework\View\Element\Template $block
+ * @var \Nosto\Tagging\Block\Knockout $block
  * @noinspection PhpFullyQualifiedNameUsageInspection
  */
 ?>
@@ -64,7 +64,17 @@
 </div>
 <!--suppress JSUnresolvedVariable -->
 <script type="text/x-magento-init">
-{"[data-role=nosto-cart-tagging]": {"Magento_Ui/js/core/app": <?= /* @escapeNotVerified */
-    $block->getJsLayout(); ?>}}
+{
+  "[data-role=nosto-cart-tagging]": {
+    "Magento_Ui/js/core/app": {
+      "components": {
+        "cartTagging": {
+          "component": "Nosto_Tagging/js/view/cart-tagging",
+          "refresh": "<?php echo /* @escapeNotVerified */ $block->isReloadRecsAfterAtcEnabled() ?>"
+        }
+      }
+    }
+  }
+}
 
 </script>

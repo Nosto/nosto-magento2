@@ -38,34 +38,45 @@ namespace Nosto\Tagging\Block;
 
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Element\Template\Context;
+use Magento\Store\Model\StoreManagerInterface;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
+use Nosto\Tagging\Helper\Data as NostoHelperData;
 
 /**
  * Cart block used for cart tagging.
  */
 class Knockout extends Template
 {
+    /** @var NostoHelperAccount  */
     private $nostoHelperAccount;
+    /** @var NostoHelperScope  */
     private $nostoHelperScope;
+    /** @var NostoHelperData  */
+    private $nostoHelperData;
+    /** @var StoreManagerInterface */
+    private $storeManager;
 
     /**
-     * Constructor
-     *
+     * Knockout constructor.
      * @param Context $context
      * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoHelperScope $nostoHelperScope
+     * @param NostoHelperData $nostoHelperData
      * @param array $data
      */
     public function __construct(
         Context $context,
         NostoHelperAccount $nostoHelperAccount,
         NostoHelperScope $nostoHelperScope,
+        NostoHelperData $nostoHelperData,
         array $data = []
     ) {
         parent::__construct($context, $data);
+        $this->storeManager = $context->getStoreManager();
         $this->nostoHelperAccount = $nostoHelperAccount;
         $this->nostoHelperScope = $nostoHelperScope;
+        $this->nostoHelperData = $nostoHelperData;
     }
 
     /**
@@ -110,5 +121,13 @@ class Knockout extends Template
         }
 
         return $jsLayout;
+    }
+
+    /**
+     * @return int
+     */
+    public function isReloadRecsAfterAtcEnabled() {
+        $store = $this->storeManager->getStore();
+        return $this->nostoHelperData->isReloadRecsAfterAtcEnabled($store);
     }
 }

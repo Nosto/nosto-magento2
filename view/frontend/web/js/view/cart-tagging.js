@@ -40,14 +40,22 @@ define([
   'nostojs'
 ], function (Component, customerData, nostojs) {
   'use strict';
+  var refreshRecs = false;
 
   // noinspection JSCheckFunctionSignatures
   return Component.extend({
-    initialize: function () {
+    /**
+    * Initialize Component
+    *
+    * @param config
+    */
+    initialize: function (config) {
       // noinspection JSUnresolvedFunction
       this._super();
       //noinspection JSUnusedGlobalSymbols
       this.cartTagging = customerData.get('cart-tagging');
+      //noinspection JSUnusedGlobalSymbols
+      refreshRecs = Boolean(parseInt(config.refresh))
     },
     sendTagging: function (elements, data) {
       //noinspection JSUnresolvedVariable
@@ -60,8 +68,13 @@ define([
           const element = document.querySelector("#nosto_cart_tagging");
           element.classList.remove('nosto_cart_hidden');
           element.classList.add('nosto_cart');
-          // noinspection JSUnresolvedFunction
-          api.resendCartTagging("nosto_cart_tagging");
+          if (refreshRecs === true) {
+              // noinspection JSUnresolvedFunction
+              api.loadRecommendations();
+          } else {
+              // noinspection JSUnresolvedFunction
+              api.resendCartTagging("nosto_cart_tagging");
+          }
         });
       }
     }
