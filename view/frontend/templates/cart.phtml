@@ -70,7 +70,7 @@
       "components": {
         "cartTagging": {
           "component": "Nosto_Tagging/js/view/cart-tagging",
-          "refresh": "<?= /* @escapeNotVerified */ $block->isReloadRecsAfterAtcEnabled() ?>"
+          "refresh": "<?= $block->escapeHtml($block->isReloadRecsAfterAtcEnabled())?>"
         }
       }
     }
