@@ -40,7 +40,7 @@ define([
   'nostojs'
 ], function (Component, customerData, nostojs) {
   'use strict';
-  var refreshRecs = false;
+  let refreshRecs = false;
 
   // noinspection JSCheckFunctionSignatures
   return Component.extend({

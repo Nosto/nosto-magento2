@@ -42,6 +42,8 @@ use Magento\Store\Model\StoreManagerInterface;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
+use Nosto\Tagging\Logger\Logger;
+use Exception;
 
 /**
  * Cart block used for cart tagging.
@@ -50,12 +52,18 @@ class Knockout extends Template
 {
     /** @var NostoHelperAccount  */
     private $nostoHelperAccount;
+
     /** @var NostoHelperScope  */
     private $nostoHelperScope;
+
     /** @var NostoHelperData  */
     private $nostoHelperData;
+
     /** @var StoreManagerInterface */
     private $storeManager;
+
+    /** @var Logger */
+    private $logger;
 
     /**
      * Knockout constructor.
@@ -63,6 +71,7 @@ class Knockout extends Template
      * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoHelperScope $nostoHelperScope
      * @param NostoHelperData $nostoHelperData
+     * @param Logger $logger
      * @param array $data
      */
     public function __construct(
@@ -70,6 +79,7 @@ class Knockout extends Template
         NostoHelperAccount $nostoHelperAccount,
         NostoHelperScope $nostoHelperScope,
         NostoHelperData $nostoHelperData,
+        Logger $logger,
         array $data = []
     ) {
         parent::__construct($context, $data);
@@ -77,6 +87,7 @@ class Knockout extends Template
         $this->nostoHelperAccount = $nostoHelperAccount;
         $this->nostoHelperScope = $nostoHelperScope;
         $this->nostoHelperData = $nostoHelperData;
+        $this->logger = $logger;
     }
 
     /**
@@ -128,7 +139,14 @@ class Knockout extends Template
      */
     public function isReloadRecsAfterAtcEnabled()
     {
-        $store = $this->storeManager->getStore();
-        return $this->nostoHelperData->isReloadRecsAfterAtcEnabled($store);
+        $reload = false;
+        try {
+            $store = $this->storeManager->getStore();
+            $reload = $this->nostoHelperData->isReloadRecsAfterAtcEnabled($store);
+        } catch (Exception $e) {
+            $this->logger->debug("Could not get value for reloading recs after ATC");
+        } finally {
+            return $reload;
+        }
     }
 }
