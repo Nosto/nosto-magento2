@@ -139,7 +139,7 @@ class Knockout extends Template
      */
     public function isReloadRecsAfterAtcEnabled()
     {
-        $reload = false;
+        $reload = 0;
         try {
             $store = $this->storeManager->getStore();
             $reload = $this->nostoHelperData->isReloadRecsAfterAtcEnabled($store);
