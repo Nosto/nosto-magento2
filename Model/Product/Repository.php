@@ -200,10 +200,15 @@ class Repository
             $parentProductIds = $this->configurableProduct->getParentIdsByChild(
                 $product->getId()
             );
-            $parentProductIds = $this->filterWithDefaultVisibility($parentProductIds);
-            if (count($parentProductIds) == 0) {
-                throw new ParentProductDisabledException($product->getId());
+
+            //If product has parent ids, sanitize and check if they are not disabled
+            if (count($parentProductIds) != 0) {
+                $parentProductIds = $this->filterWithDefaultVisibility($parentProductIds);
+                if (count($parentProductIds) == 0) {
+                    throw new ParentProductDisabledException($product->getId());
+                }
             }
+
             $this->saveParentIdsToCache($product, $parentProductIds);
         }
         return $parentProductIds;
