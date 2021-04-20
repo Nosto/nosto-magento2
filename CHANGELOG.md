@@ -1,5 +1,8 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 5.2.9
+* Upgrade sdk version to update phpseclib dependency
+
 ### 5.2.8
 * Fix simple products not being reindex issue
 
