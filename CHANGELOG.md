@@ -1,5 +1,9 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 5.2.10
+* Improve message text for mixed nosto accounts
+* Remove old changelog tables when upgrading to v5
+
 ### 5.2.9
 * Upgrade sdk version to update phpseclib dependency
 
