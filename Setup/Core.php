@@ -49,6 +49,9 @@ abstract class Core
 {
     const PRODUCT_DATA_MAX_LENGTH = '32M';
 
+    const CL_TABLE_INDEX_PRODUCT_INVALIDATE = "nosto_index_product_invalidate_cl";
+    const CL_TABLE_INDEX_PRODUCT_DATA = "nosto_index_product_data_cl";
+
     /**
      * Creates a table for mapping Nosto customer to Magento's cart & orders
      *
@@ -206,5 +209,21 @@ abstract class Core
                 'Completed at Time'
             );
         $setup->getConnection()->createTable($table);
+    }
+
+    /**
+     * Deletes _cl tables from the older version of the module
+     *
+     * @param SchemaSetupInterface $setup
+     */
+    public function removeOldCliTables(SchemaSetupInterface $setup)
+    {
+        if ($setup->tableExists(self::CL_TABLE_INDEX_PRODUCT_INVALIDATE)) {
+            $setup->getConnection()->dropTable($setup->getTable(self::CL_TABLE_INDEX_PRODUCT_INVALIDATE));
+        }
+
+        if ($setup->tableExists(self::CL_TABLE_INDEX_PRODUCT_DATA)) {
+            $setup->getConnection()->dropTable($setup->getTable(self::CL_TABLE_INDEX_PRODUCT_DATA));
+        }
     }
 }
