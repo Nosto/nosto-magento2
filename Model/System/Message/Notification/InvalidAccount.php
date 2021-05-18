@@ -111,8 +111,8 @@ class InvalidAccount implements MessageInterface
         foreach ($invalidStores as $store) {
             $message .= 'It looks like Nosto account (<b>' . $store['nostoAccount'] . '</b>) '
                 . 'is connected to the wrong store (<b>' . $store['storeName'] . '</b>) or '
-                . 'the configured storefront domain is not matching with magento backend'
-                . 'It is not possible to share Nosto accounts across multiple domains.'
+                . 'the configured storefront domain is not matching with magento backend. '
+                . 'It is not possible to share Nosto accounts across multiple domains. '
                 . 'Please reconnect the nosto account or create a new one. '
                 . '<a href=" ' . $store['resetUrl'] . ' ">Reset Nosto settings</a> </br></br>';
         }
