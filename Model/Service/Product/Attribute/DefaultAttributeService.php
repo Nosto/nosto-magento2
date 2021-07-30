@@ -48,6 +48,7 @@ class DefaultAttributeService extends AbstractAttributeService
     /**
      * @inheritDoc
      */
+    // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter
     public function getAttributeValue(Product $product, StoreInterface $store, AbstractAttribute $attribute)
     {
         $value = null;
@@ -72,6 +73,7 @@ class DefaultAttributeService extends AbstractAttributeService
     /**
      * @inheritDoc
      */
+    // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter
     public function getAttributeValueByAttributeCode(Product $product, StoreInterface $store, $attributeCode)
     {
         $attributes = $product->getAttributes(); // This result is cached by Magento

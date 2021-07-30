@@ -152,7 +152,7 @@ class Builder
                         $code = $attribute->getProductAttribute()->getAttributeCode();
                         $nostoSku->addCustomField(
                             $code,
-                            $this->attributeService->getAttributeValueByAttributeCode($product, $code)
+                            $this->attributeService->getAttributeValueByAttributeCode($product, $store, $code)
                         );
                     } catch (Exception $e) {
                         $this->getLogger()->exception($e);

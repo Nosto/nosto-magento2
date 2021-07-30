@@ -250,6 +250,7 @@ class Builder
                 $nostoProduct->setBrand(
                     $this->attributeService->getAttributeValueByAttributeCode(
                         $product,
+                        $store,
                         $brandAttribute
                     )
                 );
@@ -259,6 +260,7 @@ class Builder
                 $nostoProduct->setSupplierCost(
                     $this->attributeService->getAttributeValueByAttributeCode(
                         $product,
+                        $store,
                         $marginAttribute
                     )
                 );
@@ -268,6 +270,7 @@ class Builder
                 $nostoProduct->setGtin(
                     $this->attributeService->getAttributeValueByAttributeCode(
                         $product,
+                        $store,
                         $gtinAttribute
                     )
                 );
@@ -277,6 +280,7 @@ class Builder
                 $nostoProduct->setGoogleCategory(
                     $this->attributeService->getAttributeValueByAttributeCode(
                         $product,
+                        $store,
                         $googleCategoryAttr
                     )
                 );
