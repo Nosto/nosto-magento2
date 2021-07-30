@@ -40,6 +40,7 @@ use Exception;
 use Magento\Catalog\Model\Product;
 use Magento\Eav\Model\Entity\Attribute\AbstractAttribute;
 use Magento\Framework\Phrase;
+use Magento\Store\Api\Data\StoreInterface;
 use Nosto\Helper\ArrayHelper;
 
 class DefaultAttributeService extends AbstractAttributeService
@@ -47,7 +48,7 @@ class DefaultAttributeService extends AbstractAttributeService
     /**
      * @inheritDoc
      */
-    public function getAttributeValue(Product $product, AbstractAttribute $attribute)
+    public function getAttributeValue(Product $product, StoreInterface $store, AbstractAttribute $attribute)
     {
         $value = null;
         try {
@@ -71,7 +72,7 @@ class DefaultAttributeService extends AbstractAttributeService
     /**
      * @inheritDoc
      */
-    public function getAttributeValueByAttributeCode(Product $product, $attributeCode)
+    public function getAttributeValueByAttributeCode(Product $product, StoreInterface $store, $attributeCode)
     {
         $attributes = $product->getAttributes(); // This result is cached by Magento
         if (isset($attributes[$attributeCode]) && $attributes[$attributeCode] instanceof AbstractAttribute) {

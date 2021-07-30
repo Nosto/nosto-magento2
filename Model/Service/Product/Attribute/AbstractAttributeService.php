@@ -183,13 +183,14 @@ abstract class AbstractAttributeService implements AttributeServiceInterface
      * using comma as glue.
      *
      * @param Product $product
+     * @param StoreInterface $store
      * @param AbstractAttribute $attribute
      * @return bool|float|int|string|null
      */
-    abstract public function getAttributeValue(Product $product, AbstractAttribute $attribute);
+    abstract public function getAttributeValue(Product $product, StoreInterface $store, AbstractAttribute $attribute);
 
     /**
      * @inheritDoc
      */
-    abstract public function getAttributeValueByAttributeCode(Product $product, $attributeCode);
+    abstract public function getAttributeValueByAttributeCode(Product $product, StoreInterface $store, $attributeCode);
 }

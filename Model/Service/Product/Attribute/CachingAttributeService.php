@@ -149,11 +149,11 @@ class CachingAttributeService extends AbstractAttributeService
     /**
      * @inheritDoc
      */
-    public function getAttributeValueByAttributeCode(Product $product, $attributeCode)
+    public function getAttributeValueByAttributeCode(Product $product, StoreInterface $store, $attributeCode)
     {
-        if ($this->isAttributeCached($product, $product->getStore(), $attributeCode) === false) {
+        if ($this->isAttributeCached($product, $store, $attributeCode) === false) {
             $value = $this->attributeService->getAttributeValueByAttributeCode($product, $attributeCode);
-            $this->saveAttributeToCache($product, $product->getStore(), $attributeCode, $value);
+            $this->saveAttributeToCache($product, $store, $attributeCode, $value);
         }
         return $this->getAttributeFromCacheByAttributeCode($product, $product->getStore(), $attributeCode);
     }
@@ -161,7 +161,7 @@ class CachingAttributeService extends AbstractAttributeService
     /**
      * @inheritDoc
      */
-    public function getAttributeValue(Product $product, AbstractAttribute $attribute)
+    public function getAttributeValue(Product $product, Store $store, AbstractAttribute $attribute)
     {
         return $this->getAttributeValueByAttributeCode($product, $attribute->getAttributeCode());
     }

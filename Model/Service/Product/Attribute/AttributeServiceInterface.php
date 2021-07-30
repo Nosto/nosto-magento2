@@ -63,8 +63,9 @@ interface AttributeServiceInterface
      * Resolves "textual" product attribute value by attribute code.
      *
      * @param Product $product
+     * @param StoreInterface $store
      * @param string $attributeCode
      * @return bool|float|int|null|string
      */
-    public function getAttributeValueByAttributeCode(Product $product, $attributeCode);
+    public function getAttributeValueByAttributeCode(Product $product, StoreInterface $store, $attributeCode);
 }
