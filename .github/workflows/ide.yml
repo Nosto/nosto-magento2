@@ -16,7 +16,7 @@ jobs:
       uses: shivammathur/setup-php@v2
       with:
         php-version: '7.3'
-        tools: composer:v2, prestissimo, pecl
+        tools: composer:v2, pecl
         extensions: bcmath, gd, pdo_mysql, zip, soap, ast
         coverage: none
 

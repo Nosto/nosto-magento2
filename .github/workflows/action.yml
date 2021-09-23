@@ -15,7 +15,7 @@ jobs:
       uses: shivammathur/setup-php@v2
       with:
         php-version: '7.3'
-        tools: composer, prestissimo
+        tools: composer
         extensions: ast, bcmath, gd
         coverage: none
 
@@ -69,7 +69,7 @@ jobs:
       uses: shivammathur/setup-php@v2
       with:
         php-version: '7.3'
-        tools: composer, prestissimo
+        tools: composer
         extensions: ast, bcmath, gd
         coverage: none
 
@@ -120,7 +120,7 @@ jobs:
       uses: shivammathur/setup-php@v2
       with:
         php-version: '7.3'
-        tools: composer, prestissimo
+        tools: composer:v2, pecl
         extensions: ast, bcmath, gd
         coverage: none
 
