@@ -87,7 +87,7 @@ class MassProductAttributeUpdate implements ObserverInterface
     {
         $ids = $observer->getData('product_ids');
 
-        if (!is_array($ids) ) {
+        if (!is_array($ids)) {
             $this->logger->debug("Could not add mass updated products to nosto indexer");
             return;
         }
@@ -102,7 +102,8 @@ class MassProductAttributeUpdate implements ObserverInterface
      * @param Store $store
      * @param array $ids
      */
-    private function indexProductsPerStore(Store $store, array $ids) {
+    private function indexProductsPerStore(Store $store, array $ids)
+    {
         $collection = $this->getCollection($store, $ids);
         try {
             $this->queueService->addCollectionToUpsertQueue(
@@ -125,5 +126,4 @@ class MassProductAttributeUpdate implements ObserverInterface
             ->withIds($ids)
             ->build();
     }
-
 }
