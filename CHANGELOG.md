@@ -1,5 +1,8 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 5.3.0
+* Index products to Nosto after bulk updates
+
 ### 5.2.10
 * Improve message text for mixed nosto accounts
 * Remove old changelog tables when upgrading to v5
