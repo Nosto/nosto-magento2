@@ -104,7 +104,8 @@ trait BuilderTrait
         if (empty($image)) {
             $mediaUrl = $this->storeManager->getStore()->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_MEDIA);
             $thumbnailPlaceholderPath = 'catalog/placeholder/thumbnail_placeholder';
-            return $mediaUrl . 'catalog/product/placeholder/' . $this->storeManager->getStore()->getConfig($thumbnailPlaceholderPath);
+            return $mediaUrl . 'catalog/product/placeholder/' .
+                $this->storeManager->getStore()->getConfig($thumbnailPlaceholderPath);
         }
 
         return $this->finalizeImageUrl(
