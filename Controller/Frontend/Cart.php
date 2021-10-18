@@ -57,7 +57,8 @@ use Zend_Uri_Exception;
 /*
  * Controller class for handling cart restoration
  */
-
+// @phan-suppress-next-next-line PhanDeprecatedClass - recommended to avoid code migration till 2.5.0
+// https://community.magento.com/t5/Magento-DevBlog/Decomposition-of-Magento-Controllers/ba-p/430883
 class Cart extends Action
 {
     /**

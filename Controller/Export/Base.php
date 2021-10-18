@@ -50,6 +50,8 @@ use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 /**
  * Export base controller that all export controllers must extend.
  */
+// @phan-suppress-next-next-line PhanDeprecatedClass - recommended to avoid code migration till 2.5.0
+// https://community.magento.com/t5/Magento-DevBlog/Decomposition-of-Magento-Controllers/ba-p/430883
 abstract class Base extends Action
 {
     const ID = 'id';
