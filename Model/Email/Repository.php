@@ -66,6 +66,7 @@ class Repository
      */
     public function getNewsletterOptInForEmail($email)
     {
+        // @phan-suppress-next-line PhanDeprecatedFunction
         return $this->subscriber->loadByEmail($email);
     }
 

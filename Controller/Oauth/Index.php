@@ -54,6 +54,8 @@ use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Meta\Oauth\Builder as NostoOauthBuilder;
 use Nosto\Types\Signup\AccountInterface;
 
+// @phan-suppress-next-next-line PhanDeprecatedClass - recommended to avoid code migration till 2.5.0
+// https://community.magento.com/t5/Magento-DevBlog/Decomposition-of-Magento-Controllers/ba-p/430883
 class Index extends Action
 {
     use OauthTrait;
@@ -156,7 +158,7 @@ class Index extends Action
             ) {
                 throw new NostoException(
                     sprintf(
-                        'This account is already being used by "%s". 
+                        'This account is already being used by "%s".
                                 Please create a new account for each store view',
                         $store->getName()
                     )

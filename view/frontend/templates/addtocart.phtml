@@ -41,7 +41,7 @@ use Nosto\Tagging\Block\Addtocart;
 <form action="<?= $block->escapeUrl($block->getSubmitUrl()) ?>" method="post" id="nosto_addtocart_form">
     <?= $block->getBlockHtml('formkey') ?>
 </form>
-<!--suppress JSUnresolvedVariable, JSValidateTypes -->
+<!--suppress JSUnresolvedVariable, JSValidateTypes, JSUnresolvedFunction -->
 <script type="text/javascript">
     require(['recobuy'], function (module) {
         window.Nosto = module;
