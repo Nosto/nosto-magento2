@@ -37,6 +37,7 @@
 namespace Nosto\Tagging\Model\Product;
 
 use Exception;
+use Magento\Catalog\Helper\Image;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\Product\Gallery\ReadHandler as GalleryReadHandler;
 use Magento\Framework\Event\ManagerInterface;
@@ -141,7 +142,8 @@ class Builder
         NostoVariationHelper $nostoVariationHelper,
         NostoRating $nostoRatingHelper,
         StoreManagerInterface $storeManager,
-        AttributeServiceInterface $attributeService
+        AttributeServiceInterface $attributeService,
+        Image $imageHelper
     ) {
         $this->nostoPriceHelper = $priceHelper;
         $this->eventManager = $eventManager;
@@ -155,7 +157,8 @@ class Builder
             $stockService,
             $logger,
             $storeManager,
-            $attributeService
+            $attributeService,
+            $imageHelper
         );
         $this->priceVariationCollection = $priceVariationCollection;
         $this->nostoVariationHelper = $nostoVariationHelper;
