@@ -14,7 +14,7 @@ jobs:
     - name: Set up PHP
       uses: shivammathur/setup-php@v2
       with:
-        php-version: '7.3'
+        php-version: '7.4'
         tools: composer
         extensions: ast, bcmath, gd
         coverage: none
@@ -68,7 +68,7 @@ jobs:
     - name: Set up PHP
       uses: shivammathur/setup-php@v2
       with:
-        php-version: '7.3'
+        php-version: '7.4'
         tools: composer
         extensions: ast, bcmath, gd
         coverage: none
@@ -119,7 +119,7 @@ jobs:
     - name: Set up PHP
       uses: shivammathur/setup-php@v2
       with:
-        php-version: '7.3'
+        php-version: '7.4'
         tools: composer:v2, pecl
         extensions: ast, bcmath, gd
         coverage: none

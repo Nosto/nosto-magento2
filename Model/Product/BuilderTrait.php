@@ -36,6 +36,7 @@
 
 namespace Nosto\Tagging\Model\Product;
 
+use Magento\Catalog\Helper\Image;
 use Magento\Catalog\Model\Product;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
@@ -62,6 +63,9 @@ trait BuilderTrait
     /** @var AttributeServiceInterface */
     private $attributeService;
 
+    /** @var Image  */
+    private $imageHelper;
+
     /**
      * BuilderTrait constructor.
      * @param NostoHelperData $nostoHelperData
@@ -69,19 +73,22 @@ trait BuilderTrait
      * @param NostoLogger $logger
      * @param StoreManagerInterface $storeManager
      * @param AttributeServiceInterface $attributeService
+     * @param Image $imageHelper
      */
     public function __construct(
         NostoHelperData $nostoHelperData,
         StockService $stockService,
         NostoLogger $logger,
         StoreManagerInterface $storeManager,
-        AttributeServiceInterface $attributeService
+        AttributeServiceInterface $attributeService,
+        Image $imageHelper
     ) {
         $this->nostoDataHelper = $nostoHelperData;
         $this->stockService = $stockService;
         $this->logger = $logger;
         $this->storeManager = $storeManager;
         $this->attributeService = $attributeService;
+        $this->imageHelper = $imageHelper;
     }
 
     /**
@@ -99,6 +106,8 @@ trait BuilderTrait
             $image = $media[$primary];
         } elseif (isset($media[$secondary])) {
             $image = $media[$secondary];
+        } else {
+            $image = $this->imageHelper->init($product, "product_base_image")->getUrl();
         }
 
         if (empty($image)) {
