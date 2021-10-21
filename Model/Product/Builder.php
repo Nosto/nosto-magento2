@@ -125,6 +125,7 @@ class Builder
      * @param NostoRating $nostoRatingHelper
      * @param StoreManagerInterface $storeManager
      * @param AttributeServiceInterface $attributeService
+     * @param Image $imageHelper
      */
     public function __construct(
         NostoHelperData $nostoHelperData,
