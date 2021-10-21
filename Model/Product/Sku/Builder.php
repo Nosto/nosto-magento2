@@ -37,6 +37,7 @@
 namespace Nosto\Tagging\Model\Product\Sku;
 
 use Exception;
+use Magento\Catalog\Helper\Image;
 use Magento\Catalog\Model\Product;
 use Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable\Attribute\Collection
     as ConfigurableAttributeCollection;
@@ -80,6 +81,7 @@ class Builder
      * @param StockService $stockService
      * @param StoreManagerInterface $storeManager
      * @param AttributeServiceInterface $attributeService
+     * @param Image $imageHelper
      */
     public function __construct(
         NostoHelperData $nostoHelperData,
@@ -89,7 +91,8 @@ class Builder
         CurrencyHelper $nostoCurrencyHelper,
         StockService $stockService,
         StoreManagerInterface $storeManager,
-        AttributeServiceInterface $attributeService
+        AttributeServiceInterface $attributeService,
+        Image $imageHelper
     ) {
         $this->nostoPriceHelper = $priceHelper;
         $this->eventManager = $eventManager;
@@ -99,7 +102,8 @@ class Builder
             $stockService,
             $logger,
             $storeManager,
-            $attributeService
+            $attributeService,
+            $imageHelper
         );
     }
 
