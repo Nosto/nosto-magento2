@@ -37,6 +37,7 @@
 namespace Nosto\Tagging\Model\Product;
 
 use Exception;
+use GraphQL\Examples\Blog\Data\Image;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\Product\Gallery\ReadHandler as GalleryReadHandler;
 use Magento\Framework\Event\ManagerInterface;
@@ -54,8 +55,11 @@ use Nosto\Tagging\Model\Product\Sku\Collection as NostoSkuCollection;
 use Nosto\Tagging\Model\Product\Tags\LowStock as LowStockHelper;
 use Nosto\Tagging\Model\Product\Url\Builder as NostoUrlBuilder;
 use Nosto\Tagging\Model\Product\Variation\Collection as PriceVariationCollection;
+use Nosto\Tagging\Model\Service\Product\Attribute\AttributeServiceInterface;
+use Nosto\Tagging\Model\Service\Product\AvailabilityService;
 use Nosto\Tagging\Model\Service\Product\Category\CategoryServiceInterface;
-use Nosto\Tagging\Model\Service\Product\ProductBuilderService;
+use Nosto\Tagging\Model\Service\Product\ImageService;
+use Nosto\Tagging\Model\Service\Stock\StockService;
 use Nosto\Types\Product\ProductInterface;
 
 class Builder
@@ -95,8 +99,17 @@ class Builder
     /** @var CategoryServiceInterface */
     private $nostoCategoryService;
 
-    /** @var ProductBuilderService */
-    private $productBuilderService;
+    /** @var AttributeServiceInterface */
+    private $attributeService;
+
+    /** @var AvailabilityService */
+    private $availabilityService;
+
+    /** @var ImageService */
+    private $imageService;
+
+    /** @var StockService */
+    private $stockService;
 
     /**
      * Builder constructor.
@@ -111,7 +124,10 @@ class Builder
      * @param PriceVariationCollection $priceVariationCollection
      * @param NostoVariationHelper $nostoVariationHelper
      * @param NostoRating $nostoRatingHelper
-     * @param ProductBuilderService $productBuilderService
+     * @param AttributeServiceInterface $attributeService
+     * @param AvailabilityService $availabilityService
+     * @param ImageService $imageService
+     * @param StockService $stockService
      */
     public function __construct(
         NostoPriceHelper $priceHelper,
@@ -125,7 +141,10 @@ class Builder
         PriceVariationCollection $priceVariationCollection,
         NostoVariationHelper $nostoVariationHelper,
         NostoRating $nostoRatingHelper,
-        ProductBuilderService $productBuilderService
+        AttributeServiceInterface $attributeService,
+        AvailabilityService $availabilityService,
+        ImageService $imageService,
+        StockService $stockService
     ) {
         $this->nostoPriceHelper = $priceHelper;
         $this->eventManager = $eventManager;
@@ -138,7 +157,10 @@ class Builder
         $this->nostoVariationHelper = $nostoVariationHelper;
         $this->nostoRatingHelper = $nostoRatingHelper;
         $this->nostoCategoryService = $nostoCategoryService;
-        $this->productBuilderService = $productBuilderService;
+        $this->attributeService = $attributeService;
+        $this->availabilityService = $availabilityService;
+        $this->imageService = $imageService;
+        $this->stockService = $stockService;
     }
 
     /**
@@ -172,7 +194,7 @@ class Builder
             $nostoProduct->setProductId((string)$product->getId());
             $nostoProduct->setName($product->getName());
             $nostoProduct->setImageUrl(
-                $this->productBuilderService->getProductImageBuilderService()->buildImageUrl($product, $store)
+                $this->imageService->buildImageUrl($product, $store)
             );
             $price = $this->nostoCurrencyHelper->convertToTaggingPrice(
                 $this->nostoPriceHelper->getProductFinalDisplayPrice(
@@ -195,7 +217,7 @@ class Builder
             $nostoProduct->setAvailability($this->buildAvailability($product, $store));
             $nostoProduct->setCategories($this->nostoCategoryService->getCategories($product, $store));
             if ($this->productBuilderService->getDataHelper()->isInventoryTaggingEnabled($store)) {
-                $inventoryLevel = $this->productBuilderService->getStockService()->getQuantity($product, $store);
+                $inventoryLevel = $this->stockService->getQuantity($product, $store);
                 $nostoProduct->setInventoryLevel($inventoryLevel);
             }
             $rating = $this->nostoRatingHelper->getRatings($product, $store);
@@ -228,7 +250,7 @@ class Builder
             $brandAttribute = $this->productBuilderService->getDataHelper()->getBrandAttribute($store);
             if ($product->hasData($brandAttribute)) {
                 $nostoProduct->setBrand(
-                    $this->productBuilderService->getAttributeService()->getAttributeValueByAttributeCode(
+                    $this->attributeService->getAttributeValueByAttributeCode(
                         $product,
                         $brandAttribute
                     )
@@ -237,7 +259,7 @@ class Builder
             $marginAttribute = $this->productBuilderService->getDataHelper()->getMarginAttribute($store);
             if ($product->hasData($marginAttribute)) {
                 $nostoProduct->setSupplierCost(
-                    $this->productBuilderService->getAttributeService()->getAttributeValueByAttributeCode(
+                    $this->attributeService->getAttributeValueByAttributeCode(
                         $product,
                         $marginAttribute
                     )
@@ -246,7 +268,7 @@ class Builder
             $gtinAttribute = $this->productBuilderService->getDataHelper()->getGtinAttribute($store);
             if ($product->hasData($gtinAttribute)) {
                 $nostoProduct->setGtin(
-                    $this->productBuilderService->getAttributeService()->getAttributeValueByAttributeCode(
+                    $this->attributeService->getAttributeValueByAttributeCode(
                         $product,
                         $gtinAttribute
                     )
@@ -255,7 +277,7 @@ class Builder
             $googleCategoryAttr = $this->productBuilderService->getDataHelper()->getGoogleCategoryAttribute($store);
             if ($product->hasData($googleCategoryAttr)) {
                 $nostoProduct->setGoogleCategory(
-                    $this->productBuilderService->getAttributeService()->getAttributeValueByAttributeCode(
+                    $this->attributeService->getAttributeValueByAttributeCode(
                         $product,
                         $googleCategoryAttr
                     )
@@ -321,7 +343,7 @@ class Builder
             return [];
         }
         // Note that for main product the attributes are the same for custom fields & tags
-        return $this->productBuilderService->getAttributeService()->getAttributesForCustomFields($product, $store);
+        return $this->attributeService->getAttributesForCustomFields($product, $store);
     }
 
     /**
@@ -335,7 +357,7 @@ class Builder
      */
     private function amendAttributeTags(Product $product, NostoProduct $nostoProduct, Store $store)
     {
-        $attributeValues = $this->productBuilderService->getAttributeService()->getAttributesForTags($product, $store);
+        $attributeValues = $this->attributeService->getAttributesForTags($product, $store);
         foreach (self::CUSTOMIZED_TAGS as $tag) {
             $configuredTagAttributes = $this->productBuilderService->getDataHelper()->getTagAttributes($tag, $store);
             if (empty($configuredTagAttributes)) {
@@ -373,10 +395,9 @@ class Builder
     private function buildAvailability(Product $product, Store $store)
     {
         $availability = ProductInterface::OUT_OF_STOCK;
-        $isInStock = $this->productBuilderService->getProductAvailabilityService()->isInStock($product, $store);
+        $isInStock = $this->availabilityService->isInStock($product, $store);
         if (!$product->isVisibleInSiteVisibility()
-            || (!$this->productBuilderService->getProductAvailabilityService()
-                    ->isAvailableInStore($product, $store) && $isInStock)
+            || (!$this->availabilityService->isAvailableInStore($product, $store) && $isInStock)
         ) {
             $availability = ProductInterface::INVISIBLE;
         } elseif ($isInStock
@@ -401,7 +422,7 @@ class Builder
         $this->galleryReadHandler->execute($product);
         foreach ($product->getMediaGalleryImages() as $image) {
             if (isset($image['url']) && (isset($image['disabled']) && $image['disabled'] !== '1')) {
-                $images[] = $this->productBuilderService->getProductImageBuilderService()
+                $images[] = $this->imageService
                     ->finalizeImageUrl($image['url'], $store);
             }
         }

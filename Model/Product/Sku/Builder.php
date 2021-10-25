@@ -45,8 +45,11 @@ use Magento\Store\Model\Store;
 use Nosto\Model\Product\Sku as NostoSku;
 use Nosto\Tagging\Helper\Currency as CurrencyHelper;
 use Nosto\Tagging\Helper\Price as NostoPriceHelper;
+use Nosto\Tagging\Model\Service\Product\Attribute\AttributeServiceInterface;
+use Nosto\Tagging\Model\Service\Product\AvailabilityService;
+use Nosto\Tagging\Model\Service\Product\ImageService;
+use Nosto\Tagging\Model\Service\Stock\StockService;
 use Nosto\Types\Product\ProductInterface;
-use Nosto\Tagging\Model\Service\Product\ProductBuilderService;
 
 // @codingStandardsIgnoreLine
 
@@ -61,26 +64,44 @@ class Builder
     /** @var CurrencyHelper */
     private $nostoCurrencyHelper;
 
-    /** @var ProductBuilderService */
-    private $productBuilderService;
+    /** @var AttributeServiceInterface */
+    private $attributeService;
+
+    /** @var AvailabilityService */
+    private $availabilityService;
+
+    /** @var ImageService */
+    private $imageService;
+
+    /** @var StockService */
+    private $stockService;
 
     /**
      * Builder constructor.
      * @param NostoPriceHelper $priceHelper
      * @param ManagerInterface $eventManager
      * @param CurrencyHelper $nostoCurrencyHelper
-     * @param ProductBuilderService $productBuilderService
+     * @param AttributeServiceInterface $attributeService
+     * @param AvailabilityService $availabilityService
+     * @param ImageService $imageService
+     * @param StockService $stockService
      */
     public function __construct(
         NostoPriceHelper $priceHelper,
         ManagerInterface $eventManager,
         CurrencyHelper $nostoCurrencyHelper,
-        ProductBuilderService $productBuilderService
+        AttributeServiceInterface $attributeService,
+        AvailabilityService $availabilityService,
+        ImageService $imageService,
+        StockService $stockService
     ) {
         $this->nostoPriceHelper = $priceHelper;
         $this->eventManager = $eventManager;
         $this->nostoCurrencyHelper = $nostoCurrencyHelper;
-        $this->productBuilderService = $productBuilderService;
+        $this->attributeService = $attributeService;
+        $this->availabilityService = $availabilityService;
+        $this->imageService = $imageService;
+        $this->stockService = $stockService;
     }
 
     /**
@@ -95,7 +116,7 @@ class Builder
         Store $store,
         ConfigurableAttributeCollection $attributes
     ) {
-        if (!$this->productBuilderService->getProductAvailabilityService()->isAvailableInStore($product, $store)) {
+        if (!$this->availabilityService->isAvailableInStore($product, $store)) {
             return null;
         }
 
@@ -104,8 +125,7 @@ class Builder
             $nostoSku->setId($product->getId());
             $nostoSku->setName($product->getName());
             $nostoSku->setAvailability($this->buildSkuAvailability($product, $store));
-            $nostoSku->setImageUrl($this->productBuilderService->getProductImageBuilderService()
-                ->buildImageUrl($product, $store));
+            $nostoSku->setImageUrl($this->imageService->buildImageUrl($product, $store));
             $price = $this->nostoCurrencyHelper->convertToTaggingPrice(
                 $this->nostoPriceHelper->getProductFinalDisplayPrice(
                     $product,
@@ -133,8 +153,7 @@ class Builder
                         $code = $attribute->getProductAttribute()->getAttributeCode();
                         $nostoSku->addCustomField(
                             $code,
-                            $this->productBuilderService->getAttributeService()
-                                ->getAttributeValueByAttributeCode($product, $code)
+                            $this->attributeService->getAttributeValueByAttributeCode($product, $code)
                         );
                     } catch (Exception $e) {
                         $this->productBuilderService->getLogger()->exception($e);
@@ -142,8 +161,7 @@ class Builder
                 }
             }
             if ($this->productBuilderService->getDataHelper()->isInventoryTaggingEnabled($store)) {
-                $nostoSku->setInventoryLevel($this->productBuilderService->getStockService()
-                    ->getQuantity($product, $store));
+                $nostoSku->setInventoryLevel($this->stockService->getQuantity($product, $store));
             }
         } catch (Exception $e) {
             $this->productBuilderService->getLogger()->exception($e);
@@ -164,7 +182,7 @@ class Builder
     private function buildSkuAvailability(Product $product, Store $store)
     {
         if ($product->isAvailable()
-            && $this->productBuilderService->getProductAvailabilityService()->isInStock($product, $store)
+            && $this->availabilityService->isInStock($product, $store)
         ) {
             return ProductInterface::IN_STOCK;
         }

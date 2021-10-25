@@ -36,76 +36,65 @@
 
 namespace Nosto\Tagging\Model\Service\Product\Builder;
 
-use Magento\Catalog\Helper\Image;
 use Magento\Catalog\Model\Product;
 use Magento\Store\Model\Store;
+use Magento\Store\Model\StoreManagerInterface;
+use Nosto\Tagging\Helper\Account as NostoAccountHelper;
 use Nosto\Tagging\Helper\Data as NostoDataHelper;
-use Nosto\Tagging\Util\Url as UrlUtil;
+use Nosto\Tagging\Logger\Logger as NostoLogger;
+use Nosto\Tagging\Model\Service\AbstractService;
+use Nosto\Tagging\Model\Service\Stock\StockService;
 
-class ProductImageBuilderService
+class AvailabilityService extends AbstractService
 {
+    /** @var StoreManagerInterface */
+    private $storeManager;
 
-    /** @var NostoDataHelper */
-    private $nostoDataHelper;
-
-    /** @var Image  */
-    private $imageHelper;
+    /** @var StockService */
+    private $stockService;
 
     /**
-     * ProductImageBuilder constructor.
+     * ProductAvailabiltyService constructor.
      * @param NostoDataHelper $nostoDataHelper
-     * @param Image $imageHelper
+     * @param NostoAccountHelper $nostoAccountHelper
+     * @param NostoLogger $nostoLogger
+     * @param StoreManagerInterface $storeManager
+     * @param StockService $stockService
      */
     public function __construct(
         NostoDataHelper $nostoDataHelper,
-        Image $imageHelper
+        NostoAccountHelper $nostoAccountHelper,
+        NostoLogger $nostoLogger,
+        StoreManagerInterface $storeManager,
+        StockService $stockService
     ) {
-        $this->nostoDataHelper = $nostoDataHelper;
-        $this->imageHelper = $imageHelper;
+        parent::__construct($nostoDataHelper, $nostoAccountHelper, $nostoLogger);
+        $this->storeManager = $storeManager;
+        $this->stockService = $stockService;
     }
 
     /**
      * @param Product $product
      * @param Store $store
-     * @return string|null
+     * @return bool
      */
-    public function buildImageUrl(Product $product, Store $store)
+    public function isAvailableInStore(Product $product, Store $store)
     {
-        $primary = $this->nostoDataHelper->getProductImageVersion($store);
-        $secondary = 'image'; // The "base" image.
-        $media = $product->getMediaAttributeValues();
-
-        if (isset($media[$primary])) {
-            $image = $media[$primary];
-        } elseif (isset($media[$secondary])) {
-            $image = $media[$secondary];
-        } else {
-            $image = $this->imageHelper->init($product, "product_base_image")->getUrl();
+        if ($this->storeManager->isSingleStoreMode()) {
+            return $product->isAvailable();
         }
-
-        if (empty($image)) {
-            return null;
-        }
-
-        return $this->finalizeImageUrl(
-            $product->getMediaConfig()->getMediaUrl($image),
-            $store
-        );
+        return in_array($store->getId(), $product->getStoreIds(), false);
     }
 
     /**
-     * Finalizes product image urls, stips off "pub/" directory if applicable
+     * Checks if the product is in stock
      *
-     * @param string $url
+     * @param Product $product
      * @param Store $store
-     * @return string
+     * @return bool
      */
-    public function finalizeImageUrl($url, Store $store)
+    public function isInStock(Product $product, Store $store)
     {
-        if ($this->nostoDataHelper->getRemovePubDirectoryFromProductImageUrl($store)) {
-            return UrlUtil::removePubFromUrl($url);
-        }
-
-        return $url;
+        return $this->stockService->isInStock($product, $store);
     }
 }
