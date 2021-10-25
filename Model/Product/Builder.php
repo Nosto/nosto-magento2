@@ -37,7 +37,7 @@
 namespace Nosto\Tagging\Model\Product;
 
 use Exception;
-use GraphQL\Examples\Blog\Data\Image;
+use Magento\Catalog\Helper\Image;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\Product\Gallery\ReadHandler as GalleryReadHandler;
 use Magento\Framework\Event\ManagerInterface;
