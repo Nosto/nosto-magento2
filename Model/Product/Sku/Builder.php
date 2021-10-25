@@ -37,7 +37,6 @@
 namespace Nosto\Tagging\Model\Product\Sku;
 
 use Exception;
-use Magento\Catalog\Helper\Image;
 use Magento\Catalog\Model\Product;
 use Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable\Attribute\Collection
     as ConfigurableAttributeCollection;

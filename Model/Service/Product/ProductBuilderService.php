@@ -95,7 +95,7 @@ class ProductBuilderService extends AbstractService
     }
 
     /**
-     * @return AttributeServiceInterface
+     * @return StockService
      */
     public function getStockService()
     {
