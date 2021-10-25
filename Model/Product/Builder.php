@@ -48,6 +48,7 @@ use Nosto\NostoException;
 use Nosto\Model\ModelFilter;
 use Nosto\Model\Product\Product as NostoProduct;
 use Nosto\Tagging\Helper\Currency as CurrencyHelper;
+use Nosto\Tagging\Helper\Data as NostoDataHelper;
 use Nosto\Tagging\Helper\Price as NostoPriceHelper;
 use Nosto\Tagging\Helper\Ratings as NostoRating;
 use Nosto\Tagging\Helper\Variation as NostoVariationHelper;
@@ -65,6 +66,9 @@ use Nosto\Types\Product\ProductInterface;
 class Builder
 {
     const CUSTOMIZED_TAGS = ['tag1', 'tag2', 'tag3'];
+
+    /** @var NostoDataHelper */
+    private $nostoDataHelper;
 
     /** @var NostoPriceHelper */
     private $nostoPriceHelper;
@@ -113,6 +117,7 @@ class Builder
 
     /**
      * Builder constructor.
+     * @param NostoDataHelper $nostoDataHelper
      * @param NostoPriceHelper $priceHelper
      * @param CategoryServiceInterface $nostoCategoryService
      * @param NostoSkuCollection $skuCollection
@@ -130,6 +135,7 @@ class Builder
      * @param StockService $stockService
      */
     public function __construct(
+        NostoDataHelper $nostoDataHelper,
         NostoPriceHelper $priceHelper,
         CategoryServiceInterface $nostoCategoryService,
         NostoSkuCollection $skuCollection,
@@ -146,6 +152,7 @@ class Builder
         ImageService $imageService,
         StockService $stockService
     ) {
+        $this->nostoDataHelper = $nostoDataHelper;
         $this->nostoPriceHelper = $priceHelper;
         $this->eventManager = $eventManager;
         $this->galleryReadHandler = $galleryReadHandler;
@@ -209,14 +216,14 @@ class Builder
                         $store
                     )->getCode()
                 );
-            } elseif ($this->productBuilderService->getDataHelper()->isPricingVariationEnabled($store)) {
+            } elseif ($this->nostoDataHelper->isPricingVariationEnabled($store)) {
                 $nostoProduct->setVariationId(
                     $this->nostoVariationHelper->getDefaultVariationCode()
                 );
             }
             $nostoProduct->setAvailability($this->buildAvailability($product, $store));
             $nostoProduct->setCategories($this->nostoCategoryService->getCategories($product, $store));
-            if ($this->productBuilderService->getDataHelper()->isInventoryTaggingEnabled($store)) {
+            if ($this->nostoDataHelper->isInventoryTaggingEnabled($store)) {
                 $inventoryLevel = $this->stockService->getQuantity($product, $store);
                 $nostoProduct->setInventoryLevel($inventoryLevel);
             }
@@ -227,10 +234,10 @@ class Builder
             }
             $nostoProduct->setCustomFields($this->getCustomFieldsWithAttributes($product, $store));
             // Update customised Tag1, Tag2 and Tag3
-            if ($this->productBuilderService->getDataHelper()->isAltimgTaggingEnabled($store)) {
+            if ($this->nostoDataHelper->isAltimgTaggingEnabled($store)) {
                 $nostoProduct->setAlternateImageUrls($this->buildAlternativeImages($product, $store));
             }
-            if ($this->productBuilderService->getDataHelper()->isVariationTaggingEnabled($store)) {
+            if ($this->nostoDataHelper->isVariationTaggingEnabled($store)) {
                 $nostoProduct->setSkus($this->skuCollection->build($product, $store));
             }
             $descriptions = [];
@@ -247,7 +254,7 @@ class Builder
                 $nostoProduct->setTag1($tags);
             }
             $this->amendAttributeTags($product, $nostoProduct, $store);
-            $brandAttribute = $this->productBuilderService->getDataHelper()->getBrandAttribute($store);
+            $brandAttribute = $this->nostoDataHelper->getBrandAttribute($store);
             if ($product->hasData($brandAttribute)) {
                 $nostoProduct->setBrand(
                     $this->attributeService->getAttributeValueByAttributeCode(
@@ -256,7 +263,7 @@ class Builder
                     )
                 );
             }
-            $marginAttribute = $this->productBuilderService->getDataHelper()->getMarginAttribute($store);
+            $marginAttribute = $this->nostoDataHelper->getMarginAttribute($store);
             if ($product->hasData($marginAttribute)) {
                 $nostoProduct->setSupplierCost(
                     $this->attributeService->getAttributeValueByAttributeCode(
@@ -265,7 +272,7 @@ class Builder
                     )
                 );
             }
-            $gtinAttribute = $this->productBuilderService->getDataHelper()->getGtinAttribute($store);
+            $gtinAttribute = $this->nostoDataHelper->getGtinAttribute($store);
             if ($product->hasData($gtinAttribute)) {
                 $nostoProduct->setGtin(
                     $this->attributeService->getAttributeValueByAttributeCode(
@@ -274,7 +281,7 @@ class Builder
                     )
                 );
             }
-            $googleCategoryAttr = $this->productBuilderService->getDataHelper()->getGoogleCategoryAttribute($store);
+            $googleCategoryAttr = $this->nostoDataHelper->getGoogleCategoryAttribute($store);
             if ($product->hasData($googleCategoryAttr)) {
                 $nostoProduct->setGoogleCategory(
                     $this->attributeService->getAttributeValueByAttributeCode(
@@ -284,14 +291,14 @@ class Builder
                 );
             }
             // When using customer group price variations, set the variations
-            if ($this->productBuilderService->getDataHelper()->isPricingVariationEnabled($store)
-                && $this->productBuilderService->getDataHelper()->isMultiCurrencyDisabled($store)
+            if ($this->nostoDataHelper->isPricingVariationEnabled($store)
+                && $this->nostoDataHelper->isMultiCurrencyDisabled($store)
             ) {
                 $nostoProduct->setVariations(
                     $this->priceVariationCollection->build($product, $nostoProduct, $store)
                 );
             }
-            if ($this->productBuilderService->getDataHelper()->isTagDatePublishedEnabled($store)) {
+            if ($this->nostoDataHelper->isTagDatePublishedEnabled($store)) {
                 $nostoProduct->setDatePublished($product->getCreatedAt());
             }
 
@@ -339,7 +346,7 @@ class Builder
      */
     private function getCustomFieldsWithAttributes(Product $product, Store $store)
     {
-        if (!$this->productBuilderService->getDataHelper()->isCustomFieldsEnabled($store)) {
+        if (!$this->nostoDataHelper->isCustomFieldsEnabled($store)) {
             return [];
         }
         // Note that for main product the attributes are the same for custom fields & tags
@@ -359,7 +366,7 @@ class Builder
     {
         $attributeValues = $this->attributeService->getAttributesForTags($product, $store);
         foreach (self::CUSTOMIZED_TAGS as $tag) {
-            $configuredTagAttributes = $this->productBuilderService->getDataHelper()->getTagAttributes($tag, $store);
+            $configuredTagAttributes = $this->nostoDataHelper->getTagAttributes($tag, $store);
             if (empty($configuredTagAttributes)) {
                 continue;
             }
@@ -443,7 +450,7 @@ class Builder
             $tags[] = ProductInterface::ADD_TO_CART;
         }
 
-        if ($this->productBuilderService->getDataHelper()->isLowStockIndicationEnabled($store)
+        if ($this->nostoDataHelper->isLowStockIndicationEnabled($store)
             && $this->lowStockHelper->build($product)
         ) {
             $tags[] = ProductInterface::LOW_STOCK;

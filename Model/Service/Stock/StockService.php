@@ -50,7 +50,7 @@ use Nosto\Tagging\Model\Service\Stock\Provider\StockProviderInterface;
 /**
  * StockService helper used for product inventory level related tasks.
  */
-class StockService
+class StockService 
 {
     /** @var StockProviderInterface */
     private $stockProvider;
