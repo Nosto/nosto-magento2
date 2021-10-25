@@ -43,7 +43,6 @@ use Nosto\Tagging\Model\Service\Stock\StockService;
 
 class ProductAvailabilityService
 {
-
     /** @var StoreManagerInterface */
     private $storeManager;
 
@@ -87,5 +86,4 @@ class ProductAvailabilityService
     {
         return $this->stockService->isInStock($product, $store);
     }
-
 }

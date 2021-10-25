@@ -47,7 +47,6 @@ use Nosto\Model\Product\Sku as NostoSku;
 use Nosto\Tagging\Helper\Currency as CurrencyHelper;
 use Nosto\Tagging\Helper\Price as NostoPriceHelper;
 use Nosto\Types\Product\ProductInterface;
-use Magento\Store\Model\StoreManagerInterface;
 use Nosto\Tagging\Model\Service\Product\ProductBuilderService;
 
 // @codingStandardsIgnoreLine
@@ -71,14 +70,12 @@ class Builder
      * @param NostoPriceHelper $priceHelper
      * @param ManagerInterface $eventManager
      * @param CurrencyHelper $nostoCurrencyHelper
-     * @param StoreManagerInterface $storeManager
      * @param ProductBuilderService $productBuilderService
      */
     public function __construct(
         NostoPriceHelper $priceHelper,
         ManagerInterface $eventManager,
         CurrencyHelper $nostoCurrencyHelper,
-        StoreManagerInterface $storeManager,
         ProductBuilderService $productBuilderService
     ) {
         $this->nostoPriceHelper = $priceHelper;
@@ -108,7 +105,8 @@ class Builder
             $nostoSku->setId($product->getId());
             $nostoSku->setName($product->getName());
             $nostoSku->setAvailability($this->buildSkuAvailability($product, $store));
-            $nostoSku->setImageUrl($this->productBuilderService->getProductImageBuilder()->buildImageUrl($product, $store));
+            $nostoSku->setImageUrl($this->productBuilderService->getProductImageBuilderService()
+                ->buildImageUrl($product, $store));
             $price = $this->nostoCurrencyHelper->convertToTaggingPrice(
                 $this->nostoPriceHelper->getProductFinalDisplayPrice(
                     $product,
@@ -136,18 +134,20 @@ class Builder
                         $code = $attribute->getProductAttribute()->getAttributeCode();
                         $nostoSku->addCustomField(
                             $code,
-                            $this->productBuilderService->getAttributeService()->getAttributeValueByAttributeCode($product, $code)
+                            $this->productBuilderService->getAttributeService()
+                                ->getAttributeValueByAttributeCode($product, $code)
                         );
                     } catch (Exception $e) {
-                        $this->getLogger()->exception($e);
+                        $this->productBuilderService->getLogger()->exception($e);
                     }
                 }
             }
             if ($this->productBuilderService->getDataHelper()->isInventoryTaggingEnabled($store)) {
-                $nostoSku->setInventoryLevel($this->productBuilderService->getProductAvailabilityService()->getStockService()->getQuantity($product, $store));
+                $nostoSku->setInventoryLevel($this->productBuilderService->getStockService()
+                    ->getQuantity($product, $store));
             }
         } catch (Exception $e) {
-            $this->getLogger()->exception($e);
+            $this->productBuilderService->getLogger()->exception($e);
         }
 
         $this->eventManager->dispatch('nosto_sku_load_after', ['sku' => $nostoSku, 'magentoProduct' => $product]);

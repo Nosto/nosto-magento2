@@ -57,7 +57,6 @@ use Nosto\Tagging\Model\Product\Variation\Collection as PriceVariationCollection
 use Nosto\Tagging\Model\Service\Product\Category\CategoryServiceInterface;
 use Nosto\Tagging\Model\Service\Product\ProductBuilderService;
 use Nosto\Types\Product\ProductInterface;
-use Magento\Store\Model\StoreManagerInterface;
 
 class Builder
 {
@@ -112,7 +111,6 @@ class Builder
      * @param PriceVariationCollection $priceVariationCollection
      * @param NostoVariationHelper $nostoVariationHelper
      * @param NostoRating $nostoRatingHelper
-     * @param StoreManagerInterface $storeManager
      * @param ProductBuilderService $productBuilderService
      */
     public function __construct(
@@ -127,7 +125,6 @@ class Builder
         PriceVariationCollection $priceVariationCollection,
         NostoVariationHelper $nostoVariationHelper,
         NostoRating $nostoRatingHelper,
-        StoreManagerInterface $storeManager,
         ProductBuilderService $productBuilderService
     ) {
         $this->nostoPriceHelper = $priceHelper;
@@ -198,7 +195,7 @@ class Builder
             $nostoProduct->setAvailability($this->buildAvailability($product, $store));
             $nostoProduct->setCategories($this->nostoCategoryService->getCategories($product, $store));
             if ($this->productBuilderService->getDataHelper()->isInventoryTaggingEnabled($store)) {
-                $inventoryLevel = $this->productAvailabilityService->getStockService()->getQuantity($product, $store);
+                $inventoryLevel = $this->productBuilderService->getStockService()->getQuantity($product, $store);
                 $nostoProduct->setInventoryLevel($inventoryLevel);
             }
             $rating = $this->nostoRatingHelper->getRatings($product, $store);
@@ -376,9 +373,10 @@ class Builder
     private function buildAvailability(Product $product, Store $store)
     {
         $availability = ProductInterface::OUT_OF_STOCK;
-        $isInStock = $this->productBuilderService->getProductAvailabilityService->isInStock($product, $store);
+        $isInStock = $this->productBuilderService->getProductAvailabilityService()->isInStock($product, $store);
         if (!$product->isVisibleInSiteVisibility()
-            || (!$this->productBuilderService->getProductAvailabilityService()->isAvailableInStore($product, $store) && $isInStock)
+            || (!$this->productBuilderService->getProductAvailabilityService()
+                    ->isAvailableInStore($product, $store) && $isInStock)
         ) {
             $availability = ProductInterface::INVISIBLE;
         } elseif ($isInStock
@@ -403,7 +401,8 @@ class Builder
         $this->galleryReadHandler->execute($product);
         foreach ($product->getMediaGalleryImages() as $image) {
             if (isset($image['url']) && (isset($image['disabled']) && $image['disabled'] !== '1')) {
-                $images[] = $this->productBuilderService->getProductImageBuilder()->finalizeImageUrl($image['url'], $store);
+                $images[] = $this->productBuilderService->getProductImageBuilderService()
+                    ->finalizeImageUrl($image['url'], $store);
             }
         }
 

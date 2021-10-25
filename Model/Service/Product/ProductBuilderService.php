@@ -43,12 +43,16 @@ use Nosto\Tagging\Model\Service\AbstractService;
 use Nosto\Tagging\Model\Service\Product\Builder\ProductAvailabilityService;
 use Nosto\Tagging\Model\Service\Product\Builder\ProductImageBuilderService;
 use Nosto\Tagging\Model\Service\Product\Attribute\AttributeServiceInterface;
+use Nosto\Tagging\Model\Service\Stock\StockService;
 
 class ProductBuilderService extends AbstractService
 {
 
     /** @var AttributeServiceInterface */
     private $attributeService;
+
+    /** @var StockService */
+    private $stockService;
 
     /** @var ProductAvailabilityService */
     private $productAvailabilityService;
@@ -62,6 +66,7 @@ class ProductBuilderService extends AbstractService
      * @param NostoDataHelper $nostoDataHelper
      * @param NostoAccountHelper $nostoAccountHelper
      * @param AttributeServiceInterface $attributeService
+     * @param StockService $stockService
      * @param ProductAvailabilityService $productAvailabilityService
      * @param ProductImageBuilderService $productImageBuilderService
      */
@@ -70,11 +75,13 @@ class ProductBuilderService extends AbstractService
         NostoDataHelper $nostoDataHelper,
         NostoAccountHelper $nostoAccountHelper,
         AttributeServiceInterface $attributeService,
+        StockService $stockService,
         ProductAvailabilityService $productAvailabilityService,
         ProductImageBuilderService $productImageBuilderService
     ) {
         parent::__construct($nostoDataHelper, $nostoAccountHelper, $logger);
         $this->attributeService = $attributeService;
+        $this->stockService = $stockService;
         $this->productAvailabilityService = $productAvailabilityService;
         $this->productImageBuilderService = $productImageBuilderService;
     }
@@ -88,6 +95,14 @@ class ProductBuilderService extends AbstractService
     }
 
     /**
+     * @return AttributeServiceInterface
+     */
+    public function getStockService()
+    {
+        return $this->stockService;
+    }
+
+    /**
      * @return ProductAvailabilityService
      */
     public function getProductAvailabilityService()
@@ -96,11 +111,10 @@ class ProductBuilderService extends AbstractService
     }
 
     /**
-     * @return ProductAvailabilityService
+     * @return ProductImageBuilderService
      */
     public function getProductImageBuilderService()
     {
         return $this->productImageBuilderService;
     }
-
 }
