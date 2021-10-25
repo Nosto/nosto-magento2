@@ -34,7 +34,7 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Service\Product\Builder;
+namespace Nosto\Tagging\Model\Service\Product;
 
 use Magento\Catalog\Helper\Image;
 use Magento\Catalog\Model\Product;
