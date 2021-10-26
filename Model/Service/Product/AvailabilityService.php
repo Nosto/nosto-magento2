@@ -39,13 +39,9 @@ namespace Nosto\Tagging\Model\Service\Product;
 use Magento\Catalog\Model\Product;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
-use Nosto\Tagging\Helper\Account as NostoAccountHelper;
-use Nosto\Tagging\Helper\Data as NostoDataHelper;
-use Nosto\Tagging\Logger\Logger as NostoLogger;
-use Nosto\Tagging\Model\Service\AbstractService;
 use Nosto\Tagging\Model\Service\Stock\StockService;
 
-class AvailabilityService extends AbstractService
+class AvailabilityService
 {
     /** @var StoreManagerInterface */
     private $storeManager;
@@ -54,21 +50,14 @@ class AvailabilityService extends AbstractService
     private $stockService;
 
     /**
-     * ProductAvailabiltyService constructor.
-     * @param NostoDataHelper $nostoDataHelper
-     * @param NostoAccountHelper $nostoAccountHelper
-     * @param NostoLogger $nostoLogger
+     * AvailabiltyService constructor.
      * @param StoreManagerInterface $storeManager
      * @param StockService $stockService
      */
     public function __construct(
-        NostoDataHelper $nostoDataHelper,
-        NostoAccountHelper $nostoAccountHelper,
-        NostoLogger $nostoLogger,
         StoreManagerInterface $storeManager,
         StockService $stockService
     ) {
-        parent::__construct($nostoDataHelper, $nostoAccountHelper, $nostoLogger);
         $this->storeManager = $storeManager;
         $this->stockService = $stockService;
     }

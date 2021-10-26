@@ -39,32 +39,28 @@ namespace Nosto\Tagging\Model\Service\Product;
 use Magento\Catalog\Helper\Image;
 use Magento\Catalog\Model\Product;
 use Magento\Store\Model\Store;
-use Nosto\Tagging\Helper\Account as NostoAccountHelper;
 use Nosto\Tagging\Helper\Data as NostoDataHelper;
-use Nosto\Tagging\Logger\Logger as NostoLogger;
-use Nosto\Tagging\Model\Service\AbstractService;
 use Nosto\Tagging\Util\Url as UrlUtil;
 
-class ImageService extends AbstractService
+class ImageService
 {
     /** @var Image  */
     private $imageHelper;
 
+    /** @var NostoDataHelper  */
+    private $nostoDataHelper;
+
     /**
      * ImageService constructor.
-     * @param NostoDataHelper $nostoDataHelper
-     * @param NostoAccountHelper $nostoAccountHelper
-     * @param NostoLogger $nostoLogger
      * @param Image $imageHelper
+     * @param NostoDataHelper $nostoDataHelper
      */
     public function __construct(
-        NostoDataHelper $nostoDataHelper,
-        NostoAccountHelper $nostoAccountHelper,
-        NostoLogger $nostoLogger,
-        Image $imageHelper
+        Image $imageHelper,
+        NostoDataHelper $nostoDataHelper
     ) {
-        parent::__construct($nostoDataHelper, $nostoAccountHelper, $nostoLogger);
         $this->imageHelper = $imageHelper;
+        $this->nostoDataHelper = $nostoDataHelper;
     }
 
     /**
@@ -74,7 +70,7 @@ class ImageService extends AbstractService
      */
     public function buildImageUrl(Product $product, Store $store)
     {
-        $primary = $this->getDataHelper()->getProductImageVersion($store);
+        $primary = $this->nostoDataHelper->getProductImageVersion($store);
         $secondary = 'image'; // The "base" image.
         $media = $product->getMediaAttributeValues();
 
@@ -105,7 +101,7 @@ class ImageService extends AbstractService
      */
     public function finalizeImageUrl($url, Store $store)
     {
-        if ($this->getDataHelper()->getRemovePubDirectoryFromProductImageUrl($store)) {
+        if ($this->nostoDataHelper->getRemovePubDirectoryFromProductImageUrl($store)) {
             return UrlUtil::removePubFromUrl($url);
         }
 
