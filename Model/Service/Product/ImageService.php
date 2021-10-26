@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2020, Nosto Solutions Ltd
+ * Copyright (c) 2021, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,66 +29,38 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <contact@nosto.com>
- * @copyright 2020 Nosto Solutions Ltd
+ * @copyright 2021 Nosto Solutions Ltd
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
 
-namespace Nosto\Tagging\Model\Product;
+namespace Nosto\Tagging\Model\Service\Product;
 
 use Magento\Catalog\Helper\Image;
 use Magento\Catalog\Model\Product;
 use Magento\Store\Model\Store;
-use Magento\Store\Model\StoreManagerInterface;
-use Nosto\Tagging\Helper\Data as NostoHelperData;
-use Nosto\Tagging\Logger\Logger as NostoLogger;
-use Nosto\Tagging\Model\Service\Product\Attribute\AttributeServiceInterface;
-use Nosto\Tagging\Model\Service\Stock\StockService;
+use Nosto\Tagging\Helper\Data as NostoDataHelper;
 use Nosto\Tagging\Util\Url as UrlUtil;
 
-trait BuilderTrait
+class ImageService
 {
-    /** @var NostoHelperData */
-    private $nostoDataHelper;
-
-    /** @var NostoLogger */
-    private $logger;
-
-    /** @var StockService */
-    private $stockService;
-
-    /** @var StoreManagerInterface */
-    private $storeManager;
-
-    /** @var AttributeServiceInterface */
-    private $attributeService;
-
     /** @var Image  */
     private $imageHelper;
 
+    /** @var NostoDataHelper  */
+    private $nostoDataHelper;
+
     /**
-     * BuilderTrait constructor.
-     * @param NostoHelperData $nostoHelperData
-     * @param StockService $stockService
-     * @param NostoLogger $logger
-     * @param StoreManagerInterface $storeManager
-     * @param AttributeServiceInterface $attributeService
+     * ImageService constructor.
      * @param Image $imageHelper
+     * @param NostoDataHelper $nostoDataHelper
      */
     public function __construct(
-        NostoHelperData $nostoHelperData,
-        StockService $stockService,
-        NostoLogger $logger,
-        StoreManagerInterface $storeManager,
-        AttributeServiceInterface $attributeService,
-        Image $imageHelper
+        Image $imageHelper,
+        NostoDataHelper $nostoDataHelper
     ) {
-        $this->nostoDataHelper = $nostoHelperData;
-        $this->stockService = $stockService;
-        $this->logger = $logger;
-        $this->storeManager = $storeManager;
-        $this->attributeService = $attributeService;
         $this->imageHelper = $imageHelper;
+        $this->nostoDataHelper = $nostoDataHelper;
     }
 
     /**
@@ -134,54 +106,5 @@ trait BuilderTrait
         }
 
         return $url;
-    }
-
-    /**
-     * @param Product $product
-     * @param Store $store
-     * @return bool
-     */
-    public function isAvailableInStore(Product $product, Store $store)
-    {
-        if ($this->storeManager->isSingleStoreMode()) {
-            return $product->isAvailable();
-        }
-        return in_array($store->getId(), $product->getStoreIds(), false);
-    }
-
-    /**
-     * Checks if the product is in stock
-     *
-     * @param Product $product
-     * @param Store $store
-     * @return bool
-     */
-    public function isInStock(Product $product, Store $store)
-    {
-        return $this->stockService->isInStock($product, $store);
-    }
-
-    /**
-     * @return StockService
-     */
-    public function getStockService()
-    {
-        return $this->stockService;
-    }
-
-    /**
-     * @return NostoLogger
-     */
-    public function getLogger()
-    {
-        return $this->logger;
-    }
-
-    /**
-     * @return NostoHelperData
-     */
-    public function getDataHelper()
-    {
-        return $this->nostoDataHelper;
     }
 }
