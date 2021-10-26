@@ -1,6 +1,6 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
-### 5.3.2
+### upcoming
 * Refactor BuilderTrait into service classes
 
 ### 5.3.1
