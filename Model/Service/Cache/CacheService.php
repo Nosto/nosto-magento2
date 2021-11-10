@@ -43,6 +43,7 @@ use Nosto\Model\Product\Product;
 use Nosto\Tagging\Helper\Account as NostoAccountHelper;
 use Nosto\Tagging\Helper\Data as NostoDataHelper;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
+use Nosto\Tagging\Model\Cache\Type\ProductData;
 use Nosto\Tagging\Model\Cache\Type\ProductDataInterface;
 use Nosto\Tagging\Model\Service\AbstractService;
 use Nosto\Tagging\Model\Service\Product\ProductSerializerInterface;
@@ -80,14 +81,17 @@ class CacheService extends AbstractService
     /**
      * @param NostoProductInterface $nostoProduct
      * @param StoreInterface $store
+     * @param int|null $lifeTime
      */
-    public function save(NostoProductInterface $nostoProduct, StoreInterface $store)
+    public function save(NostoProductInterface $nostoProduct, StoreInterface $store, $lifeTime)
     {
         try {
             $serializedNostoProduct = $this->productSerializer->toString($nostoProduct);
             $this->productDataCache->save(
                 $serializedNostoProduct,
-                $this->generateCacheKey($nostoProduct->getProductId(), $store->getId())
+                $this->generateCacheKey($nostoProduct->getProductId(), $store->getId()),
+                [ProductData::CACHE_TAG],
+                $lifeTime
             );
         } catch (Exception $e) {
             $this->getLogger()->exception($e);

@@ -53,7 +53,7 @@ class CachingCategoryService implements CategoryServiceInterface
     private $cache = [];
 
     /**
-     * Index constructor.
+     * CachingCategoryService constructor.
      * @param CategoryServiceInterface $categoryService
      */
     public function __construct(

@@ -146,6 +146,8 @@
             <argument name="defaultProductService" xsi:type="object">
                 Nosto\Tagging\Model\Service\Product\DefaultProductService
             </argument>
+            <!-- Default TTL value is equal to 7 days -->
+            <argument name="lifeTime" xsi:type="number">604800</argument>
         </arguments>
     </type>
     <type name="Nosto\Tagging\Model\Service\Product\SanitizingProductService">
@@ -224,6 +226,8 @@
             </argument>
             <argument name="apiBatchSize" xsi:type="number">50</argument>
             <argument name="apiTimeout" xsi:type="number">60</argument>
+            <!-- Default TTL value is equal to 7 days -->
+            <argument name="lifeTime" xsi:type="number">604800</argument>
         </arguments>
     </type>
     <type name="Nosto\Tagging\Model\Service\Sync\Delete\DeleteService">

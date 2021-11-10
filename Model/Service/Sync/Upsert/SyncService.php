@@ -79,8 +79,11 @@ class SyncService extends AbstractService
     /** @var int */
     private $apiTimeout;
 
+    /** @var int|null */
+    private $lifeTime;
+
     /**
-     * Index constructor.
+     * Sync constructor.
      * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoHelperUrl $nostoHelperUrl
      * @param NostoLogger $logger
@@ -89,6 +92,7 @@ class SyncService extends AbstractService
      * @param CacheService $cacheService
      * @param $apiBatchSize
      * @param $apiTimeout
+     * @param $lifeTime
      */
     public function __construct(
         NostoHelperAccount $nostoHelperAccount,
@@ -98,7 +102,8 @@ class SyncService extends AbstractService
         ProductServiceInterface $productService,
         CacheService $cacheService,
         $apiBatchSize,
-        $apiTimeout
+        $apiTimeout,
+        $lifeTime
     ) {
         parent::__construct($nostoDataHelper, $nostoHelperAccount, $logger);
         $this->productService = $productService;
@@ -108,6 +113,7 @@ class SyncService extends AbstractService
         $this->cacheService = $cacheService;
         $this->apiBatchSize = $apiBatchSize;
         $this->apiTimeout = $apiTimeout;
+        $this->lifeTime = $lifeTime;
     }
 
     /**
@@ -147,8 +153,11 @@ class SyncService extends AbstractService
                     throw new NostoException('Could not get product from the product service.');
                 }
                 $op->addProduct($nostoProduct);
+                if ($this->lifeTime < 0) {
+                    $this->lifeTime = null;
+                }
                 // phpcs:ignore
-                $this->cacheService->save($nostoProduct, $store);
+                $this->cacheService->save($nostoProduct, $store, $this->lifeTime);
                 $this->tickBenchmark(self::BENCHMARK_SYNC_NAME);
             }
 
