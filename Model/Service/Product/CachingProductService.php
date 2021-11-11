@@ -54,26 +54,20 @@ class CachingProductService implements ProductServiceInterface
     /** @var ProductServiceInterface */
     private $defaultProductService;
 
-    /** @var int|null */
-    private $lifeTime;
-
     /**
      * CachingProductService constructor.
      * @param Logger $nostoLogger
      * @param CacheService $nostoCacheService
      * @param ProductServiceInterface $defaultProductService
-     * @param $lifeTime
      */
     public function __construct(
         Logger $nostoLogger,
         CacheService $nostoCacheService,
-        ProductServiceInterface $defaultProductService,
-        $lifeTime
+        ProductServiceInterface $defaultProductService
     ) {
         $this->nostoLogger = $nostoLogger;
         $this->nostoCacheService = $nostoCacheService;
         $this->defaultProductService = $defaultProductService;
-        $this->lifeTime = $lifeTime;
     }
 
     /**
@@ -92,10 +86,7 @@ class CachingProductService implements ProductServiceInterface
             if ($nostoProduct === null) {
                 $nostoProduct = $this->defaultProductService->getProduct($product, $store);
                 if ($nostoProduct !== null) {
-                    if ($this->lifeTime < 0) {
-                        $this->lifeTime = null;
-                    }
-                    $this->nostoCacheService->save($nostoProduct, $store, $this->lifeTime);
+                    $this->nostoCacheService->save($nostoProduct, $store);
                 }
             }
             return $nostoProduct;

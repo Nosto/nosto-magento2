@@ -43,7 +43,6 @@ use Nosto\Model\Product\Product;
 use Nosto\Tagging\Helper\Account as NostoAccountHelper;
 use Nosto\Tagging\Helper\Data as NostoDataHelper;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
-use Nosto\Tagging\Model\Cache\Type\ProductData;
 use Nosto\Tagging\Model\Cache\Type\ProductDataInterface;
 use Nosto\Tagging\Model\Service\AbstractService;
 use Nosto\Tagging\Model\Service\Product\ProductSerializerInterface;
@@ -58,6 +57,9 @@ class CacheService extends AbstractService
     /** @var ProductDataInterface */
     private $productDataCache;
 
+    /** @var int|null */
+    private $lifeTime;
+
     /**
      * CacheService constructor.
      * @param NostoLogger $logger
@@ -65,33 +67,38 @@ class CacheService extends AbstractService
      * @param NostoAccountHelper $nostoAccountHelper
      * @param ProductSerializerInterface $productSerializer
      * @param ProductDataInterface $productDataCache
+     * @param int $lifeTime
      */
     public function __construct(
         NostoLogger $logger,
         NostoDataHelper $nostoDataHelper,
         NostoAccountHelper $nostoAccountHelper,
         ProductSerializerInterface $productSerializer,
-        ProductDataInterface $productDataCache
+        ProductDataInterface $productDataCache,
+        $lifeTime
     ) {
         parent::__construct($nostoDataHelper, $nostoAccountHelper, $logger);
         $this->productSerializer = $productSerializer;
         $this->productDataCache = $productDataCache;
+        $this->lifeTime = $lifeTime;
     }
 
     /**
      * @param NostoProductInterface $nostoProduct
      * @param StoreInterface $store
-     * @param int|null $lifeTime
      */
-    public function save(NostoProductInterface $nostoProduct, StoreInterface $store, $lifeTime)
+    public function save(NostoProductInterface $nostoProduct, StoreInterface $store)
     {
         try {
             $serializedNostoProduct = $this->productSerializer->toString($nostoProduct);
+            if ($this->lifeTime < 0) {
+                $this->lifeTime = null;
+            }
             $this->productDataCache->save(
                 $serializedNostoProduct,
                 $this->generateCacheKey($nostoProduct->getProductId(), $store->getId()),
-                [ProductData::CACHE_TAG],
-                $lifeTime
+                [],
+                $this->lifeTime
             );
         } catch (Exception $e) {
             $this->getLogger()->exception($e);
