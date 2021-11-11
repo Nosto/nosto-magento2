@@ -80,7 +80,7 @@ class SyncService extends AbstractService
     private $apiTimeout;
 
     /**
-     * Index constructor.
+     * Sync constructor.
      * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoHelperUrl $nostoHelperUrl
      * @param NostoLogger $logger

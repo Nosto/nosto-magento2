@@ -55,7 +55,7 @@ class CachingProductService implements ProductServiceInterface
     private $defaultProductService;
 
     /**
-     * Index constructor.
+     * CachingProductService constructor.
      * @param Logger $nostoLogger
      * @param CacheService $nostoCacheService
      * @param ProductServiceInterface $defaultProductService

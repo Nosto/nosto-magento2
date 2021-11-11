@@ -1,5 +1,8 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### upcoming
+* Refactor BuilderTrait into service classes
+
 ### 5.3.1
 * Fix to use placeholder thumbnail image if product has no image
 
