@@ -46,8 +46,8 @@ use Magento\Framework\Indexer\DimensionalIndexerInterface;
 use Magento\Framework\Indexer\DimensionProviderInterface;
 use Magento\Framework\Mview\ActionInterface as MviewActionInterface;
 use Magento\Indexer\Model\ProcessManager;
+use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\App\Emulation;
-use Magento\Store\Model\Store;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Indexer\Dimensions\AbstractDimensionModeConfiguration as DimensionModeConfiguration;
@@ -123,11 +123,11 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
     /**
      * Implement logic of single store indexing
      *
-     * @param Store $store
+     * @param StoreInterface $store
      * @param array $ids
      * @throws Exception
      */
-    abstract public function doIndex(Store $store, array $ids = []);
+    abstract public function doIndex(StoreInterface $store, array $ids = []);
 
     /**
      * @return string

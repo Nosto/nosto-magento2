@@ -43,7 +43,7 @@ use Magento\Framework\App\Helper\Context;
 use Magento\Framework\DataObject;
 use Magento\Framework\Registry;
 use Magento\Review\Model\ReviewFactory;
-use Magento\Store\Model\Store;
+use Magento\Store\Api\Data\StoreInterface;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Product\Ratings as ProductRatings;
@@ -98,10 +98,10 @@ class Ratings extends AbstractHelper
      * Get ratings
      *
      * @param Product $product
-     * @param Store $store
+     * @param StoreInterface $store
      * @return ProductRatings|null
      */
-    public function getRatings(Product $product, Store $store)
+    public function getRatings(Product $product, StoreInterface $store)
     {
         $ratings = $this->getRatingsFromProviders($product, $store);
         if ($ratings === null) {
@@ -118,12 +118,12 @@ class Ratings extends AbstractHelper
      * Get Ratings of product from different providers
      *
      * @param Product $product
-     * @param Store $store
+     * @param StoreInterface $store
      * @return array|null
      *
      * @suppress PhanUndeclaredClassMethod
      */
-    private function getRatingsFromProviders(Product $product, Store $store)
+    private function getRatingsFromProviders(Product $product, StoreInterface $store)
     {
         if ($this->nostoDataHelper->isRatingTaggingEnabled($store)) {
             $provider = $this->nostoDataHelper->getRatingTaggingProvider($store);
@@ -172,11 +172,11 @@ class Ratings extends AbstractHelper
      * normalised to a 0-5 value.
      *
      * @param Product $product the product whose rating value to fetch
-     * @param Store $store the store scope in which to fetch the rating
+     * @param StoreInterface $store the store scope in which to fetch the rating
      * @return float|null the normalized rating value of the product
      * @noinspection PhpPossiblePolymorphicInvocationInspection
      */
-    private function buildRatingValue(Product $product, Store $store)
+    private function buildRatingValue(Product $product, StoreInterface $store)
     {
         try {
             /** @noinspection PhpUndefinedMethodInspection */
@@ -213,10 +213,10 @@ class Ratings extends AbstractHelper
      * returned as is.
      *
      * @param Product $product the product whose rating value to fetch
-     * @param Store $store the store scope in which to fetch the rating
+     * @param StoreInterface $store the store scope in which to fetch the rating
      * @return int|null the normalized rating value of the product
      */
-    private function buildReviewCount(Product $product, Store $store)
+    private function buildReviewCount(Product $product, StoreInterface $store)
     {
         try {
             /** @noinspection PhpUndefinedMethodInspection */

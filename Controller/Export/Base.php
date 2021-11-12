@@ -41,6 +41,7 @@ use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\Controller\Result\Raw;
 use Magento\Framework\Controller\ResultFactory;
+use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\Store;
 use Nosto\Helper\ExportHelper;
 use Nosto\Model\AbstractCollection;
@@ -102,22 +103,22 @@ abstract class Base extends Action
      * Abstract function that should be implemented to return the correct collection object with
      * the controller specific filters applied
      *
-     * @param Store $store The store object for the current store
+     * @param StoreInterface $store The store object for the current store
      * @param $id
      * @return AbstractCollection The collection
      */
-    abstract public function buildSingleExportCollection(Store $store, $id);
+    abstract public function buildSingleExportCollection(StoreInterface $store, $id);
 
     /**
      * Abstract function that should be implemented to return the built export collection object
      * with all the items added
      *
-     * @param Store $store
+     * @param StoreInterface $store
      * @param int $limit
      * @param int $offset
      * @return AbstractCollection the collection with the items to export
      */
-    abstract public function buildExportCollection(Store $store, $limit = 100, $offset = 0);
+    abstract public function buildExportCollection(StoreInterface $store, $limit = 100, $offset = 0);
 
     /**
      * Encrypts the export collection and outputs it to the browser.
@@ -127,9 +128,12 @@ abstract class Base extends Action
      */
     public function export(AbstractCollection $collection)
     {
+        $account = null;
         $result = $this->resultFactory->create(ResultFactory::TYPE_RAW);
         $store = $this->nostoHelperScope->getStore(true);
-        $account = $this->nostoHelperAccount->findAccount($store);
+        if ($store instanceof Store) {
+            $account = $this->nostoHelperAccount->findAccount($store);
+        }
         if ($account !== null) {
             $cipherText = (new ExportHelper())->export($account, $collection);
             if ($result instanceof Raw) {

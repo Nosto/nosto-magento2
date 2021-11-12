@@ -37,7 +37,7 @@
 namespace Nosto\Tagging\Model\Service;
 
 use Exception;
-use Magento\Store\Model\Store;
+use Magento\Store\Api\Data\StoreInterface;
 use Nosto\Exception\MemoryOutOfBoundsException;
 use Nosto\NostoException;
 use Nosto\Tagging\Helper\Data as NostoDataHelper;
@@ -135,10 +135,10 @@ abstract class AbstractService
      * Logs the recorded benchmark summary
      *
      * @param string $name
-     * @param Store $store
+     * @param StoreInterface $store
      * @param object|null $sourceClass
      */
-    public function logBenchmarkSummary($name, Store $store, $sourceClass = null)
+    public function logBenchmarkSummary($name, StoreInterface $store, $sourceClass = null)
     {
         try {
             Benchmark::getInstance()->stopInstrumentation($name);
@@ -210,10 +210,10 @@ abstract class AbstractService
      * Shortcut for logging debug messages with store id
      *
      * @param string $message
-     * @param Store $store
+     * @param StoreInterface $store
      * @param array $context
      */
-    public function logDebugWithStore($message, Store $store, array $context = [])
+    public function logDebugWithStore($message, StoreInterface $store, array $context = [])
     {
         $context['storeId'] = $store->getId();
         $this->logDebug($message, $context);
@@ -223,10 +223,10 @@ abstract class AbstractService
      * Shortcut for logging info messages with store id
      *
      * @param string $message
-     * @param Store $store
+     * @param StoreInterface $store
      * @param array $context
      */
-    public function logInfoWithStore($message, Store $store, array $context = [])
+    public function logInfoWithStore($message, StoreInterface $store, array $context = [])
     {
         $context['storeId'] = $store->getId();
         $this->logInfo($message, $context);

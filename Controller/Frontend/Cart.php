@@ -115,6 +115,7 @@ class Cart extends Action
     public function execute()
     {
         $store = $this->nostoScopeHelper->getStore();
+        /** @phan-suppress-next-line PhanUndeclaredMethod */
         $redirectUrl = $store->getBaseUrl();
 
         $url = $this->context->getUrl();

@@ -42,7 +42,7 @@ use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Indexer\IndexerRegistry;
 use Magento\Framework\Module\Manager as ModuleManager;
-use Magento\Store\Model\Store;
+use Magento\Store\Api\Data\StoreInterface;
 use Nosto\Tagging\Helper\Account as NostoAccountHelper;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
@@ -141,9 +141,9 @@ class Config implements ObserverInterface
 
     /**
      * Wrapper to log and mark all products as dirty after configuration has changed
-     * @param Store $store
+     * @param StoreInterface $store
      */
-    private function reindexAll(Store $store)
+    private function reindexAll(StoreInterface $store)
     {
         if ($this->nostoAccountHelper->nostoInstalledAndEnabled($store)) {
             $this->logger->infoWithSource(

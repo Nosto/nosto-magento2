@@ -37,6 +37,7 @@
 namespace Nosto\Tagging\Console\Command;
 
 use Magento\Framework\App\Config\Storage\WriterInterface;
+use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\Store;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
@@ -173,10 +174,10 @@ class NostoAccountRemoveCommand extends Command
     }
 
     /**
-     * @param Store $store
+     * @param StoreInterface $store
      * @return bool
      */
-    private function deleteAccount(Store $store)
+    private function deleteAccount(StoreInterface $store)
     {
         if ((int)$store->getId() < 1) {
             return false;
@@ -193,7 +194,9 @@ class NostoAccountRemoveCommand extends Command
             $store->getId()
         );
 
-        $store->resetConfig();
+        if ($store instanceof Store) {
+            $store->resetConfig();
+        }
 
         return true;
     }

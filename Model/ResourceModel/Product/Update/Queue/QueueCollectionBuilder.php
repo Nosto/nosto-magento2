@@ -40,7 +40,7 @@ use DateInterval;
 use DateTime;
 use Exception;
 use Magento\Sales\Api\Data\EntityInterface;
-use Magento\Store\Model\Store;
+use Magento\Store\Api\Data\StoreInterface;
 use Nosto\Tagging\Api\Data\ProductUpdateQueueInterface;
 
 /**
@@ -75,10 +75,10 @@ class QueueCollectionBuilder
     /**
      * Sets the store filter
      *
-     * @param Store $store
+     * @param StoreInterface $store
      * @return $this
      */
-    public function withStore(Store $store)
+    public function withStore(StoreInterface $store)
     {
         $this->collection->addStoreFilter($store);
         return $this;
@@ -194,10 +194,10 @@ class QueueCollectionBuilder
     /**
      * Initializes the collection with store filter and defaults
      *
-     * @param Store $store
+     * @param StoreInterface $store
      * @return QueueCollectionBuilder
      */
-    public function initDefault(Store $store)
+    public function initDefault(StoreInterface $store)
     {
         /** @var QueueCollection $collection */
         return $this

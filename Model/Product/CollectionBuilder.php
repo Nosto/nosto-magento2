@@ -38,7 +38,7 @@ namespace Nosto\Tagging\Model\Product;
 
 use Exception;
 use Magento\Catalog\Model\Product;
-use Magento\Store\Model\Store;
+use Magento\Store\Api\Data\StoreInterface;
 use Nosto\NostoException;
 use Nosto\Model\Product\ProductCollection as NostoProductCollection;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
@@ -78,12 +78,12 @@ class CollectionBuilder
     }
 
     /**
-     * @param Store $store
+     * @param StoreInterface $store
      * @param $id
      * @return NostoProductCollection
      * @throws NostoException
      */
-    public function buildSingle(Store $store, $id)
+    public function buildSingle(StoreInterface $store, $id)
     {
         return $this->load(
             $store,
@@ -92,13 +92,13 @@ class CollectionBuilder
     }
 
     /**
-     * @param Store $store
+     * @param StoreInterface $store
      * @param int $limit
      * @param int $offset
      * @return NostoProductCollection
      * @throws NostoException
      */
-    public function buildMany(Store $store, $limit = 100, $offset = 0)
+    public function buildMany(StoreInterface $store, $limit = 100, $offset = 0)
     {
         return $this->load(
             $store,
@@ -107,12 +107,12 @@ class CollectionBuilder
     }
 
     /**
-     * @param Store $store
+     * @param StoreInterface $store
      * @param $collection
      * @return NostoProductCollection
      * @throws NostoException
      */
-    private function load(Store $store, $collection)
+    private function load(StoreInterface $store, $collection)
     {
         /** @var ProductCollection $collection */
         $products = new NostoProductCollection();

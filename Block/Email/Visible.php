@@ -38,6 +38,7 @@ namespace Nosto\Tagging\Block\Email;
 
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Element\Template\Context;
+use Magento\Store\Model\Store;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 
@@ -77,8 +78,11 @@ class Visible extends Template
      */
     public function _toHtml()
     {
+        $account = null;
         $store = $this->nostoHelperScope->getStore(true);
-        $account = $this->nostoHelperAccount->findAccount($store);
+        if ($store instanceof Store) {
+            $account = $this->nostoHelperAccount->findAccount($store);
+        }
         return $account === null ? 'style="display:none"' : '';
     }
 }

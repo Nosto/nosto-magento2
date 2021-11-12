@@ -37,6 +37,7 @@
 
 namespace Nosto\Tagging\Cron;
 
+use Magento\Store\Model\Store;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Rates\Service as NostoRatesService;
@@ -73,8 +74,10 @@ class RatesCron
         $this->logger->info('Updating exchange rates to Nosto for all store views');
         foreach ($this->nostoHelperScope->getStores(false) as $store) {
             $this->logger->info('Updating exchange rates for ' . $store->getName());
-            if ($this->nostoRatesService->update($store)) {
-                $this->logger->info('Successfully updated the exchange rates for the store view');
+            if ($store instanceof Store) {
+                if ($this->nostoRatesService->update($store)) {
+                    $this->logger->info('Successfully updated the exchange rates for the store view');
+                }
             } else {
                 $this->logger->warning('Unable to update the exchange rates for the store view');
             }

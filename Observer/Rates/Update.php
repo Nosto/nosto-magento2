@@ -39,6 +39,7 @@ namespace Nosto\Tagging\Observer\Rates;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Module\Manager as ModuleManager;
+use Magento\Store\Model\Store;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
@@ -90,8 +91,10 @@ class Update implements ObserverInterface
         $this->logger->debug('Updating settings to Nosto for all store views');
         foreach ($this->nostoHelperScope->getStores(false) as $store) {
             $this->logger->debug('Updating settings for ' . $store->getName());
-            if ($this->nostoRatesService->update($store)) {
-                $this->logger->debug('Successfully updated the settings for the store view');
+            if ($store instanceof Store) {
+                if ($this->nostoRatesService->update($store)) {
+                    $this->logger->debug('Successfully updated the settings for the store view');
+                }
             } else {
                 $this->logger->warning('Unable to update the settings for the store view');
             }

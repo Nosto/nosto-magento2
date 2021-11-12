@@ -38,6 +38,7 @@ namespace Nosto\Tagging\Controller\Adminhtml\Account;
 
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\Controller\Result\Json;
+use Magento\Store\Model\Store;
 use Nosto\Helper\OAuthHelper;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Model\Meta\Oauth\Builder as NostoOauthBuilder;
@@ -78,7 +79,7 @@ class Connect extends Base
         $storeId = $this->_request->getParam('store');
         $store = $this->nostoHelperScope->getStore($storeId);
 
-        if ($store !== null) {
+        if ($store !== null && $store instanceof Store) {
             $metaData = $this->oauthMetaBuilder->build($store);
             $response['success'] = true;
             $response['redirect_url'] = OAuthHelper::getAuthorizationUrl($metaData);

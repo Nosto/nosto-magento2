@@ -39,7 +39,7 @@ namespace Nosto\Tagging\Observer\Product;
 use Exception;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
-use Magento\Store\Model\Store;
+use Magento\Store\Api\Data\StoreInterface;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\ResourceModel\Magento\Product\Collection as ProductCollection;
@@ -99,10 +99,10 @@ class MassProductAttributeUpdate implements ObserverInterface
     }
 
     /**
-     * @param Store $store
+     * @param StoreInterface $store
      * @param array $ids
      */
-    private function indexProductsPerStore(Store $store, array $ids)
+    private function indexProductsPerStore(StoreInterface $store, array $ids)
     {
         $collection = $this->getCollection($store, $ids);
         try {
@@ -116,11 +116,11 @@ class MassProductAttributeUpdate implements ObserverInterface
     }
 
     /**
-     * @param Store $store
+     * @param StoreInterface $store
      * @param array $ids
      * @return ProductCollection
      */
-    private function getCollection(Store $store, array $ids): ProductCollection
+    private function getCollection(StoreInterface $store, array $ids): ProductCollection
     {
         return $this->productCollectionBuilder->initDefault($store)
             ->withIds($ids)

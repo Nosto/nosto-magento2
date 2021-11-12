@@ -37,7 +37,7 @@
 namespace Nosto\Tagging\Model\Service\Sync\Delete;
 
 use Exception;
-use Magento\Store\Model\Store;
+use Magento\Store\Api\Data\StoreInterface;
 use Nosto\Model\Signup\Account as NostoSignupAccount;
 use Nosto\NostoException;
 use Nosto\Operation\DeleteProduct;
@@ -95,10 +95,10 @@ class DeleteService extends AbstractService
      * Discontinues products in Nosto and removes indexed products from Nosto product index
      *
      * @param array $productIds
-     * @param Store $store
+     * @param StoreInterface $store
      * @throws NostoException
      */
-    public function delete(array $productIds, Store $store)
+    public function delete(array $productIds, StoreInterface $store)
     {
         if (count($productIds) === 0) {
             return;

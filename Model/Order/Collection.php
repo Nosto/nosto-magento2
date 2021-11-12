@@ -39,7 +39,7 @@ namespace Nosto\Tagging\Model\Order;
 use Magento\Sales\Api\Data\EntityInterface;
 use Magento\Sales\Model\Order;
 use Magento\Sales\Model\ResourceModel\Order\CollectionFactory as OrderCollectionFactory;
-use Magento\Store\Model\Store;
+use Magento\Store\Api\Data\StoreInterface;
 use Nosto\NostoException;
 use Nosto\Model\Order\OrderCollection;
 use Nosto\Tagging\Model\Order\Builder as NostoOrderBuilder;
@@ -58,7 +58,7 @@ class Collection
         $this->nostoOrderBuilder = $nostoOrderBuilder;
     }
 
-    public function getCollection(Store $store)
+    public function getCollection(StoreInterface $store)
     {
         $collection = $this->orderCollectionFactory->create();
         $collection->addAttributeToFilter('store_id', ['eq' => $store->getId()]);
@@ -67,12 +67,12 @@ class Collection
     }
 
     /**
-     * @param Store $store
+     * @param StoreInterface $store
      * @param $id
      * @return OrderCollection
      * @throws NostoException
      */
-    public function buildSingle(Store $store, $id)
+    public function buildSingle(StoreInterface $store, $id)
     {
         $collection = $this->getCollection($store);
         $collection->addFieldToFilter(EntityInterface::ENTITY_ID, $id);
@@ -80,13 +80,13 @@ class Collection
     }
 
     /**
-     * @param Store $store
+     * @param StoreInterface $store
      * @param int $limit
      * @param int $offset
      * @return OrderCollection
      * @throws NostoException
      */
-    public function buildMany(Store $store, $limit = 100, $offset = 0)
+    public function buildMany(StoreInterface $store, $limit = 100, $offset = 0)
     {
         $collection = $this->getCollection($store);
         $currentPage = ($offset / $limit) + 1;

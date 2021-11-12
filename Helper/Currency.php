@@ -40,7 +40,7 @@ use Exception;
 use Magento\Directory\Model\Currency as MagentoCurrency;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
-use Magento\Store\Model\Store;
+use Magento\Store\Api\Data\StoreInterface;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 
 /**
@@ -70,11 +70,11 @@ class Currency extends AbstractHelper
      * currency into given currency. Otherwise the given price is returned.
      *
      * @param float $basePrice The price of a product in base currency
-     * @param Store $store
+     * @param StoreInterface $store
      * @return float
      * @throws Exception
      */
-    public function convertToTaggingPrice($basePrice, Store $store)
+    public function convertToTaggingPrice($basePrice, StoreInterface $store)
     {
         // If multi currency is disabled or exchange rates are used
         // we don't do any processing / conversions for the price
@@ -86,6 +86,7 @@ class Currency extends AbstractHelper
 
         $taggingPrice = $basePrice;
         $taggingCurrency = $this->getTaggingCurrency($store);
+        /** @phan-suppress-next-line PhanUndeclaredMethod */
         $baseCurrency = $store->getBaseCurrency();
 
         if ($taggingCurrency->getCurrencyCode() !== $baseCurrency->getCurrencyCode()) {
@@ -98,18 +99,20 @@ class Currency extends AbstractHelper
     /**
      * Returns the currency that must be used in tagging
      *
-     * @param Store $store
+     * @param StoreInterface $store
      * @return MagentoCurrency
      */
-    public function getTaggingCurrency(Store $store)
+    public function getTaggingCurrency(StoreInterface $store)
     {
         // If multi currency is disabled or exhange rates are used
         // we always use the base currency for tagging
         if ($this->nostoHelperData->isMultiCurrencyExchangeRatesEnabled($store)
             || $this->nostoHelperData->isMultiCurrencyDisabled($store)
         ) {
+            /** @phan-suppress-next-line PhanUndeclaredMethod */
             $taggingCurrency = $store->getBaseCurrency();
         } else {
+            /** @phan-suppress-next-line PhanUndeclaredMethod */
             $taggingCurrency = $store->getDefaultCurrency();
         }
 
@@ -119,11 +122,12 @@ class Currency extends AbstractHelper
     /**
      * Returns the amount of currencies used in given store
      *
-     * @param Store $store
+     * @param StoreInterface $store
      * @return int
      */
-    public function getCurrencyCount(Store $store)
+    public function getCurrencyCount(StoreInterface $store)
     {
+        /** @phan-suppress-next-line PhanUndeclaredMethod */
         $currencies = $store->getAvailableCurrencyCodes(true);
 
         return count($currencies);
@@ -132,10 +136,10 @@ class Currency extends AbstractHelper
     /**
      * Returns the info if exchange rates are used
      *
-     * @param Store $store
+     * @param StoreInterface $store
      * @return boolean
      */
-    public function exchangeRatesInUse(Store $store)
+    public function exchangeRatesInUse(StoreInterface $store)
     {
         if ($this->nostoHelperData->isMultiCurrencyExchangeRatesEnabled($store)) {
             return true;

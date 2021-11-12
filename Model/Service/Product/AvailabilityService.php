@@ -37,7 +37,7 @@
 namespace Nosto\Tagging\Model\Service\Product;
 
 use Magento\Catalog\Model\Product;
-use Magento\Store\Model\Store;
+use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Nosto\Tagging\Model\Service\Stock\StockService;
 
@@ -64,10 +64,10 @@ class AvailabilityService
 
     /**
      * @param Product $product
-     * @param Store $store
+     * @param StoreInterface $store
      * @return bool
      */
-    public function isAvailableInStore(Product $product, Store $store)
+    public function isAvailableInStore(Product $product, StoreInterface $store)
     {
         if ($this->storeManager->isSingleStoreMode()) {
             return $product->isAvailable();
@@ -79,10 +79,10 @@ class AvailabilityService
      * Checks if the product is in stock
      *
      * @param Product $product
-     * @param Store $store
+     * @param StoreInterface $store
      * @return bool
      */
-    public function isInStock(Product $product, Store $store)
+    public function isInStock(Product $product, StoreInterface $store)
     {
         return $this->stockService->isInStock($product, $store);
     }

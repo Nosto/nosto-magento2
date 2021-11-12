@@ -50,7 +50,7 @@ use Magento\Framework\Api\FilterBuilder;
 use Magento\Framework\Api\Search\FilterGroupBuilder;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\Exception\NoSuchEntityException;
-use Magento\Store\Model\Store;
+use Magento\Store\Api\Data\StoreInterface;
 use Nosto\Tagging\Exception\ParentProductDisabledException;
 use Nosto\Tagging\Model\ResourceModel\Sku;
 use Nosto\Tagging\Model\Service\Stock\Provider\StockProviderInterface;
@@ -306,11 +306,11 @@ class Repository
      * Gets the variations / SKUs of configurable product as an associative array.
      *
      * @param Product $product
-     * @param Store $store
+     * @param StoreInterface $store
      * @return array
      * @throws NoSuchEntityException
      */
-    public function getSkusAsArray(Product $product, Store $store)
+    public function getSkusAsArray(Product $product, StoreInterface $store)
     {
         $inStockProductsByIds = $this->stockProvider->getInStockProductIds(
             $this->getSkuIds($product),

@@ -42,6 +42,7 @@ use Magento\Framework\App\Config\Storage\WriterInterface;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 use Magento\Backend\Model\UrlInterface;
+use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\Store;
 use Nosto\NostoException;
@@ -145,7 +146,9 @@ class Account extends AbstractHelper
             $store->getId()
         );
 
-        $store->resetConfig();
+        if ($store instanceof Store) {
+            $store->resetConfig();
+        }
 
         return true;
     }
@@ -191,6 +194,7 @@ class Account extends AbstractHelper
             $this->logger->error($e->__toString());
         }
 
+        /** @phan-suppress-next-line PhanUndeclaredMethod */
         $store->resetConfig();
 
         return true;
@@ -199,13 +203,16 @@ class Account extends AbstractHelper
     /**
      * Checks if Nosto module is enabled and Nosto account is set
      *
-     * @param Store $store
+     * @param StoreInterface $store
      * @return bool
      */
-    public function nostoInstalledAndEnabled(Store $store)
+    public function nostoInstalledAndEnabled(StoreInterface $store)
     {
-        return $this->moduleManager->isEnabled(NostoHelper::MODULE_NAME)
-            && $this->findAccount($store);
+        if ($store instanceof Store) {
+            return $this->moduleManager->isEnabled(NostoHelper::MODULE_NAME)
+                && $this->findAccount($store);
+        }
+        return false;
     }
 
     /**
@@ -300,9 +307,11 @@ class Account extends AbstractHelper
         $stores = $this->nostoHelperScope->getStores();
         $storesWithNosto = [];
         foreach ($stores as $store) {
-            $nostoAccount = $this->findAccount($store);
-            if ($nostoAccount instanceof NostoSignupAccount) {
-                $storesWithNosto[] = $store;
+            if ($store instanceof Store) {
+                $nostoAccount = $this->findAccount($store);
+                if ($nostoAccount instanceof NostoSignupAccount) {
+                    $storesWithNosto[] = $store;
+                }
             }
         }
 
@@ -312,11 +321,12 @@ class Account extends AbstractHelper
     /**
      * Returns the stored storefront domain
      *
-     * @param Store $store
+     * @param StoreInterface $store
      * @return string the domain
      */
-    public function getStoreFrontDomain(Store $store)
+    public function getStoreFrontDomain(StoreInterface $store)
     {
+        /** @phan-suppress-next-line PhanUndeclaredMethod */
         return $store->getConfig(self::XML_PATH_DOMAIN);
     }
 
@@ -334,10 +344,10 @@ class Account extends AbstractHelper
     /**
      * Returns bool value that represent validity of domain
      *
-     * @param Store $store
+     * @param StoreInterface $store
      * @return bool
      */
-    public function isDomainValid(Store $store)
+    public function isDomainValid(StoreInterface $store)
     {
         $storedDomain = $this->getStoreFrontDomain($store);
         $realDomain = $this->nostoHelperUrl->getActiveDomain($store);

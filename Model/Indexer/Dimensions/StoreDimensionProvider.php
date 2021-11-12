@@ -38,7 +38,6 @@ namespace Nosto\Tagging\Model\Indexer\Dimensions;
 
 use Magento\Framework\Indexer\DimensionFactory;
 use Magento\Framework\Indexer\DimensionProviderInterface;
-use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
 use Nosto\Tagging\Helper\Account;
 use Traversable;
@@ -81,8 +80,7 @@ class StoreDimensionProvider implements DimensionProviderInterface
     public function getIterator(): Traversable
     {
         foreach ($this->storeManager->getStores() as $store) {
-            // instanceof check for Phan
-            if ($store instanceof Store && $this->account->nostoInstalledAndEnabled($store)) {
+            if ($this->account->nostoInstalledAndEnabled($store)) {
                 yield [
                     self::DIMENSION_NAME => $this->dimensionFactory->create(
                         self::DIMENSION_NAME,

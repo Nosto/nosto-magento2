@@ -47,6 +47,7 @@ use Magento\Framework\Setup\ModuleContextInterface;
 use Magento\Framework\Setup\ModuleDataSetupInterface;
 use Magento\Framework\Setup\UpgradeDataInterface;
 use Magento\Store\Model\ScopeInterface;
+use Magento\Store\Model\Store;
 use Nosto\NostoException;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Url as NostoHelperUrl;
@@ -128,7 +129,10 @@ class UpgradeData extends CoreData implements UpgradeDataInterface
     {
         $stores = $this->nostoHelperAccount->getStoresWithNosto();
         foreach ($stores as $store) {
-            $storeFrontDomain = $this->nostoHelperAccount->getStoreFrontDomain($store);
+            $storeFrontDomain = null;
+            if ($store instanceof Store) {
+                $storeFrontDomain = $this->nostoHelperAccount->getStoreFrontDomain($store);
+            }
             if ($storeFrontDomain === null ||
                 $storeFrontDomain === ''
             ) {

@@ -41,6 +41,7 @@ use Magento\Backend\Model\UrlInterface;
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\App\Response\Http;
+use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreRepository;
 use Nosto\Mixins\OauthTrait;
@@ -119,12 +120,17 @@ class Index extends Action
      * Implemented trait method that is responsible for fetching the OAuth parameters used for all
      * OAuth operations
      *
-     * @return Oauth the OAuth parameters for the operations
+     * @return Oauth|null the OAuth parameters for the operations
      */
     public function getMeta()
     {
-        $account = $this->nostoHelperAccount->findAccount($this->nostoHelperScope->getStore());
-        return $this->oauthMetaBuilder->build($this->nostoHelperScope->getStore(), $account);
+        $account = null;
+        $store = $this->nostoHelperScope->getStore();
+        if ($store instanceof Store) {
+            $account = $this->nostoHelperAccount->findAccount($store);
+            return $this->oauthMetaBuilder->build($store, $account);
+        }
+        return null;
     }
 
     /**
@@ -149,7 +155,7 @@ class Index extends Action
             $currentStore = $this->nostoHelperScope->getStore();
         }
 
-        /** @var Store $store */
+        /** @var StoreInterface $store */
         foreach ($stores as $store) {
             $existingAccount = $this->nostoHelperAccount->findAccount($store);
             if ($existingAccount !== null

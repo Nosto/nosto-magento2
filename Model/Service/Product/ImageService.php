@@ -38,7 +38,7 @@ namespace Nosto\Tagging\Model\Service\Product;
 
 use Magento\Catalog\Helper\Image;
 use Magento\Catalog\Model\Product;
-use Magento\Store\Model\Store;
+use Magento\Store\Api\Data\StoreInterface;
 use Nosto\Tagging\Helper\Data as NostoDataHelper;
 use Nosto\Tagging\Util\Url as UrlUtil;
 
@@ -65,10 +65,10 @@ class ImageService
 
     /**
      * @param Product $product
-     * @param Store $store
+     * @param StoreInterface $store
      * @return string|null
      */
-    public function buildImageUrl(Product $product, Store $store)
+    public function buildImageUrl(Product $product, StoreInterface $store)
     {
         $primary = $this->nostoDataHelper->getProductImageVersion($store);
         $secondary = 'image'; // The "base" image.
@@ -96,10 +96,10 @@ class ImageService
      * Finalizes product image urls, stips off "pub/" directory if applicable
      *
      * @param string $url
-     * @param Store $store
+     * @param StoreInterface $store
      * @return string
      */
-    public function finalizeImageUrl($url, Store $store)
+    public function finalizeImageUrl($url, StoreInterface $store)
     {
         if ($this->nostoDataHelper->getRemovePubDirectoryFromProductImageUrl($store)) {
             return UrlUtil::removePubFromUrl($url);

@@ -42,6 +42,7 @@ use Magento\Backend\Block\Template\Context as BlockContext;
 use Magento\Backend\Model\Auth\Session;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NotFoundException;
+use Magento\Store\Model\Store;
 use Nosto\Mixins\IframeTrait;
 use Nosto\Nosto;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
@@ -166,7 +167,9 @@ class Iframe extends BlockTemplate
     {
         try {
             $store = $this->nostoHelperScope->getSelectedStore($this->getRequest());
-            return $this->iframeMetaBuilder->build($store);
+            if ($store instanceof Store) {
+                return $this->iframeMetaBuilder->build($store);
+            }
         } catch (Exception $e) {
             $this->logger->exception($e);
         }
@@ -189,7 +192,9 @@ class Iframe extends BlockTemplate
     {
         try {
             $store = $this->nostoHelperScope->getSelectedStore($this->getRequest());
-            return $this->nostoHelperAccount->findAccount($store);
+            if ($store instanceof Store) {
+                return $this->nostoHelperAccount->findAccount($store);
+            }
         } catch (Exception $e) {
             $this->logger->exception($e);
         }

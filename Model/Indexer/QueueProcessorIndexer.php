@@ -38,8 +38,8 @@ namespace Nosto\Tagging\Model\Indexer;
 
 use Exception;
 use Magento\Indexer\Model\ProcessManager;
+use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\App\Emulation;
-use Magento\Store\Model\Store;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Indexer\Dimensions\QueueProcessor\ModeSwitcher as QueueProcessorModeSwitcher;
@@ -121,7 +121,7 @@ class QueueProcessorIndexer extends AbstractIndexer
      * @throws Exception
      */
     // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter
-    public function doIndex(Store $store, array $ids = [])
+    public function doIndex(StoreInterface $store, array $ids = [])
     {
         $collection = $this->getCollection($store);
         $this->queueProcessorService->processQueueCollection($collection, $store);
@@ -136,10 +136,10 @@ class QueueProcessorIndexer extends AbstractIndexer
     }
 
     /**
-     * @param Store $store
+     * @param StoreInterface $store
      * @return QueueCollection
      */
-    public function getCollection(Store $store)
+    public function getCollection(StoreInterface $store)
     {
         // Fetch always all queue entries having status new.
         // It makes the merging of queues more efficient.

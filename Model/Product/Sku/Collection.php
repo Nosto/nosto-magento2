@@ -41,7 +41,7 @@ use Magento\Catalog\Model\Product;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable as ConfigurableType;
 use Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable\Attribute\Collection
     as ConfigurableAttributeCollection;
-use Magento\Store\Model\Store;
+use Magento\Store\Api\Data\StoreInterface;
 use Nosto\Model\Product\SkuCollection;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Product\Repository as NostoProductRepository;
@@ -76,12 +76,12 @@ class Collection
 
     /**
      * @param Product $product
-     * @param Store $store
+     * @param StoreInterface $store
      * @return SkuCollection
      * @throws Exception
      * @suppress PhanUndeclaredMethod
      */
-    public function build(Product $product, Store $store)
+    public function build(Product $product, StoreInterface $store)
     {
         $skuCollection = new SkuCollection();
         if ($product->getTypeId() === ConfigurableType::TYPE_CODE) {

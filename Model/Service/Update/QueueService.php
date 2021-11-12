@@ -39,7 +39,7 @@ namespace Nosto\Tagging\Model\Service\Update;
 use Exception;
 use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Framework\Exception\AlreadyExistsException;
-use Magento\Store\Model\Store;
+use Magento\Store\Api\Data\StoreInterface;
 use Nosto\NostoException;
 use Nosto\Tagging\Exception\ParentProductDisabledException;
 use Nosto\Tagging\Helper\Account as NostoAccountHelper;
@@ -96,11 +96,11 @@ class QueueService extends AbstractService
      * Sets the products into the update queue
      *
      * @param ProductCollection $collection
-     * @param Store $store
+     * @param StoreInterface $store
      * @throws NostoException
      * @throws Exception
      */
-    public function addCollectionToUpsertQueue(ProductCollection $collection, Store $store)
+    public function addCollectionToUpsertQueue(ProductCollection $collection, StoreInterface $store)
     {
         if ($this->getAccountHelper()->findAccount($store) === null) {
             $this->logDebugWithStore('No nosto account found for the store', $store);
@@ -135,10 +135,10 @@ class QueueService extends AbstractService
      * Sets the product ids into the delete queue
      *
      * @param $productIds
-     * @param Store $store
+     * @param StoreInterface $store
      * @throws AlreadyExistsException
      */
-    public function addIdsToDeleteQueue($productIds, Store $store)
+    public function addIdsToDeleteQueue($productIds, StoreInterface $store)
     {
         if ($this->getAccountHelper()->findAccount($store) === null) {
             $this->logDebugWithStore('No nosto account found for the store', $store);

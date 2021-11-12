@@ -39,7 +39,7 @@ namespace Nosto\Tagging\Model\Service\Update;
 use Exception;
 use Magento\Framework\Exception\AlreadyExistsException;
 use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
-use Magento\Store\Model\Store;
+use Magento\Store\Api\Data\StoreInterface;
 use Nosto\Tagging\Api\Data\ProductUpdateQueueInterface;
 use Nosto\Tagging\Helper\Account as NostoAccountHelper;
 use Nosto\Tagging\Helper\Data as NostoDataHelper;
@@ -115,9 +115,9 @@ class QueueProcessorService extends AbstractService
      * Processes a collection of queue entries
      * - merges product ids from queue entries within the same store
      * @param QueueCollection $collection
-     * @param Store $store
+     * @param StoreInterface $store
      */
-    public function processQueueCollection(QueueCollection $collection, Store $store)
+    public function processQueueCollection(QueueCollection $collection, StoreInterface $store)
     {
         $initialCollectionSize = $collection->getSize();
         $this->logDebugWithStore(
@@ -159,9 +159,9 @@ class QueueProcessorService extends AbstractService
      * Caps the collection to the max amount of products in one batch
      *
      * @param QueueCollection $collection
-     * @param Store $store
+     * @param StoreInterface $store
      */
-    private function capCollection(QueueCollection $collection, Store $store)
+    private function capCollection(QueueCollection $collection, StoreInterface $store)
     {
         // phpcs:ignore
         $originalSize = $collection->count();
@@ -194,10 +194,10 @@ class QueueProcessorService extends AbstractService
      * Merges productIds from QueueCollection into an array containing only unique product ids per store
      *
      * @param QueueCollection $collection
-     * @param Store $store
+     * @param StoreInterface $store
      * @return array
      */
-    private function mergeQueues(QueueCollection $collection, Store $store)
+    private function mergeQueues(QueueCollection $collection, StoreInterface $store)
     {
         $merged = [];
         $totalCount = 0;
@@ -268,9 +268,9 @@ class QueueProcessorService extends AbstractService
 
     /**
      * Cleans up completed entries from the queue table
-     * @param Store $store
+     * @param StoreInterface $store
      */
-    private function cleanupUpdateQueue(Store $store)
+    private function cleanupUpdateQueue(StoreInterface $store)
     {
         try {
             $processed = $this->queueCollectionBuilder

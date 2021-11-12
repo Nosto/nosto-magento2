@@ -47,6 +47,7 @@ use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Url as UrlBuilder;
 use Magento\Framework\UrlInterface;
+use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\Store;
 use Nosto\Helper\UrlHelper;
 use Nosto\Request\Http\HttpRequest;
@@ -257,10 +258,10 @@ class Url extends AbstractHelper
      * The search query in the URL is "q=nosto".
      * The preview url includes "nostodebug=true" parameter.
      *
-     * @param Store $store the store to get the url for.
+     * @param StoreInterface $store the store to get the url for.
      * @return string the url.
      */
-    public function getPreviewUrlSearch(Store $store)
+    public function getPreviewUrlSearch(StoreInterface $store)
     {
         $url = $this->urlBuilder->getUrl(
             self::MAGENTO_PATH_SEARCH_RESULT,
@@ -277,10 +278,10 @@ class Url extends AbstractHelper
     /**
      * Returns the store domain
      *
-     * @param Store $store
+     * @param StoreInterface $store
      * @return string
      */
-    public function getActiveDomain(Store $store)
+    public function getActiveDomain(StoreInterface $store)
     {
         try {
             return UrlHelper::parseDomain($store->getBaseUrl());
@@ -294,10 +295,10 @@ class Url extends AbstractHelper
      * Gets the absolute preview URL to the given store's cart page.
      * The preview url includes "nostodebug=true" parameter.
      *
-     * @param Store $store the store to get the url for.
+     * @param StoreInterface $store the store to get the url for.
      * @return string the url.
      */
-    public function getPreviewUrlCart(Store $store)
+    public function getPreviewUrlCart(StoreInterface $store)
     {
         $url = $this->urlBuilder->getUrl(
             self::MAGENTO_PATH_CART,
@@ -314,10 +315,10 @@ class Url extends AbstractHelper
      * Gets the absolute preview URL to the given store's front page.
      * The preview url includes "nostodebug=true" parameter.
      *
-     * @param Store $store the store to get the url for.
+     * @param StoreInterface $store the store to get the url for.
      * @return string the url.
      */
-    public function getPreviewUrlFront(Store $store)
+    public function getPreviewUrlFront(StoreInterface $store)
     {
         $url = $this->urlBuilder->getUrl(
             '',
@@ -333,18 +334,19 @@ class Url extends AbstractHelper
     /**
      * Gets the absolute URL to the current store view cart page.
      *
-     * @param Store $store the store to get the url for.
+     * @param StoreInterface $store the store to get the url for.
      * @param string $currentUrl restore cart url
      * @return string cart url.
      * @throws Zend_Uri_Exception
      * @throws NoSuchEntityException
      */
-    public function getUrlCart(Store $store, $currentUrl)
+    public function getUrlCart(StoreInterface $store, $currentUrl)
     {
         $zendHttp = Zend_Uri_Http::fromString($currentUrl);
         $urlParameters = $zendHttp->getQueryAsArray();
 
         $defaultParams = $this->getUrlOptionsWithNoSid($store);
+        /** @phan-suppress-next-line PhanUndeclaredMethod */
         $url = $store->getUrl(
             self::MAGENTO_PATH_CART,
             $defaultParams
@@ -366,10 +368,10 @@ class Url extends AbstractHelper
     /**
      * Returns the default options for fetching Magento urls with no session id
      *
-     * @param Store $store
+     * @param StoreInterface $store
      * @return array
      */
-    public function getUrlOptionsWithNoSid(Store $store)
+    public function getUrlOptionsWithNoSid(StoreInterface $store)
     {
         return [
             self::MAGENTO_URL_OPTION_SCOPE_TO_URL => $this->nostoDataHelper->getStoreCodeToUrl($store),
@@ -382,12 +384,13 @@ class Url extends AbstractHelper
     /**
      * Gets the absolute URL to the Nosto configuration page
      *
-     * @param Store $store the store to get the url for.
+     * @param StoreInterface $store the store to get the url for.
      *
      * @return string the url.
      */
-    public function getAdminNostoConfigurationUrl(Store $store)
+    public function getAdminNostoConfigurationUrl(StoreInterface $store)
     {
+        /** @phan-suppress-next-line PhanUndeclaredMethod */
         $params = [self::MAGENTO_URL_OPTION_STORE_ID => $store->getStoreId()];
         return $this->backendDataHelper->getUrl(self::URL_PATH_NOSTO_CONFIG, $params);
     }

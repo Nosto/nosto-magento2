@@ -38,6 +38,7 @@ namespace Nosto\Tagging\Block\Email;
 
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Element\Template\Context;
+use Magento\Store\Model\Store;
 use Nosto\Model\Email\ImageUrl as NostoImageUrl;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
@@ -82,8 +83,11 @@ class ImageUrl extends Template
      */
     public function _toHtml()
     {
+        $account = null;
         $store = $this->nostoHelperScope->getStore(true);
-        $account = $this->nostoHelperAccount->findAccount($store);
+        if ($store instanceof Store) {
+            $account = $this->nostoHelperAccount->findAccount($store);
+        }
 
         if (!$account || !$account->getName()) {
             return '';

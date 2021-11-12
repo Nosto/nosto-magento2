@@ -100,6 +100,7 @@ class Builder
     {
         $currencies = [];
         try {
+
             $storeLocale = $store->getConfig('general/locale/code');
             $localeCode = $storeLocale ?: $this->localeResolver->getLocale();
             $localeData = (new DataBundle())->get($localeCode);

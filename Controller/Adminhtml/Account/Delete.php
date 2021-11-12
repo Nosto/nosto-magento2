@@ -41,6 +41,7 @@ use Magento\Backend\App\Action\Context;
 use Magento\Framework\Controller\Result\Json;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Phrase;
+use Magento\Store\Model\Store;
 use Nosto\Helper\IframeHelper;
 use Nosto\Nosto;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
@@ -95,7 +96,7 @@ class Delete extends Base
     {
         $storeId = $this->_request->getParam('store');
         $store = $this->nostoHelperScope->getStore($storeId);
-        if ($store === null) {
+        if ($store === null || !($store instanceof Store)) {
             throw new LocalizedException(new Phrase('No account found'));
         }
 

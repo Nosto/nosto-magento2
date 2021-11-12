@@ -47,7 +47,7 @@ use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
-use Magento\Store\Model\Store;
+use Magento\Store\Api\Data\StoreInterface;
 use Nosto\Model\Product\Product as NostoProduct;
 use Nosto\Model\Product\Variation;
 use Nosto\NostoException;
@@ -101,14 +101,14 @@ class Builder
     /**
      * @param Product $product
      * @param NostoProduct $nostoProduct
-     * @param Store $store
+     * @param StoreInterface $store
      * @param Group $group
      * @return Variation
      */
     public function build(
         Product $product,
         NostoProduct $nostoProduct,
-        Store $store,
+        StoreInterface $store,
         Group $group
     ) {
         $variation = new Variation();
@@ -142,12 +142,12 @@ class Builder
     /**
      * @param Product $product
      * @param Group $group
-     * @param Store $store
+     * @param StoreInterface $store
      * @return float
      * @throws LocalizedException
      * @throws NoSuchEntityException|NostoException
      */
-    private function getLowestVariationPrice(Product $product, Group $group, Store $store)
+    private function getLowestVariationPrice(Product $product, Group $group, StoreInterface $store)
     {
         // If product is configurable, the parent has no customer group price. Get SKU with lowest price
         if ($product->getTypeInstance() instanceof ConfigurableType) {
@@ -196,10 +196,10 @@ class Builder
      *
      * @param MageProduct $product
      * @param Group $group
-     * @param Store $store
+     * @param StoreInterface $store
      * @return MageProduct
      */
-    public function getMinPriceSku(Product $product, Group $group, Store $store)
+    public function getMinPriceSku(Product $product, Group $group, StoreInterface $store)
     {
         $minPriceSku = [];
         if (!$product->getTypeInstance() instanceof ConfigurableType) {

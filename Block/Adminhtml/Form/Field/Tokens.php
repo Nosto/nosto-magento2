@@ -40,6 +40,7 @@ use Magento\Backend\Block\Template\Context;
 use Magento\Config\Block\System\Config\Form\Field;
 use Magento\Framework\App\Request\Http;
 use Magento\Framework\Data\Form\Element\AbstractElement;
+use Magento\Store\Model\Store;
 use Nosto\Model\Signup\Account as SignupAccount;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
@@ -86,7 +87,10 @@ class Tokens extends Field
         /** @SuppressWarnings(PHPMD.ShortVariable) */
         $id = (int) $this->request->getParam('store');
         $store = $this->nostoHelperScope->getStore($id);
-        return $this->nostoHelperAccount->findAccount($store);
+        if ($store instanceof Store) {
+            return $this->nostoHelperAccount->findAccount($store);
+        }
+        return null;
     }
 
     /**

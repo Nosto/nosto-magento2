@@ -38,7 +38,7 @@ namespace Nosto\Tagging\Model\ResourceModel\Magento\Product;
 
 use Magento\Catalog\Model\Product\Visibility as ProductVisibility;
 use Magento\Sales\Api\Data\EntityInterface;
-use Magento\Store\Model\Store;
+use Magento\Store\Api\Data\StoreInterface;
 use Nosto\Tagging\Model\ResourceModel\Magento\Product\Collection as ProductCollection;
 use Nosto\Tagging\Model\ResourceModel\Magento\Product\CollectionFactory as ProductCollectionFactory;
 
@@ -102,10 +102,10 @@ class CollectionBuilder
     /**
      * Sets the store filter
      *
-     * @param Store $store
+     * @param StoreInterface $store
      * @return $this
      */
-    public function withStore(Store $store)
+    public function withStore(StoreInterface $store)
     {
         $this->collection->addStoreFilter($store);
         $this->collection->setStore($store);
@@ -206,10 +206,10 @@ class CollectionBuilder
     /**
      * Initializes the collection with store filter and defaults
      *
-     * @param Store $store
+     * @param StoreInterface $store
      * @return CollectionBuilder
      */
-    public function initDefault(Store $store)
+    public function initDefault(StoreInterface $store)
     {
         /** @var ProductCollection $collection */
         return $this
@@ -222,11 +222,11 @@ class CollectionBuilder
     /**
      * Builds and returns the collection with single item (if found)
      *
-     * @param Store $store
+     * @param StoreInterface $store
      * @param $id
      * @return Collection
      */
-    public function buildSingle(Store $store, $id)
+    public function buildSingle(StoreInterface $store, $id)
     {
         return $this
             ->initDefault($store)
@@ -239,12 +239,12 @@ class CollectionBuilder
      * Builds collection with default visibility filter and given limit
      * and offset.
      *
-     * @param Store $store
+     * @param StoreInterface $store
      * @param int $limit
      * @param int $offset
      * @return Collection
      */
-    public function buildMany(Store $store, $limit = 100, $offset = 0)
+    public function buildMany(StoreInterface $store, $limit = 100, $offset = 0)
     {
         $currentPage = ($offset / $limit) + 1;
         return $this

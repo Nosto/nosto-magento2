@@ -41,7 +41,7 @@ use Magento\Customer\Api\GroupRepositoryInterface as GroupRepository;
 use Magento\Customer\Model\Data\Group;
 use Magento\Customer\Model\GroupManagement;
 use Magento\Framework\Exception\LocalizedException;
-use Magento\Store\Model\Store;
+use Magento\Store\Api\Data\StoreInterface;
 use Nosto\Model\Product\Product as NostoProduct;
 use Nosto\Model\Product\VariationCollection;
 use Nosto\Tagging\Model\Product\Variation\Builder as VariationBuilder;
@@ -75,12 +75,12 @@ class Collection
     /**
      * @param Product $product
      * @param NostoProduct $nostoProduct
-     * @param Store $store
+     * @param StoreInterface $store
      * @return VariationCollection
      * @throws LocalizedException
      * @suppress PhanTypeMismatchArgument
      */
-    public function build(Product $product, NostoProduct $nostoProduct, Store $store)
+    public function build(Product $product, NostoProduct $nostoProduct, StoreInterface $store)
     {
         $collection = new VariationCollection();
         $groups = $this->customerGroupManager->getLoggedInGroups();

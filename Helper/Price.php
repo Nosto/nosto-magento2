@@ -52,6 +52,7 @@ use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
 use Magento\GroupedProduct\Model\Product\Type\Grouped as GroupedType;
+use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\Store;
 use Magento\Tax\Helper\Data as TaxHelper;
 use Magento\Tax\Model\Config as TaxConfig;
@@ -103,12 +104,12 @@ class Price extends AbstractHelper
      * Gets the unit price for a product model including taxes.
      *
      * @param Product $product the product model.
-     * @param Store $store
+     * @param StoreInterface $store
      * @return float
      * @throws LocalizedException
      * @throws NostoException
      */
-    public function getProductDisplayPrice(Product $product, Store $store)
+    public function getProductDisplayPrice(Product $product, StoreInterface $store)
     {
         return $this->getProductPrice(
             $product,
@@ -122,7 +123,7 @@ class Price extends AbstractHelper
      * Get unit/final price for a product model.
      *
      * @param Product $product the product model.
-     * @param Store $store
+     * @param StoreInterface $store
      * @param bool $inclTax if tax is to be included.
      * @param bool $finalPrice if final price.
      * @return float
@@ -134,7 +135,7 @@ class Price extends AbstractHelper
      */
     public function getProductPrice(// @codingStandardsIgnoreLine
         Product $product,
-        Store $store,
+        StoreInterface $store,
         $inclTax = true,
         $finalPrice = false
     ) {
@@ -189,12 +190,12 @@ class Price extends AbstractHelper
      * Get the final price for a product model including taxes.
      *
      * @param Product $product the product model.
-     * @param Store $store
+     * @param StoreInterface $store
      * @return float
      * @throws LocalizedException
      * @throws NostoException
      */
-    public function getProductFinalDisplayPrice(Product $product, Store $store)
+    public function getProductFinalDisplayPrice(Product $product, StoreInterface $store)
     {
         return $this->getProductPrice(
             $product,
@@ -212,10 +213,10 @@ class Price extends AbstractHelper
      * If the store is configured to show prices with and without taxes we will
      * use the price without taxes.
      *
-     * @param Store $store
+     * @param StoreInterface $store
      * @return bool
      */
-    private function includeTaxes(Store $store)
+    private function includeTaxes(StoreInterface $store)
     {
         return ($this->taxHelper->getPriceDisplayType($store) === TaxConfig::DISPLAY_TYPE_INCLUDING_TAX);
     }
@@ -224,12 +225,12 @@ class Price extends AbstractHelper
      * Adds taxes to the product based on product and store
      *
      * @param Product $product
-     * @param Store $store
+     * @param StoreInterface $store
      * @param float $price
      *
      * @return float
      */
-    public function addTaxes(Product $product, Store $store, $price)
+    public function addTaxes(Product $product, StoreInterface $store, $price)
     {
         return $this->catalogHelper->getTaxPrice(
             $product,
@@ -247,12 +248,12 @@ class Price extends AbstractHelper
      * Otherwise returns the price without taxes.
      *
      * @param Product $product
-     * @param Store $store
+     * @param StoreInterface $store
      * @param float $price
      *
      * @return float
      */
-    public function addTaxDisplayPriceIfApplicable(Product $product, Store $store, $price)
+    public function addTaxDisplayPriceIfApplicable(Product $product, StoreInterface $store, $price)
     {
         if ($this->includeTaxes($store)) {
             return $this->catalogHelper->getTaxPrice(
@@ -275,12 +276,12 @@ class Price extends AbstractHelper
      * @param Product $product
      * @param $finalPrice
      * @param $inclTax
-     * @param Store $store
+     * @param StoreInterface $store
      * @return array|float|int|mixed
      * @throws LocalizedException
      * @throws NostoException
      */
-    private function getBundleProductPrice(Product $product, $finalPrice, $inclTax, Store $store)
+    private function getBundleProductPrice(Product $product, $finalPrice, $inclTax, StoreInterface $store)
     {
         $priceModel = $product->getPriceModel();
         $price = 0.0;
@@ -375,13 +376,13 @@ class Price extends AbstractHelper
      * @param Product $product
      * @param $finalPrice
      * @param $inclTax
-     * @param Store $store
+     * @param StoreInterface $store
      * @return float
      * @throws LocalizedException
      * @throws NoSuchEntityException
      * @throws NostoException
      */
-    private function getConfigurableProductPrice(Product $product, $finalPrice, $inclTax, Store $store)
+    private function getConfigurableProductPrice(Product $product, $finalPrice, $inclTax, StoreInterface $store)
     {
         $price = 0.00;
         if (!$product->getTypeInstance() instanceof ConfigurableType) {

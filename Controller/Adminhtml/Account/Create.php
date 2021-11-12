@@ -40,6 +40,7 @@ use Exception;
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\Controller\Result\Json;
 use Magento\Framework\Exception\LocalizedException;
+use Magento\Store\Model\Store;
 use Nosto\Helper\IframeHelper;
 use Nosto\Nosto;
 use Nosto\NostoException;
@@ -133,7 +134,7 @@ class Create extends Base
         $storeId = $this->_request->getParam('store');
         $store = $this->nostoHelperScope->getStore($storeId);
         $messageText = null;
-        if ($store !== null) {
+        if ($store !== null && $store instanceof Store) {
             try {
                 /** @var string $signupDetails */
                 $signupDetails = $this->_request->getParam('details');

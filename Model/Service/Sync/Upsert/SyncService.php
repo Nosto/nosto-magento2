@@ -38,7 +38,7 @@ namespace Nosto\Tagging\Model\Service\Sync\Upsert;
 
 use Exception;
 use Magento\Catalog\Model\Product;
-use Magento\Store\Model\Store;
+use Magento\Store\Api\Data\StoreInterface;
 use Nosto\Exception\MemoryOutOfBoundsException;
 use Nosto\NostoException;
 use Nosto\Operation\UpsertProduct;
@@ -112,13 +112,13 @@ class SyncService extends AbstractService
 
     /**
      * @param ProductCollection $collection
-     * @param Store $store
+     * @param StoreInterface $store
      * @throws MemoryOutOfBoundsException
      * @throws NostoException
      * @throws AbstractHttpException
      * @throws Exception
      */
-    public function syncProducts(ProductCollection $collection, Store $store)
+    public function syncProducts(ProductCollection $collection, StoreInterface $store)
     {
         if (!$this->nostoDataHelper->isProductUpdatesEnabled($store)) {
             $this->logDebugWithStore(

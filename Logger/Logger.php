@@ -36,7 +36,7 @@
 
 namespace Nosto\Tagging\Logger;
 
-use Magento\Store\Model\Store;
+use Magento\Store\Api\Data\StoreInterface;
 use Monolog\Logger as MonologLogger;
 use Nosto\Tagging\Helper\NewRelic;
 use Nosto\Util\Memory;
@@ -59,11 +59,11 @@ class Logger extends MonologLogger
      * Logs a message along with the memory consumption
      *
      * @param $message
-     * @param Store|null $store
+     * @param StoreInterface|null $store
      * @param null $sourceClass
      * @return bool
      */
-    public function logWithMemoryConsumption($message, Store $store = null, $sourceClass = null)
+    public function logWithMemoryConsumption($message, StoreInterface $store = null, $sourceClass = null)
     {
         $msg = sprintf(
             '%s [mem usage: %sM / %s] [realmem: %sM]',

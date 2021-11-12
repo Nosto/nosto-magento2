@@ -40,7 +40,6 @@ use Exception;
 use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Model\Product;
 use Magento\Store\Api\Data\StoreInterface;
-use Magento\Store\Model\Store;
 use Nosto\Exception\FilteredProductException;
 use Nosto\Exception\NonBuildableProductException;
 use Nosto\Model\Product\Product as NostoProduct;
@@ -86,7 +85,7 @@ class DefaultProductService implements ProductServiceInterface
     public function getProduct(ProductInterface $product, StoreInterface $store)
     {
         /** @var Product $product */
-        /** @var Store $store */
+        /** @var StoreInterface $store */
         try {
             return $this->nostoProductBuilder->build(
                 $this->nostoProductRepository->reloadProduct(

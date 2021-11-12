@@ -42,7 +42,7 @@ use Magento\Catalog\Model\Product\Type as ProductType;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\GroupedProduct\Model\Product\Type\Grouped;
-use Magento\Store\Model\Store;
+use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\Website;
 use Nosto\Tagging\Logger\Logger;
 use Nosto\Tagging\Model\Service\Stock\Provider\StockProviderInterface;
@@ -77,12 +77,12 @@ class StockService
      * the sum of associated products will be calculated.
      *
      * @param Product $product
-     * @param Store $store
+     * @param StoreInterface $store
      * @return int
      * @suppress PhanUndeclaredMethod
      * @suppress PhanDeprecatedFunction
      */
-    public function getQuantity(Product $product, Store $store)
+    public function getQuantity(Product $product, StoreInterface $store)
     {
         $qty = 0;
         try {
@@ -174,10 +174,10 @@ class StockService
      * Sums quantities for all product ids in array
      *
      * @param Product $product
-     * @param Store $store
+     * @param StoreInterface $store
      * @return bool
      */
-    public function isInStock(Product $product, Store $store)
+    public function isInStock(Product $product, StoreInterface $store)
     {
         try {
             return (bool)$this->stockProvider->isInStock(

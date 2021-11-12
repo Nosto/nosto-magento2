@@ -41,6 +41,7 @@ use Magento\Checkout\Helper\Cart as CartHelper;
 use Magento\Customer\CustomerData\SectionSourceInterface;
 use Magento\Framework\Stdlib\CookieManagerInterface;
 use Magento\Quote\Model\Quote;
+use Magento\Store\Model\Store;
 use Nosto\Model\Cart\LineItem;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
@@ -95,33 +96,40 @@ class CartTagging extends HashedTagging implements SectionSourceInterface
             'restore_cart_url' => ''
         ];
         $cart = $this->cartHelper->getCart();
-        $nostoCart = $this->nostoCartBuilder->build(
-            $this->getQuote(),
-            $this->nostoScopeHelper->getStore()
-        );
+        $nostoCart = null;
+        $store = $this->nostoScopeHelper->getStore();
+        if ($store instanceof Store) {
+            $nostoCart = $this->nostoCartBuilder->build(
+                $this->getQuote(),
+                $store
+            );
+        }
         $itemCount = $cart->getItemsCount();
         $data['itemCount'] = $itemCount;
         $addedCount = 0;
-        /* @var LineItem $item */
-        foreach ($nostoCart->getItems() as $item) {
-            $addedCount++;
-            $data['items'][] = [
-                'product_id' => $item->getProductId(),
-                'sku_id' => $item->getSkuId(),
-                'quantity' => $item->getQuantity(),
-                'name' => $item->getName(),
-                'unit_price' => $item->getUnitPrice(),
-                'price_currency_code' => $item->getPriceCurrencyCode(),
-                'total_count' => $itemCount,
-                'index' => $addedCount
-            ];
+        if ($nostoCart) {
+            /* @var LineItem $item */
+            foreach ($nostoCart->getItems() as $item) {
+                $addedCount++;
+                $data['items'][] = [
+                    'product_id' => $item->getProductId(),
+                    'sku_id' => $item->getSkuId(),
+                    'quantity' => $item->getQuantity(),
+                    'name' => $item->getName(),
+                    'unit_price' => $item->getUnitPrice(),
+                    'price_currency_code' => $item->getPriceCurrencyCode(),
+                    'total_count' => $itemCount,
+                    'index' => $addedCount
+                ];
+            }
         }
 
         if ($data['itemCount'] > 0) {
-            $store = $this->nostoScopeHelper->getStore();
             try {
-                $data['restore_cart_url'] = $this->nostoRestoreCartUrlBuilder
-                    ->build($this->getQuote(), $store);
+                if ($store instanceof Store) {
+                    $data['restore_cart_url'] = $this->nostoRestoreCartUrlBuilder
+                        ->build($this->getQuote(), $store);
+                }
             } catch (Exception $e) {
                 $this->logger->exception($e);
             }

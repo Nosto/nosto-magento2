@@ -38,6 +38,7 @@ namespace Nosto\Tagging\Controller\Adminhtml\Account;
 
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\Controller\Result\Json;
+use Magento\Store\Model\Store;
 use Nosto\Helper\OAuthHelper;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
@@ -78,13 +79,13 @@ class Sync extends Base
      */
     public function execute()
     {
+        $account = null;
         $response = ['success' => false];
 
         $storeId = $this->_request->getParam('store');
         $store = $this->nostoHelperScope->getStore($storeId);
-        $account = $store !== null ? $this->nostoHelperAccount->findAccount($store) : null;
-
-        if ($store !== null && $account !== null) {
+        if ($store!== null && $store instanceof Store) {
+            $account = $this->nostoHelperAccount->findAccount($store);
             $metaData = $this->oauthMetaBuilder->build($store, $account);
             $response['success'] = true;
             $response['redirect_url'] = OAuthHelper::getAuthorizationUrl($metaData);

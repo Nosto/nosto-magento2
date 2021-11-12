@@ -39,7 +39,7 @@ namespace Nosto\Tagging\Model\Rates;
 use Exception;
 use Magento\Directory\Model\CurrencyFactory;
 use Magento\Framework\Event\ManagerInterface;
-use Magento\Store\Model\Store;
+use Magento\Store\Api\Data\StoreInterface;
 use Nosto\Model\ExchangeRate;
 use Nosto\Model\ExchangeRateCollection;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
@@ -69,10 +69,10 @@ class Builder
      * Builds the collection of exchange-rates for the specified store view. The collection of rates
      * contains rates from the store's base currency to each of the other currencies.
      *
-     * @param Store $store the store view for which to build the exchange rates
+     * @param StoreInterface $store the store view for which to build the exchange rates
      * @return ExchangeRateCollection the collection of exchange rates for the store
      */
-    public function build(Store $store)
+    public function build(StoreInterface $store)
     {
         $exchangeRates = new ExchangeRateCollection();
 

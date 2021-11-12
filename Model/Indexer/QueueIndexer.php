@@ -39,8 +39,8 @@ namespace Nosto\Tagging\Model\Indexer;
 use Exception;
 use Magento\Framework\Exception\AlreadyExistsException;
 use Magento\Indexer\Model\ProcessManager;
+use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\App\Emulation;
-use Magento\Store\Model\Store;
 use Nosto\NostoException;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
@@ -124,7 +124,7 @@ class QueueIndexer extends AbstractIndexer
      * @throws NostoException
      * @throws Exception
      */
-    public function doIndex(Store $store, array $ids = [])
+    public function doIndex(StoreInterface $store, array $ids = [])
     {
         $collection = $this->getCollection($store, $ids);
         $this->queueService->addCollectionToUpsertQueue(
@@ -136,13 +136,16 @@ class QueueIndexer extends AbstractIndexer
 
     /**
      * @param ProductCollection $existingCollection
-     * @param Store $store
+     * @param StoreInterface $store
      * @param array $givenIds
      * @throws NostoException
      * @throws AlreadyExistsException
      */
-    private function handleDeletedProducts(ProductCollection $existingCollection, Store $store, array $givenIds)
-    {
+    private function handleDeletedProducts(
+        ProductCollection $existingCollection,
+        StoreInterface $store,
+        array $givenIds
+    ) {
         if (!empty($givenIds)) {
             $existingCollection->setPageSize(1000);
             $iterator = new PagingIterator($existingCollection);
@@ -174,11 +177,11 @@ class QueueIndexer extends AbstractIndexer
     }
 
     /**
-     * @param Store $store
+     * @param StoreInterface $store
      * @param array $ids
      * @return ProductCollection
      */
-    public function getCollection(Store $store, array $ids = []): ProductCollection
+    public function getCollection(StoreInterface $store, array $ids = []): ProductCollection
     {
         $this->productCollectionBuilder->initDefault($store);
         if (!empty($ids)) {

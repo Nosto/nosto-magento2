@@ -40,7 +40,7 @@ use Exception;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\Product\Gallery\ReadHandler as GalleryReadHandler;
 use Magento\Framework\Event\ManagerInterface;
-use Magento\Store\Model\Store;
+use Magento\Store\Api\Data\StoreInterface;
 use Nosto\Exception\FilteredProductException;
 use Nosto\Exception\NonBuildableProductException;
 use Nosto\NostoException;
@@ -171,14 +171,14 @@ class Builder
 
     /**
      * @param Product $product
-     * @param Store $store
+     * @param StoreInterface $store
      * @return NostoProduct
      * @throws FilteredProductException
      * @throws NonBuildableProductException
      */
     public function build(
         Product $product,
-        Store $store
+        StoreInterface $store
     ) {
         $nostoProduct = new NostoProduct();
         $modelFilter = new ModelFilter();
@@ -340,10 +340,10 @@ class Builder
      * Adds selected attributes to all tags also in the custom fields section
      *
      * @param Product $product
-     * @param Store $store
+     * @param StoreInterface $store
      * @return array
      */
-    private function getCustomFieldsWithAttributes(Product $product, Store $store)
+    private function getCustomFieldsWithAttributes(Product $product, StoreInterface $store)
     {
         if (!$this->nostoDataHelper->isCustomFieldsEnabled($store)) {
             return [];
@@ -358,10 +358,10 @@ class Builder
      *
      * @param Product $product the magento product model.
      * @param NostoProduct $nostoProduct nosto product object
-     * @param Store $store the store model.
+     * @param StoreInterface $store the store model.
      * @throws NostoException
      */
-    private function amendAttributeTags(Product $product, NostoProduct $nostoProduct, Store $store)
+    private function amendAttributeTags(Product $product, NostoProduct $nostoProduct, StoreInterface $store)
     {
         $attributeValues = $this->attributeService->getAttributesForTags($product, $store);
         foreach (self::CUSTOMIZED_TAGS as $tag) {
@@ -395,10 +395,10 @@ class Builder
      * Generates the availability for the product
      *
      * @param Product $product
-     * @param Store $store
+     * @param StoreInterface $store
      * @return string
      */
-    private function buildAvailability(Product $product, Store $store)
+    private function buildAvailability(Product $product, StoreInterface $store)
     {
         $availability = ProductInterface::OUT_OF_STOCK;
         $isInStock = $this->availabilityService->isInStock($product, $store);
@@ -419,10 +419,10 @@ class Builder
      * Adds the alternative image urls
      *
      * @param Product $product the product model.
-     * @param Store $store
+     * @param StoreInterface $store
      * @return array
      */
-    public function buildAlternativeImages(Product $product, Store $store)
+    public function buildAlternativeImages(Product $product, StoreInterface $store)
     {
         $images = [];
         $this->galleryReadHandler->execute($product);
@@ -438,10 +438,10 @@ class Builder
 
     /**
      * @param Product $product
-     * @param Store $store
+     * @param StoreInterface $store
      * @return array
      */
-    public function buildDefaultTags(Product $product, Store $store)
+    public function buildDefaultTags(Product $product, StoreInterface $store)
     {
         $tags = [];
 

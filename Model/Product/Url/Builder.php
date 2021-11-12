@@ -40,7 +40,7 @@ use Magento\Catalog\Model\Product;
 use Magento\CatalogUrlRewrite\Model\ProductUrlRewriteGenerator;
 use Magento\Framework\DataObject;
 use Magento\Framework\Url;
-use Magento\Store\Model\Store;
+use Magento\Store\Api\Data\StoreInterface;
 use Magento\UrlRewrite\Model\UrlFinderInterface;
 use Magento\UrlRewrite\Service\V1\Data\UrlRewrite;
 use Nosto\Tagging\Helper\Data as NostoDataHelper;
@@ -81,7 +81,7 @@ class Builder extends DataObject
         $this->nostoDataHelper = $nostoDataHelper;
     }
 
-    public function getUrlInStore(Product $product, Store $store)
+    public function getUrlInStore(Product $product, StoreInterface $store)
     {
         $routeParams = [];
         $routePath = '';

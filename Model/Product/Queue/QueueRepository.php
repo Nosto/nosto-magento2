@@ -39,7 +39,6 @@ namespace Nosto\Tagging\Model\Product\Queue;
 use Exception;
 use Magento\Framework\Exception\AlreadyExistsException;
 use Magento\Store\Api\Data\StoreInterface;
-use Magento\Store\Model\Store;
 use Nosto\Tagging\Api\Data\ProductUpdateQueueInterface;
 use Nosto\Tagging\Api\ProductUpdateQueueRepositoryInterface;
 use Nosto\Tagging\Model\ResourceModel\Product\Update\Queue as QueueResource;
@@ -68,7 +67,7 @@ class QueueRepository implements ProductUpdateQueueRepositoryInterface
         $this->queueCollectionFactory = $queueCollectionFactory;
     }
 
-    public function getTotalCount(Store $store)
+    public function getTotalCount(StoreInterface $store)
     {
         $collection = $this->queueCollectionFactory->create();
         if ((int)$store->getId() !== 0) {

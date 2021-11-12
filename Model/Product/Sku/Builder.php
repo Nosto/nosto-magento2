@@ -41,7 +41,7 @@ use Magento\Catalog\Model\Product;
 use Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable\Attribute\Collection
     as ConfigurableAttributeCollection;
 use Magento\Framework\Event\ManagerInterface;
-use Magento\Store\Model\Store;
+use Magento\Store\Api\Data\StoreInterface;
 use Nosto\Model\Product\Sku as NostoSku;
 use Nosto\Tagging\Helper\Currency as CurrencyHelper;
 use Nosto\Tagging\Helper\Data as NostoDataHelper;
@@ -120,14 +120,14 @@ class Builder
 
     /**
      * @param Product $product
-     * @param Store $store
+     * @param StoreInterface $store
      * @param ConfigurableAttributeCollection $attributes
      * @return NostoSku|null
      * @throws Exception
      */
     public function build(
         Product $product,
-        Store $store,
+        StoreInterface $store,
         ConfigurableAttributeCollection $attributes
     ) {
         if (!$this->availabilityService->isAvailableInStore($product, $store)) {
@@ -190,10 +190,10 @@ class Builder
      * Generates the availability for the SKU
      *
      * @param Product $product
-     * @param Store $store
+     * @param StoreInterface $store
      * @return string
      */
-    private function buildSkuAvailability(Product $product, Store $store)
+    private function buildSkuAvailability(Product $product, StoreInterface $store)
     {
         if ($product->isAvailable()
             && $this->availabilityService->isInStock($product, $store)
