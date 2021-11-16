@@ -313,7 +313,7 @@ class Builder
                 )->getCode()
             );
         } catch (Exception $e) {
-            $message = sprintf("Could not build product with id: %s",  $product->getId());
+            $message = sprintf("Could not build product with id: %s", $product->getId());
             throw new NonBuildableProductException($message, $e);
         }
         $this->eventManager->dispatch(
