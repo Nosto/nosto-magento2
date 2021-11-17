@@ -3,6 +3,9 @@ All notable changes to this project will be documented in this file. This projec
 ### upcoming
 * Refactor BuilderTrait into service classes
 
+### 5.3.2
+* Improve exception during product build by passing previos exception
+
 ### 5.3.1
 * Fix to use placeholder thumbnail image if product has no image
 
