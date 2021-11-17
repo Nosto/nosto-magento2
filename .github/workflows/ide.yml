@@ -73,6 +73,7 @@ jobs:
         scope: Inspection
 
     - name: Archive inspection results
+      if: always()
       uses: actions/upload-artifact@v1
       with:
         name: inspection-results
