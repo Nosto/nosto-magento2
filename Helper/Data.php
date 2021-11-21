@@ -150,6 +150,11 @@ class Data extends AbstractHelper
     const XML_PATH_TRACK_MULTI_CHANNEL_ORDERS = 'nosto/flags/track_multi_channel_orders';
 
     /**
+     * Path to the configuration object that stores preference for reloading recs after adding product to cart
+     */
+    const XML_PATH_RELOAD_RECS_AFTER_ATC = 'nosto/flags/reload_recs_after_atc';
+
+    /**
      * Path to the configuration object for pricing variations
      */
     const XML_PATH_PRICING_VARIATION = 'nosto/multicurrency/pricing_variation';
@@ -425,6 +430,17 @@ class Data extends AbstractHelper
     public function isMultiChannelOrderTrackingEnabled(StoreInterface $store = null)
     {
         return (bool)$this->getStoreConfig(self::XML_PATH_TRACK_MULTI_CHANNEL_ORDERS, $store);
+    }
+
+    /**
+     * Returns if recs should be reloaded after adding product to cart
+     *
+     * @param StoreInterface|null $store
+     * @return int
+     */
+    public function isReloadRecsAfterAtcEnabled(StoreInterface $store = null)
+    {
+        return $this->getStoreConfig(self::XML_PATH_RELOAD_RECS_AFTER_ATC, $store);
     }
 
     /**

@@ -39,8 +39,10 @@ namespace Nosto\Tagging\Model\Service\Sync;
 
 use Exception;
 use InvalidArgumentException;
+use Magento\AsynchronousOperations\Api\Data\OperationInterface;
 use Magento\Framework\EntityManager\EntityManager;
 use Magento\Framework\Json\Helper\Data as JsonHelper;
+use Magento\Store\Model\App\Emulation;
 use Nosto\Tagging\Logger\Logger;
 
 abstract class AbstractBulkConsumer implements BulkConsumerInterface
@@ -54,67 +56,67 @@ abstract class AbstractBulkConsumer implements BulkConsumerInterface
     /** @var EntityManager */
     private $entityManager;
 
+    /** @var Emulation */
+    private $storeEmulation;
+
     /**
      * AbstractBulkConsumer constructor.
      * @param Logger $logger
      * @param JsonHelper $jsonHelper
      * @param EntityManager $entityManager
+     * @param Emulation $storeEmulation
      */
     public function __construct(
         Logger $logger,
         JsonHelper $jsonHelper,
-        EntityManager $entityManager
+        EntityManager $entityManager,
+        Emulation $storeEmulation
     ) {
         $this->logger = $logger;
         $this->jsonHelper = $jsonHelper;
         $this->entityManager = $entityManager;
+        $this->storeEmulation = $storeEmulation;
     }
 
     /**
      * Processing operation for product sync
      *
-     * @param array|\Magento\AsynchronousOperations\Api\Data\OperationInterface $operation
+     * @param OperationInterface $operation
      * @return void
      * @throws Exception
      * @suppress PhanUndeclaredClassConstant
-     * @noinspection PhpFullyQualifiedNameUsageInspection
      */
     public function processOperation($operation)
     {
         $errorCode = null;
-        if (is_array($operation)) {
-            $serializedData = $operation['data']['serialized_data'];
-        } elseif ($operation instanceof \Magento\AsynchronousOperations\Api\Data\OperationInterface) {
+        if ($operation instanceof OperationInterface) {
             $serializedData = $operation->getSerializedData();
         } else {
             throw new InvalidArgumentException(
-                'Wrong type passed to AsyncBulkConsumer::processOperation. 
-                Expected array|\Magento\AsynchronousOperations\Api\Data\OperationInterface.'
+                'Wrong type passed to AsyncBulkConsumer::processOperation.
+                Expected \Magento\AsynchronousOperations\Api\Data\OperationInterface.'
             );
         }
         $unserializedData = $this->jsonHelper->jsonDecode($serializedData);
         $productIds = $unserializedData['product_ids'];
         $storeId = $unserializedData['store_id'];
         try {
+            $this->storeEmulation->startEnvironmentEmulation((int)$storeId);
             $this->doOperation($productIds, $storeId);
-            if (!is_array($operation)) {
-                /** @phan-suppress-next-line PhanTypeMismatchArgument */
-                $message = __('Something went wrong when syncing products to Nosto. Check log for details.');
-                $operation->setStatus(
-                    \Magento\AsynchronousOperations\Api\Data\OperationInterface::STATUS_TYPE_COMPLETE
-                )->setResultMessage($message);
-                $this->entityManager->save($operation);
-            }
+            /** @phan-suppress-next-line PhanTypeMismatchArgument */
+            $message = __('Success.');
+            $operation->setStatus(OperationInterface::STATUS_TYPE_COMPLETE)
+                ->setResultMessage($message);
         } catch (Exception $e) {
-            $this->logger->critical($e->getMessage());
+            $this->logger->critical(sprintf('Bulk uuid: %s. %s', $operation->getBulkUuid(), $e->getMessage()));
             /** @phan-suppress-next-line PhanTypeMismatchArgument */
             $message = __('Something went wrong when syncing products to Nosto. Check log for details.');
-            if (!is_array($operation)) {
-                $operation->setStatus(
-                    \Magento\AsynchronousOperations\Api\Data\OperationInterface::STATUS_TYPE_NOT_RETRIABLY_FAILED
-                )->setErrorCode($e->getCode())
-                    ->setResultMessage($message);
-            }
+            $operation->setStatus(OperationInterface::STATUS_TYPE_NOT_RETRIABLY_FAILED)
+                ->setErrorCode($e->getCode())
+                ->setResultMessage($message);
+        } finally {
+            $this->entityManager->save($operation);
+            $this->storeEmulation->stopEnvironmentEmulation();
         }
     }
 

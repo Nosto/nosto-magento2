@@ -40,8 +40,10 @@ use Closure;
 use Magento\Catalog\Model\ResourceModel\Product as MagentoResourceProduct;
 use Magento\Framework\Indexer\IndexerRegistry;
 use Magento\Framework\Model\AbstractModel;
+use Nosto\Tagging\Exception\ParentProductDisabledException;
 use Nosto\Tagging\Model\Indexer\QueueIndexer;
 use Nosto\Tagging\Model\Product\Repository as NostoProductRepository;
+use Nosto\Tagging\Logger\Logger as NostoLogger;
 
 /**
  * Plugin for product updates
@@ -58,20 +60,26 @@ class ProductUpdate
     /** @var NostoProductRepository  */
     private $nostoProductRepository;
 
+    /** @var NostoLogger */
+    private $logger;
+
     /**
-     * ProductInvalidate constructor.
+     * ProductUpdate constructor.
      * @param IndexerRegistry $indexerRegistry
      * @param QueueIndexer $queueIndexer
      * @param NostoProductRepository $nostoProductRepository
+     * @param NostoLogger $logger
      */
     public function __construct(
         IndexerRegistry $indexerRegistry,
         QueueIndexer $queueIndexer,
-        NostoProductRepository $nostoProductRepository
+        NostoProductRepository $nostoProductRepository,
+        NostoLogger $logger
     ) {
         $this->indexerRegistry = $indexerRegistry;
         $this->queueIndexer = $queueIndexer;
         $this->nostoProductRepository = $nostoProductRepository;
+        $this->logger = $logger;
     }
 
     /**
@@ -111,7 +119,13 @@ class ProductUpdate
         $mageIndexer = $this->indexerRegistry->get(QueueIndexer::INDEXER_ID);
         if (!$mageIndexer->isScheduled()) {
 
-            $productIds = $this->nostoProductRepository->resolveParentProductIds($product);
+            try {
+                $productIds = $this->nostoProductRepository->resolveParentProductIds($product);
+            } catch (ParentProductDisabledException $e) {
+                $this->logger->debug($e->getMessage());
+                return $proceed($product);
+            }
+
             if (empty($productIds)) {
                 $productResource->addCommitCallback(function () use ($product) {
                     $this->queueIndexer->executeRow($product->getId());

@@ -1,5 +1,5 @@
-/** @noinspection DuplicatedCode */
-/*
+<?php
+/**
  * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
  *
@@ -34,36 +34,16 @@
  *
  */
 
-// noinspection JSUnresolvedFunction
-define([
-  'uiComponent',
-  'Magento_Customer/js/customer-data',
-  'nostojs'
-], function (Component, customerData, nostojs) {
-  'use strict';
+namespace Nosto\Tagging\Exception;
 
-  // noinspection JSUnusedGlobalSymbols,JSCheckFunctionSignatures
-  return Component.extend({
-    initialize: function () {
-      // noinspection JSUnresolvedFunction
-      this._super();
-      //noinspection JSUnusedGlobalSymbols
-      this.variationTagging = customerData.get('active-variation-tagging');
-    },
-    reloadRecommendations: function () {
-      // Remove the static variation if it exists - it should not but as a safeguard we rename the class
-      const element = document.querySelector(".nosto_variation");
-      if (element) {
-        element.classList.remove('nosto_variation');
-        element.classList.add('nosto_variation_static');
-      }
-      document.querySelector(".nosto_variation_dynamic").classList.add("nosto_variation")
-      if (typeof nostojs === 'function') {
-        nostojs(function (api) {
-          // noinspection JSUnresolvedFunction
-          api.loadRecommendations();
-        });
-      }
+use Nosto\NostoException;
+use Throwable;
+
+class ParentProductDisabledException extends NostoException
+{
+    function __construct(int $productId, $code = 0, Throwable $previous = null)
+    {
+        $message = "Parent product is disabled for SKU with id: " . $productId;
+        parent::__construct($message, $code, $previous);
     }
-  });
-});
+}

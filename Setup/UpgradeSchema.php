@@ -76,6 +76,7 @@ class UpgradeSchema extends Core implements UpgradeSchemaInterface
         if (version_compare($fromVersion, '5.0.0', '<')) {
             try {
                 $this->createProductUpdateQueue($setup);
+                $this->removeOldCliTables($setup);
             } catch (Exception $e) {
                 $this->loger->exception($e);
             }

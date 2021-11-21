@@ -42,6 +42,7 @@ use Magento\Store\Model\Store;
 use Nosto\Exception\MemoryOutOfBoundsException;
 use Nosto\NostoException;
 use Nosto\Operation\UpsertProduct;
+use Nosto\Request\Http\Exception\AbstractHttpException;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Data as NostoDataHelper;
 use Nosto\Tagging\Helper\Url as NostoHelperUrl;
@@ -79,7 +80,7 @@ class SyncService extends AbstractService
     private $apiTimeout;
 
     /**
-     * Index constructor.
+     * Sync constructor.
      * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoHelperUrl $nostoHelperUrl
      * @param NostoLogger $logger
@@ -114,6 +115,8 @@ class SyncService extends AbstractService
      * @param Store $store
      * @throws MemoryOutOfBoundsException
      * @throws NostoException
+     * @throws AbstractHttpException
+     * @throws Exception
      */
     public function syncProducts(ProductCollection $collection, Store $store)
     {
@@ -143,29 +146,22 @@ class SyncService extends AbstractService
                 if ($nostoProduct === null) {
                     throw new NostoException('Could not get product from the product service.');
                 }
-                try {
-                    $op->addProduct($nostoProduct);
-                    // phpcs:ignore
-                    $this->cacheService->save($nostoProduct, $store);
-                    $this->tickBenchmark(self::BENCHMARK_SYNC_NAME);
-                } catch (Exception $e) {
-                    $this->getLogger()->exception($e);
-                }
+                $op->addProduct($nostoProduct);
+                // phpcs:ignore
+                $this->cacheService->save($nostoProduct, $store);
+                $this->tickBenchmark(self::BENCHMARK_SYNC_NAME);
             }
-            try {
-                $this->logDebugWithStore(
-                    sprintf(
-                        'Upserting batch of %d (%s) - API timeout is set to %d seconds',
-                        $this->apiBatchSize,
-                        implode(',', $productIdsInBatch),
-                        $this->apiTimeout
-                    ),
-                    $store
-                );
-                $op->upsert();
-            } catch (Exception $upsertException) {
-                $this->getLogger()->exception($upsertException);
-            }
+
+            $this->logDebugWithStore(
+                sprintf(
+                    'Upserting batch of %d (%s) - API timeout is set to %d seconds',
+                    $this->apiBatchSize,
+                    implode(',', $productIdsInBatch),
+                    $this->apiTimeout
+                ),
+                $store
+            );
+            $op->upsert();
         }
         $this->logBenchmarkSummary(self::BENCHMARK_SYNC_NAME, $store, $this);
     }

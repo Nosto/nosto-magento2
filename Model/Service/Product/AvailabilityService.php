@@ -1,6 +1,6 @@
-/** @noinspection DuplicatedCode */
-/*
- * Copyright (c) 2020, Nosto Solutions Ltd
+<?php
+/**
+ * Copyright (c) 2021, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,41 +29,61 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <contact@nosto.com>
- * @copyright 2020 Nosto Solutions Ltd
+ * @copyright 2021 Nosto Solutions Ltd
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
 
-// noinspection JSUnresolvedFunction
-define([
-  'uiComponent',
-  'Magento_Customer/js/customer-data',
-  'nostojs'
-], function (Component, customerData, nostojs) {
-  'use strict';
+namespace Nosto\Tagging\Model\Service\Product;
 
-  // noinspection JSUnusedGlobalSymbols,JSCheckFunctionSignatures
-  return Component.extend({
-    initialize: function () {
-      // noinspection JSUnresolvedFunction
-      this._super();
-      //noinspection JSUnusedGlobalSymbols
-      this.variationTagging = customerData.get('active-variation-tagging');
-    },
-    reloadRecommendations: function () {
-      // Remove the static variation if it exists - it should not but as a safeguard we rename the class
-      const element = document.querySelector(".nosto_variation");
-      if (element) {
-        element.classList.remove('nosto_variation');
-        element.classList.add('nosto_variation_static');
-      }
-      document.querySelector(".nosto_variation_dynamic").classList.add("nosto_variation")
-      if (typeof nostojs === 'function') {
-        nostojs(function (api) {
-          // noinspection JSUnresolvedFunction
-          api.loadRecommendations();
-        });
-      }
+use Magento\Catalog\Model\Product;
+use Magento\Store\Model\Store;
+use Magento\Store\Model\StoreManagerInterface;
+use Nosto\Tagging\Model\Service\Stock\StockService;
+
+class AvailabilityService
+{
+    /** @var StoreManagerInterface */
+    private $storeManager;
+
+    /** @var StockService */
+    private $stockService;
+
+    /**
+     * AvailabiltyService constructor.
+     * @param StoreManagerInterface $storeManager
+     * @param StockService $stockService
+     */
+    public function __construct(
+        StoreManagerInterface $storeManager,
+        StockService $stockService
+    ) {
+        $this->storeManager = $storeManager;
+        $this->stockService = $stockService;
     }
-  });
-});
+
+    /**
+     * @param Product $product
+     * @param Store $store
+     * @return bool
+     */
+    public function isAvailableInStore(Product $product, Store $store)
+    {
+        if ($this->storeManager->isSingleStoreMode()) {
+            return $product->isAvailable();
+        }
+        return in_array($store->getId(), $product->getStoreIds(), false);
+    }
+
+    /**
+     * Checks if the product is in stock
+     *
+     * @param Product $product
+     * @param Store $store
+     * @return bool
+     */
+    public function isInStock(Product $product, Store $store)
+    {
+        return $this->stockService->isInStock($product, $store);
+    }
+}

@@ -118,6 +118,12 @@
             <argument name="customerSession" xsi:type="object">Magento\Customer\Model\Session\Proxy</argument>
         </arguments>
     </type>
+    <type name="Nosto\Tagging\Model\Service\Cache\CacheService">
+        <arguments>
+            <!-- Default TTL value is equal to 7 days -->
+            <argument name="lifeTime" xsi:type="number">604800</argument>
+        </arguments>
+    </type>
     <type name="Nosto\Tagging\Model\Service\Product\Attribute\CachingAttributeService">
         <arguments>
             <argument name="attributeService" xsi:type="object">

@@ -39,10 +39,10 @@
         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
     <menu>
         <add id="Nosto_Tagging::nosto" title="Nosto" module="Nosto_Tagging" sortOrder="50"
-             resource="Nosto_Tagging::nosto" parent="Magento_Backend::marketing"/>
+             resource="Nosto_Tagging::nosto" parent="Magento_Backend::marketing" translate="title" />
         <add id="Nosto_Tagging::system_nosto" title="Nosto Dashboard" module="Nosto_Tagging"
              sortOrder="10"
              resource="Nosto_Tagging::system_nosto_account" action="nosto/account"
-             parent="Nosto_Tagging::nosto"/>
+             parent="Nosto_Tagging::nosto" translate="title" />
     </menu>
 </config>

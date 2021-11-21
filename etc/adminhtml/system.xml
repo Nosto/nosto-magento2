@@ -112,7 +112,7 @@
                     <source_model>Nosto\Tagging\Model\Config\Source\GoogleCategory</source_model>
                 </field>
             </group>
-            <group id="flags" translate="label" type="text" sortOrder="30" showInDefault="1"
+            <group id="flags" translate="label comment" type="text" sortOrder="30" showInDefault="1"
                    showInWebsite="1" showInStore="1">
                 <label>Feature Flags</label>
                 <comment>Feature flags to enable or disable optional tagging data. Toggling any of
@@ -223,8 +223,16 @@
                     </comment>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
+                <field id="reload_recs_after_atc" translate="label comment" type="select" sortOrder="150"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Reload recs after reloading cart</label>
+                    <comment>
+                        <![CDATA[Set this yes if you want to reload recs after adding products to cart]]>
+                    </comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
             </group>
-            <group id="attributes" translate="label" type="text" sortOrder="40" showInDefault="1"
+            <group id="attributes" translate="label comment" type="text" sortOrder="40" showInDefault="1"
                    showInWebsite="1" showInStore="1">
                 <label>Attributes to tags</label>
                 <comment>Choose attributes that will be added to tags when present

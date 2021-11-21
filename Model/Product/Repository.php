@@ -39,7 +39,9 @@ namespace Nosto\Tagging\Model\Product;
 use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Api\Data\ProductSearchResultsInterface;
 use Magento\Catalog\Model\Product;
+use Magento\Catalog\Model\Product\Attribute\Source\Status;
 use Magento\Catalog\Model\Product\Type;
+use Magento\Catalog\Model\Product\Visibility;
 use Magento\Catalog\Model\Product\Visibility as ProductVisibility;
 use Magento\Catalog\Model\ProductRepository;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable as ConfigurableType;
@@ -49,6 +51,7 @@ use Magento\Framework\Api\Search\FilterGroupBuilder;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Store\Model\Store;
+use Nosto\Tagging\Exception\ParentProductDisabledException;
 use Nosto\Tagging\Model\ResourceModel\Sku;
 use Nosto\Tagging\Model\Service\Stock\Provider\StockProviderInterface;
 
@@ -61,14 +64,31 @@ class Repository
 
     private $parentProductIdCache = [];
 
+    /** @var ProductRepository $productRepository */
     private $productRepository;
+
+    /** @var SearchCriteriaBuilder $searchCriteriaBuilder */
     private $searchCriteriaBuilder;
+
+    /** @var ConfigurableProduct $configurableProduct */
     private $configurableProduct;
+
+    /** @var FilterGroupBuilder $filterGroupBuilder */
     private $filterGroupBuilder;
+
+    /** @var FilterBuilder $filterBuilder */
     private $filterBuilder;
+
+    /** @var ConfigurableType $configurableType */
     private $configurableType;
+
+    /** @var ProductVisibility $productVisibility */
     private $productVisibility;
+
+    /** @var StockProviderInterface $stockProvider */
     private $stockProvider;
+
+    /** @var Sku $skuResource */
     private $skuResource;
 
     /**
@@ -167,6 +187,7 @@ class Repository
      *
      * @param ProductInterface $product
      * @return string[]|null
+     * @throws ParentProductDisabledException
      * @suppress PhanTypeMismatchReturn
      */
     public function resolveParentProductIds(ProductInterface $product)
@@ -179,9 +200,41 @@ class Repository
             $parentProductIds = $this->configurableProduct->getParentIdsByChild(
                 $product->getId()
             );
+
+            //If product has parent ids, sanitize and check if they are not disabled
+            if (count($parentProductIds) != 0) {
+                $parentProductIds = $this->filterWithDefaultVisibility($parentProductIds);
+                if (count($parentProductIds) == 0) {
+                    throw new ParentProductDisabledException($product->getId());
+                }
+            }
+
             $this->saveParentIdsToCache($product, $parentProductIds);
         }
         return $parentProductIds;
+    }
+
+    /**
+     *
+     * @param array $ids
+     * @return array
+     */
+    private function filterWithDefaultVisibility(array $ids)
+    {
+        $this->productRepository->cleanCache();
+        $searchCriteria = $this->searchCriteriaBuilder
+            ->addFilter('entity_id', $ids, 'in')
+            ->addFilter('status', Status::STATUS_ENABLED, 'eq')
+            ->addFilter('visibility', Visibility::VISIBILITY_NOT_VISIBLE, 'neq')
+            ->create();
+        $items = $this->productRepository->getList($searchCriteria)
+            ->getItems();
+
+        $filteredParentIds = [];
+        foreach ($items as $item) {
+            $filteredParentIds[] = $item->getId();
+        }
+        return $filteredParentIds;
     }
 
     /**
