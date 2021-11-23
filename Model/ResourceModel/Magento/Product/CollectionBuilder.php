@@ -85,28 +85,6 @@ class CollectionBuilder
     }
 
     /**
-     * Sets filter for only products that are visible in active sites defined
-     * by store
-     * @return $this
-     */
-    public function withOnlyVisibleInSites()
-    {
-        $this->collection->setVisibility($this->productVisibility->getVisibleInSiteIds());
-        return $this;
-    }
-
-    /**
-     * Sets filter for only globally visible products
-     *
-     * @return $this
-     */
-    public function withOnlyVisible()
-    {
-        $this->collection->addVisibleFilter();
-        return $this;
-    }
-
-    /**
      * Sets filter for product status based on configuration
      *
      * @param Store $store
@@ -201,9 +179,7 @@ class CollectionBuilder
      */
     public function withDefaultVisibility(Store $store)
     {
-        return $this->withOnlyVisibleInSites()
-            ->withOnlyVisible()
-            ->withConfiguredProductStatus($store);
+        return $this->withConfiguredProductStatus($store);
     }
 
     /**
