@@ -37,7 +37,6 @@
 namespace Nosto\Tagging\Model\ResourceModel\Magento\Product;
 
 use Magento\Catalog\Model\Product\Attribute\Source\Status;
-use Magento\Catalog\Model\Product\Visibility;
 use Magento\Catalog\Model\ResourceModel\Product\Collection as MagentoProductCollection;
 
 class Collection extends MagentoProductCollection
