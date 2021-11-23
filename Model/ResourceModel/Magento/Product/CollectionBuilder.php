@@ -36,6 +36,7 @@
 
 namespace Nosto\Tagging\Model\ResourceModel\Magento\Product;
 
+use Magento\Catalog\Model\Product\Attribute\Source\Status as ProductStatus;
 use Magento\Catalog\Model\Product\Visibility as ProductVisibility;
 use Magento\Sales\Api\Data\EntityInterface;
 use Magento\Store\Model\Store;
@@ -82,6 +83,17 @@ class CollectionBuilder
     public function build()
     {
         return $this->collection;
+    }
+
+    /**
+     * Sets filter for only products that are visible in active sites defined
+     * by store
+     * @return $this
+     */
+    public function withOnlyVisibleInSites()
+    {
+        $this->collection->addAttributeToFilter('visibility', ['neq' => ProductVisibility::VISIBILITY_NOT_VISIBLE]);
+        return $this;
     }
 
     /**
@@ -179,7 +191,7 @@ class CollectionBuilder
      */
     public function withDefaultVisibility(Store $store)
     {
-        return $this->withConfiguredProductStatus($store);
+        return $this->withOnlyVisibleInSites()->withConfiguredProductStatus($store);
     }
 
     /**
