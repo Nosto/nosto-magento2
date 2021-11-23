@@ -36,7 +36,6 @@
 
 namespace Nosto\Tagging\Model\ResourceModel\Magento\Product;
 
-use Magento\Catalog\Model\Product\Attribute\Source\Status as ProductStatus;
 use Magento\Catalog\Model\Product\Visibility as ProductVisibility;
 use Magento\Sales\Api\Data\EntityInterface;
 use Magento\Store\Model\Store;
