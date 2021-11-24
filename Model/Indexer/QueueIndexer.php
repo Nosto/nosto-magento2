@@ -184,7 +184,7 @@ class QueueIndexer extends AbstractIndexer
         if (!empty($ids)) {
             $this->productCollectionBuilder->withIds($ids);
         } else {
-            $this->productCollectionBuilder->withDefaultVisibility();
+            $this->productCollectionBuilder->withDefaultVisibility($store);
         }
         return $this->productCollectionBuilder->build();
     }

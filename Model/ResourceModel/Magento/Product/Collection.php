@@ -37,7 +37,6 @@
 namespace Nosto\Tagging\Model\ResourceModel\Magento\Product;
 
 use Magento\Catalog\Model\Product\Attribute\Source\Status;
-use Magento\Catalog\Model\Product\Visibility;
 use Magento\Catalog\Model\ResourceModel\Product\Collection as MagentoProductCollection;
 
 class Collection extends MagentoProductCollection
@@ -45,16 +44,9 @@ class Collection extends MagentoProductCollection
     /**
      * @return Collection
      */
-    public function addActiveAndVisibleFilter()
+    public function addActiveFilter()
     {
-        return $this->addAttributeToSelect($this->getIdFieldName())
-            ->addAttributeToFilter(
-                'status',
-                ['eq' => Status::STATUS_ENABLED]
-            )->addAttributeToFilter(
-                'visibility',
-                ['neq' => Visibility::VISIBILITY_NOT_VISIBLE]
-            );
+        return $this->addAttributeToFilter('status', ['eq' => Status::STATUS_ENABLED]);
     }
 
     /**

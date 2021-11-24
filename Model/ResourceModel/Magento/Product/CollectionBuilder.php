@@ -41,6 +41,7 @@ use Magento\Sales\Api\Data\EntityInterface;
 use Magento\Store\Model\Store;
 use Nosto\Tagging\Model\ResourceModel\Magento\Product\Collection as ProductCollection;
 use Nosto\Tagging\Model\ResourceModel\Magento\Product\CollectionFactory as ProductCollectionFactory;
+use Nosto\Tagging\Helper\Data as NostoHelperData;
 
 /**
  * A builder class for building product collection with the most common filters
@@ -56,17 +57,23 @@ class CollectionBuilder
     /** @var CollectionFactory */
     private $productCollectionFactory;
 
+    /** @var NostoHelperData */
+    private $nostoHelperData;
+
     /**
      * Collection constructor.
      * @param ProductCollectionFactory $productCollectionFactory
      * @param ProductVisibility $productVisibility
+     * @param NostoHelperData $nostoHelperData
      */
     public function __construct(
         ProductCollectionFactory $productCollectionFactory,
-        ProductVisibility $productVisibility
+        ProductVisibility $productVisibility,
+        NostoHelperData $nostoHelperData
     ) {
         $this->productCollectionFactory = $productCollectionFactory;
         $this->productVisibility = $productVisibility;
+        $this->nostoHelperData = $nostoHelperData;
     }
 
     /**
@@ -84,18 +91,21 @@ class CollectionBuilder
      */
     public function withOnlyVisibleInSites()
     {
-        $this->collection->setVisibility($this->productVisibility->getVisibleInSiteIds());
+        $this->collection->addAttributeToFilter('visibility', ['neq' => ProductVisibility::VISIBILITY_NOT_VISIBLE]);
         return $this;
     }
 
     /**
-     * Sets filter for only active products and globally visible products
+     * Sets filter for product status based on configuration
      *
+     * @param Store $store
      * @return $this
      */
-    public function withOnlyActiveAndVisible()
+    public function withConfiguredProductStatus(Store $store)
     {
-        $this->collection->addActiveAndVisibleFilter();
+        if (!$this->nostoHelperData->canIndexDisabledProducts($store)) {
+            $this->collection->addActiveFilter();
+        }
         return $this;
     }
 
@@ -173,14 +183,14 @@ class CollectionBuilder
     }
 
     /**
-     * Sets the default visibility. Calls self::withOnlyVisibleInSites()
-     * and self::withOnlyActiveAndVisible()
+     * Sets the default visibility and set active products filter based on configuration
      *
+     * @param Store $store
      * @return CollectionBuilder
      */
-    public function withDefaultVisibility()
+    public function withDefaultVisibility(Store $store)
     {
-        return $this->withOnlyVisibleInSites()->withOnlyActiveAndVisible();
+        return $this->withOnlyVisibleInSites()->withConfiguredProductStatus($store);
     }
 
     /**
@@ -231,7 +241,7 @@ class CollectionBuilder
         return $this
             ->initDefault($store)
             ->withIds([$id])
-            ->withDefaultVisibility()
+            ->withDefaultVisibility($store)
             ->build();
     }
 
@@ -249,7 +259,7 @@ class CollectionBuilder
         $currentPage = ($offset / $limit) + 1;
         return $this
             ->initDefault($store)
-            ->withDefaultVisibility()
+            ->withDefaultVisibility($store)
             ->setPageSize($limit)
             ->setCurrentPage($currentPage)
             ->build();

@@ -405,6 +405,7 @@ class Builder
         $isInStock = $this->availabilityService->isInStock($product, $store);
         if (!$product->isVisibleInSiteVisibility()
             || (!$this->availabilityService->isAvailableInStore($product, $store) && $isInStock)
+            || !$product->isSalable()
         ) {
             $availability = ProductInterface::INVISIBLE;
         } elseif ($isInStock
