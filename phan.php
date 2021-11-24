@@ -82,6 +82,9 @@ return [
     ],
     'suppress_issue_types' => [
         'PhanParamSignatureMismatch',
+        'PhanTypeMismatchReturn',
+        'PhanTypeMismatchReturnSuperType',
+        'PhanTypeMismatchArgumentProbablyReal'
     ],
     "color_issue_messages_if_supported" => true,
     'plugins' => [
