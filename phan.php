@@ -84,7 +84,8 @@ return [
         'PhanParamSignatureMismatch',
         'PhanTypeMismatchReturn',
         'PhanTypeMismatchReturnSuperType',
-        'PhanTypeMismatchArgumentProbablyReal'
+        'PhanTypeMismatchArgumentProbablyReal',
+        'PhanTypeMismatchArgumentSuperType'
     ],
     "color_issue_messages_if_supported" => true,
     'plugins' => [
