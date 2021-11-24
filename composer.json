@@ -26,7 +26,7 @@
     "staabm/annotate-pull-request-from-checkstyle": "^1.1",
     "magento/magento-coding-standard": "^5.0",
     "magento/module-asynchronous-operations": "100.4.3",
-    "phan/phan": "2.6",
+    "phan/phan": "5.3.0",
     "drenso/phan-extensions": "^2.5",
     "yotpo/module-review": "^2.9"
   },
