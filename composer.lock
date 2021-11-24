@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e06f073a52f290dce1219228afd30818",
+    "content-hash": "df0416d8f7e92f8fc990d18484a787e2",
     "packages": [
         {
             "name": "brick/math",
@@ -6265,20 +6265,20 @@
     "packages-dev": [
         {
             "name": "drenso/phan-extensions",
-            "version": "v2.5.0",
+            "version": "v3.5.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Drenso/PhanExtensions.git",
-                "reference": "cedef1c214c259bfaab0652256abf931b00c2781"
+                "reference": "848a4f2d8c52a29a14320df5452c1558f44b2cfe"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Drenso/PhanExtensions/zipball/cedef1c214c259bfaab0652256abf931b00c2781",
-                "reference": "cedef1c214c259bfaab0652256abf931b00c2781",
+                "url": "https://api.github.com/repos/Drenso/PhanExtensions/zipball/848a4f2d8c52a29a14320df5452c1558f44b2cfe",
+                "reference": "848a4f2d8c52a29a14320df5452c1558f44b2cfe",
                 "shasum": ""
             },
             "require-dev": {
-                "phan/phan": "~1|~2"
+                "phan/phan": "~2|~3"
             },
             "type": "project",
             "notification-url": "https://packagist.org/downloads/",
@@ -6307,9 +6307,9 @@
             ],
             "support": {
                 "issues": "https://github.com/Drenso/PhanExtensions/issues",
-                "source": "https://github.com/Drenso/PhanExtensions/tree/v2.5.0"
+                "source": "https://github.com/Drenso/PhanExtensions/tree/v3.5.1"
             },
-            "time": "2019-05-31T15:22:44+00:00"
+            "time": "2021-06-08T10:46:31+00:00"
         },
         {
             "name": "felixfbecker/advanced-json-rpc",
