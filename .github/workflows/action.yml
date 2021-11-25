@@ -73,13 +73,6 @@ jobs:
         extensions: ast, bcmath, gd
         coverage: none
 
-    - uses: actions/cache@v1
-      with:
-        path: ${{ steps.composer-cache.outputs.dir }}
-        key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-composer-
-
     - name: Update project dependencies
       env:
         REPO_USR: ${{ secrets.REPO_USR }}
