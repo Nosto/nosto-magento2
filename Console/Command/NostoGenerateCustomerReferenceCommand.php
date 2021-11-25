@@ -94,7 +94,7 @@ class NostoGenerateCustomerReferenceCommand extends Command
             $customers = $customerCollection->getItems();
             /** @var CustomerInterface $customer */
             foreach ($customers as $customer) {
-                /** @phan-suppress-next-line PhanTypeMismatchArgument */
+                /** @phan-suppress-next-line PhanTypeMismatchArgumentSuperType */
                 $customerReference = CustomerUtil::generateCustomerReference($customer);
                 /** @noinspection PhpUndefinedMethodInspection */
                 $customer->setData(
