@@ -174,6 +174,10 @@ class Repository implements CustomerRepositoryInterface
         $collection = $this->customerCollectionFactory->create();
         $searchResults = $this->customerSearchResultsFactory->create();
 
+        /**
+         * Returning \Magento\Framework\Api\Search\SearchResult
+         * but declared to return CustomerSearchResults
+         */
         /** @phan-suppress-next-next-line PhanTypeMismatchReturnSuperType */
         /** @noinspection PhpIncompatibleReturnTypeInspection */
         return RepositoryUtil::search(

@@ -87,6 +87,9 @@ class StockRegistryProvider extends MagentoStockRegistryProvider
     public function getStockStatuses(array $productIds, $scopeId = self::DEFAULT_STOCK_SCOPE)
     {
         $criteria = $this->stockStatusCriteriaFactory->create();
+        /**
+         * Argument is of type array but int is expected
+         */
         /** @phan-suppress-next-next-line PhanTypeMismatchArgumentProbablyReal */
         /** @noinspection PhpParamsInspection */
         $criteria->setProductsFilter($productIds); // @codingStandardsIgnoreLine

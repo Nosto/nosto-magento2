@@ -169,8 +169,12 @@ class QueueCollection extends AbstractCollection
     {
         parent::_afterLoad();
         foreach ($this->getItems() as $item) {
+            /**
+             * Argument is of type Magento\Framework\DataObject
+             * but \Magento\Framework\Model\AbstractModel is expected
+             */
+            /** @phan-suppress-next-next-line PhanTypeMismatchArgumentSuperType */
             /** @noinspection PhpParamsInspection */
-            /** @phan-suppress-next-line PhanTypeMismatchArgumentSuperType */
             $this->getResource()->unserializeFields($item);
             /** @noinspection PhpPossiblePolymorphicInvocationInspection */
             $item->setDataChanges(false);

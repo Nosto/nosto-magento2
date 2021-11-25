@@ -220,6 +220,9 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
                         $this->executeByDimensions($dimension, new ArrayIterator($ids));
                     };
                 }
+                /**
+                 * Argument is of type array but Traversable is expected
+                 */
                 /** @phan-suppress-next-next-line PhanTypeMismatchArgumentProbablyReal */
                 /** @var Traversable $userFunctions */
                 $this->getProcessManager()->execute($userFunctions);

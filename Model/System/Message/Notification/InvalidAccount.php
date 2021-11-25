@@ -117,6 +117,9 @@ class InvalidAccount implements MessageInterface
                 . '<a href=" ' . $store['resetUrl'] . ' ">Reset Nosto settings</a> </br></br>';
         }
 
+        /**
+         * Argument is of type string but array is expected
+         */
         /** @phan-suppress-next-line PhanTypeMismatchArgumentProbablyReal */
         $this->message = __($message);
     }
