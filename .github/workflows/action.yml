@@ -120,7 +120,7 @@ jobs:
       uses: shivammathur/setup-php@v2
       with:
         php-version: '7.4'
-        tools: composer:v2, pecl
+        tools: composer, pecl
         extensions: ast, bcmath, gd
         coverage: none
 
@@ -128,6 +128,7 @@ jobs:
     - name: Cache composer packages
       id: composer-cache
       run: |
+        composer config cache-files-dir
         echo "::set-output name=dir::$(composer config cache-files-dir)"
     - uses: actions/cache@v1
       with:
