@@ -50,7 +50,7 @@ class GoogleCategory extends Selector
     public function filterCollection(Collection $collection)
     {
         /**
-         * Argument is of type array but string expected
+         * Argument is of type array but string is expected
          */
         /** @phan-suppress-next-next-line PhanTypeMismatchArgumentProbablyReal */
         /** @noinspection PhpParamsInspection */
