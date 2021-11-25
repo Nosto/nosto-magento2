@@ -81,11 +81,7 @@ return [
         'vendor/'
     ],
     'suppress_issue_types' => [
-        'PhanParamSignatureMismatch',
-        'PhanTypeMismatchReturn',
-        'PhanTypeMismatchReturnSuperType',
-        'PhanTypeMismatchArgumentProbablyReal',
-        'PhanTypeMismatchArgumentSuperType'
+        'PhanParamSignatureMismatch'
     ],
     "color_issue_messages_if_supported" => true,
     'plugins' => [

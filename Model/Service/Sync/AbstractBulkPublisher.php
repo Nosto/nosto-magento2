@@ -130,7 +130,7 @@ abstract class AbstractBulkPublisher implements BulkPublisherInterface
         }
         $productIdsChunks = array_chunk($productIds, $this->getBulkSize());
         $bulkUuid = $this->identityService->generateId();
-        /** @phan-suppress-next-line PhanTypeMismatchArgument */
+        /** @phan-suppress-next-line PhanTypeMismatchArgumentProbablyReal */
         $bulkDescription = __('Sync ' . count($productIds) . ' Nosto products');
         $operationsData = [];
         foreach ($productIdsChunks as $productIdsChunk) {
@@ -154,7 +154,7 @@ abstract class AbstractBulkPublisher implements BulkPublisherInterface
             $bulkDescription
         );
         if (!$result) {
-            /** @phan-suppress-next-line PhanTypeMismatchArgument */
+            /** @phan-suppress-next-line PhanTypeMismatchArgumentProbablyReal */
             throw new LocalizedException(__('Something went wrong while processing the request.'));
         }
     }

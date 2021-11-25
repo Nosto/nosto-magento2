@@ -174,6 +174,7 @@ class Repository implements CustomerRepositoryInterface
         $collection = $this->customerCollectionFactory->create();
         $searchResults = $this->customerSearchResultsFactory->create();
 
+        /** @phan-suppress-next-next-line PhanTypeMismatchReturnSuperType */
         /** @noinspection PhpIncompatibleReturnTypeInspection */
         return RepositoryUtil::search(
             $collection,

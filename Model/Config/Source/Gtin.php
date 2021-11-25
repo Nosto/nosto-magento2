@@ -50,6 +50,7 @@ class Gtin extends Selector
      */
     public function filterCollection(Collection $collection)
     {
+        /** @phan-suppress-next-next-line PhanTypeMismatchArgumentProbablyReal */
         /** @noinspection PhpParamsInspection */
         $collection->setFrontendInputTypeFilter(['text', 'textarea']);
     }

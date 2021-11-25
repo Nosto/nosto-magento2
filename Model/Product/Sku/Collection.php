@@ -111,6 +111,7 @@ class Collection
     {
         /* @var ConfigurableAttributeCollection $attributes */
         $attributes = $this->configurableType->getConfigurableAttributes($product);
+        /** @phan-suppress-next-line PhanTypeMismatchReturn */
         return $attributes;
     }
 }

@@ -176,6 +176,7 @@ class Repository
         $product = $this->productRepository->getList($searchCriteria)->setTotalCount(1);
 
         foreach ($product->getItems() as $item) {
+            /** @phan-suppress-next-next-line PhanTypeMismatchReturnSuperType */
             /** @var Product $item */
             return $item;
         }
