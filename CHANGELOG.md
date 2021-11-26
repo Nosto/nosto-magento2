@@ -1,7 +1,8 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
-### upcoming
+### 5.4.0
 * Add functionality to send disabled products to Nosto
+* Add ttl for nosto_product_cache
 * Refactor BuilderTrait into service classes
 
 ### 5.3.2
