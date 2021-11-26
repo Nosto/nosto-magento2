@@ -144,8 +144,8 @@ class Create extends Base
                 $emailAddress = $this->_request->getParam('email');
                 $accountOwner = $this->nostoOwnerBuilder->build();
                 if (Zend_Validate::is($emailAddress, 'EmailAddress')) {
-                    $accountOwner->setFirstName(null);
-                    $accountOwner->setLastName(null);
+                    $accountOwner->setFirstName('');
+                    $accountOwner->setLastName('');
                     $accountOwner->setEmail($emailAddress);
                     /** @var array $signupDetails */
                     $signupParams = $this->nostoSignupBuilder->build(

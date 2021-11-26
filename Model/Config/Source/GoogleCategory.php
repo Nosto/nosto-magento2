@@ -46,10 +46,13 @@ class GoogleCategory extends Selector
 {
     /**
      * @param Collection $collection
-     * @suppress PhanTypeMismatchArgument
      */
     public function filterCollection(Collection $collection)
     {
+        /**
+         * Argument is of type array but string is expected
+         */
+        /** @phan-suppress-next-next-line PhanTypeMismatchArgumentProbablyReal */
         /** @noinspection PhpParamsInspection */
         $collection->setFrontendInputTypeFilter(['text', 'textarea']);
     }
