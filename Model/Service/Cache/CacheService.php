@@ -57,6 +57,9 @@ class CacheService extends AbstractService
     /** @var ProductDataInterface */
     private $productDataCache;
 
+    /** @var int|null */
+    private $lifeTime;
+
     /**
      * CacheService constructor.
      * @param NostoLogger $logger
@@ -64,17 +67,20 @@ class CacheService extends AbstractService
      * @param NostoAccountHelper $nostoAccountHelper
      * @param ProductSerializerInterface $productSerializer
      * @param ProductDataInterface $productDataCache
+     * @param int $lifeTime
      */
     public function __construct(
         NostoLogger $logger,
         NostoDataHelper $nostoDataHelper,
         NostoAccountHelper $nostoAccountHelper,
         ProductSerializerInterface $productSerializer,
-        ProductDataInterface $productDataCache
+        ProductDataInterface $productDataCache,
+        $lifeTime
     ) {
         parent::__construct($nostoDataHelper, $nostoAccountHelper, $logger);
         $this->productSerializer = $productSerializer;
         $this->productDataCache = $productDataCache;
+        $this->lifeTime = $lifeTime;
     }
 
     /**
@@ -85,9 +91,14 @@ class CacheService extends AbstractService
     {
         try {
             $serializedNostoProduct = $this->productSerializer->toString($nostoProduct);
+            if ($this->lifeTime < 0) {
+                $this->lifeTime = null;
+            }
             $this->productDataCache->save(
                 $serializedNostoProduct,
-                $this->generateCacheKey($nostoProduct->getProductId(), $store->getId())
+                $this->generateCacheKey($nostoProduct->getProductId(), $store->getId()),
+                [],
+                $this->lifeTime
             );
         } catch (Exception $e) {
             $this->getLogger()->exception($e);

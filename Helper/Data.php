@@ -134,6 +134,11 @@ class Data extends AbstractHelper
      */
     const XML_PATH_INDEXER_MEMORY = 'nosto/flags/indexer_memory';
 
+    /**
+     * Path to the configuration object that stores the preference for indexing disabled products
+     */
+    const XML_PATH_INDEX_DISABLED_PRODUCTS = 'nosto/flags/indexer_disabled_products';
+
     /*
      * Path to the configuration object for tagging the date a product has beed added to Magento's catalog
      */
@@ -458,6 +463,17 @@ class Data extends AbstractHelper
     public function getIndexerMemory(StoreInterface $store = null)
     {
         return $this->getStoreConfig(self::XML_PATH_INDEXER_MEMORY, $store);
+    }
+
+    /**
+     * Returns maximum percentage of PHP available memory that indexer should use
+     *
+     * @param StoreInterface|null $store the store model or null.
+     * @return bool the configuration value
+     */
+    public function canIndexDisabledProducts(StoreInterface $store = null)
+    {
+        return $this->getStoreConfig(self::XML_PATH_INDEX_DISABLED_PRODUCTS, $store);
     }
 
     /**

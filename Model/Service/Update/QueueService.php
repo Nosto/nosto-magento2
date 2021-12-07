@@ -67,7 +67,7 @@ class QueueService extends AbstractService
     private $batchSize;
 
     /**
-     * CacheService constructor.
+     * QueueService constructor.
      * @param QueueRepository $queueRepository
      * @param QueueBuilder $queueBuilder
      * @param NostoLogger $logger

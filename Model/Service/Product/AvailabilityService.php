@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2020, Nosto Solutions Ltd
+ * Copyright (c) 2021, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,60 +29,61 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <contact@nosto.com>
- * @copyright 2020 Nosto Solutions Ltd
+ * @copyright 2021 Nosto Solutions Ltd
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
 
-namespace Nosto\Tagging\Model\Service\Product\Category;
+namespace Nosto\Tagging\Model\Service\Product;
 
-use Magento\Catalog\Model\Category;
 use Magento\Catalog\Model\Product;
-use Magento\Store\Api\Data\StoreInterface;
+use Magento\Store\Model\Store;
+use Magento\Store\Model\StoreManagerInterface;
+use Nosto\Tagging\Model\Service\Stock\StockService;
 
-class CachingCategoryService implements CategoryServiceInterface
+class AvailabilityService
 {
-    /**
-     * @var CategoryServiceInterface
-     */
-    private $categoryService;
+    /** @var StoreManagerInterface */
+    private $storeManager;
+
+    /** @var StockService */
+    private $stockService;
 
     /**
-     * @var array
-     */
-    private $cache = [];
-
-    /**
-     * CachingCategoryService constructor.
-     * @param CategoryServiceInterface $categoryService
+     * AvailabiltyService constructor.
+     * @param StoreManagerInterface $storeManager
+     * @param StockService $stockService
      */
     public function __construct(
-        CategoryServiceInterface $categoryService
+        StoreManagerInterface $storeManager,
+        StockService $stockService
     ) {
-        $this->categoryService = $categoryService;
+        $this->storeManager = $storeManager;
+        $this->stockService = $stockService;
     }
 
     /**
-     * @inheritDoc
+     * @param Product $product
+     * @param Store $store
+     * @return bool
      */
-    public function getCategory(Category $category, StoreInterface $store)
+    public function isAvailableInStore(Product $product, Store $store)
     {
-        if (!isset($this->cache[$store->getId()])) {
-            $this->cache[$store->getId()] = [];
+        if ($this->storeManager->isSingleStoreMode()) {
+            return $product->isAvailable();
         }
-
-        if (!isset($this->cache[$store->getId()][$category->getId()])) {
-            $slug = $this->categoryService->getCategory($category, $store);
-            $this->cache[$store->getId()][$category->getId()] = $slug;
-        }
-        return $this->cache[$store->getId()][$category->getId()];
+        return in_array($store->getId(), $product->getStoreIds(), false);
     }
 
     /**
-     * @inheritDoc
+     * Checks if the product is in stock
+     *
+     * @param Product $product
+     * @param Store $store
+     * @return bool
      */
-    public function getCategories(Product $product, StoreInterface $store)
+    public function isInStock(Product $product, Store $store)
     {
-        return $this->categoryService->getCategories($product, $store);
+        return $this->stockService->isInStock($product, $store);
     }
 }

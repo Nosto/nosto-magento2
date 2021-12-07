@@ -42,7 +42,7 @@
             <resource id="Magento_Backend::admin">
                 <resource id="Magento_Backend::marketing">
                     <resource id="Nosto_Tagging::nosto" title="Nosto" sortOrder="500">
-                        <resource id="Nosto_Tagging::system_nosto_account" title="Account Settings"
+                        <resource id="Nosto_Tagging::system_nosto_account" title="Account Settings" translate="title"
                                   sortOrder="10"/>
                     </resource>
                 </resource>
