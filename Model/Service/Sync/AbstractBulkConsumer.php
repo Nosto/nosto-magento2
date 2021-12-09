@@ -103,13 +103,19 @@ abstract class AbstractBulkConsumer implements BulkConsumerInterface
         try {
             $this->storeEmulation->startEnvironmentEmulation((int)$storeId);
             $this->doOperation($productIds, $storeId);
-            /** @phan-suppress-next-line PhanTypeMismatchArgument */
+            /**
+             * Argument is of type string but array is expected
+             */
+            /** @phan-suppress-next-line PhanTypeMismatchArgumentProbablyReal */
             $message = __('Success.');
             $operation->setStatus(OperationInterface::STATUS_TYPE_COMPLETE)
                 ->setResultMessage($message);
         } catch (Exception $e) {
             $this->logger->critical(sprintf('Bulk uuid: %s. %s', $operation->getBulkUuid(), $e->getMessage()));
-            /** @phan-suppress-next-line PhanTypeMismatchArgument */
+            /**
+             * Argument is of type string but array is expected
+             */
+            /** @phan-suppress-next-line PhanTypeMismatchArgumentProbablyReal */
             $message = __('Something went wrong when syncing products to Nosto. Check log for details.');
             $operation->setStatus(OperationInterface::STATUS_TYPE_NOT_RETRIABLY_FAILED)
                 ->setErrorCode($e->getCode())

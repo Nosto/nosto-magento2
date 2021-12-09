@@ -47,10 +47,13 @@ class Brand extends Selector
 
     /**
      * @param Collection $collection
-     * @suppress PhanTypeMismatchArgument
      */
     public function filterCollection(Collection $collection)
     {
+        /**
+         * Argument is of type array but string expected
+         */
+        /** @phan-suppress-next-next-line PhanTypeMismatchArgumentProbablyReal */
         /** @noinspection PhpParamsInspection */
         $collection->setFrontendInputTypeFilter(['text', 'select', 'textarea']);
         $collection->addFieldToFilter('attribute_code', ['nin' => ['sku']]);
