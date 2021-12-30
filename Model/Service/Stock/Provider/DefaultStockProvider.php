@@ -40,7 +40,6 @@ namespace Nosto\Tagging\Model\Service\Stock\Provider;
 use Magento\Catalog\Model\Product;
 use Magento\CatalogInventory\Api\Data\StockItemInterface;
 use Magento\CatalogInventory\Api\Data\StockStatusInterface;
-use Magento\CatalogInventory\Model\Stock\Status;
 use Magento\Store\Model\Website;
 
 class DefaultStockProvider implements StockProviderInterface
@@ -119,22 +118,5 @@ class DefaultStockProvider implements StockProviderInterface
             $ids,
             StockRegistryProvider::DEFAULT_STOCK_SCOPE
         )->getItems();
-    }
-
-    /**
-     * @inheritDoc
-     */
-    // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter
-    public function getInStockProductIds(array $productIds, Website $website)
-    {
-        $stockItems = $this->getStockStatuses($productIds);
-        $inStockIds = [];
-        /** @var Status $stockItem */
-        foreach ($stockItems as $stockItem) {
-            if ($stockItem->getStockStatus() === StockStatusInterface::STATUS_IN_STOCK) {
-                $inStockIds[] = $stockItem->getProductId();
-            }
-        }
-        return $inStockIds;
     }
 }

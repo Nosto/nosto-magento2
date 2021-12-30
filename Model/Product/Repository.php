@@ -53,7 +53,6 @@ use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Store\Model\Store;
 use Nosto\Tagging\Exception\ParentProductDisabledException;
 use Nosto\Tagging\Model\ResourceModel\Sku;
-use Nosto\Tagging\Model\Service\Stock\Provider\StockProviderInterface;
 
 /**
  * Repository wrapper class for fetching products
@@ -85,9 +84,6 @@ class Repository
     /** @var ProductVisibility $productVisibility */
     private $productVisibility;
 
-    /** @var StockProviderInterface $stockProvider */
-    private $stockProvider;
-
     /** @var Sku $skuResource */
     private $skuResource;
 
@@ -105,7 +101,6 @@ class Repository
      * @param FilterGroupBuilder $filterGroupBuilder
      * @param ConfigurableType $configurableType
      * @param ProductVisibility $productVisibility
-     * @param StockProviderInterface $stockProvider
      * @param Sku $skuResource
      */
     public function __construct(
@@ -116,7 +111,6 @@ class Repository
         FilterGroupBuilder $filterGroupBuilder,
         ConfigurableType $configurableType,
         ProductVisibility $productVisibility,
-        StockProviderInterface $stockProvider,
         Sku $skuResource
     ) {
         $this->productRepository = $productRepository;
@@ -126,7 +120,6 @@ class Repository
         $this->filterBuilder = $filterBuilder;
         $this->configurableType = $configurableType;
         $this->productVisibility = $productVisibility;
-        $this->stockProvider = $stockProvider;
         $this->skuResource = $skuResource;
     }
 
@@ -312,11 +305,7 @@ class Repository
      */
     public function getSkusAsArray(Product $product, Store $store)
     {
-        $inStockProductsByIds = $this->stockProvider->getInStockProductIds(
-            $this->getSkuIds($product),
-            $store->getWebsite()
-        );
-        return $this->skuResource->getSkuPricesByIds($store->getWebsite(), $inStockProductsByIds);
+        return $this->skuResource->getSkuPricesByIds($store->getWebsite(), $this->getSkuIds($product));
     }
 
     /**
