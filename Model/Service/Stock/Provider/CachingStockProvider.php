@@ -51,9 +51,6 @@ class CachingStockProvider implements StockProviderInterface
     /** @var array */
     private $inStockCache = [];
 
-    /** @var array */
-    private $productIdsInStockCache = [];
-
     /** @var int */
     private $maxCacheSize;
 
