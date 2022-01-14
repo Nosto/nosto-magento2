@@ -38,6 +38,7 @@ namespace Nosto\Tagging\Model\Product;
 
 use Exception;
 use Magento\Catalog\Model\Product;
+use Magento\Catalog\Model\Product\Attribute\Source\Status as ProductStatus;
 use Magento\Catalog\Model\Product\Gallery\ReadHandler as GalleryReadHandler;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Store\Model\Store;
@@ -405,7 +406,7 @@ class Builder
         $isInStock = $this->availabilityService->isInStock($product, $store);
         if (!$product->isVisibleInSiteVisibility()
             || (!$this->availabilityService->isAvailableInStore($product, $store) && $isInStock)
-            || !$product->isSalable()
+            || ($product->getStatus() == ProductStatus::STATUS_DISABLED)
         ) {
             $availability = ProductInterface::INVISIBLE;
         } elseif ($isInStock
