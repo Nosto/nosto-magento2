@@ -88,7 +88,6 @@ class Builder
     /**
      * @param NostoLogger $logger
      * @param ManagerInterface $eventManager
-     * @param CurrencyFactory $currencyFactory
      * @param NostoHelperCurrency $nostoCurrencyHelper
      * @param LocaleResolver $localeResolver
      * @param CurrencyInterface $localeCurrency
@@ -102,7 +101,6 @@ class Builder
     ) {
         $this->logger = $logger;
         $this->eventManager = $eventManager;
-        $this->currencyFactory = $currencyFactory;
         $this->nostoCurrencyHelper = $nostoCurrencyHelper;
         $this->localeResolver = $localeResolver;
         $this->localeCurrency = $localeCurrency;
