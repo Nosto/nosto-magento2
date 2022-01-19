@@ -38,9 +38,9 @@
 namespace Nosto\Tagging\Model\Meta\Account\Settings\Currencies;
 
 use Exception;
-use Magento\Directory\Model\CurrencyFactory;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\Locale\Bundle\DataBundle;
+use Magento\Framework\Locale\CurrencyInterface;
 use Magento\Framework\Locale\ResolverInterface as LocaleResolver;
 use Magento\Store\Model\Store;
 use Nosto\Model\Format;
@@ -55,14 +55,14 @@ class Builder
     /** @var ManagerInterface  */
     private $eventManager;
 
-    /** @var CurrencyFactory  */
-    private $currencyFactory;
-
     /** @var LocaleResolver  */
     private $localeResolver;
 
     /** @var NostoHelperCurrency */
     private $nostoCurrencyHelper;
+
+    /** @var CurrencyInterface */
+    private $localeCurrency;
 
     /* List of zero decimal currencies in compliance with ISO-4217 */
     const ZERO_DECIMAL_CURRENCIES = [
@@ -91,19 +91,21 @@ class Builder
      * @param CurrencyFactory $currencyFactory
      * @param NostoHelperCurrency $nostoCurrencyHelper
      * @param LocaleResolver $localeResolver
+     * @param CurrencyInterface $localeCurrency
      */
     public function __construct(
         NostoLogger $logger,
         ManagerInterface $eventManager,
-        CurrencyFactory $currencyFactory,
         NostoHelperCurrency $nostoCurrencyHelper,
-        LocaleResolver $localeResolver
+        LocaleResolver $localeResolver,
+        CurrencyInterface $localeCurrency
     ) {
         $this->logger = $logger;
         $this->eventManager = $eventManager;
         $this->currencyFactory = $currencyFactory;
         $this->nostoCurrencyHelper = $nostoCurrencyHelper;
         $this->localeResolver = $localeResolver;
+        $this->localeCurrency = $localeCurrency;
     }
 
     /**
@@ -134,10 +136,10 @@ class Builder
             if (is_array($currencyCodes) && !empty($currencyCodes)) {
                 foreach ($currencyCodes as $currencyCode) {
                     $finalPrecision = $this->isZeroDecimalCurrency($currencyCode) ? 0 : $precision;
-                    $currency = $this->currencyFactory->create()->load($currencyCode); // @codingStandardsIgnoreLine
-                    $currencies[$currency->getCode()] = new Format(
+                    $currency = $this->localeCurrency->getCurrency($currencyCode); // @codingStandardsIgnoreLine
+                    $currencies[$currency->getShortName()] = new Format(
                         $this->isSymbolBeforeAmount($localeData, $defaultSet),
-                        $currency->getCurrencySymbol(),
+                        $currency->getSymbol(),
                         $decimalSymbol,
                         $groupSymbol,
                         $finalPrecision
