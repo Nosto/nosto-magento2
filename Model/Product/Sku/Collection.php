@@ -111,6 +111,11 @@ class Collection
     {
         /* @var ConfigurableAttributeCollection $attributes */
         $attributes = $this->configurableType->getConfigurableAttributes($product);
+        /**
+         * Returning \Magento\ConfigurableProduct\Model\Product\Type\Configurable\Attribute[]
+         * but declared to return ConfigurableAttributeCollection
+         */
+        /** @phan-suppress-next-line PhanTypeMismatchReturn */
         return $attributes;
     }
 }
