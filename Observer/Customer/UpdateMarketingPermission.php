@@ -42,7 +42,6 @@ use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Module\Manager as ModuleManager;
 use Magento\Newsletter\Model\Subscriber;
-use Magento\Store\Api\WebsiteRepositoryInterface;
 use Nosto\Operation\MarketingPermission;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
@@ -51,37 +50,29 @@ use Nosto\Tagging\Logger\Logger as NostoLogger;
 
 class UpdateMarketingPermission implements ObserverInterface
 {
-    private $nostoHelperData;
     private $nostoHelperAccount;
     private $logger;
     private $moduleManager;
     private $nostoHelperScope;
-    private $websiteRepository;
 
     /**
      * UpdateMarketingPermission constructor.
      *
-     * @param NostoHelperData $nostoHelperData
      * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoHelperScope $nostoHelperScope
      * @param NostoLogger $logger
      * @param ModuleManager $moduleManager
-     * @param WebsiteRepositoryInterface $websiteRepository
      */
     public function __construct(
-        NostoHelperData $nostoHelperData,
         NostoHelperAccount $nostoHelperAccount,
         NostoHelperScope $nostoHelperScope,
         NostoLogger $logger,
         ModuleManager $moduleManager,
-        WebsiteRepositoryInterface $websiteRepository
     ) {
-        $this->nostoHelperData = $nostoHelperData;
         $this->nostoHelperAccount = $nostoHelperAccount;
         $this->nostoHelperScope = $nostoHelperScope;
         $this->logger = $logger;
         $this->moduleManager = $moduleManager;
-        $this->websiteRepository = $websiteRepository;
     }
 
     /**
