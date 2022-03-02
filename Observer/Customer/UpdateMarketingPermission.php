@@ -67,7 +67,7 @@ class UpdateMarketingPermission implements ObserverInterface
         NostoHelperAccount $nostoHelperAccount,
         NostoHelperScope $nostoHelperScope,
         NostoLogger $logger,
-        ModuleManager $moduleManager,
+        ModuleManager $moduleManager
     ) {
         $this->nostoHelperAccount = $nostoHelperAccount;
         $this->nostoHelperScope = $nostoHelperScope;
