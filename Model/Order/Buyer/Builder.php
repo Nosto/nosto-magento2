@@ -51,23 +51,12 @@ class Builder extends PersonBuilder
      * @return Buyer
      */
     public function buildObject( // @codingStandardsIgnoreLine
-        $firstName,
-        $lastName,
-        $email,
-        $phone = null,
-        $postCode = null,
         $country = null,
         $customerGroup = null,
-        $dateOfBirth = null,
         $gender = null,
         $customerReference = null
     ) {
         $buyer = new Buyer();
-        $buyer->setFirstName($firstName);
-        $buyer->setLastName($lastName);
-        $buyer->setEmail($email);
-        $buyer->setPhone($phone);
-        $buyer->setPostCode($postCode);
         $buyer->setCountry($country);
 
         return $buyer;
@@ -84,24 +73,11 @@ class Builder extends PersonBuilder
     public function fromOrder(Order $order)
     {
         $address = $order->getBillingAddress();
-        $telephone = null;
-        $postcode = null;
-        $countryId = null;
         if ($address instanceof OrderAddressInterface) {
-            $telephone = $address->getTelephone() ? (string)$address->getTelephone() : null;
-            $postcode = $address->getPostcode() ? (string)$address->getPostcode() : null;
             $countryId = $address->getCountryId() ? (string)$address->getCountryId() : null;
         }
-        $customerFirstname = $order->getCustomerFirstname() ? (string)$order->getCustomerFirstname() : '';
-        $customerLastname = $order->getCustomerLastname() ? (string)$order->getCustomerLastname() : '';
-        $customerEmail = $order->getCustomerEmail() ? (string)$order->getCustomerEmail() : '';
         return $this->build(
-            $customerFirstname,
-            $customerLastname,
-            $customerEmail,
-            $telephone,
-            $postcode,
-            $countryId
+            $countryId ?? null
         );
     }
 }

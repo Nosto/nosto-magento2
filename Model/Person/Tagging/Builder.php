@@ -95,30 +95,16 @@ class Builder extends PersonBuilder
      * @return Customer
      */
     public function buildObject(
-        $firstName,
-        $lastName,
-        $email,
-        $phone = null,
-        $postCode = null,
         $country = null,
         $customerGroup = null,
-        $dateOfBirth = null,
         $gender = null,
         $customerReference = null
     ) {
         $customer = new Customer();
-        $customer->setFirstName($firstName);
-        $customer->setLastName($lastName);
-        $customer->setEmail($email);
-        $customer->setPhone($phone);
-        $customer->setPostCode($postCode);
         $customer->setCountry($country);
         $customer->setCustomerGroup($customerGroup);
         $customer->setCustomerReference($customerReference);
         $customer->setGender($gender);
-        if ($dateOfBirth !== null) {
-            $customer->setDateOfBirth(DateTime::createFromFormat('Y-m-d', $dateOfBirth));
-        }
 
         return $customer;
     }
