@@ -36,7 +36,6 @@
 
 namespace Nosto\Tagging\Model\Person\Tagging;
 
-use DateTime;
 use Exception;
 use Magento\Customer\Api\CustomerRepositoryInterface;
 use Magento\Customer\Api\Data\CustomerInterface;
