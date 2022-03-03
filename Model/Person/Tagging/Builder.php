@@ -124,14 +124,8 @@ class Builder extends PersonBuilder
 
             /** @noinspection PhpIncompatibleReturnTypeInspection */
             return $this->build(
-                $customer->getFirstname(),
-                $customer->getLastname(),
-                $customer->getEmail(),
-                null,
-                null,
                 null,
                 $customerGroup,
-                $customer->getDob(),
                 $gender,
                 $customerReference
             );
