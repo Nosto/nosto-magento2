@@ -36,6 +36,7 @@
 
 namespace Nosto\Tagging\Model\Person\Tagging;
 
+use DateTime;
 use Exception;
 use Magento\Customer\Api\CustomerRepositoryInterface;
 use Magento\Customer\Api\Data\CustomerInterface;
@@ -94,16 +95,30 @@ class Builder extends PersonBuilder
      * @return Customer
      */
     public function buildObject(
+        $firstName,
+        $lastName,
+        $email,
+        $phone = null,
+        $postCode = null,
         $country = null,
         $customerGroup = null,
+        $dateOfBirth = null,
         $gender = null,
         $customerReference = null
     ) {
         $customer = new Customer();
+        $customer->setFirstName($firstName);
+        $customer->setLastName($lastName);
+        $customer->setEmail($email);
+        $customer->setPhone($phone);
+        $customer->setPostCode($postCode);
         $customer->setCountry($country);
         $customer->setCustomerGroup($customerGroup);
         $customer->setCustomerReference($customerReference);
         $customer->setGender($gender);
+        if ($dateOfBirth !== null) {
+            $customer->setDateOfBirth(DateTime::createFromFormat('Y-m-d', $dateOfBirth));
+        }
 
         return $customer;
     }
@@ -124,8 +139,14 @@ class Builder extends PersonBuilder
 
             /** @noinspection PhpIncompatibleReturnTypeInspection */
             return $this->build(
+                $customer->getFirstname(),
+                $customer->getLastname(),
+                $customer->getEmail(),
+                null,
+                null,
                 null,
                 $customerGroup,
+                $customer->getDob(),
                 $gender,
                 $customerReference
             );

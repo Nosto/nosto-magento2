@@ -74,16 +74,28 @@ abstract class Builder
     }
 
     /**
+     * @param string $firstName
+     * @param string $lastName
+     * @param string $email
+     * @param string|null $phone
+     * @param string|null $postCode
      * @param string|null $country
      * @param string|null $customerGroup
+     * @param string|null $dateOfBirth
      * @param string|null $gender
      * @param string|null $customerReference
      *
      * @return AbstractPerson|null
      */
     public function build(
+        $firstName,
+        $lastName,
+        $email,
+        $phone = null,
+        $postCode = null,
         $country = null,
         $customerGroup = null,
+        $dateOfBirth = null,
         $gender = null,
         $customerReference = null
     ) {
@@ -96,6 +108,11 @@ abstract class Builder
             [
                 'modelFilter' => $modelFilter,
                 'fields' => [
+                    'firstName' => $firstName,
+                    'lastLane' => $lastName,
+                    'email' => $email,
+                    'phone' => $phone,
+                    'postCode' => $postCode,
                     'country' => $country
                 ]
             ]
@@ -104,8 +121,14 @@ abstract class Builder
             return null;
         }
         $person = $this->buildObject(
+            $firstName,
+            $lastName,
+            $email,
+            $phone,
+            $postCode,
             $country,
             $customerGroup,
+            $dateOfBirth,
             $gender,
             $customerReference
         );
@@ -124,16 +147,28 @@ abstract class Builder
     }
 
     /**
+     * @param string $firstName
+     * @param string $lastName
+     * @param string $email
+     * @param string|null $phone
+     * @param string|null $postCode
      * @param string|null $country
      * @param string|null $customerGroup
+     * @param string|null $dateOfBirth
      * @param string|null $gender
      * @param string|null $customerReference
      *
      * @return AbstractPerson
      */
     abstract public function buildObject(
+        $firstName,
+        $lastName,
+        $email,
+        $phone = null,
+        $postCode = null,
         $country = null,
         $customerGroup = null,
+        $dateOfBirth = null,
         $gender = null,
         $customerReference = null
     );
