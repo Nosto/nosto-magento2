@@ -168,8 +168,7 @@ class Builder extends PersonBuilder
         if ($groupId === null) {
             return null;
         }
-        $group = $this->groupRepository->getById($groupId);
-        return $group->getCode();
+        return $this->groupRepository->getById($groupId)->getCode();
     }
 
     /**
