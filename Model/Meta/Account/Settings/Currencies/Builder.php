@@ -45,13 +45,25 @@ use Magento\Framework\Locale\ResolverInterface as LocaleResolver;
 use Magento\Store\Model\Store;
 use Nosto\Model\Format;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
+use Nosto\Tagging\Helper\Currency as NostoHelperCurrency;
 
 class Builder
 {
+    /** @var NostoLogger  */
     private $logger;
+
+    /** @var ManagerInterface  */
     private $eventManager;
+
+    /** @var CurrencyFactory  */
     private $currencyFactory;
+
+    /** @var LocaleResolver  */
     private $localeResolver;
+
+    /** @var NostoHelperCurrency */
+    private $nostoCurrencyHelper;
+
     /* List of zero decimal currencies in compliance with ISO-4217 */
     const ZERO_DECIMAL_CURRENCIES = [
         'XOF',
@@ -77,17 +89,20 @@ class Builder
      * @param NostoLogger $logger
      * @param ManagerInterface $eventManager
      * @param CurrencyFactory $currencyFactory
+     * @param NostoHelperCurrency $nostoCurrencyHelper
      * @param LocaleResolver $localeResolver
      */
     public function __construct(
         NostoLogger $logger,
         ManagerInterface $eventManager,
         CurrencyFactory $currencyFactory,
+        NostoHelperCurrency $nostoCurrencyHelper,
         LocaleResolver $localeResolver
     ) {
         $this->logger = $logger;
         $this->eventManager = $eventManager;
         $this->currencyFactory = $currencyFactory;
+        $this->nostoCurrencyHelper = $nostoCurrencyHelper;
         $this->localeResolver = $localeResolver;
     }
 
@@ -110,7 +125,12 @@ class Builder
             $groupSymbol = $this->buildGroupSymbol($localeData, $defaultSet);
             $precision = $this->getDecimalPrecision($priceFormat);
 
-            $currencyCodes = $store->getAvailableCurrencyCodes(true);
+            // Get other active currencies when multicurrency is enabled
+            if ($this->nostoCurrencyHelper->exchangeRatesInUse($store)) {
+                $currencyCodes = $store->getAvailableCurrencyCodes(true);
+            } else {
+                $currencyCodes = [$store->getBaseCurrencyCode()];
+            }
             if (is_array($currencyCodes) && !empty($currencyCodes)) {
                 foreach ($currencyCodes as $currencyCode) {
                     $finalPrecision = $this->isZeroDecimalCurrency($currencyCode) ? 0 : $precision;
