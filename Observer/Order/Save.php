@@ -249,7 +249,7 @@ class Save implements ObserverInterface
             $nostoCustomerIdentifier = NostoOrderCreate::IDENTIFIER_BY_REF;
         }
         $nostoOrder = $this->nostoOrderBuilder->build($order);
-        $nostoOrder->setCustomer(new Buyer());
+        $nostoOrder->setCustomer(new Buyer()); // Remove customer data from order API calls
         if ($nostoCustomerId !== null) {
             try {
                 $orderService = new NostoOrderCreate(
