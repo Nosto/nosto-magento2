@@ -44,6 +44,7 @@ use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Module\Manager;
 use Magento\Framework\Serialize\SerializerInterface;
 use Nosto\Tagging\Logger\Logger;
+use Magento\AsynchronousOperations\Api\Data\OperationInterfaceFactory;
 
 abstract class AbstractBulkPublisher implements BulkPublisherInterface
 {
@@ -52,7 +53,7 @@ abstract class AbstractBulkPublisher implements BulkPublisherInterface
     /** @var \Magento\Framework\Bulk\BulkManagementInterface|null */
     private $bulkManagement;
 
-    /** @var \Magento\AsynchronousOperations\Api\Data\OperationInterfaceFactory|null */
+    /** @var OperationInterfaceFactory|null */
     private $operationFactory;
 
     /** @var IdentityGeneratorInterface */
@@ -60,9 +61,6 @@ abstract class AbstractBulkPublisher implements BulkPublisherInterface
 
     /** @var SerializerInterface */
     public $serializer;
-
-    /** @var BulkConsumerInterface */
-    private $asyncBulkConsumer;
 
     /** @var Manager */
     private $manager;
@@ -73,28 +71,26 @@ abstract class AbstractBulkPublisher implements BulkPublisherInterface
     /**
      * AbstractBulkPublisher constructor.
      * @param IdentityGeneratorInterface $identityService
+     * @param OperationInterfaceFactory $operationInterfaceFactory
      * @param SerializerInterface $serializer
-     * @param BulkConsumerInterface $asyncBulkConsumer
      * @param Manager $manager
      * @param Logger $logger
      */
     public function __construct(// @codingStandardsIgnoreLine
         IdentityGeneratorInterface $identityService,
+        OperationInterfaceFactory $operationInterfaceFactory,
         SerializerInterface $serializer,
-        BulkConsumerInterface $asyncBulkConsumer,
         Manager $manager,
         Logger $logger
     ) {
         $this->identityService = $identityService;
+        $this->operationFactory = $operationInterfaceFactory;
         $this->serializer = $serializer;
-        $this->asyncBulkConsumer = $asyncBulkConsumer;
         $this->manager = $manager;
         $this->logger = $logger;
         try {
             $this->bulkManagement = ObjectManager::getInstance()
                 ->get(\Magento\Framework\Bulk\BulkManagementInterface::class);
-            $this->operationFactory = ObjectManager::getInstance()
-                ->get(\Magento\AsynchronousOperations\Api\Data\OperationInterfaceFactory::class);
         } catch (Exception $e) {
             $logger->debug('Module Magento_AsynchronousOperations not available');
         }
