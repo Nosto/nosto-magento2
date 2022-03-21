@@ -76,7 +76,7 @@ use Magento\CatalogInventory\Model\StockRegistryProvider as MagentoStockRegistry
 
 class StockRegistryProvider extends MagentoStockRegistryProvider
 {
-    const DEFAULT_STOCK_SCOPE = 0;
+    public const DEFAULT_STOCK_SCOPE = 0;
 
     /**
      * @param int[] $productIds

@@ -51,7 +51,7 @@ use Nosto\Tagging\Model\User\Builder as NostoCurrentUserBuilder;
 
 class Delete extends Base
 {
-    const ADMIN_RESOURCE = 'Nosto_Tagging::system_nosto_account';
+    public const ADMIN_RESOURCE = 'Nosto_Tagging::system_nosto_account';
     private $result;
     private $nostoHelperAccount;
     private $nostoCurrentUserBuilder;

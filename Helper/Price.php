@@ -69,9 +69,9 @@ class Price extends AbstractHelper
     private $nostoProductRepository;
     private $taxHelper;
 
-    const KEY_SKU_FINAL_PRICE = 'final_price';
-    const KEY_SKU_PRICE = 'price';
-    const KEY_SKU_PRODUCT_ID = 'entity_id';
+    public const KEY_SKU_FINAL_PRICE = 'final_price';
+    public const KEY_SKU_PRICE = 'price';
+    public const KEY_SKU_PRODUCT_ID = 'entity_id';
 
     /**
      * Constructor.

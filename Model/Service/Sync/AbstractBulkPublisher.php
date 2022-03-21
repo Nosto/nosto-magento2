@@ -48,7 +48,7 @@ use Magento\AsynchronousOperations\Api\Data\OperationInterfaceFactory;
 
 abstract class AbstractBulkPublisher implements BulkPublisherInterface
 {
-    const STATUS_TYPE_OPEN = 4; //\Magento\Framework\Bulk\OperationInterface::STATUS_TYPE_OPEN;
+    private const STATUS_TYPE_OPEN = 4; //\Magento\Framework\Bulk\OperationInterface::STATUS_TYPE_OPEN;
 
     /** @var \Magento\Framework\Bulk\BulkManagementInterface|null */
     private $bulkManagement;

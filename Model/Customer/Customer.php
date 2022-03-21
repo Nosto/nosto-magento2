@@ -46,7 +46,7 @@ class Customer extends AbstractModel implements CustomerInterface
     /**
      * Name of cookie that holds Nosto visitor id
      */
-    const COOKIE_NAME = '2c_cId';
+    public const COOKIE_NAME = '2c_cId';
 
     /**
      * @inheritDoc

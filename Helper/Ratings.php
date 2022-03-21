@@ -53,9 +53,9 @@ use Nosto\Tagging\Model\Product\Ratings as ProductRatings;
  */
 class Ratings extends AbstractHelper
 {
-    const REVIEW_COUNT = 'reviews_count';
-    const AVERAGE_SCORE = 'average_score';
-    const CURRENT_PRODUCT = 'current_product';
+    public const REVIEW_COUNT = 'reviews_count';
+    public const AVERAGE_SCORE = 'average_score';
+    public const CURRENT_PRODUCT = 'current_product';
 
     private $moduleManager;
     private $nostoDataHelper;

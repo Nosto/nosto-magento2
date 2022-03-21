@@ -60,7 +60,7 @@ use Nosto\Tagging\Model\Service\Stock\Provider\StockProviderInterface;
  */
 class Repository
 {
-    const MAX_SKUS = 5000;
+    public const MAX_SKUS = 5000;
 
     private $parentProductIdCache = [];
 

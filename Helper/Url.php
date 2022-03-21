@@ -62,39 +62,39 @@ use Zend_Uri_Http;
  */
 class Url extends AbstractHelper
 {
-    const URL_PATH_NOSTO_CONFIG = 'adminhtml/system_config/edit/section/nosto/';
-    const MAGENTO_URL_OPTION_STORE_ID = 'store';
+    public const URL_PATH_NOSTO_CONFIG = 'adminhtml/system_config/edit/section/nosto/';
+    public const MAGENTO_URL_OPTION_STORE_ID = 'store';
 
-    const MAGENTO_PATH_SEARCH_RESULT = 'catalogsearch/result';
+    public const MAGENTO_PATH_SEARCH_RESULT = 'catalogsearch/result';
     /**
      * Path to Magento's cart controller
      */
-    const MAGENTO_PATH_CART = 'checkout/cart';
+    public const MAGENTO_PATH_CART = 'checkout/cart';
 
     /**
      * The ___store parameter in Magento URLs
      */
-    const MAGENTO_URL_PARAMETER_STORE = '___store';
+    public const MAGENTO_URL_PARAMETER_STORE = '___store';
 
     /**
      * The array option key for scope in Magento's URLs
      */
-    const MAGENTO_URL_OPTION_SCOPE = '_scope';
+    public const MAGENTO_URL_OPTION_SCOPE = '_scope';
 
     /**
      * The array option key for store to url in Magento's URLs
      */
-    const MAGENTO_URL_OPTION_SCOPE_TO_URL = '_scope_to_url';
+    public const MAGENTO_URL_OPTION_SCOPE_TO_URL = '_scope_to_url';
 
     /**
      * The array option key for URL type in Magento's URLs
      */
-    const MAGENTO_URL_OPTION_LINK_TYPE = '_type';
+    public const MAGENTO_URL_OPTION_LINK_TYPE = '_type';
 
     /**
      * Path to Nosto's restore cart controller
      */
-    const NOSTO_PATH_RESTORE_CART = 'nosto/frontend/cart';
+    public const NOSTO_PATH_RESTORE_CART = 'nosto/frontend/cart';
 
     /**
      * The array option key for no session id in Magento's URLs.
@@ -103,7 +103,7 @@ class Url extends AbstractHelper
      * product URLs we cannot include the session id as the product URL should
      * be the same for all visitors and it will be saved to Nosto.
      */
-    const MAGENTO_URL_OPTION_NOSID = '_nosid';
+    public const MAGENTO_URL_OPTION_NOSID = '_nosid';
 
     /**
      * The url type to be used for links.

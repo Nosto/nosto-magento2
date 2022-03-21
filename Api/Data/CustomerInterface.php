@@ -40,17 +40,17 @@ use DateTime;
 
 interface CustomerInterface
 {
-    const CUSTOMER_ID = 'customer_id';
-    const QUOTE_ID = 'quote_id';
-    const NOSTO_ID = 'nosto_id';
-    const CREATED_AT = 'created_at';
-    const UPDATED_AT = 'updated_at';
-    const RESTORE_CART_HASH = 'restore_cart_hash';
+    public const CUSTOMER_ID = 'customer_id';
+    public const QUOTE_ID = 'quote_id';
+    public const NOSTO_ID = 'nosto_id';
+    public const CREATED_AT = 'created_at';
+    public const UPDATED_AT = 'updated_at';
+    public const RESTORE_CART_HASH = 'restore_cart_hash';
 
     /**
      * @var int The length of the restore cart attribute
      */
-    const NOSTO_TAGGING_RESTORE_CART_ATTRIBUTE_LENGTH = 64;
+    public const NOSTO_TAGGING_RESTORE_CART_ATTRIBUTE_LENGTH = 64;
 
     /**
      * Get customer id

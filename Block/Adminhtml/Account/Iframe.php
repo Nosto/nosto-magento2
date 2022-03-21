@@ -59,7 +59,7 @@ class Iframe extends BlockTemplate
 {
     use IframeTrait;
 
-    const IFRAME_VERSION = 1;
+    public const IFRAME_VERSION = 1;
 
     private $nostoHelperAccount;
     private $backendAuthSession;

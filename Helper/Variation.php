@@ -52,7 +52,7 @@ use Nosto\Tagging\Logger\Logger;
  */
 class Variation extends AbstractHelper
 {
-    const DEFAULT_CUSTOMER_GROUP_ID = GroupManagement::NOT_LOGGED_IN_ID;
+    public const DEFAULT_CUSTOMER_GROUP_ID = GroupManagement::NOT_LOGGED_IN_ID;
 
     /** @var GroupRepository */
     private $groupRepository;

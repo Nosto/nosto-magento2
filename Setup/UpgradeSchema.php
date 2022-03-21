@@ -49,7 +49,7 @@ use Nosto\Tagging\Model\ResourceModel\Customer;
 
 class UpgradeSchema extends Core implements UpgradeSchemaInterface
 {
-    const PRODUCT_QUEUE_TABLE = 'nosto_tagging_product_queue';
+    public const PRODUCT_QUEUE_TABLE = 'nosto_tagging_product_queue';
 
     /** @var Logger $loger */
     private $loger;

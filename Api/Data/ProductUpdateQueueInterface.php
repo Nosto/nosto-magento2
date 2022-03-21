@@ -44,20 +44,20 @@ use Magento\Store\Api\Data\StoreInterface;
  */
 interface ProductUpdateQueueInterface
 {
-    const ID = 'id';
-    const CREATED_AT = 'created_at';
-    const STARTED_AT = 'started_at';
-    const COMPLETED_AT = 'completed_at';
-    const STORE_ID = 'store_id';
-    const PRODUCT_IDS = 'product_ids';
-    const PRODUCT_ID_COUNT = 'product_id_count';
-    const ACTION = 'action';
-    const ACTION_VALUE_UPSERT = 'upsert';
-    const ACTION_VALUE_DELETE = 'delete';
-    const STATUS = 'status';
-    const STATUS_VALUE_NEW = 'new';
-    const STATUS_VALUE_PROCESSING = 'processing';
-    const STATUS_VALUE_DONE = 'done';
+    public const ID = 'id';
+    public const CREATED_AT = 'created_at';
+    public const STARTED_AT = 'started_at';
+    public const COMPLETED_AT = 'completed_at';
+    public const STORE_ID = 'store_id';
+    public const PRODUCT_IDS = 'product_ids';
+    public const PRODUCT_ID_COUNT = 'product_id_count';
+    public const ACTION = 'action';
+    public const ACTION_VALUE_UPSERT = 'upsert';
+    public const ACTION_VALUE_DELETE = 'delete';
+    public const STATUS = 'status';
+    public const STATUS_VALUE_NEW = 'new';
+    public const STATUS_VALUE_PROCESSING = 'processing';
+    public const STATUS_VALUE_DONE = 'done';
 
     /**
      * Get row id

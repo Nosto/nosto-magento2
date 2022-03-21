@@ -41,8 +41,8 @@ use Nosto\Tagging\Model\Service\Sync\AbstractBulkPublisher;
 // @codingStandardsIgnoreFile
 class AsyncBulkPublisher extends AbstractBulkPublisher
 {
-    const NOSTO_SYNC_MESSAGE_QUEUE = 'nosto_product_sync.update';
-    const BULK_SIZE = 100;
+    public const NOSTO_SYNC_MESSAGE_QUEUE = 'nosto_product_sync.update';
+    public const BULK_SIZE = 100;
 
     /**
      * @inheritDoc

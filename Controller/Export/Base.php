@@ -54,9 +54,9 @@ use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 // https://community.magento.com/t5/Magento-DevBlog/Decomposition-of-Magento-Controllers/ba-p/430883
 abstract class Base extends Action
 {
-    const ID = 'id';
-    const LIMIT = 'limit';
-    const OFFSET = 'offset';
+    public const ID = 'id';
+    public const LIMIT = 'limit';
+    public const OFFSET = 'offset';
 
     private $nostoHelperAccount;
     private $nostoHelperScope;

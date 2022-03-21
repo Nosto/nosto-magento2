@@ -61,7 +61,7 @@ use Symfony\Component\Console\Input\InputInterface;
  */
 class QueueIndexer extends AbstractIndexer
 {
-    const INDEXER_ID = 'nosto_index_product_queue';
+    public const INDEXER_ID = 'nosto_index_product_queue';
 
     /** @var QueueService */
     private $queueService;

@@ -64,17 +64,17 @@ class Account extends AbstractHelper
     /**
      * Path to store config nosto account name.
      */
-    const XML_PATH_ACCOUNT = 'nosto_tagging/settings/account';
+    public const XML_PATH_ACCOUNT = 'nosto_tagging/settings/account';
 
     /**
      * Path to store config nosto account tokens.
      */
-    const XML_PATH_TOKENS = 'nosto_tagging/settings/tokens';
+    public const XML_PATH_TOKENS = 'nosto_tagging/settings/tokens';
 
     /**
      * Path to store config store domain.
      */
-    const XML_PATH_DOMAIN = 'nosto_tagging/settings/domain';
+    public const XML_PATH_DOMAIN = 'nosto_tagging/settings/domain';
 
     private $config;
     private $moduleManager;

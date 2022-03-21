@@ -43,8 +43,8 @@ abstract class AbstractDimensionModeConfiguration
     /**
      * Available modes of dimensions for nosto product data indexer
      */
-    const DIMENSION_NONE = 'none';
-    const DIMENSION_STORE = 'store';
+    public const DIMENSION_NONE = 'none';
+    public const DIMENSION_STORE = 'store';
 
     /**
      * Mapping between dimension mode and dimension provider name

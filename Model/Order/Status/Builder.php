@@ -46,7 +46,7 @@ use Nosto\Tagging\Logger\Logger as NostoLogger;
 
 class Builder
 {
-    const ORDER_NUMBER_PREFIX = 'M2_';
+    public const ORDER_NUMBER_PREFIX = 'M2_';
 
     /** @var NostoLogger */
     private $logger;

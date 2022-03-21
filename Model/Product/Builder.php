@@ -65,7 +65,7 @@ use Nosto\Types\Product\ProductInterface;
 
 class Builder
 {
-    const CUSTOMIZED_TAGS = ['tag1', 'tag2', 'tag3'];
+    public const CUSTOMIZED_TAGS = ['tag1', 'tag2', 'tag3'];
 
     /** @var NostoDataHelper */
     private $nostoDataHelper;

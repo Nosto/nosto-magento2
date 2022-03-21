@@ -58,10 +58,10 @@ use Nosto\Tagging\Util\Customer as CustomerUtil;
 class Builder extends PersonBuilder
 {
 
-    const GENDER_MALE = 'Male';
-    const GENDER_FEMALE = 'Female';
-    const GENDER_MALE_ID = '1';
-    const GENDER_FEMALE_ID = '2';
+    public const GENDER_MALE = 'Male';
+    public const GENDER_FEMALE = 'Female';
+    public const GENDER_MALE_ID = '1';
+    public const GENDER_FEMALE_ID = '2';
 
     private $groupRepository;
     private $customerRepository;

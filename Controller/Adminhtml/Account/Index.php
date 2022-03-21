@@ -47,7 +47,7 @@ use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 
 class Index extends Base
 {
-    const ADMIN_RESOURCE = 'Nosto_Tagging::system_nosto_account';
+    public const ADMIN_RESOURCE = 'Nosto_Tagging::system_nosto_account';
     private $resultPageFactory;
     private $nostoHelperScope;
 

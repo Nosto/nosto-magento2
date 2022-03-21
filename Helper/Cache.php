@@ -50,7 +50,7 @@ use Nosto\Tagging\Logger\Logger as NostoLogger;
  */
 class Cache extends AbstractHelper
 {
-    const CACHE_ID_LAYOUT = 'layout';
+    public const CACHE_ID_LAYOUT = 'layout';
 
     /** @var TypeListInterface $typeList */
     private $typeList;

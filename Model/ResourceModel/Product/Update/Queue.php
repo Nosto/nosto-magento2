@@ -43,7 +43,7 @@ class Queue extends AbstractDb
 {
     protected $_serializableFields = [ProductUpdateQueueInterface::PRODUCT_IDS => [[], []]];
 
-    const TABLE_NAME = 'nosto_tagging_product_update_queue';
+    public const TABLE_NAME = 'nosto_tagging_product_update_queue';
     /**
      * Initialize resource model
      *

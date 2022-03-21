@@ -44,7 +44,7 @@ use Nosto\Tagging\Model\Meta\Oauth\Builder as NostoOauthBuilder;
 
 class Connect extends Base
 {
-    const ADMIN_RESOURCE = 'Nosto_Tagging::system_nosto_account';
+    public const ADMIN_RESOURCE = 'Nosto_Tagging::system_nosto_account';
     private $result;
     private $oauthMetaBuilder;
     private $nostoHelperScope;

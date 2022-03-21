@@ -55,8 +55,8 @@ use Nosto\Tagging\Util\PagingIterator;
 
 class SyncService extends AbstractService
 {
-    const BENCHMARK_SYNC_NAME = 'nosto_product_upsert';
-    const BENCHMARK_SYNC_BREAKPOINT = 1;
+    public const BENCHMARK_SYNC_NAME = 'nosto_product_upsert';
+    public const BENCHMARK_SYNC_BREAKPOINT = 1;
 
     /** @var NostoHelperAccount */
     private $nostoHelperAccount;

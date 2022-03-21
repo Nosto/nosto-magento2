@@ -64,7 +64,7 @@ class Cart extends Action
     /**
      * The name of the hash parameter to look from URL
      */
-    const HASH_PARAM = 'h';
+    public const HASH_PARAM = 'h';
 
     private $context;
     private $moduleManager;

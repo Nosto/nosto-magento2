@@ -54,7 +54,7 @@ use Nosto\Tagging\Model\Product\CollectionBuilder;
  */
 class Product extends Base
 {
-    const PARAM_PREVIEW = 'preview';
+    public const PARAM_PREVIEW = 'preview';
 
     /** @var CollectionBuilder  */
     private $nostoCollectionBuilder;

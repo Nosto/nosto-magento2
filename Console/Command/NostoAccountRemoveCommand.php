@@ -50,7 +50,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 class NostoAccountRemoveCommand extends Command
 {
-    const SCOPE_CODE = 'scope-code';
+    public const SCOPE_CODE = 'scope-code';
 
     /**
      * @var NostoHelperAccount

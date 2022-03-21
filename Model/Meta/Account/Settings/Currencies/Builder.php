@@ -65,7 +65,7 @@ class Builder
     private $nostoCurrencyHelper;
 
     /* List of zero decimal currencies in compliance with ISO-4217 */
-    const ZERO_DECIMAL_CURRENCIES = [
+    public const ZERO_DECIMAL_CURRENCIES = [
         'XOF',
         'BIF',
         'XAF',

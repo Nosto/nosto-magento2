@@ -58,7 +58,7 @@ use Symfony\Component\Console\Input\InputInterface;
  */
 class QueueProcessorIndexer extends AbstractIndexer
 {
-    const INDEXER_ID = 'nosto_index_product_queue_processor';
+    public const INDEXER_ID = 'nosto_index_product_queue_processor';
 
     /** @var QueueProcessorService */
     private $queueProcessorService;

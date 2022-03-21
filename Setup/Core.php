@@ -47,10 +47,10 @@ use Zend_Db_Exception;
 
 abstract class Core
 {
-    const PRODUCT_DATA_MAX_LENGTH = '32M';
+    public const PRODUCT_DATA_MAX_LENGTH = '32M';
 
-    const CL_TABLE_INDEX_PRODUCT_INVALIDATE = "nosto_index_product_invalidate_cl";
-    const CL_TABLE_INDEX_PRODUCT_DATA = "nosto_index_product_data_cl";
+    public const CL_TABLE_INDEX_PRODUCT_INVALIDATE = "nosto_index_product_invalidate_cl";
+    public const CL_TABLE_INDEX_PRODUCT_DATA = "nosto_index_product_data_cl";
 
     /**
      * Creates a table for mapping Nosto customer to Magento's cart & orders

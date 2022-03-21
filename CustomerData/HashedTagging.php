@@ -42,7 +42,7 @@ abstract class HashedTagging
     /**
      * @var string the algorithm to use for hashing visitor id.
      */
-    const VISITOR_HASH_ALGO = 'sha256';
+    public const VISITOR_HASH_ALGO = 'sha256';
 
     /**
      * Return the checksum for for the customer tagging i.e hashed cookie identifier or HCID for
