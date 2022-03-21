@@ -1,5 +1,8 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 6.0.0
+* Compatibility with Magento 2.4.4
+
 ### 5.5.0
 * Remove personally identifiable information from the module
 
