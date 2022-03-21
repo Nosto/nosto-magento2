@@ -39,7 +39,7 @@
   ],
   "require": {
     "nosto/php-sdk": ">=5.6.0",
-    "php": ">=7.0.0",
+    "php": ">=7.4.0",
     "magento/framework": ">=101.0.6|~102.0",
     "ext-json": "*"
   },
