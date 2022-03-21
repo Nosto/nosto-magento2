@@ -34,77 +34,81 @@
  *
  */
 
-namespace Nosto\Tagging\Setup;
+namespace Nosto\Tagging\Setup\Patch\Data;
 
-use Exception;
 use Magento\Customer\Model\Customer;
-use Magento\Customer\Model\CustomerFactory;
-use Magento\Customer\Model\ResourceModel\Customer as CustomerResource;
-use Magento\Customer\Model\ResourceModel\Customer\CollectionFactory as CustomerCollectionFactory;
 use Magento\Customer\Setup\CustomerSetupFactory;
 use Magento\Eav\Model\Entity\Attribute\SetFactory as AttributeSetFactory;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Setup\ModuleDataSetupInterface;
-use Nosto\NostoException;
+use Magento\Framework\Setup\Patch\DataPatchInterface;
+use Magento\Framework\Setup\Patch\PatchVersionInterface;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
-use Nosto\Tagging\Logger\Logger;
-use Nosto\Tagging\Util\Customer as CustomerUtil;
-use Nosto\Tagging\Util\PagingIterator;
 use Zend_Validate_Exception;
+use Exception;
 
-/**
- * @deprecated to be removed. setup/patch/data is in use
- */
-abstract class CoreData
+class AddCustomerReference implements DataPatchInterface, PatchVersionInterface
 {
-
+    private $customerReferenceForms = ['adminhtml_customer'];
     /** @var CustomerSetupFactory */
     private $customerSetupFactory;
 
     /** @var AttributeSetFactory */
     private $attributeSetFactory;
 
-    private $customerReferenceForms = ['adminhtml_customer'];
-
-    /** @var CustomerFactory */
-    private $customerCollectionFactory;
-
-    /** @var CustomerResource */
-    private $customerResource;
-
-    /** @var Logger */
-    private $logger;
+    /** @var ModuleDataSetupInterface */
+    private $moduleDataSetup;
 
     /**
-     * CoreData constructor.
      * @param CustomerSetupFactory $customerSetupFactory
-     * @param AttributeSetFactory $attributeSetFactory
-     * @param CustomerCollectionFactory $customerCollectionFactory
-     * @param CustomerResource $customerResource
-     * @param Logger $logger
+     * @param ModuleDataSetupInterface $moduleDataSetup
      */
     public function __construct(
         CustomerSetupFactory $customerSetupFactory,
         AttributeSetFactory $attributeSetFactory,
-        CustomerCollectionFactory $customerCollectionFactory,
-        CustomerResource $customerResource,
-        Logger $logger
-    ) {
+        ModuleDataSetupInterface $moduleDataSetup
+    )
+    {
         $this->customerSetupFactory = $customerSetupFactory;
         $this->attributeSetFactory = $attributeSetFactory;
-        $this->customerCollectionFactory = $customerCollectionFactory;
-        $this->customerResource = $customerResource;
-        $this->logger = $logger;
+        $this->moduleDataSetup = $moduleDataSetup;
     }
 
     /**
-     * @param ModuleDataSetupInterface $setup
+     * {@inheritdoc}
+     */
+    public function getAliases(): array
+    {
+        return [];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public static function getDependencies(): array
+    {
+        return [];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function apply()
+    {
+        $this->moduleDataSetup->getConnection()->startSetup();
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $this->addCustomerReference();
+        $this->moduleDataSetup->getConnection()->endSetup();
+    }
+
+    /**
      * @throws LocalizedException
      * @throws Zend_Validate_Exception
+     * @throws Exception
      */
-    public function addCustomerReference(ModuleDataSetupInterface $setup)
+    public function addCustomerReference()
     {
-        $customerEavSetup = $this->customerSetupFactory->create(['setup' => $setup]);
+        $customerEavSetup = $this->customerSetupFactory->create(['setup' => $this->moduleDataSetup]);
 
         $customerEntity = $customerEavSetup->getEavConfig()->getEntityType(Customer::ENTITY);
         $attributeSetId = (int)$customerEntity->getDefaultAttributeSetId();
@@ -134,6 +138,7 @@ abstract class CoreData
             NostoHelperData::NOSTO_CUSTOMER_REFERENCE_ATTRIBUTE_NAME
         );
 
+        /** @noinspection NullPointerExceptionInspection */
         $attribute->addData(
             [
                 'attribute_set_id' => $attributeSetId,
@@ -142,69 +147,17 @@ abstract class CoreData
             ]
         );
 
-        /** @noinspection PhpUnhandledExceptionInspection */
         /** @noinspection PhpDeprecationInspection */
+        /** @noinspection NullPointerExceptionInspection */
         $attribute->save();
     }
 
     /**
-     * Sets the attribute Nosto customer reference to be only editable in admin
-     *
-     * @param ModuleDataSetupInterface $setup
-     * @throws LocalizedException
-     * @throws Exception
+     * {@inheritdoc}
      */
-    public function alterCustomerReferenceNonEditable(ModuleDataSetupInterface $setup)
+    public static function getVersion(): string
     {
-        $customerSetup = $this->customerSetupFactory->create(['setup' => $setup]);
-        $attribute = $customerSetup->getEavConfig()->getAttribute(
-            Customer::ENTITY,
-            NostoHelperData::NOSTO_CUSTOMER_REFERENCE_ATTRIBUTE_NAME
-        );
-        $attribute->addData(
-            [
-                'used_in_forms' => $this->customerReferenceForms
-            ]
-        );
-        $attribute->save();
+        return '6.0.0';
     }
 
-    /**
-     * @throws LocalizedException
-     * @throws NostoException
-     */
-    public function populateCustomerReference()
-    {
-        $customerCollection = $this->customerCollectionFactory->create()
-            ->addAttributeToSelect(NostoHelperData::NOSTO_CUSTOMER_REFERENCE_ATTRIBUTE_NAME)
-            ->setPageSize(1000);
-        $iterator = new PagingIterator($customerCollection);
-        /* @var Customer $customer */
-        foreach ($iterator as $page) {
-            foreach ($page as $customer) {
-                if (!$customer->getData(NostoHelperData::NOSTO_CUSTOMER_REFERENCE_ATTRIBUTE_NAME)) {
-                    $customer->setData(
-                        NostoHelperData::NOSTO_CUSTOMER_REFERENCE_ATTRIBUTE_NAME,
-                        CustomerUtil::generateCustomerReference($customer)
-                    );
-                    try {
-                        $this->customerResource->saveAttribute(
-                            $customer,
-                            NostoHelperData::NOSTO_CUSTOMER_REFERENCE_ATTRIBUTE_NAME
-                        );
-                    } catch (Exception $e) {
-                        $this->logger->exception($e);
-                    }
-                }
-            }
-        }
-    }
-
-    /**
-     * @return Logger
-     */
-    public function getLogger()
-    {
-        return $this->logger;
-    }
 }
