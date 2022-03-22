@@ -61,14 +61,14 @@ class AddCustomerReference implements DataPatchInterface, PatchVersionInterface
 
     /**
      * @param CustomerSetupFactory $customerSetupFactory
+     * @param AttributeSetFactory $attributeSetFactory
      * @param ModuleDataSetupInterface $moduleDataSetup
      */
     public function __construct(
         CustomerSetupFactory $customerSetupFactory,
         AttributeSetFactory $attributeSetFactory,
         ModuleDataSetupInterface $moduleDataSetup
-    )
-    {
+    ) {
         $this->customerSetupFactory = $customerSetupFactory;
         $this->attributeSetFactory = $attributeSetFactory;
         $this->moduleDataSetup = $moduleDataSetup;
@@ -159,5 +159,4 @@ class AddCustomerReference implements DataPatchInterface, PatchVersionInterface
     {
         return '6.0.0';
     }
-
 }
