@@ -52,9 +52,9 @@ class Simple
     /**
      * @param SalesItem|Item $item
      * @param $parentIds
-     * @return string|null
+     * @return string
      */
-    public function buildName($item, $parentIds): ?string
+    public function buildName($item, $parentIds): string
     {
         if (!$item instanceof Item && !$item instanceof SalesItem) {
             throw new InvalidArgumentException(
