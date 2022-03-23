@@ -4,7 +4,7 @@ PROJECT_NAME=$(cat composer.json| jq --raw-output .name)
 APP_DIR=$(pwd)
 TMP_DIR=$(mktemp -d -t ci-XXXXXXXXXX)
 cd $TMP_DIR || exit 0
-composer create-project magento/community-edition=2.3.2 .
+composer create-project magento/community-edition=2.4.3 .
 composer config minimum-stability dev
 composer config prefer-stable true
 composer require --no-update ${PROJECT_NAME}:dev-${BRANCH_NAME}
