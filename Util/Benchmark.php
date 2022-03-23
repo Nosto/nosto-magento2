@@ -40,11 +40,16 @@ use Nosto\NostoException;
 
 class Benchmark
 {
-    private $times = [];
-    private $ticks = [];
-    private $checkpoints = [];
-    private $checkpointTimes = [];
-    private static $instance;
+    /** @var array */
+    private array $times = [];
+    /** @var array */
+    private array $ticks = [];
+    /** @var array */
+    private array $checkpoints = [];
+    /** @var array */
+    private array $checkpointTimes = [];
+    /** @var Benchmark */
+    private static Benchmark $instance;
 
     /**
      * Prevent instance
@@ -56,9 +61,10 @@ class Benchmark
 
     /**
      * Returns singleton instance
+     *
      * @return Benchmark
      */
-    public static function getInstance()
+    public static function getInstance(): Benchmark
     {
         if (self::$instance === null) {
             self::$instance = new Benchmark();
@@ -67,6 +73,8 @@ class Benchmark
     }
 
     /**
+     * Start instrumentation
+     *
      * @param string $name
      * @param int $checkpoint
      */
@@ -78,12 +86,20 @@ class Benchmark
         $this->ticks[$name] = 0;
     }
 
+    /**
+     * Reset timer
+     *
+     * @param $name
+     * @return void
+     */
     public function resetTimer($name)
     {
         $this->times[$name] = microtime(true);
     }
 
     /**
+     * Stop instrumentation
+     *
      * @param string $name
      */
     public function stopInstrumentation(string $name)
@@ -92,6 +108,8 @@ class Benchmark
     }
 
     /**
+     * Return elapsed time for timer
+     *
      * @param string $name
      * @return float
      */
@@ -131,7 +149,7 @@ class Benchmark
      * @return array
      * @throws NostoException
      */
-    public function getCheckpointTimes(string $name)
+    public function getCheckpointTimes(string $name): array
     {
         if (!isset($this->checkpointTimes[$name])) {
             throw new NostoException(sprintf('No breakpoints found for %s', $name));
@@ -146,7 +164,7 @@ class Benchmark
      * @return int
      * @throws NostoException
      */
-    public function getTickCount(string $name)
+    public function getTickCount(string $name): int
     {
         if (!isset($this->ticks[$name])) {
             throw new NostoException(sprintf('No ticks defined for %s', $name));
@@ -161,7 +179,7 @@ class Benchmark
      * @return float
      * @throws NostoException
      */
-    public function getAvgTickTime(string $name)
+    public function getAvgTickTime(string $name): float
     {
         if (!isset($this->checkpointTimes[$name])) {
             throw new NostoException(sprintf('No breakpoints found for %s', $name));
@@ -177,7 +195,7 @@ class Benchmark
      * @return float
      * @throws NostoException
      */
-    public function getTotalTime(string $name)
+    public function getTotalTime(string $name): float
     {
         if (!isset($this->checkpointTimes[$name])) {
             throw new NostoException(sprintf('No breakpoints found for %s', $name));
