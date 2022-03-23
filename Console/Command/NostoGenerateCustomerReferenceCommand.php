@@ -98,8 +98,8 @@ class NostoGenerateCustomerReferenceCommand extends Command
                  * Argument is of type \Magento\Framework\DataObject
                  * but CustomerInterface|\Magento\Customer\Model\Backend\Customer\Interceptor is expected
                  */
-                /** @phan-suppress-next-line PhanTypeMismatchArgumentSuperType */
                 $customerUtil = new CustomerUtil();
+                /** @phan-suppress-next-line PhanTypeMismatchArgumentSuperType */
                 $customerReference = $customerUtil->generateCustomerReference($customer);
                 /** @noinspection PhpUndefinedMethodInspection */
                 $customer->setData(
