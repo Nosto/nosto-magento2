@@ -299,7 +299,8 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
      */
     public function allowFullExecution(): bool
     {
-        return IndexerUtil::isCalledFromSetupUpgrade($this->input) === false;
+        $indexerUtil = new IndexerUtil();
+        return $indexerUtil->isCalledFromSetupUpgrade($this->input) === false;
     }
 
     /**

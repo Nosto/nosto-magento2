@@ -47,7 +47,7 @@ class Customer
      * @param CustomerInterface|CustomerInterceptor $customer
      * @return string
      */
-    public static function generateCustomerReference($customer)
+    public function generateCustomerReference($customer)
     {
         return hash(
             self::CUSTOMER_REFERENCE_HASH_ALGO,

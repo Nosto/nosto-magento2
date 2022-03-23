@@ -89,7 +89,7 @@ class CartTagging extends HashedTagging implements SectionSourceInterface
     {
         $nostoCustomerId = $this->cookieManager->getCookie(NostoCustomer::COOKIE_NAME);
         $data = [
-            'hcid' => parent::generateVisitorChecksum($nostoCustomerId),
+            'hcid' => $this->generateVisitorChecksum($nostoCustomerId),
             'items' => [],
             'itemCount' => 0,
             'restore_cart_url' => ''

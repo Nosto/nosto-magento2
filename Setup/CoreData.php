@@ -183,9 +183,10 @@ abstract class CoreData
         foreach ($iterator as $page) {
             foreach ($page as $customer) {
                 if (!$customer->getData(NostoHelperData::NOSTO_CUSTOMER_REFERENCE_ATTRIBUTE_NAME)) {
+                    $customerUtil = new CustomerUtil();
                     $customer->setData(
                         NostoHelperData::NOSTO_CUSTOMER_REFERENCE_ATTRIBUTE_NAME,
-                        CustomerUtil::generateCustomerReference($customer)
+                        $customerUtil->generateCustomerReference($customer)
                     );
                     try {
                         $this->customerResource->saveAttribute(

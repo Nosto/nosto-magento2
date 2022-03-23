@@ -180,7 +180,7 @@ class Repository implements CustomerRepositoryInterface
          */
         /** @phan-suppress-next-next-line PhanTypeMismatchReturnSuperType */
         /** @noinspection PhpIncompatibleReturnTypeInspection */
-        return RepositoryUtil::search(
+        return (new RepositoryUtil())->search(
             $collection,
             $searchCriteria,
             $searchResults

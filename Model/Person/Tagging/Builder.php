@@ -203,7 +203,8 @@ class Builder extends PersonBuilder
             );
 
             if ($customerReference === null) {
-                $customerReference = CustomerUtil::generateCustomerReference($customer);
+                $customerUtil = new CustomerUtil();
+                $customerReference = $customerUtil->generateCustomerReference($customer);
                 $customer->setCustomAttribute(
                     NostoHelperData::NOSTO_CUSTOMER_REFERENCE_ATTRIBUTE_NAME,
                     $customerReference

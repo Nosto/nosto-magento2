@@ -71,7 +71,8 @@ class Save implements ObserverInterface
             );
 
             if ($customerReference === null) {
-                $customerReference = CustomerUtil::generateCustomerReference($customer);
+                $customerUtil = new CustomerUtil();
+                $customerReference = $customerUtil->generateCustomerReference($customer);
                 $customer->setData(
                     NostoHelperData::NOSTO_CUSTOMER_REFERENCE_ATTRIBUTE_NAME,
                     $customerReference

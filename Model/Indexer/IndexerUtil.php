@@ -53,7 +53,7 @@ class IndexerUtil
      * @param InputInterface $input
      * @return bool
      */
-    public static function isCalledFromSetupUpgrade(InputInterface $input)
+    public function isCalledFromSetupUpgrade(InputInterface $input): bool
     {
         try {
             $parts = explode(':', $input->getFirstArgument());
