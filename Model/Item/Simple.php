@@ -90,6 +90,6 @@ class Simple
         if (!empty($optNames)) {
             $name .= ' (' . implode(', ', $optNames) . ')';
         }
-        return $name;
+        return (string)$name;
     }
 }
