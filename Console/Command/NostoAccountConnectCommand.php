@@ -213,7 +213,7 @@ class NostoAccountConnectCommand extends Command
      */
     private function getTokensFromInput(InputInterface $input, SymfonyStyle $io)
     {
-        $tokens = array();
+        $tokens = [];
 
         $ssoToken = $input->getOption(Token::API_SSO . self::TOKEN_SUFFIX) ?:
             $io->ask('Enter SSO Token: ');
