@@ -44,7 +44,6 @@ use Nosto\Tagging\Model\ResourceModel\Product\Update\Queue as QueueResource;
 
 /**
  * Plugin for product updates
- * @package Nosto\Tagging\Plugin
  */
 class ProductQueueUpdate
 {

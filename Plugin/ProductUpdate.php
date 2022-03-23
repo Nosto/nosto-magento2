@@ -47,7 +47,6 @@ use Nosto\Tagging\Logger\Logger as NostoLogger;
 
 /**
  * Plugin for product updates
- * @package Nosto\Tagging\Plugin
  */
 class ProductUpdate
 {
