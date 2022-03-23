@@ -47,7 +47,7 @@ class Simple extends SimpleItem
      * @param Item $item the ordered item
      * @return string the name of the product
      */
-    public static function buildItemName(Item $item)
+    public function buildItemName(Item $item): string
     {
         if ($item->getProduct()) {
             $type = $item->getProduct()->getTypeInstance();
@@ -55,6 +55,6 @@ class Simple extends SimpleItem
         } else {
             $parentIds = 0;
         }
-        return self::buildName($item, $parentIds);
+        return $this->buildName($item, $parentIds);
     }
 }

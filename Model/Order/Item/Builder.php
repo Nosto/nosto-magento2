@@ -49,6 +49,8 @@ use Nosto\Tagging\Model\Item\Downloadable;
 use Nosto\Tagging\Model\Item\Giftcard;
 use Nosto\Tagging\Model\Item\Virtual;
 use Throwable;
+use Nosto\Tagging\Model\Item\Grouped as GroupedItem;
+use Nosto\Tagging\Model\Order\Item\Grouped as OrderGroupedItem;
 
 class Builder
 {
@@ -105,20 +107,23 @@ class Builder
             $productType
         ));
         switch ($productType) {
-            case Simple::getType():
-            case Virtual::getType():
-            case Downloadable::getType():
-            case Giftcard::getType():
-                $nostoItem->setName(Simple::buildItemName($item));
+            case Simple::TYPE:
+            case Virtual::TYPE:
+            case Downloadable::TYPE:
+            case Giftcard::TYPE:
+                $simple = new Simple();
+                $nostoItem->setName($simple->buildItemName($item));
                 break;
-            case Configurable::getType():
-                $nostoItem->setName(Configurable::buildItemName($item));
+            case Configurable::TYPE:
+                $configurable = new Configurable();
+                $nostoItem->setName($configurable->buildItemName($item));
                 break;
-            case Bundle::getType():
-                $nostoItem->setName(Bundle::buildItemName($item));
+            case Bundle::TYPE:
+                $bundle = new Bundle();
+                $nostoItem->setName($bundle->buildItemName($item));
                 break;
-            case Grouped::getType():
-                $nostoItem->setName((new Grouped($this->productRepository))->buildItemName($item));
+            case GroupedItem::TYPE:
+                $nostoItem->setName((new OrderGroupedItem($this->productRepository))->buildItemName($item));
                 break;
         }
         try {
@@ -196,7 +201,7 @@ class Builder
      */
     public function buildSkuId(Item $item)
     {
-        if ($item->getProductType() === Configurable::getType()) {
+        if ($item->getProductType() === Configurable::TYPE) {
             $children = $item->getChildrenItems();
             //An item with bundle product and group product may have more than 1 child.
             //But configurable product item should have max 1 child item.

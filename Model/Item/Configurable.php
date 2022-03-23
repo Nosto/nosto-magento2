@@ -40,13 +40,6 @@ use Magento\ConfigurableProduct\Model\Product\Type\Configurable as Type;
 
 class Configurable
 {
-    /**
-     * Returns the product type for configurable item
-     *
-     * @return string
-     */
-    public static function getType()
-    {
-        return Type::TYPE_CODE;
-    }
+    /** Product type for configurable item */
+    public const TYPE = Type::TYPE_CODE;
 }

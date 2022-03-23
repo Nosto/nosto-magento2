@@ -92,7 +92,7 @@ class Builder
         $settings = new Settings();
 
         try {
-            $settings->setTitle(self::buildTitle($store));
+            $settings->setTitle($this->buildTitle($store));
             $settings->setFrontPageUrl($this->buildURL($store));
             $settings->setCurrencyCode($this->nostoHelperCurrency->getTaggingCurrency($store)->getCode());
             $settings->setLanguageCode(substr($store->getConfig('general/locale/code'), 0, 2));
@@ -141,7 +141,7 @@ class Builder
      * @return string the complete common name of the store
      * @throws NoSuchEntityException
      */
-    private static function buildTitle(Store $store)
+    private function buildTitle(Store $store): string
     {
         return implode(
             ' - ',
