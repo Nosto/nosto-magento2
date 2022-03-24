@@ -165,10 +165,11 @@ class Builder extends PersonBuilder
     private function getCustomerGroupName(CustomerInterface $customer)
     {
         $groupId = (int)$customer->getGroupId();
-        if ($groupId === null) {
+        try {
+            return $this->groupRepository->getById($groupId)->getCode();
+        } catch (NoSuchEntityException $e) {
             return null;
         }
-        return $this->groupRepository->getById($groupId)->getCode();
     }
 
     /**

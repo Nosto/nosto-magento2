@@ -91,7 +91,6 @@ class CartTagging extends HashedTagging implements SectionSourceInterface
         $data = [
             'hcid' => $this->generateVisitorChecksum($nostoCustomerId),
             'items' => [],
-            'itemCount' => 0,
             'restore_cart_url' => ''
         ];
         $cart = $this->cartHelper->getCart();

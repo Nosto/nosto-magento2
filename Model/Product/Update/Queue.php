@@ -151,9 +151,9 @@ class Queue extends AbstractModel implements ProductUpdateQueueInterface
     /**
      * @inheritDoc
      */
-    public function setId($id)
+    public function setId($value)
     {
-        return $this->setData(self::ID, $id);
+        return $this->setData(self::ID, $value);
     }
 
     /**
