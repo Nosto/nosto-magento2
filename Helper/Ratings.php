@@ -66,7 +66,7 @@ class Ratings extends AbstractHelper
     /** @var RatingsFactory $ratingsFactory */
     private RatingsFactory $ratingsFactory;
     private Registry $registry;
-    private ProductInterface $originalProduct;
+    private ?ProductInterface $originalProduct;
 
     /**
      * Ratings constructor.
