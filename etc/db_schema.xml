@@ -18,7 +18,6 @@
         <!--Nosto customer and order mapping-->
         <index referenceId="NOSTO_CUSTOMER_ORDER_MAPPING" indexType="btree">
             <column name="quote_id"/>
-            <column name="nosto_id"/>
         </index>
     </table>
 
