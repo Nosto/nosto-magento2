@@ -191,5 +191,5 @@ abstract class AbstractAttributeService implements AttributeServiceInterface
     /**
      * @inheritDoc
      */
-    abstract public function getAttributeValueByAttributeCode(Product $product, $attributeCode);
+    abstract public function getAttributeValueByAttributeCode(Product $product, string $attributeCode);
 }

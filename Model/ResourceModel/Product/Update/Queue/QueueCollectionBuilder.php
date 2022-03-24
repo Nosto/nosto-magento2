@@ -141,7 +141,7 @@ class QueueCollectionBuilder
      * @param string $sortOrder
      * @return $this
      */
-    public function setSort($field, $sortOrder)
+    public function setSort(string $field, string $sortOrder)
     {
         $this->collection->setOrder($field, $sortOrder);
         return $this;

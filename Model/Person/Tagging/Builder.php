@@ -95,16 +95,16 @@ class Builder extends PersonBuilder
      * @return Customer
      */
     public function buildObject(
-        $firstName,
-        $lastName,
-        $email,
-        $phone = null,
-        $postCode = null,
-        $country = null,
-        $customerGroup = null,
-        $dateOfBirth = null,
-        $gender = null,
-        $customerReference = null
+        string $firstName,
+        string $lastName,
+        string $email,
+        string $phone = null,
+        string $postCode = null,
+        string $country = null,
+        string $customerGroup = null,
+        string $dateOfBirth = null,
+        string $gender = null,
+        string $customerReference = null
     ) {
         $customer = new Customer();
         $customer->setFirstName($firstName);

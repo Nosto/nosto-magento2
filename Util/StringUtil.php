@@ -44,7 +44,7 @@ class StringUtil
      * @param string $string
      * @return string
      */
-    public function stripWhitespaceAndLinebreaks($string): string
+    public function stripWhitespaceAndLinebreaks(string $string): string
     {
         return preg_replace(
             '/[ \t]+/',

@@ -52,7 +52,7 @@ abstract class HashedTagging
      * @param string $string
      * @return string
      */
-    public function generateVisitorChecksum($string)
+    public function generateVisitorChecksum(string $string)
     {
         return hash(self::VISITOR_HASH_ALGO, $string);
     }

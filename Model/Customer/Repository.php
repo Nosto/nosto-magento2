@@ -102,7 +102,7 @@ class Repository implements CustomerRepositoryInterface
      *
      * @return CustomerInterface|null
      */
-    public function getOneByNostoIdAndQuoteId($nostoId, $quoteId)
+    public function getOneByNostoIdAndQuoteId(string $nostoId, int $quoteId)
     {
         $searchCriteria = $this->searchCriteriaBuilder
             ->addFilter(CustomerInterface::NOSTO_ID, $nostoId)
@@ -126,7 +126,7 @@ class Repository implements CustomerRepositoryInterface
      *
      * @return CustomerInterface|null
      */
-    public function getOneByQuoteId($quoteId)
+    public function getOneByQuoteId(int $quoteId)
     {
         $searchCriteria = $this->searchCriteriaBuilder
             ->addFilter(NostoCustomer::QUOTE_ID, $quoteId)
@@ -149,7 +149,7 @@ class Repository implements CustomerRepositoryInterface
      *
      * @return CustomerInterface|null
      */
-    public function getOneByRestoreCartHash($hash)
+    public function getOneByRestoreCartHash(string $hash)
     {
         $searchCriteria = $this->searchCriteriaBuilder
             ->addFilter(CustomerInterface::RESTORE_CART_HASH, $hash)

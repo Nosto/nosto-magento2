@@ -86,7 +86,7 @@ abstract class AbstractBulkConsumer implements BulkConsumerInterface
      * @throws Exception
      * @suppress PhanUndeclaredClassConstant
      */
-    public function processOperation($operation)
+    public function processOperation(OperationInterface $operation)
     {
         $errorCode = null;
         if ($operation instanceof OperationInterface) {

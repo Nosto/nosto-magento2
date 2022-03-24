@@ -99,7 +99,7 @@ class ImageService
      * @param Store $store
      * @return string
      */
-    public function finalizeImageUrl($url, Store $store)
+    public function finalizeImageUrl(string $url, Store $store)
     {
         if ($this->nostoDataHelper->getRemovePubDirectoryFromProductImageUrl($store)) {
             return (new UrlUtil())->removePubFromUrl($url);

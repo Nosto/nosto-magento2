@@ -83,7 +83,7 @@ class Order extends Base
      * @return AbstractCollection|OrderCollection
      * @throws NostoException
      */
-    public function buildExportCollection(Store $store, $limit = 100, $offset = 0)
+    public function buildExportCollection(Store $store, int $limit = 100, int $offset = 0)
     {
         return $this->nostoOrderCollection->buildMany($store, $limit, $offset);
     }

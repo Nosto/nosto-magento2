@@ -104,7 +104,7 @@ class InvalidAccount implements MessageInterface
      *
      * @param array $invalidStores
      */
-    private function buildMessage($invalidStores)
+    private function buildMessage(array $invalidStores)
     {
         $message = '';
 

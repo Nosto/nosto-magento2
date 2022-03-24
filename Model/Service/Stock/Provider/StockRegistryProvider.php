@@ -84,7 +84,7 @@ class StockRegistryProvider extends MagentoStockRegistryProvider
      * @return StockStatusCollectionInterface
      * @suppress PhanTypeMismatchArgument
      */
-    public function getStockStatuses(array $productIds, $scopeId = self::DEFAULT_STOCK_SCOPE)
+    public function getStockStatuses(array $productIds, int $scopeId = self::DEFAULT_STOCK_SCOPE)
     {
         $criteria = $this->stockStatusCriteriaFactory->create();
         /**

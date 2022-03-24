@@ -91,7 +91,7 @@ class Customer extends AbstractModel implements CustomerInterface
     /**
      * @inheritDoc
      */
-    public function setCustomerId($customerId)
+    public function setCustomerId(int $customerId)
     {
         return $this->setData(self::CUSTOMER_ID, $customerId);
     }
@@ -99,7 +99,7 @@ class Customer extends AbstractModel implements CustomerInterface
     /**
      * @inheritDoc
      */
-    public function setQuoteId($quoteId)
+    public function setQuoteId(int $quoteId)
     {
         return $this->setData(self::QUOTE_ID, $quoteId);
     }
@@ -107,7 +107,7 @@ class Customer extends AbstractModel implements CustomerInterface
     /**
      * @inheritDoc
      */
-    public function setNostoId($nostoId)
+    public function setNostoId(string $nostoId)
     {
         return $this->setData(self::NOSTO_ID, $nostoId);
     }
@@ -149,7 +149,7 @@ class Customer extends AbstractModel implements CustomerInterface
     /**
      * @inheritDoc
      */
-    public function setRestoreCartHash($restoreCartHash)
+    public function setRestoreCartHash(string $restoreCartHash)
     {
         return $this->setData(self::RESTORE_CART_HASH, $restoreCartHash);
     }

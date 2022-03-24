@@ -80,7 +80,7 @@ abstract class AbstractService
      * @param string $serviceName
      * @throws MemoryOutOfBoundsException
      */
-    public function checkMemoryConsumption($serviceName)
+    public function checkMemoryConsumption(string $serviceName)
     {
         $maxMemPercentage = $this->nostoDataHelper->getIndexerMemory();
         if (NostoMemUtil::getPercentageUsedMem() >= $maxMemPercentage) {
@@ -111,7 +111,7 @@ abstract class AbstractService
      * @return float|null
      * @throws Exception
      */
-    public function tickBenchmark(string $name, $writeLog = false)
+    public function tickBenchmark(string $name, bool $writeLog = false)
     {
         $elapsed = Benchmark::getInstance()->tick($name);
         if ($elapsed !== null) {
@@ -138,7 +138,7 @@ abstract class AbstractService
      * @param Store $store
      * @param object|null $sourceClass
      */
-    public function logBenchmarkSummary($name, Store $store, $sourceClass = null)
+    public function logBenchmarkSummary(string $name, Store $store, ?object $sourceClass = null)
     {
         try {
             Benchmark::getInstance()->stopInstrumentation($name);
@@ -190,7 +190,7 @@ abstract class AbstractService
      * @param string $message
      * @param array $context
      */
-    public function logDebug($message, $context = [])
+    public function logDebug(string $message, array $context = [])
     {
         $this->getLogger()->debugWithSource($message, $context, $this);
     }
@@ -201,7 +201,7 @@ abstract class AbstractService
      * @param string $message
      * @param array $context
      */
-    public function logInfo($message, array $context = [])
+    public function logInfo(string $message, array $context = [])
     {
         $this->getLogger()->infoWithSource($message, $context, $this);
     }
@@ -213,7 +213,7 @@ abstract class AbstractService
      * @param Store $store
      * @param array $context
      */
-    public function logDebugWithStore($message, Store $store, array $context = [])
+    public function logDebugWithStore(string $message, Store $store, array $context = [])
     {
         $context['storeId'] = $store->getId();
         $this->logDebug($message, $context);
@@ -226,7 +226,7 @@ abstract class AbstractService
      * @param Store $store
      * @param array $context
      */
-    public function logInfoWithStore($message, Store $store, array $context = [])
+    public function logInfoWithStore(string $message, Store $store, array $context = [])
     {
         $context['storeId'] = $store->getId();
         $this->logInfo($message, $context);

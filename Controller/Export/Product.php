@@ -82,7 +82,7 @@ class Product extends Base
      * @return AbstractCollection|ProductCollection
      * @throws NostoException
      */
-    public function buildExportCollection(Store $store, $limit = 100, $offset = 0)
+    public function buildExportCollection(Store $store, int $limit = 100, int $offset = 0)
     {
         return $this->nostoCollectionBuilder->buildMany($store, $limit, $offset);
     }

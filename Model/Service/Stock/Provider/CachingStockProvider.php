@@ -64,7 +64,7 @@ class CachingStockProvider implements StockProviderInterface
      */
     public function __construct(
         StockProviderInterface $stockProvider,
-        $maxCacheSize
+        int $maxCacheSize
     ) {
         $this->stockProvider = $stockProvider;
         $this->maxCacheSize = $maxCacheSize;
@@ -125,7 +125,7 @@ class CachingStockProvider implements StockProviderInterface
      * @param Website $website
      * @param bool $inStock
      */
-    private function saveToInStockCache(Product $product, Website $website, $inStock)
+    private function saveToInStockCache(Product $product, Website $website, bool $inStock)
     {
         if (empty($this->inStockCache[$website->getId()])) {
             $this->inStockCache[$website->getId()] = [];
@@ -161,7 +161,7 @@ class CachingStockProvider implements StockProviderInterface
      * @param Website $website
      * @param int $quantity
      */
-    private function saveQuantityToCache($productId, Website $website, $quantity)
+    private function saveQuantityToCache(int $productId, Website $website, int $quantity)
     {
         if (empty($this->quantityCache[$website->getId()])) {
             $this->quantityCache[$website->getId()] = [];
@@ -179,7 +179,7 @@ class CachingStockProvider implements StockProviderInterface
      * @param Website $website
      * @return int|null
      */
-    private function getQuantityFromCache($productId, Website $website)
+    private function getQuantityFromCache(int $productId, Website $website)
     {
         if (!isset($this->quantityCache[$website->getId()][$productId])) {
             return null;
@@ -202,7 +202,7 @@ class CachingStockProvider implements StockProviderInterface
      * @param Website $website
      * @return bool
      */
-    private function existsInQuantityCache($productId, Website $website)
+    private function existsInQuantityCache(int $productId, Website $website)
     {
         return isset($this->quantityCache[$website->getId()][$productId]);
     }

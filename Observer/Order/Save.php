@@ -101,7 +101,7 @@ class Save implements ObserverInterface
         IndexerRegistry $indexerRegistry,
         NostoHelperUrl $nostoHelperUrl,
         MagentoCustomerRepository $magentoCustomerRepository,
-        $intervalForNew
+        int $intervalForNew
     ) {
         $this->nostoHelperData = $nostoHelperData;
         $this->nostoHelperAccount = $nostoHelperAccount;

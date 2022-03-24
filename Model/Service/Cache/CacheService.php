@@ -75,7 +75,7 @@ class CacheService extends AbstractService
         NostoAccountHelper $nostoAccountHelper,
         ProductSerializerInterface $productSerializer,
         ProductDataInterface $productDataCache,
-        $lifeTime
+        int $lifeTime
     ) {
         parent::__construct($nostoDataHelper, $nostoAccountHelper, $logger);
         $this->productSerializer = $productSerializer;
@@ -134,7 +134,7 @@ class CacheService extends AbstractService
      * @param int $storeId
      * @return Product|null
      */
-    private function getById($productId, $storeId)
+    private function getById(int $productId, int $storeId)
     {
         $cachedProduct = $this->productDataCache->load($this->generateCacheKey($productId, $storeId));
         return $cachedProduct ? $this->productSerializer->fromString($cachedProduct) : null;
@@ -145,7 +145,7 @@ class CacheService extends AbstractService
      * @param int $storeId
      * @return string
      */
-    private function generateCacheKey($productId, $storeId)
+    private function generateCacheKey(int $productId, int $storeId)
     {
         return sprintf(
             '%s-%d-%d',

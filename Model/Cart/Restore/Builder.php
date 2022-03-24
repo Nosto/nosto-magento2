@@ -182,7 +182,7 @@ class Builder
      * @return string the restore cart URL
      * @throws NoSuchEntityException
      */
-    private function generateRestoreCartUrl($hash, Store $store)
+    private function generateRestoreCartUrl(string $hash, Store $store)
     {
         $params = $this->urlHelper->getUrlOptionsWithNoSid($store);
         $params['h'] = $hash;

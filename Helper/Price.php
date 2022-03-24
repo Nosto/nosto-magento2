@@ -134,9 +134,9 @@ class Price extends AbstractHelper
      */
     public function getProductPrice(// @codingStandardsIgnoreLine
         Product $product,
-        Store $store,
-        $inclTax = true,
-        $finalPrice = false
+        Store   $store,
+        bool    $inclTax = true,
+        bool $finalPrice = false
     ) {
         switch ($product->getTypeId()) {
             // Get the bundle product "from" price.
@@ -229,7 +229,7 @@ class Price extends AbstractHelper
      *
      * @return float
      */
-    public function addTaxes(Product $product, Store $store, $price)
+    public function addTaxes(Product $product, Store $store, float $price)
     {
         return $this->catalogHelper->getTaxPrice(
             $product,
@@ -252,7 +252,7 @@ class Price extends AbstractHelper
      *
      * @return float
      */
-    public function addTaxDisplayPriceIfApplicable(Product $product, Store $store, $price)
+    public function addTaxDisplayPriceIfApplicable(Product $product, Store $store, float $price)
     {
         if ($this->includeTaxes($store)) {
             return $this->catalogHelper->getTaxPrice(

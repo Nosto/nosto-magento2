@@ -196,7 +196,7 @@ class Url extends AbstractHelper
      * @param string $url the url.
      * @return string the updated url.
      */
-    public function addNostoDebugParamToUrl($url)
+    public function addNostoDebugParamToUrl(string $url)
     {
         return HttpRequest::replaceQueryParamInUrl(
             'nostodebug',
@@ -247,7 +247,7 @@ class Url extends AbstractHelper
      * @param string $url the url.
      * @return string the updated url.
      */
-    public function replaceQueryParamsInUrl(array $params, $url)
+    public function replaceQueryParamsInUrl(array $params, string $url)
     {
         return HttpRequest::replaceQueryParamsInUrl($params, $url);
     }
@@ -339,7 +339,7 @@ class Url extends AbstractHelper
      * @throws Zend_Uri_Exception
      * @throws NoSuchEntityException
      */
-    public function getUrlCart(Store $store, $currentUrl)
+    public function getUrlCart(Store $store, string $currentUrl)
     {
         $zendHttp = Zend_Uri_Http::fromString($currentUrl);
         $urlParameters = $zendHttp->getQueryAsArray();

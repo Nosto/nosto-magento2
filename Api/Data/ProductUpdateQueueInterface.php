@@ -129,7 +129,7 @@ interface ProductUpdateQueueInterface
      * @return self
      * @SuppressWarnings(PHPMD.ShortVariable)
      */
-    public function setId($id);
+    public function setId(int $id);
 
     /**
      * Set product id
@@ -145,7 +145,7 @@ interface ProductUpdateQueueInterface
      * @param int $storeId
      * @return self
      */
-    public function setStoreId($storeId);
+    public function setStoreId(int $storeId);
 
     /**
      * Set created at time
@@ -181,17 +181,17 @@ interface ProductUpdateQueueInterface
      * @param string $status
      * @return self
      */
-    public function setStatus($status);
+    public function setStatus(string $status);
 
     /**
      * @param string $action
      * @return self
      */
-    public function setAction($action);
+    public function setAction(string $action);
 
     /**
      * @param int $count
      * @return self
      */
-    public function setProductIdCount($count);
+    public function setProductIdCount(int $count);
 }

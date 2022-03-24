@@ -100,14 +100,14 @@ interface CustomerInterface
      * @param int $customerId
      * @return self
      */
-    public function setCustomerId($customerId);
+    public function setCustomerId(int $customerId);
 
     /**
      * Set quote id
      *
      * @param int $quoteId
      */
-    public function setQuoteId($quoteId);
+    public function setQuoteId(int $quoteId);
 
     /**
      * Set Nosto Id
@@ -115,7 +115,7 @@ interface CustomerInterface
      * @param string $nostoId
      * @return self
      */
-    public function setNostoId($nostoId);
+    public function setNostoId(string $nostoId);
 
     /**
      * Set created at time
@@ -139,5 +139,5 @@ interface CustomerInterface
      * @param string $restoreCartHash
      * @return self
      */
-    public function setRestoreCartHash($restoreCartHash);
+    public function setRestoreCartHash(string $restoreCartHash);
 }

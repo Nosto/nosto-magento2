@@ -116,7 +116,7 @@ class Variation extends AbstractHelper
      * @param string $code
      * @return bool
      */
-    public function isDefaultVariationCode($code)
+    public function isDefaultVariationCode(string $code)
     {
         try {
             if ($code === $this->getDefaultVariationCode()) {

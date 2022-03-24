@@ -51,5 +51,5 @@ interface ProductSerializerInterface
      * @param string $data
      * @return Product|null
      */
-    public function fromString($data);
+    public function fromString(string $data);
 }

@@ -91,7 +91,7 @@ class Logger extends MonologLogger
      * @param object $sourceClass
      * @return bool
      */
-    public function debugWithSource($message, array $context, $sourceClass)
+    public function debugWithSource($message, array $context, object $sourceClass)
     {
         return $this->logWithSource($message, $context, $sourceClass, 'debug');
     }
@@ -104,7 +104,7 @@ class Logger extends MonologLogger
      * @param object $sourceClass
      * @return bool
      */
-    public function infoWithSource($message, array $context, $sourceClass)
+    public function infoWithSource($message, array $context, object $sourceClass)
     {
         return $this->logWithSource($message, $context, $sourceClass, 'info');
     }

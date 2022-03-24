@@ -100,7 +100,7 @@ abstract class AbstractBulkPublisher implements BulkPublisherInterface
      * @inheritDoc
      * @throws LocalizedException
      */
-    public function execute($storeId, $productIds = [])
+    public function execute(int $storeId, array $productIds = [])
     {
         if (!empty($productIds)) {
             $this->publishCollectionToQueue($storeId, $productIds);
@@ -200,9 +200,9 @@ abstract class AbstractBulkPublisher implements BulkPublisherInterface
      * @return array
      */
     private function buildOperationData(
-        $storeId,
-        $productIds,
-        $bulkUuid
+        int $storeId,
+        array $productIds,
+        string $bulkUuid
     ) {
         $dataToEncode = [
             'meta_information' => $this->getMetaData(),

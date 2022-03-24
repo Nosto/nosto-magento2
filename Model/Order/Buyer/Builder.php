@@ -51,16 +51,16 @@ class Builder extends PersonBuilder
      * @return Buyer
      */
     public function buildObject( // @codingStandardsIgnoreLine
-        $firstName,
-        $lastName,
-        $email,
-        $phone = null,
-        $postCode = null,
-        $country = null,
-        $customerGroup = null,
-        $dateOfBirth = null,
-        $gender = null,
-        $customerReference = null
+        string $firstName,
+        string $lastName,
+        string $email,
+        string $phone = null,
+        string $postCode = null,
+        string $country = null,
+        string $customerGroup = null,
+        string $dateOfBirth = null,
+        string $gender = null,
+        string $customerReference = null
     ) {
         $buyer = new Buyer();
         $buyer->setFirstName($firstName);

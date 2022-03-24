@@ -66,5 +66,5 @@ interface AttributeServiceInterface
      * @param string $attributeCode
      * @return bool|float|int|null|string
      */
-    public function getAttributeValueByAttributeCode(Product $product, $attributeCode);
+    public function getAttributeValueByAttributeCode(Product $product, string $attributeCode);
 }

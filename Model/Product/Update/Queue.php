@@ -55,7 +55,7 @@ class Queue extends AbstractModel implements ProductUpdateQueueInterface
     /**
      * @inheritDoc
      */
-    public function setProductIdCount($count)
+    public function setProductIdCount(int $count)
     {
         return $this->setData(self::PRODUCT_ID_COUNT, $count);
     }
@@ -71,7 +71,7 @@ class Queue extends AbstractModel implements ProductUpdateQueueInterface
     /**
      * @inheritDoc
      */
-    public function setAction($action)
+    public function setAction(string $action)
     {
         return $this->setData(self::ACTION, $action);
     }
@@ -87,7 +87,7 @@ class Queue extends AbstractModel implements ProductUpdateQueueInterface
     /**
      * @inheritDoc
      */
-    public function setStatus($status)
+    public function setStatus(string $status)
     {
         return $this->setData(self::STATUS, $status);
     }
@@ -151,9 +151,9 @@ class Queue extends AbstractModel implements ProductUpdateQueueInterface
     /**
      * @inheritDoc
      */
-    public function setId($value)
+    public function setId(int $id)
     {
-        return $this->setData(self::ID, $value);
+        return $this->setData(self::ID, $id);
     }
 
     /**
@@ -183,7 +183,7 @@ class Queue extends AbstractModel implements ProductUpdateQueueInterface
     /**
      * @inheritDoc
      */
-    public function setStoreId($storeId)
+    public function setStoreId(int $storeId)
     {
         return $this->setData(self::STORE_ID, $storeId);
     }

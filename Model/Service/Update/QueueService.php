@@ -83,7 +83,7 @@ class QueueService extends AbstractService
         NostoDataHelper $nostoDataHelper,
         NostoAccountHelper $nostoAccountHelper,
         NostoProductRepository $nostoProductRepository,
-        $batchSize
+        int $batchSize
     ) {
         parent::__construct($nostoDataHelper, $nostoAccountHelper, $logger);
         $this->queueRepository = $queueRepository;

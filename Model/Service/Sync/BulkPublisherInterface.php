@@ -43,5 +43,5 @@ interface BulkPublisherInterface
      * @param array $productIds
      * @return void
      */
-    public function execute($storeId, $productIds = []);
+    public function execute(int $storeId, array $productIds = []);
 }

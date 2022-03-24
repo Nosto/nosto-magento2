@@ -98,7 +98,7 @@ class CollectionBuilder
      * @return NostoProductCollection
      * @throws NostoException
      */
-    public function buildMany(Store $store, $limit = 100, $offset = 0)
+    public function buildMany(Store $store, int $limit = 100, int $offset = 0)
     {
         return $this->load(
             $store,

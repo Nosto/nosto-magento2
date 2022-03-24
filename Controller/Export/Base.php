@@ -117,7 +117,7 @@ abstract class Base extends Action
      * @param int $offset
      * @return AbstractCollection the collection with the items to export
      */
-    abstract public function buildExportCollection(Store $store, $limit = 100, $offset = 0);
+    abstract public function buildExportCollection(Store $store, int $limit = 100, int $offset = 0);
 
     /**
      * Encrypts the export collection and outputs it to the browser.

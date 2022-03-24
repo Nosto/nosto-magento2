@@ -301,7 +301,7 @@ class Repository
      * @param ProductInterface $product
      * @param string[] $parentProductIds
      */
-    private function saveParentIdsToCache(ProductInterface $product, $parentProductIds)
+    private function saveParentIdsToCache(ProductInterface $product, array $parentProductIds)
     {
         $this->parentProductIdCache[$product->getId()] = $parentProductIds;
     }
@@ -330,7 +330,7 @@ class Repository
      * @return ProductInterface|Product
      * @throws NoSuchEntityException
      */
-    public function reloadProduct($productId, $storeId)
+    public function reloadProduct(int $productId, int $storeId)
     {
         return $this->productRepository->getById(
             $productId,
