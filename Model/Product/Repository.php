@@ -316,8 +316,12 @@ class Repository
      */
     public function getSkusAsArray(Product $product, Store $store)
     {
+        $skuIds = $this->getSkuIds($product);
+        if (empty($skuIds)) {
+            return [];
+        }
         $inStockProductsByIds = $this->stockProvider->getInStockProductIds(
-            $this->getSkuIds($product),
+            $skuIds,
             $store->getWebsite()
         );
         return $this->skuResource->getSkuPricesByIds($store->getWebsite(), $inStockProductsByIds);
