@@ -167,7 +167,7 @@ class Builder extends PersonBuilder
         $groupId = (int)$customer->getGroupId();
         try {
             return $this->groupRepository->getById($groupId)->getCode();
-        } catch (NoSuchEntityException $e) {
+        } catch (Exception $e) {
             return null;
         }
     }
