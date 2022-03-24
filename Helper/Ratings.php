@@ -37,10 +37,12 @@
 namespace Nosto\Tagging\Helper;
 
 use Exception;
+use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Model\Product;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 use Magento\Framework\DataObject;
+use Magento\Framework\Module\Manager;
 use Magento\Framework\Registry;
 use Magento\Review\Model\ReviewFactory;
 use Magento\Store\Model\Store;
@@ -57,14 +59,14 @@ class Ratings extends AbstractHelper
     public const AVERAGE_SCORE = 'average_score';
     public const CURRENT_PRODUCT = 'current_product';
 
-    private \Magento\Framework\Module\Manager $moduleManager;
+    private Manager $moduleManager;
     private Data $nostoDataHelper;
     private NostoLogger $logger;
     private ReviewFactory $reviewFactory;
     /** @var RatingsFactory $ratingsFactory */
     private RatingsFactory $ratingsFactory;
     private Registry $registry;
-    private $originalProduct;
+    private ProductInterface $originalProduct;
 
     /**
      * Ratings constructor.

@@ -41,12 +41,13 @@ use Magento\Backend\Block\Template as BlockTemplate;
 use Magento\Backend\Block\Template\Context as BlockContext;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Helper\Url as NostoHelperUrl;
+use Psr\Log\LoggerInterface;
 
 class Config extends BlockTemplate
 {
     private NostoHelperUrl $urlHelper;
     private NostoHelperScope $nostoHelperScope;
-    private \Psr\Log\LoggerInterface $logger;
+    private LoggerInterface $logger;
 
     /**
      * Constructor.

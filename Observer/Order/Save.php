@@ -41,6 +41,7 @@ use Exception;
 use Magento\Customer\Api\CustomerRepositoryInterface as MagentoCustomerRepository;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
+use Magento\Framework\Indexer\IndexerInterface;
 use Magento\Framework\Indexer\IndexerRegistry;
 use Magento\Framework\Module\Manager as ModuleManager;
 use Magento\Sales\Model\Order;
@@ -69,7 +70,7 @@ class Save implements ObserverInterface
     private NostoOrderBuilder $nostoOrderBuilder;
     private ModuleManager $moduleManager;
     private CustomerRepository $customerRepository;
-    private \Magento\Framework\Indexer\IndexerInterface $indexer;
+    private IndexerInterface $indexer;
     private NostoHelperUrl $nostoHelperUrl;
     private MagentoCustomerRepository $magentoCustomerRepository;
     private NostoOrderStatusBuilder $orderStatusBuilder;
