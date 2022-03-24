@@ -1,5 +1,8 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 5.5.0
+* Remove personally identifiable information from the module
+
 ### 5.4.2
 * Send all active currencies formating to Nosto only when multi-currency is enabled
 
