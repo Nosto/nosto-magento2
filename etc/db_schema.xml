@@ -1,32 +1,41 @@
+<?xml version="1.0"?>
 <schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
 
     <!--createCustomerTable-->
     <table name="nosto_tagging_customer" engine="innodb" comment="Nosto Tagging Customer">
-        <column xsi:type="int" name="customer_id" primary="true" unsigned="true" nullable="false" identity="true" comment="Customer ID"/>
+        <column xsi:type="int" name="customer_id" unsigned="true" nullable="false" identity="true" comment="Customer ID"/>
         <column xsi:type="int" name="quote_id" unsigned="true" nullable="false"/>
         <column xsi:type="text" name="nosto_id" nullable="false" comment="Nosto Customer ID"/>
         <column xsi:type="datetime" name="created_at" nullable="false" comment="Creation Time"/>
         <column xsi:type="datetime" name="updated_at" nullable="false" comment="Updated Time"/>
         <column xsi:type="text" name="restore_cart_hash" nullable="true" comment="Restore Cart Hash"/>
 
-        <index referenceId="NOSTO_CUSTOMER_ORDER_MAPPING" indexType="unique" comment="Nosto customer and order mapping">
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="customer_id"/>
+        </constraint>
+
+        <!--Nosto customer and order mapping-->
+        <index referenceId="NOSTO_CUSTOMER_ORDER_MAPPING" indexType="btree">
             <column name="quote_id"/>
             <column name="nosto_id"/>
         </index>
     </table>
 
     <!--createProductUpdateQueue-->
-    <table name="nosto_tagging_customer" engine="innodb" comment="Nosto Tagging Customer">
-        <column xsi:type="int" name="id" auto_increment="true" primary="true" unsigned="true" nullable="false" identity="true" comment="ID"/>
+    <table name="nosto_tagging_product_update_queue" engine="innodb" comment="Nosto Tagging Customer">
+        <column xsi:type="int" name="id" unsigned="true" nullable="false" identity="true" comment="ID"/>
         <column xsi:type="smallint" name="store_id" unsigned="true" nullable="false" comment="Store ID"/>
-        <column xsi:type="text" name="product_ids" unsigned="true" nullable="true" size="32M" comment="Product Data"/>
-        <column xsi:type="text" name="status" nullable="false" size="10" comment="Processing status"/>
-        <column xsi:type="text" name="action" nullable="false" size="10" comment="Action"/>
+        <column xsi:type="varchar" name="product_ids" nullable="true" length="32" comment="Product Data"/>
+        <column xsi:type="varchar" name="status" nullable="false" length="10" comment="Processing status"/>
+        <column xsi:type="varchar" name="action" nullable="false" length="10" comment="Action"/>
         <column xsi:type="int" name="product_id_count" unsigned="true" nullable="false" comment="The amount of product ids in an entry"/>
         <column xsi:type="datetime" name="created_at" nullable="false" comment="Creation time"/>
         <column xsi:type="datetime" name="started_at" nullable="true" comment="Started at time"/>
         <column xsi:type="datetime" name="completed_at" nullable="true" comment="Completed at time"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="id"/>
+        </constraint>
     </table>
 
 </schema>
