@@ -54,7 +54,7 @@ use Nosto\Tagging\Model\Order\Collection as NostoOrderCollection;
  */
 class Order extends Base
 {
-    private $nostoOrderCollection;
+    private NostoOrderCollection $nostoOrderCollection;
 
     /**
      * Constructor.

@@ -55,27 +55,27 @@ class NostoAccountRemoveCommand extends Command
     /**
      * @var NostoHelperAccount
      */
-    private $nostoHelperAccount;
+    private NostoHelperAccount $nostoHelperAccount;
 
     /**
      * @var NostoHelperScope
      */
-    private $nostoHelperScope;
+    private NostoHelperScope $nostoHelperScope;
 
     /**
      * @var NostoHelperCache
      */
-    private $nostoHelperCache;
+    private NostoHelperCache $nostoHelperCache;
 
     /**
      * @var bool
      */
-    private $isInteractive = true;
+    private bool $isInteractive = true;
 
     /**
      * @var WriterInterface
      */
-    private $config;
+    private WriterInterface $config;
 
     /**
      * NostoAccountRemoveCommand constructor.

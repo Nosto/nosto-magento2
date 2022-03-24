@@ -50,10 +50,10 @@ use Nosto\Tagging\Model\Rates\Service as NostoRatesService;
  */
 class Update implements ObserverInterface
 {
-    private $logger;
-    private $moduleManager;
-    private $nostoRatesService;
-    private $nostoHelperScope;
+    private NostoLogger $logger;
+    private ModuleManager $moduleManager;
+    private NostoRatesService $nostoRatesService;
+    private NostoHelperScope $nostoHelperScope;
 
     /**
      * Constructor.

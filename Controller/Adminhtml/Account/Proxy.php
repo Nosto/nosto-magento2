@@ -44,7 +44,7 @@ class Proxy extends Base
 {
     public const ADMIN_RESOURCE = 'Nosto_Tagging::system_nosto_account';
     protected $_publicActions = ['proxy']; // @codingStandardsIgnoreLine
-    private $backendAuthSession;
+    private Session $backendAuthSession;
 
     /**
      * @param Context $context

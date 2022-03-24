@@ -52,7 +52,7 @@ class UpgradeSchema extends Core implements UpgradeSchemaInterface
     public const PRODUCT_QUEUE_TABLE = 'nosto_tagging_product_queue';
 
     /** @var Logger $loger */
-    private $loger;
+    private Logger $loger;
 
     /**
      * UpgradeSchema constructor.

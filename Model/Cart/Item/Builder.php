@@ -57,17 +57,17 @@ class Builder
     /**
      * @var ManagerInterface $eventManager
      */
-    private $eventManager;
+    private ManagerInterface $eventManager;
 
     /**
      * @var ProductRepository $productRepository
      */
-    private $productRepository;
+    private ProductRepository $productRepository;
 
     /**
      * @var NostoLogger $logger
      */
-    private $logger;
+    private NostoLogger $logger;
 
     /**
      * Builder constructor.

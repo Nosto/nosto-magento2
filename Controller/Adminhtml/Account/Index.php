@@ -48,8 +48,8 @@ use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 class Index extends Base
 {
     public const ADMIN_RESOURCE = 'Nosto_Tagging::system_nosto_account';
-    private $resultPageFactory;
-    private $nostoHelperScope;
+    private PageFactory $resultPageFactory;
+    private NostoHelperScope $nostoHelperScope;
 
     /**
      * @param Context $context

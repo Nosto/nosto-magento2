@@ -50,16 +50,16 @@ class MassProductAttributeUpdate implements ObserverInterface
 {
 
     /** @var QueueService */
-    private $queueService;
+    private QueueService $queueService;
 
     /** @var CollectionBuilder */
-    private $productCollectionBuilder;
+    private CollectionBuilder $productCollectionBuilder;
 
     /** @var NostoLogger */
-    private $logger;
+    private NostoLogger $logger;
 
     /** @var NostoHelperAccount */
-    private $nostoHelperAccount;
+    private NostoHelperAccount $nostoHelperAccount;
 
     /**
      * MassProductAttributeUpdate constructor.

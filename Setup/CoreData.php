@@ -59,21 +59,21 @@ abstract class CoreData
 {
 
     /** @var CustomerSetupFactory */
-    private $customerSetupFactory;
+    private CustomerSetupFactory $customerSetupFactory;
 
     /** @var AttributeSetFactory */
-    private $attributeSetFactory;
+    private AttributeSetFactory $attributeSetFactory;
 
-    private $customerReferenceForms = ['adminhtml_customer'];
+    private array $customerReferenceForms = ['adminhtml_customer'];
 
     /** @var CustomerFactory */
     private $customerCollectionFactory;
 
     /** @var CustomerResource */
-    private $customerResource;
+    private CustomerResource $customerResource;
 
     /** @var Logger */
-    private $logger;
+    private Logger $logger;
 
     /**
      * CoreData constructor.

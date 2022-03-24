@@ -39,10 +39,10 @@ namespace Nosto\Tagging\Model\Product;
 class Ratings
 {
     /** @var int */
-    private $reviewCount;
+    private int $reviewCount;
 
     /** @var float */
-    private $rating;
+    private float $rating;
 
     /**
      * @return int $reviewCount

@@ -51,12 +51,12 @@ use Nosto\Tagging\Model\Meta\Account\Settings\Currencies\Builder as NostoCurrenc
 
 class Builder
 {
-    private $logger;
-    private $eventManager;
-    private $nostoCurrenciesBuilder;
-    private $nostoHelperCurrency;
-    private $nostoDataHelper;
-    private $nostoVariationHelper;
+    private NostoLogger $logger;
+    private ManagerInterface $eventManager;
+    private NostoCurrenciesBuilder $nostoCurrenciesBuilder;
+    private NostoHelperCurrency $nostoHelperCurrency;
+    private NostoDataHelper $nostoDataHelper;
+    private NostoVariationHelper $nostoVariationHelper;
 
     /**
      * Builder constructor.

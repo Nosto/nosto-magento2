@@ -57,8 +57,8 @@ class Order extends Success
         TaggingTrait::__construct as taggingConstruct; // @codingStandardsIgnoreLine
     }
 
-    private $nostoOrderBuilder;
-    private $checkoutSession;
+    private NostoOrderBuilder $nostoOrderBuilder;
+    private Session $checkoutSession;
 
     /**
      * Constructor.

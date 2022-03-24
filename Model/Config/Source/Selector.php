@@ -48,7 +48,7 @@ use Nosto\Tagging\Model\Service\Product\Attribute\AttributeProviderInterface;
 abstract class Selector implements OptionSourceInterface
 {
     /** @var AttributeProviderInterface */
-    private $attributeProvider;
+    private AttributeProviderInterface $attributeProvider;
 
     /**
      * Selector constructor.

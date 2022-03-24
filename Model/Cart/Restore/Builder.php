@@ -53,13 +53,13 @@ use Nosto\Tagging\Model\Customer\Repository as NostoCustomerRepository;
 
 class Builder
 {
-    private $logger;
-    private $cookieManager;
-    private $date;
-    private $encryptor;
-    private $nostoCustomerFactory;
-    private $urlHelper;
-    private $nostoCustomerRepository;
+    private NostoLogger $logger;
+    private CookieManagerInterface $cookieManager;
+    private DateTime $date;
+    private EncryptorInterface $encryptor;
+    private NostoCustomerFactory $nostoCustomerFactory;
+    private NostoHelperUrl $urlHelper;
+    private NostoCustomerRepository $nostoCustomerRepository;
 
     /**
      * Builder constructor.

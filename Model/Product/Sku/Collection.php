@@ -50,10 +50,10 @@ use Nosto\Types\Product\SkuInterface;
 
 class Collection
 {
-    private $configurableType;
-    private $logger;
-    private $nostoSkuBuilder;
-    private $nostoProductRepository;
+    private ConfigurableType $configurableType;
+    private NostoLogger $logger;
+    private Builder $nostoSkuBuilder;
+    private NostoProductRepository $nostoProductRepository;
 
     /**
      * Builder constructor.

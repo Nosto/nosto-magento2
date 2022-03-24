@@ -43,7 +43,7 @@ class DimensionModeConfiguration extends AbstractDimensionModeConfiguration
     /**
      * @var string
      */
-    private $currentMode;
+    private string $currentMode;
 
     /**
      * @return string

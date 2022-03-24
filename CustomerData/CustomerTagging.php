@@ -45,9 +45,9 @@ use Nosto\Tagging\Model\Person\Tagging\Builder as NostoPersonBuilder;
 
 class CustomerTagging extends HashedTagging implements SectionSourceInterface
 {
-    private $currentCustomer;
-    private $cookieManager;
-    private $personBuilder;
+    private CurrentCustomer $currentCustomer;
+    private CookieManagerInterface $cookieManager;
+    private NostoPersonBuilder $personBuilder;
 
     /**
      * CustomerTagging constructor.

@@ -57,25 +57,25 @@ use Nosto\Tagging\Model\Service\Sync\BulkPublisherInterface;
 class QueueProcessorService extends AbstractService
 {
     /** @var BulkPublisherInterface */
-    private $upsertBulkPublisher;
+    private BulkPublisherInterface $upsertBulkPublisher;
 
     /** @var QueueRepository */
-    private $queueRepository;
+    private QueueRepository $queueRepository;
 
     /** @var TimezoneInterface */
-    private $magentoTimeZone;
+    private TimezoneInterface $magentoTimeZone;
 
     /** @var QueueCollectionBuilder */
-    private $queueCollectionBuilder;
+    private QueueCollectionBuilder $queueCollectionBuilder;
 
     /** @var BulkPublisherInterface */
-    private $deleteBulkPublisher;
+    private BulkPublisherInterface $deleteBulkPublisher;
 
     /** @var int */
-    private $maxProductsInBatch;
+    private int $maxProductsInBatch;
 
     /** @var int */
-    private $cleanupInterval;
+    private int $cleanupInterval;
 
     /**
      * @param NostoLogger $logger

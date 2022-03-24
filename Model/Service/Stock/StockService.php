@@ -53,10 +53,10 @@ use Nosto\Tagging\Model\Service\Stock\Provider\StockProviderInterface;
 class StockService
 {
     /** @var StockProviderInterface */
-    private $stockProvider;
+    private StockProviderInterface $stockProvider;
 
     /** @var Logger */
-    private $logger;
+    private Logger $logger;
 
     /**
      * Constructor.

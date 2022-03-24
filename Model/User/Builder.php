@@ -44,9 +44,9 @@ use Nosto\Tagging\Logger\Logger as NostoLogger;
 
 class Builder
 {
-    private $logger;
-    private $backendAuthSession;
-    private $eventManager;
+    private NostoLogger $logger;
+    private Session $backendAuthSession;
+    private ManagerInterface $eventManager;
 
     /**
      * @param Session $backendAuthSession

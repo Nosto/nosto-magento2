@@ -65,25 +65,25 @@ use UnexpectedValueException;
 abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerActionInterface, MviewActionInterface
 {
     /** @var NostoHelperScope */
-    private $nostoHelperScope;
+    private NostoHelperScope $nostoHelperScope;
 
     /** @var NostoLogger */
-    public $nostoLogger;
+    public NostoLogger $nostoLogger;
 
     /** @var ProcessManager */
-    private $processManager;
+    private ?ProcessManager $processManager;
 
     /** @var DimensionProviderInterface */
     private $dimensionProvider;
 
     /** @var Emulation */
-    private $storeEmulator;
+    private Emulation $storeEmulator;
 
     /** @var InputInterface */
-    private $input;
+    private InputInterface $input;
 
     /** @var IndexerStatusServiceInterface */
-    private $indexerStatusService;
+    private IndexerStatusServiceInterface $indexerStatusService;
 
     /**
      * AbstractIndexer constructor.

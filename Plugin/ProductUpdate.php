@@ -51,16 +51,16 @@ use Nosto\Tagging\Logger\Logger as NostoLogger;
 class ProductUpdate
 {
     /** @var IndexerRegistry  */
-    private $indexerRegistry;
+    private IndexerRegistry $indexerRegistry;
 
     /** @var QueueIndexer  */
-    private $queueIndexer;
+    private QueueIndexer $queueIndexer;
 
     /** @var NostoProductRepository  */
-    private $nostoProductRepository;
+    private NostoProductRepository $nostoProductRepository;
 
     /** @var NostoLogger */
-    private $logger;
+    private NostoLogger $logger;
 
     /**
      * ProductUpdate constructor.

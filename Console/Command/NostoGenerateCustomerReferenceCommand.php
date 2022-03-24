@@ -51,7 +51,7 @@ class NostoGenerateCustomerReferenceCommand extends Command
     /**
      * @var CollectionFactory
      */
-    private $collectionFactory;
+    private CollectionFactory $collectionFactory;
 
     /**
      * NostoGenerateCustomerReferenceCommand constructor.

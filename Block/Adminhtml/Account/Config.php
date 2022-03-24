@@ -44,9 +44,9 @@ use Nosto\Tagging\Helper\Url as NostoHelperUrl;
 
 class Config extends BlockTemplate
 {
-    private $urlHelper;
-    private $nostoHelperScope;
-    private $logger;
+    private NostoHelperUrl $urlHelper;
+    private NostoHelperScope $nostoHelperScope;
+    private \Psr\Log\LoggerInterface $logger;
 
     /**
      * Constructor.

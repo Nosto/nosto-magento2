@@ -42,8 +42,8 @@ use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 
 trait TaggingTrait
 {
-    private $nostoHelperAccount;
-    private $nostoHelperScope;
+    private NostoHelperAccount $nostoHelperAccount;
+    private NostoHelperScope $nostoHelperScope;
 
     /**
      * TaggingTrait constructor.

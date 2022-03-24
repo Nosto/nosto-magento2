@@ -45,7 +45,7 @@ use Nosto\Tagging\Util\Customer as CustomerUtil;
 
 class Save implements ObserverInterface
 {
-    private $moduleManger;
+    private ModuleManager $moduleManger;
 
     /**
      * Save constructor.

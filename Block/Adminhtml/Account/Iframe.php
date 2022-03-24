@@ -61,12 +61,12 @@ class Iframe extends BlockTemplate
 
     public const IFRAME_VERSION = 1;
 
-    private $nostoHelperAccount;
-    private $backendAuthSession;
-    private $iframeMetaBuilder;
-    private $currentUserBuilder;
-    private $nostoHelperScope;
-    private $logger;
+    private NostoHelperAccount $nostoHelperAccount;
+    private Session $backendAuthSession;
+    private NostoIframeMetaBuilder $iframeMetaBuilder;
+    private NostoCurrentUserBuilder $currentUserBuilder;
+    private NostoHelperScope $nostoHelperScope;
+    private NostoLogger $logger;
 
     /**
      * Constructor.

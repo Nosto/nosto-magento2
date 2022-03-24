@@ -204,11 +204,11 @@ class Data extends AbstractHelper
      */
     public const PLATFORM_NAME = 'Magento';
 
-    private $moduleListing;
-    private $configWriter;
-    private $productMetaData;
-    private $nostoHelperScope;
-    private $cacheManager;
+    private ModuleListInterface $moduleListing;
+    private WriterInterface $configWriter;
+    private ProductMetadataInterface $productMetaData;
+    private Scope $nostoHelperScope;
+    private CacheManager $cacheManager;
 
     /**
      * Data constructor.

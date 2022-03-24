@@ -63,9 +63,9 @@ class Builder extends PersonBuilder
     public const GENDER_MALE_ID = '1';
     public const GENDER_FEMALE_ID = '2';
 
-    private $groupRepository;
-    private $customerRepository;
-    private $logger;
+    private GroupRepository $groupRepository;
+    private CustomerRepositoryInterface $customerRepository;
+    private NostoLogger $logger;
 
     /**
      * Builder constructor.

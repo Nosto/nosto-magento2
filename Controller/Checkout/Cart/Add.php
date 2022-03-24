@@ -54,13 +54,13 @@ use Magento\Store\Model\StoreManager;
 class Add
 {
     /** @var ProductRepositoryInterface */
-    private $productRepository;
+    private ProductRepositoryInterface $productRepository;
 
     /** @var StoreManager */
-    private $storeManager;
+    private StoreManager $storeManager;
 
     /** @var ProductResourceModel */
-    private $productResourceModel;
+    private ProductResourceModel $productResourceModel;
 
     /**
      * Add constructor.

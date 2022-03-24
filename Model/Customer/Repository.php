@@ -49,10 +49,10 @@ use Nosto\Tagging\Util\Repository as RepositoryUtil;
 
 class Repository implements CustomerRepositoryInterface
 {
-    private $searchCriteriaBuilder;
-    private $customerCollectionFactory;
-    private $customerSearchResultsFactory;
-    private $customerResource;
+    private SearchCriteriaBuilder $searchCriteriaBuilder;
+    private CustomerCollectionFactory $customerCollectionFactory;
+    private CustomerSearchResultsFactory $customerSearchResultsFactory;
+    private CustomerResource $customerResource;
 
     /**
      * Customer repository constructor

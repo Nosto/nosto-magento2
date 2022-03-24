@@ -47,8 +47,8 @@ use Nosto\Tagging\Helper\Scope as NostoHelperScope;
  */
 class Visible extends Template
 {
-    private $nostoHelperScope;
-    private $nostoHelperAccount;
+    private NostoHelperScope $nostoHelperScope;
+    private NostoHelperAccount $nostoHelperAccount;
 
     /**
      * Constructor.

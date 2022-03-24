@@ -52,13 +52,13 @@ class StoreDimensionProvider implements DimensionProviderInterface
     public const DIMENSION_NAME = 'scope';
 
     /** @var StoreManagerInterface */
-    private $storeManager;
+    private StoreManagerInterface $storeManager;
 
     /** @var DimensionFactory */
-    private $dimensionFactory;
+    private DimensionFactory $dimensionFactory;
 
     /** @var Account */
-    private $account;
+    private Account $account;
 
     /**
      * @param StoreManagerInterface $storeManager

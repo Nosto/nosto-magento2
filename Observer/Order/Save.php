@@ -63,18 +63,18 @@ use Nosto\Types\Signup\AccountInterface;
 
 class Save implements ObserverInterface
 {
-    private $nostoHelperData;
-    private $nostoHelperAccount;
-    private $logger;
-    private $nostoOrderBuilder;
-    private $moduleManager;
-    private $customerRepository;
-    private $indexer;
-    private $nostoHelperUrl;
-    private $magentoCustomerRepository;
-    private $orderStatusBuilder;
-    private static $sent = [];
-    private $intervalForNew;
+    private NostoHelperData $nostoHelperData;
+    private NostoHelperAccount $nostoHelperAccount;
+    private NostoLogger $logger;
+    private NostoOrderBuilder $nostoOrderBuilder;
+    private ModuleManager $moduleManager;
+    private CustomerRepository $customerRepository;
+    private \Magento\Framework\Indexer\IndexerInterface $indexer;
+    private NostoHelperUrl $nostoHelperUrl;
+    private MagentoCustomerRepository $magentoCustomerRepository;
+    private NostoOrderStatusBuilder $orderStatusBuilder;
+    private static array $sent = [];
+    private int $intervalForNew;
 
     /**
      * Save constructor.

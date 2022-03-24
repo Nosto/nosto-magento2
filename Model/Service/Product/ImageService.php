@@ -45,10 +45,10 @@ use Nosto\Tagging\Util\Url as UrlUtil;
 class ImageService
 {
     /** @var Image  */
-    private $imageHelper;
+    private Image $imageHelper;
 
     /** @var NostoDataHelper  */
-    private $nostoDataHelper;
+    private NostoDataHelper $nostoDataHelper;
 
     /**
      * ImageService constructor.

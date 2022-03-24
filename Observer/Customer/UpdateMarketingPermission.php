@@ -50,10 +50,10 @@ use Nosto\Tagging\Logger\Logger as NostoLogger;
 
 class UpdateMarketingPermission implements ObserverInterface
 {
-    private $nostoHelperAccount;
-    private $logger;
-    private $moduleManager;
-    private $nostoHelperScope;
+    private NostoHelperAccount $nostoHelperAccount;
+    private NostoLogger $logger;
+    private ModuleManager $moduleManager;
+    private NostoHelperScope $nostoHelperScope;
 
     /**
      * UpdateMarketingPermission constructor.

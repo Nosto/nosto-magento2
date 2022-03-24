@@ -60,14 +60,14 @@ class Index extends Action
 {
     use OauthTrait;
 
-    private $logger;
-    private $urlBuilder;
-    private $nostoHelperAccount;
-    private $oauthMetaBuilder;
-    private $nostoHelperScope;
-    private $nostoHelperCache;
-    private $storeRepository;
-    private $request;
+    private NostoLogger $logger;
+    private UrlInterface $urlBuilder;
+    private NostoHelperAccount $nostoHelperAccount;
+    private NostoOauthBuilder $oauthMetaBuilder;
+    private NostoHelperScope $nostoHelperScope;
+    private NostoHelperCache $nostoHelperCache;
+    private StoreRepository $storeRepository;
+    private \Magento\Framework\App\RequestInterface $request;
 
     /**
      * Index constructor.

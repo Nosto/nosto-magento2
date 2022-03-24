@@ -43,19 +43,19 @@ use Magento\Store\Model\Website;
 class CachingStockProvider implements StockProviderInterface
 {
     /** @var StockProviderInterface */
-    private $stockProvider;
+    private StockProviderInterface $stockProvider;
 
     /** @var array */
-    private $quantityCache = [];
+    private array $quantityCache = [];
 
     /** @var array */
-    private $inStockCache = [];
+    private array $inStockCache = [];
 
     /** @var array */
-    private $productIdsInStockCache = [];
+    private array $productIdsInStockCache = [];
 
     /** @var int */
-    private $maxCacheSize;
+    private int $maxCacheSize;
 
     /**
      * CachingStockProvider constructor.

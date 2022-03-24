@@ -49,14 +49,14 @@ class ModeSwitcherConfiguration
      *
      * @var ConfigInterface
      */
-    private $configWriter;
+    private ConfigInterface $configWriter;
 
     /**
      * TypeListInterface
      *
      * @var TypeListInterface
      */
-    private $cacheTypeList;
+    private TypeListInterface $cacheTypeList;
 
     /**
      * ModeSwitcherConfiguration constructor.

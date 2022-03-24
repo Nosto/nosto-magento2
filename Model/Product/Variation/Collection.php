@@ -48,10 +48,10 @@ use Nosto\Tagging\Model\Product\Variation\Builder as VariationBuilder;
 
 class Collection
 {
-    private $nostoVariationBuilder;
-    private $customerGroupManager;
-    private $groupRepository;
-    private $variationBuilder;
+    private Builder $nostoVariationBuilder;
+    private GroupManagement $customerGroupManager;
+    private GroupRepository $groupRepository;
+    private Builder $variationBuilder;
 
     /**
      * Collection constructor.

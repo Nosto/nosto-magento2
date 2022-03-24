@@ -58,8 +58,8 @@ abstract class Base extends Action
     public const LIMIT = 'limit';
     public const OFFSET = 'offset';
 
-    private $nostoHelperAccount;
-    private $nostoHelperScope;
+    private NostoHelperAccount $nostoHelperAccount;
+    private NostoHelperScope $nostoHelperScope;
 
     /**
      * Constructor.

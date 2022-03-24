@@ -76,12 +76,12 @@ class Account extends AbstractHelper
      */
     public const XML_PATH_DOMAIN = 'nosto_tagging/settings/domain';
 
-    private $config;
-    private $moduleManager;
-    private $logger;
-    private $nostoHelperScope;
-    private $nostoHelperUrl;
-    private $urlBuilder;
+    private WriterInterface $config;
+    private \Magento\Framework\Module\Manager $moduleManager;
+    private \Psr\Log\LoggerInterface $logger;
+    private Scope $nostoHelperScope;
+    private Url $nostoHelperUrl;
+    private UrlInterface $urlBuilder;
 
     /**
      * Account constructor.

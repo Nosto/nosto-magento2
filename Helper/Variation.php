@@ -55,10 +55,10 @@ class Variation extends AbstractHelper
     public const DEFAULT_CUSTOMER_GROUP_ID = GroupManagement::NOT_LOGGED_IN_ID;
 
     /** @var GroupRepository */
-    private $groupRepository;
+    private GroupRepository $groupRepository;
 
     /** @var Logger */
-    private $logger;
+    private Logger $logger;
 
     /**
      * Variation constructor.

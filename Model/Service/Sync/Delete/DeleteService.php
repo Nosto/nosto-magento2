@@ -56,16 +56,16 @@ class DeleteService extends AbstractService
     public const PRODUCT_DELETION_BATCH_SIZE = 100;
 
     /** @var CacheService */
-    private $cacheService;
+    private CacheService $cacheService;
 
     /** @var NostoHelperAccount */
-    private $nostoHelperAccount;
+    private NostoHelperAccount $nostoHelperAccount;
 
     /** @var NostoHelperUrl */
-    private $nostoHelperUrl;
+    private NostoHelperUrl $nostoHelperUrl;
 
     /** @var int */
-    private $deleteBatchSize;
+    private int $deleteBatchSize;
 
     /**
      * DeleteService constructor.

@@ -51,7 +51,7 @@ abstract class AbstractDimensionModeConfiguration
      *
      * @var array
      */
-    public $modesMapping = [
+    public array $modesMapping = [
         self::DIMENSION_NONE => [
         ],
         self::DIMENSION_STORE => [
@@ -62,7 +62,7 @@ abstract class AbstractDimensionModeConfiguration
     /**
      * @var ScopeConfigInterface
      */
-    public $scopeConfig;
+    public ScopeConfigInterface $scopeConfig;
 
     /**
      * @return string

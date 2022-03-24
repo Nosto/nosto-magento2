@@ -45,12 +45,12 @@ class CachingCategoryService implements CategoryServiceInterface
     /**
      * @var CategoryServiceInterface
      */
-    private $categoryService;
+    private CategoryServiceInterface $categoryService;
 
     /**
      * @var array
      */
-    private $cache = [];
+    private array $cache = [];
 
     /**
      * CachingCategoryService constructor.

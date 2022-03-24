@@ -42,13 +42,13 @@ use Nosto\NostoException;
 
 class PagingIterator implements Iterator
 {
-    private $collection;
+    private Collection $collection;
 
     /** @var int */
-    private $currentPageNumber;
+    private int $currentPageNumber;
 
     /** @var int */
-    private $lastPageNumber;
+    private int $lastPageNumber;
 
     /**
      * Iterator constructor.

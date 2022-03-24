@@ -49,16 +49,16 @@ use Nosto\Tagging\Helper\Data as NostoHelperData;
 class CollectionBuilder
 {
     /** @var ProductVisibility */
-    private $productVisibility;
+    private ProductVisibility $productVisibility;
 
     /** @var Collection */
-    private $collection;
+    private Collection $collection;
 
     /** @var CollectionFactory */
-    private $productCollectionFactory;
+    private CollectionFactory $productCollectionFactory;
 
     /** @var NostoHelperData */
-    private $nostoHelperData;
+    private NostoHelperData $nostoHelperData;
 
     /**
      * Collection constructor.

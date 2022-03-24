@@ -57,13 +57,13 @@ class Ratings extends AbstractHelper
     public const AVERAGE_SCORE = 'average_score';
     public const CURRENT_PRODUCT = 'current_product';
 
-    private $moduleManager;
-    private $nostoDataHelper;
-    private $logger;
-    private $reviewFactory;
+    private \Magento\Framework\Module\Manager $moduleManager;
+    private Data $nostoDataHelper;
+    private NostoLogger $logger;
+    private ReviewFactory $reviewFactory;
     /** @var RatingsFactory $ratingsFactory */
-    private $ratingsFactory;
-    private $registry;
+    private RatingsFactory $ratingsFactory;
+    private Registry $registry;
     private $originalProduct;
 
     /**

@@ -49,10 +49,10 @@ use Nosto\Tagging\Logger\Logger as NostoLogger;
 class DefaultCategoryService implements CategoryServiceInterface
 {
 
-    private $logger;
-    private $categoryRepository;
-    private $categoryCollectionFactory;
-    private $eventManager;
+    private NostoLogger $logger;
+    private CategoryRepositoryInterface $categoryRepository;
+    private CollectionFactory $categoryCollectionFactory;
+    private ManagerInterface $eventManager;
 
     /**
      * Builder constructor.

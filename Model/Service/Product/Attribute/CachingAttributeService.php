@@ -45,13 +45,13 @@ use Nosto\Tagging\Logger\Logger as NostoLogger;
 class CachingAttributeService extends AbstractAttributeService
 {
     /** @var array */
-    private $productAttributeCache = [];
+    private array $productAttributeCache = [];
 
     /** @var AttributeServiceInterface */
-    private $attributeService;
+    private AttributeServiceInterface $attributeService;
 
     /** @var int */
-    private $maxCachedProducts;
+    private int $maxCachedProducts;
 
     /**
      * CachingAttributeService constructor.

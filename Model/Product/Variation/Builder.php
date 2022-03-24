@@ -58,14 +58,14 @@ use Nosto\Tagging\Model\Product\Repository as NostoProductRepository;
 
 class Builder
 {
-    private $nostoPriceHelper;
-    private $eventManager;
-    private $logger;
-    private $nostoCurrencyHelper;
-    private $priceFactory;
-    private $ruleResourceModel;
-    private $nostoProductRepository;
-    private $localeDate;
+    private NostoPriceHelper $nostoPriceHelper;
+    private ManagerInterface $eventManager;
+    private NostoLogger $logger;
+    private CurrencyHelper $nostoCurrencyHelper;
+    private PriceFactory $priceFactory;
+    private RuleResourceModel $ruleResourceModel;
+    private NostoProductRepository $nostoProductRepository;
+    private TimezoneInterface $localeDate;
 
     /**
      * Builder constructor.

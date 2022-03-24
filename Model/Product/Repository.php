@@ -62,34 +62,34 @@ class Repository
 {
     public const MAX_SKUS = 5000;
 
-    private $parentProductIdCache = [];
+    private array $parentProductIdCache = [];
 
     /** @var ProductRepository $productRepository */
-    private $productRepository;
+    private ProductRepository $productRepository;
 
     /** @var SearchCriteriaBuilder $searchCriteriaBuilder */
-    private $searchCriteriaBuilder;
+    private SearchCriteriaBuilder $searchCriteriaBuilder;
 
     /** @var ConfigurableProduct $configurableProduct */
-    private $configurableProduct;
+    private ConfigurableProduct $configurableProduct;
 
     /** @var FilterGroupBuilder $filterGroupBuilder */
-    private $filterGroupBuilder;
+    private FilterGroupBuilder $filterGroupBuilder;
 
     /** @var FilterBuilder $filterBuilder */
-    private $filterBuilder;
+    private FilterBuilder $filterBuilder;
 
     /** @var ConfigurableType $configurableType */
-    private $configurableType;
+    private ConfigurableType $configurableType;
 
     /** @var ProductVisibility $productVisibility */
-    private $productVisibility;
+    private ProductVisibility $productVisibility;
 
     /** @var StockProviderInterface $stockProvider */
-    private $stockProvider;
+    private StockProviderInterface $stockProvider;
 
     /** @var Sku $skuResource */
-    private $skuResource;
+    private Sku $skuResource;
 
     /**
      * Constructor to instantiating the reindex command. This constructor uses proxy classes for

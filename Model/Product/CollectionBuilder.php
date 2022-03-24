@@ -53,13 +53,13 @@ use Traversable;
 class CollectionBuilder
 {
     /** @var ProductCollectionBuilder */
-    private $productCollectionBuilder;
+    private ProductCollectionBuilder $productCollectionBuilder;
 
     /** @var ProductServiceInterface */
-    private $productService;
+    private ProductServiceInterface $productService;
 
     /** @var NostoLogger */
-    private $logger;
+    private NostoLogger $logger;
 
     /**
      * Collection constructor.

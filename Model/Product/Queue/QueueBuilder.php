@@ -45,10 +45,10 @@ use Nosto\Tagging\Model\Product\Update\QueueFactory;
 class QueueBuilder
 {
     /** @var QueueFactory  */
-    private $queueFactory;
+    private QueueFactory $queueFactory;
 
     /** @var TimezoneInterface */
-    private $magentoTimeZone;
+    private TimezoneInterface $magentoTimeZone;
 
     /**
      * Builder constructor.

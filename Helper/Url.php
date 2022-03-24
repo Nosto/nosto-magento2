@@ -125,15 +125,15 @@ class Url extends AbstractHelper
      *
      * @var string
      */
-    public static $urlType = UrlInterface::URL_TYPE_LINK;
+    public static string $urlType = UrlInterface::URL_TYPE_LINK;
 
-    private $categoryCollectionFactory;
-    private $urlBuilder;
-    private $nostoDataHelper;
-    private $backendDataHelper;
-    private $productRepository;
-    private $nostoUrlBuilder;
-    private $logger;
+    private CategoryCollectionFactory $categoryCollectionFactory;
+    private UrlBuilder $urlBuilder;
+    private Data $nostoDataHelper;
+    private BackendDataHelper $backendDataHelper;
+    private ProductRepository $productRepository;
+    private NostoUrlBuilder $nostoUrlBuilder;
+    private NostoLogger $logger;
 
     /**
      * Constructor.

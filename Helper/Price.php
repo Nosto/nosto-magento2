@@ -63,11 +63,11 @@ use Nosto\Tagging\Model\Product\Repository as NostoProductRepository;
  */
 class Price extends AbstractHelper
 {
-    private $catalogHelper;
-    private $priceRuleFactory;
-    private $localeDate;
-    private $nostoProductRepository;
-    private $taxHelper;
+    private CatalogHelper $catalogHelper;
+    private RuleFactory $priceRuleFactory;
+    private TimezoneInterface $localeDate;
+    private NostoProductRepository $nostoProductRepository;
+    private TaxHelper $taxHelper;
 
     public const KEY_SKU_FINAL_PRICE = 'final_price';
     public const KEY_SKU_PRICE = 'price';

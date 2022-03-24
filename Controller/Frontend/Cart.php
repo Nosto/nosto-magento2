@@ -66,14 +66,14 @@ class Cart extends Action
      */
     public const HASH_PARAM = 'h';
 
-    private $context;
-    private $moduleManager;
-    private $checkoutSession;
-    private $logger;
-    private $nostoUrlHelper;
-    private $nostoScopeHelper;
-    private $nostoCustomerRepository;
-    private $cartRepository;
+    private Context $context;
+    private ModuleManager $moduleManager;
+    private Session $checkoutSession;
+    private NostoLogger $logger;
+    private NostoHelperUrl $nostoUrlHelper;
+    private NostoHelperScope $nostoScopeHelper;
+    private NostoCustomerRepository $nostoCustomerRepository;
+    private CartRepositoryInterface $cartRepository;
 
     /**
      * Cart constructor.

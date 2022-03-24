@@ -56,17 +56,17 @@ class NostoAccountConnectCommand extends Command
     /**
      * @var NostoHelperAccount
      */
-    private $nostoHelperAccount;
+    private NostoHelperAccount $nostoHelperAccount;
 
     /**
      * @var NostoHelperScope
      */
-    private $nostoHelperScope;
+    private NostoHelperScope $nostoHelperScope;
 
     /**
      * @var bool
      */
-    private $isInteractive = true;
+    private bool $isInteractive = true;
 
     /**
      * NostoConfigConnectCommand constructor.

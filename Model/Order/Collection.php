@@ -47,8 +47,8 @@ use Traversable;
 
 class Collection
 {
-    private $orderCollectionFactory;
-    private $nostoOrderBuilder;
+    private OrderCollectionFactory $orderCollectionFactory;
+    private Builder $nostoOrderBuilder;
 
     public function __construct(
         OrderCollectionFactory $orderCollectionFactory,

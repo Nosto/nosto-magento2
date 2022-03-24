@@ -46,13 +46,13 @@ use Nosto\Types\Product\ProductInterface as NostoProductInterface;
 class CachingProductService implements ProductServiceInterface
 {
     /** @var Logger */
-    private $nostoLogger;
+    private Logger $nostoLogger;
 
     /** @var CacheService */
-    private $nostoCacheService;
+    private CacheService $nostoCacheService;
 
     /** @var ProductServiceInterface */
-    private $defaultProductService;
+    private ProductServiceInterface $defaultProductService;
 
     /**
      * CachingProductService constructor.

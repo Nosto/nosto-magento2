@@ -44,10 +44,10 @@ use Nosto\Tagging\Model\Service\Stock\StockService;
 class AvailabilityService
 {
     /** @var StoreManagerInterface */
-    private $storeManager;
+    private StoreManagerInterface $storeManager;
 
     /** @var StockService */
-    private $stockService;
+    private StockService $stockService;
 
     /**
      * AvailabiltyService constructor.

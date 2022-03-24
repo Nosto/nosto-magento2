@@ -56,13 +56,13 @@ use Zend_Validate_Exception;
 class UpgradeData extends CoreData implements UpgradeDataInterface
 {
     /** @var NostoHelperAccount */
-    private $nostoHelperAccount;
+    private NostoHelperAccount $nostoHelperAccount;
 
     /** @var NostoHelperUrl */
-    private $nostoHelperUrl;
+    private NostoHelperUrl $nostoHelperUrl;
 
     /** @var WriterInterface */
-    private $config;
+    private WriterInterface $config;
 
     /**
      * UpgradeData constructor.

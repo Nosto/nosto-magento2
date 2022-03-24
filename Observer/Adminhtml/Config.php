@@ -58,22 +58,22 @@ class Config implements ObserverInterface
     public const STORE_SCOPE_KEY = 'store';
 
     /** @var NostoLogger  */
-    private $logger;
+    private NostoLogger $logger;
 
     /** @var ModuleManager  */
-    private $moduleManager;
+    private ModuleManager $moduleManager;
 
     /** @var NostoHelperScope  */
-    private $nostoHelperScope;
+    private NostoHelperScope $nostoHelperScope;
 
     /** @var NostoAccountHelper  */
-    private $nostoAccountHelper;
+    private NostoAccountHelper $nostoAccountHelper;
 
     /** var QueueIndexer */
-    private $queueIndexer;
+    private QueueIndexer $queueIndexer;
 
     /** @var IndexerRegistry */
-    private $indexerRegistry;
+    private IndexerRegistry $indexerRegistry;
 
     /**
      * Config Constructor.

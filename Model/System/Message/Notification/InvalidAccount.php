@@ -43,8 +43,8 @@ use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 
 class InvalidAccount implements MessageInterface
 {
-    private $nostoHelperScope;
-    private $nostoHelperAccount;
+    private NostoHelperScope $nostoHelperScope;
+    private NostoHelperAccount $nostoHelperAccount;
     private $message;
 
     /**

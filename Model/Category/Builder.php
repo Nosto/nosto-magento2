@@ -46,9 +46,9 @@ use Nosto\Tagging\Model\Service\Product\Category\CategoryServiceInterface as Nos
 
 class Builder
 {
-    private $logger;
-    private $eventManager;
-    private $nostoCategoryService;
+    private NostoLogger $logger;
+    private ManagerInterface $eventManager;
+    private NostoCategoryService $nostoCategoryService;
 
     /**
      * Builder constructor.

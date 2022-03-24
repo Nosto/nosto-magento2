@@ -52,13 +52,13 @@ class CacheService extends AbstractService
 {
 
     /** @var ProductSerializerInterface */
-    private $productSerializer;
+    private ProductSerializerInterface $productSerializer;
 
     /** @var ProductDataInterface */
-    private $productDataCache;
+    private ProductDataInterface $productDataCache;
 
     /** @var int|null */
-    private $lifeTime;
+    private ?int $lifeTime;
 
     /**
      * CacheService constructor.

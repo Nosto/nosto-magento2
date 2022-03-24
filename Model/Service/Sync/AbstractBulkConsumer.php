@@ -48,16 +48,16 @@ use Nosto\Tagging\Logger\Logger;
 abstract class AbstractBulkConsumer implements BulkConsumerInterface
 {
     /** @var Logger */
-    private $logger;
+    private Logger $logger;
 
     /** @var JsonHelper */
-    private $jsonHelper;
+    private JsonHelper $jsonHelper;
 
     /** @var EntityManager */
-    private $entityManager;
+    private EntityManager $entityManager;
 
     /** @var Emulation */
-    private $storeEmulation;
+    private Emulation $storeEmulation;
 
     /**
      * AbstractBulkConsumer constructor.

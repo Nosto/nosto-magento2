@@ -47,15 +47,15 @@ abstract class Builder
     /**
      * @var NostoEmailRepository
      */
-    private $emailRepository;
+    private NostoEmailRepository $emailRepository;
     /**
      * @var EventManager
      */
-    private $eventManager;
+    private EventManager $eventManager;
     /**
      * @var NostoHelperData
      */
-    private $nostoHelperData;
+    private NostoHelperData $nostoHelperData;
 
     /**
      * Builder constructor.

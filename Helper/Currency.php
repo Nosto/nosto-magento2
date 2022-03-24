@@ -48,7 +48,7 @@ use Nosto\Tagging\Helper\Data as NostoHelperData;
  */
 class Currency extends AbstractHelper
 {
-    private $nostoHelperData;
+    private Data $nostoHelperData;
 
     /**
      * Constructor.

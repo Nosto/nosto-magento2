@@ -57,7 +57,7 @@ class Product extends Base
     public const PARAM_PREVIEW = 'preview';
 
     /** @var CollectionBuilder  */
-    private $nostoCollectionBuilder;
+    private CollectionBuilder $nostoCollectionBuilder;
 
     /**
      * @param Context $context

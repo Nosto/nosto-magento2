@@ -45,13 +45,13 @@ use Nosto\Tagging\Logger\Logger;
 class DefaultAttributeProvider implements AttributeProviderInterface
 {
     /** @var AttributeCollectionFactory */
-    private $attributeCollectionFactory;
+    private AttributeCollectionFactory $attributeCollectionFactory;
 
     /** @var Config */
-    private $eavConfig;
+    private Config $eavConfig;
 
     /** @var Logger */
-    private $logger;
+    private Logger $logger;
 
     /**
      * AttributeProvider constructor.

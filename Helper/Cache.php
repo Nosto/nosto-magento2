@@ -53,15 +53,15 @@ class Cache extends AbstractHelper
     public const CACHE_ID_LAYOUT = 'layout';
 
     /** @var TypeListInterface $typeList */
-    private $typeList;
+    private TypeListInterface $typeList;
 
-    private $cacheState;
+    private StateInterface $cacheState;
 
     /** @var NostoLogger */
-    private $logger;
+    private NostoLogger $logger;
 
     /** @var Pool */
-    private $cacheFrontendPool;
+    private Pool $cacheFrontendPool;
 
     /**
      * Cache constructor.

@@ -60,17 +60,17 @@ use Zend_Validate_Exception;
 class Create extends Base
 {
     public const ADMIN_RESOURCE = 'Nosto_Tagging::system_nosto_account';
-    private $result;
-    private $nostoHelperAccount;
-    private $nostoCurrentUserBuilder;
-    private $nostoIframeMetaBuilder;
-    private $nostoRatesService;
-    private $nostoCurrencyHelper;
-    private $nostoOwnerBuilder;
-    private $nostoSignupBuilder;
-    private $logger;
-    private $nostoHelperScope;
-    private $nostoHelperCache;
+    private Json $result;
+    private NostoHelperAccount $nostoHelperAccount;
+    private NostoCurrentUserBuilder $nostoCurrentUserBuilder;
+    private NostoIframeMetaBuilder $nostoIframeMetaBuilder;
+    private NostoRatesService $nostoRatesService;
+    private NostoCurrencyHelper $nostoCurrencyHelper;
+    private NostoOwnerBuilder $nostoOwnerBuilder;
+    private NostoSignupBuilder $nostoSignupBuilder;
+    private NostoLogger $logger;
+    private NostoHelperScope $nostoHelperScope;
+    private NostoHelperCache $nostoHelperCache;
 
     /**
      * @param Context $context

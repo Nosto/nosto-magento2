@@ -49,15 +49,15 @@ use Exception;
 
 class AddCustomerReference implements DataPatchInterface, PatchVersionInterface
 {
-    private $customerReferenceForms = ['adminhtml_customer'];
+    private array $customerReferenceForms = ['adminhtml_customer'];
     /** @var CustomerSetupFactory */
-    private $customerSetupFactory;
+    private CustomerSetupFactory $customerSetupFactory;
 
     /** @var AttributeSetFactory */
-    private $attributeSetFactory;
+    private AttributeSetFactory $attributeSetFactory;
 
     /** @var ModuleDataSetupInterface */
-    private $moduleDataSetup;
+    private ModuleDataSetupInterface $moduleDataSetup;
 
     /**
      * @param CustomerSetupFactory $customerSetupFactory

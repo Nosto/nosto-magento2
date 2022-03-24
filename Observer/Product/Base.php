@@ -50,19 +50,19 @@ use Nosto\Tagging\Model\Indexer\QueueIndexer as QueueIndexer;
 abstract class Base implements ObserverInterface
 {
     /** @var ModuleManager $moduleManager */
-    public $moduleManager;
+    public ModuleManager $moduleManager;
 
     /** @var ProductRepository $productRepository */
-    public $productRepository;
+    public ProductRepository $productRepository;
 
     /** @var NostoHelperData $dataHelper */
-    public $dataHelper;
+    public NostoHelperData $dataHelper;
 
     /** @var IndexerInterface */
-    public $indexer;
+    public IndexerInterface $indexer;
 
     /** @var QueueIndexer $queueIndexer */
-    public $queueIndexer;
+    public QueueIndexer $queueIndexer;
 
     /**
      * Base constructor.

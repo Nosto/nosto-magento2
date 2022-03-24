@@ -52,13 +52,13 @@ class DefaultProductService implements ProductServiceInterface
 {
 
     /** @var NostoProductBuilder */
-    private $nostoProductBuilder;
+    private NostoProductBuilder $nostoProductBuilder;
 
     /** @var NostoLogger */
-    private $logger;
+    private NostoLogger $logger;
 
     /** @var NostoProductRepository */
-    private $nostoProductRepository;
+    private NostoProductRepository $nostoProductRepository;
 
     /**
      * DefaultProductService constructor.

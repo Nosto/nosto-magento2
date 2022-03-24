@@ -54,19 +54,19 @@ abstract class AbstractBulkPublisher implements BulkPublisherInterface
     private $bulkManagement;
 
     /** @var OperationInterfaceFactory|null */
-    private $operationFactory;
+    private ?OperationInterfaceFactory $operationFactory;
 
     /** @var IdentityGeneratorInterface */
-    private $identityService;
+    private IdentityGeneratorInterface $identityService;
 
     /** @var SerializerInterface */
-    public $serializer;
+    public SerializerInterface $serializer;
 
     /** @var Manager */
-    private $manager;
+    private Manager $manager;
 
     /** @var Logger */
-    private $logger;
+    private Logger $logger;
 
     /**
      * AbstractBulkPublisher constructor.

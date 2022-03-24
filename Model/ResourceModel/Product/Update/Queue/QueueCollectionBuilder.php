@@ -49,10 +49,10 @@ use Nosto\Tagging\Api\Data\ProductUpdateQueueInterface;
 class QueueCollectionBuilder
 {
     /** @var QueueCollection */
-    private $collection;
+    private QueueCollection $collection;
 
     /** @var QueueCollectionFactory */
-    private $queueCollectionFactory;
+    private QueueCollectionFactory $queueCollectionFactory;
 
     /**
      * Collection constructor.

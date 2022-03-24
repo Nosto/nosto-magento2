@@ -46,7 +46,7 @@ class OrderRepository
     /**
      * @var ManagerInterface
      */
-    private $eventManager;
+    private ManagerInterface $eventManager;
 
     /**
      * OrderRepository constructor.

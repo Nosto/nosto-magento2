@@ -67,10 +67,10 @@ class Product extends View
     }
 
     /** @var NostoCategoryBuilder */
-    private $categoryBuilder;
+    private NostoCategoryBuilder $categoryBuilder;
 
     /** @var ProductServiceInterface */
-    private $productService;
+    private ProductServiceInterface $productService;
 
     /**
      * Constructor.

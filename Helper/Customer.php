@@ -50,9 +50,9 @@ use Nosto\Tagging\Logger\Logger;
 class Customer extends AbstractHelper
 {
 
-    private $customerSession;
-    private $groupRepository;
-    private $logger;
+    private CustomerSession $customerSession;
+    private GroupRepository $groupRepository;
+    private Logger $logger;
 
     /**
      * Customer constructor.
