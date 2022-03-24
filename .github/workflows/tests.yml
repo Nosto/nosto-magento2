@@ -1,4 +1,4 @@
-name: PHP CI
+name: Unit Tests
 
 on: [push]
 
