@@ -5,9 +5,8 @@ All notable changes to this project will be documented in this file. This projec
 
 ### 5.5.0
 * Remove personally identifiable information from the module
-
-### 5.4.2
 * Send all active currencies formating to Nosto only when multi-currency is enabled
+* Fix failing product data tagging for configurable product with no SKUs
 
 ### 5.4.1
 * Fix product availability building for products with OOS threshold
