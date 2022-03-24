@@ -39,24 +39,20 @@ namespace Nosto\Tagging\Model\System\Message\Notification;
 use Magento\Framework\Notification\MessageInterface;
 use Magento\Framework\Phrase;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
-use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 
 class InvalidAccount implements MessageInterface
 {
-    private NostoHelperScope $nostoHelperScope;
     private NostoHelperAccount $nostoHelperAccount;
+    /** @noinspection PhpMissingFieldTypeInspection */
     private $message;
 
     /**
      * Messages constructor.
      * @param NostoHelperAccount $nostoHelperAccount
-     * @param NostoHelperScope $nostoHelperScope
      */
     public function __construct(
-        NostoHelperAccount $nostoHelperAccount,
-        NostoHelperScope $nostoHelperScope
+        NostoHelperAccount $nostoHelperAccount
     ) {
-        $this->nostoHelperScope = $nostoHelperScope;
         $this->nostoHelperAccount = $nostoHelperAccount;
     }
 

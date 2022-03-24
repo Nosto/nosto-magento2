@@ -63,7 +63,6 @@ class Ratings extends AbstractHelper
     private Data $nostoDataHelper;
     private NostoLogger $logger;
     private ReviewFactory $reviewFactory;
-    /** @var RatingsFactory $ratingsFactory */
     private RatingsFactory $ratingsFactory;
     private Registry $registry;
     private ?ProductInterface $originalProduct;

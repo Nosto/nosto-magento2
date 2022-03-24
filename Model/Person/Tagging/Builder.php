@@ -159,8 +159,6 @@ class Builder extends PersonBuilder
     /**
      * @param CustomerInterface $customer
      * @return string|null
-     * @throws LocalizedException
-     * @throws NoSuchEntityException
      */
     private function getCustomerGroupName(CustomerInterface $customer)
     {
