@@ -160,7 +160,7 @@ class StockService
      * @param Website $website
      * @return int
      */
-    private function getQtySum($productIds, Website $website)
+    private function getQtySum(array $productIds, Website $website)
     {
         $qty = 0;
         $quantities = $this->stockProvider->getQuantitiesByIds($productIds, $website);
