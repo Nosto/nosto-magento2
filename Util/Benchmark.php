@@ -48,8 +48,8 @@ class Benchmark
     private array $checkpoints = [];
     /** @var array */
     private array $checkpointTimes = [];
-    /** @var Benchmark */
-    private static Benchmark $instance;
+    /** @var Benchmark|null */
+    private static ?Benchmark $instance = null;
 
     /**
      * Prevent instance
