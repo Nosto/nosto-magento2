@@ -8,3 +8,4 @@ bin
 phan.xml
 chk*xml
 output
+.phpunit.cache
