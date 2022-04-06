@@ -150,7 +150,7 @@ jobs:
     ############################################################################
 
     - name: Build archive using composer
-      run: composer archive nosto/module-nostotagging --format=zip --file=archive
+      run: composer archive nosto/module-nostotagging:dev-${GITHUB_REF#refs/heads/}#${GITHUB_SHA} --format=zip --file=archive
 
     - name: Archive built arhive
       uses: actions/upload-artifact@v1
