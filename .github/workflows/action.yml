@@ -120,7 +120,7 @@ jobs:
       uses: shivammathur/setup-php@v2
       with:
         php-version: '7.4'
-        tools: composer:v2, pecl
+        tools: composer:v2.1.14, pecl
         extensions: ast, bcmath, gd
         coverage: none
 
