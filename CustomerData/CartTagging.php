@@ -80,6 +80,7 @@ class CartTagging extends HashedTagging implements SectionSourceInterface
         $this->nostoScopeHelper = $nostoScopeHelper;
         $this->nostoCartBuilder = $nostoCartBuilder;
         $this->nostoRestoreCartUrlBuilder = $nostoRestoreCartUrlBuilder;
+        $this->quote = $this->cartHelper->getCart()->getQuote();
     }
 
     /**
