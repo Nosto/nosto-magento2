@@ -174,7 +174,7 @@ class Ratings extends AbstractHelper
      *
      * @param Product $product the product whose rating value to fetch
      * @param Store $store the store scope in which to fetch the rating
-     * @return float|null the normalized rating value of the product
+     * @return float the normalized rating value of the product
      * @noinspection PhpPossiblePolymorphicInvocationInspection
      */
     private function buildRatingValue(Product $product, Store $store)
@@ -206,7 +206,7 @@ class Ratings extends AbstractHelper
             $this->logger->exception($e);
         }
 
-        return null;
+        return 0;
     }
 
     /**
@@ -215,7 +215,7 @@ class Ratings extends AbstractHelper
      *
      * @param Product $product the product whose rating value to fetch
      * @param Store $store the store scope in which to fetch the rating
-     * @return int|null the normalized rating value of the product
+     * @return int the normalized rating value of the product
      */
     private function buildReviewCount(Product $product, Store $store)
     {
@@ -240,11 +240,11 @@ class Ratings extends AbstractHelper
             } elseif (is_numeric($reviewCount)) {
                 return (int)$reviewCount;
             }
-            return null;
+            return 0;
         } catch (Exception $e) {
             $this->logger->exception($e);
         }
-        return null;
+        return 0;
     }
 
     /**
