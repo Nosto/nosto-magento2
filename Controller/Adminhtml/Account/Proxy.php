@@ -70,9 +70,9 @@ class Proxy extends Base
      */
     public function execute()
     {
-        $type = $this->_request->getParam('message_type');
-        $code = $this->_request->getParam('message_code');
-        $text = $this->_request->getParam('message_text');
+        $type = $this->getRequest()->getParam('message_type');
+        $code = $this->getRequest()->getParam('message_code');
+        $text = $this->getRequest()->getParam('message_text');
         if ($type !== null && $code !== null) {
             /** @noinspection PhpUndefinedMethodInspection */
             $this->backendAuthSession->setData(
@@ -85,7 +85,7 @@ class Proxy extends Base
             );
         }
 
-        if (($storeId = (int)$this->_request->getParam('store')) !== 0) {
+        if (($storeId = (int)$this->getRequest()->getParam('store')) !== 0) {
             return $this->resultRedirectFactory->create()
                 ->setPath('*/*/index', ['store' => $storeId]);
         }
