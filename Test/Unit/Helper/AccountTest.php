@@ -71,13 +71,13 @@ class AccountTest extends TestCase
     protected $urlInterface;
 
     /** @var Logger */
-    protected $loggerMock;
+    protected Logger $loggerMock;
 
     /** @var MockObject */
-    protected $moduleManagerMock;
+    protected MockObject $moduleManagerMock;
 
     /** @var Account */
-    protected $account;
+    protected Account $account;
 
     /**
      * SetUp test
