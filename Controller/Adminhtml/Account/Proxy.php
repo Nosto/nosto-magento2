@@ -45,11 +45,6 @@ class Proxy extends Base
     public const ADMIN_RESOURCE = 'Nosto_Tagging::system_nosto_account';
 
     /**
-     * @var array|string[]
-     */
-    protected array $_publicActions = ['proxy'];
-
-    /**
      * @var Session
      */
     private Session $backendAuthSession;
@@ -64,6 +59,7 @@ class Proxy extends Base
     ) {
         parent::__construct($context);
 
+        $this->_publicActions = ['proxy'];
         $this->backendAuthSession = $backendAuthSession;
     }
 
