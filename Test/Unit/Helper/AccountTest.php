@@ -67,9 +67,6 @@ class AccountTest extends TestCase
     /** @var NostoHelperUrl|MockObject */
     protected $nostoHelperUrl;
 
-    /** @var nostoHelperUrl|MockObject */
-    protected nostoHelperUrl;
-
     /** @var UrlInterface|MockObject */
     protected $urlInterface;
 
