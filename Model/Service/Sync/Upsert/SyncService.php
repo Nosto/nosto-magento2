@@ -128,6 +128,14 @@ class SyncService extends AbstractService
             return;
         }
         $account = $this->nostoHelperAccount->findAccount($store);
+        if (!$account) {
+            $this->logDebugWithStore(
+                'Account not found for this store',
+                $store
+            );
+            return;
+        }
+
         $this->startBenchmark(self::BENCHMARK_SYNC_NAME, self::BENCHMARK_SYNC_BREAKPOINT);
 
         $collection->setPageSize($this->apiBatchSize);
