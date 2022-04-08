@@ -45,7 +45,6 @@ use Magento\Framework\Setup\Patch\DataPatchInterface;
 use Magento\Framework\Setup\Patch\PatchVersionInterface;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Logger\Logger;
-use Zend_Validate_Exception;
 use Exception;
 use Nosto\Tagging\Util\PagingIterator;
 use Nosto\Tagging\Util\Customer as CustomerUtil;
@@ -111,7 +110,6 @@ class PopulateCustomerReference implements DataPatchInterface, PatchVersionInter
 
     /**
      * @throws LocalizedException
-     * @throws Zend_Validate_Exception
      * @throws Exception
      */
     public function populateCustomerReference()

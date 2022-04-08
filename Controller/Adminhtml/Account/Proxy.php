@@ -43,7 +43,15 @@ use Magento\Framework\Controller\Result\Redirect;
 class Proxy extends Base
 {
     public const ADMIN_RESOURCE = 'Nosto_Tagging::system_nosto_account';
-    protected $_publicActions = ['proxy']; // @codingStandardsIgnoreLine
+
+    /**
+     * @var array|string[]
+     */
+    protected array $_publicActions = ['proxy'];
+
+    /**
+     * @var Session
+     */
     private Session $backendAuthSession;
 
     /**

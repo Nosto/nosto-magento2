@@ -41,7 +41,7 @@ namespace Nosto\Tagging\Test\Unit\Helper;
 
 use Magento\Backend\Model\UrlInterface;
 use Magento\Framework\App\Config\Storage\WriterInterface;
-use Nosto\Request\Api\Token;
+//use Nosto\Request\Api\Token;
 use Nosto\Tagging\Helper\Account;
 use Magento\Framework\App\Helper\Context;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
