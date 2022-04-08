@@ -55,9 +55,32 @@ use Nosto\Tagging\Logger\Logger;
 
 class AccountTest extends TestCase
 {
-
     /** @var Context|MockObject */
     protected $contextMock;
+
+    /** @var WriterInterface|MockObject */
+    protected $appConfig;
+
+    /** @var NostoHelperScope|MockObject */
+    protected $nostoHelperScope;
+
+    /** @var NostoHelperUrl|MockObject */
+    protected $nostoHelperUrl;
+
+    /** @var nostoHelperUrl|MockObject */
+    protected nostoHelperUrl;
+
+    /** @var UrlInterface|MockObject */
+    protected $urlInterface;
+
+    /** @var Logger */
+    protected $loggerMock;
+
+    /** @var MockObject */
+    protected $moduleManagerMock;
+
+    /** @var Account */
+    protected $account;
 
     /**
      * SetUp test

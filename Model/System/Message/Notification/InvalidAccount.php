@@ -42,8 +42,14 @@ use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 
 class InvalidAccount implements MessageInterface
 {
+    /**
+     * @var NostoHelperAccount
+     */
     private NostoHelperAccount $nostoHelperAccount;
-    /** @noinspection PhpMissingFieldTypeInspection */
+
+    /**
+     * @var mixed
+     */
     private $message;
 
     /**
