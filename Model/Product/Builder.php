@@ -255,7 +255,7 @@ class Builder
             }
             $this->amendAttributeTags($product, $nostoProduct, $store);
             $brandAttribute = $this->nostoDataHelper->getBrandAttribute($store);
-            if ($product->hasData($brandAttribute)) {
+            if (is_string($brandAttribute) && $product->hasData($brandAttribute)) {
                 $nostoProduct->setBrand(
                     $this->attributeService->getAttributeValueByAttributeCode(
                         $product,
@@ -264,7 +264,7 @@ class Builder
                 );
             }
             $marginAttribute = $this->nostoDataHelper->getMarginAttribute($store);
-            if ($product->hasData($marginAttribute)) {
+            if (is_string($marginAttribute) && $product->hasData($marginAttribute)) {
                 $nostoProduct->setSupplierCost(
                     $this->attributeService->getAttributeValueByAttributeCode(
                         $product,
@@ -273,7 +273,7 @@ class Builder
                 );
             }
             $gtinAttribute = $this->nostoDataHelper->getGtinAttribute($store);
-            if ($product->hasData($gtinAttribute)) {
+            if (is_string($gtinAttribute) && $product->hasData($gtinAttribute)) {
                 $nostoProduct->setGtin(
                     $this->attributeService->getAttributeValueByAttributeCode(
                         $product,
@@ -282,7 +282,7 @@ class Builder
                 );
             }
             $googleCategoryAttr = $this->nostoDataHelper->getGoogleCategoryAttribute($store);
-            if ($product->hasData($googleCategoryAttr)) {
+            if (is_string($googleCategoryAttr) && $product->hasData($googleCategoryAttr)) {
                 $nostoProduct->setGoogleCategory(
                     $this->attributeService->getAttributeValueByAttributeCode(
                         $product,
