@@ -45,7 +45,7 @@ jobs:
     - name: Install Magento
       id: install-magento
       run: |
-        composer create-project magento/community-edition=2.4.3 magento --no-dev
+        composer create-project magento/community-edition=2.4.3 magento --no-dev --with-all-dependencies
         cd magento
         composer config minimum-stability dev
         composer config prefer-stable true
