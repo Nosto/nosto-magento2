@@ -49,8 +49,8 @@ jobs:
         cd magento
         composer config minimum-stability dev
         composer config prefer-stable true
-        composer require nosto/module-nostotagging:dev-${GITHUB_REF#refs/heads/}#${GITHUB_SHA}
-        composer update --no-dev --with-all-dependencies
+        composer require --no-update nosto/module-nostotagging:dev-${GITHUB_REF#refs/heads/}#${GITHUB_SHA}
+        composer update --no-dev
         bin/magento module:enable --all
         bin/magento setup:di:compile
         cd ..
