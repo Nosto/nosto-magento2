@@ -76,6 +76,7 @@ class PagingIterator implements Iterator
     /**
      * @inheritDoc
      */
+    #[\ReturnTypeWillChange]
     public function next()
     {
         ++$this->currentPageNumber;
@@ -85,6 +86,7 @@ class PagingIterator implements Iterator
     /**
      * @inheritDoc
      */
+    #[\ReturnTypeWillChange]
     public function key()
     {
         return $this->collection->getCurPage();
@@ -93,6 +95,7 @@ class PagingIterator implements Iterator
     /**
      * @inheritDoc
      */
+    #[\ReturnTypeWillChange]
     public function valid(): bool
     {
         return $this->currentPageNumber <= $this->lastPageNumber;
