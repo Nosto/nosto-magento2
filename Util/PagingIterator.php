@@ -104,6 +104,7 @@ class PagingIterator implements Iterator
     /**
      * @inheritDoc
      */
+    #[\ReturnTypeWillChange]
     public function rewind()
     {
         $this->page(1);
