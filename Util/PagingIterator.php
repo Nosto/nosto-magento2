@@ -67,6 +67,7 @@ class PagingIterator implements Iterator
     /**
      * @inheritDoc
      */
+    #[\ReturnTypeWillChange]
     public function current()
     {
         return $this->collection;
