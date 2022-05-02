@@ -157,7 +157,7 @@ class Builder
             );
             $nostoSku->setListPrice($listPrice);
             $gtinAttribute = $this->nostoDataHelper->getGtinAttribute($store);
-            if ($product->hasData($gtinAttribute)) {
+            if (is_string($gtinAttribute) && $product->hasData($gtinAttribute)) {
                 $nostoSku->setGtin($product->getData($gtinAttribute));
             }
 
