@@ -39,7 +39,7 @@
     "OSL-3.0"
   ],
   "require": {
-    "nosto/php-sdk": ">=5.8.0",
+    "nosto/php-sdk": ">=5.8.1",
     "php": ">=7.4.0",
     "magento/framework": ">=101.0.6|~102.0",
     "ext-json": "*"
