@@ -136,7 +136,7 @@ class Price extends AbstractHelper
         Product $product,
         Store   $store,
         bool    $inclTax = true,
-        bool $finalPrice = false
+        bool    $finalPrice = false
     ) {
         switch ($product->getTypeId()) {
             // Get the bundle product "from" price.
