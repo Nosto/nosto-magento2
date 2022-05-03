@@ -43,13 +43,13 @@ use Nosto\Tagging\Model\Mview\MviewInterface;
 class IndexerStatusService implements IndexerStatusServiceInterface
 {
     /** @var IndexerRegistry */
-    private $indexerRegistry;
+    private IndexerRegistry $indexerRegistry;
 
     /** @var ChangeLogInterface */
-    private $changeLog;
+    private ChangeLogInterface $changeLog;
 
     /** @var MviewInterface */
-    private $mview;
+    private MviewInterface $mview;
 
     /**
      * @param ChangelogInterface $changeLog

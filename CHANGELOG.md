@@ -1,10 +1,17 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 6.0.0
+* Compatibility with Magento 2.4.4
+* Bump minimum PHP version to 7.4
+* Use of XML schemas and data patches
+* Remove personally identifiable information from the module
+
 ### 5.4.3
 * Add page-type tagging for checkout page
 
 ### 5.4.2
 * Send all active currencies formating to Nosto only when multi-currency is enabled
+* Fix failing product data tagging for configurable product with no SKUs
 
 ### 5.4.1
 * Fix product availability building for products with OOS threshold

@@ -76,7 +76,7 @@ use Magento\CatalogInventory\Model\StockRegistryProvider as MagentoStockRegistry
 
 class StockRegistryProvider extends MagentoStockRegistryProvider
 {
-    const DEFAULT_STOCK_SCOPE = 0;
+    public const DEFAULT_STOCK_SCOPE = 0;
 
     /**
      * @param int[] $productIds
@@ -84,9 +84,13 @@ class StockRegistryProvider extends MagentoStockRegistryProvider
      * @return StockStatusCollectionInterface
      * @suppress PhanTypeMismatchArgument
      */
-    public function getStockStatuses(array $productIds, $scopeId = self::DEFAULT_STOCK_SCOPE)
+    public function getStockStatuses(array $productIds, int $scopeId = self::DEFAULT_STOCK_SCOPE)
     {
         $criteria = $this->stockStatusCriteriaFactory->create();
+        /**
+         * Argument is of type array but int is expected
+         */
+        /** @phan-suppress-next-next-line PhanTypeMismatchArgumentProbablyReal */
         /** @noinspection PhpParamsInspection */
         $criteria->setProductsFilter($productIds); // @codingStandardsIgnoreLine
         $criteria->setScopeFilter($scopeId);

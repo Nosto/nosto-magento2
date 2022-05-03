@@ -47,7 +47,7 @@ use Nosto\Tagging\Helper\Ratings as NostoRatingsHelper;
  */
 class Ratings implements OptionSourceInterface
 {
-    private $nostoRatingsHelper;
+    private NostoRatingsHelper $nostoRatingsHelper;
 
     /**
      * Ratings constructor.

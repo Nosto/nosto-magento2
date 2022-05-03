@@ -57,13 +57,13 @@ use Nosto\Tagging\Model\Order\Item\Builder as NostoOrderItemBuilder;
 
 class Builder
 {
-    const ORDER_NUMBER_PREFIX = 'M2_';
+    public const ORDER_NUMBER_PREFIX = 'M2_';
 
-    private $logger;
-    private $salesRuleFactory;
-    private $nostoOrderItemBuilder;
-    private $eventManager;
-    private $buyerBuilder;
+    private NostoLogger $logger;
+    private SalesRuleFactory $salesRuleFactory;
+    private NostoOrderItemBuilder $nostoOrderItemBuilder;
+    private ManagerInterface $eventManager;
+    private NostoBuyerBuilder $buyerBuilder;
 
     /**
      * @param NostoLogger $logger

@@ -44,12 +44,12 @@ class ProductData extends TagScope implements ProductDataInterface
     /**
      * Cache type code unique among all cache types
      */
-    const TYPE_IDENTIFIER = 'nosto_product_cache';
+    public const TYPE_IDENTIFIER = 'nosto_product_cache';
 
     /**
      * The tag name that limits the cache cleaning scope within a particular tag
      */
-    const CACHE_TAG = 'NOSTO_PRODUCT';
+    public const CACHE_TAG = 'NOSTO_PRODUCT';
 
     /**
      * @param FrontendPool $cacheFrontendPool

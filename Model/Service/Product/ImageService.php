@@ -45,10 +45,10 @@ use Nosto\Tagging\Util\Url as UrlUtil;
 class ImageService
 {
     /** @var Image  */
-    private $imageHelper;
+    private Image $imageHelper;
 
     /** @var NostoDataHelper  */
-    private $nostoDataHelper;
+    private NostoDataHelper $nostoDataHelper;
 
     /**
      * ImageService constructor.
@@ -99,10 +99,10 @@ class ImageService
      * @param Store $store
      * @return string
      */
-    public function finalizeImageUrl($url, Store $store)
+    public function finalizeImageUrl(string $url, Store $store)
     {
         if ($this->nostoDataHelper->getRemovePubDirectoryFromProductImageUrl($store)) {
-            return UrlUtil::removePubFromUrl($url);
+            return (new UrlUtil())->removePubFromUrl($url);
         }
 
         return $url;

@@ -48,7 +48,7 @@ class Grouped extends GroupedItem
     /**
      * @var ProductRepository
      */
-    private $productRepository;
+    private ProductRepository $productRepository;
 
     /**
      * Grouped constructor.

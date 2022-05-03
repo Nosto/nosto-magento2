@@ -40,13 +40,6 @@ use Magento\GroupedProduct\Model\Product\Type\Grouped as Type;
 
 class Grouped
 {
-    /**
-     * Returns the product type for grouped item
-     *
-     * @return string
-     */
-    public static function getType()
-    {
-        return Type::TYPE_CODE;
-    }
+    /** Product type for grouped item  */
+    public const TYPE = Type::TYPE_CODE;
 }

@@ -46,10 +46,10 @@ use Nosto\Tagging\Model\Rates\Builder as NostoExchangeRatesBuilder;
 
 class Service
 {
-    private $logger;
-    private $nostoExchangeRatesBuilder;
-    private $nostoHelperAccount;
-    private $nostoHelperCurrency;
+    private NostoLogger $logger;
+    private Builder $nostoExchangeRatesBuilder;
+    private NostoHelperAccount $nostoHelperAccount;
+    private NostoHelperCurrency $nostoHelperCurrency;
 
     /**
      * @param NostoLogger $logger

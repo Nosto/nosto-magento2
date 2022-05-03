@@ -65,55 +65,55 @@ use Nosto\Types\Product\ProductInterface;
 
 class Builder
 {
-    const CUSTOMIZED_TAGS = ['tag1', 'tag2', 'tag3'];
+    public const CUSTOMIZED_TAGS = ['tag1', 'tag2', 'tag3'];
 
     /** @var NostoDataHelper */
-    private $nostoDataHelper;
+    private NostoDataHelper $nostoDataHelper;
 
     /** @var NostoPriceHelper */
-    private $nostoPriceHelper;
+    private NostoPriceHelper $nostoPriceHelper;
 
     /** @var GalleryReadHandler */
-    private $galleryReadHandler;
+    private GalleryReadHandler $galleryReadHandler;
 
     /** @var ManagerInterface */
-    private $eventManager;
+    private ManagerInterface $eventManager;
 
     /** @var NostoUrlBuilder */
-    private $urlBuilder;
+    private NostoUrlBuilder $urlBuilder;
 
     /** @var NostoSkuCollection */
-    private $skuCollection;
+    private NostoSkuCollection $skuCollection;
 
     /** @var CurrencyHelper */
-    private $nostoCurrencyHelper;
+    private CurrencyHelper $nostoCurrencyHelper;
 
     /** @var LowStockHelper */
-    private $lowStockHelper;
+    private LowStockHelper $lowStockHelper;
 
     /** @var PriceVariationCollection */
-    private $priceVariationCollection;
+    private PriceVariationCollection $priceVariationCollection;
 
     /** @var NostoVariationHelper */
-    private $nostoVariationHelper;
+    private NostoVariationHelper $nostoVariationHelper;
 
     /** @var NostoRating */
-    private $nostoRatingHelper;
+    private NostoRating $nostoRatingHelper;
 
     /** @var CategoryServiceInterface */
-    private $nostoCategoryService;
+    private CategoryServiceInterface $nostoCategoryService;
 
     /** @var AttributeServiceInterface */
-    private $attributeService;
+    private AttributeServiceInterface $attributeService;
 
     /** @var AvailabilityService */
-    private $availabilityService;
+    private AvailabilityService $availabilityService;
 
     /** @var ImageService */
-    private $imageService;
+    private ImageService $imageService;
 
     /** @var StockService */
-    private $stockService;
+    private StockService $stockService;
 
     /**
      * Builder constructor.
@@ -255,7 +255,7 @@ class Builder
             }
             $this->amendAttributeTags($product, $nostoProduct, $store);
             $brandAttribute = $this->nostoDataHelper->getBrandAttribute($store);
-            if ($product->hasData($brandAttribute)) {
+            if (is_string($brandAttribute) && $product->hasData($brandAttribute)) {
                 $nostoProduct->setBrand(
                     $this->attributeService->getAttributeValueByAttributeCode(
                         $product,
@@ -264,7 +264,7 @@ class Builder
                 );
             }
             $marginAttribute = $this->nostoDataHelper->getMarginAttribute($store);
-            if ($product->hasData($marginAttribute)) {
+            if (is_string($marginAttribute) && $product->hasData($marginAttribute)) {
                 $nostoProduct->setSupplierCost(
                     $this->attributeService->getAttributeValueByAttributeCode(
                         $product,
@@ -273,7 +273,7 @@ class Builder
                 );
             }
             $gtinAttribute = $this->nostoDataHelper->getGtinAttribute($store);
-            if ($product->hasData($gtinAttribute)) {
+            if (is_string($gtinAttribute) && $product->hasData($gtinAttribute)) {
                 $nostoProduct->setGtin(
                     $this->attributeService->getAttributeValueByAttributeCode(
                         $product,
@@ -282,7 +282,7 @@ class Builder
                 );
             }
             $googleCategoryAttr = $this->nostoDataHelper->getGoogleCategoryAttribute($store);
-            if ($product->hasData($googleCategoryAttr)) {
+            if (is_string($googleCategoryAttr) && $product->hasData($googleCategoryAttr)) {
                 $nostoProduct->setGoogleCategory(
                     $this->attributeService->getAttributeValueByAttributeCode(
                         $product,

@@ -57,17 +57,17 @@ class Stub extends Template
     /**
      * @var NostoHelperData
      */
-    private $nostoHelperData;
+    private NostoHelperData $nostoHelperData;
 
     /**
      * @var NostoHelperCustomer
      */
-    private $nostoHelperCustomer;
+    private NostoHelperCustomer $nostoHelperCustomer;
 
     /**
      * @var NostoHelperVariation
      */
-    private $nostoHelperVariation;
+    private NostoHelperVariation $nostoHelperVariation;
 
     /**
      * Stub constructor.

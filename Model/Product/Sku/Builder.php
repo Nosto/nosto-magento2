@@ -58,31 +58,31 @@ use Nosto\Types\Product\ProductInterface;
 class Builder
 {
     /** @var NostoDataHelper */
-    private $nostoDataHelper;
+    private NostoDataHelper $nostoDataHelper;
 
     /** @var NostoPriceHelper */
-    private $nostoPriceHelper;
+    private NostoPriceHelper $nostoPriceHelper;
 
     /** @var NostoLogger */
-    private $nostoLogger;
+    private NostoLogger $nostoLogger;
 
     /** @var ManagerInterface */
-    private $eventManager;
+    private ManagerInterface $eventManager;
 
     /** @var CurrencyHelper */
-    private $nostoCurrencyHelper;
+    private CurrencyHelper $nostoCurrencyHelper;
 
     /** @var AttributeServiceInterface */
-    private $attributeService;
+    private AttributeServiceInterface $attributeService;
 
     /** @var AvailabilityService */
-    private $availabilityService;
+    private AvailabilityService $availabilityService;
 
     /** @var ImageService */
-    private $imageService;
+    private ImageService $imageService;
 
     /** @var StockService */
-    private $stockService;
+    private StockService $stockService;
 
     /**
      * Builder constructor.
@@ -157,7 +157,7 @@ class Builder
             );
             $nostoSku->setListPrice($listPrice);
             $gtinAttribute = $this->nostoDataHelper->getGtinAttribute($store);
-            if ($product->hasData($gtinAttribute)) {
+            if (is_string($gtinAttribute) && $product->hasData($gtinAttribute)) {
                 $nostoSku->setGtin($product->getData($gtinAttribute));
             }
 

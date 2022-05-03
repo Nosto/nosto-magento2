@@ -48,5 +48,5 @@ interface BulkConsumerInterface
      * @return void
      * @throws Exception
      */
-    public function processOperation($operation);
+    public function processOperation(OperationInterface $operation);
 }

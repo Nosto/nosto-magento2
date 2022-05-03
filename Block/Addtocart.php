@@ -55,8 +55,8 @@ class Addtocart extends Template
         TaggingTrait::__construct as taggingConstruct; // @codingStandardsIgnoreLine
     }
 
-    private $urlEncoder;
-    private $nostoHelperData;
+    private EncoderInterface $urlEncoder;
+    private NostoHelperData $nostoHelperData;
 
     /**
      * Constructor.

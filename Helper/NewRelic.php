@@ -48,7 +48,7 @@ class NewRelic
      *
      * @return bool
      */
-    public static function newRelicAvailable()
+    public function newRelicAvailable()
     {
         return extension_loaded('newrelic');
     }
@@ -58,9 +58,9 @@ class NewRelic
      *
      * @param Throwable $throwable
      */
-    public static function reportException(Throwable $throwable)
+    public function reportException(Throwable $throwable)
     {
-        if (self::newRelicAvailable()) {
+        if ($this->newRelicAvailable()) {
             /** @noinspection PhpComposerExtensionStubsInspection */
             newrelic_notice_error($throwable->getMessage(), $throwable);
         }

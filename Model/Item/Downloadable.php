@@ -40,13 +40,6 @@ use Magento\Downloadable\Model\Product\Type;
 
 class Downloadable
 {
-    /**
-     * Returns the product type for downloadable item
-     *
-     * @return string
-     */
-    public static function getType()
-    {
-        return Type::TYPE_DOWNLOADABLE;
-    }
+    /** Product type for downloadable item */
+    public const TYPE = Type::TYPE_DOWNLOADABLE;
 }

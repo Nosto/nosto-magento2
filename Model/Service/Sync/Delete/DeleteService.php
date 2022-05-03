@@ -51,21 +51,21 @@ use Nosto\Tagging\Model\Service\Cache\CacheService;
 class DeleteService extends AbstractService
 {
 
-    const BENCHMARK_DELETE_NAME = 'nosto_product_delete';
-    const BENCHMARK_DELETE_BREAKPOINT = 1;
-    const PRODUCT_DELETION_BATCH_SIZE = 100;
+    public const BENCHMARK_DELETE_NAME = 'nosto_product_delete';
+    public const BENCHMARK_DELETE_BREAKPOINT = 1;
+    public const PRODUCT_DELETION_BATCH_SIZE = 100;
 
     /** @var CacheService */
-    private $cacheService;
+    private CacheService $cacheService;
 
     /** @var NostoHelperAccount */
-    private $nostoHelperAccount;
+    private NostoHelperAccount $nostoHelperAccount;
 
     /** @var NostoHelperUrl */
-    private $nostoHelperUrl;
+    private NostoHelperUrl $nostoHelperUrl;
 
     /** @var int */
-    private $deleteBatchSize;
+    private int $deleteBatchSize;
 
     /**
      * DeleteService constructor.

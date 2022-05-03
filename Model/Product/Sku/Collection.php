@@ -50,10 +50,10 @@ use Nosto\Types\Product\SkuInterface;
 
 class Collection
 {
-    private $configurableType;
-    private $logger;
-    private $nostoSkuBuilder;
-    private $nostoProductRepository;
+    private ConfigurableType $configurableType;
+    private NostoLogger $logger;
+    private Builder $nostoSkuBuilder;
+    private NostoProductRepository $nostoProductRepository;
 
     /**
      * Builder constructor.
@@ -111,6 +111,11 @@ class Collection
     {
         /* @var ConfigurableAttributeCollection $attributes */
         $attributes = $this->configurableType->getConfigurableAttributes($product);
+        /**
+         * Returning \Magento\ConfigurableProduct\Model\Product\Type\Configurable\Attribute[]
+         * but declared to return ConfigurableAttributeCollection
+         */
+        /** @phan-suppress-next-line PhanTypeMismatchReturn */
         return $attributes;
     }
 }

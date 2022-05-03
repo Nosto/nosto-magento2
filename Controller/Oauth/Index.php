@@ -40,6 +40,7 @@ use Exception;
 use Magento\Backend\Model\UrlInterface;
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
+use Magento\Framework\App\RequestInterface;
 use Magento\Framework\App\Response\Http;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreRepository;
@@ -60,14 +61,14 @@ class Index extends Action
 {
     use OauthTrait;
 
-    private $logger;
-    private $urlBuilder;
-    private $nostoHelperAccount;
-    private $oauthMetaBuilder;
-    private $nostoHelperScope;
-    private $nostoHelperCache;
-    private $storeRepository;
-    private $request;
+    private NostoLogger $logger;
+    private UrlInterface $urlBuilder;
+    private NostoHelperAccount $nostoHelperAccount;
+    private NostoOauthBuilder $oauthMetaBuilder;
+    private NostoHelperScope $nostoHelperScope;
+    private NostoHelperCache $nostoHelperCache;
+    private StoreRepository $storeRepository;
+    private RequestInterface $request;
 
     /**
      * Index constructor.

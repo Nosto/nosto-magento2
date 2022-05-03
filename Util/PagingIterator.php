@@ -42,13 +42,13 @@ use Nosto\NostoException;
 
 class PagingIterator implements Iterator
 {
-    private $collection;
+    private Collection $collection;
 
     /** @var int */
-    private $currentPageNumber;
+    private int $currentPageNumber;
 
     /** @var int */
-    private $lastPageNumber;
+    private int $lastPageNumber;
 
     /**
      * Iterator constructor.
@@ -67,6 +67,7 @@ class PagingIterator implements Iterator
     /**
      * @inheritDoc
      */
+    #[\ReturnTypeWillChange]
     public function current()
     {
         return $this->collection;
@@ -75,6 +76,7 @@ class PagingIterator implements Iterator
     /**
      * @inheritDoc
      */
+    #[\ReturnTypeWillChange]
     public function next()
     {
         ++$this->currentPageNumber;
@@ -84,6 +86,7 @@ class PagingIterator implements Iterator
     /**
      * @inheritDoc
      */
+    #[\ReturnTypeWillChange]
     public function key()
     {
         return $this->collection->getCurPage();
@@ -92,6 +95,7 @@ class PagingIterator implements Iterator
     /**
      * @inheritDoc
      */
+    #[\ReturnTypeWillChange]
     public function valid(): bool
     {
         return $this->currentPageNumber <= $this->lastPageNumber;
@@ -100,6 +104,7 @@ class PagingIterator implements Iterator
     /**
      * @inheritDoc
      */
+    #[\ReturnTypeWillChange]
     public function rewind()
     {
         $this->page(1);

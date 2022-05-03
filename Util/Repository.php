@@ -44,12 +44,35 @@ use Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection;
 class Repository
 {
     /**
+     * Performs search
+     *
+     * @param AbstractCollection $collection
+     * @param SearchCriteriaInterface $searchCriteria
+     * @param SearchResult $searchResults
+     *
+     * @return SearchResult
+     */
+    public function search(
+        AbstractCollection $collection,
+        SearchCriteriaInterface $searchCriteria,
+        SearchResult $searchResults
+    ) {
+        $this->addFiltersToCollection($searchCriteria, $collection);
+        $collection->load();
+        $searchResults->setSearchCriteria($searchCriteria);
+        $searchResults->setItems($collection->getItems());
+        $searchResults->setTotalCount($collection->getSize());
+
+        return $searchResults;
+    }
+
+    /**
      * Adds filters to given collection
      *
      * @param SearchCriteriaInterface $searchCriteria
      * @param SourceProviderInterface $collection
      */
-    public static function addFiltersToCollection(
+    private function addFiltersToCollection(
         SearchCriteriaInterface $searchCriteria,
         SourceProviderInterface $collection
     ) {
@@ -61,28 +84,5 @@ class Repository
             }
             $collection->addFieldToFilter($fields, $conditions);
         }
-    }
-
-    /**
-     * Performs search
-     *
-     * @param AbstractCollection $collection
-     * @param SearchCriteriaInterface $searchCriteria
-     * @param SearchResult $searchResults
-     *
-     * @return SearchResult
-     */
-    public static function search(
-        AbstractCollection $collection,
-        SearchCriteriaInterface $searchCriteria,
-        SearchResult $searchResults
-    ) {
-        self::addFiltersToCollection($searchCriteria, $collection);
-        $collection->load();
-        $searchResults->setSearchCriteria($searchCriteria);
-        $searchResults->setItems($collection->getItems());
-        $searchResults->setTotalCount($collection->getSize());
-
-        return $searchResults;
     }
 }

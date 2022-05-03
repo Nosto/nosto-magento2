@@ -46,12 +46,15 @@ use Throwable;
 
 class Simple
 {
+    /** Product type for simple item */
+    public const TYPE = Type::TYPE_SIMPLE;
+
     /**
      * @param SalesItem|Item $item
      * @param $parentIds
-     * @return string|null
+     * @return string
      */
-    public static function buildName($item, $parentIds)
+    public function buildName($item, $parentIds): string
     {
         if (!$item instanceof Item && !$item instanceof SalesItem) {
             throw new InvalidArgumentException(
@@ -87,16 +90,6 @@ class Simple
         if (!empty($optNames)) {
             $name .= ' (' . implode(', ', $optNames) . ')';
         }
-        return $name;
-    }
-
-    /**
-     * Returns the product type for simple item
-     *
-     * @return string
-     */
-    public static function getType()
-    {
-        return Type::TYPE_SIMPLE;
+        return (string)$name;
     }
 }

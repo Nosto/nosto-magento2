@@ -42,7 +42,7 @@ interface MviewInterface extends ViewInterface
 {
     /**
      * Set view id
-     * @param string $id
+     * @param string|int $id
      * @return $this
      */
     public function setId($id);

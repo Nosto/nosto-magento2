@@ -39,24 +39,26 @@ namespace Nosto\Tagging\Model\System\Message\Notification;
 use Magento\Framework\Notification\MessageInterface;
 use Magento\Framework\Phrase;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
-use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 
 class InvalidAccount implements MessageInterface
 {
-    private $nostoHelperScope;
-    private $nostoHelperAccount;
+    /**
+     * @var NostoHelperAccount
+     */
+    private NostoHelperAccount $nostoHelperAccount;
+
+    /**
+     * @var mixed
+     */
     private $message;
 
     /**
      * Messages constructor.
      * @param NostoHelperAccount $nostoHelperAccount
-     * @param NostoHelperScope $nostoHelperScope
      */
     public function __construct(
-        NostoHelperAccount $nostoHelperAccount,
-        NostoHelperScope $nostoHelperScope
+        NostoHelperAccount $nostoHelperAccount
     ) {
-        $this->nostoHelperScope = $nostoHelperScope;
         $this->nostoHelperAccount = $nostoHelperAccount;
     }
 
@@ -104,7 +106,7 @@ class InvalidAccount implements MessageInterface
      *
      * @param array $invalidStores
      */
-    private function buildMessage($invalidStores)
+    private function buildMessage(array $invalidStores)
     {
         $message = '';
 
@@ -117,7 +119,10 @@ class InvalidAccount implements MessageInterface
                 . '<a href=" ' . $store['resetUrl'] . ' ">Reset Nosto settings</a> </br></br>';
         }
 
-        /** @phan-suppress-next-line PhanTypeMismatchArgument */
+        /**
+         * Argument is of type string but array is expected
+         */
+        /** @phan-suppress-next-line PhanTypeMismatchArgumentProbablyReal */
         $this->message = __($message);
     }
 }

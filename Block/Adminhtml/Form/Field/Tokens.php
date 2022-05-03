@@ -47,13 +47,13 @@ use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 class Tokens extends Field
 {
     /** @var NostoHelperAccount $nostoHelperAccount */
-    public $nostoHelperAccount;
+    public NostoHelperAccount $nostoHelperAccount;
 
     /** @var NostoHelperScope $nostoHelperScope */
-    public $nostoHelperScope;
+    public NostoHelperScope $nostoHelperScope;
 
     /** @var Http $request */
-    public $request;
+    public Http $request;
 
     /**
      * Tokens constructor.

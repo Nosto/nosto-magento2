@@ -99,7 +99,7 @@ class QueueCollection extends AbstractCollection
      * @param string $status
      * @return QueueCollection
      */
-    public function addStatusFilter($status)
+    public function addStatusFilter(string $status)
     {
         return $this->addFieldToFilter(
             ProductUpdateQueueInterface::STATUS,
@@ -154,7 +154,7 @@ class QueueCollection extends AbstractCollection
      * @param string $sort
      * @return QueueCollection
      */
-    public function orderBy($field, $sort)
+    public function orderBy(string $field, string $sort)
     {
         $this->getSelect()->order($field . ' ' . $sort);
         return $this;
@@ -169,8 +169,12 @@ class QueueCollection extends AbstractCollection
     {
         parent::_afterLoad();
         foreach ($this->getItems() as $item) {
+            /**
+             * Argument is of type Magento\Framework\DataObject
+             * but \Magento\Framework\Model\AbstractModel is expected
+             */
+            /** @phan-suppress-next-next-line PhanTypeMismatchArgumentSuperType */
             /** @noinspection PhpParamsInspection */
-            /** @phan-suppress-next-line PhanTypeMismatchArgument */
             $this->getResource()->unserializeFields($item);
             /** @noinspection PhpPossiblePolymorphicInvocationInspection */
             $item->setDataChanges(false);

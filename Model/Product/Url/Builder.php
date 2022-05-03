@@ -59,9 +59,9 @@ use Nosto\Tagging\Helper\Data as NostoDataHelper;
  */
 class Builder extends DataObject
 {
-    private $urlFinder;
-    private $urlFactory;
-    private $nostoDataHelper;
+    private UrlFinderInterface $urlFinder;
+    private Url $urlFactory;
+    private NostoDataHelper $nostoDataHelper;
 
     /**
      * @param Url $urlFactory

@@ -47,8 +47,9 @@ class DefaultProductComparator implements ProductComparatorInterface
      */
     public function isEqual(ProductInterface $product1, ProductInterface $product2)
     {
-        $product1string = StringUtil::stripWhitespaceAndLinebreaks(SerializationHelper::serialize($product1));
-        $product2string = StringUtil::stripWhitespaceAndLinebreaks(SerializationHelper::serialize($product2));
+        $stringUtil = new StringUtil();
+        $product1string = $stringUtil->stripWhitespaceAndLinebreaks(SerializationHelper::serialize($product1));
+        $product2string = $stringUtil->stripWhitespaceAndLinebreaks(SerializationHelper::serialize($product2));
 
         return $product1string === $product2string;
     }

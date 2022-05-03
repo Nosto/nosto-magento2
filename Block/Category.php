@@ -58,22 +58,22 @@ class Category extends Template
     /**
      * @var Registry
      */
-    private $registry;
+    private Registry $registry;
 
     /**
      * @var NostoCategoryBuilder
      */
-    private $categoryBuilder;
+    private NostoCategoryBuilder $categoryBuilder;
 
     /**
      * @var NostoHelperScope
      */
-    private $nostoHelperScope;
+    private NostoHelperScope $nostoHelperScope;
 
     /**
      * @var NostoHelperAccount
      */
-    private $nostoHelperAccount;
+    private NostoHelperAccount $nostoHelperAccount;
 
     /**
      * Constructor.

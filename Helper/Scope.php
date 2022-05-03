@@ -52,7 +52,7 @@ use Nosto\Tagging\Model\Service\Store\MissingStoreException;
 
 class Scope extends AbstractHelper
 {
-    private $storeManager;
+    private StoreManagerInterface $storeManager;
 
     /**
      * Scope constructor.
@@ -74,6 +74,10 @@ class Scope extends AbstractHelper
     public function getStore($storeId = null)
     {
         try {
+            /**
+             * Returning StoreInterface but declared to return Store
+             */
+            /** @phan-suppress-next-next-line PhanTypeMismatchReturnSuperType */
             /** @noinspection PhpIncompatibleReturnTypeInspection */
             return $this->storeManager->getStore($storeId);
         } catch (NoSuchEntityException $e) {
@@ -88,6 +92,10 @@ class Scope extends AbstractHelper
      */
     public function getStores($withDefault = false, $codeKey = false)
     {
+        /**
+         * Returning StoreInterface[] but declared to return Store[]
+         */
+        /** @phan-suppress-next-next-line PhanTypeMismatchReturn */
         /** @noinspection PhpIncompatibleReturnTypeInspection */
         return $this->storeManager->getStores($withDefault, $codeKey);
     }
@@ -126,6 +134,10 @@ class Scope extends AbstractHelper
      */
     public function getWebsites($withDefault = false, $codeKey = false)
     {
+        /**
+         * Returning WebsiteInterface[] but declared to return Website[]
+         */
+        /** @phan-suppress-next-next-line PhanTypeMismatchReturn */
         /** @noinspection PhpIncompatibleReturnTypeInspection */
         return $this->storeManager->getWebsites($withDefault, $codeKey);
     }

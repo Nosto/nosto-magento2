@@ -46,13 +46,13 @@ use Nosto\Tagging\Logger\Logger as NostoLogger;
 
 class Builder
 {
-    const ORDER_NUMBER_PREFIX = 'M2_';
+    public const ORDER_NUMBER_PREFIX = 'M2_';
 
     /** @var NostoLogger */
-    private $logger;
+    private NostoLogger $logger;
 
     /** @var ManagerInterface */
-    private $eventManager;
+    private ManagerInterface $eventManager;
 
     /**
      * Builder constructor.

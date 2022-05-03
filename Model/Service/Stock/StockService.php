@@ -53,10 +53,10 @@ use Nosto\Tagging\Model\Service\Stock\Provider\StockProviderInterface;
 class StockService
 {
     /** @var StockProviderInterface */
-    private $stockProvider;
+    private StockProviderInterface $stockProvider;
 
     /** @var Logger */
-    private $logger;
+    private Logger $logger;
 
     /**
      * Constructor.
@@ -160,7 +160,7 @@ class StockService
      * @param Website $website
      * @return int
      */
-    private function getQtySum($productIds, Website $website)
+    private function getQtySum(array $productIds, Website $website)
     {
         $qty = 0;
         $quantities = $this->stockProvider->getQuantitiesByIds($productIds, $website);

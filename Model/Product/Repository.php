@@ -60,36 +60,36 @@ use Nosto\Tagging\Model\Service\Stock\Provider\StockProviderInterface;
  */
 class Repository
 {
-    const MAX_SKUS = 5000;
+    public const MAX_SKUS = 5000;
 
-    private $parentProductIdCache = [];
+    private array $parentProductIdCache = [];
 
     /** @var ProductRepository $productRepository */
-    private $productRepository;
+    private ProductRepository $productRepository;
 
     /** @var SearchCriteriaBuilder $searchCriteriaBuilder */
-    private $searchCriteriaBuilder;
+    private SearchCriteriaBuilder $searchCriteriaBuilder;
 
     /** @var ConfigurableProduct $configurableProduct */
-    private $configurableProduct;
+    private ConfigurableProduct $configurableProduct;
 
     /** @var FilterGroupBuilder $filterGroupBuilder */
-    private $filterGroupBuilder;
+    private FilterGroupBuilder $filterGroupBuilder;
 
     /** @var FilterBuilder $filterBuilder */
-    private $filterBuilder;
+    private FilterBuilder $filterBuilder;
 
     /** @var ConfigurableType $configurableType */
-    private $configurableType;
+    private ConfigurableType $configurableType;
 
     /** @var ProductVisibility $productVisibility */
-    private $productVisibility;
+    private ProductVisibility $productVisibility;
 
     /** @var StockProviderInterface $stockProvider */
-    private $stockProvider;
+    private StockProviderInterface $stockProvider;
 
     /** @var Sku $skuResource */
-    private $skuResource;
+    private Sku $skuResource;
 
     /**
      * Constructor to instantiating the reindex command. This constructor uses proxy classes for
@@ -176,6 +176,10 @@ class Repository
         $product = $this->productRepository->getList($searchCriteria)->setTotalCount(1);
 
         foreach ($product->getItems() as $item) {
+            /**
+             * Returning ProductInterface but declared to return Product|null
+             */
+            /** @phan-suppress-next-next-line PhanTypeMismatchReturnSuperType */
             /** @var Product $item */
             return $item;
         }
@@ -297,7 +301,7 @@ class Repository
      * @param ProductInterface $product
      * @param string[] $parentProductIds
      */
-    private function saveParentIdsToCache(ProductInterface $product, $parentProductIds)
+    private function saveParentIdsToCache(ProductInterface $product, array $parentProductIds)
     {
         $this->parentProductIdCache[$product->getId()] = $parentProductIds;
     }
@@ -312,8 +316,12 @@ class Repository
      */
     public function getSkusAsArray(Product $product, Store $store)
     {
+        $skuIds = $this->getSkuIds($product);
+        if (empty($skuIds)) {
+            return [];
+        }
         $inStockProductsByIds = $this->stockProvider->getInStockProductIds(
-            $this->getSkuIds($product),
+            $skuIds,
             $store->getWebsite()
         );
         return $this->skuResource->getSkuPricesByIds($store->getWebsite(), $inStockProductsByIds);
@@ -326,7 +334,7 @@ class Repository
      * @return ProductInterface|Product
      * @throws NoSuchEntityException
      */
-    public function reloadProduct($productId, $storeId)
+    public function reloadProduct(int $productId, int $storeId)
     {
         return $this->productRepository->getById(
             $productId,

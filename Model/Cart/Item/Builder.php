@@ -49,23 +49,25 @@ use Nosto\Tagging\Model\Item\Downloadable;
 use Nosto\Tagging\Model\Item\Giftcard;
 use Nosto\Tagging\Model\Item\Virtual;
 use Throwable;
+use Nosto\Tagging\Model\Item\Grouped as GroupedItem;
+use Nosto\Tagging\Model\Cart\Item\Grouped as CartGroupedItem;
 
 class Builder
 {
     /**
      * @var ManagerInterface $eventManager
      */
-    private $eventManager;
+    private ManagerInterface $eventManager;
 
     /**
      * @var ProductRepository $productRepository
      */
-    private $productRepository;
+    private ProductRepository $productRepository;
 
     /**
      * @var NostoLogger $logger
      */
-    private $logger;
+    private NostoLogger $logger;
 
     /**
      * Builder constructor.
@@ -104,20 +106,23 @@ class Builder
             $productType
         ));
         switch ($productType) {
-            case Simple::getType():
-            case Virtual::getType():
-            case Downloadable::getType():
-            case Giftcard::getType():
-                $cartItem->setName(Simple::buildItemName($item));
+            case Simple::TYPE:
+            case Virtual::TYPE:
+            case Downloadable::TYPE:
+            case Giftcard::TYPE:
+                $simple = new Simple();
+                $cartItem->setName($simple->buildItemName($item));
                 break;
-            case Configurable::getType():
-                $cartItem->setName(Configurable::buildItemName($item));
+            case Configurable::TYPE:
+                $configurable = new Configurable();
+                $cartItem->setName($configurable->buildItemName($item));
                 break;
-            case Bundle::getType():
-                $cartItem->setName(Bundle::buildItemName($item));
+            case Bundle::TYPE:
+                $bundle = new Bundle();
+                $cartItem->setName($bundle->buildItemName($item));
                 break;
-            case Grouped::getType():
-                $cartItem->setName((new Grouped($this->productRepository))->buildItemName($item));
+            case GroupedItem::TYPE:
+                $cartItem->setName((new CartGroupedItem($this->productRepository))->buildItemName($item));
                 break;
         }
         try {
@@ -173,7 +178,7 @@ class Builder
      */
     public function buildSkuId(Item $item)
     {
-        if ($item->getProductType() === Configurable::getType()) {
+        if ($item->getProductType() === Configurable::TYPE) {
             $children = $item->getChildren();
             //An item with bundle product and group product may have more than 1 child.
             //But configurable product item should have max 1 child item.

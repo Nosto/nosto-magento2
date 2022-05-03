@@ -56,16 +56,16 @@ use Nosto\Tagging\Model\Customer\Customer as NostoCustomer;
 
 class Add implements ObserverInterface
 {
-    private $nostoHelperData;
-    private $nostoHelperAccount;
-    private $logger;
-    private $moduleManager;
-    private $nostoHelperScope;
-    private $cookieManager;
-    private $nostoCartItemBuilder;
-    private $nostoCartBuilder;
-    private $cookieMetadataFactory;
-    const COOKIE_NAME = 'nosto.itemsAddedToCart';
+    private NostoHelperData $nostoHelperData;
+    private NostoHelperAccount $nostoHelperAccount;
+    private NostoLogger $logger;
+    private ModuleManager $moduleManager;
+    private NostoHelperScope $nostoHelperScope;
+    private CookieManagerInterface $cookieManager;
+    private NostoCartItemBuilder $nostoCartItemBuilder;
+    private NostoCartBuilder $nostoCartBuilder;
+    private CookieMetadataFactory $cookieMetadataFactory;
+    public const COOKIE_NAME = 'nosto.itemsAddedToCart';
 
     /**
      * Constructor.

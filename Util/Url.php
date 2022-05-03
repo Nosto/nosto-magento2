@@ -44,7 +44,7 @@ class Url
      * @param string $url
      * @return mixed
      */
-    public static function removePubFromUrl($url)
+    public function removePubFromUrl(string $url)
     {
         $path = '/pub/';
         $pos = strpos($url, $path);

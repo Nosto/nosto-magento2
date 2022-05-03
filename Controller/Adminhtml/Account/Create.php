@@ -59,18 +59,18 @@ use Zend_Validate_Exception;
 
 class Create extends Base
 {
-    const ADMIN_RESOURCE = 'Nosto_Tagging::system_nosto_account';
-    private $result;
-    private $nostoHelperAccount;
-    private $nostoCurrentUserBuilder;
-    private $nostoIframeMetaBuilder;
-    private $nostoRatesService;
-    private $nostoCurrencyHelper;
-    private $nostoOwnerBuilder;
-    private $nostoSignupBuilder;
-    private $logger;
-    private $nostoHelperScope;
-    private $nostoHelperCache;
+    public const ADMIN_RESOURCE = 'Nosto_Tagging::system_nosto_account';
+    private Json $result;
+    private NostoHelperAccount $nostoHelperAccount;
+    private NostoCurrentUserBuilder $nostoCurrentUserBuilder;
+    private NostoIframeMetaBuilder $nostoIframeMetaBuilder;
+    private NostoRatesService $nostoRatesService;
+    private NostoCurrencyHelper $nostoCurrencyHelper;
+    private NostoOwnerBuilder $nostoOwnerBuilder;
+    private NostoSignupBuilder $nostoSignupBuilder;
+    private NostoLogger $logger;
+    private NostoHelperScope $nostoHelperScope;
+    private NostoHelperCache $nostoHelperCache;
 
     /**
      * @param Context $context
@@ -144,8 +144,8 @@ class Create extends Base
                 $emailAddress = $this->_request->getParam('email');
                 $accountOwner = $this->nostoOwnerBuilder->build();
                 if (Zend_Validate::is($emailAddress, 'EmailAddress')) {
-                    $accountOwner->setFirstName(null);
-                    $accountOwner->setLastName(null);
+                    $accountOwner->setFirstName('');
+                    $accountOwner->setLastName('');
                     $accountOwner->setEmail($emailAddress);
                     /** @var array $signupDetails */
                     $signupParams = $this->nostoSignupBuilder->build(

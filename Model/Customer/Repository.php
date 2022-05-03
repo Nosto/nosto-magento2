@@ -49,10 +49,10 @@ use Nosto\Tagging\Util\Repository as RepositoryUtil;
 
 class Repository implements CustomerRepositoryInterface
 {
-    private $searchCriteriaBuilder;
-    private $customerCollectionFactory;
-    private $customerSearchResultsFactory;
-    private $customerResource;
+    private SearchCriteriaBuilder $searchCriteriaBuilder;
+    private CustomerCollectionFactory $customerCollectionFactory;
+    private CustomerSearchResultsFactory $customerSearchResultsFactory;
+    private CustomerResource $customerResource;
 
     /**
      * Customer repository constructor
@@ -102,7 +102,7 @@ class Repository implements CustomerRepositoryInterface
      *
      * @return CustomerInterface|null
      */
-    public function getOneByNostoIdAndQuoteId($nostoId, $quoteId)
+    public function getOneByNostoIdAndQuoteId(string $nostoId, int $quoteId)
     {
         $searchCriteria = $this->searchCriteriaBuilder
             ->addFilter(CustomerInterface::NOSTO_ID, $nostoId)
@@ -126,7 +126,7 @@ class Repository implements CustomerRepositoryInterface
      *
      * @return CustomerInterface|null
      */
-    public function getOneByQuoteId($quoteId)
+    public function getOneByQuoteId(int $quoteId)
     {
         $searchCriteria = $this->searchCriteriaBuilder
             ->addFilter(NostoCustomer::QUOTE_ID, $quoteId)
@@ -149,7 +149,7 @@ class Repository implements CustomerRepositoryInterface
      *
      * @return CustomerInterface|null
      */
-    public function getOneByRestoreCartHash($hash)
+    public function getOneByRestoreCartHash(string $hash)
     {
         $searchCriteria = $this->searchCriteriaBuilder
             ->addFilter(CustomerInterface::RESTORE_CART_HASH, $hash)
@@ -174,8 +174,13 @@ class Repository implements CustomerRepositoryInterface
         $collection = $this->customerCollectionFactory->create();
         $searchResults = $this->customerSearchResultsFactory->create();
 
+        /**
+         * Returning \Magento\Framework\Api\Search\SearchResult
+         * but declared to return CustomerSearchResults
+         */
+        /** @phan-suppress-next-next-line PhanTypeMismatchReturnSuperType */
         /** @noinspection PhpIncompatibleReturnTypeInspection */
-        return RepositoryUtil::search(
+        return (new RepositoryUtil())->search(
             $collection,
             $searchCriteria,
             $searchResults

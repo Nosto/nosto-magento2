@@ -43,15 +43,15 @@ abstract class AbstractDimensionModeConfiguration
     /**
      * Available modes of dimensions for nosto product data indexer
      */
-    const DIMENSION_NONE = 'none';
-    const DIMENSION_STORE = 'store';
+    public const DIMENSION_NONE = 'none';
+    public const DIMENSION_STORE = 'store';
 
     /**
      * Mapping between dimension mode and dimension provider name
      *
      * @var array
      */
-    public $modesMapping = [
+    public array $modesMapping = [
         self::DIMENSION_NONE => [
         ],
         self::DIMENSION_STORE => [
@@ -62,7 +62,7 @@ abstract class AbstractDimensionModeConfiguration
     /**
      * @var ScopeConfigInterface
      */
-    public $scopeConfig;
+    public ScopeConfigInterface $scopeConfig;
 
     /**
      * @return string

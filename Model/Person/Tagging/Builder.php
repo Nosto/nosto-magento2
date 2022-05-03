@@ -43,8 +43,6 @@ use Magento\Customer\Api\Data\CustomerInterface;
 use Magento\Customer\Api\GroupRepositoryInterface as GroupRepository;
 use Magento\Customer\Helper\Session\CurrentCustomer;
 use Magento\Framework\Event\ManagerInterface as EventManager;
-use Magento\Framework\Exception\LocalizedException;
-use Magento\Framework\Exception\NoSuchEntityException;
 use Nosto\Model\Customer;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
@@ -58,14 +56,14 @@ use Nosto\Tagging\Util\Customer as CustomerUtil;
 class Builder extends PersonBuilder
 {
 
-    const GENDER_MALE = 'Male';
-    const GENDER_FEMALE = 'Female';
-    const GENDER_MALE_ID = '1';
-    const GENDER_FEMALE_ID = '2';
+    public const GENDER_MALE = 'Male';
+    public const GENDER_FEMALE = 'Female';
+    public const GENDER_MALE_ID = '1';
+    public const GENDER_FEMALE_ID = '2';
 
-    private $groupRepository;
-    private $customerRepository;
-    private $logger;
+    private GroupRepository $groupRepository;
+    private CustomerRepositoryInterface $customerRepository;
+    private NostoLogger $logger;
 
     /**
      * Builder constructor.
@@ -95,16 +93,16 @@ class Builder extends PersonBuilder
      * @return Customer
      */
     public function buildObject(
-        $firstName,
-        $lastName,
-        $email,
-        $phone = null,
-        $postCode = null,
-        $country = null,
-        $customerGroup = null,
-        $dateOfBirth = null,
-        $gender = null,
-        $customerReference = null
+        string $firstName,
+        string $lastName,
+        string $email,
+        string $phone = null,
+        string $postCode = null,
+        string $country = null,
+        string $customerGroup = null,
+        string $dateOfBirth = null,
+        string $gender = null,
+        string $customerReference = null
     ) {
         $customer = new Customer();
         $customer->setFirstName($firstName);
@@ -159,17 +157,15 @@ class Builder extends PersonBuilder
     /**
      * @param CustomerInterface $customer
      * @return string|null
-     * @throws LocalizedException
-     * @throws NoSuchEntityException
      */
     private function getCustomerGroupName(CustomerInterface $customer)
     {
         $groupId = (int)$customer->getGroupId();
-        if ($groupId === null) {
+        try {
+            return $this->groupRepository->getById($groupId)->getCode();
+        } catch (Exception $e) {
             return null;
         }
-        $group = $this->groupRepository->getById($groupId);
-        return $group->getCode();
     }
 
     /**
@@ -204,7 +200,8 @@ class Builder extends PersonBuilder
             );
 
             if ($customerReference === null) {
-                $customerReference = CustomerUtil::generateCustomerReference($customer);
+                $customerUtil = new CustomerUtil();
+                $customerReference = $customerUtil->generateCustomerReference($customer);
                 $customer->setCustomAttribute(
                     NostoHelperData::NOSTO_CUSTOMER_REFERENCE_ATTRIBUTE_NAME,
                     $customerReference

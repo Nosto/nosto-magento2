@@ -42,9 +42,12 @@ use Magento\Framework\Controller\Result\Redirect;
 
 class Proxy extends Base
 {
-    const ADMIN_RESOURCE = 'Nosto_Tagging::system_nosto_account';
-    protected $_publicActions = ['proxy']; // @codingStandardsIgnoreLine
-    private $backendAuthSession;
+    public const ADMIN_RESOURCE = 'Nosto_Tagging::system_nosto_account';
+
+    /**
+     * @var Session
+     */
+    private Session $backendAuthSession;
 
     /**
      * @param Context $context
@@ -56,6 +59,7 @@ class Proxy extends Base
     ) {
         parent::__construct($context);
 
+        $this->_publicActions = ['proxy'];
         $this->backendAuthSession = $backendAuthSession;
     }
 
@@ -70,9 +74,9 @@ class Proxy extends Base
      */
     public function execute()
     {
-        $type = $this->_request->getParam('message_type');
-        $code = $this->_request->getParam('message_code');
-        $text = $this->_request->getParam('message_text');
+        $type = $this->getRequest()->getParam('message_type');
+        $code = $this->getRequest()->getParam('message_code');
+        $text = $this->getRequest()->getParam('message_text');
         if ($type !== null && $code !== null) {
             /** @noinspection PhpUndefinedMethodInspection */
             $this->backendAuthSession->setData(
@@ -85,7 +89,7 @@ class Proxy extends Base
             );
         }
 
-        if (($storeId = (int)$this->_request->getParam('store')) !== 0) {
+        if (($storeId = (int)$this->getRequest()->getParam('store')) !== 0) {
             return $this->resultRedirectFactory->create()
                 ->setPath('*/*/index', ['store' => $storeId]);
         }

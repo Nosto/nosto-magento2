@@ -37,10 +37,12 @@
 namespace Nosto\Tagging\Helper;
 
 use Exception;
+use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Model\Product;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 use Magento\Framework\DataObject;
+use Magento\Framework\Module\Manager;
 use Magento\Framework\Registry;
 use Magento\Review\Model\ReviewFactory;
 use Magento\Store\Model\Store;
@@ -53,18 +55,17 @@ use Nosto\Tagging\Model\Product\Ratings as ProductRatings;
  */
 class Ratings extends AbstractHelper
 {
-    const REVIEW_COUNT = 'reviews_count';
-    const AVERAGE_SCORE = 'average_score';
-    const CURRENT_PRODUCT = 'current_product';
+    public const REVIEW_COUNT = 'reviews_count';
+    public const AVERAGE_SCORE = 'average_score';
+    public const CURRENT_PRODUCT = 'current_product';
 
-    private $moduleManager;
-    private $nostoDataHelper;
-    private $logger;
-    private $reviewFactory;
-    /** @var RatingsFactory $ratingsFactory */
-    private $ratingsFactory;
-    private $registry;
-    private $originalProduct;
+    private Manager $moduleManager;
+    private Data $nostoDataHelper;
+    private NostoLogger $logger;
+    private ReviewFactory $reviewFactory;
+    private RatingsFactory $ratingsFactory;
+    private Registry $registry;
+    private ?ProductInterface $originalProduct;
 
     /**
      * Ratings constructor.
@@ -173,7 +174,7 @@ class Ratings extends AbstractHelper
      *
      * @param Product $product the product whose rating value to fetch
      * @param Store $store the store scope in which to fetch the rating
-     * @return float|null the normalized rating value of the product
+     * @return float the normalized rating value of the product
      * @noinspection PhpPossiblePolymorphicInvocationInspection
      */
     private function buildRatingValue(Product $product, Store $store)
@@ -205,7 +206,7 @@ class Ratings extends AbstractHelper
             $this->logger->exception($e);
         }
 
-        return null;
+        return 0;
     }
 
     /**
@@ -214,7 +215,7 @@ class Ratings extends AbstractHelper
      *
      * @param Product $product the product whose rating value to fetch
      * @param Store $store the store scope in which to fetch the rating
-     * @return int|null the normalized rating value of the product
+     * @return int the normalized rating value of the product
      */
     private function buildReviewCount(Product $product, Store $store)
     {
@@ -239,11 +240,11 @@ class Ratings extends AbstractHelper
             } elseif (is_numeric($reviewCount)) {
                 return (int)$reviewCount;
             }
-            return null;
+            return 0;
         } catch (Exception $e) {
             $this->logger->exception($e);
         }
-        return null;
+        return 0;
     }
 
     /**

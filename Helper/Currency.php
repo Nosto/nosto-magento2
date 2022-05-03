@@ -48,7 +48,7 @@ use Nosto\Tagging\Helper\Data as NostoHelperData;
  */
 class Currency extends AbstractHelper
 {
-    private $nostoHelperData;
+    private Data $nostoHelperData;
 
     /**
      * Constructor.
@@ -74,7 +74,7 @@ class Currency extends AbstractHelper
      * @return float
      * @throws Exception
      */
-    public function convertToTaggingPrice($basePrice, Store $store)
+    public function convertToTaggingPrice(float $basePrice, Store $store)
     {
         // If multi currency is disabled or exchange rates are used
         // we don't do any processing / conversions for the price

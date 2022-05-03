@@ -54,13 +54,13 @@ use Nosto\Tagging\Model\Service\Sync\AbstractBulkConsumer;
 class AsyncBulkConsumer extends AbstractBulkConsumer
 {
     /** @var SyncService */
-    private $syncService;
+    private SyncService $syncService;
 
     /** @var NostoScopeHelper */
-    private $nostoScopeHelper;
+    private NostoScopeHelper $nostoScopeHelper;
 
     /** @var CollectionFactory */
-    private $collectionFactory;
+    private CollectionFactory $collectionFactory;
 
     /**
      * AsyncBulkConsumer constructor.

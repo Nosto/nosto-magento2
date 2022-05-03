@@ -55,16 +55,16 @@ use Nosto\Tagging\Util\PagingIterator;
 class QueueService extends AbstractService
 {
     /** @var QueueRepository  */
-    private $queueRepository;
+    private QueueRepository $queueRepository;
 
     /** @var QueueBuilder */
-    private $queueBuilder;
+    private QueueBuilder $queueBuilder;
 
     /** @var NostoProductRepository $nostoProductRepository */
-    private $nostoProductRepository;
+    private NostoProductRepository $nostoProductRepository;
 
     /** @var int $batchSize */
-    private $batchSize;
+    private int $batchSize;
 
     /**
      * QueueService constructor.
@@ -83,7 +83,7 @@ class QueueService extends AbstractService
         NostoDataHelper $nostoDataHelper,
         NostoAccountHelper $nostoAccountHelper,
         NostoProductRepository $nostoProductRepository,
-        $batchSize
+        int $batchSize
     ) {
         parent::__construct($nostoDataHelper, $nostoAccountHelper, $logger);
         $this->queueRepository = $queueRepository;

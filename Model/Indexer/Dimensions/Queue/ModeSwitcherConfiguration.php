@@ -42,21 +42,21 @@ use Magento\Framework\App\Config\ConfigResource\ConfigInterface;
 
 class ModeSwitcherConfiguration
 {
-    const XML_PATH_PRODUCT_QUEUE_DIMENSIONS_MODE = 'indexer/nosto_index_product_queue/dimensions_mode';
+    public const XML_PATH_PRODUCT_QUEUE_DIMENSIONS_MODE = 'indexer/nosto_index_product_queue/dimensions_mode';
 
     /**
      * ConfigInterface
      *
      * @var ConfigInterface
      */
-    private $configWriter;
+    private ConfigInterface $configWriter;
 
     /**
      * TypeListInterface
      *
      * @var TypeListInterface
      */
-    private $cacheTypeList;
+    private TypeListInterface $cacheTypeList;
 
     /**
      * ModeSwitcherConfiguration constructor.

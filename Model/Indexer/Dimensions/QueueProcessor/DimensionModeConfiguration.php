@@ -43,14 +43,14 @@ class DimensionModeConfiguration extends AbstractDimensionModeConfiguration
     /**
      * @var string
      */
-    private $currentMode;
+    private string $currentMode = '';
 
     /**
      * @return string
      */
     public function getCurrentMode(): string
     {
-        if ($this->currentMode === null) {
+        if ($this->currentMode === '') {
             $mode = $this->scopeConfig->getValue(
                 ModeSwitcherConfiguration::XML_PATH_PRODUCT_QUEUE_PROCESSOR_DIMENSIONS_MODE
             );

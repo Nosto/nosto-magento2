@@ -47,8 +47,8 @@ use Traversable;
 
 class Collection
 {
-    private $orderCollectionFactory;
-    private $nostoOrderBuilder;
+    private OrderCollectionFactory $orderCollectionFactory;
+    private Builder $nostoOrderBuilder;
 
     public function __construct(
         OrderCollectionFactory $orderCollectionFactory,
@@ -86,7 +86,7 @@ class Collection
      * @return OrderCollection
      * @throws NostoException
      */
-    public function buildMany(Store $store, $limit = 100, $offset = 0)
+    public function buildMany(Store $store, int $limit = 100, int $offset = 0)
     {
         $collection = $this->getCollection($store);
         $currentPage = ($offset / $limit) + 1;

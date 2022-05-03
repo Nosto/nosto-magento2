@@ -58,7 +58,7 @@ interface CustomerRepositoryInterface extends BaseRepositoryInterface
      *
      * @return CustomerInterface|null
      */
-    public function getOneByNostoIdAndQuoteId($nostoId, $quoteId);
+    public function getOneByNostoIdAndQuoteId(string $nostoId, int $quoteId);
 
     /**
      * Get customer entry by restore cart hash. If multiple entries
@@ -68,5 +68,5 @@ interface CustomerRepositoryInterface extends BaseRepositoryInterface
      *
      * @return CustomerInterface|null
      */
-    public function getOneByRestoreCartHash($hash);
+    public function getOneByRestoreCartHash(string $hash);
 }

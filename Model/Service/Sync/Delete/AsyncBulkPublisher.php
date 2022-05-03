@@ -40,8 +40,8 @@ use Nosto\Tagging\Model\Service\Sync\AbstractBulkPublisher;
 
 class AsyncBulkPublisher extends AbstractBulkPublisher
 {
-    const NOSTO_DELETE_MESSAGE_QUEUE = 'nosto_product_sync.delete';
-    const BULK_SIZE = 100;
+    public const NOSTO_DELETE_MESSAGE_QUEUE = 'nosto_product_sync.delete';
+    public const BULK_SIZE = 100;
 
     /**
      * @inheritDoc

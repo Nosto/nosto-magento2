@@ -40,13 +40,6 @@ use Magento\Catalog\Model\Product\Type;
 
 class Virtual
 {
-    /**
-     * Returns the product type for configurable item
-     *
-     * @return string
-     */
-    public static function getType()
-    {
-        return Type::TYPE_VIRTUAL;
-    }
+    /** Product type for configurable item */
+    public const TYPE = Type::TYPE_VIRTUAL;
 }

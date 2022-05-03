@@ -53,13 +53,13 @@ use Nosto\Tagging\Model\Customer\Repository as NostoCustomerRepository;
 
 class Builder
 {
-    private $logger;
-    private $cookieManager;
-    private $date;
-    private $encryptor;
-    private $nostoCustomerFactory;
-    private $urlHelper;
-    private $nostoCustomerRepository;
+    private NostoLogger $logger;
+    private CookieManagerInterface $cookieManager;
+    private DateTime $date;
+    private EncryptorInterface $encryptor;
+    private NostoCustomerFactory $nostoCustomerFactory;
+    private NostoHelperUrl $urlHelper;
+    private NostoCustomerRepository $nostoCustomerRepository;
 
     /**
      * Builder constructor.
@@ -115,7 +115,7 @@ class Builder
         // Handle the Nosto customer & quote mapping
         $nostoCustomerId = $this->cookieManager->getCookie(NostoCustomer::COOKIE_NAME);
 
-        if ($quote === null || $nostoCustomerId === null || $quote->getId() === null) {
+        if ($nostoCustomerId === null || $quote->getId() === null) {
             return null;
         }
         $nostoCustomer = $this->nostoCustomerRepository->getOneByNostoIdAndQuoteId(
@@ -182,7 +182,7 @@ class Builder
      * @return string the restore cart URL
      * @throws NoSuchEntityException
      */
-    private function generateRestoreCartUrl($hash, Store $store)
+    private function generateRestoreCartUrl(string $hash, Store $store)
     {
         $params = $this->urlHelper->getUrlOptionsWithNoSid($store);
         $params['h'] = $hash;

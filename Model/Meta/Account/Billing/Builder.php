@@ -44,8 +44,8 @@ use Nosto\Tagging\Logger\Logger as NostoLogger;
 
 class Builder
 {
-    private $logger;
-    private $eventManager;
+    private NostoLogger $logger;
+    private ManagerInterface $eventManager;
 
     /**
      * @param NostoLogger $logger

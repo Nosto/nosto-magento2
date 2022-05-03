@@ -58,22 +58,22 @@ class Variation extends Template
     /**
      * @var NostoHelperCurrency
      */
-    private $nostoHelperCurrency;
+    private NostoHelperCurrency $nostoHelperCurrency;
 
     /**
      * @var NostoHelperData
      */
-    private $nostoHelperData;
+    private NostoHelperData $nostoHelperData;
 
     /**
      * @var NostoHelperCustomer
      */
-    private $nostoHelperCustomer;
+    private NostoHelperCustomer $nostoHelperCustomer;
 
     /**
      * @var NostoHelperVariation
      */
-    private $nostoHelperVariation;
+    private NostoHelperVariation $nostoHelperVariation;
 
     /**
      * Variation constructor.

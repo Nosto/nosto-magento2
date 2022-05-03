@@ -45,9 +45,9 @@ use Nosto\Tagging\Model\Person\Tagging\Builder as NostoPersonBuilder;
 
 class CustomerTagging extends HashedTagging implements SectionSourceInterface
 {
-    private $currentCustomer;
-    private $cookieManager;
-    private $personBuilder;
+    private CurrentCustomer $currentCustomer;
+    private CookieManagerInterface $cookieManager;
+    private NostoPersonBuilder $personBuilder;
 
     /**
      * CustomerTagging constructor.
@@ -84,7 +84,7 @@ class CustomerTagging extends HashedTagging implements SectionSourceInterface
                 'first_name' => $customer->getFirstName(),
                 'last_name' => $customer->getLastName(),
                 'email' => $customer->getEmail(),
-                'hcid' => self::generateVisitorChecksum($nostoCustomerId),
+                'hcid' => $this->generateVisitorChecksum($nostoCustomerId),
                 'marketing_permission' => $customer->getMarketingPermission(),
                 'customer_reference' => $customer->getCustomerReference(),
                 'customer_group' => $customer->getCustomerGroup(),

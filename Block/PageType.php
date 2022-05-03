@@ -54,7 +54,7 @@ class PageType extends Template
     /**
      * Default type assigned to the page if none is set in the layout xml.
      */
-    const DEFAULT_TYPE = 'unknown';
+    public const DEFAULT_TYPE = 'unknown';
 
     /**
      * Constructor.

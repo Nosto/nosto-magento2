@@ -39,10 +39,10 @@ namespace Nosto\Tagging\Model\Product;
 class Ratings
 {
     /** @var int */
-    private $reviewCount;
+    private int $reviewCount;
 
     /** @var float */
-    private $rating;
+    private float $rating;
 
     /**
      * @return int $reviewCount
@@ -55,7 +55,7 @@ class Ratings
     /**
      * @param int $reviewCount
      */
-    public function setReviewCount($reviewCount)
+    public function setReviewCount(int $reviewCount)
     {
         $this->reviewCount = (int)$reviewCount;
     }
@@ -68,7 +68,7 @@ class Ratings
     /**
      * @param float $rating
      */
-    public function setRating($rating)
+    public function setRating(float $rating)
     {
         $this->rating = (float)$rating;
     }

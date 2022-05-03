@@ -49,11 +49,11 @@ use Nosto\Tagging\Logger\Logger as NostoLogger;
 
 class Builder
 {
-    private $localeResolver;
-    private $urlBuilder;
-    private $logger;
-    private $eventManager;
-    private $nostoHelperData;
+    private ResolverInterface $localeResolver;
+    private Url $urlBuilder;
+    private NostoLogger $logger;
+    private ManagerInterface $eventManager;
+    private NostoHelperData $nostoHelperData;
 
     /**
      * @param ResolverInterface $localeResolver

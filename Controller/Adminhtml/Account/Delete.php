@@ -51,13 +51,13 @@ use Nosto\Tagging\Model\User\Builder as NostoCurrentUserBuilder;
 
 class Delete extends Base
 {
-    const ADMIN_RESOURCE = 'Nosto_Tagging::system_nosto_account';
-    private $result;
-    private $nostoHelperAccount;
-    private $nostoCurrentUserBuilder;
-    private $nostoIframeMetaBuilder;
-    private $nostoHelperScope;
-    private $nostoHelperCache;
+    public const ADMIN_RESOURCE = 'Nosto_Tagging::system_nosto_account';
+    private Json $result;
+    private NostoHelperAccount $nostoHelperAccount;
+    private NostoCurrentUserBuilder $nostoCurrentUserBuilder;
+    private NostoIframeMetaBuilder $nostoIframeMetaBuilder;
+    private NostoHelperScope $nostoHelperScope;
+    private NostoHelperCache $nostoHelperCache;
 
     /**
      * @param Context $context

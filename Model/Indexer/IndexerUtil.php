@@ -42,10 +42,10 @@ use Symfony\Component\Console\Input\InputInterface;
 class IndexerUtil
 {
     /** Non-ambiguous scope for settings commands */
-    const SETUP_UPGRADE_SCOPE = 'se';
+    public const SETUP_UPGRADE_SCOPE = 'se';
 
     /** Non-ambiguous action argument for settings command */
-    const SETUP_UPGRADE_ACTION = 'up';
+    public const SETUP_UPGRADE_ACTION = 'up';
 
     /**
      * Checks if the execution scope is from Magento's setup:upgrade
@@ -53,7 +53,7 @@ class IndexerUtil
      * @param InputInterface $input
      * @return bool
      */
-    public static function isCalledFromSetupUpgrade(InputInterface $input)
+    public function isCalledFromSetupUpgrade(InputInterface $input): bool
     {
         try {
             $parts = explode(':', $input->getFirstArgument());

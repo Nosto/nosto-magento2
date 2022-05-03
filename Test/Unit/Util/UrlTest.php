@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
@@ -34,29 +35,30 @@
  *
  */
 
-namespace Nosto\Tagging\Setup;
+declare(strict_types=1);
 
-use Magento\Framework\Setup\InstallSchemaInterface;
-use Magento\Framework\Setup\ModuleContextInterface;
-use Magento\Framework\Setup\SchemaSetupInterface;
-use Zend_Db_Exception;
+namespace Nosto\Tagging\Test\Unit\Util;
 
-class InstallSchema extends Core implements InstallSchemaInterface
+use Nosto\Tagging\Util\Url;
+use PHPUnit\Framework\TestCase;
+
+class UrlTest extends TestCase
 {
+    private Url $url;
+
+    public function setUp(): void
+    {
+        $this->url = new Url();
+    }
+
     /**
-     * Installs DB schema for Nosto Tagging module
-     *
-     * @param SchemaSetupInterface $setup
-     * @param ModuleContextInterface $context
-     * @throws Zend_Db_Exception
+     * @covers Url::removePubFromUrl()
+     * @return void
      */
-    public function install(// @codingStandardsIgnoreLine
-        SchemaSetupInterface $setup,
-        ModuleContextInterface $context
-    ) {
-        $setup->startSetup();
-        $this->createCustomerTable($setup);
-        $this->createProductUpdateQueue($setup);
-        $setup->endSetup();
+    public function testRemovePubFromUrl()
+    {
+        $urlToRemovePub = 'https://magento2.dev.nos.to/media/pub/18263871.jpg';
+        $result = $this->url->removePubFromUrl($urlToRemovePub);
+        $this->assertEquals('https://magento2.dev.nos.to/media/18263871.jpg', $result);
     }
 }

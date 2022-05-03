@@ -45,10 +45,10 @@ use Nosto\Model\Product\Product;
 class SanitizingProductService implements ProductServiceInterface
 {
     /** @var ProductServiceInterface */
-    private $nostoProductService;
+    private ProductServiceInterface $nostoProductService;
 
     /** @var Logger */
-    private $logger;
+    private Logger $logger;
 
     /**
      * DefaultProductService constructor.

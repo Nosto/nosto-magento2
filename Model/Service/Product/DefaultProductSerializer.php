@@ -48,7 +48,7 @@ class DefaultProductSerializer implements ProductSerializerInterface
     /**
      * @inheritDoc
      */
-    public function fromString($data)
+    public function fromString(string $data)
     {
         return Base64Serialize::fromString($data, [Product::class]);
     }

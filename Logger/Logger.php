@@ -51,7 +51,8 @@ class Logger extends MonologLogger
      */
     public function exception(Throwable $exception)
     {
-        NewRelic::reportException($exception);
+        $newRelic = new NewRelic();
+        $newRelic->reportException($exception);
         return $this->error($exception->__toString());
     }
 
@@ -90,7 +91,7 @@ class Logger extends MonologLogger
      * @param object $sourceClass
      * @return bool
      */
-    public function debugWithSource($message, array $context, $sourceClass)
+    public function debugWithSource($message, array $context, object $sourceClass)
     {
         return $this->logWithSource($message, $context, $sourceClass, 'debug');
     }
@@ -103,7 +104,7 @@ class Logger extends MonologLogger
      * @param object $sourceClass
      * @return bool
      */
-    public function infoWithSource($message, array $context, $sourceClass)
+    public function infoWithSource($message, array $context, object $sourceClass)
     {
         return $this->logWithSource($message, $context, $sourceClass, 'info');
     }

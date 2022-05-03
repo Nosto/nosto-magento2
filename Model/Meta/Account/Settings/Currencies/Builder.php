@@ -50,22 +50,22 @@ use Nosto\Tagging\Helper\Currency as NostoHelperCurrency;
 class Builder
 {
     /** @var NostoLogger  */
-    private $logger;
+    private NostoLogger $logger;
 
     /** @var ManagerInterface  */
-    private $eventManager;
+    private ManagerInterface $eventManager;
 
     /** @var CurrencyFactory  */
-    private $currencyFactory;
+    private CurrencyFactory $currencyFactory;
 
     /** @var LocaleResolver  */
-    private $localeResolver;
+    private LocaleResolver $localeResolver;
 
     /** @var NostoHelperCurrency */
-    private $nostoCurrencyHelper;
+    private NostoHelperCurrency $nostoCurrencyHelper;
 
     /* List of zero decimal currencies in compliance with ISO-4217 */
-    const ZERO_DECIMAL_CURRENCIES = [
+    public const ZERO_DECIMAL_CURRENCIES = [
         'XOF',
         'BIF',
         'XAF',

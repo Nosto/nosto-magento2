@@ -47,7 +47,7 @@ use Magento\Framework\Module\ModuleListInterface;
 use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\Store;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
-use phpseclib\Crypt\Random;
+use phpseclib3\Crypt\Random;
 
 /**
  * NostoHelperData helper used for common tasks, mainly configurations.
@@ -57,158 +57,158 @@ class Data extends AbstractHelper
     /**
      * Path to store config installation ID.
      */
-    const XML_PATH_INSTALLATION_ID = 'nosto_tagging/installation/id';
+    public const XML_PATH_INSTALLATION_ID = 'nosto_tagging/installation/id';
 
     /**
      * Path to store config product image version setting.
      */
-    const XML_PATH_IMAGE_VERSION = 'nosto/images/version';
+    public const XML_PATH_IMAGE_VERSION = 'nosto/images/version';
 
     /**
      * Path to store config for removing "pub/" directory from image URLs
      */
-    const XML_PATH_IMAGE_REMOVE_PUB_FROM_URL = 'nosto/images/remove_pub_directory';
+    public const XML_PATH_IMAGE_REMOVE_PUB_FROM_URL = 'nosto/images/remove_pub_directory';
 
     /**
      * Path to the configuration object that store's the brand attribute
      */
-    const XML_PATH_BRAND_ATTRIBUTE = 'nosto/optional/brand';
+    public const XML_PATH_BRAND_ATTRIBUTE = 'nosto/optional/brand';
 
     /**
      * Path to the configuration object that store's the margin attribute
      */
-    const XML_PATH_MARGIN_ATTRIBUTE = 'nosto/optional/margin';
+    public const XML_PATH_MARGIN_ATTRIBUTE = 'nosto/optional/margin';
 
     /**
      * Path to the configuration object that store's the GTIN attribute
      */
-    const XML_PATH_GTIN_ATTRIBUTE = 'nosto/optional/gtin';
+    public const XML_PATH_GTIN_ATTRIBUTE = 'nosto/optional/gtin';
 
     /**
      * Path to the configuration object that store's the google_category attribute
      */
-    const XML_PATH_GOOGLE_CATEGORY_ATTRIBUTE = 'nosto/optional/google_category';
+    public const XML_PATH_GOOGLE_CATEGORY_ATTRIBUTE = 'nosto/optional/google_category';
 
     /**
      * Path to the configuration object that stores the preference to tag variation data
      */
-    const XML_PATH_VARIATION_TAGGING = 'nosto/flags/variation_tagging';
+    public const XML_PATH_VARIATION_TAGGING = 'nosto/flags/variation_tagging';
 
     /**
      * Path to store config for custom fields
      */
-    const XML_PATH_USE_CUSTOM_FIELDS = 'nosto/flags/use_custom_fields';
+    public const XML_PATH_USE_CUSTOM_FIELDS = 'nosto/flags/use_custom_fields';
 
     /**
      * Path to the configuration object that stores the preference to tag alt. image data
      */
-    const XML_PATH_ALTIMG_TAGGING = 'nosto/flags/altimg_tagging';
+    public const XML_PATH_ALTIMG_TAGGING = 'nosto/flags/altimg_tagging';
 
     /**
      * Path to the configuration object that stores the preference to tag rating and review data
      */
-    const XML_PATH_RATING_TAGGING = 'nosto/flags/rating_tagging';
+    public const XML_PATH_RATING_TAGGING = 'nosto/flags/rating_tagging';
 
     /**
      * Path to the configuration object that stores the preference to tag inventory data
      */
-    const XML_PATH_INVENTORY_TAGGING = 'nosto/flags/inventory_tagging';
+    public const XML_PATH_INVENTORY_TAGGING = 'nosto/flags/inventory_tagging';
 
     /**
      * Path to the configuration object that stores the preference for real time product updates
      */
-    const XML_PATH_PRODUCT_UPDATES = 'nosto/flags/product_updates';
+    public const XML_PATH_PRODUCT_UPDATES = 'nosto/flags/product_updates';
 
     /**
      * Path to store config for sending customer data to Nosto or not
      */
-    const XML_PATH_SEND_CUSTOMER_DATA = 'nosto/flags/send_customer_data';
+    public const XML_PATH_SEND_CUSTOMER_DATA = 'nosto/flags/send_customer_data';
 
     /**
      * Path to the configuration object that stores the preference for low stock tagging
      */
-    const XML_PATH_LOW_STOCK_INDICATION = 'nosto/flags/low_stock_indication';
+    public const XML_PATH_LOW_STOCK_INDICATION = 'nosto/flags/low_stock_indication';
 
     /**
      * Path to the configuration object that stores the percentage of PHP available memory for indexer
      */
-    const XML_PATH_INDEXER_MEMORY = 'nosto/flags/indexer_memory';
+    public const XML_PATH_INDEXER_MEMORY = 'nosto/flags/indexer_memory';
 
     /**
      * Path to the configuration object that stores the preference for indexing disabled products
      */
-    const XML_PATH_INDEX_DISABLED_PRODUCTS = 'nosto/flags/indexer_disabled_products';
+    public const XML_PATH_INDEX_DISABLED_PRODUCTS = 'nosto/flags/indexer_disabled_products';
 
     /*
      * Path to the configuration object for tagging the date a product has beed added to Magento's catalog
      */
-    const XML_PATH_TAG_DATE_PUBLISHED = 'nosto/flags/tag_date_published';
+    public const XML_PATH_TAG_DATE_PUBLISHED = 'nosto/flags/tag_date_published';
 
     /**
      * Path to the configuration object that stores customer reference
      */
-    const XML_PATH_TRACK_MULTI_CHANNEL_ORDERS = 'nosto/flags/track_multi_channel_orders';
+    public const XML_PATH_TRACK_MULTI_CHANNEL_ORDERS = 'nosto/flags/track_multi_channel_orders';
 
     /**
      * Path to the configuration object that stores preference for reloading recs after adding product to cart
      */
-    const XML_PATH_RELOAD_RECS_AFTER_ATC = 'nosto/flags/reload_recs_after_atc';
+    public const XML_PATH_RELOAD_RECS_AFTER_ATC = 'nosto/flags/reload_recs_after_atc';
 
     /**
      * Path to the configuration object for pricing variations
      */
-    const XML_PATH_PRICING_VARIATION = 'nosto/multicurrency/pricing_variation';
+    public const XML_PATH_PRICING_VARIATION = 'nosto/multicurrency/pricing_variation';
 
     /**
      * Path to the configuration object that stores the preference for adding store code to URL
      */
-    const XML_PATH_STORE_CODE_TO_URL = 'nosto/url/store_code_to_url';
+    public const XML_PATH_STORE_CODE_TO_URL = 'nosto/url/store_code_to_url';
 
     /**
      * Path to the configuration object for customized tags
      */
-    const XML_PATH_TAG = 'nosto/attributes/';
+    public const XML_PATH_TAG = 'nosto/attributes/';
 
     /**
      * Path to the configuration object for multi currency
      */
-    const XML_PATH_MULTI_CURRENCY = 'nosto/multicurrency/method';
+    public const XML_PATH_MULTI_CURRENCY = 'nosto/multicurrency/method';
 
     /**
      * @var string Nosto customer reference attribute name
      */
-    const NOSTO_CUSTOMER_REFERENCE_ATTRIBUTE_NAME = 'nosto_customer_reference';
+    public const NOSTO_CUSTOMER_REFERENCE_ATTRIBUTE_NAME = 'nosto_customer_reference';
 
     /**
      * Values for ratings settings
      */
-    const SETTING_VALUE_YOTPO_RATINGS = '2';
-    const SETTING_VALUE_MAGENTO_RATINGS = '1';
-    const SETTING_VALUE_NO_RATINGS = '0';
+    public const SETTING_VALUE_YOTPO_RATINGS = '2';
+    public const SETTING_VALUE_MAGENTO_RATINGS = '1';
+    public const SETTING_VALUE_NO_RATINGS = '0';
 
     /**
      * Values of the multi currency settings
      */
-    const SETTING_VALUE_MC_EXCHANGE_RATE = 'exchangerates';
-    const SETTING_VALUE_MC_SINGLE = 'single';
-    const SETTING_VALUE_MC_DISABLED = 'disabled';
-    const SETTING_VALUE_MC_UNDEFINED = 'undefined';
+    public const SETTING_VALUE_MC_EXCHANGE_RATE = 'exchangerates';
+    public const SETTING_VALUE_MC_SINGLE = 'single';
+    public const SETTING_VALUE_MC_DISABLED = 'disabled';
+    public const SETTING_VALUE_MC_UNDEFINED = 'undefined';
 
     /**
      * Name of the module
      */
-    const MODULE_NAME = 'Nosto_Tagging';
+    public const MODULE_NAME = 'Nosto_Tagging';
 
     /**
      * Name of the platform
      */
-    const PLATFORM_NAME = 'Magento';
+    public const PLATFORM_NAME = 'Magento';
 
-    private $moduleListing;
-    private $configWriter;
-    private $productMetaData;
-    private $nostoHelperScope;
-    private $cacheManager;
+    private ModuleListInterface $moduleListing;
+    private WriterInterface $configWriter;
+    private ProductMetadataInterface $productMetaData;
+    private Scope $nostoHelperScope;
+    private CacheManager $cacheManager;
 
     /**
      * Data constructor.
