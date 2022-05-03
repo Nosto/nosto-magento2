@@ -45,13 +45,13 @@ use Nosto\Tagging\Logger\Logger as NostoLogger;
 class CachingAttributeService extends AbstractAttributeService
 {
     /** @var array */
-    private $productAttributeCache = [];
+    private array $productAttributeCache = [];
 
     /** @var AttributeServiceInterface */
-    private $attributeService;
+    private AttributeServiceInterface $attributeService;
 
     /** @var int */
-    private $maxCachedProducts;
+    private int $maxCachedProducts;
 
     /**
      * CachingAttributeService constructor.
@@ -81,7 +81,7 @@ class CachingAttributeService extends AbstractAttributeService
      * @param string $attributeCode
      * @param bool|float|int|null|string $value
      */
-    private function saveAttributeToCache(Product $product, StoreInterface $store, $attributeCode, $value)
+    private function saveAttributeToCache(Product $product, StoreInterface $store, string $attributeCode, $value)
     {
         $storeId = $store->getId();
         $productId = $product->getId();
@@ -119,7 +119,7 @@ class CachingAttributeService extends AbstractAttributeService
      * @param string $attributeCode
      * @return bool
      */
-    private function isAttributeCached(Product $product, StoreInterface $store, $attributeCode): bool
+    private function isAttributeCached(Product $product, StoreInterface $store, string $attributeCode): bool
     {
         $storeId = $store->getId();
         $productId = $product->getId();
@@ -149,7 +149,7 @@ class CachingAttributeService extends AbstractAttributeService
     /**
      * @inheritDoc
      */
-    public function getAttributeValueByAttributeCode(Product $product, $attributeCode)
+    public function getAttributeValueByAttributeCode(Product $product, string $attributeCode)
     {
         if ($this->isAttributeCached($product, $product->getStore(), $attributeCode) === false) {
             $value = $this->attributeService->getAttributeValueByAttributeCode($product, $attributeCode);

@@ -41,7 +41,7 @@ use Nosto\Tagging\Api\Data\CustomerInterface;
 
 class Customer extends AbstractDb
 {
-    const TABLE_NAME = 'nosto_tagging_customer';
+    public const TABLE_NAME = 'nosto_tagging_customer';
 
     /**
      * Initialize resource model

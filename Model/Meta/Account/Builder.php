@@ -52,15 +52,15 @@ use stdClass;
 
 class Builder
 {
-    const API_TOKEN = 'YBDKYwSqTCzSsU8Bwbg4im2pkHMcgTy9cCX7vevjJwON1UISJIwXOLMM0a8nZY7h';
-    const PLATFORM_NAME = 'magento';
-    private $accountBillingMetaBuilder;
-    private $localeResolver;
-    private $logger;
-    private $eventManager;
-    private $nostoHelperCurrency;
-    private $nostoCurrenciesBuilder;
-    private $nostoDataHelper;
+    public const API_TOKEN = 'YBDKYwSqTCzSsU8Bwbg4im2pkHMcgTy9cCX7vevjJwON1UISJIwXOLMM0a8nZY7h';
+    public const PLATFORM_NAME = 'magento';
+    private NostoBillingBuilder $accountBillingMetaBuilder;
+    private ResolverInterface $localeResolver;
+    private NostoLogger $logger;
+    private ManagerInterface $eventManager;
+    private NostoHelperCurrency $nostoHelperCurrency;
+    private NostoCurrenciesBuilder $nostoCurrenciesBuilder;
+    private NostoDataHelper $nostoDataHelper;
 
     /**
      * @param NostoHelperCurrency $nostoHelperCurrency

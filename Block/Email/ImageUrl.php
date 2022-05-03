@@ -48,9 +48,9 @@ use Nosto\Tagging\Logger\Logger as NostoLogger;
  */
 class ImageUrl extends Template
 {
-    private $nostoHelperScope;
-    private $nostoHelperAccount;
-    private $logger;
+    private NostoHelperScope $nostoHelperScope;
+    private NostoHelperAccount $nostoHelperAccount;
+    private NostoLogger $logger;
 
     /**
      * Constructor.

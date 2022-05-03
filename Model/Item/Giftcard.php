@@ -38,15 +38,6 @@ namespace Nosto\Tagging\Model\Item;
 
 class Giftcard
 {
-    const GIFTCARD_TYPE = 'giftcard';
-
-    /**
-     * Returns the product type for gift card item
-     *
-     * @return string
-     */
-    public static function getType()
-    {
-        return self::GIFTCARD_TYPE;
-    }
+    /** Product type for gift card item */
+    public const TYPE = 'giftcard';
 }

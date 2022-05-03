@@ -50,10 +50,10 @@ use Nosto\Tagging\Model\Meta\Account\Settings\Service as NostoSettingsService;
  */
 class Update implements ObserverInterface
 {
-    private $logger;
-    private $moduleManager;
-    private $nostoSettingsService;
-    private $nostoHelperScope;
+    private NostoLogger $logger;
+    private ModuleManager $moduleManager;
+    private NostoSettingsService $nostoSettingsService;
+    private NostoHelperScope $nostoHelperScope;
 
     /**
      * Constructor.

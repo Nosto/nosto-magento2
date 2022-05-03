@@ -54,12 +54,12 @@ use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 // https://community.magento.com/t5/Magento-DevBlog/Decomposition-of-Magento-Controllers/ba-p/430883
 abstract class Base extends Action
 {
-    const ID = 'id';
-    const LIMIT = 'limit';
-    const OFFSET = 'offset';
+    public const ID = 'id';
+    public const LIMIT = 'limit';
+    public const OFFSET = 'offset';
 
-    private $nostoHelperAccount;
-    private $nostoHelperScope;
+    private NostoHelperAccount $nostoHelperAccount;
+    private NostoHelperScope $nostoHelperScope;
 
     /**
      * Constructor.
@@ -117,7 +117,7 @@ abstract class Base extends Action
      * @param int $offset
      * @return AbstractCollection the collection with the items to export
      */
-    abstract public function buildExportCollection(Store $store, $limit = 100, $offset = 0);
+    abstract public function buildExportCollection(Store $store, int $limit = 100, int $offset = 0);
 
     /**
      * Encrypts the export collection and outputs it to the browser.

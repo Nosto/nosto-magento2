@@ -49,10 +49,10 @@ use Nosto\Tagging\Model\ResourceModel\Product\Update\Queue\QueueCollectionFactor
 class QueueRepository implements ProductUpdateQueueRepositoryInterface
 {
     /** @var QueueCollectionFactory  */
-    private $queueCollectionFactory;
+    private QueueCollectionFactory $queueCollectionFactory;
 
     /** @var QueueResource  */
-    private $queueResource;
+    private QueueResource $queueResource;
 
     /**
      * IndexRepository constructor.

@@ -50,27 +50,27 @@ class ActiveVariationTagging implements SectionSourceInterface
     /**
      * @var NostoHelperData
      */
-    private $nostoHelperData;
+    private NostoHelperData $nostoHelperData;
 
     /**
      * @var NostoHelperCustomer
      */
-    private $nostoHelperCustomer;
+    private NostoHelperCustomer $nostoHelperCustomer;
 
     /**
      * @var NostoHelperScope
      */
-    private $nostoHelperScope;
+    private NostoHelperScope $nostoHelperScope;
 
     /**
      * @var NostoHelperVariation
      */
-    private $nostoHelperVariation;
+    private NostoHelperVariation $nostoHelperVariation;
 
     /**
      * @var NostoLogger
      */
-    private $nostoLogger;
+    private NostoLogger $nostoLogger;
 
     /**
      * ActiveVariationTagging constructor.

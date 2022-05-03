@@ -52,7 +52,7 @@ use Nosto\Tagging\Model\Service\Store\MissingStoreException;
 
 class Scope extends AbstractHelper
 {
-    private $storeManager;
+    private StoreManagerInterface $storeManager;
 
     /**
      * Scope constructor.

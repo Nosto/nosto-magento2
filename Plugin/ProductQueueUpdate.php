@@ -44,15 +44,14 @@ use Nosto\Tagging\Model\ResourceModel\Product\Update\Queue as QueueResource;
 
 /**
  * Plugin for product updates
- * @package Nosto\Tagging\Plugin
  */
 class ProductQueueUpdate
 {
     /** @var IndexerRegistry  */
-    private $indexerRegistry;
+    private IndexerRegistry $indexerRegistry;
 
     /** @var QueueProcessorIndexer  */
-    private $queueProcessorIndexer;
+    private QueueProcessorIndexer $queueProcessorIndexer;
 
     /**
      * ProductInvalidate constructor.

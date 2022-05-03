@@ -47,15 +47,15 @@ abstract class Builder
     /**
      * @var NostoEmailRepository
      */
-    private $emailRepository;
+    private NostoEmailRepository $emailRepository;
     /**
      * @var EventManager
      */
-    private $eventManager;
+    private EventManager $eventManager;
     /**
      * @var NostoHelperData
      */
-    private $nostoHelperData;
+    private NostoHelperData $nostoHelperData;
 
     /**
      * Builder constructor.
@@ -88,16 +88,16 @@ abstract class Builder
      * @return AbstractPerson|null
      */
     public function build(
-        $firstName,
-        $lastName,
-        $email,
-        $phone = null,
-        $postCode = null,
-        $country = null,
-        $customerGroup = null,
-        $dateOfBirth = null,
-        $gender = null,
-        $customerReference = null
+        string $firstName,
+        string $lastName,
+        string $email,
+        ?string $phone = null,
+        ?string $postCode = null,
+        ?string $country = null,
+        ?string $customerGroup = null,
+        ?string $dateOfBirth = null,
+        ?string $gender = null,
+        ?string $customerReference = null
     ) {
         if (!$this->nostoHelperData->isSendCustomerDataToNostoEnabled()) {
             return null;
@@ -161,15 +161,15 @@ abstract class Builder
      * @return AbstractPerson
      */
     abstract public function buildObject(
-        $firstName,
-        $lastName,
-        $email,
-        $phone = null,
-        $postCode = null,
-        $country = null,
-        $customerGroup = null,
-        $dateOfBirth = null,
-        $gender = null,
-        $customerReference = null
+        string $firstName,
+        string $lastName,
+        string $email,
+        string $phone = null,
+        string $postCode = null,
+        string $country = null,
+        string $customerGroup = null,
+        string $dateOfBirth = null,
+        string $gender = null,
+        string $customerReference = null
     );
 }

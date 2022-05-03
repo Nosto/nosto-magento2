@@ -52,7 +52,7 @@ class Meta extends Template
         TaggingTrait::__construct as taggingConstruct; // @codingStandardsIgnoreLine
     }
 
-    private $nostoHelperData;
+    private NostoHelperData $nostoHelperData;
 
     /**
      * Constructor.

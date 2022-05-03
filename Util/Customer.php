@@ -41,13 +41,13 @@ use Magento\Customer\Model\Backend\Customer\Interceptor as CustomerInterceptor;
 
 class Customer
 {
-    const CUSTOMER_REFERENCE_HASH_ALGO = 'sha256';
+    public const CUSTOMER_REFERENCE_HASH_ALGO = 'sha256';
 
     /**
      * @param CustomerInterface|CustomerInterceptor $customer
      * @return string
      */
-    public static function generateCustomerReference($customer)
+    public function generateCustomerReference($customer)
     {
         return hash(
             self::CUSTOMER_REFERENCE_HASH_ALGO,

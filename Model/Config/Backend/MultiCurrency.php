@@ -48,7 +48,7 @@ use Nosto\Tagging\Helper\Data as NostoHelperData;
 
 class MultiCurrency extends Value
 {
-    private $configWriter;
+    private WriterInterface $configWriter;
 
     /**
      * MultiCurrency constructor.

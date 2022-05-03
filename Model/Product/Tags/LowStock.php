@@ -42,7 +42,7 @@ use Magento\CatalogInventory\Api\StockStateInterface;
 
 class LowStock
 {
-    private $stockItem;
+    private StockStateInterface $stockItem;
 
     /**
      * LowStock constructor.

@@ -65,25 +65,25 @@ use UnexpectedValueException;
 abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerActionInterface, MviewActionInterface
 {
     /** @var NostoHelperScope */
-    private $nostoHelperScope;
+    private NostoHelperScope $nostoHelperScope;
 
     /** @var NostoLogger */
-    public $nostoLogger;
+    public NostoLogger $nostoLogger;
 
     /** @var ProcessManager */
-    private $processManager;
+    private ?ProcessManager $processManager;
 
     /** @var DimensionProviderInterface */
     private $dimensionProvider;
 
     /** @var Emulation */
-    private $storeEmulator;
+    private Emulation $storeEmulator;
 
     /** @var InputInterface */
-    private $input;
+    private InputInterface $input;
 
     /** @var IndexerStatusServiceInterface */
-    private $indexerStatusService;
+    private IndexerStatusServiceInterface $indexerStatusService;
 
     /**
      * AbstractIndexer constructor.
@@ -299,7 +299,8 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
      */
     public function allowFullExecution(): bool
     {
-        return IndexerUtil::isCalledFromSetupUpgrade($this->input) === false;
+        $indexerUtil = new IndexerUtil();
+        return $indexerUtil->isCalledFromSetupUpgrade($this->input) === false;
     }
 
     /**
@@ -339,7 +340,7 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
      * @param string $message
      * @param int|string|null $storeId
      */
-    private function logDebug($message, $storeId = null)
+    private function logDebug(string $message, $storeId = null)
     {
         $this->log($message, 'debug', $storeId);
     }
@@ -350,7 +351,7 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
      * @param string $message
      * @param int|string|null $storeId
      */
-    private function logInfo($message, $storeId = null)
+    private function logInfo(string $message, $storeId = null)
     {
         $this->log($message, 'info', $storeId);
     }
@@ -363,7 +364,7 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
      * @param int|string|null $storeId
      * @return bool
      */
-    private function log($message, $level, $storeId = null)
+    private function log(string $message, string $level, $storeId = null)
     {
         $logContext = ['indexerId' => $this->getIndexerId()];
         if ($storeId !== null) {

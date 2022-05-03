@@ -44,57 +44,53 @@ use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Module\Manager;
 use Magento\Framework\Serialize\SerializerInterface;
 use Nosto\Tagging\Logger\Logger;
+use Magento\AsynchronousOperations\Api\Data\OperationInterfaceFactory;
 
 abstract class AbstractBulkPublisher implements BulkPublisherInterface
 {
-    const STATUS_TYPE_OPEN = 4; //\Magento\Framework\Bulk\OperationInterface::STATUS_TYPE_OPEN;
+    private const STATUS_TYPE_OPEN = \Magento\Framework\Bulk\OperationInterface::STATUS_TYPE_OPEN;
 
     /** @var \Magento\Framework\Bulk\BulkManagementInterface|null */
     private $bulkManagement;
 
-    /** @var \Magento\AsynchronousOperations\Api\Data\OperationInterfaceFactory|null */
-    private $operationFactory;
+    /** @var OperationInterfaceFactory|null */
+    private ?OperationInterfaceFactory $operationFactory;
 
     /** @var IdentityGeneratorInterface */
-    private $identityService;
+    private IdentityGeneratorInterface $identityService;
 
     /** @var SerializerInterface */
-    public $serializer;
-
-    /** @var BulkConsumerInterface */
-    private $asyncBulkConsumer;
+    public SerializerInterface $serializer;
 
     /** @var Manager */
-    private $manager;
+    private Manager $manager;
 
     /** @var Logger */
-    private $logger;
+    private Logger $logger;
 
     /**
      * AbstractBulkPublisher constructor.
      * @param IdentityGeneratorInterface $identityService
+     * @param OperationInterfaceFactory $operationInterfaceFactory
      * @param SerializerInterface $serializer
-     * @param BulkConsumerInterface $asyncBulkConsumer
      * @param Manager $manager
      * @param Logger $logger
      */
     public function __construct(// @codingStandardsIgnoreLine
         IdentityGeneratorInterface $identityService,
+        OperationInterfaceFactory $operationInterfaceFactory,
         SerializerInterface $serializer,
-        BulkConsumerInterface $asyncBulkConsumer,
         Manager $manager,
         Logger $logger
     ) {
         $this->identityService = $identityService;
+        $this->operationFactory = $operationInterfaceFactory;
         $this->serializer = $serializer;
-        $this->asyncBulkConsumer = $asyncBulkConsumer;
         $this->manager = $manager;
         $this->logger = $logger;
         try {
             $this->bulkManagement = ObjectManager::getInstance()
                 ->get(\Magento\Framework\Bulk\BulkManagementInterface::class);
-            $this->operationFactory = ObjectManager::getInstance()
-                ->get(\Magento\AsynchronousOperations\Api\Data\OperationInterfaceFactory::class);
         } catch (Exception $e) {
             $logger->debug('Module Magento_AsynchronousOperations not available');
         }
@@ -104,7 +100,7 @@ abstract class AbstractBulkPublisher implements BulkPublisherInterface
      * @inheritDoc
      * @throws LocalizedException
      */
-    public function execute($storeId, $productIds = [])
+    public function execute(int $storeId, array $productIds = [])
     {
         if (!empty($productIds)) {
             $this->publishCollectionToQueue($storeId, $productIds);
@@ -204,9 +200,9 @@ abstract class AbstractBulkPublisher implements BulkPublisherInterface
      * @return array
      */
     private function buildOperationData(
-        $storeId,
-        $productIds,
-        $bulkUuid
+        int $storeId,
+        array $productIds,
+        string $bulkUuid
     ) {
         $dataToEncode = [
             'meta_information' => $this->getMetaData(),

@@ -45,9 +45,9 @@ use Nosto\Tagging\Model\Meta\Account\Settings\Builder as NostoSettingsBuilder;
 
 class Service
 {
-    private $logger;
-    private $nostoHelperAccount;
-    private $nostoSettingsBuilder;
+    private NostoLogger $logger;
+    private NostoHelperAccount $nostoHelperAccount;
+    private Builder $nostoSettingsBuilder;
 
     /**
      * @param NostoLogger $logger

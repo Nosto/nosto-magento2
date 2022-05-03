@@ -47,10 +47,10 @@ use Magento\Store\Model\App\Emulation;
 class AsyncBulkConsumer extends AbstractBulkConsumer
 {
     /** @var DeleteService */
-    private $deleteService;
+    private DeleteService $deleteService;
 
     /** @var NostoHelperScope */
-    private $nostoHelperScope;
+    private NostoHelperScope $nostoHelperScope;
 
     /**
      * AsyncBulkConsumer constructor.

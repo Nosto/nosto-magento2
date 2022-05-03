@@ -46,9 +46,9 @@ use Nosto\Tagging\Logger\Logger as NostoLogger;
 
 class Builder
 {
-    private $logger;
-    private $eventManager;
-    private $currencyFactory;
+    private NostoLogger $logger;
+    private ManagerInterface $eventManager;
+    private CurrencyFactory $currencyFactory;
 
     /**
      * @param NostoLogger $logger

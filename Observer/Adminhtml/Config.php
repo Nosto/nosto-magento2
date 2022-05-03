@@ -54,26 +54,26 @@ use Nosto\Tagging\Model\Indexer\QueueIndexer;
  */
 class Config implements ObserverInterface
 {
-    const WEBSITE_SCOPE_KEY = 'website';
-    const STORE_SCOPE_KEY = 'store';
+    public const WEBSITE_SCOPE_KEY = 'website';
+    public const STORE_SCOPE_KEY = 'store';
 
     /** @var NostoLogger  */
-    private $logger;
+    private NostoLogger $logger;
 
     /** @var ModuleManager  */
-    private $moduleManager;
+    private ModuleManager $moduleManager;
 
     /** @var NostoHelperScope  */
-    private $nostoHelperScope;
+    private NostoHelperScope $nostoHelperScope;
 
     /** @var NostoAccountHelper  */
-    private $nostoAccountHelper;
+    private NostoAccountHelper $nostoAccountHelper;
 
     /** var QueueIndexer */
-    private $queueIndexer;
+    private QueueIndexer $queueIndexer;
 
     /** @var IndexerRegistry */
-    private $indexerRegistry;
+    private IndexerRegistry $indexerRegistry;
 
     /**
      * Config Constructor.

@@ -50,13 +50,13 @@ use Nosto\Tagging\Model\Customer\Customer as NostoCustomer;
 
 class CartTagging extends HashedTagging implements SectionSourceInterface
 {
-    private $cartHelper;
-    private $cookieManager;
-    private $logger;
-    private $quote;
-    private $nostoScopeHelper;
-    private $nostoCartBuilder;
-    private $nostoRestoreCartUrlBuilder;
+    private CartHelper $cartHelper;
+    private CookieManagerInterface $cookieManager;
+    private NostoLogger $logger;
+    private Quote $quote;
+    private NostoHelperScope $nostoScopeHelper;
+    private NostoCartBuilder $nostoCartBuilder;
+    private NostoRestoreCartUrlBuilder $nostoRestoreCartUrlBuilder;
 
     /**
      * @param CartHelper $cartHelper
@@ -80,6 +80,7 @@ class CartTagging extends HashedTagging implements SectionSourceInterface
         $this->nostoScopeHelper = $nostoScopeHelper;
         $this->nostoCartBuilder = $nostoCartBuilder;
         $this->nostoRestoreCartUrlBuilder = $nostoRestoreCartUrlBuilder;
+        $this->quote = $this->cartHelper->getCart()->getQuote();
     }
 
     /**
@@ -89,9 +90,8 @@ class CartTagging extends HashedTagging implements SectionSourceInterface
     {
         $nostoCustomerId = $this->cookieManager->getCookie(NostoCustomer::COOKIE_NAME);
         $data = [
-            'hcid' => parent::generateVisitorChecksum($nostoCustomerId),
+            'hcid' => $this->generateVisitorChecksum($nostoCustomerId),
             'items' => [],
-            'itemCount' => 0,
             'restore_cart_url' => ''
         ];
         $cart = $this->cartHelper->getCart();

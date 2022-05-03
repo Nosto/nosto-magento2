@@ -48,7 +48,7 @@ class Bundle extends BundledItem
      * @param Item $item the ordered item
      * @return string the name of the product
      */
-    public static function buildItemName(Item $item)
+    public function buildItemName(Item $item): string
     {
         $name = $item->getName() ?: '';
         $optNames = [];

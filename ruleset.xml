@@ -38,11 +38,17 @@
 <ruleset name="Magento">
     <file>./Api</file>
     <file>./Block</file>
+    <file>./Console</file>
     <file>./Controller</file>
+    <file>./Cron</file>
     <file>./CustomerData</file>
+    <file>./Exception</file>
     <file>./Helper</file>
+    <file>./Logger</file>
     <file>./Model</file>
     <file>./Observer</file>
+    <file>./Plugin</file>
+    <file>./Util</file>
     <file>./Setup</file>
     <file>./view</file>
     <exclude-pattern>*.js</exclude-pattern>
@@ -51,9 +57,25 @@
             value="./vendor/magento-ecg/coding-standard/EcgM2,./vendor/magento/magento-coding-standard/Magento2"/>
     <description>The Magento coding standard.</description>
     <rule ref="./vendor/magento-ecg/coding-standard/EcgM2">
+        <exclude name="EcgM2.Deprecated.InheritDoc.Found"/>
+        <exclude name="EcgM2.Deprecated.SpaceDocBlock.Found"/><!--@author from copyright blocks-->
+        <exclude name="Ecg.PHP.PrivateClassMember.PrivateClassMemberError"/>
+        <exclude name="EcgM2.Classes.StrictTypes.NotFound"/>
+        <exclude name="Ecg.Performance.Loop.ModelLSD"/>
+
+        <!--@TODO: To be fixed-->
+        <exclude name="EcgM2.Templates.ThisInTemplate.ThisInTemplateWarning"/>
+        <exclude name=".Sniffs.MissingParentCall.NoParentMethodCall"/>
+        <exclude name="Ecg.Performance.Loop.ModelLSD"/>
+        <exclude name="EcgM2.Performance.ObjectManagerUsage.Found"/>
+        <exclude name="EcgM2.Blocks.SetTemplateInBlock.Found"/>
+        <exclude name="Generic.CodeAnalysis.UnusedFunctionParameter.FoundBeforeLastUsed"/>
     </rule>
     <rule ref="./vendor/magento/magento-coding-standard/Magento2">
         <exclude name="Magento2.Functions.StaticFunction"/>
         <exclude name="Generic.Metrics.CyclomaticComplexity"/>
+        <exclude name="Magento2.CodeAnalysis.EmptyBlock.DetectedFunction"/>
+        <exclude name="EcgM2.Templates.EscapedOutput.DeprecatedEscapeUsage"/>
+        <exclude name="EcgM2.Templates.EscapedOutput.Unescaped output"/>
     </rule>
 </ruleset>

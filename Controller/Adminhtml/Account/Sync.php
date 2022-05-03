@@ -45,11 +45,11 @@ use Nosto\Tagging\Model\Meta\Oauth\Builder as NostoOauthBuilder;
 
 class Sync extends Base
 {
-    const ADMIN_RESOURCE = 'Nosto_Tagging::system_nosto_account';
-    private $result;
-    private $nostoHelperAccount;
-    private $oauthMetaBuilder;
-    private $nostoHelperScope;
+    public const ADMIN_RESOURCE = 'Nosto_Tagging::system_nosto_account';
+    private Json $result;
+    private NostoHelperAccount $nostoHelperAccount;
+    private NostoOauthBuilder $oauthMetaBuilder;
+    private NostoHelperScope $nostoHelperScope;
 
     /**
      * @param Context $context

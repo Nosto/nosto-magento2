@@ -41,9 +41,7 @@ use Nosto\Tagging\Api\Data\ProductUpdateQueueInterface;
 
 class Queue extends AbstractDb
 {
-    protected $_serializableFields = [ProductUpdateQueueInterface::PRODUCT_IDS => [[], []]];
-
-    const TABLE_NAME = 'nosto_tagging_product_update_queue';
+    public const TABLE_NAME = 'nosto_tagging_product_update_queue';
     /**
      * Initialize resource model
      *
@@ -51,6 +49,7 @@ class Queue extends AbstractDb
      */
     public function _construct()
     {
+        $this->_serializableFields = [ProductUpdateQueueInterface::PRODUCT_IDS => [[], []]];
         $this->_init(self::TABLE_NAME, ProductUpdateQueueInterface::ID);
     }
 }

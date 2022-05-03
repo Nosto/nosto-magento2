@@ -42,6 +42,7 @@ use Magento\Framework\App\Config\Storage\WriterInterface;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 use Magento\Backend\Model\UrlInterface;
+use Magento\Framework\Module\Manager;
 use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\Store;
 use Nosto\NostoException;
@@ -53,6 +54,7 @@ use Nosto\Tagging\Helper\Data as NostoHelper;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Helper\Url as NostoHelperUrl;
 use Nosto\Types\Signup\AccountInterface;
+use Psr\Log\LoggerInterface;
 use RuntimeException;
 
 /**
@@ -64,24 +66,24 @@ class Account extends AbstractHelper
     /**
      * Path to store config nosto account name.
      */
-    const XML_PATH_ACCOUNT = 'nosto_tagging/settings/account';
+    public const XML_PATH_ACCOUNT = 'nosto_tagging/settings/account';
 
     /**
      * Path to store config nosto account tokens.
      */
-    const XML_PATH_TOKENS = 'nosto_tagging/settings/tokens';
+    public const XML_PATH_TOKENS = 'nosto_tagging/settings/tokens';
 
     /**
      * Path to store config store domain.
      */
-    const XML_PATH_DOMAIN = 'nosto_tagging/settings/domain';
+    public const XML_PATH_DOMAIN = 'nosto_tagging/settings/domain';
 
-    private $config;
-    private $moduleManager;
-    private $logger;
-    private $nostoHelperScope;
-    private $nostoHelperUrl;
-    private $urlBuilder;
+    private WriterInterface $config;
+    private Manager $moduleManager;
+    private LoggerInterface $logger;
+    private Scope $nostoHelperScope;
+    private Url $nostoHelperUrl;
+    private UrlInterface $urlBuilder;
 
     /**
      * Account constructor.

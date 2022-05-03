@@ -41,6 +41,7 @@ use Exception;
 use Magento\Customer\Api\CustomerRepositoryInterface as MagentoCustomerRepository;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
+use Magento\Framework\Indexer\IndexerInterface;
 use Magento\Framework\Indexer\IndexerRegistry;
 use Magento\Framework\Module\Manager as ModuleManager;
 use Magento\Sales\Model\Order;
@@ -63,18 +64,18 @@ use Nosto\Types\Signup\AccountInterface;
 
 class Save implements ObserverInterface
 {
-    private $nostoHelperData;
-    private $nostoHelperAccount;
-    private $logger;
-    private $nostoOrderBuilder;
-    private $moduleManager;
-    private $customerRepository;
-    private $indexer;
-    private $nostoHelperUrl;
-    private $magentoCustomerRepository;
-    private $orderStatusBuilder;
-    private static $sent = [];
-    private $intervalForNew;
+    private NostoHelperData $nostoHelperData;
+    private NostoHelperAccount $nostoHelperAccount;
+    private NostoLogger $logger;
+    private NostoOrderBuilder $nostoOrderBuilder;
+    private ModuleManager $moduleManager;
+    private CustomerRepository $customerRepository;
+    private IndexerInterface $indexer;
+    private NostoHelperUrl $nostoHelperUrl;
+    private MagentoCustomerRepository $magentoCustomerRepository;
+    private NostoOrderStatusBuilder $orderStatusBuilder;
+    private static array $sent = [];
+    private int $intervalForNew;
 
     /**
      * Save constructor.
@@ -101,7 +102,7 @@ class Save implements ObserverInterface
         IndexerRegistry $indexerRegistry,
         NostoHelperUrl $nostoHelperUrl,
         MagentoCustomerRepository $magentoCustomerRepository,
-        $intervalForNew
+        int $intervalForNew
     ) {
         $this->nostoHelperData = $nostoHelperData;
         $this->nostoHelperAccount = $nostoHelperAccount;

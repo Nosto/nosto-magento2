@@ -46,12 +46,12 @@ class ModeSwitcher implements ModeSwitcherInterface
     /**
      * @var DimensionModeConfiguration
      */
-    private $dimensionModeConfiguration;
+    private DimensionModeConfiguration $dimensionModeConfiguration;
 
     /**
      * @var ModeSwitcherConfiguration
      */
-    private $modeSwitcherConfiguration;
+    private ModeSwitcherConfiguration $modeSwitcherConfiguration;
 
     /**
      * ModeSwitcher constructor.

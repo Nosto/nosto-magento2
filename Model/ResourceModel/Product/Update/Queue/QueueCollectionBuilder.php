@@ -49,10 +49,10 @@ use Nosto\Tagging\Api\Data\ProductUpdateQueueInterface;
 class QueueCollectionBuilder
 {
     /** @var QueueCollection */
-    private $collection;
+    private QueueCollection $collection;
 
     /** @var QueueCollectionFactory */
-    private $queueCollectionFactory;
+    private QueueCollectionFactory $queueCollectionFactory;
 
     /**
      * Collection constructor.
@@ -141,7 +141,7 @@ class QueueCollectionBuilder
      * @param string $sortOrder
      * @return $this
      */
-    public function setSort($field, $sortOrder)
+    public function setSort(string $field, string $sortOrder)
     {
         $this->collection->setOrder($field, $sortOrder);
         return $this;

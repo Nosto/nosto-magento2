@@ -47,9 +47,9 @@ use Nosto\Tagging\Model\Cart\Item\Builder as NostoCartItemBuilder;
 
 class Builder
 {
-    private $nostoCartItemBuilder;
-    private $logger;
-    private $eventManager;
+    private NostoCartItemBuilder $nostoCartItemBuilder;
+    private NostoLogger $logger;
+    private ManagerInterface $eventManager;
 
     /**
      * Constructor.

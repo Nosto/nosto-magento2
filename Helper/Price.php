@@ -63,15 +63,15 @@ use Nosto\Tagging\Model\Product\Repository as NostoProductRepository;
  */
 class Price extends AbstractHelper
 {
-    private $catalogHelper;
-    private $priceRuleFactory;
-    private $localeDate;
-    private $nostoProductRepository;
-    private $taxHelper;
+    private CatalogHelper $catalogHelper;
+    private RuleFactory $priceRuleFactory;
+    private TimezoneInterface $localeDate;
+    private NostoProductRepository $nostoProductRepository;
+    private TaxHelper $taxHelper;
 
-    const KEY_SKU_FINAL_PRICE = 'final_price';
-    const KEY_SKU_PRICE = 'price';
-    const KEY_SKU_PRODUCT_ID = 'entity_id';
+    public const KEY_SKU_FINAL_PRICE = 'final_price';
+    public const KEY_SKU_PRICE = 'price';
+    public const KEY_SKU_PRODUCT_ID = 'entity_id';
 
     /**
      * Constructor.
@@ -134,9 +134,9 @@ class Price extends AbstractHelper
      */
     public function getProductPrice(// @codingStandardsIgnoreLine
         Product $product,
-        Store $store,
-        $inclTax = true,
-        $finalPrice = false
+        Store   $store,
+        bool    $inclTax = true,
+        bool    $finalPrice = false
     ) {
         switch ($product->getTypeId()) {
             // Get the bundle product "from" price.
@@ -229,7 +229,7 @@ class Price extends AbstractHelper
      *
      * @return float
      */
-    public function addTaxes(Product $product, Store $store, $price)
+    public function addTaxes(Product $product, Store $store, float $price)
     {
         return $this->catalogHelper->getTaxPrice(
             $product,
@@ -252,7 +252,7 @@ class Price extends AbstractHelper
      *
      * @return float
      */
-    public function addTaxDisplayPriceIfApplicable(Product $product, Store $store, $price)
+    public function addTaxDisplayPriceIfApplicable(Product $product, Store $store, float $price)
     {
         if ($this->includeTaxes($store)) {
             return $this->catalogHelper->getTaxPrice(

@@ -48,13 +48,13 @@ use Nosto\Tagging\Model\Product\Builder;
 abstract class AbstractAttributeService implements AttributeServiceInterface
 {
     /** @var NostoHelperData */
-    private $nostoHelperData;
+    private NostoHelperData $nostoHelperData;
 
     /** @var NostoLogger */
-    private $logger;
+    private NostoLogger $logger;
 
     /** @var AttributeProviderInterface */
-    private $attributeProvider;
+    private AttributeProviderInterface $attributeProvider;
 
     /**
      * AbstractAttributeService constructor.
@@ -191,5 +191,5 @@ abstract class AbstractAttributeService implements AttributeServiceInterface
     /**
      * @inheritDoc
      */
-    abstract public function getAttributeValueByAttributeCode(Product $product, $attributeCode);
+    abstract public function getAttributeValueByAttributeCode(Product $product, string $attributeCode);
 }

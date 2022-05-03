@@ -54,10 +54,10 @@ use Nosto\Tagging\Model\Product\CollectionBuilder;
  */
 class Product extends Base
 {
-    const PARAM_PREVIEW = 'preview';
+    public const PARAM_PREVIEW = 'preview';
 
     /** @var CollectionBuilder  */
-    private $nostoCollectionBuilder;
+    private CollectionBuilder $nostoCollectionBuilder;
 
     /**
      * @param Context $context
@@ -82,7 +82,7 @@ class Product extends Base
      * @return AbstractCollection|ProductCollection
      * @throws NostoException
      */
-    public function buildExportCollection(Store $store, $limit = 100, $offset = 0)
+    public function buildExportCollection(Store $store, int $limit = 100, int $offset = 0)
     {
         return $this->nostoCollectionBuilder->buildMany($store, $limit, $offset);
     }

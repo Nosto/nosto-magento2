@@ -49,24 +49,24 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 class NostoAccountConnectCommand extends Command
 {
-    const NOSTO_ACCOUNT_ID = 'account-id';
-    const TOKEN_SUFFIX = '_token';
-    const SCOPE_CODE = 'scope-code';
+    public const NOSTO_ACCOUNT_ID = 'account-id';
+    public const TOKEN_SUFFIX = '_token';
+    public const SCOPE_CODE = 'scope-code';
 
     /**
      * @var NostoHelperAccount
      */
-    private $nostoHelperAccount;
+    private NostoHelperAccount $nostoHelperAccount;
 
     /**
      * @var NostoHelperScope
      */
-    private $nostoHelperScope;
+    private NostoHelperScope $nostoHelperScope;
 
     /**
      * @var bool
      */
-    private $isInteractive = true;
+    private bool $isInteractive = true;
 
     /**
      * NostoConfigConnectCommand constructor.
@@ -213,7 +213,7 @@ class NostoAccountConnectCommand extends Command
      */
     private function getTokensFromInput(InputInterface $input, SymfonyStyle $io)
     {
-        $tokens = array();
+        $tokens = [];
 
         $ssoToken = $input->getOption(Token::API_SSO . self::TOKEN_SUFFIX) ?:
             $io->ask('Enter SSO Token: ');

@@ -51,19 +51,19 @@ use Exception;
 class Knockout extends Template
 {
     /** @var NostoHelperAccount  */
-    private $nostoHelperAccount;
+    private NostoHelperAccount $nostoHelperAccount;
 
     /** @var NostoHelperScope  */
-    private $nostoHelperScope;
+    private NostoHelperScope $nostoHelperScope;
 
     /** @var NostoHelperData  */
-    private $nostoHelperData;
+    private NostoHelperData $nostoHelperData;
 
     /** @var StoreManagerInterface */
-    private $storeManager;
+    private StoreManagerInterface $storeManager;
 
     /** @var Logger */
-    private $logger;
+    private Logger $logger;
 
     /**
      * Knockout constructor.

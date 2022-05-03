@@ -51,12 +51,12 @@ use Nosto\Tagging\Model\Meta\Account\Settings\Currencies\Builder as NostoCurrenc
 
 class Builder
 {
-    private $logger;
-    private $eventManager;
-    private $nostoCurrenciesBuilder;
-    private $nostoHelperCurrency;
-    private $nostoDataHelper;
-    private $nostoVariationHelper;
+    private NostoLogger $logger;
+    private ManagerInterface $eventManager;
+    private NostoCurrenciesBuilder $nostoCurrenciesBuilder;
+    private NostoHelperCurrency $nostoHelperCurrency;
+    private NostoDataHelper $nostoDataHelper;
+    private NostoVariationHelper $nostoVariationHelper;
 
     /**
      * Builder constructor.
@@ -92,7 +92,7 @@ class Builder
         $settings = new Settings();
 
         try {
-            $settings->setTitle(self::buildTitle($store));
+            $settings->setTitle($this->buildTitle($store));
             $settings->setFrontPageUrl($this->buildURL($store));
             $settings->setCurrencyCode($this->nostoHelperCurrency->getTaggingCurrency($store)->getCode());
             $settings->setLanguageCode(substr($store->getConfig('general/locale/code'), 0, 2));
@@ -141,7 +141,7 @@ class Builder
      * @return string the complete common name of the store
      * @throws NoSuchEntityException
      */
-    private static function buildTitle(Store $store)
+    private function buildTitle(Store $store): string
     {
         return implode(
             ' - ',

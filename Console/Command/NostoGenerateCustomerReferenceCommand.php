@@ -51,7 +51,7 @@ class NostoGenerateCustomerReferenceCommand extends Command
     /**
      * @var CollectionFactory
      */
-    private $collectionFactory;
+    private CollectionFactory $collectionFactory;
 
     /**
      * NostoGenerateCustomerReferenceCommand constructor.
@@ -98,8 +98,9 @@ class NostoGenerateCustomerReferenceCommand extends Command
                  * Argument is of type \Magento\Framework\DataObject
                  * but CustomerInterface|\Magento\Customer\Model\Backend\Customer\Interceptor is expected
                  */
+                $customerUtil = new CustomerUtil();
                 /** @phan-suppress-next-line PhanTypeMismatchArgumentSuperType */
-                $customerReference = CustomerUtil::generateCustomerReference($customer);
+                $customerReference = $customerUtil->generateCustomerReference($customer);
                 /** @noinspection PhpUndefinedMethodInspection */
                 $customer->setData(
                     NostoHelperData::NOSTO_CUSTOMER_REFERENCE_ATTRIBUTE_NAME,

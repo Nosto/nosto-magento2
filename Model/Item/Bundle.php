@@ -40,13 +40,6 @@ use Magento\Catalog\Model\Product\Type;
 
 class Bundle
 {
-    /**
-     * Returns the product type for bundled item
-     *
-     * @return string
-     */
-    public static function getType()
-    {
-        return Type::TYPE_BUNDLE;
-    }
+    /** Product type for bundled item */
+    public const TYPE = Type::TYPE_BUNDLE;
 }

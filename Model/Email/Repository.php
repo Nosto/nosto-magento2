@@ -47,7 +47,7 @@ class Repository
     /**
      * @var SubscriberResource
      */
-    private $subscriber;
+    private SubscriberResource $subscriber;
 
     /**
      * Repository constructor.

@@ -49,16 +49,16 @@ use Nosto\Tagging\Helper\Data as NostoHelperData;
 class CollectionBuilder
 {
     /** @var ProductVisibility */
-    private $productVisibility;
+    private ProductVisibility $productVisibility;
 
     /** @var Collection */
-    private $collection;
+    private Collection $collection;
 
     /** @var CollectionFactory */
-    private $productCollectionFactory;
+    private CollectionFactory $productCollectionFactory;
 
     /** @var NostoHelperData */
-    private $nostoHelperData;
+    private NostoHelperData $nostoHelperData;
 
     /**
      * Collection constructor.
@@ -152,7 +152,7 @@ class CollectionBuilder
      * @param string $sortOrder
      * @return $this
      */
-    public function setSort($field, $sortOrder)
+    public function setSort(string $field, string $sortOrder)
     {
         $this->collection->setOrder($field, $sortOrder);
         return $this;
@@ -254,7 +254,7 @@ class CollectionBuilder
      * @param int $offset
      * @return Collection
      */
-    public function buildMany(Store $store, $limit = 100, $offset = 0)
+    public function buildMany(Store $store, int $limit = 100, int $offset = 0)
     {
         $currentPage = ($offset / $limit) + 1;
         return $this

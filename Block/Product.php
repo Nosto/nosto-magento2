@@ -67,10 +67,10 @@ class Product extends View
     }
 
     /** @var NostoCategoryBuilder */
-    private $categoryBuilder;
+    private NostoCategoryBuilder $categoryBuilder;
 
     /** @var ProductServiceInterface */
-    private $productService;
+    private ProductServiceInterface $productService;
 
     /**
      * Constructor.
@@ -158,7 +158,7 @@ class Product extends View
     /**
      * Formats a price e.g. "1234.56".
      *
-     * @param int $price the price to format.
+     * @param int|float|string $price the price to format.
      * @return string the formatted price.
      */
     public function formatNostoPrice($price)
@@ -172,7 +172,7 @@ class Product extends View
      * @param string $date the date to format.
      * @return string the formatted date.
      */
-    public function formatNostoDate($date)
+    public function formatNostoDate(string $date)
     {
         return DateHelper::format($date);
     }

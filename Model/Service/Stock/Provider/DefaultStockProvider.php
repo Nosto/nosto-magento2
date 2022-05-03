@@ -46,7 +46,7 @@ use Magento\Store\Model\Website;
 class DefaultStockProvider implements StockProviderInterface
 {
     /** @var StockRegistryProvider */
-    private $stockRegistryProvider;
+    private StockRegistryProvider $stockRegistryProvider;
 
     /**
      * DefaultStockProvider constructor.

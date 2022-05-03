@@ -50,32 +50,32 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 class NostoAccountRemoveCommand extends Command
 {
-    const SCOPE_CODE = 'scope-code';
+    public const SCOPE_CODE = 'scope-code';
 
     /**
      * @var NostoHelperAccount
      */
-    private $nostoHelperAccount;
+    private NostoHelperAccount $nostoHelperAccount;
 
     /**
      * @var NostoHelperScope
      */
-    private $nostoHelperScope;
+    private NostoHelperScope $nostoHelperScope;
 
     /**
      * @var NostoHelperCache
      */
-    private $nostoHelperCache;
+    private NostoHelperCache $nostoHelperCache;
 
     /**
      * @var bool
      */
-    private $isInteractive = true;
+    private bool $isInteractive = true;
 
     /**
      * @var WriterInterface
      */
-    private $config;
+    private WriterInterface $config;
 
     /**
      * NostoAccountRemoveCommand constructor.
