@@ -47,7 +47,6 @@ use Magento\Framework\Module\ModuleListInterface;
 use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\Store;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
-use phpseclib3\Crypt\Random;
 
 /**
  * NostoHelperData helper used for common tasks, mainly configurations.
