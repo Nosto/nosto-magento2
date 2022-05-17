@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection ALL */
 /**
  * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
@@ -242,6 +242,7 @@ class Data extends AbstractHelper
      * Nosto accounts used on this installation.
      *
      * @return string the ID.
+     * @suppress PhanAccessMethodInternal, PhanUndeclaredClassConstant, PhanUndeclaredClassMethod
      */
     public function getInstallationId()
     {
