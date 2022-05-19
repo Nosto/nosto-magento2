@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "5143f6a2e1dc95ba2f304b70634065a3",
+    "content-hash": "ae0f4001273762eacc96caeb445c5e9b",
     "packages": [
         {
             "name": "brick/math",
@@ -2582,16 +2582,16 @@
         },
         {
             "name": "nosto/php-sdk",
-            "version": "dev-feature/support-different-phpseclib-versiosn",
+            "version": "5.8.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Nosto/nosto-php-sdk.git",
-                "reference": "f5035f1b0553c189586c61c3625a33bdfe09cbfe"
+                "reference": "0acb3150e10fa5880e9268c3a677037617a88463"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Nosto/nosto-php-sdk/zipball/f5035f1b0553c189586c61c3625a33bdfe09cbfe",
-                "reference": "f5035f1b0553c189586c61c3625a33bdfe09cbfe",
+                "url": "https://api.github.com/repos/Nosto/nosto-php-sdk/zipball/0acb3150e10fa5880e9268c3a677037617a88463",
+                "reference": "0acb3150e10fa5880e9268c3a677037617a88463",
                 "shasum": ""
             },
             "require": {
@@ -2599,7 +2599,7 @@
                 "ext-json": "*",
                 "php": ">=5.5",
                 "phpseclib/phpseclib": "2.0.* || ~3.0.9",
-                "vlucas/phpdotenv": "^3.6"
+                "vlucas/phpdotenv": "^2.4 || ^3.6"
             },
             "require-dev": {
                 "codeception/c3": "^2.6",
@@ -2630,7 +2630,11 @@
                 "BSD-3-Clause"
             ],
             "description": "PHP SDK for developing Nosto modules for e-commerce platforms",
-            "time": "2022-05-11T11:15:59+00:00"
+            "support": {
+                "issues": "https://github.com/Nosto/nosto-php-sdk/issues",
+                "source": "https://github.com/Nosto/nosto-php-sdk/tree/5.8.2"
+            },
+            "time": "2022-05-19T06:59:11+00:00"
         },
         {
             "name": "paragonie/constant_time_encoding",
@@ -11484,9 +11488,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "nosto/php-sdk": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
@@ -11494,5 +11496,5 @@
         "ext-json": "*"
     },
     "platform-dev": [],
-    "plugin-api-version": "1.1.0"
+    "plugin-api-version": "2.1.0"
 }
