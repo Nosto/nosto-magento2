@@ -1,5 +1,9 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 6.0.1
+* Add support for both version 2 and 3 of phpseclib/phpseclib library (for compatibility with Magento versions 2.3.x and 2.4.x)
+* Remove customer visitor checksum generation when 2c.cid cookie does not exist
+
 ### 6.0.0
 * Compatibility with Magento 2.4.4
 * Bump minimum PHP version to 7.4
