@@ -88,12 +88,16 @@ class CartTagging extends HashedTagging implements SectionSourceInterface
      */
     public function getSectionData()
     {
-        $nostoCustomerId = $this->cookieManager->getCookie(NostoCustomer::COOKIE_NAME);
         $data = [
-            'hcid' => $this->generateVisitorChecksum($nostoCustomerId),
             'items' => [],
             'restore_cart_url' => ''
         ];
+
+        $nostoCustomerId = $this->cookieManager->getCookie(NostoCustomer::COOKIE_NAME);
+        if ($nostoCustomerId) {
+            $data['hcid'] = $this->generateVisitorChecksum($nostoCustomerId);
+        }
+
         $cart = $this->cartHelper->getCart();
         $nostoCart = $this->nostoCartBuilder->build(
             $this->getQuote(),
