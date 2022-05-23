@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection ALL */
 /**
  * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
@@ -47,7 +47,6 @@ use Magento\Framework\Module\ModuleListInterface;
 use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\Store;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
-use phpseclib3\Crypt\Random;
 
 /**
  * NostoHelperData helper used for common tasks, mainly configurations.
@@ -242,6 +241,7 @@ class Data extends AbstractHelper
      * Nosto accounts used on this installation.
      *
      * @return string the ID.
+     * @suppress PhanAccessMethodInternal, PhanUndeclaredClassConstant, PhanUndeclaredClassMethod
      */
     public function getInstallationId()
     {
@@ -249,8 +249,15 @@ class Data extends AbstractHelper
             self::XML_PATH_INSTALLATION_ID
         );
         if (empty($installationId)) {
-            // Running bin2hex() will make the ID string length 64 characters.
-            $installationId = bin2hex(Random::string(32));
+            //Check if phpseclib v3 is used
+            //needed for comaptibility with Magento 2.4 versions
+            if (class_exists("phpseclib3\Crypt\Random")) {
+                // Running bin2hex() will make the ID string length 64 characters.
+                $installationId = bin2hex(\phpseclib3\Crypt\Random::string(32));
+            } else {
+                // Running bin2hex() will make the ID string length 64 characters.
+                $installationId = bin2hex(\phpseclib\Crypt\Random::string(32));
+            }
             $this->configWriter->save(
                 self::XML_PATH_INSTALLATION_ID,
                 $installationId
