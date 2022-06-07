@@ -84,23 +84,23 @@ class CurrenciesCron
         $this->logger->info('Updating currencies to Nosto for all store views');
         foreach ($this->nostoHelperScope->getStores(false) as $store) {
             $this->logger->info('Updating currencies for ' . $store->getName());
-            if (!$account = $this->nostoHelperAccount->findAccount($store)) {
+            if ($account = $this->nostoHelperAccount->findAccount($store)) {
+                try {
+                    $settings = $this->nostoSettingsBuilder->build($store);
+                    $settings->setCurrencies($this->nostoCurrenciesBuilder->build($store));
+                    $service = new UpdateSettings($account);
+                    $service->update($settings);
+                } catch (Exception $e) {
+                    $this->logger->error(sprintf(
+                        'Unable to update the currencies for the store view %s. Message was: %s',
+                        $store->getName(),
+                        $e->getMessage()
+                    ));
+                }
+            } else {
                 $this->logger->info(sprintf(
                     'Skipping update; an account doesn\'t exist for %s',
                     $store->getName()
-                ));
-                continue;
-            }
-            try {
-                $settings = $this->nostoSettingsBuilder->build($store);
-                $settings->setCurrencies($this->nostoCurrenciesBuilder->build($store));
-                $service = new UpdateSettings($account);
-                $service->update($settings);
-            } catch (Exception $e) {
-                $this->logger->warning(sprintf(
-                    'Unable to update the currencies for the store view %s. Message was: %s',
-                    $store->getName(),
-                    $e->getMessage()
                 ));
             }
         }
