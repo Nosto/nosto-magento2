@@ -91,9 +91,8 @@ class CurrenciesCron
                 ));
                 continue;
             }
-
-            $settings = $this->nostoSettingsBuilder->build($store);
             try {
+                $settings = $this->nostoSettingsBuilder->build($store);
                 $settings->setCurrencies($this->nostoCurrenciesBuilder->build($store));
                 $service = new UpdateSettings($account);
                 $service->update($settings);
