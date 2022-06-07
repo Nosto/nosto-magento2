@@ -41,5 +41,8 @@
         <job name="nosto_exchange_rates" instance="Nosto\Tagging\Cron\RatesCron" method="execute">
             <schedule>4 * * * *</schedule>
         </job>
+        <job name="nosto_currencies" instance="Nosto\Tagging\Cron\CurrenciesCron" method="execute">
+            <schedule>0 1 * * *</schedule> <!-- Everyday at 1 am -->
+        </job>
     </group>
 </config>

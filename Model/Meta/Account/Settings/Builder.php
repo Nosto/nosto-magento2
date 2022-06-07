@@ -47,13 +47,11 @@ use Nosto\Tagging\Helper\Currency as NostoHelperCurrency;
 use Nosto\Tagging\Helper\Data as NostoDataHelper;
 use Nosto\Tagging\Helper\Variation as NostoVariationHelper;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
-use Nosto\Tagging\Model\Meta\Account\Settings\Currencies\Builder as NostoCurrenciesBuilder;
 
 class Builder
 {
     private NostoLogger $logger;
     private ManagerInterface $eventManager;
-    private NostoCurrenciesBuilder $nostoCurrenciesBuilder;
     private NostoHelperCurrency $nostoHelperCurrency;
     private NostoDataHelper $nostoDataHelper;
     private NostoVariationHelper $nostoVariationHelper;
@@ -63,7 +61,6 @@ class Builder
      * @param NostoLogger $logger
      * @param ManagerInterface $eventManager
      * @param NostoHelperCurrency $nostoHelperCurrency
-     * @param NostoCurrenciesBuilder $nostoCurrenciesBuilder
      * @param NostoDataHelper $nostoDataHelper
      * @param NostoVariationHelper $nostoVariationHelper
      */
@@ -71,13 +68,11 @@ class Builder
         NostoLogger $logger,
         ManagerInterface $eventManager,
         NostoHelperCurrency $nostoHelperCurrency,
-        NostoCurrenciesBuilder $nostoCurrenciesBuilder,
         NostoDataHelper $nostoDataHelper,
         NostoVariationHelper $nostoVariationHelper
     ) {
         $this->logger = $logger;
         $this->eventManager = $eventManager;
-        $this->nostoCurrenciesBuilder = $nostoCurrenciesBuilder;
         $this->nostoHelperCurrency = $nostoHelperCurrency;
         $this->nostoDataHelper = $nostoDataHelper;
         $this->nostoVariationHelper = $nostoVariationHelper;
@@ -102,7 +97,7 @@ class Builder
             } elseif ($this->nostoDataHelper->isPricingVariationEnabled($store)) {
                 $settings->setDefaultVariantId($this->nostoVariationHelper->getDefaultVariationCode());
             }
-            $settings->setCurrencies($this->nostoCurrenciesBuilder->build($store));
+            // Currencies are build in CurrenciesCron to avoid increased loading times when logging into the admin
         } catch (Exception $e) {
             $this->logger->exception($e);
         }
