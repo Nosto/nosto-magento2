@@ -57,7 +57,7 @@ class CurrenciesCron
     private NostoSettingsBuilder $nostoSettingsBuilder;
 
     /**
-     * Rates constructor.
+     * CurrenciesCron constructor.
      *
      * @param NostoLogger $logger
      * @param NostoHelperScope $nostoHelperScope
