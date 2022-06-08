@@ -38,7 +38,6 @@
 namespace Nosto\Tagging\Model\Service\Sync;
 
 use Exception;
-use InvalidArgumentException;
 use Magento\AsynchronousOperations\Api\Data\OperationInterface;
 use Magento\Framework\EntityManager\EntityManager;
 use Magento\Framework\Json\Helper\Data as JsonHelper;
@@ -88,15 +87,7 @@ abstract class AbstractBulkConsumer implements BulkConsumerInterface
      */
     public function processOperation(OperationInterface $operation)
     {
-        $errorCode = null;
-        if ($operation instanceof OperationInterface) {
-            $serializedData = $operation->getSerializedData();
-        } else {
-            throw new InvalidArgumentException(
-                'Wrong type passed to AsyncBulkConsumer::processOperation.
-                Expected \Magento\AsynchronousOperations\Api\Data\OperationInterface.'
-            );
-        }
+        $serializedData = $operation->getSerializedData();
         $unserializedData = $this->jsonHelper->jsonDecode($serializedData);
         $productIds = $unserializedData['product_ids'];
         $storeId = $unserializedData['store_id'];
