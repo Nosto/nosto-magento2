@@ -246,7 +246,7 @@
                 Nosto\Tagging\Model\Service\Sync\Delete\AsyncBulkPublisher
             </argument>
             <argument name="maxProductsInBatch" xsi:type="number">1000</argument>
-            <argument name="cleanUpInterval" xsi:type="number">8</argument>
+            <argument name="cleanUpInterval" xsi:type="number">1</argument>
         </arguments>
     </type>
     <type name="Nosto\Tagging\Model\Service\Update\QueueService">
