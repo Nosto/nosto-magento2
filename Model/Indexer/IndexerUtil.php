@@ -60,7 +60,7 @@ class IndexerUtil
             if (count($parts) !== 2) {
                 return false;
             }
-            list($commandScope, $commandAction) = $parts;
+            [$commandScope, $commandAction] = $parts;
             $currentCommandScope = substr($commandScope, 0, strlen(self::SETUP_UPGRADE_SCOPE));
             $currentCommandAction = substr($commandAction, 0, strlen(self::SETUP_UPGRADE_ACTION));
             return (
