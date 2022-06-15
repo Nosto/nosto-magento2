@@ -38,7 +38,6 @@ namespace Nosto\Tagging\Model\Person\Tagging;
 
 use DateTime;
 use Exception;
-use Magento\Customer\Api\CustomerRepositoryInterface;
 use Magento\Customer\Api\Data\CustomerInterface;
 use Magento\Customer\Api\GroupRepositoryInterface as GroupRepository;
 use Magento\Customer\Helper\Session\CurrentCustomer;
@@ -62,13 +61,11 @@ class Builder extends PersonBuilder
     public const GENDER_FEMALE_ID = '2';
 
     private GroupRepository $groupRepository;
-    private CustomerRepositoryInterface $customerRepository;
     private NostoLogger $logger;
 
     /**
      * Builder constructor.
      * @param GroupRepository $groupRepository
-     * @param CustomerRepositoryInterface $customerRepository
      * @param NostoEmailRepository $emailRepository
      * @param NostoLogger $logger
      * @param EventManager $eventManager
@@ -76,14 +73,12 @@ class Builder extends PersonBuilder
      */
     public function __construct(
         GroupRepository $groupRepository,
-        CustomerRepositoryInterface $customerRepository,
         NostoEmailRepository $emailRepository,
         NostoLogger $logger,
         EventManager $eventManager,
         NostoHelperData $nostoHelperData
     ) {
         $this->groupRepository = $groupRepository;
-        $this->customerRepository = $customerRepository;
         $this->logger = $logger;
         parent::__construct($emailRepository, $eventManager, $nostoHelperData);
     }
@@ -103,7 +98,8 @@ class Builder extends PersonBuilder
         string $dateOfBirth = null,
         string $gender = null,
         string $customerReference = null
-    ) {
+    ): Customer
+    {
         $customer = new Customer();
         $customer->setFirstName($firstName);
         $customer->setLastName($lastName);
@@ -127,7 +123,7 @@ class Builder extends PersonBuilder
      * @param CurrentCustomer $currentCustomer
      * @return Customer|null
      */
-    public function fromSession(CurrentCustomer $currentCustomer)
+    public function fromSession(CurrentCustomer $currentCustomer): ?Customer
     {
         try {
             $customer = $currentCustomer->getCustomer();
@@ -158,7 +154,7 @@ class Builder extends PersonBuilder
      * @param CustomerInterface $customer
      * @return string|null
      */
-    private function getCustomerGroupName(CustomerInterface $customer)
+    private function getCustomerGroupName(CustomerInterface $customer): ?string
     {
         $groupId = (int)$customer->getGroupId();
         try {
@@ -172,7 +168,7 @@ class Builder extends PersonBuilder
      * @param CustomerInterface $customer
      * @return null|string
      */
-    private function getGenderName(CustomerInterface $customer)
+    private function getGenderName(CustomerInterface $customer): ?string
     {
         $gender = $customer->getGender();
         switch ($gender) {
@@ -189,31 +185,13 @@ class Builder extends PersonBuilder
      * @param CurrentCustomer $currentCustomer
      * @return string
      */
-    private function getCustomerReference(CurrentCustomer $currentCustomer)
+    private function getCustomerReference(CurrentCustomer $currentCustomer): string
     {
-        $customerReference = '';
-
         try {
-            $customer = $currentCustomer->getCustomer();
-            $customerReference = $customer->getCustomAttribute(
-                NostoHelperData::NOSTO_CUSTOMER_REFERENCE_ATTRIBUTE_NAME
-            );
-
-            if ($customerReference === null) {
-                $customerUtil = new CustomerUtil();
-                $customerReference = $customerUtil->generateCustomerReference($customer);
-                $customer->setCustomAttribute(
-                    NostoHelperData::NOSTO_CUSTOMER_REFERENCE_ATTRIBUTE_NAME,
-                    $customerReference
-                );
-                $this->customerRepository->save($customer);
-                return $customerReference;
-            }
-            return $customerReference->getValue();
+            return (new CustomerUtil())->generateCustomerReference($currentCustomer->getCustomer());
         } catch (Exception $e) {
             $this->logger->exception($e);
         }
-
-        return $customerReference;
+        return '';
     }
 }
