@@ -77,20 +77,20 @@ class DefaultProductService implements ProductServiceInterface
     }
 
     /**
-     * @param ProductInterface $product
+     * @param int $productId
      * @param StoreInterface $store
      * @return NostoProduct|null
      * @suppress PhanTypeMismatchArgument
      * @throws Exception
      */
-    public function getProduct(ProductInterface $product, StoreInterface $store)
+    public function getProduct(int $productId, StoreInterface $store): ?NostoProduct
     {
         /** @var Product $product */
         /** @var Store $store */
         try {
             return $this->nostoProductBuilder->build(
                 $this->nostoProductRepository->reloadProduct(
-                    $product->getId(),
+                    $productId,
                     $store->getId()
                 ),
                 $store

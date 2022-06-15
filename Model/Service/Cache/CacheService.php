@@ -106,13 +106,13 @@ class CacheService extends AbstractService
     }
 
     /**
-     * @param ProductInterface $product
+     * @param int $productId
      * @param StoreInterface $store
      * @return Product|null
      */
-    public function get(ProductInterface $product, StoreInterface $store)
+    public function get(int $productId, StoreInterface $store)
     {
-        return $this->getById($product->getId(), $store->getId());
+        return $this->getById($productId, $store->getId());
     }
 
     /**

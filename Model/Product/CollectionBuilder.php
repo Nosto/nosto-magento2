@@ -126,7 +126,7 @@ class CollectionBuilder
             /** @var Product $product */
             try {
                 $nostoProduct = $this->productService->getProduct(
-                    $product,
+                    $product->getId(),
                     $store
                 );
                 if ($nostoProduct !== null) {

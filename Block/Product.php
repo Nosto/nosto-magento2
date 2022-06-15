@@ -137,9 +137,17 @@ class Product extends View
     public function getAbstractObject()
     {
         return $this->productService->getProduct(
-            $this->getProduct(),
+            $this->getProductId(),
             $this->nostoHelperScope->getStore()
         );
+    }
+
+    /**
+     * @return int
+     */
+    public function getProductId(): int
+    {
+        return $this->getProduct()->getId();
     }
 
     /**

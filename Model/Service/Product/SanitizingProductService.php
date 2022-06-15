@@ -37,10 +37,10 @@
 namespace Nosto\Tagging\Model\Service\Product;
 
 use Exception;
-use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Store\Api\Data\StoreInterface;
 use Nosto\Tagging\Logger\Logger;
 use Nosto\Model\Product\Product;
+use Nosto\Model\Product\Product as NostoProduct;
 
 class SanitizingProductService implements ProductServiceInterface
 {
@@ -66,11 +66,11 @@ class SanitizingProductService implements ProductServiceInterface
     /**
      * @inheritDoc
      */
-    public function getProduct(ProductInterface $product, StoreInterface $store)
+    public function getProduct(int $productId, StoreInterface $store): ?NostoProduct
     {
         /** @var Product $nostoProduct */
         $nostoProduct = $this->nostoProductService->getProduct(
-            $product,
+            $productId,
             $store
         );
         if ($nostoProduct !== null) {

@@ -37,11 +37,11 @@
 namespace Nosto\Tagging\Model\Service\Product;
 
 use Exception;
-use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Store\Api\Data\StoreInterface;
 use Nosto\Tagging\Logger\Logger;
 use Nosto\Tagging\Model\Service\Cache\CacheService;
 use Nosto\Types\Product\ProductInterface as NostoProductInterface;
+use Nosto\Model\Product\Product as NostoProduct;
 
 class CachingProductService implements ProductServiceInterface
 {
@@ -75,16 +75,16 @@ class CachingProductService implements ProductServiceInterface
      * If is not indexed or dirty, rebuilds, saves product to the indexed table
      * and returns NostoProduct from indexed product
      *
-     * @param ProductInterface $product
+     * @param int $productId
      * @param StoreInterface $store
      * @return NostoProductInterface|null
      */
-    public function getProduct(ProductInterface $product, StoreInterface $store)
+    public function getProduct(int $productId, StoreInterface $store): ?NostoProduct
     {
         try {
-            $nostoProduct = $this->nostoCacheService->get($product, $store);
+            $nostoProduct = $this->nostoCacheService->get($productId, $store);
             if ($nostoProduct === null) {
-                $nostoProduct = $this->defaultProductService->getProduct($product, $store);
+                $nostoProduct = $this->defaultProductService->getProduct($productId, $store);
                 if ($nostoProduct !== null) {
                     $this->nostoCacheService->save($nostoProduct, $store);
                 }

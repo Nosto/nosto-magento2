@@ -52,7 +52,6 @@ use Nosto\Tagging\Model\Service\AbstractService;
 use Nosto\Tagging\Model\Service\Cache\CacheService;
 use Nosto\Tagging\Model\Service\Product\ProductServiceInterface;
 use Nosto\Tagging\Util\PagingIterator;
-use Nosto\Tagging\Model\Product\Repository as ProductRepository;
 
 class SyncService extends AbstractService
 {
@@ -80,9 +79,6 @@ class SyncService extends AbstractService
     /** @var int */
     private int $apiTimeout;
 
-    /** @var ProductRepository */
-    private ProductRepository $productRepository;
-
     /**
      * Sync constructor.
      * @param NostoHelperAccount $nostoHelperAccount
@@ -91,7 +87,6 @@ class SyncService extends AbstractService
      * @param NostoDataHelper $nostoDataHelper
      * @param ProductServiceInterface $productService
      * @param CacheService $cacheService
-     * @param ProductRepository $productRepository
      * @param $apiBatchSize
      * @param $apiTimeout
      */
@@ -102,7 +97,6 @@ class SyncService extends AbstractService
         NostoDataHelper $nostoDataHelper,
         ProductServiceInterface $productService,
         CacheService $cacheService,
-        ProductRepository $productRepository,
         $apiBatchSize,
         $apiTimeout
     ) {
@@ -112,7 +106,6 @@ class SyncService extends AbstractService
         $this->nostoHelperUrl = $nostoHelperUrl;
         $this->nostoDataHelper = $nostoDataHelper;
         $this->cacheService = $cacheService;
-        $this->productRepository = $productRepository;
         $this->apiBatchSize = $apiBatchSize;
         $this->apiTimeout = $apiTimeout;
     }
@@ -142,15 +135,13 @@ class SyncService extends AbstractService
 
         /** @var ProductCollection $page */
         foreach ($iterator as $page) {
-            $productIdsInBatch = [];
             $this->checkMemoryConsumption('product sync');
             $op = new UpsertProduct($account, $this->nostoHelperUrl->getActiveDomain($store));
             $op->setResponseTimeout($this->apiTimeout);
-            $products = $this->productRepository->getByIds($page->getAllIds());
+            $productIdsInBatch = $page->getAllIds();
             /** @var Product $product */
-            foreach ($products->getItems() as $product) {
-                $productIdsInBatch[] = $product->getId();
-                $nostoProduct = $this->productService->getProduct($product, $store);
+            foreach ($productIdsInBatch as $productId) {
+                $nostoProduct = $this->productService->getProduct((int)$productId, $store);
                 if ($nostoProduct === null) {
                     throw new NostoException('Could not get product from the product service.');
                 }
