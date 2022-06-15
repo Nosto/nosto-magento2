@@ -68,31 +68,27 @@ class CustomerTagging extends HashedTagging implements SectionSourceInterface
     /**
      * @return array
      */
-    public function getSectionData()
+    public function getSectionData(): array
     {
-        $data = [];
-        if ($this->currentCustomer instanceof CurrentCustomer
-            && $this->currentCustomer->getCustomerId()
-        ) {
-            /** @var Customer $customer */
-            $customer = $this->personBuilder->fromSession($this->currentCustomer);
-            if ($customer === null) {
-                return [];
-            }
-            $nostoCustomerId = $this->cookieManager->getCookie(NostoCustomer::COOKIE_NAME);
-            $data = [
-                'first_name' => $customer->getFirstName(),
-                'last_name' => $customer->getLastName(),
-                'email' => $customer->getEmail(),
-                'hcid' => $this->generateVisitorChecksum($nostoCustomerId),
-                'marketing_permission' => $customer->getMarketingPermission(),
-                'customer_reference' => $customer->getCustomerReference(),
-                'customer_group' => $customer->getCustomerGroup(),
-                'gender' => $customer->getGender(),
-                'date_of_birth' => $customer->getDateOfBirth()
-            ];
+        if (!$this->currentCustomer->getCustomerId()) {
+            return [];
         }
-
-        return $data;
+        /** @var Customer $customer */
+        $customer = $this->personBuilder->fromSession($this->currentCustomer);
+        if ($customer === null) {
+            return [];
+        }
+        $nostoCustomerId = $this->cookieManager->getCookie(NostoCustomer::COOKIE_NAME);
+        return [
+            'first_name' => $customer->getFirstName(),
+            'last_name' => $customer->getLastName(),
+            'email' => $customer->getEmail(),
+            'hcid' => $this->generateVisitorChecksum($nostoCustomerId),
+            'marketing_permission' => $customer->getMarketingPermission(),
+            'customer_reference' => $customer->getCustomerReference(),
+            'customer_group' => $customer->getCustomerGroup(),
+            'gender' => $customer->getGender(),
+            'date_of_birth' => $customer->getDateOfBirth()
+        ];
     }
 }
