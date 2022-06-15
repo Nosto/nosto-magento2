@@ -91,8 +91,8 @@ class UpdateMarketingPermission implements ObserverInterface
         $currentStore = $this->nostoHelperScope->getStore();
         $stores = $currentStore->getWebsite()->getStores();
         if (!$subscriber instanceof Subscriber
-            || !$this->moduleManager->isEnabled(NostoHelperData::MODULE_NAME)
             || $stores === []
+            || !$this->moduleManager->isEnabled(NostoHelperData::MODULE_NAME)
         ) {
             return;
         }

@@ -63,7 +63,6 @@ class Add implements ObserverInterface
     private NostoHelperScope $nostoHelperScope;
     private CookieManagerInterface $cookieManager;
     private NostoCartItemBuilder $nostoCartItemBuilder;
-    private NostoCartBuilder $nostoCartBuilder;
     private CookieMetadataFactory $cookieMetadataFactory;
     public const COOKIE_NAME = 'nosto.itemsAddedToCart';
 
@@ -77,7 +76,6 @@ class Add implements ObserverInterface
      * @param ModuleManager $moduleManager
      * @param CookieManagerInterface $cookieManager
      * @param NostoCartItemBuilder $nostoCartItemBuilder
-     * @param NostoCartBuilder $nostoCartBuilder
      * @param CookieMetadataFactory $cookieMetadataFactory
      */
     public function __construct(
@@ -88,7 +86,6 @@ class Add implements ObserverInterface
         ModuleManager $moduleManager,
         CookieManagerInterface $cookieManager,
         NostoCartItemBuilder $nostoCartItemBuilder,
-        NostoCartBuilder $nostoCartBuilder,
         CookieMetadataFactory $cookieMetadataFactory
     ) {
         $this->nostoHelperData = $nostoHelperData;
@@ -98,7 +95,6 @@ class Add implements ObserverInterface
         $this->nostoHelperScope = $nostoHelperScope;
         $this->cookieManager = $cookieManager;
         $this->nostoCartItemBuilder = $nostoCartItemBuilder;
-        $this->nostoCartBuilder = $nostoCartBuilder;
         $this->cookieMetadataFactory = $cookieMetadataFactory;
     }
 
