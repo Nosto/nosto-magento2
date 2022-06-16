@@ -62,7 +62,7 @@ class QueueCollection extends AbstractCollection
      * @param StoreInterface $store
      * @return QueueCollection
      */
-    public function addStoreFilter(StoreInterface $store)
+    public function addStoreFilter(StoreInterface $store): QueueCollection
     {
         return $this->addStoreIdFilter($store->getId());
     }
@@ -71,7 +71,7 @@ class QueueCollection extends AbstractCollection
      * @param array $ids
      * @return QueueCollection
      */
-    public function addIdsFilter(array $ids)
+    public function addIdsFilter(array $ids): QueueCollection
     {
         return $this->addFieldToFilter(
             ProductUpdateQueueInterface::ID,
@@ -85,7 +85,7 @@ class QueueCollection extends AbstractCollection
      * @param int $storeId
      * @return QueueCollection
      */
-    public function addStoreIdFilter(int $storeId)
+    public function addStoreIdFilter(int $storeId): QueueCollection
     {
         return $this->addFieldToFilter(
             ProductUpdateQueueInterface::STORE_ID,
@@ -99,7 +99,7 @@ class QueueCollection extends AbstractCollection
      * @param string $status
      * @return QueueCollection
      */
-    public function addStatusFilter(string $status)
+    public function addStatusFilter(string $status): QueueCollection
     {
         return $this->addFieldToFilter(
             ProductUpdateQueueInterface::STATUS,
@@ -113,11 +113,25 @@ class QueueCollection extends AbstractCollection
      * @param DateTimeInterface $dateTime
      * @return QueueCollection
      */
-    public function addCompletedBeforeFilter(DateTimeInterface $dateTime)
+    public function addCompletedBeforeFilter(DateTimeInterface $dateTime): QueueCollection
     {
         return $this->addFieldToFilter(
             ProductUpdateQueueInterface::COMPLETED_AT,
             ['lteq' => $dateTime->format('Y-m-d H:i:s')]
+        );
+    }
+
+    /**
+     * Filters collection by action
+     *
+     * @param string $action
+     * @return QueueCollection
+     */
+    public function addActionFilter(string $action): QueueCollection
+    {
+        return $this->addFieldToFilter(
+            ProductUpdateQueueInterface::ACTION,
+            ['eq' => $action]
         );
     }
 
@@ -127,7 +141,7 @@ class QueueCollection extends AbstractCollection
      * @param int $indexId
      * @return QueueCollection
      */
-    public function addIdFilter(int $indexId)
+    public function addIdFilter(int $indexId): QueueCollection
     {
         return $this->addFieldToFilter(
             ProductUpdateQueueInterface::ID,

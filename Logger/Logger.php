@@ -62,7 +62,7 @@ class Logger extends MonologLogger
      * @param $message
      * @param Store|null $store
      * @param null $sourceClass
-     * @return bool
+     * @return bool|void
      */
     public function logWithMemoryConsumption($message, Store $store = null, $sourceClass = null)
     {
@@ -78,7 +78,7 @@ class Logger extends MonologLogger
             $context['storeId'] = $store->getId();
         }
         if (is_object($sourceClass)) {
-            return $this->debugWithSource($message, $context, $sourceClass);
+            return $this->debugWithSource($msg, $context, $sourceClass);
         }
         return $this->debug($msg, $context);
     }

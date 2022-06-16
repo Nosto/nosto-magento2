@@ -1,5 +1,11 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 6.0.2
+* Indexer - Reduces completed queue cleanup time to 1 hour instead of 8
+* Indexer Sync Service - Uses Magento Product repository to fetch product data in bulk, reducing amount of database queries
+* Indexer - Prevent insertion of duplicated rows to be upsert
+* Move currencies building process to a cronjob, reducing admin loading time in setups with a large amount of currencies and storeviews
+
 ### 6.0.1
 * Add support for both version 2 and 3 of phpseclib/phpseclib library (for compatibility with Magento versions 2.3.x and 2.4.x)
 * Remove customer visitor checksum generation when 2c.cid cookie does not exist
