@@ -151,7 +151,7 @@ class QueueService extends AbstractService
                 $store,
                 $idBatch
             );
-            if (!empty($queueEntry->getProductIds())) {
+            if (!empty($queueEntry->getProductIds()) && !$this->queueRepository->isEntryDuplicated($queueEntry)) {
                 $this->queueRepository->save($queueEntry); // @codingStandardsIgnoreLine
             }
         }
