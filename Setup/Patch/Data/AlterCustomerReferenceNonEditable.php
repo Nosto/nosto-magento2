@@ -120,6 +120,6 @@ class AlterCustomerReferenceNonEditable implements DataPatchInterface, PatchVers
      */
     public static function getVersion(): string
     {
-        return '6.0.2';
+        return '6.0.3';
     }
 }

@@ -1,5 +1,8 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 6.0.3
+* Indexer - Prevent insertion of duplicated rows to be delete
+
 ### 6.0.2
 * Indexer - Reduces completed queue cleanup time to 1 hour instead of 8
 * Indexer Sync Service - Uses Magento Product repository to fetch product data in bulk, reducing amount of database queries
