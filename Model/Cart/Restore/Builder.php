@@ -146,6 +146,9 @@ class Builder
             $nostoCustomer->setNostoId($nostoCustomerId);
             $nostoCustomer->setCreatedAt($this->getNow());
             $nostoCustomer->setRestoreCartHash($this->generateRestoreCartHash());
+            if ($mageCustomerId) {
+                $nostoCustomer->setCustomerId($mageCustomerId);
+            }
         }
         try {
             return $this->nostoCustomerRepository->save($nostoCustomer);

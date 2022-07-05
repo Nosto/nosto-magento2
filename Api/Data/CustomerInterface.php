@@ -97,10 +97,10 @@ interface CustomerInterface
     /**
      * Set customer id
      *
-     * @param int $customerId
+     * @param int|null $customerId
      * @return self
      */
-    public function setCustomerId(int $customerId);
+    public function setCustomerId(?int $customerId);
 
     /**
      * Set quote id

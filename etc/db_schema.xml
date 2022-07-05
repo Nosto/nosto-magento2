@@ -4,16 +4,12 @@
 
     <!--createCustomerTable-->
     <table name="nosto_tagging_customer" engine="innodb" comment="Nosto Tagging Customer">
-        <column xsi:type="int" name="customer_id" unsigned="true" nullable="false" identity="true" comment="Customer ID"/>
+        <column xsi:type="int" name="customer_id" unsigned="true" nullable="true" comment="Customer ID"/>
         <column xsi:type="int" name="quote_id" unsigned="true" nullable="false"/>
         <column xsi:type="varchar" length="255" name="nosto_id" nullable="false" comment="Nosto Customer ID"/>
         <column xsi:type="datetime" name="created_at" nullable="false" comment="Creation Time"/>
         <column xsi:type="datetime" name="updated_at" nullable="false" comment="Updated Time"/>
         <column xsi:type="text" name="restore_cart_hash" nullable="true" comment="Restore Cart Hash"/>
-
-        <constraint xsi:type="primary" referenceId="PRIMARY">
-            <column name="customer_id"/>
-        </constraint>
 
         <!--Nosto customer and order mapping-->
         <index referenceId="NOSTO_CUSTOMER_ORDER_MAPPING" indexType="btree">

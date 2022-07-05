@@ -190,7 +190,7 @@ class Repository implements CustomerRepositoryInterface
     /**
      * @param int $customerId
      * @param int $quoteId
-     * 
+     *
      * @return CustomerInterface|null
      */
     public function getOneByCustomerIdAndQuoteId(int $customerId, int $quoteId): ?CustomerInterface
