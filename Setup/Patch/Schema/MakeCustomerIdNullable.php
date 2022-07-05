@@ -64,8 +64,15 @@ class MakeCustomerIdNullable implements SchemaPatchInterface
     {
         $this->schemaSetup->startSetup();
         $connection = $this->schemaSetup->getConnection();
+        $primaryKeyName = $connection->getPrimaryKeyName(NostoCustomer::TABLE_NAME);
+        if ($primaryKeyName === 'id') {
+            $this->schemaSetup->endSetup();
+            return;
+        }
         $idColumnExists = $connection->tableColumnExists(NostoCustomer::TABLE_NAME, 'id');
         if (!$idColumnExists) {
+            $connection->truncateTable(NostoCustomer::TABLE_NAME);
+            $connection->dropColumn(NostoCustomer::TABLE_NAME, CustomerInterface::CUSTOMER_ID);
             $connection->addColumn(
                 NostoCustomer::TABLE_NAME,
                 'id',
@@ -75,20 +82,20 @@ class MakeCustomerIdNullable implements SchemaPatchInterface
                 'identity' => true,
                 'comment' => 'ID'
             ]);
+            $connection->addColumn(
+                NostoCustomer::TABLE_NAME,
+                CustomerInterface::CUSTOMER_ID,
+                [
+                    'type' => MagentoTable::TYPE_INTEGER,
+                    'name' => CustomerInterface::CUSTOMER_ID,
+                    'nullable' => true,
+                    'unsigned' => true,
+                    'identity' => false,
+                    'comment' => 'Customer ID'
+                ]
+            );
         }
 
-        $connection->modifyColumn(
-            NostoCustomer::TABLE_NAME,
-            CustomerInterface::CUSTOMER_ID,
-            [
-                'type' => MagentoTable::TYPE_INTEGER,
-                'name' => CustomerInterface::CUSTOMER_ID,
-                'nullable' => true,
-                'unsigned' => true,
-                'identity' => false,
-                'comment' => 'Customer ID'
-            ]
-        );
         $this->schemaSetup->endSetup();
     }
 
