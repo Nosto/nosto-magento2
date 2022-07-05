@@ -40,6 +40,7 @@ use DateTime;
 
 interface CustomerInterface
 {
+    public const ID = 'id';
     public const CUSTOMER_ID = 'customer_id';
     public const QUOTE_ID = 'quote_id';
     public const NOSTO_ID = 'nosto_id';
@@ -53,7 +54,7 @@ interface CustomerInterface
     public const NOSTO_TAGGING_RESTORE_CART_ATTRIBUTE_LENGTH = 64;
 
     /**
-     * Get customer id
+     * Get Magento customer id
      *
      * @return int|null
      */
@@ -95,7 +96,7 @@ interface CustomerInterface
     public function getRestoreCartHash();
 
     /**
-     * Set customer id
+     * Set Magento customer id
      *
      * @param int|null $customerId
      * @return self
