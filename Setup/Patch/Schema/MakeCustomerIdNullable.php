@@ -64,6 +64,19 @@ class MakeCustomerIdNullable implements SchemaPatchInterface
     {
         $this->schemaSetup->startSetup();
         $connection = $this->schemaSetup->getConnection();
+        $idColumnExists = $connection->tableColumnExists(NostoCustomer::TABLE_NAME, 'id');
+        if (!$idColumnExists) {
+            $connection->addColumn(
+                NostoCustomer::TABLE_NAME,
+                'id',
+                [
+                'unsigned' => true,
+                'nullable' => false,
+                'identity' => true,
+                'comment' => 'ID'
+            ]);
+        }
+
         $connection->modifyColumn(
             NostoCustomer::TABLE_NAME,
             CustomerInterface::CUSTOMER_ID,
@@ -72,6 +85,7 @@ class MakeCustomerIdNullable implements SchemaPatchInterface
                 'name' => CustomerInterface::CUSTOMER_ID,
                 'nullable' => true,
                 'unsigned' => true,
+                'identity' => false,
                 'comment' => 'Customer ID'
             ]
         );
