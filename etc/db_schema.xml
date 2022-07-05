@@ -12,6 +12,10 @@
         <column xsi:type="datetime" name="updated_at" nullable="false" comment="Updated Time"/>
         <column xsi:type="text" name="restore_cart_hash" nullable="true" comment="Restore Cart Hash"/>
 
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="id"/>
+        </constraint>
+
         <!--Nosto customer and order mapping-->
         <index referenceId="NOSTO_CUSTOMER_ORDER_MAPPING" indexType="btree">
             <column name="quote_id"/>
