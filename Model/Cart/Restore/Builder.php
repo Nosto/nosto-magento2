@@ -135,9 +135,7 @@ class Builder
             );
         }
         // Handle the Nosto customer & quote mapping
-        if ($nostoCustomer instanceof CustomerInterface
-            && $nostoCustomer->getCustomerId()
-        ) {
+        if ($nostoCustomer instanceof CustomerInterface) {
             if ($nostoCustomer->getRestoreCartHash() === null) {
                 $nostoCustomer->setRestoreCartHash($this->generateRestoreCartHash());
             }
