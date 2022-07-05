@@ -82,7 +82,7 @@ class Builder
         NostoCustomerRepository $nostoCustomerRepository,
         NostoHelperUrl $urlHelper,
         DateTime $date,
-        CurrentCustomer $currentCustomer,
+        CurrentCustomer $currentCustomer
     ) {
         $this->logger = $logger;
         $this->cookieManager = $cookieManager;
@@ -124,7 +124,9 @@ class Builder
 
         $mageCustomerId = $this->currentCustomer->getCustomerId();
         if ($mageCustomerId) {
-            $nostoCustomer = $this->nostoCustomerRepository->getOneByCustomerIdAndQuoteId($mageCustomerId, $quote->getId());
+            $nostoCustomer = $this->nostoCustomerRepository->getOneByCustomerIdAndQuoteId(
+                $mageCustomerId, $quote->getId()
+            );
         } else {
             $nostoCustomer = $this->nostoCustomerRepository->getOneByNostoIdAndQuoteId(
                 $nostoCustomerId,
