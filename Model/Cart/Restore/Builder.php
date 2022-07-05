@@ -38,6 +38,7 @@
 namespace Nosto\Tagging\Model\Cart\Restore;
 
 use Exception;
+use Magento\Customer\Helper\Session\CurrentCustomer;
 use Magento\Framework\Encryption\EncryptorInterface;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Stdlib\CookieManagerInterface;
@@ -60,6 +61,7 @@ class Builder
     private NostoCustomerFactory $nostoCustomerFactory;
     private NostoHelperUrl $urlHelper;
     private NostoCustomerRepository $nostoCustomerRepository;
+    private CurrentCustomer $currentCustomer;
 
     /**
      * Builder constructor.
@@ -70,6 +72,7 @@ class Builder
      * @param NostoCustomerRepository $nostoCustomerRepository
      * @param NostoHelperUrl $urlHelper
      * @param DateTime $date
+     * @param CurrentCustomer $currentCustomer
      */
     public function __construct(
         NostoLogger $logger,
@@ -78,7 +81,8 @@ class Builder
         NostoCustomerFactory $nostoCustomerFactory,
         NostoCustomerRepository $nostoCustomerRepository,
         NostoHelperUrl $urlHelper,
-        DateTime $date
+        DateTime $date,
+        CurrentCustomer $currentCustomer,
     ) {
         $this->logger = $logger;
         $this->cookieManager = $cookieManager;
@@ -87,6 +91,7 @@ class Builder
         $this->nostoCustomerFactory = $nostoCustomerFactory;
         $this->urlHelper = $urlHelper;
         $this->nostoCustomerRepository = $nostoCustomerRepository;
+        $this->currentCustomer = $currentCustomer;
     }
 
     /**
@@ -112,17 +117,21 @@ class Builder
      */
     private function updateNostoId(Quote $quote)
     {
-        // Handle the Nosto customer & quote mapping
         $nostoCustomerId = $this->cookieManager->getCookie(NostoCustomer::COOKIE_NAME);
-
         if ($nostoCustomerId === null || $quote->getId() === null) {
             return null;
         }
-        $nostoCustomer = $this->nostoCustomerRepository->getOneByNostoIdAndQuoteId(
-            $nostoCustomerId,
-            $quote->getId()
-        );
 
+        $mageCustomerId = $this->currentCustomer->getCustomerId();
+        if ($mageCustomerId) {
+            $nostoCustomer = $this->nostoCustomerRepository->getOneByCustomerIdAndQuoteId($mageCustomerId, $quote->getId());
+        } else {
+            $nostoCustomer = $this->nostoCustomerRepository->getOneByNostoIdAndQuoteId(
+                $nostoCustomerId,
+                $quote->getId()
+            );
+        }
+        // Handle the Nosto customer & quote mapping
         if ($nostoCustomer instanceof CustomerInterface
             && $nostoCustomer->getCustomerId()
         ) {
@@ -130,7 +139,8 @@ class Builder
                 $nostoCustomer->setRestoreCartHash($this->generateRestoreCartHash());
             }
             $nostoCustomer->setUpdatedAt($this->getNow());
-        } else {
+            $nostoCustomer->setNostoId($nostoCustomerId);
+        } else { // Create a new entry
             $nostoCustomer = $this->nostoCustomerFactory->create();
             $nostoCustomer->setQuoteId($quote->getId());
             $nostoCustomer->setNostoId($nostoCustomerId);
@@ -138,9 +148,7 @@ class Builder
             $nostoCustomer->setRestoreCartHash($this->generateRestoreCartHash());
         }
         try {
-            $nostoCustomer = $this->nostoCustomerRepository->save($nostoCustomer);
-
-            return $nostoCustomer;
+            return $this->nostoCustomerRepository->save($nostoCustomer);
         } catch (Exception $e) {
             $this->logger->exception($e);
         }

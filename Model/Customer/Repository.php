@@ -186,4 +186,25 @@ class Repository implements CustomerRepositoryInterface
             $searchResults
         );
     }
+
+    /**
+     * @param int $customerId
+     *
+     * @return CustomerInterface|null
+     */
+    public function getOneByCustomerIdAndQuoteId(int $customerId, int $quoteId): ?CustomerInterface
+    {
+        $searchCriteria = $this->searchCriteriaBuilder
+            ->addFilter(NostoCustomer::CUSTOMER_ID, $customerId)
+            ->addFilter(NostoCustomer::QUOTE_ID, $quoteId)
+            ->setPageSize(1)
+            ->setCurrentPage(1)
+            ->create();
+
+        /** @var CustomerInterface[]|null $items */
+        $items = $this->search($searchCriteria)->getItems();
+        /** @var CustomerInterface|null $item */
+        $item = $items ? reset($items) : null;
+        return $item;
+    }
 }
