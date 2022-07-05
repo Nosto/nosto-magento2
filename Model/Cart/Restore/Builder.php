@@ -51,6 +51,7 @@ use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Customer\Customer as NostoCustomer;
 use Nosto\Tagging\Model\Customer\CustomerFactory as NostoCustomerFactory;
 use Nosto\Tagging\Model\Customer\Repository as NostoCustomerRepository;
+use Psr\Log\LogLevel;
 
 class Builder
 {
@@ -136,6 +137,9 @@ class Builder
         }
         // Handle the Nosto customer & quote mapping
         if ($nostoCustomer instanceof CustomerInterface) {
+            if ($mageCustomerId) {
+                $this->deleteOldEntries($nostoCustomerId);
+            }
             if ($nostoCustomer->getRestoreCartHash() === null) {
                 $nostoCustomer->setRestoreCartHash($this->generateRestoreCartHash());
             }
@@ -199,5 +203,27 @@ class Builder
         $params = $this->urlHelper->getUrlOptionsWithNoSid($store);
         $params['h'] = $hash;
         return $store->getUrl(NostoHelperUrl::NOSTO_PATH_RESTORE_CART, $params);
+    }
+
+    /**
+     * @param string $nostoCustomerId
+     */
+    private function deleteOldEntries(string $nostoCustomerId): void
+    {
+        $toDelete = $this->nostoCustomerRepository->getByNostoIdWithoutCustomerId($nostoCustomerId);
+        foreach ($toDelete as $item) {
+            try {
+                $item->delete();
+            } catch (\Exception $e) {
+                $this->logger->log(
+                    LogLevel::WARNING,
+                    sprintf(
+                        'Could not delete entry %d from nosto_tagging_customer table, message was: %s',
+                        $item->getId(),
+                        $e->getMessage()
+                    )
+                );
+            }
+        }
     }
 }

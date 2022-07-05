@@ -119,6 +119,26 @@ class Repository implements CustomerRepositoryInterface
     }
 
     /**
+     * Get customer entries by Nosto id.
+     *
+     * @param string $nostoId
+     *
+     * @return CustomerInterface[]|null
+     */
+    public function getByNostoIdWithoutCustomerId(string $nostoId): ?array
+    {
+        $searchCriteria = $this->searchCriteriaBuilder
+            ->addFilter(CustomerInterface::NOSTO_ID, $nostoId)
+            ->addFilter(CustomerInterface::CUSTOMER_ID, true, 'null')
+            ->setPageSize(1)
+            ->setCurrentPage(1)
+            ->create();
+
+        /** @var CustomerInterface[]|null $items */
+        return $this->search($searchCriteria)->getItems();
+    }
+
+    /**
      * Get customer entry by field name and quote id. If multiple entries
      * are found first one will be returned.
      *
