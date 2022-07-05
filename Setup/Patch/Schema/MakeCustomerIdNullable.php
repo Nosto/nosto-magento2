@@ -77,11 +77,12 @@ class MakeCustomerIdNullable implements SchemaPatchInterface
                 NostoCustomer::TABLE_NAME,
                 'id',
                 [
-                'unsigned' => true,
-                'nullable' => false,
-                'identity' => true,
-                'comment' => 'ID'
-            ]);
+                    'unsigned' => true,
+                    'nullable' => false,
+                    'identity' => true,
+                    'comment' => 'ID'
+                ]
+            );
             $connection->addColumn(
                 NostoCustomer::TABLE_NAME,
                 CustomerInterface::CUSTOMER_ID,
