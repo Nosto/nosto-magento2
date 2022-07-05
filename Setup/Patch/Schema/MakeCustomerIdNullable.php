@@ -53,8 +53,7 @@ class MakeCustomerIdNullable implements SchemaPatchInterface
      */
     public function __construct(
         SchemaSetupInterface $schemaSetup
-    )
-    {
+    ) {
         $this->schemaSetup = $schemaSetup;
     }
 
