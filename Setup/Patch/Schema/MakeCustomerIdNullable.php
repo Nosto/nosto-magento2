@@ -36,6 +36,7 @@
 
 namespace Nosto\Tagging\Setup\Patch\Schema;
 
+use Magento\Framework\DB\Ddl\Table as MagentoTable;
 use Magento\Framework\Setup\SchemaSetupInterface;
 use Magento\Framework\Setup\Patch\SchemaPatchInterface;
 use Nosto\Tagging\Model\ResourceModel\Customer as NostoCustomer;
@@ -68,11 +69,10 @@ class MakeCustomerIdNullable implements SchemaPatchInterface
             NostoCustomer::TABLE_NAME,
             CustomerInterface::CUSTOMER_ID,
             [
-                'type' => 'integer',
+                'type' => MagentoTable::TYPE_INTEGER,
                 'name' => CustomerInterface::CUSTOMER_ID,
-                'unsigned' => true,
                 'nullable' => true,
-                'identity' => false,
+                'unsigned' => true,
                 'comment' => 'Customer ID'
             ]
         );
