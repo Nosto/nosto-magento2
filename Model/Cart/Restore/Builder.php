@@ -125,7 +125,8 @@ class Builder
         $mageCustomerId = $this->currentCustomer->getCustomerId();
         if ($mageCustomerId) {
             $nostoCustomer = $this->nostoCustomerRepository->getOneByCustomerIdAndQuoteId(
-                $mageCustomerId, $quote->getId()
+                $mageCustomerId,
+                $quote->getId()
             );
         } else {
             $nostoCustomer = $this->nostoCustomerRepository->getOneByNostoIdAndQuoteId(
