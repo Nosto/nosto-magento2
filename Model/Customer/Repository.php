@@ -37,6 +37,7 @@
 namespace Nosto\Tagging\Model\Customer;
 
 use Exception;
+use Magento\Framework\Api\Search\DocumentInterface;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\Api\SearchCriteriaInterface;
 use Magento\Framework\Exception\AlreadyExistsException;
@@ -134,7 +135,7 @@ class Repository implements CustomerRepositoryInterface
             ->setCurrentPage(1)
             ->create();
 
-        /** @var CustomerInterface[]|null $items */
+        /** @var CustomerInterface[]|DocumentInterface[]|null $items */
         return $this->search($searchCriteria)->getItems();
     }
 
