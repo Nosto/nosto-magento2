@@ -136,7 +136,8 @@ class Repository implements CustomerRepositoryInterface
             ->create();
 
         /** @var CustomerInterface[]|DocumentInterface[]|null $items */
-        return $this->search($searchCriteria)->getItems();
+        $items = $this->search($searchCriteria)->getItems();
+        return $items;
     }
 
     /**
