@@ -41,7 +41,6 @@ use Exception;
 use Magento\Customer\Helper\Session\CurrentCustomer;
 use Magento\Framework\Encryption\EncryptorInterface;
 use Magento\Framework\Exception\NoSuchEntityException;
-use Magento\Framework\Model\AbstractModel;
 use Magento\Framework\Stdlib\CookieManagerInterface;
 use Magento\Framework\Stdlib\DateTime\DateTime;
 use Magento\Quote\Model\Quote;
