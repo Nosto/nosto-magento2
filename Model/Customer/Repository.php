@@ -124,7 +124,7 @@ class Repository implements CustomerRepositoryInterface
      *
      * @param string $nostoId
      *
-     * @return CustomerInterface[]|null
+     * @return CustomerInterface[]|DocumentInterface[]|null
      */
     public function getByNostoIdWithoutCustomerId(string $nostoId): ?array
     {

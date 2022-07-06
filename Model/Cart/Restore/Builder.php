@@ -214,7 +214,7 @@ class Builder
         $toDelete = $this->nostoCustomerRepository->getByNostoIdWithoutCustomerId($nostoCustomerId);
         foreach ($toDelete as $item) {
             try {
-                /** @var AbstractModel $item */
+                /** @phan-var AbstractModel $item */
                 $item->delete();
             } catch (Exception $e) {
                 $this->logger->log(
