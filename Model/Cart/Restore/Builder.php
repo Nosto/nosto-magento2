@@ -214,13 +214,14 @@ class Builder
         $toDelete = $this->nostoCustomerRepository->getByNostoIdWithoutCustomerId($nostoCustomerId);
         foreach ($toDelete as $item) {
             try {
-                /** @phan-var AbstractModel $item */
+                /** @phan-suppress-next-line */
                 $item->delete();
             } catch (Exception $e) {
                 $this->logger->log(
                     LogLevel::WARNING,
                     sprintf(
                         'Could not delete entry %d from nosto_tagging_customer table, message was: %s',
+                        /** @phan-suppress-next-line */
                         $item->getId(),
                         $e->getMessage()
                     )
