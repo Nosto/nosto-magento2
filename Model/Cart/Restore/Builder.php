@@ -213,7 +213,7 @@ class Builder
         $toDelete = $this->nostoCustomerRepository->getByNostoIdWithoutCustomerId($nostoCustomerId);
         foreach ($toDelete as $item) {
             try {
-                /** @phan-suppress-next-line */
+                /** @phan-suppress-next-line PhanUndeclaredMethod */
                 $item->delete();
             } catch (Exception $e) {
                 $this->logger->log(
