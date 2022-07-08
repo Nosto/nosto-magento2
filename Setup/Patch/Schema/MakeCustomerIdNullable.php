@@ -42,6 +42,7 @@ use Magento\Framework\Setup\Patch\SchemaPatchInterface;
 use Nosto\Tagging\Model\ResourceModel\Customer as NostoCustomer;
 use Nosto\Tagging\Api\Data\CustomerInterface;
 use Nosto\Tagging\Logger\Logger;
+use Zend_Db_Exception;
 
 class MakeCustomerIdNullable implements SchemaPatchInterface
 {
@@ -140,7 +141,7 @@ class MakeCustomerIdNullable implements SchemaPatchInterface
                 ['quote_id']
             );
             $connection->createTable($nostoCustomerTable);
-        } catch (\Zend_Db_Exception $e) {
+        } catch (Zend_Db_Exception $e) {
             $this->logger->error(
                 sprintf(
                     'Could not create %s table. Error was: %s',
