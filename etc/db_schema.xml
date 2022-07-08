@@ -3,7 +3,7 @@
         xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
 
     <!--createCustomerTable-->
-    <table name="nosto_tagging_customer" engine="innodb" comment="Nosto Tagging Customer">
+    <table name="nosto_tagging_customer" engine="innodb" comment="Nosto Tagging Customer" disabled="true">
         <column xsi:type="int" name="id" unsigned="true" nullable="false" identity="true" comment="ID"/>
         <column xsi:type="int" name="customer_id" unsigned="true" nullable="true" comment="Customer ID"/>
         <column xsi:type="int" name="quote_id" unsigned="true" nullable="false"/>
