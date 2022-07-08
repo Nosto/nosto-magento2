@@ -82,6 +82,7 @@ class MakeCustomerIdNullable implements SchemaPatchInterface
                 [
                     'unsigned' => true,
                     'nullable' => false,
+                    'primary' => true,
                     'identity' => true
                 ],
                 'ID'
@@ -134,9 +135,12 @@ class MakeCustomerIdNullable implements SchemaPatchInterface
                 ['nullable' => true],
                 'Nosto Customer ID'
             );
+            $nostoCustomerTable->addIndex(
+                $this->schemaSetup->getIdxName(NostoCustomer::TABLE_NAME, ['quote_id']),
+                ['quote_id']
+            );
             $connection->createTable($nostoCustomerTable);
         } catch (\Zend_Db_Exception $e) {
-            $debugger=true;
             $this->logger->error(
                 sprintf(
                     'Could not create %s table. Error was: %s',
