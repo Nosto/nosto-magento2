@@ -41,20 +41,26 @@ use Magento\Framework\Setup\SchemaSetupInterface;
 use Magento\Framework\Setup\Patch\SchemaPatchInterface;
 use Nosto\Tagging\Model\ResourceModel\Customer as NostoCustomer;
 use Nosto\Tagging\Api\Data\CustomerInterface;
+use Nosto\Tagging\Logger\Logger;
 
 class MakeCustomerIdNullable implements SchemaPatchInterface
 {
     /** @var SchemaSetupInterface */
     private SchemaSetupInterface $schemaSetup;
 
+    /** @var Logger */
+    private Logger $logger;
     /**
      * MakeCustomerIdNullable constructor.
      * @param SchemaSetupInterface $schemaSetup
+     * @param Logger $logger
      */
     public function __construct(
-        SchemaSetupInterface $schemaSetup
+        SchemaSetupInterface $schemaSetup,
+        Logger $logger
     ) {
         $this->schemaSetup = $schemaSetup;
+        $this->logger = $logger;
     }
 
     /**
@@ -64,39 +70,81 @@ class MakeCustomerIdNullable implements SchemaPatchInterface
     {
         $this->schemaSetup->startSetup();
         $connection = $this->schemaSetup->getConnection();
-        $primaryKeyName = $connection->getPrimaryKeyName(NostoCustomer::TABLE_NAME);
-        if ($primaryKeyName === 'id') {
-            $this->schemaSetup->endSetup();
-            return;
-        }
-        $idColumnExists = $connection->tableColumnExists(NostoCustomer::TABLE_NAME, 'id');
-        if (!$idColumnExists) {
-            $connection->truncateTable(NostoCustomer::TABLE_NAME);
-            $connection->dropColumn(NostoCustomer::TABLE_NAME, CustomerInterface::CUSTOMER_ID);
-            $connection->addColumn(
-                NostoCustomer::TABLE_NAME,
+
+        $connection->dropTable(NostoCustomer::TABLE_NAME);
+
+        $nostoCustomerTable = $connection->newTable(NostoCustomer::TABLE_NAME);
+        try {
+            $nostoCustomerTable->addColumn(
                 'id',
+                MagentoTable::TYPE_INTEGER,
+                null,
                 [
                     'unsigned' => true,
                     'nullable' => false,
-                    'identity' => true,
-                    'comment' => 'ID'
-                ]
+                    'identity' => true
+                ],
+                'ID'
             );
-            $connection->addColumn(
-                NostoCustomer::TABLE_NAME,
+            $nostoCustomerTable->addColumn(
                 CustomerInterface::CUSTOMER_ID,
+                MagentoTable::TYPE_INTEGER,
+                null,
                 [
                     'type' => MagentoTable::TYPE_INTEGER,
-                    'name' => CustomerInterface::CUSTOMER_ID,
+                    'nullable' => true,
+                    'unsigned' => true
+                ],
+                'Magento Customer ID'
+            );
+            $nostoCustomerTable->addColumn(
+                'quote_id',
+                MagentoTable::TYPE_INTEGER,
+                null,
+                [
                     'nullable' => true,
                     'unsigned' => true,
-                    'identity' => false,
-                    'comment' => 'Customer ID'
                 ]
             );
+            $nostoCustomerTable->addColumn(
+                'nosto_id',
+                MagentoTable::TYPE_TEXT,
+                255,
+                ['nullable' => true],
+                'Nosto Customer ID'
+            );
+            $nostoCustomerTable->addColumn(
+                'created_at',
+                MagentoTable::TYPE_DATETIME,
+                null,
+                ['nullable' => true],
+                'Creation Time'
+            );
+            $nostoCustomerTable->addColumn(
+                'updated_at',
+                MagentoTable::TYPE_DATETIME,
+                null,
+                ['nullable' => true],
+                'Updated Time'
+            );
+            $nostoCustomerTable->addColumn(
+                'restore_cart_hash',
+                MagentoTable::TYPE_TEXT,
+                255,
+                ['nullable' => true],
+                'Nosto Customer ID'
+            );
+            $connection->createTable($nostoCustomerTable);
+        } catch (\Zend_Db_Exception $e) {
+            $debugger=true;
+            $this->logger->error(
+                sprintf(
+                    'Could not create %s table. Error was: %s',
+                    NostoCustomer::TABLE_NAME,
+                    $e->getMessage()
+                )
+            );
         }
-
         $this->schemaSetup->endSetup();
     }
 
