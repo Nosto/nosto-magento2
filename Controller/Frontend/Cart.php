@@ -157,7 +157,7 @@ class Cart extends Action
     private function resolveQuote($restoreCartHash)
     {
         $customer = $this->nostoCustomerRepository->getOneByRestoreCartHash($restoreCartHash);
-        if ($customer === null || !$customer->getCustomerId()) {
+        if ($customer === null) {
             throw new NostoException(
                 sprintf(
                     'No nosto customer found for hash %s',

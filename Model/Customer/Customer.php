@@ -91,7 +91,7 @@ class Customer extends AbstractModel implements CustomerInterface
     /**
      * @inheritDoc
      */
-    public function setCustomerId(int $customerId)
+    public function setCustomerId(?int $customerId)
     {
         return $this->setData(self::CUSTOMER_ID, $customerId);
     }
