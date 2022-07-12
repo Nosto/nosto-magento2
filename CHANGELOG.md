@@ -3,6 +3,9 @@ All notable changes to this project will be documented in this file. This projec
 ### 6.0.5
 - Fix call to undefined warn logger method
 
+### 6.0.4
+* Fix issue where nosto_tagging_customer would get a lot of entries
+
 ### 6.0.3
 * Indexer - Prevent insertion of duplicated rows to be delete
 
