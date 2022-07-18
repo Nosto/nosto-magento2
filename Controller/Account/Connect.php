@@ -1,7 +1,4 @@
-<?php /** @noinspection PhpUnhandledExceptionInspection */
-
-use Nosto\Tagging\Block\Adminhtml\Account\Iframe;
-
+<?php
 /**
  * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
@@ -37,27 +34,57 @@ use Nosto\Tagging\Block\Adminhtml\Account\Iframe;
  *
  */
 
-/**
- * @var Iframe $block
- */
-?>
+namespace Nosto\Tagging\Controller\Account;
 
-<!-- If account connected show this button -->
-<button id="nosto_connect"
-        title="Configuration"
-        type="button"
-        class="action- scalable primary"
-        onclick="window.open('<?= $block->escapeUrl($block->getIframeUrl()) ?>', '_blank');">
-    <span>Open Nosto Iframe</span>
-</button>
+use Magento\Backend\App\Action\Context;
+use Magento\Framework\Controller\Result\Json;
+use Nosto\Helper\OAuthHelper;
+use Nosto\Tagging\Helper\Scope as NostoHelperScope;
+use Nosto\Tagging\Model\Meta\Oauth\Builder as NostoOauthBuilder;
 
-<!-- If account connected show this button -->
-<button id="nosto_connect"
-        title="Configuration"
-        type="button"
-        class="action- scalable primary"
-        onclick="removeAccount()"
-        data-mage-init='<?= $block->escapeHtml(json_encode($block->getIframeConfig())); ?>'
->
-    <span>Remove Account</span>
-</button>
+class Connect extends Base
+{
+    public const ADMIN_RESOURCE = 'Nosto_Tagging::system_nosto_account';
+    private Json $result;
+    private NostoOauthBuilder $oauthMetaBuilder;
+    private NostoHelperScope $nostoHelperScope;
+
+    /**
+     * @param Context $context
+     * @param NostoOauthBuilder $oauthMetaBuilder
+     * @param NostoHelperScope $nostoHelperScope
+     * @param Json $result
+     */
+    public function __construct(
+        Context $context,
+        NostoOauthBuilder $oauthMetaBuilder,
+        NostoHelperScope $nostoHelperScope,
+        Json $result
+    ) {
+        parent::__construct($context);
+
+        $this->oauthMetaBuilder = $oauthMetaBuilder;
+        $this->result = $result;
+        $this->nostoHelperScope = $nostoHelperScope;
+    }
+
+    /**
+     * @return Json
+     */
+    public function execute()
+    {
+        $response = ['success' => false];
+
+        $storeId = $this->_request->getParam('store');
+        $store = $this->nostoHelperScope->getStore($storeId);
+
+        if ($store !== null) {
+            $metaData = $this->oauthMetaBuilder->build($store);
+            $response['success'] = true;
+            $response['works'] = true;
+            $response['redirect_url'] = OAuthHelper::getAuthorizationUrl($metaData);
+        }
+
+        return $this->result->setData($response);
+    }
+}

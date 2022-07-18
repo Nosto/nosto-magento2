@@ -1,7 +1,4 @@
-<?php /** @noinspection PhpUnhandledExceptionInspection */
-
-use Nosto\Tagging\Block\Adminhtml\Account\Iframe;
-
+<?php
 /**
  * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
@@ -37,27 +34,17 @@ use Nosto\Tagging\Block\Adminhtml\Account\Iframe;
  *
  */
 
-/**
- * @var Iframe $block
- */
-?>
+namespace Nosto\Tagging\Controller\Account;
 
-<!-- If account connected show this button -->
-<button id="nosto_connect"
-        title="Configuration"
-        type="button"
-        class="action- scalable primary"
-        onclick="window.open('<?= $block->escapeUrl($block->getIframeUrl()) ?>', '_blank');">
-    <span>Open Nosto Iframe</span>
-</button>
+use Magento\Framework\App\Action\Action;
+use Magento\Framework\Controller\ResultFactory;
 
-<!-- If account connected show this button -->
-<button id="nosto_connect"
-        title="Configuration"
-        type="button"
-        class="action- scalable primary"
-        onclick="removeAccount()"
-        data-mage-init='<?= $block->escapeHtml(json_encode($block->getIframeConfig())); ?>'
->
-    <span>Remove Account</span>
-</button>
+abstract class Base extends Action
+{
+    public function execute()
+    {
+        $result = $this->resultFactory->create(ResultFactory::TYPE_RAW);
+        $result->setContents('it works!');
+        return $result;
+    }
+}
