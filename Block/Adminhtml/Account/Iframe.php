@@ -113,9 +113,6 @@ class Iframe extends BlockTemplate
     {
         $params = [];
         $params['v'] = self::IFRAME_VERSION;
-//        $params['ajaxEndpoint'] = 'magento2.dev.nos.to:8443';
-//        $params['ajaxEndpoint'] = 'https://magento2.dev.nos.to:8443/admin/nosto/account/create/store/1/isAjax/1/key/' . $this->formKey->getFormKey();
-        $params['ajaxEndpoint'] = 'https://magento2.dev.nos.to:8443/admin/nosto/account/create/store/1/isAjax/1';
         $iframeConfig = $this->getIframeConfig();
         $params['ajaxEndpoint'] = $iframeConfig['iframe_handler']['urls']['createAccount'];
 
