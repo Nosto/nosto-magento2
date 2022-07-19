@@ -114,8 +114,9 @@ class Iframe extends BlockTemplate
         $params = [];
         $params['v'] = self::IFRAME_VERSION;
         $iframeConfig = $this->getIframeConfig();
+        $store = $this->nostoHelperScope->getSelectedStore($this->getRequest())->getId();
         $params['ajaxEndpoint'] = $iframeConfig['iframe_handler']['urls']['createAccount'];
-        $params['redirectUrl'] = $this->getUrl('*/*/', ['store' => $this->nostoHelperScope->getSelectedStore($this->getRequest())->getId()]);
+        $params['redirectUrl'] = $this->getUrl('*/*/', ['store' => $store]);
 
         // Pass any error/success messages we might have to the iframe.
         // These can be available when getting redirect back from the OAuth
