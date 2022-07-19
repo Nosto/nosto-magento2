@@ -38,6 +38,7 @@ namespace Nosto\Tagging\Controller\Adminhtml\Account;
 
 use Exception;
 use Magento\Backend\App\Action\Context;
+use Magento\Framework\Controller\ResultFactory;
 use Magento\Framework\Controller\Result\Json;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Phrase;
@@ -93,6 +94,7 @@ class Delete extends Base
      */
     public function execute()
     {
+        $resultRedirect = $this->resultFactory->create(ResultFactory::TYPE_REDIRECT);
         $storeId = $this->_request->getParam('store');
         $store = $this->nostoHelperScope->getStore($storeId);
         if ($store === null) {
@@ -118,7 +120,7 @@ class Delete extends Base
                         'message_code' => Nosto::CODE_ACCOUNT_DELETE,
                     ]
                 );
-                return $this->result->setData($response);
+                return $resultRedirect->setUrl($this->_redirect->getRefererUrl());
             }
         }
 
@@ -132,6 +134,6 @@ class Delete extends Base
                 'message_code' => Nosto::CODE_ACCOUNT_DELETE,
             ]
         );
-        return $this->result->setData($response);
+        return $resultRedirect->setUrl($this->_redirect->getRefererUrl());
     }
 }

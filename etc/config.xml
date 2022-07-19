@@ -38,16 +38,6 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
     <default>
-<!--        <csp>-->
-<!--            <mode>-->
-<!--                <storefront>-->
-<!--                    <report_uri>https://magento2.dev.nos.to:8443/csp/endpoint</report_uri>-->
-<!--                </storefront>-->
-<!--                <admin>-->
-<!--                    <report_uri>https://magento2.dev.nos.to:8443/csp/endpoint</report_uri>-->
-<!--                </admin>-->
-<!--            </mode>-->
-<!--        </csp>-->
         <nosto>
             <images>
                 <version>image</version>

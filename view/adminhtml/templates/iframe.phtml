@@ -42,22 +42,30 @@ use Nosto\Tagging\Block\Adminhtml\Account\Iframe;
  */
 ?>
 
-<!-- If account connected show this button -->
-<button id="nosto_connect"
-        title="Configuration"
-        type="button"
-        class="action- scalable primary"
-        onclick="window.open('<?= $block->escapeUrl($block->getIframeUrl()) ?>', '_blank');">
-    <span>Open Nosto Iframe</span>
-</button>
+<?php if ($block->getAccount()): ?>
+    <?php if ($block->getAccount()->isConnectedToNosto()): ?>
+        <button id="nosto_open"
+                title="Open Nosto Iframe"
+                type="button"
+                class="action-default primary"
+                onclick="window.open('<?= $block->escapeUrl($block->getIframeUrl()) ?>', '_blank');">
+            <span>Open Nosto Iframe</span>
+        </button>
 
-<!-- If account connected show this button -->
-<button id="nosto_connect"
-        title="Configuration"
-        type="button"
-        class="action- scalable primary"
-        onclick="removeAccount()"
-        data-mage-init='<?= $block->escapeHtml(json_encode($block->getIframeConfig())); ?>'
->
-    <span>Remove Account</span>
-</button>
+        <button id="nosto_connect"
+                title="Configuration"
+                type="button"
+                class="action-default"
+                onclick="window.open('<?= $block->escapeUrl($block->getAccountDeleteUrl()) ?>', '_self');">
+            <span>Remove Account</span>
+        </button>
+    <?php endif; ?>
+<?php else: ?>
+    <button id="nosto_connect"
+            title="Configuration"
+            type="button"
+            class="action-default primary"
+            onclick="window.open('<?= $block->escapeUrl($block->getIframeUrl()) ?>', '_self');">
+        <span>Connect to Nosto</span>
+    </button>
+<?php endif; ?>
