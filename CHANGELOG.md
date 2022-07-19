@@ -1,5 +1,8 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 6.0.5
+- Fix call to undefined warn logger method
+
 ### 6.0.4
 * Fix issue where nosto_tagging_customer would get a lot of entries
 

@@ -276,7 +276,7 @@ class Save implements ObserverInterface
                 );
             }
         } else {
-            $this->logger->warn(
+            $this->logger->warning(
                 sprintf(
                     'Could not resolve Nosto customer id for order #%s',
                     $order->getQuoteId()
