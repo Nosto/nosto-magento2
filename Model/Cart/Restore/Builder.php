@@ -38,6 +38,7 @@
 namespace Nosto\Tagging\Model\Cart\Restore;
 
 use Exception;
+use Magento\Customer\Helper\Session\CurrentCustomer;
 use Magento\Framework\Encryption\EncryptorInterface;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Stdlib\CookieManagerInterface;
@@ -50,6 +51,7 @@ use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Customer\Customer as NostoCustomer;
 use Nosto\Tagging\Model\Customer\CustomerFactory as NostoCustomerFactory;
 use Nosto\Tagging\Model\Customer\Repository as NostoCustomerRepository;
+use Psr\Log\LogLevel;
 
 class Builder
 {
@@ -60,6 +62,7 @@ class Builder
     private NostoCustomerFactory $nostoCustomerFactory;
     private NostoHelperUrl $urlHelper;
     private NostoCustomerRepository $nostoCustomerRepository;
+    private CurrentCustomer $currentCustomer;
 
     /**
      * Builder constructor.
@@ -70,6 +73,7 @@ class Builder
      * @param NostoCustomerRepository $nostoCustomerRepository
      * @param NostoHelperUrl $urlHelper
      * @param DateTime $date
+     * @param CurrentCustomer $currentCustomer
      */
     public function __construct(
         NostoLogger $logger,
@@ -78,7 +82,8 @@ class Builder
         NostoCustomerFactory $nostoCustomerFactory,
         NostoCustomerRepository $nostoCustomerRepository,
         NostoHelperUrl $urlHelper,
-        DateTime $date
+        DateTime $date,
+        CurrentCustomer $currentCustomer
     ) {
         $this->logger = $logger;
         $this->cookieManager = $cookieManager;
@@ -87,6 +92,7 @@ class Builder
         $this->nostoCustomerFactory = $nostoCustomerFactory;
         $this->urlHelper = $urlHelper;
         $this->nostoCustomerRepository = $nostoCustomerRepository;
+        $this->currentCustomer = $currentCustomer;
     }
 
     /**
@@ -112,35 +118,45 @@ class Builder
      */
     private function updateNostoId(Quote $quote)
     {
-        // Handle the Nosto customer & quote mapping
         $nostoCustomerId = $this->cookieManager->getCookie(NostoCustomer::COOKIE_NAME);
-
         if ($nostoCustomerId === null || $quote->getId() === null) {
             return null;
         }
-        $nostoCustomer = $this->nostoCustomerRepository->getOneByNostoIdAndQuoteId(
-            $nostoCustomerId,
-            $quote->getId()
-        );
 
-        if ($nostoCustomer instanceof CustomerInterface
-            && $nostoCustomer->getCustomerId()
-        ) {
+        $mageCustomerId = $this->currentCustomer->getCustomerId();
+        if ($mageCustomerId) {
+            $nostoCustomer = $this->nostoCustomerRepository->getOneByCustomerIdAndQuoteId(
+                $mageCustomerId,
+                $quote->getId()
+            );
+        } else {
+            $nostoCustomer = $this->nostoCustomerRepository->getOneByNostoIdAndQuoteId(
+                $nostoCustomerId,
+                $quote->getId()
+            );
+        }
+        // Handle the Nosto customer & quote mapping
+        if ($nostoCustomer instanceof CustomerInterface) {
+            if ($mageCustomerId) {
+                $this->deleteOldEntries($nostoCustomerId);
+            }
             if ($nostoCustomer->getRestoreCartHash() === null) {
                 $nostoCustomer->setRestoreCartHash($this->generateRestoreCartHash());
             }
             $nostoCustomer->setUpdatedAt($this->getNow());
-        } else {
+            $nostoCustomer->setNostoId($nostoCustomerId);
+        } else { // Create a new entry
             $nostoCustomer = $this->nostoCustomerFactory->create();
             $nostoCustomer->setQuoteId($quote->getId());
             $nostoCustomer->setNostoId($nostoCustomerId);
             $nostoCustomer->setCreatedAt($this->getNow());
             $nostoCustomer->setRestoreCartHash($this->generateRestoreCartHash());
+            if ($mageCustomerId) {
+                $nostoCustomer->setCustomerId($mageCustomerId);
+            }
         }
         try {
-            $nostoCustomer = $this->nostoCustomerRepository->save($nostoCustomer);
-
-            return $nostoCustomer;
+            return $this->nostoCustomerRepository->save($nostoCustomer);
         } catch (Exception $e) {
             $this->logger->exception($e);
         }
@@ -187,5 +203,29 @@ class Builder
         $params = $this->urlHelper->getUrlOptionsWithNoSid($store);
         $params['h'] = $hash;
         return $store->getUrl(NostoHelperUrl::NOSTO_PATH_RESTORE_CART, $params);
+    }
+
+    /**
+     * @param string $nostoCustomerId
+     */
+    private function deleteOldEntries(string $nostoCustomerId): void
+    {
+        $toDelete = $this->nostoCustomerRepository->getByNostoIdWithoutCustomerId($nostoCustomerId);
+        foreach ($toDelete as $item) {
+            try {
+                /** @phan-suppress-next-line PhanUndeclaredMethod */
+                $item->delete();
+            } catch (Exception $e) {
+                $this->logger->log(
+                    LogLevel::WARNING,
+                    sprintf(
+                        'Could not delete entry %d from nosto_tagging_customer table, message was: %s',
+                        /** @phan-suppress-next-line */
+                        $item->getId(),
+                        $e->getMessage()
+                    )
+                );
+            }
+        }
     }
 }

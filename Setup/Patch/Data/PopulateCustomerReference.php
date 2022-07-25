@@ -144,6 +144,6 @@ class PopulateCustomerReference implements DataPatchInterface, PatchVersionInter
      */
     public static function getVersion(): string
     {
-        return '6.0.3';
+        return '6.0.4';
     }
 }

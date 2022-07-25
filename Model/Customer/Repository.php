@@ -37,6 +37,7 @@
 namespace Nosto\Tagging\Model\Customer;
 
 use Exception;
+use Magento\Framework\Api\Search\DocumentInterface;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\Api\SearchCriteriaInterface;
 use Magento\Framework\Exception\AlreadyExistsException;
@@ -119,6 +120,27 @@ class Repository implements CustomerRepositoryInterface
     }
 
     /**
+     * Get customer entries by Nosto id.
+     *
+     * @param string $nostoId
+     *
+     * @return CustomerInterface[]|DocumentInterface[]|null
+     */
+    public function getByNostoIdWithoutCustomerId(string $nostoId): ?array
+    {
+        $searchCriteria = $this->searchCriteriaBuilder
+            ->addFilter(CustomerInterface::NOSTO_ID, $nostoId)
+            ->addFilter(CustomerInterface::CUSTOMER_ID, true, 'null')
+            ->setPageSize(1)
+            ->setCurrentPage(1)
+            ->create();
+
+        /** @var CustomerInterface[]|DocumentInterface[]|null $items */
+        $items = $this->search($searchCriteria)->getItems();
+        return $items;
+    }
+
+    /**
      * Get customer entry by field name and quote id. If multiple entries
      * are found first one will be returned.
      *
@@ -185,5 +207,27 @@ class Repository implements CustomerRepositoryInterface
             $searchCriteria,
             $searchResults
         );
+    }
+
+    /**
+     * @param int $customerId
+     * @param int $quoteId
+     *
+     * @return CustomerInterface|null
+     */
+    public function getOneByCustomerIdAndQuoteId(int $customerId, int $quoteId): ?CustomerInterface
+    {
+        $searchCriteria = $this->searchCriteriaBuilder
+            ->addFilter(NostoCustomer::CUSTOMER_ID, $customerId)
+            ->addFilter(NostoCustomer::QUOTE_ID, $quoteId)
+            ->setPageSize(1)
+            ->setCurrentPage(1)
+            ->create();
+
+        /** @var CustomerInterface[]|null $items */
+        $items = $this->search($searchCriteria)->getItems();
+        /** @var CustomerInterface|null $item */
+        $item = $items ? reset($items) : null;
+        return $item;
     }
 }
