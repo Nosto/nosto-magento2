@@ -39,7 +39,6 @@ namespace Nosto\Tagging\Controller\Adminhtml\Account;
 use Exception;
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\Controller\Result\Json;
-use Magento\Framework\Exception\LocalizedException;
 use Nosto\Nosto;
 use Nosto\NostoException;
 use Nosto\Operation\AccountSignup;
@@ -112,7 +111,6 @@ class Create extends Base
 
     /**
      * @return Json
-     * @throws LocalizedException
      * @throws Zend_Validate_Exception
      * @suppress PhanTypeMismatchArgument
      * @SuppressWarnings(PHPMD.CyclomaticComplexity)

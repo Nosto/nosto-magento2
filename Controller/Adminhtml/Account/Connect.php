@@ -82,7 +82,11 @@ class Connect extends Base
                 "Store was successfully connected to the existing Nosto account."
             );
 
-            return $resultRedirect->setUrl(OAuthHelper::getAuthorizationUrl($metaData));
+            if ($resultRedirect instanceof Redirect) {
+                return $resultRedirect->setUrl(OAuthHelper::getAuthorizationUrl($metaData));
+            }
         }
+
+        return $resultRedirect->setPath('*/*/index', ['store' => $storeId]);
     }
 }
