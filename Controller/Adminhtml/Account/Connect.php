@@ -62,7 +62,6 @@ class Connect extends Base
         parent::__construct($context);
 
         $this->oauthMetaBuilder = $oauthMetaBuilder;
-        $this->result = $result;
         $this->nostoHelperScope = $nostoHelperScope;
     }
 
