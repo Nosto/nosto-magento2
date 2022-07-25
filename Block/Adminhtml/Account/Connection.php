@@ -43,7 +43,6 @@ use Magento\Backend\Model\Auth\Session;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NotFoundException;
 use Nosto\Mixins\ConnectionTrait;
-use Nosto\Nosto;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
@@ -114,7 +113,6 @@ class Connection extends BlockTemplate
     {
         $params = [];
         $endpoints = $this->getConnectionEndpoints();
-        $store = $this->nostoHelperScope->getSelectedStore($this->getRequest())->getId();
         $params['createUrl'] = $endpoints['createAccount'];
         $params['connectUrl'] = $endpoints['connectAccount'];
         $params['redirectUrl'] = $endpoints['index'];
@@ -180,7 +178,6 @@ class Connection extends BlockTemplate
 
         return null;
     }
-
 
     /**
      * @inheritDoc
