@@ -113,5 +113,7 @@ class Delete extends Base
         if ($resultRedirect instanceof Redirect) {
             return $resultRedirect->setUrl($this->_redirect->getRefererUrl());
         }
+
+        return $resultRedirect->setPath('*/*/index', ['store' => $storeId]);
     }
 }
