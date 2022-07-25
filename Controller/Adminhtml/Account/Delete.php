@@ -80,6 +80,7 @@ class Delete extends Base
     /**
      * @return Redirect
      * @suppress PhanUndeclaredMethod
+     * @noinspection PhpPossiblePolymorphicInvocationInspection
      * @throws Exception
      */
     public function execute()
@@ -104,16 +105,11 @@ class Delete extends Base
                 $this->getMessageManager()->addSuccessMessage(
                     "Nosto has been successfully disconnected from the store."
                 );
-                if ($resultRedirect instanceof Redirect) {
-                    return $resultRedirect->setUrl($this->_redirect->getRefererUrl());
-                }
+
+                return $resultRedirect->setUrl($this->_redirect->getRefererUrl());
             }
         }
-
-        if ($resultRedirect instanceof Redirect) {
-            return $resultRedirect->setUrl($this->_redirect->getRefererUrl());
-        }
-
-        return $resultRedirect->setPath('*/*/index', ['store' => $storeId]);
+        
+        return $resultRedirect->setUrl($this->_redirect->getRefererUrl());
     }
 }

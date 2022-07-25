@@ -67,6 +67,7 @@ class Connect extends Base
 
     /**
      * @suppress PhanUndeclaredMethod
+     * @noinspection PhpPossiblePolymorphicInvocationInspection
      * @return Redirect
      */
     public function execute()
@@ -82,9 +83,7 @@ class Connect extends Base
                 "Store was successfully connected to the existing Nosto account."
             );
 
-            if ($resultRedirect instanceof Redirect) {
-                return $resultRedirect->setUrl(OAuthHelper::getAuthorizationUrl($metaData));
-            }
+            return $resultRedirect->setUrl(OAuthHelper::getAuthorizationUrl($metaData));
         }
 
         return $resultRedirect->setPath('*/*/index', ['store' => $storeId]);
