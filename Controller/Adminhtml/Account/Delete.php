@@ -42,7 +42,6 @@ use Magento\Framework\Controller\Result\Redirect;
 use Magento\Framework\Controller\ResultFactory;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Phrase;
-use Nosto\Nosto;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Cache as NostoHelperCache;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
@@ -102,7 +101,9 @@ class Delete extends Base
                 $this->nostoHelperCache->invalidatePageCache();
                 $this->nostoHelperCache->invalidateLayoutCache();
 
-                $this->getMessageManager()->addSuccess(__("Nosto has been successfully disconnected from the store."));
+                $this->getMessageManager()->addSuccessMessage(
+                    "Nosto has been successfully disconnected from the store."
+                );
                 return $resultRedirect->setUrl($this->_redirect->getRefererUrl());
             }
         }

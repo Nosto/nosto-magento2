@@ -1,6 +1,6 @@
 <?php /** @noinspection PhpUnhandledExceptionInspection */
 
-use Nosto\Tagging\Block\Adminhtml\Account\Iframe;
+use Nosto\Tagging\Block\Adminhtml\Account\Connection;
 
 /**
  * Copyright (c) 2020, Nosto Solutions Ltd
@@ -45,15 +45,15 @@ use Nosto\Tagging\Block\Adminhtml\Account\Iframe;
 <?php if ($block->getAccount()): ?>
     <?php if ($block->getAccount()->isConnectedToNosto()): ?>
         <button id="nosto_open"
-                title="Open Nosto Iframe"
+                title="Open"
                 type="button"
                 class="action-default primary"
                 onclick="window.open('<?= $block->escapeUrl($block->getNostoUrl()) ?>', '_blank');">
-            <span>Open Nosto Iframe</span>
+            <span>Open Nosto Dashboard</span>
         </button>
 
-        <button id="nosto_connect"
-                title="Configuration"
+        <button id="nosto_remove"
+                title="Remove"
                 type="button"
                 class="action-default"
                 onclick="window.open('<?= $block->escapeUrl($block->getAccountDeleteUrl()) ?>', '_self');">
@@ -62,7 +62,7 @@ use Nosto\Tagging\Block\Adminhtml\Account\Iframe;
     <?php endif; ?>
 <?php else: ?>
     <button id="nosto_connect"
-            title="Configuration"
+            title="Connect"
             type="button"
             class="action-default primary"
             onclick="window.open('<?= $block->escapeUrl($block->getNostoUrl()) ?>', '_self');">

@@ -106,7 +106,10 @@ class Connection extends BlockTemplate
      * where a new Nosto account can be created.
      *
      * @return string the Nosto url or empty string if it cannot be created.
+     * @throws LocalizedException
+     * @throws NotFoundException
      */
+
     public function getNostoUrl()
     {
         $params = [];
@@ -132,20 +135,6 @@ class Connection extends BlockTemplate
         }
 
         return $this->buildURL($params);
-    }
-
-    /**
-     * Returns the Nosto account creation url.
-     *
-     * @return string Nosto account creation url.
-     * @throws NotFoundException
-     * @throws LocalizedException
-     */
-    public function getCreateAccountUrl()
-    {
-        $store = $this->nostoHelperScope->getSelectedStore($this->getRequest());
-        $get = ['store' => $store->getId(), 'isAjax' => true];
-        return $this->getUrl('*/*/create', $get);
     }
 
     /**
