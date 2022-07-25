@@ -153,7 +153,9 @@ class Create extends Base
                     if ($this->nostoHelperAccount->saveAccount($account, $store)) {
                         $response['success'] = true;
 
-                        $this->getMessageManager()->addSuccess(__("Nosto has been successfully connected to the store."));
+                        $this->getMessageManager()->addSuccess(
+                            __("Nosto has been successfully connected to the store.")
+                        );
 
                         // Note that we will send the exchange rates even if the multi currency
                         // is not set. This is mostly for debugging purposes.
