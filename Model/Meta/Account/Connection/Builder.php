@@ -34,7 +34,7 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Meta\Account\Iframe;
+namespace Nosto\Tagging\Model\Meta\Account\Connection;
 
 use Magento\Backend\Model\Auth\Session;
 use Magento\Framework\Event\ManagerInterface;
@@ -42,7 +42,7 @@ use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Locale\ResolverInterface;
 use Magento\Store\Model\Store;
 use Nosto\NostoException;
-use Nosto\Model\Iframe;
+use Nosto\Model\ConnectionMetadata;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Url as NostoHelperUrl;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
@@ -82,12 +82,12 @@ class Builder
 
     /**
      * @param Store $store
-     * @return Iframe
+     * @return ConnectionMetadata
      * @throws LocalizedException
      */
     public function build(Store $store)
     {
-        $metaData = new Iframe();
+        $metaData = new ConnectionMetadata();
         $metaData->setUniqueId($this->nostoHelperData->getInstallationId());
         $lang = substr($this->localeResolver->getLocale(), 0, 2);
         $metaData->setLanguageIsoCode($lang);
@@ -109,7 +109,7 @@ class Builder
         $metaData->setPreviewUrlCart($this->nostoHelperUrl->getPreviewUrlCart($store));
         $metaData->setPreviewUrlFront($this->nostoHelperUrl->getPreviewUrlFront($store));
 
-        $this->eventManager->dispatch('nosto_iframe_load_after', ['iframe' => $metaData]);
+        $this->eventManager->dispatch('nosto_connection_load_after', ['connection' => $metaData]);
 
         return $metaData;
     }

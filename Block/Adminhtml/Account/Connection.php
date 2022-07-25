@@ -42,12 +42,12 @@ use Magento\Backend\Block\Template\Context as BlockContext;
 use Magento\Backend\Model\Auth\Session;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NotFoundException;
-use Nosto\Mixins\IframeTrait;
+use Nosto\Mixins\ConnectionTrait;
 use Nosto\Nosto;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
-use Nosto\Tagging\Model\Meta\Account\Iframe\Builder as NostoIframeMetaBuilder;
+use Nosto\Tagging\Model\Meta\Account\Connection\Builder as NostoConnectionMetadataBuilder;
 use Nosto\Tagging\Model\User\Builder as NostoCurrentUserBuilder;
 
 /**
@@ -57,11 +57,11 @@ use Nosto\Tagging\Model\User\Builder as NostoCurrentUserBuilder;
  */
 class Connection extends BlockTemplate
 {
-    use IframeTrait;
+    use ConnectionTrait;
 
     private NostoHelperAccount $nostoHelperAccount;
     private Session $backendAuthSession;
-    private NostoIframeMetaBuilder $iframeMetaBuilder;
+    private NostoConnectionMetadataBuilder $connectionMetadataBuilder;
     private NostoCurrentUserBuilder $currentUserBuilder;
     private NostoHelperScope $nostoHelperScope;
     private NostoLogger $logger;
@@ -72,7 +72,7 @@ class Connection extends BlockTemplate
      * @param BlockContext $context the context.
      * @param NostoHelperAccount $nostoHelperAccount the account helper.
      * @param Session $backendAuthSession
-     * @param NostoIframeMetaBuilder $iframeMetaBuilder
+     * @param NostoConnectionMetadataBuilder $connectionMetadataBuilder
      * @param NostoCurrentUserBuilder $currentUserBuilder
      * @param NostoHelperScope $nostoHelperScope
      * @param NostoLogger $logger
@@ -82,7 +82,7 @@ class Connection extends BlockTemplate
         BlockContext $context,
         NostoHelperAccount $nostoHelperAccount,
         Session $backendAuthSession,
-        NostoIframeMetaBuilder $iframeMetaBuilder,
+        NostoConnectionMetadataBuilder $connectionMetadataBuilder,
         NostoCurrentUserBuilder $currentUserBuilder,
         NostoHelperScope $nostoHelperScope,
         NostoLogger $logger,
@@ -92,7 +92,7 @@ class Connection extends BlockTemplate
 
         $this->nostoHelperAccount = $nostoHelperAccount;
         $this->backendAuthSession = $backendAuthSession;
-        $this->iframeMetaBuilder = $iframeMetaBuilder;
+        $this->connectionMetadataBuilder = $connectionMetadataBuilder;
         $this->currentUserBuilder = $currentUserBuilder;
         $this->nostoHelperScope = $nostoHelperScope;
         $this->logger = $logger;
@@ -113,11 +113,11 @@ class Connection extends BlockTemplate
     public function getNostoUrl()
     {
         $params = [];
-        $iframeConfig = $this->getIframeConfig();
+        $endpoints = $this->getConnectionEndpoints();
         $store = $this->nostoHelperScope->getSelectedStore($this->getRequest())->getId();
-        $params['createAjaxEndpoint'] = $iframeConfig['iframe_handler']['urls']['createAccount'];
-        $params['connectAjaxEndpoint'] = $iframeConfig['iframe_handler']['urls']['connectAccount'];
-        $params['redirectUrl'] = $this->getUrl('*/*/', ['store' => $store]);
+        $params['createUrl'] = $endpoints['createAccount'];
+        $params['connectUrl'] = $endpoints['connectAccount'];
+        $params['redirectUrl'] = $endpoints['index'];
         $params['dashboard_rd'] = "true";
 
         // Pass any error/success messages we might have to the controls.
@@ -141,56 +141,46 @@ class Connection extends BlockTemplate
      * Returns the Nosto account deletion url.
      *
      * @return string Nosto account deletion url.
-     * @throws LocalizedException
      * @throws NotFoundException
      */
     public function getAccountDeleteUrl()
     {
-        return $this->getIframeConfig()['iframe_handler']['urls']['deleteAccount'];
+        return $this->getConnectionEndpoints()['deleteAccount'];
     }
 
     /**
-     * Returns the config for the Nosto iframe JS component.
-     * This config can be converted into JSON in the view file.
+     * Returns the urls that are passed to the Nosto account controls.
      *
-     * @return array the config.
+     * @return array the urls.
      * @throws NotFoundException
-     * @throws LocalizedException
      */
-    public function getIframeConfig()
+    public function getConnectionEndpoints()
     {
         $store = $this->nostoHelperScope->getSelectedStore($this->getRequest());
-        $get = ['store' => $store->getId(), 'isAjax' => true];
+        $get = ['store' => $store->getId()];
         return [
-            'iframe_handler' => [
-                'origin' => Nosto::getIframeOriginRegex(),
-                'xhrParams' => [
-                    'form_key' => $this->formKey->getFormKey()
-                ],
-                'urls' => [
-                    'createAccount' => $this->getUrl('*/*/create', $get),
-                    'connectAccount' => $this->getUrl('*/*/connect', $get),
-                    'syncAccount' => $this->getUrl('*/*/sync', $get),
-                    'deleteAccount' => $this->getUrl('*/*/delete', $get)
-                ]
-            ]
+            'index' => $this->getUrl('*/*/', $get),
+            'createAccount' => $this->getUrl('*/*/create', $get),
+            'connectAccount' => $this->getUrl('*/*/connect', $get),
+            'deleteAccount' => $this->getUrl('*/*/delete', $get)
         ];
     }
 
     /**
      * @inheritDoc
      */
-    public function getIframe()
+    public function getConnectionMetadata()
     {
         try {
             $store = $this->nostoHelperScope->getSelectedStore($this->getRequest());
-            return $this->iframeMetaBuilder->build($store);
+            return $this->connectionMetadataBuilder->build($store);
         } catch (Exception $e) {
             $this->logger->exception($e);
         }
 
         return null;
     }
+
 
     /**
      * @inheritDoc
