@@ -38,58 +38,49 @@ namespace Nosto\Tagging\Controller\Adminhtml\Account;
 
 use Exception;
 use Magento\Backend\App\Action\Context;
+use Magento\Framework\Controller\Result\Redirect;
 use Magento\Framework\Controller\ResultFactory;
-use Magento\Framework\Controller\Result\Json;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Phrase;
-use Nosto\Helper\IframeHelper;
 use Nosto\Nosto;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Cache as NostoHelperCache;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
-use Nosto\Tagging\Model\Meta\Account\Iframe\Builder as NostoIframeMetaBuilder;
 use Nosto\Tagging\Model\User\Builder as NostoCurrentUserBuilder;
 
 class Delete extends Base
 {
     public const ADMIN_RESOURCE = 'Nosto_Tagging::system_nosto_account';
-    private Json $result;
     private NostoHelperAccount $nostoHelperAccount;
     private NostoCurrentUserBuilder $nostoCurrentUserBuilder;
-    private NostoIframeMetaBuilder $nostoIframeMetaBuilder;
     private NostoHelperScope $nostoHelperScope;
     private NostoHelperCache $nostoHelperCache;
 
     /**
      * @param Context $context
      * @param NostoHelperAccount $nostoHelperAccount
-     * @param NostoIframeMetaBuilder $nostoIframeMetaBuilder
      * @param NostoCurrentUserBuilder $nostoCurrentUserBuilder
      * @param NostoHelperScope $nostoHelperScope
      * @param NostoHelperCache $nostoHelperCache
-     * @param Json $result
      */
     public function __construct(
         Context $context,
         NostoHelperAccount $nostoHelperAccount,
-        NostoIframeMetaBuilder $nostoIframeMetaBuilder,
         NostoCurrentUserBuilder $nostoCurrentUserBuilder,
         NostoHelperScope $nostoHelperScope,
-        NostoHelperCache $nostoHelperCache,
-        Json $result
+        NostoHelperCache $nostoHelperCache
     ) {
         parent::__construct($context);
 
-        $this->nostoIframeMetaBuilder = $nostoIframeMetaBuilder;
         $this->nostoHelperAccount = $nostoHelperAccount;
-        $this->result = $result;
         $this->nostoCurrentUserBuilder = $nostoCurrentUserBuilder;
         $this->nostoHelperScope = $nostoHelperScope;
         $this->nostoHelperCache = $nostoHelperCache;
     }
 
     /**
-     * @return Json
+     * @return Redirect
+     * @suppress PhanUndeclaredMethod
      * @throws Exception
      */
     public function execute()
@@ -97,11 +88,13 @@ class Delete extends Base
         $resultRedirect = $this->resultFactory->create(ResultFactory::TYPE_REDIRECT);
         $storeId = $this->_request->getParam('store');
         $store = $this->nostoHelperScope->getStore($storeId);
+
         if ($store === null) {
             throw new LocalizedException(new Phrase('No account found'));
         }
 
         $account = $this->nostoHelperAccount->findAccount($store);
+
         if ($account !== null) {
             $currentUser = $this->nostoCurrentUserBuilder->build();
             if ($this->nostoHelperAccount->deleteAccount($account, $store, $currentUser)) {
@@ -109,31 +102,11 @@ class Delete extends Base
                 $this->nostoHelperCache->invalidatePageCache();
                 $this->nostoHelperCache->invalidateLayoutCache();
 
-                $response = [];
-                $response['success'] = true;
-                $response['redirect_url'] = IframeHelper::getUrl(
-                    $this->nostoIframeMetaBuilder->build($store),
-                    null, // we don't have an account anymore
-                    $this->nostoCurrentUserBuilder->build(),
-                    [
-                        'message_type' => Nosto::TYPE_SUCCESS,
-                        'message_code' => Nosto::CODE_ACCOUNT_DELETE,
-                    ]
-                );
+                $this->getMessageManager()->addSuccess(__("Nosto has been successfully disconnected from the store."));
                 return $resultRedirect->setUrl($this->_redirect->getRefererUrl());
             }
         }
 
-        $response = [];
-        $response['redirect_url'] = IframeHelper::getUrl(
-            $this->nostoIframeMetaBuilder->build($store),
-            null,
-            $this->nostoCurrentUserBuilder->build(),
-            [
-                'message_type' => Nosto::TYPE_ERROR,
-                'message_code' => Nosto::CODE_ACCOUNT_DELETE,
-            ]
-        );
         return $resultRedirect->setUrl($this->_redirect->getRefererUrl());
     }
 }

@@ -51,15 +51,13 @@ use Nosto\Tagging\Model\Meta\Account\Iframe\Builder as NostoIframeMetaBuilder;
 use Nosto\Tagging\Model\User\Builder as NostoCurrentUserBuilder;
 
 /**
- * Iframe block for displaying the Nosto account management iframe.
- * This iframe is used to setup and manage your Nosto accounts on a store basis
+ * Block for displaying the Nosto account management controls.
+ * This block is used to setup and manage your Nosto accounts on a store basis
  * in Magento.
  */
-class Iframe extends BlockTemplate
+class Connection extends BlockTemplate
 {
     use IframeTrait;
-
-    public const IFRAME_VERSION = 1;
 
     private NostoHelperAccount $nostoHelperAccount;
     private Session $backendAuthSession;
@@ -101,24 +99,25 @@ class Iframe extends BlockTemplate
     }
 
     /**
-     * Gets the iframe url for the account settings page from Nosto.
+     * Gets the Nosto url for the account settings page from Nosto.
      * If there is an account for the current store and the admin user can be
      * logged in to that account using SSO, the url will be for the account
      * management. In other cases, the url will be that of the install screen
      * where a new Nosto account can be created.
      *
-     * @return string the iframe url or empty string if it cannot be created.
+     * @return string the Nosto url or empty string if it cannot be created.
      */
-    public function getIframeUrl()
+    public function getNostoUrl()
     {
         $params = [];
-        $params['v'] = self::IFRAME_VERSION;
         $iframeConfig = $this->getIframeConfig();
         $store = $this->nostoHelperScope->getSelectedStore($this->getRequest())->getId();
-        $params['ajaxEndpoint'] = $iframeConfig['iframe_handler']['urls']['createAccount'];
+        $params['createAjaxEndpoint'] = $iframeConfig['iframe_handler']['urls']['createAccount'];
+        $params['connectAjaxEndpoint'] = $iframeConfig['iframe_handler']['urls']['connectAccount'];
         $params['redirectUrl'] = $this->getUrl('*/*/', ['store' => $store]);
+        $params['dashboard_rd'] = "true";
 
-        // Pass any error/success messages we might have to the iframe.
+        // Pass any error/success messages we might have to the controls.
         // These can be available when getting redirect back from the OAuth
         // front controller after connecting a Nosto account to a store.
         $nostoMessage = $this->backendAuthSession->getData('nosto_message');
@@ -133,6 +132,32 @@ class Iframe extends BlockTemplate
         }
 
         return $this->buildURL($params);
+    }
+
+    /**
+     * Returns the Nosto account creation url.
+     *
+     * @return string Nosto account creation url.
+     * @throws NotFoundException
+     * @throws LocalizedException
+     */
+    public function getCreateAccountUrl()
+    {
+        $store = $this->nostoHelperScope->getSelectedStore($this->getRequest());
+        $get = ['store' => $store->getId(), 'isAjax' => true];
+        return $this->getUrl('*/*/create', $get);
+    }
+
+    /**
+     * Returns the Nosto account deletion url.
+     *
+     * @return string Nosto account deletion url.
+     * @throws LocalizedException
+     * @throws NotFoundException
+     */
+    public function getAccountDeleteUrl()
+    {
+        return $this->getIframeConfig()['iframe_handler']['urls']['deleteAccount'];
     }
 
     /**
@@ -199,10 +224,5 @@ class Iframe extends BlockTemplate
         }
 
         return null;
-    }
-
-    public function getAccountDeleteUrl()
-    {
-        return $this->getIframeConfig()['iframe_handler']['urls']['deleteAccount'];
     }
 }

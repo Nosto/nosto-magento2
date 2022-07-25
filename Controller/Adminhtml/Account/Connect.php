@@ -37,7 +37,8 @@
 namespace Nosto\Tagging\Controller\Adminhtml\Account;
 
 use Magento\Backend\App\Action\Context;
-use Magento\Framework\Controller\Result\Json;
+use Magento\Framework\Controller\ResultFactory;
+use Magento\Framework\Controller\Result\Redirect;
 use Nosto\Helper\OAuthHelper;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Model\Meta\Oauth\Builder as NostoOauthBuilder;
@@ -45,7 +46,6 @@ use Nosto\Tagging\Model\Meta\Oauth\Builder as NostoOauthBuilder;
 class Connect extends Base
 {
     public const ADMIN_RESOURCE = 'Nosto_Tagging::system_nosto_account';
-    private Json $result;
     private NostoOauthBuilder $oauthMetaBuilder;
     private NostoHelperScope $nostoHelperScope;
 
@@ -53,13 +53,11 @@ class Connect extends Base
      * @param Context $context
      * @param NostoOauthBuilder $oauthMetaBuilder
      * @param NostoHelperScope $nostoHelperScope
-     * @param Json $result
      */
     public function __construct(
         Context $context,
         NostoOauthBuilder $oauthMetaBuilder,
-        NostoHelperScope $nostoHelperScope,
-        Json $result
+        NostoHelperScope $nostoHelperScope
     ) {
         parent::__construct($context);
 
@@ -69,21 +67,21 @@ class Connect extends Base
     }
 
     /**
-     * @return Json
+     * @suppress PhanUndeclaredMethod
+     * @return Redirect
      */
     public function execute()
     {
-        $response = ['success' => false];
+        $resultRedirect = $this->resultFactory->create(ResultFactory::TYPE_REDIRECT);
 
         $storeId = $this->_request->getParam('store');
         $store = $this->nostoHelperScope->getStore($storeId);
 
         if ($store !== null) {
             $metaData = $this->oauthMetaBuilder->build($store);
-            $response['success'] = true;
-            $response['redirect_url'] = OAuthHelper::getAuthorizationUrl($metaData);
+            $this->getMessageManager()->addSuccess(__("Store was successfully connected to the existing Nosto account."));
+            
+            return $resultRedirect->setUrl(OAuthHelper::getAuthorizationUrl($metaData));
         }
-
-        return $this->result->setData($response);
     }
 }

@@ -1,4 +1,8 @@
-/*
+<?php /** @noinspection PhpUnhandledExceptionInspection */
+
+use Nosto\Tagging\Block\Adminhtml\Account\Iframe;
+
+/**
  * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
  *
@@ -33,11 +37,35 @@
  *
  */
 
-const config = {
-  map: {
-    '*': {
-      iframe_handler: 'Nosto_Tagging/js/iframe_handler',
-      iframe_resizer: 'Nosto_Tagging/js/iframe_resizer'
-    }
-  }
-};
+/**
+ * @var Connection $block
+ */
+?>
+
+<?php if ($block->getAccount()): ?>
+    <?php if ($block->getAccount()->isConnectedToNosto()): ?>
+        <button id="nosto_open"
+                title="Open Nosto Iframe"
+                type="button"
+                class="action-default primary"
+                onclick="window.open('<?= $block->escapeUrl($block->getNostoUrl()) ?>', '_blank');">
+            <span>Open Nosto Iframe</span>
+        </button>
+
+        <button id="nosto_connect"
+                title="Configuration"
+                type="button"
+                class="action-default"
+                onclick="window.open('<?= $block->escapeUrl($block->getAccountDeleteUrl()) ?>', '_self');">
+            <span>Remove Account</span>
+        </button>
+    <?php endif; ?>
+<?php else: ?>
+    <button id="nosto_connect"
+            title="Configuration"
+            type="button"
+            class="action-default primary"
+            onclick="window.open('<?= $block->escapeUrl($block->getNostoUrl()) ?>', '_self');">
+        <span>Connect to Nosto</span>
+    </button>
+<?php endif; ?>
