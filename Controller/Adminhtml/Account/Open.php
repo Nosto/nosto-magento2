@@ -118,9 +118,8 @@ class Open extends Base
         $params = [];
         $store = $this->nostoHelperScope->getSelectedStore($this->getRequest());
         $get = ['store' => $store->getId()];
-        $params['ajaxCreateUrl'] = $this->getUrl('*/*/create', $get);
-        $params['ajaxConnectUrl'] = $this->getUrl('*/*/connect', $get);
-        $params['redirectUrl'] = $this->getUrl('*/*/', $get);
+        $params['createUrl'] = $this->getUrl('*/*/create', $get);
+        $params['connectUrl'] = $this->getUrl('*/*/connect', $get);
         $params['dashboard_rd'] = "true";
 
         // Pass any error/success messages we might have to the controls.

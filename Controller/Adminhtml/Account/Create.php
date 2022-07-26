@@ -39,6 +39,8 @@ namespace Nosto\Tagging\Controller\Adminhtml\Account;
 use Exception;
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\Controller\Result\Json;
+use Magento\Framework\Controller\Result\Redirect;
+use Magento\Framework\Controller\ResultFactory;
 use Nosto\Nosto;
 use Nosto\NostoException;
 use Nosto\Operation\AccountSignup;
@@ -110,9 +112,11 @@ class Create extends Base
     }
 
     /**
-     * @return Json
+     * @return Redirect
      * @throws Zend_Validate_Exception
      * @suppress PhanTypeMismatchArgument
+     * @suppress PhanUndeclaredMethod
+     * @noinspection PhpPossiblePolymorphicInvocationInspection
      * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      * @phpcs:disable Generic.Metrics.CyclomaticComplexity
      * @phpcs:disable Generic.Metrics.NestingLevel
@@ -122,6 +126,7 @@ class Create extends Base
     {
         $response = ['success' => false];
 
+        $resultRedirect = $this->resultFactory->create(ResultFactory::TYPE_REDIRECT);
         $storeId = $this->_request->getParam('store');
         $store = $this->nostoHelperScope->getStore($storeId);
         $messageText = null;
@@ -189,6 +194,6 @@ class Create extends Base
             }
         }
 
-        return $this->result->setData($response);
+        return $resultRedirect->setUrl($this->getUrl('*/*/index'), ['store' => $storeId]);
     }
 }
