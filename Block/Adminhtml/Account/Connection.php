@@ -98,6 +98,7 @@ class Connection extends BlockTemplate
      * Returns the Nosto open url
      *
      * @return string url to the Open controller
+     * @throws NotFoundException
      */
     public function redirectToNostoUrl()
     {
@@ -111,6 +112,7 @@ class Connection extends BlockTemplate
      * @return string Nosto account deletion url.
      * @throws NotFoundException
      */
+
     public function getAccountDeleteUrl()
     {
         $store = $this->nostoHelperScope->getSelectedStore($this->getRequest());
