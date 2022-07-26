@@ -36,10 +36,11 @@
 
 namespace Nosto\Tagging\Controller\Adminhtml\Account;
 
+use Exception;
 use Magento\Backend\App\Action\Context;
 use Magento\Backend\Model\Auth\Session;
-use Magento\Framework\Controller\ResultFactory;
 use Magento\Framework\Controller\Result\Redirect;
+use Magento\Framework\Controller\ResultFactory;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NotFoundException;
 use Nosto\Mixins\ConnectionTrait;
@@ -57,6 +58,7 @@ class Open extends Base
     private NostoHelperAccount $nostoHelperAccount;
     private NostoHelperScope $nostoHelperScope;
     private NostoConnectionMetadataBuilder $connectionMetadataBuilder;
+    private NostoCurrentUserBuilder $currentUserBuilder;
     private NostoLogger $logger;
 
     /**
@@ -87,6 +89,13 @@ class Open extends Base
         $this->logger = $logger;
     }
 
+    /**
+     * @return Redirect
+     * @suppress PhanUndeclaredMethod
+     * @noinspection PhpPossiblePolymorphicInvocationInspection
+     * @throws LocalizedException
+     * @throws NotFoundException
+     */
     public function execute()
     {
         $resultRedirect = $this->resultFactory->create(ResultFactory::TYPE_REDIRECT);

@@ -39,7 +39,6 @@ namespace Nosto\Tagging\Block\Adminhtml\Account;
 use Magento\Backend\Block\Template as BlockTemplate;
 use Magento\Backend\Block\Template\Context as BlockContext;
 use Magento\Backend\Helper\Data as BackendHelper;
-use Magento\Framework\Controller\Result\Redirect;
 use Magento\Framework\Controller\Result\RedirectFactory;
 use Magento\Framework\Exception\NotFoundException;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
