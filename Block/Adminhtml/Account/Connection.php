@@ -36,18 +36,14 @@
 
 namespace Nosto\Tagging\Block\Adminhtml\Account;
 
-use Exception;
 use Magento\Backend\Block\Template as BlockTemplate;
 use Magento\Backend\Block\Template\Context as BlockContext;
-use Magento\Backend\Model\Auth\Session;
-use Magento\Framework\Exception\LocalizedException;
+use Magento\Backend\Helper\Data as BackendHelper;
+use Magento\Framework\Controller\Result\Redirect;
+use Magento\Framework\Controller\Result\RedirectFactory;
 use Magento\Framework\Exception\NotFoundException;
-use Nosto\Mixins\ConnectionTrait;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
-use Nosto\Tagging\Logger\Logger as NostoLogger;
-use Nosto\Tagging\Model\Meta\Account\Connection\Builder as NostoConnectionMetadataBuilder;
-use Nosto\Tagging\Model\User\Builder as NostoCurrentUserBuilder;
 
 /**
  * Block for displaying the Nosto account management controls.
@@ -56,83 +52,57 @@ use Nosto\Tagging\Model\User\Builder as NostoCurrentUserBuilder;
  */
 class Connection extends BlockTemplate
 {
-    use ConnectionTrait;
-
+    private RedirectFactory $resultRedirectFactory;
+    private BackendHelper $backendHelper;
     private NostoHelperAccount $nostoHelperAccount;
-    private Session $backendAuthSession;
-    private NostoConnectionMetadataBuilder $connectionMetadataBuilder;
-    private NostoCurrentUserBuilder $currentUserBuilder;
     private NostoHelperScope $nostoHelperScope;
-    private NostoLogger $logger;
 
     /**
      * Constructor.
      *
      * @param BlockContext $context the context.
-     * @param NostoHelperAccount $nostoHelperAccount the account helper.
-     * @param Session $backendAuthSession
-     * @param NostoConnectionMetadataBuilder $connectionMetadataBuilder
-     * @param NostoCurrentUserBuilder $currentUserBuilder
+     * @param RedirectFactory $resultRedirectFactory
+     * @param BackendHelper $backendHelper
+     * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoHelperScope $nostoHelperScope
-     * @param NostoLogger $logger
      * @param array $data
      */
     public function __construct(
         BlockContext $context,
+        RedirectFactory $resultRedirectFactory,
+        BackendHelper $backendHelper,
         NostoHelperAccount $nostoHelperAccount,
-        Session $backendAuthSession,
-        NostoConnectionMetadataBuilder $connectionMetadataBuilder,
-        NostoCurrentUserBuilder $currentUserBuilder,
         NostoHelperScope $nostoHelperScope,
-        NostoLogger $logger,
         array $data = []
     ) {
         parent::__construct($context, $data);
 
+        $this->resultRedirectFactory = $resultRedirectFactory;
+        $this->backendHelper = $backendHelper;
         $this->nostoHelperAccount = $nostoHelperAccount;
-        $this->backendAuthSession = $backendAuthSession;
-        $this->connectionMetadataBuilder = $connectionMetadataBuilder;
-        $this->currentUserBuilder = $currentUserBuilder;
         $this->nostoHelperScope = $nostoHelperScope;
-        $this->logger = $logger;
     }
 
     /**
-     * Gets the Nosto url for the account settings page from Nosto.
-     * If there is an account for the current store and the admin user can be
-     * logged in to that account using SSO, the url will be for the account
-     * management. In other cases, the url will be that of the install screen
-     * where a new Nosto account can be created.
+     * Checks if Nosto module is enabled and Nosto account is set
      *
-     * @return string the Nosto url or empty string if it cannot be created.
-     * @throws LocalizedException
+     * @return bool
      * @throws NotFoundException
      */
+    public function nostoInstalledAndEnabled() {
+        $store = $this->nostoHelperScope->getSelectedStore($this->getRequest());
+        return $this->nostoHelperAccount->nostoInstalledAndEnabled($store);
+    }
 
-    public function getNostoUrl()
+    /**
+     * Returns the Nosto open url
+     *
+     * @return string url to the Open controller
+     */
+    public function redirectToNostoUrl()
     {
-        $params = [];
-        $endpoints = $this->getConnectionEndpoints();
-        $params['ajaxCreateUrl'] = $endpoints['createAccount'];
-        $params['ajaxConnectUrl'] = $endpoints['connectAccount'];
-        $params['redirectUrl'] = $endpoints['index'];
-        $params['dashboard_rd'] = "true";
-
-        // Pass any error/success messages we might have to the controls.
-        // These can be available when getting redirect back from the OAuth
-        // front controller after connecting a Nosto account to a store.
-        $nostoMessage = $this->backendAuthSession->getData('nosto_message');
-        if (is_array($nostoMessage) && !empty($nostoMessage)) {
-            foreach ($nostoMessage as $key => $value) {
-                if (is_string($key) && !empty($value)) {
-                    $params[$key] = $value;
-                }
-            }
-            /** @noinspection PhpUndefinedMethodInspection */
-            $this->backendAuthSession->setData('nosto_message', null);
-        }
-
-        return $this->buildURL($params);
+        $store = $this->nostoHelperScope->getSelectedStore($this->getRequest());
+        return $this->backendHelper->getUrl('*/*/open', ['store' => $store->getId()]);
     }
 
     /**
@@ -143,62 +113,7 @@ class Connection extends BlockTemplate
      */
     public function getAccountDeleteUrl()
     {
-        return $this->getConnectionEndpoints()['deleteAccount'];
-    }
-
-    /**
-     * Returns the urls that are passed to the Nosto account controls.
-     *
-     * @return array the urls.
-     * @throws NotFoundException
-     */
-    public function getConnectionEndpoints()
-    {
         $store = $this->nostoHelperScope->getSelectedStore($this->getRequest());
-        $get = ['store' => $store->getId()];
-        return [
-            'index' => $this->getUrl('*/*/', $get),
-            'createAccount' => $this->getUrl('*/*/create', $get),
-            'connectAccount' => $this->getUrl('*/*/connect', $get),
-            'deleteAccount' => $this->getUrl('*/*/delete', $get)
-        ];
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getConnectionMetadata()
-    {
-        try {
-            $store = $this->nostoHelperScope->getSelectedStore($this->getRequest());
-            return $this->connectionMetadataBuilder->build($store);
-        } catch (Exception $e) {
-            $this->logger->exception($e);
-        }
-
-        return null;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getUser()
-    {
-        return $this->currentUserBuilder->build();
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getAccount()
-    {
-        try {
-            $store = $this->nostoHelperScope->getSelectedStore($this->getRequest());
-            return $this->nostoHelperAccount->findAccount($store);
-        } catch (Exception $e) {
-            $this->logger->exception($e);
-        }
-
-        return null;
+        return $this->backendHelper->getUrl('*/*/delete', ['store' => $store->getId()]);
     }
 }
