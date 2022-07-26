@@ -109,6 +109,19 @@ jobs:
       id: report-annotations
       run: ./vendor/bin/pmd2pr --graceful-warnings pmdphpmd.xml
 
+  snyk:
+    name: Example workflow for PHP using Snyk
+    on: push
+    jobs:
+      security:
+        runs-on: ubuntu-latest
+        steps:
+          - uses: actions/checkout@master
+          - name: Run Snyk to check for vulnerabilities
+            uses: snyk/actions/php@master
+            env:
+              SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
   package:
     name: Package
     runs-on: ubuntu-latest
