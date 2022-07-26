@@ -107,10 +107,11 @@ class Open extends Base
     public function getNostoUrl()
     {
         $params = [];
-        $endpoints = $this->getConnectionEndpoints();
-        $params['ajaxCreateUrl'] = $endpoints['createAccount'];
-        $params['ajaxConnectUrl'] = $endpoints['connectAccount'];
-        $params['redirectUrl'] = $endpoints['index'];
+        $store = $this->nostoHelperScope->getSelectedStore($this->getRequest());
+        $get = ['store' => $store->getId()];
+        $params['ajaxCreateUrl'] = $this->getUrl('*/*/create', $get);
+        $params['ajaxConnectUrl'] = $this->getUrl('*/*/connect', $get);
+        $params['redirectUrl'] = $this->getUrl('*/*/', $get);
         $params['dashboard_rd'] = "true";
 
         // Pass any error/success messages we might have to the controls.
@@ -128,24 +129,6 @@ class Open extends Base
         }
 
         return $this->buildURL($params);
-    }
-
-    /**
-     * Returns the urls that are passed to the Nosto account controls.
-     *
-     * @return array the urls.
-     * @throws NotFoundException
-     */
-    public function getConnectionEndpoints()
-    {
-        $store = $this->nostoHelperScope->getSelectedStore($this->getRequest());
-        $get = ['store' => $store->getId()];
-        return [
-            'index' => $this->getUrl('*/*/', $get),
-            'createAccount' => $this->getUrl('*/*/create', $get),
-            'connectAccount' => $this->getUrl('*/*/connect', $get),
-            'deleteAccount' => $this->getUrl('*/*/delete', $get)
-        ];
     }
 
     /**
