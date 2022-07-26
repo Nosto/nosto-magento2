@@ -88,7 +88,8 @@ class Connection extends BlockTemplate
      * @return bool
      * @throws NotFoundException
      */
-    public function nostoInstalledAndEnabled() {
+    public function nostoInstalledAndEnabled()
+    {
         $store = $this->nostoHelperScope->getSelectedStore($this->getRequest());
         return $this->nostoHelperAccount->nostoInstalledAndEnabled($store);
     }
