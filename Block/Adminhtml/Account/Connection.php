@@ -113,8 +113,8 @@ class Connection extends BlockTemplate
     {
         $params = [];
         $endpoints = $this->getConnectionEndpoints();
-        $params['createUrl'] = $endpoints['createAccount'];
-        $params['connectUrl'] = $endpoints['connectAccount'];
+        $params['ajaxCreateUrl'] = $endpoints['createAccount'];
+        $params['ajaxConnectUrl'] = $endpoints['connectAccount'];
         $params['redirectUrl'] = $endpoints['index'];
         $params['dashboard_rd'] = "true";
 
