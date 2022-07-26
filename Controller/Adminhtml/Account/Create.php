@@ -194,6 +194,6 @@ class Create extends Base
             }
         }
 
-        return $resultRedirect->setUrl($this->getUrl('*/*/index'), ['store' => $storeId]);
+        return $resultRedirect->setUrl($this->getUrl('*/*/index', ['store' => $storeId]));
     }
 }
