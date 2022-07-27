@@ -117,7 +117,7 @@ class MissingApiTokens implements MessageInterface
     /**
      * Set the value of the message
      *
-     * @param string $account
+     * @param Account $account
      */
     private function buildMessage($account)
     {

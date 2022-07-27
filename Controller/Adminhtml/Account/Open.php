@@ -96,8 +96,7 @@ class Open extends Base
     public function execute()
     {
         try {
-            $resultRedirect = $this->resultFactory->create(ResultFactory::TYPE_REDIRECT);
-            return $resultRedirect->setUrl($this->getNostoUrl());
+            return $this->resultFactory->create(ResultFactory::TYPE_REDIRECT)->setUrl($this->getNostoUrl());
         } catch (NotFoundException $e) {
             $this->logger->exception($e);
         }
