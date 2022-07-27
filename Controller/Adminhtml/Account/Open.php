@@ -41,7 +41,6 @@ use Magento\Backend\App\Action\Context;
 use Magento\Backend\Model\Auth\Session;
 use Magento\Framework\Controller\Result\Redirect;
 use Magento\Framework\Controller\ResultFactory;
-use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NotFoundException;
 use Nosto\Mixins\ConnectionTrait;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
@@ -93,13 +92,15 @@ class Open extends Base
      * @return Redirect
      * @suppress PhanUndeclaredMethod
      * @noinspection PhpPossiblePolymorphicInvocationInspection
-     * @throws LocalizedException
-     * @throws NotFoundException
      */
     public function execute()
     {
-        $resultRedirect = $this->resultFactory->create(ResultFactory::TYPE_REDIRECT);
-        return $resultRedirect->setUrl($this->getNostoUrl());
+        try {
+            $resultRedirect = $this->resultFactory->create(ResultFactory::TYPE_REDIRECT);
+            return $resultRedirect->setUrl($this->getNostoUrl());
+        } catch (NotFoundException $e) {
+            $this->logger->exception($e);
+        }
     }
 
     /**
@@ -110,7 +111,6 @@ class Open extends Base
      * where a new Nosto account can be created.
      *
      * @return string the Nosto url or empty string if it cannot be created.
-     * @throws LocalizedException
      * @throws NotFoundException
      */
     public function getNostoUrl()
