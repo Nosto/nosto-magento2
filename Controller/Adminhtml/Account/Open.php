@@ -39,7 +39,6 @@ namespace Nosto\Tagging\Controller\Adminhtml\Account;
 use Exception;
 use Magento\Backend\App\Action\Context;
 use Magento\Backend\Model\Auth\Session;
-use Magento\Framework\Controller\Result\Redirect;
 use Magento\Framework\Controller\ResultFactory;
 use Magento\Framework\Exception\NotFoundException;
 use Nosto\Mixins\ConnectionTrait;
