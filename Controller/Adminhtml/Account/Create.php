@@ -157,7 +157,8 @@ class Create extends Base
                         $response['success'] = true;
 
                         $this->getMessageManager()->addSuccessMessage(
-                            "Nosto has been successfully connected to the store."
+                            /** @phan-suppress-next-line PhanTypeMismatchArgumentProbablyReal */
+                            __("Nosto has been successfully connected to the store.")
                         );
 
                         // Note that we will send the exchange rates even if the multi currency
@@ -194,6 +195,6 @@ class Create extends Base
             }
         }
 
-        return $resultRedirect->setUrl($this->getUrl('*/*/index', ['store' => $storeId]));
+        return $resultRedirect->setUrl($this->getUrl('*/*/', ['store' => $storeId]));
     }
 }

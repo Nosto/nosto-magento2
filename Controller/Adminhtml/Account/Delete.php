@@ -103,13 +103,14 @@ class Delete extends Base
                 $this->nostoHelperCache->invalidateLayoutCache();
 
                 $this->getMessageManager()->addSuccessMessage(
-                    "Nosto has been successfully disconnected from the store."
+                    /** @phan-suppress-next-line PhanTypeMismatchArgumentProbablyReal */
+                    __("Nosto has been successfully disconnected from the store.")
                 );
 
                 return $resultRedirect->setUrl($this->_redirect->getRefererUrl());
             }
         }
-        
+
         return $resultRedirect->setUrl($this->_redirect->getRefererUrl());
     }
 }

@@ -89,38 +89,13 @@ use Nosto\Tagging\Block\Adminhtml\Account\Connection;
     </button>
 <?php endif; ?>
 
-<script type="text/javascript">// <![CDATA[
-    require([
-            'jquery',
-            'Magento_Ui/js/modal/confirm'
-        ],
-        function($, modal) {
-
-            var options = {
-                title: $.mage.__('Remove Nosto account'),
-                content: $('#remove_modal_content').html(),
-                buttons: [
-                    {
-                        text: $.mage.__('Remove Nosto'),
-                        class: 'action-default primary',
-                        click: function () {
-                            window.open('<?= $block->escapeUrl($block->getAccountDeleteUrl()) ?>', '_self');
-                        }
-                    },
-                    {
-                        text: $.mage.__('Close'),
-                        click: function () {
-                            this.closeModal();
-                        }
-                    }
-                ]
-            };
-
-
-            $('#nosto_remove').on('click', function(event) {
-                modal(options);
-            })
+<script type="text/x-magento-init">
+{
+    "*": {
+        "Nosto_Tagging/js/nostoRemoveModal": {
+            "buttonId": "#nosto_remove",
+            "endpoint": "<?= $block->getEscaper()->escapeUrl($block->getAccountDeleteUrl()) ?>"
         }
-    );
-    // ]]>
+    }
+}
 </script>
