@@ -89,14 +89,14 @@ class Open extends Base
     }
 
     /**
-     * @return Redirect
+     * @return void
      * @suppress PhanUndeclaredMethod
      * @noinspection PhpPossiblePolymorphicInvocationInspection
      */
     public function execute()
     {
         try {
-            return $this->resultFactory->create(ResultFactory::TYPE_REDIRECT)->setUrl($this->getNostoUrl());
+            $this->resultFactory->create(ResultFactory::TYPE_REDIRECT)->setUrl($this->getNostoUrl());
         } catch (NotFoundException $e) {
             $this->logger->exception($e);
         }

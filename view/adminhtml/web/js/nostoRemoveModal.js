@@ -1,4 +1,3 @@
-/** @noinspection JSUnresolvedVariable,JSUnresolvedFunction */
 /*
  * Copyright (c) 2022, Nosto Solutions Ltd
  * All rights reserved.
@@ -42,30 +41,28 @@ define([
 
     return function (config) {
         const options = {
-            title: $.mage.__('Remove Nosto account'),
-            content: $('#remove_modal_content').html(),
+            title: $.mage.__('Remove Nosto account'), // noinspection JSUnresolvedVariable,JSUnresolvedFunction
+            // noinspection JSUnresolvedVariable,JSUnresolvedFunction
+            content: $('#remove_modal_content').html(), // noinspection JSUnresolvedFunction
             buttons: [
                 {
-                    text: $.mage.__('Remove Nosto'),
+                    text: $.mage.__('Remove Nosto'), // noinspection JSUnresolvedVariable,JSUnresolvedFunction
                     class: 'action-default primary',
                     click: function () {
                         window.open(config.endpoint, '_self');
                     }
                 },
                 {
-                    text: $.mage.__('Close'),
+                    text: $.mage.__('Close'), // noinspection JSUnresolvedVariable,JSUnresolvedFunction
                     click: function () {
-                        // noinspection JSUnresolvedFunction
-                        this.closeModal();
+                        this.closeModal(); // noinspection JSUnresolvedFunction
                     }
                 }
             ]
         };
 
-        $(config.buttonId).on('click', function() {
+        $(config.buttonId).on('click', function() { // noinspection JSUnresolvedVariable
             modal(options);
         })
-
-        return;
     }
 });
