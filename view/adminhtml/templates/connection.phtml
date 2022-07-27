@@ -44,26 +44,74 @@ use Nosto\Tagging\Block\Adminhtml\Account\Connection;
 
 <?php if ($block->nostoInstalledAndEnabled()): ?>
     <button id="nosto_open"
-            title="Open"
+            title="<?= __('Open Nosto account dashboard') ?>"
             type="button"
             class="action-default primary"
             onclick="window.open('<?= $block->escapeUrl($block->redirectToNostoUrl()) ?>', '_blank');">
-        <span>Open Nosto Dashboard</span>
+        <span>
+            <?= __('Open Nosto Dashboard') ?>
+        </span>
     </button>
 
     <button id="nosto_remove"
-            title="Remove"
+            title="<?= __('Remove Nosto account') ?>"
             type="button"
             class="action-default"
-            onclick="window.open('<?= $block->escapeUrl($block->getAccountDeleteUrl()) ?>', '_self');">
-        <span>Remove Account</span>
+            style="float: right;"
+    >
+        <span>
+            <?= __('Remove Account') ?>
+        </span>
     </button>
+
+    <div id="remove_modal_content" style="display: none;">
+        <p><?= __('This will disconnect Nosto account associated with your store.') ?></p>
+        <p><?= __('You can later reconnect to the existing account.') ?></p>
+    </div>
 <?php else: ?>
     <button id="nosto_connect"
-            title="Connect"
+            title="<?= __('Connect to Nosto') ?>"
             type="button"
             class="action-default primary"
             onclick="window.open('<?= $block->escapeUrl($block->redirectToNostoUrl()) ?>', '_self');">
-        <span>Connect to Nosto</span>
+        <span>
+            <?= __('Connect to Nosto') ?>
+        </span>
     </button>
 <?php endif; ?>
+
+<script type="text/javascript">// <![CDATA[
+    require([
+            'jquery',
+            'Magento_Ui/js/modal/confirm'
+        ],
+        function($, modal) {
+
+            var options = {
+                title: $.mage.__('Remove Nosto account'),
+                content: $('#remove_modal_content').html(),
+                buttons: [
+                    {
+                        text: $.mage.__('Remove Nosto'),
+                        class: 'action-default primary',
+                        click: function () {
+                            window.open('<?= $block->escapeUrl($block->getAccountDeleteUrl()) ?>', '_self');
+                        }
+                    },
+                    {
+                        text: $.mage.__('Close'),
+                        click: function () {
+                            this.closeModal();
+                        }
+                    }
+                ]
+            };
+
+
+            $('#nosto_remove').on('click', function(event) {
+                modal(options);
+            })
+        }
+    );
+    // ]]>
+</script>

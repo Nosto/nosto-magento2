@@ -39,7 +39,6 @@ namespace Nosto\Tagging\Block\Adminhtml\Account;
 use Magento\Backend\Block\Template as BlockTemplate;
 use Magento\Backend\Block\Template\Context as BlockContext;
 use Magento\Backend\Helper\Data as BackendHelper;
-use Magento\Framework\Controller\Result\RedirectFactory;
 use Magento\Framework\Exception\NotFoundException;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
@@ -51,7 +50,6 @@ use Nosto\Tagging\Helper\Scope as NostoHelperScope;
  */
 class Connection extends BlockTemplate
 {
-    private RedirectFactory $resultRedirectFactory;
     private BackendHelper $backendHelper;
     private NostoHelperAccount $nostoHelperAccount;
     private NostoHelperScope $nostoHelperScope;
@@ -60,7 +58,6 @@ class Connection extends BlockTemplate
      * Constructor.
      *
      * @param BlockContext $context the context.
-     * @param RedirectFactory $resultRedirectFactory
      * @param BackendHelper $backendHelper
      * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoHelperScope $nostoHelperScope
@@ -68,7 +65,6 @@ class Connection extends BlockTemplate
      */
     public function __construct(
         BlockContext $context,
-        RedirectFactory $resultRedirectFactory,
         BackendHelper $backendHelper,
         NostoHelperAccount $nostoHelperAccount,
         NostoHelperScope $nostoHelperScope,
@@ -76,7 +72,6 @@ class Connection extends BlockTemplate
     ) {
         parent::__construct($context, $data);
 
-        $this->resultRedirectFactory = $resultRedirectFactory;
         $this->backendHelper = $backendHelper;
         $this->nostoHelperAccount = $nostoHelperAccount;
         $this->nostoHelperScope = $nostoHelperScope;
