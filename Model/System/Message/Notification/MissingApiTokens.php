@@ -117,11 +117,12 @@ class MissingApiTokens implements MessageInterface
     /**
      * Set the value of the message
      *
-     * @param Account $invalidStores
+     * @param string $account
      */
     private function buildMessage($account)
     {
-        $message = 'It looks like Nosto account (<b>' . $account->getName() . '</b>) '
+        $message = '';
+        $message .= 'It looks like Nosto account (<b>' . $account->getName() . '</b>) '
             . 'has some missing API tokens. Please reconnect the nosto account or create a new one. ';
 
         /**

@@ -1,7 +1,6 @@
 <?php /** @noinspection PhpUnhandledExceptionInspection */
 
 use Nosto\Tagging\Block\Adminhtml\Account\Connection;
-use Nosto\Types\Signup\AccountInterface;
 
 /**
  * Copyright (c) 2020, Nosto Solutions Ltd
@@ -45,41 +44,47 @@ use Nosto\Types\Signup\AccountInterface;
 
 <?php if ($block->nostoInstalledAndEnabled()): ?>
     <button id="nosto_open"
-            title="<?= __('Open Nosto account dashboard') ?>"
+            title="<?= $block->getEscaper()->escapeHtmlAttr(__('Open Nosto account dashboard')) ?>"
             type="button"
             class="action-default primary"
-            onclick="window.open('<?= $block->escapeUrl($block->getNostoUrl()) ?>', '_blank');">
+            onclick="window.open('<?= $block->getEscaper()->escapeUrl($block->getNostoUrl()) ?>', '_blank');">
         <span>
             <?php if ($block->hasMissingTokens()): ?>
-                <?= __('Reconnect to Nosto') ?>
+                <?= $block->getEscaper()->escapeHtml(__('Reconnect to Nosto')) ?>
             <?php else: ?>
-                <?= __('Open Nosto Dashboard') ?>
+                <?= $block->getEscaper()->escapeHtml(__('Open Nosto Dashboard')) ?>
             <?php endif; ?>
         </span>
     </button>
 
     <button id="nosto_remove"
-            title="<?= __('Remove Nosto account') ?>"
+            title="<?= $block->getEscaper()->escapeHtmlAttr(__('Remove Nosto account')) ?>"
             type="button"
             class="action-default"
             style="float: right;">
         <span>
-            <?= __('Remove Account') ?>
+            <?= $block->getEscaper()->escapeHtml(__('Remove Account')) ?>
         </span>
     </button>
 
     <div id="remove_modal_content" style="display: none;">
-        <p><?= __('This will disconnect Nosto account associated with your store.') ?></p>
-        <p><?= __('You can later reconnect to the existing account.') ?></p>
+        <p>
+            <?=
+                $block->getEscaper()->escapeHtml(
+                    __('This will disconnect Nosto account associated with your store.')
+                )
+            ?>
+        </p>
+        <p><?= $block->getEscaper()->escapeHtml(__('You can later reconnect to the existing account.')) ?></p>
     </div>
 <?php else: ?>
     <button id="nosto_connect"
-            title="<?= __('Connect to Nosto') ?>"
+            title="<?= $block->getEscaper()->escapeHtmlAttr(__('Connect to Nosto')) ?>"
             type="button"
             class="action-default primary"
-            onclick="window.open('<?= $block->escapeUrl($block->getNostoUrl()) ?>', '_self');">
+            onclick="window.open('<?= $block->getEscaper()->escapeHtml($block->getNostoUrl()) ?>', '_self');">
         <span>
-            <?= __('Connect to Nosto') ?>
+            <?= $block->getEscaper()->escapeHtml(__('Connect to Nosto')) ?>
         </span>
     </button>
 <?php endif; ?>

@@ -38,6 +38,7 @@ namespace Nosto\Tagging\Block\Adminhtml\Account;
 
 use Magento\Backend\Block\Template as BlockTemplate;
 use Magento\Backend\Block\Template\Context as BlockContext;
+use Magento\Framework\Escaper;
 use Magento\Backend\Helper\Data as BackendHelper;
 use Magento\Framework\Exception\NotFoundException;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
@@ -50,6 +51,7 @@ use Nosto\Tagging\Helper\Scope as NostoHelperScope;
  */
 class Connection extends BlockTemplate
 {
+    private Escaper $escaper;
     private BackendHelper $backendHelper;
     private NostoHelperAccount $nostoHelperAccount;
     private NostoHelperScope $nostoHelperScope;
@@ -72,6 +74,7 @@ class Connection extends BlockTemplate
     ) {
         parent::__construct($context, $data);
 
+        $this->escaper = $context->getEscaper();
         $this->backendHelper = $backendHelper;
         $this->nostoHelperAccount = $nostoHelperAccount;
         $this->nostoHelperScope = $nostoHelperScope;
@@ -120,10 +123,17 @@ class Connection extends BlockTemplate
      * @return string Nosto account deletion url.
      * @throws NotFoundException
      */
-
     public function getAccountDeleteUrl()
     {
         $store = $this->nostoHelperScope->getSelectedStore($this->getRequest());
         return $this->backendHelper->getUrl('*/*/delete', ['store' => $store->getId()]);
+    }
+
+    /**
+     * @return Escaper
+     */
+    public function getEscaper()
+    {
+        return $this->escaper;
     }
 }
