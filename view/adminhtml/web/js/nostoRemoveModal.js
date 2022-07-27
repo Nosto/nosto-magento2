@@ -41,12 +41,13 @@ define([
 
     return function (config) {
         const options = {
-            // noinspection JSUnresolvedVariable
+            // noinspection JSUnresolvedVariable,JSUnresolvedFunction
             title: $.mage.__('Remove Nosto account'),
+            // noinspection JSUnresolvedVariable,JSUnresolvedFunction
             content: $('#remove_modal_content').html(),
             buttons: [
                 {
-                    // noinspection JSUnresolvedVariable
+                    // noinspection JSUnresolvedVariable,JSUnresolvedFunction
                     text: $.mage.__('Remove Nosto'),
                     class: 'action-default primary',
                     click: function () {
@@ -54,15 +55,17 @@ define([
                     }
                 },
                 {
-                    // noinspection JSUnresolvedVariable
+                    // noinspection JSUnresolvedVariable,JSUnresolvedFunction
                     text: $.mage.__('Close'),
                     click: function () {
+                        // noinspection JSUnresolvedFunction
                         this.closeModal();
                     }
                 }
             ]
         };
 
+        // noinspection JSUnresolvedVariable,JSUnresolvedFunction
         $(config.buttonId).on('click', function(event) {
             modal(options);
         })
