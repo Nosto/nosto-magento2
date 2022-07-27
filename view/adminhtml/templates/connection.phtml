@@ -1,6 +1,7 @@
 <?php /** @noinspection PhpUnhandledExceptionInspection */
 
 use Nosto\Tagging\Block\Adminhtml\Account\Connection;
+use Nosto\Types\Signup\AccountInterface;
 
 /**
  * Copyright (c) 2020, Nosto Solutions Ltd
@@ -47,9 +48,13 @@ use Nosto\Tagging\Block\Adminhtml\Account\Connection;
             title="<?= __('Open Nosto account dashboard') ?>"
             type="button"
             class="action-default primary"
-            onclick="window.open('<?= $block->escapeUrl($block->redirectToNostoUrl()) ?>', '_blank');">
+            onclick="window.open('<?= $block->escapeUrl($block->getNostoUrl()) ?>', '_blank');">
         <span>
-            <?= __('Open Nosto Dashboard') ?>
+            <?php if ($block->hasMissingTokens()): ?>
+                <?= __('Reconnect to Nosto') ?>
+            <?php else: ?>
+                <?= __('Open Nosto Dashboard') ?>
+            <?php endif; ?>
         </span>
     </button>
 
@@ -57,8 +62,7 @@ use Nosto\Tagging\Block\Adminhtml\Account\Connection;
             title="<?= __('Remove Nosto account') ?>"
             type="button"
             class="action-default"
-            style="float: right;"
-    >
+            style="float: right;">
         <span>
             <?= __('Remove Account') ?>
         </span>
@@ -73,7 +77,7 @@ use Nosto\Tagging\Block\Adminhtml\Account\Connection;
             title="<?= __('Connect to Nosto') ?>"
             type="button"
             class="action-default primary"
-            onclick="window.open('<?= $block->escapeUrl($block->redirectToNostoUrl()) ?>', '_self');">
+            onclick="window.open('<?= $block->escapeUrl($block->getNostoUrl()) ?>', '_self');">
         <span>
             <?= __('Connect to Nosto') ?>
         </span>

@@ -95,10 +95,23 @@ class Connection extends BlockTemplate
      * @return string url to the Open controller
      * @throws NotFoundException
      */
-    public function redirectToNostoUrl()
+    public function getNostoUrl()
     {
         $store = $this->nostoHelperScope->getSelectedStore($this->getRequest());
         return $this->backendHelper->getUrl('*/*/open', ['store' => $store->getId()]);
+    }
+
+    /**
+     * Checks if there are missing Nosto tokens
+     *
+     * @return bool true if some token(s) are missing, false otherwise.
+     * @throws NotFoundException
+     */
+    public function hasMissingTokens()
+    {
+        $store = $this->nostoHelperScope->getSelectedStore($this->getRequest());
+        $account = $this->nostoHelperAccount->findAccount($store);
+        return $account->hasMissingTokens();
     }
 
     /**

@@ -75,7 +75,7 @@ class InvalidAccount implements MessageInterface
      */
     public function getIdentity()
     {
-        return sha1('Nosto_Account_Notification');
+        return sha1('Nosto_InvalidAccount_Notification');
     }
 
     /**

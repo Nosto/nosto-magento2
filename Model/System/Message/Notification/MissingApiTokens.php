@@ -34,62 +34,100 @@
  *
  */
 
-namespace Nosto\Tagging\Controller\Adminhtml\Account;
+namespace Nosto\Tagging\Model\System\Message\Notification;
 
-use Magento\Backend\App\Action\Context;
-use Magento\Framework\Controller\Result\Json;
-use Nosto\Helper\OAuthHelper;
+use Magento\Framework\Notification\MessageInterface;
+use Magento\Framework\Phrase;
+use Nosto\Model\Signup\Account;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
-use Nosto\Tagging\Model\Meta\Oauth\Builder as NostoOauthBuilder;
 
-class Sync extends Base
+class MissingApiTokens implements MessageInterface
 {
-    public const ADMIN_RESOURCE = 'Nosto_Tagging::system_nosto_account';
-    private Json $result;
-    private NostoHelperAccount $nostoHelperAccount;
-    private NostoOauthBuilder $oauthMetaBuilder;
+    /**
+     * @var NostoHelperScope
+     */
     private NostoHelperScope $nostoHelperScope;
 
     /**
-     * @param Context $context
-     * @param NostoHelperAccount $nostoHelperAccount
-     * @param NostoOauthBuilder $oauthMetaBuilder
+     * @var NostoHelperAccount
+     */
+    private NostoHelperAccount $nostoHelperAccount;
+
+    /**
+     * @var mixed
+     */
+    private $message;
+
+    /**
+     * Messages constructor.
      * @param NostoHelperScope $nostoHelperScope
-     * @param Json $result
+     * @param NostoHelperAccount $nostoHelperAccount
      */
     public function __construct(
-        Context $context,
-        NostoHelperAccount $nostoHelperAccount,
-        NostoOauthBuilder $oauthMetaBuilder,
         NostoHelperScope $nostoHelperScope,
-        Json $result
+        NostoHelperAccount $nostoHelperAccount
     ) {
-        parent::__construct($context);
-
-        $this->nostoHelperAccount = $nostoHelperAccount;
-        $this->oauthMetaBuilder = $oauthMetaBuilder;
-        $this->result = $result;
         $this->nostoHelperScope = $nostoHelperScope;
+        $this->nostoHelperAccount = $nostoHelperAccount;
     }
 
     /**
-     * @return Json
+     * @return Phrase|string
      */
-    public function execute()
+    public function getText()
     {
-        $response = ['success' => false];
+        return __($this->message);
+    }
 
-        $storeId = $this->_request->getParam('store');
-        $store = $this->nostoHelperScope->getStore($storeId);
-        $account = $store !== null ? $this->nostoHelperAccount->findAccount($store) : null;
+    /**
+     * @return string
+     */
+    public function getIdentity()
+    {
+        return sha1('Nosto_MissingApiTokens_Notification');
+    }
+
+    /**
+     * @return bool
+     */
+    public function isDisplayed()
+    {
+        $store = $this->nostoHelperScope->getStore();
+        $account = $this->nostoHelperAccount->findAccount($store);
 
         if ($store !== null && $account !== null) {
-            $metaData = $this->oauthMetaBuilder->build($store, $account);
-            $response['success'] = true;
-            $response['redirect_url'] = OAuthHelper::getAuthorizationUrl($metaData);
+            if ($account->hasMissingTokens()) {
+                $this->buildMessage($account);
+                return true;
+            }
         }
 
-        return $this->result->setData($response);
+        return false;
+    }
+
+    /**
+     * @return int
+     */
+    public function getSeverity()
+    {
+        return MessageInterface::SEVERITY_CRITICAL;
+    }
+
+    /**
+     * Set the value of the message
+     *
+     * @param Account $invalidStores
+     */
+    private function buildMessage($account)
+    {
+        $message = 'It looks like Nosto account (<b>' . $account->getName() . '</b>) '
+            . 'has some missing API tokens. Please reconnect the nosto account or create a new one. ';
+
+        /**
+         * Argument is of type string but array is expected
+         */
+        /** @phan-suppress-next-line PhanTypeMismatchArgumentProbablyReal */
+        $this->message = __($message);
     }
 }
