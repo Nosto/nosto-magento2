@@ -1,4 +1,6 @@
 <?php
+use Nosto\Tagging\Block\Adminhtml\Account\Connection;
+
 /**
  * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
@@ -90,8 +92,12 @@
 {
     "*": {
         "Nosto_Tagging/js/nostoRemoveModal": {
-            "buttonId": "#nosto_remove",
+            "buttonId": "<?= $block->getEscaper()->escapeJs('#nosto_remove') ?>",
             "endpoint": "<?= $block->getEscaper()->escapeUrl($block->getAccountDeleteUrl()) ?>"
+            "modalContentId": "<?= $block->getEscaper()->escapeJs('#remove_modal_content') ?>"
+            "title": "<?= $block->getEscaper()->escapeHtml(__('Remove Nosto account')) ?>"
+            "removeButtonText": "<?= $block->getEscaper()->escapeHtml(__('Remove Nosto')) ?>"
+            "closeButtonText": "<?= $block->getEscaper()->escapeHtml(__('Close')) ?>"
         }
     }
 }
