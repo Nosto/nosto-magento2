@@ -103,11 +103,6 @@ class Builder
         $metaData->setUniqueId($this->nostoHelperData->getInstallationId());
         $metaData->setVersionPlatform($this->nostoHelperData->getPlatformVersion());
         $metaData->setVersionModule($this->nostoHelperData->getModuleVersion());
-        $metaData->setPreviewUrlProduct($this->nostoHelperUrl->getPreviewUrlProduct($store));
-        $metaData->setPreviewUrlCategory($this->nostoHelperUrl->getPreviewUrlCategory($store));
-        $metaData->setPreviewUrlSearch($this->nostoHelperUrl->getPreviewUrlSearch($store));
-        $metaData->setPreviewUrlCart($this->nostoHelperUrl->getPreviewUrlCart($store));
-        $metaData->setPreviewUrlFront($this->nostoHelperUrl->getPreviewUrlFront($store));
 
         $this->eventManager->dispatch('nosto_connection_load_after', ['connection' => $metaData]);
 
