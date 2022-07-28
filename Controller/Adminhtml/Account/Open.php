@@ -39,6 +39,7 @@ namespace Nosto\Tagging\Controller\Adminhtml\Account;
 use Exception;
 use Magento\Backend\App\Action\Context;
 use Magento\Backend\Model\Auth\Session;
+use Magento\Framework\Controller\Result\Redirect;
 use Magento\Framework\Controller\ResultFactory;
 use Magento\Framework\Exception\NotFoundException;
 use Nosto\Mixins\ConnectionTrait;
@@ -88,17 +89,21 @@ class Open extends Base
     }
 
     /**
-     * @return void
+     * @return Redirect
      * @suppress PhanUndeclaredMethod
      * @noinspection PhpPossiblePolymorphicInvocationInspection
      */
     public function execute()
     {
+        $resultRedirect = $this->resultFactory->create(ResultFactory::TYPE_REDIRECT);
+
         try {
-            $this->resultFactory->create(ResultFactory::TYPE_REDIRECT)->setUrl($this->getNostoUrl());
+            return $resultRedirect->setUrl($this->getNostoUrl());
         } catch (NotFoundException $e) {
             $this->logger->exception($e);
         }
+
+        return $resultRedirect->setUrl($this->_redirect->getRefererUrl());
     }
 
     /**
