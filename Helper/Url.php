@@ -41,12 +41,12 @@ use Magento\Backend\Helper\Data as BackendDataHelper;
 use Magento\Catalog\Model\ResourceModel\Category\CollectionFactory as CategoryCollectionFactory;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
-use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Url as UrlBuilder;
 use Magento\Framework\UrlInterface;
 use Magento\Store\Model\Store;
 use Nosto\Helper\UrlHelper;
+use Nosto\Request\Http\HttpRequest;
 use Nosto\Tagging\Helper\Data as NostoDataHelper;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Product\Repository as ProductRepository;
@@ -62,7 +62,6 @@ class Url extends AbstractHelper
     public const URL_PATH_NOSTO_CONFIG = 'adminhtml/system_config/edit/section/nosto/';
     public const MAGENTO_URL_OPTION_STORE_ID = 'store';
 
-    public const MAGENTO_PATH_SEARCH_RESULT = 'catalogsearch/result';
     /**
      * Path to Magento's cart controller
      */
@@ -180,6 +179,39 @@ class Url extends AbstractHelper
             $this->logger->exception($e);
             return '';
         }
+    }
+
+    /**
+     * Gets the absolute URL to the current store view cart page.
+     *
+     * @param Store $store the store to get the url for.
+     * @param string $currentUrl restore cart url
+     * @return string cart url.
+     * @throws NoSuchEntityException
+     * @throws Zend_Uri_Exception
+     */
+    public function getUrlCart(Store $store, string $currentUrl)
+    {
+        $zendHttp = Zend_Uri_Http::fromString($currentUrl);
+        $urlParameters = $zendHttp->getQueryAsArray();
+
+        $defaultParams = $this->getUrlOptionsWithNoSid($store);
+        $url = $store->getUrl(
+            self::MAGENTO_PATH_CART,
+            $defaultParams
+        );
+
+        if (!empty($urlParameters)) {
+            foreach ($urlParameters as $key => $val) {
+                $url = HttpRequest::replaceQueryParamInUrl(
+                    $key,
+                    $val,
+                    $url
+                );
+            }
+        }
+
+        return $url;
     }
 
     /**
