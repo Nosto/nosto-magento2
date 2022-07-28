@@ -43,6 +43,7 @@ use Magento\Backend\Helper\Data as BackendHelper;
 use Magento\Framework\Exception\NotFoundException;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
+use Nosto\Tagging\Logger\Logger;
 
 /**
  * Block for displaying the Nosto account management controls.
@@ -55,6 +56,7 @@ class Connection extends BlockTemplate
     private BackendHelper $backendHelper;
     private NostoHelperAccount $nostoHelperAccount;
     private NostoHelperScope $nostoHelperScope;
+    private Logger $logger;
 
     /**
      * Constructor.
@@ -63,6 +65,7 @@ class Connection extends BlockTemplate
      * @param BackendHelper $backendHelper
      * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoHelperScope $nostoHelperScope
+     * @param Logger $logger
      * @param array $data
      */
     public function __construct(
@@ -70,6 +73,7 @@ class Connection extends BlockTemplate
         BackendHelper $backendHelper,
         NostoHelperAccount $nostoHelperAccount,
         NostoHelperScope $nostoHelperScope,
+        Logger $logger,
         array $data = []
     ) {
         parent::__construct($context, $data);
@@ -78,55 +82,76 @@ class Connection extends BlockTemplate
         $this->backendHelper = $backendHelper;
         $this->nostoHelperAccount = $nostoHelperAccount;
         $this->nostoHelperScope = $nostoHelperScope;
+        $this->logger = $logger;
     }
 
     /**
      * Checks if Nosto module is enabled and Nosto account is set
      *
      * @return bool
-     * @throws NotFoundException
      */
     public function nostoInstalledAndEnabled()
     {
-        $store = $this->nostoHelperScope->getSelectedStore($this->getRequest());
-        return $this->nostoHelperAccount->nostoInstalledAndEnabled($store);
+        try {
+            $store = $this->nostoHelperScope->getSelectedStore($this->getRequest());
+            return $this->nostoHelperAccount->nostoInstalledAndEnabled($store);
+        } catch (NotFoundException $e) {
+            $this->logger->exception($e);
+        }
+
+        return false;
     }
 
     /**
      * Returns the Nosto open url
      *
      * @return string url to the Open controller
-     * @throws NotFoundException
      */
     public function getNostoUrl()
     {
-        $store = $this->nostoHelperScope->getSelectedStore($this->getRequest());
-        return $this->backendHelper->getUrl('*/*/open', ['store' => $store->getId()]);
+        try {
+            $store = $this->nostoHelperScope->getSelectedStore($this->getRequest());
+            return $this->backendHelper->getUrl('*/*/open', ['store' => $store->getId()]);
+        } catch (NotFoundException $e) {
+            $this->logger->exception($e);
+        }
+
+        return '';
     }
 
     /**
      * Checks if there are missing Nosto tokens
      *
      * @return bool true if some token(s) are missing, false otherwise.
-     * @throws NotFoundException
      */
     public function hasMissingTokens()
     {
-        $store = $this->nostoHelperScope->getSelectedStore($this->getRequest());
-        $account = $this->nostoHelperAccount->findAccount($store);
-        return $account->hasMissingTokens();
+        try {
+            $store = $this->nostoHelperScope->getSelectedStore($this->getRequest());
+            $account = $this->nostoHelperAccount->findAccount($store);
+            return $account->hasMissingTokens();
+        } catch (NotFoundException $e) {
+            $this->logger->exception($e);
+        }
+
+        return false;
     }
 
     /**
      * Returns the Nosto account deletion url.
      *
      * @return string Nosto account deletion url.
-     * @throws NotFoundException
      */
     public function getAccountDeleteUrl()
     {
-        $store = $this->nostoHelperScope->getSelectedStore($this->getRequest());
-        return $this->backendHelper->getUrl('*/*/delete', ['store' => $store->getId()]);
+        try {
+            $store = $this->nostoHelperScope->getSelectedStore($this->getRequest());
+            return $this->backendHelper->getUrl('*/*/delete', ['store' => $store->getId()]);
+        } catch (NotFoundException $e) {
+            $this->logger->exception($e);
+        }
+
+        return '';
     }
 
     /**
