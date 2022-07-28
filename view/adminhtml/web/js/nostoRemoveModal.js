@@ -40,10 +40,10 @@ define([
 ], function ($, modal) {
 
     return function (config) {
+        // noinspection JSUnresolvedVariable,JSUnresolvedFunction
         const options = {
             title: config.title,
-            // noinspection JSUnresolvedVariable,JSUnresolvedFunction
-            content: $(config.modalContentId).html(), // noinspection JSUnresolvedFunction
+            content: $(config.modalContentId).html(),
             buttons: [
                 {
                     // noinspection JSUnresolvedVariable
@@ -65,7 +65,7 @@ define([
             ]
         };
 
-        // noinspection JSUnresolvedVariable
+        // noinspection JSUnresolvedVariable,JSUnresolvedFunction
         $(config.buttonId).on('click', function() {
             modal(options);
         })
