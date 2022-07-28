@@ -36,12 +36,9 @@
 
 namespace Nosto\Tagging\Controller\Adminhtml\Account;
 
-use Exception;
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\Controller\Result\Redirect;
 use Magento\Framework\Controller\ResultFactory;
-use Magento\Framework\Exception\LocalizedException;
-use Magento\Framework\Phrase;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Cache as NostoHelperCache;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
@@ -81,17 +78,12 @@ class Delete extends Base
      * @return Redirect
      * @suppress PhanUndeclaredMethod
      * @noinspection PhpPossiblePolymorphicInvocationInspection
-     * @throws Exception
      */
     public function execute()
     {
         $resultRedirect = $this->resultFactory->create(ResultFactory::TYPE_REDIRECT);
         $storeId = $this->_request->getParam('store');
         $store = $this->nostoHelperScope->getStore($storeId);
-
-        if ($store === null) {
-            throw new LocalizedException(new Phrase('No account found'));
-        }
 
         $account = $this->nostoHelperAccount->findAccount($store);
 
@@ -111,6 +103,10 @@ class Delete extends Base
             }
         }
 
+        $this->getMessageManager()->addErrorMessage(
+            /** @phan-suppress-next-line PhanTypeMismatchArgumentProbablyReal */
+                __("No Nosto account associated with the store was found.")
+            );
         return $resultRedirect->setUrl($this->getUrl('*/*/', ['store' => $storeId]));
     }
 }

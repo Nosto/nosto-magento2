@@ -38,7 +38,6 @@ namespace Nosto\Tagging\Model\Meta\Account\Connection;
 
 use Magento\Backend\Model\Auth\Session;
 use Magento\Framework\Event\ManagerInterface;
-use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Locale\ResolverInterface;
 use Magento\Store\Model\Store;
 use Nosto\NostoException;
@@ -83,7 +82,6 @@ class Builder
     /**
      * @param Store $store
      * @return ConnectionMetadata
-     * @throws LocalizedException
      */
     public function build(Store $store)
     {

@@ -95,7 +95,6 @@ class Open extends Base
      */
     public function execute()
     {
-        $store = $this->nostoHelperScope->getSelectedStore($this->getRequest());
         $resultRedirect = $this->resultFactory->create(ResultFactory::TYPE_REDIRECT);
 
         try {
@@ -106,7 +105,7 @@ class Open extends Base
             /** @phan-suppress-next-line PhanTypeMismatchArgumentProbablyReal */
                 __("Something went wrong when opening Nosto. Please see logs for more details")
             );
-            return $resultRedirect->setUrl($this->getUrl('*/*/', ['store' => $store->getId()]));
+            return $resultRedirect->setUrl($this->getUrl('*/*/', ['store' => $this->nostoHelperScope->getStore()->getId()]));
         }
     }
 
