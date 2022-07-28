@@ -107,10 +107,10 @@ class Delete extends Base
                     __("Nosto has been successfully disconnected from the store.")
                 );
 
-                return $resultRedirect->setUrl($this->_redirect->getRefererUrl());
+                return $resultRedirect->setUrl($this->getUrl('*/*/', ['store' => $storeId]));
             }
         }
 
-        return $resultRedirect->setUrl($this->_redirect->getRefererUrl());
+        return $resultRedirect->setUrl($this->getUrl('*/*/', ['store' => $storeId]));
     }
 }

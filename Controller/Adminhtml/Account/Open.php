@@ -95,15 +95,19 @@ class Open extends Base
      */
     public function execute()
     {
+        $store = $this->nostoHelperScope->getSelectedStore($this->getRequest());
         $resultRedirect = $this->resultFactory->create(ResultFactory::TYPE_REDIRECT);
 
         try {
             return $resultRedirect->setUrl($this->getNostoUrl());
         } catch (NotFoundException $e) {
             $this->logger->exception($e);
+            $this->getMessageManager()->addErrorMessage(
+            /** @phan-suppress-next-line PhanTypeMismatchArgumentProbablyReal */
+                __("Something went wrong when opening Nosto. Please see logs for more details")
+            );
+            return $resultRedirect->setUrl($this->getUrl('*/*/', ['store' => $store->getId()]));
         }
-
-        return $resultRedirect->setUrl($this->_redirect->getRefererUrl());
     }
 
     /**
@@ -122,6 +126,7 @@ class Open extends Base
         $store = $this->nostoHelperScope->getSelectedStore($this->getRequest());
         $get = ['store' => $store->getId()];
         $params['createUrl'] = $this->getUrl('*/*/create', $get);
+        $params['deleteUrl'] = $this->getUrl('*/*/delete', $get);
         $params['connectUrl'] = $this->getUrl('*/*/connect', $get);
         $params['dashboard_rd'] = "true";
 
