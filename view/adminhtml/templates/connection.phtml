@@ -93,10 +93,10 @@ use Nosto\Tagging\Block\Adminhtml\Account\Connection;
     "*": {
         "Nosto_Tagging/js/nostoRemoveModal": {
             "buttonId": "<?= $block->getEscaper()->escapeJs('#nosto_remove') ?>",
-            "endpoint": "<?= $block->getEscaper()->escapeUrl($block->getAccountDeleteUrl()) ?>"
-            "modalContentId": "<?= $block->getEscaper()->escapeJs('#remove_modal_content') ?>"
-            "title": "<?= $block->getEscaper()->escapeHtml(__('Remove Nosto account')) ?>"
-            "removeButtonText": "<?= $block->getEscaper()->escapeHtml(__('Remove Nosto')) ?>"
+            "endpoint": "<?= $block->getEscaper()->escapeUrl($block->getAccountDeleteUrl()) ?>",
+            "modalContentId": "<?= $block->getEscaper()->escapeJs('#remove_modal_content') ?>",
+            "title": "<?= $block->getEscaper()->escapeHtml(__('Remove Nosto account')) ?>",
+            "removeButtonText": "<?= $block->getEscaper()->escapeHtml(__('Remove Nosto')) ?>",
             "closeButtonText": "<?= $block->getEscaper()->escapeHtml(__('Close')) ?>"
         }
     }
