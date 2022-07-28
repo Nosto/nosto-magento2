@@ -105,8 +105,8 @@ class Delete extends Base
 
         $this->getMessageManager()->addErrorMessage(
             /** @phan-suppress-next-line PhanTypeMismatchArgumentProbablyReal */
-                __("No Nosto account associated with the store was found.")
-            );
+            __("No Nosto account associated with the store was found.")
+        );
         return $resultRedirect->setUrl($this->getUrl('*/*/', ['store' => $storeId]));
     }
 }

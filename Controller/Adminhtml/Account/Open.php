@@ -105,7 +105,10 @@ class Open extends Base
             /** @phan-suppress-next-line PhanTypeMismatchArgumentProbablyReal */
                 __("Something went wrong when opening Nosto. Please see logs for more details")
             );
-            return $resultRedirect->setUrl($this->getUrl('*/*/', ['store' => $this->nostoHelperScope->getStore()->getId()]));
+            return $resultRedirect->setUrl($this->getUrl(
+                '*/*/',
+                ['store' => $this->nostoHelperScope->getStore()->getId()]
+            ));
         }
     }
 
