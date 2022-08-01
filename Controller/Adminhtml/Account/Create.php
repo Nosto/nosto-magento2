@@ -39,8 +39,8 @@ namespace Nosto\Tagging\Controller\Adminhtml\Account;
 use Exception;
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\Controller\Result\Json;
-use Magento\Framework\Exception\LocalizedException;
-use Nosto\Helper\IframeHelper;
+use Magento\Framework\Controller\Result\Redirect;
+use Magento\Framework\Controller\ResultFactory;
 use Nosto\Nosto;
 use Nosto\NostoException;
 use Nosto\Operation\AccountSignup;
@@ -50,7 +50,6 @@ use Nosto\Tagging\Helper\Currency as NostoCurrencyHelper;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Meta\Account\Builder as NostoSignupBuilder;
-use Nosto\Tagging\Model\Meta\Account\Iframe\Builder as NostoIframeMetaBuilder;
 use Nosto\Tagging\Model\Meta\Account\Owner\Builder as NostoOwnerBuilder;
 use Nosto\Tagging\Model\Rates\Service as NostoRatesService;
 use Nosto\Tagging\Model\User\Builder as NostoCurrentUserBuilder;
@@ -63,7 +62,6 @@ class Create extends Base
     private Json $result;
     private NostoHelperAccount $nostoHelperAccount;
     private NostoCurrentUserBuilder $nostoCurrentUserBuilder;
-    private NostoIframeMetaBuilder $nostoIframeMetaBuilder;
     private NostoRatesService $nostoRatesService;
     private NostoCurrencyHelper $nostoCurrencyHelper;
     private NostoOwnerBuilder $nostoOwnerBuilder;
@@ -76,7 +74,6 @@ class Create extends Base
      * @param Context $context
      * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoSignupBuilder $nostoSignupBuilder
-     * @param NostoIframeMetaBuilder $nostoIframeMetaBuilder
      * @param NostoCurrentUserBuilder $nostoCurrentUserBuilder
      * @param NostoOwnerBuilder $nostoOwnerBuilder
      * @param NostoHelperScope $nostoHelperScope
@@ -91,7 +88,6 @@ class Create extends Base
         Context $context,
         NostoHelperAccount $nostoHelperAccount,
         NostoSignupBuilder $nostoSignupBuilder,
-        NostoIframeMetaBuilder $nostoIframeMetaBuilder,
         NostoCurrentUserBuilder $nostoCurrentUserBuilder,
         NostoOwnerBuilder $nostoOwnerBuilder,
         NostoHelperScope $nostoHelperScope,
@@ -105,7 +101,6 @@ class Create extends Base
 
         $this->nostoHelperAccount = $nostoHelperAccount;
         $this->nostoSignupBuilder = $nostoSignupBuilder;
-        $this->nostoIframeMetaBuilder = $nostoIframeMetaBuilder;
         $this->nostoOwnerBuilder = $nostoOwnerBuilder;
         $this->nostoCurrentUserBuilder = $nostoCurrentUserBuilder;
         $this->result = $result;
@@ -117,10 +112,10 @@ class Create extends Base
     }
 
     /**
-     * @return Json
-     * @throws LocalizedException
+     * @return Redirect
      * @throws Zend_Validate_Exception
      * @suppress PhanTypeMismatchArgument
+     * @suppress PhanUndeclaredMethod
      * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      * @phpcs:disable Generic.Metrics.CyclomaticComplexity
      * @phpcs:disable Generic.Metrics.NestingLevel
@@ -130,6 +125,7 @@ class Create extends Base
     {
         $response = ['success' => false];
 
+        $resultRedirect = $this->resultFactory->create(ResultFactory::TYPE_REDIRECT);
         $storeId = $this->_request->getParam('store');
         $store = $this->nostoHelperScope->getStore($storeId);
         $messageText = null;
@@ -158,14 +154,10 @@ class Create extends Base
 
                     if ($this->nostoHelperAccount->saveAccount($account, $store)) {
                         $response['success'] = true;
-                        $response['redirect_url'] = IframeHelper::getUrl(
-                            $this->nostoIframeMetaBuilder->build($store),
-                            $account,
-                            $this->nostoCurrentUserBuilder->build(),
-                            [
-                                'message_type' => Nosto::TYPE_SUCCESS,
-                                'message_code' => Nosto::CODE_ACCOUNT_CREATE,
-                            ]
+
+                        $this->getMessageManager()->addSuccessMessage(
+                            /** @phan-suppress-next-line PhanTypeMismatchArgumentProbablyReal */
+                            __("Nosto has been successfully connected to the store.")
                         );
 
                         // Note that we will send the exchange rates even if the multi currency
@@ -200,14 +192,9 @@ class Create extends Base
             if ($messageText) {
                 $params['message_text'] = $messageText;
             }
-            $response['redirect_url'] = IframeHelper::getUrl(
-                $this->nostoIframeMetaBuilder->build($store),
-                null, // account creation failed, so we have none.
-                $this->nostoCurrentUserBuilder->build(),
-                $params
-            );
         }
 
-        return $this->result->setData($response);
+        /** @noinspection PhpPossiblePolymorphicInvocationInspection */
+        return $resultRedirect->setUrl($this->getUrl('*/*/', ['store' => $storeId]));
     }
 }

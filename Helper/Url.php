@@ -38,12 +38,9 @@ namespace Nosto\Tagging\Helper;
 
 use Exception;
 use Magento\Backend\Helper\Data as BackendDataHelper;
-use Magento\Catalog\Model\Category;
-use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\ResourceModel\Category\CollectionFactory as CategoryCollectionFactory;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
-use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Url as UrlBuilder;
 use Magento\Framework\UrlInterface;
@@ -65,7 +62,6 @@ class Url extends AbstractHelper
     public const URL_PATH_NOSTO_CONFIG = 'adminhtml/system_config/edit/section/nosto/';
     public const MAGENTO_URL_OPTION_STORE_ID = 'store';
 
-    public const MAGENTO_PATH_SEARCH_RESULT = 'catalogsearch/result';
     /**
      * Path to Magento's cart controller
      */
@@ -170,111 +166,6 @@ class Url extends AbstractHelper
     }
 
     /**
-     * Gets the absolute preview URL to a given store's product page.
-     * The product is the first one found in the database for the store.
-     * The preview url includes "nostodebug=true" parameter.
-     *
-     * @param Store $store the store to get the url for.
-     * @return string|null the url.
-     * @suppress PhanTypeMismatchReturn
-     */
-    public function getPreviewUrlProduct(Store $store)
-    {
-        $product = $this->productRepository->getRandomSingleActiveProduct();
-        $url = null;
-        if ($product instanceof Product) {
-            $url = $this->nostoUrlBuilder->getUrlInStore($product, $store);
-            $url = $this->addNostoDebugParamToUrl($url);
-        }
-
-        return $url;
-    }
-
-    /**
-     * Adds the `nostodebug` parameter to a url.
-     *
-     * @param string $url the url.
-     * @return string the updated url.
-     */
-    public function addNostoDebugParamToUrl(string $url)
-    {
-        return HttpRequest::replaceQueryParamInUrl(
-            'nostodebug',
-            'true',
-            $url
-        );
-    }
-
-    /**
-     * Gets the absolute preview URL to a given store's category page.
-     * The category is the first one found in the database for the store.
-     * The preview url includes "nostodebug=true" parameter.
-     *
-     * @param Store $store the store to get the url for.
-     * @return string the url.
-     *
-     * @throws LocalizedException
-     */
-    public function getPreviewUrlCategory(Store $store)
-    {
-        $rootCatId = (int)$store->getRootCategoryId();
-        $collection = $this->categoryCollectionFactory->create();
-        $collection->addAttributeToFilter('is_active', ['eq' => 1]);
-        $collection->addAttributeToFilter('path', ['like' => "1/$rootCatId/%"]);
-        $collection->setCurPage(1);
-        $collection->setPageSize(1);
-        $collection->load();
-        foreach ($collection->getItems() as $category) {
-            /** @var Category $category */
-            $url = $category->getUrl();
-            if ($this->nostoDataHelper->getStoreCodeToUrl($store)) {
-                $url = $this->replaceQueryParamsInUrl(
-                    ['___store' => $store->getCode()],
-                    $url
-                );
-            }
-
-            return $this->addNostoDebugParamToUrl($url);
-        }
-
-        return '';
-    }
-
-    /**
-     * Replaces or adds a query parameters to a url.
-     *
-     * @param array $params the query params to replace.
-     * @param string $url the url.
-     * @return string the updated url.
-     */
-    public function replaceQueryParamsInUrl(array $params, string $url)
-    {
-        return HttpRequest::replaceQueryParamsInUrl($params, $url);
-    }
-
-    /**
-     * Gets the absolute preview URL to the given store's search page.
-     * The search query in the URL is "q=nosto".
-     * The preview url includes "nostodebug=true" parameter.
-     *
-     * @param Store $store the store to get the url for.
-     * @return string the url.
-     */
-    public function getPreviewUrlSearch(Store $store)
-    {
-        $url = $this->urlBuilder->getUrl(
-            self::MAGENTO_PATH_SEARCH_RESULT,
-            [
-                self::MAGENTO_URL_OPTION_NOSID => true,
-                self::MAGENTO_URL_OPTION_SCOPE_TO_URL => $this->nostoDataHelper->getStoreCodeToUrl($store),
-                self::MAGENTO_URL_OPTION_SCOPE => $store->getCode(),
-            ]
-        );
-        $url = $this->replaceQueryParamsInUrl(['q' => 'nosto'], $url);
-        return $this->addNostoDebugParamToUrl($url);
-    }
-
-    /**
      * Returns the store domain
      *
      * @param Store $store
@@ -291,53 +182,13 @@ class Url extends AbstractHelper
     }
 
     /**
-     * Gets the absolute preview URL to the given store's cart page.
-     * The preview url includes "nostodebug=true" parameter.
-     *
-     * @param Store $store the store to get the url for.
-     * @return string the url.
-     */
-    public function getPreviewUrlCart(Store $store)
-    {
-        $url = $this->urlBuilder->getUrl(
-            self::MAGENTO_PATH_CART,
-            [
-                self::MAGENTO_URL_OPTION_NOSID => true,
-                self::MAGENTO_URL_OPTION_SCOPE_TO_URL => $this->nostoDataHelper->getStoreCodeToUrl($store),
-                self::MAGENTO_URL_OPTION_SCOPE => $store->getCode(),
-            ]
-        );
-        return $this->addNostoDebugParamToUrl($url);
-    }
-
-    /**
-     * Gets the absolute preview URL to the given store's front page.
-     * The preview url includes "nostodebug=true" parameter.
-     *
-     * @param Store $store the store to get the url for.
-     * @return string the url.
-     */
-    public function getPreviewUrlFront(Store $store)
-    {
-        $url = $this->urlBuilder->getUrl(
-            '',
-            [
-                self::MAGENTO_URL_OPTION_NOSID => true,
-                self::MAGENTO_URL_OPTION_SCOPE_TO_URL => $this->nostoDataHelper->getStoreCodeToUrl($store),
-                self::MAGENTO_URL_OPTION_SCOPE => $store->getCode(),
-            ]
-        );
-        return $this->addNostoDebugParamToUrl($url);
-    }
-
-    /**
      * Gets the absolute URL to the current store view cart page.
      *
      * @param Store $store the store to get the url for.
      * @param string $currentUrl restore cart url
      * @return string cart url.
-     * @throws Zend_Uri_Exception
      * @throws NoSuchEntityException
+     * @throws Zend_Uri_Exception
      */
     public function getUrlCart(Store $store, string $currentUrl)
     {

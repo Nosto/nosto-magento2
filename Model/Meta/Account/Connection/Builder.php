@@ -34,22 +34,19 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Meta\Account\Iframe;
+namespace Nosto\Tagging\Model\Meta\Account\Connection;
 
 use Magento\Backend\Model\Auth\Session;
 use Magento\Framework\Event\ManagerInterface;
-use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Locale\ResolverInterface;
 use Magento\Store\Model\Store;
 use Nosto\NostoException;
-use Nosto\Model\Iframe;
+use Nosto\Model\ConnectionMetadata;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
-use Nosto\Tagging\Helper\Url as NostoHelperUrl;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 
 class Builder
 {
-    private NostoHelperUrl $nostoHelperUrl;
     private NostoHelperData $nostoHelperData;
     private ResolverInterface $localeResolver;
     private Session $backendAuthSession;
@@ -57,7 +54,6 @@ class Builder
     private ManagerInterface $eventManager;
 
     /**
-     * @param NostoHelperUrl $nostoHelperUrl
      * @param NostoHelperData $nostoHelperData
      * @param Session $backendAuthSession
      * @param ResolverInterface $localeResolver
@@ -65,14 +61,12 @@ class Builder
      * @param ManagerInterface $eventManager
      */
     public function __construct(
-        NostoHelperUrl $nostoHelperUrl,
         NostoHelperData $nostoHelperData,
         Session $backendAuthSession,
         ResolverInterface $localeResolver,
         NostoLogger $logger,
         ManagerInterface $eventManager
     ) {
-        $this->nostoHelperUrl = $nostoHelperUrl;
         $this->nostoHelperData = $nostoHelperData;
         $this->backendAuthSession = $backendAuthSession;
         $this->localeResolver = $localeResolver;
@@ -82,12 +76,11 @@ class Builder
 
     /**
      * @param Store $store
-     * @return Iframe
-     * @throws LocalizedException
+     * @return ConnectionMetadata
      */
     public function build(Store $store)
     {
-        $metaData = new Iframe();
+        $metaData = new ConnectionMetadata();
         $metaData->setUniqueId($this->nostoHelperData->getInstallationId());
         $lang = substr($this->localeResolver->getLocale(), 0, 2);
         $metaData->setLanguageIsoCode($lang);
@@ -103,13 +96,8 @@ class Builder
         $metaData->setUniqueId($this->nostoHelperData->getInstallationId());
         $metaData->setVersionPlatform($this->nostoHelperData->getPlatformVersion());
         $metaData->setVersionModule($this->nostoHelperData->getModuleVersion());
-        $metaData->setPreviewUrlProduct($this->nostoHelperUrl->getPreviewUrlProduct($store));
-        $metaData->setPreviewUrlCategory($this->nostoHelperUrl->getPreviewUrlCategory($store));
-        $metaData->setPreviewUrlSearch($this->nostoHelperUrl->getPreviewUrlSearch($store));
-        $metaData->setPreviewUrlCart($this->nostoHelperUrl->getPreviewUrlCart($store));
-        $metaData->setPreviewUrlFront($this->nostoHelperUrl->getPreviewUrlFront($store));
 
-        $this->eventManager->dispatch('nosto_iframe_load_after', ['iframe' => $metaData]);
+        $this->eventManager->dispatch('nosto_connection_load_after', ['connection' => $metaData]);
 
         return $metaData;
     }

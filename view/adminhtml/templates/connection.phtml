@@ -1,0 +1,104 @@
+<?php
+use Nosto\Tagging\Block\Adminhtml\Account\Connection;
+
+/**
+ * Copyright (c) 2020, Nosto Solutions Ltd
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice,
+ * this list of conditions and the following disclaimer.
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * 3. Neither the name of the copyright holder nor the names of its contributors
+ * may be used to endorse or promote products derived from this software without
+ * specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * @author Nosto Solutions Ltd <contact@nosto.com>
+ * @copyright 2020 Nosto Solutions Ltd
+ * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
+ *
+ */
+
+/**
+ * @var Connection $block
+ */
+?>
+
+<?php if ($block->nostoInstalledAndEnabled()): ?>
+    <button id="nosto_open"
+            title="<?= $block->getEscaper()->escapeHtmlAttr(__('Open Nosto account dashboard')) ?>"
+            type="button"
+            class="action-default primary"
+            onclick="window.open('<?= $block->getEscaper()->escapeUrl($block->getNostoUrl()) ?>', '_blank');">
+        <span>
+            <?php if ($block->hasMissingTokens()): ?>
+                <?= $block->getEscaper()->escapeHtml(__('Reconnect to Nosto')) ?>
+            <?php else: ?>
+                <?= $block->getEscaper()->escapeHtml(__('Open Nosto Dashboard')) ?>
+            <?php endif; ?>
+        </span>
+    </button>
+
+    <button id="nosto_remove"
+            title="<?= $block->getEscaper()->escapeHtmlAttr(__('Remove Nosto account')) ?>"
+            type="button"
+            class="action-default"
+            style="float: right;">
+        <span>
+            <?= $block->getEscaper()->escapeHtml(__('Remove Account')) ?>
+        </span>
+    </button>
+
+    <div id="remove_modal_content" style="display: none;">
+        <p>
+            <?=
+                $block->getEscaper()->escapeHtml(
+                    __('This will disconnect Nosto account associated with your store.')
+                )
+            ?>
+        </p>
+        <p><?= $block->getEscaper()->escapeHtml(__('You can later reconnect to the existing account.')) ?></p>
+    </div>
+<?php else: ?>
+    <button id="nosto_connect"
+            title="<?= $block->getEscaper()->escapeHtmlAttr(__('Connect to Nosto')) ?>"
+            type="button"
+            class="action-default primary"
+            onclick="window.open('<?= $block->getEscaper()->escapeHtml($block->getNostoUrl()) ?>', '_self');">
+        <span>
+            <?= $block->getEscaper()->escapeHtml(__('Connect to Nosto')) ?>
+        </span>
+    </button>
+<?php endif; ?>
+
+<script type="text/x-magento-init">
+{
+    "*": {
+        "Nosto_Tagging/js/nostoRemoveModal": {
+            "buttonId": "<?= $block->getEscaper()->escapeJs('#nosto_remove') ?>",
+            "endpoint": "<?= $block->getEscaper()->escapeUrl($block->getAccountDeleteUrl()) ?>",
+            "modalContentId": "<?= $block->getEscaper()->escapeJs('#remove_modal_content') ?>",
+            "title": "<?= $block->getEscaper()->escapeHtml(__('Remove Nosto account')) ?>",
+            "removeButtonText": "<?= $block->getEscaper()->escapeHtml(__('Remove Nosto')) ?>",
+            "closeButtonText": "<?= $block->getEscaper()->escapeHtml(__('Close')) ?>"
+        }
+    }
+}
+</script>

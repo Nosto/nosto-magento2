@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, Nosto Solutions Ltd
+ * Copyright (c) 2022, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -33,11 +33,41 @@
  *
  */
 
-const config = {
-  map: {
-    '*': {
-      iframe_handler: 'Nosto_Tagging/js/iframe_handler',
-      iframe_resizer: 'Nosto_Tagging/js/iframe_resizer'
+// noinspection JSUnresolvedFunction
+define([
+    'jquery',
+    'Magento_Ui/js/modal/confirm'
+], function ($, modal) {
+
+    return function (config) {
+        // noinspection JSUnresolvedVariable,JSUnresolvedFunction
+        const options = {
+            title: config.title,
+            content: $(config.modalContentId).html(),
+            buttons: [
+                {
+                    // noinspection JSUnresolvedVariable
+                    text: config.removeButtonText,
+                    class: 'action-default primary',
+                    click: function () {
+                        // noinspection JSUnresolvedVariable
+                        window.open(config.endpoint, '_self');
+                    }
+                },
+                {
+                    // noinspection JSUnresolvedVariable
+                    text: config.closeButtonText,
+                    click: function () {
+                        // noinspection JSUnresolvedFunction
+                        this.closeModal();
+                    }
+                }
+            ]
+        };
+
+        // noinspection JSUnresolvedVariable,JSUnresolvedFunction
+        $(config.buttonId).on('click', function() {
+            modal(options);
+        })
     }
-  }
-};
+});
