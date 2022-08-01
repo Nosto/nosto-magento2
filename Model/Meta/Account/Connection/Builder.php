@@ -43,12 +43,10 @@ use Magento\Store\Model\Store;
 use Nosto\NostoException;
 use Nosto\Model\ConnectionMetadata;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
-use Nosto\Tagging\Helper\Url as NostoHelperUrl;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 
 class Builder
 {
-    private NostoHelperUrl $nostoHelperUrl;
     private NostoHelperData $nostoHelperData;
     private ResolverInterface $localeResolver;
     private Session $backendAuthSession;
@@ -56,7 +54,6 @@ class Builder
     private ManagerInterface $eventManager;
 
     /**
-     * @param NostoHelperUrl $nostoHelperUrl
      * @param NostoHelperData $nostoHelperData
      * @param Session $backendAuthSession
      * @param ResolverInterface $localeResolver
@@ -64,14 +61,12 @@ class Builder
      * @param ManagerInterface $eventManager
      */
     public function __construct(
-        NostoHelperUrl $nostoHelperUrl,
         NostoHelperData $nostoHelperData,
         Session $backendAuthSession,
         ResolverInterface $localeResolver,
         NostoLogger $logger,
         ManagerInterface $eventManager
     ) {
-        $this->nostoHelperUrl = $nostoHelperUrl;
         $this->nostoHelperData = $nostoHelperData;
         $this->backendAuthSession = $backendAuthSession;
         $this->localeResolver = $localeResolver;

@@ -67,7 +67,6 @@ class Connect extends Base
 
     /**
      * @suppress PhanUndeclaredMethod
-     * @noinspection PhpPossiblePolymorphicInvocationInspection
      * @return Redirect
      */
     public function execute()
