@@ -91,6 +91,7 @@ class Open extends Base
     /**
      * @return Redirect
      * @suppress PhanUndeclaredMethod
+     * @noinspection PhpPossiblePolymorphicInvocationInspection
      */
     public function execute()
     {

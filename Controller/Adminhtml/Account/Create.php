@@ -194,6 +194,7 @@ class Create extends Base
             }
         }
 
+        /** @noinspection PhpPossiblePolymorphicInvocationInspection */
         return $resultRedirect->setUrl($this->getUrl('*/*/', ['store' => $storeId]));
     }
 }

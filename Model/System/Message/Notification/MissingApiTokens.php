@@ -122,7 +122,8 @@ class MissingApiTokens implements MessageInterface
      */
     private function buildMessage($account)
     {
-        $message = 'It looks like Nosto account (<b>' . $account->getName() . '</b>) ' // @phan-suppress-current-line
+        $message = '';
+        $message .= 'It looks like Nosto account (<b>' . $account->getName() . '</b>) '
             . 'has some missing API tokens. Please reconnect the nosto account or create a new one. ';
 
         /**
