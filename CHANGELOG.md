@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file. This projec
 * Remove Iframe. Nosto account connection is now configured externally and redirects back to the Magento 2 admin
 * Remove preview URLs that were used in the iframe.
 * Add system notification for missing API tokens 
+* Add guard to customer reference when multi-channel order tracking is enable but customer is not logged in
 
 ### 6.0.6
 * Fix issue with product builder when products have null prices
