@@ -189,7 +189,7 @@ class Builder extends PersonBuilder
      * @param CurrentCustomer $currentCustomer
      * @return string
      */
-    private function getCustomerReference(CurrentCustomer $currentCustomer)
+    private function getCustomerReference(CurrentCustomer $currentCustomer): string
     {
         $customerReference = '';
 

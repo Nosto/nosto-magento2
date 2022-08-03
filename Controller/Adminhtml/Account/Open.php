@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2020, Nosto Solutions Ltd
+ * Copyright (c) 2022, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -34,87 +34,105 @@
  *
  */
 
-namespace Nosto\Tagging\Block\Adminhtml\Account;
+namespace Nosto\Tagging\Controller\Adminhtml\Account;
 
 use Exception;
-use Magento\Backend\Block\Template as BlockTemplate;
-use Magento\Backend\Block\Template\Context as BlockContext;
+use Magento\Backend\App\Action\Context;
 use Magento\Backend\Model\Auth\Session;
-use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Controller\Result\Redirect;
+use Magento\Framework\Controller\ResultFactory;
 use Magento\Framework\Exception\NotFoundException;
-use Nosto\Mixins\IframeTrait;
-use Nosto\Nosto;
+use Nosto\Mixins\ConnectionTrait;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
-use Nosto\Tagging\Model\Meta\Account\Iframe\Builder as NostoIframeMetaBuilder;
+use Nosto\Tagging\Model\Meta\Account\Connection\Builder as NostoConnectionMetadataBuilder;
 use Nosto\Tagging\Model\User\Builder as NostoCurrentUserBuilder;
 
-/**
- * Iframe block for displaying the Nosto account management iframe.
- * This iframe is used to setup and manage your Nosto accounts on a store basis
- * in Magento.
- */
-class Iframe extends BlockTemplate
+class Open extends Base
 {
-    use IframeTrait;
+    use ConnectionTrait;
 
-    public const IFRAME_VERSION = 1;
-
-    private NostoHelperAccount $nostoHelperAccount;
     private Session $backendAuthSession;
-    private NostoIframeMetaBuilder $iframeMetaBuilder;
-    private NostoCurrentUserBuilder $currentUserBuilder;
+    private NostoHelperAccount $nostoHelperAccount;
     private NostoHelperScope $nostoHelperScope;
+    private NostoConnectionMetadataBuilder $connectionMetadataBuilder;
+    private NostoCurrentUserBuilder $currentUserBuilder;
     private NostoLogger $logger;
 
     /**
-     * Constructor.
-     *
-     * @param BlockContext $context the context.
-     * @param NostoHelperAccount $nostoHelperAccount the account helper.
+     * @param Context $context
      * @param Session $backendAuthSession
-     * @param NostoIframeMetaBuilder $iframeMetaBuilder
-     * @param NostoCurrentUserBuilder $currentUserBuilder
+     * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoHelperScope $nostoHelperScope
+     * @param NostoConnectionMetadataBuilder $connectionMetadataBuilder
+     * @param NostoCurrentUserBuilder $currentUserBuilder
      * @param NostoLogger $logger
-     * @param array $data
      */
     public function __construct(
-        BlockContext $context,
-        NostoHelperAccount $nostoHelperAccount,
+        Context $context,
         Session $backendAuthSession,
-        NostoIframeMetaBuilder $iframeMetaBuilder,
-        NostoCurrentUserBuilder $currentUserBuilder,
+        NostoHelperAccount $nostoHelperAccount,
         NostoHelperScope $nostoHelperScope,
-        NostoLogger $logger,
-        array $data = []
+        NostoConnectionMetadataBuilder $connectionMetadataBuilder,
+        NostoCurrentUserBuilder $currentUserBuilder,
+        NostoLogger $logger
     ) {
-        parent::__construct($context, $data);
+        parent::__construct($context);
 
-        $this->nostoHelperAccount = $nostoHelperAccount;
         $this->backendAuthSession = $backendAuthSession;
-        $this->iframeMetaBuilder = $iframeMetaBuilder;
-        $this->currentUserBuilder = $currentUserBuilder;
+        $this->nostoHelperAccount = $nostoHelperAccount;
         $this->nostoHelperScope = $nostoHelperScope;
+        $this->connectionMetadataBuilder = $connectionMetadataBuilder;
+        $this->currentUserBuilder = $currentUserBuilder;
         $this->logger = $logger;
     }
 
     /**
-     * Gets the iframe url for the account settings page from Nosto.
+     * @return Redirect
+     * @suppress PhanUndeclaredMethod
+     * @noinspection PhpPossiblePolymorphicInvocationInspection
+     */
+    public function execute()
+    {
+        $resultRedirect = $this->resultFactory->create(ResultFactory::TYPE_REDIRECT);
+
+        try {
+            return $resultRedirect->setUrl($this->getNostoUrl());
+        } catch (NotFoundException $e) {
+            $this->logger->exception($e);
+            $this->getMessageManager()->addErrorMessage(
+            /** @phan-suppress-next-line PhanTypeMismatchArgumentProbablyReal */
+                __("Something went wrong when opening Nosto. Please see logs for more details")
+            );
+            return $resultRedirect->setUrl($this->getUrl(
+                '*/*/',
+                ['store' => $this->nostoHelperScope->getStore()->getId()]
+            ));
+        }
+    }
+
+    /**
+     * Gets the Nosto url for the account settings page from Nosto.
      * If there is an account for the current store and the admin user can be
      * logged in to that account using SSO, the url will be for the account
      * management. In other cases, the url will be that of the install screen
      * where a new Nosto account can be created.
      *
-     * @return string the iframe url or empty string if it cannot be created.
+     * @return string the Nosto url or empty string if it cannot be created.
+     * @throws NotFoundException
      */
-    public function getIframeUrl()
+    public function getNostoUrl()
     {
         $params = [];
-        $params['v'] = self::IFRAME_VERSION;
+        $store = $this->nostoHelperScope->getSelectedStore($this->getRequest());
+        $get = ['store' => $store->getId()];
+        $params['createUrl'] = $this->getUrl('*/*/create', $get);
+        $params['deleteUrl'] = $this->getUrl('*/*/delete', $get);
+        $params['connectUrl'] = $this->getUrl('*/*/connect', $get);
+        $params['dashboard_rd'] = "true";
 
-        // Pass any error/success messages we might have to the iframe.
+        // Pass any error/success messages we might have to the controls.
         // These can be available when getting redirect back from the OAuth
         // front controller after connecting a Nosto account to a store.
         $nostoMessage = $this->backendAuthSession->getData('nosto_message');
@@ -132,41 +150,13 @@ class Iframe extends BlockTemplate
     }
 
     /**
-     * Returns the config for the Nosto iframe JS component.
-     * This config can be converted into JSON in the view file.
-     *
-     * @return array the config.
-     * @throws NotFoundException
-     * @throws LocalizedException
-     */
-    public function getIframeConfig()
-    {
-        $store = $this->nostoHelperScope->getSelectedStore($this->getRequest());
-        $get = ['store' => $store->getId(), 'isAjax' => true];
-        return [
-            'iframe_handler' => [
-                'origin' => Nosto::getIframeOriginRegex(),
-                'xhrParams' => [
-                    'form_key' => $this->formKey->getFormKey()
-                ],
-                'urls' => [
-                    'createAccount' => $this->getUrl('*/*/create', $get),
-                    'connectAccount' => $this->getUrl('*/*/connect', $get),
-                    'syncAccount' => $this->getUrl('*/*/sync', $get),
-                    'deleteAccount' => $this->getUrl('*/*/delete', $get)
-                ]
-            ]
-        ];
-    }
-
-    /**
      * @inheritDoc
      */
-    public function getIframe()
+    public function getConnectionMetadata()
     {
         try {
             $store = $this->nostoHelperScope->getSelectedStore($this->getRequest());
-            return $this->iframeMetaBuilder->build($store);
+            return $this->connectionMetadataBuilder->build($store);
         } catch (Exception $e) {
             $this->logger->exception($e);
         }

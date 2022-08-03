@@ -206,9 +206,12 @@ class Save implements ObserverInterface
      * @param Order $order
      * @return string|null
      */
-    private function getCustomerReference(Order $order)
+    private function getCustomerReference(Order $order): ?string
     {
         $customerId = $order->getCustomerId();
+        if (!isset($customerId)) {
+            return null; // In case customer is not logged in
+        }
         $nostoCustomerId = null;
         try {
             $magentoCustomer = $this->magentoCustomerRepository->getById($customerId);

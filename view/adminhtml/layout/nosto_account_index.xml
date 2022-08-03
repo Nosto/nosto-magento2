@@ -45,8 +45,8 @@
                    template="config.phtml"/>
         </referenceContainer>
         <referenceContainer name="content">
-            <block class="Nosto\Tagging\Block\Adminhtml\Account\Iframe" name="nosto.account.iframe"
-                   template="iframe.phtml"/>
+            <block class="Nosto\Tagging\Block\Adminhtml\Account\Connection" name="nosto.account.connection"
+                   template="connection.phtml"/>
         </referenceContainer>
     </body>
 </page>

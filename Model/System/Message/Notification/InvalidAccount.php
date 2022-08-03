@@ -75,7 +75,7 @@ class InvalidAccount implements MessageInterface
      */
     public function getIdentity()
     {
-        return sha1('Nosto_Account_Notification');
+        return sha1('Nosto_InvalidAccount_Notification');
     }
 
     /**
@@ -105,6 +105,7 @@ class InvalidAccount implements MessageInterface
      * Set the value of the message
      *
      * @param array $invalidStores
+     * @return void
      */
     private function buildMessage(array $invalidStores)
     {

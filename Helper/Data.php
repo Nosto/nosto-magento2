@@ -237,7 +237,7 @@ class Data extends AbstractHelper
 
     /**
      * Returns a unique ID that identifies this Magento installation.
-     * This ID is sent to the Nosto account config iframe and used to link all
+     * This ID is sent to the Nosto account controls and used to link all
      * Nosto accounts used on this installation.
      *
      * @return string the ID.
