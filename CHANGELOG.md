@@ -1,10 +1,16 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 6.1.0
+* Remove Iframe. Nosto account connection is now configured externally and redirects back to the Magento 2 admin
+* Remove preview URLs that were used in the iframe.
+* Add system notification for missing API tokens 
+* Add guard to customer reference when multi-channel order tracking is enable but customer is not logged in
+
 ### 6.0.6
-- Fix issue with product builder when products have null prices
+* Fix issue with product builder when products have null prices
 
 ### 6.0.5
-- Fix call to undefined warn logger method
+* Fix call to undefined warn logger method
 
 ### 6.0.4
 * Fix issue where nosto_tagging_customer would get a lot of entries
