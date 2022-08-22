@@ -44,10 +44,10 @@ use Nosto\Tagging\Block\Adminhtml\Account\Connection;
 <?php if ($block->nostoInstalledAndEnabled()): ?>
     <div>
         <p>
-            <?=
-            $block->getEscaper()->escapeHtml(
-                __("Nosto is installed in your store. Your account ID is "))
-            .  "<b>" . $block->getAccountName() . "</b>" ?>
+            <?= $block->getEscaper()->escapeHtml(__("Nosto is installed in your store. Your account ID is ")) ?>
+            <b>
+                <?= $block->getEscaper()->escapeHtml($block->getAccountName()); ?>
+            </b>
         </p>
     </div>
     <button id="nosto_open"
