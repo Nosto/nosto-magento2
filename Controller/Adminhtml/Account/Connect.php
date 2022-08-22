@@ -79,11 +79,6 @@ class Connect extends Base
 
         if ($store !== null) {
             $metaData = $this->oauthMetaBuilder->build($store);
-            $this->getMessageManager()->addSuccessMessage(
-                /** @phan-suppress-next-line PhanTypeMismatchArgumentProbablyReal */
-                __("Store was successfully connected to the existing Nosto account.")
-            );
-
             return $resultRedirect->setUrl(OAuthHelper::getAuthorizationUrl($metaData));
         }
 
