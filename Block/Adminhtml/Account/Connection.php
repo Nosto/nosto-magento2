@@ -110,12 +110,14 @@ class Connection extends BlockTemplate
     public function getAccountName()
     {
         try {
-            $store = $this->nostoHelperScope->getStore(true);
+            $store = $this->nostoHelperScope->getSelectedStore($this->getRequest());
             $account = $this->nostoHelperAccount->findAccount($store);
             return $account->getName();
         } catch (NotFoundException $e) {
             $this->logger->exception($e);
         }
+
+        return '';
     }
 
     /**
