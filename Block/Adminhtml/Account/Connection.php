@@ -103,6 +103,22 @@ class Connection extends BlockTemplate
     }
 
     /**
+     * Get Nosto account name to display on the admin view.
+     *
+     * @return string
+     */
+    public function getAccountName()
+    {
+        try {
+            $store = $this->nostoHelperScope->getStore(true);
+            $account = $this->nostoHelperAccount->findAccount($store);
+            return $account->getName();
+        } catch (NotFoundException $e) {
+            $this->logger->exception($e);
+        }
+    }
+
+    /**
      * Returns the Nosto open url
      *
      * @return string url to the Open controller
