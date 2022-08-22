@@ -54,11 +54,6 @@ use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 class Data extends AbstractHelper
 {
     /**
-     * Path to store config installation ID.
-     */
-    public const XML_PATH_INSTALLATION_ID = 'nosto_tagging/installation/id';
-
-    /**
      * Path to store config product image version setting.
      */
     public const XML_PATH_IMAGE_VERSION = 'nosto/images/version';
@@ -233,37 +228,6 @@ class Data extends AbstractHelper
         $this->productMetaData = $productMetadataInterface;
         $this->nostoHelperScope = $nostoHelperScope;
         $this->cacheManager = $cacheManager;
-    }
-
-    /**
-     * Returns a unique ID that identifies this Magento installation.
-     * This ID is sent to the Nosto account controls and used to link all
-     * Nosto accounts used on this installation.
-     *
-     * @return string the ID.
-     * @suppress PhanAccessMethodInternal, PhanUndeclaredClassConstant, PhanUndeclaredClassMethod
-     */
-    public function getInstallationId()
-    {
-        $installationId = $this->scopeConfig->getValue(
-            self::XML_PATH_INSTALLATION_ID
-        );
-        if (empty($installationId)) {
-            //Check if phpseclib v3 is used
-            //needed for comaptibility with Magento 2.4 versions
-            if (class_exists("phpseclib3\Crypt\Random")) {
-                // Running bin2hex() will make the ID string length 64 characters.
-                $installationId = bin2hex(\phpseclib3\Crypt\Random::string(32));
-            } else {
-                // Running bin2hex() will make the ID string length 64 characters.
-                $installationId = bin2hex(\phpseclib\Crypt\Random::string(32));
-            }
-            $this->configWriter->save(
-                self::XML_PATH_INSTALLATION_ID,
-                $installationId
-            );
-        }
-        return $installationId;
     }
 
     /**
