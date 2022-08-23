@@ -1,5 +1,10 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 6.1.1
+* Remove installation id and unique id from Magento module
+* Remove false success message after account reconnection
+* Add current account info to admin view
+
 ### 6.1.0
 * Remove Iframe. Nosto account connection is now configured externally and redirects back to the Magento 2 admin
 * Remove preview URLs that were used in the iframe.
