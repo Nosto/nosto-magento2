@@ -87,16 +87,6 @@ class Meta extends Template
     }
 
     /**
-     * Returns the unique installation ID.
-     *
-     * @return string the unique ID.
-     */
-    public function getInstallationId()
-    {
-        return $this->nostoHelperData->getInstallationId();
-    }
-
-    /**
      * Returns the current stores language code in ISO 639-1 format.
      *
      * @return string the language code.
