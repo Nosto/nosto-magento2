@@ -1,5 +1,8 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 6.1.1
+* Fix recobuy.js from crashing the cart on storefront
+
 ### 6.1.0
 * Remove Iframe. Nosto account connection is now configured externally and redirects back to the Magento 2 admin
 * Remove preview URLs that were used in the iframe.
