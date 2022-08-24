@@ -81,7 +81,6 @@ class Builder
     public function build(Store $store)
     {
         $metaData = new ConnectionMetadata();
-        $metaData->setUniqueId($this->nostoHelperData->getInstallationId());
         $lang = substr($this->localeResolver->getLocale(), 0, 2);
         $metaData->setLanguageIsoCode($lang);
         $lang = substr($store->getConfig('general/locale/code'), 0, 2);
@@ -93,7 +92,6 @@ class Builder
         }
         $metaData->setPlatform('magento');
         $metaData->setShopName($store->getName());
-        $metaData->setUniqueId($this->nostoHelperData->getInstallationId());
         $metaData->setVersionPlatform($this->nostoHelperData->getPlatformVersion());
         $metaData->setVersionModule($this->nostoHelperData->getModuleVersion());
 

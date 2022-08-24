@@ -89,12 +89,12 @@ class Proxy extends Base
             );
         }
 
+        $store = [];
         if (($storeId = (int)$this->getRequest()->getParam('store')) !== 0) {
-            return $this->resultRedirectFactory->create()
-                ->setPath('*/*/index', ['store' => $storeId]);
+            $store = ['store' => $storeId];
         }
 
         return $this->resultRedirectFactory->create()
-            ->setPath('*/*/index', []);
+            ->setPath('*/*/open', $store);
     }
 }
