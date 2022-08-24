@@ -74,20 +74,24 @@ define([
         const url = document.querySelector("#nosto_addtocart_form").getAttribute("action");
         const formKey = document.querySelector("#nosto_addtocart_form > input[name='form_key']").getAttribute("value");
 
-
         return new Promise(function (resolve, reject) {
             // noinspection JSUnresolvedFunction
-            $.post(url, {
-                form_key: formKey,
-                qty: quantity,
-                product: product.productId,
-                sku: product.skuId
-            }).done(function() {
-                Recobuy.sendCartEvent(element, product.productId)
-                return resolve()
-                // noinspection JSUnresolvedFunction
-            }).fail(function () {
-                return reject()
+            $.ajax({
+                url: url,
+                type: 'POST',
+                data: {
+                    'form_key': formKey,
+                    'qty': quantity,
+                    'product': product.productId,
+                    'sku': product.skuId,
+                },
+                success: function () {
+                    Recobuy.sendCartEvent(element, product.productId)
+                    return resolve()
+                },
+                error: function () {
+                    return reject()
+                }
             })
         })
 
