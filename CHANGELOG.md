@@ -1,6 +1,6 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
-### 6.1.1
+### 6.1.2
 * Remove installation id and unique id from Magento module
 * Remove false success message after account reconnection
 * Add current account info to admin view
