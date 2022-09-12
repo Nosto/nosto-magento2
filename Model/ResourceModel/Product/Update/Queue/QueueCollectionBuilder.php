@@ -189,16 +189,6 @@ class QueueCollectionBuilder
     }
 
     /**
-     * @param bool $flag
-     * @return $this
-     */
-    public function distinct(bool $flag)
-    {
-        $this->queueCollection->distinct($flag);
-        return $this;
-    }
-
-    /**
      * Initializes the collection with store filter and defaults
      *
      * @param Store $store
@@ -210,7 +200,6 @@ class QueueCollectionBuilder
         return $this
             ->reset()
             ->withStore($store)
-            ->setSort(EntityInterface::CREATED_AT, $this->queueCollection::SORT_ORDER_ASC)
-            ->distinct(true);
+            ->setSort(EntityInterface::CREATED_AT, $this->queueCollection::SORT_ORDER_ASC);
     }
 }

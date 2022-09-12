@@ -81,7 +81,10 @@ class CollectionBuilder
      */
     public function withOnlyVisibleInSites()
     {
-        $this->productCollection->addAttributeToFilter('visibility', ['neq' => ProductVisibility::VISIBILITY_NOT_VISIBLE]);
+        $this->productCollection->addAttributeToFilter(
+            'visibility',
+            ['neq' => ProductVisibility::VISIBILITY_NOT_VISIBLE]
+        );
         return $this;
     }
 
@@ -193,16 +196,6 @@ class CollectionBuilder
     }
 
     /**
-     * @param bool $flag
-     * @return $this
-     */
-    public function distinct(bool $flag)
-    {
-        $this->productCollection->distinct($flag);
-        return $this;
-    }
-
-    /**
      * Initializes the collection
      *
      * @return $this
@@ -225,8 +218,7 @@ class CollectionBuilder
         return $this
             ->reset()
             ->withStore($store)
-            ->setSort(EntityInterface::CREATED_AT, $this->productCollection::SORT_ORDER_DESC)
-            ->distinct(true);
+            ->setSort(EntityInterface::CREATED_AT, $this->productCollection::SORT_ORDER_DESC);
     }
 
     /**

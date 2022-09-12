@@ -56,6 +56,8 @@ use Symfony\Component\Console\Input\InputInterface;
 
 /**
  * Class QueueIndexer
+ * Fetches to be indexed products from CL tables and create queues entry
+ * to subsequently be sent to the message queue
  */
 class QueueIndexer extends AbstractIndexer
 {
