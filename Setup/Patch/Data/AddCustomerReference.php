@@ -42,12 +42,11 @@ use Magento\Eav\Model\Entity\Attribute\SetFactory as AttributeSetFactory;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Setup\ModuleDataSetupInterface;
 use Magento\Framework\Setup\Patch\DataPatchInterface;
-use Magento\Framework\Setup\Patch\PatchVersionInterface;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Zend_Validate_Exception;
 use Exception;
 
-class AddCustomerReference implements DataPatchInterface, PatchVersionInterface
+class AddCustomerReference implements DataPatchInterface
 {
     private array $customerReferenceForms = ['adminhtml_customer'];
     /** @var CustomerSetupFactory */
@@ -150,13 +149,5 @@ class AddCustomerReference implements DataPatchInterface, PatchVersionInterface
         /** @noinspection PhpDeprecationInspection */
         /** @noinspection NullPointerExceptionInspection */
         $attribute->save();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public static function getVersion(): string
-    {
-        return '6.0.4';
     }
 }
