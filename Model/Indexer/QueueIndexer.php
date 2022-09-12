@@ -55,9 +55,7 @@ use Nosto\Tagging\Util\PagingIterator;
 use Symfony\Component\Console\Input\InputInterface;
 
 /**
- * Class Invalidate
- * This class is responsible for listening to product changes
- * and setting the `is_dirty` value in `nosto_product_index` table
+ * Class QueueIndexer
  */
 class QueueIndexer extends AbstractIndexer
 {
@@ -165,6 +163,7 @@ class QueueIndexer extends AbstractIndexer
             }
         }
     }
+
     /**
      * @inheritDoc
      */

@@ -215,8 +215,8 @@ class QueueProcessorService extends AbstractService
             }
         }
         $mergedCount = 0;
-        foreach ($merged as $storeId => $arr) {
-            foreach ($arr as $method => $ids) {
+        foreach ($merged as $arr) {
+            foreach ($arr as $ids) {
                 // phpcs:ignore
                 $mergedCount += count($ids);
             }

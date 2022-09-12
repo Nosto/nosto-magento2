@@ -40,7 +40,6 @@ use Magento\Catalog\Model\Product\Visibility as ProductVisibility;
 use Magento\Sales\Api\Data\EntityInterface;
 use Magento\Store\Model\Store;
 use Nosto\Tagging\Model\ResourceModel\Magento\Product\Collection as ProductCollection;
-use Nosto\Tagging\Model\ResourceModel\Magento\Product\CollectionFactory as ProductCollectionFactory;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 
 /**
@@ -48,31 +47,22 @@ use Nosto\Tagging\Helper\Data as NostoHelperData;
  */
 class CollectionBuilder
 {
-    /** @var ProductVisibility */
-    private ProductVisibility $productVisibility;
-
-    /** @var Collection */
-    private Collection $collection;
-
-    /** @var CollectionFactory */
-    private CollectionFactory $productCollectionFactory;
+    /** @var ProductCollection */
+    private ProductCollection $productCollection;
 
     /** @var NostoHelperData */
     private NostoHelperData $nostoHelperData;
 
     /**
      * Collection constructor.
-     * @param ProductCollectionFactory $productCollectionFactory
-     * @param ProductVisibility $productVisibility
+     * @param ProductCollection $productCollection,
      * @param NostoHelperData $nostoHelperData
      */
     public function __construct(
-        ProductCollectionFactory $productCollectionFactory,
-        ProductVisibility $productVisibility,
+        ProductCollection $productCollection,
         NostoHelperData $nostoHelperData
     ) {
-        $this->productCollectionFactory = $productCollectionFactory;
-        $this->productVisibility = $productVisibility;
+        $this->productCollection = $productCollection;
         $this->nostoHelperData = $nostoHelperData;
     }
 
@@ -81,7 +71,7 @@ class CollectionBuilder
      */
     public function build()
     {
-        return $this->collection;
+        return $this->productCollection;
     }
 
     /**
@@ -91,7 +81,7 @@ class CollectionBuilder
      */
     public function withOnlyVisibleInSites()
     {
-        $this->collection->addAttributeToFilter('visibility', ['neq' => ProductVisibility::VISIBILITY_NOT_VISIBLE]);
+        $this->productCollection->addAttributeToFilter('visibility', ['neq' => ProductVisibility::VISIBILITY_NOT_VISIBLE]);
         return $this;
     }
 
@@ -104,7 +94,7 @@ class CollectionBuilder
     public function withConfiguredProductStatus(Store $store)
     {
         if (!$this->nostoHelperData->canIndexDisabledProducts($store)) {
-            $this->collection->addActiveFilter();
+            $this->productCollection->addActiveFilter();
         }
         return $this;
     }
@@ -117,8 +107,8 @@ class CollectionBuilder
      */
     public function withStore(Store $store)
     {
-        $this->collection->addStoreFilter($store);
-        $this->collection->setStore($store);
+        $this->productCollection->addStoreFilter($store);
+        $this->productCollection->setStore($store);
         return $this;
     }
 
@@ -129,7 +119,7 @@ class CollectionBuilder
      */
     public function withAllAttributes()
     {
-        $this->collection->addAttributeToSelect('*');
+        $this->productCollection->addAttributeToSelect('*');
         return $this;
     }
 
@@ -141,7 +131,7 @@ class CollectionBuilder
      */
     public function withIds(array $ids)
     {
-        $this->collection->addIdsToFilter($ids);
+        $this->productCollection->addIdsToFilter($ids);
         return $this;
     }
 
@@ -154,7 +144,7 @@ class CollectionBuilder
      */
     public function setSort(string $field, string $sortOrder)
     {
-        $this->collection->setOrder($field, $sortOrder);
+        $this->productCollection->setOrder($field, $sortOrder);
         return $this;
     }
 
@@ -166,7 +156,7 @@ class CollectionBuilder
      */
     public function setPageSize($pageSize)
     {
-        $this->collection->setPageSize($pageSize);
+        $this->productCollection->setPageSize($pageSize);
         return $this;
     }
 
@@ -178,7 +168,7 @@ class CollectionBuilder
      */
     public function setCurrentPage($currentPage)
     {
-        $this->collection->setCurPage($currentPage);
+        $this->productCollection->setCurPage($currentPage);
         return $this;
     }
 
@@ -203,13 +193,23 @@ class CollectionBuilder
     }
 
     /**
+     * @param bool $flag
+     * @return $this
+     */
+    public function distinct(bool $flag)
+    {
+        $this->productCollection->distinct($flag);
+        return $this;
+    }
+
+    /**
      * Initializes the collection
      *
      * @return $this
      */
     public function init()
     {
-        $this->collection = $this->productCollectionFactory->create();
+        $this->productCollection->resetData();
         return $this;
     }
 
@@ -225,8 +225,8 @@ class CollectionBuilder
         return $this
             ->reset()
             ->withStore($store)
-            ->withAllAttributes()
-            ->setSort(EntityInterface::CREATED_AT, $this->collection::SORT_ORDER_DESC);
+            ->setSort(EntityInterface::CREATED_AT, $this->productCollection::SORT_ORDER_DESC)
+            ->distinct(true);
     }
 
     /**
