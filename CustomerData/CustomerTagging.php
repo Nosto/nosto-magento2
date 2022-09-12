@@ -80,11 +80,15 @@ class CustomerTagging extends HashedTagging implements SectionSourceInterface
                 return [];
             }
             $nostoCustomerId = $this->cookieManager->getCookie(NostoCustomer::COOKIE_NAME);
+            $hcid = "";
+            if ($nostoCustomerId) {
+                $hcid = $this->generateVisitorChecksum($nostoCustomerId);
+            }
             $data = [
                 'first_name' => $customer->getFirstName(),
                 'last_name' => $customer->getLastName(),
                 'email' => $customer->getEmail(),
-                'hcid' => $this->generateVisitorChecksum($nostoCustomerId),
+                'hcid' => $hcid,
                 'marketing_permission' => $customer->getMarketingPermission(),
                 'customer_reference' => $customer->getCustomerReference(),
                 'customer_group' => $customer->getCustomerGroup(),
