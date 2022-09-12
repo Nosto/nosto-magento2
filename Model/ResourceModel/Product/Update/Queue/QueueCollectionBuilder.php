@@ -49,19 +49,16 @@ use Nosto\Tagging\Api\Data\ProductUpdateQueueInterface;
 class QueueCollectionBuilder
 {
     /** @var QueueCollection */
-    private QueueCollection $collection;
-
-    /** @var QueueCollectionFactory */
-    private QueueCollectionFactory $queueCollectionFactory;
+    private QueueCollection $queueCollection;
 
     /**
      * Collection constructor.
-     * @param QueueCollectionFactory $productCollectionFactory
+     * @param QueueCollection $queueCollection
      */
     public function __construct(
-        QueueCollectionFactory $productCollectionFactory
+        QueueCollection $queueCollection
     ) {
-        $this->queueCollectionFactory = $productCollectionFactory;
+        $this->queueCollection = $queueCollection;
     }
 
     /**
@@ -69,7 +66,7 @@ class QueueCollectionBuilder
      */
     public function build(): QueueCollection
     {
-        return $this->collection;
+        return $this->queueCollection;
     }
 
     /**
@@ -80,7 +77,7 @@ class QueueCollectionBuilder
      */
     public function withStore(Store $store)
     {
-        $this->collection->addStoreFilter($store);
+        $this->queueCollection->addStoreFilter($store);
         return $this;
     }
 
@@ -91,7 +88,7 @@ class QueueCollectionBuilder
      */
     public function withStatusNew()
     {
-        $this->collection->addStatusFilter(ProductUpdateQueueInterface::STATUS_VALUE_NEW);
+        $this->queueCollection->addStatusFilter(ProductUpdateQueueInterface::STATUS_VALUE_NEW);
         return $this;
     }
 
@@ -107,7 +104,7 @@ class QueueCollectionBuilder
         $date = new DateTime('now');
         $interval = new DateInterval('PT' . $hrs . 'H');
         $date->sub($interval);
-        $this->collection->addCompletedBeforeFilter($date);
+        $this->queueCollection->addCompletedBeforeFilter($date);
         return $this->withStatusCompleted();
     }
 
@@ -118,7 +115,7 @@ class QueueCollectionBuilder
      */
     public function withStatusCompleted()
     {
-        $this->collection->addStatusFilter(ProductUpdateQueueInterface::STATUS_VALUE_DONE);
+        $this->queueCollection->addStatusFilter(ProductUpdateQueueInterface::STATUS_VALUE_DONE);
         return $this;
     }
 
@@ -130,7 +127,7 @@ class QueueCollectionBuilder
      */
     public function withIds(array $ids)
     {
-        $this->collection->addIdsFilter($ids);
+        $this->queueCollection->addIdsFilter($ids);
         return $this;
     }
 
@@ -143,7 +140,7 @@ class QueueCollectionBuilder
      */
     public function setSort(string $field, string $sortOrder)
     {
-        $this->collection->setOrder($field, $sortOrder);
+        $this->queueCollection->setOrder($field, $sortOrder);
         return $this;
     }
 
@@ -155,7 +152,7 @@ class QueueCollectionBuilder
      */
     public function setPageSize($pageSize)
     {
-        $this->collection->setPageSize($pageSize);
+        $this->queueCollection->setPageSize($pageSize);
         return $this;
     }
 
@@ -167,7 +164,7 @@ class QueueCollectionBuilder
      */
     public function setCurrentPage($currentPage)
     {
-        $this->collection->setCurPage($currentPage);
+        $this->queueCollection->setCurPage($currentPage);
         return $this;
     }
 
@@ -187,7 +184,7 @@ class QueueCollectionBuilder
      */
     public function init()
     {
-        $this->collection = $this->queueCollectionFactory->create();
+        $this->queueCollection->resetData();
         return $this;
     }
 
@@ -199,10 +196,10 @@ class QueueCollectionBuilder
      */
     public function initDefault(Store $store)
     {
-        /** @var QueueCollection $collection */
+        /** @var QueueCollection $queueCollection */
         return $this
             ->reset()
             ->withStore($store)
-            ->setSort(EntityInterface::CREATED_AT, $this->collection::SORT_ORDER_ASC);
+            ->setSort(EntityInterface::CREATED_AT, $this->queueCollection::SORT_ORDER_ASC);
     }
 }
