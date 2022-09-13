@@ -1,7 +1,11 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
-### Unreleased
-- Remove factories from ProductCollectionBuilder and QueueCollectionBuilder to reduce indexer memory footprint
+
+### 6.1.4
+* Remove factories from ProductCollectionBuilder and QueueCollectionBuilder to reduce indexer memory footprint
+
+### 6.1.3
+* Generate visitor checksum only if the CID cookie exists
 
 ### 6.1.2
 * Remove installation id and unique id from Magento module
