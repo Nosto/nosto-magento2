@@ -42,14 +42,13 @@ use Magento\Customer\Model\ResourceModel\Customer\CollectionFactory as CustomerC
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Setup\ModuleDataSetupInterface;
 use Magento\Framework\Setup\Patch\DataPatchInterface;
-use Magento\Framework\Setup\Patch\PatchVersionInterface;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Logger\Logger;
 use Exception;
 use Nosto\Tagging\Util\PagingIterator;
 use Nosto\Tagging\Util\Customer as CustomerUtil;
 
-class PopulateCustomerReference implements DataPatchInterface, PatchVersionInterface
+class PopulateCustomerReference implements DataPatchInterface
 {
     /** @var ModuleDataSetupInterface */
     private ModuleDataSetupInterface $moduleDataSetup;
@@ -137,13 +136,5 @@ class PopulateCustomerReference implements DataPatchInterface, PatchVersionInter
                 }
             }
         }
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public static function getVersion(): string
-    {
-        return '6.0.4';
     }
 }
