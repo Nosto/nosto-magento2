@@ -37,7 +37,7 @@
 namespace Nosto\Tagging\Model\Category;
 
 use Exception;
-use Magento\Catalog\Api\Data\CategoryInterface;
+use Magento\Catalog\Model\Category;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Store\Model\Store;
 use Nosto\Model\Category as NostoCategory;
@@ -67,11 +67,11 @@ class Builder
     }
 
     /**
-     * @param CategoryInterface $category
+     * @param Category $category
      * @param Store $store
      * @return NostoCategory|null
      */
-    public function build(CategoryInterface $category, Store $store)
+    public function build(Category $category, Store $store)
     {
         $nostoCategory = new NostoCategory();
         try {
