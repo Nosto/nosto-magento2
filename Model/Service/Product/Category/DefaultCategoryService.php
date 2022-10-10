@@ -38,7 +38,7 @@ namespace Nosto\Tagging\Model\Service\Product\Category;
 
 use Exception;
 use Magento\Catalog\Api\CategoryRepositoryInterface;
-use Magento\Catalog\Api\Data\CategoryInterface as Category;
+use Magento\Catalog\Model\Category;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\ResourceModel\Category\CollectionFactory;
 use Magento\Catalog\Model\ResourceModel\Category\Collection;
