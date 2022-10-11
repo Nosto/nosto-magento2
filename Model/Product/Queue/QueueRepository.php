@@ -110,18 +110,4 @@ class QueueRepository implements ProductUpdateQueueRepositoryInterface
         /** @phan-suppress-next-line PhanTypeMismatchArgument */
         $this->queueResource->delete($entry);
     }
-
-    /**
-     * @param ProductUpdateQueueInterface $entry
-     * @return bool
-     */
-    public function isEntryDuplicated(ProductUpdateQueueInterface $entry): bool
-    {
-        $collection = $this->queueCollectionFactory->create()
-            ->addStoreIdFilter($entry->getStoreId())
-            ->addStatusFilter($entry->getStatus())
-            ->addActionFilter($entry->getAction())
-            ->limitResults(1);
-        return (bool)$collection->getItems();
-    }
 }
