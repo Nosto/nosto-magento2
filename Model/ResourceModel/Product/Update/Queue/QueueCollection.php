@@ -122,20 +122,6 @@ class QueueCollection extends AbstractCollection
     }
 
     /**
-     * Filters collection by action
-     *
-     * @param string $action
-     * @return QueueCollection
-     */
-    public function addActionFilter(string $action): QueueCollection
-    {
-        return $this->addFieldToFilter(
-            ProductUpdateQueueInterface::ACTION,
-            ['eq' => $action]
-        );
-    }
-
-    /**
      * Filters collection by id (primary key)
      *
      * @param int $indexId
