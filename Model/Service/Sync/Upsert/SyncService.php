@@ -137,6 +137,7 @@ class SyncService extends AbstractService
         $account = $this->nostoHelperAccount->findAccount($store);
         $this->startBenchmark(self::BENCHMARK_SYNC_NAME, self::BENCHMARK_SYNC_BREAKPOINT);
 
+        $index = 0;
         $collection->setPageSize($this->apiBatchSize);
         $iterator = new PagingIterator($collection);
 
@@ -146,7 +147,13 @@ class SyncService extends AbstractService
             $this->checkMemoryConsumption('product sync');
             $op = new UpsertProduct($account, $this->nostoHelperUrl->getActiveDomain($store));
             $op->setResponseTimeout($this->apiTimeout);
-            $products = $this->productRepository->getByIds($page->getAllIds());
+            $products = $this->productRepository->getByIds(
+                $page->getAllIds(
+                    $this->apiBatchSize,
+                    ($page->getCurrentPageNumber() - 1) * $this->apiBatchSize
+                )
+            );
+            $index ++;
             /** @var Product $product */
             foreach ($products->getItems() as $product) {
                 $productIdsInBatch[] = $product->getId();
