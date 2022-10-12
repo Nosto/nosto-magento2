@@ -150,7 +150,7 @@ class SyncService extends AbstractService
             $products = $this->productRepository->getByIds(
                 $page->getAllIds(
                     $this->apiBatchSize,
-                    ($page->getCurrentPageNumber() - 1) * $this->apiBatchSize
+                    ($iterator->getCurrentPageNumber() - 1) * $this->apiBatchSize
                 )
             );
             $index ++;
