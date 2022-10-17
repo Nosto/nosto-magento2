@@ -1,6 +1,9 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
 
+### 6.1.6
+* Fix iteration on API sync service
+
 ### 6.1.5
 * Remove check for duplicate batch entries in the product update queue table
 
