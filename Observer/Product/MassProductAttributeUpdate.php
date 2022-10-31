@@ -42,9 +42,11 @@ use Magento\Framework\Event\ObserverInterface;
 use Magento\Store\Model\Store;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
+use Nosto\Tagging\Model\Indexer\QueueIndexer;
 use Nosto\Tagging\Model\ResourceModel\Magento\Product\Collection as ProductCollection;
 use Nosto\Tagging\Model\ResourceModel\Magento\Product\CollectionBuilder;
 use Nosto\Tagging\Model\Service\Update\QueueService;
+use Magento\Framework\Indexer\IndexerRegistry;
 
 class MassProductAttributeUpdate implements ObserverInterface
 {
@@ -61,22 +63,28 @@ class MassProductAttributeUpdate implements ObserverInterface
     /** @var NostoHelperAccount */
     private NostoHelperAccount $nostoHelperAccount;
 
+    /** @var IndexerRegistry */
+    private IndexerRegistry $indexerRegistry;
+
     /**
      * MassProductAttributeUpdate constructor.
      * @param QueueService $queueService
      * @param CollectionBuilder $productCollectionBuilder
      * @param NostoHelperAccount $nostoHelperAccount
+     * @param IndexerRegistry $indexerRegistry
      * @param NostoLogger $logger
      */
     public function __construct(
         QueueService $queueService,
         CollectionBuilder $productCollectionBuilder,
         NostoHelperAccount $nostoHelperAccount,
+        IndexerRegistry $indexerRegistry,
         NostoLogger $logger
     ) {
         $this->queueService = $queueService;
         $this->productCollectionBuilder = $productCollectionBuilder;
         $this->nostoHelperAccount = $nostoHelperAccount;
+        $this->indexerRegistry = $indexerRegistry;
         $this->logger = $logger;
     }
 
@@ -85,6 +93,10 @@ class MassProductAttributeUpdate implements ObserverInterface
      */
     public function execute(Observer $observer)
     {
+        if ($this->indexerRegistry->get(QueueIndexer::INDEXER_ID)->isScheduled()) {
+            return;
+        }
+
         $ids = $observer->getData('product_ids');
 
         if (!is_array($ids)) {

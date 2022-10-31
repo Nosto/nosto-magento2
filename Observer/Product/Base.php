@@ -45,7 +45,7 @@ use Magento\Framework\Indexer\IndexerInterface;
 use Magento\Framework\Indexer\IndexerRegistry;
 use Magento\Framework\Module\Manager as ModuleManager;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
-use Nosto\Tagging\Model\Indexer\QueueIndexer as QueueIndexer;
+use Nosto\Tagging\Model\Indexer\QueueIndexer;
 
 abstract class Base implements ObserverInterface
 {
