@@ -108,6 +108,20 @@ class QueueCollection extends AbstractCollection
     }
 
     /**
+     * Filters collection by productIds
+     *
+     * @param string $productIds
+     * @return QueueCollection
+     */
+    public function addProductIdsFilter(string $productIds): QueueCollection
+    {
+        return $this->addFieldToFilter(
+            ProductUpdateQueueInterface::PRODUCT_IDS,
+            ['eq' => $productIds]
+        );
+    }
+
+    /**
      * Filters collection by completed by
      *
      * @param DateTimeInterface $dateTime

@@ -113,15 +113,18 @@ class QueueRepository implements ProductUpdateQueueRepositoryInterface
 
     /**
      * @param ProductUpdateQueueInterface $entry
+     * @param array $productIds
      * @return bool
      */
-    public function isEntryDuplicated(ProductUpdateQueueInterface $entry): bool
+    public function isEntryDuplicated(ProductUpdateQueueInterface $entry, array $productIds): bool
     {
         $collection = $this->queueCollectionFactory->create()
             ->addStoreIdFilter($entry->getStoreId())
             ->addStatusFilter($entry->getStatus())
             ->addActionFilter($entry->getAction())
+            ->addProductIdsFilter(json_encode($productIds))
             ->limitResults(1);
+
         return (bool)$collection->getItems();
     }
 }
