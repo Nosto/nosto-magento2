@@ -127,8 +127,8 @@ class QueueService extends AbstractService
             );
             /** @var $queueEntryProductIds array */
             $queueEntryProductIds = $queueEntry->getProductIds();
-            /** @phan-suppress-next-next-line PhanTypeMismatchArgumentProbablyReal */
             if (!empty($queueEntryProductIds)
+                /** @phan-suppress-next-next-line PhanTypeMismatchArgumentProbablyReal */
                 && !$this->queueRepository->isEntryDuplicated($queueEntry, $queueEntryProductIds)
             ) {
                 $this->queueRepository->save($queueEntry); // @codingStandardsIgnoreLine
@@ -158,8 +158,8 @@ class QueueService extends AbstractService
             );
             /** @var $queueEntryProductIds array */
             $queueEntryProductIds = $queueEntry->getProductIds();
-            /** @phan-suppress-next-next-line PhanTypeMismatchArgumentProbablyReal */
             if (!empty($queueEntryProductIds)
+                /** @phan-suppress-next-next-line PhanTypeMismatchArgumentProbablyReal */
                 && !$this->queueRepository->isEntryDuplicated($queueEntry, $queueEntryProductIds)
             ) {
                 $this->queueRepository->save($queueEntry); // @codingStandardsIgnoreLine
