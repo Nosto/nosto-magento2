@@ -38,7 +38,6 @@ namespace Nosto\Tagging\Model\Service\Update;
 
 use Exception;
 use Magento\Catalog\Api\Data\ProductInterface;
-use Magento\Framework\Exception\AlreadyExistsException;
 use Magento\Store\Model\Store;
 use Nosto\NostoException;
 use Nosto\Tagging\Exception\ParentProductDisabledException;
@@ -129,7 +128,6 @@ class QueueService extends AbstractService
      *
      * @param $productIds
      * @param Store $store
-     * @throws AlreadyExistsException
      */
     public function addIdsToDeleteQueue($productIds, Store $store)
     {
