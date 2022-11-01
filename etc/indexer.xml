@@ -38,8 +38,4 @@
         <title>Nosto Product Queue</title>
         <description>Populates queue for product ids to be sent to Nosto</description>
     </indexer>
-    <indexer id="nosto_index_product_queue_processor" view_id="nosto_index_product_queue_processor" class="Nosto\Tagging\Model\Indexer\QueueProcessorIndexer">
-        <title>Nosto Product Queue Processor</title>
-        <description>Processes the update queue</description>
-    </indexer>
 </config>

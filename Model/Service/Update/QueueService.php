@@ -45,55 +45,54 @@ use Nosto\Tagging\Exception\ParentProductDisabledException;
 use Nosto\Tagging\Helper\Account as NostoAccountHelper;
 use Nosto\Tagging\Helper\Data as NostoDataHelper;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
-use Nosto\Tagging\Model\Product\Queue\QueueBuilder;
-use Nosto\Tagging\Model\Product\Queue\QueueRepository;
 use Nosto\Tagging\Model\Product\Repository as NostoProductRepository;
 use Nosto\Tagging\Model\ResourceModel\Magento\Product\Collection as ProductCollection;
 use Nosto\Tagging\Model\Service\AbstractService;
 use Nosto\Tagging\Util\PagingIterator;
+use Nosto\Tagging\Model\Service\Sync\BulkPublisherInterface;
 
 class QueueService extends AbstractService
 {
-    /** @var QueueRepository  */
-    private QueueRepository $queueRepository;
-
-    /** @var QueueBuilder */
-    private QueueBuilder $queueBuilder;
-
     /** @var NostoProductRepository $nostoProductRepository */
     private NostoProductRepository $nostoProductRepository;
 
     /** @var int $batchSize */
     private int $batchSize;
 
+    /** @var BulkPublisherInterface */
+    private BulkPublisherInterface $upsertBulkPublisher;
+
+    /** @var BulkPublisherInterface */
+    private BulkPublisherInterface $deleteBulkPublisher;
+
     /**
      * QueueService constructor.
-     * @param QueueRepository $queueRepository
-     * @param QueueBuilder $queueBuilder
      * @param NostoLogger $logger
      * @param NostoDataHelper $nostoDataHelper
      * @param NostoAccountHelper $nostoAccountHelper
      * @param NostoProductRepository $nostoProductRepository
+     * @param BulkPublisherInterface $upsertBulkPublisher
+     * @param BulkPublisherInterface $deleteBulkPublisher
      * @param int $batchSize
      */
     public function __construct(
-        QueueRepository $queueRepository,
-        QueueBuilder $queueBuilder,
         NostoLogger $logger,
         NostoDataHelper $nostoDataHelper,
         NostoAccountHelper $nostoAccountHelper,
         NostoProductRepository $nostoProductRepository,
+        BulkPublisherInterface $upsertBulkPublisher,
+        BulkPublisherInterface $deleteBulkPublisher,
         int $batchSize
     ) {
         parent::__construct($nostoDataHelper, $nostoAccountHelper, $logger);
-        $this->queueRepository = $queueRepository;
-        $this->queueBuilder = $queueBuilder;
         $this->nostoProductRepository = $nostoProductRepository;
+        $this->upsertBulkPublisher = $upsertBulkPublisher;
+        $this->deleteBulkPublisher = $deleteBulkPublisher;
         $this->batchSize = $batchSize;
     }
 
     /**
-     * Sets the products into the update queue
+     * Sets the products into the message queue
      *
      * @param ProductCollection $collection
      * @param Store $store
@@ -121,13 +120,7 @@ class QueueService extends AbstractService
         );
         /** @var ProductCollection $page */
         foreach ($iterator as $page) {
-            $queueEntry = $this->queueBuilder->buildForUpsert(
-                $store,
-                $this->toParentProductIds($page)
-            );
-            if (!empty($queueEntry->getProductIds())) {
-                $this->queueRepository->save($queueEntry); // @codingStandardsIgnoreLine
-            }
+            $this->upsertBulkPublisher->execute($store->getId(), $this->toParentProductIds($page));
         }
     }
 
@@ -145,15 +138,8 @@ class QueueService extends AbstractService
             return;
         }
         $batchedIds = array_chunk($productIds, $this->batchSize);
-        /** @var ProductCollection $page */
         foreach ($batchedIds as $idBatch) {
-            $queueEntry = $this->queueBuilder->buildForDeletion(
-                $store,
-                $idBatch
-            );
-            if (!empty($queueEntry->getProductIds())) {
-                $this->queueRepository->save($queueEntry); // @codingStandardsIgnoreLine
-            }
+            $this->deleteBulkPublisher->execute($store->getId(), $idBatch);
         }
     }
 
@@ -161,7 +147,7 @@ class QueueService extends AbstractService
      * @param ProductCollection $collection
      * @return array
      */
-    private function toParentProductIds(ProductCollection $collection)
+    private function toParentProductIds(ProductCollection $collection): array
     {
         $productIds = [];
         /** @var ProductInterface $product */
