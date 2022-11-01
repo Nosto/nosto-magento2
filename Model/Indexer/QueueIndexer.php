@@ -37,7 +37,6 @@
 namespace Nosto\Tagging\Model\Indexer;
 
 use Exception;
-use Magento\Framework\Exception\AlreadyExistsException;
 use Magento\Indexer\Model\ProcessManager;
 use Magento\Store\Model\App\Emulation;
 use Magento\Store\Model\Store;
@@ -56,11 +55,11 @@ use Symfony\Component\Console\Input\InputInterface;
 
 /**
  * Class QueueIndexer
- * Fetches to be indexed products from CL tables and create queues entry
- * to subsequently be sent to the message queue
+ * Fetches to be indexed products from CL tables and create entries in the message queue
  */
 class QueueIndexer extends AbstractIndexer
 {
+    // @TODO: Rename this to ProductIndexer
     public const INDEXER_ID = 'nosto_index_product_queue';
 
     /** @var QueueService */
@@ -139,7 +138,6 @@ class QueueIndexer extends AbstractIndexer
      * @param Store $store
      * @param array $givenIds
      * @throws NostoException
-     * @throws AlreadyExistsException
      */
     private function handleDeletedProducts(ProductCollection $existingCollection, Store $store, array $givenIds)
     {
