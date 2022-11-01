@@ -175,7 +175,7 @@
     <type name="Magento\Indexer\Console\Command\IndexerSetDimensionsModeCommand">
         <arguments>
             <argument name="dimensionSwitchers" xsi:type="array">
-                <item name="nosto_index_product_queue" xsi:type="object">
+                <item name="nosto_index_product" xsi:type="object">
                     Nosto\Tagging\Model\Indexer\Dimensions\Queue\ModeSwitcher
                 </item>
             </argument>
@@ -184,11 +184,11 @@
     <type name="Magento\Indexer\Console\Command\IndexerShowDimensionsModeCommand">
         <arguments>
             <argument name="indexers" xsi:type="array">
-                <item name="nosto_index_product_queue" xsi:type="string">nosto_index_product_queue</item>
+                <item name="nosto_index_product" xsi:type="string">nosto_index_product</item>
             </argument>
         </arguments>
     </type>
-    <type name="Nosto\Tagging\Model\Indexer\QueueIndexer">
+    <type name="Nosto\Tagging\Model\Indexer\ProductIndexer">
         <arguments>
             <argument name="dimensionProvider" xsi:type="object" shared="false">
                 Nosto\Tagging\Model\Indexer\Dimensions\StoreDimensionProvider

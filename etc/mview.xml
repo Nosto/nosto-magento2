@@ -34,7 +34,7 @@
   ~
   -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Mview/etc/mview.xsd">
-    <view id="nosto_index_product_queue" class="Nosto\Tagging\Model\Indexer\QueueIndexer" group="indexer">
+    <view id="nosto_index_product" class="Nosto\Tagging\Model\Indexer\ProductIndexer" group="indexer">
         <subscriptions>
             <!-- basic product information -->
             <table name="catalog_product_entity" entity_column="entity_id" />

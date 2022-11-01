@@ -54,13 +54,12 @@ use Nosto\Tagging\Util\PagingIterator;
 use Symfony\Component\Console\Input\InputInterface;
 
 /**
- * Class QueueIndexer
+ * Class ProductIndexer
  * Fetches to be indexed products from CL tables and create entries in the message queue
  */
-class QueueIndexer extends AbstractIndexer
+class ProductIndexer extends AbstractIndexer
 {
-    // @TODO: Rename this to ProductIndexer
-    public const INDEXER_ID = 'nosto_index_product_queue';
+    public const INDEXER_ID = 'nosto_index_product';
 
     /** @var QueueService */
     private QueueService $queueService;
