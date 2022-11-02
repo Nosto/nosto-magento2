@@ -50,7 +50,7 @@ class MassProductAttributeUpdate implements ObserverInterface
 {
 
     /** @var ProductUpdateService */
-    private ProductUpdateService $queueService;
+    private ProductUpdateService $productUpdateService;
 
     /** @var CollectionBuilder */
     private CollectionBuilder $productCollectionBuilder;
@@ -63,18 +63,18 @@ class MassProductAttributeUpdate implements ObserverInterface
 
     /**
      * MassProductAttributeUpdate constructor.
-     * @param ProductUpdateService $queueService
+     * @param ProductUpdateService $productUpdateService
      * @param CollectionBuilder $productCollectionBuilder
      * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoLogger $logger
      */
     public function __construct(
-        ProductUpdateService $queueService,
+        ProductUpdateService $productUpdateService,
         CollectionBuilder    $productCollectionBuilder,
         NostoHelperAccount   $nostoHelperAccount,
         NostoLogger          $logger
     ) {
-        $this->queueService = $queueService;
+        $this->productUpdateService = $productUpdateService;
         $this->productCollectionBuilder = $productCollectionBuilder;
         $this->nostoHelperAccount = $nostoHelperAccount;
         $this->logger = $logger;
@@ -106,7 +106,7 @@ class MassProductAttributeUpdate implements ObserverInterface
     {
         $collection = $this->getCollection($store, $ids);
         try {
-            $this->queueService->addCollectionToUpdateMessageQueue(
+            $this->productUpdateService->addCollectionToUpdateMessageQueue(
                 $collection,
                 $store
             );
