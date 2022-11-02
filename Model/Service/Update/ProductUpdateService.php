@@ -50,7 +50,7 @@ use Nosto\Tagging\Model\Service\AbstractService;
 use Nosto\Tagging\Util\PagingIterator;
 use Nosto\Tagging\Model\Service\Sync\BulkPublisherInterface;
 
-class QueueService extends AbstractService
+class ProductUpdateService extends AbstractService
 {
     /** @var NostoProductRepository $nostoProductRepository */
     private NostoProductRepository $nostoProductRepository;

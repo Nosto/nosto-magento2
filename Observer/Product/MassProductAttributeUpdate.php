@@ -44,13 +44,13 @@ use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\ResourceModel\Magento\Product\Collection as ProductCollection;
 use Nosto\Tagging\Model\ResourceModel\Magento\Product\CollectionBuilder;
-use Nosto\Tagging\Model\Service\Update\QueueService;
+use Nosto\Tagging\Model\Service\Update\ProductUpdateService;
 
 class MassProductAttributeUpdate implements ObserverInterface
 {
 
-    /** @var QueueService */
-    private QueueService $queueService;
+    /** @var ProductUpdateService */
+    private ProductUpdateService $queueService;
 
     /** @var CollectionBuilder */
     private CollectionBuilder $productCollectionBuilder;
@@ -63,16 +63,16 @@ class MassProductAttributeUpdate implements ObserverInterface
 
     /**
      * MassProductAttributeUpdate constructor.
-     * @param QueueService $queueService
+     * @param ProductUpdateService $queueService
      * @param CollectionBuilder $productCollectionBuilder
      * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoLogger $logger
      */
     public function __construct(
-        QueueService $queueService,
-        CollectionBuilder $productCollectionBuilder,
-        NostoHelperAccount $nostoHelperAccount,
-        NostoLogger $logger
+        ProductUpdateService $queueService,
+        CollectionBuilder    $productCollectionBuilder,
+        NostoHelperAccount   $nostoHelperAccount,
+        NostoLogger          $logger
     ) {
         $this->queueService = $queueService;
         $this->productCollectionBuilder = $productCollectionBuilder;

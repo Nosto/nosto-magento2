@@ -223,7 +223,7 @@
             <argument name="deleteBatchSize" xsi:type="number">100</argument>
         </arguments>
     </type>
-    <type name="Nosto\Tagging\Model\Service\Update\QueueService">
+    <type name="Nosto\Tagging\Model\Service\Update\ProductUpdateService">
         <arguments>
             <argument name="batchSize" xsi:type="number">500</argument>
         </arguments>

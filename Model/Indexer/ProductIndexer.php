@@ -49,7 +49,7 @@ use Nosto\Tagging\Model\Indexer\Dimensions\StoreDimensionProvider;
 use Nosto\Tagging\Model\ResourceModel\Magento\Product\Collection as ProductCollection;
 use Nosto\Tagging\Model\ResourceModel\Magento\Product\CollectionBuilder;
 use Nosto\Tagging\Model\Service\Indexer\IndexerStatusServiceInterface;
-use Nosto\Tagging\Model\Service\Update\QueueService;
+use Nosto\Tagging\Model\Service\Update\ProductUpdateService;
 use Nosto\Tagging\Util\PagingIterator;
 use Symfony\Component\Console\Input\InputInterface;
 
@@ -61,8 +61,8 @@ class ProductIndexer extends AbstractIndexer
 {
     public const INDEXER_ID = 'nosto_index_product';
 
-    /** @var QueueService */
-    private QueueService $queueService;
+    /** @var ProductUpdateService */
+    private ProductUpdateService $queueService;
 
     /** @var CollectionBuilder */
     private CollectionBuilder $productCollectionBuilder;
@@ -73,7 +73,7 @@ class ProductIndexer extends AbstractIndexer
     /**
      * Invalidate constructor.
      * @param NostoHelperScope $nostoHelperScope
-     * @param QueueService $queueService
+     * @param ProductUpdateService $queueService
      * @param NostoLogger $logger
      * @param CollectionBuilder $productCollectionBuilder
      * @param QueueModeSwitcher $modeSwitcher
@@ -84,15 +84,15 @@ class ProductIndexer extends AbstractIndexer
      * @param IndexerStatusServiceInterface $indexerStatusService
      */
     public function __construct(
-        NostoHelperScope $nostoHelperScope,
-        QueueService $queueService,
-        NostoLogger $logger,
-        CollectionBuilder $productCollectionBuilder,
-        QueueModeSwitcher $modeSwitcher,
-        StoreDimensionProvider $dimensionProvider,
-        Emulation $storeEmulation,
-        ProcessManager $processManager,
-        InputInterface $input,
+        NostoHelperScope              $nostoHelperScope,
+        ProductUpdateService          $queueService,
+        NostoLogger                   $logger,
+        CollectionBuilder             $productCollectionBuilder,
+        QueueModeSwitcher             $modeSwitcher,
+        StoreDimensionProvider        $dimensionProvider,
+        Emulation                     $storeEmulation,
+        ProcessManager                $processManager,
+        InputInterface                $input,
         IndexerStatusServiceInterface $indexerStatusService
     ) {
         $this->queueService = $queueService;
