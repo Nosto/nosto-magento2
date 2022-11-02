@@ -55,14 +55,14 @@ use Symfony\Component\Console\Input\InputInterface;
 
 /**
  * Class ProductIndexer
- * Fetches to be indexed products from CL tables and create entries in the message queue
+ * Fetches product ID's from CL tables and create entries in the message queue
  */
 class ProductIndexer extends AbstractIndexer
 {
     public const INDEXER_ID = 'nosto_index_product';
 
     /** @var ProductUpdateService */
-    private ProductUpdateService $queueService;
+    private ProductUpdateService $productUpdateService;
 
     /** @var CollectionBuilder */
     private CollectionBuilder $productCollectionBuilder;
@@ -73,7 +73,7 @@ class ProductIndexer extends AbstractIndexer
     /**
      * Invalidate constructor.
      * @param NostoHelperScope $nostoHelperScope
-     * @param ProductUpdateService $queueService
+     * @param ProductUpdateService $productUpdateService
      * @param NostoLogger $logger
      * @param CollectionBuilder $productCollectionBuilder
      * @param QueueModeSwitcher $modeSwitcher
@@ -85,7 +85,7 @@ class ProductIndexer extends AbstractIndexer
      */
     public function __construct(
         NostoHelperScope              $nostoHelperScope,
-        ProductUpdateService          $queueService,
+        ProductUpdateService          $productUpdateService,
         NostoLogger                   $logger,
         CollectionBuilder             $productCollectionBuilder,
         QueueModeSwitcher             $modeSwitcher,
@@ -95,7 +95,7 @@ class ProductIndexer extends AbstractIndexer
         InputInterface                $input,
         IndexerStatusServiceInterface $indexerStatusService
     ) {
-        $this->queueService = $queueService;
+        $this->productUpdateService = $productUpdateService;
         $this->productCollectionBuilder = $productCollectionBuilder;
         $this->modeSwitcher = $modeSwitcher;
         parent::__construct(
@@ -125,7 +125,7 @@ class ProductIndexer extends AbstractIndexer
     public function doIndex(Store $store, array $ids = [])
     {
         $collection = $this->getCollection($store, $ids);
-        $this->queueService->addCollectionToUpsertQueue(
+        $this->productUpdateService->addCollectionToUpdateMessageQueue(
             $collection,
             $store
         );
@@ -158,7 +158,7 @@ class ProductIndexer extends AbstractIndexer
                 }
             }
             if (count($removed) > 0) {
-                $this->queueService->addIdsToDeleteQueue($removed, $store);
+                $this->productUpdateService->addIdsToDeleteMessageQueue($removed, $store);
             }
         }
     }

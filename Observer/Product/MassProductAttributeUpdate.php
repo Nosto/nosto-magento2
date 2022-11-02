@@ -106,7 +106,7 @@ class MassProductAttributeUpdate implements ObserverInterface
     {
         $collection = $this->getCollection($store, $ids);
         try {
-            $this->queueService->addCollectionToUpsertQueue(
+            $this->queueService->addCollectionToUpdateMessageQueue(
                 $collection,
                 $store
             );

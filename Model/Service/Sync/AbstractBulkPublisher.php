@@ -103,7 +103,7 @@ abstract class AbstractBulkPublisher implements BulkPublisherInterface
     public function execute(int $storeId, array $productIds = [])
     {
         if (!empty($productIds)) {
-            $this->publishCollectionToQueue($storeId, $productIds);
+            $this->publishCollectionToMessageQueue($storeId, $productIds);
         }
     }
 
@@ -113,7 +113,7 @@ abstract class AbstractBulkPublisher implements BulkPublisherInterface
      * @throws LocalizedException
      * @throws Exception
      */
-    private function publishCollectionToQueue(
+    private function publishCollectionToMessageQueue(
         $storeId,
         $productIds
     ) {

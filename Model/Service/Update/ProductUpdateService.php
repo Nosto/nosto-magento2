@@ -65,7 +65,7 @@ class ProductUpdateService extends AbstractService
     private BulkPublisherInterface $deleteBulkPublisher;
 
     /**
-     * QueueService constructor.
+     * ProductUpdateService constructor.
      * @param NostoLogger $logger
      * @param NostoDataHelper $nostoDataHelper
      * @param NostoAccountHelper $nostoAccountHelper
@@ -98,7 +98,7 @@ class ProductUpdateService extends AbstractService
      * @throws NostoException
      * @throws Exception
      */
-    public function addCollectionToUpsertQueue(ProductCollection $collection, Store $store)
+    public function addCollectionToUpdateMessageQueue(ProductCollection $collection, Store $store)
     {
         if ($this->getAccountHelper()->findAccount($store) === null) {
             $this->logDebugWithStore('No nosto account found for the store', $store);
@@ -108,7 +108,7 @@ class ProductUpdateService extends AbstractService
         $iterator = new PagingIterator($collection);
         $this->getLogger()->debugWithSource(
             sprintf(
-                'Adding %d products to queue for store %s - batch size is %s, total amount of pages %d',
+                'Adding %d products to message queue for store %s - batch size is %s, total amount of pages %d',
                 $collection->getSize(),
                 $store->getCode(),
                 $this->batchSize,
@@ -124,12 +124,12 @@ class ProductUpdateService extends AbstractService
     }
 
     /**
-     * Sets the product ids into the delete queue
+     * Sets the product ids into the delete message queue
      *
      * @param $productIds
      * @param Store $store
      */
-    public function addIdsToDeleteQueue($productIds, Store $store)
+    public function addIdsToDeleteMessageQueue($productIds, Store $store)
     {
         if ($this->getAccountHelper()->findAccount($store) === null) {
             $this->logDebugWithStore('No nosto account found for the store', $store);
