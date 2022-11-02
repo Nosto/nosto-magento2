@@ -46,13 +46,27 @@
             <table name="catalog_product_entity_text" entity_column="entity_id" />
             <table name="catalog_product_entity_tier_price" entity_column="entity_id" />
             <table name="catalog_product_entity_varchar" entity_column="entity_id" />
-            <table name="catalog_product_website" entity_column="product_id" />
-            <table name="catalog_category_product" entity_column="product_id" />
+
+            <!-- sku -->
+            <table name="catalog_product_super_link" entity_column="product_id" />
+
+            <!-- inventory level -->
             <table name="cataloginventory_stock_item" entity_column="product_id" />
+
+            <!-- price -->
+            <table name="catalog_product_index_price" entity_column="entity_id" />
+            <table name="catalogrule_product_price" entity_column="product_id" />
+
+            <!-- category -->
+            <table name="catalog_category_product" entity_column="product_id" />
+
+            <!-- website -->
+            <table name="catalog_product_website" entity_column="product_id" />
         </subscriptions>
     </view>
     <view id="nosto_index_product_queue_processor" class="Nosto\Tagging\Model\Indexer\QueueProcessorIndexer" group="indexer">
         <subscriptions>
+            <!-- basic product information -->
             <table name="nosto_tagging_product_update_queue" entity_column="id" />
         </subscriptions>
     </view>
