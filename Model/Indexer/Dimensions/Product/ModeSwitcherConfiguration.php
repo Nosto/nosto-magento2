@@ -34,7 +34,7 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Indexer\Dimensions\Queue;
+namespace Nosto\Tagging\Model\Indexer\Dimensions\Product;
 
 use InvalidArgumentException;
 use Magento\Framework\App\Cache\TypeListInterface;

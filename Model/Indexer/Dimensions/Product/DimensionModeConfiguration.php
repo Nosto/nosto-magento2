@@ -34,7 +34,7 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Indexer\Dimensions\Queue;
+namespace Nosto\Tagging\Model\Indexer\Dimensions\Product;
 
 use Nosto\Tagging\Model\Indexer\Dimensions\AbstractDimensionModeConfiguration;
 

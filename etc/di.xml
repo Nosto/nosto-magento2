@@ -176,7 +176,7 @@
         <arguments>
             <argument name="dimensionSwitchers" xsi:type="array">
                 <item name="nosto_index_product" xsi:type="object">
-                    Nosto\Tagging\Model\Indexer\Dimensions\Queue\ModeSwitcher
+                    Nosto\Tagging\Model\Indexer\Dimensions\Product\ModeSwitcher
                 </item>
             </argument>
         </arguments>
