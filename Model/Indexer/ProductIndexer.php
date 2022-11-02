@@ -43,7 +43,7 @@ use Magento\Store\Model\Store;
 use Nosto\NostoException;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
-use Nosto\Tagging\Model\Indexer\Dimensions\Product\ModeSwitcher as QueueModeSwitcher;
+use Nosto\Tagging\Model\Indexer\Dimensions\Product\ModeSwitcher as ProductModeSwitcher;
 use Nosto\Tagging\Model\Indexer\Dimensions\ModeSwitcherInterface;
 use Nosto\Tagging\Model\Indexer\Dimensions\StoreDimensionProvider;
 use Nosto\Tagging\Model\ResourceModel\Magento\Product\Collection as ProductCollection;
@@ -67,8 +67,8 @@ class ProductIndexer extends AbstractIndexer
     /** @var CollectionBuilder */
     private CollectionBuilder $productCollectionBuilder;
 
-    /** @var QueueModeSwitcher */
-    private QueueModeSwitcher $modeSwitcher;
+    /** @var ProductModeSwitcher */
+    private ProductModeSwitcher $modeSwitcher;
 
     /**
      * Invalidate constructor.
@@ -76,7 +76,7 @@ class ProductIndexer extends AbstractIndexer
      * @param ProductUpdateService $productUpdateService
      * @param NostoLogger $logger
      * @param CollectionBuilder $productCollectionBuilder
-     * @param QueueModeSwitcher $modeSwitcher
+     * @param ProductModeSwitcher $modeSwitcher
      * @param StoreDimensionProvider $dimensionProvider
      * @param Emulation $storeEmulation
      * @param ProcessManager $processManager
@@ -88,7 +88,7 @@ class ProductIndexer extends AbstractIndexer
         ProductUpdateService          $productUpdateService,
         NostoLogger                   $logger,
         CollectionBuilder             $productCollectionBuilder,
-        QueueModeSwitcher             $modeSwitcher,
+        ProductModeSwitcher           $modeSwitcher,
         StoreDimensionProvider        $dimensionProvider,
         Emulation                     $storeEmulation,
         ProcessManager                $processManager,
