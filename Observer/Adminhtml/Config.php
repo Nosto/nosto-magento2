@@ -47,7 +47,7 @@ use Nosto\Tagging\Helper\Account as NostoAccountHelper;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
-use Nosto\Tagging\Model\Indexer\QueueIndexer;
+use Nosto\Tagging\Model\Indexer\ProductIndexer;
 
 /**
  * Observer to mark all indexed products as dirty if settings have changed
@@ -69,8 +69,8 @@ class Config implements ObserverInterface
     /** @var NostoAccountHelper  */
     private NostoAccountHelper $nostoAccountHelper;
 
-    /** var QueueIndexer */
-    private QueueIndexer $queueIndexer;
+    /** var ProductIndexer */
+    private ProductIndexer $productIndexer;
 
     /** @var IndexerRegistry */
     private IndexerRegistry $indexerRegistry;
@@ -83,7 +83,7 @@ class Config implements ObserverInterface
      * @param NostoHelperScope $nostoHelperScope
      * @param NostoAccountHelper $nostoAccountHelper
      * @param IndexerRegistry $indexerRegistry
-     * @param QueueIndexer $queueIndexer
+     * @param ProductIndexer $productIndexer
      */
     public function __construct(
         NostoLogger $logger,
@@ -91,13 +91,13 @@ class Config implements ObserverInterface
         NostoHelperScope $nostoHelperScope,
         NostoAccountHelper $nostoAccountHelper,
         IndexerRegistry $indexerRegistry,
-        QueueIndexer $queueIndexer
+        ProductIndexer $productIndexer
     ) {
         $this->logger = $logger;
         $this->moduleManager = $moduleManager;
         $this->nostoHelperScope = $nostoHelperScope;
         $this->nostoAccountHelper = $nostoAccountHelper;
-        $this->queueIndexer = $queueIndexer;
+        $this->productIndexer = $productIndexer;
         $this->indexerRegistry = $indexerRegistry;
     }
 
@@ -155,7 +155,7 @@ class Config implements ObserverInterface
                 $this
             );
 
-            $indexer = $this->indexerRegistry->get(QueueIndexer::INDEXER_ID);
+            $indexer = $this->indexerRegistry->get(ProductIndexer::INDEXER_ID);
             if (!$indexer->isScheduled()) {
                 $this->logger->infoWithSource(
                     'Not performing full Nosto reindex as the indexer is not scheduled',
@@ -164,7 +164,7 @@ class Config implements ObserverInterface
                 );
             } else {
                 try {
-                    $this->queueIndexer->doIndex($store);
+                    $this->productIndexer->doIndex($store);
                 } catch (Exception $e) {
                     $this->logger->exception($e);
                 }

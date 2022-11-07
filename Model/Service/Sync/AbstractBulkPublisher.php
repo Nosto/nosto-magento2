@@ -103,7 +103,7 @@ abstract class AbstractBulkPublisher implements BulkPublisherInterface
     public function execute(int $storeId, array $productIds = [])
     {
         if (!empty($productIds)) {
-            $this->publishCollectionToQueue($storeId, $productIds);
+            $this->publishCollectionToMessageQueue($storeId, $productIds);
         }
     }
 
@@ -113,7 +113,7 @@ abstract class AbstractBulkPublisher implements BulkPublisherInterface
      * @throws LocalizedException
      * @throws Exception
      */
-    private function publishCollectionToQueue(
+    private function publishCollectionToMessageQueue(
         $storeId,
         $productIds
     ) {
@@ -153,9 +153,6 @@ abstract class AbstractBulkPublisher implements BulkPublisherInterface
             $bulkDescription
         );
         if (!$result) {
-            /**
-             * Argument is of type string but array is expected
-             */
             /** @phan-suppress-next-line PhanTypeMismatchArgumentProbablyReal */
             throw new LocalizedException(__('Something went wrong while processing the request.'));
         }
@@ -166,10 +163,7 @@ abstract class AbstractBulkPublisher implements BulkPublisherInterface
      */
     private function canUseAsyncOperations(): bool
     {
-        if ($this->manager->isEnabled('Magento_AsynchronousOperations')) {
-            return true;
-        }
-        return false;
+        return $this->manager->isEnabled('Magento_AsynchronousOperations');
     }
 
     /**

@@ -37,48 +37,46 @@
 namespace Nosto\Tagging\Model\Indexer;
 
 use Exception;
-use Magento\Framework\Exception\AlreadyExistsException;
 use Magento\Indexer\Model\ProcessManager;
 use Magento\Store\Model\App\Emulation;
 use Magento\Store\Model\Store;
 use Nosto\NostoException;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
-use Nosto\Tagging\Model\Indexer\Dimensions\Queue\ModeSwitcher as QueueModeSwitcher;
+use Nosto\Tagging\Model\Indexer\Dimensions\Product\ModeSwitcher as ProductModeSwitcher;
 use Nosto\Tagging\Model\Indexer\Dimensions\ModeSwitcherInterface;
 use Nosto\Tagging\Model\Indexer\Dimensions\StoreDimensionProvider;
 use Nosto\Tagging\Model\ResourceModel\Magento\Product\Collection as ProductCollection;
 use Nosto\Tagging\Model\ResourceModel\Magento\Product\CollectionBuilder;
 use Nosto\Tagging\Model\Service\Indexer\IndexerStatusServiceInterface;
-use Nosto\Tagging\Model\Service\Update\QueueService;
+use Nosto\Tagging\Model\Service\Update\ProductUpdateService;
 use Nosto\Tagging\Util\PagingIterator;
 use Symfony\Component\Console\Input\InputInterface;
 
 /**
- * Class QueueIndexer
- * Fetches to be indexed products from CL tables and create queues entry
- * to subsequently be sent to the message queue
+ * Class ProductIndexer
+ * Fetches product ID's from CL tables and create entries in the message queue
  */
-class QueueIndexer extends AbstractIndexer
+class ProductIndexer extends AbstractIndexer
 {
-    public const INDEXER_ID = 'nosto_index_product_queue';
+    public const INDEXER_ID = 'nosto_index_product';
 
-    /** @var QueueService */
-    private QueueService $queueService;
+    /** @var ProductUpdateService */
+    private ProductUpdateService $productUpdateService;
 
     /** @var CollectionBuilder */
     private CollectionBuilder $productCollectionBuilder;
 
-    /** @var QueueModeSwitcher */
-    private QueueModeSwitcher $modeSwitcher;
+    /** @var ProductModeSwitcher */
+    private ProductModeSwitcher $modeSwitcher;
 
     /**
      * Invalidate constructor.
      * @param NostoHelperScope $nostoHelperScope
-     * @param QueueService $queueService
+     * @param ProductUpdateService $productUpdateService
      * @param NostoLogger $logger
      * @param CollectionBuilder $productCollectionBuilder
-     * @param QueueModeSwitcher $modeSwitcher
+     * @param ProductModeSwitcher $modeSwitcher
      * @param StoreDimensionProvider $dimensionProvider
      * @param Emulation $storeEmulation
      * @param ProcessManager $processManager
@@ -86,18 +84,18 @@ class QueueIndexer extends AbstractIndexer
      * @param IndexerStatusServiceInterface $indexerStatusService
      */
     public function __construct(
-        NostoHelperScope $nostoHelperScope,
-        QueueService $queueService,
-        NostoLogger $logger,
-        CollectionBuilder $productCollectionBuilder,
-        QueueModeSwitcher $modeSwitcher,
-        StoreDimensionProvider $dimensionProvider,
-        Emulation $storeEmulation,
-        ProcessManager $processManager,
-        InputInterface $input,
+        NostoHelperScope              $nostoHelperScope,
+        ProductUpdateService          $productUpdateService,
+        NostoLogger                   $logger,
+        CollectionBuilder             $productCollectionBuilder,
+        ProductModeSwitcher           $modeSwitcher,
+        StoreDimensionProvider        $dimensionProvider,
+        Emulation                     $storeEmulation,
+        ProcessManager                $processManager,
+        InputInterface                $input,
         IndexerStatusServiceInterface $indexerStatusService
     ) {
-        $this->queueService = $queueService;
+        $this->productUpdateService = $productUpdateService;
         $this->productCollectionBuilder = $productCollectionBuilder;
         $this->modeSwitcher = $modeSwitcher;
         parent::__construct(
@@ -127,7 +125,7 @@ class QueueIndexer extends AbstractIndexer
     public function doIndex(Store $store, array $ids = [])
     {
         $collection = $this->getCollection($store, $ids);
-        $this->queueService->addCollectionToUpsertQueue(
+        $this->productUpdateService->addCollectionToUpdateMessageQueue(
             $collection,
             $store
         );
@@ -139,7 +137,6 @@ class QueueIndexer extends AbstractIndexer
      * @param Store $store
      * @param array $givenIds
      * @throws NostoException
-     * @throws AlreadyExistsException
      */
     private function handleDeletedProducts(ProductCollection $existingCollection, Store $store, array $givenIds)
     {
@@ -161,7 +158,7 @@ class QueueIndexer extends AbstractIndexer
                 }
             }
             if (count($removed) > 0) {
-                $this->queueService->addIdsToDeleteQueue($removed, $store);
+                $this->productUpdateService->addIdsToDeleteMessageQueue($removed, $store);
             }
         }
     }

@@ -35,7 +35,7 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Indexer\Dimensions\Queue;
+namespace Nosto\Tagging\Model\Indexer\Dimensions\Product;
 
 use Magento\Indexer\Model\DimensionMode;
 use Magento\Indexer\Model\DimensionModes;

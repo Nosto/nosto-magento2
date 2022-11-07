@@ -41,7 +41,7 @@ use Magento\Catalog\Model\ResourceModel\Product as MagentoResourceProduct;
 use Magento\Framework\Indexer\IndexerRegistry;
 use Magento\Framework\Model\AbstractModel;
 use Nosto\Tagging\Exception\ParentProductDisabledException;
-use Nosto\Tagging\Model\Indexer\QueueIndexer;
+use Nosto\Tagging\Model\Indexer\ProductIndexer;
 use Nosto\Tagging\Model\Product\Repository as NostoProductRepository;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 
@@ -53,8 +53,8 @@ class ProductUpdate
     /** @var IndexerRegistry  */
     private IndexerRegistry $indexerRegistry;
 
-    /** @var QueueIndexer  */
-    private QueueIndexer $queueIndexer;
+    /** @var ProductIndexer  */
+    private ProductIndexer $productIndexer;
 
     /** @var NostoProductRepository  */
     private NostoProductRepository $nostoProductRepository;
@@ -65,18 +65,18 @@ class ProductUpdate
     /**
      * ProductUpdate constructor.
      * @param IndexerRegistry $indexerRegistry
-     * @param QueueIndexer $queueIndexer
+     * @param ProductIndexer $productIndexer
      * @param NostoProductRepository $nostoProductRepository
      * @param NostoLogger $logger
      */
     public function __construct(
         IndexerRegistry $indexerRegistry,
-        QueueIndexer $queueIndexer,
+        ProductIndexer $productIndexer,
         NostoProductRepository $nostoProductRepository,
         NostoLogger $logger
     ) {
         $this->indexerRegistry = $indexerRegistry;
-        $this->queueIndexer = $queueIndexer;
+        $this->productIndexer = $productIndexer;
         $this->nostoProductRepository = $nostoProductRepository;
         $this->logger = $logger;
     }
@@ -92,10 +92,10 @@ class ProductUpdate
         Closure $proceed,
         AbstractModel $product
     ) {
-        $mageIndexer = $this->indexerRegistry->get(QueueIndexer::INDEXER_ID);
+        $mageIndexer = $this->indexerRegistry->get(ProductIndexer::INDEXER_ID);
         if (!$mageIndexer->isScheduled()) {
             $productResource->addCommitCallback(function () use ($product) {
-                $this->queueIndexer->executeRow($product->getId());
+                $this->productIndexer->executeRow($product->getId());
             });
         }
 
@@ -115,7 +115,7 @@ class ProductUpdate
         Closure $proceed,
         AbstractModel $product
     ) {
-        $mageIndexer = $this->indexerRegistry->get(QueueIndexer::INDEXER_ID);
+        $mageIndexer = $this->indexerRegistry->get(ProductIndexer::INDEXER_ID);
         if (!$mageIndexer->isScheduled()) {
 
             try {
@@ -127,12 +127,12 @@ class ProductUpdate
 
             if (empty($productIds)) {
                 $productResource->addCommitCallback(function () use ($product) {
-                    $this->queueIndexer->executeRow($product->getId());
+                    $this->productIndexer->executeRow($product->getId());
                 });
             }
             if (is_array($productIds) && !empty($productIds)) {
                 $productResource->addCommitCallback(function () use ($productIds) {
-                    $this->queueIndexer->executeList($productIds);
+                    $this->productIndexer->executeList($productIds);
                 });
             }
         }

@@ -34,7 +34,7 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Indexer\Dimensions\QueueProcessor;
+namespace Nosto\Tagging\Model\Indexer\Dimensions\Product;
 
 use Nosto\Tagging\Model\Indexer\Dimensions\AbstractDimensionModeConfiguration;
 
@@ -52,7 +52,7 @@ class DimensionModeConfiguration extends AbstractDimensionModeConfiguration
     {
         if ($this->currentMode === '') {
             $mode = $this->scopeConfig->getValue(
-                ModeSwitcherConfiguration::XML_PATH_PRODUCT_QUEUE_PROCESSOR_DIMENSIONS_MODE
+                ModeSwitcherConfiguration::XML_PATH_PRODUCT_INDEX_DIMENSIONS_MODE
             );
             if ($mode) {
                 $this->currentMode = $mode;

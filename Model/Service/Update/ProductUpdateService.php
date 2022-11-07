@@ -38,69 +38,67 @@ namespace Nosto\Tagging\Model\Service\Update;
 
 use Exception;
 use Magento\Catalog\Api\Data\ProductInterface;
-use Magento\Framework\Exception\AlreadyExistsException;
 use Magento\Store\Model\Store;
 use Nosto\NostoException;
 use Nosto\Tagging\Exception\ParentProductDisabledException;
 use Nosto\Tagging\Helper\Account as NostoAccountHelper;
 use Nosto\Tagging\Helper\Data as NostoDataHelper;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
-use Nosto\Tagging\Model\Product\Queue\QueueBuilder;
-use Nosto\Tagging\Model\Product\Queue\QueueRepository;
 use Nosto\Tagging\Model\Product\Repository as NostoProductRepository;
 use Nosto\Tagging\Model\ResourceModel\Magento\Product\Collection as ProductCollection;
 use Nosto\Tagging\Model\Service\AbstractService;
 use Nosto\Tagging\Util\PagingIterator;
+use Nosto\Tagging\Model\Service\Sync\BulkPublisherInterface;
 
-class QueueService extends AbstractService
+class ProductUpdateService extends AbstractService
 {
-    /** @var QueueRepository  */
-    private QueueRepository $queueRepository;
-
-    /** @var QueueBuilder */
-    private QueueBuilder $queueBuilder;
-
     /** @var NostoProductRepository $nostoProductRepository */
     private NostoProductRepository $nostoProductRepository;
 
     /** @var int $batchSize */
     private int $batchSize;
 
+    /** @var BulkPublisherInterface */
+    private BulkPublisherInterface $upsertBulkPublisher;
+
+    /** @var BulkPublisherInterface */
+    private BulkPublisherInterface $deleteBulkPublisher;
+
     /**
-     * QueueService constructor.
-     * @param QueueRepository $queueRepository
-     * @param QueueBuilder $queueBuilder
+     * ProductUpdateService constructor.
      * @param NostoLogger $logger
      * @param NostoDataHelper $nostoDataHelper
      * @param NostoAccountHelper $nostoAccountHelper
      * @param NostoProductRepository $nostoProductRepository
+     * @param BulkPublisherInterface $upsertBulkPublisher
+     * @param BulkPublisherInterface $deleteBulkPublisher
      * @param int $batchSize
      */
     public function __construct(
-        QueueRepository $queueRepository,
-        QueueBuilder $queueBuilder,
         NostoLogger $logger,
         NostoDataHelper $nostoDataHelper,
         NostoAccountHelper $nostoAccountHelper,
         NostoProductRepository $nostoProductRepository,
+        BulkPublisherInterface $upsertBulkPublisher,
+        BulkPublisherInterface $deleteBulkPublisher,
         int $batchSize
     ) {
         parent::__construct($nostoDataHelper, $nostoAccountHelper, $logger);
-        $this->queueRepository = $queueRepository;
-        $this->queueBuilder = $queueBuilder;
         $this->nostoProductRepository = $nostoProductRepository;
+        $this->upsertBulkPublisher = $upsertBulkPublisher;
+        $this->deleteBulkPublisher = $deleteBulkPublisher;
         $this->batchSize = $batchSize;
     }
 
     /**
-     * Sets the products into the update queue
+     * Sets the products into the message queue
      *
      * @param ProductCollection $collection
      * @param Store $store
      * @throws NostoException
      * @throws Exception
      */
-    public function addCollectionToUpsertQueue(ProductCollection $collection, Store $store)
+    public function addCollectionToUpdateMessageQueue(ProductCollection $collection, Store $store)
     {
         if ($this->getAccountHelper()->findAccount($store) === null) {
             $this->logDebugWithStore('No nosto account found for the store', $store);
@@ -110,7 +108,7 @@ class QueueService extends AbstractService
         $iterator = new PagingIterator($collection);
         $this->getLogger()->debugWithSource(
             sprintf(
-                'Adding %d products to queue for store %s - batch size is %s, total amount of pages %d',
+                'Adding %d products to message queue for store %s - batch size is %s, total amount of pages %d',
                 $collection->getSize(),
                 $store->getCode(),
                 $this->batchSize,
@@ -121,39 +119,25 @@ class QueueService extends AbstractService
         );
         /** @var ProductCollection $page */
         foreach ($iterator as $page) {
-            $queueEntry = $this->queueBuilder->buildForUpsert(
-                $store,
-                $this->toParentProductIds($page)
-            );
-            if (!empty($queueEntry->getProductIds())) {
-                $this->queueRepository->save($queueEntry); // @codingStandardsIgnoreLine
-            }
+            $this->upsertBulkPublisher->execute($store->getId(), $this->toParentProductIds($page));
         }
     }
 
     /**
-     * Sets the product ids into the delete queue
+     * Sets the product ids into the delete message queue
      *
      * @param $productIds
      * @param Store $store
-     * @throws AlreadyExistsException
      */
-    public function addIdsToDeleteQueue($productIds, Store $store)
+    public function addIdsToDeleteMessageQueue($productIds, Store $store)
     {
         if ($this->getAccountHelper()->findAccount($store) === null) {
             $this->logDebugWithStore('No nosto account found for the store', $store);
             return;
         }
         $batchedIds = array_chunk($productIds, $this->batchSize);
-        /** @var ProductCollection $page */
         foreach ($batchedIds as $idBatch) {
-            $queueEntry = $this->queueBuilder->buildForDeletion(
-                $store,
-                $idBatch
-            );
-            if (!empty($queueEntry->getProductIds())) {
-                $this->queueRepository->save($queueEntry); // @codingStandardsIgnoreLine
-            }
+            $this->deleteBulkPublisher->execute($store->getId(), $idBatch);
         }
     }
 
@@ -161,7 +145,7 @@ class QueueService extends AbstractService
      * @param ProductCollection $collection
      * @return array
      */
-    private function toParentProductIds(ProductCollection $collection)
+    private function toParentProductIds(ProductCollection $collection): array
     {
         $productIds = [];
         /** @var ProductInterface $product */
