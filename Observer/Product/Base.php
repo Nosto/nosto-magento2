@@ -45,7 +45,7 @@ use Magento\Framework\Indexer\IndexerInterface;
 use Magento\Framework\Indexer\IndexerRegistry;
 use Magento\Framework\Module\Manager as ModuleManager;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
-use Nosto\Tagging\Model\Indexer\QueueIndexer as QueueIndexer;
+use Nosto\Tagging\Model\Indexer\ProductIndexer;
 
 abstract class Base implements ObserverInterface
 {
@@ -61,8 +61,8 @@ abstract class Base implements ObserverInterface
     /** @var IndexerInterface */
     public IndexerInterface $indexer;
 
-    /** @var QueueIndexer $queueIndexer */
-    public QueueIndexer $queueIndexer;
+    /** @var ProductIndexer $productIndexer */
+    public ProductIndexer $productIndexer;
 
     /**
      * Base constructor.
@@ -70,20 +70,20 @@ abstract class Base implements ObserverInterface
      * @param ProductRepository $productRepository
      * @param NostoHelperData $dataHelper
      * @param IndexerRegistry $indexerRegistry
-     * @param QueueIndexer $indexerInvalidate
+     * @param ProductIndexer $productIndexer
      */
     public function __construct(
         ModuleManager $moduleManager,
         ProductRepository $productRepository,
         NostoHelperData $dataHelper,
         IndexerRegistry $indexerRegistry,
-        QueueIndexer $indexerInvalidate
+        ProductIndexer $productIndexer
     ) {
         $this->moduleManager = $moduleManager;
         $this->productRepository = $productRepository;
         $this->dataHelper = $dataHelper;
-        $this->indexer = $indexerRegistry->get(QueueIndexer::INDEXER_ID);
-        $this->queueIndexer = $indexerInvalidate;
+        $this->indexer = $indexerRegistry->get(ProductIndexer::INDEXER_ID);
+        $this->productIndexer = $productIndexer;
     }
 
     /**
@@ -99,7 +99,7 @@ abstract class Base implements ObserverInterface
             $product = $this->extractProduct($observer);
 
             if ($product instanceof Product && $product->getId()) {
-                $this->queueIndexer->executeRow($product->getId());
+                $this->productIndexer->executeRow($product->getId());
             }
         }
     }

@@ -21,21 +21,4 @@
             <column name="quote_id"/>
         </index>
     </table>
-
-    <!--createProductUpdateQueue-->
-    <table name="nosto_tagging_product_update_queue" engine="innodb" comment="Nosto Tagging Customer">
-        <column xsi:type="int" name="id" unsigned="true" nullable="false" identity="true" comment="ID"/>
-        <column xsi:type="smallint" name="store_id" unsigned="true" nullable="false" comment="Store ID"/>
-        <column xsi:type="longtext" name="product_ids" nullable="true" comment="Product Data"/>
-        <column xsi:type="varchar" name="status" nullable="false" length="10" comment="Processing status"/>
-        <column xsi:type="varchar" name="action" nullable="false" length="10" comment="Action"/>
-        <column xsi:type="int" name="product_id_count" unsigned="true" nullable="false" comment="The amount of product ids in an entry"/>
-        <column xsi:type="datetime" name="created_at" nullable="false" comment="Creation time"/>
-        <column xsi:type="datetime" name="started_at" nullable="true" comment="Started at time"/>
-        <column xsi:type="datetime" name="completed_at" nullable="true" comment="Completed at time"/>
-        <constraint xsi:type="primary" referenceId="PRIMARY">
-            <column name="id"/>
-        </constraint>
-    </table>
-
 </schema>

@@ -34,56 +34,53 @@
  *
  */
 
-namespace Nosto\Tagging\Plugin;
+namespace Nosto\Tagging\Model\Indexer\Dimensions\Product;
 
-use Closure;
-use Magento\Framework\Indexer\IndexerRegistry;
-use Magento\Framework\Model\AbstractModel;
-use Nosto\Tagging\Model\Indexer\QueueProcessorIndexer;
-use Nosto\Tagging\Model\ResourceModel\Product\Update\Queue as QueueResource;
+use InvalidArgumentException;
+use Magento\Framework\App\Cache\TypeListInterface;
+use Magento\Framework\App\Config\ConfigResource\ConfigInterface;
 
-/**
- * Plugin for product updates
- */
-class ProductQueueUpdate
+class ModeSwitcherConfiguration
 {
-    /** @var IndexerRegistry  */
-    private IndexerRegistry $indexerRegistry;
-
-    /** @var QueueProcessorIndexer  */
-    private QueueProcessorIndexer $queueProcessorIndexer;
+    public const XML_PATH_PRODUCT_INDEX_DIMENSIONS_MODE = 'indexer/nosto_index_product/dimensions_mode';
 
     /**
-     * ProductInvalidate constructor.
-     * @param IndexerRegistry $indexerRegistry
-     * @param QueueProcessorIndexer $queueProcessorIndexer
+     * ConfigInterface
+     *
+     * @var ConfigInterface
+     */
+    private ConfigInterface $configWriter;
+
+    /**
+     * TypeListInterface
+     *
+     * @var TypeListInterface
+     */
+    private TypeListInterface $cacheTypeList;
+
+    /**
+     * ModeSwitcherConfiguration constructor.
+     * @param ConfigInterface $configWriter
+     * @param TypeListInterface $cacheTypeList
      */
     public function __construct(
-        IndexerRegistry $indexerRegistry,
-        QueueProcessorIndexer $queueProcessorIndexer
+        ConfigInterface $configWriter,
+        TypeListInterface $cacheTypeList
     ) {
-        $this->indexerRegistry = $indexerRegistry;
-        $this->queueProcessorIndexer = $queueProcessorIndexer;
+        $this->configWriter = $configWriter;
+        $this->cacheTypeList = $cacheTypeList;
     }
 
     /**
-     * @param QueueResource $queueResource
-     * @param Closure $proceed
-     * @param AbstractModel $queue
-     * @return mixed
+     * Save switcher mode and invalidate reindex.
+     *
+     * @param string $mode
+     * @return void
+     * @throws InvalidArgumentException
      */
-    public function aroundSave(
-        QueueResource $queueResource,
-        Closure $proceed,
-        AbstractModel $queue
-    ) {
-        $mageIndexer = $this->indexerRegistry->get(QueueProcessorIndexer::INDEXER_ID);
-        if (!$mageIndexer->isScheduled()) {
-            $queueResource->addCommitCallback(function () use ($queue) {
-                $this->queueProcessorIndexer->executeRow($queue->getId());
-            });
-        }
-
-        return $proceed($queue);
+    public function saveMode(string $mode)
+    {
+        $this->configWriter->saveConfig(self::XML_PATH_PRODUCT_INDEX_DIMENSIONS_MODE, $mode);
+        $this->cacheTypeList->cleanType('config');
     }
 }
