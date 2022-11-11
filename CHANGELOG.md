@@ -3,6 +3,9 @@ All notable changes to this project will be documented in this file. This projec
 ### 7.0.0-RC1
 * Remove queue processor indexer. Product indexer now only sends product ids straight to message queue
 
+### 6.2.0
+* Add category ids to product tagging
+
 ### 6.1.6
 * Fix iteration on API sync service
 
