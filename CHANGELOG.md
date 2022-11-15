@@ -1,6 +1,6 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
-### 7.0.0-RC1
+### 7.0.0
 * Remove queue processor indexer. Product indexer now only sends product ids straight to message queue
 
 ### 6.1.6
