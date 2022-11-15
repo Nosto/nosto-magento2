@@ -5,7 +5,6 @@ All notable changes to this project will be documented in this file. This projec
 * By removing the indexer, fixes an issue with duplicated rows, which caused the indexer to run multiple times for the same product
 * By removing the indexer, also fixes an issue with out of memory when trying to index large catalogs
 * By removing the indexer, also fixes an issue with MassProductAttributeUpdate operations, which would cause the index queue to be over populated when indexer was on save mode
-* Remove queue processor indexer. Product indexer now only sends product ids straight to message queue
 
 ### 6.1.6
 * Fix iteration on API sync service
