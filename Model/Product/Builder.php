@@ -223,6 +223,7 @@ class Builder
             }
             $nostoProduct->setAvailability($this->buildAvailability($product, $store));
             $nostoProduct->setCategories($this->nostoCategoryService->getCategories($product, $store));
+            $nostoProduct->setCategoryIds($product->getCategoryIds());
             if ($this->nostoDataHelper->isInventoryTaggingEnabled($store)) {
                 $inventoryLevel = $this->stockService->getQuantity($product, $store);
                 $nostoProduct->setInventoryLevel($inventoryLevel);

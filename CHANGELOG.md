@@ -1,5 +1,8 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 7.1.0
+* Add category ids to product tagging
+
 ### 7.0.0
 * Removes queue processor indexer. Now there is a single indexer, which simply sends product ID's to the message queue with an action to either update or delete products that will be consumed by SyncService
 * By removing the indexer, fixes an issue with duplicated rows, which caused the indexer to run multiple times for the same product
