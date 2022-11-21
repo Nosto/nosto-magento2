@@ -69,22 +69,22 @@ class Currency extends AbstractHelper
      * If the store uses multiple currencies the prices are converted from base
      * currency into given currency. Otherwise the given price is returned.
      *
-     * @param float|null $basePrice The price of a product in base currency
+     * @param float $basePrice The price of a product in base currency
      * @param Store $store
      * @return float
      * @throws Exception
      */
-    public function convertToTaggingPrice(?float $basePrice, Store $store): float
+    public function convertToTaggingPrice(float $basePrice, Store $store): float
     {
         // If multi currency is disabled or exchange rates are used
         // we don't do any processing / conversions for the price
         if ($this->nostoHelperData->isMultiCurrencyDisabled($store)
             || $this->nostoHelperData->isMultiCurrencyExchangeRatesEnabled($store)
         ) {
-            return (float)$basePrice;
+            return $basePrice;
         }
 
-        $taggingPrice = (float)$basePrice;
+        $taggingPrice = $basePrice;
         $taggingCurrency = $this->getTaggingCurrency($store);
         $baseCurrency = $store->getBaseCurrency();
 
