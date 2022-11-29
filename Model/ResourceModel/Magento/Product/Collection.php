@@ -55,7 +55,7 @@ class Collection extends MagentoProductCollection
      */
     public function addIdsToFilter(array $ids)
     {
-        return $this->addAttributeToFilter($this->getIdFieldName(), ['in', $ids]);
+        return $this->addAttributeToFilter($this->getIdFieldName(), ['in' => $ids]);
     }
 
     /**
@@ -64,6 +64,6 @@ class Collection extends MagentoProductCollection
      */
     public function addSkuFilter(array $skus)
     {
-        return $this->addAttributeToFilter('sku', ['in', $skus]);
+        return $this->addAttributeToFilter('sku', ['in' => $skus]);
     }
 }
