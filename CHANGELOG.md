@@ -1,5 +1,8 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 7.1.1
+* Fix query filter format. Uses `IN` instead of `OR` when filtering attributes (by @TzviCons)
+
 ### 7.1.0
 * Add category ids to product tagging
 
