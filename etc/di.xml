@@ -231,7 +231,7 @@
             <argument name="deleteBulkPublisher" xsi:type="object" shared="false">
                 Nosto\Tagging\Model\Service\Sync\Delete\AsyncBulkPublisher
             </argument>
-            <argument name="batchSize" xsi:type="object">500</argument>
+            <argument name="batchSize" xsi:type="number">500</argument>
         </arguments>
     </type>
 </config>
