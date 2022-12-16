@@ -48,7 +48,8 @@ use Nosto\Tagging\Model\Product\Repository as NostoProductRepository;
 use Nosto\Tagging\Model\ResourceModel\Magento\Product\Collection as ProductCollection;
 use Nosto\Tagging\Model\Service\AbstractService;
 use Nosto\Tagging\Util\PagingIterator;
-use Nosto\Tagging\Model\Service\Sync\BulkPublisherInterface;
+use Nosto\Tagging\Model\Service\Sync\Delete\AsyncBulkPublisher as DeleteBulkPublisher;
+use Nosto\Tagging\Model\Service\Sync\Upsert\AsyncBulkPublisher as UpsertBulkPublisher;
 
 class ProductUpdateService extends AbstractService
 {
@@ -58,11 +59,11 @@ class ProductUpdateService extends AbstractService
     /** @var int $batchSize */
     private int $batchSize;
 
-    /** @var BulkPublisherInterface */
-    private BulkPublisherInterface $upsertBulkPublisher;
+    /** @var UpsertBulkPublisher */
+    private UpsertBulkPublisher $upsertBulkPublisher;
 
-    /** @var BulkPublisherInterface */
-    private BulkPublisherInterface $deleteBulkPublisher;
+    /** @var DeleteBulkPublisher */
+    private DeleteBulkPublisher $deleteBulkPublisher;
 
     /**
      * ProductUpdateService constructor.
@@ -70,8 +71,8 @@ class ProductUpdateService extends AbstractService
      * @param NostoDataHelper $nostoDataHelper
      * @param NostoAccountHelper $nostoAccountHelper
      * @param NostoProductRepository $nostoProductRepository
-     * @param BulkPublisherInterface $upsertBulkPublisher
-     * @param BulkPublisherInterface $deleteBulkPublisher
+     * @param UpsertBulkPublisher $upsertBulkPublisher
+     * @param DeleteBulkPublisher $deleteBulkPublisher
      * @param int $batchSize
      */
     public function __construct(
@@ -79,8 +80,8 @@ class ProductUpdateService extends AbstractService
         NostoDataHelper $nostoDataHelper,
         NostoAccountHelper $nostoAccountHelper,
         NostoProductRepository $nostoProductRepository,
-        BulkPublisherInterface $upsertBulkPublisher,
-        BulkPublisherInterface $deleteBulkPublisher,
+        UpsertBulkPublisher $upsertBulkPublisher,
+        DeleteBulkPublisher $deleteBulkPublisher,
         int $batchSize
     ) {
         parent::__construct($nostoDataHelper, $nostoAccountHelper, $logger);
