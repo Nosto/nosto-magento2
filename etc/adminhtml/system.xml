@@ -169,14 +169,6 @@
                     </comment>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
-                <field id="full_reindex" translate="label comment" type="select" sortOrder="60"
-                       showInDefault="1" showInWebsite="0" showInStore="0">
-                    <label>Indexer full reindex</label>
-                    <comment><![CDATA[Enable full reindex for reindex all products to nosto by running
-                     the magento indexer:reindex command]]>
-                    </comment>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                </field>
                 <field id="low_stock_indication" translate="label comment" type="select" sortOrder="70"
                        showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Enable Low Stock Indication</label>
