@@ -202,7 +202,7 @@ class CollectionBuilder
      */
     public function init()
     {
-        $this->productCollection->resetData();
+        $this->productCollection->clear()->getSelect()->reset(\Zend_Db_Select::WHERE);
         return $this;
     }
 
