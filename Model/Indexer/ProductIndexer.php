@@ -129,38 +129,6 @@ class ProductIndexer extends AbstractIndexer
             $collection,
             $store
         );
-        $this->handleDeletedProducts($collection, $store, $ids);
-    }
-
-    /**
-     * @param ProductCollection $existingCollection
-     * @param Store $store
-     * @param array $givenIds
-     * @throws NostoException
-     */
-    private function handleDeletedProducts(ProductCollection $existingCollection, Store $store, array $givenIds)
-    {
-        if (!empty($givenIds)) {
-            $existingCollection->setPageSize(1000);
-            $iterator = new PagingIterator($existingCollection);
-            $present = [];
-            foreach ($iterator as $page) {
-                foreach ($page->getItems() as $item) {
-                    /** @noinspection PhpPossiblePolymorphicInvocationInspection */
-                    $id = $item->getId();
-                    $present[$id] = $id;
-                }
-            }
-            $removed = [];
-            foreach ($givenIds as $productId) {
-                if (!isset($present[$productId])) {
-                    $removed[] = $productId;
-                }
-            }
-            if (count($removed) > 0) {
-                $this->productUpdateService->addIdsToDeleteMessageQueue($removed, $store);
-            }
-        }
     }
 
     /**
