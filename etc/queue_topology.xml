@@ -37,6 +37,5 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework-message-queue:etc/topology.xsd">
     <exchange name="magento-db" type="topic" connection="db">
         <binding id="updateBindingUpsert" topic="nosto_product_sync.update" destinationType="queue" destination="nosto_product_sync.update"/>
-        <binding id="updateBindingDelete" topic="nosto_product_sync.delete" destinationType="queue" destination="nosto_product_sync.delete"/>
     </exchange>
 </config>

@@ -41,10 +41,4 @@
                consumerInstance="Magento\Framework\MessageQueue\Consumer"
                handler="Nosto\Tagging\Model\Service\Sync\Upsert\AsyncBulkConsumer::process"/>
     </broker>
-    <broker topic="nosto_product_sync.delete" exchange="magento-db" type="db">
-        <queue name="nosto_product_sync.delete"
-               consumer="nosto_product_sync.delete"
-               consumerInstance="Magento\Framework\MessageQueue\Consumer"
-               handler="Nosto\Tagging\Model\Service\Sync\Delete\AsyncBulkConsumer::process"/>
-    </broker>
 </config>
