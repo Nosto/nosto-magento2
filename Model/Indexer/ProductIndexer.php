@@ -50,7 +50,6 @@ use Nosto\Tagging\Model\ResourceModel\Magento\Product\Collection as ProductColle
 use Nosto\Tagging\Model\ResourceModel\Magento\Product\CollectionBuilder;
 use Nosto\Tagging\Model\Service\Indexer\IndexerStatusServiceInterface;
 use Nosto\Tagging\Model\Service\Update\ProductUpdateService;
-use Nosto\Tagging\Util\PagingIterator;
 use Symfony\Component\Console\Input\InputInterface;
 
 /**
@@ -129,38 +128,6 @@ class ProductIndexer extends AbstractIndexer
             $collection,
             $store
         );
-        $this->handleDeletedProducts($collection, $store, $ids);
-    }
-
-    /**
-     * @param ProductCollection $existingCollection
-     * @param Store $store
-     * @param array $givenIds
-     * @throws NostoException
-     */
-    private function handleDeletedProducts(ProductCollection $existingCollection, Store $store, array $givenIds)
-    {
-        if (!empty($givenIds)) {
-            $existingCollection->setPageSize(1000);
-            $iterator = new PagingIterator($existingCollection);
-            $present = [];
-            foreach ($iterator as $page) {
-                foreach ($page->getItems() as $item) {
-                    /** @noinspection PhpPossiblePolymorphicInvocationInspection */
-                    $id = $item->getId();
-                    $present[$id] = $id;
-                }
-            }
-            $removed = [];
-            foreach ($givenIds as $productId) {
-                if (!isset($present[$productId])) {
-                    $removed[] = $productId;
-                }
-            }
-            if (count($removed) > 0) {
-                $this->productUpdateService->addIdsToDeleteMessageQueue($removed, $store);
-            }
-        }
     }
 
     /**
