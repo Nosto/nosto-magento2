@@ -1,5 +1,8 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 7.2.0 
+* Remove `nosto_product_sync` message queue consumer
+
 ### 7.1.2
 * Remove unreffered system configuration for enabling 'Indexer full reindex' for Nosto indexers
 
