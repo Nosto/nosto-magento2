@@ -86,7 +86,6 @@ class DefaultCategoryService implements CategoryServiceInterface
     {
         $categories = [];
         foreach ($product->getCategoryCollection()->setStore($store->getId()) as $category) {
-            $rootCategoryId = $store->getRootCategoryId();
             $categoryString = $this->getCategory($category, $store);
             if (!empty($categoryString)) {
                 $categories[] = $categoryString;
