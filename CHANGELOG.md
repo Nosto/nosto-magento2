@@ -1,5 +1,8 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 7.2.1
+* Add store filter to the DefaulCategoryService to generate categories for specific store
+
 ### 7.2.0 
 * Remove `nosto_product_sync` message queue consumer
 
