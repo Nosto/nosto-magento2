@@ -37,6 +37,7 @@
 namespace Nosto\Tagging\Model\Category;
 
 use Exception;
+use Magento\Catalog\Api\CategoryRepositoryInterface;
 use Magento\Catalog\Model\Category;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Store\Model\Store;
@@ -46,24 +47,35 @@ use Nosto\Tagging\Model\Service\Product\Category\CategoryServiceInterface as Nos
 
 class Builder
 {
-    private NostoLogger $logger;
+    /** @var CategoryRepositoryInterface */
+    private CategoryRepositoryInterface $categoryRepository;
+
+    /** @var ManagerInterface */
     private ManagerInterface $eventManager;
+
+    /** @var NostoCategoryService */
     private NostoCategoryService $nostoCategoryService;
+
+    /** @var NostoLogger */
+    private NostoLogger $logger;
 
     /**
      * Builder constructor.
-     * @param NostoLogger $logger
+     * @param CategoryRepositoryInterface $categoryRepository
      * @param ManagerInterface $eventManager
      * @param NostoCategoryService $nostoCategoryService
+     * @param NostoLogger $logger
      */
     public function __construct(
-        NostoLogger $logger,
+        CategoryRepositoryInterface $categoryRepository,
         ManagerInterface $eventManager,
-        NostoCategoryService $nostoCategoryService
+        NostoCategoryService $nostoCategoryService,
+        NostoLogger $logger
     ) {
-        $this->logger = $logger;
+        $this->categoryRepository = $categoryRepository;
         $this->eventManager = $eventManager;
         $this->nostoCategoryService = $nostoCategoryService;
+        $this->logger = $logger;
     }
 
     /**
@@ -77,14 +89,11 @@ class Builder
         try {
             $nostoCategory->setId($category->getId());
             $nostoCategory->setParentId($category->getParentId());
-            $nostoCategory->setImageUrl($category->getImageUrl());
-            $nostoCategory->setLevel($category->getLevel());
-            $nostoCategory->setUrl($category->getUrl());
-            $nostoCategory->setVisibleInMenu($this->getCategoryVisibleInMenu($category));
-            $nostoCategory->setCategoryString(
+            $nostoCategory->setTitle($this->getCategoryNameById($category->getId(), $store->getId()));
+            $nostoCategory->setPath(
                 $this->nostoCategoryService->getCategory($category, $store)
             );
-            $nostoCategory->setName($category->getName());
+            $nostoCategory->setUrl($category->getUrl());
         } catch (Exception $e) {
             $this->logger->exception($e);
         }
@@ -98,6 +107,18 @@ class Builder
         }
 
         return $nostoCategory;
+    }
+
+    /**
+     * @param int $id
+     * @param null $storeId
+     * @return string
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
+    private function getCategoryNameById($id, $storeId = null)
+    {
+        $categoryInstance = $this->categoryRepository->get($id, $storeId);
+        return $categoryInstance->getName();
     }
 
     /**
