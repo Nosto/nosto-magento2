@@ -124,8 +124,6 @@ class Category extends Template
      */
     public function getAbstractObject()
     {
-        $category = new NostoCategory();
-        $category->setCategoryString($this->getNostoCategory());
-        return $category;
+        return $this->getNostoCategory();
     }
 }
