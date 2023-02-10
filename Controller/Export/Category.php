@@ -39,7 +39,7 @@ namespace Nosto\Tagging\Controller\Export;
 use Magento\Framework\App\Action\Context;
 use Magento\Store\Model\Store;
 use Nosto\Model\AbstractCollection;
-use Nosto\Model\CategoryCollection;
+use Nosto\Model\Category\CategoryCollection;
 use Nosto\NostoException;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
@@ -78,7 +78,7 @@ class Category extends Base
      * @param Store $store
      * @param int $limit
      * @param int $offset
-     * @return AbstractCollection|ProductCollection
+     * @return AbstractCollection|CategoryCollection
      * @throws NostoException
      */
     public function buildExportCollection(Store $store, int $limit = 100, int $offset = 0)
@@ -89,7 +89,7 @@ class Category extends Base
     /**
      * @param Store $store
      * @param $id
-     * @return AbstractCollection|ProductCollection
+     * @return AbstractCollection|CategoryCollection
      * @throws NostoException
      */
     public function buildSingleExportCollection(Store $store, $id)
