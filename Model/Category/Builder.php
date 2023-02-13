@@ -41,7 +41,7 @@ use Magento\Catalog\Api\CategoryRepositoryInterface;
 use Magento\Catalog\Model\Category;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Store\Model\Store;
-use Nosto\Model\Category as NostoCategory;
+use Nosto\Model\Category\Category as NostoCategory;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Service\Product\Category\CategoryServiceInterface as NostoCategoryService;
 
