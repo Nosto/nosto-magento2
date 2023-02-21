@@ -42,7 +42,7 @@
     "php": ">=7.4.0",
     "magento/framework": ">=101.0.6|~104.0",
     "ext-json": "*",
-    "nosto/php-sdk": "^6.2"
+    "nosto/php-sdk": "^7.0"
   },
   "repositories": [
     {
