@@ -38,10 +38,8 @@ namespace Nosto\Tagging\Controller\Adminhtml\Account;
 
 use Exception;
 use Magento\Backend\App\Action\Context;
-use Magento\Framework\Controller\Result\Json;
 use Magento\Framework\Controller\Result\Redirect;
 use Magento\Framework\Controller\ResultFactory;
-use Nosto\Nosto;
 use Nosto\NostoException;
 use Nosto\Operation\AccountSignup;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
@@ -52,16 +50,12 @@ use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Meta\Account\Builder as NostoSignupBuilder;
 use Nosto\Tagging\Model\Meta\Account\Owner\Builder as NostoOwnerBuilder;
 use Nosto\Tagging\Model\Rates\Service as NostoRatesService;
-use Nosto\Tagging\Model\User\Builder as NostoCurrentUserBuilder;
-use Zend_Validate;
-use Zend_Validate_Exception;
+use Magento\Framework\Validator\EmailAddress as EmailAddressValidator;
 
 class Create extends Base
 {
     public const ADMIN_RESOURCE = 'Nosto_Tagging::system_nosto_account';
-    private Json $result;
     private NostoHelperAccount $nostoHelperAccount;
-    private NostoCurrentUserBuilder $nostoCurrentUserBuilder;
     private NostoRatesService $nostoRatesService;
     private NostoCurrencyHelper $nostoCurrencyHelper;
     private NostoOwnerBuilder $nostoOwnerBuilder;
@@ -74,10 +68,8 @@ class Create extends Base
      * @param Context $context
      * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoSignupBuilder $nostoSignupBuilder
-     * @param NostoCurrentUserBuilder $nostoCurrentUserBuilder
      * @param NostoOwnerBuilder $nostoOwnerBuilder
      * @param NostoHelperScope $nostoHelperScope
-     * @param Json $result
      * @param NostoLogger $logger
      * @param NostoRatesService $nostoRatesService
      * @param NostoCurrencyHelper $nostoCurrencyHelper
@@ -88,10 +80,8 @@ class Create extends Base
         Context $context,
         NostoHelperAccount $nostoHelperAccount,
         NostoSignupBuilder $nostoSignupBuilder,
-        NostoCurrentUserBuilder $nostoCurrentUserBuilder,
         NostoOwnerBuilder $nostoOwnerBuilder,
         NostoHelperScope $nostoHelperScope,
-        Json $result,
         NostoLogger $logger,
         NostoRatesService $nostoRatesService,
         NostoCurrencyHelper $nostoCurrencyHelper,
@@ -102,8 +92,6 @@ class Create extends Base
         $this->nostoHelperAccount = $nostoHelperAccount;
         $this->nostoSignupBuilder = $nostoSignupBuilder;
         $this->nostoOwnerBuilder = $nostoOwnerBuilder;
-        $this->nostoCurrentUserBuilder = $nostoCurrentUserBuilder;
-        $this->result = $result;
         $this->logger = $logger;
         $this->nostoRatesService = $nostoRatesService;
         $this->nostoCurrencyHelper = $nostoCurrencyHelper;
@@ -113,22 +101,17 @@ class Create extends Base
 
     /**
      * @return Redirect
-     * @throws Zend_Validate_Exception
      * @suppress PhanTypeMismatchArgument
      * @suppress PhanUndeclaredMethod
      * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      * @phpcs:disable Generic.Metrics.CyclomaticComplexity
      * @phpcs:disable Generic.Metrics.NestingLevel
-     * @throws Zend_Validate_Exception
      */
     public function execute()
     {
-        $response = ['success' => false];
-
         $resultRedirect = $this->resultFactory->create(ResultFactory::TYPE_REDIRECT);
         $storeId = $this->_request->getParam('store');
         $store = $this->nostoHelperScope->getStore($storeId);
-        $messageText = null;
         if ($store !== null) {
             try {
                 /** @var string $signupDetails */
@@ -139,7 +122,8 @@ class Create extends Base
 
                 $emailAddress = $this->_request->getParam('email');
                 $accountOwner = $this->nostoOwnerBuilder->build();
-                if (Zend_Validate::is($emailAddress, 'EmailAddress')) {
+                $emailAddressValidator = new EmailAddressValidator();
+                if ($emailAddressValidator->isValid($emailAddress)) {
                     $accountOwner->setFirstName('');
                     $accountOwner->setLastName('');
                     $accountOwner->setEmail($emailAddress);
@@ -153,8 +137,6 @@ class Create extends Base
                     $account = $operation->create();
 
                     if ($this->nostoHelperAccount->saveAccount($account, $store)) {
-                        $response['success'] = true;
-
                         $this->getMessageManager()->addSuccessMessage(
                             /** @phan-suppress-next-line PhanTypeMismatchArgumentProbablyReal */
                             __("Nosto has been successfully connected to the store.")
@@ -176,21 +158,9 @@ class Create extends Base
                     }
                 } else {
                     $this->logger->exception(new NostoException('Invalid email address ' . $emailAddress));
-                    $messageText = 'Invalid email address ' . $emailAddress;
                 }
             } catch (NostoException $e) {
                 $this->logger->exception($e);
-                $messageText = $e->getMessage();
-            }
-        }
-
-        if (!$response['success']) {
-            $params = [
-                'message_type' => Nosto::TYPE_ERROR,
-                'message_code' => Nosto::CODE_ACCOUNT_CREATE,
-            ];
-            if ($messageText) {
-                $params['message_text'] = $messageText;
             }
         }
 
