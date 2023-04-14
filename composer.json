@@ -2,7 +2,7 @@
   "name": "nosto/module-nostotagging",
   "description": "Increase your conversion rate and average order value by delivering your customers personalized product recommendations throughout their shopping journey.",
   "type": "magento2-module",
-  "version": "7.2.1",
+  "version": "7.2.2",
   "require-dev": {
     "phpmd/phpmd": "^2.5",
     "sebastian/phpcpd": "*",
@@ -21,7 +21,6 @@
     "magento/module-quote": "101.2.3",
     "magento/module-review": "100.4.3",
     "magento/module-grouped-product": "100.4.3",
-    "magento/zendframework1": "1.14.3",
     "mridang/pmd-annotations": "^0.0.2",
     "staabm/annotate-pull-request-from-checkstyle": "^1.1",
     "magento/magento-coding-standard": "^5.0",
