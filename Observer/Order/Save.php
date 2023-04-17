@@ -138,6 +138,9 @@ class Save implements ObserverInterface
             /* @var Order $order */
             /** @noinspection PhpUndefinedMethodInspection */
             $order = $observer->getOrder();
+            if (!$order) {
+                return;
+            }
 
             //Check if order has been sent once
             if (in_array($order->getId(), self::$sent)) {
