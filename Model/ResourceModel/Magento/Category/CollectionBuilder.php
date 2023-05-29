@@ -36,7 +36,6 @@
 
 namespace Nosto\Tagging\Model\ResourceModel\Magento\Category;
 
-use Magento\Catalog\Model\Category\Visibility as CategoryVisibility;
 use Magento\Sales\Api\Data\EntityInterface;
 use Magento\Store\Model\Store;
 use Magento\Catalog\Model\ResourceModel\Category\Collection as CategoryCollection;
@@ -61,7 +60,7 @@ class CollectionBuilder
     }
 
     /**
-     * @return Collection
+     * @return CategoryCollection
      */
     public function build()
     {
@@ -76,7 +75,7 @@ class CollectionBuilder
      */
     public function withStore(Store $store)
     {
-        $this->categoryCollection->setProductStoreId($store);
+        $this->categoryCollection->setProductStoreId($store->getId());
         $this->categoryCollection->setStore($store);
         return $this;
     }

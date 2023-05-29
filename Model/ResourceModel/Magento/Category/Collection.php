@@ -36,7 +36,6 @@
 
 namespace Nosto\Tagging\Model\ResourceModel\Magento\Category;
 
-use Magento\Catalog\Model\Category\Attribute;
 use Magento\Catalog\Model\ResourceModel\Category\Collection as MagentoCategoryCollection;
 
 class Collection extends MagentoCategoryCollection
