@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "22e02fc78bdd5bf61196bf1a0dfa50c3",
+    "content-hash": "8ae4ec567d738ff3eacc4e59391fa2d7",
     "packages": [
         {
             "name": "brick/math",
@@ -2866,16 +2866,16 @@
         },
         {
             "name": "nosto/php-sdk",
-            "version": "dev-release/7.1.0",
+            "version": "7.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Nosto/nosto-php-sdk.git",
-                "reference": "411aa6ae4ed8f27b74c5238ce41cd8892f816283"
+                "reference": "7217ae9c10bdf42c80306f6d01a9e122223e7ebf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Nosto/nosto-php-sdk/zipball/411aa6ae4ed8f27b74c5238ce41cd8892f816283",
-                "reference": "411aa6ae4ed8f27b74c5238ce41cd8892f816283",
+                "url": "https://api.github.com/repos/Nosto/nosto-php-sdk/zipball/7217ae9c10bdf42c80306f6d01a9e122223e7ebf",
+                "reference": "7217ae9c10bdf42c80306f6d01a9e122223e7ebf",
                 "shasum": ""
             },
             "require": {
@@ -2916,9 +2916,9 @@
             "description": "PHP SDK for developing Nosto modules for e-commerce platforms",
             "support": {
                 "issues": "https://github.com/Nosto/nosto-php-sdk/issues",
-                "source": "https://github.com/Nosto/nosto-php-sdk/tree/release/7.1.0"
+                "source": "https://github.com/Nosto/nosto-php-sdk/tree/7.1.0"
             },
-            "time": "2023-05-29T13:25:30+00:00"
+            "time": "2023-05-29T13:49:33+00:00"
         },
         {
             "name": "paragonie/constant_time_encoding",
@@ -12255,9 +12255,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "nosto/php-sdk": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
