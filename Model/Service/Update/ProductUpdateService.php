@@ -61,6 +61,9 @@ class ProductUpdateService extends AbstractService
     /** @var BulkPublisherInterface */
     private BulkPublisherInterface $upsertBulkPublisher;
 
+    /** @var BulkPublisherInterface */
+    private BulkPublisherInterface $deleteBulkPublisher;
+
     /**
      * ProductUpdateService constructor.
      * @param NostoLogger $logger
@@ -68,6 +71,7 @@ class ProductUpdateService extends AbstractService
      * @param NostoAccountHelper $nostoAccountHelper
      * @param NostoProductRepository $nostoProductRepository
      * @param BulkPublisherInterface $upsertBulkPublisher
+     * @param BulkPublisherInterface $deleteBulkPublisher
      * @param int $batchSize
      */
     public function __construct(
@@ -76,11 +80,13 @@ class ProductUpdateService extends AbstractService
         NostoAccountHelper $nostoAccountHelper,
         NostoProductRepository $nostoProductRepository,
         BulkPublisherInterface $upsertBulkPublisher,
+        BulkPublisherInterface $deleteBulkPublisher,
         int $batchSize
     ) {
         parent::__construct($nostoDataHelper, $nostoAccountHelper, $logger);
         $this->nostoProductRepository = $nostoProductRepository;
         $this->upsertBulkPublisher = $upsertBulkPublisher;
+        $this->deleteBulkPublisher = $deleteBulkPublisher;
         $this->batchSize = $batchSize;
     }
 
@@ -114,6 +120,24 @@ class ProductUpdateService extends AbstractService
         /** @var ProductCollection $page */
         foreach ($iterator as $page) {
             $this->upsertBulkPublisher->execute($store->getId(), $this->toParentProductIds($page));
+        }
+    }
+
+    /**
+     * Sets the product ids into the delete message queue
+     *
+     * @param $productIds
+     * @param Store $store
+     */
+    public function addIdsToDeleteMessageQueue($productIds, Store $store)
+    {
+        if ($this->getAccountHelper()->findAccount($store) === null) {
+            $this->logDebugWithStore('No nosto account found for the store', $store);
+            return;
+        }
+        $batchedIds = array_chunk($productIds, $this->batchSize);
+        foreach ($batchedIds as $idBatch) {
+            $this->deleteBulkPublisher->execute($store->getId(), $idBatch);
         }
     }
 

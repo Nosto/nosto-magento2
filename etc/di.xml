@@ -202,6 +202,13 @@
             </argument>
         </arguments>
     </type>
+    <type name="Nosto\Tagging\Model\Service\Sync\Delete\AsyncBulkPublisher">
+        <arguments>
+            <argument name="asyncBulkConsumer" xsi:type="object" shared="false">
+                Nosto\Tagging\Model\Service\Sync\Delete\AsyncBulkConsumer
+            </argument>
+        </arguments>
+    </type>
     <type name="Nosto\Tagging\Model\Service\Sync\Upsert\SyncService">
         <arguments>
             <argument name="productService" xsi:type="object" shared="false">
@@ -211,10 +218,18 @@
             <argument name="apiTimeout" xsi:type="number">60</argument>
         </arguments>
     </type>
+    <type name="Nosto\Tagging\Model\Service\Sync\Delete\DeleteService">
+        <arguments>
+            <argument name="deleteBatchSize" xsi:type="number">100</argument>
+        </arguments>
+    </type>
     <type name="Nosto\Tagging\Model\Service\Update\ProductUpdateService">
         <arguments>
             <argument name="upsertBulkPublisher" xsi:type="object" shared="false">
                 Nosto\Tagging\Model\Service\Sync\Upsert\AsyncBulkPublisher
+            </argument>
+            <argument name="deleteBulkPublisher" xsi:type="object" shared="false">
+                Nosto\Tagging\Model\Service\Sync\Delete\AsyncBulkPublisher
             </argument>
             <argument name="batchSize" xsi:type="number">500</argument>
         </arguments>
