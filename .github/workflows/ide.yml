@@ -64,7 +64,7 @@ jobs:
         REPO_PSW: ${{ secrets.REPO_PSW }}
 
     - name: Run PHPStorm
-      uses: mridang/action-phpstorm@master
+      uses: supercid/action-phpstorm@master
       with:
         target: .
         profile: ./.idea/inspectionProfiles/CI.xml
@@ -74,7 +74,7 @@ jobs:
 
     - name: Archive inspection results
       if: always()
-      uses: actions/upload-artifact@v1
+      uses: actions/upload-artifact@v2
       with:
         name: inspection-results
         path: output
