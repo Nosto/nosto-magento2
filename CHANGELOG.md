@@ -1,5 +1,9 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 7.3.0 - UNRELEASED
+* Update tagging with category listing support
+* Add category export
+
 ### 7.2.4
 * Add null check in order observer to allow for orders overriding
 
