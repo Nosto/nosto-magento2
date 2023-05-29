@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "fdfe0a8101bae542f39aad114077748e",
+    "content-hash": "22e02fc78bdd5bf61196bf1a0dfa50c3",
     "packages": [
         {
             "name": "brick/math",
@@ -2866,16 +2866,16 @@
         },
         {
             "name": "nosto/php-sdk",
-            "version": "7.0.0",
+            "version": "dev-release/7.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Nosto/nosto-php-sdk.git",
-                "reference": "0b978cae3cc5bdc783562518dd7d4b4a5138b4b3"
+                "reference": "411aa6ae4ed8f27b74c5238ce41cd8892f816283"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Nosto/nosto-php-sdk/zipball/0b978cae3cc5bdc783562518dd7d4b4a5138b4b3",
-                "reference": "0b978cae3cc5bdc783562518dd7d4b4a5138b4b3",
+                "url": "https://api.github.com/repos/Nosto/nosto-php-sdk/zipball/411aa6ae4ed8f27b74c5238ce41cd8892f816283",
+                "reference": "411aa6ae4ed8f27b74c5238ce41cd8892f816283",
                 "shasum": ""
             },
             "require": {
@@ -2916,9 +2916,9 @@
             "description": "PHP SDK for developing Nosto modules for e-commerce platforms",
             "support": {
                 "issues": "https://github.com/Nosto/nosto-php-sdk/issues",
-                "source": "https://github.com/Nosto/nosto-php-sdk/tree/7.0.0"
+                "source": "https://github.com/Nosto/nosto-php-sdk/tree/release/7.1.0"
             },
-            "time": "2023-02-21T11:40:47+00:00"
+            "time": "2023-05-29T13:25:30+00:00"
         },
         {
             "name": "paragonie/constant_time_encoding",
@@ -12255,7 +12255,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "nosto/php-sdk": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
