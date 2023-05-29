@@ -104,7 +104,7 @@ class Category extends Template
     /**
      * Returns the current category as a slash delimited string
      *
-     * @return string|null the current category as a slash delimited string
+     * @return NostoCategory|null the current category as a slash delimited string
      */
     private function getNostoCategory()
     {
@@ -120,7 +120,7 @@ class Category extends Template
     /**
      * Returns the HTML to render categories
      *
-     * @return NostoCategory
+     * @return NostoCategory|null
      */
     public function getAbstractObject()
     {
