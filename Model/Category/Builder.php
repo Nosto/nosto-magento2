@@ -40,6 +40,7 @@ use Exception;
 use Magento\Catalog\Api\CategoryRepositoryInterface;
 use Magento\Catalog\Model\Category;
 use Magento\Framework\Event\ManagerInterface;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Store\Model\Store;
 use Nosto\Model\Category\Category as NostoCategory;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
@@ -97,7 +98,7 @@ class Builder
         } catch (Exception $e) {
             $this->logger->exception($e);
         }
-        if (empty($nostoCategory)) {
+        if (empty($nostoCategory->getId())) {
             $nostoCategory = null;
         } else {
             $this->eventManager->dispatch(
@@ -111,23 +112,12 @@ class Builder
 
     /**
      * @param int $id
-     * @param null $storeId
+     * @param int $storeId
      * @return string
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     * @throws NoSuchEntityException
      */
-    private function getCategoryNameById($id, $storeId = null)
+    private function getCategoryNameById(int $id, int $storeId)
     {
-        $categoryInstance = $this->categoryRepository->get($id, $storeId);
-        return $categoryInstance->getName();
-    }
-
-    /**
-     * @param Category $category
-     * @return bool
-     */
-    private function getCategoryVisibleInMenu(Category $category)
-    {
-        $visibleInMenu = $category->getIncludeInMenu();
-        return $visibleInMenu === "1";
+        return $this->categoryRepository->get($id, $storeId)->getName();
     }
 }
