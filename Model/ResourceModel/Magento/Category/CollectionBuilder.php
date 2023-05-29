@@ -36,6 +36,7 @@
 
 namespace Nosto\Tagging\Model\ResourceModel\Magento\Category;
 
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Sales\Api\Data\EntityInterface;
 use Magento\Store\Model\Store;
 use Magento\Catalog\Model\ResourceModel\Category\Collection as CategoryCollection;
@@ -84,6 +85,7 @@ class CollectionBuilder
      * Defines all attributes to be included into the collection items
      *
      * @return $this
+     * @throws LocalizedException
      */
     public function withAllAttributes()
     {
@@ -119,10 +121,10 @@ class CollectionBuilder
     /**
      * Sets the page size
      *
-     * @param $pageSize
+     * @param int $pageSize
      * @return $this
      */
-    public function setPageSize($pageSize)
+    public function setPageSize(int $pageSize)
     {
         $this->categoryCollection->setPageSize($pageSize);
         return $this;
@@ -131,10 +133,10 @@ class CollectionBuilder
     /**
      * Sets the current page
      *
-     * @param $currentPage
+     * @param int $currentPage
      * @return $this
      */
-    public function setCurrentPage($currentPage)
+    public function setCurrentPage(int $currentPage)
     {
         $this->categoryCollection->setCurPage($currentPage);
         return $this;
@@ -179,10 +181,10 @@ class CollectionBuilder
      * Builds and returns the collection with single item (if found)
      *
      * @param Store $store
-     * @param $id
-     * @return Collection
+     * @param int $id
+     * @return CategoryCollection
      */
-    public function buildSingle(Store $store, $id)
+    public function buildSingle(Store $store, int $id)
     {
         return $this
             ->initDefault($store)
@@ -197,7 +199,7 @@ class CollectionBuilder
      * @param Store $store
      * @param int $limit
      * @param int $offset
-     * @return Collection
+     * @return CategoryCollection
      */
     public function buildMany(Store $store, int $limit = 100, int $offset = 0)
     {
