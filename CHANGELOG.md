@@ -1,5 +1,11 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 7.2.3
+* Update PHP-SDK to fix an issue that would cause category id's to be removed by the crawler
+
+### 7.2.2
+* Fixes an issue with Zend_Validate that would cause the admin to not connect to a Nosto account
+
 ### 7.2.1
 * Add store filter to the DefaulCategoryService to generate categories for specific store
 
