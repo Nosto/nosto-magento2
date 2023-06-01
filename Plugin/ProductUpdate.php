@@ -44,6 +44,11 @@ use Nosto\Tagging\Exception\ParentProductDisabledException;
 use Nosto\Tagging\Model\Indexer\ProductIndexer;
 use Nosto\Tagging\Model\Product\Repository as NostoProductRepository;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
+use Nosto\Tagging\Model\ProductIndexerIgnorance\ProductIndexerIgnoranceFactory;
+use Nosto\Tagging\Model\ProductIndexerIgnorance\ProductIndexerIgnorance;
+use Nosto\Tagging\Model\ProductIndexerIgnorance\RepositoryFactory as ProductIndexerIgnoranceRepositoryFactory;
+use Nosto\Tagging\Model\ProductIndexerIgnorance\Repository as ProductIndexerIgnoranceRepository;
+use Nosto\Tagging\Api\Data\ProductIndexerIgnoranceInterface;
 
 /**
  * Plugin for product updates
@@ -63,22 +68,38 @@ class ProductUpdate
     private NostoLogger $logger;
 
     /**
+     * @var ProductIndexerIgnoranceFactory
+     */
+    private ProductIndexerIgnoranceFactory $productIndexerIgnoranceFactory;
+
+    /**
+     * @var ProductIndexerIgnoranceRepositoryFactory
+     */
+    private ProductIndexerIgnoranceRepositoryFactory $productIndexerIgnoranceRepositoryFactory;
+
+    /**
      * ProductUpdate constructor.
      * @param IndexerRegistry $indexerRegistry
      * @param ProductIndexer $productIndexer
      * @param NostoProductRepository $nostoProductRepository
      * @param NostoLogger $logger
+     * @param ProductIndexerIgnoranceFactory $productIndexerIgnoranceFactory
+     * @param ProductIndexerIgnoranceRepositoryFactory $productIndexerIgnoranceRepositoryFactory
      */
     public function __construct(
-        IndexerRegistry $indexerRegistry,
-        ProductIndexer $productIndexer,
-        NostoProductRepository $nostoProductRepository,
-        NostoLogger $logger
+        IndexerRegistry                $indexerRegistry,
+        ProductIndexer                 $productIndexer,
+        NostoProductRepository         $nostoProductRepository,
+        NostoLogger                    $logger,
+        ProductIndexerIgnoranceFactory $productIndexerIgnoranceFactory,
+        ProductIndexerIgnoranceRepositoryFactory $productIndexerIgnoranceRepositoryFactory
     ) {
         $this->indexerRegistry = $indexerRegistry;
         $this->productIndexer = $productIndexer;
         $this->nostoProductRepository = $nostoProductRepository;
         $this->logger = $logger;
+        $this->productIndexerIgnoranceFactory = $productIndexerIgnoranceFactory;
+        $this->productIndexerIgnoranceRepositoryFactory = $productIndexerIgnoranceRepositoryFactory;
     }
 
     /**
@@ -115,26 +136,46 @@ class ProductUpdate
         Closure $proceed,
         AbstractModel $product
     ) {
+        try {
+            $productIds = $this->nostoProductRepository->resolveParentProductIds($product);
+        } catch (ParentProductDisabledException $e) {
+            $this->logger->debug($e->getMessage());
+            return $proceed($product);
+        }
+
         $mageIndexer = $this->indexerRegistry->get(ProductIndexer::INDEXER_ID);
-        if (!$mageIndexer->isScheduled()) {
 
-            try {
-                $productIds = $this->nostoProductRepository->resolveParentProductIds($product);
-            } catch (ParentProductDisabledException $e) {
-                $this->logger->debug($e->getMessage());
-                return $proceed($product);
-            }
+        if (empty($productIds) && !$mageIndexer->isScheduled()) {
+            $productResource->addCommitCallback(function () use ($product) {
+                $this->productIndexer->executeRow($product->getId());
+            });
+        }
 
-            if (empty($productIds)) {
-                $productResource->addCommitCallback(function () use ($product) {
-                    $this->productIndexer->executeRow($product->getId());
-                });
-            }
-            if (is_array($productIds) && !empty($productIds)) {
-                $productResource->addCommitCallback(function () use ($productIds) {
-                    $this->productIndexer->executeList($productIds);
-                });
-            }
+        if (is_array($productIds) && !empty($productIds)) {
+            $productResource->addCommitCallback(function () use ($productIds, $mageIndexer, $product) {
+                $this->productIndexer->executeList($productIds);
+
+                if ($mageIndexer->isScheduled()) {
+                    /**
+                     * When the indexer has mode is "Run on Schedule" the table nosto_index_product_cl will be used,
+                     * we need to let product indexer know that ignore please ignore the product id when
+                     * handling the delete operation because we have updated the parent product above,
+                     * so we do not need to handle the id of the current product in the delete operation
+                     * because the current product is child product of other product
+                     */
+
+                    /** @var ProductIndexerIgnorance $newIgnorance */
+                    $newIgnorance = $this->productIndexerIgnoranceFactory->create();
+                    $newIgnorance->setData([
+                        'entity_id' => (int) $product->getId(),
+                        'action' => ProductIndexerIgnoranceInterface::ACTION_DELETE
+                    ]);
+
+                    /** @var ProductIndexerIgnoranceRepository $indexerIgnoranceRepository */
+                    $indexerIgnoranceRepository = $this->productIndexerIgnoranceRepositoryFactory->create();
+                    $indexerIgnoranceRepository->save($newIgnorance);
+                }
+            });
         }
 
         return $proceed($product);

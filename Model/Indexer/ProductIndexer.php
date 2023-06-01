@@ -37,10 +37,12 @@
 namespace Nosto\Tagging\Model\Indexer;
 
 use Exception;
+use Magento\Framework\Indexer\IndexerRegistry;
 use Magento\Indexer\Model\ProcessManager;
 use Magento\Store\Model\App\Emulation;
 use Magento\Store\Model\Store;
 use Nosto\NostoException;
+use Nosto\Tagging\Api\Data\ProductIndexerIgnoranceInterface;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Indexer\Dimensions\Product\ModeSwitcher as ProductModeSwitcher;
@@ -51,6 +53,10 @@ use Nosto\Tagging\Model\ResourceModel\Magento\Product\CollectionBuilder;
 use Nosto\Tagging\Model\Service\Indexer\IndexerStatusServiceInterface;
 use Nosto\Tagging\Model\Service\Update\ProductUpdateService;
 use Symfony\Component\Console\Input\InputInterface;
+use Nosto\Tagging\Util\PagingIterator;
+use Nosto\Tagging\Model\ProductIndexerIgnorance\RepositoryFactory as IgnoranceRepositoryFactory;
+use Nosto\Tagging\Model\ProductIndexerIgnorance\Repository as IgnoranceRepository;
+use Magento\Framework\Api\SearchCriteriaBuilder;
 
 /**
  * Class ProductIndexer
@@ -69,6 +75,20 @@ class ProductIndexer extends AbstractIndexer
     /** @var ProductModeSwitcher */
     private ProductModeSwitcher $modeSwitcher;
 
+    /** @var IndexerRegistry  */
+    private IndexerRegistry $indexerRegistry;
+
+    /**
+     * @var IgnoranceRepositoryFactory
+     */
+    private IgnoranceRepositoryFactory $ignoranceRepositoryFactory;
+
+    /**
+     * @var SearchCriteriaBuilder
+     */
+    protected SearchCriteriaBuilder $searchCriteriaBuilder;
+
+
     /**
      * Invalidate constructor.
      * @param NostoHelperScope $nostoHelperScope
@@ -81,6 +101,9 @@ class ProductIndexer extends AbstractIndexer
      * @param ProcessManager $processManager
      * @param InputInterface $input
      * @param IndexerStatusServiceInterface $indexerStatusService
+     * @param IndexerRegistry $indexerRegistry
+     * @param IgnoranceRepositoryFactory $ignoranceRepositoryFactory
+     * @param SearchCriteriaBuilder $searchCriteriaBuilder
      */
     public function __construct(
         NostoHelperScope              $nostoHelperScope,
@@ -92,11 +115,17 @@ class ProductIndexer extends AbstractIndexer
         Emulation                     $storeEmulation,
         ProcessManager                $processManager,
         InputInterface                $input,
-        IndexerStatusServiceInterface $indexerStatusService
+        IndexerStatusServiceInterface $indexerStatusService,
+        IndexerRegistry               $indexerRegistry,
+        IgnoranceRepositoryFactory    $ignoranceRepositoryFactory,
+        SearchCriteriaBuilder         $searchCriteriaBuilder
     ) {
         $this->productUpdateService = $productUpdateService;
         $this->productCollectionBuilder = $productCollectionBuilder;
         $this->modeSwitcher = $modeSwitcher;
+        $this->indexerRegistry = $indexerRegistry;
+        $this->searchCriteriaBuilder = $searchCriteriaBuilder;
+
         parent::__construct(
             $nostoHelperScope,
             $logger,
@@ -106,6 +135,7 @@ class ProductIndexer extends AbstractIndexer
             $indexerStatusService,
             $processManager
         );
+        $this->ignoranceRepositoryFactory = $ignoranceRepositoryFactory;
     }
 
     /**
@@ -114,6 +144,15 @@ class ProductIndexer extends AbstractIndexer
     public function getModeSwitcher(): ModeSwitcherInterface
     {
         return $this->modeSwitcher;
+    }
+
+    /**
+     * @return bool
+     */
+    private function isSchedule(): bool
+    {
+        $mageIndexer = $this->indexerRegistry->get(self::INDEXER_ID);
+        return $mageIndexer->isScheduled();
     }
 
     /**
@@ -140,6 +179,26 @@ class ProductIndexer extends AbstractIndexer
     private function handleDeletedProducts(ProductCollection $existingCollection, Store $store, array $givenIds)
     {
         if (!empty($givenIds)) {
+
+            if ($this->isSchedule()) {
+                $searchCriteria = $this->searchCriteriaBuilder
+                    ->addFilter('action', ProductIndexerIgnoranceInterface::ACTION_DELETE, 'eq')
+                    ->addFilter('entity_id', $givenIds, 'in')
+                    ->create();
+
+                /** @var IgnoranceRepository $indexerIgnoranceRepository */
+                $indexerIgnoranceRepository = $this->ignoranceRepositoryFactory->create();
+
+                $items = $indexerIgnoranceRepository->search($searchCriteria)->getItems();
+
+                $ignoreIds = array_map(function ($item) {
+                    return $item->getEntityId();
+                }, $items);
+
+                $givenIds = array_diff($givenIds, $ignoreIds);
+                $indexerIgnoranceRepository->deleteByIds($ignoreIds);
+            }
+
             $existingCollection->setPageSize(1000);
             $iterator = new PagingIterator($existingCollection);
             $present = [];

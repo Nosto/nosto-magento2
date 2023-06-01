@@ -1,0 +1,29 @@
+{
+    "nosto_tagging_customer": {
+        "column": {
+            "id": true,
+            "customer_id": true,
+            "quote_id": true,
+            "nosto_id": true,
+            "created_at": true,
+            "updated_at": true,
+            "restore_cart_hash": true
+        },
+        "index": {
+            "NOSTO_TAGGING_CUSTOMER_QUOTE_ID": true
+        },
+        "constraint": {
+            "PRIMARY": true
+        }
+    },
+    "nosto_product_indexer_ignorance": {
+        "column": {
+            "id": true,
+            "action": true,
+            "entity_id": true
+        },
+        "constraint": {
+            "PRIMARY": true
+        }
+    }
+}
