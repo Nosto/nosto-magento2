@@ -35,53 +35,22 @@
 
 namespace Nosto\Tagging\Api\Data;
 
+use Magento\Framework\Api\SearchResultsInterface;
 
-interface ProductIndexerIgnoranceInterface
+interface ProductIndexerExcludeSearchResultsInterface extends SearchResultsInterface
 {
-    const ID = 'id';
-    const ENTITY_ID = 'entity_id';
-    const ACTION = 'action';
-    const ACTION_DELETE = 'delete';
-    const ACTION_UPDATE = 'update';
-
     /**
-     * Get ID.
+     * Get product indexer Exclude list.
      *
-     * @return int|null
+     * @return ProductIndexerExcludeInterface[]
      */
-    public function getId();
+    public function getItems();
 
     /**
-     * Set ID.
+     * Set product indexer Exclude list.
      *
-     * @param int $id
-     * @return $this
+     * @param ProductIndexerExcludeInterface[] $items
+     * @return ProductIndexerExcludeSearchResultsInterface
      */
-    public function setId($id);
-
-    /**
-     * Get action.
-     *
-     * @return string|null
-     */
-    public function getAction();
-
-    /**
-     * Set action.
-     *
-     * @param string $action
-     * @return $this
-     */
-    public function setAction($action);
-
-    /**
-     * @return mixed
-     */
-    public function getEntityId();
-
-    /**
-     * @param $entityId
-     * @return mixed
-     */
-    public function setEntityId($entityId);
+    public function setItems(array $items);
 }

@@ -33,24 +33,61 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
-namespace Nosto\Tagging\Api\Data;
+namespace Nosto\Tagging\Model\ProductIndexerExclude;
 
-use Magento\Framework\Api\SearchResultsInterface;
+use Nosto\Tagging\Api\Data\ProductIndexerExcludeInterface;
+use Magento\Framework\Model\AbstractModel;
+use Nosto\Tagging\Model\ResourceModel\ProductIndexerExclude as ResourceModel;
 
-interface ProductIndexerIgnoranceSearchResultsInterface extends SearchResultsInterface
+class ProductIndexerExclude extends AbstractModel implements ProductIndexerExcludeInterface
 {
     /**
-     * Get product indexer ignorance list.
-     *
-     * @return ProductIndexerIgnoranceInterface[]
+     * Initialize resource model.
      */
-    public function getItems();
+    protected function _construct()
+    {
+        $this->_init(ResourceModel::class);
+    }
 
     /**
-     * Set product indexer ignorance list.
+     * Get ID.
      *
-     * @param ProductIndexerIgnoranceInterface[] $items
-     * @return ProductIndexerIgnoranceSearchResultsInterface
+     * @return int|null
      */
-    public function setItems(array $items);
+    public function getId()
+    {
+        return $this->_getData(self::ID);
+    }
+
+    /**
+     * Set ID.
+     *
+     * @param int $id
+     * @return $this
+     */
+    public function setId($id)
+    {
+        return $this->setData(self::ID, $id);
+    }
+
+    /**
+     * Get action.
+     *
+     * @return string|null
+     */
+    public function getAction()
+    {
+        return $this->_getData(self::ACTION);
+    }
+
+    /**
+     * Set action.
+     *
+     * @param string $action
+     * @return $this
+     */
+    public function setAction($action)
+    {
+        return $this->setData(self::ACTION, $action);
+    }
 }

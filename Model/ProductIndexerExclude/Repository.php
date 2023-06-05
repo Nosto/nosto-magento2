@@ -33,37 +33,38 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
-namespace Nosto\Tagging\Model\ProductIndexerIgnorance;
+namespace Nosto\Tagging\Model\ProductIndexerExclude;
 
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
-use Nosto\Tagging\Api\Data\ProductIndexerIgnoranceInterface;
-use Nosto\Tagging\Api\Data\ProductIndexerIgnoranceSearchResultsInterface;
-use Nosto\Tagging\Model\ProductIndexerIgnorance\ProductIndexerIgnoranceSearchResultFactory as SearchResultFactory;
-use Nosto\Tagging\Api\ProductIndexerIgnoranceRepositoryInterface;
-use Nosto\Tagging\Model\ResourceModel\ProductIndexerIgnorance as ProductIndexerIgnoranceResource;
-use Nosto\Tagging\Model\ResourceModel\ProductIndexerIgnorance\CollectionFactory;
+use Nosto\Tagging\Api\Data\ProductIndexerExcludeInterface;
+use Nosto\Tagging\Api\Data\ProductIndexerExcludeSearchResultsInterface;
+use Nosto\Tagging\Model\ProductIndexerExclude\ProductIndexerExcludeSearchResultFactory as SearchResultFactory;
+use Nosto\Tagging\Api\ProductIndexerExcludeRepositoryInterface;
+use Nosto\Tagging\Model\ResourceModel\ProductIndexerExclude as ResourceModel;
+use Nosto\Tagging\Model\ResourceModel\ProductIndexerExclude\CollectionFactory;
 use Magento\Framework\Api\SearchCriteriaInterface;
 use Magento\Framework\Api\SearchCriteria\CollectionProcessorInterface;
 use Nosto\Tagging\Util\Repository as RepositoryUtil;
-use Magento\Framework\Api\SearchResultsInterfaceFactory;
+use Nosto\Tagging\Model\ProductIndexerExclude\ProductIndexerExcludeSearchResultFactory
+    as SearchResultsInterfaceFactory;
 
-class Repository implements ProductIndexerIgnoranceRepositoryInterface
+class Repository implements ProductIndexerExcludeRepositoryInterface
 {
     /**
-     * @var ProductIndexerIgnoranceResource
+     * @var ResourceModel
      */
     protected $resource;
 
     /**
-     * @var ProductIndexerIgnoranceFactory
+     * @var ProductIndexerExcludeFactory
      */
-    protected $productIndexerIgnoranceFactory;
+    protected $productIndexerExcludeFactory;
 
     /**
-     * @var ProductIndexerIgnoranceCollectionFactory
+     * @var CollectionFactory
      */
-    protected $productIndexerIgnoranceCollectionFactory;
+    protected $productIndexerExcludeCollectionFactory;
 
     /**
      * @var SearchResultsInterfaceFactory
@@ -76,74 +77,76 @@ class Repository implements ProductIndexerIgnoranceRepositoryInterface
     protected $collectionProcessor;
 
     /**
-     * ProductIndexerIgnoranceRepository constructor.
-     * @param ProductIndexerIgnoranceResource $resource
-     * @param ProductIndexerIgnoranceFactory $productIndexerIgnoranceFactory
+     * ProductIndexerExcludeRepository constructor.
+     * @param ResourceModel $resource
+     * @param ProductIndexerExcludeFactory $productIndexerExcludeFactory
      * @param CollectionFactory $collectionFactory
      * @param SearchResultFactory $searchResultsFactory
      * @param CollectionProcessorInterface $collectionProcessor
      */
     public function __construct(
-        ProductIndexerIgnoranceResource $resource,
-        ProductIndexerIgnoranceFactory  $productIndexerIgnoranceFactory,
-        CollectionFactory               $collectionFactory,
-        SearchResultFactory             $searchResultsFactory,
-        CollectionProcessorInterface    $collectionProcessor
+        ResourceModel                  $resource,
+        ProductIndexerExcludeFactory $productIndexerExcludeFactory,
+        CollectionFactory              $collectionFactory,
+        SearchResultFactory            $searchResultsFactory,
+        CollectionProcessorInterface   $collectionProcessor
     ) {
         $this->resource = $resource;
-        $this->productIndexerIgnoranceFactory = $productIndexerIgnoranceFactory;
-        $this->productIndexerIgnoranceCollectionFactory = $collectionFactory;
+        $this->productIndexerExcludeFactory = $productIndexerExcludeFactory;
+        $this->productIndexerExcludeCollectionFactory = $collectionFactory;
         $this->searchResultsFactory = $searchResultsFactory;
         $this->collectionProcessor = $collectionProcessor;
     }
 
     /**
-     * Save the product indexer ignorance.
+     * Save the product indexer Exclude.
      *
-     * @param ProductIndexerIgnoranceInterface $productIndexerIgnorance
-     * @return ProductIndexerIgnoranceInterface
+     * @param ProductIndexerExcludeInterface $productIndexerExclude
+     * @return ProductIndexerExcludeInterface
      * @throws LocalizedException
+     * @suppress PhanTypeMismatchArgument
      */
-    public function save(ProductIndexerIgnoranceInterface $productIndexerIgnorance)
+    public function save(ProductIndexerExcludeInterface $productIndexerExclude)
     {
-        $this->resource->save($productIndexerIgnorance);
-        return $productIndexerIgnorance;
+        $this->resource->save($productIndexerExclude);
+        return $productIndexerExclude;
     }
 
     /**
-     * Retrieve a product indexer ignorance by ID.
+     * Retrieve a product indexer Exclude by ID.
      *
      * @param int $id
-     * @return ProductIndexerIgnoranceInterface
+     * @return ProductIndexerExcludeInterface
      * @throws LocalizedException
      */
     public function getById($id)
     {
-        $productIndexerIgnorance = $this->productIndexerIgnoranceFactory->create();
-        $this->resource->load($productIndexerIgnorance, $id);
-        if (!$productIndexerIgnorance->getId()) {
-            throw new NoSuchEntityException(__('Product indexer ignorance with ID "%1" does not exist.', $id));
+        $productIndexerExclude = $this->productIndexerExcludeFactory->create();
+        $this->resource->load($productIndexerExclude, $id);
+        if (!$productIndexerExclude->getId()) {
+            // @phan-suppress-next-line PhanTypeMismatchArgumentProbablyReal, PhanTypeMismatchArgument
+            throw new NoSuchEntityException(__('Product indexer Exclude with ID "%1" does not exist.', $id));
         }
-        return $productIndexerIgnorance;
+        return $productIndexerExclude;
     }
 
     /**
-     * Retrieve product indexer ignorance list based on search criteria.
+     * Retrieve product indexer Exclude list based on search criteria.
      *
      * @param SearchCriteriaInterface $searchCriteria
-     * @return ProductIndexerIgnoranceSearchResultsInterface
+     * @return ProductIndexerExcludeSearchResultsInterface
      * @throws LocalizedException
      */
     public function search(SearchCriteriaInterface $searchCriteria)
     {
-        $collection = $this->productIndexerIgnoranceCollectionFactory->create();
+        $collection = $this->productIndexerExcludeCollectionFactory->create();
         $searchResults = $this->searchResultsFactory->create();
 
         /**
          * Returning \Magento\Framework\Api\Search\SearchResult
-         * but declared to return ProductIndexerIgnoranceSearchResultsInterface
+         * but declared to return ProductIndexerExcludeSearchResultsInterface
          */
-        /** @phan-suppress-next-next-line PhanTypeMismatchReturnSuperType */
+        /** @phan-suppress-next-next-line PhanTypeMismatchReturn */
         /** @noinspection PhpIncompatibleReturnTypeInspection */
         return (new RepositoryUtil())->search(
             $collection,
@@ -153,20 +156,21 @@ class Repository implements ProductIndexerIgnoranceRepositoryInterface
     }
 
     /**
-     * Delete a product indexer ignorance.
+     * Delete a product indexer Exclude.
      *
-     * @param ProductIndexerIgnoranceInterface $productIndexerIgnorance
+     * @param ProductIndexerExcludeInterface $productIndexerExclude
      * @return bool
      * @throws LocalizedException
+     * @suppress PhanTypeMismatchArgument
      */
-    public function delete(ProductIndexerIgnoranceInterface $productIndexerIgnorance)
+    public function delete(ProductIndexerExcludeInterface $productIndexerExclude)
     {
-        $this->resource->delete($productIndexerIgnorance);
+        $this->resource->delete($productIndexerExclude);
         return true;
     }
 
     /**
-     * Delete a product indexer ignorance by ID.
+     * Delete a product indexer Exclude by ID.
      *
      * @param int $id
      * @return bool
@@ -174,12 +178,12 @@ class Repository implements ProductIndexerIgnoranceRepositoryInterface
      */
     public function deleteById($id)
     {
-        $productIndexerIgnorance = $this->getById($id);
-        return $this->delete($productIndexerIgnorance);
+        $productIndexerExclude = $this->getById($id);
+        return $this->delete($productIndexerExclude);
     }
 
     /**
-     * Delete a product indexer ignorance by IDs.
+     * Delete a product indexer Exclude by IDs.
      *
      * @param array $ids
      * @return bool

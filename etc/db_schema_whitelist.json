@@ -16,7 +16,7 @@
             "PRIMARY": true
         }
     },
-    "nosto_product_indexer_ignorance": {
+    "nosto_product_indexer_exclude": {
         "column": {
             "id": true,
             "action": true,

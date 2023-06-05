@@ -42,7 +42,7 @@ use Magento\Indexer\Model\ProcessManager;
 use Magento\Store\Model\App\Emulation;
 use Magento\Store\Model\Store;
 use Nosto\NostoException;
-use Nosto\Tagging\Api\Data\ProductIndexerIgnoranceInterface;
+use Nosto\Tagging\Api\Data\ProductIndexerExcludeInterface;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Indexer\Dimensions\Product\ModeSwitcher as ProductModeSwitcher;
@@ -54,8 +54,8 @@ use Nosto\Tagging\Model\Service\Indexer\IndexerStatusServiceInterface;
 use Nosto\Tagging\Model\Service\Update\ProductUpdateService;
 use Symfony\Component\Console\Input\InputInterface;
 use Nosto\Tagging\Util\PagingIterator;
-use Nosto\Tagging\Model\ProductIndexerIgnorance\RepositoryFactory as IgnoranceRepositoryFactory;
-use Nosto\Tagging\Model\ProductIndexerIgnorance\Repository as IgnoranceRepository;
+use Nosto\Tagging\Model\ProductIndexerExclude\RepositoryFactory as ExcludeRepositoryFactory;
+use Nosto\Tagging\Model\ProductIndexerExclude\Repository as ExcludeRepository;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 
 /**
@@ -79,15 +79,14 @@ class ProductIndexer extends AbstractIndexer
     private IndexerRegistry $indexerRegistry;
 
     /**
-     * @var IgnoranceRepositoryFactory
+     * @var ExcludeRepositoryFactory
      */
-    private IgnoranceRepositoryFactory $ignoranceRepositoryFactory;
+    private ExcludeRepositoryFactory $excludeRepositoryFactory;
 
     /**
      * @var SearchCriteriaBuilder
      */
     protected SearchCriteriaBuilder $searchCriteriaBuilder;
-
 
     /**
      * Invalidate constructor.
@@ -102,7 +101,7 @@ class ProductIndexer extends AbstractIndexer
      * @param InputInterface $input
      * @param IndexerStatusServiceInterface $indexerStatusService
      * @param IndexerRegistry $indexerRegistry
-     * @param IgnoranceRepositoryFactory $ignoranceRepositoryFactory
+     * @param ExcludeRepositoryFactory $excludeRepositoryFactory
      * @param SearchCriteriaBuilder $searchCriteriaBuilder
      */
     public function __construct(
@@ -117,7 +116,7 @@ class ProductIndexer extends AbstractIndexer
         InputInterface                $input,
         IndexerStatusServiceInterface $indexerStatusService,
         IndexerRegistry               $indexerRegistry,
-        IgnoranceRepositoryFactory    $ignoranceRepositoryFactory,
+        ExcludeRepositoryFactory      $excludeRepositoryFactory,
         SearchCriteriaBuilder         $searchCriteriaBuilder
     ) {
         $this->productUpdateService = $productUpdateService;
@@ -135,7 +134,7 @@ class ProductIndexer extends AbstractIndexer
             $indexerStatusService,
             $processManager
         );
-        $this->ignoranceRepositoryFactory = $ignoranceRepositoryFactory;
+        $this->excludeRepositoryFactory = $excludeRepositoryFactory;
     }
 
     /**
@@ -182,21 +181,21 @@ class ProductIndexer extends AbstractIndexer
 
             if ($this->isSchedule()) {
                 $searchCriteria = $this->searchCriteriaBuilder
-                    ->addFilter('action', ProductIndexerIgnoranceInterface::ACTION_DELETE, 'eq')
+                    ->addFilter('action', ProductIndexerExcludeInterface::ACTION_DELETE, 'eq')
                     ->addFilter('entity_id', $givenIds, 'in')
                     ->create();
 
-                /** @var IgnoranceRepository $indexerIgnoranceRepository */
-                $indexerIgnoranceRepository = $this->ignoranceRepositoryFactory->create();
+                /** @var ExcludeRepository $indexerExcludeRepository */
+                $indexerExcludeRepository = $this->excludeRepositoryFactory->create();
 
-                $items = $indexerIgnoranceRepository->search($searchCriteria)->getItems();
+                $items = $indexerExcludeRepository->search($searchCriteria)->getItems();
 
                 $ignoreIds = array_map(function ($item) {
                     return $item->getEntityId();
                 }, $items);
 
                 $givenIds = array_diff($givenIds, $ignoreIds);
-                $indexerIgnoranceRepository->deleteByIds($ignoreIds);
+                $indexerExcludeRepository->deleteByIds($ignoreIds);
             }
 
             $existingCollection->setPageSize(1000);

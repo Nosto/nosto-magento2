@@ -33,55 +33,11 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
-namespace Nosto\Tagging\Api;
+namespace Nosto\Tagging\Model\ProductIndexerExclude;
 
-use Magento\Framework\Exception\LocalizedException;
-use Nosto\Tagging\Api\Data\ProductIndexerIgnoranceInterface;
+use Magento\Framework\Api\Search\SearchResult;
+use Nosto\Tagging\Api\Data\ProductIndexerExcludeSearchResultsInterface;
 
-interface ProductIndexerIgnoranceRepositoryInterface extends BaseRepositoryInterface
+class ProductIndexerExcludeSearchResult extends SearchResult implements ProductIndexerExcludeSearchResultsInterface
 {
-    /**
-     * Save the product indexer ignorance.
-     *
-     * @param ProductIndexerIgnoranceInterface $productIndexerIgnorance
-     * @return ProductIndexerIgnoranceInterface
-     * @throws LocalizedException
-     */
-    public function save(Data\ProductIndexerIgnoranceInterface $productIndexerIgnorance);
-
-    /**
-     * Retrieve a product indexer ignorance by ID.
-     *
-     * @param int $id
-     * @return ProductIndexerIgnoranceInterface
-     * @throws LocalizedException
-     */
-    public function getById($id);
-
-    /**
-     * Delete a product indexer ignorance.
-     *
-     * @param ProductIndexerIgnoranceInterface $productIndexerIgnorance
-     * @return bool
-     * @throws LocalizedException
-     */
-    public function delete(ProductIndexerIgnoranceInterface $productIndexerIgnorance);
-
-    /**
-     * Delete a product indexer ignorance by ID.
-     *
-     * @param int $id
-     * @return bool
-     * @throws LocalizedException
-     */
-    public function deleteById($id);
-
-    /**
-     * Delete a product indexer ignorance by ID.
-     *
-     * @param array $id
-     * @return bool
-     * @throws LocalizedException
-     */
-    public function deleteByIds($ids);
 }

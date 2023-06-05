@@ -33,11 +33,55 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
-namespace Nosto\Tagging\Model\ProductIndexerIgnorance;
+namespace Nosto\Tagging\Api;
 
-use Magento\Framework\Api\Search\SearchResult;
-use Nosto\Tagging\Api\Data\ProductIndexerIgnoranceSearchResultsInterface;
+use Magento\Framework\Exception\LocalizedException;
+use Nosto\Tagging\Api\Data\ProductIndexerExcludeInterface;
 
-class ProductIndexerIgnoranceSearchResult extends SearchResult implements ProductIndexerIgnoranceSearchResultsInterface
+interface ProductIndexerExcludeRepositoryInterface extends BaseRepositoryInterface
 {
+    /**
+     * Save the product indexer Exclude.
+     *
+     * @param ProductIndexerExcludeInterface $productIndexerExclude
+     * @return ProductIndexerExcludeInterface
+     * @throws LocalizedException
+     */
+    public function save(Data\ProductIndexerExcludeInterface $productIndexerExclude);
+
+    /**
+     * Retrieve a product indexer Exclude by ID.
+     *
+     * @param int $id
+     * @return ProductIndexerExcludeInterface
+     * @throws LocalizedException
+     */
+    public function getById($id);
+
+    /**
+     * Delete a product indexer Exclude.
+     *
+     * @param ProductIndexerExcludeInterface $productIndexerExclude
+     * @return bool
+     * @throws LocalizedException
+     */
+    public function delete(ProductIndexerExcludeInterface $productIndexerExclude);
+
+    /**
+     * Delete a product indexer Exclude by ID.
+     *
+     * @param int $id
+     * @return bool
+     * @throws LocalizedException
+     */
+    public function deleteById($id);
+
+    /**
+     * Delete a product indexer Exclude by ID.
+     *
+     * @param array $ids
+     * @return bool
+     * @throws LocalizedException
+     */
+    public function deleteByIds($ids);
 }

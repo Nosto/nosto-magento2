@@ -1,6 +1,6 @@
 <?php
-/**
- * Copyright (c) 2020, Nosto Solutions Ltd
+/*
+ * Copyright (c) 2023, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,28 +29,26 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <contact@nosto.com>
- * @copyright 2020 Nosto Solutions Ltd
+ * @copyright 2023 Nosto Solutions Ltd
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
- *
  */
 
-namespace Nosto\Tagging\Model\ResourceModel;
+namespace Nosto\Tagging\Model\ResourceModel\ProductIndexerExclude;
 
-use Nosto\Tagging\Api\Data\ProductIndexerIgnoranceInterface;
-use Magento\Framework\Model\ResourceModel\Db\AbstractDb;
+use Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection;
+use Nosto\Tagging\Model\ProductIndexerExclude\ProductIndexerExclude;
+use Nosto\Tagging\Model\ResourceModel\ProductIndexerExclude as ProductIndexerExcludeResource;
 
-class ProductIndexerIgnorance extends AbstractDb
+class Collection extends AbstractCollection
 {
-    public const TABLE_NAME = 'nosto_product_indexer_ignorance';
-
     /**
-     * Initialize resource model
-     *
      * @return void
      */
     public function _construct()
     {
-        $this->_init(self::TABLE_NAME, ProductIndexerIgnoranceInterface::ID);
+        $this->_init(
+            ProductIndexerExclude::class,
+            ProductIndexerExcludeResource::class
+        );
     }
 }
-

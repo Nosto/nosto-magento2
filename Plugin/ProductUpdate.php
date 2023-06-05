@@ -44,11 +44,11 @@ use Nosto\Tagging\Exception\ParentProductDisabledException;
 use Nosto\Tagging\Model\Indexer\ProductIndexer;
 use Nosto\Tagging\Model\Product\Repository as NostoProductRepository;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
-use Nosto\Tagging\Model\ProductIndexerIgnorance\ProductIndexerIgnoranceFactory;
-use Nosto\Tagging\Model\ProductIndexerIgnorance\ProductIndexerIgnorance;
-use Nosto\Tagging\Model\ProductIndexerIgnorance\RepositoryFactory as ProductIndexerIgnoranceRepositoryFactory;
-use Nosto\Tagging\Model\ProductIndexerIgnorance\Repository as ProductIndexerIgnoranceRepository;
-use Nosto\Tagging\Api\Data\ProductIndexerIgnoranceInterface;
+use Nosto\Tagging\Model\ProductIndexerExclude\ProductIndexerExcludeFactory;
+use Nosto\Tagging\Model\ProductIndexerExclude\ProductIndexerExclude;
+use Nosto\Tagging\Model\ProductIndexerExclude\RepositoryFactory as ProductIndexerExcludeRepositoryFactory;
+use Nosto\Tagging\Model\ProductIndexerExclude\Repository as ProductIndexerExcludeRepository;
+use Nosto\Tagging\Api\Data\ProductIndexerExcludeInterface;
 
 /**
  * Plugin for product updates
@@ -68,14 +68,14 @@ class ProductUpdate
     private NostoLogger $logger;
 
     /**
-     * @var ProductIndexerIgnoranceFactory
+     * @var ProductIndexerExcludeFactory
      */
-    private ProductIndexerIgnoranceFactory $productIndexerIgnoranceFactory;
+    private ProductIndexerExcludeFactory $productIndexerExcludeFactory;
 
     /**
-     * @var ProductIndexerIgnoranceRepositoryFactory
+     * @var ProductIndexerExcludeRepositoryFactory
      */
-    private ProductIndexerIgnoranceRepositoryFactory $productIndexerIgnoranceRepositoryFactory;
+    private ProductIndexerExcludeRepositoryFactory $productIndexerExcludeRepositoryFactory;
 
     /**
      * ProductUpdate constructor.
@@ -83,23 +83,23 @@ class ProductUpdate
      * @param ProductIndexer $productIndexer
      * @param NostoProductRepository $nostoProductRepository
      * @param NostoLogger $logger
-     * @param ProductIndexerIgnoranceFactory $productIndexerIgnoranceFactory
-     * @param ProductIndexerIgnoranceRepositoryFactory $productIndexerIgnoranceRepositoryFactory
+     * @param ProductIndexerExcludeFactory $productIndexerExcludeFactory
+     * @param ProductIndexerExcludeRepositoryFactory $productIndexerExcludeRepositoryFactory
      */
     public function __construct(
         IndexerRegistry                $indexerRegistry,
         ProductIndexer                 $productIndexer,
         NostoProductRepository         $nostoProductRepository,
         NostoLogger                    $logger,
-        ProductIndexerIgnoranceFactory $productIndexerIgnoranceFactory,
-        ProductIndexerIgnoranceRepositoryFactory $productIndexerIgnoranceRepositoryFactory
+        ProductIndexerExcludeFactory $productIndexerExcludeFactory,
+        ProductIndexerExcludeRepositoryFactory $productIndexerExcludeRepositoryFactory
     ) {
         $this->indexerRegistry = $indexerRegistry;
         $this->productIndexer = $productIndexer;
         $this->nostoProductRepository = $nostoProductRepository;
         $this->logger = $logger;
-        $this->productIndexerIgnoranceFactory = $productIndexerIgnoranceFactory;
-        $this->productIndexerIgnoranceRepositoryFactory = $productIndexerIgnoranceRepositoryFactory;
+        $this->productIndexerExcludeFactory = $productIndexerExcludeFactory;
+        $this->productIndexerExcludeRepositoryFactory = $productIndexerExcludeRepositoryFactory;
     }
 
     /**
@@ -164,16 +164,16 @@ class ProductUpdate
                      * because the current product is child product of other product
                      */
 
-                    /** @var ProductIndexerIgnorance $newIgnorance */
-                    $newIgnorance = $this->productIndexerIgnoranceFactory->create();
-                    $newIgnorance->setData([
+                    /** @var ProductIndexerExclude $newExclude */
+                    $newExclude = $this->productIndexerExcludeFactory->create();
+                    $newExclude->setData([
                         'entity_id' => (int) $product->getId(),
-                        'action' => ProductIndexerIgnoranceInterface::ACTION_DELETE
+                        'action' => ProductIndexerExcludeInterface::ACTION_DELETE
                     ]);
 
-                    /** @var ProductIndexerIgnoranceRepository $indexerIgnoranceRepository */
-                    $indexerIgnoranceRepository = $this->productIndexerIgnoranceRepositoryFactory->create();
-                    $indexerIgnoranceRepository->save($newIgnorance);
+                    /** @var ProductIndexerExcludeRepository $indexerExcludeRepository */
+                    $indexerExcludeRepository = $this->productIndexerExcludeRepositoryFactory->create();
+                    $indexerExcludeRepository->save($newExclude);
                 }
             });
         }

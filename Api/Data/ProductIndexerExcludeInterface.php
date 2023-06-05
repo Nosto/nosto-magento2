@@ -33,31 +33,22 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
-namespace Nosto\Tagging\Model\ProductIndexerIgnorance;
+namespace Nosto\Tagging\Api\Data;
 
-use Nosto\Tagging\Api\Data\ProductIndexerIgnoranceInterface;
-use Magento\Framework\Model\AbstractModel;
-use Nosto\Tagging\Model\ResourceModel\ProductIndexerIgnorance as ResourceModel;
-
-class ProductIndexerIgnorance extends AbstractModel implements ProductIndexerIgnoranceInterface
+interface ProductIndexerExcludeInterface
 {
-    /**
-     * Initialize resource model.
-     */
-    protected function _construct()
-    {
-        $this->_init(ResourceModel::class);
-    }
+    const ID = 'id';
+    const ENTITY_ID = 'entity_id';
+    const ACTION = 'action';
+    const ACTION_DELETE = 'delete';
+    const ACTION_UPDATE = 'update';
 
     /**
      * Get ID.
      *
      * @return int|null
      */
-    public function getId()
-    {
-        return $this->_getData(self::ID);
-    }
+    public function getId();
 
     /**
      * Set ID.
@@ -65,20 +56,14 @@ class ProductIndexerIgnorance extends AbstractModel implements ProductIndexerIgn
      * @param int $id
      * @return $this
      */
-    public function setId($id)
-    {
-        return $this->setData(self::ID, $id);
-    }
+    public function setId($id);
 
     /**
      * Get action.
      *
      * @return string|null
      */
-    public function getAction()
-    {
-        return $this->_getData(self::ACTION);
-    }
+    public function getAction();
 
     /**
      * Set action.
@@ -86,8 +71,16 @@ class ProductIndexerIgnorance extends AbstractModel implements ProductIndexerIgn
      * @param string $action
      * @return $this
      */
-    public function setAction($action)
-    {
-        return $this->setData(self::ACTION, $action);
-    }
+    public function setAction($action);
+
+    /**
+     * @return mixed
+     */
+    public function getEntityId();
+
+    /**
+     * @param $entityId
+     * @return mixed
+     */
+    public function setEntityId($entityId);
 }
