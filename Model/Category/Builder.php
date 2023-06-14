@@ -95,6 +95,7 @@ class Builder
                 $this->nostoCategoryService->getCategory($category, $store)
             );
             $nostoCategory->setUrl($category->getUrl());
+            $nostoCategory->setAvailable($category->getIsActive() ?? false);
         } catch (Exception $e) {
             $this->logger->exception($e);
         }
