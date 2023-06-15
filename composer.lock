@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8ae4ec567d738ff3eacc4e59391fa2d7",
+    "content-hash": "5d5b24449493c6a2fc300fae27501844",
     "packages": [
         {
             "name": "brick/math",
@@ -2866,16 +2866,16 @@
         },
         {
             "name": "nosto/php-sdk",
-            "version": "7.1.0",
+            "version": "dev-hotfix/fix-update-category",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Nosto/nosto-php-sdk.git",
-                "reference": "7217ae9c10bdf42c80306f6d01a9e122223e7ebf"
+                "reference": "9a479e74ddd84df77b590d0818e008f99218d1bc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Nosto/nosto-php-sdk/zipball/7217ae9c10bdf42c80306f6d01a9e122223e7ebf",
-                "reference": "7217ae9c10bdf42c80306f6d01a9e122223e7ebf",
+                "url": "https://api.github.com/repos/Nosto/nosto-php-sdk/zipball/9a479e74ddd84df77b590d0818e008f99218d1bc",
+                "reference": "9a479e74ddd84df77b590d0818e008f99218d1bc",
                 "shasum": ""
             },
             "require": {
@@ -2916,9 +2916,9 @@
             "description": "PHP SDK for developing Nosto modules for e-commerce platforms",
             "support": {
                 "issues": "https://github.com/Nosto/nosto-php-sdk/issues",
-                "source": "https://github.com/Nosto/nosto-php-sdk/tree/7.1.0"
+                "source": "https://github.com/Nosto/nosto-php-sdk/tree/hotfix/fix-update-category"
             },
-            "time": "2023-05-29T13:49:33+00:00"
+            "time": "2023-06-15T08:38:35+00:00"
         },
         {
             "name": "paragonie/constant_time_encoding",
@@ -12255,7 +12255,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "nosto/php-sdk": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
@@ -12263,5 +12265,5 @@
         "ext-json": "*"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.1.0"
+    "plugin-api-version": "2.2.0"
 }
