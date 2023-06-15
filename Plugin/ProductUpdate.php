@@ -45,6 +45,7 @@ use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Model\Indexer\ProductIndexer;
 use Nosto\Tagging\Model\Product\Repository as NostoProductRepository;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
+use Nosto\Tagging\Model\ResourceModel\Magento\Product\CollectionBuilder;
 use Nosto\Tagging\Model\Service\Update\ProductUpdateService;
 
 /**
@@ -70,6 +71,9 @@ class ProductUpdate
     /** @var NostoHelperScope */
     private NostoHelperScope $nostoHelperScope;
 
+    /** @var CollectionBuilder */
+    private CollectionBuilder $productCollectionBuilder;
+
     /**
      * ProductUpdate constructor.
      * @param IndexerRegistry $indexerRegistry
@@ -85,7 +89,8 @@ class ProductUpdate
         NostoProductRepository         $nostoProductRepository,
         NostoLogger                    $logger,
         ProductUpdateService           $productUpdateService,
-        NostoHelperScope               $nostoHelperScope
+        NostoHelperScope               $nostoHelperScope,
+        CollectionBuilder              $productCollectionBuilder
     ) {
         $this->indexerRegistry = $indexerRegistry;
         $this->productIndexer = $productIndexer;
@@ -93,6 +98,7 @@ class ProductUpdate
         $this->logger = $logger;
         $this->productUpdateService = $productUpdateService;
         $this->nostoHelperScope = $nostoHelperScope;
+        $this->productCollectionBuilder = $productCollectionBuilder;
     }
 
     /**

@@ -37,7 +37,6 @@
 namespace Nosto\Tagging\Model\Indexer;
 
 use Exception;
-use Magento\Framework\Indexer\IndexerRegistry;
 use Magento\Indexer\Model\ProcessManager;
 use Magento\Store\Model\App\Emulation;
 use Magento\Store\Model\Store;
@@ -52,8 +51,6 @@ use Nosto\Tagging\Model\ResourceModel\Magento\Product\CollectionBuilder;
 use Nosto\Tagging\Model\Service\Indexer\IndexerStatusServiceInterface;
 use Nosto\Tagging\Model\Service\Update\ProductUpdateService;
 use Symfony\Component\Console\Input\InputInterface;
-use Nosto\Tagging\Util\PagingIterator;
-use Magento\Framework\Api\SearchCriteriaBuilder;
 
 /**
  * Class ProductIndexer
@@ -72,14 +69,6 @@ class ProductIndexer extends AbstractIndexer
     /** @var ProductModeSwitcher */
     private ProductModeSwitcher $modeSwitcher;
 
-    /** @var IndexerRegistry  */
-    private IndexerRegistry $indexerRegistry;
-
-    /**
-     * @var SearchCriteriaBuilder
-     */
-    protected SearchCriteriaBuilder $searchCriteriaBuilder;
-
     /**
      * Invalidate constructor.
      * @param NostoHelperScope $nostoHelperScope
@@ -92,8 +81,6 @@ class ProductIndexer extends AbstractIndexer
      * @param ProcessManager $processManager
      * @param InputInterface $input
      * @param IndexerStatusServiceInterface $indexerStatusService
-     * @param IndexerRegistry $indexerRegistry
-     * @param SearchCriteriaBuilder $searchCriteriaBuilder
      */
     public function __construct(
         NostoHelperScope              $nostoHelperScope,
@@ -105,16 +92,11 @@ class ProductIndexer extends AbstractIndexer
         Emulation                     $storeEmulation,
         ProcessManager                $processManager,
         InputInterface                $input,
-        IndexerStatusServiceInterface $indexerStatusService,
-        IndexerRegistry               $indexerRegistry,
-        SearchCriteriaBuilder         $searchCriteriaBuilder
+        IndexerStatusServiceInterface $indexerStatusService
     ) {
         $this->productUpdateService = $productUpdateService;
         $this->productCollectionBuilder = $productCollectionBuilder;
         $this->modeSwitcher = $modeSwitcher;
-        $this->indexerRegistry = $indexerRegistry;
-        $this->searchCriteriaBuilder = $searchCriteriaBuilder;
-
         parent::__construct(
             $nostoHelperScope,
             $logger,
