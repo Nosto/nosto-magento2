@@ -126,10 +126,10 @@ class ProductUpdateService extends AbstractService
     /**
      * Sets the product ids into the delete message queue
      *
-     * @param $productIds
+     * @param array $productIds
      * @param Store $store
      */
-    public function addIdsToDeleteMessageQueue($productIds, Store $store)
+    public function addIdsToDeleteMessageQueue(array $productIds, Store $store)
     {
         if ($this->getAccountHelper()->findAccount($store) === null) {
             $this->logDebugWithStore('No nosto account found for the store', $store);

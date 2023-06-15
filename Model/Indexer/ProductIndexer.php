@@ -42,7 +42,6 @@ use Magento\Indexer\Model\ProcessManager;
 use Magento\Store\Model\App\Emulation;
 use Magento\Store\Model\Store;
 use Nosto\NostoException;
-use Nosto\Tagging\Api\Data\ProductIndexerExcludeInterface;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Indexer\Dimensions\Product\ModeSwitcher as ProductModeSwitcher;
@@ -54,8 +53,6 @@ use Nosto\Tagging\Model\Service\Indexer\IndexerStatusServiceInterface;
 use Nosto\Tagging\Model\Service\Update\ProductUpdateService;
 use Symfony\Component\Console\Input\InputInterface;
 use Nosto\Tagging\Util\PagingIterator;
-use Nosto\Tagging\Model\ProductIndexerExclude\RepositoryFactory as ExcludeRepositoryFactory;
-use Nosto\Tagging\Model\ProductIndexerExclude\Repository as ExcludeRepository;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 
 /**
@@ -79,11 +76,6 @@ class ProductIndexer extends AbstractIndexer
     private IndexerRegistry $indexerRegistry;
 
     /**
-     * @var ExcludeRepositoryFactory
-     */
-    private ExcludeRepositoryFactory $excludeRepositoryFactory;
-
-    /**
      * @var SearchCriteriaBuilder
      */
     protected SearchCriteriaBuilder $searchCriteriaBuilder;
@@ -101,7 +93,6 @@ class ProductIndexer extends AbstractIndexer
      * @param InputInterface $input
      * @param IndexerStatusServiceInterface $indexerStatusService
      * @param IndexerRegistry $indexerRegistry
-     * @param ExcludeRepositoryFactory $excludeRepositoryFactory
      * @param SearchCriteriaBuilder $searchCriteriaBuilder
      */
     public function __construct(
@@ -116,7 +107,6 @@ class ProductIndexer extends AbstractIndexer
         InputInterface                $input,
         IndexerStatusServiceInterface $indexerStatusService,
         IndexerRegistry               $indexerRegistry,
-        ExcludeRepositoryFactory      $excludeRepositoryFactory,
         SearchCriteriaBuilder         $searchCriteriaBuilder
     ) {
         $this->productUpdateService = $productUpdateService;
@@ -134,7 +124,6 @@ class ProductIndexer extends AbstractIndexer
             $indexerStatusService,
             $processManager
         );
-        $this->excludeRepositoryFactory = $excludeRepositoryFactory;
     }
 
     /**
@@ -143,15 +132,6 @@ class ProductIndexer extends AbstractIndexer
     public function getModeSwitcher(): ModeSwitcherInterface
     {
         return $this->modeSwitcher;
-    }
-
-    /**
-     * @return bool
-     */
-    private function isSchedule(): bool
-    {
-        $mageIndexer = $this->indexerRegistry->get(self::INDEXER_ID);
-        return $mageIndexer->isScheduled();
     }
 
     /**
@@ -166,58 +146,6 @@ class ProductIndexer extends AbstractIndexer
             $collection,
             $store
         );
-        $this->handleDeletedProducts($collection, $store, $ids);
-    }
-
-    /**
-     * @param ProductCollection $existingCollection
-     * @param Store $store
-     * @param array $givenIds
-     * @throws NostoException
-     */
-    private function handleDeletedProducts(ProductCollection $existingCollection, Store $store, array $givenIds)
-    {
-        if (!empty($givenIds)) {
-
-            if ($this->isSchedule()) {
-                $searchCriteria = $this->searchCriteriaBuilder
-                    ->addFilter('action', ProductIndexerExcludeInterface::ACTION_DELETE, 'eq')
-                    ->addFilter('entity_id', $givenIds, 'in')
-                    ->create();
-
-                /** @var ExcludeRepository $indexerExcludeRepository */
-                $indexerExcludeRepository = $this->excludeRepositoryFactory->create();
-
-                $items = $indexerExcludeRepository->search($searchCriteria)->getItems();
-
-                $ignoreIds = array_map(function ($item) {
-                    return $item->getEntityId();
-                }, $items);
-
-                $givenIds = array_diff($givenIds, $ignoreIds);
-                $indexerExcludeRepository->deleteByIds($ignoreIds);
-            }
-
-            $existingCollection->setPageSize(1000);
-            $iterator = new PagingIterator($existingCollection);
-            $present = [];
-            foreach ($iterator as $page) {
-                foreach ($page->getItems() as $item) {
-                    /** @noinspection PhpPossiblePolymorphicInvocationInspection */
-                    $id = $item->getId();
-                    $present[$id] = $id;
-                }
-            }
-            $removed = [];
-            foreach ($givenIds as $productId) {
-                if (!isset($present[$productId])) {
-                    $removed[] = $productId;
-                }
-            }
-            if (count($removed) > 0) {
-                $this->productUpdateService->addIdsToDeleteMessageQueue($removed, $store);
-            }
-        }
     }
 
     /**

@@ -21,15 +21,4 @@
             <column name="quote_id"/>
         </index>
     </table>
-
-    <!-- Table to store exclude id while doing product indexer-->
-    <table name="nosto_product_indexer_exclude" engine="innodb" comment="Nosto Product Indexer exclude">
-        <column xsi:type="int" name="id" unsigned="true" nullable="false" identity="true" comment="Primary id"/>
-        <column xsi:type="int" name="entity_id" unsigned="true" nullable="false" identity="false" comment="Entity/Product id"/>
-        <column xsi:type="varchar" length="20" name="action" nullable="false" comment="Action to apply this exclude"/>
-
-        <constraint xsi:type="primary" referenceId="PRIMARY">
-            <column name="id"/>
-        </constraint>
-    </table>
 </schema>

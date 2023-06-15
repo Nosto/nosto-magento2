@@ -41,14 +41,11 @@ use Magento\Catalog\Model\ResourceModel\Product as MagentoResourceProduct;
 use Magento\Framework\Indexer\IndexerRegistry;
 use Magento\Framework\Model\AbstractModel;
 use Nosto\Tagging\Exception\ParentProductDisabledException;
+use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Model\Indexer\ProductIndexer;
 use Nosto\Tagging\Model\Product\Repository as NostoProductRepository;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
-use Nosto\Tagging\Model\ProductIndexerExclude\ProductIndexerExcludeFactory;
-use Nosto\Tagging\Model\ProductIndexerExclude\ProductIndexerExclude;
-use Nosto\Tagging\Model\ProductIndexerExclude\RepositoryFactory as ProductIndexerExcludeRepositoryFactory;
-use Nosto\Tagging\Model\ProductIndexerExclude\Repository as ProductIndexerExcludeRepository;
-use Nosto\Tagging\Api\Data\ProductIndexerExcludeInterface;
+use Nosto\Tagging\Model\Service\Update\ProductUpdateService;
 
 /**
  * Plugin for product updates
@@ -67,15 +64,11 @@ class ProductUpdate
     /** @var NostoLogger */
     private NostoLogger $logger;
 
-    /**
-     * @var ProductIndexerExcludeFactory
-     */
-    private ProductIndexerExcludeFactory $productIndexerExcludeFactory;
+    /** @var ProductUpdateService */
+    private ProductUpdateService $productUpdateService;
 
-    /**
-     * @var ProductIndexerExcludeRepositoryFactory
-     */
-    private ProductIndexerExcludeRepositoryFactory $productIndexerExcludeRepositoryFactory;
+    /** @var NostoHelperScope */
+    private NostoHelperScope $nostoHelperScope;
 
     /**
      * ProductUpdate constructor.
@@ -83,23 +76,23 @@ class ProductUpdate
      * @param ProductIndexer $productIndexer
      * @param NostoProductRepository $nostoProductRepository
      * @param NostoLogger $logger
-     * @param ProductIndexerExcludeFactory $productIndexerExcludeFactory
-     * @param ProductIndexerExcludeRepositoryFactory $productIndexerExcludeRepositoryFactory
+     * @param ProductUpdateService $productUpdateService
+     * @param NostoHelperScope $nostoHelperScope
      */
     public function __construct(
         IndexerRegistry                $indexerRegistry,
         ProductIndexer                 $productIndexer,
         NostoProductRepository         $nostoProductRepository,
         NostoLogger                    $logger,
-        ProductIndexerExcludeFactory $productIndexerExcludeFactory,
-        ProductIndexerExcludeRepositoryFactory $productIndexerExcludeRepositoryFactory
+        ProductUpdateService           $productUpdateService,
+        NostoHelperScope               $nostoHelperScope
     ) {
         $this->indexerRegistry = $indexerRegistry;
         $this->productIndexer = $productIndexer;
         $this->nostoProductRepository = $nostoProductRepository;
         $this->logger = $logger;
-        $this->productIndexerExcludeFactory = $productIndexerExcludeFactory;
-        $this->productIndexerExcludeRepositoryFactory = $productIndexerExcludeRepositoryFactory;
+        $this->productUpdateService = $productUpdateService;
+        $this->nostoHelperScope = $nostoHelperScope;
     }
 
     /**
@@ -143,37 +136,26 @@ class ProductUpdate
             return $proceed($product);
         }
 
-        $mageIndexer = $this->indexerRegistry->get(ProductIndexer::INDEXER_ID);
+        $storeIds = $product->getStoreIds();
 
-        if (empty($productIds) && !$mageIndexer->isScheduled()) {
-            $productResource->addCommitCallback(function () use ($product) {
-                $this->productIndexer->executeRow($product->getId());
+        // The current product does not have parent product
+        if (empty($productIds)) {
+            $productResource->addCommitCallback(function () use ($product, $storeIds) {
+                foreach ($storeIds as $storeId) {
+                    $store = $this->nostoHelperScope->getStore($storeId);
+                    $this->productUpdateService->addIdsToDeleteMessageQueue([$product->getId()], $store);
+                }
             });
         }
 
+        // Current product is child product
         if (is_array($productIds) && !empty($productIds)) {
-            $productResource->addCommitCallback(function () use ($productIds, $mageIndexer, $product) {
-                $this->productIndexer->executeList($productIds);
+            $productResource->addCommitCallback(function () use ($productIds, $storeIds) {
+                $productCollection = $this->productCollectionBuilder->withIds($productIds)->build();
 
-                if ($mageIndexer->isScheduled()) {
-                    /**
-                     * When the indexer has mode is "Run on Schedule" the table nosto_index_product_cl will be used,
-                     * we need to let product indexer know that ignore please ignore the product id when
-                     * handling the delete operation because we have updated the parent product above,
-                     * so we do not need to handle the id of the current product in the delete operation
-                     * because the current product is child product of other product
-                     */
-
-                    /** @var ProductIndexerExclude $newExclude */
-                    $newExclude = $this->productIndexerExcludeFactory->create();
-                    $newExclude->setData([
-                        'entity_id' => (int) $product->getId(),
-                        'action' => ProductIndexerExcludeInterface::ACTION_DELETE
-                    ]);
-
-                    /** @var ProductIndexerExcludeRepository $indexerExcludeRepository */
-                    $indexerExcludeRepository = $this->productIndexerExcludeRepositoryFactory->create();
-                    $indexerExcludeRepository->save($newExclude);
+                foreach ($storeIds as $storeId) {
+                    $store = $this->nostoHelperScope->getStore($storeId);
+                    $this->productUpdateService->addCollectionToUpdateMessageQueue($productCollection, $store);
                 }
             });
         }
