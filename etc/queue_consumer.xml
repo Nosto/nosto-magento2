@@ -41,4 +41,10 @@
               maxMessages="20"
               consumerInstance="Magento\Framework\MessageQueue\Consumer"
               handler="Nosto\Tagging\Model\Service\Sync\Upsert\AsyncBulkConsumer::processOperation"/>
+    <consumer name="nosto_product_sync.delete"
+              queue="nosto_product_sync.delete"
+              connection="db"
+              maxMessages="100"
+              consumerInstance="Magento\Framework\MessageQueue\Consumer"
+              handler="Nosto\Tagging\Model\Service\Sync\Delete\AsyncBulkConsumer::processOperation"/>
 </config>
