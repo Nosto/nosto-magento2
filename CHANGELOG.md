@@ -1,5 +1,8 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 7.2.5
+* Restore `nosto_product_sync.delete` message queue consumer to handle product deletion
+
 ### 7.2.4
 * Add null check in order observer to allow for orders overriding
 
@@ -13,7 +16,7 @@ All notable changes to this project will be documented in this file. This projec
 * Add store filter to the DefaulCategoryService to generate categories for specific store
 
 ### 7.2.0 
-* Remove `nosto_product_sync` message queue consumer
+* Remove `nosto_product_sync.delete` message queue consumer
 
 ### 7.1.2
 * Remove unreffered system configuration for enabling 'Indexer full reindex' for Nosto indexers
