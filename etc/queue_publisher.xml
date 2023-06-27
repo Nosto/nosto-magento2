@@ -38,4 +38,7 @@
     <publisher topic="nosto_product_sync.update">
         <connection name="db" exchange="magento-db"/>
     </publisher>
+    <publisher topic="nosto_product_sync.delete">
+        <connection name="db" exchange="magento-db"/>
+    </publisher>
 </config>
