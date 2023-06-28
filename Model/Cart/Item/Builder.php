@@ -70,8 +70,7 @@ class Builder
 
     /**@var NostoLogger $logger */
     private NostoLogger $logger;
-
-
+    
     /**
      * Builder constructor.
      *
