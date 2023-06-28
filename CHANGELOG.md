@@ -1,5 +1,8 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 7.2.6
+* Convert price in cart tagging item to avoid rounding errors
+
 ### 7.2.5
 * Restore `nosto_product_sync.delete` message queue consumer to handle product deletion
 
