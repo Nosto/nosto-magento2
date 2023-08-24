@@ -44,6 +44,8 @@ use Magento\Catalog\Model\ProductRepository;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Quote\Model\Quote\Item;
 use Nosto\Model\Cart\LineItem;
+use Nosto\Tagging\Helper\Currency as CurrencyHelper;
+use Nosto\Tagging\Helper\Price as NostoPriceHelper;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Item\Downloadable;
 use Nosto\Tagging\Model\Item\Giftcard;
@@ -54,35 +56,41 @@ use Nosto\Tagging\Model\Cart\Item\Grouped as CartGroupedItem;
 
 class Builder
 {
-    /**
-     * @var ManagerInterface $eventManager
-     */
+    /** @var ManagerInterface $eventManager */
     private ManagerInterface $eventManager;
 
-    /**
-     * @var ProductRepository $productRepository
-     */
+    /** @var ProductRepository $productRepository */
     private ProductRepository $productRepository;
 
-    /**
-     * @var NostoLogger $logger
-     */
-    private NostoLogger $logger;
+    /** @var CurrencyHelper */
+    private CurrencyHelper $nostoCurrencyHelper;
 
+    /** @var NostoPriceHelper */
+    private NostoPriceHelper $nostoPriceHelper;
+
+    /**@var NostoLogger $logger */
+    private NostoLogger $logger;
+    
     /**
      * Builder constructor.
      *
      * @param ManagerInterface $eventManager
      * @param ProductRepository $productRepository
+     * @param NostoPriceHelper $priceHelper
+     * @param CurrencyHelper $nostoCurrencyHelper
      * @param NostoLogger $logger
      */
     public function __construct(
         ManagerInterface $eventManager,
         ProductRepository $productRepository,
+        NostoPriceHelper $priceHelper,
+        CurrencyHelper $nostoCurrencyHelper,
         NostoLogger $logger
     ) {
         $this->eventManager = $eventManager;
         $this->productRepository = $productRepository;
+        $this->nostoPriceHelper = $priceHelper;
+        $this->nostoCurrencyHelper = $nostoCurrencyHelper;
         $this->logger = $logger;
     }
 
@@ -126,8 +134,18 @@ class Builder
                 break;
         }
         try {
-            $cartItem->setPrice($item->getPriceInclTax());
+            $product = $item->getProduct();
+            $store = $item->getStore();
+            $price = $this->nostoCurrencyHelper->convertToTaggingPrice(
+                $this->nostoPriceHelper->getProductFinalDisplayPrice(
+                    $product,
+                    $store
+                ),
+                $store
+            );
+            $cartItem->setPrice($price);
         } catch (Exception $e) {
+            $this->logger->exception($e);
             $cartItem->setPrice(0);
         }
 
