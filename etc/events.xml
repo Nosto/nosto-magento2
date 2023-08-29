@@ -55,6 +55,9 @@
     <event name="checkout_cart_product_add_after">
         <observer name="nosto_checkout_cart_product_add_after" instance="Nosto\Tagging\Observer\Cart\Add"/>
     </event>
+    <event name="catalog_category_save_after">
+        <observer name="nosto_update_categories" instance="Nosto\Tagging\Observer\Category\Update"/>
+    </event>
     <event name="newsletter_subscriber_save_commit_after">
         <observer name="nosto_newsletter_subscriber_save_after" instance="Nosto\Tagging\Observer\Customer\UpdateMarketingPermission"/>
     </event>

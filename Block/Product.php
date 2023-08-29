@@ -143,19 +143,6 @@ class Product extends View
     }
 
     /**
-     * Returns the Nosto category DTO.
-     *
-     * @return string|null the current category as a slash-delimited string
-     */
-    public function getNostoCategory()
-    {
-        /** @phan-suppress-next-line PhanDeprecatedFunction */
-        $category = $this->_coreRegistry->registry('current_category');
-        $store = $this->nostoHelperScope->getStore();
-        return $category !== null ? $this->categoryBuilder->build($category, $store) : null;
-    }
-
-    /**
      * Formats a price e.g. "1234.56".
      *
      * @param int|float|string $price the price to format.

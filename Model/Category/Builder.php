@@ -37,33 +37,46 @@
 namespace Nosto\Tagging\Model\Category;
 
 use Exception;
+use Magento\Catalog\Api\CategoryRepositoryInterface;
 use Magento\Catalog\Model\Category;
 use Magento\Framework\Event\ManagerInterface;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Store\Model\Store;
-use Nosto\Model\Category as NostoCategory;
+use Nosto\Model\Category\Category as NostoCategory;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Service\Product\Category\CategoryServiceInterface as NostoCategoryService;
 
 class Builder
 {
-    private NostoLogger $logger;
+    /** @var CategoryRepositoryInterface */
+    private CategoryRepositoryInterface $categoryRepository;
+
+    /** @var ManagerInterface */
     private ManagerInterface $eventManager;
+
+    /** @var NostoCategoryService */
     private NostoCategoryService $nostoCategoryService;
+
+    /** @var NostoLogger */
+    private NostoLogger $logger;
 
     /**
      * Builder constructor.
-     * @param NostoLogger $logger
+     * @param CategoryRepositoryInterface $categoryRepository
      * @param ManagerInterface $eventManager
      * @param NostoCategoryService $nostoCategoryService
+     * @param NostoLogger $logger
      */
     public function __construct(
-        NostoLogger $logger,
+        CategoryRepositoryInterface $categoryRepository,
         ManagerInterface $eventManager,
-        NostoCategoryService $nostoCategoryService
+        NostoCategoryService $nostoCategoryService,
+        NostoLogger $logger
     ) {
-        $this->logger = $logger;
+        $this->categoryRepository = $categoryRepository;
         $this->eventManager = $eventManager;
         $this->nostoCategoryService = $nostoCategoryService;
+        $this->logger = $logger;
     }
 
     /**
@@ -77,18 +90,16 @@ class Builder
         try {
             $nostoCategory->setId($category->getId());
             $nostoCategory->setParentId($category->getParentId());
-            $nostoCategory->setImageUrl($category->getImageUrl());
-            $nostoCategory->setLevel($category->getLevel());
+            $nostoCategory->setTitle($this->getCategoryNameById($category->getId(), $store->getId()));
+            $path = $this->nostoCategoryService->getCategory($category, $store);
+            $nostoCategory->setPath($path);
+            $nostoCategory->setCategoryString($path);
             $nostoCategory->setUrl($category->getUrl());
-            $nostoCategory->setVisibleInMenu($this->getCategoryVisibleInMenu($category));
-            $nostoCategory->setCategoryString(
-                $this->nostoCategoryService->getCategory($category, $store)
-            );
-            $nostoCategory->setName($category->getName());
+            $nostoCategory->setAvailable($category->getIsActive() ?? false);
         } catch (Exception $e) {
             $this->logger->exception($e);
         }
-        if (empty($nostoCategory)) {
+        if (empty($nostoCategory->getId())) {
             $nostoCategory = null;
         } else {
             $this->eventManager->dispatch(
@@ -101,12 +112,13 @@ class Builder
     }
 
     /**
-     * @param Category $category
-     * @return bool
+     * @param int $id
+     * @param int $storeId
+     * @return string
+     * @throws NoSuchEntityException
      */
-    private function getCategoryVisibleInMenu(Category $category)
+    private function getCategoryNameById(int $id, int $storeId)
     {
-        $visibleInMenu = $category->getIncludeInMenu();
-        return $visibleInMenu === "1";
+        return $this->categoryRepository->get($id, $storeId)->getName();
     }
 }

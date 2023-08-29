@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2020, Nosto Solutions Ltd
+ * Copyright (c) 2023, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -34,96 +34,66 @@
  *
  */
 
-namespace Nosto\Tagging\Block;
+namespace Nosto\Tagging\Controller\Export;
 
-use Magento\Framework\Registry;
-use Magento\Framework\View\Element\Template;
-use Magento\Framework\View\Element\Template\Context;
-use Nosto\Model\Category\Category as NostoCategory;
+use Magento\Framework\App\Action\Context;
+use Magento\Store\Model\Store;
+use Nosto\Model\AbstractCollection;
+use Nosto\Model\Category\CategoryCollection;
+use Nosto\NostoException;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
-use Nosto\Tagging\Model\Category\Builder as NostoCategoryBuilder;
+use Nosto\Tagging\Model\Category\CollectionBuilder;
 
 /**
- * Category block used for outputting meta-data on the stores category pages.
- * This meta-data is sent to Nosto via JavaScript when users are browsing the
- * pages in the store.
+ * Category export controller used to export category tree to Nosto.
+ * This controller will be called by Nosto when a new account has been created
+ * from the Magento backend. The controller is public, but the information is
+ * encrypted with AES, and only Nosto can decrypt it.
  */
-class Category extends Template
+class Category extends Base
 {
-    use TaggingTrait {
-        TaggingTrait::__construct as taggingConstruct; // @codingStandardsIgnoreLine
-    }
+    public const PARAM_PREVIEW = 'preview';
+
+    /** @var CollectionBuilder  */
+    private CollectionBuilder $nostoCollectionBuilder;
 
     /**
-     * @var Registry
-     */
-    private Registry $registry;
-
-    /**
-     * @var NostoCategoryBuilder
-     */
-    private NostoCategoryBuilder $categoryBuilder;
-
-    /**
-     * @var NostoHelperScope
-     */
-    private NostoHelperScope $nostoHelperScope;
-
-    /**
-     * @var NostoHelperAccount
-     */
-    private NostoHelperAccount $nostoHelperAccount;
-
-    /**
-     * Constructor.
-     *
      * @param Context $context
-     * @param Registry $registry
-     * @param NostoCategoryBuilder $categoryBuilder
      * @param NostoHelperScope $nostoHelperScope
      * @param NostoHelperAccount $nostoHelperAccount
-     * @param array $data
+     * @param CollectionBuilder $collectionBuilder
      */
     public function __construct(
         Context $context,
-        Registry $registry,
-        NostoCategoryBuilder $categoryBuilder,
         NostoHelperScope $nostoHelperScope,
         NostoHelperAccount $nostoHelperAccount,
-        array $data = []
+        CollectionBuilder $collectionBuilder
     ) {
-        parent::__construct($context, $data);
-
-        $this->registry = $registry;
-        $this->categoryBuilder = $categoryBuilder;
-        $this->nostoHelperScope = $nostoHelperScope;
-        $this->nostoHelperAccount = $nostoHelperAccount;
+        parent::__construct($context, $nostoHelperScope, $nostoHelperAccount);
+        $this->nostoCollectionBuilder = $collectionBuilder;
     }
 
     /**
-     * Returns the current category as a slash delimited string
-     *
-     * @return NostoCategory|null the current category as a slash delimited string
+     * @param Store $store
+     * @param int $limit
+     * @param int $offset
+     * @return AbstractCollection|CategoryCollection
+     * @throws NostoException
      */
-    private function getNostoCategory()
+    public function buildExportCollection(Store $store, int $limit = 100, int $offset = 0)
     {
-        /** @phan-suppress-next-line PhanDeprecatedFunction */
-        $category = $this->registry->registry('current_category');
-        $store = $this->nostoHelperScope->getStore();
-        if ($category) {
-            return $this->categoryBuilder->build($category, $store);
-        }
-        return null;
+        return $this->nostoCollectionBuilder->buildMany($store, $limit, $offset);
     }
 
     /**
-     * Returns the HTML to render categories
-     *
-     * @return NostoCategory|null
+     * @param Store $store
+     * @param $id
+     * @return AbstractCollection|CategoryCollection
+     * @throws NostoException
      */
-    public function getAbstractObject()
+    public function buildSingleExportCollection(Store $store, $id)
     {
-        return $this->getNostoCategory();
+        return $this->nostoCollectionBuilder->buildSingle($store, $id);
     }
 }
