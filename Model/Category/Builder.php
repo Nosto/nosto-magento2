@@ -92,8 +92,8 @@ class Builder
             $nostoCategory->setParentId($category->getParentId());
             $nostoCategory->setTitle($this->getCategoryNameById($category->getId(), $store->getId()));
             $path = $this->nostoCategoryService->getCategory($category, $store);
-            $nostoCategory->setPath($path);
-            $nostoCategory->setCategoryString($path);
+            $nostoCategory->setPath($path ?? '');
+            $nostoCategory->setCategoryString($path ?? '');
             $nostoCategory->setUrl($category->getUrl());
             $nostoCategory->setAvailable($category->getIsActive() ?? false);
         } catch (Exception $e) {
