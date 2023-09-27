@@ -43,7 +43,7 @@ use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Setup\ModuleDataSetupInterface;
 use Magento\Framework\Setup\Patch\DataPatchInterface;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
-use Zend_Validate_Exception;
+use Magento\Framework\Validator\ValidateException;
 use Exception;
 
 class AddCustomerReference implements DataPatchInterface
@@ -102,7 +102,7 @@ class AddCustomerReference implements DataPatchInterface
 
     /**
      * @throws LocalizedException
-     * @throws Zend_Validate_Exception
+     * @throws ValidateException
      * @throws Exception
      */
     public function addCustomerReference()
