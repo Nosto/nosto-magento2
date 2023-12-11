@@ -53,6 +53,12 @@ use Nosto\Tagging\Model\Service\Product\ImageService;
 use Nosto\Tagging\Model\Service\Stock\StockService;
 use Nosto\Types\Product\ProductInterface;
 
+use Magento\Sales\Model\OrderRepository;
+use Magento\Sales\Model\ResourceModel\Order\CollectionFactory as OrderCollectionFactory;
+use Magento\Sales\Model\Order\ItemRepository;
+use Magento\Framework\Api\SearchCriteriaBuilder;
+
+
 // @codingStandardsIgnoreLine
 
 class Builder
@@ -84,6 +90,11 @@ class Builder
     /** @var StockService */
     private StockService $stockService;
 
+    private $orderRepository;
+    private $orderCollectionFactory;
+    private $orderItemRepository;
+    private $searchCriteriaBuilder;
+
     /**
      * Builder constructor.
      * @param NostoDataHelper $nostoDataHelper
@@ -105,7 +116,11 @@ class Builder
         AttributeServiceInterface $attributeService,
         AvailabilityService $availabilityService,
         ImageService $imageService,
-        StockService $stockService
+        StockService $stockService,
+        OrderRepository $orderRepository,
+        OrderCollectionFactory $orderCollectionFactory,
+        ItemRepository $orderItemRepository,
+        SearchCriteriaBuilder $searchCriteriaBuilder
     ) {
         $this->nostoDataHelper = $nostoDataHelper;
         $this->nostoPriceHelper = $priceHelper;
@@ -116,6 +131,10 @@ class Builder
         $this->availabilityService = $availabilityService;
         $this->imageService = $imageService;
         $this->stockService = $stockService;
+        $this->orderRepository = $orderRepository;
+        $this->orderCollectionFactory = $orderCollectionFactory;
+        $this->orderItemRepository = $orderItemRepository;
+        $this->searchCriteriaBuilder = $searchCriteriaBuilder;
     }
 
     /**
@@ -174,6 +193,8 @@ class Builder
                     }
                 }
             }
+            $nostoSku->addCustomField('returns', $this->getReturnRate($product->getId()));
+            $nostoSku->addCustomField('##id is:', $product->getId());
             if ($this->nostoDataHelper->isInventoryTaggingEnabled($store)) {
                 $nostoSku->setInventoryLevel($this->stockService->getQuantity($product, $store));
             }
@@ -202,5 +223,46 @@ class Builder
         }
 
         return ProductInterface::OUT_OF_STOCK;
+    }
+
+    public function getReturnRate($productId)
+    {
+        $orderCollection = $this->orderCollectionFactory->create();
+        $orderCollection->addFieldToFilter('status', ['in' => ['complete', 'closed']]);
+
+        $orderItems = [];
+        foreach ($orderCollection as $order) {
+            foreach ($order->getAllVisibleItems() as $item) {
+                $orderItems[] = $item->getProductId();
+            }
+        }
+
+        $totalOrders = count($orderItems);
+        $returnedOrders = $this->getReturnedOrders($productId);
+        return (string)$returnedOrders;
+//        if ($totalOrders > 0) {
+//            $returnRate = $returnedOrders / $totalOrders * 100;
+//            return $returnRate;
+//        }
+
+//        return 0;
+    }
+
+    private function getReturnedOrders($productId)
+    {
+        $searchCriteria = $this->searchCriteriaBuilder
+            ->addFilter('product_id', $productId)
+//            ->addFilter('product_id', "1812")
+//            ->addFilter('qty_invoiced', 0, '>')
+            ->create();
+
+        $returnedOrders = 0;
+        $orderItems = $this->orderItemRepository->getList($searchCriteria)->getItems();
+
+        foreach ($orderItems as $item) {
+            $returnedOrders += $item->getQtyRefunded();
+        }
+
+        return $returnedOrders;
     }
 }
