@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "118be0660735636b99e5e439f71fc122",
+    "content-hash": "bf7fe6548f1a69f404bf4e4f4b2cd27e",
     "packages": [
         {
             "name": "brick/math",
@@ -12242,25 +12242,57 @@
             "time": "2020-07-02T05:49:25+00:00"
         },
         {
-            "name": "yotpo/module-review",
-            "version": "3.3.0",
+            "name": "yotpo/module-yotpo-combined",
+            "version": "4.1.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/YotpoLtd/magento2-module-yotpo-reviews.git",
-                "reference": "0fa443867817ff3b6c56cebb51137e456881fc31"
+                "url": "https://github.com/YotpoLtd/magento2-module-combined.git",
+                "reference": "e30ff40cedc9a5681ecbc8f4948a786bfd9fcd2f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/YotpoLtd/magento2-module-yotpo-reviews/zipball/0fa443867817ff3b6c56cebb51137e456881fc31",
-                "reference": "0fa443867817ff3b6c56cebb51137e456881fc31",
+                "url": "https://api.github.com/repos/YotpoLtd/magento2-module-combined/zipball/e30ff40cedc9a5681ecbc8f4948a786bfd9fcd2f",
+                "reference": "e30ff40cedc9a5681ecbc8f4948a786bfd9fcd2f",
                 "shasum": ""
             },
             "require": {
-                "magento/framework": ">=101.0.0",
+                "yotpo/module-yotpo-messaging": "4.1.0",
+                "yotpo/module-yotpo-reviews": "4.1.0"
+            },
+            "type": "metapackage",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "OSL-3.0",
+                "AFL-3.0"
+            ],
+            "description": "Yotpo marketing extension for Magento2",
+            "support": {
+                "source": "https://github.com/YotpoLtd/magento2-module-combined/tree/4.1.0"
+            },
+            "time": "2023-07-19T20:38:27+00:00"
+        },
+        {
+            "name": "yotpo/module-yotpo-core",
+            "version": "4.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/YotpoLtd/magento2-module-core.git",
+                "reference": "c5ecd93ee9077fc3cc510876078099e58cee6d5c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/YotpoLtd/magento2-module-core/zipball/c5ecd93ee9077fc3cc510876078099e58cee6d5c",
+                "reference": "c5ecd93ee9077fc3cc510876078099e58cee6d5c",
+                "shasum": ""
+            },
+            "require": {
+                "magento/framework": ">=102.0.0",
                 "php": "~5.6.0|^7.0|^8.0"
             },
             "replace": {
-                "yotpo/magento2-module-yotpo-reviews": "*"
+                "yotpo/magento2-module-yotpo-reviews": "*",
+                "yotpo/module-review": "*",
+                "yotpo/module-yotpo": "*"
             },
             "type": "magento2-module",
             "autoload": {
@@ -12268,7 +12300,85 @@
                     "registration.php"
                 ],
                 "psr-4": {
-                    "Yotpo\\Yotpo\\": ""
+                    "Yotpo\\Core\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "OSL-3.0",
+                "AFL-3.0"
+            ],
+            "description": "Yotpo Reviews core extension for Magento2",
+            "support": {
+                "source": "https://github.com/YotpoLtd/magento2-module-core/tree/4.1.0"
+            },
+            "time": "2023-07-23T09:58:28+00:00"
+        },
+        {
+            "name": "yotpo/module-yotpo-messaging",
+            "version": "4.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/YotpoLtd/magento2-module-messaging.git",
+                "reference": "f3e3b355d6f6169dee6d607c03d76935e41d343b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/YotpoLtd/magento2-module-messaging/zipball/f3e3b355d6f6169dee6d607c03d76935e41d343b",
+                "reference": "f3e3b355d6f6169dee6d607c03d76935e41d343b",
+                "shasum": ""
+            },
+            "require": {
+                "magento/framework": ">=102.0.0",
+                "php": "~5.6.0|^7.0|^8.0",
+                "yotpo/module-yotpo-core": "4.1.0"
+            },
+            "type": "magento2-module",
+            "autoload": {
+                "files": [
+                    "registration.php"
+                ],
+                "psr-4": {
+                    "Yotpo\\SmsBump\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "OSL-3.0",
+                "AFL-3.0"
+            ],
+            "description": "Yotpo Sms extension for Magento2",
+            "support": {
+                "source": "https://github.com/YotpoLtd/magento2-module-messaging/tree/4.1.0"
+            },
+            "time": "2023-07-19T20:30:28+00:00"
+        },
+        {
+            "name": "yotpo/module-yotpo-reviews",
+            "version": "4.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/YotpoLtd/magento2-module-reviews.git",
+                "reference": "be1a534ffb9de5e7eece14751d624ec60bcafb6d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/YotpoLtd/magento2-module-reviews/zipball/be1a534ffb9de5e7eece14751d624ec60bcafb6d",
+                "reference": "be1a534ffb9de5e7eece14751d624ec60bcafb6d",
+                "shasum": ""
+            },
+            "require": {
+                "magento/framework": ">=102.0.0",
+                "php": "~5.6.0|^7.0|^8.0",
+                "yotpo/module-yotpo-core": "4.1.0"
+            },
+            "type": "magento2-module",
+            "autoload": {
+                "files": [
+                    "registration.php"
+                ],
+                "psr-4": {
+                    "Yotpo\\Reviews\\": ""
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -12278,10 +12388,9 @@
             ],
             "description": "Yotpo Reviews extension for Magento2",
             "support": {
-                "issues": "https://github.com/YotpoLtd/magento2-module-yotpo-reviews/issues",
-                "source": "https://github.com/YotpoLtd/magento2-module-yotpo-reviews/tree/3.3.0"
+                "source": "https://github.com/YotpoLtd/magento2-module-reviews/tree/4.1.0"
             },
-            "time": "2023-05-03T19:39:41+00:00"
+            "time": "2023-09-05T12:14:35+00:00"
         }
     ],
     "aliases": [],
