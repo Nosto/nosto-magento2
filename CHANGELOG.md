@@ -2,6 +2,7 @@ All notable changes to this project will be documented in this file. This projec
 
 ### Unreleased
 * Replace deprecated Zend_db_select usage
+* Update Yotpo compatibility to > 4.1 and remove < 3.3
 
 ### 7.3.1
 * Fix issue with category export where default categories were not exported correctly
