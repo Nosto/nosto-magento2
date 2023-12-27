@@ -137,7 +137,7 @@ class Ratings extends AbstractHelper
                 try {
                     $this->setRegistryProduct($product);
 
-                    $ratings = $this->ratingsFactory->create()->getRichSnippet();
+                    $ratings = $this->ratingsFactory->create()->getRichSnippet($product->getId());
                 } catch (Exception $e) {
                     $this->resetRegistryProduct();
                     $this->logger->exception($e);
