@@ -51,8 +51,8 @@ use Nosto\Tagging\Helper\Data as NostoDataHelper;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Product\Repository as ProductRepository;
 use Nosto\Tagging\Model\Product\Url\Builder as NostoUrlBuilder;
-use Zend_Uri_Exception;
-use Zend_Uri_Http;
+use Laminas\Uri\Exception\InvalidArgumentException;
+use Laminas\Uri\UriFactory;
 
 /**
  * Url helper class for common URL related tasks.
@@ -188,12 +188,12 @@ class Url extends AbstractHelper
      * @param string $currentUrl restore cart url
      * @return string cart url.
      * @throws NoSuchEntityException
-     * @throws Zend_Uri_Exception
+     * @throws InvalidArgumentException
      */
     public function getUrlCart(Store $store, string $currentUrl)
     {
-        $zendHttp = Zend_Uri_Http::fromString($currentUrl);
-        $urlParameters = $zendHttp->getQueryAsArray();
+        $uri = UriFactory::factory($currentUrl);
+        $urlParameters = $uri->getQueryAsArray();
 
         $defaultParams = $this->getUrlOptionsWithNoSid($store);
         $url = $store->getUrl(
