@@ -40,7 +40,7 @@ use Magento\Framework\Exception\LocalizedException;
 use Magento\Sales\Api\Data\EntityInterface;
 use Magento\Store\Model\Store;
 use Magento\Catalog\Model\ResourceModel\Category\Collection as CategoryCollection;
-use Zend_Db_Select;
+use Magento\Framework\DB\Select;
 
 /**
  * A builder class for building product collection with the most common filters
@@ -158,7 +158,7 @@ class CollectionBuilder
      */
     public function init()
     {
-        $this->categoryCollection->clear()->getSelect()->reset(Zend_Db_Select::WHERE);
+        $this->categoryCollection->clear()->getSelect()->reset(Select::WHERE);
         return $this;
     }
 

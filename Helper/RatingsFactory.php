@@ -38,7 +38,7 @@
 namespace Nosto\Tagging\Helper;
 
 use Magento\Framework\ObjectManagerInterface;
-use Yotpo\Yotpo\Helper\RichSnippets;
+use Yotpo\Reviews\Model\Sync\RichSnippets;
 
 class RatingsFactory
 {
@@ -62,6 +62,6 @@ class RatingsFactory
     public function create()
     {
         /** @phan-suppress-next-line PhanUndeclaredTypeReturnType */
-        return $this->objectManager->create('Yotpo\Yotpo\Helper\RichSnippets'); // @codingStandardsIgnoreLine
+        return $this->objectManager->create('Yotpo\Reviews\Model\Sync\RichSnippets'); // @codingStandardsIgnoreLine
     }
 }

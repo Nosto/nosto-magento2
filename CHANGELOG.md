@@ -1,5 +1,12 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 7.4.0
+* Replace deprecated Zend_db_select usage
+* Update Yotpo compatibility to > 4.1 and remove < 3.3
+* Add db_schema_whitelist.json to ensure database schema changes are applied correctly
+* Log error in order builder when failing to convert from base price
+* Replace Zend_Uri_Http with Laminas\Uri (@piotrkwiecinski)
+
 ### 7.3.1
 * Fix issue with category export where default categories were not exported correctly
 

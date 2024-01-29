@@ -41,7 +41,7 @@ use Magento\Sales\Api\Data\EntityInterface;
 use Magento\Store\Model\Store;
 use Nosto\Tagging\Model\ResourceModel\Magento\Product\Collection as ProductCollection;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
-use Zend_Db_Select;
+use Magento\Framework\DB\Select;
 
 /**
  * A builder class for building product collection with the most common filters
@@ -203,7 +203,7 @@ class CollectionBuilder
      */
     public function init()
     {
-        $this->productCollection->clear()->getSelect()->reset(Zend_Db_Select::WHERE);
+        $this->productCollection->clear()->getSelect()->reset(Select::WHERE);
         return $this;
     }
 
