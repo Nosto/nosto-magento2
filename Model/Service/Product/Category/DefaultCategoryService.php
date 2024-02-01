@@ -138,4 +138,20 @@ class DefaultCategoryService implements CategoryServiceInterface
 
         return $nostoCategory;
     }
+
+    /**
+     * @param Product $product
+     * @param StoreInterface $store
+     * @return array
+     */
+    public function getCategoryParentIds(Product $product, StoreInterface $store)
+    {
+        $parentCategoriesIds = [];
+        foreach ($product->getCategoryCollection()->setStore($store->getId()) as $category) {
+            foreach ($category->getParentIds() as $parentId) {
+                $parentCategoriesIds[] = $parentId;
+            }
+        }
+        return array_values(array_unique($parentCategoriesIds)); // Sequential keys to avoid serialization issues
+    }
 }
