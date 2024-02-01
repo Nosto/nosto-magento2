@@ -44,6 +44,7 @@ use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Sales\Model\Order\Item;
 use Nosto\Model\Cart\LineItem;
+use Nosto\NostoException;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Item\Downloadable;
 use Nosto\Tagging\Model\Item\Giftcard;
@@ -142,6 +143,14 @@ class Builder
             }
             $nostoItem->setPrice($price);
         } catch (Exception $e) {
+            $this->logger->exception(
+                new NostoException(
+                    sprintf(
+                        'Could not calculate order item price, message was: %s',
+                        $e->getMessage()
+                    )
+                )
+            );
             $nostoItem->setPrice(0);
         }
 
