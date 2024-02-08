@@ -86,6 +86,9 @@ class CachingCategoryService implements CategoryServiceInterface
         return $this->categoryService->getCategories($product, $store);
     }
 
+    /**
+     * @inheritDoc
+     */
     public function getCategoryParentIds(Product $product, StoreInterface $store)
     {
         return $this->categoryService->getCategoryParentIds($product, $store);

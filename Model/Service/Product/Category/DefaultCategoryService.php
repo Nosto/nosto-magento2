@@ -147,6 +147,7 @@ class DefaultCategoryService implements CategoryServiceInterface
     public function getCategoryParentIds(Product $product, StoreInterface $store)
     {
         $parentCategoriesIds = [];
+        /** @phan-suppress-next-line PhanUndeclaredMethod */
         foreach ($product->getCategoryCollection()->setStore($store->getId()) as $category) {
             foreach ($category->getParentIds() as $parentId) {
                 $parentCategoriesIds[] = $parentId;
