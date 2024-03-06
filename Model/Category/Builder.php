@@ -91,9 +91,9 @@ class Builder
             $nostoCategory->setId($category->getId());
             $nostoCategory->setParentId($category->getParentId());
             $nostoCategory->setTitle($this->getCategoryNameById($category->getId(), $store->getId()));
-            $path = $this->nostoCategoryService->getCategory($category, $store);
-            $nostoCategory->setPath($path ?? '');
-            $nostoCategory->setCategoryString($path ?? '');
+            $pathString = $this->nostoCategoryService->getCategory($category, $store);
+            $nostoCategory->setPath($category->getPath() ?? '');
+            $nostoCategory->setCategoryString($pathString ?? '');
             $nostoCategory->setUrl($category->getUrl());
             $nostoCategory->setAvailable($category->getIsActive() ?? false);
         } catch (Exception $e) {

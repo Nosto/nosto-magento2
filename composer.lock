@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "bf7fe6548f1a69f404bf4e4f4b2cd27e",
+    "content-hash": "cc92a380a8b805a1f582fac9f0ce1d2b",
     "packages": [
         {
             "name": "brick/math",
@@ -2862,16 +2862,16 @@
         },
         {
             "name": "nosto/php-sdk",
-            "version": "7.2.0",
+            "version": "7.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Nosto/nosto-php-sdk.git",
-                "reference": "efe6218e43bf08b41ca9500b9b1434d1de25e564"
+                "reference": "9588f93424490daf8c2b174842254f63bad0a945"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Nosto/nosto-php-sdk/zipball/efe6218e43bf08b41ca9500b9b1434d1de25e564",
-                "reference": "efe6218e43bf08b41ca9500b9b1434d1de25e564",
+                "url": "https://api.github.com/repos/Nosto/nosto-php-sdk/zipball/9588f93424490daf8c2b174842254f63bad0a945",
+                "reference": "9588f93424490daf8c2b174842254f63bad0a945",
                 "shasum": ""
             },
             "require": {
@@ -2912,9 +2912,9 @@
             "description": "PHP SDK for developing Nosto modules for e-commerce platforms",
             "support": {
                 "issues": "https://github.com/Nosto/nosto-php-sdk/issues",
-                "source": "https://github.com/Nosto/nosto-php-sdk/tree/7.2.0"
+                "source": "https://github.com/Nosto/nosto-php-sdk/tree/7.3.0"
             },
-            "time": "2023-11-23T15:12:57+00:00"
+            "time": "2024-02-08T14:56:42+00:00"
         },
         {
             "name": "paragonie/constant_time_encoding",
