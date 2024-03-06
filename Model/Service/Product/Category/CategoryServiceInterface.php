@@ -55,4 +55,11 @@ interface CategoryServiceInterface
      * @return array
      */
     public function getCategories(Product $product, StoreInterface $store);
+
+    /**
+     * @param Product $product
+     * @param StoreInterface $store
+     * @return array
+     */
+    public function getCategoryParentIds(Product $product, StoreInterface $store);
 }

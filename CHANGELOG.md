@@ -1,5 +1,8 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 7.5.0
+* Add category parent id to tagging and product data
+
 ### 7.4.0
 * Replace deprecated Zend_db_select usage
 * Update Yotpo compatibility to > 4.1 and remove < 3.3
