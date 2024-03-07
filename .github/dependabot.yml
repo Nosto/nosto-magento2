@@ -5,3 +5,12 @@ registries:
     url: https://repo.magento.com
     username: ${{ secrets.REPO_USR }}
     password: ${{ secrets.REPO_PSW }}
+
+updates:
+  - package-ecosystem: composer
+    directory: "/"
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 0
+    registries:
+      - adobe
