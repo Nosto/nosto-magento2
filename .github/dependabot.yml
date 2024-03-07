@@ -1,0 +1,7 @@
+version: 2
+registries:
+  adobe:
+    type: composer-repository
+    url: https://repo.magento.com
+    username: ${{ secrets.REPO_USR }}
+    password: ${{ secrets.REPO_PSW }}
