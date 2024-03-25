@@ -111,7 +111,7 @@ class DefaultCategoryService implements CategoryServiceInterface
             }
 
             $categories = $this->categoryCollectionFactory->create()
-                ->addAttributeToSelect('*')
+                ->addAttributeToSelect('name')
                 ->addAttributeToFilter('entity_id', $categoryIds)
                 ->setStore($store->getId())
                 ->addAttributeToSort('level', Collection::SORT_ORDER_ASC);
