@@ -52,7 +52,6 @@ use Nosto\Model\Order\Order as NostoOrder;
 use Nosto\Model\Order\OrderStatus;
 use Nosto\NostoException;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
-use Nosto\Tagging\Model\Order\Buyer\Builder as NostoBuyerBuilder;
 use Nosto\Tagging\Model\Order\Item\Builder as NostoOrderItemBuilder;
 
 class Builder
@@ -63,27 +62,23 @@ class Builder
     private SalesRuleFactory $salesRuleFactory;
     private NostoOrderItemBuilder $nostoOrderItemBuilder;
     private ManagerInterface $eventManager;
-    private NostoBuyerBuilder $buyerBuilder;
 
     /**
      * @param NostoLogger $logger
      * @param SalesRuleFactory $salesRuleFactory
      * @param NostoOrderItemBuilder $nostoOrderItemBuilder
      * @param ManagerInterface $eventManager
-     * @param NostoBuyerBuilder $buyerBuilder
      */
     public function __construct(
         NostoLogger $logger,
         SalesRuleFactory $salesRuleFactory,
         NostoOrderItemBuilder $nostoOrderItemBuilder,
-        ManagerInterface $eventManager,
-        NostoBuyerBuilder $buyerBuilder
+        ManagerInterface $eventManager
     ) {
         $this->logger = $logger;
         $this->salesRuleFactory = $salesRuleFactory;
         $this->nostoOrderItemBuilder = $nostoOrderItemBuilder;
         $this->eventManager = $eventManager;
-        $this->buyerBuilder = $buyerBuilder;
     }
 
     /**
@@ -120,10 +115,7 @@ class Builder
                 }
                 $nostoOrder->setOrderStatus($nostoStatus);
             }
-            $nostoBuyer = $this->buyerBuilder->fromOrder($order);
-            if ($nostoBuyer instanceof Buyer) {
-                $nostoOrder->setCustomer($nostoBuyer);
-            }
+            $nostoOrder->setCustomer(new Buyer());
 
             // Add each ordered item as a line item
             /** @var Item $item */
