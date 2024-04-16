@@ -1,5 +1,11 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 7.5.1
+* Upgrade SDK to 7.4
+* Remove PII information from Order Export
+* Query speed-up when building categories
+* Crypto utilities now use GCM mode
+
 ### 7.5.0
 * Add category parent id to tagging and product data
 
