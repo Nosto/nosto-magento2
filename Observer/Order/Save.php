@@ -46,7 +46,6 @@ use Magento\Framework\Indexer\IndexerRegistry;
 use Magento\Framework\Module\Manager as ModuleManager;
 use Magento\Sales\Model\Order;
 use Magento\Store\Model\Store;
-use Nosto\Model\Order\Buyer;
 use Nosto\Model\Order\Order as NostoOrder;
 use Nosto\Operation\Order\OrderCreate as NostoOrderCreate;
 use Nosto\Operation\Order\OrderStatus as NostoOrderUpdate;
@@ -256,7 +255,6 @@ class Save implements ObserverInterface
             $nostoCustomerIdentifier = NostoOrderCreate::IDENTIFIER_BY_REF;
         }
         $nostoOrder = $this->nostoOrderBuilder->build($order);
-        $nostoOrder->setCustomer(new Buyer()); // Remove customer data from order API calls
         if ($nostoCustomerId !== null) {
             try {
                 $orderService = new NostoOrderCreate(
