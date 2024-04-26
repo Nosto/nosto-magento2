@@ -329,12 +329,12 @@ class Repository
 
     /**
      * Loads (or reloads) Product object
-     * @param int $productId
+     * @param string $productId
      * @param int $storeId
      * @return ProductInterface|Product
      * @throws NoSuchEntityException
      */
-    public function reloadProduct(int $productId, int $storeId)
+    public function reloadProduct(string $productId, int $storeId)
     {
         return $this->productRepository->getById(
             $productId,

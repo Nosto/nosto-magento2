@@ -41,7 +41,7 @@ use Throwable;
 
 class ParentProductDisabledException extends NostoException
 {
-    public function __construct(int $productId, $code = 0, Throwable $previous = null)
+    public function __construct(string $productId, $code = 0, Throwable $previous = null)
     {
         $message = "Parent product is disabled for SKU with id: " . $productId;
         parent::__construct($message, $code, $previous);

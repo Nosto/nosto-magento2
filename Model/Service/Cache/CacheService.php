@@ -130,22 +130,22 @@ class CacheService extends AbstractService
     }
 
     /**
-     * @param int $productId
+     * @param string $productId
      * @param int $storeId
      * @return Product|null
      */
-    private function getById(int $productId, int $storeId)
+    private function getById(string $productId, int $storeId)
     {
         $cachedProduct = $this->productDataCache->load($this->generateCacheKey($productId, $storeId));
         return $cachedProduct ? $this->productSerializer->fromString($cachedProduct) : null;
     }
 
     /**
-     * @param int $productId
+     * @param string $productId
      * @param int $storeId
      * @return string
      */
-    private function generateCacheKey(int $productId, int $storeId)
+    private function generateCacheKey(string $productId, int $storeId)
     {
         return sprintf(
             '%s-%d-%d',

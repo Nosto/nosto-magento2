@@ -157,11 +157,11 @@ class CachingStockProvider implements StockProviderInterface
     }
 
     /**
-     * @param int $productId
+     * @param string $productId
      * @param Website $website
      * @param int $quantity
      */
-    private function saveQuantityToCache(int $productId, Website $website, int $quantity)
+    private function saveQuantityToCache(string $productId, Website $website, int $quantity)
     {
         if (empty($this->quantityCache[$website->getId()])) {
             $this->quantityCache[$website->getId()] = [];
@@ -175,11 +175,11 @@ class CachingStockProvider implements StockProviderInterface
     }
 
     /**
-     * @param int $productId
+     * @param string $productId
      * @param Website $website
      * @return int|null
      */
-    private function getQuantityFromCache(int $productId, Website $website)
+    private function getQuantityFromCache(string $productId, Website $website)
     {
         if (!isset($this->quantityCache[$website->getId()][$productId])) {
             return null;
@@ -198,11 +198,11 @@ class CachingStockProvider implements StockProviderInterface
     }
 
     /**
-     * @param int $productId
+     * @param string $productId
      * @param Website $website
      * @return bool
      */
-    private function existsInQuantityCache(int $productId, Website $website)
+    private function existsInQuantityCache(string $productId, Website $website)
     {
         return isset($this->quantityCache[$website->getId()][$productId]);
     }
