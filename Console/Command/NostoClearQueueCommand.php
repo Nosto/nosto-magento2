@@ -4,20 +4,11 @@ namespace Nosto\Tagging\Console\Command;
 
 use Magento\Framework\Amqp\Config;
 use Magento\Framework\App\ResourceConnection;
-use Magento\Framework\Bulk\BulkManagementInterface;
-use Magento\Framework\MessageQueue\Publisher\Config\PublisherConfigItemInterface;
 use Nosto\NostoException;
-use PhpAmqpLib\Connection\AMQPStreamConnection;
-use PhpAmqpLib\Message\AMQPMessage;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Magento\Framework\App\ObjectManager;
-use Magento\Framework\App\Config\ScopeConfigInterface;
-use Magento\Framework\App\Bootstrap;
-use Magento\Framework\App\DeploymentConfig;
 
 class NostoClearQueueCommand extends Command
 {
@@ -42,7 +33,7 @@ class NostoClearQueueCommand extends Command
     public function __construct(
         ResourceConnection $resourceConnection,
         Config $amqpConfig
-    ){
+    ) {
         $this->resourceConnection = $resourceConnection;
         $this->amqpConfig = $amqpConfig;
 
@@ -58,7 +49,7 @@ class NostoClearQueueCommand extends Command
         parent::configure();
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
 
@@ -82,7 +73,7 @@ class NostoClearQueueCommand extends Command
      * @param SymfonyStyle $io
      * @return void
      */
-    private function clearQueue(string $topicName, SymfonyStyle $io)
+    private function clearQueue(string $topicName, SymfonyStyle $io): void
     {
         $this->clearRabbitMQQueue($topicName, $io);
         $this->clearDBQueues($topicName, $io);
@@ -92,11 +83,10 @@ class NostoClearQueueCommand extends Command
      * Clear DB.
      *
      * @param string $topicName
-     * @param $io
-     *
+     * @param SymfonyStyle $io
      * @return void
      */
-    private function clearDBQueues(string $topicName, $io)
+    private function clearDBQueues(string $topicName, SymfonyStyle $io): void
     {
         // Get connection.
         $connection = $this->resourceConnection->getConnection();
@@ -104,7 +94,7 @@ class NostoClearQueueCommand extends Command
         // Start DB transaction.
         $connection->beginTransaction();
         try {
-            // Emtyig DB tables.
+            // Emptying DB tables.
             $this->clearQueueMessages($topicName, $connection);
             $this->clearRelatedRecords($topicName, $connection);
 
@@ -119,14 +109,13 @@ class NostoClearQueueCommand extends Command
     }
 
     /**
-     *  Emtying queue message tables.
+     * Emptying queue message tables.
      *
-     * @param $topicName
+     * @param string $topicName
      * @param $connection
-     *
      * @return void
      */
-    private function clearQueueMessages($topicName, $connection)
+    private function clearQueueMessages(string $topicName, $connection): void
     {
         $queueMessageTable = $this->resourceConnection->getTableName('queue_message');
         $queueMessageStatusTable = $this->resourceConnection->getTableName('queue_message_status');
@@ -147,14 +136,13 @@ class NostoClearQueueCommand extends Command
     }
 
     /**
-     * Emtying related tables.
+     * Emptying related tables.
      *
-     * @param $topicName
+     * @param string $topicName
      * @param $connection
-     *
      * @return void
      */
-    private function clearRelatedRecords($topicName, $connection)
+    private function clearRelatedRecords(string $topicName, $connection): void
     {
         $magentoOperationTable = $this->resourceConnection->getTableName('magento_operation');
         $magentoBulkTable = $this->resourceConnection->getTableName('magento_bulk');
@@ -175,14 +163,13 @@ class NostoClearQueueCommand extends Command
     }
 
     /**
-     *  Clear RabbitMq Queues by name.
+     * Clear RabbitMq Queues by name.
      *
-     * @param $queueName
-     * @param $io
-     *
+     * @param string $queueName
+     * @param SymfonyStyle $io
      * @return void
      */
-    private function clearRabbitMQQueue($queueName, $io)
+    private function clearRabbitMQQueue(string $queueName, SymfonyStyle $io): void
     {
         try {
             // Get RabbitMq channel.
@@ -203,13 +190,12 @@ class NostoClearQueueCommand extends Command
      * Check queue exist.
      *
      * @param $channel
-     * @param $queueName
-     *
+     * @param string $queueName
      * @return bool
      */
-    protected function queueExists($channel, $queueName)
+    protected function queueExists($channel, string $queueName): bool
     {
-        $queueInfo = $channel->queue_declare($queueName, passive: true);
+        $queueInfo = $channel->queue_declare($queueName, true);
 
         return !empty($queueInfo);
     }
