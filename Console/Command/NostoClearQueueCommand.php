@@ -111,7 +111,10 @@ class NostoClearQueueCommand extends Command
             $connection->commit();
         } catch (\Exception $exception) {
             $connection->rollBack();
-            $io->error('An error occurred while clearing DB queues for topic ' . $topicName . ': ' . $exception->getMessage());
+            $io->error('An error occurred while clearing DB queues for topic '
+                . $topicName . ': '
+                . $exception->getMessage()
+            );
         }
     }
 
