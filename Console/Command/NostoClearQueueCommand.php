@@ -36,7 +36,6 @@ class NostoClearQueueCommand extends Command
     ) {
         $this->resourceConnection = $resourceConnection;
         $this->amqpConfig = $amqpConfig;
-
         parent::__construct();
     }
 
@@ -45,7 +44,6 @@ class NostoClearQueueCommand extends Command
         // Define command name.
         $this->setName('nosto:clear:queue')
             ->setDescription('Clear all message queues for Nosto product sync topics.');
-
         parent::configure();
     }
 
@@ -97,7 +95,6 @@ class NostoClearQueueCommand extends Command
             // Emptying DB tables.
             $this->clearQueueMessages($topicName, $connection);
             $this->clearRelatedRecords($topicName, $connection);
-
             $connection->commit();
         } catch (\Exception $exception) {
             $connection->rollBack();
