@@ -41,7 +41,7 @@ class NostoClearQueueCommand extends Command
 
     public function __construct(
         ResourceConnection $resourceConnection,
-        Config $amqpConfig,
+        Config $amqpConfig
     ){
         $this->resourceConnection = $resourceConnection;
         $this->amqpConfig = $amqpConfig;
@@ -106,7 +106,7 @@ class NostoClearQueueCommand extends Command
         try {
             // Emtyig DB tables.
             $this->clearQueueMessages($topicName, $connection);
-            $this->clearRelatedRecords($topicName, $connection, $io);
+            $this->clearRelatedRecords($topicName, $connection);
 
             $connection->commit();
         } catch (\Exception $exception) {
@@ -148,11 +148,10 @@ class NostoClearQueueCommand extends Command
      *
      * @param $topicName
      * @param $connection
-     * @param $io
      *
      * @return void
      */
-    private function clearRelatedRecords($topicName, $connection, $io)
+    private function clearRelatedRecords($topicName, $connection)
     {
         $magentoOperationTable = $this->resourceConnection->getTableName('magento_operation');
         $magentoBulkTable = $this->resourceConnection->getTableName('magento_bulk');
