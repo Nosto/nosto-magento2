@@ -2,9 +2,11 @@
 
 namespace Nosto\Tagging\Console\Command;
 
+use Exception;
 use Magento\Framework\Amqp\Config;
 use Magento\Framework\App\ResourceConnection;
 use Nosto\NostoException;
+use RuntimeException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Console\Input\InputInterface;
@@ -23,12 +25,12 @@ class NostoClearQueueCommand extends Command
     /**
      * @var Config
      */
-    private $amqpConfig;
+    private Config $amqpConfig;
 
     /**
      * @var ResourceConnection
      */
-    private $resourceConnection;
+    private ResourceConnection $resourceConnection;
 
     public function __construct(
         ResourceConnection $resourceConnection,
@@ -96,7 +98,7 @@ class NostoClearQueueCommand extends Command
             $this->clearQueueMessages($topicName, $connection);
             $this->clearRelatedRecords($topicName, $connection);
             $connection->commit();
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             $connection->rollBack();
             $io->error('An error occurred while clearing DB queues for topic '
                 . $topicName . ': '
@@ -176,10 +178,10 @@ class NostoClearQueueCommand extends Command
             if ($this->queueExists($channel, $queueName)) {
                 $channel->queue_purge($queueName);
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // Log the error or handle it as required.
             $io->error('An error occurred while clearing RabbitMQ queue ' . $queueName . ': ' . $e->getMessage());
-            throw new \RuntimeException('Failed to clear RabbitMQ queue: ' . $e->getMessage());
+            throw new RuntimeException('Failed to clear RabbitMQ queue: ' . $e->getMessage());
         }
     }
 
