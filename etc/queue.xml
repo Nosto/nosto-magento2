@@ -35,13 +35,13 @@
   -->
 <!--suppress XmlUnboundNsPrefix -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework-message-queue:etc/queue.xsd">
-    <broker topic="nosto_product_sync.update" exchange="magento-db" type="amqp">
+    <broker topic="nosto_product_sync.update" exchange="magento-amqp" type="amqp">
         <queue name="nosto_product_sync.update"
                consumer="nosto_product_sync.update"
                consumerInstance="Magento\Framework\MessageQueue\Consumer"
                handler="Nosto\Tagging\Model\Service\Sync\Upsert\AsyncBulkConsumer::process"/>
     </broker>
-    <broker topic="nosto_product_sync.delete" exchange="magento-db" type="amqp">
+    <broker topic="nosto_product_sync.delete" exchange="magento-amqp" type="amqp">
         <queue name="nosto_product_sync.delete"
                consumer="nosto_product_sync.delete"
                consumerInstance="Magento\Framework\MessageQueue\Consumer"
