@@ -239,7 +239,6 @@
     </type>
     <type name="Nosto\Tagging\Console\Command\NostoClearQueueCommand">
         <arguments>
-            <argument name="resourceConnection" xsi:type="object">Magento\Framework\App\ResourceConnection</argument>
             <argument name="amqpConfig" xsi:type="object">Magento\Framework\Amqp\Config</argument>
         </arguments>
     </type>
