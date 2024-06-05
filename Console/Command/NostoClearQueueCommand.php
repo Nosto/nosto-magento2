@@ -3,7 +3,7 @@
 namespace Nosto\Tagging\Console\Command;
 
 use Exception;
-use Magento\Framework\Amqp\Config;
+use Magento\Framework\Amqp\Config as AmqpConfig;
 use Magento\Framework\App\ResourceConnection;
 use Magento\Framework\Bulk\BulkManagementInterface;
 use Magento\Framework\DB\Adapter\Pdo\Mysql\Interceptor;
@@ -32,12 +32,12 @@ class NostoClearQueueCommand extends Command
     public const NOSTO_DELETE_MESSAGE_QUEUE = 'nosto_product_sync.delete';
 
     /**
-     * @var Config
+     * @var AmqpConfig
      */
-    private Config $amqpConfig;
+    private AmqpConfig $amqpConfig;
 
     public function __construct(
-        Config $amqpConfig
+        AmqpConfig $amqpConfig
     ) {
         $this->amqpConfig = $amqpConfig;
         parent::__construct();
