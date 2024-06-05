@@ -68,7 +68,7 @@ class NostoClearQueueCommand extends Command
             ];
 
             foreach ($queues as $queueName) {
-                $this->clearQueue($queueName, $io);
+                $this->clearQueue($queueName);
             }
 
             $io->success('Successfully cleared message queues.');
