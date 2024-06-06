@@ -37,11 +37,9 @@
 namespace Nosto\Tagging\Model\Service\Product\Category;
 
 use Exception;
-use Magento\Catalog\Api\CategoryRepositoryInterface;
 use Magento\Catalog\Model\Category;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\ResourceModel\Category\CollectionFactory;
-use Magento\Catalog\Model\ResourceModel\Category\Collection;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Store\Api\Data\StoreInterface;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
@@ -50,24 +48,20 @@ class DefaultCategoryService implements CategoryServiceInterface
 {
 
     private NostoLogger $logger;
-    private CategoryRepositoryInterface $categoryRepository;
     private CollectionFactory $categoryCollectionFactory;
     private ManagerInterface $eventManager;
 
     /**
      * Builder constructor.
-     * @param CategoryRepositoryInterface $categoryRepository
      * @param CollectionFactory $categoryCollectionFactory
      * @param NostoLogger $logger
      * @param ManagerInterface $eventManager
      */
     public function __construct(
-        CategoryRepositoryInterface $categoryRepository,
         CollectionFactory $categoryCollectionFactory,
         NostoLogger $logger,
         ManagerInterface $eventManager
     ) {
-        $this->categoryRepository = $categoryRepository;
         $this->categoryCollectionFactory = $categoryCollectionFactory;
         $this->logger = $logger;
         $this->eventManager = $eventManager;
@@ -112,9 +106,10 @@ class DefaultCategoryService implements CategoryServiceInterface
 
             $categories = $this->categoryCollectionFactory->create()
                 ->addAttributeToSelect('name')
+                ->addAttributeToSelect('level')
                 ->addAttributeToFilter('entity_id', $categoryIds)
                 ->setStore($store->getId())
-                ->addAttributeToSort('level', Collection::SORT_ORDER_ASC);
+                ->addAttributeToSort('level');
             foreach ($categories as $cat) {
                 if ($cat instanceof Category
                     && $cat->getLevel() > 1
@@ -135,7 +130,6 @@ class DefaultCategoryService implements CategoryServiceInterface
                 ['categoryString' => $nostoCategory, 'magentoCategory' => $category]
             );
         }
-
         return $nostoCategory;
     }
 
