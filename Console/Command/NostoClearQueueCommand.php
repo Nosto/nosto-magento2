@@ -2,14 +2,10 @@
 
 namespace Nosto\Tagging\Console\Command;
 
-use Exception;
-use Magento\Framework\Amqp\Config as AmqpConfig;
-use Magento\Framework\App\ResourceConnection;
-use Magento\Framework\Bulk\BulkManagementInterface;
-use Magento\Framework\DB\Adapter\Pdo\Mysql\Interceptor;
-use Nosto\NostoException;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\MessageQueue\Consumer\ConfigInterface as ConsumerConfig;
+use Magento\Framework\MessageQueue\QueueRepository;
 use RuntimeException;
-use PhpAmqpLib\Channel\AMQPChannel;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Console\Input\InputInterface;
@@ -32,14 +28,32 @@ class NostoClearQueueCommand extends Command
     public const NOSTO_DELETE_MESSAGE_QUEUE = 'nosto_product_sync.delete';
 
     /**
-     * @var AmqpConfig
+     * @var ConsumerConfig
      */
-    private AmqpConfig $amqpConfig;
+    private $consumerConfig;
 
+    /**
+     * @var QueueRepository
+     */
+    private $queueRepository;
+
+    private array $consumers = [
+        self::NOSTO_DELETE_MESSAGE_QUEUE,
+        self::NOSTO_UPDATE_SYNC_MESSAGE_QUEUE,
+    ];
+
+    /**
+     * NostoClearQueueCommand constructor.
+     *
+     * @param ConsumerConfig $consumerConfig
+     * @param QueueRepository $queueRepository
+     */
     public function __construct(
-        AmqpConfig $amqpConfig
+        ConsumerConfig $consumerConfig,
+        QueueRepository $queueRepository
     ) {
-        $this->amqpConfig = $amqpConfig;
+        $this->consumerConfig = $consumerConfig;
+        $this->queueRepository = $queueRepository;
         parent::__construct();
     }
 
@@ -48,8 +62,7 @@ class NostoClearQueueCommand extends Command
      */
     protected function configure()
     {
-        // Define command name.
-        $this->setName('nosto:clear:messagequeue')
+        $this->setName('nosto:clear:message-queue')
             ->setDescription('Clear all message queues for Nosto product sync topics.');
         parent::configure();
     }
@@ -62,51 +75,36 @@ class NostoClearQueueCommand extends Command
         $io = new SymfonyStyle($input, $output);
 
         try {
-            $queues = [
-                self::NOSTO_DELETE_MESSAGE_QUEUE,
-                self::NOSTO_UPDATE_SYNC_MESSAGE_QUEUE,
-            ];
-
-            foreach ($queues as $queueName) {
-                $this->clearQueue($queueName);
+            foreach ($this->consumers as $queueName) {
+                $this->clearQueue($io, $queueName);
             }
-
             $io->success('Successfully cleared message queues.');
-            return 0;
-        } catch (RuntimeException $e) {
+        } catch (RuntimeException|LocalizedException $e) {
             $io->error('An error occurred while clearing message queues: ' . $e->getMessage());
             return 1;
         }
+        return 0;
     }
 
     /**
-     * Clear MySql and RabbitMq queues by name.
+     * Clear message queues by consumer name.
      *
-     * @param string $queueName
+     * @param SymfonyStyle $io
+     * @param string $consumerName
      * @return void
+     * @throws LocalizedException
      */
-    private function clearQueue(string $queueName): void
+    private function clearQueue(SymfonyStyle $io, string $consumerName): void
     {
-        // Get RabbitMq channel.
-        $channel = $this->amqpConfig->getChannel();
-
-        // Empty queue if queue exists.
-        if ($this->queueExists($channel, $queueName)) {
-            $channel->queue_purge($queueName);
+        $io->writeln(sprintf('Clearing messages from %s', $consumerName));
+        $io->createProgressBar();
+        $io->progressStart();
+        $consumerConfig = $this->consumerConfig->getConsumer($consumerName);
+        $queue = $this->queueRepository->get($consumerConfig->getConnection(), $consumerConfig->getQueue());
+        while ($message = $queue->dequeue()) {
+            $io->progressAdvance(1);
+            $queue->acknowledge($message);
         }
-    }
-
-    /**
-     * Check the expected queue exist.
-     *
-     * @param AMQPChannel $channel
-     * @param string $queueName
-     * @return bool
-     */
-    protected function queueExists(AMQPChannel $channel, string $queueName): bool
-    {
-        $queueInfo = $channel->queue_declare($queueName, true);
-
-        return !empty($queueInfo);
+        $io->progressFinish();
     }
 }
