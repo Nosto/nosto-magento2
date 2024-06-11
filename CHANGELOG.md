@@ -1,5 +1,9 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 7.6.0
+* Deprecate MySQL as message queue provider, the extension now uses RabbitMQ as the default message queue provider
+* Add command to clear the Nosto message queue
+
 ### 7.5.1
 * Upgrade SDK to 7.4
 * Remove PII information from Order Export
