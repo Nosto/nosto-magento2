@@ -3,7 +3,7 @@ All notable changes to this project will be documented in this file. This projec
 ### 7.6.0
 * Deprecate MySQL as message queue provider, the extension now uses RabbitMQ as the default message queue provider
 * Add command to clear the Nosto message queue
-* Move Nosto logfiles to its own files nosto-debug.log(debug) and nosto-system.log(info)
+* Move Nosto logfiles to its own files nosto-debug.log(debug), nosto-system.log(info) and nosto-exception.log(error)
 
 ### 7.5.1
 * Upgrade SDK to 7.4
