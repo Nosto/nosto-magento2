@@ -237,9 +237,4 @@
             <argument name="batchSize" xsi:type="number">500</argument>
         </arguments>
     </type>
-    <type name="Nosto\Tagging\Console\Command\NostoClearQueueCommand">
-        <arguments>
-            <argument name="amqpConfig" xsi:type="object">Magento\Framework\Amqp\Config</argument>
-        </arguments>
-    </type>
 </config>
