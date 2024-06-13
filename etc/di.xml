@@ -76,8 +76,8 @@
         <arguments>
             <argument name="name" xsi:type="string">nosto</argument>
             <argument name="handlers" xsi:type="array">
-                <item name="system" xsi:type="object">Magento\Framework\Logger\Handler\System</item>
-                <item name="debug" xsi:type="object">Magento\Framework\Logger\Handler\Debug</item>
+                <item name="system" xsi:type="object">Nosto\Tagging\Logger\SystemHandler</item>
+                <item name="debug" xsi:type="object">Nosto\Tagging\Logger\DebugHandler</item>
             </argument>
         </arguments>
     </type>
