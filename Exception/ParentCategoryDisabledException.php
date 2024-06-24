@@ -34,14 +34,16 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Indexer\Dimensions;
+namespace Nosto\Tagging\Exception;
 
-use Magento\Indexer\Model\ModeSwitcherInterface as MagentoModeSwitcherInterface;
+use Nosto\NostoException;
+use Throwable;
 
-interface ModeSwitcherInterface extends MagentoModeSwitcherInterface
+class ParentCategoryDisabledException extends NostoException
 {
-    /**
-     * @return string
-     */
-    public function getMode(): string;
+    public function __construct(int $categoryId, $code = 0, Throwable $previous = null)
+    {
+        $message = "Parent category is disabled for category with id: " . $categoryId;
+        parent::__construct($message, $code, $previous);
+    }
 }

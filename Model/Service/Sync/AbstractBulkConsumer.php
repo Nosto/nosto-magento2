@@ -44,6 +44,7 @@ use Magento\Framework\Json\Helper\Data as JsonHelper;
 use Magento\Store\Model\App\Emulation;
 use Nosto\Tagging\Logger\Logger;
 
+// @TODO: needs to be abstracted to include categories as well
 abstract class AbstractBulkConsumer implements BulkConsumerInterface
 {
     /** @var Logger */

@@ -43,39 +43,35 @@ use Magento\Store\Model\Store;
 use Nosto\NostoException;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
-use Nosto\Tagging\Model\Indexer\Dimensions\ModeSwitcher as ProductModeSwitcher;
-use Nosto\Tagging\Model\Indexer\Dimensions\ModeSwitcherInterface;
+use Nosto\Tagging\Model\Indexer\Dimensions\ModeSwitch\ModeSwitcher as CategoryModeSwitcher;
+use Nosto\Tagging\Model\Indexer\Dimensions\ModeSwitch\ModeSwitcherInterface;
 use Nosto\Tagging\Model\Indexer\Dimensions\StoreDimensionProvider;
-use Nosto\Tagging\Model\ResourceModel\Magento\Product\Collection as ProductCollection;
-use Nosto\Tagging\Model\ResourceModel\Magento\Product\CollectionBuilder;
+use Nosto\Tagging\Model\ResourceModel\Magento\Category\Collection as CategoryCollection;
+use Nosto\Tagging\Model\ResourceModel\Magento\Category\CollectionBuilder;
 use Nosto\Tagging\Model\Service\Indexer\IndexerStatusServiceInterface;
-use Nosto\Tagging\Model\Service\Update\ProductUpdateService;
+use Nosto\Tagging\Model\Service\Update\CategoryUpdateService;
 use Symfony\Component\Console\Input\InputInterface;
 
 /**
- * Class ProductIndexer
- * Fetches product ID's from CL tables and create entries in the message queue
+ * Class CategoryIndexer
+ * Fetches category ID's from CL tables and create entries in the message queue
  */
-class ProductIndexer extends AbstractIndexer
+class CategoryIndexer extends AbstractIndexer
 {
-    public const INDEXER_ID = 'nosto_index_product';
+    public const INDEXER_ID = 'nosto_index_category';
 
-    /** @var ProductUpdateService */
-    private ProductUpdateService $productUpdateService;
+    /** @var CategoryUpdateService */
+    private CategoryUpdateService $categoryUpdateService;
 
-    /** @var CollectionBuilder */
-    private CollectionBuilder $productCollectionBuilder;
-
-    /** @var ProductModeSwitcher */
-    private ProductModeSwitcher $modeSwitcher;
+    /** @var CategoryModeSwitcher */
+    private CategoryModeSwitcher $modeSwitcher;
 
     /**
-     * Invalidate constructor.
+     * Constructor.
      * @param NostoHelperScope $nostoHelperScope
-     * @param ProductUpdateService $productUpdateService
+     * @param CategoryUpdateService $categoryUpdateService
      * @param NostoLogger $logger
-     * @param CollectionBuilder $productCollectionBuilder
-     * @param ProductModeSwitcher $modeSwitcher
+     * @param CategoryModeSwitcher $modeSwitcher
      * @param StoreDimensionProvider $dimensionProvider
      * @param Emulation $storeEmulation
      * @param ProcessManager $processManager
@@ -84,18 +80,16 @@ class ProductIndexer extends AbstractIndexer
      */
     public function __construct(
         NostoHelperScope              $nostoHelperScope,
-        ProductUpdateService          $productUpdateService,
+        CategoryUpdateService         $categoryUpdateService,
         NostoLogger                   $logger,
-        CollectionBuilder             $productCollectionBuilder,
-        ProductModeSwitcher           $modeSwitcher,
+        CategoryModeSwitcher          $modeSwitcher,
         StoreDimensionProvider        $dimensionProvider,
         Emulation                     $storeEmulation,
         ProcessManager                $processManager,
         InputInterface                $input,
         IndexerStatusServiceInterface $indexerStatusService
     ) {
-        $this->productUpdateService = $productUpdateService;
-        $this->productCollectionBuilder = $productCollectionBuilder;
+        $this->categoryUpdateService = $categoryUpdateService;
         $this->modeSwitcher = $modeSwitcher;
         parent::__construct(
             $nostoHelperScope,
@@ -124,7 +118,7 @@ class ProductIndexer extends AbstractIndexer
     public function doIndex(Store $store, array $ids = [])
     {
         $collection = $this->getCollection($store, $ids);
-        $this->productUpdateService->addCollectionToUpdateMessageQueue(
+        $this->categoryUpdateService->addCollectionToUpdateMessageQueue(
             $collection,
             $store
         );
@@ -141,16 +135,11 @@ class ProductIndexer extends AbstractIndexer
     /**
      * @param Store $store
      * @param array $ids
-     * @return ProductCollection
+     * @return CategoryCollection
      */
-    public function getCollection(Store $store, array $ids = []): ProductCollection
+    public function getCollection(Store $store, array $ids = []) //: CategoryCollection
     {
-        $this->productCollectionBuilder->initDefault($store);
-        if (!empty($ids)) {
-            $this->productCollectionBuilder->withIds($ids);
-        } else {
-            $this->productCollectionBuilder->withDefaultVisibility($store);
-        }
-        return $this->productCollectionBuilder->build();
+        // @TODO: implement
+        return null;
     }
 }
