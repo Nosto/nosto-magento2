@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
@@ -34,33 +35,64 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Indexer\Dimensions\Product;
+namespace Nosto\Tagging\Model\Indexer\Dimensions\ModeSwitch;
 
-use Nosto\Tagging\Model\Indexer\Dimensions\AbstractDimensionModeConfiguration;
+use Magento\Indexer\Model\DimensionMode;
+use Magento\Indexer\Model\DimensionModes;
+use Nosto\Tagging\Model\Indexer\Dimensions\Product\DimensionModeConfiguration;
+use Nosto\Tagging\Model\Indexer\Dimensions\Product\ModeSwitcherConfiguration;
 
-class DimensionModeConfiguration extends AbstractDimensionModeConfiguration
+class ModeSwitcher implements ModeSwitcherInterface
 {
     /**
-     * @var string
+     * @var DimensionModeConfiguration
      */
-    private string $currentMode = '';
+    private DimensionModeConfiguration $dimensionModeConfiguration;
+
+    /**
+     * @var ModeSwitcherConfiguration
+     */
+    private ModeSwitcherConfiguration $modeSwitcherConfiguration;
+
+    /**
+     * ModeSwitcher constructor.
+     * @param DimensionModeConfiguration $dimensionModeConfiguration
+     * @param ModeSwitcherConfiguration $modeSwitcherConfiguration
+     */
+    public function __construct(
+        DimensionModeConfiguration $dimensionModeConfiguration,
+        ModeSwitcherConfiguration $modeSwitcherConfiguration
+    ) {
+        $this->dimensionModeConfiguration = $dimensionModeConfiguration;
+        $this->modeSwitcherConfiguration = $modeSwitcherConfiguration;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getDimensionModes(): DimensionModes
+    {
+        $dimensionsList = [];
+        foreach ($this->dimensionModeConfiguration->getDimensionModes() as $dimension => $modes) {
+            $dimensionsList[] = new DimensionMode($dimension, $modes);
+        }
+
+        return new DimensionModes($dimensionsList);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function switchMode(string $currentMode, string $previousMode) // @codingStandardsIgnoreLine
+    {
+        $this->modeSwitcherConfiguration->saveMode($currentMode);
+    }
 
     /**
      * @return string
      */
-    public function getCurrentMode(): string
+    public function getMode(): string
     {
-        if ($this->currentMode === '') {
-            $mode = $this->scopeConfig->getValue(
-                ModeSwitcherConfiguration::XML_PATH_PRODUCT_INDEX_DIMENSIONS_MODE
-            );
-            if ($mode) {
-                $this->currentMode = $mode;
-            } else {
-                $this->currentMode = self::DIMENSION_NONE;
-            }
-        }
-
-        return $this->currentMode;
+        return $this->dimensionModeConfiguration->getCurrentMode();
     }
 }
