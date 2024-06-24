@@ -34,53 +34,28 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Indexer\Dimensions\Product;
+namespace Nosto\Tagging\Model\ResourceModel\Magento\Category;
 
-use InvalidArgumentException;
-use Magento\Framework\App\Cache\TypeListInterface;
-use Magento\Framework\App\Config\ConfigResource\ConfigInterface;
+use Magento\Catalog\Model\Category\Attribute\Source\Status;
+use Magento\Catalog\Model\ResourceModel\Category\Collection as MagentoCategoryCollection;
 
-class ModeSwitcherConfiguration
+class Collection extends MagentoCategoryCollection
 {
-    public const XML_PATH_PRODUCT_INDEX_DIMENSIONS_MODE = 'indexer/nosto_index_product/dimensions_mode';
-
     /**
-     * ConfigInterface
-     *
-     * @var ConfigInterface
+     * @return Collection
      */
-    private ConfigInterface $configWriter;
-
-    /**
-     * TypeListInterface
-     *
-     * @var TypeListInterface
-     */
-    private TypeListInterface $cacheTypeList;
-
-    /**
-     * ModeSwitcherConfiguration constructor.
-     * @param ConfigInterface $configWriter
-     * @param TypeListInterface $cacheTypeList
-     */
-    public function __construct(
-        ConfigInterface $configWriter,
-        TypeListInterface $cacheTypeList
-    ) {
-        $this->configWriter = $configWriter;
-        $this->cacheTypeList = $cacheTypeList;
+    public function addActiveFilter()
+    {
+        // @TODO: Here should be included in the menu
+        return $this->addAttributeToFilter('status', ['eq' => Status::STATUS_ENABLED]);
     }
 
     /**
-     * Save switcher mode and invalidate reindex.
-     *
-     * @param string $mode
-     * @return void
-     * @throws InvalidArgumentException
+     * @param array $ids
+     * @return Collection
      */
-    public function saveMode(string $mode)
+    public function addIdsToFilter(array $ids)
     {
-        $this->configWriter->saveConfig(self::XML_PATH_PRODUCT_INDEX_DIMENSIONS_MODE, $mode);
-        $this->cacheTypeList->cleanType('config');
+        return $this->addAttributeToFilter($this->getIdFieldName(), ['in' => $ids]);
     }
 }

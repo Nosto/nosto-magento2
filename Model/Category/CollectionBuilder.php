@@ -45,7 +45,6 @@ use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Magento\Catalog\Model\ResourceModel\Category\Collection as MagentoCategoryCollection;
 use Nosto\Tagging\Model\Category\Builder as NostoCategoryBuilder;
 use Nosto\Tagging\Model\ResourceModel\Magento\Category\CollectionBuilder as CategoryCollectionBuilder;
-use Nosto\Tagging\Model\Service\Product\Category\CategoryServiceInterface;
 use Traversable;
 
 /**
@@ -59,9 +58,6 @@ class CollectionBuilder
     /** @var CategoryCollectionBuilder */
     private CategoryCollectionBuilder $categoryCollectionBuilder;
 
-    /** @var CategoryServiceInterface */
-    private CategoryServiceInterface $categoryService;
-
     /** @var NostoLogger */
     private NostoLogger $logger;
 
@@ -69,18 +65,15 @@ class CollectionBuilder
      * Collection constructor.
      * @param NostoCategoryBuilder $categoryBuilder
      * @param CategoryCollectionBuilder $categoryCollectionBuilder
-     * @param CategoryServiceInterface $categoryService
      * @param NostoLogger $logger
      */
     public function __construct(
         NostoCategoryBuilder $categoryBuilder,
         CategoryCollectionBuilder $categoryCollectionBuilder,
-        CategoryServiceInterface $categoryService,
         NostoLogger $logger
     ) {
         $this->categoryBuilder = $categoryBuilder;
         $this->categoryCollectionBuilder = $categoryCollectionBuilder;
-        $this->categoryService = $categoryService;
         $this->logger = $logger;
     }
 
