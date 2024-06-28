@@ -44,6 +44,7 @@ use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Module\Manager;
 use Magento\Framework\Serialize\SerializerInterface;
 use Nosto\Tagging\Logger\Logger;
+use Magento\Backend\Model\Auth\Session;
 use Magento\AsynchronousOperations\Api\Data\OperationInterfaceFactory;
 
 abstract class AbstractBulkPublisher implements BulkPublisherInterface
@@ -81,12 +82,14 @@ abstract class AbstractBulkPublisher implements BulkPublisherInterface
         OperationInterfaceFactory $operationInterfaceFactory,
         SerializerInterface $serializer,
         Manager $manager,
+        Session $authSession,
         Logger $logger
     ) {
         $this->identityService = $identityService;
         $this->operationFactory = $operationInterfaceFactory;
         $this->serializer = $serializer;
         $this->manager = $manager;
+        $this->authSession = $authSession;
         $this->logger = $logger;
         try {
             $this->bulkManagement = ObjectManager::getInstance()
@@ -105,6 +108,15 @@ abstract class AbstractBulkPublisher implements BulkPublisherInterface
         if (!empty($productIds)) {
             $this->publishCollectionToMessageQueue($storeId, $productIds);
         }
+    }
+
+    private function getCurrentAdminUserId()
+    {
+        $user = $this->authSession->getUser();
+        if ($user instanceof \Magento\User\Model\User) {
+            return $user->getId();
+        }
+        return null;
     }
 
     /**
@@ -150,7 +162,8 @@ abstract class AbstractBulkPublisher implements BulkPublisherInterface
         $result = $this->bulkManagement->scheduleBulk(
             $bulkUuid,
             $operations,
-            $bulkDescription
+            $bulkDescription,
+            $this->getCurrentAdminUserId()
         );
         if (!$result) {
             /** @phan-suppress-next-line PhanTypeMismatchArgumentProbablyReal */
