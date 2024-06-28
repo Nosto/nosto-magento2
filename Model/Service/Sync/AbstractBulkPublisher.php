@@ -66,6 +66,9 @@ abstract class AbstractBulkPublisher implements BulkPublisherInterface
     /** @var Manager */
     private Manager $manager;
 
+    /** @var Session */
+    private Session $authSession;
+
     /** @var Logger */
     private Logger $logger;
 
