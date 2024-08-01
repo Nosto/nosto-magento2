@@ -169,7 +169,7 @@ class SyncService extends AbstractService
 
             $this->logDebugWithStore(
                 sprintf(
-                    'Upserting batch of %d (%s) - API timeout is set to %d seconds',
+                    'GC ON: Upserting batch of %d (%s) - API timeout is set to %d seconds',
                     $this->apiBatchSize,
                     implode(',', $productIdsInBatch),
                     $this->apiTimeout
@@ -177,6 +177,7 @@ class SyncService extends AbstractService
                 $store
             );
             $op->upsert();
+            gc_collect_cycles();
         }
         $this->logBenchmarkSummary(self::BENCHMARK_SYNC_NAME, $store, $this);
     }
