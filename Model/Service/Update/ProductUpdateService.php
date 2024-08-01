@@ -124,6 +124,29 @@ class ProductUpdateService extends AbstractService
     }
 
     /**
+     * Sets the product ids into the update message queue
+     *
+     * @param array $productIds
+     * @param Store $store
+     */
+    public function addIdsToUpsertMessageQueue(array $productIds, Store $store)
+    {
+        if ($this->getAccountHelper()->findAccount($store) === null) {
+            $this->logDebugWithStore('No nosto account found for the store', $store);
+            return;
+        }
+        $batchedIds = array_chunk($productIds, $this->batchSize);
+        $this->logDebug(sprintf(
+            "Adding queue message with %s products to upsert queue. Batch size is %s",
+            count($productIds),
+            $this->batchSize
+        ));
+        foreach ($batchedIds as $idBatch) {
+            $this->upsertBulkPublisher->execute($store->getId(), $idBatch);
+        }
+    }
+
+    /**
      * Sets the product ids into the delete message queue
      *
      * @param array $productIds

@@ -48,6 +48,7 @@ use Nosto\Tagging\Model\Indexer\Dimensions\ModeSwitcherInterface;
 use Nosto\Tagging\Model\Indexer\Dimensions\StoreDimensionProvider;
 use Nosto\Tagging\Model\ResourceModel\Magento\Product\Collection as ProductCollection;
 use Nosto\Tagging\Model\ResourceModel\Magento\Product\CollectionBuilder;
+use Nosto\Tagging\Model\ResourceModel\Magento\Product\ProductBatchFetcher;
 use Nosto\Tagging\Model\Service\Indexer\IndexerStatusServiceInterface;
 use Nosto\Tagging\Model\Service\Update\ProductUpdateService;
 use Symfony\Component\Console\Input\InputInterface;
@@ -69,6 +70,9 @@ class ProductIndexer extends AbstractIndexer
     /** @var ProductModeSwitcher */
     private ProductModeSwitcher $modeSwitcher;
 
+    /** @var ProductBatchFetcher */
+    private ProductBatchFetcher $productBatchFetcher;
+
     /**
      * Invalidate constructor.
      * @param NostoHelperScope $nostoHelperScope
@@ -87,6 +91,7 @@ class ProductIndexer extends AbstractIndexer
         ProductUpdateService          $productUpdateService,
         NostoLogger                   $logger,
         CollectionBuilder             $productCollectionBuilder,
+        ProductBatchFetcher           $productBatchFetcher,
         ProductModeSwitcher           $modeSwitcher,
         StoreDimensionProvider        $dimensionProvider,
         Emulation                     $storeEmulation,
@@ -96,6 +101,7 @@ class ProductIndexer extends AbstractIndexer
     ) {
         $this->productUpdateService = $productUpdateService;
         $this->productCollectionBuilder = $productCollectionBuilder;
+        $this->productBatchFetcher = $productBatchFetcher;
         $this->modeSwitcher = $modeSwitcher;
         parent::__construct(
             $nostoHelperScope,
@@ -123,6 +129,16 @@ class ProductIndexer extends AbstractIndexer
      */
     public function doIndex(Store $store, array $ids = [])
     {
+        if (empty($ids)) { // Full reindexing
+            foreach ($this->productBatchFetcher->fetchProductIdBatches() as $productIdsBatch) {
+                $this->productUpdateService->addIdsToUpsertMessageQueue(
+                    $productIdsBatch,
+                    $store
+                );
+            }
+            return;
+        }
+
         $collection = $this->getCollection($store, $ids);
         $this->productUpdateService->addCollectionToUpdateMessageQueue(
             $collection,
