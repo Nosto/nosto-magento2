@@ -38,5 +38,7 @@
     <exchange name="magento-amqp" type="topic" connection="amqp">
         <binding id="updateBindingUpsert" topic="nosto_product_sync.update" destinationType="queue" destination="nosto_product_sync.update"/>
         <binding id="updateBindingDelete" topic="nosto_product_sync.delete" destinationType="queue" destination="nosto_product_sync.delete"/>
+        <binding id="updateBindingPartialInventory" topic="nosto_product_sync.partial_inventory_update" destinationType="queue" destination="nosto_product_sync.partial_inventory_update"/>
+        <binding id="updateBindingPartialPrice" topic="nosto_product_sync.partial_price_update" destinationType="queue" destination="nosto_product_sync.partial_price_update"/>
     </exchange>
 </config>
