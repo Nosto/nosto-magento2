@@ -53,4 +53,16 @@
                consumerInstance="Magento\Framework\MessageQueue\Consumer"
                handler="Nosto\Tagging\Model\Service\Sync\Upsert\Category\AsyncBulkConsumer::process"/>
     </broker>
+    <broker topic="nosto_product_sync.partial_inventory_update" exchange="magento-amqp" type="amqp">
+        <queue name="nosto_product_sync.partial_inventory_update"
+               consumer="nosto_product_sync.partial_inventory_update"
+               consumerInstance="Magento\Framework\MessageQueue\Consumer"
+               handler="Nosto\Tagging\Model\Service\Sync\Partial\InventoryBulkConsumer::process"/>
+    </broker>
+    <broker topic="nosto_product_sync.partial_price_update" exchange="magento-amqp" type="amqp">
+        <queue name="nosto_product_sync.partial_price_update"
+               consumer="nosto_product_sync.partial_price_update"
+               consumerInstance="Magento\Framework\MessageQueue\Consumer"
+               handler="Nosto\Tagging\Model\Service\Sync\Partial\PriceBulkConsumer::process"/>
+    </broker>
 </config>

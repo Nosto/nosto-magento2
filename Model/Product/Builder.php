@@ -405,7 +405,7 @@ class Builder
      * @param Store $store
      * @return string
      */
-    private function buildAvailability(Product $product, Store $store)
+    public function buildAvailability(Product $product, Store $store)
     {
         $availability = ProductInterface::OUT_OF_STOCK;
         $isInStock = $this->availabilityService->isInStock($product, $store);

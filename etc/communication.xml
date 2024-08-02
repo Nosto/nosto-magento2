@@ -44,4 +44,10 @@
     <topic name="nosto_category_sync.update" request="Magento\AsynchronousOperations\Api\Data\OperationInterface">
         <handler name="nosto_category_sync.update" type="Nosto\Tagging\Model\Service\Sync\Upsert\Category\AsyncBulkConsumer" method="processOperation"/>
     </topic>
+    <topic name="nosto_product_sync.partial_inventory_update" request="Magento\AsynchronousOperations\Api\Data\OperationInterface">
+        <handler name="nosto_product_sync.partial_inventory_update" type="Nosto\Tagging\Model\Service\Sync\Partial\InventoryBulkConsumer" method="processOperation"/>
+    </topic>
+    <topic name="nosto_product_sync.partial_price_update" request="Magento\AsynchronousOperations\Api\Data\OperationInterface">
+        <handler name="nosto_product_sync.partial_price_update" type="Nosto\Tagging\Model\Service\Sync\Partial\PriceBulkConsumer" method="processOperation"/>
+    </topic>
 </config>

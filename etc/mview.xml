@@ -50,13 +50,6 @@
             <!-- sku -->
             <table name="catalog_product_super_link" entity_column="product_id" />
 
-            <!-- inventory level -->
-            <table name="cataloginventory_stock_item" entity_column="product_id" />
-
-            <!-- price -->
-            <table name="catalog_product_index_price" entity_column="entity_id" />
-            <table name="catalogrule_product_price" entity_column="product_id" />
-
             <!-- category -->
             <table name="catalog_category_product" entity_column="product_id" />
 
@@ -64,7 +57,6 @@
             <table name="catalog_product_website" entity_column="product_id" />
         </subscriptions>
     </view>
-
     <view id="nosto_index_category" class="Nosto\Tagging\Model\Indexer\CategoryIndexer" group="indexer">
         <subscriptions>
             <table name="catalog_category_entity" entity_column="entity_id" />
@@ -73,6 +65,17 @@
             <table name="catalog_category_entity_text" entity_column="entity_id" />
             <table name="catalog_category_entity_varchar" entity_column="entity_id" />
             <table name="catalog_category_entity_datetime" entity_column="entity_id" />
+        </subscriptions>
+    </view>
+    <view id="nosto_index_partial_product_inventory" class="Nosto\Tagging\Model\Indexer\Partial\ProductInventoryIndexer" group="indexer">
+        <subscriptions>
+            <table name="cataloginventory_stock_item" entity_column="product_id" />
+        </subscriptions>
+    </view>
+    <view id="nosto_index_partial_product_price" class="Nosto\Tagging\Model\Indexer\Partial\ProductPriceIndexer" group="indexer">
+        <subscriptions>
+            <table name="catalog_product_index_price" entity_column="entity_id" />
+            <table name="catalogrule_product_price" entity_column="product_id" />
         </subscriptions>
     </view>
 </config>
