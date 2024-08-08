@@ -41,8 +41,6 @@ use Magento\Catalog\Model\Product;
 use Magento\Store\Model\Store;
 use Nosto\Exception\MemoryOutOfBoundsException;
 use Nosto\NostoException;
-use Nosto\Operation\UpsertProduct;
-use Nosto\Operation\Product\InventoryUpdate;
 use Nosto\Request\Http\Exception\AbstractHttpException;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Data as NostoDataHelper;
