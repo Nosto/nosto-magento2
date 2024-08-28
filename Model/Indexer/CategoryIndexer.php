@@ -43,8 +43,8 @@ use Magento\Store\Model\Store;
 use Nosto\NostoException;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
-use Nosto\Tagging\Model\Indexer\Dimensions\ModeSwitch\ModeSwitcher as CategoryModeSwitcher;
-use Nosto\Tagging\Model\Indexer\Dimensions\ModeSwitch\ModeSwitcherInterface;
+use Nosto\Tagging\Model\Indexer\Dimensions\ModeSwitcher\ModeSwitcher as CategoryModeSwitcher;
+use Nosto\Tagging\Model\Indexer\Dimensions\ModeSwitcher\ModeSwitcherInterface;
 use Nosto\Tagging\Model\Indexer\Dimensions\StoreDimensionProvider;
 use Nosto\Tagging\Model\ResourceModel\Magento\Category\Collection as CategoryCollection;
 use Nosto\Tagging\Model\ResourceModel\Magento\Category\CollectionBuilder;
@@ -66,11 +66,15 @@ class CategoryIndexer extends AbstractIndexer
     /** @var CategoryModeSwitcher */
     private CategoryModeSwitcher $modeSwitcher;
 
+    /** @var CollectionBuilder */
+    private CollectionBuilder $categoryCollectionBuilder;
+
     /**
      * Constructor.
      * @param NostoHelperScope $nostoHelperScope
      * @param CategoryUpdateService $categoryUpdateService
      * @param NostoLogger $logger
+     * @param CollectionBuilder $categoryCollectionBuilder
      * @param CategoryModeSwitcher $modeSwitcher
      * @param StoreDimensionProvider $dimensionProvider
      * @param Emulation $storeEmulation
@@ -82,6 +86,7 @@ class CategoryIndexer extends AbstractIndexer
         NostoHelperScope              $nostoHelperScope,
         CategoryUpdateService         $categoryUpdateService,
         NostoLogger                   $logger,
+        CollectionBuilder             $categoryCollectionBuilder,
         CategoryModeSwitcher          $modeSwitcher,
         StoreDimensionProvider        $dimensionProvider,
         Emulation                     $storeEmulation,
@@ -91,6 +96,8 @@ class CategoryIndexer extends AbstractIndexer
     ) {
         $this->categoryUpdateService = $categoryUpdateService;
         $this->modeSwitcher = $modeSwitcher;
+        $this->categoryCollectionBuilder = $categoryCollectionBuilder;
+
         parent::__construct(
             $nostoHelperScope,
             $logger,
@@ -139,7 +146,16 @@ class CategoryIndexer extends AbstractIndexer
      */
     public function getCollection(Store $store, array $ids = []) //: CategoryCollection
     {
-        // @TODO: implement
+        $this->categoryCollectionBuilder->initDefault($store);
+
+        if (!empty($ids)) {
+            $this->categoryCollectionBuilder->withIds($ids);
+        } else {
+            $this->categoryCollectionBuilder->withStore($store);
+        }
+
         return null;
+        // @TODO: Implement logic
+        // return $this->categoryCollectionBuilder->build();
     }
 }

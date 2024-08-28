@@ -34,7 +34,7 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Indexer\Dimensions\ModeSwitch;
+namespace Nosto\Tagging\Model\Indexer\Dimensions\ModeSwitcher;
 
 use Nosto\Tagging\Model\Indexer\Dimensions\AbstractDimensionModeConfiguration;
 
