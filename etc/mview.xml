@@ -66,11 +66,13 @@
     </view>
 
     <view id="nosto_index_category" class="Nosto\Tagging\Model\Indexer\CategoryIndexer" group="indexer">
-        <table name="catalog_category_entity" entity_column="entity_id" />
-        <table name="catalog_category_entity_decimal" entity_column="entity_id" />
-        <table name="catalog_category_entity_int" entity_column="entity_id" />
-        <table name="catalog_category_entity_text" entity_column="entity_id" />
-        <table name="catalog_category_entity_varchar" entity_column="entity_id" />
-        <table name="catalog_category_entity_datetime" entity_column="entity_id" />
+        <subscriptions>
+            <table name="catalog_category_entity" entity_column="entity_id" />
+            <table name="catalog_category_entity_decimal" entity_column="entity_id" />
+            <table name="catalog_category_entity_int" entity_column="entity_id" />
+            <table name="catalog_category_entity_text" entity_column="entity_id" />
+            <table name="catalog_category_entity_varchar" entity_column="entity_id" />
+            <table name="catalog_category_entity_datetime" entity_column="entity_id" />
+        </subscriptions>
     </view>
 </config>
