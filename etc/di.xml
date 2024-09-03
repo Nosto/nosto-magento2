@@ -224,6 +224,13 @@
             </argument>
         </arguments>
     </type>
+    <type name="Nosto\Tagging\Model\Service\Sync\Upsert\Category\BulkPublisher">
+        <arguments>
+            <argument name="AsyncBulkConsumer" xsi:type="object" shared="false">
+                Nosto\Tagging\Model\Service\Sync\Upsert\Category\AsyncBulkConsumer
+            </argument>
+        </arguments>
+    </type>
     <type name="Nosto\Tagging\Model\Service\Sync\Upsert\SyncService">
         <arguments>
             <argument name="productService" xsi:type="object" shared="false">
@@ -251,8 +258,8 @@
     </type>
     <type name="Nosto\Tagging\Model\Service\Update\CategoryUpdateService">
         <arguments>
-            <argument name="upsertBulkPublisher" xsi:type="object" shared="false">
-                Nosto\Tagging\Model\Service\Sync\Upsert\AsyncBulkPublisher
+            <argument name="upsertCategoryBulkPublisher" xsi:type="object" shared="false">
+                Nosto\Tagging\Model\Service\Sync\Upsert\Category\BulkPublisher
             </argument>
             <argument name="deleteBulkPublisher" xsi:type="object" shared="false">
                 Nosto\Tagging\Model\Service\Sync\Delete\AsyncBulkPublisher

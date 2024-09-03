@@ -39,7 +39,8 @@ namespace Nosto\Tagging\Model\ResourceModel\Magento\Category;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Sales\Api\Data\EntityInterface;
 use Magento\Store\Model\Store;
-use Magento\Catalog\Model\ResourceModel\Category\Collection as CategoryCollection;
+//use Magento\Catalog\Model\ResourceModel\Category\Collection as CategoryCollection;
+use Nosto\Tagging\Model\ResourceModel\Magento\Category\Collection  as CategoryCollection;
 use Magento\Framework\DB\Select;
 
 /**
@@ -47,16 +48,15 @@ use Magento\Framework\DB\Select;
  */
 class CollectionBuilder
 {
+
     /** @var CategoryCollection */
     private CategoryCollection $categoryCollection;
 
     /**
-     * Collection constructor.
-     * @param CategoryCollection $categoryCollection,
+     * @param CategoryCollection $categoryCollection
      */
-    public function __construct(
-        CategoryCollection $categoryCollection
-    ) {
+    public function __construct(CategoryCollection $categoryCollection)
+    {
         $this->categoryCollection = $categoryCollection;
     }
 

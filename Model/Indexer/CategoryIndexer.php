@@ -125,6 +125,7 @@ class CategoryIndexer extends AbstractIndexer
     public function doIndex(Store $store, array $ids = [])
     {
         $collection = $this->getCollection($store, $ids);
+
         $this->categoryUpdateService->addCollectionToUpdateMessageQueue(
             $collection,
             $store
@@ -144,7 +145,7 @@ class CategoryIndexer extends AbstractIndexer
      * @param array $ids
      * @return CategoryCollection
      */
-    public function getCollection(Store $store, array $ids = []) //: CategoryCollection
+    public function getCollection(Store $store, array $ids = []) : CategoryCollection
     {
         $this->categoryCollectionBuilder->initDefault($store);
 
@@ -154,8 +155,6 @@ class CategoryIndexer extends AbstractIndexer
             $this->categoryCollectionBuilder->withStore($store);
         }
 
-        return null;
-        // @TODO: Implement logic
-        // return $this->categoryCollectionBuilder->build();
+        return $this->categoryCollectionBuilder->build();
     }
 }
