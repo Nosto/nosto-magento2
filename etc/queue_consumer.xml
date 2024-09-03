@@ -47,4 +47,10 @@
               maxMessages="100"
               consumerInstance="Magento\Framework\MessageQueue\Consumer"
               handler="Nosto\Tagging\Model\Service\Sync\Delete\AsyncBulkConsumer::processOperation"/>
+    <consumer name="nosto_category_sync.update"
+              queue="nosto_category_sync.update"
+              connection="amqp"
+              maxMessages="200"
+              consumerInstance="Magento\Framework\MessageQueue\Consumer"
+              handler="Nosto\Tagging\Model\Service\Sync\Upsert\Category\AsyncBulkConsumer::processOperation"/>
 </config>

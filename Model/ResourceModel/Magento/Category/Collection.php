@@ -36,7 +36,7 @@
 
 namespace Nosto\Tagging\Model\ResourceModel\Magento\Category;
 
-use Magento\Catalog\Model\Category\Attribute\Source\Status;
+//use Magento\Catalog\Model\Category\Attribute\Source\Status;
 use Magento\Catalog\Model\ResourceModel\Category\Collection as MagentoCategoryCollection;
 
 class Collection extends MagentoCategoryCollection
@@ -46,8 +46,11 @@ class Collection extends MagentoCategoryCollection
      */
     public function addActiveFilter()
     {
+        echo '<pre>';
+        print_r(44);
+        die;
         // @TODO: Here should be included in the menu
-        return $this->addAttributeToFilter('status', ['eq' => Status::STATUS_ENABLED]);
+        return $this->addAttributeToFilter('status', ['eq' => 1]);
     }
 
     /**
@@ -56,6 +59,9 @@ class Collection extends MagentoCategoryCollection
      */
     public function addIdsToFilter(array $ids)
     {
+        echo '<pre>';
+        print_r(222);
+        die;
         return $this->addAttributeToFilter($this->getIdFieldName(), ['in' => $ids]);
     }
 }
