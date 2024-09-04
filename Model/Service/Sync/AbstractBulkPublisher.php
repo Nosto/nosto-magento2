@@ -154,7 +154,9 @@ abstract class AbstractBulkPublisher implements BulkPublisherInterface
         );
         if (!$result) {
             /** @phan-suppress-next-line PhanTypeMismatchArgumentProbablyReal */
-            throw new LocalizedException(__('Something went wrong while processing the request.'));
+            throw new LocalizedException(__(
+                'Something went wrong while publishing bulk to RabbitMQ. Please check your connection'
+            ));
         }
     }
 
