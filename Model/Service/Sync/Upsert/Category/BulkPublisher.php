@@ -49,9 +49,6 @@ class BulkPublisher extends AbstractBulkPublisher
      */
     public function getTopicName(): string
     {
-        echo '<pre>';
-        print_r(122);
-        die;
         return self::NOSTO_SYNC_MESSAGE_QUEUE;
     }
 

@@ -39,8 +39,8 @@ namespace Nosto\Tagging\Model\Indexer\Dimensions\ModeSwitcher;
 
 use Magento\Indexer\Model\DimensionMode;
 use Magento\Indexer\Model\DimensionModes;
-use Nosto\Tagging\Model\Indexer\Dimensions\Product\DimensionModeConfiguration;
-use Nosto\Tagging\Model\Indexer\Dimensions\Product\ModeSwitcherConfiguration;
+use Nosto\Tagging\Model\Indexer\Dimensions\ModeSwitcher\DimensionModeConfiguration;
+use Nosto\Tagging\Model\Indexer\Dimensions\ModeSwitcher\ModeSwitcherConfiguration;
 
 class ModeSwitcher implements ModeSwitcherInterface
 {
