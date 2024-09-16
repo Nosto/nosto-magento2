@@ -46,9 +46,6 @@ class Collection extends MagentoCategoryCollection
      */
     public function addActiveFilter()
     {
-        echo '<pre>';
-        print_r(44);
-        die;
         // @TODO: Here should be included in the menu
         return $this->addAttributeToFilter('status', ['eq' => 1]);
     }
@@ -59,9 +56,7 @@ class Collection extends MagentoCategoryCollection
      */
     public function addIdsToFilter(array $ids)
     {
-        echo '<pre>';
-        print_r(222);
-        die;
+
         return $this->addAttributeToFilter($this->getIdFieldName(), ['in' => $ids]);
     }
 }
