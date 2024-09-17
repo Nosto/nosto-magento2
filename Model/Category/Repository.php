@@ -37,12 +37,10 @@
 namespace Nosto\Tagging\Model\Category;
 
 use Magento\Catalog\Api\Data\CategoryInterface;
-use Magento\Catalog\Api\Data\CategorySearchResultsInterface;
 use Magento\Catalog\Model\CategoryRepository;
 use Magento\Catalog\Model\ResourceModel\Category\Collection as CategoryCollection;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\Exception\LocalizedException;
-use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Store\Model\Store;
 use Magento\Catalog\Model\ResourceModel\Category\CollectionFactory as CategoryCollectionFactory;
 use Nosto\Tagging\Exception\ParentCategoryDisabledException;
