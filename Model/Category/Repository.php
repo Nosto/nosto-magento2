@@ -37,6 +37,7 @@
 namespace Nosto\Tagging\Model\Category;
 
 use Magento\Catalog\Api\Data\CategoryInterface;
+use Magento\Catalog\Model\Category;
 use Magento\Catalog\Model\CategoryRepository;
 use Magento\Catalog\Model\ResourceModel\Category\Collection as CategoryCollection;
 use Magento\Framework\Api\SearchCriteriaBuilder;
@@ -84,7 +85,6 @@ class Repository
         //@TODO implement
     }
 
-
     /**
      * @param Store $store
      * @param array $categoryIds
@@ -110,15 +110,13 @@ class Repository
         return $categories;
     }
 
-
     /**
      * Gets the parent category ID's for a given category
      *
-     * @param CategoryInterface $category
      * @return string[]|null
      * @throws ParentCategoryDisabledException
      */
-    public function resolveParentCategoryIds(CategoryInterface $category)
+    public function resolveParentCategoryIds(Category $category): ?array
     {
         if ($this->getParentIdsFromCache($category)) {
             return $this->getParentIdsFromCache($category);
@@ -135,13 +133,12 @@ class Repository
 
         $parentCategoryIds = null;
         if ($category->getLevel() >= 1) {
-            //@TODO: get parents from root category, check if this works
             $parentCategoryIds = $category->getParentIds();
             $this->saveParentIdsToCache($category, $parentCategoryIds);
         }
+
         return $parentCategoryIds;
     }
-
 
     /**
      * Get parent ids from cache. Return null if the cache is not available

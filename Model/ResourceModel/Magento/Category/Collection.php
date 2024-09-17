@@ -36,27 +36,27 @@
 
 namespace Nosto\Tagging\Model\ResourceModel\Magento\Category;
 
-//use Magento\Catalog\Model\Category\Attribute\Source\Status;
 use Magento\Catalog\Model\ResourceModel\Category\Collection as MagentoCategoryCollection;
+use Magento\Framework\Exception\LocalizedException;
 
 class Collection extends MagentoCategoryCollection
 {
     /**
      * @return Collection
+     * @throws LocalizedException
      */
-    public function addActiveFilter()
+    public function addActiveFilter(): Collection
     {
-        // @TODO: Here should be included in the menu
         return $this->addAttributeToFilter('status', ['eq' => 1]);
     }
 
     /**
      * @param array $ids
      * @return Collection
+     * @throws LocalizedException
      */
-    public function addIdsToFilter(array $ids)
+    public function addIdsToFilter(array $ids): Collection
     {
-
         return $this->addAttributeToFilter($this->getIdFieldName(), ['in' => $ids]);
     }
 }
