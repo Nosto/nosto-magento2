@@ -38,6 +38,7 @@ namespace Nosto\Tagging\Model\Service\Update;
 
 use Exception;
 use Magento\Catalog\Api\Data\CategoryInterface;
+use Magento\Catalog\Model\Category;
 use Magento\Store\Model\Store;
 use Nosto\NostoException;
 use Nosto\Tagging\Exception\ParentCategoryDisabledException;
@@ -124,7 +125,7 @@ class CategoryUpdateService extends AbstractService
     private function toParentCategoryIds(CategoryCollection $collection): array
     {
         $categoryIds = [];
-        /** @var CategoryInterface $category */
+        /** @var Category $category */
         foreach ($collection->getItems() as $category) {
             try {
                 $parents = $this->nostoCategoryRepository->resolveParentCategoryIds($category);
