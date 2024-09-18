@@ -125,7 +125,7 @@ class CategoryUpdateService extends AbstractService
     private function toParentCategoryIds(CategoryCollection $collection): array
     {
         $categoryIds = [];
-        /** @var Category $category */
+        /** @var CategoryInterface $category */
         foreach ($collection->getItems() as $category) {
             try {
                 $parents = $this->nostoCategoryRepository->resolveParentCategoryIds($category);
@@ -141,6 +141,7 @@ class CategoryUpdateService extends AbstractService
                 $categoryIds[] = $category->getId();
             }
         }
+
         return array_unique($categoryIds);
     }
 }

@@ -116,7 +116,7 @@ class Repository
      * @return string[]|null
      * @throws ParentCategoryDisabledException
      */
-    public function resolveParentCategoryIds(Category $category): ?array
+    public function resolveParentCategoryIds(CategoryInterface $category): ?array
     {
         if ($this->getParentIdsFromCache($category)) {
             return $this->getParentIdsFromCache($category);
