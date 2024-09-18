@@ -133,11 +133,27 @@ class Repository
 
         $parentCategoryIds = null;
         if ($category->getLevel() >= 1) {
-            $parentCategoryIds = $category->getParentIds();
+            $parentCategoryIds = $this->getCategoryParentIds($category['path']);
+
             $this->saveParentIdsToCache($category, $parentCategoryIds);
         }
 
         return $parentCategoryIds;
+    }
+
+    /**
+     * Get Parent Category IDS
+     *
+     * @param $path
+     * @return array
+     */
+    private function getCategoryParentIds($path): array
+    {
+        $parentCategories = explode('/', $path);
+
+        array_pop($parentCategories);
+
+        return $parentCategories;
     }
 
     /**
