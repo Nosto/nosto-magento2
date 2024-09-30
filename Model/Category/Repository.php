@@ -99,7 +99,7 @@ class Repository
             ->addNameToResult()
             ->setStoreId($store->getId())
             ->addUrlRewriteToResult()
-            ->addAttributeToFilter('level', ['gt' => 1]) // @TODO: Check if zero level categories are needed
+            ->addAttributeToFilter('level', ['gt' => 1])
             ->addAttributeToSelect(array_merge(['name', 'is_active', 'include_in_menu']))
             ->addOrderField('entity_id');
 
