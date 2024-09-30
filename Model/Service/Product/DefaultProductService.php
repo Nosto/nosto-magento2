@@ -128,10 +128,6 @@ class DefaultProductService implements ProductServiceInterface
                 $store
             );
             return $nostoProduct;
-//            $nostoLightProduct = new stdClass();
-//            $nostoLightProduct->product_id = $nostoProduct->getProductId();
-//            $nostoLightProduct->url = $nostoProduct->getUrl();
-//            return $nostoLightProduct;
         } catch (NonBuildableProductException $e) {
             $this->logger->exception($e);
             return null;
