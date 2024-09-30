@@ -40,7 +40,6 @@ use InvalidArgumentException;
 use Magento\Framework\App\Cache\TypeListInterface;
 use Magento\Framework\App\Config\ConfigResource\ConfigInterface;
 
-//@TODO: needs to be abstracted to include categories as well
 class ModeSwitcherConfiguration
 {
     public const XML_PATH_PRODUCT_INDEX_DIMENSIONS_MODE = 'indexer/nosto_index_product/dimensions_mode';
