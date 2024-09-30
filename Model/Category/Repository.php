@@ -37,7 +37,6 @@
 namespace Nosto\Tagging\Model\Category;
 
 use Magento\Catalog\Api\Data\CategoryInterface;
-use Magento\Catalog\Model\Category;
 use Magento\Catalog\Model\CategoryRepository;
 use Magento\Catalog\Model\ResourceModel\Category\Collection as CategoryCollection;
 use Magento\Framework\Api\SearchCriteriaBuilder;
