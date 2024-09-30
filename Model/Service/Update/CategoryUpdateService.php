@@ -38,7 +38,6 @@ namespace Nosto\Tagging\Model\Service\Update;
 
 use Exception;
 use Magento\Catalog\Api\Data\CategoryInterface;
-use Magento\Catalog\Model\Category;
 use Magento\Store\Model\Store;
 use Nosto\NostoException;
 use Nosto\Tagging\Exception\ParentCategoryDisabledException;
