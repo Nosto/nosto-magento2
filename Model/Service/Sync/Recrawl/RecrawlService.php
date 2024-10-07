@@ -44,7 +44,6 @@ use Nosto\Model\Product\SkuCollection;
 use Nosto\Model\Product\VariationCollection;
 use Nosto\NostoException;
 use Nosto\Operation\RecrawlProduct;
-use Nosto\Tagging\Helper\Data as NostoDataHelper;
 use Nosto\Tagging\Model\Product\Repository as ProductRepository;
 use Nosto\Request\Http\Exception\AbstractHttpException;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;

@@ -111,11 +111,11 @@ class DefaultProductService implements ProductServiceInterface
 
     /**
      * @param ProductInterface $product
-     * @param StoreInterface $store
+     * @param Store $store
      * @return NostoProduct|null
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
-    public function getLightProduct(ProductInterface $product, StoreInterface $store)
+    public function getLightProduct(ProductInterface $product, Store $store)
     {
         /** @var Product $product */
         /** @var Store $store */
