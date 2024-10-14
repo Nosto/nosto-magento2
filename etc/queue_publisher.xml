@@ -41,4 +41,10 @@
     <publisher topic="nosto_product_sync.delete">
         <connection name="amqp" exchange="magento-amqp"/>
     </publisher>
+    <publisher topic="nosto_product_sync.partial_price_update">
+        <connection name="amqp" exchange="magento-amqp"/>
+    </publisher>
+    <publisher topic="nosto_product_sync.partial_inventory_update">
+        <connection name="amqp" exchange="magento-amqp"/>
+    </publisher>
 </config>

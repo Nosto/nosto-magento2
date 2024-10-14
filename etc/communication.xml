@@ -41,4 +41,10 @@
     <topic name="nosto_product_sync.delete" request="Magento\AsynchronousOperations\Api\Data\OperationInterface">
         <handler name="nosto_product_sync.delete" type="Nosto\Tagging\Model\Service\Sync\Delete\AsyncBulkConsumer" method="processOperation"/>
     </topic>
+    <topic name="nosto_product_sync.partial_inventory_update" request="Magento\AsynchronousOperations\Api\Data\OperationInterface">
+        <handler name="nosto_product_sync.partial_inventory_update" type="Nosto\Tagging\Model\Service\Sync\Partial\InventoryBulkConsumer" method="processOperation"/>
+    </topic>
+    <topic name="nosto_product_sync.partial_price_update" request="Magento\AsynchronousOperations\Api\Data\OperationInterface">
+        <handler name="nosto_product_sync.partial_price_update" type="Nosto\Tagging\Model\Service\Sync\Partial\PriceBulkConsumer" method="processOperation"/>
+    </topic>
 </config>
