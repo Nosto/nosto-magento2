@@ -49,8 +49,8 @@ use Nosto\Tagging\Model\Service\Sync\Partial\InventoryService as SyncService;
 
 /**
  * Inventory Bulk Consumer
+ * Used for bulk operations when doing partial inventory updates
  *
- * Class InventoryBulkConsumer
  */
 class InventoryBulkConsumer extends AbstractBulkConsumer
 {

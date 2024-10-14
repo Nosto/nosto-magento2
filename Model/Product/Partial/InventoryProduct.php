@@ -75,7 +75,7 @@ class InventoryProduct
         NostoUrlBuilder $urlBuilder,
         StockService $stockService,
         FullProductBuilder $fullProductBuilder,
-        NostoSkuCollection $skuCollection,
+        NostoSkuCollection $skuCollection
     ) {
         $this->nostoDataHelper = $nostoDataHelper;
         $this->urlBuilder = $urlBuilder;

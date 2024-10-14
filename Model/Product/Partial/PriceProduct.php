@@ -63,9 +63,6 @@ class PriceProduct
 
     /** @var PriceVariationCollection */
     private PriceVariationCollection $priceVariationCollection;
-
-
-
     /**
      * Builder constructor.
      * @param NostoDataHelper $nostoDataHelper
@@ -79,7 +76,7 @@ class PriceProduct
         NostoPriceHelper $priceHelper,
         NostoUrlBuilder $urlBuilder,
         CurrencyHelper $nostoCurrencyHelper,
-        PriceVariationCollection $priceVariationCollection,
+        PriceVariationCollection $priceVariationCollection
     ) {
         $this->nostoDataHelper = $nostoDataHelper;
         $this->nostoPriceHelper = $priceHelper;

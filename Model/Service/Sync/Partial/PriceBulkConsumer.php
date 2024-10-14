@@ -50,7 +50,7 @@ use Nosto\Tagging\Model\Service\Sync\Partial\PriceService as SyncService;
 /**
  * Price Bulk Consumer
  *
- * Class PriceBulkConsumer
+ * Used for bulk operations when doing partial price updates
  */
 class PriceBulkConsumer extends AbstractBulkConsumer
 {

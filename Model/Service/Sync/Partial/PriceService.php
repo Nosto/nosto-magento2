@@ -103,8 +103,8 @@ class PriceService extends AbstractService
         ProductService $productService,
         CacheService $cacheService,
         ProductRepository $productRepository,
-                           $apiBatchSize,
-                           $apiTimeout
+        $apiBatchSize,
+        $apiTimeout
     ) {
         parent::__construct($nostoDataHelper, $nostoHelperAccount, $logger);
         $this->productService = $productService;

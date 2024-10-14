@@ -86,7 +86,7 @@ class ProductInventoryIndexer extends AbstractIndexer
         Emulation                     $storeEmulation,
         ProcessManager                $processManager,
         InputInterface                $input,
-        IndexerStatusServiceInterface $indexerStatusService,
+        IndexerStatusServiceInterface $indexerStatusService
     ) {
         $this->productCollectionBuilder = $productCollectionBuilder;
         $this->modeSwitcher = $modeSwitcher;
