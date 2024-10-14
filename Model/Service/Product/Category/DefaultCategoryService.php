@@ -130,7 +130,7 @@ class DefaultCategoryService implements CategoryServiceInterface
                 ['categoryString' => $nostoCategory, 'magentoCategory' => $category]
             );
         }
-        return $nostoCategory;
+        return trim($nostoCategory);
     }
 
     /**
