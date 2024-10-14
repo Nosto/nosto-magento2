@@ -1,5 +1,9 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 7.6.1
+* Remove whitespaces from category strings
+* Make rabbitmq publishing error message more clear
+
 ### 7.6.0
 * Deprecate MySQL as message queue provider, the extension now uses RabbitMQ as the default message queue provider
 * Add command to clear the Nosto message queue
