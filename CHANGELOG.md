@@ -2,6 +2,7 @@ All notable changes to this project will be documented in this file. This projec
 
 ### 7.6.1
 * Remove whitespaces from category strings
+* Make rabbitmq publishing error message more clear
 
 ### 7.6.0
 * Deprecate MySQL as message queue provider, the extension now uses RabbitMQ as the default message queue provider
