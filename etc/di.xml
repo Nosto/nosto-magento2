@@ -182,6 +182,9 @@
                 <item name="nosto_index_product" xsi:type="object">
                     Nosto\Tagging\Model\Indexer\Dimensions\Product\ModeSwitcher
                 </item>
+                <item name="nosto_index_light_product" xsi:type="object">
+                    Nosto\Tagging\Model\Indexer\Dimensions\Product\ModeSwitcher
+                </item>
             </argument>
         </arguments>
     </type>
@@ -193,6 +196,13 @@
         </arguments>
     </type>
     <type name="Nosto\Tagging\Model\Indexer\ProductIndexer">
+        <arguments>
+            <argument name="dimensionProvider" xsi:type="object" shared="false">
+                Nosto\Tagging\Model\Indexer\Dimensions\StoreDimensionProvider
+            </argument>
+        </arguments>
+    </type>
+    <type name="Nosto\Tagging\Model\Indexer\LightProductIndexer">
         <arguments>
             <argument name="dimensionProvider" xsi:type="object" shared="false">
                 Nosto\Tagging\Model\Indexer\Dimensions\StoreDimensionProvider

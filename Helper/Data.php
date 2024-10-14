@@ -169,6 +169,11 @@ class Data extends AbstractHelper
     public const XML_PATH_MULTI_CURRENCY = 'nosto/multicurrency/method';
 
     /**
+     * Path to the configuration object for light indexer
+     */
+    public const XML_PATH_USE_LIGHT_INDEXER = 'nosto/flags/use_light_indexer';
+
+    /**
      * @var string Nosto customer reference attribute name
      */
     public const NOSTO_CUSTOMER_REFERENCE_ATTRIBUTE_NAME = 'nosto_customer_reference';
@@ -502,6 +507,17 @@ class Data extends AbstractHelper
     public function getMultiCurrencyMethod(StoreInterface $store = null)
     {
         return $this->getStoreConfig(self::XML_PATH_MULTI_CURRENCY, $store);
+    }
+
+    /**
+     * Returns if the light indexer should be used
+     *
+     * @param StoreInterface|null $store the store model or null.
+     * @return string the configuration value
+     */
+    public function getUseLightIndexer(StoreInterface $store = null)
+    {
+        return $this->getStoreConfig(self::XML_PATH_USE_LIGHT_INDEXER, $store);
     }
 
     /**
