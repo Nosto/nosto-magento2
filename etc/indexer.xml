@@ -38,4 +38,9 @@
         <title>Nosto Product Indexer</title>
         <description>Populates message queue with product ids to be sent to Nosto</description>
     </indexer>
+    <indexer id="nosto_index_category" view_id="nosto_index_category" class="Nosto\Tagging\Model\Indexer\CategoryIndexer">
+        <title>Nosto Category Indexer</title>
+        <!-- @TODO: Add description-->
+        <description>Category</description>
+    </indexer>
 </config>

@@ -47,4 +47,10 @@
                consumerInstance="Magento\Framework\MessageQueue\Consumer"
                handler="Nosto\Tagging\Model\Service\Sync\Delete\AsyncBulkConsumer::process"/>
     </broker>
+    <broker topic="nosto_category_sync.update" exchange="magento-amqp" type="amqp">
+        <queue name="nosto_category_sync.update"
+               consumer="nosto_category_sync.update"
+               consumerInstance="Magento\Framework\MessageQueue\Consumer"
+               handler="Nosto\Tagging\Model\Service\Sync\Upsert\Category\AsyncBulkConsumer::process"/>
+    </broker>
 </config>
