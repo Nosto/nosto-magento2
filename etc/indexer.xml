@@ -40,7 +40,7 @@
     </indexer>
 
     <indexer id="nosto_index_light_product" view_id="nosto_index_light_product" class="Nosto\Tagging\Model\Indexer\LightProductIndexer">
-        <title>Nosto Product Indexer</title>
+        <title>Nosto Product Light Indexer</title>
         <description>Populates message queue with product ids to be sent to Nosto</description>
     </indexer>
 </config>

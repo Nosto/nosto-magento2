@@ -61,7 +61,6 @@ class RecrawlService extends AbstractService
 
     public const BENCHMARK_RECRAWL_NAME = 'nosto_product_recrawl';
     public const BENCHMARK_RECRAWL_BREAKPOINT = 1;
-    public const PRODUCT_RECRAWL_BATCH_SIZE = 100;
 
     /** @var CacheService */
     private CacheService $cacheService;
@@ -78,9 +77,6 @@ class RecrawlService extends AbstractService
     /** @var ProductRepository */
     private ProductRepository $productRepository;
 
-    /** @var int */
-    private int $recrawlBatchSize;
-
     /**
      * RecrawlService constructor.
      * @param CacheService $cacheService
@@ -90,7 +86,6 @@ class RecrawlService extends AbstractService
      * @param NostoHelperUrl $nostoHelperUrl
      * @param ProductRepository $productRepository
      * @param NostoLogger $logger
-     * @param int $recrawlBatchSize
      */
     public function __construct(
         CacheService $cacheService,
@@ -99,15 +94,13 @@ class RecrawlService extends AbstractService
         NostoHelperData $nostoHelperData,
         NostoHelperUrl $nostoHelperUrl,
         ProductRepository $productRepository,
-        NostoLogger $logger,
-        int $recrawlBatchSize = self::PRODUCT_RECRAWL_BATCH_SIZE
+        NostoLogger $logger
     ) {
         $this->cacheService = $cacheService;
         $this->productService = $productService;
         $this->nostoHelperAccount = $nostoHelperAccount;
         $this->nostoHelperUrl = $nostoHelperUrl;
         $this->productRepository = $productRepository;
-        $this->recrawlBatchSize = $recrawlBatchSize;
         parent::__construct($nostoHelperData, $nostoHelperAccount, $logger);
     }
 
@@ -132,8 +125,11 @@ class RecrawlService extends AbstractService
         $account = $this->nostoHelperAccount->findAccount($store);
         $this->startBenchmark(self::BENCHMARK_RECRAWL_NAME, self::BENCHMARK_RECRAWL_BREAKPOINT);
 
+        $timeBetweenBatchOfRequests = $this->getDataHelper()->getRequestTimeout();
+        $productsPerRequest = $this->getDataHelper()->getProductsPerRequest();
+
         $index = 0;
-        $collection->setPageSize($this->recrawlBatchSize);
+        $collection->setPageSize($productsPerRequest);
         $iterator = new PagingIterator($collection);
 
         /** @var ProductCollection $page */
@@ -144,8 +140,8 @@ class RecrawlService extends AbstractService
             $op->setResponseTimeout(60);
             $products = $this->productRepository->getByIds(
                 $page->getAllIds(
-                    $this->recrawlBatchSize,
-                    ($iterator->getCurrentPageNumber() - 1) * $this->recrawlBatchSize
+                    $productsPerRequest,
+                    ($iterator->getCurrentPageNumber() - 1) * $productsPerRequest
                 )
             );
             /** @var Product $product */
@@ -167,13 +163,14 @@ class RecrawlService extends AbstractService
             $this->logDebugWithStore(
                 sprintf(
                     'Upserting batch of %d (%s) - API timeout is set to %d seconds',
-                    $this->recrawlBatchSize,
+                    $productsPerRequest,
                     implode(',', $productIdsInBatch),
                     60
                 ),
                 $store
             );
             $op->requestRecrawl();
+            sleep($timeBetweenBatchOfRequests);
         }
         $this->logBenchmarkSummary(self::BENCHMARK_RECRAWL_NAME, $store, $this);
     }
