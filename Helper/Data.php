@@ -129,6 +129,16 @@ class Data extends AbstractHelper
     public const XML_PATH_INDEXER_MEMORY = 'nosto/flags/indexer_memory';
 
     /**
+     * Product per request
+     */
+    public const XML_PATH_PRODUCT_PER_REQUEST = 'nosto/flags/product_per_request';
+
+    /**
+     * Request timeout
+     */
+    public const XML_PATH_REQUEST_TIMEOUT = 'nosto/flags/request_timeout';
+
+    /**
      * Path to the configuration object that stores the preference for indexing disabled products
      */
     public const XML_PATH_INDEX_DISABLED_PRODUCTS = 'nosto/flags/indexer_disabled_products';
@@ -167,6 +177,11 @@ class Data extends AbstractHelper
      * Path to the configuration object for multi currency
      */
     public const XML_PATH_MULTI_CURRENCY = 'nosto/multicurrency/method';
+
+    /**
+     * Path to the configuration object for light indexer
+     */
+    public const XML_PATH_USE_LIGHT_INDEXER = 'nosto/flags/use_light_indexer';
 
     /**
      * @var string Nosto customer reference attribute name
@@ -437,6 +452,28 @@ class Data extends AbstractHelper
     }
 
     /**
+     * Products per request
+     *
+     * @param StoreInterface|null $store the store model or null.
+     * @return int the configuration value
+     */
+    public function getProductsPerRequest(StoreInterface $store = null)
+    {
+        return $this->getStoreConfig(self::XML_PATH_PRODUCT_PER_REQUEST, $store);
+    }
+
+    /**
+     * Request timeout
+     *
+     * @param StoreInterface|null $store the store model or null.
+     * @return int the configuration value
+     */
+    public function getRequestTimeout(StoreInterface $store = null)
+    {
+        return $this->getStoreConfig(self::XML_PATH_REQUEST_TIMEOUT, $store);
+    }
+
+    /**
      * Returns maximum percentage of PHP available memory that indexer should use
      *
      * @param StoreInterface|null $store the store model or null.
@@ -502,6 +539,17 @@ class Data extends AbstractHelper
     public function getMultiCurrencyMethod(StoreInterface $store = null)
     {
         return $this->getStoreConfig(self::XML_PATH_MULTI_CURRENCY, $store);
+    }
+
+    /**
+     * Returns if the light indexer should be used
+     *
+     * @param StoreInterface|null $store the store model or null.
+     * @return string the configuration value
+     */
+    public function getUseLightIndexer(StoreInterface $store = null)
+    {
+        return $this->getStoreConfig(self::XML_PATH_USE_LIGHT_INDEXER, $store);
     }
 
     /**

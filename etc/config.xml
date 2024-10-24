@@ -56,6 +56,8 @@
                 <low_stock_indication>0</low_stock_indication>
                 <send_customer_data>1</send_customer_data>
                 <indexer_memory>50</indexer_memory>
+                <product_per_request>100</product_per_request>
+                <time_between_batch_of_requests>60</time_between_batch_of_requests>
                 <indexer_disabled_products>0</indexer_disabled_products>
                 <tag_date_published>0</tag_date_published>
                 <track_multi_channel_orders>1</track_multi_channel_orders>

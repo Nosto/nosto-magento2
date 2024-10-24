@@ -344,6 +344,47 @@ class Builder
     }
 
     /**
+     * @param Product $product
+     * @param Store $store
+     * @return NostoProduct
+     * @throws FilteredProductException
+     * @throws NonBuildableProductException
+     */
+    public function buildLightProduct(
+        Product $product,
+        Store $store
+    ) {
+        $nostoProduct = new NostoProduct();
+        $modelFilter = new ModelFilter();
+        $this->eventManager->dispatch(
+            'nosto_product_load_before',
+            ['product' => $nostoProduct, 'magentoProduct' => $product, 'modelFilter' => $modelFilter]
+        );
+        if (!$modelFilter->isValid()) {
+            throw new FilteredProductException(
+                sprintf(
+                    'Product id %d did not pass pre-build model filter for store %s',
+                    $product->getId(),
+                    $store->getCode()
+                )
+            );
+        }
+        try {
+            $nostoProduct->setUrl($this->urlBuilder->getUrlInStore($product, $store));
+            $nostoProduct->setProductId((string)$product->getId());
+        } catch (Exception $e) {
+            $message = sprintf("Could not build light product with id: %s", $product->getId());
+            throw new NonBuildableProductException($message, $e);
+        }
+        $this->eventManager->dispatch(
+            'nosto_product_load_after',
+            ['product' => $nostoProduct, 'magentoProduct' => $product, 'modelFilter' => $modelFilter]
+        );
+
+        return $nostoProduct;
+    }
+
+    /**
      * Adds selected attributes to all tags also in the custom fields section
      *
      * @param Product $product

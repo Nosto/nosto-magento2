@@ -191,6 +191,22 @@
                     </comment>
                     <source_model>Nosto\Tagging\Model\Config\Source\Memory</source_model>
                 </field>
+                <field id="product_per_request" translate="label comment" type="select" sortOrder="110"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Light Recrawl Indexer - Products per Request</label>
+                    <comment>
+                        <![CDATA[Set the number of product IDs to be sent to Nosto in each request. A lower number can prevent overwhelming Nosto during updates.]]>
+                    </comment>
+                    <source_model>Nosto\Tagging\Model\Config\Source\ProductsPerRequest</source_model>
+                </field>
+                <field id="time_between_batch_of_requests" translate="label comment" type="select" sortOrder="110"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Light Recrawl Indexer - Time between batch of requests (seconds)</label>
+                    <comment>
+                        <![CDATA[Define the time between batch of requests to Nosto. This helps manage traffic and prevents potential spikes that could affect performance.]]>
+                    </comment>
+                    <source_model>Nosto\Tagging\Model\Config\Source\TimeBetweenBatchOfRequests</source_model>
+                </field>
                 <field id="indexer_disabled_products" translate="label comment" type="select" sortOrder="120"
                        showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Index disabled products</label>

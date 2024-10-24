@@ -108,4 +108,29 @@ class DefaultProductService implements ProductServiceInterface
             return null;
         }
     }
+
+    /**
+     * @param ProductInterface $product
+     * @param Store $store
+     * @return NostoProduct|null
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
+    public function getLightProduct(ProductInterface $product, Store $store)
+    {
+        /** @var Product $product */
+        /** @var Store $store */
+        try {
+            $nostoProduct =  $this->nostoProductBuilder->buildLightProduct(
+                $this->nostoProductRepository->reloadProduct(
+                    $product->getId(),
+                    $store->getId()
+                ),
+                $store
+            );
+            return $nostoProduct;
+        } catch (NonBuildableProductException $e) {
+            $this->logger->exception($e);
+            return null;
+        }
+    }
 }
