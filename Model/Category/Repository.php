@@ -132,8 +132,7 @@ class Repository
 
         $parentCategoryIds = null;
         if ($category->getLevel() >= 1) {
-            $parentCategoryIds = $this->getCategoryParentIds($category['path']);
-
+            $parentCategoryIds = $this->getCategoryParentIds($category->getPath());
             $this->saveParentIdsToCache($category, $parentCategoryIds);
         }
 
