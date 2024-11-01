@@ -39,7 +39,7 @@ namespace Nosto\Tagging\Model\Service\Sync\Upsert\Category;
 use Nosto\Tagging\Model\Service\Sync\AbstractBulkPublisher;
 
 // @codingStandardsIgnoreFile
-class BulkPublisher extends AbstractBulkPublisher
+class AsyncBulkPublisher extends AbstractBulkPublisher
 {
     public const NOSTO_SYNC_MESSAGE_QUEUE = 'nosto_category_sync.update';
     public const BULK_SIZE = 100;

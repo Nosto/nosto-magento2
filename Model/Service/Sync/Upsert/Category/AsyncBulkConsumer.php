@@ -43,7 +43,7 @@ use Nosto\Exception\MemoryOutOfBoundsException;
 use Nosto\NostoException;
 use Nosto\Tagging\Helper\Scope as NostoScopeHelper;
 use Nosto\Tagging\Logger\Logger;
-use Magento\Catalog\Model\ResourceModel\Category\CollectionFactory;
+use Nosto\Tagging\Model\ResourceModel\Magento\Product\CollectionFactory;
 use Nosto\Tagging\Model\Service\Sync\AbstractBulkConsumer;
 use Nosto\Tagging\Model\Service\Sync\Upsert\SyncService;
 
@@ -98,12 +98,12 @@ class AsyncBulkConsumer extends AbstractBulkConsumer
      * @throws MemoryOutOfBoundsException
      * @throws NostoException
      */
-    public function doOperation(array $categoryIds, string $storeId)
+    public function doOperation(array $productIds, string $storeId)
     {
         $store = $this->nostoScopeHelper->getStore($storeId);
-        $categoryCollection = $this->collectionFactory->create()
-            ->addIdsToFilter($categoryIds)
+        $productCollection = $this->collectionFactory->create()
+            ->addIdsToFilter($productIds)
             ->addStoreFilter($storeId);
-        $this->syncService->syncProducts($categoryCollection, $store);
+        $this->syncService->syncProducts($productCollection, $store);
     }
 }

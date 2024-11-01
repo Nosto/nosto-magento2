@@ -100,37 +100,36 @@ abstract class AbstractBulkPublisher implements BulkPublisherInterface
      * @inheritDoc
      * @throws LocalizedException
      */
-    public function execute(int $storeId, array $productIds = [])
+    public function execute(int $storeId, array $entityIds = [])
     {
-        if (!empty($productIds)) {
-            $this->publishCollectionToMessageQueue($storeId, $productIds);
+        if (!empty($entityIds)) {
+            $this->publishCollectionToMessageQueue($storeId, $entityIds);
         }
     }
 
     /**
      * @param $storeId
-     * @param $productIds
+     * @param $entityIds
      * @throws LocalizedException
      * @throws Exception
      */
     private function publishCollectionToMessageQueue(
         $storeId,
-        $productIds
+        $entityIds
     ) {
-
         if (!$this->canUseAsyncOperations()) {
             $this->logger->critical(
                 "Module Magento_AsynchronousOperations not available. Aborting bulk publish operation"
             );
             return;
         }
-        $productIdsChunks = array_chunk($productIds, $this->getBulkSize());
+        $productIdsChunks = array_chunk($entityIds, $this->getBulkSize());
         $bulkUuid = $this->identityService->generateId();
         /**
          * Argument is of type string but array is expected
          */
         /** @phan-suppress-next-line PhanTypeMismatchArgumentProbablyReal */
-        $bulkDescription = __('Sync ' . count($productIds) . ' Nosto products');
+        $bulkDescription = __('Sync ' . count($entityIds) . ' Nosto products');
         $operationsData = [];
         foreach ($productIdsChunks as $productIdsChunk) {
             $operationsData[] = $this->buildOperationData(
