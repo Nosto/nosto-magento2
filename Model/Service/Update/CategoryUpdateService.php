@@ -127,6 +127,7 @@ class CategoryUpdateService extends AbstractService
         /** @var CategoryInterface $category */
         foreach ($collection->getItems() as $category) {
             try {
+                /** @phan-suppress-next-line PhanTypeMismatchArgument */
                 $parents = $this->nostoCategoryRepository->resolveParentCategoryIds($category);
             } catch (ParentCategoryDisabledException $e) {
                 $this->getLogger()->debug($e->getMessage());

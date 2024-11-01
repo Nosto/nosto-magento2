@@ -85,34 +85,11 @@ class Repository
     }
 
     /**
-     * @param Store $store
-     * @param array $categoryIds
+     *  Gets the parent category ID's for a given category
      *
-     * @return CategoryCollection
-     * @throws LocalizedException
-     */
-    public function getCategoryCollectionQuery(Store $store, array $categoryIds = [])
-    {
-        $categories = $this->categoryCollectionFactory->create()
-            ->distinct(true)
-            ->addNameToResult()
-            ->setStoreId($store->getId())
-            ->addUrlRewriteToResult()
-            ->addAttributeToFilter('level', ['gt' => 1])
-            ->addAttributeToSelect(array_merge(['name', 'is_active', 'include_in_menu']))
-            ->addOrderField('entity_id');
-
-        if ($categoryIds) {
-            $categories->addAttributeToFilter('entity_id', ['in' => $categoryIds]);
-        }
-
-        return $categories;
-    }
-
-    /**
-     * Gets the parent category ID's for a given category
-     *
+     * @param CategoryInterface $category
      * @return string[]|null
+     *
      * @throws ParentCategoryDisabledException
      */
     public function resolveParentCategoryIds(CategoryInterface $category): ?array
@@ -137,6 +114,31 @@ class Repository
         }
 
         return $parentCategoryIds;
+    }
+
+    /**
+     * @param Store $store
+     * @param array $categoryIds
+     *
+     * @return CategoryCollection
+     * @throws LocalizedException
+     */
+    public function getCategoryCollectionQuery(Store $store, array $categoryIds = [])
+    {
+        $categories = $this->categoryCollectionFactory->create()
+            ->distinct(true)
+            ->addNameToResult()
+            ->setStoreId($store->getId())
+            ->addUrlRewriteToResult()
+            ->addAttributeToFilter('level', ['gt' => 1])
+            ->addAttributeToSelect(array_merge(['name', 'is_active', 'include_in_menu']))
+            ->addOrderField('entity_id');
+
+        if ($categoryIds) {
+            $categories->addAttributeToFilter('entity_id', ['in' => $categoryIds]);
+        }
+
+        return $categories;
     }
 
     /**
