@@ -51,6 +51,7 @@ use Nosto\Tagging\Model\ResourceModel\Magento\Product\CollectionBuilder;
 use Nosto\Tagging\Model\Service\Indexer\IndexerStatusServiceInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use Nosto\Tagging\Model\Service\Sync\Recrawl\RecrawlService;
+use Nosto\Tagging\Helper\Data as NostoHelperData;
 
 /**
  * Class ProductIndexer
@@ -65,6 +66,9 @@ class LightProductIndexer extends AbstractIndexer
 
     /** @var ProductModeSwitcher */
     private ProductModeSwitcher $modeSwitcher;
+
+    /** @var NostoHelperData */
+    protected NostoHelperData $nostoHelperData;
 
     /** @var RecrawlService */
     private RecrawlService $recrawlService;
@@ -81,6 +85,7 @@ class LightProductIndexer extends AbstractIndexer
      * @param InputInterface $input
      * @param IndexerStatusServiceInterface $indexerStatusService
      * @param RecrawlService $recrawlService
+     * @param NostoHelperData $nostoHelperData
      */
     public function __construct(
         NostoHelperScope              $nostoHelperScope,
@@ -92,11 +97,13 @@ class LightProductIndexer extends AbstractIndexer
         ProcessManager                $processManager,
         InputInterface                $input,
         IndexerStatusServiceInterface $indexerStatusService,
-        RecrawlService                $recrawlService
+        RecrawlService                $recrawlService,
+        NostoHelperData               $nostoHelperData
     ) {
         $this->productCollectionBuilder = $productCollectionBuilder;
         $this->modeSwitcher = $modeSwitcher;
         $this->recrawlService = $recrawlService;
+        $this->nostoHelperData = $nostoHelperData;
         parent::__construct(
             $nostoHelperScope,
             $logger,
@@ -123,10 +130,10 @@ class LightProductIndexer extends AbstractIndexer
      */
     public function doIndex(Store $store, array $ids = [])
     {
-//        if ($this->nostoHelperData->getUseLightIndexer($store)) {
+        if ($this->nostoHelperData->isMultiIndexerLightIndexerEnabled($store)) {
             $collection = $this->getCollection($store, $ids);
             $this->recrawlService->recrawl($collection, $store);
-//        }
+        }
     }
 
     /**

@@ -41,6 +41,7 @@ use Magento\Indexer\Model\ProcessManager;
 use Magento\Store\Model\App\Emulation;
 use Magento\Store\Model\Store;
 use Nosto\NostoException;
+use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Indexer\Dimensions\Product\ModeSwitcher as ProductModeSwitcher;
@@ -69,6 +70,9 @@ class ProductIndexer extends AbstractIndexer
     /** @var ProductModeSwitcher */
     private ProductModeSwitcher $modeSwitcher;
 
+    /** @var NostoHelperData */
+    protected NostoHelperData $nostoHelperData;
+
     /**
      * Invalidate constructor.
      * @param NostoHelperScope $nostoHelperScope
@@ -92,11 +96,13 @@ class ProductIndexer extends AbstractIndexer
         Emulation                     $storeEmulation,
         ProcessManager                $processManager,
         InputInterface                $input,
-        IndexerStatusServiceInterface $indexerStatusService
+        IndexerStatusServiceInterface $indexerStatusService,
+        NostoHelperData               $nostoHelperData
     ) {
         $this->productUpdateService = $productUpdateService;
         $this->productCollectionBuilder = $productCollectionBuilder;
         $this->modeSwitcher = $modeSwitcher;
+        $this->nostoHelperData = $nostoHelperData;
         parent::__construct(
             $nostoHelperScope,
             $logger,
@@ -123,11 +129,15 @@ class ProductIndexer extends AbstractIndexer
      */
     public function doIndex(Store $store, array $ids = [])
     {
-        $collection = $this->getCollection($store, $ids);
-        $this->productUpdateService->addCollectionToUpdateMessageQueue(
-            $collection,
-            $store
-        );
+        if ($this->nostoHelperData->isMultiIndexerMainIndexerEnabled($store)) {
+            $collection = $this->getCollection($store, $ids);
+            $this->productUpdateService->addCollectionToUpdateMessageQueue(
+                $collection,
+                $store
+            );
+        } else {
+            $this->nostoLogger->debugWithSource();
+        }
     }
 
     /**

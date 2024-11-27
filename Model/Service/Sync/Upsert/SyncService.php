@@ -66,7 +66,7 @@ class SyncService extends AbstractService
     private NostoHelperUrl $nostoHelperUrl;
 
     /** @var NostoDataHelper */
-    private NostoDataHelper $nostoDataHelper;
+    protected NostoDataHelper $nostoDataHelper;
 
     /** @var ProductServiceInterface */
     private ProductServiceInterface $productService;

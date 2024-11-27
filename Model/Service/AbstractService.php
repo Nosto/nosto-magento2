@@ -49,7 +49,7 @@ use Nosto\Util\Memory as NostoMemUtil;
 abstract class AbstractService
 {
     /** @var NostoDataHelper */
-    private NostoDataHelper $nostoDataHelper;
+    protected NostoDataHelper $nostoDataHelper;
 
     /** @var NostoLogger */
     private NostoLogger $nostoLogger;

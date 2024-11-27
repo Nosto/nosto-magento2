@@ -159,16 +159,6 @@
                     </comment>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
-                <field id="product_updates" translate="label comment" type="select" sortOrder="50"
-                       showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Product Updates via API</label>
-                    <comment><![CDATA[Enable product updates via API for keeping the catalog in sync.
-                        <strong style="color:red">Warning!</strong> Disabling this feature may
-                        lead to products with incorrect pricing and availability data to be displayed
-                        in recommendations.]]>
-                    </comment>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                </field>
                 <field id="low_stock_indication" translate="label comment" type="select" sortOrder="70"
                        showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Enable Low Stock Indication</label>
@@ -190,22 +180,6 @@
                         <![CDATA[Percentage of total PHP available memory that Nosto indexer is allowed to use]]>
                     </comment>
                     <source_model>Nosto\Tagging\Model\Config\Source\Memory</source_model>
-                </field>
-                <field id="product_per_request" translate="label comment" type="select" sortOrder="110"
-                       showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Light Recrawl Indexer - Products per Request</label>
-                    <comment>
-                        <![CDATA[Set the number of product IDs to be sent to Nosto in each request. A lower number can prevent overwhelming Nosto during updates.]]>
-                    </comment>
-                    <source_model>Nosto\Tagging\Model\Config\Source\ProductsPerRequest</source_model>
-                </field>
-                <field id="time_between_batch_of_requests" translate="label comment" type="select" sortOrder="110"
-                       showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Light Recrawl Indexer - Time between batch of requests (seconds)</label>
-                    <comment>
-                        <![CDATA[Define the time between batch of requests to Nosto. This helps manage traffic and prevents potential spikes that could affect performance.]]>
-                    </comment>
-                    <source_model>Nosto\Tagging\Model\Config\Source\TimeBetweenBatchOfRequests</source_model>
                 </field>
                 <field id="indexer_disabled_products" translate="label comment" type="select" sortOrder="120"
                        showInDefault="1" showInWebsite="1" showInStore="1">
@@ -298,6 +272,63 @@
                        showInDefault="0" showInWebsite="0" showInStore="1">
                     <label>Account Details and Tokens</label>
                     <frontend_model>Nosto\Tagging\Block\Adminhtml\Form\Field\Tokens</frontend_model>
+                </field>
+            </group>
+            <group id="product_sync" translate="label" type="text" sortOrder="10" showInDefault="1"
+                   showInWebsite="1" showInStore="1">
+                <label>Product Sync and Indexers</label>
+                <field id="indexer_method" translate="label comment" type="select" sortOrder="10"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Multi indexer setup</label>
+                    <comment>Set this to "Product indexer" if your store uses Magento's product regural indexer. If the store view uses light indexer set this to
+                        "Product light indexer". If you disable indexer you set this to "Disabled" and Nosto will not try to do any indexer.
+                    </comment>
+                    <source_model>Nosto\Tagging\Model\Config\Source\MultiIndexer</source_model>
+                    <backend_model>Nosto\Tagging\Model\Config\Backend\MultiIndexer</backend_model>
+                </field>
+                <field id="product_updates" translate="label comment" type="select" sortOrder="10"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <depends>
+                        <field id="indexer_method">productindexer</field>
+                    </depends>
+                    <label>Product Updates via API</label>
+                    <comment><![CDATA[Enable product updates via API for keeping the catalog in sync.
+                        <strong style="color:red">Warning!</strong> Disabling this feature may
+                        lead to products with incorrect pricing and availability data to be displayed
+                        in recommendations.]]>
+                    </comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="product_per_request" translate="label comment" type="select" sortOrder="50"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <depends>
+                        <field id="indexer_method">productlightindexer</field>
+                    </depends>
+                    <label>Light Recrawl Indexer - Products per Request</label>
+                    <comment>
+                        <![CDATA[Set the number of product IDs to be sent to Nosto in each request. A lower number can prevent overwhelming Nosto during updates.
+                        <strong style="color:red">Warning!</strong> The light recrawl indexer does not currently perform partial API updates with inventory levels. This feature is not yet implemented on Nosto's side.]]>
+                    </comment>
+                    <source_model>Nosto\Tagging\Model\Config\Source\ProductsPerRequest</source_model>
+                </field>
+                <field id="time_between_batch_of_requests" translate="label comment" type="select" sortOrder="60"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <depends>
+                        <field id="indexer_method">productlightindexer</field>
+                    </depends>
+                    <label>Light Recrawl Indexer - Time between batch of requests (seconds)</label>
+                    <comment>
+                        <![CDATA[Define the time between batch of requests to Nosto. This helps manage traffic and prevents potential spikes that could affect performance.
+                        <strong style="color:red">Warning!</strong> The light recrawl indexer does not currently perform partial API updates with inventory levels. This feature is not yet implemented on Nosto's side.]]>
+                    </comment>
+                    <source_model>Nosto\Tagging\Model\Config\Source\TimeBetweenBatchOfRequests</source_model>
+                </field>
+                <field id="website_publicity" translate="label comment" type="select" sortOrder="40"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Website publicity</label>
+                    <comment>Set this yes, because the light recrawl indexer only works if the website is publicity
+                    </comment>
+                    <source_model>Nosto\Tagging\Model\Config\Source\WebsitePublicity</source_model>
                 </field>
             </group>
         </section>

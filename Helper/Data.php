@@ -179,9 +179,9 @@ class Data extends AbstractHelper
     public const XML_PATH_MULTI_CURRENCY = 'nosto/multicurrency/method';
 
     /**
-     * Path to the configuration object for light indexer
+     * Path to the configuration object for multi currency
      */
-    public const XML_PATH_USE_LIGHT_INDEXER = 'nosto/flags/use_light_indexer';
+    public const XML_PATH_MULTI_INDEXER = 'nosto/product_sync/indexer_method';
 
     /**
      * @var string Nosto customer reference attribute name
@@ -202,6 +202,14 @@ class Data extends AbstractHelper
     public const SETTING_VALUE_MC_SINGLE = 'single';
     public const SETTING_VALUE_MC_DISABLED = 'disabled';
     public const SETTING_VALUE_MC_UNDEFINED = 'undefined';
+
+    /**
+     * Values of the multi indexer settings
+     */
+    public const SETTING_VALUE_MI_PRODUCT_INDEXER = 'productindexer';
+    public const SETTING_VALUE_MI_PRODUCT_LIGHT_INDEXER = 'productlightindexer';
+    public const SETTING_VALUE_MI_PRODUCT_DISABLED = 'disabled';
+    public const SETTING_VALUE_MI_UNDEFINDED = 'undefined';
 
     /**
      * Name of the module
@@ -542,14 +550,50 @@ class Data extends AbstractHelper
     }
 
     /**
-     * Returns if the light indexer should be used
+     * Returns if multi indexer is disabled
+     *
+     * @param StoreInterface|null $store the store model or null.
+     * @return bool the configuration value
+     */
+    public function isMultiIndexerDisabled(StoreInterface $store = null)
+    {
+        $storeConfig = $this->getMultiIndexerMethod($store);
+        return ($storeConfig === self::SETTING_VALUE_MI_PRODUCT_DISABLED);
+    }
+
+    /**
+     * Returns if multi indexer is enabled
+     *
+     * @param StoreInterface|null $store the store model or null.
+     * @return bool the configuration value
+     */
+    public function isMultiIndexerMainIndexerEnabled(StoreInterface $store = null)
+    {
+        $storeConfig = $this->getMultiIndexerMethod($store);
+        return ($storeConfig === self::SETTING_VALUE_MI_PRODUCT_INDEXER);
+    }
+
+    /**
+     * Returns if multi indexer is enabled
+     *
+     * @param StoreInterface|null $store the store model or null.
+     * @return bool the configuration value
+     */
+    public function isMultiIndexerLightIndexerEnabled(StoreInterface $store = null)
+    {
+        $storeConfig = $this->getMultiIndexerMethod($store);
+        return ($storeConfig === self::SETTING_VALUE_MI_PRODUCT_LIGHT_INDEXER);
+    }
+
+    /**
+     * Returns the multi indexer setup value / multi indexer_method
      *
      * @param StoreInterface|null $store the store model or null.
      * @return string the configuration value
      */
-    public function getUseLightIndexer(StoreInterface $store = null)
+    public function getMultiIndexerMethod(StoreInterface $store = null)
     {
-        return $this->getStoreConfig(self::XML_PATH_USE_LIGHT_INDEXER, $store);
+        return $this->getStoreConfig(self::XML_PATH_MULTI_INDEXER, $store);
     }
 
     /**

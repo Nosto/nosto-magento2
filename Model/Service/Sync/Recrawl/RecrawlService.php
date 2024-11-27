@@ -71,6 +71,9 @@ class RecrawlService extends AbstractService
     /** @var NostoHelperAccount */
     private NostoHelperAccount $nostoHelperAccount;
 
+    /** @var NostoHelperData */
+    protected NostoHelperData $nostoHelperData;
+
     /** @var NostoHelperUrl */
     private NostoHelperUrl $nostoHelperUrl;
 
@@ -99,6 +102,7 @@ class RecrawlService extends AbstractService
         $this->cacheService = $cacheService;
         $this->productService = $productService;
         $this->nostoHelperAccount = $nostoHelperAccount;
+        $this->nostoHelperData = $nostoHelperData;
         $this->nostoHelperUrl = $nostoHelperUrl;
         $this->productRepository = $productRepository;
         parent::__construct($nostoHelperData, $nostoHelperAccount, $logger);
@@ -115,13 +119,13 @@ class RecrawlService extends AbstractService
      */
     public function recrawl(ProductCollection $collection, Store $store)
     {
-//        if (!$this->nostoDataHelper->isProductUpdatesEnabled($store)) {
-//            $this->logDebugWithStore(
-//                'Nosto product sync is disabled - skipping products recrawl request to Nosto',
-//                $store
-//            );
-//            return;
-//        }
+        if (!$this->nostoDataHelper->isProductUpdatesEnabled($store)) {
+            $this->logDebugWithStore(
+                'Nosto product sync is disabled - skipping products recrawl request to Nosto',
+                $store
+            );
+            return;
+        }
         $account = $this->nostoHelperAccount->findAccount($store);
         $this->startBenchmark(self::BENCHMARK_RECRAWL_NAME, self::BENCHMARK_RECRAWL_BREAKPOINT);
 
