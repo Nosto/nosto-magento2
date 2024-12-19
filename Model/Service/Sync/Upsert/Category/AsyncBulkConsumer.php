@@ -37,13 +37,14 @@
 namespace Nosto\Tagging\Model\Service\Sync\Upsert\Category;
 
 use Magento\Framework\EntityManager\EntityManager;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Json\Helper\Data as JsonHelper;
 use Magento\Store\Model\App\Emulation;
 use Nosto\Exception\MemoryOutOfBoundsException;
 use Nosto\NostoException;
 use Nosto\Tagging\Helper\Scope as NostoScopeHelper;
 use Nosto\Tagging\Logger\Logger;
-use Nosto\Tagging\Model\ResourceModel\Magento\Product\CollectionFactory;
+use Nosto\Tagging\Model\ResourceModel\Magento\Category\CollectionFactory;
 use Nosto\Tagging\Model\Service\Sync\AbstractBulkConsumer;
 use Nosto\Tagging\Model\Service\Sync\Upsert\SyncService;
 
@@ -95,15 +96,14 @@ class AsyncBulkConsumer extends AbstractBulkConsumer
 
     /**
      * @inheritDoc
-     * @throws MemoryOutOfBoundsException
-     * @throws NostoException
      */
-    public function doOperation(array $productIds, string $storeId)
+    public function doOperation(array $categoryIds, string $storeId)
     {
+        // TODO: Add store.
         $store = $this->nostoScopeHelper->getStore($storeId);
-        $productCollection = $this->collectionFactory->create()
-            ->addIdsToFilter($productIds)
-            ->addStoreFilter($storeId);
-        $this->syncService->syncProducts($productCollection, $store);
+        $categoryCollection = $this->collectionFactory->create()
+            ->addIdsToFilter($categoryIds);
+
+        $this->syncService->syncCategories($categoryCollection, $store);
     }
 }

@@ -40,6 +40,7 @@ use Exception;
 use Magento\Catalog\Model\Product;
 use Magento\Store\Model\Store;
 use Nosto\Exception\MemoryOutOfBoundsException;
+use Nosto\Tagging\Model\ResourceModel\Magento\Category\Collection as CategoryCollection;
 use Nosto\NostoException;
 use Nosto\Operation\UpsertProduct;
 use Nosto\Request\Http\Exception\AbstractHttpException;
@@ -179,5 +180,34 @@ class SyncService extends AbstractService
             $op->upsert();
         }
         $this->logBenchmarkSummary(self::BENCHMARK_SYNC_NAME, $store, $this);
+    }
+
+    /**
+     * @throws NostoException
+     * @throws MemoryOutOfBoundsException
+     */
+    public function syncCategories(CategoryCollection $collection, Store $store)
+    {
+        if (!$this->nostoDataHelper->isProductUpdatesEnabled($store)) {
+            $this->logDebugWithStore(
+                'Nosto Category sync is disabled',
+                $store
+            );
+            return;
+        }
+        $account = $this->nostoHelperAccount->findAccount($store);
+        $this->startBenchmark('nosto_category_upsert', self::BENCHMARK_SYNC_BREAKPOINT);
+        $index = 0;
+        $collection->setPageSize($this->apiBatchSize);
+        $iterator = new PagingIterator($collection);
+        /** @var CategoryCollection $page */
+        foreach ($iterator as $page) {
+            $categoryIdsInBatch = [];
+            $this->checkMemoryConsumption('category sync');
+
+            die;
+
+        }
+
     }
 }

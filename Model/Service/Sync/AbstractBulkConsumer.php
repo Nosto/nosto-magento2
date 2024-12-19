@@ -90,11 +90,15 @@ abstract class AbstractBulkConsumer implements BulkConsumerInterface
     {
         $serializedData = $operation->getSerializedData();
         $unserializedData = $this->jsonHelper->jsonDecode($serializedData);
-        $productIds = $unserializedData['product_ids'];
+
+        $productIds = $unserializedData['product_ids'] ?? null;
+        $categoryIds = $unserializedData['category_ids'] ?? null;
         $storeId = $unserializedData['store_id'];
         try {
+            $idsToProcess = $productIds ?: $categoryIds;
+
             $this->storeEmulation->startEnvironmentEmulation((int)$storeId);
-            $this->doOperation($productIds, $storeId);
+            $this->doOperation($idsToProcess, $storeId);
             /**
              * Argument is of type string but array is expected
              */

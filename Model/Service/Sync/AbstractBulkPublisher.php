@@ -123,34 +123,52 @@ abstract class AbstractBulkPublisher implements BulkPublisherInterface
             );
             return;
         }
-        $productIdsChunks = array_chunk($entityIds, $this->getBulkSize());
+
         $bulkUuid = $this->identityService->generateId();
-        /**
-         * Argument is of type string but array is expected
-         */
-        /** @phan-suppress-next-line PhanTypeMismatchArgumentProbablyReal */
-        $bulkDescription = __('Sync ' . count($entityIds) . ' Nosto products');
+        $bulkDescription = __('Sync ' . count($entityIds) . ' Nosto entities');
         $operationsData = [];
-        foreach ($productIdsChunks as $productIdsChunk) {
-            $operationsData[] = $this->buildOperationData(
-                $storeId,
-                $productIdsChunk,
-                $bulkUuid
-            );
+
+        // TODO: @Ugljesa Check the code.
+        if (isset($entityIds['entity']) && $entityIds['entity'] === 'category') {
+            // Process Categories.
+            $categoryIdsChunks = array_chunk($entityIds['categoryIds'], $this->getBulkSize());
+
+            foreach ($categoryIdsChunks as $categoryIdsChunk) {
+                $operationsData[] = $this->buildOperationData(
+                    $storeId,
+                    [],
+                    $categoryIdsChunk,
+                    $bulkUuid
+                );
+            }
+        } else {
+            // Process Products.
+            $productIdsChunks = array_chunk($entityIds, $this->getBulkSize());
+            foreach ($productIdsChunks as $productIdsChunk) {
+                $operationsData[] = $this->buildOperationData(
+                    $storeId,
+                    $productIdsChunk,
+                    [],
+                    $bulkUuid
+                );
+            }
         }
 
         $operations = [];
         foreach ($operationsData as $operationData) {
             $operations[] = $this->operationFactory->create($operationData);
         }
+
         if (empty($operations)) {
             return;
         }
+
         $result = $this->bulkManagement->scheduleBulk(
             $bulkUuid,
             $operations,
             $bulkDescription
         );
+
         if (!$result) {
             $msg = 'Something went wrong while publishing bulk to RabbitMQ. Please check your connection';
             /** @phan-suppress-next-line PhanTypeMismatchArgumentProbablyReal */
@@ -190,17 +208,20 @@ abstract class AbstractBulkPublisher implements BulkPublisherInterface
      * Build asynchronous operation data
      * @param int $storeId
      * @param array $productIds
+     * @param array $categoryIdsChunks
      * @param string $bulkUuid
      * @return array
      */
     private function buildOperationData(
         int $storeId,
         array $productIds,
+        array $categoryIdsChunks,
         string $bulkUuid
     ) {
         $dataToEncode = [
             'meta_information' => $this->getMetaData(),
             'product_ids' => $productIds,
+            'category_ids' => $categoryIdsChunks,
             'store_id' => $storeId
         ];
         return [

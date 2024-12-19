@@ -81,7 +81,10 @@ class Repository
      */
     public function getByIds(array $ids)
     {
-        //@TODO implement
+        $searchCriteria = $this->searchCriteriaBuilder
+            ->addFilter('entity_id', $ids, 'in')
+            ->create();
+        return $this->categoryRepository->getList($searchCriteria);
     }
 
     /**

@@ -52,6 +52,8 @@ use Nosto\Tagging\Model\Service\Sync\BulkPublisherInterface;
 
 class CategoryUpdateService extends AbstractService
 {
+    const CATEGORY_SERIVCE = 'category';
+
     /** @var NostoCategoryRepository $nostoCategoryRepository */
     private NostoCategoryRepository $nostoCategoryRepository;
 
@@ -113,7 +115,12 @@ class CategoryUpdateService extends AbstractService
         );
         /** @var CategoryCollection $page */
         foreach ($iterator as $page) {
-            $this->upsertBulkPublisher->execute($store->getId(), $this->toParentCategoryIds($page));
+            $data = [
+                'entity' => self::CATEGORY_SERIVCE,
+                'categoryIds' => $this->toParentCategoryIds($page)
+            ];
+
+            $this->upsertBulkPublisher->execute($store->getId(), $data);
         }
     }
 
@@ -125,6 +132,7 @@ class CategoryUpdateService extends AbstractService
     {
         $categoryIds = [];
         /** @var CategoryInterface $category */
+        // TODO: @ugljesa Check instanceof.
         foreach ($collection->getItems() as $category) {
             try {
                 /** @phan-suppress-next-line PhanTypeMismatchArgument */
