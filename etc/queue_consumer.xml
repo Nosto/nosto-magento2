@@ -40,7 +40,7 @@
               connection="amqp"
               maxMessages="20"
               consumerInstance="Magento\Framework\MessageQueue\Consumer"
-              handler="Nosto\Tagging\Model\Service\Sync\Upsert\AsyncBulkConsumer::processOperation"/>
+              handler="Nosto\Tagging\Model\Service\Sync\Upsert\Product\AsyncBulkConsumer::processOperation"/>
     <consumer name="nosto_product_sync.delete"
               queue="nosto_product_sync.delete"
               connection="amqp"
