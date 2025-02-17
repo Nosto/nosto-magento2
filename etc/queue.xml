@@ -39,7 +39,7 @@
         <queue name="nosto_product_sync.update"
                consumer="nosto_product_sync.update"
                consumerInstance="Magento\Framework\MessageQueue\Consumer"
-               handler="Nosto\Tagging\Model\Service\Sync\Upsert\AsyncBulkConsumer::process"/>
+               handler="Nosto\Tagging\Model\Service\Sync\Upsert\Product\AsyncBulkConsumer::process"/>
     </broker>
     <broker topic="nosto_product_sync.delete" exchange="magento-amqp" type="amqp">
         <queue name="nosto_product_sync.delete"

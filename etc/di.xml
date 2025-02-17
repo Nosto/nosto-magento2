@@ -48,7 +48,7 @@
     <preference for="Nosto\Tagging\Model\Mview\ChangeLogInterface" type="Nosto\Tagging\Model\Mview\ChangeLog"/>
     <preference for="Nosto\Tagging\Model\Mview\MviewInterface" type="Nosto\Tagging\Model\Mview\Mview"/>
     <preference for="Nosto\Tagging\Model\Service\Indexer\IndexerStatusServiceInterface" type="Nosto\Tagging\Model\Service\Indexer\IndexerStatusService"/>
-    <preference for="Nosto\Tagging\Model\Service\Sync\BulkPublisherInterface" type="Nosto\Tagging\Model\Service\Sync\Upsert\AsyncBulkPublisher"/>
+    <preference for="Nosto\Tagging\Model\Service\Sync\BulkPublisherInterface" type="Nosto\Tagging\Model\Service\Sync\Upsert\Product\AsyncBulkPublisher"/>
     <preference for="Nosto\Tagging\Model\Service\Sync\BulkPublisherInterface" type="Nosto\Tagging\Model\Service\Sync\Upsert\Category\AsyncBulkPublisher"/>
     <preference for="Nosto\Tagging\Model\Cache\Type\ProductDataInterface" type="Nosto\Tagging\Model\Cache\Type\ProductData" />
     <type name="Magento\Catalog\Model\ResourceModel\Product">
@@ -217,10 +217,10 @@
             </argument>
         </arguments>
     </type>
-    <type name="Nosto\Tagging\Model\Service\Sync\Upsert\AsyncBulkPublisher">
+    <type name="Nosto\Tagging\Model\Service\Sync\Upsert\Product\AsyncBulkPublisher">
         <arguments>
             <argument name="asyncBulkConsumer" xsi:type="object" shared="false">
-                Nosto\Tagging\Model\Service\Sync\Upsert\AsyncBulkConsumer
+                Nosto\Tagging\Model\Service\Sync\Upsert\Product\AsyncBulkConsumer
             </argument>
         </arguments>
     </type>
@@ -255,7 +255,7 @@
     <type name="Nosto\Tagging\Model\Service\Update\ProductUpdateService">
         <arguments>
             <argument name="upsertBulkPublisher" xsi:type="object" shared="false">
-                Nosto\Tagging\Model\Service\Sync\Upsert\AsyncBulkPublisher
+                Nosto\Tagging\Model\Service\Sync\Upsert\Product\AsyncBulkPublisher
             </argument>
             <argument name="deleteBulkPublisher" xsi:type="object" shared="false">
                 Nosto\Tagging\Model\Service\Sync\Delete\AsyncBulkPublisher
