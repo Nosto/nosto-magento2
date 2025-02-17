@@ -113,7 +113,7 @@ class SyncService extends AbstractService
         foreach ($iterator as $page) {
             $this->checkMemoryConsumption('category sync');
             foreach ($page as $category) {
-                // @TODO: Adjust on the SDK to batch instead of calling the API for each category
+                // Needs to adjust on the SDK to batch instead of calling the API for each category
                 try {
                     $nostoCategory = $this->categoryBuilder->build($category, $store);
                     $op = new CategoryUpdate($nostoCategory, $account, $this->nostoHelperUrl->getActiveDomain($store));
