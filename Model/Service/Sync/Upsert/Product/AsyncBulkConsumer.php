@@ -34,43 +34,56 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Service\Sync\Delete;
+namespace Nosto\Tagging\Model\Service\Sync\Upsert\Product;
 
-use Nosto\NostoException;
-use Nosto\Tagging\Model\Service\Sync\AbstractBulkConsumer;
-use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Magento\Framework\EntityManager\EntityManager;
 use Magento\Framework\Json\Helper\Data as JsonHelper;
-use Nosto\Tagging\Logger\Logger;
 use Magento\Store\Model\App\Emulation;
+use Nosto\Exception\MemoryOutOfBoundsException;
+use Nosto\NostoException;
+use Nosto\Tagging\Helper\Scope as NostoScopeHelper;
+use Nosto\Tagging\Logger\Logger;
+use Nosto\Tagging\Model\ResourceModel\Magento\Product\CollectionFactory;
+use Nosto\Tagging\Model\Service\Sync\AbstractBulkConsumer;
 
+/**
+ * Asynchronous Bulk Consumer
+ *
+ * Class AsyncBulkConsumer
+ */
 class AsyncBulkConsumer extends AbstractBulkConsumer
 {
-    /** @var DeleteService */
-    private DeleteService $deleteService;
+    /** @var SyncService */
+    private SyncService $syncService;
 
-    /** @var NostoHelperScope */
-    private NostoHelperScope $nostoHelperScope;
+    /** @var NostoScopeHelper */
+    private NostoScopeHelper $nostoScopeHelper;
+
+    /** @var CollectionFactory */
+    private CollectionFactory $collectionFactory;
 
     /**
      * AsyncBulkConsumer constructor.
-     * @param DeleteService $deleteService
-     * @param NostoHelperScope $nostoHelperScope
+     * @param SyncService $syncService
+     * @param NostoScopeHelper $nostoScopeHelper
+     * @param CollectionFactory $collectionFactory
      * @param JsonHelper $jsonHelper
      * @param EntityManager $entityManager
      * @param Emulation $storeEmulation
      * @param Logger $logger
      */
     public function __construct(
-        DeleteService $deleteService,
-        NostoHelperScope $nostoHelperScope,
+        SyncService $syncService,
+        NostoScopeHelper $nostoScopeHelper,
+        CollectionFactory $collectionFactory,
         JsonHelper $jsonHelper,
         EntityManager $entityManager,
         Emulation $storeEmulation,
         Logger $logger
     ) {
-        $this->deleteService = $deleteService;
-        $this->nostoHelperScope = $nostoHelperScope;
+        $this->syncService = $syncService;
+        $this->nostoScopeHelper = $nostoScopeHelper;
+        $this->collectionFactory = $collectionFactory;
         parent::__construct(
             $logger,
             $jsonHelper,
@@ -81,13 +94,15 @@ class AsyncBulkConsumer extends AbstractBulkConsumer
 
     /**
      * @inheritDoc
-     * @param array $entityIds Product IDs
-     * @param string $storeId
+     * @throws MemoryOutOfBoundsException
      * @throws NostoException
      */
     public function doOperation(array $entityIds, string $storeId)
     {
-        $store = $this->nostoHelperScope->getStore($storeId);
-        $this->deleteService->delete($entityIds, $store);
+        $store = $this->nostoScopeHelper->getStore($storeId);
+        $productCollection = $this->collectionFactory->create()
+            ->addIdsToFilter($entityIds)
+            ->addStoreFilter($storeId);
+        $this->syncService->sync($productCollection, $store);
     }
 }

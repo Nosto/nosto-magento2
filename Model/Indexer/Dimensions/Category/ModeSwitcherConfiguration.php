@@ -34,19 +34,53 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Service\Sync;
+namespace Nosto\Tagging\Model\Indexer\Dimensions\Category;
 
-use Exception;
-use Magento\AsynchronousOperations\Api\Data\OperationInterface;
+use InvalidArgumentException;
+use Magento\Framework\App\Cache\TypeListInterface;
+use Magento\Framework\App\Config\ConfigResource\ConfigInterface;
 
-interface BulkConsumerInterface
+class ModeSwitcherConfiguration
 {
+    public const XML_PATH_PRODUCT_INDEX_DIMENSIONS_MODE = 'indexer/nosto_index_category/dimensions_mode';
+
     /**
-     * Processing operation for data sync
+     * ConfigInterface
      *
-     * @param OperationInterface $operation
-     * @return void
-     * @throws Exception
+     * @var ConfigInterface
      */
-    public function processOperation(OperationInterface $operation);
+    private ConfigInterface $configWriter;
+
+    /**
+     * TypeListInterface
+     *
+     * @var TypeListInterface
+     */
+    private TypeListInterface $cacheTypeList;
+
+    /**
+     * ModeSwitcherConfiguration constructor.
+     * @param ConfigInterface $configWriter
+     * @param TypeListInterface $cacheTypeList
+     */
+    public function __construct(
+        ConfigInterface $configWriter,
+        TypeListInterface $cacheTypeList
+    ) {
+        $this->configWriter = $configWriter;
+        $this->cacheTypeList = $cacheTypeList;
+    }
+
+    /**
+     * Save switcher mode and invalidate reindex.
+     *
+     * @param string $mode
+     * @return void
+     * @throws InvalidArgumentException
+     */
+    public function saveMode(string $mode)
+    {
+        $this->configWriter->saveConfig(self::XML_PATH_PRODUCT_INDEX_DIMENSIONS_MODE, $mode);
+        $this->cacheTypeList->cleanType('config');
+    }
 }

@@ -64,4 +64,15 @@
             <table name="catalog_product_website" entity_column="product_id" />
         </subscriptions>
     </view>
+
+    <view id="nosto_index_category" class="Nosto\Tagging\Model\Indexer\CategoryIndexer" group="indexer">
+        <subscriptions>
+            <table name="catalog_category_entity" entity_column="entity_id" />
+            <table name="catalog_category_entity_decimal" entity_column="entity_id" />
+            <table name="catalog_category_entity_int" entity_column="entity_id" />
+            <table name="catalog_category_entity_text" entity_column="entity_id" />
+            <table name="catalog_category_entity_varchar" entity_column="entity_id" />
+            <table name="catalog_category_entity_datetime" entity_column="entity_id" />
+        </subscriptions>
+    </view>
 </config>

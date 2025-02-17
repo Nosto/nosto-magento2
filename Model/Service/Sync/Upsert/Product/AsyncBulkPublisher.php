@@ -34,19 +34,45 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Service\Sync;
+namespace Nosto\Tagging\Model\Service\Sync\Upsert\Product;
 
-use Exception;
-use Magento\AsynchronousOperations\Api\Data\OperationInterface;
+use Nosto\Tagging\Model\Service\Sync\AbstractBulkPublisher;
 
-interface BulkConsumerInterface
+// @codingStandardsIgnoreFile
+class AsyncBulkPublisher extends AbstractBulkPublisher
 {
+    public const NOSTO_SYNC_MESSAGE_QUEUE = 'nosto_product_sync.update';
+    public const BULK_SIZE = 100;
+
     /**
-     * Processing operation for data sync
-     *
-     * @param OperationInterface $operation
-     * @return void
-     * @throws Exception
+     * @inheritDoc
      */
-    public function processOperation(OperationInterface $operation);
+    public function getTopicName(): string
+    {
+        return self::NOSTO_SYNC_MESSAGE_QUEUE;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getBulkSize(): int
+    {
+        return self::BULK_SIZE;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getBulkDescription(): string
+    {
+        return sprintf('Sync %d Nosto products', 2);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getMetaData(): string
+    {
+        return 'Sync Nosto products';
+    }
 }

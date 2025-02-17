@@ -34,7 +34,7 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Service\Sync\Upsert;
+namespace Nosto\Tagging\Model\Service\Sync\Upsert\Category;
 
 use Magento\Framework\EntityManager\EntityManager;
 use Magento\Framework\Json\Helper\Data as JsonHelper;
@@ -43,7 +43,7 @@ use Nosto\Exception\MemoryOutOfBoundsException;
 use Nosto\NostoException;
 use Nosto\Tagging\Helper\Scope as NostoScopeHelper;
 use Nosto\Tagging\Logger\Logger;
-use Nosto\Tagging\Model\ResourceModel\Magento\Product\CollectionFactory;
+use Nosto\Tagging\Model\ResourceModel\Magento\Category\CollectionFactory;
 use Nosto\Tagging\Model\Service\Sync\AbstractBulkConsumer;
 
 /**
@@ -63,7 +63,6 @@ class AsyncBulkConsumer extends AbstractBulkConsumer
     private CollectionFactory $collectionFactory;
 
     /**
-     * AsyncBulkConsumer constructor.
      * @param SyncService $syncService
      * @param NostoScopeHelper $nostoScopeHelper
      * @param CollectionFactory $collectionFactory
@@ -94,15 +93,16 @@ class AsyncBulkConsumer extends AbstractBulkConsumer
 
     /**
      * @inheritDoc
-     * @throws MemoryOutOfBoundsException
-     * @throws NostoException
      */
-    public function doOperation(array $productIds, string $storeId)
+    public function doOperation(array $entityIds, string $storeId)
     {
         $store = $this->nostoScopeHelper->getStore($storeId);
-        $productCollection = $this->collectionFactory->create()
-            ->addIdsToFilter($productIds)
-            ->addStoreFilter($storeId);
-        $this->syncService->syncProducts($productCollection, $store);
+        $categoryCollection = $this->collectionFactory->create()
+            ->addIdsToFilter($entityIds);
+        try {
+            $this->syncService->sync($categoryCollection, $store);
+        } catch (MemoryOutOfBoundsException|NostoException $e) {
+            $this->logger->error($e->getMessage());
+        }
     }
 }

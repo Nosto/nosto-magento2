@@ -48,10 +48,14 @@
     <preference for="Nosto\Tagging\Model\Mview\ChangeLogInterface" type="Nosto\Tagging\Model\Mview\ChangeLog"/>
     <preference for="Nosto\Tagging\Model\Mview\MviewInterface" type="Nosto\Tagging\Model\Mview\Mview"/>
     <preference for="Nosto\Tagging\Model\Service\Indexer\IndexerStatusServiceInterface" type="Nosto\Tagging\Model\Service\Indexer\IndexerStatusService"/>
-    <preference for="Nosto\Tagging\Model\Service\Sync\BulkPublisherInterface" type="Nosto\Tagging\Model\Service\Sync\Upsert\AsyncBulkPublisher"/>
+    <preference for="Nosto\Tagging\Model\Service\Sync\BulkPublisherInterface" type="Nosto\Tagging\Model\Service\Sync\Upsert\Product\AsyncBulkPublisher"/>
+    <preference for="Nosto\Tagging\Model\Service\Sync\BulkPublisherInterface" type="Nosto\Tagging\Model\Service\Sync\Upsert\Category\AsyncBulkPublisher"/>
     <preference for="Nosto\Tagging\Model\Cache\Type\ProductDataInterface" type="Nosto\Tagging\Model\Cache\Type\ProductData" />
     <type name="Magento\Catalog\Model\ResourceModel\Product">
-        <plugin name="nostoProductObserverUpdate" type="Nosto\Tagging\Plugin\ProductUpdate"/>
+        <plugin name="nostoCategoryObserverUpdate" type="Nosto\Tagging\Plugin\ProductUpdate"/>
+    </type>
+    <type name="Magento\Catalog\Model\ResourceModel\Category">
+        <plugin name="nostoProductObserverUpdate" type="Nosto\Tagging\Plugin\CategoryUpdate"/>
     </type>
     <type name="Nosto\Tagging\Console\Command\NostoAccountConnectCommand">
         <arguments>
@@ -180,8 +184,19 @@
         <arguments>
             <argument name="dimensionSwitchers" xsi:type="array">
                 <item name="nosto_index_product" xsi:type="object">
-                    Nosto\Tagging\Model\Indexer\Dimensions\Product\ModeSwitcher
+                    Nosto\Tagging\Model\Indexer\Dimensions\ModeSwitcher\ModeSwitcher
                 </item>
+                <item name="nosto_index_category" xsi:type="object">
+                    Nosto\Tagging\Model\Indexer\Dimensions\ModeSwitcher\ModeSwitcher
+                </item>
+
+            </argument>
+        </arguments>
+    </type>
+    <type name="Nosto\Tagging\Model\Indexer\CategoryIndexer">
+        <arguments>
+            <argument name="dimensionProvider" xsi:type="object" shared="false">
+                Nosto\Tagging\Model\Indexer\Dimensions\StoreDimensionProvider
             </argument>
         </arguments>
     </type>
@@ -189,6 +204,9 @@
         <arguments>
             <argument name="indexers" xsi:type="array">
                 <item name="nosto_index_product" xsi:type="string">nosto_index_product</item>
+            </argument>
+            <argument name="indexers" xsi:type="array">
+                <item name="nosto_index_category" xsi:type="string">nosto_index_category</item>
             </argument>
         </arguments>
     </type>
@@ -199,10 +217,10 @@
             </argument>
         </arguments>
     </type>
-    <type name="Nosto\Tagging\Model\Service\Sync\Upsert\AsyncBulkPublisher">
+    <type name="Nosto\Tagging\Model\Service\Sync\Upsert\Product\AsyncBulkPublisher">
         <arguments>
             <argument name="asyncBulkConsumer" xsi:type="object" shared="false">
-                Nosto\Tagging\Model\Service\Sync\Upsert\AsyncBulkConsumer
+                Nosto\Tagging\Model\Service\Sync\Upsert\Product\AsyncBulkConsumer
             </argument>
         </arguments>
     </type>
@@ -213,10 +231,26 @@
             </argument>
         </arguments>
     </type>
-    <type name="Nosto\Tagging\Model\Service\Sync\Upsert\SyncService">
+    <type name="Nosto\Tagging\Model\Service\Sync\Upsert\Category\AsyncBulkPublisher">
+        <arguments>
+            <argument name="AsyncBulkConsumer" xsi:type="object" shared="false">
+                Nosto\Tagging\Model\Service\Sync\Upsert\Category\AsyncBulkConsumer
+            </argument>
+        </arguments>
+    </type>
+    <type name="Nosto\Tagging\Model\Service\Sync\Upsert\Product\SyncService">
         <arguments>
             <argument name="productService" xsi:type="object" shared="false">
                 Nosto\Tagging\Model\Service\Product\DefaultProductService
+            </argument>
+            <argument name="apiBatchSize" xsi:type="number">50</argument>
+            <argument name="apiTimeout" xsi:type="number">60</argument>
+        </arguments>
+    </type>
+    <type name="Nosto\Tagging\Model\Service\Sync\Upsert\Category\SyncService">
+        <arguments>
+            <argument name="categoryService" xsi:type="object" shared="false">
+                Nosto\Tagging\Model\Service\Product\Category\DefaultCategoryService
             </argument>
             <argument name="apiBatchSize" xsi:type="number">50</argument>
             <argument name="apiTimeout" xsi:type="number">60</argument>
@@ -230,10 +264,18 @@
     <type name="Nosto\Tagging\Model\Service\Update\ProductUpdateService">
         <arguments>
             <argument name="upsertBulkPublisher" xsi:type="object" shared="false">
-                Nosto\Tagging\Model\Service\Sync\Upsert\AsyncBulkPublisher
+                Nosto\Tagging\Model\Service\Sync\Upsert\Product\AsyncBulkPublisher
             </argument>
             <argument name="deleteBulkPublisher" xsi:type="object" shared="false">
                 Nosto\Tagging\Model\Service\Sync\Delete\AsyncBulkPublisher
+            </argument>
+            <argument name="batchSize" xsi:type="number">500</argument>
+        </arguments>
+    </type>
+    <type name="Nosto\Tagging\Model\Service\Update\CategoryUpdateService">
+        <arguments>
+            <argument name="upsertCategoryBulkPublisher" xsi:type="object" shared="false">
+                Nosto\Tagging\Model\Service\Sync\Upsert\Category\AsyncBulkPublisher
             </argument>
             <argument name="batchSize" xsi:type="number">500</argument>
         </arguments>

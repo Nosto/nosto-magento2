@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
@@ -35,63 +34,53 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Indexer\Dimensions\Product;
+namespace Nosto\Tagging\Model\Indexer\Dimensions\ModeSwitcher;
 
-use Magento\Indexer\Model\DimensionMode;
-use Magento\Indexer\Model\DimensionModes;
-use Nosto\Tagging\Model\Indexer\Dimensions\ModeSwitcherInterface;
+use InvalidArgumentException;
+use Magento\Framework\App\Cache\TypeListInterface;
+use Magento\Framework\App\Config\ConfigResource\ConfigInterface;
 
-class ModeSwitcher implements ModeSwitcherInterface
+class ModeSwitcherConfiguration
 {
-    /**
-     * @var DimensionModeConfiguration
-     */
-    private DimensionModeConfiguration $dimensionModeConfiguration;
+    public const XML_PATH_PRODUCT_INDEX_DIMENSIONS_MODE = 'indexer/nosto_index_product/dimensions_mode';
 
     /**
-     * @var ModeSwitcherConfiguration
+     * ConfigInterface
+     *
+     * @var ConfigInterface
      */
-    private ModeSwitcherConfiguration $modeSwitcherConfiguration;
+    private ConfigInterface $configWriter;
 
     /**
-     * ModeSwitcher constructor.
-     * @param DimensionModeConfiguration $dimensionModeConfiguration
-     * @param ModeSwitcherConfiguration $modeSwitcherConfiguration
+     * TypeListInterface
+     *
+     * @var TypeListInterface
+     */
+    private TypeListInterface $cacheTypeList;
+
+    /**
+     * ModeSwitcherConfiguration constructor.
+     * @param ConfigInterface $configWriter
+     * @param TypeListInterface $cacheTypeList
      */
     public function __construct(
-        DimensionModeConfiguration $dimensionModeConfiguration,
-        ModeSwitcherConfiguration $modeSwitcherConfiguration
+        ConfigInterface $configWriter,
+        TypeListInterface $cacheTypeList
     ) {
-        $this->dimensionModeConfiguration = $dimensionModeConfiguration;
-        $this->modeSwitcherConfiguration = $modeSwitcherConfiguration;
+        $this->configWriter = $configWriter;
+        $this->cacheTypeList = $cacheTypeList;
     }
 
     /**
-     * @inheritDoc
+     * Save switcher mode and invalidate reindex.
+     *
+     * @param string $mode
+     * @return void
+     * @throws InvalidArgumentException
      */
-    public function getDimensionModes(): DimensionModes
+    public function saveMode(string $mode)
     {
-        $dimensionsList = [];
-        foreach ($this->dimensionModeConfiguration->getDimensionModes() as $dimension => $modes) {
-            $dimensionsList[] = new DimensionMode($dimension, $modes);
-        }
-
-        return new DimensionModes($dimensionsList);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function switchMode(string $currentMode, string $previousMode) // @codingStandardsIgnoreLine
-    {
-        $this->modeSwitcherConfiguration->saveMode($currentMode);
-    }
-
-    /**
-     * @return string
-     */
-    public function getMode(): string
-    {
-        return $this->dimensionModeConfiguration->getCurrentMode();
+        $this->configWriter->saveConfig(self::XML_PATH_PRODUCT_INDEX_DIMENSIONS_MODE, $mode);
+        $this->cacheTypeList->cleanType('config');
     }
 }

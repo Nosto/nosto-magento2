@@ -34,19 +34,33 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Service\Sync;
+namespace Nosto\Tagging\Model\Indexer\Dimensions\ModeSwitcher;
 
-use Exception;
-use Magento\AsynchronousOperations\Api\Data\OperationInterface;
+use Nosto\Tagging\Model\Indexer\Dimensions\AbstractDimensionModeConfiguration;
 
-interface BulkConsumerInterface
+class DimensionModeConfiguration extends AbstractDimensionModeConfiguration
 {
     /**
-     * Processing operation for data sync
-     *
-     * @param OperationInterface $operation
-     * @return void
-     * @throws Exception
+     * @var string
      */
-    public function processOperation(OperationInterface $operation);
+    private string $currentMode = '';
+
+    /**
+     * @return string
+     */
+    public function getCurrentMode(): string
+    {
+        if ($this->currentMode === '') {
+            $mode = $this->scopeConfig->getValue(
+                ModeSwitcherConfiguration::XML_PATH_PRODUCT_INDEX_DIMENSIONS_MODE
+            );
+            if ($mode) {
+                $this->currentMode = $mode;
+            } else {
+                $this->currentMode = self::DIMENSION_NONE;
+            }
+        }
+
+        return $this->currentMode;
+    }
 }

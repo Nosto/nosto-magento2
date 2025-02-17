@@ -34,60 +34,70 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Service\Sync\Delete;
+namespace Nosto\Tagging\Plugin;
 
-use Nosto\NostoException;
-use Nosto\Tagging\Model\Service\Sync\AbstractBulkConsumer;
+use Closure;
+use Magento\Catalog\Model\ResourceModel\Category as MagentoResourceCategory;
+use Magento\Framework\Model\AbstractModel;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
-use Magento\Framework\EntityManager\EntityManager;
-use Magento\Framework\Json\Helper\Data as JsonHelper;
-use Nosto\Tagging\Logger\Logger;
-use Magento\Store\Model\App\Emulation;
+use Nosto\Tagging\Logger\Logger as NostoLogger;
+use Nosto\Tagging\Model\ResourceModel\Magento\Category\CollectionBuilder;
+use Nosto\Tagging\Model\Service\Update\CategoryUpdateService;
 
-class AsyncBulkConsumer extends AbstractBulkConsumer
+/**
+ * Plugin for category updates
+ */
+class CategoryUpdate
 {
-    /** @var DeleteService */
-    private DeleteService $deleteService;
+    /** @var NostoLogger */
+    private NostoLogger $logger;
+
+    /** @var CategoryUpdateService */
+    private CategoryUpdateService $categoryUpdateService;
 
     /** @var NostoHelperScope */
     private NostoHelperScope $nostoHelperScope;
 
-    /**
-     * AsyncBulkConsumer constructor.
-     * @param DeleteService $deleteService
-     * @param NostoHelperScope $nostoHelperScope
-     * @param JsonHelper $jsonHelper
-     * @param EntityManager $entityManager
-     * @param Emulation $storeEmulation
-     * @param Logger $logger
-     */
-    public function __construct(
-        DeleteService $deleteService,
-        NostoHelperScope $nostoHelperScope,
-        JsonHelper $jsonHelper,
-        EntityManager $entityManager,
-        Emulation $storeEmulation,
-        Logger $logger
-    ) {
-        $this->deleteService = $deleteService;
-        $this->nostoHelperScope = $nostoHelperScope;
-        parent::__construct(
-            $logger,
-            $jsonHelper,
-            $entityManager,
-            $storeEmulation
-        );
-    }
+    /** @var CollectionBuilder */
+    private CollectionBuilder $categoryCollectionBuilder;
 
     /**
-     * @inheritDoc
-     * @param array $entityIds Product IDs
-     * @param string $storeId
-     * @throws NostoException
+     * ProductUpdate constructor.
+     * @param NostoLogger $logger
+     * @param CategoryUpdateService $categoryUpdateService
+     * @param NostoHelperScope $nostoHelperScope
      */
-    public function doOperation(array $entityIds, string $storeId)
-    {
-        $store = $this->nostoHelperScope->getStore($storeId);
-        $this->deleteService->delete($entityIds, $store);
+    public function __construct(
+        NostoLogger                    $logger,
+        CategoryUpdateService          $categoryUpdateService,
+        NostoHelperScope               $nostoHelperScope,
+        CollectionBuilder              $categoryCollectionBuilder
+    ) {
+        $this->logger = $logger;
+        $this->categoryUpdateService = $categoryUpdateService;
+        $this->nostoHelperScope = $nostoHelperScope;
+        $this->categoryCollectionBuilder = $categoryCollectionBuilder;
+    }
+
+    public function aroundSave(
+        MagentoResourceCategory $resourceCategory,
+        Closure $proceed,
+        AbstractModel $category
+    ) {
+        try {
+            $categoryCollection = $this->categoryCollectionBuilder->withIds([$category->getId()])->build();
+            foreach ($category->getStoreIds() as $storeId) {
+                $store = $this->nostoHelperScope->getStore($storeId);
+                $this->categoryUpdateService->addCollectionToUpdateMessageQueue($categoryCollection, $store);
+            }
+        } catch (\Exception $e) {
+            $this->logger->warning(
+                sprintf(
+                    "Error adding category collection to update message queue: %s",
+                    $e->getMessage()
+                )
+            );
+        }
+        return $proceed($category);
     }
 }
