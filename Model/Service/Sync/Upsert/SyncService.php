@@ -202,27 +202,24 @@ class SyncService extends AbstractService
      */
     public function syncCategories(CategoryCollection $collection, Store $store)
     {
-//        if (!$this->nostoDataHelper->isProductUpdatesEnabled($store)) {
-//            $this->logDebugWithStore(
-//                'Nosto Category sync is disabled',
-//                $store
-//            );
-//            return;
-//        }
+        if (!$this->nostoDataHelper->isProductUpdatesEnabled($store)) {
+            $this->logDebugWithStore(
+                'Nosto Category sync is disabled',
+                $store
+            );
+            return;
+        }
         $categoryIdsInBatch = [];
         $account = $this->nostoHelperAccount->findAccount($store);
         $this->startBenchmark('nosto_category_upsert', self::BENCHMARK_SYNC_BREAKPOINT);
-        $index = 0;
         $collection->setPageSize($this->apiBatchSize);
         $iterator = new PagingIterator($collection);
 
         /** @var CategoryCollection $page */
         foreach ($iterator as $page) {
             $this->checkMemoryConsumption('category sync');
-
-            // todo: send to nosto customer
             foreach ($page->getData() as $category) {
-                $categoryDb = $this->categoryRepository->getById($category['entity_id']);
+                $categoryDb = $this->categoryRepository->getByIds($category['entity_id']);
                 $categoryIdsInBatch[] = $category['entity_id'];
                 $id = $category['entity_id'];
                 $name = explode("/", $categoryDb->getName());
@@ -249,11 +246,7 @@ class SyncService extends AbstractService
                 ),
                 $store
             );
-
-            die;
-
         }
-
     }
 
     private function getUrlPath($category, Store $store)

@@ -42,7 +42,7 @@ use Magento\AsynchronousOperations\Api\Data\OperationInterface;
 interface BulkConsumerInterface
 {
     /**
-     * Processing operation for product sync
+     * Processing operation for data sync
      *
      * @param OperationInterface $operation
      * @return void

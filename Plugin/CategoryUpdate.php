@@ -38,29 +38,17 @@ namespace Nosto\Tagging\Plugin;
 
 use Closure;
 use Magento\Catalog\Model\ResourceModel\Category as MagentoResourceCategory;
-use Magento\Framework\Indexer\IndexerRegistry;
 use Magento\Framework\Model\AbstractModel;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
-use Nosto\Tagging\Model\Indexer\CategoryIndexer;
-use Nosto\Tagging\Model\Category\Repository as NostoCategoryRepository;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\ResourceModel\Magento\Category\CollectionBuilder;
 use Nosto\Tagging\Model\Service\Update\CategoryUpdateService;
 
 /**
- * Plugin for product updates
+ * Plugin for category updates
  */
 class CategoryUpdate
 {
-    /** @var IndexerRegistry  */
-    private IndexerRegistry $indexerRegistry;
-
-    /** @var CategoryIndexer  */
-    private CategoryIndexer $categoryIndexer;
-
-    /** @var NostoCategoryRepository  */
-    private NostoCategoryRepository $nostoCategoryRepository;
-
     /** @var NostoLogger */
     private NostoLogger $logger;
 
@@ -75,25 +63,16 @@ class CategoryUpdate
 
     /**
      * ProductUpdate constructor.
-     * @param IndexerRegistry $indexerRegistry
-     * @param CategoryIndexer $categoryIndexer
-     * @param NostoCategoryRepository $nostoCategoryRepository
      * @param NostoLogger $logger
      * @param CategoryUpdateService $categoryUpdateService
      * @param NostoHelperScope $nostoHelperScope
      */
     public function __construct(
-        IndexerRegistry                $indexerRegistry,
-        CategoryIndexer                $categoryIndexer,
-        NostoCategoryRepository        $nostoCategoryRepository,
         NostoLogger                    $logger,
         CategoryUpdateService          $categoryUpdateService,
         NostoHelperScope               $nostoHelperScope,
         CollectionBuilder              $categoryCollectionBuilder
     ) {
-        $this->indexerRegistry = $indexerRegistry;
-        $this->categoryIndexer = $categoryIndexer;
-        $this->nostoCategoryRepository = $nostoCategoryRepository;
         $this->logger = $logger;
         $this->categoryUpdateService = $categoryUpdateService;
         $this->nostoHelperScope = $nostoHelperScope;
@@ -105,17 +84,20 @@ class CategoryUpdate
         Closure $proceed,
         AbstractModel $category
     ) {
-        $storeIds = $category->getStoreIds();
-        $categoryCollection = $this->categoryCollectionBuilder->withIds([$category->getId()])->build();
-
-         foreach ($storeIds as $storeId) {
-            $store = $this->nostoHelperScope->getStore($storeId);
-            $this->categoryUpdateService->addCollectionToUpdateMessageQueue($categoryCollection, $store);
+        try {
+            $categoryCollection = $this->categoryCollectionBuilder->withIds([$category->getId()])->build();
+            foreach ($category->getStoreIds() as $storeId) {
+                $store = $this->nostoHelperScope->getStore($storeId);
+                $this->categoryUpdateService->addCollectionToUpdateMessageQueue($categoryCollection, $store);
+            }
+        } catch (\Exception $e) {
+            $this->logger->warning(
+                sprintf(
+                    "Error adding category collection to update message queue: %s",
+                    $e->getMessage()
+                )
+            );
         }
-
-
         return $proceed($category);
-
     }
-
 }

@@ -37,7 +37,6 @@
 namespace Nosto\Tagging\Model\Service\Sync\Upsert\Category;
 
 use Magento\Framework\EntityManager\EntityManager;
-use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Json\Helper\Data as JsonHelper;
 use Magento\Store\Model\App\Emulation;
 use Nosto\Exception\MemoryOutOfBoundsException;
@@ -97,13 +96,15 @@ class AsyncBulkConsumer extends AbstractBulkConsumer
     /**
      * @inheritDoc
      */
-    public function doOperation(array $categoryIds, string $storeId)
+    public function doOperation(array $entityIds, string $storeId)
     {
-        // TODO: Add store.
         $store = $this->nostoScopeHelper->getStore($storeId);
         $categoryCollection = $this->collectionFactory->create()
-            ->addIdsToFilter($categoryIds);
-
-        $this->syncService->syncCategories($categoryCollection, $store);
+            ->addIdsToFilter($entityIds);
+        try {
+            $this->syncService->syncCategories($categoryCollection, $store);
+        } catch (MemoryOutOfBoundsException|NostoException $e) {
+            $this->logger->error($e->getMessage());
+        }
     }
 }

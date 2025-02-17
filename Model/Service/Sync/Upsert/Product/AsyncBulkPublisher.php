@@ -34,7 +34,7 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Service\Sync\Upsert;
+namespace Nosto\Tagging\Model\Service\Sync\Upsert\Product;
 
 use Nosto\Tagging\Model\Service\Sync\AbstractBulkPublisher;
 

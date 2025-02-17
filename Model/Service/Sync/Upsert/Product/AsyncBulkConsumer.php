@@ -34,7 +34,7 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Service\Sync\Upsert;
+namespace Nosto\Tagging\Model\Service\Sync\Upsert\Product;
 
 use Magento\Framework\EntityManager\EntityManager;
 use Magento\Framework\Json\Helper\Data as JsonHelper;
@@ -45,6 +45,7 @@ use Nosto\Tagging\Helper\Scope as NostoScopeHelper;
 use Nosto\Tagging\Logger\Logger;
 use Nosto\Tagging\Model\ResourceModel\Magento\Product\CollectionFactory;
 use Nosto\Tagging\Model\Service\Sync\AbstractBulkConsumer;
+use Nosto\Tagging\Model\Service\Sync\Upsert\SyncService;
 
 /**
  * Asynchronous Bulk Consumer
@@ -97,11 +98,11 @@ class AsyncBulkConsumer extends AbstractBulkConsumer
      * @throws MemoryOutOfBoundsException
      * @throws NostoException
      */
-    public function doOperation(array $productIds, string $storeId)
+    public function doOperation(array $entityIds, string $storeId)
     {
         $store = $this->nostoScopeHelper->getStore($storeId);
         $productCollection = $this->collectionFactory->create()
-            ->addIdsToFilter($productIds)
+            ->addIdsToFilter($entityIds)
             ->addStoreFilter($storeId);
         $this->syncService->syncProducts($productCollection, $store);
     }

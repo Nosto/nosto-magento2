@@ -43,6 +43,7 @@ class Collection extends MagentoCategoryCollection
 {
     /**
      * @return Collection
+     * @throws LocalizedException
      */
     public function addActiveFilter(): Collection
     {
@@ -52,6 +53,7 @@ class Collection extends MagentoCategoryCollection
     /**
      * @param array $ids
      * @return Collection
+     * @throws LocalizedException
      */
     public function addIdsToFilter(array $ids): Collection
     {

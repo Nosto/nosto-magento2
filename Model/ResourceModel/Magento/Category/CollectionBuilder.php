@@ -39,7 +39,6 @@ namespace Nosto\Tagging\Model\ResourceModel\Magento\Category;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Sales\Api\Data\EntityInterface;
 use Magento\Store\Model\Store;
-//use Magento\Catalog\Model\ResourceModel\Category\Collection as CategoryCollection;
 use Nosto\Tagging\Model\ResourceModel\Magento\Category\Collection  as CategoryCollection;
 use Magento\Framework\DB\Select;
 

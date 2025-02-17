@@ -1,5 +1,4 @@
-<?php /** @noinspection PhpFullyQualifiedNameUsageInspection */
-
+<?php
 /**
  * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
@@ -39,6 +38,8 @@ namespace Nosto\Tagging\Model\Service\Sync;
 
 use Exception;
 use Magento\Framework\App\ObjectManager;
+use Magento\Framework\Bulk\BulkManagementInterface;
+use Magento\Framework\Bulk\OperationInterface;
 use Magento\Framework\DataObject\IdentityGeneratorInterface;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Module\Manager;
@@ -48,10 +49,10 @@ use Magento\AsynchronousOperations\Api\Data\OperationInterfaceFactory;
 
 abstract class AbstractBulkPublisher implements BulkPublisherInterface
 {
-    private const STATUS_TYPE_OPEN = \Magento\Framework\Bulk\OperationInterface::STATUS_TYPE_OPEN;
+    private const STATUS_TYPE_OPEN = OperationInterface::STATUS_TYPE_OPEN;
 
-    /** @var \Magento\Framework\Bulk\BulkManagementInterface|null */
-    private $bulkManagement;
+    /** @var BulkManagementInterface|null */
+    private ?BulkManagementInterface $bulkManagement;
 
     /** @var OperationInterfaceFactory|null */
     private ?OperationInterfaceFactory $operationFactory;
@@ -90,9 +91,9 @@ abstract class AbstractBulkPublisher implements BulkPublisherInterface
         $this->logger = $logger;
         try {
             $this->bulkManagement = ObjectManager::getInstance()
-                ->get(\Magento\Framework\Bulk\BulkManagementInterface::class);
+                ->get(BulkManagementInterface::class);
         } catch (Exception $e) {
-            $logger->debug('Module Magento_AsynchronousOperations not available');
+            $logger->debug(sprintf('Module Magento_AsynchronousOperations not available: %s', $e->getMessage()));
         }
     }
 
@@ -108,14 +109,14 @@ abstract class AbstractBulkPublisher implements BulkPublisherInterface
     }
 
     /**
-     * @param $storeId
-     * @param $entityIds
+     * @param int $storeId
+     * @param array $entityIds
      * @throws LocalizedException
      * @throws Exception
      */
     private function publishCollectionToMessageQueue(
-        $storeId,
-        $entityIds
+        int $storeId,
+        array $entityIds
     ) {
         if (!$this->canUseAsyncOperations()) {
             $this->logger->critical(
@@ -126,38 +127,7 @@ abstract class AbstractBulkPublisher implements BulkPublisherInterface
 
         $bulkUuid = $this->identityService->generateId();
         $bulkDescription = __('Sync ' . count($entityIds) . ' Nosto entities');
-        $operationsData = [];
-
-        // TODO: @Ugljesa Check the code.
-        if (isset($entityIds['entity']) && $entityIds['entity'] === 'category') {
-            // Process Categories.
-            $categoryIdsChunks = array_chunk($entityIds['categoryIds'], $this->getBulkSize());
-
-            foreach ($categoryIdsChunks as $categoryIdsChunk) {
-                $operationsData[] = $this->buildOperationData(
-                    $storeId,
-                    [],
-                    $categoryIdsChunk,
-                    $bulkUuid
-                );
-            }
-        } else {
-            // Process Products.
-            $productIdsChunks = array_chunk($entityIds, $this->getBulkSize());
-            foreach ($productIdsChunks as $productIdsChunk) {
-                $operationsData[] = $this->buildOperationData(
-                    $storeId,
-                    $productIdsChunk,
-                    [],
-                    $bulkUuid
-                );
-            }
-        }
-
-        $operations = [];
-        foreach ($operationsData as $operationData) {
-            $operations[] = $this->operationFactory->create($operationData);
-        }
+        $operations = $this->generateOperationsChunks($entityIds, $storeId, $bulkUuid);
 
         if (empty($operations)) {
             return;
@@ -207,21 +177,18 @@ abstract class AbstractBulkPublisher implements BulkPublisherInterface
     /**
      * Build asynchronous operation data
      * @param int $storeId
-     * @param array $productIds
-     * @param array $categoryIdsChunks
+     * @param array $entityIds
      * @param string $bulkUuid
      * @return array
      */
     private function buildOperationData(
         int $storeId,
-        array $productIds,
-        array $categoryIdsChunks,
+        array $entityIds,
         string $bulkUuid
     ) {
         $dataToEncode = [
             'meta_information' => $this->getMetaData(),
-            'product_ids' => $productIds,
-            'category_ids' => $categoryIdsChunks,
+            'entity_ids' => $entityIds,
             'store_id' => $storeId
         ];
         return [
@@ -232,5 +199,31 @@ abstract class AbstractBulkPublisher implements BulkPublisherInterface
                 'status' => self::STATUS_TYPE_OPEN
             ]
         ];
+    }
+
+    /**
+     * @param array $entityIds
+     * @param int $storeId
+     * @param string $bulkUuid
+     * @return array
+     */
+    private function generateOperationsChunks(array $entityIds, int $storeId, string $bulkUuid): array
+    {
+        $operationsData = [];
+
+        $entityIdsChunks = array_chunk($entityIds, $this->getBulkSize());
+        foreach ($entityIdsChunks as $entityIdsChunk) {
+            $operationsData[] = $this->buildOperationData(
+                $storeId,
+                $entityIdsChunk,
+                $bulkUuid
+            );
+        }
+
+        $operations = [];
+        foreach ($operationsData as $operationData) {
+            $operations[] = $this->operationFactory->create($operationData);
+        }
+        return $operations;
     }
 }

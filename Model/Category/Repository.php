@@ -78,12 +78,14 @@ class Repository
      * Gets categories by category ids
      *
      * @param array $ids
+     * @return mixed
      */
     public function getByIds(array $ids)
     {
         $searchCriteria = $this->searchCriteriaBuilder
             ->addFilter('entity_id', $ids, 'in')
             ->create();
+        /** @noinspection PhpUndefinedMethodInspection */
         return $this->categoryRepository->getList($searchCriteria);
     }
 
@@ -147,15 +149,13 @@ class Repository
     /**
      * Get Parent Category IDS
      *
-     * @param $path
+     * @param string $path
      * @return array
      */
-    private function getCategoryParentIds($path): array
+    private function getCategoryParentIds(string $path): array
     {
         $parentCategories = explode('/', $path);
-
         array_pop($parentCategories);
-
         return $parentCategories;
     }
 
@@ -167,11 +167,7 @@ class Repository
      */
     private function getParentIdsFromCache(CategoryInterface $category)
     {
-        if (isset($this->parentCategoryIdCache[$category->getId()])) {
-            return $this->parentCategoryIdCache[$category->getId()];
-        }
-
-        return null;
+        return $this->parentCategoryIdCache[$category->getId()] ?? null;
     }
 
     /**
