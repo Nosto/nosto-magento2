@@ -238,13 +238,6 @@
             </argument>
         </arguments>
     </type>
-    <type name="Nosto\Tagging\Model\Service\Sync\Upsert\AsyncBulkPublisher">
-        <arguments>
-            <argument name="asyncBulkConsumer" xsi:type="object" shared="false">
-                Nosto\Tagging\Model\Service\Sync\Upsert\Product\AsyncBulkConsumer
-            </argument>
-        </arguments>
-    </type>
     <type name="Nosto\Tagging\Model\Service\Sync\Delete\AsyncBulkPublisher">
         <arguments>
             <argument name="asyncBulkConsumer" xsi:type="object" shared="false">

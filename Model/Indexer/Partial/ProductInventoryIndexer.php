@@ -34,7 +34,7 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Indexer;
+namespace Nosto\Tagging\Model\Indexer\Partial;
 
 use Exception;
 use Magento\Indexer\Model\ProcessManager;
@@ -43,8 +43,9 @@ use Magento\Store\Model\Store;
 use Nosto\NostoException;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
-use Nosto\Tagging\Model\Indexer\Dimensions\Product\ModeSwitcher as ProductModeSwitcher;
-use Nosto\Tagging\Model\Indexer\Dimensions\ModeSwitcherInterface;
+use Nosto\Tagging\Model\Indexer\AbstractIndexer;
+use Nosto\Tagging\Model\Indexer\Dimensions\ModeSwitcher\ModeSwitcher as ProductModeSwitcher;
+use Nosto\Tagging\Model\Indexer\Dimensions\ModeSwitcher\ModeSwitcherInterface;
 use Nosto\Tagging\Model\Indexer\Dimensions\StoreDimensionProvider;
 use Nosto\Tagging\Model\ResourceModel\Magento\Product\Collection as ProductCollection;
 use Nosto\Tagging\Model\ResourceModel\Magento\Product\CollectionBuilder;
