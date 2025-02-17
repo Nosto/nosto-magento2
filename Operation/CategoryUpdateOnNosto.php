@@ -39,6 +39,7 @@ use Nosto\Operation\AbstractGraphQLOperation;
 use Nosto\Types\Signup\AccountInterface;
 use Nosto\Result\Graphql\Session\SessionResultHandler;
 
+//@TODO: move this to the SDK
 class CategoryUpdateOnNosto extends AbstractGraphQLOperation
 {
     /**
@@ -87,17 +88,27 @@ class CategoryUpdateOnNosto extends AbstractGraphQLOperation
     private string $referer;
 
     /**
-     * NewSession constructor.
      * @param AccountInterface $account
+     * @param string $referer
      * @param string $id
      * @param string $name
      * @param string $parentId
      * @param string $urlPath
      * @param string $fullName
      * @param boolean $available
+     * @param string $activeDomain
      */
-    public function __construct(AccountInterface $account, string $referer, string $id, string $name, string $parentId, string $urlPath, string $fullName, bool $available, string $activeDomain = '')
-    {
+    public function __construct(
+        AccountInterface $account,
+        string $referer,
+        string $id,
+        string $name,
+        string $parentId,
+        string $urlPath,
+        string $fullName,
+        bool $available,
+        string $activeDomain = ''
+    ) {
         $this->referer = $referer;
         $this->id = $id;
         $this->name = $name;

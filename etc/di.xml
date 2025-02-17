@@ -238,10 +238,19 @@
             </argument>
         </arguments>
     </type>
-    <type name="Nosto\Tagging\Model\Service\Sync\Upsert\SyncService">
+    <type name="Nosto\Tagging\Model\Service\Sync\Upsert\Product\SyncService">
         <arguments>
             <argument name="productService" xsi:type="object" shared="false">
                 Nosto\Tagging\Model\Service\Product\DefaultProductService
+            </argument>
+            <argument name="apiBatchSize" xsi:type="number">50</argument>
+            <argument name="apiTimeout" xsi:type="number">60</argument>
+        </arguments>
+    </type>
+    <type name="Nosto\Tagging\Model\Service\Sync\Upsert\Category\SyncService">
+        <arguments>
+            <argument name="categoryService" xsi:type="object" shared="false">
+                Nosto\Tagging\Model\Service\Product\Category\DefaultCategoryService
             </argument>
             <argument name="apiBatchSize" xsi:type="number">50</argument>
             <argument name="apiTimeout" xsi:type="number">60</argument>

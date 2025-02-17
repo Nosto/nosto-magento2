@@ -45,7 +45,6 @@ use Nosto\Tagging\Helper\Scope as NostoScopeHelper;
 use Nosto\Tagging\Logger\Logger;
 use Nosto\Tagging\Model\ResourceModel\Magento\Product\CollectionFactory;
 use Nosto\Tagging\Model\Service\Sync\AbstractBulkConsumer;
-use Nosto\Tagging\Model\Service\Sync\Upsert\SyncService;
 
 /**
  * Asynchronous Bulk Consumer
@@ -104,6 +103,6 @@ class AsyncBulkConsumer extends AbstractBulkConsumer
         $productCollection = $this->collectionFactory->create()
             ->addIdsToFilter($entityIds)
             ->addStoreFilter($storeId);
-        $this->syncService->syncProducts($productCollection, $store);
+        $this->syncService->sync($productCollection, $store);
     }
 }

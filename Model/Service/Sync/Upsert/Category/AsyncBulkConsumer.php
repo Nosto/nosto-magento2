@@ -45,7 +45,6 @@ use Nosto\Tagging\Helper\Scope as NostoScopeHelper;
 use Nosto\Tagging\Logger\Logger;
 use Nosto\Tagging\Model\ResourceModel\Magento\Category\CollectionFactory;
 use Nosto\Tagging\Model\Service\Sync\AbstractBulkConsumer;
-use Nosto\Tagging\Model\Service\Sync\Upsert\SyncService;
 
 /**
  * Asynchronous Bulk Consumer
@@ -64,7 +63,6 @@ class AsyncBulkConsumer extends AbstractBulkConsumer
     private CollectionFactory $collectionFactory;
 
     /**
-     * AsyncBulkConsumer constructor.
      * @param SyncService $syncService
      * @param NostoScopeHelper $nostoScopeHelper
      * @param CollectionFactory $collectionFactory
@@ -102,7 +100,7 @@ class AsyncBulkConsumer extends AbstractBulkConsumer
         $categoryCollection = $this->collectionFactory->create()
             ->addIdsToFilter($entityIds);
         try {
-            $this->syncService->syncCategories($categoryCollection, $store);
+            $this->syncService->sync($categoryCollection, $store);
         } catch (MemoryOutOfBoundsException|NostoException $e) {
             $this->logger->error($e->getMessage());
         }
