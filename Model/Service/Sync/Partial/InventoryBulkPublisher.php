@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
@@ -35,62 +34,45 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Indexer\Dimensions\ModeSwitcher;
+namespace Nosto\Tagging\Model\Service\Sync\Partial;
 
-use Magento\Indexer\Model\DimensionMode;
-use Magento\Indexer\Model\DimensionModes;
+use Nosto\Tagging\Model\Service\Sync\AbstractBulkPublisher;
 
-class ModeSwitcher implements ModeSwitcherInterface
+// @codingStandardsIgnoreFile
+class InventoryBulkPublisher extends AbstractBulkPublisher
 {
-    /**
-     * @var DimensionModeConfiguration
-     */
-    private DimensionModeConfiguration $dimensionModeConfiguration;
+    public const NOSTO_SYNC_MESSAGE_QUEUE = 'nosto_product_sync.partial_inventory_update';
+    public const BULK_SIZE = 100;
 
     /**
-     * @var ModeSwitcherConfiguration
+     * @inheritDoc
      */
-    private ModeSwitcherConfiguration $modeSwitcherConfiguration;
-
-    /**
-     * ModeSwitcher constructor.
-     * @param DimensionModeConfiguration $dimensionModeConfiguration
-     * @param ModeSwitcherConfiguration $modeSwitcherConfiguration
-     */
-    public function __construct(
-        DimensionModeConfiguration $dimensionModeConfiguration,
-        ModeSwitcherConfiguration $modeSwitcherConfiguration
-    ) {
-        $this->dimensionModeConfiguration = $dimensionModeConfiguration;
-        $this->modeSwitcherConfiguration = $modeSwitcherConfiguration;
+    public function getTopicName(): string
+    {
+        return self::NOSTO_SYNC_MESSAGE_QUEUE;
     }
 
     /**
      * @inheritDoc
      */
-    public function getDimensionModes(): DimensionModes
+    public function getBulkSize(): int
     {
-        $dimensionsList = [];
-        foreach ($this->dimensionModeConfiguration->getDimensionModes() as $dimension => $modes) {
-            $dimensionsList[] = new DimensionMode($dimension, $modes);
-        }
-
-        return new DimensionModes($dimensionsList);
+        return self::BULK_SIZE;
     }
 
     /**
      * @inheritDoc
      */
-    public function switchMode(string $currentMode, string $previousMode) // @codingStandardsIgnoreLine
+    public function getBulkDescription(): string
     {
-        $this->modeSwitcherConfiguration->saveMode($currentMode);
+        return sprintf('Sync price for %d Nosto products', 2);
     }
 
     /**
-     * @return string
+     * @inheritDoc
      */
-    public function getMode(): string
+    public function getMetaData(): string
     {
-        return $this->dimensionModeConfiguration->getCurrentMode();
+        return 'Sync price for Nosto products';
     }
 }

@@ -28,6 +28,20 @@ class NostoClearQueueCommand extends Command
     public const NOSTO_DELETE_MESSAGE_QUEUE = 'nosto_product_sync.delete';
 
     /**
+     * Nosto Product Sync Partial Price label.
+     *
+     * @var string
+     */
+    public const NOSTO_PRODUCT_PARTIAL_PRICE_QUEUE = 'nosto_product_sync.partial_price_update';
+
+    /**
+     * Nosto Product Sync Partial Inventory label.
+     *
+     * @var string
+     */
+    public const NOSTO_PRODUCT_PARTIAL_INVENTORY_QUEUE = 'nosto_product_sync.partial_inventory_update';
+
+    /**
      * @var ConsumerConfig
      */
     private $consumerConfig;
@@ -40,6 +54,8 @@ class NostoClearQueueCommand extends Command
     private array $consumers = [
         self::NOSTO_DELETE_MESSAGE_QUEUE,
         self::NOSTO_UPDATE_SYNC_MESSAGE_QUEUE,
+        self::NOSTO_PRODUCT_PARTIAL_PRICE_QUEUE,
+        self::NOSTO_PRODUCT_PARTIAL_INVENTORY_QUEUE
     ];
 
     /**
