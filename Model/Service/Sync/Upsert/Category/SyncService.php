@@ -39,16 +39,16 @@ namespace Nosto\Tagging\Model\Service\Sync\Upsert\Category;
 use Exception;
 use Magento\Store\Model\Store;
 use Nosto\Exception\MemoryOutOfBoundsException;
+use Nosto\Operation\Category\CategoryUpdate;
 use Nosto\Tagging\Model\ResourceModel\Magento\Category\Collection as CategoryCollection;
 use Nosto\NostoException;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Data as NostoDataHelper;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Service\AbstractService;
-use Nosto\Tagging\Model\Service\Product\Category\CategoryServiceInterface as NostoCategoryService;
 use Nosto\Tagging\Util\PagingIterator;
-use Nosto\Tagging\Model\Category\Repository as CategoryRepository;
-use Nosto\Tagging\Model\Operation\CategoryUpdateOnNosto;
+use Nosto\Tagging\Model\Category\Builder as CategoryBuilder;
+use Nosto\Tagging\Helper\Url as NostoHelperUrl;
 
 class SyncService extends AbstractService
 {
@@ -58,31 +58,35 @@ class SyncService extends AbstractService
     /** @var NostoHelperAccount */
     private NostoHelperAccount $nostoHelperAccount;
 
+    /** @var NostoHelperUrl */
+    private NostoHelperUrl $nostoHelperUrl;
+
+    /** @var CategoryBuilder */
+    private CategoryBuilder $categoryBuilder;
+
     /** @var NostoDataHelper */
     private NostoDataHelper $nostoDataHelper;
 
     /** @var int */
     private int $apiBatchSize;
 
-    private CategoryRepository $categoryRepository;
-
-    /** @var NostoCategoryService */
-    private NostoCategoryService $nostoCategoryService;
+    /** @var int */
+    private int $apiTimeout;
 
     public function __construct(
         NostoHelperAccount $nostoHelperAccount,
+        NostoHelperUrl $nostoHelperUrl,
+        CategoryBuilder $categoryBuilder,
         NostoLogger $logger,
         NostoDataHelper $nostoDataHelper,
-        CategoryRepository $categoryRepository,
-        NostoCategoryService $nostoCategoryService,
         $apiBatchSize,
         $apiTimeout
     ) {
         parent::__construct($nostoDataHelper, $nostoHelperAccount, $logger);
         $this->nostoHelperAccount = $nostoHelperAccount;
+        $this->nostoHelperUrl = $nostoHelperUrl;
+        $this->categoryBuilder = $categoryBuilder;
         $this->nostoDataHelper = $nostoDataHelper;
-        $this->categoryRepository = $categoryRepository;
-        $this->nostoCategoryService = $nostoCategoryService;
         $this->apiBatchSize = $apiBatchSize;
         $this->apiTimeout = $apiTimeout;
     }
@@ -95,7 +99,7 @@ class SyncService extends AbstractService
     {
         if (!$this->nostoDataHelper->isProductUpdatesEnabled($store)) {
             $this->logDebugWithStore(
-                'Nosto Category Sync is disabled',
+                'Nosto product updates are disabled',
                 $store
             );
             return;
@@ -105,41 +109,16 @@ class SyncService extends AbstractService
         $this->startBenchmark('nosto_category_upsert', self::BENCHMARK_SYNC_BREAKPOINT);
         $collection->setPageSize($this->apiBatchSize);
         $iterator = new PagingIterator($collection);
-
         /** @var CategoryCollection $page */
         foreach ($iterator as $page) {
             $this->checkMemoryConsumption('category sync');
-            foreach ($page->getData() as $category) {
-                $categoryDb = $this->nostoCategoryService->getCategory($category['entity_id'], $store);
-//                $categoryDb = $this->categoryRepository->getByIds($category['entity_id']);
-                $categoryIdsInBatch[] = $category['entity_id'];
-                $id = $category['entity_id'];
-                $name = explode("/", $categoryDb->getName());
-                $name = end($name);
-                $parentId = $categoryDb->getParentId();
-                $urlPath = $this->getUrlPath($categoryDb, $store);
-                $fullName = $categoryDb->getName();
-                $available = $categoryDb->getIsActive() ?? false;
-                try {
-                    (new CategoryUpdateOnNosto(
-                        $account,
-                        $store->getCurrentUrl(),
-                        $id,
-                        $name,
-                        $parentId,
-                        $urlPath,
-                        $fullName,
-                        $available
-                    ))->execute();
-                } catch (Exception $e) {
-                    $this->logger->logDebugWithStore(sprintf(
-                        'Failed to update Nosto category %s with %s id',
-                        $name,
-                        $id
-                    ));
-                }
+            foreach ($page as $category) {
+                // @TODO: Adjust on the SDK to batch instead of calling the API for each category
+                $nostoCategory = $this->categoryBuilder->build($category, $store);
+                $op = new CategoryUpdate($nostoCategory, $account, $this->nostoHelperUrl->getActiveDomain($store));
+                $op->setResponseTimeout($this->apiTimeout);
+                $op->execute();
             }
-
             $this->logDebugWithStore(
                 sprintf(
                     'Nosto category sync with ids - %s',
@@ -148,24 +127,5 @@ class SyncService extends AbstractService
                 $store
             );
         }
-    }
-
-    private function getUrlPath($category, Store $store)
-    {
-        $nostoCategory = '';
-        try {
-            $data = [];
-            $path = $category->getPath();
-            $data[] = $category->getName();
-            $nostoCategory = count($data) ? '/' . implode('/', $data) : '';
-        } catch (Exception $e) {
-            $this->logDebugWithStore($e, $store);
-        }
-
-        if (empty($nostoCategory)) {
-            $nostoCategory = null;
-        }
-
-        return $nostoCategory ? trim($nostoCategory) : $nostoCategory;
     }
 }

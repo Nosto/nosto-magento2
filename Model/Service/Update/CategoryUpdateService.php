@@ -132,7 +132,6 @@ class CategoryUpdateService extends AbstractService
     {
         $categoryIds = [];
         /** @var CategoryInterface $category */
-        // TODO: @ugljesa Check instanceof.
         foreach ($collection->getItems() as $category) {
             try {
                 /** @phan-suppress-next-line PhanTypeMismatchArgument */
