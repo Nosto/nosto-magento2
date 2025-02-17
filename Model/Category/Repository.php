@@ -37,12 +37,6 @@
 namespace Nosto\Tagging\Model\Category;
 
 use Magento\Catalog\Api\Data\CategoryInterface;
-use Magento\Catalog\Model\CategoryRepository;
-use Magento\Catalog\Model\ResourceModel\Category\Collection as CategoryCollection;
-use Magento\Framework\Api\SearchCriteriaBuilder;
-use Magento\Framework\Exception\LocalizedException;
-use Magento\Store\Model\Store;
-use Magento\Catalog\Model\ResourceModel\Category\CollectionFactory as CategoryCollectionFactory;
 use Nosto\Tagging\Exception\ParentCategoryDisabledException;
 
 /**
@@ -51,43 +45,6 @@ use Nosto\Tagging\Exception\ParentCategoryDisabledException;
 class Repository
 {
     private array $parentCategoryIdCache = [];
-
-    /** @var SearchCriteriaBuilder $searchCriteriaBuilder */
-    private SearchCriteriaBuilder $searchCriteriaBuilder;
-
-    /** @var CategoryRepository $categoryRepository */
-    private CategoryRepository $categoryRepository;
-
-    /** @var CategoryCollectionFactory $categoryCollectionFactory */
-    private CategoryCollectionFactory $categoryCollectionFactory;
-
-    /**
-     * @param SearchCriteriaBuilder $searchCriteriaBuilder
-     */
-    public function __construct(
-        SearchCriteriaBuilder $searchCriteriaBuilder,
-        CategoryRepository $categoryRepository,
-        CategoryCollectionFactory $categoryCollectionFactory
-    ) {
-        $this->searchCriteriaBuilder = $searchCriteriaBuilder;
-        $this->categoryRepository = $categoryRepository;
-        $this->categoryCollectionFactory = $categoryCollectionFactory;
-    }
-
-    /**
-     * Gets categories by category ids
-     *
-     * @param array $ids
-     * @return mixed
-     */
-    public function getByIds(array $ids)
-    {
-        $searchCriteria = $this->searchCriteriaBuilder
-            ->addFilter('entity_id', $ids, 'in')
-            ->create();
-        /** @noinspection PhpUndefinedMethodInspection */
-        return $this->categoryRepository->getList($searchCriteria);
-    }
 
     /**
      *  Gets the parent category ID's for a given category
@@ -119,31 +76,6 @@ class Repository
         }
 
         return $parentCategoryIds;
-    }
-
-    /**
-     * @param Store $store
-     * @param array $categoryIds
-     *
-     * @return CategoryCollection
-     * @throws LocalizedException
-     */
-    public function getCategoryCollectionQuery(Store $store, array $categoryIds = [])
-    {
-        $categories = $this->categoryCollectionFactory->create()
-            ->distinct(true)
-            ->addNameToResult()
-            ->setStoreId($store->getId())
-            ->addUrlRewriteToResult()
-            ->addAttributeToFilter('level', ['gt' => 1])
-            ->addAttributeToSelect(array_merge(['name', 'is_active', 'include_in_menu']))
-            ->addOrderField('entity_id');
-
-        if ($categoryIds) {
-            $categories->addAttributeToFilter('entity_id', ['in' => $categoryIds]);
-        }
-
-        return $categories;
     }
 
     /**
@@ -181,5 +113,4 @@ class Repository
     {
         $this->parentCategoryIdCache[$category->getId()] = $parentCategoryIds;
     }
-
 }

@@ -114,10 +114,20 @@ class SyncService extends AbstractService
             $this->checkMemoryConsumption('category sync');
             foreach ($page as $category) {
                 // @TODO: Adjust on the SDK to batch instead of calling the API for each category
-                $nostoCategory = $this->categoryBuilder->build($category, $store);
-                $op = new CategoryUpdate($nostoCategory, $account, $this->nostoHelperUrl->getActiveDomain($store));
-                $op->setResponseTimeout($this->apiTimeout);
-                $op->execute();
+                try {
+                    $nostoCategory = $this->categoryBuilder->build($category, $store);
+                    $op = new CategoryUpdate($nostoCategory, $account, $this->nostoHelperUrl->getActiveDomain($store));
+                    $op->setResponseTimeout($this->apiTimeout);
+                    $op->execute();
+                } catch (Exception $e) {
+                    $this->getLogger()->error(
+                        sprintf(
+                            'Failed to sync category with id %s - %s',
+                            $category->getId(),
+                            $e->getMessage()
+                        )
+                    );
+                }
             }
             $this->logDebugWithStore(
                 sprintf(

@@ -126,6 +126,7 @@ abstract class AbstractBulkPublisher implements BulkPublisherInterface
         }
 
         $bulkUuid = $this->identityService->generateId();
+        /** @phan-suppress-next-line PhanTypeMismatchArgumentProbablyReal */
         $bulkDescription = __('Sync ' . count($entityIds) . ' Nosto entities');
         $operations = $this->generateOperationsChunks($entityIds, $storeId, $bulkUuid);
 

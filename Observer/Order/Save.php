@@ -46,7 +46,6 @@ use Magento\Framework\Indexer\IndexerRegistry;
 use Magento\Framework\Module\Manager as ModuleManager;
 use Magento\Sales\Model\Order;
 use Magento\Store\Model\Store;
-use Nosto\Model\Order\Buyer;
 use Nosto\Model\Order\Order as NostoOrder;
 use Nosto\Operation\Order\OrderCreate as NostoOrderCreate;
 use Nosto\Operation\Order\OrderStatus as NostoOrderUpdate;
