@@ -47,34 +47,96 @@
  * to override the core parts of the extension. Failure to do so will result in broken and incorrect
  * recommendations.
  * Please see a reference guide such as https://github.com/Nosto/nosto-magento2/wiki
- */
-
-/**
- * Template for customer tagging. The actual data is populated via
- * Magento's KnockoutJS logic.
  *
- * @see \Nosto\Tagging\CustomerData\ActiveVariationTagging
- * @var \Magento\Framework\View\Element\Template $block
- * @phpcs:disable Generic.Files.LineLength
- * @noinspection PhpFullyQualifiedNameUsageInspection
+ * @var Nosto\Tagging\Block\Variation $block
  */
-?>
-<!-- Nosto Variation Tagging -->
-<div id="nosto_variation_tagging" style="display:none"
-     data-bind="scope: 'variationTagging'"
-     data-role="nosto-variation-tagging"
->
-  <!-- ko if: variationTagging().active_variation -->
-  <span class="nosto_variation_dynamic" data-bind="text: variationTagging().active_variation, afterRender: reloadRecommendations"></span>
-  <!-- /ko -->
-</div>
-<!--suppress JSUnresolvedVariable -->
-<script type="text/x-magento-init">
-{
-  "[data-role=nosto-variation-tagging]": {
-    "Magento_Ui/js/core/app": <?= /* @escapeNotVerified */
-    $block->getJsLayout(); ?>
-  }
-}
 
-</script>
+$isHyva = $block->isHyva();
+$variationId = $block->getVariationId();
+?>
+
+<!-- Nosto Variation Tagging -->
+<?php if ($isHyva): ?>
+
+  <?php if (!empty($block->getAbstractObject())): {
+      // Skip rendering if multiple currencies are not used or if pricing variation is not enabled
+      return;
+  } else:
+  ?>
+  <div id="nosto_variation_tagging" style="display:none">
+    <!-- Static variation span, will be replaced with dynamic one if necessary -->
+    <span class="nosto_variation"><?= $block->escapeHtml($variationId) ?></span>
+  </div>
+  <script>
+      document.addEventListener('DOMContentLoaded', function() {
+          function initNostoVariationTagging() {
+              const defaultVariation = '<?= $block->escapeJs($variationId) ?>';
+              function processVariationData(data) {
+                  if (!data || !data['active-variation-tagging']) return;
+                  const tagging = data['active-variation-tagging'];
+                  if (tagging && tagging.active_variation) {
+                      reloadRecommendations(tagging.active_variation);
+                  }
+              }
+              function reloadRecommendations(activeVariation) {
+                  const staticElement = document.querySelector(".nosto_variation:not(.nosto_variation_dynamic)");
+                  if (staticElement) {
+                      staticElement.classList.remove('nosto_variation');
+                      staticElement.classList.add('nosto_variation_static');
+                  }
+
+                  let dynamicElement = document.querySelector(".nosto_variation_dynamic");
+                  if (!dynamicElement) {
+                      dynamicElement = document.createElement('span');
+                      dynamicElement.className = 'nosto_variation_dynamic';
+                      document.getElementById('nosto_variation_tagging').appendChild(dynamicElement);
+                  }
+
+                  dynamicElement.classList.add("nosto_variation");
+                  dynamicElement.textContent = activeVariation;
+                  if (typeof nostojs === 'function') {
+                      nostojs(api => {
+                          api.loadRecommendations();
+                      });
+                  }
+              }
+
+              window.addEventListener('private-content-loaded', (event) => {
+                  if (event.detail && event.detail.data) {
+                      processVariationData(event.detail.data);
+                  }
+              });
+
+              if (typeof Alpine !== 'undefined' &&
+                  typeof Alpine.store === 'function' &&
+                  Alpine.store('customer') &&
+                  Alpine.store('customer').variationData) {
+                  processVariationData(Alpine.store('customer'));
+              }
+          }
+          initNostoVariationTagging();
+      });
+  </script>
+  <?php endif; ?>
+<?php else: ?>
+  <!-- Luma with Knockout.js -->
+  <div id="nosto_variation_tagging" style="display:none"
+       data-bind="scope: 'variationTagging'"
+       data-role="nosto-variation-tagging"
+  >
+    <!-- ko if: variationTagging().active_variation -->
+    <span class="nosto_variation_dynamic" data-bind="text: variationTagging().active_variation, afterRender: reloadRecommendations"></span>
+    <!-- /ko -->
+    <!-- ko ifnot: variationTagging().active_variation -->
+    <span class="nosto_variation"><?= $block->escapeHtml($variationId) ?></span>
+    <!-- /ko -->
+  </div>
+
+  <script type="text/x-magento-init">
+    {
+      "[data-role=nosto-variation-tagging]": {
+        "Magento_Ui/js/core/app": <?= $block->getJsLayout(); ?>
+    }
+  }
+  </script>
+<?php endif; ?>

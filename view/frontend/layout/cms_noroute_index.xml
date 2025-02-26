@@ -38,12 +38,23 @@
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
     <body>
+        <referenceContainer name="before.body.end">
+            <!-- Set page type to 'notfound' for TaggingProvider -->
+            <block class="Nosto\Tagging\Block\TaggingProvider" name="nosto.tagging.provider" template="Nosto_Tagging::tagging-provider.phtml">
+                <arguments>
+                    <argument name="page_type" xsi:type="string">notfound</argument>
+                </arguments>
+            </block>
+        </referenceContainer>
+
         <referenceContainer name="content">
             <block class="Nosto\Tagging\Block\PageType" name="nosto.page.type.notfound" after="-">
                 <arguments>
                     <argument name="page_type" xsi:type="string">notfound</argument>
                 </arguments>
             </block>
+
+            <!-- Recommendation slots for 404 page -->
             <block class="Nosto\Tagging\Block\Element" name="nosto.page.notfound1" after="-"
                    template="Nosto_Tagging::element.phtml">
                 <arguments>

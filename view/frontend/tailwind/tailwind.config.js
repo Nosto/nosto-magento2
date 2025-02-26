@@ -32,17 +32,8 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
-
-// noinspection JSUnresolvedFunction
-define([], function () {
-    'use strict';
-    // Initialize nostojs if it's not already defined
-    if (typeof window.nostojs !== 'function') {
-        window.nostojs = function (cb) {
-            (window.nostojs.q = window.nostojs.q || []).push(cb);
-        };
-    }
-
-    // Return the global nostojs function
-    return window.nostojs;
-});
+module.exports = {
+    content: [
+        '../templates/**/*.phtml',
+    ]
+}

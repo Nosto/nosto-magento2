@@ -54,35 +54,95 @@
  * Magento's KnockoutJS logic.
  *
  * @see \Nosto\Tagging\CustomerData\CustomerTagging
- * @var \Magento\Framework\View\Element\Template $block
+ * @see https://docs.hyva.io/hyva-themes/writing-code/working-with-sectiondata.html
+ * @var \Nosto\Tagging\Block\Knockout $block
  * @noinspection PhpFullyQualifiedNameUsageInspection
  */
-?>
-<!-- Nosto Customer Tagging -->
-<div id="nosto_customer_tagging" class="nosto_customer_hidden" style="display:none"
-     data-bind="scope: 'customerTagging'"
-     data-role="nosto-customer-tagging">
-  <!-- ko if: customerTagging().first_name -->
-  <!-- ko foreach: {data: customerTagging(), afterRender: sendTagging } -->
-  <span class="first_name" data-bind="text: $data.first_name"></span>
-  <span class="last_name" data-bind="text: $data.last_name"></span>
-  <span class="email" data-bind="text: $data.email"></span>
-  <span class="hcid" data-bind="text: $data.hcid"></span>
-  <span class="customer_reference" data-bind="text: $data.customer_reference"></span>
-  <span class="marketing_permission" data-bind="text: $data.marketing_permission"></span>
-  <span class="date_of_birth" data-bind="text: $data.date_of_birth"></span>
-  <span class="customer_group" data-bind="text: $data.customer_group"></span>
-  <span class="gender" data-bind="text: $data.gender"></span>
-  <!-- /ko -->
-  <!-- /ko -->
-</div>
-<!--suppress JSUnresolvedVariable -->
-<script type="text/x-magento-init">
-{
-  "[data-role=nosto-customer-tagging]": {
-    "Magento_Ui/js/core/app": <?= /* @escapeNotVerified */
-    $block->getJsLayout(); ?>
-  }
-}
 
-</script>
+$isHyva = $block->isHyva();
+?>
+<?php if ($isHyva): ?>
+  <div id="nosto_customer_tagging" class="nosto_customer_hidden" style="display:none">
+    <!-- Customer data will be inserted dynamically -->
+  </div>
+  <script>
+      // Runs after the Hyva theme initializes section data in the footer
+      document.addEventListener('DOMContentLoaded', function() {
+          const customerTaggingElement = document.getElementById('nosto_customer_tagging');
+          if (!customerTaggingElement) return
+          function processCustomerData(data) {
+              if (!data || !data['customer-tagging']) return;
+              const tagging = data['customer-tagging'];
+              if (!tagging.first_name) return;
+
+              // Update DOM directly
+              customerTaggingElement.innerHTML = `
+            <span class="first_name">${tagging.first_name || ''}</span>
+            <span class="last_name">${tagging.last_name || ''}</span>
+            <span class="email">${tagging.email || ''}</span>
+            <span class="hcid">${tagging.hcid || ''}</span>
+            <span class="customer_reference">${tagging.customer_reference || ''}</span>
+            <span class="marketing_permission">${tagging.marketing_permission || ''}</span>
+            <span class="date_of_birth">${tagging.date_of_birth || ''}</span>
+            <span class="customer_group">${tagging.customer_group || ''}</span>
+            <span class="gender">${tagging.gender || ''}</span>
+        `;
+              sendTagging(); // Send tagging via JS API
+          }
+
+          // Function to send data to Nosto
+          function sendTagging() {
+              if (typeof nostojs === 'function') {
+                  nostojs(api => {
+                      customerTaggingElement.classList.remove('nosto_customer_hidden');
+                      customerTaggingElement.classList.add('nosto_customer');
+                      api.resendCustomerTagging('nosto_customer_tagging');
+                  });
+              }
+          }
+
+          window.addEventListener('private-content-loaded', function(event) {
+              if (event.detail && event.detail.data) {
+                  processCustomerData(event.detail.data);
+              }
+          });
+
+          // Check if Alpine has the data (for cases where our listener registers after the event fires)
+          if (typeof Alpine !== 'undefined' &&
+              typeof Alpine.store === 'function' &&
+              Alpine.store('customer')) {
+              processCustomerData({
+                  'customer-tagging': Alpine.store('customer').customerData
+              });
+          }
+          dispatchEvent(new Event('reload-customer-section-data'));
+      });
+  </script>
+<?php else: ?>
+  <!-- Luma with Knockout.js -->
+  <div id="nosto_customer_tagging" class="nosto_customer_hidden" style="display:none"
+       data-bind="scope: 'customerTagging'"
+       data-role="nosto-customer-tagging">
+    <!-- ko if: customerTagging().first_name -->
+    <!-- ko foreach: {data: customerTagging(), afterRender: sendTagging } -->
+    <span class="first_name" data-bind="text: $data.first_name"></span>
+    <span class="last_name" data-bind="text: $data.last_name"></span>
+    <span class="email" data-bind="text: $data.email"></span>
+    <span class="hcid" data-bind="text: $data.hcid"></span>
+    <span class="customer_reference" data-bind="text: $data.customer_reference"></span>
+    <span class="marketing_permission" data-bind="text: $data.marketing_permission"></span>
+    <span class="date_of_birth" data-bind="text: $data.date_of_birth"></span>
+    <span class="customer_group" data-bind="text: $data.customer_group"></span>
+    <span class="gender" data-bind="text: $data.gender"></span>
+    <!-- /ko -->
+    <!-- /ko -->
+  </div>
+
+  <script type="text/x-magento-init">
+    {
+      "[data-role=nosto-customer-tagging]": {
+        "Magento_Ui/js/core/app": <?= $block->getJsLayout(); ?>
+    }
+  }
+  </script>
+<?php endif; ?>

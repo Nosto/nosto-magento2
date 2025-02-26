@@ -41,30 +41,17 @@
         <referenceBlock name="head.additional">
             <block class="Nosto\Tagging\Block\Meta" name="nosto.meta" after="-"
                    template="Nosto_Tagging::meta.phtml"/>
-            <block class="Nosto\Tagging\Block\Stub" name="nosto.jstub" after="nosto.meta"
-                   template="Nosto_Tagging::jsstub.phtml"/>
-            <block class="Nosto\Tagging\Block\Embed" name="nosto.embed" after="nosto.jstub"
-                   template="Nosto_Tagging::embed.phtml"/>
         </referenceBlock>
+        <referenceContainer name="before.body.end">
+            <block class="Nosto\Tagging\Block\TaggingProvider" name="nosto.tagging.provider" template="Nosto_Tagging::tagging-provider.phtml" />
+            <block class="Nosto\Tagging\Block\Stub" name="nosto.jsstub" template="Nosto_Tagging::jsstub.phtml" after="nosto.tagging.provider" />
+            <block name="script-nosto-js" template="Nosto_Tagging::js/nostojs.phtml" after="nosto.jsstub" />
+            <block class="Nosto\Tagging\Block\Embed" name="nosto.embed" template="Nosto_Tagging::embed.phtml" after="script-nosto-js" />
+        </referenceContainer>
+
         <referenceContainer name="content">
-            <block class="Nosto\Tagging\Block\Variation" name="nosto.currency.variation" before="-"/>
-            <block class="Nosto\Tagging\Block\Addtocart" name="nosto.page.type.addtocart" after="-"
-                   template="Nosto_Tagging::addtocart.phtml">
-            </block>
-            <block class="Nosto\Tagging\Block\Knockout" name="nosto.cart" before="-"
-                   template="Nosto_Tagging::cart.phtml">
-                <arguments>
-                    <argument name="jsLayout" xsi:type="array">
-                        <item name="components" xsi:type="array">
-                            <item name="cartTagging" xsi:type="array">
-                                <item name="component" xsi:type="string">Nosto_Tagging/js/view/cart-tagging</item>
-                            </item>
-                        </item>
-                    </argument>
-                </arguments>
-            </block>
-            <block class="Nosto\Tagging\Block\Knockout" name="nosto.customer" after="nosto.cart"
-                   template="Nosto_Tagging::customer.phtml">
+            <block class="Nosto\Tagging\Block\Addtocart" name="nosto.page.type.addtocart" after="-" template="Nosto_Tagging::addtocart.phtml"/>
+            <block class="Nosto\Tagging\Block\Knockout" name="nosto.customer" after="nosto.cart" template="Nosto_Tagging::customer.phtml">
                 <arguments>
                     <argument name="jsLayout" xsi:type="array">
                         <item name="components" xsi:type="array">
@@ -75,8 +62,18 @@
                     </argument>
                 </arguments>
             </block>
-            <block class="Nosto\Tagging\Block\Knockout" name="nosto.price.variation" after="nosto.cart"
-                   template="Nosto_Tagging::variation.phtml">
+            <block class="Nosto\Tagging\Block\Knockout" name="nosto.cart" before="-" template="Nosto_Tagging::cart.phtml">
+                <arguments>
+                    <argument name="jsLayout" xsi:type="array">
+                        <item name="components" xsi:type="array">
+                            <item name="cartTagging" xsi:type="array">
+                                <item name="component" xsi:type="string">Nosto_Tagging/js/view/cart-tagging</item>
+                            </item>
+                        </item>
+                    </argument>
+                </arguments>
+            </block>
+            <block class="Nosto\Tagging\Block\Knockout" name="nosto.price.variation" after="nosto.cart" template="Nosto_Tagging::variation.phtml">
                 <arguments>
                     <argument name="jsLayout" xsi:type="array">
                         <item name="components" xsi:type="array">
