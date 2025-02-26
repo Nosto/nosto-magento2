@@ -78,11 +78,22 @@
       "/magento"
     ]
   },
-  "config": {
-    "process-timeout":3600
-  },
   "scripts": {
     "di:compile": "./compile.sh",
-    "ci:inspect": "./inspect.sh"
+    "ci:inspect": "./inspect.sh",
+    "test": "phpunit -c phpunit.xml.dist",
+    "test-integration": "phpunit -c phpunit.integration.xml.dist",
+    "lint": "phpcs --standard=phpcs.xml .",
+    "lint-fix": "phpcbf --standard=phpcs.xml .",
+    "phpmd": "phpmd . text phpmd.xml --exclude vendor",
+    "phpcpd": "phpcpd --exclude=vendor ."
+  },
+  "config": {
+    "process-timeout":3600,
+    "allow-plugins": {
+      "dealerdirect/phpcodesniffer-composer-installer": true,
+      "laminas/laminas-dependency-version-plugin": true,
+      "magento/composer-dependency-version-audit-plugin": true
+    }
   }
 }

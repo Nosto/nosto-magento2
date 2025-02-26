@@ -1,0 +1,32 @@
+{
+  "name": "nosto-tagging",
+  "version": "1.0.0",
+  "description": "Nosto Tagging Extension for Magento 2",
+  "private": true,
+  "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "lint": "eslint view/frontend/web/js",
+    "lint:fix": "eslint --fix view/frontend/web/js"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.15.0",
+    "@babel/preset-env": "^7.15.0",
+    "babel-jest": "^27.1.0",
+    "eslint": "^7.32.0",
+    "jest": "^27.1.0",
+    "jest-environment-jsdom": "^27.1.0"
+  },
+  "babel": {
+    "presets": [
+      [
+        "@babel/preset-env",
+        {
+          "targets": {
+            "node": "current"
+          }
+        }
+      ]
+    ]
+  }
+}
