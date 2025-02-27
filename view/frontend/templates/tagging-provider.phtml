@@ -40,7 +40,6 @@
 
 $isHyva = $block->isHyva();
 
-// Include the appropriate template based on the theme
 if ($isHyva) {
     echo $block->getLayout()
         ->createBlock(\Nosto\Tagging\Block\TaggingProvider::class)
