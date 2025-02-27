@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v4
 
     ############################################################################
     - name: Set up PHP
@@ -25,7 +25,7 @@ jobs:
       run: |
         composer config cache-files-dir
         echo "::set-output name=dir::$(composer config cache-files-dir)"
-    - uses: actions/cache@v1
+    - uses: actions/cache@v4
       with:
         path: ${{ steps.composer-cache.outputs.dir }}
         key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}

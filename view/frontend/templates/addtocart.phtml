@@ -39,8 +39,9 @@
 $isHyva = $block->isHyva();
 ?>
 
-  <form <?= $isHyva ? 'x-data="nostoRecobuy()"' : '' ?> action="<?= $block->escapeUrl($block->getSubmitUrl()) ?>" method="post" id="nosto_addtocart_form">
-      <?= $block->getBlockHtml('formkey') ?>
+  <form <?= $isHyva ? 'x-data="nostoRecobuy()"' : '' ?>
+    action="<?= $block->escapeUrl($block->getSubmitUrl()) ?>"
+    method="post" id="nosto_addtocart_form">
   </form>
 
 <?php if ($isHyva): ?>
@@ -77,7 +78,9 @@ $isHyva = $block->isHyva();
               addSkuToCart(product, element) {
                   const quantity = product.quantity || 1;
                   const url = document.querySelector("#nosto_addtocart_form").getAttribute("action");
-                  const formKey = document.querySelector("#nosto_addtocart_form > input[name='form_key']").getAttribute("value");
+                  const formKey = document
+                      .querySelector("#nosto_addtocart_form > input[name='form_key']")
+                      .getAttribute("value");
 
                   return new Promise((resolve, reject) => {
                       fetch(url, {
@@ -180,7 +183,9 @@ $isHyva = $block->isHyva();
           Recobuy.addSkuToCart = function (product, element) {
               const quantity = product.quantity || 1;
               const url = document.querySelector("#nosto_addtocart_form").getAttribute("action");
-              const formKey = document.querySelector("#nosto_addtocart_form > input[name='form_key']").getAttribute("value");
+              const formKey = document
+                  .querySelector("#nosto_addtocart_form > input[name='form_key']")
+                  .getAttribute("value");
 
               return new Promise(function (resolve, reject) {
                   // noinspection JSUnresolvedFunction

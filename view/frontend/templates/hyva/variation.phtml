@@ -56,10 +56,10 @@ $variationId = $block->getVariationId();
 
 <!-- Nosto Variation Tagging -->
 <?php if (empty($block->getAbstractObject())): {
-    // Skip rendering if multiple currencies are not used (single currency selected) or if pricing variation is not enabled
-    return;
-} else:
-?>
+        // Skip rendering if MC is not used (single currency selected) or if pricing variation is disabled
+        return;
+    } else:
+        ?>
 <div id="nosto_variation_tagging" style="display:none">
   <!-- Static variation span, will be replaced with dynamic one if necessary -->
   <span class="nosto_variation"><?= $block->escapeHtml($variationId) ?></span>
