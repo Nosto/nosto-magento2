@@ -35,10 +35,13 @@
  */
 namespace Nosto\Tagging\Block;
 
+use Magento\Framework\App\ObjectManager;
 use Magento\Framework\Registry;
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Element\Template\Context;
 use Nosto\Helper\SerializationHelper;
+use Nosto\Tagging\CustomerData\CartTagging;
+use Nosto\Tagging\CustomerData\CustomerTagging;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
@@ -142,17 +145,9 @@ class TaggingProvider extends Template
             'pageType' => $pageType,
         ];
 
-        // Add cart data if available
         $result['cart'] = $this->getCurrentCart();
-
-        // Add customer data if available
-            $result['customer'] = $this->getCurrentCustomer();
-        // Add variation data if multiple currencies or price variations are enabled
-//        try {
-//            $result['variation'] = $this->getCurrentVariation();
-//        } catch (\Exception $e) {
-//            // Variation data not available
-//        }
+        $result['customer'] = $this->getCurrentCustomer();
+        $result['variation'] = $this->getCurrentVariation();
 
         if ($pageType === 'product') {
             $productData = $this->getCurrentProducts();
@@ -221,6 +216,25 @@ class TaggingProvider extends Template
     private function getCurrentCart()
     {
         try {
+            if ($this->isHyva()) {
+                // For Hyva, we need to get cart data from the customer data section
+                $objectManager = ObjectManager::getInstance();
+                $cartTagging = $objectManager->create(CartTagging::class);
+                $cartData = $cartTagging->getSectionData();
+                
+                // Remove null values
+                if (isset($cartData['items']) && is_array($cartData['items'])) {
+                    foreach ($cartData['items'] as &$item) {
+                        $item = array_filter($item, function ($value) {
+                            return $value !== null;
+                        });
+                    }
+                }
+                return array_filter($cartData, function ($value) {
+                    return $value !== null && (!is_string($value) || trim($value) !== '');
+                });
+            }
+            // For Luma, we get it from the JS layout
             $cartData = json_decode($this->knockout->getJsLayout(), true);
             return $cartData['components']['cartTagging']['component'] ? $cartData : null;
         } catch (\Exception $e) {
@@ -237,6 +251,18 @@ class TaggingProvider extends Template
     private function getCurrentCustomer()
     {
         try {
+            if ($this->isHyva()) {
+                // For Hyva, we need to get customer data from the customer data section
+                $objectManager = ObjectManager::getInstance();
+                $customerTagging = $objectManager->create(CustomerTagging::class);
+                $customerData = $customerTagging->getSectionData();
+                
+                // Remove null values so it won't break the tagging provider implementation
+                return array_filter($customerData, function ($value) {
+                    return $value !== null && (!is_string($value) || trim($value) !== '');
+                });
+            }
+            // For Luma, we get it from the JS layout
             $customerData = json_decode($this->knockout->getJsLayout(), true);
             return $customerData['components']['customerTagging']['component'] ? $customerData : null;
         } catch (\Exception $e) {
@@ -272,9 +298,7 @@ class TaggingProvider extends Template
     private function getCurrentSearchTerm()
     {
         try {
-            if ($this->search instanceof Search) {
-                return $this->search->getNostoSearchTerm();
-            }
+            return $this->search->getNostoSearchTerm();
         } catch (\Exception $e) {
             // Search term not available
         }
@@ -284,7 +308,7 @@ class TaggingProvider extends Template
     /**
      * Get variation data (currency or price variation)
      *
-     * @return array|null
+     * @return string|null
      */
     private function getCurrentVariation()
     {
@@ -295,9 +319,7 @@ class TaggingProvider extends Template
             ($this->nostoHelperData->isPricingVariationEnabled($store) &&
                 !$this->nostoHelperVariation->isDefaultVariationCode($this->nostoHelperCustomer->getGroupCode()))
         ) {
-            return [
-                'variation_id' => $this->variation->getVariationId()
-            ];
+            return $this->variation->getVariationId();
         }
 
         return null;
@@ -358,7 +380,8 @@ class TaggingProvider extends Template
             $store = $this->_storeManager->getStore();
             $reload = $this->nostoHelperData->isReloadRecsAfterAtcEnabled($store);
         } catch (\Exception $e) {
-            // Unable to determine if reload recs is enabled
+            // Unable to determine if reload recs is enabled,
+            // likely the store can't be loaded from the request
         }
 
         return $reload;

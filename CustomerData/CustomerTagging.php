@@ -71,30 +71,50 @@ class CustomerTagging extends HashedTagging implements SectionSourceInterface
     public function getSectionData()
     {
         $data = [];
-        if ($this->currentCustomer instanceof CurrentCustomer
-            && $this->currentCustomer->getCustomerId()
-        ) {
-            /** @var Customer $customer */
-            $customer = $this->personBuilder->fromSession($this->currentCustomer);
-            if ($customer === null) {
-                return [];
+        try {
+            if ($this->currentCustomer->getCustomerId()) {
+                /** @var Customer $customer */
+                $customer = $this->personBuilder->fromSession($this->currentCustomer);
+                if ($customer === null) {
+                    return [];
+                }
+                $nostoCustomerId = $this->cookieManager->getCookie(NostoCustomer::COOKIE_NAME);
+                $hcid = "";
+                if ($nostoCustomerId) {
+                    $hcid = $this->generateVisitorChecksum($nostoCustomerId);
+                }
+                
+                $data = [
+                    'first_name' => $customer->getFirstName() ?: '',
+                    'last_name' => $customer->getLastName() ?: '',
+                    'email' => $customer->getEmail() ?: '',
+                    'hcid' => $hcid,
+                ];
+                
+                // Only add optional fields if they're not null or
+                // they'll break the tagging provider on the client script
+                if ($customer->getMarketingPermission() !== null) {
+                    $data['marketing_permission'] = $customer->getMarketingPermission();
+                }
+                
+                if ($customer->getCustomerReference() !== null) {
+                    $data['customer_reference'] = $customer->getCustomerReference();
+                }
+                
+                if ($customer->getCustomerGroup() !== null) {
+                    $data['customer_group'] = $customer->getCustomerGroup();
+                }
+                
+                if ($customer->getGender() !== null) {
+                    $data['gender'] = $customer->getGender();
+                }
+                
+                if ($customer->getDateOfBirth() !== null) {
+                    $data['date_of_birth'] = $customer->getDateOfBirth();
+                }
             }
-            $nostoCustomerId = $this->cookieManager->getCookie(NostoCustomer::COOKIE_NAME);
-            $hcid = "";
-            if ($nostoCustomerId) {
-                $hcid = $this->generateVisitorChecksum($nostoCustomerId);
-            }
-            $data = [
-                'first_name' => $customer->getFirstName(),
-                'last_name' => $customer->getLastName(),
-                'email' => $customer->getEmail(),
-                'hcid' => $hcid,
-                'marketing_permission' => $customer->getMarketingPermission(),
-                'customer_reference' => $customer->getCustomerReference(),
-                'customer_group' => $customer->getCustomerGroup(),
-                'gender' => $customer->getGender(),
-                'date_of_birth' => $customer->getDateOfBirth()
-            ];
+        } catch (\Exception $e) {
+            return [];
         }
 
         return $data;
