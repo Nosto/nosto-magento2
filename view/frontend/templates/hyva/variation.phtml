@@ -55,8 +55,8 @@ $variationId = $block->getVariationId();
 ?>
 
 <!-- Nosto Variation Tagging -->
-<?php if (!empty($block->getAbstractObject())): {
-    // Skip rendering if multiple currencies are not used or if pricing variation is not enabled
+<?php if (empty($block->getAbstractObject())): {
+    // Skip rendering if multiple currencies are not used (single currency selected) or if pricing variation is not enabled
     return;
 } else:
 ?>
@@ -67,7 +67,6 @@ $variationId = $block->getVariationId();
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         function initNostoVariationTagging() {
-            const defaultVariation = '<?= $block->escapeJs($variationId) ?>';
             function processVariationData(data) {
                 if (!data || !data['active-variation-tagging']) return;
                 const tagging = data['active-variation-tagging'];
