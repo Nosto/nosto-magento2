@@ -42,7 +42,7 @@ $taggingConfig = $block->getTaggingConfig();
 <!-- Hyva Theme with Alpine.js -->
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        window.initNostoTaggingProviders(<?= json_encode($taggingConfig) ?>);
+        window.initNostoTaggingProviders(<?= $block->escapeHtml(json_encode($taggingConfig)) ?>);
     });
 </script>
 <?php endif; ?>

@@ -39,7 +39,9 @@
 $isHyva = $block->isHyva();
 ?>
 
-  <form <?= $isHyva ? 'x-data="nostoRecobuy()"' : '' ?> action="<?= $block->escapeUrl($block->getSubmitUrl()) ?>" method="post" id="nosto_addtocart_form">
+  <form <?= $isHyva ? 'x-data="nostoRecobuy()"' : '' ?> 
+        action="<?= $block->escapeUrl($block->getSubmitUrl()) ?>" 
+        method="post" id="nosto_addtocart_form">
       <?= $block->getBlockHtml('formkey') ?>
   </form>
 
@@ -125,7 +127,7 @@ $isHyva = $block->isHyva();
                       depth++;
                       currentElement = currentElement.parentElement;
 
-                      if (currentElement.getAttribute('class') === 'nosto_element' &&
+                      if (currentElement.getAttribute('class') === 'nosto_element' && 
                           currentElement.getAttribute('id')) {
                           return currentElement.getAttribute('id');
                       }

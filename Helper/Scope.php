@@ -208,11 +208,13 @@ class Scope extends AbstractHelper
         }
         try {
             $storeId = $store->getId();
+            // @phan-suppress-next-line PhanUndeclaredMethod
             $themeId = $this->storeManager->getStore($storeId)->getConfig('design/theme/theme_id');
             $theme = $this->themeProvider->getThemeById($themeId);
             if ($theme) {
                 $themePath = $theme->getThemePath();
-                return (str_contains($themePath, 'Hyva/'));
+                // @phan-suppress-next-line PhanUndeclaredFunction
+                return (strpos($themePath, 'Hyva/') !== false);
             }
         } catch (Exception $e) {
             return false;
