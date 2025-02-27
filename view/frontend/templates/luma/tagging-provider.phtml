@@ -34,23 +34,15 @@
  *
  */
 
-/**
- * @var Nosto\Tagging\Block\Variation $block
- */
+/** @var \Nosto\Tagging\Block\TaggingProvider $block */
+$taggingConfig = $block->getTaggingConfig();
+?>
 
-$isHyva = $block->isHyva();
-
-// Include the appropriate template based on the theme
-if ($isHyva) {
-    echo $block->getLayout()
-        ->createBlock(\Nosto\Tagging\Block\Variation::class)
-        ->setTemplate('Nosto_Tagging::hyva/variation.phtml')
-        ->setData($block->getData())
-        ->toHtml();
-} else {
-    echo $block->getLayout()
-        ->createBlock(\Nosto\Tagging\Block\Variation::class)
-        ->setTemplate('Nosto_Tagging::luma/variation.phtml')
-        ->setData($block->getData())
-        ->toHtml();
-}
+<?php if ($block->isNostoEnabled()): ?>
+<!-- Luma with Knockout.js -->
+<script>
+    require(['Nosto_Tagging/js/tagging-providers'], function(initTaggingProviders) {
+        initTaggingProviders(<?= json_encode($taggingConfig) ?>);
+    });
+</script>
+<?php endif; ?>

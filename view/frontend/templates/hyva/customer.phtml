@@ -1,0 +1,118 @@
+<?php
+/**
+ * Copyright (c) 2020, Nosto Solutions Ltd
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice,
+ * this list of conditions and the following disclaimer.
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * 3. Neither the name of the copyright holder nor the names of its contributors
+ * may be used to endorse or promote products derived from this software without
+ * specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * @author Nosto Solutions Ltd <contact@nosto.com>
+ * @copyright 2020 Nosto Solutions Ltd
+ * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
+ *
+ */
+
+/**
+ *     ______     ___     ____  _____  ___   _________   ________ ______  _____ _________
+ *    |_   _ `. .'   `.  |_   \|_   _.'   `.|  _   _  | |_   __  |_   _ `|_   _|  _   _  |
+ *      | | `. /  .-.  \   |   \ | |/  .-.  |_/ | | \_|   | |_ \_| | | `. \| | |_/ | | \_|
+ *      | |  | | |   | |   | |\ \| || |   | |   | |       |  _| _  | |  | || |     | |
+ *     _| |_.' \  `-'  /  _| |_\   |\  `-'  /  _| |_     _| |__/ |_| |_.' _| |_   _| |_
+ *    |______.' `.___.'  |_____|\____`.___.'  |_____|   |________|______.|_____| |_____|
+ *
+ * Nosto sends information over both the API and the browser tagging. Values for the tagging is generated
+ * via the Nosto corresponding objects. In order to customize the values in the markup below, you will need
+ * to override the core parts of the extension. Failure to do so will result in broken and incorrect
+ * recommendations.
+ * Please see a reference guide such as https://github.com/Nosto/nosto-magento2/wiki
+ */
+
+/**
+ * Template for customer tagging. The actual data is populated via
+ * Alpine.js stores in Hyva.
+ *
+ * @see \Nosto\Tagging\CustomerData\CustomerTagging
+ * @see https://docs.hyva.io/hyva-themes/writing-code/working-with-sectiondata.html
+ * @var \Nosto\Tagging\Block\Knockout $block
+ * @noinspection PhpFullyQualifiedNameUsageInspection
+ */
+?>
+
+<div id="nosto_customer_tagging" class="nosto_customer_hidden" style="display:none">
+  <!-- Customer data will be inserted dynamically -->
+</div>
+<script>
+    // Runs after the Hyva theme initializes section data in the footer
+    document.addEventListener('DOMContentLoaded', function() {
+        const customerTaggingElement = document.getElementById('nosto_customer_tagging');
+        if (!customerTaggingElement) return
+        function processCustomerData(data) {
+            if (!data || !data['customer-tagging']) return;
+            const tagging = data['customer-tagging'];
+            if (!tagging.first_name) return;
+
+            // Update DOM directly
+            customerTaggingElement.innerHTML = `
+          <span class="first_name">${tagging.first_name || ''}</span>
+          <span class="last_name">${tagging.last_name || ''}</span>
+          <span class="email">${tagging.email || ''}</span>
+          <span class="hcid">${tagging.hcid || ''}</span>
+          <span class="customer_reference">${tagging.customer_reference || ''}</span>
+          <span class="marketing_permission">${tagging.marketing_permission || ''}</span>
+          <span class="date_of_birth">${tagging.date_of_birth || ''}</span>
+          <span class="customer_group">${tagging.customer_group || ''}</span>
+          <span class="gender">${tagging.gender || ''}</span>
+      `;
+            sendTagging(); // Send tagging via JS API
+        }
+
+        // Function to send data to Nosto
+        function sendTagging() {
+            if (typeof nostojs === 'function') {
+                nostojs(api => {
+                    customerTaggingElement.classList.remove('nosto_customer_hidden');
+                    customerTaggingElement.classList.add('nosto_customer');
+                    api.resendCustomerTagging('nosto_customer_tagging');
+                });
+            }
+        }
+
+        window.addEventListener('private-content-loaded', function(event) {
+            if (event.detail && event.detail.data) {
+                processCustomerData(event.detail.data);
+            }
+        });
+
+        // Check if Alpine has the data (for cases where our listener registers after the event fires)
+        if (typeof Alpine !== 'undefined' &&
+            typeof Alpine.store === 'function' &&
+            Alpine.store('customer')) {
+            processCustomerData({
+                'customer-tagging': Alpine.store('customer').customerData
+            });
+        }
+        dispatchEvent(new Event('reload-customer-section-data'));
+    });
+</script>

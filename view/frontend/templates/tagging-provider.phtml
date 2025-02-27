@@ -34,108 +34,23 @@
  *
  */
 
-/** @var \Nosto\Tagging\Block\TaggingProvider $block */
-$taggingConfig = $block->getTaggingConfig();
+/**
+ * @var \Nosto\Tagging\Block\TaggingProvider $block
+ */
+
 $isHyva = $block->isHyva();
-?>
 
-<?php if ($block->isNostoEnabled()): ?>
-    <?php if ($isHyva): ?>
-    <!-- Hyva Theme with Alpine.js -->
-    <script>
-        // Store configuration globally
-        window.nostoTaggingConfig = <?= json_encode($taggingConfig) ?>;
-
-        // Initialize tagging providers when the DOM is ready
-        document.addEventListener('DOMContentLoaded', function() {
-            // Initialize Nosto tagging providers
-            function initNostoTaggingProviders() {
-                // Wait for nostojs to be available
-                function waitForNostoJs(callback, maxAttempts = 50, interval = 100) {
-                    let attempts = 0;
-
-                    const checkNostoJs = setInterval(function() {
-                        attempts++;
-
-                        if (typeof nostojs === 'function') {
-                            clearInterval(checkNostoJs);
-                            callback();
-                            return;
-                        }
-
-                        if (attempts >= maxAttempts) {
-                            clearInterval(checkNostoJs);
-                            console.log('Failed to load nostojs after ' + maxAttempts + ' attempts');
-                        }
-                    }, interval);
-                }
-
-                // Setup tagging providers
-                function setupTaggingProviders() {
-                    var config = window.nostoTaggingConfig || {};
-
-                    nostojs(function (api) {
-                        // Page Type Provider
-                        api.internal.setTaggingProvider("pageType", function () {
-                            return config.pageType;
-                        });
-
-                        // Products Provider
-                        if (config.products) {
-                            api.internal.setTaggingProvider("products", function () {
-                                return config.products;
-                            });
-                        }
-
-                        // Cart Provider
-                        if (config.cart) {
-                            api.internal.setTaggingProvider("cart", function () {
-                                return config.cart;
-                            });
-                        }
-
-                        // Customer Provider
-                        if (config.customer) {
-                            api.internal.setTaggingProvider("customer", function () {
-                                return config.customer;
-                            });
-                        }
-
-                        // Categories Provider
-                        if (config.categories) {
-                            api.internal.setTaggingProvider("categories", function () {
-                                return config.categories;
-                            });
-                        }
-
-                        // Variation Provider
-                        if (config.variation) {
-                            api.internal.setTaggingProvider("variation", function () {
-                                return config.variation;
-                            });
-                        }
-
-                        // Search Term Provider
-                        if (config.searchTerm) {
-                            api.internal.setTaggingProvider("searchTerm", function () {
-                                return config.searchTerm;
-                            });
-                        }
-                    });
-                }
-                waitForNostoJs(setupTaggingProviders);
-            }
-
-            // Initialize tagging providers
-            initNostoTaggingProviders();
-        });
-    </script>
-    <?php else: ?>
-    <!-- Luma with Knockout.js -->
-    <script>
-        require(['Nosto_Tagging/js/tagging-providers'], function(initTaggingProviders) {
-            initTaggingProviders(<?= json_encode($taggingConfig) ?>);
-        });
-    </script>
-    <?php endif; ?>
-<?php endif; ?>
+// Include the appropriate template based on the theme
+if ($isHyva) {
+    echo $block->getLayout()
+        ->createBlock(\Nosto\Tagging\Block\TaggingProvider::class)
+        ->setTemplate('Nosto_Tagging::hyva/tagging-provider.phtml')
+        ->setData($block->getData())
+        ->toHtml();
+} else {
+    echo $block->getLayout()
+        ->createBlock(\Nosto\Tagging\Block\TaggingProvider::class)
+        ->setTemplate('Nosto_Tagging::luma/tagging-provider.phtml')
+        ->setData($block->getData())
+        ->toHtml();
+}

@@ -34,118 +34,23 @@
  *
  */
 
-/** @var \Nosto\Tagging\Block\Knockout $block */
+/**
+ * @var \Nosto\Tagging\Block\Knockout $block
+ */
 
 $isHyva = $block->isHyva();
-?>
 
-<?php if ($isHyva): ?>
-  <div id="nosto_cart_tagging" class="nosto_cart_hidden" style="display:none">
-    <span class="hcid"></span>
-    <span class="restore_link"></span>
-    <!-- Cart items will be inserted dynamically -->
-  </div>
-
-  <script>
-      document.addEventListener('DOMContentLoaded', function() {
-          function initNostoCartTagging() {
-              const refreshRecs = <?= (int)$block->isReloadRecsAfterAtcEnabled() ?>;
-              function processCartData(data) {
-                  if (!data || !data['cart-tagging']) return;
-
-                  const tagging = data['cart-tagging'];
-                  const cartElement = document.getElementById('nosto_cart_tagging');
-                  if (!cartElement) return;
-
-                  const hcidElement = cartElement.querySelector('.hcid');
-                  const restoreLinkElement = cartElement.querySelector('.restore_link');
-
-                  if (hcidElement) hcidElement.textContent = tagging.hcid || '';
-                  if (restoreLinkElement) restoreLinkElement.textContent = tagging.restore_cart_url || '';
-
-                  if (tagging.itemCount > 0 && Array.isArray(tagging.items)) {
-                      const existingItems = cartElement.querySelectorAll('.line_item');
-                      existingItems.forEach(item => item.remove());
-
-                      tagging.items.forEach(item => {
-                          const lineItem = document.createElement('div');
-                          lineItem.className = 'line_item';
-                          lineItem.innerHTML = `
-                        <span class="product_id">${item.product_id || ''}</span>
-                        <span class="sku_id">${item.sku_id || ''}</span>
-                        <span class="quantity">${item.quantity || ''}</span>
-                        <span class="name">${item.name || ''}</span>
-                        <span class="unit_price">${item.unit_price || ''}</span>
-                        <span class="price_currency_code">${item.price_currency_code || ''}</span>
-                    `;
-                          cartElement.appendChild(lineItem);
-                      });
-                      sendTagging();
-                  }
-              }
-
-              function sendTagging() {
-                  if (typeof nostojs === 'function') {
-                      nostojs(api => {
-                          const element = document.querySelector("#nosto_cart_tagging");
-                          element.classList.remove('nosto_cart_hidden');
-                          element.classList.add('nosto_cart');
-
-                          if (refreshRecs) {
-                              api.loadRecommendations();
-                          } else {
-                              api.resendCartTagging("nosto_cart_tagging");
-                          }
-                      });
-                  }
-              }
-
-              window.addEventListener('private-content-loaded', (event) => {
-                  if (event.detail && event.detail.data) {
-                      processCartData(event.detail.data);
-                  }
-              });
-              if (typeof Alpine !== 'undefined' &&
-                  typeof Alpine.store === 'function' &&
-                  Alpine.store('customer') &&
-                  Alpine.store('customer').cartData) {
-                  processCartData(Alpine.store('customer'));
-              }
-          }
-          initNostoCartTagging();
-      });
-  </script>
-<?php else: ?>
-  <!-- Luma with Knockout.js -->
-  <div class="nosto_cart_hidden" style="display:none" data-bind="scope: 'cartTagging'" data-role="nosto-cart-tagging" id="nosto_cart_tagging">
-    <span class="hcid" data-bind="text: cartTagging().hcid"></span>
-    <span class="restore_link" data-bind="text: cartTagging().restore_cart_url"></span>
-    <!-- ko if: cartTagging().itemCount > 0 -->
-    <!-- ko foreach: {data: cartTagging().items, afterRender: sendTagging } -->
-    <div class="line_item">
-      <span class="product_id" data-bind="text: $data.product_id"></span>
-      <span class="sku_id" data-bind="text: $data.sku_id"></span>
-      <span class="quantity" data-bind="text: $data.quantity"></span>
-      <span class="name" data-bind="text: $data.name"></span>
-      <span class="unit_price" data-bind="text: $data.unit_price"></span>
-      <span class="price_currency_code" data-bind="text: $data.price_currency_code"></span>
-    </div>
-    <!-- /ko -->
-    <!-- /ko -->
-  </div>
-
-  <script type="text/x-magento-init">
-    {
-      "[data-role=nosto-cart-tagging]": {
-        "Magento_Ui/js/core/app": {
-          "components": {
-            "cartTagging": {
-              "component": "Nosto_Tagging/js/view/cart-tagging",
-              "refresh": "<?= $block->escapeHtml($block->isReloadRecsAfterAtcEnabled())?>"
-        }
-      }
-    }
-  }
+// Include the appropriate template based on the theme
+if ($isHyva) {
+    echo $block->getLayout()
+        ->createBlock(\Nosto\Tagging\Block\Knockout::class)
+        ->setTemplate('Nosto_Tagging::hyva/cart.phtml')
+        ->setData($block->getData())
+        ->toHtml();
+} else {
+    echo $block->getLayout()
+        ->createBlock(\Nosto\Tagging\Block\Knockout::class)
+        ->setTemplate('Nosto_Tagging::luma/cart.phtml')
+        ->setData($block->getData())
+        ->toHtml();
 }
-  </script>
-<?php endif; ?>
