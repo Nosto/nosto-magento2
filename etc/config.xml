@@ -60,6 +60,7 @@
                 <tag_date_published>0</tag_date_published>
                 <track_multi_channel_orders>1</track_multi_channel_orders>
                 <reload_recs_after_atc>0</reload_recs_after_atc>
+                <tagging_providers_enabled>0</tagging_providers_enabled>
             </flags>
             <multicurrency>
                 <method>undefined</method>

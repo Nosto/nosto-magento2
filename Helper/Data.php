@@ -147,6 +147,11 @@ class Data extends AbstractHelper
      * Path to the configuration object that stores preference for reloading recs after adding product to cart
      */
     public const XML_PATH_RELOAD_RECS_AFTER_ATC = 'nosto/flags/reload_recs_after_atc';
+    
+    /**
+     * Path to the configuration object that stores preference for enabling tagging providers
+     */
+    public const XML_PATH_TAGGING_PROVIDERS_ENABLED = 'nosto/flags/tagging_providers_enabled';
 
     /**
      * Path to the configuration object for pricing variations
@@ -412,6 +417,17 @@ class Data extends AbstractHelper
     public function isReloadRecsAfterAtcEnabled(StoreInterface $store = null)
     {
         return $this->getStoreConfig(self::XML_PATH_RELOAD_RECS_AFTER_ATC, $store);
+    }
+    
+    /**
+     * Returns if tagging providers are enabled
+     *
+     * @param StoreInterface|null $store the store model or null.
+     * @return bool the configuration value
+     */
+    public function isTaggingProvidersEnabled(StoreInterface $store = null)
+    {
+        return (bool)$this->getStoreConfig(self::XML_PATH_TAGGING_PROVIDERS_ENABLED, $store);
     }
 
     /**

@@ -328,15 +328,11 @@ class TaggingProvider extends Template
      *
      * @return bool
      */
-    /**
-     * Check if Nosto is enabled
-     *
-     * @return bool
-     */
     public function isNostoEnabled()
     {
         $store = $this->nostoHelperScope->getStore(true);
-        return $this->nostoHelperAccount->nostoInstalledAndEnabled($store);
+        return $this->nostoHelperAccount->nostoInstalledAndEnabled($store) && 
+            $this->nostoHelperData->isTaggingProvidersEnabled($store);
     }
 
     /**
