@@ -46,6 +46,7 @@ use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Customer as NostoHelperCustomer;
 use Nosto\Tagging\Helper\Variation as NostoHelperVariation;
+use Nosto\Tagging\Logger\Logger as NostoLogger;
 
 class TaggingProvider extends Template
 {
@@ -74,6 +75,8 @@ class TaggingProvider extends Template
     private Variation $variation;
     /** @var Knockout $knockout */
     private Knockout $knockout;
+    /** @var NostoLogger */
+    private NostoLogger $logger;
 
     public function __construct(
         Context $context,
@@ -87,6 +90,7 @@ class TaggingProvider extends Template
         Search $search,
         Variation $variation,
         Knockout $knockout,
+        NostoLogger $logger,
         array $data = []
     ) {
         parent::__construct($context, $data);
@@ -100,6 +104,7 @@ class TaggingProvider extends Template
         $this->search = $search;
         $this->variation = $variation;
         $this->knockout = $knockout;
+        $this->logger = $logger;
     }
 
     /**
@@ -173,6 +178,10 @@ class TaggingProvider extends Template
             }
         } catch (\Exception $e) {
             // Product not available
+            $this->logger->debug(
+                'Error getting product data for tagging: ' . $e->getMessage(),
+                ['exception' => $e]
+            );
         }
         return null;
     }
@@ -208,6 +217,10 @@ class TaggingProvider extends Template
             return $cartData['components']['cartTagging']['component'] ? $cartData : null;
         } catch (\Exception $e) {
             // Cart data not available
+            $this->logger->debug(
+                'Error getting cart data for tagging: ' . $e->getMessage(),
+                ['exception' => $e]
+            );
         }
         return null;
     }
@@ -236,6 +249,10 @@ class TaggingProvider extends Template
             return $customerData['components']['customerTagging']['component'] ? $customerData : null;
         } catch (\Exception $e) {
             // Customer data not available
+            $this->logger->debug(
+                'Error getting customer data for tagging: ' . $e->getMessage(),
+                ['exception' => $e]
+            );
         }
         return null;
     }
@@ -255,6 +272,10 @@ class TaggingProvider extends Template
             }
         } catch (\Exception $e) {
             // Category not available
+            $this->logger->debug(
+                'Error getting category data for tagging: ' . $e->getMessage(),
+                ['exception' => $e]
+            );
         }
         return null;
     }
@@ -270,6 +291,10 @@ class TaggingProvider extends Template
             return $this->search->getNostoSearchTerm();
         } catch (\Exception $e) {
             // Search term not available
+            $this->logger->debug(
+                'Error getting search term for tagging: ' . $e->getMessage(),
+                ['exception' => $e]
+            );
         }
         return null;
     }
@@ -351,6 +376,10 @@ class TaggingProvider extends Template
         } catch (\Exception $e) {
             // Unable to determine if reload recs is enabled,
             // likely the store can't be loaded from the request
+            $this->logger->debug(
+                'Error determining if recommendations should reload after add to cart: ' . $e->getMessage(),
+                ['exception' => $e]
+            );
         }
 
         return $reload;
