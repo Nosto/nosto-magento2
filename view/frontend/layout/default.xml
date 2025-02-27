@@ -43,7 +43,8 @@
                    template="Nosto_Tagging::meta.phtml"/>
         </referenceBlock>
         <referenceContainer name="before.body.end">
-            <block class="Nosto\Tagging\Block\TaggingProvider" name="nosto.tagging.provider" template="Nosto_Tagging::tagging-provider.phtml" />
+            <block class="Magento\Framework\View\Element\Template" name="nosto.tagging.providers.js" template="Nosto_Tagging::js/tagging-providers-include.phtml" />
+            <block class="Nosto\Tagging\Block\TaggingProvider" name="nosto.tagging.provider" template="Nosto_Tagging::tagging-provider.phtml" after="nosto.tagging.providers.js" />
             <block class="Nosto\Tagging\Block\Stub" name="nosto.jsstub" template="Nosto_Tagging::jsstub.phtml" after="nosto.tagging.provider" />
             <block name="script-nosto-js" template="Nosto_Tagging::js/nostojs.phtml" after="nosto.jsstub" />
             <block class="Nosto\Tagging\Block\Embed" name="nosto.embed" template="Nosto_Tagging::embed.phtml" after="script-nosto-js" />

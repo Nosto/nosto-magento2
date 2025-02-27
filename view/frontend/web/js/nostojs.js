@@ -33,13 +33,18 @@
  *
  */
 
-// noinspection JSUnresolvedFunction
-define([], function () {
+(function (root) {
     'use strict';
-    if (typeof window.nostojs !== 'function') {
-        window.nostojs = function (cb) {
-            (window.nostojs.q = window.nostojs.q || []).push(cb);
+    // Initialize nostojs if not already present
+    if (typeof root.nostojs !== 'function') {
+        root.nostojs = function (cb) {
+            (root.nostojs.q = root.nostojs.q || []).push(cb);
         };
     }
-    return window.nostojs;
-});
+
+    if (typeof define === 'function' && define.amd) {
+        define([], function () {
+            return root.nostojs;
+        });
+    }
+}(typeof self !== 'undefined' ? self : this));

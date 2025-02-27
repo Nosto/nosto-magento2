@@ -35,14 +35,7 @@
  */
 
 /** @var \Nosto\Tagging\Block\TaggingProvider $block */
-$taggingConfig = $block->getTaggingConfig();
 ?>
-
-<?php if ($block->isNostoEnabled()): ?>
-<!-- Hyva Theme with Alpine.js -->
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        window.initNostoTaggingProviders(<?= json_encode($taggingConfig) ?>);
-    });
-</script>
-<?php endif; ?>
+<!-- Load nostojs first, then tagging-providers.js for both Luma and Hyva -->
+<script type="text/javascript" src="<?= $block->getViewFileUrl('Nosto_Tagging/js/nostojs.js') ?>"></script>
+<script type="text/javascript" src="<?= $block->getViewFileUrl('Nosto_Tagging/js/tagging-providers.js') ?>"></script>
