@@ -36,7 +36,6 @@
 namespace Nosto\Tagging\Block;
 
 use Magento\Framework\App\ObjectManager;
-use Magento\Framework\Registry;
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Element\Template\Context;
 use Nosto\Helper\SerializationHelper;
@@ -47,7 +46,6 @@ use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Customer as NostoHelperCustomer;
 use Nosto\Tagging\Helper\Variation as NostoHelperVariation;
-use Nosto\Tagging\Model\Category\Builder as NostoCategoryBuilder;
 
 class TaggingProvider extends Template
 {
@@ -56,10 +54,6 @@ class TaggingProvider extends Template
      */
     private const DEFAULT_PAGE_TYPE = 'unknown';
 
-    /** @var Registry */
-    private Registry $registry;
-    /** @var NostoCategoryBuilder */
-    private NostoCategoryBuilder $categoryBuilder;
     /** @var NostoHelperScope */
     private NostoHelperScope $nostoHelperScope;
     /** @var NostoHelperData */
@@ -70,19 +64,8 @@ class TaggingProvider extends Template
     private NostoHelperVariation $nostoHelperVariation;
     /** @var NostoHelperAccount */
     private NostoHelperAccount $nostoHelperAccount;
-
     /** @var Category $category */
     private Category $category;
-    /** @var Element $element */
-    private Element $element;
-    /** @var Embed $embed */
-    private Embed $embed;
-    /** @var Meta $meta */
-    private Meta $meta;
-    /** @var Order $order */
-    private Order $order;
-    /** @var PageType $pageType */
-    private PageType $pageType;
     /** @var Product $product */
     private Product $product;
     /** @var Search $search */
@@ -94,19 +77,12 @@ class TaggingProvider extends Template
 
     public function __construct(
         Context $context,
-        Registry $registry,
-        NostoCategoryBuilder $categoryBuilder,
         NostoHelperScope $nostoHelperScope,
         NostoHelperAccount $nostoHelperAccount,
         NostoHelperData $nostoHelperData,
         NostoHelperCustomer $nostoHelperCustomer,
         NostoHelperVariation $nostoHelperVariation,
         Category $category,
-        Element $element,
-        Embed $embed,
-        Meta $meta,
-        Order $order,
-        PageType $pageType,
         Product $product,
         Search $search,
         Variation $variation,
@@ -114,19 +90,12 @@ class TaggingProvider extends Template
         array $data = []
     ) {
         parent::__construct($context, $data);
-        $this->registry = $registry;
-        $this->categoryBuilder = $categoryBuilder;
         $this->nostoHelperScope = $nostoHelperScope;
         $this->nostoHelperAccount = $nostoHelperAccount;
         $this->nostoHelperData = $nostoHelperData;
         $this->nostoHelperCustomer = $nostoHelperCustomer;
         $this->nostoHelperVariation = $nostoHelperVariation;
         $this->category = $category;
-        $this->element = $element;
-        $this->embed = $embed;
-        $this->meta = $meta;
-        $this->order = $order;
-        $this->pageType = $pageType;
         $this->product = $product;
         $this->search = $search;
         $this->variation = $variation;
@@ -225,7 +194,7 @@ class TaggingProvider extends Template
                 // Remove null values
                 if (isset($cartData['items']) && is_array($cartData['items'])) {
                     foreach ($cartData['items'] as &$item) {
-                        $item = array_filter($item, function ($value) {
+                        $item = array_filter($item, static function ($value) {
                             return $value !== null;
                         });
                     }
