@@ -173,7 +173,6 @@ class TaggingProvider extends Template
             }
         } catch (\Exception $e) {
             // Product not available
-            // phpcs:ignore Magento2.CodeAnalysis.EmptyBlock.DetectedCatch
         }
         return null;
     }
@@ -206,11 +205,9 @@ class TaggingProvider extends Template
             }
             // For Luma, we get it from the JS layout
             $cartData = json_decode($this->knockout->getJsLayout(), true);
-            // @phan-suppress-next-line PhanTypeArraySuspiciousNullable
-            return ($cartData && isset($cartData['components']['cartTagging']['component'])) ? $cartData : null;
+            return $cartData['components']['cartTagging']['component'] ? $cartData : null;
         } catch (\Exception $e) {
             // Cart data not available
-            // phpcs:ignore Magento2.CodeAnalysis.EmptyBlock.DetectedCatch
         }
         return null;
     }
@@ -236,11 +233,9 @@ class TaggingProvider extends Template
             }
             // For Luma, we get it from the JS layout
             $customerData = json_decode($this->knockout->getJsLayout(), true);
-            // @phan-suppress-next-line PhanTypeArraySuspiciousNullable
-            return ($customerData && isset($customerData['components']['customerTagging']['component'])) ? $customerData : null;
+            return $customerData['components']['customerTagging']['component'] ? $customerData : null;
         } catch (\Exception $e) {
             // Customer data not available
-            // phpcs:ignore Magento2.CodeAnalysis.EmptyBlock.DetectedCatch
         }
         return null;
     }
@@ -260,7 +255,6 @@ class TaggingProvider extends Template
             }
         } catch (\Exception $e) {
             // Category not available
-            // phpcs:ignore Magento2.CodeAnalysis.EmptyBlock.DetectedCatch
         }
         return null;
     }
@@ -276,7 +270,6 @@ class TaggingProvider extends Template
             return $this->search->getNostoSearchTerm();
         } catch (\Exception $e) {
             // Search term not available
-            // phpcs:ignore Magento2.CodeAnalysis.EmptyBlock.DetectedCatch
         }
         return null;
     }
@@ -358,7 +351,6 @@ class TaggingProvider extends Template
         } catch (\Exception $e) {
             // Unable to determine if reload recs is enabled,
             // likely the store can't be loaded from the request
-            // phpcs:ignore Magento2.CodeAnalysis.EmptyBlock.DetectedCatch
         }
 
         return $reload;

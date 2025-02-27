@@ -55,7 +55,7 @@ $variationId = $block->getVariationId();
 ?>
 
 <!-- Nosto Variation Tagging -->
-<?php if (empty($block->getAbstractObject())) {
+<?php if (empty($block->getAbstractObject())): {
     // Skip rendering if multiple currencies are not used (single currency selected) or if pricing variation is not enabled
     return;
 } else:

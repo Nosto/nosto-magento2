@@ -60,8 +60,7 @@ $variationId = $block->getVariationId();
      data-role="nosto-variation-tagging"
 >
   <!-- ko if: variationTagging().active_variation -->
-  <span class="nosto_variation_dynamic" 
-        data-bind="text: variationTagging().active_variation, afterRender: reloadRecommendations"></span>
+  <span class="nosto_variation_dynamic" data-bind="text: variationTagging().active_variation, afterRender: reloadRecommendations"></span>
   <!-- /ko -->
   <!-- ko ifnot: variationTagging().active_variation -->
   <span class="nosto_variation"><?= $block->escapeHtml($variationId) ?></span>
