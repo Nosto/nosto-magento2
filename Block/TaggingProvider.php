@@ -143,54 +143,33 @@ class TaggingProvider extends Template
         ];
 
         // Add cart data if available
-        try {
-            $result['cart'] = $this->getCurrentCart();
-        } catch (\Exception $e) {
-            // Cart data not available
-        }
+        $result['cart'] = $this->getCurrentCart();
 
         // Add customer data if available
-        try {
             $result['customer'] = $this->getCurrentCustomer();
-        } catch (\Exception $e) {
-            // Customer data not available
-        }
-
         // Add variation data if multiple currencies or price variations are enabled
-        try {
-            $result['variation'] = $this->getCurrentVariation();
-        } catch (\Exception $e) {
-            // Variation data not available
-        }
+//        try {
+//            $result['variation'] = $this->getCurrentVariation();
+//        } catch (\Exception $e) {
+//            // Variation data not available
+//        }
 
         if ($pageType === 'product') {
-            try {
-                $productData = $this->getCurrentProducts();
-                if ($productData) {
-                    $result['products'] = [$productData];
-                }
-            } catch (\Exception $e) {
-                // Product data not available
+            $productData = $this->getCurrentProducts();
+            if ($productData) {
+                $result['products'] = [$productData];
             }
         }
 
         if (in_array($pageType, ['category', 'product', 'search'])) {
-            try {
-                $categoryData = $this->getCurrentCategories();
-                if ($categoryData) {
-                    $result['categories'] = [$categoryData];
-                }
-            } catch (\Exception $e) {
-                // Category data not available
+            $categoryString = $this->getCurrentCategories();
+            if ($categoryString) {
+                $result['categories'] = [$categoryString];
             }
         }
 
         if ($pageType === 'search') {
-            try {
-                $result['searchTerm'] = $this->getCurrentSearchTerm();
-            } catch (\Exception $e) {
-                // Search term not available
-            }
+            $result['searchTerm'] = $this->getCurrentSearchTerm();
         }
 
         return $result;
@@ -269,14 +248,15 @@ class TaggingProvider extends Template
     /**
      * Get category data for the current page
      *
-     * @return array|null
+     * @return string|null
      */
     private function getCurrentCategories()
     {
         try {
             $category = $this->category->getAbstractObject();
             if ($category) {
-                return SerializationHelper::toArray($category);
+                // Return only the category string instead of the whole category object
+                return $category->getCategoryString();
             }
         } catch (\Exception $e) {
             // Category not available
@@ -331,7 +311,7 @@ class TaggingProvider extends Template
     public function isNostoEnabled()
     {
         $store = $this->nostoHelperScope->getStore(true);
-        return $this->nostoHelperAccount->nostoInstalledAndEnabled($store) && 
+        return $this->nostoHelperAccount->nostoInstalledAndEnabled($store) &&
             $this->nostoHelperData->isTaggingProvidersEnabled($store);
     }
 
