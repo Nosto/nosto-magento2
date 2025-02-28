@@ -42,7 +42,7 @@ $taggingConfig = $block->getTaggingConfig();
 <!-- Luma with Knockout.js -->
 <script>
     require(['Nosto_Tagging/js/tagging-providers'], function(initTaggingProviders) {
-        initTaggingProviders(<?= json_encode($taggingConfig) ?>);
+        initTaggingProviders(<?= $block->escapeJsQuote($block->getTaggingConfigForJs()) ?>);
     });
 </script>
 <?php endif; ?>

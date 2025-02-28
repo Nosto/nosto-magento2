@@ -36,6 +36,7 @@
 namespace Nosto\Tagging\Block;
 
 use Magento\Framework\App\ObjectManager;
+use Magento\Framework\Serialize\Serializer\Json;
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Element\Template\Context;
 use Nosto\Helper\SerializationHelper;
@@ -75,8 +76,10 @@ class TaggingProvider extends Template
     private Variation $variation;
     /** @var Knockout $knockout */
     private Knockout $knockout;
-    /** @var NostoLogger */
+    /** @var NostoLogger $logger */
     private NostoLogger $logger;
+    /** @var Json $json */
+    private Json $json;
 
     public function __construct(
         Context $context,
@@ -91,6 +94,7 @@ class TaggingProvider extends Template
         Variation $variation,
         Knockout $knockout,
         NostoLogger $logger,
+        Json $json,
         array $data = []
     ) {
         parent::__construct($context, $data);
@@ -105,6 +109,7 @@ class TaggingProvider extends Template
         $this->variation = $variation;
         $this->knockout = $knockout;
         $this->logger = $logger;
+        $this->json = $json;
     }
 
     /**
@@ -142,6 +147,16 @@ class TaggingProvider extends Template
         }
 
         return $result;
+    }
+
+    /**
+     * Get tagging configuration as JSON ready for JavaScript context
+     *
+     * @return string
+     */
+    public function getTaggingConfigForJs()
+    {
+        return $this->json->serialize($this->getTaggingConfig());
     }
 
     /**
