@@ -33,16 +33,22 @@
  *
  */
 
-define('Nosto_Tagging/js/nostojs', [], function () {
+// Universal nostojs module that works in both RequireJS and non-RequireJS environments
+(function (root, factory) {
     'use strict';
     
-    // Initialize nostojs if not already present
-    var root = typeof self !== 'undefined' ? self : window;
     if (typeof root.nostojs !== 'function') {
         root.nostojs = function (cb) {
             (root.nostojs.q = root.nostojs.q || []).push(cb);
         };
     }
     
+    // RequireJS
+    if (typeof define === 'function' && define.amd) {
+        define('Nosto_Tagging/js/nostojs', [], function () {
+            return root.nostojs;
+        });
+    }
+
     return root.nostojs;
-});
+}(typeof self !== 'undefined' ? self : this));

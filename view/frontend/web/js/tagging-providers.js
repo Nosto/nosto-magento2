@@ -1,4 +1,5 @@
-define('Nosto_Tagging/js/tagging-providers', ['Nosto_Tagging/js/nostojs'], function (nostojs) {
+// This should work in both RequireJS and non-RequireJS environments
+(function (root) {
     'use strict';
 
     /**
@@ -10,20 +11,18 @@ define('Nosto_Tagging/js/tagging-providers', ['Nosto_Tagging/js/nostojs'], funct
      *
      * @param {Object} config The tagging configuration
      */
-    function initTaggingProviders(config)
-    {
-        function waitForNostoJs(callback, maxAttempts = 50, interval = 100)
-        {
-            if (typeof nostojs === 'function') {
+    function initTaggingProviders(config) {
+        function waitForNostoJs(callback, maxAttempts = 50, interval = 100) {
+            if (typeof root.nostojs === 'function') {
                 callback();
                 return;
             }
 
             let attempts = 0;
-            const checkNostoJs = setInterval(function () {
+            const checkNostoJs = setInterval(function() {
                 attempts++;
 
-                if (typeof nostojs === 'function') {
+                if (typeof root.nostojs === 'function') {
                     clearInterval(checkNostoJs);
                     callback();
                     return;
@@ -36,9 +35,8 @@ define('Nosto_Tagging/js/tagging-providers', ['Nosto_Tagging/js/nostojs'], funct
             }, interval);
         }
 
-        function setupTaggingProviders()
-        {
-            nostojs(function (api) {
+        function setupTaggingProviders() {
+            root.nostojs(function (api) {
                 api.internal.setTaggingProvider("pageType", function () {
                     return config.pageType;
                 });
@@ -90,5 +88,13 @@ define('Nosto_Tagging/js/tagging-providers', ['Nosto_Tagging/js/nostojs'], funct
         waitForNostoJs(setupTaggingProviders);
     }
 
-    return initTaggingProviders;
-});
+    // Make the function globally available for non-RequireJS (Hyva)
+    root.initNostoTaggingProviders = initTaggingProviders;
+
+    // RequireJS
+    if (typeof define === 'function' && define.amd) {
+        define('Nosto_Tagging/js/tagging-providers', ['Nosto_Tagging/js/nostojs'], function (nostojs) {
+            return initTaggingProviders;
+        });
+    }
+}(typeof self !== 'undefined' ? self : this));

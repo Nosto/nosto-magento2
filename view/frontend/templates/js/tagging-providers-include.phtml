@@ -37,5 +37,18 @@
 /** @var \Nosto\Tagging\Block\TaggingProvider $block */
 ?>
 <!-- Load nostojs first, then tagging-providers.js for both Luma and Hyva -->
+<script>
+    // Need this for Hyvä without RequireJS
+    if (typeof define !== 'function') {
+        window.define = function() {};
+        window.define.amd = false;
+    }
+</script>
 <script type="text/javascript" src="<?= $block->getViewFileUrl('Nosto_Tagging/js/nostojs.js') ?>"></script>
 <script type="text/javascript" src="<?= $block->getViewFileUrl('Nosto_Tagging/js/tagging-providers.js') ?>"></script>
+<script>
+    // Need to clean up the temporary define()
+    if (window.define && window.define.amd === false) {
+        delete window.define;
+    }
+</script>
