@@ -54,7 +54,7 @@ class TaggingProvider extends Template
     /**
      * Default type assigned to the page if none is set in the layout xml.
      */
-    private const DEFAULT_PAGE_TYPE = 'unknown';
+    private const DEFAULT_PAGE_TYPE = 'other';
 
     /** @var NostoHelperScope */
     private NostoHelperScope $nostoHelperScope;
