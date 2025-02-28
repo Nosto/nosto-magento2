@@ -33,18 +33,16 @@
  *
  */
 
-(function (root) {
+define('Nosto_Tagging/js/nostojs', [], function () {
     'use strict';
+    
     // Initialize nostojs if not already present
+    var root = typeof self !== 'undefined' ? self : window;
     if (typeof root.nostojs !== 'function') {
         root.nostojs = function (cb) {
             (root.nostojs.q = root.nostojs.q || []).push(cb);
         };
     }
-
-    if (typeof define === 'function' && define.amd) {
-        define([], function () {
-            return root.nostojs;
-        });
-    }
-}(typeof self !== 'undefined' ? self : this));
+    
+    return root.nostojs;
+});

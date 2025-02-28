@@ -1,16 +1,4 @@
-// noinspection JSUnresolvedReference
-
-(function (root, factory) {
-    'use strict';
-
-    // Support both RequireJS and vanilla JS environments
-    if (typeof define === 'function' && define.amd) {
-        define(['Nosto_Tagging/js/nostojs'], factory);
-    } else {
-        // Browser globals: Create function directly
-        root.initNostoTaggingProviders = factory(root.nostojs);
-    }
-}(typeof self !== 'undefined' ? self : this, function (nostojs) {
+define('Nosto_Tagging/js/tagging-providers', ['Nosto_Tagging/js/nostojs'], function (nostojs) {
     'use strict';
 
     /**
@@ -18,7 +6,7 @@
      *
      * Can be used in both RequireJS and vanilla JS contexts:
      * - In Luma: require(['Nosto_Tagging/js/tagging-providers'], function(initTaggingProviders) { ... })
-     * - In Hyva (vanilla): As a global function
+     * - In Hyva (vanilla): As a global function window.initNostoTaggingProviders
      *
      * @param {Object} config The tagging configuration
      */
@@ -103,4 +91,4 @@
     }
 
     return initTaggingProviders;
-}));
+});
