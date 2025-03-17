@@ -34,16 +34,24 @@
  *
  */
 
+use Magento\Framework\View\Helper\SecureHtmlRenderer;
 use Nosto\Tagging\Block\Addtocart;
 
-/** @var Addtocart $block */
+/**
+ * @var Addtocart $block
+ * @var SecureHtmlRenderer $secureRenderer
+ */
 ?>
 <form action="<?= $block->escapeUrl($block->getSubmitUrl()) ?>" method="post" id="nosto_addtocart_form">
     <?= $block->getBlockHtml('formkey') ?>
 </form>
 <!--suppress JSUnresolvedVariable, JSValidateTypes, JSUnresolvedFunction -->
-<script type="text/javascript">
+<?php
+$script = <<<script
     require(['recobuy'], function (module) {
         window.Nosto = module;
     })
-</script>
+script;
+?>
+
+<?= /* @noEscape */ $secureRenderer->renderTag('script', ['type' => 'text/javascript'], $script, false) ?>
