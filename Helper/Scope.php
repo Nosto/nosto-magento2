@@ -208,7 +208,7 @@ class Scope extends AbstractHelper
         }
         try {
             $storeId = $store->getId();
-            /* @phan-suppress-next-line PhanUndeclaredVariable, PhanUndeclaredFunction */
+            /** @phan-suppress-next-line PhanUndeclaredMethod, PhanUndeclaredVariable, PhanUndeclaredFunction */
             $themeId = $this->storeManager->getStore($storeId)->getConfig('design/theme/theme_id');
             $theme = $this->themeProvider->getThemeById($themeId);
             if ($theme) {
