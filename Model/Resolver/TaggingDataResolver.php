@@ -65,7 +65,10 @@ class TaggingDataResolver implements ResolverInterface
      * @inheritdoc
      * @suppress PhanUnusedPublicMethodParameter
      */
-    public function resolve(Field $field, $context, ResolveInfo $info, array $value = null, array $args = null) {
+    public function resolve(
+        Field $field, $context, ResolveInfo $info, array $value = null, array $args = null) {
+        // Prevent "unused parameter" warnings by assigning them to a dummy variable
+        $_unused = [$field, $context, $info, $value];
         $pageType = $args['pageType'] ?? 'unknown';
         $this->taggingProvider->setData('page_type', $pageType);
         return $this->taggingProvider->getTaggingConfig();
