@@ -2862,16 +2862,16 @@
         },
         {
             "name": "nosto/php-sdk",
-            "version": "7.6.2",
+            "version": "7.6.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Nosto/nosto-php-sdk.git",
-                "reference": "a16433aa413d1bcebc02702bec80f4d6aa29d5e7"
+                "reference": "bdf3c8fab58a2c7f7562d4d1810d2a8dab5ad0cf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Nosto/nosto-php-sdk/zipball/a16433aa413d1bcebc02702bec80f4d6aa29d5e7",
-                "reference": "a16433aa413d1bcebc02702bec80f4d6aa29d5e7",
+                "url": "https://api.github.com/repos/Nosto/nosto-php-sdk/zipball/bdf3c8fab58a2c7f7562d4d1810d2a8dab5ad0cf",
+                "reference": "bdf3c8fab58a2c7f7562d4d1810d2a8dab5ad0cf",
                 "shasum": ""
             },
             "require": {
@@ -2912,9 +2912,9 @@
             "description": "PHP SDK for developing Nosto modules for e-commerce platforms",
             "support": {
                 "issues": "https://github.com/Nosto/nosto-php-sdk/issues",
-                "source": "https://github.com/Nosto/nosto-php-sdk/tree/7.6.2"
+                "source": "https://github.com/Nosto/nosto-php-sdk/tree/7.6.3"
             },
-            "time": "2025-02-08T17:30:36+00:00"
+            "time": "2025-03-18T11:59:26+00:00"
         },
         {
             "name": "paragonie/constant_time_encoding",
