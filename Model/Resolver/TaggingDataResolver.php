@@ -60,14 +60,10 @@ class TaggingDataResolver implements ResolverInterface
     }
 
     /**
-     * @param Field $field
-     * @param $context
-     * @param ResolveInfo $info
-     * @param array|null $value
-     * @param array|null $args
      * @inheritdoc
      */
-    public function resolve(
+    // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter
+    public function resolve(// @codingStandardsIgnoreLine
         Field $field,
         $context,
         ResolveInfo $info,
