@@ -57,6 +57,9 @@ class TaggingDataResolver implements ResolverInterface
     }
 
     /**
+     * @phan-suppress PhanUnreferencedPublicMethod, PhanUnusedPublicMethodParameter
+     * @suppress PhanUnreferencedPublicMethod, PhanUnusedPublicMethodParameter
+     * @phan-file-suppress PhanUnreferencedPublicMethod
      * @param Field $field
      * @param $context
      * @param ResolveInfo $info
@@ -66,9 +69,12 @@ class TaggingDataResolver implements ResolverInterface
      * @suppress PhanUnusedPublicMethodParameter
      */
     public function resolve(
-        Field $field, $context, ResolveInfo $info, array $value = null, array $args = null) {
-        // Prevent "unused parameter" warnings by assigning them to a dummy variable
-        $_unused = [$field, $context, $info, $value];
+        Field $field,
+        $context,
+        ResolveInfo $info,
+        array $value = null,
+        array $args = null
+    ) {
         $pageType = $args['pageType'] ?? 'unknown';
         $this->taggingProvider->setData('page_type', $pageType);
         return $this->taggingProvider->getTaggingConfig();
