@@ -274,8 +274,12 @@ class TaggingProvider extends Template
             }
             // For Luma, we get it from the JS layout
             $customerData = json_decode($this->knockout->getJsLayout(), true);
-            /** @phan-suppress-next-line PhanSuspiciousNullableArrayAccess */
-            return $customerData['components']['customerTagging']['component'] ? $customerData : null;
+            if (array_key_exists('components', $customerData) &&
+                array_key_exists('customerTagging', $customerData['components']) &&
+                array_key_exists('component', $customerData['components']['customerTagging'])) {
+                return $customerData;
+            }
+            return null;
         } catch (\Exception $e) {
             // Customer data not available
             $this->logger->debug(
