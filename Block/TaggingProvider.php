@@ -148,6 +148,18 @@ class TaggingProvider extends Template
 
         return $result;
     }
+    
+    /**
+     * Explicitly expose setData method for GraphQL and API usage
+     *
+     * @param string $key
+     * @param mixed $value
+     * @return $this
+     */
+    public function setData($key, $value = null)
+    {
+        return parent::setData($key, $value);
+    }
 
     /**
      * Get tagging configuration as JSON ready for JavaScript context
