@@ -58,7 +58,7 @@ class TaggingDataResolver implements ResolverInterface
 
     /**
      * @inheritdoc
-     * @phan-suppress-next-line PhanUnusedParameter
+     * @phan-suppress PhanUnusedPublicMethodParameter
      */
     public function resolve(
         Field $field,
