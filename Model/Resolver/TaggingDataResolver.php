@@ -56,6 +56,7 @@ class TaggingDataResolver implements ResolverInterface
         $this->taggingProvider = $taggingProvider;
     }
 
+
     /**
      * @inheritdoc
      * @phan-suppress PhanUnusedPublicMethodParameter
