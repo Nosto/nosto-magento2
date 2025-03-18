@@ -40,7 +40,6 @@ use Magento\Framework\GraphQl\Query\ResolverInterface;
 use Magento\Framework\GraphQl\Schema\Type\ResolveInfo;
 use Nosto\Tagging\Block\TaggingProvider;
 
-/** @phan-file-suppress PhanUnusedPublicMethodParameter */
 class TaggingDataResolver implements ResolverInterface
 {
     /**
@@ -58,16 +57,15 @@ class TaggingDataResolver implements ResolverInterface
     }
 
     /**
+     * @param Field $field
+     * @param $context
+     * @param ResolveInfo $info
+     * @param array|null $value
+     * @param array|null $args
      * @inheritdoc
      * @suppress PhanUnusedPublicMethodParameter
      */
-    public function resolve(
-        Field $field,
-        $context,
-        ResolveInfo $info,
-        array $value = null,
-        array $args = null
-    ) {
+    public function resolve(Field $field, $context, ResolveInfo $info, array $value = null, array $args = null) {
         $pageType = $args['pageType'] ?? 'unknown';
         $this->taggingProvider->setData('page_type', $pageType);
         return $this->taggingProvider->getTaggingConfig();
