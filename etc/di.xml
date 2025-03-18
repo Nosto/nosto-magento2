@@ -71,7 +71,13 @@
             <argument name="nostoHelperCache" xsi:type="object">Nosto\Tagging\Helper\Cache\Proxy</argument>
         </arguments>
     </type>
-    <type name="Nosto\Tagging\Console\Command\NostoGenerateCustomerReferenceCommand">
+    <type name="Nosto\Tagging\Console\Command\NostoPopulateCustomerReference">
+        <arguments>
+            <argument name="objectManager" xsi:type="object">Magento\Framework\ObjectManagerInterface</argument>
+            <argument name="appState" xsi:type="object">Magento\Framework\App\State</argument>
+        </arguments>
+    </type>
+    <type name="Nosto\Tagging\Console\Command\PopulateCustomerReference">
         <arguments>
             <argument name="customerFactory" xsi:type="object">Magento\Customer\Model\CustomerFactory\Proxy</argument>
         </arguments>
@@ -105,6 +111,12 @@
                 </item>
                 <item name="nosto_clear_queue_command" xsi:type="object">
                     Nosto\Tagging\Console\Command\NostoClearQueueCommand
+                </item>
+                <item name="nosto_generate_customer_command" xsi:type="object">
+                    Nosto\Tagging\Console\Command\GenerateCustomerCommand
+                </item>
+                <item name="nosto_populate_customer_reference_command" xsi:type="object">
+                    Nosto\Tagging\Console\Command\NostoPopulateCustomerReferenceCommand
                 </item>
             </argument>
         </arguments>

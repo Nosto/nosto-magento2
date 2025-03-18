@@ -34,7 +34,7 @@
  *
  */
 
-namespace Nosto\Tagging\Setup\Patch\Data;
+namespace Nosto\Tagging\Util;
 
 use Magento\Customer\Model\Customer;
 use Magento\Customer\Model\ResourceModel\Customer as CustomerResource;
@@ -46,6 +46,7 @@ use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Logger\Logger;
 use Exception;
 use Nosto\Tagging\Util\PagingIterator;
+use Nosto\Tagging\Util\PagingNewIterator;
 use Nosto\Tagging\Util\Customer as CustomerUtil;
 
 class PopulateCustomerReference implements DataPatchInterface
@@ -117,6 +118,7 @@ class PopulateCustomerReference implements DataPatchInterface
             ->addAttributeToSelect(NostoHelperData::NOSTO_CUSTOMER_REFERENCE_ATTRIBUTE_NAME)
             ->setPageSize(1000);
         $iterator = new PagingIterator($customerCollection);
+        $i = 0;
         /* @var Customer $customer */
         foreach ($iterator as $page) {
             foreach ($page as $customer) {
