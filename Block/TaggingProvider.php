@@ -156,6 +156,7 @@ class TaggingProvider extends Template
      * @param mixed $value
      * @return $this
      */
+    /** @phan-suppress PhanUselessMethodOverride */
     public function setData($key, $value = null)
     {
         return parent::setData($key, $value);
