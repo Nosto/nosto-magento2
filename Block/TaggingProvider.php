@@ -241,7 +241,7 @@ class TaggingProvider extends Template
             }
             // For Luma, we get it from the JS layout
             $cartData = json_decode($this->knockout->getJsLayout(), true);
-            /* @phan-suppress-next-line PhanTypeArraySuspicious */
+            /** @phan-suppress-next-line PhanSuspiciousNullableArrayAccess */
             return $cartData['components']['cartTagging']['component'] ? $cartData : null;
         } catch (\Exception $e) {
             // Cart data not available
@@ -274,7 +274,7 @@ class TaggingProvider extends Template
             }
             // For Luma, we get it from the JS layout
             $customerData = json_decode($this->knockout->getJsLayout(), true);
-            /** @phan-suppress-next-line PhanTypeArraySuspicious */
+            /** @phan-suppress-next-line PhanSuspiciousNullableArrayAccess */
             return $customerData['components']['customerTagging']['component'] ? $customerData : null;
         } catch (\Exception $e) {
             // Customer data not available
