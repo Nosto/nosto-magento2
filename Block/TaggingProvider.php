@@ -148,7 +148,7 @@ class TaggingProvider extends Template
 
         return $result;
     }
-    
+
     /**
      * Explicitly expose setData method for GraphQL and API usage
      *
@@ -226,8 +226,8 @@ class TaggingProvider extends Template
                 $objectManager = ObjectManager::getInstance();
                 $cartTagging = $objectManager->create(CartTagging::class);
                 $cartData = $cartTagging->getSectionData();
-                
-                // Remove null values
+
+                // Remove null values from cart items
                 if (isset($cartData['items']) && is_array($cartData['items'])) {
                     foreach ($cartData['items'] as &$item) {
                         $item = array_filter($item, static function ($value) {
@@ -235,24 +235,36 @@ class TaggingProvider extends Template
                         });
                     }
                 }
-                return array_filter($cartData, function ($value) {
+
+                $filteredCartData = array_filter($cartData, function ($value) {
                     return $value !== null && (!is_string($value) || trim($value) !== '');
                 });
+
+                if (empty($filteredCartData['items'])) {
+                    return $this->getLumaCartData();
+                }
+
+                return $filteredCartData;
             }
             // For Luma, we get it from the JS layout
-            $cartData = json_decode($this->knockout->getJsLayout(), true);
-            if (array_key_exists('components', $cartData) &&
-                array_key_exists('cartTagging', $cartData['components']) &&
-                array_key_exists('component', $cartData['components']['cartTagging'])) {
-                return $cartData;
-            }
-            return null;
+            return $this->getLumaCartData();
         } catch (\Exception $e) {
             // Cart data not available
             $this->logger->debug(
                 'Error getting cart data for tagging: ' . $e->getMessage(),
                 ['exception' => $e]
             );
+        }
+        return null;
+    }
+
+    private function getLumaCartData()
+    {
+        $cartData = json_decode($this->knockout->getJsLayout(), true);
+        if (array_key_exists('components', $cartData) &&
+            array_key_exists('cartTagging', $cartData['components']) &&
+            array_key_exists('component', $cartData['components']['cartTagging'])) {
+            return $cartData;
         }
         return null;
     }
@@ -270,26 +282,36 @@ class TaggingProvider extends Template
                 $objectManager = ObjectManager::getInstance();
                 $customerTagging = $objectManager->create(CustomerTagging::class);
                 $customerData = $customerTagging->getSectionData();
-                
-                // Remove null values so it won't break the tagging provider implementation
-                return array_filter($customerData, function ($value) {
+
+                $filteredData = array_filter($customerData, function ($value) {
                     return $value !== null && (!is_string($value) || trim($value) !== '');
                 });
+
+                if (empty($filteredData)) {
+                    return $this->getLumaCustomerData();
+                }
+
+                return $filteredData;
             }
             // For Luma, we get it from the JS layout
-            $customerData = json_decode($this->knockout->getJsLayout(), true);
-            if (array_key_exists('components', $customerData) &&
-                array_key_exists('customerTagging', $customerData['components']) &&
-                array_key_exists('component', $customerData['components']['customerTagging'])) {
-                return $customerData;
-            }
-            return null;
+            return $this->getLumaCustomerData();
         } catch (\Exception $e) {
             // Customer data not available
             $this->logger->debug(
                 'Error getting customer data for tagging: ' . $e->getMessage(),
                 ['exception' => $e]
             );
+        }
+        return null;
+    }
+
+    private function getLumaCustomerData()
+    {
+        $customerData = json_decode($this->knockout->getJsLayout(), true);
+        if (array_key_exists('components', $customerData) &&
+            array_key_exists('customerTagging', $customerData['components']) &&
+            array_key_exists('component', $customerData['components']['customerTagging'])) {
+            return $customerData['components']['customerTagging']['component'];
         }
         return null;
     }

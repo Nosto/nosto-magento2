@@ -83,32 +83,32 @@ class CustomerTagging extends HashedTagging implements SectionSourceInterface
                 if ($nostoCustomerId) {
                     $hcid = $this->generateVisitorChecksum($nostoCustomerId);
                 }
-                
+
                 $data = [
                     'first_name' => $customer->getFirstName() ?: '',
                     'last_name' => $customer->getLastName() ?: '',
                     'email' => $customer->getEmail() ?: '',
                     'hcid' => $hcid,
                 ];
-                
+
                 // Only add optional fields if they're not null or
                 // they'll break the tagging provider on the client script
                 if ($customer->getMarketingPermission() !== null) {
                     $data['marketing_permission'] = $customer->getMarketingPermission();
                 }
-                
+
                 if ($customer->getCustomerReference() !== null) {
                     $data['customer_reference'] = $customer->getCustomerReference();
                 }
-                
+
                 if ($customer->getCustomerGroup() !== null) {
                     $data['customer_group'] = $customer->getCustomerGroup();
                 }
-                
+
                 if ($customer->getGender() !== null) {
                     $data['gender'] = $customer->getGender();
                 }
-                
+
                 if ($customer->getDateOfBirth() !== null) {
                     $data['date_of_birth'] = $customer->getDateOfBirth();
                 }

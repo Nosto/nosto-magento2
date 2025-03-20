@@ -42,6 +42,7 @@ $isHyva = $block->isHyva();
   <form <?= $isHyva ? 'x-data="nostoRecobuy()"' : '' ?>
     action="<?= $block->escapeUrl($block->getSubmitUrl()) ?>"
     method="post" id="nosto_addtocart_form">
+      <?= $block->getBlockHtml('formkey') ?>
   </form>
 
 <?php if ($isHyva): ?>
