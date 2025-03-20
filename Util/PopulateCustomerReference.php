@@ -116,25 +116,18 @@ class PopulateCustomerReference implements DataPatchInterface
     {
         $customerCollection = $this->customerCollectionFactory->create()
             ->addAttributeToSelect(NostoHelperData::NOSTO_CUSTOMER_REFERENCE_ATTRIBUTE_NAME)
-            ->setPageSize(1000);
-        $iterator = new PagingIterator($customerCollection);
-        $i = 0;
-        /* @var Customer $customer */
-        foreach ($iterator as $page) {
-            foreach ($page as $customer) {
-                if (!$customer->getData(NostoHelperData::NOSTO_CUSTOMER_REFERENCE_ATTRIBUTE_NAME)) {
-                    $customer->setData(
-                        NostoHelperData::NOSTO_CUSTOMER_REFERENCE_ATTRIBUTE_NAME,
-                        (new CustomerUtil)->generateCustomerReference($customer)
-                    );
-                    try {
-                        $this->customerResource->saveAttribute(
-                            $customer,
-                            NostoHelperData::NOSTO_CUSTOMER_REFERENCE_ATTRIBUTE_NAME
-                        );
-                    } catch (Exception $e) {
-                        $this->logger->exception($e);
-                    }
+            ->load();
+
+        foreach ($customerCollection->getItems() as $customer) {
+            if (!$customer->getData(NostoHelperData::NOSTO_CUSTOMER_REFERENCE_ATTRIBUTE_NAME)) {
+                $customer->setData(
+                    NostoHelperData::NOSTO_CUSTOMER_REFERENCE_ATTRIBUTE_NAME,
+                    (new CustomerUtil)->generateCustomerReference($customer)
+                );
+                try {
+                    $this->customerResource->saveAttribute($customer, NostoHelperData::NOSTO_CUSTOMER_REFERENCE_ATTRIBUTE_NAME);
+                } catch (Exception $e) {
+                    $this->logger->exception($e);
                 }
             }
         }

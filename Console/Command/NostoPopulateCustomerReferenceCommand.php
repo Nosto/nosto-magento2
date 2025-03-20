@@ -39,15 +39,15 @@ class NostoPopulateCustomerReferenceCommand extends Command
             /** @var PopulateCustomerReference $populateCustomerReference */
             $populateCustomerReference = $this->objectManager->create(PopulateCustomerReference::class);
             $populateCustomerReference->apply();
-dd('proslo');
+
             $output->writeln('<info>PopulateCustomerReference done!</info>');
-            return Command::SUCCESS;
-        } catch (LocalizedException $e) {
+            return 0;
+        } catch (\Exception $e) {
             $output->writeln('<error>Error: ' . $e->getMessage() . '</error>');
-            return Command::FAILURE;
+            return 1;
         } catch (\Exception $e) {
             $output->writeln('<error>Unexpected error: ' . $e->getMessage() . '</error>');
-            return Command::FAILURE;
+            return 1;
         }
     }
 }
