@@ -109,7 +109,6 @@
         if (typeof Alpine !== 'undefined' &&
             typeof Alpine.store === 'function' &&
             Alpine.store('customer')) {
-            console.log("Test2")
             processCustomerData({
                 'customer-tagging': Alpine.store('customer').customerData
             });
