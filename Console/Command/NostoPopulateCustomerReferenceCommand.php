@@ -9,7 +9,6 @@ use Nosto\Tagging\Util\PopulateCustomerReference;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class NostoPopulateCustomerReferenceCommand extends Command
@@ -44,9 +43,6 @@ class NostoPopulateCustomerReferenceCommand extends Command
             return 0;
         } catch (\Exception $e) {
             $output->writeln('<error>Error: ' . $e->getMessage() . '</error>');
-            return 1;
-        } catch (\Exception $e) {
-            $output->writeln('<error>Unexpected error: ' . $e->getMessage() . '</error>');
             return 1;
         }
     }
