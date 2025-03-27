@@ -57,6 +57,9 @@ class Builder
     /** @var NostoCategoryService */
     private NostoCategoryService $nostoCategoryService;
 
+    /** @var UrlBuilder */
+    private UrlBuilder $urlBuilder;
+
     /** @var NostoLogger */
     private NostoLogger $logger;
 
@@ -71,11 +74,13 @@ class Builder
         CategoryRepositoryInterface $categoryRepository,
         ManagerInterface $eventManager,
         NostoCategoryService $nostoCategoryService,
+        UrlBuilder $urlBuilder,
         NostoLogger $logger
     ) {
         $this->categoryRepository = $categoryRepository;
         $this->eventManager = $eventManager;
         $this->nostoCategoryService = $nostoCategoryService;
+        $this->urlBuilder = $urlBuilder;
         $this->logger = $logger;
     }
 
@@ -94,7 +99,7 @@ class Builder
             $pathString = $this->nostoCategoryService->getCategory($category, $store);
             $nostoCategory->setPath($category->getPath() ?? '');
             $nostoCategory->setCategoryString($pathString ?? '');
-            $nostoCategory->setUrl($category->getUrl());
+            $nostoCategory->setUrl($this->urlBuilder->getCategoryUrlInStore($category, $store));
             $nostoCategory->setAvailable($category->getIsActive() ?? false);
         } catch (Exception $e) {
             $this->logger->exception($e);
