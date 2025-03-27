@@ -38,6 +38,14 @@
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
     <body>
+        <referenceContainer name="before.body.end">
+            <block class="Nosto\Tagging\Block\TaggingProvider" name="nosto.tagging.provider" template="Nosto_Tagging::tagging-provider.phtml">
+                <arguments>
+                    <argument name="page_type" xsi:type="string">checkout</argument>
+                </arguments>
+            </block>
+        </referenceContainer>
+
         <referenceContainer name="content">
             <block class="Nosto\Tagging\Block\PageType" name="nosto.page.type.checkout" after="-">
                 <arguments>

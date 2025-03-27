@@ -36,13 +36,16 @@
 
 namespace Nosto\Tagging\Helper;
 
+use Exception;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Exception\NotFoundException;
+use Magento\Framework\Module\Manager;
 use Magento\Framework\Phrase;
+use Magento\Framework\View\Design\Theme\ThemeProviderInterface;
 use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Api\Data\WebsiteInterface;
 use Magento\Store\Model\Store;
@@ -52,19 +55,32 @@ use Nosto\Tagging\Model\Service\Store\MissingStoreException;
 
 class Scope extends AbstractHelper
 {
+    /** @var Manager */
+    private Manager $moduleManager;
+
+    /** @var StoreManagerInterface $storeManager */
     private StoreManagerInterface $storeManager;
+
+    /** @var ThemeProviderInterface */
+    private ThemeProviderInterface $themeProvider;
 
     /**
      * Scope constructor.
      * @param Context $context
+     * @param Manager $moduleManager
      * @param StoreManagerInterface $storeManager
+     * @param ThemeProviderInterface $themeProvider
      */
     public function __construct(
         Context $context,
-        StoreManagerInterface $storeManager
+        Manager $moduleManager,
+        StoreManagerInterface $storeManager,
+        ThemeProviderInterface $themeProvider
     ) {
         parent::__construct($context);
         $this->storeManager = $storeManager;
+        $this->moduleManager = $moduleManager;
+        $this->themeProvider = $themeProvider;
     }
 
     /**
@@ -178,5 +194,30 @@ class Scope extends AbstractHelper
         }
 
         return $store;
+    }
+
+    /**
+     * Check if Hyva theme is installed and enabled
+     *
+     * @return bool
+     */
+    public function isHyvaEnabled(StoreInterface $store)
+    {
+        if (!$this->moduleManager->isEnabled('Hyva_Theme')) {
+            return false;
+        }
+        try {
+            $storeId = $store->getId();
+            /** @phan-suppress-next-line PhanUndeclaredMethod, PhanUndeclaredVariable, PhanUndeclaredFunction */
+            $themeId = $this->storeManager->getStore($storeId)->getConfig('design/theme/theme_id');
+            $theme = $this->themeProvider->getThemeById($themeId);
+            if ($theme) {
+                $themePath = $theme->getThemePath();
+                return (strpos($themePath, 'Hyva/') !== false);
+            }
+        } catch (Exception $e) {
+            return false;
+        }
+        return false;
     }
 }

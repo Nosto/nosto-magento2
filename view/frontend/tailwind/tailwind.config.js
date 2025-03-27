@@ -32,23 +32,8 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
-
-// Universal nostojs module that works in both RequireJS and non-RequireJS environments
-(function (root, factory) {
-    'use strict';
-    
-    if (typeof root.nostojs !== 'function') {
-        root.nostojs = function (cb) {
-            (root.nostojs.q = root.nostojs.q || []).push(cb);
-        };
-    }
-    
-    // RequireJS
-    if (typeof define === 'function' && define.amd) {
-        define('Nosto_Tagging/js/nostojs', [], function () {
-            return root.nostojs;
-        });
-    }
-
-    return root.nostojs;
-}(typeof self !== 'undefined' ? self : this));
+module.exports = {
+    content: [
+        '../templates/**/*.phtml',
+    ]
+}

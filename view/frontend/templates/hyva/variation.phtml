@@ -48,35 +48,69 @@
  * recommendations.
  * Please see a reference guide such as https://github.com/Nosto/nosto-magento2/wiki
  *
- * @var Nosto\Tagging\Block\Stub $block
+ * @var Nosto\Tagging\Block\Variation $block
  */
 
-$isHyva = $block->isHyva();
+$variationId = $block->getVariationId();
 ?>
 
-<!-- Nosto JS Initialization -->
-<script type="text/javascript">
-  (function () {
-    const name = "nostojs";
-    window[name] = window[name] || function (cb) {
-      (window[name].q = window[name].q || []).push(cb);
-    };
-      <?php if ($block->isRecoAutoloadDisabled()): ?>
-    window[name](function (api) {
-      api.setAutoLoad(false);
-    });
-      <?php endif; ?>
-  })();
-</script>
+<!-- Nosto Variation Tagging -->
+<?php if (empty($block->getAbstractObject())): {
+        // Skip rendering if MC is not used (single currency selected) or if pricing variation is disabled
+        return;
+    } else:
+        ?>
+<div id="nosto_variation_tagging" style="display:none">
+  <!-- Static variation span, will be replaced with dynamic one if necessary -->
+  <span class="nosto_variation"><?= $block->escapeHtml($variationId) ?></span>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        function initNostoVariationTagging() {
+            function processVariationData(data) {
+                if (!data || !data['active-variation-tagging']) return;
+                const tagging = data['active-variation-tagging'];
+                if (tagging && tagging.active_variation) {
+                    reloadRecommendations(tagging.active_variation);
+                }
+            }
+            function reloadRecommendations(activeVariation) {
+                const staticElement = document.querySelector(".nosto_variation:not(.nosto_variation_dynamic)");
+                if (staticElement) {
+                    staticElement.classList.remove('nosto_variation');
+                    staticElement.classList.add('nosto_variation_static');
+                }
 
-<?php if ($isHyva): ?>
-  <script>
-      document.addEventListener('DOMContentLoaded', function() {
-          if (typeof nostojs === 'function') {
-              return;
-          } else if (typeof window['nostojs'] === 'function') {
-              window.nostojs = window['nostojs'];
-          }
-      });
-  </script>
+                let dynamicElement = document.querySelector(".nosto_variation_dynamic");
+                if (!dynamicElement) {
+                    dynamicElement = document.createElement('span');
+                    dynamicElement.className = 'nosto_variation_dynamic';
+                    document.getElementById('nosto_variation_tagging').appendChild(dynamicElement);
+                }
+
+                dynamicElement.classList.add("nosto_variation");
+                dynamicElement.textContent = activeVariation;
+                if (typeof nostojs === 'function') {
+                    nostojs(api => {
+                        api.loadRecommendations();
+                    });
+                }
+            }
+
+            window.addEventListener('private-content-loaded', (event) => {
+                if (event.detail && event.detail.data) {
+                    processVariationData(event.detail.data);
+                }
+            });
+
+            if (typeof Alpine !== 'undefined' &&
+                typeof Alpine.store === 'function' &&
+                Alpine.store('customer') &&
+                Alpine.store('customer').variationData) {
+                processVariationData(Alpine.store('customer'));
+            }
+        }
+        initNostoVariationTagging();
+    });
+</script>
 <?php endif; ?>

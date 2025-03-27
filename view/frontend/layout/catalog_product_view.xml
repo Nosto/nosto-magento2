@@ -38,6 +38,41 @@
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
     <body>
+        <referenceContainer name="before.body.end">
+            <!-- Set page type to 'product' for TaggingProvider -->
+            <block class="Nosto\Tagging\Block\TaggingProvider" name="nosto.tagging.provider" template="Nosto_Tagging::tagging-provider.phtml">
+                <arguments>
+                    <argument name="page_type" xsi:type="string">product</argument>
+                </arguments>
+            </block>
+
+            <!-- Product tagging -->
+            <block class="Nosto\Tagging\Block\Product" name="nosto.product" after="-"/>
+
+            <!-- Category tagging (for breadcrumbs) -->
+            <block class="Nosto\Tagging\Block\Category" name="nosto.category" after="-"/>
+
+            <!-- Recommendation slots -->
+            <block class="Nosto\Tagging\Block\Element" name="nosto.page.product1" after="-"
+                   template="Nosto_Tagging::element.phtml">
+                <arguments>
+                    <argument name="nostoId" xsi:type="string">nosto-page-product1</argument>
+                </arguments>
+            </block>
+            <block class="Nosto\Tagging\Block\Element" name="nosto.page.product2"
+                   after="nosto.page.product1" template="Nosto_Tagging::element.phtml">
+                <arguments>
+                    <argument name="nostoId" xsi:type="string">nosto-page-product2</argument>
+                </arguments>
+            </block>
+            <block class="Nosto\Tagging\Block\Element" name="nosto.page.product3"
+                   after="nosto.page.product2" template="Nosto_Tagging::element.phtml">
+                <arguments>
+                    <argument name="nostoId" xsi:type="string">nosto-page-product3</argument>
+                </arguments>
+            </block>
+        </referenceContainer>
+
         <referenceContainer name="content">
             <block class="Nosto\Tagging\Block\PageType" name="nosto.page.type.product" after="-">
                 <arguments>
@@ -45,9 +80,9 @@
                 </arguments>
             </block>
             <block class="Nosto\Tagging\Block\Product" name="nosto.product" after="-"/>
-
             <block class="Nosto\Tagging\Block\Category" name="nosto.category" after="-"/>
 
+            <!-- Recommendation slots -->
             <block class="Nosto\Tagging\Block\Element" name="nosto.page.product1" after="-"
                    template="Nosto_Tagging::element.phtml">
                 <arguments>

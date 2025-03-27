@@ -135,6 +135,18 @@ class Knockout extends Template
     }
 
     /**
+     * @return bool
+     */
+    public function isHyva()
+    {
+        try {
+            return $this->nostoHelperScope->isHyvaEnabled($this->storeManager->getStore());
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
+
+    /**
      * @return int
      */
     public function isReloadRecsAfterAtcEnabled()
