@@ -40,6 +40,7 @@ use Magento\Customer\CustomerData\SectionSourceInterface;
 use Magento\Customer\Helper\Session\CurrentCustomer;
 use Magento\Framework\Stdlib\CookieManagerInterface;
 use Nosto\Model\Customer;
+use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Customer\Customer as NostoCustomer;
 use Nosto\Tagging\Model\Person\Tagging\Builder as NostoPersonBuilder;
 
@@ -48,6 +49,8 @@ class CustomerTagging extends HashedTagging implements SectionSourceInterface
     private CurrentCustomer $currentCustomer;
     private CookieManagerInterface $cookieManager;
     private NostoPersonBuilder $personBuilder;
+    /** @var NostoLogger */
+    private NostoLogger $logger;
 
     /**
      * CustomerTagging constructor.
@@ -114,6 +117,12 @@ class CustomerTagging extends HashedTagging implements SectionSourceInterface
                 }
             }
         } catch (\Exception $e) {
+            $this->logger->warning(
+                sprintf(
+                    "Failed to retrieve or process customer data in getSectionData: %s",
+                    $e->getMessage()
+                )
+            );
             return [];
         }
 
