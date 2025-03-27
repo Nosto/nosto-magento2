@@ -94,6 +94,18 @@ trait TaggingTrait
     }
 
     /**
+     * @return bool
+     */
+    public function isHyva()
+    {
+        try {
+            return $this->nostoHelperScope->isHyvaEnabled($this->nostoHelperScope->getStore());
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
+
+    /**
      * @return AbstractObject
      */
     abstract public function getAbstractObject();

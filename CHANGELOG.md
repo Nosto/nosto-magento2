@@ -1,5 +1,11 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 8.0.0
+* Add compatibility and support for Hyvä themes
+* Add support for Nosto tagging providers 
+* Implement a new indexer for indexing categories in Nosto
+* Send category url to Nosto
+
 ### 7.6.1
 * Remove whitespaces from category strings
 * Make rabbitmq publishing error message more clear

@@ -1,5 +1,4 @@
-<?php /** @noinspection PhpFullyQualifiedNameUsageInspection */
-
+<?php
 /**
  * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
@@ -39,6 +38,8 @@ namespace Nosto\Tagging\Model\Service\Sync;
 
 use Exception;
 use Magento\Framework\App\ObjectManager;
+use Magento\Framework\Bulk\BulkManagementInterface;
+use Magento\Framework\Bulk\OperationInterface;
 use Magento\Framework\DataObject\IdentityGeneratorInterface;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Module\Manager;
@@ -48,10 +49,10 @@ use Magento\AsynchronousOperations\Api\Data\OperationInterfaceFactory;
 
 abstract class AbstractBulkPublisher implements BulkPublisherInterface
 {
-    private const STATUS_TYPE_OPEN = \Magento\Framework\Bulk\OperationInterface::STATUS_TYPE_OPEN;
+    private const STATUS_TYPE_OPEN = OperationInterface::STATUS_TYPE_OPEN;
 
-    /** @var \Magento\Framework\Bulk\BulkManagementInterface|null */
-    private $bulkManagement;
+    /** @var BulkManagementInterface|null */
+    private ?BulkManagementInterface $bulkManagement;
 
     /** @var OperationInterfaceFactory|null */
     private ?OperationInterfaceFactory $operationFactory;
@@ -90,9 +91,9 @@ abstract class AbstractBulkPublisher implements BulkPublisherInterface
         $this->logger = $logger;
         try {
             $this->bulkManagement = ObjectManager::getInstance()
-                ->get(\Magento\Framework\Bulk\BulkManagementInterface::class);
+                ->get(BulkManagementInterface::class);
         } catch (Exception $e) {
-            $logger->debug('Module Magento_AsynchronousOperations not available');
+            $logger->debug(sprintf('Module Magento_AsynchronousOperations not available: %s', $e->getMessage()));
         }
     }
 
@@ -100,58 +101,45 @@ abstract class AbstractBulkPublisher implements BulkPublisherInterface
      * @inheritDoc
      * @throws LocalizedException
      */
-    public function execute(int $storeId, array $productIds = [])
+    public function execute(int $storeId, array $entityIds = [])
     {
-        if (!empty($productIds)) {
-            $this->publishCollectionToMessageQueue($storeId, $productIds);
+        if (!empty($entityIds)) {
+            $this->publishCollectionToMessageQueue($storeId, $entityIds);
         }
     }
 
     /**
-     * @param $storeId
-     * @param $productIds
+     * @param int $storeId
+     * @param array $entityIds
      * @throws LocalizedException
      * @throws Exception
      */
     private function publishCollectionToMessageQueue(
-        $storeId,
-        $productIds
+        int $storeId,
+        array $entityIds
     ) {
-
         if (!$this->canUseAsyncOperations()) {
             $this->logger->critical(
                 "Module Magento_AsynchronousOperations not available. Aborting bulk publish operation"
             );
             return;
         }
-        $productIdsChunks = array_chunk($productIds, $this->getBulkSize());
-        $bulkUuid = $this->identityService->generateId();
-        /**
-         * Argument is of type string but array is expected
-         */
-        /** @phan-suppress-next-line PhanTypeMismatchArgumentProbablyReal */
-        $bulkDescription = __('Sync ' . count($productIds) . ' Nosto products');
-        $operationsData = [];
-        foreach ($productIdsChunks as $productIdsChunk) {
-            $operationsData[] = $this->buildOperationData(
-                $storeId,
-                $productIdsChunk,
-                $bulkUuid
-            );
-        }
 
-        $operations = [];
-        foreach ($operationsData as $operationData) {
-            $operations[] = $this->operationFactory->create($operationData);
-        }
+        $bulkUuid = $this->identityService->generateId();
+        /** @phan-suppress-next-line PhanTypeMismatchArgumentProbablyReal */
+        $bulkDescription = __('Sync ' . count($entityIds) . ' Nosto entities');
+        $operations = $this->generateOperationsChunks($entityIds, $storeId, $bulkUuid);
+
         if (empty($operations)) {
             return;
         }
+
         $result = $this->bulkManagement->scheduleBulk(
             $bulkUuid,
             $operations,
             $bulkDescription
         );
+
         if (!$result) {
             $msg = 'Something went wrong while publishing bulk to RabbitMQ. Please check your connection';
             /** @phan-suppress-next-line PhanTypeMismatchArgumentProbablyReal */
@@ -190,18 +178,18 @@ abstract class AbstractBulkPublisher implements BulkPublisherInterface
     /**
      * Build asynchronous operation data
      * @param int $storeId
-     * @param array $productIds
+     * @param array $entityIds
      * @param string $bulkUuid
      * @return array
      */
     private function buildOperationData(
         int $storeId,
-        array $productIds,
+        array $entityIds,
         string $bulkUuid
     ) {
         $dataToEncode = [
             'meta_information' => $this->getMetaData(),
-            'product_ids' => $productIds,
+            'entity_ids' => $entityIds,
             'store_id' => $storeId
         ];
         return [
@@ -212,5 +200,31 @@ abstract class AbstractBulkPublisher implements BulkPublisherInterface
                 'status' => self::STATUS_TYPE_OPEN
             ]
         ];
+    }
+
+    /**
+     * @param array $entityIds
+     * @param int $storeId
+     * @param string $bulkUuid
+     * @return array
+     */
+    private function generateOperationsChunks(array $entityIds, int $storeId, string $bulkUuid): array
+    {
+        $operationsData = [];
+
+        $entityIdsChunks = array_chunk($entityIds, $this->getBulkSize());
+        foreach ($entityIdsChunks as $entityIdsChunk) {
+            $operationsData[] = $this->buildOperationData(
+                $storeId,
+                $entityIdsChunk,
+                $bulkUuid
+            );
+        }
+
+        $operations = [];
+        foreach ($operationsData as $operationData) {
+            $operations[] = $this->operationFactory->create($operationData);
+        }
+        return $operations;
     }
 }

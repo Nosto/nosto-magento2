@@ -34,7 +34,7 @@
  *
  */
 
-namespace Nosto\Tagging\Model\Service\Sync\Upsert;
+namespace Nosto\Tagging\Model\Service\Sync\Upsert\Product;
 
 use Exception;
 use Magento\Catalog\Model\Product;
@@ -125,7 +125,7 @@ class SyncService extends AbstractService
      * @throws AbstractHttpException
      * @throws Exception
      */
-    public function syncProducts(ProductCollection $collection, Store $store)
+    public function sync(ProductCollection $collection, Store $store)
     {
         if (!$this->nostoDataHelper->isProductUpdatesEnabled($store)) {
             $this->logDebugWithStore(
@@ -137,7 +137,6 @@ class SyncService extends AbstractService
         $account = $this->nostoHelperAccount->findAccount($store);
         $this->startBenchmark(self::BENCHMARK_SYNC_NAME, self::BENCHMARK_SYNC_BREAKPOINT);
 
-        $index = 0;
         $collection->setPageSize($this->apiBatchSize);
         $iterator = new PagingIterator($collection);
 
@@ -153,7 +152,6 @@ class SyncService extends AbstractService
                     ($iterator->getCurrentPageNumber() - 1) * $this->apiBatchSize
                 )
             );
-            $index ++;
             /** @var Product $product */
             foreach ($products->getItems() as $product) {
                 $productIdsInBatch[] = $product->getId();

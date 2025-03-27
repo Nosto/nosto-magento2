@@ -33,13 +33,22 @@
  *
  */
 
-// noinspection JSUnresolvedFunction
-define([], function () {
-  //noinspection AmdModulesDependencies,JSUnresolvedVariable
-  if (typeof nostojs === 'function') {
-      // noinspection JSUnresolvedVariable
-	  return nostojs;
-  } else if (typeof window['nostojs'] === 'function') {
-    return window['nostojs'];
-  }
-});
+// Universal nostojs module that works in both RequireJS and non-RequireJS environments
+(function (root, factory) {
+    'use strict';
+    
+    if (typeof root.nostojs !== 'function') {
+        root.nostojs = function (cb) {
+            (root.nostojs.q = root.nostojs.q || []).push(cb);
+        };
+    }
+    
+    // RequireJS
+    if (typeof define === 'function' && define.amd) {
+        define('Nosto_Tagging/js/nostojs', [], function () {
+            return root.nostojs;
+        });
+    }
+
+    return root.nostojs;
+}(typeof self !== 'undefined' ? self : this));

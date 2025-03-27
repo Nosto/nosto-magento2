@@ -50,8 +50,11 @@
  *
  * @var Nosto\Tagging\Block\Stub $block
  */
+
+$isHyva = $block->isHyva();
 ?>
-<!--suppress JSUnresolvedVariable, JSUnresolvedFunction -->
+
+<!-- Nosto JS Initialization -->
 <script type="text/javascript">
   (function () {
     const name = "nostojs";
@@ -65,3 +68,15 @@
       <?php endif; ?>
   })();
 </script>
+
+<?php if ($isHyva): ?>
+  <script>
+      document.addEventListener('DOMContentLoaded', function() {
+          if (typeof nostojs === 'function') {
+              return;
+          } else if (typeof window['nostojs'] === 'function') {
+              window.nostojs = window['nostojs'];
+          }
+      });
+  </script>
+<?php endif; ?>

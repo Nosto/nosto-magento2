@@ -41,4 +41,7 @@
     <publisher topic="nosto_product_sync.delete">
         <connection name="amqp" exchange="magento-amqp"/>
     </publisher>
+    <publisher topic="nosto_category_sync.update">
+        <connection name="amqp" exchange="magento-amqp"/>
+    </publisher>
 </config>

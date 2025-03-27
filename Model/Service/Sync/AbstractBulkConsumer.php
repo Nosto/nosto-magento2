@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
@@ -47,7 +46,7 @@ use Nosto\Tagging\Logger\Logger;
 abstract class AbstractBulkConsumer implements BulkConsumerInterface
 {
     /** @var Logger */
-    private Logger $logger;
+    public Logger $logger;
 
     /** @var JsonHelper */
     private JsonHelper $jsonHelper;
@@ -89,25 +88,20 @@ abstract class AbstractBulkConsumer implements BulkConsumerInterface
     {
         $serializedData = $operation->getSerializedData();
         $unserializedData = $this->jsonHelper->jsonDecode($serializedData);
-        $productIds = $unserializedData['product_ids'];
+
+        $entityIds = $unserializedData['entity_ids'] ?? null;
         $storeId = $unserializedData['store_id'];
         try {
             $this->storeEmulation->startEnvironmentEmulation((int)$storeId);
-            $this->doOperation($productIds, $storeId);
-            /**
-             * Argument is of type string but array is expected
-             */
+            $this->doOperation($entityIds, $storeId);
             /** @phan-suppress-next-line PhanTypeMismatchArgumentProbablyReal */
             $message = __('Success.');
             $operation->setStatus(OperationInterface::STATUS_TYPE_COMPLETE)
                 ->setResultMessage($message);
         } catch (Exception $e) {
             $this->logger->critical(sprintf('Bulk uuid: %s. %s', $operation->getBulkUuid(), $e->getMessage()));
-            /**
-             * Argument is of type string but array is expected
-             */
             /** @phan-suppress-next-line PhanTypeMismatchArgumentProbablyReal */
-            $message = __('Something went wrong when syncing products to Nosto. Check log for details.');
+            $message = __('Something went wrong when syncing data to Nosto. Check log for details.');
             $operation->setStatus(OperationInterface::STATUS_TYPE_NOT_RETRIABLY_FAILED)
                 ->setErrorCode($e->getCode())
                 ->setResultMessage($message);
@@ -118,8 +112,8 @@ abstract class AbstractBulkConsumer implements BulkConsumerInterface
     }
 
     /**
-     * @param array $productIds
+     * @param array $entityIds
      * @param string $storeId
      */
-    abstract public function doOperation(array $productIds, string $storeId);
+    abstract public function doOperation(array $entityIds, string $storeId);
 }

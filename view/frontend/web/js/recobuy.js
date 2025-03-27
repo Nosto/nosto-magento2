@@ -68,9 +68,9 @@ define([
     };
 
     // Product object must have fields productId and skuId {'productId': '123', 'skuId': '321'}
-    Recobuy.addSkuToCart = function (product, element) {
+    Recobuy.addSkuToCart = function (product, element, _quantity) {
 
-        const quantity = product.quantity || 1;
+        const quantity = product.quantity || _quantity || 1;
         const url = document.querySelector("#nosto_addtocart_form").getAttribute("action");
         const formKey = document.querySelector("#nosto_addtocart_form > input[name='form_key']").getAttribute("value");
 
@@ -86,7 +86,7 @@ define([
                     'sku': product.skuId,
                 },
                 success: function () {
-                    Recobuy.sendCartEvent(element, product.productId)
+                    Recobuy.sendCartEvent(element, product)
                     return resolve()
                 },
                 error: function () {
@@ -97,19 +97,20 @@ define([
 
     };
 
-    Recobuy.sendCartEvent = function (element, productId) {
-        if (typeof element === 'object' && element) {
-            const slotId = this.resolveContextSlotId(element);
-            if (slotId) {
-                nostojs(function (api) {
-                    // noinspection JSUnresolvedFunction
-                    api.recommendedProductAddedToCart(productId, slotId);
-                });
-            }
+    Recobuy.sendCartEvent = function (element, product) {
+        const slotId = this.resolveContextSlotId(element);
+        if (slotId) {
+            nostojs(function (api) {
+                // noinspection JSUnresolvedFunction
+                api.reportAddToCart(product, slotId);
+            });
         }
     }
 
     Recobuy.resolveContextSlotId = function (element) {
+        if (!element || typeof element === "string") {
+            return element;
+        }
         const m = 20;
         let n = 0;
         let e = element;

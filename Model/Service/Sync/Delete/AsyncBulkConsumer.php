@@ -81,13 +81,13 @@ class AsyncBulkConsumer extends AbstractBulkConsumer
 
     /**
      * @inheritDoc
-     * @param array $productIds
+     * @param array $entityIds Product IDs
      * @param string $storeId
      * @throws NostoException
      */
-    public function doOperation(array $productIds, string $storeId)
+    public function doOperation(array $entityIds, string $storeId)
     {
         $store = $this->nostoHelperScope->getStore($storeId);
-        $this->deleteService->delete($productIds, $store);
+        $this->deleteService->delete($entityIds, $store);
     }
 }
