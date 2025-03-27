@@ -2,7 +2,8 @@ All notable changes to this project will be documented in this file. This projec
 
 ### 8.0.0
 * Add compatibility and support for Hyvä themes
-* Add support for Nosto tagging providers
+* Add support for Nosto tagging providers 
+* Implement a new indexer for indexing categories in Nosto
 * Send category url to Nosto
 
 ### 7.6.1
