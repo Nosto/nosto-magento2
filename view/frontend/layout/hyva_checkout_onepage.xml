@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!--
-  ~ Copyright (c) 2020, Nosto Solutions Ltd
+  ~ Copyright (c) 2025, Nosto Solutions Ltd
   ~ All rights reserved.
   ~
   ~ Redistribution and use in source and binary forms, with or without modification,
@@ -35,7 +35,35 @@
   -->
 
 <!--suppress XmlUnboundNsPrefix -->
-<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:noNamespaceSchemaLocation="urn:magento:framework:Module/etc/module.xsd">
-    <module name="Nosto_Tagging" setup_version="8.0.1"/>
-</config>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceContainer name="before.body.end">
+            <block class="Nosto\Tagging\Block\TaggingProvider" name="nosto.tagging.provider" template="Nosto_Tagging::tagging-provider.phtml">
+                <arguments>
+                    <argument name="page_type" xsi:type="string">checkout</argument>
+                </arguments>
+            </block>
+        </referenceContainer>
+
+        <referenceContainer name="checkout.price-summary.section">
+            <block class="Nosto\Tagging\Block\PageType" name="nosto.page.type.checkout" after="-">
+                <arguments>
+                    <argument name="page_type" xsi:type="string">checkout</argument>
+                </arguments>
+            </block>
+            <block class="Nosto\Tagging\Block\Element" name="nosto.page.checkout1"
+                   after="nosto.order" template="Nosto_Tagging::element.phtml">
+                <arguments>
+                    <argument name="nostoId" xsi:type="string">checkout-nosto-1</argument>
+                </arguments>
+            </block>
+            <block class="Nosto\Tagging\Block\Element" name="nosto.page.checkout2"
+                   after="nosto.order" template="Nosto_Tagging::element.phtml">
+                <arguments>
+                    <argument name="nostoId" xsi:type="string">checkout-nosto-2</argument>
+                </arguments>
+            </block>
+        </referenceContainer>
+    </body>
+</page>
