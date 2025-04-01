@@ -1,6 +1,6 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
-### 7.7.0
+### Unreleased
 * Fix CSP in checkout
 
 ### 8.0.0
