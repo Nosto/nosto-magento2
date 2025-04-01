@@ -84,7 +84,8 @@ script;
 
 
 <?php if ($isHyva): ?>
-  <script>
+    <?php
+    $script = <<<script
       document.addEventListener('DOMContentLoaded', function() {
           if (typeof nostojs === 'function') {
               return;
@@ -92,5 +93,7 @@ script;
               window.nostojs = window['nostojs'];
           }
       });
-  </script>
+  script;
+    ?>
+    <?= /* @noEscape */ $secureRenderer->renderTag('script', [], $script, false) ?>
 <?php endif; ?>
