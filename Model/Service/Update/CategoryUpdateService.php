@@ -144,6 +144,7 @@ class CategoryUpdateService extends AbstractService
                 foreach ($parents as $id) {
                     $categoryIds[] = $id;
                 }
+                $categoryIds[] = $category->getId();
             } else {
                 $categoryIds[] = $category->getId();
             }
