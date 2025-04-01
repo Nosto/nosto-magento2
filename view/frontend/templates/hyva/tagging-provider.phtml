@@ -1,4 +1,5 @@
-/*
+<?php
+/**
  * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
  *
@@ -33,22 +34,15 @@
  *
  */
 
-// Universal nostojs module that works in both RequireJS and non-RequireJS environments
-(function (root, factory) {
-    'use strict';
-    
-    if (typeof root.nostojs !== 'function') {
-        root.nostojs = function (cb) {
-            (root.nostojs.q = root.nostojs.q || []).push(cb);
-        };
-    }
-    
-    // RequireJS
-    if (typeof define === 'function' && define.amd) {
-        define('Nosto_Tagging/js/nostojs', [], function () {
-            return root.nostojs;
-        });
-    }
+/** @var \Nosto\Tagging\Block\TaggingProvider $block */
+$taggingConfig = $block->getTaggingConfig();
+?>
 
-    return root.nostojs;
-}(typeof self !== 'undefined' ? self : this));
+<?php if ($block->isNostoEnabled()): ?>
+<!-- Hyva Theme with Alpine.js -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        window.initNostoTaggingProviders(<?= $block->escapeJsQuote($block->getTaggingConfigForJs()) ?>);
+    });
+</script>
+<?php endif; ?>

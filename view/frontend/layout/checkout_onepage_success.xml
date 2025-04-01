@@ -38,13 +38,28 @@
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
     <body>
+        <referenceContainer name="before.body.end">
+            <!-- Set page type to 'order' for TaggingProvider -->
+            <block class="Nosto\Tagging\Block\TaggingProvider" name="nosto.tagging.provider" template="Nosto_Tagging::tagging-provider.phtml">
+                <arguments>
+                    <argument name="page_type" xsi:type="string">order</argument>
+                </arguments>
+            </block>
+
+            <!-- Order tagging - needs to be non-cacheable -->
+            <block class="Nosto\Tagging\Block\Order" name="nosto.order" cacheable="false" after="-"/>
+        </referenceContainer>
+
         <referenceContainer name="content">
             <block class="Nosto\Tagging\Block\PageType" name="nosto.page.type.order" after="-">
                 <arguments>
                     <argument name="page_type" xsi:type="string">order</argument>
                 </arguments>
             </block>
+
             <block class="Nosto\Tagging\Block\Order" name="nosto.order" cacheable="false" after="-"/>
+
+            <!-- Recommendation slots for order confirmation page -->
             <block class="Nosto\Tagging\Block\Element" name="nosto.page.orderconfirmation1"
                    after="nosto.order" template="Nosto_Tagging::element.phtml">
                 <arguments>

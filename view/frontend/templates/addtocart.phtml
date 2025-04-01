@@ -41,17 +41,216 @@ use Nosto\Tagging\Block\Addtocart;
  * @var Addtocart $block
  * @var SecureHtmlRenderer $secureRenderer
  */
-?>
-<form action="<?= $block->escapeUrl($block->getSubmitUrl()) ?>" method="post" id="nosto_addtocart_form">
-    <?= $block->getBlockHtml('formkey') ?>
-</form>
-<!--suppress JSUnresolvedVariable, JSValidateTypes, JSUnresolvedFunction -->
-<?php
-$script = <<<script
-    require(['recobuy'], function (module) {
-        window.Nosto = module;
-    })
-script;
+$isHyva = $block->isHyva();
 ?>
 
+  <form <?= $isHyva ? 'x-data="nostoRecobuy()"' : '' ?>
+    action="<?= $block->escapeUrl($block->getSubmitUrl()) ?>"
+    method="post" id="nosto_addtocart_form">
+      <?= $block->getBlockHtml('formkey') ?>
+  </form>
+
+<?php if ($isHyva): ?>
+  <!-- Hyva Theme with Alpine.js -->
+    <?php
+    $script = <<<script
+      function nostoRecobuy() {
+          'use strict';
+
+          // Make sure Nosto global object is initialized
+          window.Nosto = window.Nosto || {};
+
+          const Recobuy = {
+              addProductToCart(productId, element, quantity = 1) {
+                  const productData = {
+                      productId: productId,
+                      skuId: productId,
+                      quantity: quantity
+                  };
+                  return this.addSkuToCart(productData, element);
+              },
+
+              addMultipleProductsToCart(products, element) {
+                  if (Array.isArray(products)) {
+                      return products.reduce((acc, product) => {
+                          return acc.then(() => {
+                              return this.addSkuToCart(product, element);
+                          });
+                      }, Promise.resolve());
+                  } else {
+                      return Promise.reject(new Error("Products is not type array"));
+                  }
+              },
+
+              addSkuToCart(product, element) {
+                  const quantity = product.quantity || 1;
+                  const url = document.querySelector("#nosto_addtocart_form").getAttribute("action");
+                  const formKey = document
+                      .querySelector("#nosto_addtocart_form > input[name='form_key']")
+                      .getAttribute("value");
+
+                  return new Promise((resolve, reject) => {
+                      fetch(url, {
+                          method: 'POST',
+                          headers: {
+                              'Content-Type': 'application/x-www-form-urlencoded',
+                          },
+                          body: new URLSearchParams({
+                              'form_key': formKey,
+                              'qty': quantity,
+                              'product': product.productId,
+                              'sku': product.skuId
+                          })
+                      })
+                          .then(response => {
+                              if (response.ok) {
+                                  this.sendCartEvent(element, product.productId);
+                                  return resolve();
+                              }
+                              return reject();
+                          })
+                          .catch(() => {
+                              return reject();
+                          });
+                  });
+              },
+
+              sendCartEvent(element, productId) {
+                  if (typeof element === 'object' && element) {
+                      const slotId = this.resolveContextSlotId(element);
+                      if (slotId && typeof nostojs === 'function') {
+                          nostojs(api => {
+                              api.recommendedProductAddedToCart(productId, slotId);
+                          });
+                      }
+                  }
+              },
+
+              resolveContextSlotId(element) {
+                  const maxDepth = 20;
+                  let depth = 0;
+                  let currentElement = element;
+
+                  while (currentElement.parentElement && depth < maxDepth) {
+                      depth++;
+                      currentElement = currentElement.parentElement;
+
+                      if (currentElement.getAttribute('class') === 'nosto_element' &&
+                          currentElement.getAttribute('id')) {
+                          return currentElement.getAttribute('id');
+                      }
+                  }
+
+                  return false;
+              }
+          };
+
+          // Expose functionality to global Nosto object
+          Object.assign(window.Nosto, Recobuy);
+
+          return Recobuy;
+      }
+  script;
+    ?>
+<?php else: ?>
+  <!-- Luma with RequireJS -->
+    <?php
+    $script = <<<script
+      // noinspection JSUnresolvedFunction
+      window.Nosto = nostoRecobuy();
+
+      function nostoRecobuy() {
+          'use strict';
+
+          const Recobuy = {};
+
+          Recobuy.addProductToCart = function (productId, element, quantity = 1) {
+              const productData = {
+                  productId: productId,
+                  skuId: productId,
+                  quantity: quantity
+              };
+              return Recobuy.addSkuToCart(productData, element);
+          };
+
+          // Products must be and array of objects [{'productId': '123', 'skuId': '321'}, {...}]
+          // skuId is optional for simple products.
+          Recobuy.addMultipleProductsToCart = function (products, element) {
+              if (Array.isArray(products)) {
+                  return products.reduce(function(acc, product) {
+                      return acc.then(function() {
+                          return Recobuy.addSkuToCart(product, element)
+                      })
+                  } , Promise.resolve())
+              } else {
+                  // noinspection JSIgnoredPromiseFromCall
+                  Promise.reject(new Error("Products is not type array"))
+              }
+          };
+
+          // Product object must have fields productId and skuId {'productId': '123', 'skuId': '321'}
+          Recobuy.addSkuToCart = function (product, element) {
+              const quantity = product.quantity || 1;
+              const url = document.querySelector("#nosto_addtocart_form").getAttribute("action");
+              const formKey = document
+                  .querySelector("#nosto_addtocart_form > input[name='form_key']")
+                  .getAttribute("value");
+
+              return new Promise(function (resolve, reject) {
+                  // noinspection JSUnresolvedFunction
+                  var formKey = document.querySelector('input[name=form_key]').value;
+                  fetch(url, {
+                      method: 'POST',
+                      headers: {
+                          'Content-Type': 'application/x-www-form-urlencoded',
+                      },
+                      body: new URLSearchParams({
+                          form_key: formKey,
+                          qty: quantity,
+                          product: product.productId,
+                          sku: product.skuId
+                      })
+                  }).then(function (response) {
+                      Recobuy.sendCartEvent(element, product.productId)
+                      return resolve();
+                  }).catch(function(error) {
+                      return reject();
+                  });
+              });
+          };
+
+          Recobuy.sendCartEvent = function (element, productId) {
+              if (typeof element === 'object' && element) {
+                  const slotId = this.resolveContextSlotId(element);
+                  if (slotId) {
+                      nostojs(function (api) {
+                          // noinspection JSUnresolvedFunction
+                          api.recommendedProductAddedToCart(productId, slotId);
+                      });
+                  }
+              }
+          }
+
+          Recobuy.resolveContextSlotId = function (element) {
+              const m = 20;
+              let n = 0;
+              let e = element;
+              while (typeof e.parentElement !== "undefined" && e.parentElement) {
+                  ++n;
+                  e = e.parentElement;
+                  if (e.getAttribute('class') === 'nosto_element' && e.getAttribute('id')) {
+                      return e.getAttribute('id');
+                  }
+                  if (n >= m) {
+                      return false;
+                  }
+              }
+              return false;
+          };
+
+          return Recobuy;
+      };
+  script;
+    ?>
+<?php endif; ?>
 <?= /* @noEscape */ $secureRenderer->renderTag('script', ['type' => 'text/javascript'], $script, false) ?>

@@ -1,4 +1,5 @@
-/*
+<?php
+/**
  * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
  *
@@ -32,23 +33,45 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
+namespace Nosto\Tagging\Model;
 
-// Universal nostojs module that works in both RequireJS and non-RequireJS environments
-(function (root, factory) {
-    'use strict';
+use Magento\Framework\App\RequestInterface;
+use Nosto\Tagging\Api\TaggingDataInterface;
+use Nosto\Tagging\Block\TaggingProvider;
+
+/**
+ * Implementation of tagging data API
+ */
+class TaggingData implements TaggingDataInterface
+{
+    /**
+     * @var TaggingProvider
+     */
+    private TaggingProvider $taggingProvider;
     
-    if (typeof root.nostojs !== 'function') {
-        root.nostojs = function (cb) {
-            (root.nostojs.q = root.nostojs.q || []).push(cb);
-        };
+    /**
+     * @var RequestInterface
+     */
+    private RequestInterface $request;
+    
+    /**
+     * @param TaggingProvider $taggingProvider
+     * @param RequestInterface $request
+     */
+    public function __construct(
+        TaggingProvider $taggingProvider,
+        RequestInterface $request
+    ) {
+        $this->taggingProvider = $taggingProvider;
+        $this->request = $request;
     }
     
-    // RequireJS
-    if (typeof define === 'function' && define.amd) {
-        define('Nosto_Tagging/js/nostojs', [], function () {
-            return root.nostojs;
-        });
+    /**
+     * @inheritdoc
+     */
+    public function getTaggingData($pageType)
+    {
+        $this->taggingProvider->setData('page_type', $pageType);
+        return $this->taggingProvider->getTaggingConfig();
     }
-
-    return root.nostojs;
-}(typeof self !== 'undefined' ? self : this));
+}

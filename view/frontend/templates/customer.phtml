@@ -35,54 +35,21 @@
  */
 
 /**
- *     ______     ___     ____  _____  ___   _________   ________ ______  _____ _________
- *    |_   _ `. .'   `.  |_   \|_   _.'   `.|  _   _  | |_   __  |_   _ `|_   _|  _   _  |
- *      | | `. /  .-.  \   |   \ | |/  .-.  |_/ | | \_|   | |_ \_| | | `. \| | |_/ | | \_|
- *      | |  | | |   | |   | |\ \| || |   | |   | |       |  _| _  | |  | || |     | |
- *     _| |_.' \  `-'  /  _| |_\   |\  `-'  /  _| |_     _| |__/ |_| |_.' _| |_   _| |_
- *    |______.' `.___.'  |_____|\____`.___.'  |_____|   |________|______.|_____| |_____|
- *
- * Nosto sends information over both the API and the browser tagging. Values for the tagging is generated
- * via the Nosto corresponding objects. In order to customize the values in the markup below, you will need
- * to override the core parts of the extension. Failure to do so will result in broken and incorrect
- * recommendations.
- * Please see a reference guide such as https://github.com/Nosto/nosto-magento2/wiki
+ * @var \Nosto\Tagging\Block\Knockout $block
  */
 
-/**
- * Template for customer tagging. The actual data is populated via
- * Magento's KnockoutJS logic.
- *
- * @see \Nosto\Tagging\CustomerData\CustomerTagging
- * @var \Magento\Framework\View\Element\Template $block
- * @noinspection PhpFullyQualifiedNameUsageInspection
- */
-?>
-<!-- Nosto Customer Tagging -->
-<div id="nosto_customer_tagging" class="nosto_customer_hidden" style="display:none"
-     data-bind="scope: 'customerTagging'"
-     data-role="nosto-customer-tagging">
-  <!-- ko if: customerTagging().first_name -->
-  <!-- ko foreach: {data: customerTagging(), afterRender: sendTagging } -->
-  <span class="first_name" data-bind="text: $data.first_name"></span>
-  <span class="last_name" data-bind="text: $data.last_name"></span>
-  <span class="email" data-bind="text: $data.email"></span>
-  <span class="hcid" data-bind="text: $data.hcid"></span>
-  <span class="customer_reference" data-bind="text: $data.customer_reference"></span>
-  <span class="marketing_permission" data-bind="text: $data.marketing_permission"></span>
-  <span class="date_of_birth" data-bind="text: $data.date_of_birth"></span>
-  <span class="customer_group" data-bind="text: $data.customer_group"></span>
-  <span class="gender" data-bind="text: $data.gender"></span>
-  <!-- /ko -->
-  <!-- /ko -->
-</div>
-<!--suppress JSUnresolvedVariable -->
-<script type="text/x-magento-init">
-{
-  "[data-role=nosto-customer-tagging]": {
-    "Magento_Ui/js/core/app": <?= /* @escapeNotVerified */
-    $block->getJsLayout(); ?>
-  }
+$isHyva = $block->isHyva();
+
+if ($isHyva) {
+    echo $block->getLayout()
+        ->createBlock(\Nosto\Tagging\Block\Knockout::class)
+        ->setTemplate('Nosto_Tagging::hyva/customer.phtml')
+        ->setData($block->getData())
+        ->toHtml();
+} else {
+    echo $block->getLayout()
+        ->createBlock(\Nosto\Tagging\Block\Knockout::class)
+        ->setTemplate('Nosto_Tagging::luma/customer.phtml')
+        ->setData($block->getData())
+        ->toHtml();
 }
-
-</script>

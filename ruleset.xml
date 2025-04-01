@@ -78,4 +78,7 @@
         <exclude name="EcgM2.Templates.EscapedOutput.DeprecatedEscapeUsage"/>
         <exclude name="EcgM2.Templates.EscapedOutput.Unescaped output"/>
     </rule>
+    <rule ref="Squiz.PHP.NonExecutableCode">
+        <exclude name="Squiz.PHP.NonExecutableCode"/>
+    </rule>
 </ruleset>
