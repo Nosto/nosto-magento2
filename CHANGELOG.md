@@ -1,7 +1,7 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
 ### 8.0.2
-* Fix issue with category export where only parent categories are included
+* Fix category export issue where only parent categories are included
 
 ### 8.0.1
 * Add page-type tagging for Hyvä checkout page
