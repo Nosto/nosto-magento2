@@ -49,6 +49,7 @@
  * Please see a reference guide such as https://github.com/Nosto/nosto-magento2/wiki
  *
  * @var Nosto\Tagging\Block\Variation $block
+ * @var Magento\Framework\View\Helper\SecureHtmlRenderer $secureRenderer
  */
 
 $variationId = $block->getVariationId();
@@ -64,7 +65,8 @@ $variationId = $block->getVariationId();
   <!-- Static variation span, will be replaced with dynamic one if necessary -->
   <span class="nosto_variation"><?= $block->escapeHtml($variationId) ?></span>
 </div>
-<script>
+<?php
+$script = <<<script
     document.addEventListener('DOMContentLoaded', function() {
         function initNostoVariationTagging() {
             function processVariationData(data) {
@@ -112,5 +114,7 @@ $variationId = $block->getVariationId();
         }
         initNostoVariationTagging();
     });
-</script>
+script;
+?>
+<?= /* @noEscape */ $secureRenderer->renderTag('script', [], $script, false) ?>
 <?php endif; ?>

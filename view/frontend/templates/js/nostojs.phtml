@@ -1,4 +1,10 @@
-<script>
+<?php
+/**
+ * @var Magento\Framework\View\Helper\SecureHtmlRenderer $secureRenderer
+ */
+?>
+<?php
+$script = <<<script
     window.addEventListener('load', (event) => {
       //noinspection AmdModulesDependencies,JSUnresolvedVariable
       if (typeof nostojs === 'function') {
@@ -8,4 +14,6 @@
         return window['nostojs'];
       }
     });
-</script>
+script;
+?>
+<?= /* @noEscape */ $secureRenderer->renderTag('script', [], $script, false) ?>

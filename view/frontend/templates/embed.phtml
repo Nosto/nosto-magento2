@@ -51,11 +51,12 @@ use Nosto\Tagging\Block\Embed;
  * Please see a reference guide such as https://github.com/Nosto/nosto-magento2/wiki
  */
 
-/** @var Embed $block */
+/**
+ * @var Embed $block
+ * @var Magento\Framework\View\Helper\SecureHtmlRenderer $secureRenderer
+ */
 ?>
 <?php if ($block->getNostoScriptUrl()): ?>
   <!--suppress JSUnresolvedVariable -->
-  <script type="text/javascript"
-          src="<?= $block->escapeUrl($block->getNostoScriptUrl()); ?>"
-          async></script>
+    <?= $secureRenderer->renderTag('script', ['type' => 'text/javascript', 'src' => $block->escapeUrl($block->getNostoScriptUrl()), 'async'], '', false) ?>
 <?php endif; ?>
