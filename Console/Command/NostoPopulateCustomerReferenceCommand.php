@@ -45,7 +45,7 @@ class NostoPopulateCustomerReferenceCommand extends Command
     protected function configure(): void
     {
         $this->setName('nosto:populate:customer:reference')
-            ->setDescription('Generate new customer reference');
+            ->setDescription('Generate automatically customer_reference for all customer missing it');
 
         parent::configure();
     }
@@ -83,7 +83,11 @@ class NostoPopulateCustomerReferenceCommand extends Command
                 try {
                     $this->saveCustomerReference($customer);
                 } catch (Exception $e) {
-                    $this->logger->exception($e);
+                    $this->logger->error(sprintf(
+                        'Customer update failed for ID %s, Error: %s',
+                        $customer->getId(),
+                        $e->getMessage()
+                    ));
                 }
             }
         }
