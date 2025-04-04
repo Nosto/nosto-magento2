@@ -77,7 +77,7 @@ class NostoPopulateCustomerReferenceCommand extends Command
         $this->generateAndSaveCustomerReference();
         $io->success('Customer references successfully generated.');
 
-        return Command::SUCCESS;
+        return 0;
     }
 
     /**
