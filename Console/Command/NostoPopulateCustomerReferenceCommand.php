@@ -128,10 +128,10 @@ class NostoPopulateCustomerReferenceCommand extends Command
     /**
      * Generate customer reference attribute
      *
-     * @param Customer $customer
+     * @param $customer
      * @return void
      */
-    private function generateCustomerReference(Customer $customer): void
+    private function generateCustomerReference($customer): void
     {
         $customer->setData(
             NostoHelperData::NOSTO_CUSTOMER_REFERENCE_ATTRIBUTE_NAME,
