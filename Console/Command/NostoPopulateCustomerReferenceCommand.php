@@ -20,6 +20,15 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 class NostoPopulateCustomerReferenceCommand extends Command
 {
+    /** @var CustomerResource $customerResource */
+    private CustomerResource $customerResource;
+
+    /** @var Logger $logger */
+    private Logger $logger;
+
+    /** @var CustomerCollection $collection */
+    private CustomerCollection $collection;
+
     /**
      * NostoPopulateCustomerReferenceCommand Constructor
      *
@@ -29,11 +38,15 @@ class NostoPopulateCustomerReferenceCommand extends Command
      * @param string|null $name
      */
     public function __construct(
-        private readonly CustomerResource $customerResource,
-        private readonly Logger $logger,
-        private readonly CustomerCollection $collection,
+        CustomerResource $customerResource,
+        Logger $logger,
+        CustomerCollection $collection,
         ?string $name = null,
     ) {
+        $this->customerResource = $customerResource;
+        $this->logger = $logger;
+        $this->collection = $collection;
+
         parent::__construct($name);
     }
 
@@ -44,7 +57,7 @@ class NostoPopulateCustomerReferenceCommand extends Command
      */
     protected function configure(): void
     {
-        $this->setName('nosto:populate:customer:reference')
+        $this->setName('nosto:generate:customer-reference')
             ->setDescription('Generate automatically customer_reference for all customer missing it');
 
         parent::configure();
