@@ -41,7 +41,7 @@ class NostoPopulateCustomerReferenceCommand extends Command
         CustomerResource $customerResource,
         Logger $logger,
         CustomerCollection $collection,
-        ?string $name = null,
+        ?string $name = null
     ) {
         $this->customerResource = $customerResource;
         $this->logger = $logger;
