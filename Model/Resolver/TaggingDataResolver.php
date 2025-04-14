@@ -1,4 +1,5 @@
-/*
+<?php
+/**
  * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
  *
@@ -32,23 +33,45 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
+namespace Nosto\Tagging\Model\Resolver;
 
-// Universal nostojs module that works in both RequireJS and non-RequireJS environments
-(function (root, factory) {
-    'use strict';
-    
-    if (typeof root.nostojs !== 'function') {
-        root.nostojs = function (cb) {
-            (root.nostojs.q = root.nostojs.q || []).push(cb);
-        };
-    }
-    
-    // RequireJS
-    if (typeof define === 'function' && define.amd) {
-        define('Nosto_Tagging/js/nostojs', [], function () {
-            return root.nostojs;
-        });
+use Magento\Framework\GraphQl\Config\Element\Field;
+use Magento\Framework\GraphQl\Query\ResolverInterface;
+use Magento\Framework\GraphQl\Schema\Type\ResolveInfo;
+use Nosto\Tagging\Block\TaggingProvider;
+
+/**
+ * @phan-file-suppress PhanUnusedPublicMethodParameter, PhanUnusedPublicMethod
+ */
+class TaggingDataResolver implements ResolverInterface
+{
+    /**
+     * @var TaggingProvider
+     */
+    private TaggingProvider $taggingProvider;
+
+    /**
+     * @param TaggingProvider $taggingProvider
+     */
+    public function __construct(
+        TaggingProvider $taggingProvider
+    ) {
+        $this->taggingProvider = $taggingProvider;
     }
 
-    return root.nostojs;
-}(typeof self !== 'undefined' ? self : this));
+    /**
+     * @inheritdoc
+     */
+    // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter
+    public function resolve(// @codingStandardsIgnoreLine
+        Field $field,
+        $context,
+        ResolveInfo $info,
+        array $value = null,
+        array $args = null
+    ) {
+        $pageType = $args['pageType'] ?? 'unknown';
+        $this->taggingProvider->setData('page_type', $pageType);
+        return $this->taggingProvider->getTaggingConfig();
+    }
+}

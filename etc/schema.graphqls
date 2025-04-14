@@ -1,0 +1,83 @@
+type Query {
+    nostoTaggingData(
+        pageType: String!
+    ): NostoTaggingData @resolver(class: "Nosto\\Tagging\\Model\\Resolver\\TaggingDataResolver")
+}
+
+type NostoTaggingData {
+    pageType: String
+    products: [NostoProduct]
+    cart: NostoCart
+    customer: NostoCustomer
+    categories: [String]
+    variation: String
+    searchTerm: String
+}
+
+type NostoProduct {
+    productId: String
+    name: String
+    url: String
+    imageUrl: String
+    priceCurrencyCode: String
+    price: Float
+    listPrice: Float
+    price_currency_code: String
+    availability: String
+    categories: [String]
+    description: String
+    brand: String
+    variation_id: String
+    google_category: String
+    gender: String
+    age_group: String
+    custom_fields: NostoCustomFields
+    gtin: String
+    rating_value: Float
+    skus: [NostoSku]
+    alternate_image_urls: [String]
+    tags: [String]
+}
+
+type NostoSku {
+    id: String
+    name: String
+    price: Float
+    listPrice: Float
+    url: String
+    imageUrl: String
+    availability: String
+    gtin: String
+    custom_fields: NostoCustomFields
+}
+
+type NostoCart {
+    hcid: String
+    restore_cart_url: String
+    items: [NostoCartItem]
+}
+
+type NostoCartItem {
+    product_id: String
+    sku_id: String
+    name: String
+    unit_price: Float
+    price_currency_code: String
+    quantity: Int
+}
+
+type NostoCustomer {
+    first_name: String
+    last_name: String
+    email: String
+    hcid: String
+    customer_reference: String
+    customer_group: String
+    gender: String
+    date_of_birth: String
+    marketing_permission: Boolean
+}
+
+type NostoCustomFields {
+    additionalProp: String
+}

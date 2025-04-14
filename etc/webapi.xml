@@ -33,39 +33,12 @@
   ~ @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
   ~
   -->
-
-<!--suppress XmlUnboundNsPrefix -->
-<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
-    <default>
-        <nosto>
-            <images>
-                <version>image</version>
-                <remove_pub_directory>0</remove_pub_directory>
-            </images>
-            <url>
-                <store_code_to_url>1</store_code_to_url>
-            </url>
-            <flags>
-                <variation_tagging>1</variation_tagging>
-                <use_custom_fields>1</use_custom_fields>
-                <altimg_tagging>1</altimg_tagging>
-                <rating_tagging>1</rating_tagging>
-                <inventory_tagging>0</inventory_tagging>
-                <product_updates>1</product_updates>
-                <low_stock_indication>0</low_stock_indication>
-                <send_customer_data>1</send_customer_data>
-                <indexer_memory>50</indexer_memory>
-                <indexer_disabled_products>0</indexer_disabled_products>
-                <tag_date_published>0</tag_date_published>
-                <track_multi_channel_orders>1</track_multi_channel_orders>
-                <reload_recs_after_atc>0</reload_recs_after_atc>
-                <tagging_providers_enabled>0</tagging_providers_enabled>
-            </flags>
-            <multicurrency>
-                <method>undefined</method>
-                <pricing_variation>0</pricing_variation>
-            </multicurrency>
-        </nosto>
-    </default>
-</config>
+<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Webapi:etc/webapi.xsd">
+    <route url="/V1/nosto/tagging/:pageType" method="GET">
+        <service class="Nosto\Tagging\Api\TaggingDataInterface" method="getTaggingData"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+</routes>

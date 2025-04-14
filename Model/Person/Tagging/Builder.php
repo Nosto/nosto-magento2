@@ -134,12 +134,17 @@ class Builder extends PersonBuilder
             $customerGroup = $this->getCustomerGroupName($customer);
             $gender = $this->getGenderName($customer);
             $customerReference = $this->getCustomerReference($currentCustomer);
+            
+            // Check for null values and provide defaults for required string parameters
+            $firstName = $customer->getFirstname() ?: '';
+            $lastName = $customer->getLastname() ?: '';
+            $email = $customer->getEmail() ?: '';
 
             /** @noinspection PhpIncompatibleReturnTypeInspection */
             return $this->build(
-                $customer->getFirstname(),
-                $customer->getLastname(),
-                $customer->getEmail(),
+                $firstName,
+                $lastName,
+                $email,
                 null,
                 null,
                 null,

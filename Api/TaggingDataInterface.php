@@ -1,4 +1,5 @@
-/*
+<?php
+/**
  * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
  *
@@ -32,23 +33,20 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  *
  */
+namespace Nosto\Tagging\Api;
 
-// Universal nostojs module that works in both RequireJS and non-RequireJS environments
-(function (root, factory) {
-    'use strict';
-    
-    if (typeof root.nostojs !== 'function') {
-        root.nostojs = function (cb) {
-            (root.nostojs.q = root.nostojs.q || []).push(cb);
-        };
-    }
-    
-    // RequireJS
-    if (typeof define === 'function' && define.amd) {
-        define('Nosto_Tagging/js/nostojs', [], function () {
-            return root.nostojs;
-        });
-    }
-
-    return root.nostojs;
-}(typeof self !== 'undefined' ? self : this));
+/**
+ * Interface for tagging data API
+ *
+ * @api
+ */
+interface TaggingDataInterface
+{
+    /**
+     * Get tagging data for the specified page type
+     *
+     * @param string $pageType The page type (product, category, cart, search, frontpage, order, notfound)
+     * @return array
+     */
+    public function getTaggingData($pageType);
+}

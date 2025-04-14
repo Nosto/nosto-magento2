@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!--
-  ~ Copyright (c) 2020, Nosto Solutions Ltd
+  ~ Copyright (c) 2025, Nosto Solutions Ltd
   ~ All rights reserved.
   ~
   ~ Redistribution and use in source and binary forms, with or without modification,
@@ -39,38 +39,29 @@
       xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
     <body>
         <referenceContainer name="before.body.end">
-            <!-- Set page type to 'cart' for TaggingProvider -->
             <block class="Nosto\Tagging\Block\TaggingProvider" name="nosto.tagging.provider" template="Nosto_Tagging::tagging-provider.phtml">
                 <arguments>
-                    <argument name="page_type" xsi:type="string">cart</argument>
+                    <argument name="page_type" xsi:type="string">checkout</argument>
                 </arguments>
             </block>
         </referenceContainer>
 
-        <referenceContainer name="content">
-            <block class="Nosto\Tagging\Block\PageType" name="nosto.page.type.cart" after="-">
+        <referenceContainer name="checkout.price-summary.section">
+            <block class="Nosto\Tagging\Block\PageType" name="nosto.page.type.checkout" after="-">
                 <arguments>
-                    <argument name="page_type" xsi:type="string">cart</argument>
+                    <argument name="page_type" xsi:type="string">checkout</argument>
                 </arguments>
             </block>
-
-            <!-- Recommendation slots for cart page -->
-            <block class="Nosto\Tagging\Block\Element" name="nosto.page.cart1" after="checkout.cart"
-                   template="Nosto_Tagging::element.phtml">
+            <block class="Nosto\Tagging\Block\Element" name="nosto.page.checkout1"
+                   after="nosto.order" template="Nosto_Tagging::element.phtml">
                 <arguments>
-                    <argument name="nostoId" xsi:type="string">nosto-page-cart1</argument>
+                    <argument name="nostoId" xsi:type="string">checkout-nosto-1</argument>
                 </arguments>
             </block>
-            <block class="Nosto\Tagging\Block\Element" name="nosto.page.cart2"
-                   after="nosto.page.cart1" template="Nosto_Tagging::element.phtml">
+            <block class="Nosto\Tagging\Block\Element" name="nosto.page.checkout2"
+                   after="nosto.order" template="Nosto_Tagging::element.phtml">
                 <arguments>
-                    <argument name="nostoId" xsi:type="string">nosto-page-cart2</argument>
-                </arguments>
-            </block>
-            <block class="Nosto\Tagging\Block\Element" name="nosto.page.cart3"
-                   after="nosto.page.cart2" template="Nosto_Tagging::element.phtml">
-                <arguments>
-                    <argument name="nostoId" xsi:type="string">nosto-page-cart3</argument>
+                    <argument name="nostoId" xsi:type="string">checkout-nosto-2</argument>
                 </arguments>
             </block>
         </referenceContainer>
