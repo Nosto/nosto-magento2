@@ -1,0 +1,33 @@
+<?php
+/* @var Nosto\Tagging\Block\Form $block */
+$action = $block->getFormAction();
+?>
+<div class="row">
+    <div class="col-md-8">
+        <form name="addData" method="post" id="addData" class="form"
+              action="<?php echo $action; ?>"
+              data-hasrequired="<?= $block->escapeHtmlAttr(__('* Required Fields')) ?>"
+              data-mage-init='{"validation":{}}'>
+            <fieldset class="fieldset">
+                <fieldset class="fieldset row">
+                    <div class="fields col-md-6">
+                        <div class="field token required">
+                            <label class="label" for="title"><span><?= $block->
+                                    escapeHtmlAttr(__('Token')) ?></span></label>
+                            <div class="control">
+                                <input name="token" id="token" title="Token" value="" class="input-text" type="text"
+                                       data-validate="{required:true, 'validate-alphanum-with-spaces':true}">
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+            </fieldset>
+            <div class="actions-toolbar">
+                <div class="primary">
+                    <button type="submit" class="action submit primary" title="Login"><span><?= $block->
+                            escapeHtmlAttr(__('Login')) ?></span></button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
