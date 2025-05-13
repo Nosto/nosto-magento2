@@ -5,7 +5,7 @@ namespace Nosto\Tagging\Controller\Monitoring;
 use Magento\Framework\App\ActionInterface;
 use Magento\Framework\View\Result\PageFactory;
 
-class Page implements ActionInterface
+class Login implements ActionInterface
 {
     /** @var PageFactory $pageFactory */
     private PageFactory $pageFactory;
