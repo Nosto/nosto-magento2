@@ -5,7 +5,7 @@ namespace Nosto\Tagging\Block;
 use Magento\Framework\View\Element\Template;
 use Magento\Backend\Block\Template\Context;
 
-class Form extends Template
+class MonitoringLogin extends Template
 {
     public function __construct(Context $context, array $data = [])
     {
