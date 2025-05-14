@@ -1,11 +1,10 @@
 <?php
 /* @var Nosto\Tagging\Block\MonitoringLogin $block */
-$action = $block->getFormAction();
 ?>
 <div class="row">
     <div class="col-md-8">
         <form name="addData" method="post" id="addData" class="form"
-              action="<?php echo $action; ?>"
+              action="<?php echo $block->getLoginFormAction(); ?>"
               data-hasrequired="<?= $block->escapeHtmlAttr(__('* Required Fields')) ?>"
               data-mage-init='{"validation":{}}'>
             <fieldset class="fieldset">

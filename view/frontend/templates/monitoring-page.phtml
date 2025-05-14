@@ -1,16 +1,27 @@
 <?php
 /* @var Nosto\Tagging\Block\MonitoringPage $block */
-$action = $block->getFormAction();
 ?>
 <div class="row">
     <div class="col-md-8">
         <form name="addData" method="post" id="addData" class="form"
-              action="<?php echo $action; ?>"
+              action="<?php echo $block->getLogoutFormAction() ?>"
               data-mage-init='{"validation":{}}'>
             <div class="actions-toolbar">
                 <div class="primary">
                     <button type="submit" class="action submit primary" title="Logout"><span><?= $block->
                             escapeHtmlAttr(__('Logout')) ?></span></button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="col-md-8">
+        <form name="addData" method="post" id="addData" class="form"
+              action="<?php echo $block->getDownloadLogFilesFormAction(); ?>"
+              data-mage-init='{"validation":{}}'>
+            <div class="actions-toolbar">
+                <div class="primary">
+                    <button type="submit" class="action submit primary" title="Download Nosto log files"><span><?= $block->
+                            escapeHtmlAttr(__('Download Nosto log files')) ?></span></button>
                 </div>
             </div>
         </form>
