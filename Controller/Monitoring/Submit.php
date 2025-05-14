@@ -5,16 +5,18 @@ namespace Nosto\Tagging\Controller\Monitoring;
 use Magento\Framework\App\ActionInterface;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Controller\Result\RedirectFactory;
-use Magento\Framework\Exception\InputException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Message\ManagerInterface;
 use Magento\Framework\Stdlib\Cookie\CookieMetadataFactory;
-use Magento\Framework\Stdlib\Cookie\CookieSizeLimitReachedException;
-use Magento\Framework\Stdlib\Cookie\FailureToSendException;
 use Magento\Framework\Stdlib\CookieManagerInterface;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
+use Nosto\NostoException;
+use Nosto\Request\Http\Exception\AbstractHttpException;
 use Nosto\Tagging\Helper\Account;
+use Nosto\Model\Signup\Account as SignupAccount;
+use Nosto\Request\Api\Token as NostoToken;
+use Nosto\Tagging\Model\MockOperation\MockUpsertProduct;
 
 class Submit implements ActionInterface
 {
@@ -34,7 +36,7 @@ class Submit implements ActionInterface
     private RedirectFactory $redirectFactory;
 
     /** @var CookieManagerInterface  */
-    protected CookieManagerInterface $cookieManager;
+    private CookieManagerInterface $cookieManager;
 
     /** @var CookieMetadataFactory $cookieMetadataFactory */
     private CookieMetadataFactory $cookieMetadataFactory;
@@ -58,10 +60,9 @@ class Submit implements ActionInterface
     }
 
     /**
+     * @throws NostoException
      * @throws NoSuchEntityException
-     * @throws FailureToSendException
-     * @throws CookieSizeLimitReachedException
-     * @throws InputException
+     * @throws AbstractHttpException
      */
     public function execute()
     {
@@ -70,8 +71,12 @@ class Submit implements ActionInterface
         $account = $this->accountHelper->findAccount($store);
         $request = $this->request->getParams();
 
-        if ('3l6N8ignodufMWmz5KcOegBttCJIQDmsFB7P6qmN3MRI7BJyruhsdhm9hjqrlzBz' !== $request['token']) {
-            $this->messageManager->addErrorMessage('Invalid token!');
+        $signupAccount = new SignupAccount($account->getName());
+
+        $signupAccount->addApiToken(new NostoToken(NostoToken::API_PRODUCTS, $request['token']));
+        $result = (new MockUpsertProduct($signupAccount))->upsert();
+        if (false === $result['success']) {
+            $this->messageManager->addErrorMessage($result['message']);
 
             return $this->redirectFactory->create()->setUrl('/nosto/monitoring/login');
         }
