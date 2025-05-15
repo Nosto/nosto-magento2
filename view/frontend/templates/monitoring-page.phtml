@@ -1,5 +1,20 @@
 <?php
+
 /* @var Nosto\Tagging\Block\MonitoringPage $block */
+$nostoIsInstalledAndEnabled = $block->checkIfNostoInstalledAndEnabled();
+if (true === $nostoIsInstalledAndEnabled) {
+    $nostoIsInstalledAndEnabled = 'Yes';
+} else {
+    $nostoIsInstalledAndEnabled = 'No';
+}
+$tokens = $block->getAccountNameAndTokens()->getTokens();
+$storesWithNosto = $block->getStoresWithNosto();
+$removePubDirectoryFromProductImageUrl = $block->getRemovePubDirectoryFromProductImageUrl();
+if (true === $removePubDirectoryFromProductImageUrl) {
+    $removePubDirectoryFromProductImageUrl = 'Yes';
+} else {
+    $removePubDirectoryFromProductImageUrl = 'No';
+}
 ?>
 <div class="row">
     <div class="col-md-8">
@@ -8,22 +23,98 @@
               data-mage-init='{"validation":{}}'>
             <div class="actions-toolbar">
                 <div class="primary">
-                    <button type="submit" class="action submit primary" title="Logout"><span><?= $block->
-                            escapeHtmlAttr(__('Logout')) ?></span></button>
+                    <button type="submit" class="action submit primary" title="Logout"><span>Logout</span></button>
                 </div>
             </div>
         </form>
     </div>
+    <hr>
     <div class="col-md-8">
         <form name="addData" method="post" id="addData" class="form"
               action="<?php echo $block->getDownloadLogFilesFormAction(); ?>"
               data-mage-init='{"validation":{}}'>
             <div class="actions-toolbar">
                 <div class="primary">
-                    <button type="submit" class="action submit primary" title="Download Nosto log files"><span><?= $block->
-                            escapeHtmlAttr(__('Download Nosto log files')) ?></span></button>
+                    <button type="submit" class="action submit primary" title="Download Nosto log files"><span>Download Nosto log files</span></button>
                 </div>
             </div>
         </form>
+    </div>
+    <hr>
+    <div class="col-md-8">
+        <p>Nosto is enabled and installed: <span style="font-weight: bold;"><?= $nostoIsInstalledAndEnabled ?></span></p>
+    </div>
+    <div class="col-md-8">
+        <p>Account ID: <span style="font-weight: bold;"><?= $block->getAccountNameAndTokens()->getName() ?></span></p>
+    </div>
+    <div class="col-md-8">
+        <p style="font-weight: bold;">Account tokens</p>
+        <table>
+            <tr>
+                <td>Token name</td>
+                <td>Token value</td>
+            </tr>
+        <?php
+        if (!empty($tokens)) {
+            foreach ($tokens as $token) {
+                ?>
+                <tr>
+                    <td><?= $token->getName() ?></td>
+                    <td><?= $token->getValue() ?></td>
+                </tr>
+                <?php
+            }
+        }
+        ?>
+        </table>
+    </div>
+    <div class="col-md-8">
+        <p style="font-weight: bold;">Stores where Nosto is installed</p>
+        <table>
+            <tr>
+                <td>Store ID</td>
+                <td>Store code</td>
+                <td>Store name</td>
+            </tr>
+        <?php
+        if (!empty($storesWithNosto)) {
+            foreach ($storesWithNosto as $store) {
+                $storeData = $store->getData();
+                ?>
+                <tr>
+                    <td><?= $storeData['store_id'] ?></td>
+                    <td><?= $storeData['code'] ?></td>
+                    <td><?= $storeData['name'] ?></td>
+                </tr>
+                <?php
+            }
+        }
+        ?>
+        </table>
+    </div>
+    <div class="col-md-8">
+        <p style="font-weight: bold;">Nosto admin settings</p>
+        <table>
+            <tr>
+                <td>Image Version</td>
+                <td><?= $block->getProductImageVersion() ?? 'N\A' ?></td>
+            </tr>
+            <tr>
+                <td>Remove "pub/" from product image URLs</td>
+                <td><?= $removePubDirectoryFromProductImageUrl ?></td>
+            </tr>
+            <tr>
+                <td>Brand</td>
+                <td><?= $block->getBrandAttribute() ?? 'N\A' ?></td>
+            </tr>
+            <tr>
+                <td>Supplier Cost</td>
+                <td><?= $block->getMarginAttribute() ?? 'N\A' ?></td>
+            </tr>
+            <tr>
+                <td>GTIN</td>
+                <td><?= $block->getGtinAttribute() ?? 'N\A' ?></td>
+            </tr>
+        </table>
     </div>
 </div>
