@@ -1,5 +1,8 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 8.0.4
+* Fixed issue where variation tagging is applied when MC is disabled
+
 ### 8.0.3
 * Add search token support during Nosto account setup via CLI
 * Separate customer reference population into a standalone CLI command to improve deployment time
