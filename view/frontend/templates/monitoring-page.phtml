@@ -8,7 +8,7 @@ $nostoIndexCategoryIndexer = $block->getLastIndexedTime('nosto_index_category');
 <div class="row">
     <div class="col-md-8">
         <form name="addData" method="post" id="addData" class="form"
-              action="<?php echo $block->getLogoutFormAction() ?>"
+              action="<?php echo $block->getFormAction('nosto/monitoring/logout') ?>"
               data-mage-init='{"validation":{}}'>
             <div class="actions-toolbar">
                 <div class="primary">
@@ -20,7 +20,7 @@ $nostoIndexCategoryIndexer = $block->getLastIndexedTime('nosto_index_category');
     <hr>
     <div class="col-md-8">
         <form name="addData" method="post" id="addData" class="form"
-              action="<?php echo $block->getDownloadLogFilesFormAction(); ?>"
+              action="<?php echo $block->getFormAction('nosto/monitoring/logs'); ?>"
               data-mage-init='{"validation":{}}'>
             <div class="actions-toolbar">
                 <div class="primary">
@@ -43,15 +43,19 @@ $nostoIndexCategoryIndexer = $block->getLastIndexedTime('nosto_index_category');
         <p>Last indexed time:</p>
         <p style="font-weight: bold;">
             <?php
-            foreach ($nostoIndexProductIndexer as $value) {
-                echo $value . ': ';
+            if (!empty($nostoIndexProductIndexer)) {
+                foreach ($nostoIndexProductIndexer as $value) {
+                    echo $value . ' ';
+                }
             }
             ?>
         </p>
         <p style="font-weight: bold;">
             <?php
-            foreach ($nostoIndexCategoryIndexer as $value) {
-                echo $value . ': ';
+            if (!empty($nostoIndexCategoryIndexer)) {
+                foreach ($nostoIndexCategoryIndexer as $value) {
+                    echo $value . ' ';
+                }
             }
             ?>
         </p>
@@ -185,5 +189,31 @@ $nostoIndexCategoryIndexer = $block->getLastIndexedTime('nosto_index_category');
                 <td><?= $block->getSettingsValue('isTaggingProvidersEnabled') ?></td>
             </tr>
         </table>
+    </div>
+    <hr>
+    <div class="col-md-8">
+        <form name="addData" method="post" id="addData" class="form"
+              action="<?= $block->getFormAction('nosto/monitoring/product') ?>"
+              data-hasrequired='* Required Fields'
+              data-mage-init='{"validation":{}}'>
+            <fieldset class="fieldset">
+                <fieldset class="fieldset row">
+                    <div class="fields col-md-6">
+                        <div class="field product_id required">
+                            <label class="label" for="title"><span>Product ID</span></label>
+                            <div class="control">
+                                <input name="product_id" id="product_id" title="Product ID" value="" class="input-text" type="text"
+                                       data-validate="{required:true, 'validate-alphanum-with-spaces':true}">
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+            </fieldset>
+            <div class="actions-toolbar">
+                <div class="primary">
+                    <button type="submit" class="action submit primary" title="Debug"><span>Debug</span></button>
+                </div>
+            </div>
+        </form>
     </div>
 </div>

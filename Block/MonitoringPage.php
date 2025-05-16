@@ -36,14 +36,9 @@ class MonitoringPage extends Template
         $this->settings = $settings;
     }
 
-    public function getLogoutFormAction(): string
+    public function getFormAction(string $url): string
     {
-        return $this->getUrl('nosto/monitoring/logout', ['_secure' => true]);
-    }
-
-    public function getDownloadLogFilesFormAction(): string
-    {
-        return $this->getUrl('nosto/monitoring/logs', ['_secure' => true]);
+        return $this->getUrl($url, ['_secure' => true]);
     }
 
     public function checkIfNostoInstalledAndEnabled(): string

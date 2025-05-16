@@ -88,6 +88,6 @@ class Submit implements ActionInterface
 //        $this->cookieManager->setPublicCookie('nosto_debugger_cookie', $request['token'], $metadata);
         $_SESSION['nosto_debbuger_session'] = $request['token'];
 
-        return $this->redirectFactory->create()->setUrl('/nosto/monitoring/index');
+        return $this->redirectFactory->create()->setUrl('/nosto/monitoring/');
     }
 }
