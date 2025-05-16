@@ -44,9 +44,13 @@ class MonitoringPage extends Template
         return $this->getUrl('nosto/monitoring/logs', ['_secure' => true]);
     }
 
-    public function checkIfNostoInstalledAndEnabled(): bool
+    public function checkIfNostoInstalledAndEnabled(): string
     {
-        return $this->account->nostoInstalledAndEnabled($this->store);
+        if (true === $this->account->nostoInstalledAndEnabled($this->store)) {
+            return 'Yes';
+        }
+
+        return 'No';
     }
 
     public function getAccountNameAndTokens(): NostoAccount
@@ -59,28 +63,17 @@ class MonitoringPage extends Template
         return $this->account->getStoresWithNosto();
     }
 
-    public function getProductImageVersion(): ?string
+    public function getSettingsValue(string $method): string
     {
-        return $this->settings->getProductImageVersion($this->store);
+        if (true === $this->settings->$method($this->store) || '1' === $this->settings->$method($this->store)) {
+            return 'Yes';
+        }
+
+        return 'No';
     }
 
-    public function getRemovePubDirectoryFromProductImageUrl(): ?bool
+    public function getStringSettingsValues(string $method): string
     {
-        return $this->settings->getRemovePubDirectoryFromProductImageUrl($this->store);
-    }
-
-    public function getBrandAttribute(): ?string
-    {
-        return $this->settings->getBrandAttribute($this->store);
-    }
-
-    public function getMarginAttribute(): ?string
-    {
-        return $this->settings->getMarginAttribute($this->store);
-    }
-
-    public function getGtinAttribute(): ?string
-    {
-        return $this->settings->getGtinAttribute($this->store);
+        return $this->settings->$method($this->store);
     }
 }
