@@ -2,6 +2,8 @@
 /* @var Nosto\Tagging\Block\MonitoringPage $block */
 $tokens = $block->getAccountNameAndTokens()->getTokens();
 $storesWithNosto = $block->getStoresWithNosto();
+$nostoIndexProductIndexer = $block->getLastIndexedTime('nosto_index_product');
+$nostoIndexCategoryIndexer = $block->getLastIndexedTime('nosto_index_category');
 ?>
 <div class="row">
     <div class="col-md-8">
@@ -36,6 +38,23 @@ $storesWithNosto = $block->getStoresWithNosto();
     </div>
     <div class="col-md-8">
         <p>Account ID: <span style="font-weight: bold;"><?= $block->getAccountNameAndTokens()->getName() ?></span></p>
+    </div>
+    <div class="col-md-8">
+        <p>Last indexed time:</p>
+        <p style="font-weight: bold;">
+            <?php
+            foreach ($nostoIndexProductIndexer as $value) {
+                echo $value . ': ';
+            }
+            ?>
+        </p>
+        <p style="font-weight: bold;">
+            <?php
+            foreach ($nostoIndexCategoryIndexer as $value) {
+                echo $value . ': ';
+            }
+            ?>
+        </p>
     </div>
     <div class="col-md-8">
         <p style="font-weight: bold;">Account tokens</p>
