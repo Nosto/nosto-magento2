@@ -51,27 +51,24 @@
  * @var Nosto\Tagging\Block\Variation $block
  */
 
-$variationId = $block->getVariationId();
 ?>
-
 <!-- Nosto Variation Tagging -->
 <div id="nosto_variation_tagging" style="display:none"
      data-bind="scope: 'variationTagging'"
      data-role="nosto-variation-tagging"
 >
-  <!-- ko if: variationTagging().active_variation -->
-  <span class="nosto_variation_dynamic"
-        data-bind="text: variationTagging().active_variation, afterRender: reloadRecommendations"></span>
-  <!-- /ko -->
-  <!-- ko ifnot: variationTagging().active_variation -->
-  <span class="nosto_variation"><?= $block->escapeHtml($variationId) ?></span>
-  <!-- /ko -->
+    <!-- ko if: variationTagging().active_variation -->
+    <span class="nosto_variation_dynamic"
+          data-bind="text: variationTagging().active_variation, afterRender: reloadRecommendations"></span>
+    <!-- /ko -->
 </div>
-
+<!--suppress JSUnresolvedVariable -->
 <script type="text/x-magento-init">
-  {
-    "[data-role=nosto-variation-tagging]": {
-      "Magento_Ui/js/core/app": <?= $block->getJsLayout(); ?>
+    {
+      "[data-role=nosto-variation-tagging]": {
+        "Magento_Ui/js/core/app": <?= /* @escapeNotVerified */
+        $block->getJsLayout(); ?>
+    }
   }
-}
+
 </script>
