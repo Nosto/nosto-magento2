@@ -26,13 +26,13 @@ class MonitoringPage extends Template
     public function __construct(
         Context $context,
         Account $account,
-        Scope $store,
+        Scope $scope,
         Data $settings,
         array $data = [],
     ) {
         parent::__construct($context, $data);
         $this->account = $account;
-        $this->store = $store->getStore();
+        $this->store = $scope->getStore();
         $this->settings = $settings;
     }
 

@@ -69,11 +69,11 @@ class Submit implements ActionInterface
         /** @var Store $store */
         $store = $this->storeManager->getStore();
         $account = $this->accountHelper->findAccount($store);
-        $request = $this->request->getParams();
+        $token = $this->request->getParam('token');
 
         $signupAccount = new SignupAccount($account->getName());
 
-        $signupAccount->addApiToken(new NostoToken(NostoToken::API_PRODUCTS, $request['token']));
+        $signupAccount->addApiToken(new NostoToken(NostoToken::API_PRODUCTS, $token));
         $result = (new MockUpsertProduct($signupAccount))->upsert();
         if (false === $result['success']) {
             $this->messageManager->addErrorMessage($result['message']);
@@ -86,7 +86,7 @@ class Submit implements ActionInterface
 //            ->setHttpOnly(true)
 //            ->setSecure(false);
 //        $this->cookieManager->setPublicCookie('nosto_debugger_cookie', $request['token'], $metadata);
-        $_SESSION['nosto_debbuger_session'] = $request['token'];
+        $_SESSION['nosto_debbuger_session'] = $token;
 
         return $this->redirectFactory->create()->setUrl('/nosto/monitoring/');
     }
