@@ -6,11 +6,22 @@ use Exception;
 use Magento\Framework\App\ObjectManager;
 use Magento\Framework\Controller\Result\RedirectFactory;
 use Magento\Framework\Message\ManagerInterface;
+use Magento\Framework\Stdlib\CookieManagerInterface;
 use Magento\Indexer\Model\IndexerFactory;
+use Magento\Sales\Api\OrderRepositoryInterface;
+use Magento\Sales\Model\Order;
+use Nosto\DelayedOrders\Operation\NewSession;
 use Nosto\Exception\MemoryOutOfBoundsException;
+use Nosto\Model\Signup\Account;
 use Nosto\NostoException;
+use Nosto\Operation\AbstractGraphQLOperation;
+use Nosto\Operation\Order\OrderCreate as NostoOrderCreate;
 use Nosto\Request\Http\Exception\AbstractHttpException;
+use Nosto\Tagging\Helper\Account as NostoHelperAccount;
+use Nosto\Tagging\Helper\Url as NostoHelperUrl;
+use Nosto\Tagging\Logger\Logger;
 use Nosto\Tagging\Model\Indexer\ProductIndexer;
+use Nosto\Tagging\Model\Order\Builder as OrderBuilder;
 use Nosto\Tagging\Model\ResourceModel\Magento\Product\CollectionFactory as CollectionFactory;
 use Magento\Framework\App\ActionInterface;
 use Magento\Framework\App\RequestInterface;
@@ -40,6 +51,24 @@ class Sync implements ActionInterface
     /** @var RedirectFactory $redirectFactory */
     private RedirectFactory $redirectFactory;
 
+    /** @var NostoHelperAccount $nostoHelperAccount */
+    private NostoHelperAccount $nostoHelperAccount;
+
+    /** @var Logger $logger */
+    private Logger $logger;
+
+    /** @var OrderRepositoryInterface $orderRepository */
+    private OrderRepositoryInterface $orderRepository;
+
+    /** @var OrderBuilder $orderBuilder */
+    private OrderBuilder $orderBuilder;
+
+    /** @var NostoHelperUrl $nostoHelperUrl */
+    private NostoHelperUrl $nostoHelperUrl;
+
+    /** @var CookieManagerInterface $cookieManager */
+    private CookieManagerInterface $cookieManager;
+
     public function __construct(
         RequestInterface $request,
         CollectionFactory $collectionFactory,
@@ -47,7 +76,13 @@ class Sync implements ActionInterface
         Scope $scope,
         ProductIndexer $productIndexer,
         ManagerInterface $messageManager,
-        RedirectFactory $redirectFactory
+        RedirectFactory $redirectFactory,
+        NostoHelperAccount $nostoHelperAccount,
+        Logger $logger,
+        OrderRepositoryInterface $orderRepository,
+        OrderBuilder $orderBuilder,
+        NostoHelperUrl $nostoHelperUrl,
+        CookieManagerInterface $cookieManager
     ) {
         $this->request = $request;
         $this->collectionFactory = $collectionFactory;
@@ -56,6 +91,12 @@ class Sync implements ActionInterface
         $this->productIndexer = $productIndexer;
         $this->messageManager = $messageManager;
         $this->redirectFactory = $redirectFactory;
+        $this->nostoHelperAccount = $nostoHelperAccount;
+        $this->logger = $logger;
+        $this->orderRepository = $orderRepository;
+        $this->orderBuilder = $orderBuilder;
+        $this->nostoHelperUrl = $nostoHelperUrl;
+        $this->cookieManager = $cookieManager;
     }
 
     /**
@@ -75,6 +116,24 @@ class Sync implements ActionInterface
             $this->syncService->sync($product, $store);
 
             $this->messageManager->addSuccessMessage('Product successfully synced.');
+        }
+
+        if ('order' === $this->request->getParam('entity_type')) {
+            $account = $this->nostoHelperAccount->findAccount($this->scope->getStore());
+            /** @var Order $order */
+            $order = $this->orderRepository->get($this->request->getParam('entity_id'));
+            $nostoOrder = $this->orderBuilder->build($order);
+            $customerId = $this->cookieManager->getCookie('2c_cId');
+            $orderService = new NostoOrderCreate(
+                $nostoOrder,
+                $account,
+                AbstractGraphQLOperation::IDENTIFIER_BY_CID,
+                $customerId,
+                $this->nostoHelperUrl->getActiveDomain($this->scope->getStore())
+            );
+            $orderService->execute();
+
+            $this->messageManager->addSuccessMessage('Order successfully synced.');
         }
 
         return $this->redirectFactory->create()->setUrl('/nosto/monitoring/indexer?entity_type='.$this->request->getParam('entity_type').'&entity_id='.$this->request->getParam('entity_id'));
