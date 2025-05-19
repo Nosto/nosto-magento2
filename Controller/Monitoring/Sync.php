@@ -2,8 +2,14 @@
 
 namespace Nosto\Tagging\Controller\Monitoring;
 
+use Exception;
 use Magento\Framework\App\ObjectManager;
+use Magento\Framework\Controller\Result\RedirectFactory;
+use Magento\Framework\Message\ManagerInterface;
 use Magento\Indexer\Model\IndexerFactory;
+use Nosto\Exception\MemoryOutOfBoundsException;
+use Nosto\NostoException;
+use Nosto\Request\Http\Exception\AbstractHttpException;
 use Nosto\Tagging\Model\Indexer\ProductIndexer;
 use Nosto\Tagging\Model\ResourceModel\Magento\Product\CollectionFactory as CollectionFactory;
 use Magento\Framework\App\ActionInterface;
@@ -25,35 +31,52 @@ class Sync implements ActionInterface
     /** @var Scope $scope */
     private Scope $scope;
 
+    /** @var ProductIndexer $productIndexer */
+    private ProductIndexer $productIndexer;
+
+    /** @var ManagerInterface $messageManager */
+    private ManagerInterface $messageManager;
+
+    /** @var RedirectFactory $redirectFactory */
+    private RedirectFactory $redirectFactory;
+
     public function __construct(
         RequestInterface $request,
         CollectionFactory $collectionFactory,
         SyncService $syncService,
         Scope $scope,
-        private readonly ProductIndexer $productIndexer,
-        private readonly IndexerFactory $indexerFactory
+        ProductIndexer $productIndexer,
+        ManagerInterface $messageManager,
+        RedirectFactory $redirectFactory
     ) {
         $this->request = $request;
         $this->collectionFactory = $collectionFactory;
         $this->syncService = $syncService;
         $this->scope = $scope;
+        $this->productIndexer = $productIndexer;
+        $this->messageManager = $messageManager;
+        $this->redirectFactory = $redirectFactory;
     }
 
+    /**
+     * @throws NostoException
+     * @throws MemoryOutOfBoundsException
+     * @throws AbstractHttpException
+     * @throws Exception
+     */
     public function execute()
     {
-        $x = $this->collectionFactory->create();
-        $x->addAttributeToFilter('entity_id', ['eq' => $this->request->getParam('product_id')]);
-        $store = $this->scope->getStore();
-        $this->productIndexer->executeRow($this->request->getParam('product_id'));
-        $this->productIndexer->doIndex($store, [$this->request->getParam('product_id')]);
-        $this->syncService->sync($x, $store);
-//        $output = shell_exec('bin/magento indexer:reset nosto_index_product');
-//        $output1 = shell_exec('bin/magento indexer:reindex nosto_index_product');
-//        $output2 = shell_exec('bin/magento queue:consumers:start nosto_product_sync.update');
-//        $indexer = $this->indexerFactory->create();
-//        $indexer->load('nosto_index_product');
-//        $indexer->reindexAll();
+        if ('product' === $this->request->getParam('entity_type')) {
+            $product = $this->collectionFactory->create();
+            $product->addAttributeToFilter('entity_id', ['eq' => $this->request->getParam('entity_id')]);
+            $store = $this->scope->getStore();
+            $this->productIndexer->executeRow($product->getFirstItem()->getData('entity_id'));
+            $this->productIndexer->doIndex($store, [$product->getFirstItem()->getData('entity_id')]);
+            $this->syncService->sync($product, $store);
 
-        dump('test 22');
+            $this->messageManager->addSuccessMessage('Product successfully synced.');
+        }
+
+        return $this->redirectFactory->create()->setUrl('/nosto/monitoring/indexer?entity_type='.$this->request->getParam('entity_type').'&entity_id='.$this->request->getParam('entity_id'));
     }
 }

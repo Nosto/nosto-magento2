@@ -2,7 +2,9 @@
 
 namespace Nosto\Tagging\Controller\Monitoring;
 
+use Magento\Catalog\Api\CategoryRepositoryInterface;
 use Magento\Catalog\Api\ProductRepositoryInterface;
+use Magento\Catalog\Model\Category;
 use Magento\Catalog\Model\Product;
 use Magento\Framework\App\ActionInterface;
 use Magento\Framework\App\RequestInterface;
@@ -14,6 +16,7 @@ use Magento\Sales\Api\OrderRepositoryInterface;
 use Magento\Sales\Model\Order;
 use Nosto\Tagging\Block\MonitoringIndexer;
 use Nosto\Tagging\Helper\Scope;
+use Nosto\Tagging\Model\Category\Builder as CategoryBuilder;
 use Nosto\Tagging\Model\Order\Builder as OrderBuilder;
 use Nosto\Tagging\Model\Product\Builder as ProductBuilder;
 
@@ -49,6 +52,12 @@ class Indexer implements ActionInterface
     /** @var RedirectFactory $redirectFactory */
     private RedirectFactory $redirectFactory;
 
+    /** @var CategoryRepositoryInterface $categoryRepository */
+    private CategoryRepositoryInterface $categoryRepository;
+
+    /** @var CategoryBuilder $categoryBuilder */
+    private CategoryBuilder $categoryBuilder;
+
     public function __construct(
         PageFactory $pageFactory,
         RequestInterface $request,
@@ -59,7 +68,9 @@ class Indexer implements ActionInterface
         OrderRepositoryInterface $orderRepository,
         OrderBuilder $orderBuilder,
         ManagerInterface $messageManager,
-        RedirectFactory $redirectFactory
+        RedirectFactory $redirectFactory,
+        CategoryRepositoryInterface $categoryRepository,
+        CategoryBuilder $categoryBuilder
     ) {
         $this->pageFactory = $pageFactory;
         $this->request = $request;
@@ -71,6 +82,8 @@ class Indexer implements ActionInterface
         $this->orderBuilder = $orderBuilder;
         $this->messageManager = $messageManager;
         $this->redirectFactory = $redirectFactory;
+        $this->categoryRepository = $categoryRepository;
+        $this->categoryBuilder = $categoryBuilder;
     }
 
     /**
@@ -98,12 +111,15 @@ class Indexer implements ActionInterface
             return $this->redirectFactory->create()->setUrl('/nosto/monitoring/login');
         }
 
+        $store = $this->scope->getStore();
+
         if ('product' === $this->request->getParam('entity_type')) {
             /** @var Product $product */
             $product = $this->productRepository->getById($this->request->getParam('entity_id'));
-            $store = $this->scope->getStore();
             $nostoProduct = $this->productBuilder->build($product, $store);
             $this->block->setNostoProduct($nostoProduct);
+            $this->block->setEntityId($product->getId());
+            $this->block->setEntityType('product');
         }
 
         if ('order' === $this->request->getParam('entity_type')) {
@@ -111,6 +127,17 @@ class Indexer implements ActionInterface
             $order = $this->orderRepository->get($this->request->getParam('entity_id'));
             $nostoOrder = $this->orderBuilder->build($order);
             $this->block->setNostoOrder($nostoOrder);
+            $this->block->setEntityId($order->getId());
+            $this->block->setEntityType('order');
+        }
+
+        if ('category' === $this->request->getParam('entity_type')) {
+            /** @var Category $category */
+            $category = $this->categoryRepository->get($this->request->getParam('entity_id'));
+            $nostoCategory = $this->categoryBuilder->build($category, $store);
+            $this->block->setNostoCategory($nostoCategory);
+            $this->block->setEntityId($category->getId());
+            $this->block->setEntityType('category');
         }
 
         $page = $this->pageFactory->create();

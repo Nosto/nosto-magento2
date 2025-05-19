@@ -1,14 +1,25 @@
 <?php
 /* @var Nosto\Tagging\Block\MonitoringIndexer $block */
-$nostoProduct = $block->getNostoProduct();
-dump($nostoProduct, $nostoProduct->getProductId());
+if ('product' === $block->getEntityType()) {
+    dump($block->getNostoProduct());
+}
+if ('order' === $block->getEntityType()) {
+    dump($block->getNostoOrder());
+}
+if ('category' === $block->getEntityType()) {
+    dump($block->getNostoCategory());
+}
 ?>
 <div class="row">
     <div class="col-md-8">
         <form name="addData" method="post" id="addData" class="form"
               action="<?php echo $block->getFormAction('nosto/monitoring/sync') ?>"
               data-mage-init='{"validation":{}}'>
-            <input name="product_id" id="product_id" title="Product ID" value="<?php echo $nostoProduct->getProductId() ?>" class="input-text" type="hidden"
+            <input name="entity_id" id="entity_id" title="Entity ID" value="<?= $block->getEntityId() ?>"
+                   class="input-text" type="hidden"
+                   data-validate="{required:true, 'validate-alphanum-with-spaces':true}">
+            <input name="entity_type" id="entity_type" title="Entity type" value="<?= $block->getEntityType() ?>"
+                   class="input-text" type="hidden"
                    data-validate="{required:true, 'validate-alphanum-with-spaces':true}">
             <div class="actions-toolbar">
                 <div class="primary">
