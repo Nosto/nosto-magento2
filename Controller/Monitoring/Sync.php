@@ -3,6 +3,8 @@
 namespace Nosto\Tagging\Controller\Monitoring;
 
 use Exception;
+use Magento\Catalog\Api\CategoryRepositoryInterface;
+use Magento\Catalog\Model\Category;
 use Magento\Framework\App\ObjectManager;
 use Magento\Framework\Controller\Result\RedirectFactory;
 use Magento\Framework\Message\ManagerInterface;
@@ -20,12 +22,15 @@ use Nosto\Request\Http\Exception\AbstractHttpException;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Url as NostoHelperUrl;
 use Nosto\Tagging\Logger\Logger;
+use Nosto\Tagging\Model\Indexer\CategoryIndexer;
 use Nosto\Tagging\Model\Indexer\ProductIndexer;
 use Nosto\Tagging\Model\Order\Builder as OrderBuilder;
+use Nosto\Tagging\Model\ResourceModel\Magento\Category\CollectionFactory as CategoryCollectionFactory;
 use Nosto\Tagging\Model\ResourceModel\Magento\Product\CollectionFactory as CollectionFactory;
 use Magento\Framework\App\ActionInterface;
 use Magento\Framework\App\RequestInterface;
 use Nosto\Tagging\Helper\Scope;
+use Nosto\Tagging\Model\Service\Sync\Upsert\Category\SyncService as CategorySyncService;
 use Nosto\Tagging\Model\Service\Sync\Upsert\Product\SyncService;
 
 class Sync implements ActionInterface
@@ -69,6 +74,18 @@ class Sync implements ActionInterface
     /** @var CookieManagerInterface $cookieManager */
     private CookieManagerInterface $cookieManager;
 
+    /** @var CategoryCollectionFactory $categoryCollectionFactory */
+    private CategoryCollectionFactory $categoryCollectionFactory;
+
+    /** @var CategoryIndexer $categoryIndexer */
+    private CategoryIndexer $categoryIndexer;
+
+    /** @var CategorySyncService $categorySyncService */
+    private CategorySyncService $categorySyncService;
+
+    /** @var CategoryRepositoryInterface $categoryRepository */
+    private CategoryRepositoryInterface $categoryRepository;
+
     public function __construct(
         RequestInterface $request,
         CollectionFactory $collectionFactory,
@@ -82,7 +99,11 @@ class Sync implements ActionInterface
         OrderRepositoryInterface $orderRepository,
         OrderBuilder $orderBuilder,
         NostoHelperUrl $nostoHelperUrl,
-        CookieManagerInterface $cookieManager
+        CookieManagerInterface $cookieManager,
+        CategoryCollectionFactory $categoryCollectionFactory,
+        CategoryIndexer $categoryIndexer,
+        CategorySyncService $categorySyncService,
+        CategoryRepositoryInterface $categoryRepository
     ) {
         $this->request = $request;
         $this->collectionFactory = $collectionFactory;
@@ -97,6 +118,10 @@ class Sync implements ActionInterface
         $this->orderBuilder = $orderBuilder;
         $this->nostoHelperUrl = $nostoHelperUrl;
         $this->cookieManager = $cookieManager;
+        $this->categoryCollectionFactory = $categoryCollectionFactory;
+        $this->categoryIndexer = $categoryIndexer;
+        $this->categorySyncService = $categorySyncService;
+        $this->categoryRepository = $categoryRepository;
     }
 
     /**
@@ -107,10 +132,11 @@ class Sync implements ActionInterface
      */
     public function execute()
     {
+        $store = $this->scope->getStore();
+
         if ('product' === $this->request->getParam('entity_type')) {
             $product = $this->collectionFactory->create();
             $product->addAttributeToFilter('entity_id', ['eq' => $this->request->getParam('entity_id')]);
-            $store = $this->scope->getStore();
             $this->productIndexer->executeRow($product->getFirstItem()->getData('entity_id'));
             $this->productIndexer->doIndex($store, [$product->getFirstItem()->getData('entity_id')]);
             $this->syncService->sync($product, $store);
@@ -119,7 +145,7 @@ class Sync implements ActionInterface
         }
 
         if ('order' === $this->request->getParam('entity_type')) {
-            $account = $this->nostoHelperAccount->findAccount($this->scope->getStore());
+            $account = $this->nostoHelperAccount->findAccount($store);
             /** @var Order $order */
             $order = $this->orderRepository->get($this->request->getParam('entity_id'));
             $nostoOrder = $this->orderBuilder->build($order);
@@ -129,11 +155,28 @@ class Sync implements ActionInterface
                 $account,
                 AbstractGraphQLOperation::IDENTIFIER_BY_CID,
                 $customerId,
-                $this->nostoHelperUrl->getActiveDomain($this->scope->getStore())
+                $this->nostoHelperUrl->getActiveDomain($store)
             );
             $orderService->execute();
 
             $this->messageManager->addSuccessMessage('Order successfully synced.');
+        }
+
+        if ('category' === $this->request->getParam('entity_type')) {
+//            $category = $this->categoryCollectionFactory->create();
+//            $category->addAttributeToFilter('entity_id', ['eq' => $this->request->getParam('entity_id')]);
+            /** @var Category $category */
+            $category = $this->categoryRepository->get($this->request->getParam('entity_id'));
+            $products = $this->collectionFactory->create();
+            $products->addCategoryFilter($category);
+            $this->productIndexer->execute($products->getAllIds());
+            $this->productIndexer->doIndex($store, [$products->getAllIds()]);
+            $this->syncService->sync($products, $store);
+//            $this->categoryIndexer->executeRow($category->getFirstItem()->getData('entity_id'));
+//            $this->categoryIndexer->doIndex($store, [$category->getFirstItem()->getData('entity_id')]);
+//            $this->categorySyncService->sync($category, $store);
+
+            $this->messageManager->addSuccessMessage('Category successfully synced.');
         }
 
         return $this->redirectFactory->create()->setUrl('/nosto/monitoring/indexer?entity_type='.$this->request->getParam('entity_type').'&entity_id='.$this->request->getParam('entity_id'));
