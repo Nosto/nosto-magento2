@@ -1,0 +1,20 @@
+<?php
+/* @var Nosto\Tagging\Block\MonitoringIndexer $block */
+$nostoProduct = $block->getNostoProduct();
+dump($nostoProduct, $nostoProduct->getProductId());
+?>
+<div class="row">
+    <div class="col-md-8">
+        <form name="addData" method="post" id="addData" class="form"
+              action="<?php echo $block->getFormAction('nosto/monitoring/sync') ?>"
+              data-mage-init='{"validation":{}}'>
+            <input name="product_id" id="product_id" title="Product ID" value="<?php echo $nostoProduct->getProductId() ?>" class="input-text" type="hidden"
+                   data-validate="{required:true, 'validate-alphanum-with-spaces':true}">
+            <div class="actions-toolbar">
+                <div class="primary">
+                    <button type="submit" class="action submit primary" title="Sync">Sync</span></button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

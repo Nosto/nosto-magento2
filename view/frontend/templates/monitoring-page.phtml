@@ -193,22 +193,66 @@ $nostoIndexCategoryIndexer = $block->getLastIndexedTime('nosto_index_category');
     <hr>
     <div class="col-md-8">
         <form name="addData" method="post" id="addData" class="form"
-              action="<?= $block->getFormAction('nosto/monitoring/product') ?>"
+              action="<?= $block->getFormAction('nosto/monitoring/debug') ?>"
               data-hasrequired='* Required Fields'
               data-mage-init='{"validation":{}}'>
-            <fieldset class="fieldset">
-                <fieldset class="fieldset row">
-                    <div class="fields col-md-6">
-                        <div class="field product_id required">
-                            <label class="label" for="title"><span>Product ID</span></label>
-                            <div class="control">
-                                <input name="product_id" id="product_id" title="Product ID" value="" class="input-text" type="text"
-                                       data-validate="{required:true, 'validate-alphanum-with-spaces':true}">
-                            </div>
-                        </div>
+            <div class="fields col-md-6">
+                <div class="field product_id required">
+                    <label class="label" for="title"><span>Product ID</span></label>
+                    <div class="control">
+                        <input name="product_id" id="product_id" title="Product ID" value="" class="input-text" type="text"
+                               data-validate="{required:true, 'validate-alphanum-with-spaces':true}">
+                        <input name="entityType" id="entityType" title="entityType" value="product" class="input-text" type="hidden"
+                               data-validate="{required:true, 'validate-alphanum-with-spaces':true}">
                     </div>
-                </fieldset>
-            </fieldset>
+                </div>
+            </div>
+            <div class="actions-toolbar">
+                <div class="primary">
+                    <button type="submit" class="action submit primary" title="Debug"><span>Debug</span></button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="col-md-8">
+        <form name="addData" method="post" id="addData" class="form"
+              action="<?= $block->getFormAction('nosto/monitoring/debug') ?>"
+              data-hasrequired='* Required Fields'
+              data-mage-init='{"validation":{}}'>
+            <div class="fields col-md-6">
+                <div class="field order_id required">
+                    <label class="label" for="title"><span>Order ID</span></label>
+                    <div class="control">
+                        <input name="order_id" id="order_id" title="Order ID" value="" class="input-text" type="text"
+                               data-validate="{required:true, 'validate-alphanum-with-spaces':true}">
+                        <input name="entityType" id="entityType" title="entityType" value="order" class="input-text" type="hidden"
+                               data-validate="{required:true, 'validate-alphanum-with-spaces':true}">
+                    </div>
+                </div>
+            </div>
+            <div class="actions-toolbar">
+                <div class="primary">
+                    <button type="submit" class="action submit primary" title="Debug"><span>Debug</span></button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="col-md-8">
+        <form name="addData" method="post" id="addData" class="form"
+              action="<?= $block->getFormAction('nosto/monitoring/debug') ?>"
+              data-hasrequired='* Required Fields'
+              data-mage-init='{"validation":{}}'>
+            <div class="fields col-md-6">
+                <div class="field category_id required">
+                    <label class="label" for="title"><span>Category ID</span></label>
+                    <div class="control">
+                        <input name="category_id" id="category_id" title="Category ID" value="" class="input-text" type="text"
+                               data-validate="{required:true, 'validate-alphanum-with-spaces':true}">
+                        <input name="entityType" id="entityType" title="entityType" value="category" class="input-text" type="hidden"
+                               data-validate="{required:true, 'validate-alphanum-with-spaces':true}">
+                    </div>
+                </div>
+            </div>
             <div class="actions-toolbar">
                 <div class="primary">
                     <button type="submit" class="action submit primary" title="Debug"><span>Debug</span></button>
