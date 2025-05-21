@@ -3,6 +3,7 @@
 namespace Nosto\Tagging\Controller\Monitoring;
 
 use Magento\Framework\App\ActionInterface;
+use Magento\Framework\Controller\ResultInterface;
 use Magento\Framework\View\Result\PageFactory;
 
 class Login implements ActionInterface
@@ -18,10 +19,10 @@ class Login implements ActionInterface
         $this->pageFactory = $pageFactory;
     }
 
-    public function execute()
+    public function execute(): ResultInterface
     {
         $page = $this->pageFactory->create();
-        $page->getConfig()->getTitle()->set('Login to Nosto Debugger');
+        $page->getConfig()->getTitle()->set(__('Login to Nosto Debugger'));
 
         return $page;
     }

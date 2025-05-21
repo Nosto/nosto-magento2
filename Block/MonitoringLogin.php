@@ -12,7 +12,7 @@ class MonitoringLogin extends Template
         parent::__construct($context, $data);
     }
 
-    public function getFormAction(string $url): string
+    public function getLoginFormAction(string $url): string
     {
         return $this->getUrl($url, ['_secure' => true]);
     }
