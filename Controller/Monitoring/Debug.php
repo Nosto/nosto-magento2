@@ -1,4 +1,38 @@
 <?php
+/**
+ * Copyright (c) 2020, Nosto Solutions Ltd
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice,
+ * this list of conditions and the following disclaimer.
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * 3. Neither the name of the copyright holder nor the names of its contributors
+ * may be used to endorse or promote products derived from this software without
+ * specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * @author Nosto Solutions Ltd <contact@nosto.com>
+ * @copyright 2020 Nosto Solutions Ltd
+ * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
+ *
+ */
 
 namespace Nosto\Tagging\Controller\Monitoring;
 
@@ -50,6 +84,19 @@ class Debug implements ActionInterface
     /** @var CategoryRepositoryInterface $categoryRepository */
     private CategoryRepositoryInterface $categoryRepository;
 
+    /**
+     * Debug constructor
+     *
+     * @param ProductRepositoryInterface $productRepository
+     * @param RequestInterface $request
+     * @param Scope $scope
+     * @param Builder $builder
+     * @param ManagerInterface $messageManager
+     * @param RedirectFactory $redirectFactory
+     * @param PageFactory $pageFactory
+     * @param OrderRepositoryInterface $orderRepository
+     * @param CategoryRepositoryInterface $categoryRepository
+     */
     public function __construct(
         ProductRepositoryInterface $productRepository,
         RequestInterface $request,
@@ -72,70 +119,44 @@ class Debug implements ActionInterface
         $this->categoryRepository = $categoryRepository;
     }
 
-    public function execute()
+    /**
+     * Redirects to wanted type of indexer
+     *
+     * @return Redirect
+     */
+    public function execute(): Redirect
     {
-//        $categoryId = $this->request->getParam('category_id');
-//        try {
-//            $entity = $this->categoryRepository->get($categoryId);
-//        } catch (NoSuchEntityException $e) {
-//            $this->messageManager->addErrorMessage($e->getMessage());
-//
-//            return $this->redirectFactory->create()->setUrl('/nosto/monitoring/');
-//        }
-//
-//        return $this->redirectFactory->create()->setUrl('/nosto/monitoring/indexer?category_id='.$entity->getId());
-
         $entityType = $this->request->getParam('entityType');
-        switch ($entityType) {
-            case self::PRODUCT_ENTITY:
-                $productId = $this->request->getParam('product_id');
+        if (self::PRODUCT_ENTITY === $entityType) {
+            $productId = $this->request->getParam('product_id');
 
-                return $this->getEntityIfExistAndRedirectToIndexerPage('productRepository', $productId, 'getById', $entityType);
-            case self::ORDER_ENTITY:
-                $orderId = $this->request->getParam('order_id');
+            return $this->getEntityIfExistAndRedirectToIndexerPage('productRepository', $productId, 'getById', $entityType);
+        }
+        if (self::ORDER_ENTITY === $entityType) {
+            $orderId = $this->request->getParam('order_id');
 
-                return $this->getEntityIfExistAndRedirectToIndexerPage('orderRepository', $orderId, 'get', $entityType);
-            case self::CATEGORY_ENTITY:
-                $categoryId = $this->request->getParam('category_id');
+            return $this->getEntityIfExistAndRedirectToIndexerPage('orderRepository', $orderId, 'get', $entityType);
+        }
+        if (self::CATEGORY_ENTITY === $entityType) {
+            $categoryId = $this->request->getParam('category_id');
 
-                return $this->getEntityIfExistAndRedirectToIndexerPage('categoryRepository', $categoryId, 'get', $entityType);
+            return $this->getEntityIfExistAndRedirectToIndexerPage('categoryRepository', $categoryId, 'get', $entityType);
         }
 
-//        if (self::PRODUCT_ENTITY == $type) {
-//            $productId = $this->request->getParam('product_id');
-//
-//            return $this->getEntityIfExistAndRedirectToIndexerPage('productRepository', $productId, 'getById', $type);
-//
-////            return $this->redirectFactory->create()->setUrl('/nosto/monitoring/indexer?product_id=' . $product->getId());
-//        }
-//
-//        if (self::ORDER_ENTITY == $type) {
-//            $orderId = $this->request->getParam('order_id');
-//
-//            return $this->getEntityIfExistAndRedirectToIndexerPage('orderRepository', $orderId, 'get', $type);
-//
-////            return $this->redirectFactory->create()->setUrl('/nosto/monitoring/indexer?product_id=' . $product->getId());
-//        }
+        $this->messageManager->addErrorMessage(__('Invalid entity type.'));
 
-//        try {
-//            $product = $this->productRepository->getById($productId);
-//        } catch (NoSuchEntityException $e) {
-//            $this->messageManager->addErrorMessage($e->getMessage());
-//
-//            return $this->redirectFactory->create()->setUrl('/nosto/monitoring/');
-//        }
-//
-//        return $this->redirectFactory->create()->setUrl('/nosto/monitoring/indexer?product_id=' . $product->getId());
-//        $store = $this->scope->getStore();
-//        $nostoProduct = $this->builder->build($product, $store);
-//        $this->block->setNostoProduct($nostoProduct);
-//
-//        $page = $this->pageFactory->create();
-//        $page->getConfig()->getTitle()->set('Nosto Debugger');
-//
-//        return $page;
+        return $this->redirectFactory->create()->setUrl('/nosto/monitoring/index');
     }
 
+    /**
+     * Get entity by entity type and redirect to indexer page if entity has been found
+     *
+     * @param $repository
+     * @param $entityId
+     * @param $method
+     * @param $entityType
+     * @return Redirect
+     */
     private function getEntityIfExistAndRedirectToIndexerPage($repository, $entityId, $method, $entityType): Redirect
     {
         try {
@@ -146,6 +167,8 @@ class Debug implements ActionInterface
             return $this->redirectFactory->create()->setUrl('/nosto/monitoring/');
         }
 
-        return $this->redirectFactory->create()->setUrl('/nosto/monitoring/indexer?entity_type='.$entityType.'&entity_id='.$entity->getId());
+        return $this->redirectFactory->create()->setUrl(
+            '/nosto/monitoring/indexer?entity_type='.$entityType.'&entity_id='.$entity->getId()
+        );
     }
 }

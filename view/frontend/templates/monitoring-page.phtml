@@ -42,7 +42,7 @@ $nostoIndexCategoryIndexer = $block->getLastIndexedTime('nosto_index_category');
 ?>
 <div class="row">
     <div class="col-md-8">
-        <form name="addData" method="post" id="addData" class="form"
+        <form name="logout" method="post" id="logout" class="form"
               action="<?php echo $block->getFormAction('nosto/monitoring/logout') ?>"
               data-mage-init='{"validation":{}}'>
             <div class="actions-toolbar">
@@ -54,7 +54,7 @@ $nostoIndexCategoryIndexer = $block->getLastIndexedTime('nosto_index_category');
     </div>
     <hr>
     <div class="col-md-8">
-        <form name="addData" method="post" id="addData" class="form"
+        <form name="logs" method="post" id="logs" class="form"
               action="<?php echo $block->getFormAction('nosto/monitoring/logs'); ?>"
               data-mage-init='{"validation":{}}'>
             <div class="actions-toolbar">
@@ -227,7 +227,7 @@ $nostoIndexCategoryIndexer = $block->getLastIndexedTime('nosto_index_category');
     </div>
     <hr>
     <div class="col-md-8">
-        <form name="addData" method="post" id="addData" class="form"
+        <form name="product-sync" method="post" id="product-sync" class="form"
               action="<?= $block->getFormAction('nosto/monitoring/debug') ?>"
               data-hasrequired='* Required Fields'
               data-mage-init='{"validation":{}}'>
@@ -250,7 +250,7 @@ $nostoIndexCategoryIndexer = $block->getLastIndexedTime('nosto_index_category');
         </form>
     </div>
     <div class="col-md-8">
-        <form name="addData" method="post" id="addData" class="form"
+        <form name="order-sync" method="post" id="order-sync" class="form"
               action="<?= $block->getFormAction('nosto/monitoring/debug') ?>"
               data-hasrequired='* Required Fields'
               data-mage-init='{"validation":{}}'>
@@ -273,7 +273,7 @@ $nostoIndexCategoryIndexer = $block->getLastIndexedTime('nosto_index_category');
         </form>
     </div>
     <div class="col-md-8">
-        <form name="addData" method="post" id="addData" class="form"
+        <form name="category-sync" method="post" id="category-sync" class="form"
               action="<?= $block->getFormAction('nosto/monitoring/debug') ?>"
               data-hasrequired='* Required Fields'
               data-mage-init='{"validation":{}}'>

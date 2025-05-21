@@ -1,5 +1,9 @@
 <?php
 /* @var Nosto\Tagging\Block\MonitoringIndexer $block */
+?>
+<a href="<?php echo $block->getFormAction('nosto/monitoring/') ?>">Go back</a>
+<?php
+/* @var Nosto\Tagging\Block\MonitoringIndexer $block */
 if ('product' === $block->getEntityType()) {
     dump($block->getNostoProduct());
 }
@@ -12,7 +16,7 @@ if ('category' === $block->getEntityType()) {
 ?>
 <div class="row">
     <div class="col-md-8">
-        <form name="addData" method="post" id="addData" class="form"
+        <form name="sync" method="post" id="sync" class="form"
               action="<?php echo $block->getFormAction('nosto/monitoring/sync') ?>"
               data-mage-init='{"validation":{}}'>
             <input name="entity_id" id="entity_id" title="Entity ID" value="<?= $block->getEntityId() ?>"
