@@ -41,11 +41,23 @@ use Magento\Backend\Block\Template\Context;
 
 class MonitoringLogin extends Template
 {
+    /**
+     * MonitoringLogin constructor
+     *
+     * @param Context $context
+     * @param array $data
+     */
     public function __construct(Context $context, array $data = [])
     {
         parent::__construct($context, $data);
     }
 
+    /**
+     * Returns login form action
+     *
+     * @param string $url
+     * @return string
+     */
     public function getLoginFormAction(string $url): string
     {
         return $this->getUrl($url, ['_secure' => true]);

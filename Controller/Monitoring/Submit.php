@@ -68,6 +68,15 @@ class Submit implements ActionInterface
     /** @var RedirectFactory $redirectFactory */
     private RedirectFactory $redirectFactory;
 
+    /**
+     * Submit constructor
+     *
+     * @param ManagerInterface $messageManager
+     * @param RequestInterface $request
+     * @param StoreManagerInterface $storeManager
+     * @param Account $accountHelper
+     * @param RedirectFactory $redirectFactory
+     */
     public function __construct(
         ManagerInterface $messageManager,
         RequestInterface $request,
@@ -83,6 +92,8 @@ class Submit implements ActionInterface
     }
 
     /**
+     * Process login in Nosto debugger
+     *
      * @throws NostoException
      * @throws NoSuchEntityException
      * @throws AbstractHttpException
@@ -94,7 +105,9 @@ class Submit implements ActionInterface
         $account = $this->accountHelper->findAccount($store);
         $token = $this->request->getParam('token');
         if (false === $this->sendApiCallForToken($account->getName(), $token)['success']) {
-            $this->messageManager->addErrorMessage($this->sendApiCallForToken($account->getName(), $token)['message']);
+            $this
+                ->messageManager
+                ->addErrorMessage(__($this->sendApiCallForToken($account->getName(), $token)['message']));
 
             return $this->redirectFactory->create()->setUrl('/nosto/monitoring/login');
         }
@@ -105,6 +118,8 @@ class Submit implements ActionInterface
     }
 
     /**
+     * Send API request to Nosto
+     *
      * @throws NostoException
      * @throws AbstractHttpException
      */

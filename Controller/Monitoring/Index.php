@@ -1,24 +1,52 @@
 <?php
+/**
+ * Copyright (c) 2020, Nosto Solutions Ltd
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice,
+ * this list of conditions and the following disclaimer.
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * 3. Neither the name of the copyright holder nor the names of its contributors
+ * may be used to endorse or promote products derived from this software without
+ * specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * @author Nosto Solutions Ltd <contact@nosto.com>
+ * @copyright 2020 Nosto Solutions Ltd
+ * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
+ *
+ */
 
 namespace Nosto\Tagging\Controller\Monitoring;
 
 use Magento\Framework\App\ActionInterface;
 use Magento\Framework\Controller\Result\RedirectFactory;
+use Magento\Framework\Controller\ResultInterface;
 use Magento\Framework\Message\ManagerInterface;
-use Magento\Framework\Stdlib\Cookie\CookieMetadataFactory;
-use Magento\Framework\Stdlib\CookieManagerInterface;
 use Magento\Framework\View\Result\PageFactory;
+use Nosto\Tagging\Helper\Session;
 
-class Index implements ActionInterface
+class Index extends Session implements ActionInterface
 {
     /** @var PageFactory $pageFactory */
     private PageFactory $pageFactory;
-
-    /** @var CookieManagerInterface $cookieManager */
-    private CookieManagerInterface $cookieManager;
-
-    /** @var CookieMetadataFactory $cookieMetadataFactory */
-    protected CookieMetadataFactory $cookieMetadataFactory;
 
     /** @var ManagerInterface $messageManager */
     private ManagerInterface $messageManager;
@@ -26,39 +54,32 @@ class Index implements ActionInterface
     /** @var RedirectFactory $redirectFactory */
     private RedirectFactory $redirectFactory;
 
+    /**
+     * Index constructor
+     *
+     * @param PageFactory $pageFactory
+     * @param ManagerInterface $messageManager
+     * @param RedirectFactory $redirectFactory
+     */
     public function __construct(
         PageFactory $pageFactory,
-        CookieManagerInterface $cookieManager,
-        CookieMetadataFactory $cookieMetadataFactory,
         ManagerInterface $messageManager,
         RedirectFactory $redirectFactory
     ) {
         $this->pageFactory = $pageFactory;
-        $this->cookieManager = $cookieManager;
-        $this->cookieMetadataFactory = $cookieMetadataFactory;
         $this->messageManager = $messageManager;
         $this->redirectFactory = $redirectFactory;
     }
 
-    public function execute()
+    /**
+     * Render index page of Nosto debugger
+     *
+     * @return ResultInterface
+     */
+    public function execute(): ResultInterface
     {
-//        $cookieMetadata = $this->cookieMetadataFactory->createPublicCookieMetadata()
-//            ->setPath('/')
-//            ->setDomain('')
-//            ->setDuration(-3600)
-//            ->setHttpOnly(true)
-//            ->setSecure(false);
-//        $this->cookieManager->deleteCookie('nosto_debugger_cookie', $cookieMetadata);
-//
-//        if (null === $this->cookieManager->getCookie('nosto_debugger_cookie')) {
-//            $this->messageManager->addErrorMessage('Please login to continue!');
-//
-//            return $this->redirectFactory->create()->setUrl('/nosto/monitoring/login');
-//        }
-//        unset($_SESSION['nosto_debbuger_session']);
-
-        if (!isset($_SESSION['nosto_debbuger_session'])) {
-            $this->messageManager->addErrorMessage('Please login to continue!');
+        if (false === $this->checkIfSessionExists()) {
+            $this->messageManager->addErrorMessage(__('Please login to continue!'));
 
             return $this->redirectFactory->create()->setUrl('/nosto/monitoring/login');
         }

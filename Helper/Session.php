@@ -34,37 +34,21 @@
  *
  */
 
-namespace Nosto\Tagging\Controller\Monitoring;
+namespace Nosto\Tagging\Helper;
 
-use Magento\Framework\App\ActionInterface;
-use Magento\Framework\Controller\ResultInterface;
-use Magento\Framework\View\Result\PageFactory;
-
-class Login implements ActionInterface
+class Session
 {
-    /** @var PageFactory $pageFactory */
-    private PageFactory $pageFactory;
-
     /**
-     * Login constructor
+     * Check for user session in Nosto debugger
      *
-     * @param PageFactory $pageFactory
+     * @return bool
      */
-    public function __construct(PageFactory $pageFactory)
+    public function checkIfSessionExists(): bool
     {
-        $this->pageFactory = $pageFactory;
-    }
+        if (!isset($_SESSION['nosto_debbuger_session'])) {
+            return false;
+        }
 
-    /**
-     * Render login page of Nosto debugger
-     *
-     * @return ResultInterface
-     */
-    public function execute(): ResultInterface
-    {
-        $page = $this->pageFactory->create();
-        $page->getConfig()->getTitle()->set(__('Login to Nosto Debugger'));
-
-        return $page;
+        return true;
     }
 }
