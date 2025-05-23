@@ -3,6 +3,7 @@
 namespace Nosto\Tagging\Controller\Monitoring;
 
 use Magento\Framework\App\ActionInterface;
+use Magento\Framework\Controller\Result\Redirect;
 use Magento\Framework\Controller\Result\RedirectFactory;
 use Magento\Framework\Message\ManagerInterface;
 use Nosto\Tagging\Helper\Cache;
@@ -28,13 +29,13 @@ class Logout implements ActionInterface
         $this->cache = $cache;
     }
 
-    public function execute()
+    public function execute(): Redirect
     {
         unset($_SESSION['nosto_debbuger_session']);
 
         $this->cache->flushCache();
 
-        $this->messageManager->addSuccessMessage('You have been logged out.');
+        $this->messageManager->addSuccessMessage(__('You have been logged out.'));
 
         return $this->redirectFactory->create()->setUrl('/nosto/monitoring/login');
     }
