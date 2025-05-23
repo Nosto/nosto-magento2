@@ -71,7 +71,7 @@ class MonitoringPage extends Template
         Account $account,
         Scope $scope,
         Data $settings,
-        array $data = [],
+        array $data = []
     ) {
         parent::__construct($context, $data);
         $this->account = $account;

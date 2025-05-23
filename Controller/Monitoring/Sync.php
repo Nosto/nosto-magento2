@@ -65,7 +65,7 @@ use Nosto\Tagging\Model\Service\Sync\Upsert\Product\SyncService;
 
 class Sync implements ActionInterface
 {
-    private const string CUSTOMER_ID = '2c_cId';
+    private const CUSTOMER_ID = '2c_cId';
 
     /** @var RequestInterface $request */
     private RequestInterface $request;

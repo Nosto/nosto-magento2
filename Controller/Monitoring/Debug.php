@@ -51,11 +51,11 @@ use Nosto\Tagging\Model\Product\Builder;
 
 class Debug implements ActionInterface
 {
-    private const string PRODUCT_ENTITY = 'product';
+    private const PRODUCT_ENTITY = 'product';
 
-    private const string ORDER_ENTITY = 'order';
+    private const ORDER_ENTITY = 'order';
 
-    private const string CATEGORY_ENTITY = 'category';
+    private const CATEGORY_ENTITY = 'category';
 
     /** @var ProductRepositoryInterface $productRepository */
     private ProductRepositoryInterface $productRepository;
