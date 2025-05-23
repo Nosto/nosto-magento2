@@ -36,18 +36,24 @@
 
 namespace Nosto\Tagging\Controller\Monitoring;
 
+use Exception;
 use Magento\Framework\App\ActionInterface;
+use Magento\Framework\App\Filesystem\DirectoryList;
+use Magento\Framework\App\Response\Http\FileFactory;
 use Magento\Framework\App\Response\RedirectInterface;
+use Magento\Framework\App\ResponseInterface;
 use Magento\Framework\Controller\Result\Redirect;
 use Magento\Framework\Controller\Result\RedirectFactory;
+use Magento\Framework\Exception\FileSystemException;
+use Magento\Framework\Filesystem\Driver\File;
 use Magento\Framework\Message\ManagerInterface;
 use ZipArchive;
 
 class Logs implements ActionInterface
 {
-    private const string LOG_LOCATION = BP . '/var/log/';
+    private const LOG_LOCATION = BP . '/var/log/';
 
-    private const string ARCHIVE_NAME = 'nosto-logs.zip';
+    private const ARCHIVE_NAME = 'nosto-logs.zip';
 
     /** @var ManagerInterface $messageManager */
     private ManagerInterface $messageManager;
@@ -58,63 +64,72 @@ class Logs implements ActionInterface
     /** @var RedirectInterface $redirect */
     private RedirectInterface $redirect;
 
+    /** @var FileFactory $fileFactory */
+    private FileFactory $fileFactory;
+
+    /** @var File $file */
+    private File $fileDriver;
+
     /**
      * Logs constructor
      *
      * @param ManagerInterface $messageManager
      * @param RedirectFactory $redirectFactory
      * @param RedirectInterface $redirect
+     * @param FileFactory $fileFactory
+     * @param File $fileDriver
      */
     public function __construct(
         ManagerInterface $messageManager,
         RedirectFactory $redirectFactory,
-        RedirectInterface $redirect
+        RedirectInterface $redirect,
+        FileFactory $fileFactory,
+        File $fileDriver
     ) {
         $this->messageManager = $messageManager;
         $this->redirectFactory = $redirectFactory;
         $this->redirect = $redirect;
+        $this->fileFactory = $fileFactory;
+        $this->fileDriver = $fileDriver;
     }
 
     /**
      * Check if user have permission for log folder and download log files
-     *
-     * @return Redirect
+     * @throws Exception
      */
-    public function execute(): Redirect
+    public function execute(): ResponseInterface|Redirect
     {
         if (false === $this->checkPermissionsForLogsFolder()) {
             $this->messageManager->addErrorMessage(__('Permission denied!'));
-        } else {
-            $this->compressAndDownloadLogFiles($this->getNostoLogFiles());
+
+            return $this->redirectFactory->create()->setUrl($this->redirect->getRefererUrl());
         }
 
-        return $this->redirectFactory->create()->setUrl($this->redirect->getRefererUrl());
-    }
+        $zipFilePath = self::LOG_LOCATION . self::ARCHIVE_NAME;
 
-    /**
-     * Compress and download Nosto log files
-     *
-     * @param array $files
-     * @return void
-     */
-    private function compressAndDownloadLogFiles(array $files)
-    {
         $zip = new ZipArchive();
-        if ($zip->open(self::ARCHIVE_NAME, ZipArchive::CREATE) !== true) {
-            exit('Cannot open ' . self::ARCHIVE_NAME);
+        if ($zip->open($zipFilePath, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== true) {
+            throw new Exception(__('Cannot create ZIP file.'));
         }
 
-        foreach ($files as $file) {
-            $zip->addFile(self::LOG_LOCATION . $file, $file);
+        foreach ($this->getNostoLogFiles() as $file) {
+            if ($this->fileDriver->isExists($file)) {
+                $zip->addFile($file, basename($file)); // Add file and set name inside ZIP
+            }
         }
         $zip->close();
 
-        header("Content-type: application/zip");
-        header("Content-Disposition: attachment; filename = " . (self::ARCHIVE_NAME));
-        header("Pragma: no-cache");
-        header("Expires: 0");
-        readfile(self::ARCHIVE_NAME);
-        exit;
+        // Serve ZIP file for download
+        return $this->fileFactory->create(
+            self::ARCHIVE_NAME,
+            [
+                'type'  => 'filename',
+                'value' => $zipFilePath,
+                'rm'    => true  // Delete after download
+            ],
+            DirectoryList::VAR_DIR,
+            'application/zip'
+        );
     }
 
     /**
@@ -129,7 +144,7 @@ class Logs implements ActionInterface
         $logFiles = scandir(self::LOG_LOCATION);
         foreach ($logFiles as $logFile) {
             if (str_starts_with($logFile, 'nosto')) {
-                $fileNames[] = $logFile;
+                $fileNames[] = self::LOG_LOCATION . $logFile;
             }
         }
 
@@ -140,10 +155,11 @@ class Logs implements ActionInterface
      * Check permissions for logs folder
      *
      * @return bool
+     * @throws FileSystemException
      */
     private function checkPermissionsForLogsFolder(): bool
     {
-        if (!is_readable(self::LOG_LOCATION)) {
+        if (!$this->fileDriver->isReadable(self::LOG_LOCATION)) {
             return false;
         }
 
