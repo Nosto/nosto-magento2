@@ -154,6 +154,8 @@ class Sync implements ActionInterface
     }
 
     /**
+     * Execute sync by entity type
+     *
      * @throws Exception
      */
     public function execute(): Redirect
