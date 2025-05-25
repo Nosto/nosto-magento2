@@ -123,7 +123,9 @@ class Logs implements ActionInterface
 
         $logFiles = $this->fileDriver->readDirectory(self::LOG_LOCATION);
         foreach ($logFiles as $logFile) {
-            if (str_starts_with(basename($logFile), 'nosto')) {
+            $fullPathName = new SplFileInfo($logFile);
+            $filename = $fullPathName->getFilename();
+            if (str_starts_with($filename, 'nosto')) {
                 $fileNames[] = $logFile;
             }
         }
