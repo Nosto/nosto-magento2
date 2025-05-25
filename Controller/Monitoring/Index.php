@@ -40,10 +40,11 @@ use Magento\Framework\App\ActionInterface;
 use Magento\Framework\Controller\Result\RedirectFactory;
 use Magento\Framework\Controller\ResultInterface;
 use Magento\Framework\Message\ManagerInterface;
+use Magento\Framework\Stdlib\CookieManagerInterface;
 use Magento\Framework\View\Result\PageFactory;
-use Nosto\Tagging\Helper\Session;
+use Nosto\Tagging\Helper\DebuggerCookie;
 
-class Index extends Session implements ActionInterface
+class Index extends DebuggerCookie implements ActionInterface
 {
     /** @var PageFactory $pageFactory */
     private PageFactory $pageFactory;
@@ -60,12 +61,15 @@ class Index extends Session implements ActionInterface
      * @param PageFactory $pageFactory
      * @param ManagerInterface $messageManager
      * @param RedirectFactory $redirectFactory
+     * @param CookieManagerInterface $cookieManager
      */
     public function __construct(
         PageFactory $pageFactory,
         ManagerInterface $messageManager,
-        RedirectFactory $redirectFactory
+        RedirectFactory $redirectFactory,
+        CookieManagerInterface $cookieManager
     ) {
+        parent::__construct($cookieManager);
         $this->pageFactory = $pageFactory;
         $this->messageManager = $messageManager;
         $this->redirectFactory = $redirectFactory;
@@ -78,7 +82,7 @@ class Index extends Session implements ActionInterface
      */
     public function execute(): ResultInterface
     {
-        if (false === $this->checkIfSessionExists()) {
+        if (false === $this->checkIfNostoDebuggerCookieExists()) {
             $this->messageManager->addErrorMessage(__('Please login to continue!'));
 
             return $this->redirectFactory->create()->setUrl('/nosto/monitoring/login');

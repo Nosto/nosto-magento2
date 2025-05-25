@@ -36,12 +36,18 @@
 
 namespace Nosto\Tagging\Controller\Monitoring;
 
+use Exception;
 use Magento\Framework\App\ActionInterface;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Controller\Result\Redirect;
 use Magento\Framework\Controller\Result\RedirectFactory;
+use Magento\Framework\Exception\InputException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Message\ManagerInterface;
+use Magento\Framework\Stdlib\Cookie\CookieMetadataFactory;
+use Magento\Framework\Stdlib\Cookie\CookieSizeLimitReachedException;
+use Magento\Framework\Stdlib\Cookie\FailureToSendException;
+use Magento\Framework\Stdlib\CookieManagerInterface;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
 use Nosto\NostoException;
@@ -68,6 +74,12 @@ class Submit implements ActionInterface
     /** @var RedirectFactory $redirectFactory */
     private RedirectFactory $redirectFactory;
 
+    /** @var CookieManagerInterface $cookieManager */
+    private CookieManagerInterface $cookieManager;
+
+    /** @var CookieMetadataFactory $cookieMetadataFactory */
+    private CookieMetadataFactory $cookieMetadataFactory;
+
     /**
      * Submit constructor
      *
@@ -76,19 +88,25 @@ class Submit implements ActionInterface
      * @param StoreManagerInterface $storeManager
      * @param Account $accountHelper
      * @param RedirectFactory $redirectFactory
+     * @param CookieManagerInterface $cookieManager
+     * @param CookieMetadataFactory $cookieMetadataFactory
      */
     public function __construct(
         ManagerInterface $messageManager,
         RequestInterface $request,
         StoreManagerInterface $storeManager,
         Account $accountHelper,
-        RedirectFactory $redirectFactory
+        RedirectFactory $redirectFactory,
+        CookieManagerInterface $cookieManager,
+        CookieMetadataFactory $cookieMetadataFactory
     ) {
         $this->request = $request;
         $this->messageManager = $messageManager;
         $this->storeManager = $storeManager;
         $this->accountHelper = $accountHelper;
         $this->redirectFactory = $redirectFactory;
+        $this->cookieManager = $cookieManager;
+        $this->cookieMetadataFactory = $cookieMetadataFactory;
     }
 
     /**
@@ -97,6 +115,7 @@ class Submit implements ActionInterface
      * @throws NostoException
      * @throws NoSuchEntityException
      * @throws AbstractHttpException
+     * @throws Exception
      */
     public function execute(): Redirect
     {
@@ -112,7 +131,11 @@ class Submit implements ActionInterface
             return $this->redirectFactory->create()->setUrl('/nosto/monitoring/login');
         }
 
-        $_SESSION['nosto_debbuger_session'] = $token;
+        try {
+            $this->setNostoDebuggerCookie($token);
+        } catch (Exception $e) {
+            throw new Exception($e->getMessage());
+        }
 
         return $this->redirectFactory->create()->setUrl('/nosto/monitoring/');
     }
@@ -129,5 +152,19 @@ class Submit implements ActionInterface
         $signupAccount->addApiToken(new NostoToken(NostoToken::API_PRODUCTS, $token));
 
         return (new MockUpsertProduct($signupAccount))->upsert();
+    }
+
+    /**
+     * @throws FailureToSendException
+     * @throws InputException
+     * @throws CookieSizeLimitReachedException
+     */
+    private function setNostoDebuggerCookie(string $token): void
+    {
+        $metadata = $this->cookieMetadataFactory->createPublicCookieMetadata()
+            ->setPath('/')
+            ->setHttpOnly(true)
+            ->setSecure(false);
+        $this->cookieManager->setPublicCookie('nosto_debugger_cookie', $token, $metadata);
     }
 }

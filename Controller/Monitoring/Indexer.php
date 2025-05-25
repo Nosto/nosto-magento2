@@ -46,18 +46,19 @@ use Magento\Framework\Controller\Result\RedirectFactory;
 use Magento\Framework\Controller\ResultInterface;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Message\ManagerInterface;
+use Magento\Framework\Stdlib\CookieManagerInterface;
 use Magento\Framework\View\Result\PageFactory;
 use Magento\Sales\Api\OrderRepositoryInterface;
 use Magento\Sales\Model\Order;
 use Magento\Store\Model\Store;
 use Nosto\Tagging\Block\MonitoringIndexer;
+use Nosto\Tagging\Helper\DebuggerCookie;
 use Nosto\Tagging\Helper\Scope;
-use Nosto\Tagging\Helper\Session;
 use Nosto\Tagging\Model\Category\Builder as CategoryBuilder;
 use Nosto\Tagging\Model\Order\Builder as OrderBuilder;
 use Nosto\Tagging\Model\Product\Builder as ProductBuilder;
 
-class Indexer extends Session implements ActionInterface
+class Indexer extends DebuggerCookie implements ActionInterface
 {
     /** @var PageFactory $pageFactory */
     private PageFactory $pageFactory;
@@ -110,6 +111,7 @@ class Indexer extends Session implements ActionInterface
      * @param RedirectFactory $redirectFactory
      * @param CategoryRepositoryInterface $categoryRepository
      * @param CategoryBuilder $categoryBuilder
+     * @param CookieManagerInterface $cookieManager
      */
     public function __construct(
         PageFactory $pageFactory,
@@ -123,8 +125,10 @@ class Indexer extends Session implements ActionInterface
         ManagerInterface $messageManager,
         RedirectFactory $redirectFactory,
         CategoryRepositoryInterface $categoryRepository,
-        CategoryBuilder $categoryBuilder
+        CategoryBuilder $categoryBuilder,
+        CookieManagerInterface $cookieManager
     ) {
+        parent::__construct($cookieManager);
         $this->pageFactory = $pageFactory;
         $this->request = $request;
         $this->productRepository = $productRepository;
@@ -146,7 +150,7 @@ class Indexer extends Session implements ActionInterface
      */
     public function execute(): ResultInterface
     {
-        if (false === $this->checkIfSessionExists()) {
+        if (false === $this->checkIfNostoDebuggerCookieExists()) {
             $this->messageManager->addErrorMessage(__('Please login to continue!'));
 
             return $this->redirectFactory->create()->setUrl('/nosto/monitoring/login');

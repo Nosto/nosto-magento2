@@ -36,10 +36,15 @@
 
 namespace Nosto\Tagging\Controller\Monitoring;
 
+use Exception;
 use Magento\Framework\App\ActionInterface;
 use Magento\Framework\Controller\Result\Redirect;
 use Magento\Framework\Controller\Result\RedirectFactory;
+use Magento\Framework\Exception\InputException;
 use Magento\Framework\Message\ManagerInterface;
+use Magento\Framework\Stdlib\Cookie\CookieMetadataFactory;
+use Magento\Framework\Stdlib\Cookie\FailureToSendException;
+use Magento\Framework\Stdlib\CookieManagerInterface;
 use Nosto\Tagging\Helper\Cache;
 
 class Logout implements ActionInterface
@@ -53,36 +58,68 @@ class Logout implements ActionInterface
     /** @var Cache $cache */
     private Cache $cache;
 
+    /** @var CookieManagerInterface $cookieManager */
+    private CookieManagerInterface $cookieManager;
+
+    /** @var CookieMetadataFactory $cookieMetadataFactory */
+    private CookieMetadataFactory $cookieMetadataFactory;
+
     /**
      * Logout constructor
      *
      * @param RedirectFactory $redirectFactory
      * @param ManagerInterface $messageManager
      * @param Cache $cache
+     * @param CookieManagerInterface $cookieManager
+     * @param CookieMetadataFactory $cookieMetadataFactory
      */
     public function __construct(
         RedirectFactory $redirectFactory,
         ManagerInterface $messageManager,
-        Cache $cache
+        Cache $cache,
+        CookieManagerInterface $cookieManager,
+        CookieMetadataFactory $cookieMetadataFactory
     ) {
         $this->redirectFactory = $redirectFactory;
         $this->messageManager = $messageManager;
         $this->cache = $cache;
+        $this->cookieManager = $cookieManager;
+        $this->cookieMetadataFactory = $cookieMetadataFactory;
     }
 
     /**
      * Logout user
      *
      * @return Redirect
+     * @throws Exception
      */
     public function execute(): Redirect
     {
-        unset($_SESSION['nosto_debbuger_session']);
+        try {
+            $this->deleteNostoDebuggerCookie();
+        } catch (Exception $e) {
+            throw new Exception($e->getMessage());
+        }
 
         $this->cache->flushCache();
 
         $this->messageManager->addSuccessMessage(__('You have been logged out.'));
 
         return $this->redirectFactory->create()->setUrl('/nosto/monitoring/login');
+    }
+
+    /**
+     * @throws FailureToSendException
+     * @throws InputException
+     */
+    private function deleteNostoDebuggerCookie(): void
+    {
+        $cookieMetadata = $this->cookieMetadataFactory->createPublicCookieMetadata()
+            ->setPath('/')
+            ->setDomain('')
+            ->setDuration(-3600)
+            ->setHttpOnly(true)
+            ->setSecure(false);
+        $this->cookieManager->deleteCookie('nosto_debugger_cookie', $cookieMetadata);
     }
 }

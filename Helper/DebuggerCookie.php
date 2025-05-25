@@ -36,16 +36,26 @@
 
 namespace Nosto\Tagging\Helper;
 
-class Session
+use Magento\Framework\Stdlib\CookieManagerInterface;
+
+class DebuggerCookie
 {
+    /** @var CookieManagerInterface $cookieManager */
+    private CookieManagerInterface $cookieManager;
+
+    public function __construct(CookieManagerInterface $cookieManager)
+    {
+        $this->cookieManager = $cookieManager;
+    }
+
     /**
-     * Check for user session in Nosto debugger
+     * Check for user cookie in Nosto debugger
      *
      * @return bool
      */
-    public function checkIfSessionExists(): bool
+    public function checkIfNostoDebuggerCookieExists(): bool
     {
-        if (!isset($_SESSION['nosto_debbuger_session'])) {
+        if (null === $this->cookieManager->getCookie('nosto_debugger_cookie')) {
             return false;
         }
 
