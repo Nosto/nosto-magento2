@@ -47,7 +47,8 @@ class MockResultHandler extends ResultHandler
     }
 
     /**
-     * @return array<string, mixed>
+     * @param HttpResponse $response
+     * @return array
      */
     protected function parseResponse(HttpResponse $response): array
     {
@@ -56,7 +57,7 @@ class MockResultHandler extends ResultHandler
 
             return [
                 'success' => false,
-                'message' => empty($result['message']) ? 'Unautorized' : $result['message'],
+                'message' => empty($result['message']) ? 'Unauthorized' : $result['message'],
             ];
         }
 
