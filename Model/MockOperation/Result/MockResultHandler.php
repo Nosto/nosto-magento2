@@ -41,6 +41,12 @@ use Nosto\Result\ResultHandler;
 
 class MockResultHandler extends ResultHandler
 {
+    /**
+     * Parse response
+     *
+     * @param HttpResponse $response
+     * @return array|true[]
+     */
     public function parse(HttpResponse $response): array
     {
         return $this->parseResponse($response);
