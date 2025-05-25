@@ -52,7 +52,7 @@ class MonitoringIndexer extends Template
 
     private static string $entityType;
 
-    private static int $entityId;
+    private static string $entityId;
 
     /**
      * MonitoringIndexer
