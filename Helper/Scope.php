@@ -212,8 +212,8 @@ class Scope extends AbstractHelper
             $themeId = $this->storeManager->getStore($storeId)->getConfig('design/theme/theme_id');
             $theme = $this->themeProvider->getThemeById($themeId);
             if ($theme) {
-                $themePath = $theme->getThemePath();
-                return (strpos($themePath, 'Hyva/') !== false);
+                $themeCode = $theme->getCode();
+                return (str_contains($themeCode, 'Hyva') !== false);
             }
         } catch (Exception $e) {
             return false;
