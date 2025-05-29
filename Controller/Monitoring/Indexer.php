@@ -202,12 +202,12 @@ class Indexer extends DebuggerCookie implements ActionInterface
      * @param $entityId
      * @return void
      * @throws NoSuchEntityException
+     * @phan-suppress PhanTypeMismatchArgument
      */
     private function buildNostoProduct(Store $store, $entityId): void
     {
         /** @var Product $product */
         $product = $this->productRepository->getById($entityId);
-        /** @phan-suppress-next-line PhanTypeMismatchAssignment */
         $nostoProduct = $this->productBuilder->build($product, $store);
         $this->block->setNostoProduct($nostoProduct);
         $this->block->setEntityId($product->getId());
