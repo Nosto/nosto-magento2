@@ -39,6 +39,7 @@ namespace Nosto\Tagging\Controller\Monitoring;
 use Magento\Catalog\Api\CategoryRepositoryInterface;
 use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Catalog\Model\CategoryFactory;
+use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\ProductFactory;
 use Magento\Framework\App\ActionInterface;
 use Magento\Framework\App\RequestInterface;
@@ -204,10 +205,13 @@ class Indexer extends DebuggerCookie implements ActionInterface
      */
     private function buildNostoProduct(Store $store, $entityId): void
     {
+        /**
+         * Returning ProductInterface but declared to return Product|null
+         */
+        /** @phan-suppress-next-next-line PhanTypeMismatchReturnSuperType */
+        /** @var Product $product */
         $product = $this->productRepository->getById($entityId);
-        $productModel = $this->productFactory->create();
-        $productModel->setData($product->getData());
-        $nostoProduct = $this->productBuilder->build($productModel, $store);
+        $nostoProduct = $this->productBuilder->build($product, $store);
         $this->block->setNostoProduct($nostoProduct);
         $this->block->setEntityId($product->getId());
         $this->block->setEntityType('product');
