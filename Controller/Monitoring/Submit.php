@@ -116,6 +116,7 @@ class Submit implements ActionInterface
      * @throws NoSuchEntityException
      * @throws AbstractHttpException
      * @throws Exception
+     * @phan-suppress PhanTypeMismatchArgument
      */
     public function execute(): Redirect
     {

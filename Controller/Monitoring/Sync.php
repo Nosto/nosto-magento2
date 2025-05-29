@@ -229,6 +229,7 @@ class Sync implements ActionInterface
      * @throws AbstractHttpException
      * @throws NostoException
      * @throws HttpResponseException
+     * @phan-suppress PhanTypeMismatchArgument
      */
     private function orderSync(Store $store, $entityId): void
     {
@@ -258,6 +259,7 @@ class Sync implements ActionInterface
      * @throws NostoException
      * @throws NoSuchEntityException
      * @throws Exception
+     * @phan-suppress PhanTypeMismatchArgument
      */
     private function categorySync(Store $store, $entityId): void
     {
