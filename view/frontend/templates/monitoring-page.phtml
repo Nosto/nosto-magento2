@@ -80,7 +80,9 @@ $nostoIndexCategoryIndexer = $block->getLastIndexedTime('nosto_index_category');
     </div>
     <div class="col-md-8">
         <p>Account ID:
-            <span style="font-weight: bold;"><?= $block->escapeHtml($block->getAccountNameAndTokens()->getName()) ?></span>
+            <span style="font-weight: bold;">
+                <?= $block->escapeHtml($block->getAccountNameAndTokens()->getName()) ?>
+            </span>
         </p>
     </div>
     <div class="col-md-8">
@@ -89,7 +91,7 @@ $nostoIndexCategoryIndexer = $block->getLastIndexedTime('nosto_index_category');
             <?php
             if (!empty($nostoIndexProductIndexer)) {
                 foreach ($nostoIndexProductIndexer as $value) {
-                    echo $value . ' ';
+                    echo $block->escapeHtml($value . ' ');
                 }
             }
             ?>
@@ -98,7 +100,7 @@ $nostoIndexCategoryIndexer = $block->getLastIndexedTime('nosto_index_category');
             <?php
             if (!empty($nostoIndexCategoryIndexer)) {
                 foreach ($nostoIndexCategoryIndexer as $value) {
-                    echo $value . ' ';
+                    echo $block->escapeHtml($value . ' ');
                 }
             }
             ?>
