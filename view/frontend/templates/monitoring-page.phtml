@@ -59,20 +59,29 @@ $nostoIndexCategoryIndexer = $block->getLastIndexedTime('nosto_index_category');
               data-mage-init='{"validation":{}}'>
             <div class="actions-toolbar">
                 <div class="primary">
-                    <button type="submit" class="action submit primary" title="Download Nosto log files"><span>Download Nosto log files</span></button>
+                    <button type="submit" class="action submit primary" title="Download Nosto log files">
+                        <span>Download Nosto log files</span>
+                    </button>
                 </div>
             </div>
         </form>
     </div>
     <hr>
     <div class="col-md-8">
-        <p>Nosto is enabled and installed: <span style="font-weight: bold;"><?= $block->escapeHtml($block->checkIfNostoInstalledAndEnabled()) ?></span></p>
+        <p>Nosto is enabled and installed:
+            <span style="font-weight: bold;"><?= $block->escapeHtml($block->checkIfNostoInstalledAndEnabled()) ?></span>
+        </p>
     </div>
     <div class="col-md-8">
-        <p>Nosto module version: <span style="font-weight: bold;"><?= $block->escapeHtml($block->getStringSettingsValues('getModuleVersion')) ?></span></p>
+        <p>Nosto module version:
+            <span style="font-weight: bold;">
+                <?= $block->escapeHtml($block->getStringSettingsValues('getModuleVersion')) ?>
+            </span></p>
     </div>
     <div class="col-md-8">
-        <p>Account ID: <span style="font-weight: bold;"><?= $block->escapeHtml($block->getAccountNameAndTokens()->getName()) ?></span></p>
+        <p>Account ID:
+            <span style="font-weight: bold;"><?= $block->escapeHtml($block->getAccountNameAndTokens()->getName()) ?></span>
+        </p>
     </div>
     <div class="col-md-8">
         <p>Last indexed time:</p>
@@ -149,7 +158,10 @@ $nostoIndexCategoryIndexer = $block->getLastIndexedTime('nosto_index_category');
             </tr>
             <tr>
                 <td>Remove "pub/" from product image URLs</td>
-                <td><?= $block->escapeHtml($block->getSettingsValue('getRemovePubDirectoryFromProductImageUrl')) ?></td>
+                <td>
+                    <?= $block
+                        ->escapeHtml($block->getSettingsValue('getRemovePubDirectoryFromProductImageUrl')) ?>
+                </td>
             </tr>
             <tr>
                 <td>Brand</td>
@@ -165,7 +177,9 @@ $nostoIndexCategoryIndexer = $block->getLastIndexedTime('nosto_index_category');
             </tr>
             <tr>
                 <td>Google Category</td>
-                <td><?= $block->escapeHtml($block->getStringSettingsValues('getGoogleCategoryAttribute')) ?></td>
+                <td>
+                    <?= $block->escapeHtml($block->getStringSettingsValues('getGoogleCategoryAttribute')) ?>
+                </td>
             </tr>
             <tr>
                 <td>Enable Variations</td>
@@ -213,7 +227,9 @@ $nostoIndexCategoryIndexer = $block->getLastIndexedTime('nosto_index_category');
             </tr>
             <tr>
                 <td>Track orders from multiple channels</td>
-                <td><?= $block->escapeHtml($block->getSettingsValue('isMultiChannelOrderTrackingEnabled')) ?></td>
+                <td>
+                    <?= $block->escapeHtml($block->getSettingsValue('isMultiChannelOrderTrackingEnabled')) ?>
+                </td>
             </tr>
             <tr>
                 <td>Reload recs after reloading cart</td>
@@ -235,9 +251,11 @@ $nostoIndexCategoryIndexer = $block->getLastIndexedTime('nosto_index_category');
                 <div class="field product_id required">
                     <label class="label" for="title"><span>Product ID</span></label>
                     <div class="control">
-                        <input name="product_id" id="product_id" title="Product ID" value="" class="input-text" type="text"
+                        <input name="product_id" id="product_id" title="Product ID" value="" class="input-text"
+                               type="text"
                                data-validate="{required:true, 'validate-alphanum-with-spaces':true}">
-                        <input name="entityType" id="entityType" title="entityType" value="product" class="input-text" type="hidden"
+                        <input name="entityType" id="entityType" title="entityType" value="product" class="input-text"
+                               type="hidden"
                                data-validate="{required:true, 'validate-alphanum-with-spaces':true}">
                     </div>
                 </div>
@@ -260,7 +278,8 @@ $nostoIndexCategoryIndexer = $block->getLastIndexedTime('nosto_index_category');
                     <div class="control">
                         <input name="order_id" id="order_id" title="Order ID" value="" class="input-text" type="text"
                                data-validate="{required:true, 'validate-alphanum-with-spaces':true}">
-                        <input name="entityType" id="entityType" title="entityType" value="order" class="input-text" type="hidden"
+                        <input name="entityType" id="entityType" title="entityType" value="order" class="input-text"
+                               type="hidden"
                                data-validate="{required:true, 'validate-alphanum-with-spaces':true}">
                     </div>
                 </div>
@@ -281,9 +300,11 @@ $nostoIndexCategoryIndexer = $block->getLastIndexedTime('nosto_index_category');
                 <div class="field category_id required">
                     <label class="label" for="title"><span>Category ID</span></label>
                     <div class="control">
-                        <input name="category_id" id="category_id" title="Category ID" value="" class="input-text" type="text"
+                        <input name="category_id" id="category_id" title="Category ID" value="" class="input-text"
+                               type="text"
                                data-validate="{required:true, 'validate-alphanum-with-spaces':true}">
-                        <input name="entityType" id="entityType" title="entityType" value="category" class="input-text" type="hidden"
+                        <input name="entityType" id="entityType" title="entityType" value="category" class="input-text"
+                               type="hidden"
                                data-validate="{required:true, 'validate-alphanum-with-spaces':true}">
                     </div>
                 </div>
