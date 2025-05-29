@@ -84,14 +84,14 @@ class Logs implements ActionInterface
     public function execute(): ResponseInterface
     {
         if (false === $this->checkPermissionsForLogsFolder()) {
-            throw new StateException(__('Permission denied!.'));
+            throw new StateException(__(['Permission denied!.']));
         }
 
         $zipFilePath = $this->directoryList->getRoot() . '/var/log/' . self::ARCHIVE_NAME;
 
         $zip = new ZipArchive();
         if ($zip->open($zipFilePath, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== true) {
-            throw new StateException(__('Can not create ZIP file.'));
+            throw new StateException(__(['Can not create ZIP file.']));
         }
 
         foreach ($this->getNostoLogFiles() as $file) {

@@ -224,13 +224,13 @@ class Sync implements ActionInterface
      * Sync order
      *
      * @param Store $store
-     * @param string $entityId
+     * @param $entityId
      * @return void
      * @throws AbstractHttpException
      * @throws NostoException
      * @throws HttpResponseException
      */
-    private function orderSync(Store $store, string $entityId): void
+    private function orderSync(Store $store, $entityId): void
     {
         $account = $this->nostoHelperAccount->findAccount($store);
         /** @var Order $order */
@@ -251,7 +251,7 @@ class Sync implements ActionInterface
      * Sync category
      *
      * @param Store $store
-     * @param string $entityId
+     * @param $entityId
      * @return void
      * @throws AbstractHttpException
      * @throws MemoryOutOfBoundsException
@@ -259,7 +259,7 @@ class Sync implements ActionInterface
      * @throws NoSuchEntityException
      * @throws Exception
      */
-    private function categorySync(Store $store, string $entityId): void
+    private function categorySync(Store $store, $entityId): void
     {
         /** @var Category $category */
         $category = $this->categoryRepository->get($entityId);
