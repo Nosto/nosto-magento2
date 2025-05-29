@@ -38,9 +38,8 @@ namespace Nosto\Tagging\Controller\Monitoring;
 
 use Magento\Catalog\Api\CategoryRepositoryInterface;
 use Magento\Catalog\Api\ProductRepositoryInterface;
-use Magento\Catalog\Model\CategoryFactory;
+use Magento\Catalog\Model\Category;
 use Magento\Catalog\Model\Product;
-use Magento\Catalog\Model\ProductFactory;
 use Magento\Framework\App\ActionInterface;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Controller\Result\RedirectFactory;
@@ -50,7 +49,7 @@ use Magento\Framework\Message\ManagerInterface;
 use Magento\Framework\Stdlib\CookieManagerInterface;
 use Magento\Framework\View\Result\PageFactory;
 use Magento\Sales\Api\OrderRepositoryInterface;
-use Magento\Sales\Model\OrderFactory;
+use Magento\Sales\Model\Order;
 use Magento\Store\Model\Store;
 use Nosto\Tagging\Block\MonitoringIndexer;
 use Nosto\Tagging\Helper\DebuggerCookie;
@@ -97,15 +96,6 @@ class Indexer extends DebuggerCookie implements ActionInterface
     /** @var CategoryBuilder $categoryBuilder */
     private CategoryBuilder $categoryBuilder;
 
-    /** @var ProductFactory $productFactory */
-    private ProductFactory $productFactory;
-
-    /** @var OrderFactory $orderFactory */
-    private OrderFactory $orderFactory;
-
-    /** @var CategoryFactory $categoryFactory */
-    private CategoryFactory $categoryFactory;
-
     /**
      * Indexer constructor
      *
@@ -122,9 +112,6 @@ class Indexer extends DebuggerCookie implements ActionInterface
      * @param CategoryRepositoryInterface $categoryRepository
      * @param CategoryBuilder $categoryBuilder
      * @param CookieManagerInterface $cookieManager
-     * @param ProductFactory $productFactory
-     * @param OrderFactory $orderFactory
-     * @param CategoryFactory $categoryFactory
      */
     public function __construct(
         PageFactory $pageFactory,
@@ -139,10 +126,7 @@ class Indexer extends DebuggerCookie implements ActionInterface
         RedirectFactory $redirectFactory,
         CategoryRepositoryInterface $categoryRepository,
         CategoryBuilder $categoryBuilder,
-        CookieManagerInterface $cookieManager,
-        ProductFactory $productFactory,
-        OrderFactory $orderFactory,
-        CategoryFactory $categoryFactory
+        CookieManagerInterface $cookieManager
     ) {
         parent::__construct($cookieManager);
         $this->pageFactory = $pageFactory;
@@ -157,9 +141,6 @@ class Indexer extends DebuggerCookie implements ActionInterface
         $this->redirectFactory = $redirectFactory;
         $this->categoryRepository = $categoryRepository;
         $this->categoryBuilder = $categoryBuilder;
-        $this->productFactory = $productFactory;
-        $this->orderFactory = $orderFactory;
-        $this->categoryFactory = $categoryFactory;
     }
 
     /**
@@ -219,13 +200,13 @@ class Indexer extends DebuggerCookie implements ActionInterface
      *
      * @param $entityId
      * @return void
+     * @phan-suppress PhanTypeMismatchArgument
      */
     private function buildNostoOrder($entityId): void
     {
+        /** @var Order $order */
         $order = $this->orderRepository->get($entityId);
-        $orderModel = $this->orderFactory->create();
-        $orderModel->setData($order->getData());
-        $nostoOrder = $this->orderBuilder->build($orderModel);
+        $nostoOrder = $this->orderBuilder->build($order);
         $this->block->setNostoOrder($nostoOrder);
         $this->block->setEntityId($entityId);
         $this->block->setEntityType('order');
@@ -238,13 +219,13 @@ class Indexer extends DebuggerCookie implements ActionInterface
      * @param $entityId
      * @return void
      * @throws NoSuchEntityException
+     * @phan-suppress PhanTypeMismatchArgument
      */
     private function buildNostoCategory(Store $store, $entityId): void
     {
+        /** @var Category $category */
         $category = $this->categoryRepository->get($entityId);
-        $categoryModel = $this->categoryFactory->create();
-        $categoryModel->setData($category->getData());
-        $nostoCategory = $this->categoryBuilder->build($categoryModel, $store);
+        $nostoCategory = $this->categoryBuilder->build($category, $store);
         $this->block->setNostoCategory($nostoCategory);
         $this->block->setEntityId($category->getId());
         $this->block->setEntityType('category');
