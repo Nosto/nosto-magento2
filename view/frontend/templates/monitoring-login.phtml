@@ -39,7 +39,7 @@
 <div class="row">
     <div class="col-md-8">
         <form name="login" method="post" id="login" class="form"
-              action="<?php echo $block->getLoginFormAction('nosto/monitoring/submit') ?>'); ?>"
+              action="<?= $block->escapeHtml($block->getLoginFormAction('nosto/monitoring/submit')) ?>"
               data-hasrequired="<?= __('* Required Fields') ?>"
               data-mage-init='{"validation":{}}'>
             <div class="fields col-md-6">

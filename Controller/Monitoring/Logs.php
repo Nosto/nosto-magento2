@@ -87,7 +87,7 @@ class Logs implements ActionInterface
 
         $zip = new ZipArchive();
         if ($zip->open($zipFilePath, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== true) {
-            throw new Exception(__('Cannot create ZIP file.'));
+            throw new StateException(__('Can not create ZIP file.'));
         }
 
         foreach ($this->getNostoLogFiles() as $file) {
