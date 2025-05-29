@@ -206,7 +206,7 @@ class Indexer extends DebuggerCookie implements ActionInterface
         $order = $this->orderRepository->get($entityId);
         $nostoOrder = $this->orderBuilder->build($order);
         $this->block->setNostoOrder($nostoOrder);
-        $this->block->setEntityId($order->getId());
+        $this->block->setEntityId($entityId);
         $this->block->setEntityType('order');
     }
 
