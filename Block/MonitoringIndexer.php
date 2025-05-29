@@ -36,7 +36,6 @@
 
 namespace Nosto\Tagging\Block;
 
-use Magento\Backend\Block\Template\Context;
 use Magento\Framework\View\Element\Template;
 use Nosto\Model\Category\Category;
 use Nosto\Model\Product\Product;
@@ -53,19 +52,6 @@ class MonitoringIndexer extends Template
     private static string $entityType;
 
     private static string $entityId;
-
-    /**
-     * MonitoringIndexer
-     *
-     * @param Context $context
-     * @param array $data
-     */
-    public function __construct(
-        Context $context,
-        array $data = []
-    ) {
-        parent::__construct($context, $data);
-    }
 
     /**
      * Get sync form action

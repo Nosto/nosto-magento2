@@ -37,21 +37,9 @@
 namespace Nosto\Tagging\Block;
 
 use Magento\Framework\View\Element\Template;
-use Magento\Backend\Block\Template\Context;
 
 class MonitoringLogin extends Template
 {
-    /**
-     * MonitoringLogin constructor
-     *
-     * @param Context $context
-     * @param array $data
-     */
-    public function __construct(Context $context, array $data = [])
-    {
-        parent::__construct($context, $data);
-    }
-
     /**
      * Returns login form action
      *

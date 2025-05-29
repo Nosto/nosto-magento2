@@ -42,6 +42,7 @@ use Magento\Framework\App\Filesystem\DirectoryList;
 use Magento\Framework\App\Response\Http\FileFactory;
 use Magento\Framework\App\ResponseInterface;
 use Magento\Framework\Exception\FileSystemException;
+use Magento\Framework\Exception\StateException;
 use Magento\Framework\Filesystem\Driver\File;
 use SplFileInfo;
 use ZipArchive;
@@ -79,7 +80,7 @@ class Logs implements ActionInterface
     public function execute(): ResponseInterface
     {
         if (false === $this->checkPermissionsForLogsFolder()) {
-            throw new Exception(__('Permission denied!.'));
+            throw new StateException(__('Permission denied!.'));
         }
 
         $zipFilePath = self::LOG_LOCATION . self::ARCHIVE_NAME;

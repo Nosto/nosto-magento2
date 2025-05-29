@@ -131,11 +131,7 @@ class Submit implements ActionInterface
             return $this->redirectFactory->create()->setUrl('/nosto/monitoring/login');
         }
 
-        try {
-            $this->setNostoDebuggerCookie($token);
-        } catch (Exception $e) {
-            throw new Exception($e->getMessage());
-        }
+        $this->setNostoDebuggerCookie($token);
 
         return $this->redirectFactory->create()->setUrl('/nosto/monitoring/');
     }

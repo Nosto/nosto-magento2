@@ -130,17 +130,32 @@ class Debug implements ActionInterface
         if (self::PRODUCT_ENTITY === $entityType) {
             $productId = $this->request->getParam('product_id');
 
-            return $this->getEntityIfExistAndRedirectToIndexerPage('productRepository', $productId, 'getById', $entityType);
+            return $this->getEntityIfExistAndRedirectToIndexerPage(
+                'productRepository',
+                $productId,
+                'getById',
+                $entityType
+            );
         }
         if (self::ORDER_ENTITY === $entityType) {
             $orderId = $this->request->getParam('order_id');
 
-            return $this->getEntityIfExistAndRedirectToIndexerPage('orderRepository', $orderId, 'get', $entityType);
+            return $this->getEntityIfExistAndRedirectToIndexerPage(
+                'orderRepository',
+                $orderId,
+                'get',
+                $entityType
+            );
         }
         if (self::CATEGORY_ENTITY === $entityType) {
             $categoryId = $this->request->getParam('category_id');
 
-            return $this->getEntityIfExistAndRedirectToIndexerPage('categoryRepository', $categoryId, 'get', $entityType);
+            return $this->getEntityIfExistAndRedirectToIndexerPage(
+                'categoryRepository',
+                $categoryId,
+                'get',
+                $entityType
+            );
         }
 
         $this->messageManager->addErrorMessage(__('Invalid entity type.'));

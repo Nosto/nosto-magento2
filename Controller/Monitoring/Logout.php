@@ -95,11 +95,7 @@ class Logout implements ActionInterface
      */
     public function execute(): Redirect
     {
-        try {
-            $this->deleteNostoDebuggerCookie();
-        } catch (Exception $e) {
-            throw new Exception($e->getMessage());
-        }
+        $this->deleteNostoDebuggerCookie();
 
         $this->cache->flushCache();
 

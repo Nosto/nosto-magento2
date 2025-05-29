@@ -215,8 +215,8 @@ class Sync implements ActionInterface
     {
         $product = $this->collectionFactory->create();
         $product->addAttributeToFilter('entity_id', ['eq' => $entityId]);
-        $this->productIndexer->executeRow($product->getFirstItem()->getData('entity_id'));
-        $this->productIndexer->doIndex($store, [$product->getFirstItem()->getData('entity_id')]);
+        $this->productIndexer->executeRow($product->getItems()[$entityId]->getData('entity_id'));
+        $this->productIndexer->doIndex($store, [$product->getItems()[$entityId]->getData('entity_id')]);
         $this->syncService->sync($product, $store);
     }
 
