@@ -49,8 +49,6 @@ use ZipArchive;
 
 class Logs implements ActionInterface
 {
-    private const LOG_LOCATION = BP . '/var/log/';
-
     private const ARCHIVE_NAME = 'nosto-logs.zip';
 
     /** @var FileFactory $fileFactory */
@@ -59,18 +57,24 @@ class Logs implements ActionInterface
     /** @var File $file */
     private File $fileDriver;
 
+    /** @var DirectoryList $directoryList */
+    private DirectoryList $directoryList;
+
     /**
      * Logs constructor
      *
      * @param FileFactory $fileFactory
      * @param File $fileDriver
+     * @param DirectoryList $directoryList
      */
     public function __construct(
         FileFactory $fileFactory,
-        File $fileDriver
+        File $fileDriver,
+        DirectoryList $directoryList
     ) {
         $this->fileFactory = $fileFactory;
         $this->fileDriver = $fileDriver;
+        $this->directoryList = $directoryList;
     }
 
     /**
@@ -83,7 +87,7 @@ class Logs implements ActionInterface
             throw new StateException(__('Permission denied!.'));
         }
 
-        $zipFilePath = self::LOG_LOCATION . self::ARCHIVE_NAME;
+        $zipFilePath = $this->directoryList->getRoot() . '/var/log/' . self::ARCHIVE_NAME;
 
         $zip = new ZipArchive();
         if ($zip->open($zipFilePath, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== true) {
@@ -94,7 +98,7 @@ class Logs implements ActionInterface
             $fullPathName = new SplFileInfo($file);
             $filename = $fullPathName->getFilename();
             if ($this->fileDriver->isExists($file)) {
-                $zip->addFile($file, $filename); // Add file and set name inside ZIP
+                $zip->addFile($file, $filename);
             }
         }
         $zip->close();
@@ -105,7 +109,7 @@ class Logs implements ActionInterface
             [
                 'type'  => 'filename',
                 'value' => $zipFilePath,
-                'rm'    => true  // Delete after download
+                'rm'    => true
             ],
             DirectoryList::VAR_DIR,
             'application/zip'
@@ -122,7 +126,7 @@ class Logs implements ActionInterface
     {
         $fileNames = [];
 
-        $logFiles = $this->fileDriver->readDirectory(self::LOG_LOCATION);
+        $logFiles = $this->fileDriver->readDirectory($this->directoryList->getRoot() . '/var/log/');
         foreach ($logFiles as $logFile) {
             $fullPathName = new SplFileInfo($logFile);
             $filename = $fullPathName->getFilename();
@@ -142,7 +146,7 @@ class Logs implements ActionInterface
      */
     private function checkPermissionsForLogsFolder(): bool
     {
-        if (!$this->fileDriver->isReadable(self::LOG_LOCATION)) {
+        if (!$this->fileDriver->isReadable($this->directoryList->getRoot() . '/var/log/')) {
             return false;
         }
 
