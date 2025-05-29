@@ -51,7 +51,7 @@ class MonitoringIndexer extends Template
 
     private static string $entityType;
 
-    private static string $entityId;
+    private static $entityId;
 
     /**
      * Get sync form action
@@ -151,20 +151,17 @@ class MonitoringIndexer extends Template
     /**
      * Set entity id in block
      *
-     * @param string $entityId
-     * @return void
+     * @param $entityId
      */
-    public function setEntityId(string $entityId): void
+    public function setEntityId($entityId): void
     {
         self::$entityId = $entityId;
     }
 
     /**
      * Get entity id in block
-     *
-     * @return string
      */
-    public function getEntityId(): string
+    public function getEntityId()
     {
         return self::$entityId;
     }

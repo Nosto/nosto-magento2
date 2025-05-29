@@ -99,7 +99,7 @@ class Logout implements ActionInterface
 
         $this->cache->flushCache();
 
-        $this->messageManager->addSuccessMessage(__('You have been logged out.'));
+        $this->messageManager->addSuccessMessage('You have been logged out.');
 
         return $this->redirectFactory->create()->setUrl('/nosto/monitoring/login');
     }

@@ -151,7 +151,7 @@ class Indexer extends DebuggerCookie implements ActionInterface
     public function execute(): ResultInterface
     {
         if (false === $this->checkIfNostoDebuggerCookieExists()) {
-            $this->messageManager->addErrorMessage(__('Please login to continue!'));
+            $this->messageManager->addErrorMessage('Please login to continue!');
 
             return $this->redirectFactory->create()->setUrl('/nosto/monitoring/login');
         }
@@ -180,11 +180,11 @@ class Indexer extends DebuggerCookie implements ActionInterface
      * Build Nosto product
      *
      * @param Store $store
-     * @param string $entityId
+     * @param $entityId
      * @return void
      * @throws NoSuchEntityException
      */
-    private function buildNostoProduct(Store $store, string $entityId): void
+    private function buildNostoProduct(Store $store, $entityId): void
     {
         /** @var Product $product */
         $product = $this->productRepository->getById($entityId);
@@ -197,10 +197,10 @@ class Indexer extends DebuggerCookie implements ActionInterface
     /**
      * Build Nosto order
      *
-     * @param string $entityId
+     * @param $entityId
      * @return void
      */
-    private function buildNostoOrder(string $entityId): void
+    private function buildNostoOrder($entityId): void
     {
         /** @var Order $order */
         $order = $this->orderRepository->get($entityId);
@@ -214,11 +214,11 @@ class Indexer extends DebuggerCookie implements ActionInterface
      * Build Nosto category
      *
      * @param Store $store
-     * @param string $entityId
+     * @param $entityId
      * @return void
      * @throws NoSuchEntityException
      */
-    private function buildNostoCategory(Store $store, string $entityId): void
+    private function buildNostoCategory(Store $store, $entityId): void
     {
         /** @var Category $category */
         $category = $this->categoryRepository->get($entityId);

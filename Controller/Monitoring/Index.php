@@ -83,7 +83,7 @@ class Index extends DebuggerCookie implements ActionInterface
     public function execute(): ResultInterface
     {
         if (false === $this->checkIfNostoDebuggerCookieExists()) {
-            $this->messageManager->addErrorMessage(__('Please login to continue!'));
+            $this->messageManager->addErrorMessage('Please login to continue!');
 
             return $this->redirectFactory->create()->setUrl('/nosto/monitoring/login');
         }

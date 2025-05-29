@@ -63,7 +63,7 @@ class Login implements ActionInterface
     public function execute(): ResultInterface
     {
         $page = $this->pageFactory->create();
-        $page->getConfig()->getTitle()->set(__('Login to Nosto Debugger'));
+        $page->getConfig()->getTitle()->set('Login to Nosto Debugger');
 
         return $page;
     }

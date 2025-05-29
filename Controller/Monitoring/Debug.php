@@ -158,7 +158,7 @@ class Debug implements ActionInterface
             );
         }
 
-        $this->messageManager->addErrorMessage(__('Invalid entity type.'));
+        $this->messageManager->addErrorMessage('Invalid entity type.');
 
         return $this->redirectFactory->create()->setUrl('/nosto/monitoring/index');
     }
