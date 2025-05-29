@@ -36,7 +36,9 @@
 
 namespace Nosto\Tagging\Controller\Monitoring;
 
-use Magento\Catalog\Model\CategoryFactory;
+use Magento\Catalog\Api\CategoryRepositoryInterface;
+use Magento\Catalog\Api\ProductRepositoryInterface;
+use Magento\Catalog\Model\Category;
 use Magento\Catalog\Model\ProductFactory;
 use Magento\Framework\App\ActionInterface;
 use Magento\Framework\App\RequestInterface;
@@ -46,7 +48,8 @@ use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Message\ManagerInterface;
 use Magento\Framework\Stdlib\CookieManagerInterface;
 use Magento\Framework\View\Result\PageFactory;
-use Magento\Sales\Model\OrderFactory;
+use Magento\Sales\Api\OrderRepositoryInterface;
+use Magento\Sales\Model\Order;
 use Magento\Store\Model\Store;
 use Nosto\Tagging\Block\MonitoringIndexer;
 use Nosto\Tagging\Helper\DebuggerCookie;
@@ -63,6 +66,9 @@ class Indexer extends DebuggerCookie implements ActionInterface
     /** @var RequestInterface $request */
     private RequestInterface $request;
 
+    /** @var ProductRepositoryInterface $productRepository */
+    private ProductRepositoryInterface $productRepository;
+
     /** @var Scope $ */
     private Scope $scope;
 
@@ -71,6 +77,9 @@ class Indexer extends DebuggerCookie implements ActionInterface
 
     /** @var MonitoringIndexer $block */
     private MonitoringIndexer $block;
+
+    /** @var OrderRepositoryInterface $orderRepository */
+    private OrderRepositoryInterface $orderRepository;
 
     /** @var OrderBuilder $orderBuilder */
     private OrderBuilder $orderBuilder;
@@ -81,67 +90,69 @@ class Indexer extends DebuggerCookie implements ActionInterface
     /** @var RedirectFactory $redirectFactory */
     private RedirectFactory $redirectFactory;
 
+    /** @var CategoryRepositoryInterface $categoryRepository */
+    private CategoryRepositoryInterface $categoryRepository;
+
     /** @var CategoryBuilder $categoryBuilder */
     private CategoryBuilder $categoryBuilder;
 
     /** @var ProductFactory $productFactory */
     private ProductFactory $productFactory;
 
-    /** @var OrderFactory $orderFactory */
-    private OrderFactory $orderFactory;
-
-    /** @var CategoryFactory $categoryFactory */
-    private CategoryFactory $categoryFactory;
-
     /**
      * Indexer constructor
      *
      * @param PageFactory $pageFactory
      * @param RequestInterface $request
+     * @param ProductRepositoryInterface $productRepository
      * @param Scope $scope
      * @param ProductBuilder $productBuilder
      * @param MonitoringIndexer $block
+     * @param OrderRepositoryInterface $orderRepository
      * @param OrderBuilder $orderBuilder
      * @param ManagerInterface $messageManager
      * @param RedirectFactory $redirectFactory
+     * @param CategoryRepositoryInterface $categoryRepository
      * @param CategoryBuilder $categoryBuilder
      * @param CookieManagerInterface $cookieManager
      * @param ProductFactory $productFactory
-     * @param OrderFactory $orderFactory
-     * @param CategoryFactory $categoryFactory
      */
     public function __construct(
         PageFactory $pageFactory,
         RequestInterface $request,
+        ProductRepositoryInterface $productRepository,
         Scope $scope,
         ProductBuilder $productBuilder,
         MonitoringIndexer $block,
+        OrderRepositoryInterface $orderRepository,
         OrderBuilder $orderBuilder,
         ManagerInterface $messageManager,
         RedirectFactory $redirectFactory,
+        CategoryRepositoryInterface $categoryRepository,
         CategoryBuilder $categoryBuilder,
         CookieManagerInterface $cookieManager,
-        ProductFactory $productFactory,
-        OrderFactory $orderFactory,
-        CategoryFactory $categoryFactory
+        ProductFactory $productFactory
     ) {
         parent::__construct($cookieManager);
         $this->pageFactory = $pageFactory;
         $this->request = $request;
+        $this->productRepository = $productRepository;
         $this->scope = $scope;
         $this->productBuilder = $productBuilder;
         $this->block = $block;
+        $this->orderRepository = $orderRepository;
         $this->orderBuilder = $orderBuilder;
         $this->messageManager = $messageManager;
         $this->redirectFactory = $redirectFactory;
+        $this->categoryRepository = $categoryRepository;
         $this->categoryBuilder = $categoryBuilder;
         $this->productFactory = $productFactory;
-        $this->orderFactory = $orderFactory;
-        $this->categoryFactory = $categoryFactory;
     }
 
     /**
      * Build Nosto entity based on wanted type
+     *
+     * @throws NoSuchEntityException
      */
     public function execute(): ResultInterface
     {
@@ -177,12 +188,14 @@ class Indexer extends DebuggerCookie implements ActionInterface
      * @param Store $store
      * @param $entityId
      * @return void
+     * @throws NoSuchEntityException
      */
     private function buildNostoProduct(Store $store, $entityId): void
     {
-        /** @noinspection PhpDeprecationInspection */
-        $product = $this->productFactory->create()->load($entityId);
-        $nostoProduct = $this->productBuilder->build($product, $store);
+        $product = $this->productRepository->getById($entityId);
+        $productModel = $this->productFactory->create();
+        $productModel->setData($product->getData());
+        $nostoProduct = $this->productBuilder->build($productModel, $store);
         $this->block->setNostoProduct($nostoProduct);
         $this->block->setEntityId($product->getId());
         $this->block->setEntityType('product');
@@ -196,8 +209,8 @@ class Indexer extends DebuggerCookie implements ActionInterface
      */
     private function buildNostoOrder($entityId): void
     {
-        /** @noinspection PhpDeprecationInspection */
-        $order = $this->orderFactory->create()->load($entityId);
+        /** @var Order $order */
+        $order = $this->orderRepository->get($entityId);
         $nostoOrder = $this->orderBuilder->build($order);
         $this->block->setNostoOrder($nostoOrder);
         $this->block->setEntityId($entityId);
@@ -210,11 +223,12 @@ class Indexer extends DebuggerCookie implements ActionInterface
      * @param Store $store
      * @param $entityId
      * @return void
+     * @throws NoSuchEntityException
      */
     private function buildNostoCategory(Store $store, $entityId): void
     {
-        /** @noinspection PhpDeprecationInspection */
-        $category = $this->categoryFactory->create()->load($entityId);
+        /** @var Category $category */
+        $category = $this->categoryRepository->get($entityId);
         $nostoCategory = $this->categoryBuilder->build($category, $store);
         $this->block->setNostoCategory($nostoCategory);
         $this->block->setEntityId($category->getId());
