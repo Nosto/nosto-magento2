@@ -40,11 +40,11 @@
     <div class="col-md-8">
         <form name="login" method="post" id="login" class="form"
               action="<?= $block->escapeHtml($block->getLoginFormAction('nosto/monitoring/submit')) ?>"
-              data-hasrequired="<?= __('* Required Fields') ?>"
+              data-hasrequired="<?= $block->escapeHtml(__('* Required Fields')) ?>"
               data-mage-init='{"validation":{}}'>
             <div class="fields col-md-6">
                 <div class="field token required">
-                    <label class="label" for="token"><span><?= __('Token') ?></span></label>
+                    <label class="label" for="token"><span><?= $block->escapeHtml(__('Token')) ?></span></label>
                     <div class="control">
                         <input name="token" id="token" title="Token" value="" class="input-text" type="text"
                                data-validate="{required:true, 'validate-alphanum-with-spaces':true}">
@@ -53,7 +53,9 @@
             </div>
             <div class="actions-toolbar">
                 <div class="primary">
-                    <button type="submit" class="action submit primary" title="Login"><span><?= __('Login') ?></span></button>
+                    <button type="submit" class="action submit primary" title="Login">
+                        <span><?= $block->escapeHtml(__('Login')) ?></span>
+                    </button>
                 </div>
             </div>
         </form>

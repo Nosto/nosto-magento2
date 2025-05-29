@@ -1,7 +1,7 @@
 <?php
 /* @var Nosto\Tagging\Block\MonitoringIndexer $block */
 ?>
-<a href="<?= $block->getFormAction('nosto/monitoring/') ?>">Go back</a>
+<a href="<?= $block->escapeHtml($block->getFormAction('nosto/monitoring/')) ?>">Go back</a>
 <?php
 /* @var Nosto\Tagging\Block\MonitoringIndexer $block */
 if ('product' === $block->getEntityType()) {
@@ -19,10 +19,12 @@ if ('category' === $block->getEntityType()) {
         <form name="sync" method="post" id="sync" class="form"
               action="<?= $block->escapeHtml($block->getFormAction('nosto/monitoring/sync')) ?>"
               data-mage-init='{"validation":{}}'>
-            <input name="entity_id" id="entity_id" title="Entity ID" value="<?= $block->escapeHtml($block->getEntityId()) ?>"
+            <input name="entity_id" id="entity_id" title="Entity ID"
+                   value="<?= $block->escapeHtml($block->getEntityId()) ?>"
                    class="input-text" type="hidden"
                    data-validate="{required:true, 'validate-alphanum-with-spaces':true}">
-            <input name="entity_type" id="entity_type" title="Entity type" value="<?= $block->escapeHtml($block->getEntityType()) ?>"
+            <input name="entity_type" id="entity_type" title="Entity type"
+                   value="<?= $block->escapeHtml($block->getEntityType()) ?>"
                    class="input-text" type="hidden"
                    data-validate="{required:true, 'validate-alphanum-with-spaces':true}">
             <div class="actions-toolbar">

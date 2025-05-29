@@ -43,7 +43,7 @@ $nostoIndexCategoryIndexer = $block->getLastIndexedTime('nosto_index_category');
 <div class="row">
     <div class="col-md-8">
         <form name="logout" method="post" id="logout" class="form"
-              action="<?php echo $block->getFormAction('nosto/monitoring/logout') ?>"
+              action="<?= $block->escapeHtml($block->getFormAction('nosto/monitoring/logout')) ?>"
               data-mage-init='{"validation":{}}'>
             <div class="actions-toolbar">
                 <div class="primary">
@@ -55,7 +55,7 @@ $nostoIndexCategoryIndexer = $block->getLastIndexedTime('nosto_index_category');
     <hr>
     <div class="col-md-8">
         <form name="logs" method="post" id="logs" class="form"
-              action="<?php echo $block->getFormAction('nosto/monitoring/logs'); ?>"
+              action="<?= $block->escapeHtml($block->getFormAction('nosto/monitoring/logs')) ?>"
               data-mage-init='{"validation":{}}'>
             <div class="actions-toolbar">
                 <div class="primary">
@@ -66,13 +66,13 @@ $nostoIndexCategoryIndexer = $block->getLastIndexedTime('nosto_index_category');
     </div>
     <hr>
     <div class="col-md-8">
-        <p>Nosto is enabled and installed: <span style="font-weight: bold;"><?= $block->checkIfNostoInstalledAndEnabled() ?></span></p>
+        <p>Nosto is enabled and installed: <span style="font-weight: bold;"><?= $block->escapeHtml($block->checkIfNostoInstalledAndEnabled()) ?></span></p>
     </div>
     <div class="col-md-8">
-        <p>Nosto module version: <span style="font-weight: bold;"><?= $block->getStringSettingsValues('getModuleVersion') ?></span></p>
+        <p>Nosto module version: <span style="font-weight: bold;"><?= $block->escapeHtml($block->getStringSettingsValues('getModuleVersion')) ?></span></p>
     </div>
     <div class="col-md-8">
-        <p>Account ID: <span style="font-weight: bold;"><?= $block->getAccountNameAndTokens()->getName() ?></span></p>
+        <p>Account ID: <span style="font-weight: bold;"><?= $block->escapeHtml($block->getAccountNameAndTokens()->getName()) ?></span></p>
     </div>
     <div class="col-md-8">
         <p>Last indexed time:</p>
@@ -107,8 +107,8 @@ $nostoIndexCategoryIndexer = $block->getLastIndexedTime('nosto_index_category');
             foreach ($tokens as $token) {
                 ?>
                 <tr>
-                    <td><?= $token->getName() ?></td>
-                    <td><?= $token->getValue() ?></td>
+                    <td><?= $block->escapeHtml($token->getName()) ?></td>
+                    <td><?= $block->escapeHtml($token->getValue()) ?></td>
                 </tr>
                 <?php
             }
@@ -130,9 +130,9 @@ $nostoIndexCategoryIndexer = $block->getLastIndexedTime('nosto_index_category');
                 $storeData = $store->getData();
                 ?>
                 <tr>
-                    <td><?= $storeData['store_id'] ?></td>
-                    <td><?= $storeData['code'] ?></td>
-                    <td><?= $storeData['name'] ?></td>
+                    <td><?= $block->escapeHtml($storeData['store_id']) ?></td>
+                    <td><?= $block->escapeHtml($storeData['code']) ?></td>
+                    <td><?= $block->escapeHtml($storeData['name']) ?></td>
                 </tr>
                 <?php
             }
@@ -145,90 +145,90 @@ $nostoIndexCategoryIndexer = $block->getLastIndexedTime('nosto_index_category');
         <table>
             <tr>
                 <td>Image Version</td>
-                <td><?= $block->getStringSettingsValues('getProductImageVersion') ?></td>
+                <td><?= $block->escapeHtml($block->getStringSettingsValues('getProductImageVersion')) ?></td>
             </tr>
             <tr>
                 <td>Remove "pub/" from product image URLs</td>
-                <td><?= $block->getSettingsValue('getRemovePubDirectoryFromProductImageUrl') ?></td>
+                <td><?= $block->escapeHtml($block->getSettingsValue('getRemovePubDirectoryFromProductImageUrl')) ?></td>
             </tr>
             <tr>
                 <td>Brand</td>
-                <td><?= $block->getStringSettingsValues('getBrandAttribute') ?></td>
+                <td><?= $block->escapeHtml($block->getStringSettingsValues('getBrandAttribute')) ?></td>
             </tr>
             <tr>
                 <td>Supplier Cost</td>
-                <td><?= $block->getStringSettingsValues('getMarginAttribute') ?></td>
+                <td><?= $block->escapeHtml($block->getStringSettingsValues('getMarginAttribute')) ?></td>
             </tr>
             <tr>
                 <td>GTIN</td>
-                <td><?= $block->getStringSettingsValues('getGtinAttribute') ?></td>
+                <td><?= $block->escapeHtml($block->getStringSettingsValues('getGtinAttribute')) ?></td>
             </tr>
             <tr>
                 <td>Google Category</td>
-                <td><?= $block->getStringSettingsValues('getGoogleCategoryAttribute') ?></td>
+                <td><?= $block->escapeHtml($block->getStringSettingsValues('getGoogleCategoryAttribute')) ?></td>
             </tr>
             <tr>
                 <td>Enable Variations</td>
-                <td><?= $block->getSettingsValue('isVariationTaggingEnabled') ?></td>
+                <td><?= $block->escapeHtml($block->getSettingsValue('isVariationTaggingEnabled')) ?></td>
             </tr>
             <tr>
                 <td>Enable custom fields</td>
-                <td><?= $block->getSettingsValue('isCustomFieldsEnabled') ?></td>
+                <td><?= $block->escapeHtml($block->getSettingsValue('isCustomFieldsEnabled')) ?></td>
             </tr>
             <tr>
                 <td>Enable Alternate Images</td>
-                <td><?= $block->getSettingsValue('isAltimgTaggingEnabled') ?></td>
+                <td><?= $block->escapeHtml($block->getSettingsValue('isAltimgTaggingEnabled')) ?></td>
             </tr>
             <tr>
                 <td>Enable Ratings & Reviews</td>
-                <td><?= $block->getSettingsValue('getRatingTaggingProvider') ?></td>
+                <td><?= $block->escapeHtml($block->getSettingsValue('getRatingTaggingProvider')) ?></td>
             </tr>
             <tr>
                 <td>Enable Inventory Levels</td>
-                <td><?= $block->getSettingsValue('isInventoryTaggingEnabled') ?></td>
+                <td><?= $block->escapeHtml($block->getSettingsValue('isInventoryTaggingEnabled')) ?></td>
             </tr>
             <tr>
                 <td>Product Updates via API</td>
-                <td><?= $block->getSettingsValue('isProductUpdatesEnabled') ?></td>
+                <td><?= $block->escapeHtml($block->getSettingsValue('isProductUpdatesEnabled')) ?></td>
             </tr>
             <tr>
                 <td>Enable Low Stock Indication</td>
-                <td><?= $block->getSettingsValue('isLowStockIndicationEnabled') ?></td>
+                <td><?= $block->escapeHtml($block->getSettingsValue('isLowStockIndicationEnabled')) ?></td>
             </tr>
             <tr>
                 <td>Send Customer Data To Nosto</td>
-                <td><?= $block->getSettingsValue('isSendCustomerDataToNostoEnabled') ?></td>
+                <td><?= $block->escapeHtml($block->getSettingsValue('isSendCustomerDataToNostoEnabled')) ?></td>
             </tr>
             <tr>
                 <td>Indexer Memory</td>
-                <td><?= $block->getStringSettingsValues('getIndexerMemory') ?>%</td>
+                <td><?= $block->escapeHtml($block->getStringSettingsValues('getIndexerMemory')) ?>%</td>
             </tr>
             <tr>
                 <td>Index disabled products</td>
-                <td><?= $block->getSettingsValue('canIndexDisabledProducts') ?></td>
+                <td><?= $block->escapeHtml($block->getSettingsValue('canIndexDisabledProducts')) ?></td>
             </tr>
             <tr>
                 <td>Add product published date to tagging</td>
-                <td><?= $block->getSettingsValue('isTagDatePublishedEnabled') ?></td>
+                <td><?= $block->escapeHtml($block->getSettingsValue('isTagDatePublishedEnabled')) ?></td>
             </tr>
             <tr>
                 <td>Track orders from multiple channels</td>
-                <td><?= $block->getSettingsValue('isMultiChannelOrderTrackingEnabled') ?></td>
+                <td><?= $block->escapeHtml($block->getSettingsValue('isMultiChannelOrderTrackingEnabled')) ?></td>
             </tr>
             <tr>
                 <td>Reload recs after reloading cart</td>
-                <td><?= $block->getSettingsValue('isReloadRecsAfterAtcEnabled') ?></td>
+                <td><?= $block->escapeHtml($block->getSettingsValue('isReloadRecsAfterAtcEnabled')) ?></td>
             </tr>
             <tr>
                 <td>Enable Tagging Providers</td>
-                <td><?= $block->getSettingsValue('isTaggingProvidersEnabled') ?></td>
+                <td><?= $block->escapeHtml($block->getSettingsValue('isTaggingProvidersEnabled')) ?></td>
             </tr>
         </table>
     </div>
     <hr>
     <div class="col-md-8">
         <form name="product-sync" method="post" id="product-sync" class="form"
-              action="<?= $block->getFormAction('nosto/monitoring/debug') ?>"
+              action="<?= $block->escapeHtml($block->getFormAction('nosto/monitoring/debug')) ?>"
               data-hasrequired='* Required Fields'
               data-mage-init='{"validation":{}}'>
             <div class="fields col-md-6">
@@ -251,7 +251,7 @@ $nostoIndexCategoryIndexer = $block->getLastIndexedTime('nosto_index_category');
     </div>
     <div class="col-md-8">
         <form name="order-sync" method="post" id="order-sync" class="form"
-              action="<?= $block->getFormAction('nosto/monitoring/debug') ?>"
+              action="<?= $block->escapeHtml($block->getFormAction('nosto/monitoring/debug')) ?>"
               data-hasrequired='* Required Fields'
               data-mage-init='{"validation":{}}'>
             <div class="fields col-md-6">
@@ -274,7 +274,7 @@ $nostoIndexCategoryIndexer = $block->getLastIndexedTime('nosto_index_category');
     </div>
     <div class="col-md-8">
         <form name="category-sync" method="post" id="category-sync" class="form"
-              action="<?= $block->getFormAction('nosto/monitoring/debug') ?>"
+              action="<?= $block->escapeHtml($block->getFormAction('nosto/monitoring/debug')) ?>"
               data-hasrequired='* Required Fields'
               data-mage-init='{"validation":{}}'>
             <div class="fields col-md-6">
