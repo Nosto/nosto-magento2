@@ -38,7 +38,7 @@ namespace Nosto\Tagging\Controller\Monitoring;
 
 use Magento\Catalog\Api\CategoryRepositoryInterface;
 use Magento\Catalog\Api\ProductRepositoryInterface;
-use Magento\Catalog\Model\Category;
+use Magento\Catalog\Model\CategoryFactory;
 use Magento\Catalog\Model\ProductFactory;
 use Magento\Framework\App\ActionInterface;
 use Magento\Framework\App\RequestInterface;
@@ -49,7 +49,7 @@ use Magento\Framework\Message\ManagerInterface;
 use Magento\Framework\Stdlib\CookieManagerInterface;
 use Magento\Framework\View\Result\PageFactory;
 use Magento\Sales\Api\OrderRepositoryInterface;
-use Magento\Sales\Model\Order;
+use Magento\Sales\Model\OrderFactory;
 use Magento\Store\Model\Store;
 use Nosto\Tagging\Block\MonitoringIndexer;
 use Nosto\Tagging\Helper\DebuggerCookie;
@@ -99,6 +99,12 @@ class Indexer extends DebuggerCookie implements ActionInterface
     /** @var ProductFactory $productFactory */
     private ProductFactory $productFactory;
 
+    /** @var OrderFactory $orderFactory */
+    private OrderFactory $orderFactory;
+
+    /** @var CategoryFactory $categoryFactory */
+    private CategoryFactory $categoryFactory;
+
     /**
      * Indexer constructor
      *
@@ -116,6 +122,8 @@ class Indexer extends DebuggerCookie implements ActionInterface
      * @param CategoryBuilder $categoryBuilder
      * @param CookieManagerInterface $cookieManager
      * @param ProductFactory $productFactory
+     * @param OrderFactory $orderFactory
+     * @param CategoryFactory $categoryFactory
      */
     public function __construct(
         PageFactory $pageFactory,
@@ -131,7 +139,9 @@ class Indexer extends DebuggerCookie implements ActionInterface
         CategoryRepositoryInterface $categoryRepository,
         CategoryBuilder $categoryBuilder,
         CookieManagerInterface $cookieManager,
-        ProductFactory $productFactory
+        ProductFactory $productFactory,
+        OrderFactory $orderFactory,
+        CategoryFactory $categoryFactory
     ) {
         parent::__construct($cookieManager);
         $this->pageFactory = $pageFactory;
@@ -147,6 +157,8 @@ class Indexer extends DebuggerCookie implements ActionInterface
         $this->categoryRepository = $categoryRepository;
         $this->categoryBuilder = $categoryBuilder;
         $this->productFactory = $productFactory;
+        $this->orderFactory = $orderFactory;
+        $this->categoryFactory = $categoryFactory;
     }
 
     /**
@@ -209,9 +221,10 @@ class Indexer extends DebuggerCookie implements ActionInterface
      */
     private function buildNostoOrder($entityId): void
     {
-        /** @var Order $order */
         $order = $this->orderRepository->get($entityId);
-        $nostoOrder = $this->orderBuilder->build($order);
+        $orderModel = $this->orderFactory->create();
+        $orderModel->setData($order->getData());
+        $nostoOrder = $this->orderBuilder->build($orderModel);
         $this->block->setNostoOrder($nostoOrder);
         $this->block->setEntityId($entityId);
         $this->block->setEntityType('order');
@@ -227,9 +240,10 @@ class Indexer extends DebuggerCookie implements ActionInterface
      */
     private function buildNostoCategory(Store $store, $entityId): void
     {
-        /** @var Category $category */
         $category = $this->categoryRepository->get($entityId);
-        $nostoCategory = $this->categoryBuilder->build($category, $store);
+        $categoryModel = $this->categoryFactory->create();
+        $categoryModel->setData($category->getData());
+        $nostoCategory = $this->categoryBuilder->build($categoryModel, $store);
         $this->block->setNostoCategory($nostoCategory);
         $this->block->setEntityId($category->getId());
         $this->block->setEntityType('category');
