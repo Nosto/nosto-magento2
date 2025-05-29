@@ -130,7 +130,7 @@ class Logs implements ActionInterface
         foreach ($logFiles as $logFile) {
             $fullPathName = new SplFileInfo($logFile);
             $filename = $fullPathName->getFilename();
-            if (str_starts_with($filename, 'nosto')) {
+            if (substr($filename, 0, 5) === 'nosto') {
                 $fileNames[] = $logFile;
             }
         }
