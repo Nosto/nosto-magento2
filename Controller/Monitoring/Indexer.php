@@ -208,9 +208,9 @@ class Indexer extends DebuggerCookie implements ActionInterface
         /**
          * Returning ProductInterface but declared to return Product|null
          */
-        /** @phan-suppress-next-next-line PhanTypeMismatchReturnSuperType */
         /** @var Product $product */
         $product = $this->productRepository->getById($entityId);
+        /** @phan-suppress-next-next-line PhanTypeMismatchReturnSuperType */
         $nostoProduct = $this->productBuilder->build($product, $store);
         $this->block->setNostoProduct($nostoProduct);
         $this->block->setEntityId($product->getId());
