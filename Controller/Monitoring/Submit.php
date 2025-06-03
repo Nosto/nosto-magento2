@@ -124,8 +124,7 @@ class Submit implements ActionInterface
         $store = $this->storeManager->getStore();
         $account = $this->accountHelper->findAccount($store);
         $token = $this->request->getParam('token');
-        if (
-            false === $this->sendApiCallForToken($account->getName(), $token)['success']
+        if (false === $this->sendApiCallForToken($account->getName(), $token)['success']
             || $account->getApiToken('apps')->getValue() !== $token
         ) {
             $this
