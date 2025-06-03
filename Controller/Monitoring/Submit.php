@@ -55,7 +55,7 @@ use Nosto\Request\Http\Exception\AbstractHttpException;
 use Nosto\Tagging\Helper\Account;
 use Nosto\Model\Signup\Account as SignupAccount;
 use Nosto\Request\Api\Token as NostoToken;
-use Nosto\Tagging\Model\MockOperation\MockUpsertProduct;
+use Nosto\Tagging\Model\MockOperation\MockGraphQLOperation;
 
 class Submit implements ActionInterface
 {
@@ -124,7 +124,10 @@ class Submit implements ActionInterface
         $store = $this->storeManager->getStore();
         $account = $this->accountHelper->findAccount($store);
         $token = $this->request->getParam('token');
-        if (false === $this->sendApiCallForToken($account->getName(), $token)['success']) {
+        if (
+            false === $this->sendApiCallForToken($account->getName(), $token)['success']
+            || $account->getApiToken('apps')->getValue() !== $token
+        ) {
             $this
                 ->messageManager
                 ->addErrorMessage(__($this->sendApiCallForToken($account->getName(), $token)['message']));
@@ -146,9 +149,9 @@ class Submit implements ActionInterface
     private function sendApiCallForToken(string $accountName, string $token): array
     {
         $signupAccount = new SignupAccount($accountName);
-        $signupAccount->addApiToken(new NostoToken(NostoToken::API_PRODUCTS, $token));
+        $signupAccount->addApiToken(new NostoToken(NostoToken::API_GRAPHQL, $token));
 
-        return (new MockUpsertProduct($signupAccount))->upsert();
+        return (new MockGraphQLOperation($signupAccount))->execute();
     }
 
     /**
