@@ -48,6 +48,10 @@ use Nosto\Tagging\Helper\Scope;
 
 class MonitoringPage extends Template
 {
+    private const ENABLED = 'Yes';
+
+    private const DISABLED = 'No';
+
     /** @var Account $account */
     private Account $account;
 
@@ -98,10 +102,10 @@ class MonitoringPage extends Template
     public function checkIfNostoInstalledAndEnabled(): string
     {
         if (true === $this->account->nostoInstalledAndEnabled($this->store)) {
-            return 'Yes';
+            return self::ENABLED;
         }
 
-        return 'No';
+        return self::DISABLED;
     }
 
     /**
@@ -133,10 +137,10 @@ class MonitoringPage extends Template
     public function getSettingsValue(string $method): string
     {
         if (true === $this->settings->$method($this->store) || '1' === $this->settings->$method($this->store)) {
-            return 'Yes';
+            return self::ENABLED;
         }
 
-        return 'No';
+        return self::DISABLED;
     }
 
     /**
