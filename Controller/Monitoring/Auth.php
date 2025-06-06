@@ -57,7 +57,7 @@ use Nosto\Model\Signup\Account as SignupAccount;
 use Nosto\Request\Api\Token as NostoToken;
 use Nosto\Tagging\Model\MockOperation\MockGraphQLOperation;
 
-class Submit implements ActionInterface
+class Auth implements ActionInterface
 {
     /** @var RequestInterface $request */
     private RequestInterface $request;
