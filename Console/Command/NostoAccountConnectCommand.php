@@ -115,6 +115,11 @@ class NostoAccountConnectCommand extends Command
                 InputOption::VALUE_REQUIRED,
                 'API exchange rates token'
             )->addOption(
+                Token::API_SEARCH . self::TOKEN_SUFFIX,
+                null,
+                InputOption::VALUE_REQUIRED,
+                'API search token'
+            )->addOption(
                 Token::API_EMAIL . self::TOKEN_SUFFIX,
                 null,
                 InputOption::VALUE_REQUIRED,
@@ -230,6 +235,10 @@ class NostoAccountConnectCommand extends Command
         $settingsToken = $input->getOption(Token::API_SETTINGS . self::TOKEN_SUFFIX) ?:
             $io->ask('Enter Settings Token: ');
         $tokens[] = new Token(Token::API_SETTINGS, $settingsToken);
+
+        $searchToken = $input->getOption(Token::API_SEARCH . self::TOKEN_SUFFIX) ?:
+            $io->ask('Enter Search Token: ');
+        $tokens[] = new Token(Token::API_SEARCH, $searchToken);
 
         $emailToken = $input->getOption(Token::API_EMAIL . self::TOKEN_SUFFIX);
         if (!$emailToken && $this->isInteractive) {

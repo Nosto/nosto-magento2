@@ -3,6 +3,17 @@ All notable changes to this project will be documented in this file. This projec
 ### Unreleased
 * Fix CSP in checkout
 
+### 8.0.3
+* Add search token support during Nosto account setup via CLI
+* Separate customer reference population into a standalone CLI command to improve deployment time
+
+### 8.0.2
+* Fix category export issue where only parent categories are included
+
+### 8.0.1
+* Add page-type tagging for Hyvä checkout page
+* Add default recommendation slots for Hyvä checkout page
+
 ### 8.0.0
 * Add compatibility and support for Hyvä themes
 * Add support for Nosto tagging providers 
