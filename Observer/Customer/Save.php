@@ -38,7 +38,6 @@ namespace Nosto\Tagging\Observer\Customer;
 
 use Magento\Customer\Api\CustomerRepositoryInterface;
 use Magento\Customer\Model\Data\Customer;
-use Magento\Framework\App\ObjectManager;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Exception\LocalizedException;
@@ -56,18 +55,24 @@ class Save implements ObserverInterface
     /** @var Logger $logger */
     private Logger $logger;
 
+    /** @var CustomerRepositoryInterface $customerRepository */
+    private CustomerRepositoryInterface $customerRepository;
+
     /**
      * Save constructor.
      *
      * @param ModuleManager $moduleManger
      * @param Logger $logger
+     * @param CustomerRepositoryInterface $customerRepository
      */
     public function __construct(
         ModuleManager $moduleManger,
-        Logger $logger
+        Logger $logger,
+        CustomerRepositoryInterface $customerRepository
     ) {
         $this->moduleManger = $moduleManger;
         $this->logger = $logger;
+        $this->customerRepository = $customerRepository;
     }
 
     /**
@@ -81,9 +86,7 @@ class Save implements ObserverInterface
             /** @noinspection PhpUndefinedMethodInspection */
             $customer = $observer->getCustomer();
             try {
-                $objectManager = ObjectManager::getInstance();
-                $customerRepository = $objectManager->get(CustomerRepositoryInterface::class);
-                $customerModel = $customerRepository->getById($customer->getId());
+                $customerModel = $this->customerRepository->getById($customer->getId());
                 $customerReference = $customerModel->getCustomAttribute(
                     NostoHelperData::NOSTO_CUSTOMER_REFERENCE_ATTRIBUTE_NAME
                 );
