@@ -212,8 +212,12 @@ class Scope extends AbstractHelper
             $themeId = $this->storeManager->getStore($storeId)->getConfig('design/theme/theme_id');
             $theme = $this->themeProvider->getThemeById($themeId);
             if ($theme) {
-                $themeCode = strtolower($theme->getCode());
-                return (strpos($themeCode, 'hyva') !== false);
+                $themesToInspect = array_merge([$theme], $theme->getInheritedThemes());
+                foreach ($themesToInspect as $candidate) {
+                    if (strpos(strtolower($candidate->getCode()), 'hyva') !== false) {
+                        return true;
+                    }
+                }
             }
         } catch (Exception $e) {
             return false;
