@@ -36,47 +36,75 @@
 
 namespace Nosto\Tagging\Observer\Customer;
 
+use Magento\Customer\Api\CustomerRepositoryInterface;
 use Magento\Customer\Model\Data\Customer;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Module\Manager as ModuleManager;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
+use Nosto\Tagging\Logger\Logger;
 use Nosto\Tagging\Util\Customer as CustomerUtil;
 
 class Save implements ObserverInterface
 {
+    /** @var ModuleManager $moduleManger */
     private ModuleManager $moduleManger;
+
+    /** @var Logger $logger */
+    private Logger $logger;
+
+    /** @var CustomerRepositoryInterface $customerRepository */
+    private CustomerRepositoryInterface $customerRepository;
 
     /**
      * Save constructor.
+     *
      * @param ModuleManager $moduleManger
+     * @param Logger $logger
+     * @param CustomerRepositoryInterface $customerRepository
      */
     public function __construct(
-        ModuleManager $moduleManger
+        ModuleManager $moduleManger,
+        Logger $logger,
+        CustomerRepositoryInterface $customerRepository
     ) {
         $this->moduleManger = $moduleManger;
+        $this->logger = $logger;
+        $this->customerRepository = $customerRepository;
     }
 
     /**
      * @param Observer $observer
+     * @throws LocalizedException
      */
-    public function execute(Observer $observer)
+    public function execute(Observer $observer): void
     {
         if ($this->moduleManger->isEnabled(NostoHelperData::MODULE_NAME)) {
             /** @var Customer $customer */
             /** @noinspection PhpUndefinedMethodInspection */
             $customer = $observer->getCustomer();
-            $customerReference = $customer->getCustomAttribute(
-                NostoHelperData::NOSTO_CUSTOMER_REFERENCE_ATTRIBUTE_NAME
-            );
-
-            if ($customerReference === null) {
-                $customerUtil = new CustomerUtil();
-                $customerReference = $customerUtil->generateCustomerReference($customer);
-                $customer->setData(
-                    NostoHelperData::NOSTO_CUSTOMER_REFERENCE_ATTRIBUTE_NAME,
-                    $customerReference
+            try {
+                $customerModel = $this->customerRepository->getById($customer->getId());
+                $customerReference = $customerModel->getCustomAttribute(
+                    NostoHelperData::NOSTO_CUSTOMER_REFERENCE_ATTRIBUTE_NAME
                 );
+
+                if ($customerReference === null) {
+                    $customerUtil = new CustomerUtil();
+                    $customerReference = $customerUtil->generateCustomerReference($customer);
+                    $customer->setData(
+                        NostoHelperData::NOSTO_CUSTOMER_REFERENCE_ATTRIBUTE_NAME,
+                        $customerReference
+                    );
+                }
+            } catch (NoSuchEntityException $e) {
+                $this->logger->error(sprintf(
+                    'Unable to find customer with ID: %s, Error: %s',
+                    $customer->getId(),
+                    $e->getMessage()
+                ));
             }
         }
     }
