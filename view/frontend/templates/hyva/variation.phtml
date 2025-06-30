@@ -56,65 +56,65 @@ $variationId = $block->getVariationId();
 ?>
 
 <!-- Nosto Variation Tagging -->
-<?php if (empty($block->getAbstractObject())): {
-        // Skip rendering if MC is not used (single currency selected) or if pricing variation is disabled
-        return;
-    } else:
-        ?>
+    <?php if (empty($block->getAbstractObject())): {
+            // Skip rendering if MC is not used (single currency selected) or if pricing variation is disabled
+            return;
+        } else:
+    ?>
 <div id="nosto_variation_tagging" style="display:none">
   <!-- Static variation span, will be replaced with dynamic one if necessary -->
   <span class="nosto_variation"><?= $block->escapeHtml($variationId) ?></span>
 </div>
-<?php
-    $script = <<<script
-    document.addEventListener('DOMContentLoaded', function() {
-        function initNostoVariationTagging() {
-            function processVariationData(data) {
-                if (!data || !data['active-variation-tagging']) return;
-                const tagging = data['active-variation-tagging'];
-                if (tagging && tagging.active_variation) {
-                    reloadRecommendations(tagging.active_variation);
+        <?php
+        $script = <<<script
+        document.addEventListener('DOMContentLoaded', function() {
+            function initNostoVariationTagging() {
+                function processVariationData(data) {
+                    if (!data || !data['active-variation-tagging']) return;
+                    const tagging = data['active-variation-tagging'];
+                    if (tagging && tagging.active_variation) {
+                        reloadRecommendations(tagging.active_variation);
+                    }
+                }
+                function reloadRecommendations(activeVariation) {
+                    const staticElement = document.querySelector(".nosto_variation:not(.nosto_variation_dynamic)");
+                    if (staticElement) {
+                        staticElement.classList.remove('nosto_variation');
+                        staticElement.classList.add('nosto_variation_static');
+                    }
+
+                    let dynamicElement = document.querySelector(".nosto_variation_dynamic");
+                    if (!dynamicElement) {
+                        dynamicElement = document.createElement('span');
+                        dynamicElement.className = 'nosto_variation_dynamic';
+                        document.getElementById('nosto_variation_tagging').appendChild(dynamicElement);
+                    }
+
+                    dynamicElement.classList.add("nosto_variation");
+                    dynamicElement.textContent = activeVariation;
+                    if (typeof nostojs === 'function') {
+                        nostojs(api => {
+                            api.loadRecommendations();
+                        });
+                    }
+                }
+
+                window.addEventListener('private-content-loaded', (event) => {
+                    if (event.detail && event.detail.data) {
+                        processVariationData(event.detail.data);
+                    }
+                });
+
+                if (typeof Alpine !== 'undefined' &&
+                    typeof Alpine.store === 'function' &&
+                    Alpine.store('customer') &&
+                    Alpine.store('customer').variationData) {
+                    processVariationData(Alpine.store('customer'));
                 }
             }
-            function reloadRecommendations(activeVariation) {
-                const staticElement = document.querySelector(".nosto_variation:not(.nosto_variation_dynamic)");
-                if (staticElement) {
-                    staticElement.classList.remove('nosto_variation');
-                    staticElement.classList.add('nosto_variation_static');
-                }
-
-                let dynamicElement = document.querySelector(".nosto_variation_dynamic");
-                if (!dynamicElement) {
-                    dynamicElement = document.createElement('span');
-                    dynamicElement.className = 'nosto_variation_dynamic';
-                    document.getElementById('nosto_variation_tagging').appendChild(dynamicElement);
-                }
-
-                dynamicElement.classList.add("nosto_variation");
-                dynamicElement.textContent = activeVariation;
-                if (typeof nostojs === 'function') {
-                    nostojs(api => {
-                        api.loadRecommendations();
-                    });
-                }
-            }
-
-            window.addEventListener('private-content-loaded', (event) => {
-                if (event.detail && event.detail.data) {
-                    processVariationData(event.detail.data);
-                }
-            });
-
-            if (typeof Alpine !== 'undefined' &&
-                typeof Alpine.store === 'function' &&
-                Alpine.store('customer') &&
-                Alpine.store('customer').variationData) {
-                processVariationData(Alpine.store('customer'));
-            }
-        }
-        initNostoVariationTagging();
-    });
-script;
-?>
-<?= /* @noEscape */ $secureRenderer->renderTag('script', [], $script, false) ?>
+            initNostoVariationTagging();
+        });
+        script;
+        ?>
+        <?= /* @noEscape */ $secureRenderer->renderTag('script', [], $script, false) ?>
 <?php endif; ?>
