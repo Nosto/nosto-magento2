@@ -3,6 +3,16 @@ All notable changes to this project will be documented in this file. This projec
 ### Unreleased
 * Fix CSP in checkout
 
+### 8.0.6
+* Fixed detection of Hyvä themes
+* Ensure customer reference is generated or retrieved correctly when handling customer events
+
+### 8.0.5
+* Improve detection of Hyvä themes
+
+### 8.0.4
+* Fixed issue where variation tagging is applied when MC is disabled
+
 ### 8.0.3
 * Add search token support during Nosto account setup via CLI
 * Separate customer reference population into a standalone CLI command to improve deployment time
