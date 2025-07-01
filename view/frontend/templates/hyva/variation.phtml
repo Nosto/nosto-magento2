@@ -54,18 +54,18 @@
 
 $variationId = $block->getVariationId();
 ?>
-<!-- phpcs:disable Generic.WhiteSpace.ScopeIndent -->
 <!-- Nosto Variation Tagging -->
-    <?php if (empty($block->getAbstractObject())): {
-            // Skip rendering if MC is not used (single currency selected) or if pricing variation is disabled
-            return;
-        } else:
-    ?>
+<?php if (empty($block->getAbstractObject())):
+        // Skip rendering if MC is not used (single currency selected) or if pricing variation is disabled
+        return;
+    else:
+?>
 <div id="nosto_variation_tagging" style="display:none">
   <!-- Static variation span, will be replaced with dynamic one if necessary -->
   <span class="nosto_variation"><?= $block->escapeHtml($variationId) ?></span>
 </div>
-    <?php
+<?php
+// phpcs:disable Generic.WhiteSpace.ScopeIndent
     $script = <<<script
     document.addEventListener('DOMContentLoaded', function() {
         function initNostoVariationTagging() {
@@ -115,6 +115,6 @@ $variationId = $block->getVariationId();
         initNostoVariationTagging();
     });
     script;
-    ?>
-    <?= /* @noEscape */ $secureRenderer->renderTag('script', [], $script, false) ?>
-<?php endif; ?>
+
+ /* @noEscape */ $secureRenderer->renderTag('script', [], $script, false);
+endif; ?>

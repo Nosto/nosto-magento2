@@ -41,15 +41,15 @@
 $taggingConfig = $block->getTaggingConfig();
 ?>
 
-<?php if ($block->isNostoEnabled()): ?>
 <!-- Hyva Theme with Alpine.js -->
-<?php
+<?php if ($block->isNostoEnabled()):
+
     $script = <<<script
         document.addEventListener('DOMContentLoaded', function() {
             window.initNostoTaggingProviders(<?= $block->escapeJsQuote($block->getTaggingConfigForJs()) ?>);
         });
     script;
-?>
 
-<?= /* @noEscape */ $secureRenderer->renderTag('script', [], $script, false) ?>
-<?php endif; ?>
+ /* @noEscape */ $secureRenderer->renderTag('script', [], $script, false)
+
+endif; ?>
