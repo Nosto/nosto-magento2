@@ -48,6 +48,6 @@ $taggingConfig = $block->getTaggingConfig();
             initTaggingProviders(${$block->escapeJsQuote($block->getTaggingConfigForJs())});
         });
     script;
- /* @noEscape */ $secureRenderer->renderTag('script', [], $script, false)
+ /* @noEscape */ $secureRenderer->renderTag('script', [], $script, false);
 
 endif; ?>
