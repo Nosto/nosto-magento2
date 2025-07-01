@@ -34,8 +34,13 @@
  *
  */
 
-/** @var \Nosto\Tagging\Block\Addtocart $block */
+use Magento\Framework\View\Helper\SecureHtmlRenderer;
+use Nosto\Tagging\Block\Addtocart;
 
+/**
+ * @var Addtocart $block
+ * @var SecureHtmlRenderer $secureRenderer
+ */
 $isHyva = $block->isHyva();
 ?>
 
@@ -47,7 +52,8 @@ $isHyva = $block->isHyva();
 
 <?php if ($isHyva): ?>
   <!-- Hyva Theme with Alpine.js -->
-  <script>
+    <?php
+    $script = <<<script
       function nostoRecobuy() {
           'use strict';
 
@@ -144,10 +150,12 @@ $isHyva = $block->isHyva();
 
           return Recobuy;
       }
-  </script>
+  script;
+    ?>
 <?php else: ?>
   <!-- Luma with RequireJS -->
-  <script>
+    <?php
+    $script = <<<script
       // noinspection JSUnresolvedFunction
       window.Nosto = nostoRecobuy();
 
@@ -242,5 +250,7 @@ $isHyva = $block->isHyva();
 
           return Recobuy;
       };
-  </script>
+  script;
+    ?>
 <?php endif; ?>
+<?= /* @noEscape */ $secureRenderer->renderTag('script', ['type' => 'text/javascript'], $script, false) ?>

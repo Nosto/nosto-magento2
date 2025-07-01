@@ -34,15 +34,22 @@
  *
  */
 
-/** @var \Nosto\Tagging\Block\TaggingProvider $block */
+/**
+ * @var \Nosto\Tagging\Block\TaggingProvider $block
+ * @var Magento\Framework\View\Helper\SecureHtmlRenderer $secureRenderer
+ */
 $taggingConfig = $block->getTaggingConfig();
 ?>
 
-<?php if ($block->isNostoEnabled()): ?>
 <!-- Hyva Theme with Alpine.js -->
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        window.initNostoTaggingProviders(<?= $block->escapeJsQuote($block->getTaggingConfigForJs()) ?>);
-    });
-</script>
-<?php endif; ?>
+<?php if ($block->isNostoEnabled()):
+
+    $script = <<<script
+        document.addEventListener('DOMContentLoaded', function() {
+            window.initNostoTaggingProviders(<?= $block->escapeJsQuote($block->getTaggingConfigForJs()) ?>);
+        });
+    script;
+
+ /* @noEscape */ $secureRenderer->renderTag('script', [], $script, false);
+
+endif; ?>

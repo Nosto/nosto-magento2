@@ -49,28 +49,43 @@
  * Please see a reference guide such as https://github.com/Nosto/nosto-magento2/wiki
  *
  * @var Nosto\Tagging\Block\Stub $block
+ * @var Magento\Framework\View\Helper\SecureHtmlRenderer $secureRenderer
  */
 
 $isHyva = $block->isHyva();
 ?>
 
 <!-- Nosto JS Initialization -->
-<script type="text/javascript">
+<?php
+$script = <<<script
   (function () {
     const name = "nostojs";
     window[name] = window[name] || function (cb) {
       (window[name].q = window[name].q || []).push(cb);
     };
-      <?php if ($block->isRecoAutoloadDisabled()): ?>
+  script;
+?>
+<?php if ($block->isRecoAutoloadDisabled()): ?>
+<?php
+    $script .= <<<script
     window[name](function (api) {
       api.setAutoLoad(false);
     });
-      <?php endif; ?>
+  script;
+?>
+<?php endif; ?>
+<?php
+$script .= <<<script
   })();
-</script>
+script;
+?>
+
+<?= /* @noEscape */ $secureRenderer->renderTag('script', ['type' => 'text/javascript'], $script, false) ?>
+
 
 <?php if ($isHyva): ?>
-  <script>
+    <?php
+    $script = <<<script
       document.addEventListener('DOMContentLoaded', function() {
           if (typeof nostojs === 'function') {
               return;
@@ -78,5 +93,7 @@ $isHyva = $block->isHyva();
               window.nostojs = window['nostojs'];
           }
       });
-  </script>
+  script;
+    ?>
+    <?= /* @noEscape */ $secureRenderer->renderTag('script', [], $script, false) ?>
 <?php endif; ?>
