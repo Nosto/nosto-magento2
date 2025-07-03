@@ -34,7 +34,10 @@
  *
  */
 
-/** @var \Nosto\Tagging\Block\Knockout $block */
+/**
+ * @var \Nosto\Tagging\Block\Knockout $block
+ * @var Magento\Framework\View\Helper\SecureHtmlRenderer $secureRenderer
+ */
 ?>
 
 <div id="nosto_cart_tagging" class="nosto_cart_hidden" style="display:none">
@@ -43,10 +46,12 @@
   <!-- Cart items will be inserted dynamically -->
 </div>
 
-<script>
+<?php
+$isReloadRecsAfterAtcEnabled = (int)$block->isReloadRecsAfterAtcEnabled();
+$script = <<<script
     document.addEventListener('DOMContentLoaded', function() {
         function initNostoCartTagging() {
-            const refreshRecs = <?= (int)$block->isReloadRecsAfterAtcEnabled() ?>;
+            const refreshRecs = ${$isReloadRecsAfterAtcEnabled};
             function processCartData(data) {
                 if (!data || !data['cart-tagging']) return;
 
@@ -111,4 +116,7 @@
         }
         initNostoCartTagging();
     });
-</script>
+script;
+?>
+<?= /* @noEscape */ $secureRenderer->renderTag('script', [], $script, false) ?>
+

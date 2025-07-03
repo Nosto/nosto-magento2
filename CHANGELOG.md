@@ -1,5 +1,8 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 8.0.7
+* Improve CSP compliance by wrapping inline JavaScript scripts with markup
+
 ### 8.0.6
 * Fixed detection of Hyvä themes
 * Ensure customer reference is generated or retrieved correctly when handling customer events
