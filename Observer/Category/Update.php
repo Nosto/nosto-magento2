@@ -137,7 +137,7 @@ class Update implements ObserverInterface
         } catch (Exception $e) {
             $this->logger->error(
                 sprintf(
-                    'Failed to update categoeries with id %s.
+                    'Failed to update categories with id %s.
                         Message was: %s',
                     $category->getId(),
                     $e->getMessage()

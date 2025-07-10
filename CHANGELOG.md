@@ -1,7 +1,7 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
-### Unreleased
-* Fix CSP in checkout
+### 8.0.7
+* Improve CSP compliance by wrapping inline JavaScript scripts with markup
 
 ### 8.0.6
 * Fixed detection of Hyvä themes
