@@ -64,7 +64,7 @@ class Logger extends MonologLogger
      * @param null $sourceClass
      * @return bool|void
      */
-    public function logWithMemoryConsumption($message, Store $store = null, $sourceClass = null)
+    public function logWithMemoryConsumption($message, ?Store $store = null, $sourceClass = null)
     {
         $msg = sprintf(
             '%s [mem usage: %sM / %s] [realmem: %sM]',

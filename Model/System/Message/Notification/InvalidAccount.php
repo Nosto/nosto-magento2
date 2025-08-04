@@ -67,7 +67,7 @@ class InvalidAccount implements MessageInterface
      */
     public function getText()
     {
-        return __($this->message);
+        return (string) __($this->message);
     }
 
     /**
