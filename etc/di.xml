@@ -53,10 +53,10 @@
     <preference for="Nosto\Tagging\Model\Service\Sync\BulkPublisherInterface" type="Nosto\Tagging\Model\Service\Sync\Upsert\Category\AsyncBulkPublisher"/>
     <preference for="Nosto\Tagging\Model\Cache\Type\ProductDataInterface" type="Nosto\Tagging\Model\Cache\Type\ProductData" />
     <type name="Magento\Catalog\Model\ResourceModel\Product">
-        <plugin name="nostoCategoryObserverUpdate" type="Nosto\Tagging\Plugin\ProductUpdate"/>
+        <plugin name="nostoProductObserverUpdate" type="Nosto\Tagging\Plugin\ProductUpdate"/>
     </type>
     <type name="Magento\Catalog\Model\ResourceModel\Category">
-        <plugin name="nostoProductObserverUpdate" type="Nosto\Tagging\Plugin\CategoryUpdate"/>
+        <plugin name="nostoCategoryObserverUpdate" type="Nosto\Tagging\Plugin\CategoryUpdate"/>
     </type>
     <type name="Nosto\Tagging\Console\Command\NostoAccountConnectCommand">
         <arguments>
