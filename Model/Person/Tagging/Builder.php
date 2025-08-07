@@ -96,13 +96,13 @@ class Builder extends PersonBuilder
         string $firstName,
         string $lastName,
         string $email,
-        string $phone = null,
-        string $postCode = null,
-        string $country = null,
-        string $customerGroup = null,
-        string $dateOfBirth = null,
-        string $gender = null,
-        string $customerReference = null
+        ?string $phone = null,
+        ?string $postCode = null,
+        ?string $country = null,
+        ?string $customerGroup = null,
+        ?string $dateOfBirth = null,
+        ?string $gender = null,
+        ?string $customerReference = null
     ) {
         $customer = new Customer();
         $customer->setFirstName($firstName);

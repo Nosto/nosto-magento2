@@ -241,7 +241,7 @@ class Data extends AbstractHelper
      * @param StoreInterface|null $store the store model or null.
      * @return string the configuration value
      */
-    public function getProductImageVersion(StoreInterface $store = null)
+    public function getProductImageVersion(?StoreInterface $store = null)
     {
         return $this->getStoreConfig(self::XML_PATH_IMAGE_VERSION, $store);
     }
@@ -254,7 +254,7 @@ class Data extends AbstractHelper
      * @param StoreInterface|null $store the store model or null.
      * @return boolean
      */
-    public function getRemovePubDirectoryFromProductImageUrl(StoreInterface $store = null)
+    public function getRemovePubDirectoryFromProductImageUrl(?StoreInterface $store = null)
     {
         return $this->getStoreConfig(self::XML_PATH_IMAGE_REMOVE_PUB_FROM_URL, $store);
     }
@@ -265,7 +265,7 @@ class Data extends AbstractHelper
      * @param StoreInterface|null $store the store model or null.
      * @return string the configuration value
      */
-    public function getBrandAttribute(StoreInterface $store = null)
+    public function getBrandAttribute(?StoreInterface $store = null)
     {
         return $this->getStoreConfig(self::XML_PATH_BRAND_ATTRIBUTE, $store);
     }
@@ -276,7 +276,7 @@ class Data extends AbstractHelper
      * @param StoreInterface|null $store the store model or null.
      * @return string the configuration value
      */
-    public function getMarginAttribute(StoreInterface $store = null)
+    public function getMarginAttribute(?StoreInterface $store = null)
     {
         return $this->getStoreConfig(self::XML_PATH_MARGIN_ATTRIBUTE, $store);
     }
@@ -287,7 +287,7 @@ class Data extends AbstractHelper
      * @param StoreInterface|null $store the store model or null.
      * @return string the configuration value
      */
-    public function getGtinAttribute(StoreInterface $store = null)
+    public function getGtinAttribute(?StoreInterface $store = null)
     {
         return $this->getStoreConfig(self::XML_PATH_GTIN_ATTRIBUTE, $store);
     }
@@ -298,7 +298,7 @@ class Data extends AbstractHelper
      * @param StoreInterface|null $store the store model or null.
      * @return string the configuration value
      */
-    public function getGoogleCategoryAttribute(StoreInterface $store = null)
+    public function getGoogleCategoryAttribute(?StoreInterface $store = null)
     {
         return $this->getStoreConfig(self::XML_PATH_GOOGLE_CATEGORY_ATTRIBUTE, $store);
     }
@@ -309,7 +309,7 @@ class Data extends AbstractHelper
      * @param StoreInterface|null $store the store model or null.
      * @return bool the configuration value
      */
-    public function isVariationTaggingEnabled(StoreInterface $store = null)
+    public function isVariationTaggingEnabled(?StoreInterface $store = null)
     {
         return (bool)$this->getStoreConfig(self::XML_PATH_VARIATION_TAGGING, $store);
     }
@@ -320,7 +320,7 @@ class Data extends AbstractHelper
      * @param StoreInterface|null $store the store model or null.
      * @return boolean
      */
-    public function isCustomFieldsEnabled(StoreInterface $store = null)
+    public function isCustomFieldsEnabled(?StoreInterface $store = null)
     {
         return (bool)$this->getStoreConfig(self::XML_PATH_USE_CUSTOM_FIELDS, $store);
     }
@@ -331,7 +331,7 @@ class Data extends AbstractHelper
      * @param StoreInterface|null $store the store model or null.
      * @return bool the configuration value
      */
-    public function isAltimgTaggingEnabled(StoreInterface $store = null)
+    public function isAltimgTaggingEnabled(?StoreInterface $store = null)
     {
         return (bool)$this->getStoreConfig(self::XML_PATH_ALTIMG_TAGGING, $store);
     }
@@ -342,7 +342,7 @@ class Data extends AbstractHelper
      * @param StoreInterface|null $store the store model or null.
      * @return bool the configuration value
      */
-    public function isRatingTaggingEnabled(StoreInterface $store = null)
+    public function isRatingTaggingEnabled(?StoreInterface $store = null)
     {
         $providerCode = $this->getStoreConfig(self::XML_PATH_RATING_TAGGING, $store);
 
@@ -359,7 +359,7 @@ class Data extends AbstractHelper
      * @param StoreInterface|null $store
      * @return mixed|null
      */
-    public function getRatingTaggingProvider(StoreInterface $store = null)
+    public function getRatingTaggingProvider(?StoreInterface $store = null)
     {
         return $this->getStoreConfig(self::XML_PATH_RATING_TAGGING, $store);
     }
@@ -370,7 +370,7 @@ class Data extends AbstractHelper
      * @param StoreInterface|null $store the store model or null.
      * @return bool the configuration value
      */
-    public function isInventoryTaggingEnabled(StoreInterface $store = null)
+    public function isInventoryTaggingEnabled(?StoreInterface $store = null)
     {
         return (bool)$this->getStoreConfig(self::XML_PATH_INVENTORY_TAGGING, $store);
     }
@@ -381,7 +381,7 @@ class Data extends AbstractHelper
      * @param StoreInterface|null $store the store model or null.
      * @return bool the configuration value
      */
-    public function isProductUpdatesEnabled(StoreInterface $store = null)
+    public function isProductUpdatesEnabled(?StoreInterface $store = null)
     {
         return (bool)$this->getStoreConfig(self::XML_PATH_PRODUCT_UPDATES, $store);
     }
@@ -392,7 +392,7 @@ class Data extends AbstractHelper
      * @param StoreInterface|null $store the store model or null.
      * @return bool the configuration value
      */
-    public function isSendCustomerDataToNostoEnabled(StoreInterface $store = null)
+    public function isSendCustomerDataToNostoEnabled(?StoreInterface $store = null)
     {
         return (bool)$this->getStoreConfig(self::XML_PATH_SEND_CUSTOMER_DATA, $store);
     }
@@ -403,7 +403,7 @@ class Data extends AbstractHelper
      * @param StoreInterface|null $store
      * @return bool
      */
-    public function isMultiChannelOrderTrackingEnabled(StoreInterface $store = null)
+    public function isMultiChannelOrderTrackingEnabled(?StoreInterface $store = null)
     {
         return (bool)$this->getStoreConfig(self::XML_PATH_TRACK_MULTI_CHANNEL_ORDERS, $store);
     }
@@ -414,7 +414,7 @@ class Data extends AbstractHelper
      * @param StoreInterface|null $store
      * @return int
      */
-    public function isReloadRecsAfterAtcEnabled(StoreInterface $store = null)
+    public function isReloadRecsAfterAtcEnabled(?StoreInterface $store = null)
     {
         return $this->getStoreConfig(self::XML_PATH_RELOAD_RECS_AFTER_ATC, $store);
     }
@@ -425,7 +425,7 @@ class Data extends AbstractHelper
      * @param StoreInterface|null $store the store model or null.
      * @return bool the configuration value
      */
-    public function isTaggingProvidersEnabled(StoreInterface $store = null)
+    public function isTaggingProvidersEnabled(?StoreInterface $store = null)
     {
         return (bool)$this->getStoreConfig(self::XML_PATH_TAGGING_PROVIDERS_ENABLED, $store);
     }
@@ -436,7 +436,7 @@ class Data extends AbstractHelper
      * @param StoreInterface|null $store the store model or null.
      * @return bool the configuration value
      */
-    public function isLowStockIndicationEnabled(StoreInterface $store = null)
+    public function isLowStockIndicationEnabled(?StoreInterface $store = null)
     {
         return (bool)$this->getStoreConfig(self::XML_PATH_LOW_STOCK_INDICATION, $store);
     }
@@ -447,7 +447,7 @@ class Data extends AbstractHelper
      * @param StoreInterface|null $store the store model or null.
      * @return int the configuration value
      */
-    public function getIndexerMemory(StoreInterface $store = null)
+    public function getIndexerMemory(?StoreInterface $store = null)
     {
         return $this->getStoreConfig(self::XML_PATH_INDEXER_MEMORY, $store);
     }
@@ -458,7 +458,7 @@ class Data extends AbstractHelper
      * @param StoreInterface|null $store the store model or null.
      * @return bool the configuration value
      */
-    public function canIndexDisabledProducts(StoreInterface $store = null)
+    public function canIndexDisabledProducts(?StoreInterface $store = null)
     {
         return $this->getStoreConfig(self::XML_PATH_INDEX_DISABLED_PRODUCTS, $store);
     }
@@ -469,7 +469,7 @@ class Data extends AbstractHelper
      * @param StoreInterface|null $store the store model or null.
      * @return bool the configuration value
      */
-    public function isTagDatePublishedEnabled(StoreInterface $store = null)
+    public function isTagDatePublishedEnabled(?StoreInterface $store = null)
     {
         return $this->getStoreConfig(self::XML_PATH_TAG_DATE_PUBLISHED, $store);
     }
@@ -480,7 +480,7 @@ class Data extends AbstractHelper
      * @param StoreInterface|null $store the store model or null.
      * @return bool the configuration value
      */
-    public function isPricingVariationEnabled(StoreInterface $store = null)
+    public function isPricingVariationEnabled(?StoreInterface $store = null)
     {
         return (bool)$this->getStoreConfig(self::XML_PATH_PRICING_VARIATION, $store);
     }
@@ -491,7 +491,7 @@ class Data extends AbstractHelper
      * @param StoreInterface|null $store the store model or null.
      * @return bool the configuration value
      */
-    public function isMultiCurrencyDisabled(StoreInterface $store = null)
+    public function isMultiCurrencyDisabled(?StoreInterface $store = null)
     {
         $storeConfig = $this->getMultiCurrencyMethod($store);
         return ($storeConfig === self::SETTING_VALUE_MC_DISABLED);
@@ -503,7 +503,7 @@ class Data extends AbstractHelper
      * @param StoreInterface|null $store the store model or null.
      * @return bool the configuration value
      */
-    public function isMultiCurrencyExchangeRatesEnabled(StoreInterface $store = null)
+    public function isMultiCurrencyExchangeRatesEnabled(?StoreInterface $store = null)
     {
         $storeConfig = $this->getMultiCurrencyMethod($store);
         return ($storeConfig === self::SETTING_VALUE_MC_EXCHANGE_RATE);
@@ -515,7 +515,7 @@ class Data extends AbstractHelper
      * @param StoreInterface|null $store the store model or null.
      * @return string the configuration value
      */
-    public function getMultiCurrencyMethod(StoreInterface $store = null)
+    public function getMultiCurrencyMethod(?StoreInterface $store = null)
     {
         return $this->getStoreConfig(self::XML_PATH_MULTI_CURRENCY, $store);
     }
@@ -527,7 +527,7 @@ class Data extends AbstractHelper
      * @param StoreInterface|null $store the store model or null.
      * @return string|null the configuration value
      */
-    public function saveMultiCurrencyMethod($value, StoreInterface $store = null)
+    public function saveMultiCurrencyMethod($value, ?StoreInterface $store = null)
     {
         return $this->saveStoreConfig(self::XML_PATH_MULTI_CURRENCY, $value, $store);
     }
@@ -537,7 +537,7 @@ class Data extends AbstractHelper
      * @param StoreInterface|Store|null $store
      * @return mixed|null
      */
-    public function getStoreConfig($path, StoreInterface $store = null)
+    public function getStoreConfig($path, ?StoreInterface $store = null)
     {
         if ($store === null) {
             $store = $this->nostoHelperScope->getStore(true);
@@ -550,7 +550,7 @@ class Data extends AbstractHelper
      * @param mixed $value
      * @param StoreInterface|Store|null $store
      */
-    public function saveStoreConfig($path, $value, StoreInterface $store = null)
+    public function saveStoreConfig($path, $value, ?StoreInterface $store = null)
     {
         $scope = ScopeConfigInterface::SCOPE_TYPE_DEFAULT;
         $storeId = 0;
@@ -616,7 +616,7 @@ class Data extends AbstractHelper
      * @param StoreInterface|null $store the store model or null.
      * @return null|array of attributes
      */
-    public function getTagAttributes($tagId, StoreInterface $store = null)
+    public function getTagAttributes($tagId, ?StoreInterface $store = null)
     {
         $attributesConfig = $this->getStoreConfig(self::XML_PATH_TAG . $tagId, $store);
         /** @noinspection TypeUnsafeComparisonInspection */
@@ -633,7 +633,7 @@ class Data extends AbstractHelper
      * @param StoreInterface|null $store the store model or null.
      * @return boolean the configuration value
      */
-    public function getStoreCodeToUrl(StoreInterface $store = null)
+    public function getStoreCodeToUrl(?StoreInterface $store = null)
     {
         return (bool)$this->getStoreConfig(self::XML_PATH_STORE_CODE_TO_URL, $store);
     }
