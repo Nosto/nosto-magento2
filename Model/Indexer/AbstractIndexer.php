@@ -102,7 +102,7 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
         Emulation $storeEmulator,
         InputInterface $input,
         IndexerStatusServiceInterface $indexerStatusService,
-        ProcessManager $processManager = null
+        ?ProcessManager $processManager = null
     ) {
         $this->nostoHelperScope = $nostoHelperScope;
         $this->nostoLogger = $nostoLogger;
@@ -254,7 +254,7 @@ abstract class AbstractIndexer implements DimensionalIndexerInterface, IndexerAc
      * @param Dimension[] $dimensions
      * @param Traversable|null $entityIds
      */
-    public function executeByDimensions(array $dimensions, Traversable $entityIds = null)
+    public function executeByDimensions(array $dimensions, ?Traversable $entityIds = null)
     {
         if (count($dimensions) > 1 || !isset($dimensions[StoreDimensionProvider::DIMENSION_NAME])) {
             throw new InvalidArgumentException('Indexer "' . $this->getIndexerId() . '" support only Store dimension');

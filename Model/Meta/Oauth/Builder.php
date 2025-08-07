@@ -81,7 +81,7 @@ class Builder
      * @param Account|null $account
      * @return OAuth
      */
-    public function build(Store $store, Account $account = null)
+    public function build(Store $store, ?Account $account = null)
     {
         $metaData = new OAuth();
 
