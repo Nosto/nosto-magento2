@@ -1,5 +1,8 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 8.0.9
+* Minor fixes to ensure compatibility with PHP 8.1 and above
+
 ### 8.0.8
 * Minor adjustments to ensure compatibility with PHP 8.1 and above
 
