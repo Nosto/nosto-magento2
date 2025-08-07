@@ -67,8 +67,8 @@ class TaggingDataResolver implements ResolverInterface
         Field $field,
         $context,
         ResolveInfo $info,
-        array $value = null,
-        array $args = null
+        ?array $value = null,
+        ?array $args = null
     ) {
         $pageType = $args['pageType'] ?? 'unknown';
         $this->taggingProvider->setData('page_type', $pageType);

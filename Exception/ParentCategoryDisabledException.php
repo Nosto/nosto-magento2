@@ -41,7 +41,7 @@ use Throwable;
 
 class ParentCategoryDisabledException extends NostoException
 {
-    public function __construct($categoryId, $code = 0, Throwable $previous = null)
+    public function __construct($categoryId, $code = 0, ?Throwable $previous = null)
     {
         $message = "Parent category is disabled for category with id: " . $categoryId;
         parent::__construct($message, $code, $previous);
