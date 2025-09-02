@@ -588,7 +588,7 @@ class Data extends AbstractHelper
         $version = 'unknown';
         if ($this->productMetaData->getVersion()) {
             $version = $this->productMetaData->getVersion();
-        } elseif (defined(AppInterface::VERSION)) {
+        } elseif (defined('\Magento\Framework\AppInterface::VERSION')) {
             $version = AppInterface::VERSION;
         }
         return $version;
