@@ -48,7 +48,15 @@ if ($isHyva) {
         ->toHtml();
 } else {
     echo $block->getLayout()
-        ->createBlock(\Nosto\Tagging\Block\Knockout::class)
+        ->createBlock(
+            \Nosto\Tagging\Block\Knockout::class,
+            'nosto.customer.luma',
+            [
+                'data' => [
+                    'jsLayout' => json_decode($block->getJsLayout() ?? '{}', true),
+                ]
+            ]
+        )
         ->setTemplate('Nosto_Tagging::luma/customer.phtml')
         ->setData($block->getData())
         ->toHtml();
