@@ -99,12 +99,14 @@ $isHyva = $block->isHyva();
                               'form_key': formKey,
                               'qty': quantity,
                               'product': product.productId,
-                              'sku': product.skuId
+                              'sku': product.skuId,
+                              'ajax': true
                           })
                       })
                           .then(response => {
-                              if (response.ok) {
+                               if (response.ok || response.redirected) {
                                   this.sendCartEvent(element, product.productId);
+                                  window.dispatchEvent(new CustomEvent('reload-customer-section-data'));
                                   return resolve();
                               }
                               return reject();
@@ -208,11 +210,18 @@ $isHyva = $block->isHyva();
                           form_key: formKey,
                           qty: quantity,
                           product: product.productId,
-                          sku: product.skuId
+                          sku: product.skuId,
+                          ajax: true
                       })
                   }).then(function (response) {
+                      if (response.ok || response.redirected) {
                       Recobuy.sendCartEvent(element, product.productId)
+                          require(['Magento_Customer/js/customer-data'], function(customerData) {
+                              customerData.reload(['cart', 'messages'], true);
+                          });
                       return resolve();
+                      }
+                      return reject();
                   }).catch(function(error) {
                       return reject();
                   });
