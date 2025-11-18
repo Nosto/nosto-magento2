@@ -215,7 +215,7 @@ $isHyva = $block->isHyva();
                       })
                   }).then(function (response) {
                       if (response.ok || response.redirected) {
-                      Recobuy.sendCartEvent(element, product.productId)
+                      Recobuy.sendCartEvent(element, product.productId);
                           require(['Magento_Customer/js/customer-data'], function(customerData) {
                               customerData.reload(['cart', 'messages'], true);
                           });
