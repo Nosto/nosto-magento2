@@ -1,5 +1,8 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 8.1.0
+* Fix adding to cart instantly
+
 ### 8.0.10
 * Fix plugin names for category and product
 * Pass JS layout to Block
