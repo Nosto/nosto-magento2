@@ -48,7 +48,7 @@
 
 <?php
 $isReloadRecsAfterAtcEnabled = (int)$block->isReloadRecsAfterAtcEnabled();
-$script = <<<script
+$script = <<<'JS'
     document.addEventListener('DOMContentLoaded', function() {
         function initNostoCartTagging() {
             const refreshRecs = ${$isReloadRecsAfterAtcEnabled};
@@ -116,7 +116,7 @@ $script = <<<script
         }
         initNostoCartTagging();
     });
-script;
+JS;
 ?>
 <?= /* @noEscape */ $secureRenderer->renderTag('script', [], $script, false) ?>
 

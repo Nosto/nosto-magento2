@@ -65,7 +65,7 @@
   <!-- Customer data will be inserted dynamically -->
 </div>
 <?php
-$script = <<<script
+$script = <<<'JS'
     // Runs after the Hyva theme initializes section data in the footer
     document.addEventListener('DOMContentLoaded', function() {
         const customerTaggingElement = document.getElementById('nosto_customer_tagging');
@@ -117,6 +117,6 @@ $script = <<<script
         }
         dispatchEvent(new Event('reload-customer-section-data'));
     });
-script;
+JS;
 ?>
 <?= /* @noEscape */ $secureRenderer->renderTag('script', [], $script, false) ?>
