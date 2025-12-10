@@ -41,9 +41,9 @@
 ?>
 
 <div id="nosto_cart_tagging" class="nosto_cart_hidden" style="display:none">
-  <span class="hcid"></span>
-  <span class="restore_link"></span>
-  <!-- Cart items will be inserted dynamically -->
+    <span class="hcid"></span>
+    <span class="restore_link"></span>
+    <!-- Cart items will be inserted dynamically -->
 </div>
 
 <?php
@@ -51,7 +51,7 @@ $isReloadRecsAfterAtcEnabled = (int)$block->isReloadRecsAfterAtcEnabled();
 $script = <<<'JS'
     document.addEventListener('DOMContentLoaded', function() {
         function initNostoCartTagging() {
-            const refreshRecs = ${$isReloadRecsAfterAtcEnabled};
+            const refreshRecs = __RELOAD__;
             function processCartData(data) {
                 if (!data || !data['cart-tagging']) return;
 
@@ -117,6 +117,7 @@ $script = <<<'JS'
         initNostoCartTagging();
     });
 JS;
+$script = str_replace('__RELOAD__', $isReloadRecsAfterAtcEnabled, $script);
 ?>
 <?= /* @noEscape */ $secureRenderer->renderTag('script', [], $script, false) ?>
 
