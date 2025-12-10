@@ -1,5 +1,8 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 8.1.2
+* Fix variable usage in cart
+
 ### 8.1.1
 * Switched heredoc to nowdoc in PHP templates to prevent unintended interpolation of JavaScript ES6 template literals
 
