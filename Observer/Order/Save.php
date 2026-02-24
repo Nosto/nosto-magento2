@@ -173,7 +173,10 @@ class Save implements ObserverInterface
             $updated = new DateTime($order->getUpdatedAt());
             $created = new DateTime($order->getCreatedAt());
             $diff = $updated->getTimestamp() - $created->getTimestamp();
-            return ($order->getState() === Order::STATE_NEW || $order->getState() === Order::STATE_PENDING_PAYMENT) && $diff <= $this->intervalForNew;
+            return (
+                $order->getState() === Order::STATE_NEW
+                || $order->getState() === Order::STATE_PENDING_PAYMENT
+            ) && $diff <= $this->intervalForNew;
         } catch (Exception $e) {
             $this->logger->exception($e);
             return true;
