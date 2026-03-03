@@ -46,12 +46,11 @@ jobs:
       id: install-magento
       run: |
         composer create-project magento/community-edition=2.4.4 magento --no-dev
+        mkdir -p magento/app/code/Nosto/Tagging
+        git archive HEAD | tar -x -C magento/app/code/Nosto/Tagging
         cd magento
-        composer config minimum-stability dev
-        composer config prefer-stable true
-        composer require --no-update nosto/module-nostotagging:dev-${GITHUB_REF#refs/heads/}#${GITHUB_SHA}
-        composer update --no-dev
-        bin/magento module:enable --all
+        composer require nosto/php-sdk:^7.7 laminas/laminas-uri:* --no-interaction --no-progress
+        bin/magento module:enable Nosto_Tagging
         bin/magento setup:di:compile
         cd ..
         cp -r magento/generated vendor/magento/
