@@ -37,14 +37,13 @@
 namespace Nosto\Tagging\Util;
 
 use Magento\Customer\Api\Data\CustomerInterface;
-use Magento\Customer\Model\Backend\Customer\Interceptor as CustomerInterceptor;
 
 class Customer
 {
     public const CUSTOMER_REFERENCE_HASH_ALGO = 'sha256';
 
     /**
-     * @param CustomerInterface|CustomerInterceptor $customer
+     * @param CustomerInterface $customer
      * @return string
      */
     public function generateCustomerReference($customer)
