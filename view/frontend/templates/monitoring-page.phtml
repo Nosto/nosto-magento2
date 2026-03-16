@@ -1,0 +1,321 @@
+<?php
+/**
+ * Copyright (c) 2020, Nosto Solutions Ltd
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice,
+ * this list of conditions and the following disclaimer.
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * 3. Neither the name of the copyright holder nor the names of its contributors
+ * may be used to endorse or promote products derived from this software without
+ * specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * @author Nosto Solutions Ltd <contact@nosto.com>
+ * @copyright 2020 Nosto Solutions Ltd
+ * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
+ *
+ */
+
+/* @var Nosto\Tagging\Block\MonitoringPage $block */
+$tokens = $block->getAccountNameAndTokens()->getTokens();
+$storesWithNosto = $block->getStoresWithNosto();
+$nostoIndexProductIndexer = $block->getLastIndexedTime('nosto_index_product');
+$nostoIndexCategoryIndexer = $block->getLastIndexedTime('nosto_index_category');
+?>
+<div class="row">
+    <div class="col-md-8">
+        <form name="logout" method="post" id="logout" class="form"
+              action="<?= $block->escapeHtml($block->getFormAction('nosto/monitoring/logout')) ?>"
+              data-mage-init='{"validation":{}}'>
+            <div class="actions-toolbar">
+                <div class="primary">
+                    <button type="submit" class="action submit primary" title="Logout"><span>Logout</span></button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <hr>
+    <div class="col-md-8">
+        <form name="logs" method="post" id="logs" class="form"
+              action="<?= $block->escapeHtml($block->getFormAction('nosto/monitoring/logs')) ?>"
+              data-mage-init='{"validation":{}}'>
+            <div class="actions-toolbar">
+                <div class="primary">
+                    <button type="submit" class="action submit primary" title="Download Nosto log files">
+                        <span>Download Nosto log files</span>
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <hr>
+    <div class="col-md-8">
+        <p>Nosto is enabled and installed:
+            <span style="font-weight: bold;"><?= $block->escapeHtml($block->checkIfNostoInstalledAndEnabled()) ?></span>
+        </p>
+    </div>
+    <div class="col-md-8">
+        <p>Nosto module version:
+            <span style="font-weight: bold;">
+                <?= $block->escapeHtml($block->getStringSettingsValues('getModuleVersion')) ?>
+            </span></p>
+    </div>
+    <div class="col-md-8">
+        <p>Account ID:
+            <span style="font-weight: bold;">
+                <?= $block->escapeHtml($block->getAccountNameAndTokens()->getName()) ?>
+            </span>
+        </p>
+    </div>
+    <div class="col-md-8">
+        <p>Last indexed time:</p>
+        <p style="font-weight: bold;">
+            <?php
+            if (!empty($nostoIndexProductIndexer)) {
+                foreach ($nostoIndexProductIndexer as $value) {
+                    echo $block->escapeHtml($value . ' ');
+                }
+            }
+            ?>
+        </p>
+        <p style="font-weight: bold;">
+            <?php
+            if (!empty($nostoIndexCategoryIndexer)) {
+                foreach ($nostoIndexCategoryIndexer as $value) {
+                    echo $block->escapeHtml($value . ' ');
+                }
+            }
+            ?>
+        </p>
+    </div>
+    <div class="col-md-8">
+        <p style="font-weight: bold;">Account tokens</p>
+        <table>
+            <tr>
+                <td>Token name</td>
+                <td>Token value</td>
+            </tr>
+        <?php
+        if (!empty($tokens)) {
+            foreach ($tokens as $token) {
+                ?>
+                <tr>
+                    <td><?= $block->escapeHtml($token->getName()) ?></td>
+                    <td><?= $block->escapeHtml($token->getValue()) ?></td>
+                </tr>
+                <?php
+            }
+        }
+        ?>
+        </table>
+    </div>
+    <div class="col-md-8">
+        <p style="font-weight: bold;">Stores where Nosto is installed</p>
+        <table>
+            <tr>
+                <td>Store ID</td>
+                <td>Store code</td>
+                <td>Store name</td>
+            </tr>
+        <?php
+        if (!empty($storesWithNosto)) {
+            foreach ($storesWithNosto as $store) {
+                $storeData = $store->getData();
+                ?>
+                <tr>
+                    <td><?= $block->escapeHtml($storeData['store_id']) ?></td>
+                    <td><?= $block->escapeHtml($storeData['code']) ?></td>
+                    <td><?= $block->escapeHtml($storeData['name']) ?></td>
+                </tr>
+                <?php
+            }
+        }
+        ?>
+        </table>
+    </div>
+    <div class="col-md-8">
+        <p style="font-weight: bold;">Nosto admin settings</p>
+        <table>
+            <tr>
+                <td>Image Version</td>
+                <td><?= $block->escapeHtml($block->getStringSettingsValues('getProductImageVersion')) ?></td>
+            </tr>
+            <tr>
+                <td>Remove "pub/" from product image URLs</td>
+                <td>
+                    <?= $block
+                        ->escapeHtml($block->getSettingsValue('getRemovePubDirectoryFromProductImageUrl')) ?>
+                </td>
+            </tr>
+            <tr>
+                <td>Brand</td>
+                <td><?= $block->escapeHtml($block->getStringSettingsValues('getBrandAttribute')) ?></td>
+            </tr>
+            <tr>
+                <td>Supplier Cost</td>
+                <td><?= $block->escapeHtml($block->getStringSettingsValues('getMarginAttribute')) ?></td>
+            </tr>
+            <tr>
+                <td>GTIN</td>
+                <td><?= $block->escapeHtml($block->getStringSettingsValues('getGtinAttribute')) ?></td>
+            </tr>
+            <tr>
+                <td>Google Category</td>
+                <td>
+                    <?= $block->escapeHtml($block->getStringSettingsValues('getGoogleCategoryAttribute')) ?>
+                </td>
+            </tr>
+            <tr>
+                <td>Enable Variations</td>
+                <td><?= $block->escapeHtml($block->getSettingsValue('isVariationTaggingEnabled')) ?></td>
+            </tr>
+            <tr>
+                <td>Enable custom fields</td>
+                <td><?= $block->escapeHtml($block->getSettingsValue('isCustomFieldsEnabled')) ?></td>
+            </tr>
+            <tr>
+                <td>Enable Alternate Images</td>
+                <td><?= $block->escapeHtml($block->getSettingsValue('isAltimgTaggingEnabled')) ?></td>
+            </tr>
+            <tr>
+                <td>Enable Ratings & Reviews</td>
+                <td><?= $block->escapeHtml($block->getSettingsValue('getRatingTaggingProvider')) ?></td>
+            </tr>
+            <tr>
+                <td>Enable Inventory Levels</td>
+                <td><?= $block->escapeHtml($block->getSettingsValue('isInventoryTaggingEnabled')) ?></td>
+            </tr>
+            <tr>
+                <td>Product Updates via API</td>
+                <td><?= $block->escapeHtml($block->getSettingsValue('isProductUpdatesEnabled')) ?></td>
+            </tr>
+            <tr>
+                <td>Enable Low Stock Indication</td>
+                <td><?= $block->escapeHtml($block->getSettingsValue('isLowStockIndicationEnabled')) ?></td>
+            </tr>
+            <tr>
+                <td>Send Customer Data To Nosto</td>
+                <td><?= $block->escapeHtml($block->getSettingsValue('isSendCustomerDataToNostoEnabled')) ?></td>
+            </tr>
+            <tr>
+                <td>Indexer Memory</td>
+                <td><?= $block->escapeHtml($block->getStringSettingsValues('getIndexerMemory')) ?>%</td>
+            </tr>
+            <tr>
+                <td>Index disabled products</td>
+                <td><?= $block->escapeHtml($block->getSettingsValue('canIndexDisabledProducts')) ?></td>
+            </tr>
+            <tr>
+                <td>Add product published date to tagging</td>
+                <td><?= $block->escapeHtml($block->getSettingsValue('isTagDatePublishedEnabled')) ?></td>
+            </tr>
+            <tr>
+                <td>Track orders from multiple channels</td>
+                <td>
+                    <?= $block->escapeHtml($block->getSettingsValue('isMultiChannelOrderTrackingEnabled')) ?>
+                </td>
+            </tr>
+            <tr>
+                <td>Reload recs after reloading cart</td>
+                <td><?= $block->escapeHtml($block->getSettingsValue('isReloadRecsAfterAtcEnabled')) ?></td>
+            </tr>
+            <tr>
+                <td>Enable Tagging Providers</td>
+                <td><?= $block->escapeHtml($block->getSettingsValue('isTaggingProvidersEnabled')) ?></td>
+            </tr>
+        </table>
+    </div>
+    <hr>
+    <div class="col-md-8">
+        <form name="product-sync" method="post" id="product-sync" class="form"
+              action="<?= $block->escapeHtml($block->getFormAction('nosto/monitoring/debug')) ?>"
+              data-hasrequired='* Required Fields'
+              data-mage-init='{"validation":{}}'>
+            <div class="fields col-md-6">
+                <div class="field product_id required">
+                    <label class="label" for="title"><span>Product ID</span></label>
+                    <div class="control">
+                        <input name="product_id" id="product_id" title="Product ID" value="" class="input-text"
+                               type="text"
+                               data-validate="{required:true, 'validate-alphanum-with-spaces':true}">
+                        <input name="entityType" id="entityType" title="entityType" value="product" class="input-text"
+                               type="hidden"
+                               data-validate="{required:true, 'validate-alphanum-with-spaces':true}">
+                    </div>
+                </div>
+            </div>
+            <div class="actions-toolbar">
+                <div class="primary">
+                    <button type="submit" class="action submit primary" title="Debug"><span>Debug</span></button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="col-md-8">
+        <form name="order-sync" method="post" id="order-sync" class="form"
+              action="<?= $block->escapeHtml($block->getFormAction('nosto/monitoring/debug')) ?>"
+              data-hasrequired='* Required Fields'
+              data-mage-init='{"validation":{}}'>
+            <div class="fields col-md-6">
+                <div class="field order_id required">
+                    <label class="label" for="title"><span>Order ID</span></label>
+                    <div class="control">
+                        <input name="order_id" id="order_id" title="Order ID" value="" class="input-text" type="text"
+                               data-validate="{required:true, 'validate-alphanum-with-spaces':true}">
+                        <input name="entityType" id="entityType" title="entityType" value="order" class="input-text"
+                               type="hidden"
+                               data-validate="{required:true, 'validate-alphanum-with-spaces':true}">
+                    </div>
+                </div>
+            </div>
+            <div class="actions-toolbar">
+                <div class="primary">
+                    <button type="submit" class="action submit primary" title="Debug"><span>Debug</span></button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="col-md-8">
+        <form name="category-sync" method="post" id="category-sync" class="form"
+              action="<?= $block->escapeHtml($block->getFormAction('nosto/monitoring/debug')) ?>"
+              data-hasrequired='* Required Fields'
+              data-mage-init='{"validation":{}}'>
+            <div class="fields col-md-6">
+                <div class="field category_id required">
+                    <label class="label" for="title"><span>Category ID</span></label>
+                    <div class="control">
+                        <input name="category_id" id="category_id" title="Category ID" value="" class="input-text"
+                               type="text"
+                               data-validate="{required:true, 'validate-alphanum-with-spaces':true}">
+                        <input name="entityType" id="entityType" title="entityType" value="category" class="input-text"
+                               type="hidden"
+                               data-validate="{required:true, 'validate-alphanum-with-spaces':true}">
+                    </div>
+                </div>
+            </div>
+            <div class="actions-toolbar">
+                <div class="primary">
+                    <button type="submit" class="action submit primary" title="Debug"><span>Debug</span></button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
