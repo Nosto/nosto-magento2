@@ -28,7 +28,7 @@
     "phan/phan": "5.3.0",
     "drenso/phan-extensions": "3.5.1",
     "yotpo/module-yotpo-combined": "^4.1",
-    "phpunit/phpunit": "~9.5.18"
+    "phpunit/phpunit": "~9.6.33"
   },
   "suggest": {
     "magento/product-community-edition": "2.*",
