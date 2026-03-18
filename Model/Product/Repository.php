@@ -52,6 +52,7 @@ use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Store\Model\Store;
 use Nosto\Tagging\Exception\ParentProductDisabledException;
+use Nosto\Tagging\Model\ResourceModel\Magento\Product\CollectionBuilder as MagentoProductCollectionBuilder;
 use Nosto\Tagging\Model\ResourceModel\Sku;
 use Nosto\Tagging\Model\Service\Stock\Provider\StockProviderInterface;
 
@@ -91,6 +92,9 @@ class Repository
     /** @var Sku $skuResource */
     private Sku $skuResource;
 
+    /** @var MagentoProductCollectionBuilder */
+    private MagentoProductCollectionBuilder $productCollectionBuilder;
+
     /**
      * Constructor to instantiating the reindex command. This constructor uses proxy classes for
      * two of the Nosto objects to prevent introspection of constructor parameters when the DI
@@ -107,6 +111,7 @@ class Repository
      * @param ProductVisibility $productVisibility
      * @param StockProviderInterface $stockProvider
      * @param Sku $skuResource
+     * @param MagentoProductCollectionBuilder $productCollectionBuilder
      */
     public function __construct(
         ProductRepository $productRepository,
@@ -117,7 +122,8 @@ class Repository
         ConfigurableType $configurableType,
         ProductVisibility $productVisibility,
         StockProviderInterface $stockProvider,
-        Sku $skuResource
+        Sku $skuResource,
+        MagentoProductCollectionBuilder $productCollectionBuilder
     ) {
         $this->productRepository = $productRepository;
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;
@@ -128,6 +134,7 @@ class Repository
         $this->productVisibility = $productVisibility;
         $this->stockProvider = $stockProvider;
         $this->skuResource = $skuResource;
+        $this->productCollectionBuilder = $productCollectionBuilder;
     }
 
     /**
@@ -325,6 +332,44 @@ class Repository
             $store->getWebsite()
         );
         return $this->skuResource->getSkuPricesByIds($store->getWebsite(), $inStockProductsByIds);
+    }
+
+    /**
+     * Gets the in-stock child SKU products for a configurable product in the
+     * requested store context.
+     *
+     * Unlike getSkusAsArray(), this does not read from the price index table.
+     * It returns actual product models for fallback price calculation when the
+     * indexed SKU price data is missing, stale, or resolves to zero.
+     *
+     * @param Product $product
+     * @param Store $store
+     * @return Product[]
+     * @throws NoSuchEntityException
+     */
+    public function getInStockSkuProducts(Product $product, Store $store): array
+    {
+        $skuIds = $this->getSkuIds($product);
+        if (empty($skuIds)) {
+            return [];
+        }
+
+        $inStockProductIds = $this->stockProvider->getInStockProductIds(
+            $skuIds,
+            $store->getWebsite()
+        );
+        if (empty($inStockProductIds)) {
+            return [];
+        }
+
+        return array_values(
+            $this->productCollectionBuilder
+                ->initDefault($store)
+                ->withIds($inStockProductIds)
+                ->withAllAttributes()
+                ->build()
+                ->getItems()
+        );
     }
 
     /**

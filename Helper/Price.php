@@ -451,7 +451,7 @@ class Price extends AbstractHelper
         Store $store
     ): float {
         $fallbackPrice = null;
-        foreach ($this->nostoProductRepository->getSkus($product) as $skuProduct) {
+        foreach ($this->nostoProductRepository->getInStockSkuProducts($product, $store) as $skuProduct) {
             if (!$skuProduct instanceof Product || $skuProduct->isDisabled()) {
                 continue;
             }
