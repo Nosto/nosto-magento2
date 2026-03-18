@@ -1,5 +1,8 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 8.1.4
+* Fix configurable parent price fallback when indexed SKU price resolves to zero
+
 ### 8.1.3
 * Consider pending payment state as a new order
 
