@@ -366,7 +366,7 @@ class Repository
         $collection->addStoreFilter($store);
         $collection->setStore($store);
         $collection->addAttributeToSelect('*');
-        $collection->addAttributeToFilter($collection->getIdFieldName(), ['in' => $inStockProductIds]);
+        $collection->addIdsToFilter($inStockProductIds);
 
         $items = $collection->getItems();
 

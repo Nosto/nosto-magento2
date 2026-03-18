@@ -452,7 +452,7 @@ class Price extends AbstractHelper
     ): float {
         $fallbackPrice = null;
         foreach ($this->nostoProductRepository->getInStockSkuProducts($product, $store) as $skuProduct) {
-            if (!$skuProduct instanceof Product || $skuProduct->isDisabled()) {
+            if (!$skuProduct instanceof Product) {
                 continue;
             }
             $skuPrice = $this->getProductPrice($skuProduct, $store, $inclTax, $finalPrice);
