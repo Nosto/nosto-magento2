@@ -362,14 +362,21 @@ class Repository
             return [];
         }
 
-        return array_values(
-            $this->productCollectionBuilder
-                ->initDefault($store)
-                ->withIds($inStockProductIds)
-                ->withAllAttributes()
-                ->build()
-                ->getItems()
-        );
+        $items = $this->productCollectionBuilder
+            ->initDefault($store)
+            ->withIds($inStockProductIds)
+            ->withAllAttributes()
+            ->build()
+            ->getItems();
+
+        $products = [];
+        foreach ($items as $item) {
+            if ($item instanceof Product) {
+                $products[] = $item;
+            }
+        }
+
+        return $products;
     }
 
     /**
