@@ -389,7 +389,7 @@ class Price extends AbstractHelper
         }
         $skuPrices = $this->nostoProductRepository->getSkusAsArray($product, $store);
         if (count($skuPrices) === 0) {
-            return $price;
+            return $this->getConfigurableProductPriceFallback($product, $finalPrice, $inclTax, $store);
         }
         $priceColumn = array_column($skuPrices, self::KEY_SKU_FINAL_PRICE);
         array_multisort($priceColumn, SORT_ASC, $skuPrices);
@@ -401,6 +401,9 @@ class Price extends AbstractHelper
         }
         if ($inclTax === true) {
             if (!isset($minSku[self::KEY_SKU_PRODUCT_ID])) {
+                if ((float)$price === 0.0) {
+                    return $this->getConfigurableProductPriceFallback($product, $finalPrice, $inclTax, $store);
+                }
                 // Since print_r is discouraged we use this
                 $arrayContents = '';
                 foreach ($minSku as $key => $val) {
@@ -422,6 +425,42 @@ class Price extends AbstractHelper
                 $price = $this->getProductPrice($skuProduct, $store, true, $finalPrice);
             }
         }
+        if ((float)$price === 0.0) {
+            return $this->getConfigurableProductPriceFallback($product, $finalPrice, $inclTax, $store);
+        }
         return $price;
+    }
+
+    /**
+     * Falls back to calculating the configurable price from loaded child products
+     * when stock-filtered index data is missing or stale.
+     *
+     * @param Product $product
+     * @param bool $finalPrice
+     * @param bool $inclTax
+     * @param Store $store
+     * @return float
+     * @throws LocalizedException
+     * @throws NoSuchEntityException
+     * @throws NostoException
+     */
+    private function getConfigurableProductPriceFallback(
+        Product $product,
+        bool $finalPrice,
+        bool $inclTax,
+        Store $store
+    ): float {
+        $fallbackPrice = null;
+        foreach ($this->nostoProductRepository->getInStockSkuProducts($product, $store) as $skuProduct) {
+            if (!$skuProduct instanceof Product) {
+                continue;
+            }
+            $skuPrice = $this->getProductPrice($skuProduct, $store, $inclTax, $finalPrice);
+            if ($fallbackPrice === null || $skuPrice < $fallbackPrice) {
+                $fallbackPrice = $skuPrice;
+            }
+        }
+
+        return $fallbackPrice ?? 0.0;
     }
 }
