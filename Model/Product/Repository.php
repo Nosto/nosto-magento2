@@ -52,7 +52,7 @@ use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Store\Model\Store;
 use Nosto\Tagging\Exception\ParentProductDisabledException;
-use Nosto\Tagging\Model\ResourceModel\Magento\Product\CollectionBuilder as MagentoProductCollectionBuilder;
+use Nosto\Tagging\Model\ResourceModel\Magento\Product\CollectionFactory as MagentoProductCollectionFactory;
 use Nosto\Tagging\Model\ResourceModel\Sku;
 use Nosto\Tagging\Model\Service\Stock\Provider\StockProviderInterface;
 
@@ -92,8 +92,8 @@ class Repository
     /** @var Sku $skuResource */
     private Sku $skuResource;
 
-    /** @var MagentoProductCollectionBuilder */
-    private MagentoProductCollectionBuilder $productCollectionBuilder;
+    /** @var MagentoProductCollectionFactory */
+    private MagentoProductCollectionFactory $productCollectionFactory;
 
     /**
      * Constructor to instantiating the reindex command. This constructor uses proxy classes for
@@ -111,7 +111,7 @@ class Repository
      * @param ProductVisibility $productVisibility
      * @param StockProviderInterface $stockProvider
      * @param Sku $skuResource
-     * @param MagentoProductCollectionBuilder $productCollectionBuilder
+     * @param MagentoProductCollectionFactory $productCollectionFactory
      */
     public function __construct(
         ProductRepository $productRepository,
@@ -123,7 +123,7 @@ class Repository
         ProductVisibility $productVisibility,
         StockProviderInterface $stockProvider,
         Sku $skuResource,
-        MagentoProductCollectionBuilder $productCollectionBuilder
+        MagentoProductCollectionFactory $productCollectionFactory
     ) {
         $this->productRepository = $productRepository;
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;
@@ -134,7 +134,7 @@ class Repository
         $this->productVisibility = $productVisibility;
         $this->stockProvider = $stockProvider;
         $this->skuResource = $skuResource;
-        $this->productCollectionBuilder = $productCollectionBuilder;
+        $this->productCollectionFactory = $productCollectionFactory;
     }
 
     /**
@@ -362,12 +362,13 @@ class Repository
             return [];
         }
 
-        $items = $this->productCollectionBuilder
-            ->initDefault($store)
-            ->withIds($inStockProductIds)
-            ->withAllAttributes()
-            ->build()
-            ->getItems();
+        $collection = $this->productCollectionFactory->create();
+        $collection->addStoreFilter($store);
+        $collection->setStore($store);
+        $collection->addAttributeToSelect('*');
+        $collection->addAttributeToFilter($collection->getIdFieldName(), ['in' => $inStockProductIds]);
+
+        $items = $collection->getItems();
 
         $products = [];
         foreach ($items as $item) {
