@@ -115,12 +115,7 @@ class CategoryUpdateService extends AbstractService
         );
         /** @var CategoryCollection $page */
         foreach ($iterator as $page) {
-            $data = [
-                'entity' => self::CATEGORY_SERIVCE,
-                'categoryIds' => $this->toParentCategoryIds($page)
-            ];
-
-            $this->upsertBulkPublisher->execute($store->getId(), $data);
+            $this->upsertBulkPublisher->execute($store->getId(), $this->toParentCategoryIds($page));
         }
     }
 
