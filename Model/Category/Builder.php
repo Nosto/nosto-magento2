@@ -100,7 +100,7 @@ class Builder
             $nostoCategory->setPath($category->getPath() ?? '');
             $nostoCategory->setCategoryString($pathString ?? '');
             $nostoCategory->setUrl($this->urlBuilder->getCategoryUrlInStore($category, $store));
-            $nostoCategory->setAvailable($category->getIsActive() ?? false);
+            $nostoCategory->setAvailable($this->resolveCategoryAvailability($category, $store));
         } catch (Exception $e) {
             $this->logger->exception($e);
         }
@@ -125,5 +125,26 @@ class Builder
     private function getCategoryNameById(int $id, int $storeId)
     {
         return $this->categoryRepository->get($id, $storeId)->getName();
+    }
+
+    /**
+     * @param Category $category
+     * @param Store $store
+     * @return bool
+     * @throws NoSuchEntityException
+     */
+    private function resolveCategoryAvailability(Category $category, Store $store): bool
+    {
+        if ($category->hasData('is_active')) {
+            return (bool)$category->getIsActive();
+        }
+
+        if (empty($category->getId())) {
+            return false;
+        }
+
+        return (bool)$this->categoryRepository
+            ->get($category->getId(), $store->getId())
+            ->getIsActive();
     }
 }

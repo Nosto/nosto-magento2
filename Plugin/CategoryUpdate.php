@@ -84,10 +84,15 @@ class CategoryUpdate
         Closure $proceed,
         AbstractModel $category
     ) {
+        $result = $proceed($category);
+
         try {
-            $categoryCollection = $this->categoryCollectionBuilder->withIds([$category->getId()])->build();
             foreach ($category->getStoreIds() as $storeId) {
                 $store = $this->nostoHelperScope->getStore($storeId);
+                $categoryCollection = $this->categoryCollectionBuilder
+                    ->initDefault($store)
+                    ->withIds([(int)$category->getId()])
+                    ->build();
                 $this->categoryUpdateService->addCollectionToUpdateMessageQueue($categoryCollection, $store);
             }
         } catch (\Exception $e) {
@@ -98,6 +103,6 @@ class CategoryUpdate
                 )
             );
         }
-        return $proceed($category);
+        return $result;
     }
 }
