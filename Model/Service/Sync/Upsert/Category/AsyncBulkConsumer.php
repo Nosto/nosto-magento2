@@ -98,6 +98,7 @@ class AsyncBulkConsumer extends AbstractBulkConsumer
     {
         $store = $this->nostoScopeHelper->getStore($storeId);
         $categoryCollection = $this->collectionFactory->create()
+            ->addAttributeToSelect('is_active')
             ->addIdsToFilter($entityIds);
         try {
             $this->syncService->sync($categoryCollection, $store);
