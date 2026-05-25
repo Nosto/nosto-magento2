@@ -36,30 +36,23 @@
 
 namespace Nosto\Tagging\Model\Service\Update;
 
-use Exception;
 use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Store\Model\Store;
-use Nosto\NostoException;
 use Nosto\Tagging\Exception\ParentProductDisabledException;
 use Nosto\Tagging\Helper\Account as NostoAccountHelper;
 use Nosto\Tagging\Helper\Data as NostoDataHelper;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Product\Repository as NostoProductRepository;
 use Nosto\Tagging\Model\ResourceModel\Magento\Product\Collection as ProductCollection;
-use Nosto\Tagging\Model\Service\AbstractService;
-use Nosto\Tagging\Util\PagingIterator;
 use Nosto\Tagging\Model\Service\Sync\BulkPublisherInterface;
 
-class ProductUpdateService extends AbstractService
+class ProductUpdateService extends AbstractUpdateService
 {
     /** @var NostoProductRepository $nostoProductRepository */
     private NostoProductRepository $nostoProductRepository;
 
     /** @var int $batchSize */
     private int $batchSize;
-
-    /** @var BulkPublisherInterface */
-    private BulkPublisherInterface $upsertBulkPublisher;
 
     /** @var BulkPublisherInterface */
     private BulkPublisherInterface $deleteBulkPublisher;
@@ -83,9 +76,14 @@ class ProductUpdateService extends AbstractService
         BulkPublisherInterface $deleteBulkPublisher,
         int $batchSize
     ) {
-        parent::__construct($nostoDataHelper, $nostoAccountHelper, $logger);
+        parent::__construct(
+            $logger,
+            $nostoDataHelper,
+            $nostoAccountHelper,
+            $upsertBulkPublisher,
+            $batchSize
+        );
         $this->nostoProductRepository = $nostoProductRepository;
-        $this->upsertBulkPublisher = $upsertBulkPublisher;
         $this->deleteBulkPublisher = $deleteBulkPublisher;
         $this->batchSize = $batchSize;
     }
@@ -95,32 +93,27 @@ class ProductUpdateService extends AbstractService
      *
      * @param ProductCollection $collection
      * @param Store $store
-     * @throws NostoException
-     * @throws Exception
      */
     public function addCollectionToUpdateMessageQueue(ProductCollection $collection, Store $store)
     {
-        if ($this->getAccountHelper()->findAccount($store) === null) {
-            $this->logDebugWithStore('No nosto account found for the store', $store);
-            return;
-        }
-        $collection->setPageSize($this->batchSize);
-        $iterator = new PagingIterator($collection);
-        $this->getLogger()->debugWithSource(
-            sprintf(
-                'Adding %d products to message queue for store %s - batch size is %s, total amount of pages %d',
-                $collection->getSize(),
-                $store->getCode(),
-                $this->batchSize,
-                $iterator->getLastPageNumber()
-            ),
-            ['storeId' => $store->getId()],
-            $this
-        );
-        /** @var ProductCollection $page */
-        foreach ($iterator as $page) {
-            $this->upsertBulkPublisher->execute($store->getId(), $this->toParentProductIds($page));
-        }
+        $this->queueCollectionUpdates($collection, $store);
+    }
+
+    /**
+     * @return string
+     */
+    protected function getEntityLogLabel(): string
+    {
+        return 'products';
+    }
+
+    /**
+     * @param ProductCollection $collection
+     * @return array
+     */
+    protected function getEntityIdsForPage($collection): array
+    {
+        return $this->toParentProductIds($collection);
     }
 
     /**
