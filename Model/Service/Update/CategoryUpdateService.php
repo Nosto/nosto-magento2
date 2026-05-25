@@ -53,8 +53,6 @@ use Nosto\Tagging\Model\Service\Sync\BulkPublisherInterface;
 
 class CategoryUpdateService extends AbstractService
 {
-    const CATEGORY_SERIVCE = 'category';
-
     /** @var NostoCategoryRepository $nostoCategoryRepository */
     private NostoCategoryRepository $nostoCategoryRepository;
 
