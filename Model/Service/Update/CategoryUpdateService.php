@@ -46,6 +46,7 @@ use Nosto\Tagging\Helper\Data as NostoDataHelper;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Category\Repository as NostoCategoryRepository;
 use Nosto\Tagging\Model\ResourceModel\Magento\Category\Collection as CategoryCollection;
+use Nosto\Tagging\Model\ResourceModel\Magento\Product\CollectionBuilder as ProductCollectionBuilder;
 use Nosto\Tagging\Model\Service\AbstractService;
 use Nosto\Tagging\Util\PagingIterator;
 use Nosto\Tagging\Model\Service\Sync\BulkPublisherInterface;
@@ -63,6 +64,12 @@ class CategoryUpdateService extends AbstractService
     /** @var BulkPublisherInterface */
     private BulkPublisherInterface $upsertBulkPublisher;
 
+    /** @var ProductCollectionBuilder */
+    private ProductCollectionBuilder $productCollectionBuilder;
+
+    /** @var ProductUpdateService */
+    private ProductUpdateService $productUpdateService;
+
     /**
      * CategoryUpdateService constructor.
      * @param NostoLogger $logger
@@ -70,6 +77,8 @@ class CategoryUpdateService extends AbstractService
      * @param NostoAccountHelper $nostoAccountHelper
      * @param NostoCategoryRepository $nostoCategoryRepository
      * @param BulkPublisherInterface $upsertBulkPublisher
+     * @param ProductCollectionBuilder $productCollectionBuilder
+     * @param ProductUpdateService $productUpdateService
      * @param int $batchSize
      */
     public function __construct(
@@ -78,11 +87,15 @@ class CategoryUpdateService extends AbstractService
         NostoAccountHelper $nostoAccountHelper,
         NostoCategoryRepository $nostoCategoryRepository,
         BulkPublisherInterface $upsertBulkPublisher,
+        ProductCollectionBuilder $productCollectionBuilder,
+        ProductUpdateService $productUpdateService,
         int $batchSize
     ) {
         parent::__construct($nostoDataHelper, $nostoAccountHelper, $logger);
         $this->nostoCategoryRepository = $nostoCategoryRepository;
         $this->upsertBulkPublisher = $upsertBulkPublisher;
+        $this->productCollectionBuilder = $productCollectionBuilder;
+        $this->productUpdateService = $productUpdateService;
         $this->batchSize = $batchSize;
     }
 
@@ -116,6 +129,29 @@ class CategoryUpdateService extends AbstractService
         /** @var CategoryCollection $page */
         foreach ($iterator as $page) {
             $this->upsertBulkPublisher->execute($store->getId(), $this->toParentCategoryIds($page));
+            $this->addAffectedProductsToUpdateMessageQueue($page, $store);
+        }
+    }
+
+    /**
+     * Queue products assigned to changed categories so product payloads get refreshed category data.
+     *
+     * @param CategoryCollection $collection
+     * @param Store $store
+     * @throws Exception
+     */
+    private function addAffectedProductsToUpdateMessageQueue(CategoryCollection $collection, Store $store)
+    {
+        /** @var CategoryInterface $category */
+        foreach ($collection->getItems() as $category) {
+            $productCollection = $this->productCollectionBuilder
+                ->initDefault($store)
+                ->withDefaultVisibility($store)
+                ->build();
+            /** @phan-suppress-next-line PhanUndeclaredMethod */
+            $productCollection->addCategoryFilter($category);
+
+            $this->productUpdateService->addCollectionToUpdateMessageQueue($productCollection, $store);
         }
     }
 
