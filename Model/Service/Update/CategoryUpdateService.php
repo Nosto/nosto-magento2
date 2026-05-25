@@ -141,19 +141,25 @@ class CategoryUpdateService extends AbstractService
      */
     private function addAffectedProductsToUpdateMessageQueue(CategoryCollection $collection, Store $store)
     {
+        $categoryIds = [];
         foreach ($collection->getItems() as $category) {
-            if (!$category instanceof Category) {
-                continue;
+            if ($category instanceof Category) {
+                $categoryIds[] = (int) $category->getId();
             }
-
-            $productCollection = $this->productCollectionBuilder
-                ->initDefault($store)
-                ->withDefaultVisibility($store)
-                ->build();
-            $productCollection->addCategoryFilter($category);
-
-            $this->productUpdateService->addCollectionToUpdateMessageQueue($productCollection, $store);
         }
+
+        $categoryIds = array_values(array_unique($categoryIds));
+        if (empty($categoryIds)) {
+            return;
+        }
+
+        $productCollection = $this->productCollectionBuilder
+            ->initDefault($store)
+            ->withDefaultVisibility($store)
+            ->build();
+        $productCollection->addCategoriesFilter(['eq' => $categoryIds]);
+
+        $this->productUpdateService->addCollectionToUpdateMessageQueue($productCollection, $store);
     }
 
     /**
