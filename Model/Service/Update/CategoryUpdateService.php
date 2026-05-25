@@ -37,6 +37,7 @@
 namespace Nosto\Tagging\Model\Service\Update;
 
 use Exception;
+use Magento\Catalog\Model\Category;
 use Magento\Catalog\Api\Data\CategoryInterface;
 use Magento\Store\Model\Store;
 use Nosto\NostoException;
@@ -140,13 +141,15 @@ class CategoryUpdateService extends AbstractService
      */
     private function addAffectedProductsToUpdateMessageQueue(CategoryCollection $collection, Store $store)
     {
-        /** @var CategoryInterface $category */
         foreach ($collection->getItems() as $category) {
+            if (!$category instanceof Category) {
+                continue;
+            }
+
             $productCollection = $this->productCollectionBuilder
                 ->initDefault($store)
                 ->withDefaultVisibility($store)
                 ->build();
-            /** @phan-suppress-next-line PhanUndeclaredMethod */
             $productCollection->addCategoryFilter($category);
 
             $this->productUpdateService->addCollectionToUpdateMessageQueue($productCollection, $store);
