@@ -185,8 +185,11 @@ class CategoryUpdateService extends AbstractUpdateService
                     ->withAllAttributes()
                     ->withIds([(int) $category->getId()])
                     ->build();
-                $categoryPathCategory = $categoryCollection->getFirstItem();
-                $path = (string) $categoryPathCategory->getPath();
+                $categoryItems = $categoryCollection->getItems();
+                $categoryPathCategory = reset($categoryItems);
+                if ($categoryPathCategory instanceof Category) {
+                    $path = (string) $categoryPathCategory->getPath();
+                }
             }
 
             if ($path === '') {
