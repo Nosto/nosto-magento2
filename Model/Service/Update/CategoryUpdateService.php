@@ -40,6 +40,7 @@ use Exception;
 use Magento\Catalog\Model\Category;
 use Magento\Catalog\Api\Data\CategoryInterface;
 use Magento\Store\Model\Store;
+use Nosto\NostoException;
 use Nosto\Tagging\Exception\ParentCategoryDisabledException;
 use Nosto\Tagging\Helper\Account as NostoAccountHelper;
 use Nosto\Tagging\Helper\Data as NostoDataHelper;

@@ -38,6 +38,7 @@ namespace Nosto\Tagging\Model\Service\Update;
 
 use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Store\Model\Store;
+use Nosto\NostoException;
 use Nosto\Tagging\Exception\ParentProductDisabledException;
 use Nosto\Tagging\Helper\Account as NostoAccountHelper;
 use Nosto\Tagging\Helper\Data as NostoDataHelper;
