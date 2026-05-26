@@ -173,7 +173,19 @@ class CollectionBuilder
         return $this
             ->reset()
             ->withStore($store)
+            ->withSyncAttributes()
             ->setSort(EntityInterface::CREATED_AT, $this->categoryCollection::SORT_ORDER_DESC);
+    }
+
+    /**
+     * Defines attributes required for building Nosto category payloads
+     *
+     * @return $this
+     */
+    private function withSyncAttributes()
+    {
+        $this->categoryCollection->addAttributeToSelect(['is_active', 'name']);
+        return $this;
     }
 
     /**
