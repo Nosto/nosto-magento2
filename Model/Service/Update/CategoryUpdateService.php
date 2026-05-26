@@ -114,8 +114,7 @@ class CategoryUpdateService extends AbstractUpdateService
         CategoryCollection $collection,
         Store $store,
         bool $queueAffectedProductUpdates = true
-    )
-    {
+    ) {
         $this->queueCollectionUpdates($collection, $store, $queueAffectedProductUpdates);
     }
 
