@@ -105,6 +105,9 @@ class CategoryUpdateService extends AbstractUpdateService
      *
      * @param CategoryCollection $collection
      * @param Store $store
+     * @param bool $queueAffectedProductUpdates
+     * @throws NostoException
+     * @throws Exception
      */
     public function addCollectionToUpdateMessageQueue(
         CategoryCollection $collection,
@@ -176,16 +179,7 @@ class CategoryUpdateService extends AbstractUpdateService
     private function resolveAffectedCategoryIds(CategoryCollection $collection, Store $store): array
     {
         $categoryIds = [];
-        foreach ($collection->getItems() as $category) {
-            if (!$category instanceof Category) {
-                continue;
-            }
-
-            $categoryModel = $this->resolveStoreAwareCategory($category, $store);
-            if ($categoryModel === null) {
-                continue;
-            }
-
+        foreach ($this->resolveStoreAwareCategories($collection, $store) as $categoryModel) {
             $categoryIds[] = (int) $categoryModel->getId();
             $descendantIds = $categoryModel->getAllChildren(true);
             if (!empty($descendantIds)) {
@@ -199,25 +193,48 @@ class CategoryUpdateService extends AbstractUpdateService
     }
 
     /**
-     * Return a category model that is guaranteed to be loaded in the current store context.
+     * Resolve the page categories in the current store context with at most one reload query.
      *
-     * @param Category $category
+     * @param CategoryCollection $collection
      * @param Store $store
-     * @return Category|null
+     * @return Category[]
      */
-    private function resolveStoreAwareCategory(Category $category, Store $store): ?Category
+    private function resolveStoreAwareCategories(CategoryCollection $collection, Store $store): array
     {
-        if ((int) $category->getStoreId() === (int) $store->getId() && $category->getPath() !== '') {
-            return $category;
+        $categoriesById = [];
+        $categoryIdsToLoad = [];
+
+        /** @var Category $category */
+        foreach ($collection->getItems() as $category) {
+            if (!$category instanceof Category) {
+                continue;
+            }
+
+            $categoryId = (int) $category->getId();
+            if ((int) $category->getStoreId() === (int) $store->getId() && $category->getPath() !== '') {
+                $categoriesById[$categoryId] = $category;
+                continue;
+            }
+
+            $categoryIdsToLoad[] = $categoryId;
+        }
+
+        if (empty($categoryIdsToLoad)) {
+            return $categoriesById;
         }
 
         $categoryCollection = $this->categoryCollectionFactory->create();
         $categoryCollection->setStore($store);
         $categoryCollection->addAttributeToSelect('path');
-        $categoryCollection->addIdFilter([(int) $category->getId()]);
+        $categoryCollection->addIdFilter(array_values(array_unique($categoryIdsToLoad)));
 
-        $loadedCategory = $categoryCollection->getFirstItem();
-        return $loadedCategory instanceof Category ? $loadedCategory : null;
+        foreach ($categoryCollection->getItems() as $loadedCategory) {
+            if ($loadedCategory instanceof Category) {
+                $categoriesById[(int) $loadedCategory->getId()] = $loadedCategory;
+            }
+        }
+
+        return $categoriesById;
     }
 
     /**
