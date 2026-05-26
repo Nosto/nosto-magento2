@@ -136,10 +136,10 @@ class Builder
     private function resolveCategoryName(Category $category, Store $store): string
     {
         if ($category->hasData('name') && $category->getName() !== null) {
-            return (string)$category->getName();
+            return $category->getName();
         }
 
-        return (string)$this->getCategoryNameById((int)$category->getId(), (int)$store->getId());
+        return $this->getCategoryNameById((int)$category->getId(), $store->getId());
     }
 
     /**
@@ -151,15 +151,11 @@ class Builder
     private function resolveCategoryAvailability(Category $category, Store $store): bool
     {
         if ($category->hasData('is_active')) {
-            return (bool)$category->getIsActive();
-        }
-
-        if (empty($category->getId())) {
-            return false;
+            return $category->getIsActive();
         }
 
         return (bool)$this->categoryRepository
-            ->get($category->getId(), $store->getId())
+            ->get((int)$category->getId(), $store->getId())
             ->getIsActive();
     }
 }
