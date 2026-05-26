@@ -95,7 +95,7 @@ class Builder
         try {
             $nostoCategory->setId($category->getId());
             $nostoCategory->setParentId($category->getParentId());
-            $nostoCategory->setTitle($this->getCategoryNameById($category->getId(), $store->getId()));
+            $nostoCategory->setTitle($this->resolveCategoryName($category, $store));
             $pathString = $this->nostoCategoryService->getCategory($category, $store);
             $nostoCategory->setPath($category->getPath() ?? '');
             $nostoCategory->setCategoryString($pathString ?? '');
@@ -125,6 +125,21 @@ class Builder
     private function getCategoryNameById(int $id, int $storeId)
     {
         return $this->categoryRepository->get($id, $storeId)->getName();
+    }
+
+    /**
+     * @param Category $category
+     * @param Store $store
+     * @return string
+     * @throws NoSuchEntityException
+     */
+    private function resolveCategoryName(Category $category, Store $store): string
+    {
+        if ($category->hasData('name') && $category->getName() !== null) {
+            return (string)$category->getName();
+        }
+
+        return (string)$this->getCategoryNameById((int)$category->getId(), (int)$store->getId());
     }
 
     /**

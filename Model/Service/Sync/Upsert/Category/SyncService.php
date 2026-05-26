@@ -115,6 +115,7 @@ class SyncService extends AbstractService
             foreach ($page as $category) {
                 // Needs to adjust on the SDK to batch instead of calling the API for each category
                 try {
+                    $categoryIdsInBatch[] = $category->getId();
                     $nostoCategory = $this->categoryBuilder->build($category, $store);
                     $op = new CategoryUpdate($nostoCategory, $account, $this->nostoHelperUrl->getActiveDomain($store));
                     $op->setResponseTimeout($this->apiTimeout);
