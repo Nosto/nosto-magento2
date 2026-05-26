@@ -104,13 +104,13 @@ class SyncService extends AbstractService
             );
             return;
         }
-        $categoryIdsInBatch = [];
         $account = $this->nostoHelperAccount->findAccount($store);
         $this->startBenchmark('nosto_category_upsert', self::BENCHMARK_SYNC_BREAKPOINT);
         $collection->setPageSize($this->apiBatchSize);
         $iterator = new PagingIterator($collection);
         /** @var CategoryCollection $page */
         foreach ($iterator as $page) {
+            $categoryIdsInBatch = [];
             $this->checkMemoryConsumption('category sync');
             foreach ($page as $category) {
                 // Needs to adjust on the SDK to batch instead of calling the API for each category
