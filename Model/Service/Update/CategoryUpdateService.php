@@ -46,7 +46,7 @@ use Nosto\Tagging\Helper\Data as NostoDataHelper;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Category\Repository as NostoCategoryRepository;
 use Nosto\Tagging\Model\ResourceModel\Magento\Category\Collection as CategoryCollection;
-use Nosto\Tagging\Model\ResourceModel\Magento\Category\CollectionBuilder as CategoryCollectionBuilder;
+use Nosto\Tagging\Model\ResourceModel\Magento\Category\CollectionFactory as CategoryCollectionFactory;
 use Nosto\Tagging\Model\ResourceModel\Magento\Product\CollectionBuilder as ProductCollectionBuilder;
 use Nosto\Tagging\Model\Service\Sync\BulkPublisherInterface;
 
@@ -55,11 +55,11 @@ class CategoryUpdateService extends AbstractUpdateService
     /** @var NostoCategoryRepository $nostoCategoryRepository */
     private NostoCategoryRepository $nostoCategoryRepository;
 
-    /** @var CategoryCollectionBuilder */
-    private CategoryCollectionBuilder $categoryCollectionBuilder;
-
     /** @var ProductCollectionBuilder */
     private ProductCollectionBuilder $productCollectionBuilder;
+
+    /** @var CategoryCollectionFactory */
+    private CategoryCollectionFactory $categoryCollectionFactory;
 
     /** @var ProductUpdateService */
     private ProductUpdateService $productUpdateService;
@@ -71,8 +71,8 @@ class CategoryUpdateService extends AbstractUpdateService
      * @param NostoAccountHelper $nostoAccountHelper
      * @param NostoCategoryRepository $nostoCategoryRepository
      * @param BulkPublisherInterface $upsertBulkPublisher
-     * @param CategoryCollectionBuilder $categoryCollectionBuilder
      * @param ProductCollectionBuilder $productCollectionBuilder
+     * @param CategoryCollectionFactory $categoryCollectionFactory
      * @param ProductUpdateService $productUpdateService
      * @param int $batchSize
      */
@@ -82,8 +82,8 @@ class CategoryUpdateService extends AbstractUpdateService
         NostoAccountHelper $nostoAccountHelper,
         NostoCategoryRepository $nostoCategoryRepository,
         BulkPublisherInterface $upsertBulkPublisher,
-        CategoryCollectionBuilder $categoryCollectionBuilder,
         ProductCollectionBuilder $productCollectionBuilder,
+        CategoryCollectionFactory $categoryCollectionFactory,
         ProductUpdateService $productUpdateService,
         int $batchSize
     ) {
@@ -95,8 +95,8 @@ class CategoryUpdateService extends AbstractUpdateService
             $batchSize
         );
         $this->nostoCategoryRepository = $nostoCategoryRepository;
-        $this->categoryCollectionBuilder = $categoryCollectionBuilder;
         $this->productCollectionBuilder = $productCollectionBuilder;
+        $this->categoryCollectionFactory = $categoryCollectionFactory;
         $this->productUpdateService = $productUpdateService;
     }
 
@@ -106,9 +106,13 @@ class CategoryUpdateService extends AbstractUpdateService
      * @param CategoryCollection $collection
      * @param Store $store
      */
-    public function addCollectionToUpdateMessageQueue(CategoryCollection $collection, Store $store)
+    public function addCollectionToUpdateMessageQueue(
+        CategoryCollection $collection,
+        Store $store,
+        bool $queueAffectedProductUpdates = true
+    )
     {
-        $this->queueCollectionUpdates($collection, $store);
+        $this->queueCollectionUpdates($collection, $store, $queueAffectedProductUpdates);
     }
 
     /**
@@ -156,7 +160,7 @@ class CategoryUpdateService extends AbstractUpdateService
             ->initDefault($store)
             ->withDefaultVisibility($store)
             ->build();
-        $productCollection->addCategoriesFilter(['eq' => $categoryIds]);
+        $productCollection->addCategoriesFilter(['in' => $categoryIds]);
 
         $this->productUpdateService->addCollectionToUpdateMessageQueue($productCollection, $store);
     }
@@ -177,36 +181,43 @@ class CategoryUpdateService extends AbstractUpdateService
                 continue;
             }
 
-            $categoryIds[] = (int) $category->getId();
-            $path = (string) $category->getPath();
-            if ($path === '') {
-                $categoryCollection = $this->categoryCollectionBuilder
-                    ->initDefault($store)
-                    ->withAllAttributes()
-                    ->withIds([(int) $category->getId()])
-                    ->build();
-                $categoryItems = $categoryCollection->getItems();
-                $categoryPathCategory = reset($categoryItems);
-                if ($categoryPathCategory instanceof Category) {
-                    $path = (string) $categoryPathCategory->getPath();
-                }
-            }
-
-            if ($path === '') {
+            $categoryModel = $this->resolveStoreAwareCategory($category, $store);
+            if ($categoryModel === null) {
                 continue;
             }
 
-            $descendantCollection = $this->categoryCollectionBuilder
-                ->initDefault($store)
-                ->withAllAttributes()
-                ->build();
-            $descendantCollection->addAttributeToFilter('path', ['like' => $path . '/%']);
-            foreach ($descendantCollection->getItems() as $descendantCategory) {
-                $categoryIds[] = (int) $descendantCategory->getId();
+            $categoryIds[] = (int) $categoryModel->getId();
+            $descendantIds = $categoryModel->getAllChildren(true);
+            if (!empty($descendantIds)) {
+                foreach ($descendantIds as $descendantId) {
+                    $categoryIds[] = (int) $descendantId;
+                }
             }
         }
 
         return array_values(array_unique($categoryIds));
+    }
+
+    /**
+     * Return a category model that is guaranteed to be loaded in the current store context.
+     *
+     * @param Category $category
+     * @param Store $store
+     * @return Category|null
+     */
+    private function resolveStoreAwareCategory(Category $category, Store $store): ?Category
+    {
+        if ((int) $category->getStoreId() === (int) $store->getId() && $category->getPath() !== '') {
+            return $category;
+        }
+
+        $categoryCollection = $this->categoryCollectionFactory->create();
+        $categoryCollection->setStore($store);
+        $categoryCollection->addAttributeToSelect('path');
+        $categoryCollection->addIdFilter([(int) $category->getId()]);
+
+        $loadedCategory = $categoryCollection->getFirstItem();
+        return $loadedCategory instanceof Category ? $loadedCategory : null;
     }
 
     /**

@@ -63,6 +63,9 @@ class CategoryIndexer extends AbstractIndexer
     /** @var CategoryUpdateService */
     private CategoryUpdateService $categoryUpdateService;
 
+    /** @var ProductIndexer */
+    private ProductIndexer $productIndexer;
+
     /** @var CategoryModeSwitcher */
     private CategoryModeSwitcher $modeSwitcher;
 
@@ -73,6 +76,7 @@ class CategoryIndexer extends AbstractIndexer
      * Constructor.
      * @param NostoHelperScope $nostoHelperScope
      * @param CategoryUpdateService $categoryUpdateService
+     * @param ProductIndexer $productIndexer
      * @param NostoLogger $logger
      * @param CollectionBuilder $categoryCollectionBuilder
      * @param CategoryModeSwitcher $modeSwitcher
@@ -85,6 +89,7 @@ class CategoryIndexer extends AbstractIndexer
     public function __construct(
         NostoHelperScope              $nostoHelperScope,
         CategoryUpdateService         $categoryUpdateService,
+        ProductIndexer                $productIndexer,
         NostoLogger                   $logger,
         CollectionBuilder             $categoryCollectionBuilder,
         CategoryModeSwitcher          $modeSwitcher,
@@ -95,6 +100,7 @@ class CategoryIndexer extends AbstractIndexer
         IndexerStatusServiceInterface $indexerStatusService
     ) {
         $this->categoryUpdateService = $categoryUpdateService;
+        $this->productIndexer = $productIndexer;
         $this->modeSwitcher = $modeSwitcher;
         $this->categoryCollectionBuilder = $categoryCollectionBuilder;
 
@@ -128,8 +134,13 @@ class CategoryIndexer extends AbstractIndexer
 
         $this->categoryUpdateService->addCollectionToUpdateMessageQueue(
             $collection,
-            $store
+            $store,
+            !empty($ids)
         );
+
+        if (empty($ids)) {
+            $this->productIndexer->doIndex($store, []);
+        }
     }
 
     /**

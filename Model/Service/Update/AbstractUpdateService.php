@@ -80,10 +80,11 @@ abstract class AbstractUpdateService extends AbstractService
      *
      * @param CategoryCollection|ProductCollection $collection
      * @param Store $store
+     * @param bool $runAfterPageQueued
      * @throws NostoException
      * @throws Exception
      */
-    protected function queueCollectionUpdates($collection, Store $store)
+    protected function queueCollectionUpdates($collection, Store $store, bool $runAfterPageQueued = true)
     {
         if ($this->getAccountHelper()->findAccount($store) === null) {
             $this->logDebugWithStore('No nosto account found for the store', $store);
@@ -108,7 +109,9 @@ abstract class AbstractUpdateService extends AbstractService
         /** @var CategoryCollection|ProductCollection $page */
         foreach ($iterator as $page) {
             $this->upsertBulkPublisher->execute($store->getId(), $this->getEntityIdsForPage($page));
-            $this->afterPageQueued($page, $store);
+            if ($runAfterPageQueued) {
+                $this->afterPageQueued($page, $store);
+            }
         }
     }
 
