@@ -95,7 +95,7 @@ class ProductUpdateService extends AbstractUpdateService
      * @param ProductCollection $collection
      * @param Store $store
      * @throws NostoException
-     * @throws Exception
+     * @throws \Exception
      */
     public function addCollectionToUpdateMessageQueue(ProductCollection $collection, Store $store)
     {

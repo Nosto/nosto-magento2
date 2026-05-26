@@ -108,7 +108,7 @@ class CategoryUpdateService extends AbstractUpdateService
      * @param Store $store
      * @param bool $queueAffectedProductUpdates
      * @throws NostoException
-     * @throws Exception
+     * @throws \Exception
      */
     public function addCollectionToUpdateMessageQueue(
         CategoryCollection $collection,
