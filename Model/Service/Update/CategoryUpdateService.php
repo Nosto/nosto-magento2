@@ -149,7 +149,7 @@ class CategoryUpdateService extends AbstractUpdateService
      */
     private function addAffectedProductsToUpdateMessageQueue(CategoryCollection $collection, Store $store)
     {
-        $categoryIds = $this->resolveAffectedCategoryIds($collection, $store);
+        $categoryIds = $this->resolveAffectedCategoryIds($collection);
         if (empty($categoryIds)) {
             return;
         }
@@ -167,12 +167,11 @@ class CategoryUpdateService extends AbstractUpdateService
      * Expand each changed category to include its descendant categories as well.
      *
      * @param CategoryCollection $collection
-     * @param Store $store
      * The collection must already include the `path` attribute for each category item.
      * @return int[]
      * @throws Exception
      */
-    private function resolveAffectedCategoryIds(CategoryCollection $collection, Store $store): array
+    private function resolveAffectedCategoryIds(CategoryCollection $collection): array
     {
         $categoryIds = [];
         foreach ($collection->getItems() as $category) {
