@@ -100,7 +100,7 @@ class AsyncBulkConsumer extends AbstractBulkConsumer
         $categoryCollection = $this->collectionFactory->create()
             ->setProductStoreId($store->getId())
             ->setStore($store)
-            ->addAttributeToSelect(['is_active', 'name'])
+            ->addAttributeToSelect(['is_active', 'name', 'path', 'url_key'])
             ->addIdsToFilter($entityIds);
         try {
             $this->syncService->sync($categoryCollection, $store);
