@@ -128,7 +128,8 @@ class CategoryIndexer extends AbstractIndexer
 
         $this->categoryUpdateService->addCollectionToUpdateMessageQueue(
             $collection,
-            $store
+            $store,
+            !empty($ids)
         );
     }
 
