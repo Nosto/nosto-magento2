@@ -1,5 +1,8 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 8.1.5
+* Fix category sync indexing behavior
+
 ### 8.1.4
 * Fix configurable parent price fallback when indexed SKU price resolves to zero
 
