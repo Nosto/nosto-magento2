@@ -184,7 +184,7 @@ class CollectionBuilder
      */
     private function withSyncAttributes()
     {
-        $this->categoryCollection->addAttributeToSelect(['is_active', 'name']);
+        $this->categoryCollection->addAttributeToSelect(['is_active', 'name', 'path', 'url_key']);
         return $this;
     }
 

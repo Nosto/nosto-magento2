@@ -47,7 +47,6 @@ use Nosto\Tagging\Helper\Data as NostoDataHelper;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Category\Repository as NostoCategoryRepository;
 use Nosto\Tagging\Model\ResourceModel\Magento\Category\Collection as CategoryCollection;
-use Nosto\Tagging\Model\ResourceModel\Magento\Category\CollectionFactory as CategoryCollectionFactory;
 use Nosto\Tagging\Model\ResourceModel\Magento\Product\CollectionBuilder as ProductCollectionBuilder;
 use Nosto\Tagging\Model\Service\Sync\BulkPublisherInterface;
 
@@ -58,9 +57,6 @@ class CategoryUpdateService extends AbstractUpdateService
 
     /** @var ProductCollectionBuilder */
     private ProductCollectionBuilder $productCollectionBuilder;
-
-    /** @var CategoryCollectionFactory */
-    private CategoryCollectionFactory $categoryCollectionFactory;
 
     /** @var ProductUpdateService */
     private ProductUpdateService $productUpdateService;
@@ -73,7 +69,6 @@ class CategoryUpdateService extends AbstractUpdateService
      * @param NostoCategoryRepository $nostoCategoryRepository
      * @param BulkPublisherInterface $upsertBulkPublisher
      * @param ProductCollectionBuilder $productCollectionBuilder
-     * @param CategoryCollectionFactory $categoryCollectionFactory
      * @param ProductUpdateService $productUpdateService
      * @param int $batchSize
      */
@@ -84,7 +79,6 @@ class CategoryUpdateService extends AbstractUpdateService
         NostoCategoryRepository $nostoCategoryRepository,
         BulkPublisherInterface $upsertBulkPublisher,
         ProductCollectionBuilder $productCollectionBuilder,
-        CategoryCollectionFactory $categoryCollectionFactory,
         ProductUpdateService $productUpdateService,
         int $batchSize
     ) {
@@ -97,7 +91,6 @@ class CategoryUpdateService extends AbstractUpdateService
         );
         $this->nostoCategoryRepository = $nostoCategoryRepository;
         $this->productCollectionBuilder = $productCollectionBuilder;
-        $this->categoryCollectionFactory = $categoryCollectionFactory;
         $this->productUpdateService = $productUpdateService;
     }
 
@@ -107,6 +100,8 @@ class CategoryUpdateService extends AbstractUpdateService
      * @param CategoryCollection $collection
      * @param Store $store
      * @param bool $queueAffectedProductUpdates
+     * The collection must be store-scoped and select the `path` attribute so descendant categories
+     * can be expanded without reloading the page items.
      * @throws NostoException
      * @throws \Exception
      */
@@ -173,15 +168,20 @@ class CategoryUpdateService extends AbstractUpdateService
      *
      * @param CategoryCollection $collection
      * @param Store $store
+     * The collection must already include the `path` attribute for each category item.
      * @return int[]
      * @throws Exception
      */
     private function resolveAffectedCategoryIds(CategoryCollection $collection, Store $store): array
     {
         $categoryIds = [];
-        foreach ($this->resolveStoreAwareCategories($collection, $store) as $categoryModel) {
-            $categoryIds[] = (int) $categoryModel->getId();
-            $descendantIds = $categoryModel->getAllChildren(true);
+        foreach ($collection->getItems() as $category) {
+            if (!$category instanceof Category) {
+                continue;
+            }
+
+            $categoryIds[] = (int) $category->getId();
+            $descendantIds = $category->getAllChildren(true);
             if (!empty($descendantIds)) {
                 foreach ($descendantIds as $descendantId) {
                     $categoryIds[] = (int) $descendantId;
@@ -191,52 +191,6 @@ class CategoryUpdateService extends AbstractUpdateService
 
         return array_values(array_unique($categoryIds));
     }
-
-    /**
-     * Resolve the page categories in the current store context with at most one reload query.
-     *
-     * @param CategoryCollection $collection
-     * @param Store $store
-     * @return Category[]
-     */
-    private function resolveStoreAwareCategories(CategoryCollection $collection, Store $store): array
-    {
-        $categoriesById = [];
-        $categoryIdsToLoad = [];
-
-        /** @var Category $category */
-        foreach ($collection->getItems() as $category) {
-            if (!$category instanceof Category) {
-                continue;
-            }
-
-            $categoryId = (int) $category->getId();
-            if ((int) $category->getStoreId() === (int) $store->getId() && $category->getPath() !== '') {
-                $categoriesById[$categoryId] = $category;
-                continue;
-            }
-
-            $categoryIdsToLoad[] = $categoryId;
-        }
-
-        if (empty($categoryIdsToLoad)) {
-            return $categoriesById;
-        }
-
-        $categoryCollection = $this->categoryCollectionFactory->create();
-        $categoryCollection->setStore($store);
-        $categoryCollection->addAttributeToSelect('path');
-        $categoryCollection->addIdFilter(array_values(array_unique($categoryIdsToLoad)));
-
-        foreach ($categoryCollection->getItems() as $loadedCategory) {
-            if ($loadedCategory instanceof Category) {
-                $categoriesById[(int) $loadedCategory->getId()] = $loadedCategory;
-            }
-        }
-
-        return $categoriesById;
-    }
-
     /**
      * @param CategoryCollection $collection
      * @return array
