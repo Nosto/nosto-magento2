@@ -10,3 +10,4 @@ chk*xml
 output
 .phpunit.cache
 **/.DS_Store
+**/node_modules

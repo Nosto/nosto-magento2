@@ -1,4 +1,5 @@
 /** @noinspection DuplicatedCode */
+/* global define */
 /*
  * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
@@ -35,8 +36,9 @@
  */
 
 define([
+    'require',
     'Nosto_Tagging/js/recobuy-core'
-], function (RecobuyCore) {
+], function (require, RecobuyCore) {
     'use strict';
 
     RecobuyCore.reloadCart = function () {

@@ -33,6 +33,8 @@
  *
  */
 
+/* global define */
+
 /**
  * Theme-agnostic shared logic for Recobuy.
  * Consumed by recobuy.js (RequireJS/Luma) and addtocart.phtml (Hyva).
@@ -69,8 +71,7 @@
                 })
             } , Promise.resolve())
         } else {
-            // noinspection JSIgnoredPromiseFromCall
-            Promise.reject(new Error("Products is not type array"))
+            return Promise.reject(new Error("Products is not type array"));
         }
     };
 
