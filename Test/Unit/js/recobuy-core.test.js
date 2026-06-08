@@ -160,6 +160,18 @@ describe('RecobuyCore', () => {
             expect(global.nostojs).not.toHaveBeenCalled();
         });
 
+        it('does not call nostojs when nostojs is not a function', () => {
+            global.nostojs = 'not-a-function';
+            const btn = document.createElement('button');
+            const nostoEl = document.createElement('div');
+            nostoEl.setAttribute('class', 'nosto_element');
+            nostoEl.setAttribute('id', 'slot-1');
+            nostoEl.appendChild(btn);
+            document.body.appendChild(nostoEl);
+
+            expect(() => RecobuyCore.sendCartEvent(btn, 'prod-456')).not.toThrow();
+        });
+
         it('does not call nostojs when element has no nosto_element ancestor', () => {
             const btn = document.createElement('button');
             document.body.appendChild(btn);

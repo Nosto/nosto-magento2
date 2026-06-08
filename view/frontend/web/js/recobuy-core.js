@@ -115,8 +115,7 @@
 
     Recobuy.sendCartEvent = function (element, productId) {
         const slotId = Recobuy.resolveContextSlotId(element);
-        if (slotId) {
-            // noinspection JSUnresolvedFunction
+        if (slotId && typeof nostojs === 'function') {
             nostojs(function (api) {
                 api.recommendedProductAddedToCart(productId, slotId);
             });
