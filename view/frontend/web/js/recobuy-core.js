@@ -38,12 +38,18 @@
 /**
  * Theme-agnostic shared logic for Recobuy.
  * Consumed by recobuy.js (RequireJS/Luma) and addtocart.phtml (Hyva).
+ * Always assigns to root.RecobuyCore. When RequireJS is present, also registers
+ * as a named AMD module so recobuy.js can declare it as a dependency without
+ * triggering a "mismatched anonymous define" error.
  */
 (function (root, factory) {
+    const core = factory();
+    root.RecobuyCore = core;
     if (typeof define === 'function' && define.amd) {
-        define([], factory);
-    } else {
-        root.RecobuyCore = factory();
+        // noinspection JSCheckFunctionSignatures
+        define('Nosto_Tagging/js/recobuy-core', [], function () {
+            return core;
+        });
     }
 }(typeof self !== 'undefined' ? self : this, function () {
     'use strict';
