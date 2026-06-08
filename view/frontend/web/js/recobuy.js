@@ -34,98 +34,16 @@
  *
  */
 
-// noinspection JSUnresolvedFunction
 define([
-    'nostojs',
-    'jquery'
-], function (nostojs, $) {
+    'Nosto_Tagging/js/recobuy-core'
+], function (RecobuyCore) {
     'use strict';
 
-    const Recobuy = {};
-
-    Recobuy.addProductToCart = function (productId, element, quantity = 1) {
-        const productData = {
-            productId: productId,
-            skuId: productId,
-            quantity: quantity
-        };
-        return Recobuy.addSkuToCart(productData, element);
+    RecobuyCore.reloadCart = function () {
+        require(['Magento_Customer/js/customer-data'], function (customerData) {
+            customerData.reload(['cart', 'messages'], true);
+        });
     };
 
-    // Products must be and array of objects [{'productId': '123', 'skuId': '321'}, {...}]
-    // skuId is optional for simple products.
-    Recobuy.addMultipleProductsToCart = function (products, element) {
-        if (Array.isArray(products)) {
-            return products.reduce(function(acc, product) {
-                return acc.then(function() {
-                    return  Recobuy.addSkuToCart(product, element)
-                })
-            } , Promise.resolve())
-        } else {
-            // noinspection JSIgnoredPromiseFromCall
-            Promise.reject(new Error("Products is not type array"))
-        }
-    };
-
-    // Product object must have fields productId and skuId {'productId': '123', 'skuId': '321'}
-    Recobuy.addSkuToCart = function (product, element, _quantity) {
-
-        const quantity = product.quantity || _quantity || 1;
-        const url = document.querySelector("#nosto_addtocart_form").getAttribute("action");
-        const formKey = document.querySelector("#nosto_addtocart_form > input[name='form_key']").getAttribute("value");
-
-        return new Promise(function (resolve, reject) {
-            // noinspection JSUnresolvedFunction
-            $.ajax({
-                url: url,
-                type: 'POST',
-                data: {
-                    'form_key': formKey,
-                    'qty': quantity,
-                    'product': product.productId,
-                    'sku': product.skuId,
-                },
-                success: function () {
-                    Recobuy.sendCartEvent(element, product)
-                    return resolve()
-                },
-                error: function () {
-                    return reject()
-                }
-            })
-        })
-
-    };
-
-    Recobuy.sendCartEvent = function (element, product) {
-        const slotId = this.resolveContextSlotId(element);
-        if (slotId) {
-            nostojs(function (api) {
-                // noinspection JSUnresolvedFunction
-                api.reportAddToCart(product, slotId);
-            });
-        }
-    }
-
-    Recobuy.resolveContextSlotId = function (element) {
-        if (!element || typeof element === "string") {
-            return element;
-        }
-        const m = 20;
-        let n = 0;
-        let e = element;
-        while (typeof e.parentElement !== "undefined" && e.parentElement) {
-            ++n;
-            e = e.parentElement;
-            if (e.getAttribute('class') === 'nosto_element' && e.getAttribute('id')) {
-                return e.getAttribute('id');
-            }
-            if (n >= m) {
-                return false;
-            }
-        }
-        return false;
-    };
-
-    return Recobuy;
+    return RecobuyCore;
 });

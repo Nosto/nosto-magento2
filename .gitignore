@@ -9,3 +9,4 @@ phan.xml
 chk*xml
 output
 .phpunit.cache
+**/.DS_Store
