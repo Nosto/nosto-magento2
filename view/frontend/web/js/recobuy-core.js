@@ -117,7 +117,7 @@
         const slotId = Recobuy.resolveContextSlotId(element);
         if (slotId && typeof nostojs === 'function') {
             nostojs(function (api) {
-                api.recommendedProductAddedToCart(productId, slotId);
+                api.reportAddToCart(productId, slotId);
             });
         }
     }

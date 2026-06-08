@@ -146,13 +146,13 @@ describe('RecobuyCore', () => {
 
     describe('sendCartEvent', () => {
         it('calls nostojs api with productId and slotId when element is a string slot id', () => {
-            const api = {recommendedProductAddedToCart: jest.fn()};
+            const api = {reportAddToCart: jest.fn()};
             global.nostojs.mockImplementation(cb => cb(api));
 
             RecobuyCore.sendCartEvent('slot-123', 'prod-456');
 
             expect(global.nostojs).toHaveBeenCalled();
-            expect(api.recommendedProductAddedToCart).toHaveBeenCalledWith('prod-456', 'slot-123');
+            expect(api.reportAddToCart).toHaveBeenCalledWith('prod-456', 'slot-123');
         });
 
         it('does not call nostojs when element is null', () => {
