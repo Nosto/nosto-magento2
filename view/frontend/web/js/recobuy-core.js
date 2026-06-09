@@ -62,6 +62,68 @@
         return action;
     };
 
+    Recobuy.getMatchingProductForm = function (productId, skuId) {
+        const form = document.querySelector("#product_addtocart_form");
+        if (!form) {
+            return null;
+        }
+
+        const productInput = form.querySelector("[name='product']");
+        const selectedConfigurableInput = form.querySelector("[name='selected_configurable_option']");
+        const productMatches = productInput &&
+            productInput.value &&
+            String(productInput.value) === String(productId);
+        const selectedConfigurableMatches = selectedConfigurableInput &&
+            selectedConfigurableInput.value &&
+            (
+                String(selectedConfigurableInput.value) === String(productId) ||
+                String(selectedConfigurableInput.value) === String(skuId)
+            );
+
+        if (productMatches || selectedConfigurableMatches || !productInput || !productInput.value) {
+            return form;
+        }
+
+        return null;
+    };
+
+    Recobuy.createAddToCartRequest = function (product) {
+        const quantity = product.quantity || 1;
+        const nostoForm = document.querySelector("#nosto_addtocart_form");
+        const action = nostoForm.getAttribute("action");
+        const formKey = nostoForm.querySelector("input[name='form_key']").getAttribute("value");
+        const productForm = Recobuy.getMatchingProductForm(product.productId, product.skuId);
+
+        if (productForm) {
+            const body = new FormData(productForm);
+            body.set('form_key', body.get('form_key') || formKey);
+            body.set('qty', String(quantity));
+            body.set('product', body.get('product') || product.productId);
+            body.set('sku', product.skuId);
+            body.set('ajax', '1');
+
+            return {
+                url: productForm.getAttribute("action") || Recobuy.buildCartUrl(action, product.productId),
+                body: body,
+                headers: {}
+            };
+        }
+
+        return {
+            url: Recobuy.buildCartUrl(action, product.productId),
+            body: new URLSearchParams({
+                'form_key': formKey,
+                'qty': String(quantity),
+                'product': product.productId,
+                'sku': product.skuId,
+                'ajax': '1'
+            }),
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            }
+        };
+    };
+
     Recobuy.addProductToCart = function (productId, element, quantity = 1) {
         const productData = {
             productId: productId,
@@ -88,24 +150,13 @@
     // Product object must have fields productId and skuId {'productId': '123', 'skuId': '321'}
     Recobuy.addSkuToCart = function (product, element) {
 
-        const quantity = product.quantity || 1;
-        const action = document.querySelector("#nosto_addtocart_form").getAttribute("action");
-        const url = Recobuy.buildCartUrl(action, product.productId);
-        const formKey = document.querySelector("#nosto_addtocart_form > input[name='form_key']").getAttribute("value");
+        const request = Recobuy.createAddToCartRequest(product);
 
         return new Promise(function (resolve, reject) {
-            fetch(url, {
+            fetch(request.url, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: new URLSearchParams({
-                    'form_key': formKey,
-                    'qty': String(quantity),
-                    'product': product.productId,
-                    'sku': product.skuId,
-                    'ajax': '1'
-                })
+                headers: request.headers,
+                body: request.body
             })
                 .then(function (response) {
                     if (response.ok || response.redirected) {
