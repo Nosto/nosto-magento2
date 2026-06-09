@@ -63,6 +63,10 @@ $isHyva = $block->isHyva();
               window.dispatchEvent(new CustomEvent('reload-customer-section-data'));
           };
 
+          window.RecobuyCore.buildCartUrl = function (action, productId) {
+              return `${action}/product/${productId}`;
+          };
+
           window.Nosto = window.Nosto || {};
           Object.assign(window.Nosto, window.RecobuyCore);
 

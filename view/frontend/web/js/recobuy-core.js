@@ -58,6 +58,10 @@
 
     Recobuy.reloadCart = null;
 
+    Recobuy.buildCartUrl = function (action) {
+        return action;
+    };
+
     Recobuy.addProductToCart = function (productId, element, quantity = 1) {
         const productData = {
             productId: productId,
@@ -85,7 +89,8 @@
     Recobuy.addSkuToCart = function (product, element) {
 
         const quantity = product.quantity || 1;
-        const url = document.querySelector("#nosto_addtocart_form").getAttribute("action");
+        const action = document.querySelector("#nosto_addtocart_form").getAttribute("action");
+        const url = Recobuy.buildCartUrl(action, product.productId);
         const formKey = document.querySelector("#nosto_addtocart_form > input[name='form_key']").getAttribute("value");
 
         return new Promise(function (resolve, reject) {

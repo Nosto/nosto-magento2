@@ -23,6 +23,21 @@ describe('RecobuyCore', () => {
         jest.restoreAllMocks();
     });
 
+    describe('buildCartUrl', () => {
+        it('returns the action URL unchanged by default', () => {
+            expect(RecobuyCore.buildCartUrl('/checkout/cart/add', '123')).toBe('/checkout/cart/add');
+        });
+
+        it('appends product path when overridden (Hyva style)', () => {
+            const original = RecobuyCore.buildCartUrl;
+            RecobuyCore.buildCartUrl = function (action, productId) {
+                return action + '/product/' + productId;
+            };
+            expect(RecobuyCore.buildCartUrl('/checkout/cart/add', '123')).toBe('/checkout/cart/add/product/123');
+            RecobuyCore.buildCartUrl = original;
+        });
+    });
+
     describe('addProductToCart', () => {
         it('calls addSkuToCart with productId as skuId and default quantity 1', () => {
             const spy = jest.spyOn(RecobuyCore, 'addSkuToCart').mockResolvedValue(undefined);
