@@ -157,9 +157,8 @@ class ProductUpdateService extends AbstractUpdateService
                 foreach ($parents as $id) {
                     $productIds[] = $id;
                 }
-            } else {
-                $productIds[] = $product->getId();
             }
+            $productIds[] = $product->getId();
         }
         return array_unique($productIds);
     }
