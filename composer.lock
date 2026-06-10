@@ -2933,6 +2933,7 @@
                 "codeception/codeception": "4.1.*",
                 "codeception/module-asserts": "1.3.*",
                 "codeception/specify": "^0.4.6",
+                "mridang/pmd-annotations": "^0.0.2",
                 "phan/phan": "2.6",
                 "phing/phing": "2.*",
                 "phpmd/phpmd": "^2.6",
