@@ -106,8 +106,19 @@ jobs:
         path: pmdphpmd.xml
 
     - name: Report annotations
-      id: report-annotations
-      run: ./vendor/bin/pmd2pr --graceful-warnings pmdphpmd.xml
+      if: always() && hashFiles('pmdphpmd.xml') != ''
+      run: |
+        php -r "
+        \$xml = simplexml_load_file('pmdphpmd.xml');
+        foreach (\$xml->file as \$file) {
+          \$filepath = (string)\$file['name'];
+          foreach (\$file->violation as \$violation) {
+            \$line = (int)\$violation['beginline'];
+            \$msg = (string)\$violation;
+            echo \"::notice file={\$filepath},line={\$line}::PHPMD: {\$msg}\n\";
+          }
+        }
+        " || true
 
   package:
     name: Package
