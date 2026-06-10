@@ -78,7 +78,10 @@
     ]
   },
   "config": {
-    "process-timeout":3600
+    "process-timeout":3600,
+    "platform": {
+      "php": "7.4.33"
+    }
   },
   "scripts": {
     "di:compile": "./compile.sh",
