@@ -43,11 +43,14 @@ $taggingConfig = $block->getTaggingConfig();
 
 <!-- Luma with Knockout.js -->
 <?php if ($block->isNostoEnabled()):
-    $script = <<<script
+    $script = sprintf(
+        <<<'script'
         require(['Nosto_Tagging/js/tagging-providers'], function(initTaggingProviders) {
-            initTaggingProviders(${$block->escapeJsQuote($block->getTaggingConfigForJs())});
+            initTaggingProviders(%s);
         });
-    script;
+    script,
+        $block->getTaggingConfigForJs()
+    );
  /* @noEscape */ $secureRenderer->renderTag('script', [], $script, false);
 
 endif; ?>
