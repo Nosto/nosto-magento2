@@ -50,6 +50,7 @@ jobs:
         mkdir -p magento/app/code/Nosto/Tagging
         git archive HEAD | tar -x -C magento/app/code/Nosto/Tagging
         cd magento
+        composer require nosto/php-sdk:^7.7 laminas/laminas-uri:* --no-interaction --no-progress
         bin/magento module:enable Nosto_Tagging
         bin/magento setup:di:compile
         cd ..
@@ -62,7 +63,7 @@ jobs:
         REPO_PSW: ${{ secrets.REPO_PSW }}
 
     - name: Run PHPStorm
-      uses: supercid/action-phpstorm@master
+      uses: Nosto/action-phpstorm@master
       with:
         target: .
         profile: ./.idea/inspectionProfiles/CI.xml
