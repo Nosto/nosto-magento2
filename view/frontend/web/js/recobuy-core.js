@@ -99,7 +99,9 @@
             body.set('form_key', body.get('form_key') || formKey);
             body.set('qty', String(quantity));
             body.set('product', body.get('product') || product.productId);
-            body.set('sku', product.skuId);
+            if (product.skuId) {
+                body.set('sku', product.skuId);
+            }
             body.set('ajax', '1');
 
             return {
@@ -111,13 +113,15 @@
 
         return {
             url: Recobuy.buildCartUrl(action, product.productId),
-            body: new URLSearchParams({
-                'form_key': formKey,
-                'qty': String(quantity),
-                'product': product.productId,
-                'sku': product.skuId,
-                'ajax': '1'
-            }),
+            body: new URLSearchParams(Object.assign(
+                {
+                    'form_key': formKey,
+                    'qty': String(quantity),
+                    'product': product.productId,
+                    'ajax': '1'
+                },
+                product.skuId ? {'sku': product.skuId} : {}
+            )),
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
             }
