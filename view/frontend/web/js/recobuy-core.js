@@ -99,7 +99,9 @@
             body.set('form_key', body.get('form_key') || formKey);
             body.set('qty', String(quantity));
             body.set('product', body.get('product') || product.productId);
-            body.set('sku', product.skuId);
+            if (product.skuId) {
+                body.set('sku', product.skuId);
+            }
             body.set('ajax', '1');
 
             return {
@@ -111,13 +113,15 @@
 
         return {
             url: Recobuy.buildCartUrl(action, product.productId),
-            body: new URLSearchParams({
-                'form_key': formKey,
-                'qty': String(quantity),
-                'product': product.productId,
-                'sku': product.skuId,
-                'ajax': '1'
-            }),
+            body: new URLSearchParams(Object.assign(
+                {
+                    'form_key': formKey,
+                    'qty': String(quantity),
+                    'product': product.productId,
+                    'ajax': '1'
+                },
+                product.skuId ? {'sku': product.skuId} : {}
+            )),
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
             }
@@ -177,12 +181,21 @@
 
     Recobuy.sendCartEvent = function (element, productId) {
         const slotId = Recobuy.resolveContextSlotId(element);
-        if (slotId && typeof nostojs === 'function') {
-            nostojs(function (api) {
-                api.reportAddToCart(productId, slotId);
-            });
+        if (!slotId) {
+            return;
         }
-    }
+
+        // Ensure a queueing stub exists even if Nosto_Tagging/js/nostojs.js hasn't loaded yet.
+        if (typeof nostojs !== 'function') {
+            window.nostojs = function (cb) {
+                (window.nostojs.q = window.nostojs.q || []).push(cb);
+            };
+        }
+
+        nostojs(function (api) {
+            api.reportAddToCart(productId, slotId);
+        });
+    };
 
     Recobuy.resolveContextSlotId = function (element) {
         if (!element || typeof element === "string") {
