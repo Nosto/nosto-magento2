@@ -73,7 +73,6 @@ class GetSettings extends AbstractAuthenticatedOperation
                 $data['currency_before_amount'],
                 $data['currency_token'],
                 $data['decimal_character'],
-                $data['grouping_separator'],
                 $data['decimal_places']
             )) {
                 continue;
@@ -82,7 +81,7 @@ class GetSettings extends AbstractAuthenticatedOperation
                 (bool)$data['currency_before_amount'],
                 $data['currency_token'],
                 $data['decimal_character'],
-                $data['grouping_separator'],
+                $data['grouping_separator'] ?? null,
                 (int)$data['decimal_places']
             );
         }

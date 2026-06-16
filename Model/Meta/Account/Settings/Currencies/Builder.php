@@ -256,11 +256,19 @@ class Builder
     {
         $formats = [];
         foreach ($data as $code => $item) {
+            if (!is_array($item) || !isset(
+                $item['currency_before_amount'],
+                $item['currency_token'],
+                $item['decimal_character'],
+                $item['decimal_places']
+            )) {
+                continue;
+            }
             $formats[$code] = new Format(
                 (bool)$item['currency_before_amount'],
                 $item['currency_token'],
                 $item['decimal_character'],
-                $item['grouping_separator'],
+                $item['grouping_separator'] ?? null,
                 (int)$item['decimal_places']
             );
         }
