@@ -39,13 +39,17 @@ namespace Nosto\Tagging\Model\Meta\Account\Settings\Currencies;
 
 use Exception;
 use Magento\Directory\Model\CurrencyFactory;
+use Magento\Framework\App\CacheInterface;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\Locale\Bundle\DataBundle;
 use Magento\Framework\Locale\ResolverInterface as LocaleResolver;
+use Magento\Framework\Serialize\SerializerInterface;
 use Magento\Store\Model\Store;
 use Nosto\Model\Format;
+use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Helper\Currency as NostoHelperCurrency;
+use Nosto\Tagging\Model\Operation\GetSettings;
 
 class Builder
 {
@@ -63,6 +67,18 @@ class Builder
 
     /** @var NostoHelperCurrency */
     private NostoHelperCurrency $nostoCurrencyHelper;
+
+    /** @var NostoHelperAccount */
+    private NostoHelperAccount $nostoHelperAccount;
+
+    /** @var CacheInterface */
+    private CacheInterface $cache;
+
+    /** @var SerializerInterface */
+    private SerializerInterface $serializer;
+
+    private const CACHE_KEY_PREFIX = 'nosto_currency_formats_';
+    private const CACHE_TTL = 3600;
 
     /* List of zero decimal currencies in compliance with ISO-4217 */
     public const ZERO_DECIMAL_CURRENCIES = [
@@ -91,19 +107,28 @@ class Builder
      * @param CurrencyFactory $currencyFactory
      * @param NostoHelperCurrency $nostoCurrencyHelper
      * @param LocaleResolver $localeResolver
+     * @param NostoHelperAccount $nostoHelperAccount
+     * @param CacheInterface $cache
+     * @param SerializerInterface $serializer
      */
     public function __construct(
         NostoLogger $logger,
         ManagerInterface $eventManager,
         CurrencyFactory $currencyFactory,
         NostoHelperCurrency $nostoCurrencyHelper,
-        LocaleResolver $localeResolver
+        LocaleResolver $localeResolver,
+        NostoHelperAccount $nostoHelperAccount,
+        CacheInterface $cache,
+        SerializerInterface $serializer
     ) {
         $this->logger = $logger;
         $this->eventManager = $eventManager;
         $this->currencyFactory = $currencyFactory;
         $this->nostoCurrencyHelper = $nostoCurrencyHelper;
         $this->localeResolver = $localeResolver;
+        $this->nostoHelperAccount = $nostoHelperAccount;
+        $this->cache = $cache;
+        $this->serializer = $serializer;
     }
 
     /**
@@ -115,6 +140,8 @@ class Builder
     {
         $currencies = [];
         try {
+            $nostoCurrencies = $this->fetchNostoCurrencyFormats($store);
+
             $storeLocale = $store->getConfig('general/locale/code');
             $localeCode = $storeLocale ?: $this->localeResolver->getLocale();
             $localeData = (new DataBundle())->get($localeCode);
@@ -133,6 +160,11 @@ class Builder
             }
             if (is_array($currencyCodes) && !empty($currencyCodes)) {
                 foreach ($currencyCodes as $currencyCode) {
+                    // Prioritize format already configured in Nosto over locally derived one
+                    if (isset($nostoCurrencies[$currencyCode])) {
+                        $currencies[$currencyCode] = $nostoCurrencies[$currencyCode];
+                        continue;
+                    }
                     $finalPrecision = $this->isZeroDecimalCurrency($currencyCode) ? 0 : $precision;
                     $currency = $this->currencyFactory->create()->load($currencyCode); // @codingStandardsIgnoreLine
                     $currencies[$currency->getCode()] = new Format(
@@ -151,6 +183,80 @@ class Builder
         $this->eventManager->dispatch('nosto_currencies_load_after', ['currencies' => $currencies]);
 
         return $currencies;
+    }
+
+    /**
+     * Fetches currency formats already configured in Nosto for this store's account.
+     * Results are cached for CACHE_TTL seconds to avoid repeated API calls.
+     * Returns an empty array when no account exists or the request fails.
+     *
+     * @param Store $store
+     * @return Format[]
+     */
+    private function fetchNostoCurrencyFormats(Store $store): array
+    {
+        $account = $this->nostoHelperAccount->findAccount($store);
+        if (!$account) {
+            return [];
+        }
+
+        $cacheKey = self::CACHE_KEY_PREFIX . $store->getId();
+        $cached = $this->cache->load($cacheKey);
+        if ($cached !== false) {
+            return $this->deserializeFormats($this->serializer->unserialize($cached));
+        }
+
+        try {
+            $formats = (new GetSettings($account))->getCurrencyFormats();
+            $this->cache->save(
+                $this->serializer->serialize($this->serializeFormats($formats)),
+                $cacheKey,
+                [],
+                self::CACHE_TTL
+            );
+            return $formats;
+        } catch (Exception $e) {
+            $this->logger->exception($e);
+            return [];
+        }
+    }
+
+    /**
+     * @param Format[] $formats
+     * @return array
+     */
+    private function serializeFormats(array $formats): array
+    {
+        $data = [];
+        foreach ($formats as $code => $format) {
+            $data[$code] = [
+                'currency_before_amount' => $format->getCurrencyBeforeAmount(),
+                'currency_token' => $format->getCurrencyToken(),
+                'decimal_character' => $format->getDecimalCharacter(),
+                'grouping_separator' => $format->getGroupingSeparator(),
+                'decimal_places' => $format->getDecimalPlaces(),
+            ];
+        }
+        return $data;
+    }
+
+    /**
+     * @param array $data
+     * @return Format[]
+     */
+    private function deserializeFormats(array $data): array
+    {
+        $formats = [];
+        foreach ($data as $code => $item) {
+            $formats[$code] = new Format(
+                (bool)$item['currency_before_amount'],
+                $item['currency_token'],
+                $item['decimal_character'],
+                $item['grouping_separator'],
+                (int)$item['decimal_places']
+            );
+        }
+        return $formats;
     }
 
     /**
@@ -242,7 +348,7 @@ class Builder
     private function buildPriceFormatWithSymbol($localeData, $defaultSet)
     {
         if ($localeData['NumberElements'][$defaultSet]['patterns']['currencyFormat']) {
-            return $localeData['NumberElements']['latn']['patterns']['currencyFormat'];
+            return $localeData['NumberElements'][$defaultSet]['patterns']['currencyFormat'];
         }
         return explode(';', $localeData['NumberPatterns'][1])[0];
     }
@@ -258,7 +364,7 @@ class Builder
     private function buildDecimalSymbol($localeData, $defaultSet)
     {
         if ($localeData['NumberElements'][$defaultSet]['symbols']['decimal']) {
-            return $localeData['NumberElements']['latn']['symbols']['decimal'];
+            return $localeData['NumberElements'][$defaultSet]['symbols']['decimal'];
         }
         return $localeData['NumberElements'][0];
     }
@@ -274,7 +380,7 @@ class Builder
     private function buildGroupSymbol($localeData, $defaultSet)
     {
         if ($localeData['NumberElements'][$defaultSet]['symbols']['group']) {
-            return $localeData['NumberElements']['latn']['symbols']['group'];
+            return $localeData['NumberElements'][$defaultSet]['symbols']['group'];
         }
         return $localeData['NumberElements'][1];
     }
