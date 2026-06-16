@@ -53,16 +53,16 @@ use Nosto\Tagging\Model\Operation\GetSettings;
 
 class Builder
 {
-    /** @var NostoLogger  */
+    /** @var NostoLogger */
     private NostoLogger $logger;
 
-    /** @var ManagerInterface  */
+    /** @var ManagerInterface */
     private ManagerInterface $eventManager;
 
-    /** @var CurrencyFactory  */
+    /** @var CurrencyFactory */
     private CurrencyFactory $currencyFactory;
 
-    /** @var LocaleResolver  */
+    /** @var LocaleResolver */
     private LocaleResolver $localeResolver;
 
     /** @var NostoHelperCurrency */
@@ -112,15 +112,16 @@ class Builder
      * @param SerializerInterface $serializer
      */
     public function __construct(
-        NostoLogger $logger,
-        ManagerInterface $eventManager,
-        CurrencyFactory $currencyFactory,
+        NostoLogger         $logger,
+        ManagerInterface    $eventManager,
+        CurrencyFactory     $currencyFactory,
         NostoHelperCurrency $nostoCurrencyHelper,
-        LocaleResolver $localeResolver,
-        NostoHelperAccount $nostoHelperAccount,
-        CacheInterface $cache,
+        LocaleResolver      $localeResolver,
+        NostoHelperAccount  $nostoHelperAccount,
+        CacheInterface      $cache,
         SerializerInterface $serializer
-    ) {
+    )
+    {
         $this->logger = $logger;
         $this->eventManager = $eventManager;
         $this->currencyFactory = $currencyFactory;
