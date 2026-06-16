@@ -203,7 +203,15 @@ class Builder
         $cacheKey = self::CACHE_KEY_PREFIX . $store->getId();
         $cached = $this->cache->load($cacheKey);
         if ($cached !== false) {
-            return $this->deserializeFormats($this->serializer->unserialize($cached));
+            try {
+                $data = $this->serializer->unserialize($cached);
+                if (is_array($data)) {
+                    return $this->deserializeFormats($data);
+                }
+            } catch (Exception $e) {
+                $this->logger->exception($e);
+            }
+            $this->cache->remove($cacheKey);
         }
 
         try {
