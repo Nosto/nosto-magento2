@@ -44,7 +44,6 @@ use Nosto\Request\Api\ApiRequest;
 use Nosto\Request\Api\Token;
 use Nosto\Request\Http\Exception\AbstractHttpException;
 use Nosto\Result\Api\JsonResultHandler;
-use Nosto\Types\Signup\AccountInterface;
 
 class GetSettings extends AbstractAuthenticatedOperation
 {
