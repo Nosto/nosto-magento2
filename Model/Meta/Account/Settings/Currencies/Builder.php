@@ -120,8 +120,7 @@ class Builder
         NostoHelperAccount  $nostoHelperAccount,
         CacheInterface      $cache,
         SerializerInterface $serializer
-    )
-    {
+    ) {
         $this->logger = $logger;
         $this->eventManager = $eventManager;
         $this->currencyFactory = $currencyFactory;

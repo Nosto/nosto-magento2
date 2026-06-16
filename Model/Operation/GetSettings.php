@@ -48,11 +48,6 @@ use Nosto\Types\Signup\AccountInterface;
 
 class GetSettings extends AbstractAuthenticatedOperation
 {
-    public function __construct(AccountInterface $account, string $activeDomain = '')
-    {
-        parent::__construct($account, $activeDomain);
-    }
-
     /**
      * Fetches account settings from Nosto and returns the currencies map as Format objects.
      *
