@@ -63,13 +63,13 @@ class GetSettings extends AbstractAuthenticatedOperation
         );
         $result = $request->getResultHandler()->parse($request->get());
 
-        if (!is_array($result) || empty($result['currencies'])) {
+        if (!is_array($result) || empty($result['currencies']) || !is_array($result['currencies'])) {
             return [];
         }
 
         $formats = [];
         foreach ($result['currencies'] as $code => $data) {
-            if (!isset(
+            if (!is_array($data) || !isset(
                 $data['currency_before_amount'],
                 $data['currency_token'],
                 $data['decimal_character'],
