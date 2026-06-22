@@ -48,7 +48,7 @@ use Nosto\Result\Api\JsonResultHandler;
 
 class GetSettings extends AbstractAuthenticatedOperation
 {
-    private const SETTINGS_PATH = '/include/%s/settings.json';
+    private const SETTINGS_PATH = '%s/include/%s/settings.json';
 
     /**
      * Fetches account settings from Nosto and returns the currency settings map as Format objects.
@@ -113,7 +113,7 @@ class GetSettings extends AbstractAuthenticatedOperation
     private function buildSettingsUrl(): string
     {
         return sprintf(
-            '%s' . self::SETTINGS_PATH,
+            self::SETTINGS_PATH,
             $this->getConnectBaseUrl(),
             rawurlencode($this->account->getName())
         );
