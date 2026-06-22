@@ -38,55 +38,98 @@
 namespace Nosto\Tagging\Model\Operation;
 
 use Nosto\Model\Format;
-use Nosto\NostoException;
+use Nosto\Exception\Builder as ExceptionBuilder;
+use Nosto\Nosto;
 use Nosto\Operation\AbstractAuthenticatedOperation;
 use Nosto\Request\Api\ApiRequest;
-use Nosto\Request\Api\Token;
 use Nosto\Request\Http\Exception\AbstractHttpException;
+use Nosto\Request\Http\HttpRequest;
 use Nosto\Result\Api\JsonResultHandler;
 
 class GetSettings extends AbstractAuthenticatedOperation
 {
+    private const SETTINGS_PATH = '/include/%s/settings.json';
+
     /**
-     * Fetches account settings from Nosto and returns the currencies map as Format objects.
+     * Fetches account settings from Nosto and returns the currency settings map as Format objects.
      *
      * @return Format[] keyed by currency code
-     * @throws NostoException
      * @throws AbstractHttpException
      */
     public function getCurrencyFormats(): array
     {
-        $request = $this->initRequest(
-            $this->account->getApiToken(Token::API_SETTINGS),
-            $this->account->getName(),
-            $this->activeDomain
-        );
-        $result = $request->getResultHandler()->parse($request->get());
+        $request = new HttpRequest();
+        $request->setUrl($this->buildSettingsUrl());
 
-        if (!is_array($result) || empty($result['currencies']) || !is_array($result['currencies'])) {
+        $response = $request->get();
+        if ($response->getCode() !== 200) {
+            throw ExceptionBuilder::fromHttpRequestAndResponse($request, $response);
+        }
+
+        $result = $response->getJsonResult(true);
+        if (!is_array($result)) {
+            return [];
+        }
+
+        $currencies = $result['currency_settings'] ?? $result['currencySettings'] ?? [];
+        if (!is_array($currencies)) {
             return [];
         }
 
         $formats = [];
-        foreach ($result['currencies'] as $code => $data) {
-            if (!is_array($data) || !isset(
-                $data['currency_before_amount'],
-                $data['currency_token'],
-                $data['decimal_character'],
-                $data['decimal_places']
-            )) {
+        foreach ($currencies as $code => $data) {
+            if (!is_array($data)) {
                 continue;
             }
+
+            $currencyBeforeAmount = $data['currency_before_amount'] ?? $data['currencyBeforeAmount'] ?? null;
+            $currencyToken = $data['currency_token'] ?? $data['currencyToken'] ?? null;
+            $decimalCharacter = $data['decimal_character'] ?? $data['decimalCharacter'] ?? null;
+            $groupingSeparator = $data['grouping_separator'] ?? $data['groupingSeparator'] ?? null;
+            $decimalPlaces = $data['decimal_places'] ?? $data['decimalPlaces'] ?? null;
+            if ($currencyBeforeAmount === null
+                || $currencyToken === null
+                || $decimalCharacter === null
+                || $decimalPlaces === null
+            ) {
+                continue;
+            }
+
             $formats[$code] = new Format(
-                (bool)$data['currency_before_amount'],
-                $data['currency_token'],
-                $data['decimal_character'],
-                $data['grouping_separator'] ?? null,
-                (int)$data['decimal_places']
+                (bool)$currencyBeforeAmount,
+                $currencyToken,
+                $decimalCharacter,
+                $groupingSeparator,
+                (int)$decimalPlaces
             );
         }
 
         return $formats;
+    }
+
+    /**
+     * @return string
+     */
+    private function buildSettingsUrl(): string
+    {
+        return sprintf(
+            '%s' . self::SETTINGS_PATH,
+            $this->getConnectBaseUrl(),
+            rawurlencode($this->account->getName())
+        );
+    }
+
+    /**
+     * @return string
+     */
+    private function getConnectBaseUrl(): string
+    {
+        $serverUrl = Nosto::getServerUrl();
+        if (strpos($serverUrl, 'http://') === 0 || strpos($serverUrl, 'https://') === 0) {
+            return rtrim($serverUrl, '/');
+        }
+
+        return 'https://' . rtrim($serverUrl, '/');
     }
 
     /** @inheritdoc */
