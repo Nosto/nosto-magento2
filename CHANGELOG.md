@@ -1,5 +1,8 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 8.1.7
+* Fixed currency format synchronization to preserve existing Nosto currency format settings
+
 ### 8.1.6
 * Sync cart tagging logic across recobuy.js and addtocart.phtml (Luma/Hyva templates)
 
