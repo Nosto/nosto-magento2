@@ -58,8 +58,13 @@ class GetSettings extends AbstractAuthenticatedOperation
      */
     public function getCurrencyFormats(): array
     {
+        $serverUrl = Nosto::getServerUrl();
+        if (!$serverUrl) {
+            return [];
+        }
+
         $request = new HttpRequest();
-        $request->setUrl($this->buildSettingsUrl());
+        $request->setUrl($this->buildSettingsUrl($serverUrl));
 
         $response = $request->get();
         if ($response->getCode() !== 200) {
@@ -110,21 +115,21 @@ class GetSettings extends AbstractAuthenticatedOperation
     /**
      * @return string
      */
-    private function buildSettingsUrl(): string
+    private function buildSettingsUrl(string $serverUrl): string
     {
         return sprintf(
             self::SETTINGS_PATH,
-            $this->getConnectBaseUrl(),
+            $this->getConnectBaseUrl($serverUrl),
             rawurlencode($this->account->getName())
         );
     }
 
     /**
+     * @param string $serverUrl
      * @return string
      */
-    private function getConnectBaseUrl(): string
+    private function getConnectBaseUrl(string $serverUrl): string
     {
-        $serverUrl = Nosto::getServerUrl();
         if (strpos($serverUrl, 'http://') === 0 || strpos($serverUrl, 'https://') === 0) {
             return rtrim($serverUrl, '/');
         }
