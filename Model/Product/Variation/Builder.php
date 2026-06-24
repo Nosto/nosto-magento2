@@ -223,8 +223,52 @@ class Builder
             array_values($skuIds)
         );
         if ($minPriceSkuId === null) {
-            return $product;
+            return $this->getMinPriceSkuFallback($product, $group, $store);
         }
         return $this->nostoProductRepository->reloadProduct($minPriceSkuId, (int)$store->getId());
+    }
+
+    /**
+     * Fallback when the price index has no rows for the requested website/customer group.
+     * Loads in-stock child product models and picks the one with the lowest effective price
+     * (base price, catalog rule price, and customer-group tier price all considered).
+     *
+     * @param MageProduct $product
+     * @param Group $group
+     * @param Store $store
+     * @return MageProduct
+     * @throws NoSuchEntityException
+     */
+    private function getMinPriceSkuFallback(Product $product, Group $group, Store $store): MageProduct
+    {
+        $skus = $this->nostoProductRepository->getInStockSkuProducts($product, $store);
+        if (empty($skus)) {
+            return $product;
+        }
+        $minPriceSku = null;
+        $minPrice = PHP_INT_MAX;
+        foreach ($skus as $sku) {
+            $skuPrice = (float)$sku->getPrice();
+            foreach ($sku->getTierPrices() as $tierPrice) {
+                if ((int)$tierPrice->getCustomerGroupId() === (int)$group->getId()) {
+                    $skuPrice = min($skuPrice, (float)$tierPrice->getValue());
+                    break;
+                }
+            }
+            $rulePrice = $this->ruleResourceModel->getRulePrice(
+                $this->localeDate->scopeDate(),
+                $store->getWebsiteId(),
+                $group->getId(),
+                $sku->getId()
+            );
+            if ($rulePrice !== false) {
+                $skuPrice = min($skuPrice, (float)$rulePrice);
+            }
+            if ($skuPrice < $minPrice) {
+                $minPrice = $skuPrice;
+                $minPriceSku = $sku;
+            }
+        }
+        return $minPriceSku ?? $product;
     }
 }
