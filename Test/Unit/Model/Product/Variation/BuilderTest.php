@@ -105,6 +105,11 @@ class BuilderTest extends TestCase
         $this->injectProperty('ruleResourceModel', $this->ruleResourceModelMock);
         $this->injectProperty('localeDate', $this->localeDateMock);
 
+        // Align with the production contract: getRulePrice() returns false when no rule applies.
+        // An unconfigured mock returns null, which would be misread as a 0.0 rule price.
+        $this->ruleResourceModelMock->method('getRulePrice')->willReturn(false);
+        $this->localeDateMock->method('scopeDate')->willReturn(new \DateTime());
+
         $this->websiteMock = $this->createMock(Website::class);
 
         $this->storeMock = $this->createMock(Store::class);
@@ -226,8 +231,8 @@ class BuilderTest extends TestCase
             ->willReturn([10 => 10, 20 => 20]);
         $this->skuResourceMock->method('getMinPriceSkuId')->willReturn(null);
 
-        $expensiveSku = $this->buildChildProductMock(50.0, [], false);
-        $cheapestSku  = $this->buildChildProductMock(30.0, [], false);
+        $expensiveSku = $this->buildChildProductMock(101, 50.0, []);
+        $cheapestSku  = $this->buildChildProductMock(102, 30.0, []);
 
         $this->nostoProductRepositoryMock->method('getInStockSkuProducts')
             ->willReturn([$expensiveSku, $cheapestSku]);
@@ -243,6 +248,8 @@ class BuilderTest extends TestCase
 
     /**
      * Fallback picks the child with the lowest effective price after applying a catalog rule.
+     * SKU A has base price 50 but a catalog rule brings its effective price to 25.
+     * SKU B has base price 40 and no rule. SKU A should win.
      *
      * @covers Builder::getMinPriceSku()
      */
@@ -255,10 +262,17 @@ class BuilderTest extends TestCase
             ->willReturn([10 => 10, 20 => 20]);
         $this->skuResourceMock->method('getMinPriceSkuId')->willReturn(null);
 
-        // SKU A: base price 50, catalog rule brings it to 25
-        $skuA = $this->buildChildProductMock(50.0, [], 25.0);
-        // SKU B: base price 40, no catalog rule
-        $skuB = $this->buildChildProductMock(40.0, [], false);
+        $skuA = $this->buildChildProductMock(101, 50.0, []);
+        $skuB = $this->buildChildProductMock(102, 40.0, []);
+
+        // Re-inject a fresh mock so the setUp default stub does not stack as a prior
+        // invocation and interfere with the per-SKU callback.
+        $ruleMock = $this->createMock(RuleResourceModel::class);
+        $ruleMock->method('getRulePrice')
+            ->willReturnCallback(function ($date, $websiteId, $groupId, $skuId) {
+                return $skuId === 101 ? 25.0 : false;
+            });
+        $this->injectProperty('ruleResourceModel', $ruleMock);
 
         $this->nostoProductRepositoryMock->method('getInStockSkuProducts')
             ->willReturn([$skuA, $skuB]);
@@ -274,6 +288,8 @@ class BuilderTest extends TestCase
 
     /**
      * Fallback applies the tier price for the customer group when it is lower than the base price.
+     * SKU A has base price 60 but a group-2 tier price of 20, making its effective price 20.
+     * SKU B has base price 35 and no discounts. SKU A should win.
      *
      * @covers Builder::getMinPriceSku()
      */
@@ -286,14 +302,12 @@ class BuilderTest extends TestCase
             ->willReturn([10 => 10, 20 => 20]);
         $this->skuResourceMock->method('getMinPriceSkuId')->willReturn(null);
 
-        // SKU A: base price 60, group-2 tier price 20
         $tierPrice = $this->createMock(ProductTierPriceInterface::class);
         $tierPrice->method('getCustomerGroupId')->willReturn('2');
         $tierPrice->method('getValue')->willReturn(20.0);
 
-        $skuA = $this->buildChildProductMock(60.0, [$tierPrice], false);
-        // SKU B: base price 35, no discounts
-        $skuB = $this->buildChildProductMock(35.0, [], false);
+        $skuA = $this->buildChildProductMock(101, 60.0, [$tierPrice]);
+        $skuB = $this->buildChildProductMock(102, 35.0, []);
 
         $this->nostoProductRepositoryMock->method('getInStockSkuProducts')
             ->willReturn([$skuA, $skuB]);
@@ -308,21 +322,17 @@ class BuilderTest extends TestCase
     }
 
     /**
+     * @param int $id
      * @param float $price
      * @param ProductTierPriceInterface[] $tierPrices
-     * @param float|false $rulePrice
      * @return Product|MockObject
      */
-    private function buildChildProductMock(float $price, array $tierPrices, $rulePrice): MockObject
+    private function buildChildProductMock(int $id, float $price, array $tierPrices): MockObject
     {
         $sku = $this->createMock(Product::class);
+        $sku->method('getId')->willReturn($id);
         $sku->method('getPrice')->willReturn($price);
         $sku->method('getTierPrices')->willReturn($tierPrices);
-
-        $this->ruleResourceModelMock
-            ->method('getRulePrice')
-            ->willReturn($rulePrice);
-
         return $sku;
     }
 
