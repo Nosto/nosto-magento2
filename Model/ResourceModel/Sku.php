@@ -65,6 +65,35 @@ class Sku extends ProductResource
     }
 
     /**
+     * Returns the entity_id of the child SKU with the lowest final_price for the given
+     * customer group by reading directly from the price index — no product model load.
+     *
+     * @param Website $website
+     * @param int $customerGroupId
+     * @param array $skuIds
+     * @return int|null
+     */
+    public function getMinPriceSkuId(Website $website, int $customerGroupId, array $skuIds): ?int
+    {
+        if (empty($skuIds)) {
+            return null;
+        }
+        $connection = $this->_resource->getConnection();
+        $select = $connection->select()
+            ->from(
+                ["cpip" => $this->_resource->getTableName(self::CATALOG_PRODUCT_PRICE_INDEX_TABLE)],
+                ['entity_id']
+            )
+            ->where("cpip.website_id = ?", $website->getId())
+            ->where("cpip.entity_id IN(?)", $skuIds)
+            ->where("cpip.customer_group_id = ?", $customerGroupId)
+            ->order("cpip.final_price ASC")
+            ->limit(1);
+        $result = $connection->fetchOne($select);
+        return $result !== false ? (int)$result : null;
+    }
+
+    /**
      * Builder for the select statement
      *
      * @param Website $website

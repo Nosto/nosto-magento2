@@ -55,6 +55,7 @@ use Nosto\Tagging\Helper\Currency as CurrencyHelper;
 use Nosto\Tagging\Helper\Price as NostoPriceHelper;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Product\Repository as NostoProductRepository;
+use Nosto\Tagging\Model\ResourceModel\Sku as SkuResource;
 
 class Builder
 {
@@ -66,6 +67,7 @@ class Builder
     private RuleResourceModel $ruleResourceModel;
     private NostoProductRepository $nostoProductRepository;
     private TimezoneInterface $localeDate;
+    private SkuResource $skuResource;
 
     /**
      * Builder constructor.
@@ -77,6 +79,7 @@ class Builder
      * @param RuleResourceModel $ruleResourceModel
      * @param NostoProductRepository $nostoProductRepository
      * @param TimezoneInterface $localeDate
+     * @param SkuResource $skuResource
      */
     public function __construct(
         NostoPriceHelper $priceHelper,
@@ -86,7 +89,8 @@ class Builder
         PriceFactory $priceFactory,
         RuleResourceModel $ruleResourceModel,
         NostoProductRepository $nostoProductRepository,
-        TimezoneInterface $localeDate
+        TimezoneInterface $localeDate,
+        SkuResource $skuResource
     ) {
         $this->nostoPriceHelper = $priceHelper;
         $this->logger = $logger;
@@ -96,6 +100,7 @@ class Builder
         $this->ruleResourceModel = $ruleResourceModel;
         $this->nostoProductRepository = $nostoProductRepository;
         $this->localeDate = $localeDate;
+        $this->skuResource = $skuResource;
     }
 
     /**
@@ -194,58 +199,76 @@ class Builder
     /**
      * Returns the SKU|Product object with the lowest price.
      *
+     * Reads final_price from catalog_product_index_price for the given customer group
+     * to identify the cheapest SKU without loading all child product objects.
+     *
      * @param MageProduct $product
      * @param Group $group
      * @param Store $store
      * @return MageProduct
+     * @throws NoSuchEntityException
      */
-    public function getMinPriceSku(Product $product, Group $group, Store $store)
+    public function getMinPriceSku(Product $product, Group $group, Store $store): MageProduct
     {
-        $minPriceSku = [];
         if (!$product->getTypeInstance() instanceof ConfigurableType) {
             return $product;
         }
-        $skus = $this->nostoProductRepository->getSkus($product);
+        $skuIds = $this->nostoProductRepository->getSkuIds($product);
+        if (empty($skuIds)) {
+            return $product;
+        }
+        $minPriceSkuId = $this->skuResource->getMinPriceSkuId(
+            $store->getWebsite(),
+            (int)$group->getId(),
+            array_values($skuIds)
+        );
+        if ($minPriceSkuId === null) {
+            return $this->getMinPriceSkuFallback($product, $group, $store);
+        }
+        return $this->nostoProductRepository->reloadProduct($minPriceSkuId, (int)$store->getId());
+    }
+
+    /**
+     * Fallback when the price index has no rows for the requested website/customer group.
+     * Loads in-stock child product models and picks the one with the lowest effective price
+     * (base price, catalog rule price, and customer-group tier price all considered).
+     *
+     * @param MageProduct $product
+     * @param Group $group
+     * @param Store $store
+     * @return MageProduct
+     * @throws NoSuchEntityException
+     */
+    private function getMinPriceSkuFallback(Product $product, Group $group, Store $store): MageProduct
+    {
+        $skus = $this->nostoProductRepository->getInStockSkuProducts($product, $store);
         if (empty($skus)) {
             return $product;
         }
+        $minPriceSku = null;
+        $minPrice = PHP_INT_MAX;
         foreach ($skus as $sku) {
-            if (!$sku instanceof MageProduct) {
-                continue;
+            $skuPrice = (float)$sku->getPrice();
+            foreach ($sku->getTierPrices() as $tierPrice) {
+                if ((int)$tierPrice->getCustomerGroupId() === (int)$group->getId()) {
+                    $skuPrice = min($skuPrice, (float)$tierPrice->getValue());
+                    break;
+                }
             }
-            $skuPrice = $sku->getPrice();
-            $skuRulePrice = $this->ruleResourceModel->getRulePrice(
+            $rulePrice = $this->ruleResourceModel->getRulePrice(
                 $this->localeDate->scopeDate(),
                 $store->getWebsiteId(),
                 $group->getId(),
                 $sku->getId()
             );
-            foreach ($sku->getTierPrices() as $tierPrice) {
-                if ((int)$tierPrice->getCustomerGroupId() === (int)$group->getId()) {
-                    $skuTierPrice = $tierPrice->getValue();
-                }
-                break;
+            if ($rulePrice !== false) {
+                $skuPrice = min($skuPrice, (float)$rulePrice);
             }
-            // If has a customer group pricing for current group,
-            // check if it's lower than regular SKU price
-            /* @suppress UndeclaredVariable */
-            if (isset($skuTierPrice) && $skuRulePrice !== false) {
-                $skuPrice = min($skuPrice, $skuTierPrice, $skuRulePrice);
-            } elseif (!isset($skuTierPrice) && $skuRulePrice !== false) {
-                $skuPrice = min($skuPrice, $skuRulePrice);
-            } elseif (isset($skuTierPrice) && $skuRulePrice === false) {
-                $skuPrice = min($skuPrice, $skuTierPrice);
-            }
-
-            if (empty($minPriceSku)) { // First loop run
-                $minPriceSku['sku'] = $sku;
-                $minPriceSku['price'] = $skuPrice;
-            } elseif ($skuPrice < $minPriceSku['price']) {
-                $minPriceSku['sku'] = $sku;
-                $minPriceSku['price'] = $skuPrice;
+            if ($skuPrice < $minPrice) {
+                $minPrice = $skuPrice;
+                $minPriceSku = $sku;
             }
         }
-        /** @phan-suppress-next-line PhanTypePossiblyInvalidDimOffset */
-        return $minPriceSku['sku'];
+        return $minPriceSku ?? $product;
     }
 }
