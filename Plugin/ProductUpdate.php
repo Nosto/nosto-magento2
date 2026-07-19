@@ -37,7 +37,9 @@
 namespace Nosto\Tagging\Plugin;
 
 use Closure;
+use Exception;
 use Magento\Catalog\Model\ResourceModel\Product as MagentoResourceProduct;
+use Magento\Catalog\Model\ResourceModel\Product\Website\Link as ProductWebsiteLink;
 use Magento\Framework\Indexer\IndexerRegistry;
 use Magento\Framework\Model\AbstractModel;
 use Nosto\Tagging\Exception\ParentProductDisabledException;
@@ -74,6 +76,9 @@ class ProductUpdate
     /** @var CollectionBuilder */
     private CollectionBuilder $productCollectionBuilder;
 
+    /** @var ProductWebsiteLink */
+    private ProductWebsiteLink $productWebsiteLink;
+
     /**
      * ProductUpdate constructor.
      * @param IndexerRegistry $indexerRegistry
@@ -82,6 +87,8 @@ class ProductUpdate
      * @param NostoLogger $logger
      * @param ProductUpdateService $productUpdateService
      * @param NostoHelperScope $nostoHelperScope
+     * @param CollectionBuilder $productCollectionBuilder
+     * @param ProductWebsiteLink $productWebsiteLink
      */
     public function __construct(
         IndexerRegistry                $indexerRegistry,
@@ -90,7 +97,8 @@ class ProductUpdate
         NostoLogger                    $logger,
         ProductUpdateService           $productUpdateService,
         NostoHelperScope               $nostoHelperScope,
-        CollectionBuilder              $productCollectionBuilder
+        CollectionBuilder              $productCollectionBuilder,
+        ProductWebsiteLink             $productWebsiteLink
     ) {
         $this->indexerRegistry = $indexerRegistry;
         $this->productIndexer = $productIndexer;
@@ -99,6 +107,7 @@ class ProductUpdate
         $this->productUpdateService = $productUpdateService;
         $this->nostoHelperScope = $nostoHelperScope;
         $this->productCollectionBuilder = $productCollectionBuilder;
+        $this->productWebsiteLink = $productWebsiteLink;
     }
 
     /**
@@ -119,7 +128,63 @@ class ProductUpdate
             });
         }
 
+        // A product removed from a website disappears from the store-filtered indexer
+        // collections, so the update pipeline can never mark it discontinued for the
+        // stores it left. Capture the persisted website assignments before the save
+        // and diff them against the database once the transaction has committed.
+        $websiteIdsBeforeSave = $this->getPersistedWebsiteIds($product);
+        if (!empty($websiteIdsBeforeSave)) {
+            $productResource->addCommitCallback(
+                function () use ($product, $websiteIdsBeforeSave) {
+                    $this->queueDiscontinueForRemovedWebsites($product, $websiteIdsBeforeSave);
+                }
+            );
+        }
+
         return $proceed($product);
+    }
+
+    /**
+     * Returns the website ids currently persisted for the product in catalog_product_website
+     *
+     * @param AbstractModel $product
+     * @return int[]
+     */
+    private function getPersistedWebsiteIds(AbstractModel $product): array
+    {
+        if (!$product->getId()) {
+            return [];
+        }
+        return array_map('intval', $this->productWebsiteLink->getWebsiteIdsByProductId((int)$product->getId()));
+    }
+
+    /**
+     * Queues a discontinue message for every store view belonging to a website
+     * the product was unassigned from during the save
+     *
+     * @param AbstractModel $product
+     * @param int[] $websiteIdsBeforeSave
+     * @return void
+     */
+    private function queueDiscontinueForRemovedWebsites(
+        AbstractModel $product,
+        array $websiteIdsBeforeSave
+    ): void {
+        try {
+            $websiteIdsAfterSave = array_map(
+                'intval',
+                $this->productWebsiteLink->getWebsiteIdsByProductId((int)$product->getId())
+            );
+            $removedWebsiteIds = array_diff($websiteIdsBeforeSave, $websiteIdsAfterSave);
+            foreach ($removedWebsiteIds as $websiteId) {
+                $stores = $this->nostoHelperScope->getWebsite($websiteId)->getStores();
+                foreach ($stores as $store) {
+                    $this->productUpdateService->addIdsToDeleteMessageQueue([$product->getId()], $store);
+                }
+            }
+        } catch (Exception $e) {
+            $this->logger->exception($e);
+        }
     }
 
     /**
