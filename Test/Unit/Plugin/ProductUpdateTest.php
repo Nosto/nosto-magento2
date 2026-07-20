@@ -41,7 +41,7 @@ namespace Nosto\Tagging\Test\Unit\Plugin;
 
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\ResourceModel\Product as MagentoResourceProduct;
-use Magento\Catalog\Model\ResourceModel\Product\Website\Link as ProductWebsiteLink;
+use Magento\Catalog\Model\ResourceModel\Product\Website\Link as ProductStoreLink;
 use Magento\Framework\Indexer\IndexerInterface;
 use Magento\Framework\Indexer\IndexerRegistry;
 use Magento\Store\Model\Store;
@@ -78,8 +78,8 @@ class ProductUpdateTest extends TestCase
     /** @var NostoHelperScope|MockObject */
     private MockObject $nostoHelperScopeMock;
 
-    /** @var ProductWebsiteLink|MockObject */
-    private MockObject $productWebsiteLinkMock;
+    /** @var ProductStoreLink|MockObject */
+    private MockObject $productStoreLinkMock;
 
     /** @var callable[] */
     private array $commitCallbacks = [];
@@ -104,7 +104,7 @@ class ProductUpdateTest extends TestCase
 
         $this->productUpdateServiceMock = $this->createMock(ProductUpdateService::class);
         $this->nostoHelperScopeMock = $this->createMock(NostoHelperScope::class);
-        $this->productWebsiteLinkMock = $this->createMock(ProductWebsiteLink::class);
+        $this->productStoreLinkMock = $this->createMock(ProductStoreLink::class);
 
         $this->plugin = new ProductUpdate(
             $indexerRegistryMock,
@@ -114,7 +114,7 @@ class ProductUpdateTest extends TestCase
             $this->productUpdateServiceMock,
             $this->nostoHelperScopeMock,
             $this->createMock(CollectionBuilder::class),
-            $this->productWebsiteLinkMock
+            $this->productStoreLinkMock
         );
     }
 
@@ -127,31 +127,31 @@ class ProductUpdateTest extends TestCase
 
     /**
      * @param Store[] $stores
-     * @return Website|MockObject
+     * @return Store|MockObject
      */
-    private function mockWebsite(array $stores): MockObject
+    private function mockStore(array $stores): MockObject
     {
-        $website = $this->createMock(Website::class);
-        $website->method('getStores')->willReturn($stores);
-        return $website;
+        $store = $this->createMock(Website::class);
+        $store->method('getStores')->willReturn($stores);
+        return $store;
     }
 
     /**
      * @covers \Nosto\Tagging\Plugin\ProductUpdate::aroundSave()
      */
-    public function testAroundSaveQueuesDiscontinueForStoresOfRemovedWebsites(): void
+    public function testAroundSaveQueuesDiscontinueForStoresOfRemovedStores(): void
     {
         $this->indexerMock->method('isScheduled')->willReturn(true);
 
-        // Website 2 is removed by this save, websites 1 & 7 remain
-        $this->productWebsiteLinkMock->method('getWebsiteIdsByProductId')
+        // Store 2 is removed by this save, Stores 1 & 7 remain
+        $this->productStoreLinkMock->method('getWebsiteIdsByProductId')
             ->willReturnOnConsecutiveCalls(['1', '2', '7'], ['1', '7']);
 
         $storeA = $this->createMock(Store::class);
         $storeB = $this->createMock(Store::class);
-        $this->nostoHelperScopeMock->method('getWebsite')
+        $this->nostoHelperScopeMock->method('getStore')
             ->with(2)
-            ->willReturn($this->mockWebsite([$storeA, $storeB]));
+            ->willReturn($this->mockStore([$storeA, $storeB]));
 
         $deleteQueueCalls = [];
         $this->productUpdateServiceMock->expects($this->exactly(2))
@@ -178,11 +178,11 @@ class ProductUpdateTest extends TestCase
     /**
      * @covers \Nosto\Tagging\Plugin\ProductUpdate::aroundSave()
      */
-    public function testAroundSaveDoesNotQueueDiscontinueWhenWebsitesAreUnchanged(): void
+    public function testAroundSaveDoesNotQueueDiscontinueWhenStoresAreUnchanged(): void
     {
         $this->indexerMock->method('isScheduled')->willReturn(true);
 
-        $this->productWebsiteLinkMock->method('getWebsiteIdsByProductId')
+        $this->productStoreLinkMock->method('getWebsiteIdsByProductId')
             ->willReturnOnConsecutiveCalls(['1', '7'], ['1', '7']);
 
         $this->productUpdateServiceMock->expects($this->never())
@@ -201,11 +201,11 @@ class ProductUpdateTest extends TestCase
     /**
      * @covers \Nosto\Tagging\Plugin\ProductUpdate::aroundSave()
      */
-    public function testAroundSaveDoesNotQueueDiscontinueWhenWebsitesAreOnlyAdded(): void
+    public function testAroundSaveDoesNotQueueDiscontinueWhenStoresAreOnlyAdded(): void
     {
         $this->indexerMock->method('isScheduled')->willReturn(true);
 
-        $this->productWebsiteLinkMock->method('getWebsiteIdsByProductId')
+        $this->productStoreLinkMock->method('getWebsiteIdsByProductId')
             ->willReturnOnConsecutiveCalls(['1'], ['1', '7']);
 
         $this->productUpdateServiceMock->expects($this->never())
@@ -224,14 +224,14 @@ class ProductUpdateTest extends TestCase
     /**
      * @covers \Nosto\Tagging\Plugin\ProductUpdate::aroundSave()
      */
-    public function testAroundSaveDoesNotReadWebsitesForNewProducts(): void
+    public function testAroundSaveDoesNotReadStoresForNewProducts(): void
     {
         $this->indexerMock->method('isScheduled')->willReturn(true);
 
         $newProduct = $this->createMock(Product::class);
         $newProduct->method('getId')->willReturn(null);
 
-        $this->productWebsiteLinkMock->expects($this->never())->method('getWebsiteIdsByProductId');
+        $this->productStoreLinkMock->expects($this->never())->method('getWebsiteIdsByProductId');
         $this->productUpdateServiceMock->expects($this->never())
             ->method('addIdsToDeleteMessageQueue');
 
@@ -251,16 +251,16 @@ class ProductUpdateTest extends TestCase
     public function testAroundSaveQueuesDiscontinueAlsoWhenIndexerIsScheduled(): void
     {
         // In "Update by schedule" mode mview cannot produce discontinue signals either,
-        // so the website diff must be handled by the plugin in both indexer modes
+        // so the Store diff must be handled by the plugin in both indexer modes
         $this->indexerMock->method('isScheduled')->willReturn(true);
 
-        $this->productWebsiteLinkMock->method('getWebsiteIdsByProductId')
+        $this->productStoreLinkMock->method('getWebsiteIdsByProductId')
             ->willReturnOnConsecutiveCalls(['2'], []);
 
         $store = $this->createMock(Store::class);
-        $this->nostoHelperScopeMock->method('getWebsite')
+        $this->nostoHelperScopeMock->method('getStore')
             ->with(2)
-            ->willReturn($this->mockWebsite([$store]));
+            ->willReturn($this->mockStore([$store]));
 
         $this->productUpdateServiceMock->expects($this->once())
             ->method('addIdsToDeleteMessageQueue')
