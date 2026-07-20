@@ -154,6 +154,7 @@ class ProductUpdateService extends AbstractUpdateService
                 // All parents are disabled. If the product is individually visible it is
                 // its own product in Nosto and must still be synced (e.g. to be
                 // discontinued when it gets disabled), so keep its own id. NS-14371.
+                /** @phan-suppress-next-line PhanTypeMismatchArgument */
                 if ($this->isIndividuallyVisible($product)) {
                     $productIds[] = $product->getId();
                 }
@@ -168,6 +169,7 @@ class ProductUpdateService extends AbstractUpdateService
                 // in Nosto, so sync it in addition to its parent(s). Without this a visible
                 // variant would never be updated on its own (e.g. stay in the catalog after
                 // being disabled), because only the parent gets queued. NS-14371.
+                /** @phan-suppress-next-line PhanTypeMismatchArgument */
                 if ($this->isIndividuallyVisible($product)) {
                     $productIds[] = $product->getId();
                 }
