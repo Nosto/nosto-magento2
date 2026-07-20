@@ -216,10 +216,15 @@ class CollectionBuilder
     public function initDefault(Store $store)
     {
         /** @var ProductCollection $collection */
-        return $this
+        $this
             ->reset()
             ->withStore($store)
             ->setSort(EntityInterface::CREATED_AT, $this->productCollection::SORT_ORDER_DESC);
+        // The base indexing collection does not load EAV attributes. Visibility is needed
+        // to tell an individually visible variant (which is its own product in Nosto and
+        // must be synced on its own) from a hidden configurable child. NS-14371.
+        $this->productCollection->addAttributeToSelect('visibility');
+        return $this;
     }
 
     /**

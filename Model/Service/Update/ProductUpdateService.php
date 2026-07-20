@@ -177,7 +177,8 @@ class ProductUpdateService extends AbstractUpdateService
                 $productIds[] = $product->getId();
             }
         }
-        return array_unique($productIds);
+
+        return array_values(array_unique($productIds));
     }
 
     /**
@@ -189,6 +190,12 @@ class ProductUpdateService extends AbstractUpdateService
      */
     private function isIndividuallyVisible(ProductInterface $product): bool
     {
-        return (int)$product->getVisibility() !== Visibility::VISIBILITY_NOT_VISIBLE;
+        $visibility = $product->getVisibility();
+        // If visibility is not loaded, fall back to the safe default (treat as not
+        // individually visible) so standard hidden variations are never queued on their own.
+        if ($visibility === null) {
+            return false;
+        }
+        return (int)$visibility !== Visibility::VISIBILITY_NOT_VISIBLE;
     }
 }

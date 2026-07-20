@@ -81,10 +81,10 @@ class ProductUpdateServiceTest extends TestCase
 
     /**
      * @param int $id
-     * @param int $visibility
+     * @param int|null $visibility
      * @return Product|MockObject
      */
-    private function productMock(int $id, int $visibility): MockObject
+    private function productMock(int $id, ?int $visibility): MockObject
     {
         $product = $this->createMock(Product::class);
         $product->method('getId')->willReturn($id);
@@ -165,5 +165,36 @@ class ProductUpdateServiceTest extends TestCase
             ->willThrowException(new ParentProductDisabledException(14));
 
         $this->assertSame([], $this->resolveIds([$child]));
+    }
+
+    /**
+     * @covers ::getEntityIdsForPage
+     */
+    public function testUnloadedVisibilityFallsBackToParentOnly(): void
+    {
+        // Safety: if visibility is not loaded on the collection, a child must NOT be
+        // treated as individually visible, otherwise standard hidden variations would
+        // be queued on their own.
+        $child = $this->productMock(15, null);
+        $this->repositoryMock->method('resolveParentProductIds')->willReturn([99]);
+
+        $this->assertSame([99], $this->resolveIds([$child]));
+    }
+
+    /**
+     * @covers ::getEntityIdsForPage
+     */
+    public function testResultIsSequentiallyIndexedAfterDedup(): void
+    {
+        // Two visible children sharing one parent: parent id de-duplicates, and the
+        // returned array must stay sequentially indexed (so it JSON-encodes as an array).
+        $childA = $this->productMock(20, Visibility::VISIBILITY_BOTH);
+        $childB = $this->productMock(21, Visibility::VISIBILITY_BOTH);
+        $this->repositoryMock->method('resolveParentProductIds')->willReturn([99]);
+
+        $result = $this->resolveIds([$childA, $childB]);
+
+        $this->assertSame([99, 20, 21], $result);
+        $this->assertSame(range(0, count($result) - 1), array_keys($result));
     }
 }
