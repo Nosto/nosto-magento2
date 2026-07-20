@@ -175,15 +175,21 @@ class ProductUpdate
                 'intval',
                 $this->productWebsiteLink->getWebsiteIdsByProductId((int)$product->getId())
             );
-            $removedWebsiteIds = array_diff($websiteIdsBeforeSave, $websiteIdsAfterSave);
-            foreach ($removedWebsiteIds as $websiteId) {
+        } catch (Exception $e) {
+            $this->logger->exception($e);
+            return;
+        }
+
+        $removedWebsiteIds = array_diff($websiteIdsBeforeSave, $websiteIdsAfterSave);
+        foreach ($removedWebsiteIds as $websiteId) {
+            try {
                 $stores = $this->nostoHelperScope->getWebsite($websiteId)->getStores();
                 foreach ($stores as $store) {
                     $this->productUpdateService->addIdsToDeleteMessageQueue([$product->getId()], $store);
                 }
+            } catch (Exception $e) {
+                $this->logger->exception($e);
             }
-        } catch (Exception $e) {
-            $this->logger->exception($e);
         }
     }
 
