@@ -100,15 +100,15 @@ class ProductWebsiteUpdate
         if ($type !== self::TYPE_REMOVE || empty($productIds) || empty($websiteIds)) {
             return $result;
         }
-        try {
-            foreach ($websiteIds as $websiteId) {
-                $stores = $this->nostoHelperScope->getWebsite($websiteId)->getStores();
+        foreach ($websiteIds as $websiteId) {
+            try {
+                $stores = $this->nostoHelperScope->getWebsite((int)$websiteId)->getStores();
                 foreach ($stores as $store) {
                     $this->productUpdateService->addIdsToDeleteMessageQueue($productIds, $store);
                 }
+            } catch (Exception $e) {
+                $this->logger->exception($e);
             }
-        } catch (Exception $e) {
-            $this->logger->exception($e);
         }
         return $result;
     }
