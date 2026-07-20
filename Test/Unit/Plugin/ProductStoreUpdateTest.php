@@ -45,14 +45,14 @@ use Magento\Store\Model\Website;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Service\Update\ProductUpdateService;
-use Nosto\Tagging\Plugin\ProductWebsiteUpdate;
+use Nosto\Tagging\Plugin\ProductStoreUpdate;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
-class ProductWebsiteUpdateTest extends TestCase
+class ProductStoreUpdateTest extends TestCase
 {
-    /** @var ProductWebsiteUpdate */
-    private ProductWebsiteUpdate $plugin;
+    /** @var ProductStoreUpdate */
+    private ProductStoreUpdate $plugin;
 
     /** @var ProductAction|MockObject */
     private MockObject $productActionMock;
@@ -69,7 +69,7 @@ class ProductWebsiteUpdateTest extends TestCase
         $this->productUpdateServiceMock = $this->createMock(ProductUpdateService::class);
         $this->nostoHelperScopeMock = $this->createMock(NostoHelperScope::class);
 
-        $this->plugin = new ProductWebsiteUpdate(
+        $this->plugin = new ProductStoreUpdate(
             $this->productUpdateServiceMock,
             $this->nostoHelperScopeMock,
             $this->createMock(NostoLogger::class)
@@ -80,26 +80,26 @@ class ProductWebsiteUpdateTest extends TestCase
      * @param Store[] $stores
      * @return Website|MockObject
      */
-    private function mockWebsite(array $stores): MockObject
+    private function mockStore(array $stores): MockObject
     {
-        $website = $this->createMock(Website::class);
-        $website->method('getStores')->willReturn($stores);
-        return $website;
+        $store = $this->createMock(Website::class);
+        $store->method('getStores')->willReturn($stores);
+        return $store;
     }
 
     /**
-     * @covers \Nosto\Tagging\Plugin\ProductWebsiteUpdate::afterUpdateWebsites()
+     * @covers \Nosto\Tagging\Plugin\ProductStoreUpdate::afterUpdateStores()
      */
-    public function testMassWebsiteRemovalQueuesDiscontinueForStoresOfRemovedWebsites(): void
+    public function testMassStoreRemovalQueuesDiscontinueForStoresOfRemovedStores(): void
     {
         $productIds = [11, 22, 33];
 
         $storeA = $this->createMock(Store::class);
         $storeB = $this->createMock(Store::class);
-        $this->nostoHelperScopeMock->method('getWebsite')
+        $this->nostoHelperScopeMock->method('getStore')
             ->willReturnMap([
-                [2, $this->mockWebsite([$storeA])],
-                [7, $this->mockWebsite([$storeB])],
+                [2, $this->mockStore([$storeA])],
+                [7, $this->mockStore([$storeB])],
             ]);
 
         $deleteQueueCalls = [];
@@ -109,7 +109,7 @@ class ProductWebsiteUpdateTest extends TestCase
                 $deleteQueueCalls[] = [$ids, $store];
             });
 
-        $this->plugin->afterUpdateWebsites(
+        $this->plugin->afterUpdateStores(
             $this->productActionMock,
             null,
             $productIds,
@@ -122,14 +122,14 @@ class ProductWebsiteUpdateTest extends TestCase
     }
 
     /**
-     * @covers \Nosto\Tagging\Plugin\ProductWebsiteUpdate::afterUpdateWebsites()
+     * @covers \Nosto\Tagging\Plugin\ProductStoreUpdate::afterUpdateStores()
      */
-    public function testMassWebsiteAdditionDoesNotQueueDiscontinue(): void
+    public function testMassStoreAdditionDoesNotQueueDiscontinue(): void
     {
         $this->productUpdateServiceMock->expects($this->never())
             ->method('addIdsToDeleteMessageQueue');
 
-        $this->plugin->afterUpdateWebsites(
+        $this->plugin->afterUpdateStores(
             $this->productActionMock,
             null,
             [11, 22],
@@ -139,14 +139,14 @@ class ProductWebsiteUpdateTest extends TestCase
     }
 
     /**
-     * @covers \Nosto\Tagging\Plugin\ProductWebsiteUpdate::afterUpdateWebsites()
+     * @covers \Nosto\Tagging\Plugin\ProductStoreUpdate::afterUpdateStores()
      */
-    public function testEmptyProductOrWebsiteListsDoNothing(): void
+    public function testEmptyProductOrStoreListsDoNothing(): void
     {
         $this->productUpdateServiceMock->expects($this->never())
             ->method('addIdsToDeleteMessageQueue');
 
-        $this->plugin->afterUpdateWebsites($this->productActionMock, null, [], [2], 'remove');
-        $this->plugin->afterUpdateWebsites($this->productActionMock, null, [11], [], 'remove');
+        $this->plugin->afterUpdateStores($this->productActionMock, null, [], [2], 'remove');
+        $this->plugin->afterUpdateStores($this->productActionMock, null, [11], [], 'remove');
     }
 }

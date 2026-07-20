@@ -43,9 +43,9 @@ use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Service\Update\ProductUpdateService;
 
 /**
- * Plugin for mass website assignment changes.
+ * Plugin for mass store assignment changes.
  */
-class ProductWebsiteUpdate
+class ProductStoreUpdate
 {
     private const TYPE_REMOVE = 'remove';
 
@@ -77,24 +77,24 @@ class ProductWebsiteUpdate
      * @param ProductAction $subject
      * @param mixed $result
      * @param array $productIds
-     * @param array $websiteIds
+     * @param array $storeIds
      * @param string $type
      * @return mixed
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function afterUpdateWebsites(
+    public function afterUpdateStores(
         ProductAction $subject,
         $result,
         $productIds,
-        $websiteIds,
+        $storeIds,
         $type
     ) {
-        if ($type !== self::TYPE_REMOVE || empty($productIds) || empty($websiteIds)) {
+        if ($type !== self::TYPE_REMOVE || empty($productIds) || empty($storeIds)) {
             return $result;
         }
-        foreach ($websiteIds as $websiteId) {
+        foreach ($storeIds as $storeId) {
             try {
-                $stores = $this->nostoHelperScope->getWebsite((int)$websiteId)->getStores();
+                $stores = $this->nostoHelperScope->getStore((int)$storeId)->getStores();
                 foreach ($stores as $store) {
                     $this->productUpdateService->addIdsToDeleteMessageQueue($productIds, $store);
                 }
