@@ -145,8 +145,6 @@ class ProductUpdate
     }
 
     /**
-     * Returns the website ids currently persisted for the product in catalog_product_website
-     *
      * @param AbstractModel $product
      * @return int[]
      */

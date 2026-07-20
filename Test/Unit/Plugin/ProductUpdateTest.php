@@ -118,9 +118,6 @@ class ProductUpdateTest extends TestCase
         );
     }
 
-    /**
-     * Simulates the transaction commit by running all registered commit callbacks
-     */
     private function runCommitCallbacks(): void
     {
         foreach ($this->commitCallbacks as $callback) {
@@ -129,8 +126,6 @@ class ProductUpdateTest extends TestCase
     }
 
     /**
-     * Builds a website mock exposing the given stores
-     *
      * @param Store[] $stores
      * @return Website|MockObject
      */

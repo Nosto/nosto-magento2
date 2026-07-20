@@ -77,8 +77,6 @@ class ProductWebsiteUpdateTest extends TestCase
     }
 
     /**
-     * Builds a website mock exposing the given stores
-     *
      * @param Store[] $stores
      * @return Website|MockObject
      */

@@ -44,10 +44,6 @@ use Nosto\Tagging\Model\Service\Update\ProductUpdateService;
 
 /**
  * Plugin for mass website assignment changes.
- *
- * The "Update websites" mass action does not go through the product resource
- * model save, so website removals would otherwise never reach Nosto and the
- * affected products would keep being served by the accounts they left.
  */
 class ProductWebsiteUpdate
 {
@@ -63,7 +59,6 @@ class ProductWebsiteUpdate
     private NostoLogger $logger;
 
     /**
-     * ProductWebsiteUpdate constructor.
      * @param ProductUpdateService $productUpdateService
      * @param NostoHelperScope $nostoHelperScope
      * @param NostoLogger $logger
@@ -79,9 +74,6 @@ class ProductWebsiteUpdate
     }
 
     /**
-     * Queues a discontinue message for every store view belonging to the
-     * websites the products were removed from
-     *
      * @param ProductAction $subject
      * @param mixed $result
      * @param array $productIds
