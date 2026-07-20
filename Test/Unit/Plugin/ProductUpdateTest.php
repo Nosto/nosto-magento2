@@ -149,7 +149,7 @@ class ProductUpdateTest extends TestCase
 
         $storeA = $this->createMock(Store::class);
         $storeB = $this->createMock(Store::class);
-        $this->nostoHelperScopeMock->method('getStore')
+        $this->nostoHelperScopeMock->method('getWebsite')
             ->with(2)
             ->willReturn($this->mockStore([$storeA, $storeB]));
 
@@ -258,7 +258,7 @@ class ProductUpdateTest extends TestCase
             ->willReturnOnConsecutiveCalls(['2'], []);
 
         $store = $this->createMock(Store::class);
-        $this->nostoHelperScopeMock->method('getStore')
+        $this->nostoHelperScopeMock->method('getWebsite')
             ->with(2)
             ->willReturn($this->mockStore([$store]));
 

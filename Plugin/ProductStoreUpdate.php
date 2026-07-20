@@ -82,7 +82,7 @@ class ProductStoreUpdate
      * @return mixed
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function afterUpdateStores(
+    public function afterUpdateWebsites(
         ProductAction $subject,
         $result,
         $productIds,
@@ -94,7 +94,7 @@ class ProductStoreUpdate
         }
         foreach ($storeIds as $storeId) {
             try {
-                $stores = $this->nostoHelperScope->getStore((int)$storeId)->getStores();
+                $stores = $this->nostoHelperScope->getWebsite((int)$storeId)->getStores();
                 foreach ($stores as $store) {
                     $this->productUpdateService->addIdsToDeleteMessageQueue($productIds, $store);
                 }

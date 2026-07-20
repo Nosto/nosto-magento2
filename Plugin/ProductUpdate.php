@@ -181,7 +181,7 @@ class ProductUpdate
         $removedStoreIds = array_diff($storeIdsBeforeSave, $storeIdsAfterSave);
         foreach ($removedStoreIds as $storeId) {
             try {
-                $stores = $this->nostoHelperScope->getStore($storeId)->getStores();
+                $stores = $this->nostoHelperScope->getWebsite($storeId)->getStores();
                 foreach ($stores as $store) {
                     $this->productUpdateService->addIdsToDeleteMessageQueue([$product->getId()], $store);
                 }
