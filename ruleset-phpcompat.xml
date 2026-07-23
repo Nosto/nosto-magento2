@@ -37,6 +37,10 @@
     <file>./Setup</file>
     <file>./Util</file>
     <file>./Test</file>
+    <file>./view</file>
+
+    <!-- Scan Magento .phtml templates too; they contain PHP. -->
+    <arg name="extensions" value="php,phtml"/>
 
     <rule ref="PHPCompatibility"/>
     <config name="testVersion" value="8.2-"/>
