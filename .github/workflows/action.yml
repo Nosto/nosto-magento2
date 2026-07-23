@@ -161,16 +161,20 @@ jobs:
         run: |
           composer config repositories.0 composer https://repo.magento.com
           composer config http-basic.repo.magento.com "$REPO_USR" "$REPO_PSW"
-          composer require --no-update nosto/module-nostotagging-cmp:@stable
-          composer require --no-update nosto/module-nosto-msi:@stable
-          composer require --no-update nosto/module-nosto-itp:@stable
-          composer install --prefer-dist --no-progress
+          # Pull the companion Nosto modules and install in one step. These are not
+          # in composer.lock (they are added only for the package build), so a
+          # plain `composer install` would fail the lock-consistency check; letting
+          # `composer require` update the lock in-memory avoids that.
+          composer require nosto/module-nostotagging-cmp:@stable \
+            nosto/module-nosto-msi:@stable \
+            nosto/module-nosto-itp:@stable \
+            --prefer-dist --no-progress
       ############################################################################
 
       - name: Build archive using composer
         run: composer archive --format=zip --file=archive
 
-      - name: Archive built arhive
+      - name: Archive built archive
         uses: actions/upload-artifact@v4
         with:
           name: composer-zip-archive
@@ -201,7 +205,7 @@ jobs:
       - uses: actions/cache@v4
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-composer-phpcompat-${{ hashFiles('**/composer.json') }}
+          key: ${{ runner.os }}-composer-phpcompat-${{ hashFiles('**/composer.lock') }}
           restore-keys: |
             ${{ runner.os }}-composer-phpcompat-
 

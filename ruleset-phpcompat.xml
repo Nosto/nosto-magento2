@@ -10,8 +10,11 @@
 
 <!--
   PHP cross-version compatibility gate, kept separate from ruleset.xml so the
-  Magento/ECG style rules and the compatibility rules can be run independently
-  (ruleset.xml pins its own installed_paths, which would otherwise clash).
+  Magento/ECG style rules and the compatibility rules can be run independently.
+
+  PHPCompatibility is registered by the dealerdirect/phpcodesniffer-composer-installer
+  plugin, so no installed_paths is set here (a hardcoded path failed to register the
+  standard in CI).
 
   testVersion 8.2- means "8.2 and every version above it", so this flags anything
   that breaks or is deprecated anywhere in the supported 8.2 - 8.5 range.
@@ -35,8 +38,6 @@
     <file>./Util</file>
     <file>./Test</file>
 
-    <config name="installed_paths"
-            value="./vendor/phpcompatibility/php-compatibility,./vendor/phpcsstandards/phpcsutils"/>
     <rule ref="PHPCompatibility"/>
     <config name="testVersion" value="8.2-"/>
 

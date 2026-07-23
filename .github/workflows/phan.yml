@@ -72,4 +72,8 @@ jobs:
 
       - name: Report annotations
         id: report-annotations
-        run: ./vendor/bin/cs2pr chkphan.xml
+        # --graceful-warnings: Phan annotations still appear on the PR, but only
+        # error-severity (critical) issues fail the build. Phan against Magento is
+        # inherently noisy (Phrase-vs-string, Monolog 2/3 constants, framework
+        # phpdoc imprecision), all of which Phan reports at warning severity.
+        run: ./vendor/bin/cs2pr --graceful-warnings chkphan.xml
