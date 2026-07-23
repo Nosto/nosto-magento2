@@ -4,9 +4,16 @@ on: [push]
 
 jobs:
 
-  phpcs:
-    name: Code Sniffer
+  # Magento 2.4.8 declares php ~8.2.0||~8.3.0||~8.4.0, so the full dependency
+  # install can only run on those versions. PHP 8.5 is covered by the
+  # compatibility gate in action.yml until Magento allows it.
+  phpunit:
+    name: Unit Tests (PHP ${{ matrix.php }})
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.2', '8.3', '8.4']
     steps:
       - uses: actions/checkout@v4
 
@@ -14,7 +21,7 @@ jobs:
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '7.4'
+          php-version: ${{ matrix.php }}
           tools: composer
           extensions: ast, bcmath, gd
           coverage: none
@@ -24,13 +31,13 @@ jobs:
         id: composer-cache
         run: |
           composer config cache-files-dir
-          echo "::set-output name=dir::$(composer config cache-files-dir)"
+          echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
       - uses: actions/cache@v4
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          key: ${{ runner.os }}-composer-php${{ matrix.php }}-${{ hashFiles('**/composer.json') }}
           restore-keys: |
-            ${{ runner.os }}-composer-
+            ${{ runner.os }}-composer-php${{ matrix.php }}-
 
       - name: Update project dependencies
         env:
@@ -39,9 +46,8 @@ jobs:
         run: |
           composer config repositories.0 composer https://repo.magento.com
           composer config http-basic.repo.magento.com "$REPO_USR" "$REPO_PSW"
-          composer install --prefer-dist --no-progress --no-suggest
+          composer install --prefer-dist --no-progress
       ############################################################################
 
       - name: Run unit tests
-        run: |
-          ./vendor/bin/phpunit Test
+        run: ./vendor/bin/phpunit Test/Unit

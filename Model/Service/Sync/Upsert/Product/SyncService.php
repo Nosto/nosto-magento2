@@ -167,9 +167,10 @@ class SyncService extends AbstractService
 
             $this->logDebugWithStore(
                 sprintf(
-                    'Upserting batch of %d (%s) - API timeout is set to %d seconds',
+                    'Upserting batch of %d (%s) [pid: %s] - API timeout is set to %d seconds',
                     $this->apiBatchSize,
                     implode(',', $productIdsInBatch),
+                    getmypid() ?: 'unknown',
                     $this->apiTimeout
                 ),
                 $store

@@ -35,6 +35,8 @@
  */
 
 return [
+    'target_php_version' => '8.5',
+    'minimum_target_php_version' => '8.2',
     'backward_compatibility_checks' => false,
     'signature-compatibility' => true,
     'progress-bar' => true,
@@ -85,6 +87,6 @@ return [
     ],
     "color_issue_messages_if_supported" => true,
     'plugins' => [
-      'vendor/drenso/phan-extensions/Plugin/DocComment/InlineVarPlugin.php'
+        'vendor/drenso/phan-extensions/Plugin/DocComment/InlineVarPlugin.php'
     ]
 ];

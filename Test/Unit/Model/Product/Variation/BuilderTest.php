@@ -339,7 +339,6 @@ class BuilderTest extends TestCase
     private function injectProperty(string $name, object $value): void
     {
         $property = new ReflectionProperty(Builder::class, $name);
-        $property->setAccessible(true);
         $property->setValue($this->builder, $value);
     }
 }
