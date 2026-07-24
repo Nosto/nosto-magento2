@@ -37,6 +37,7 @@
 namespace Nosto\Tagging\Model\Service\Update;
 
 use Magento\Catalog\Api\Data\ProductInterface;
+use Magento\Catalog\Model\Product\Visibility;
 use Magento\Store\Model\Store;
 use Nosto\NostoException;
 use Nosto\Tagging\Exception\ParentProductDisabledException;
@@ -150,6 +151,13 @@ class ProductUpdateService extends AbstractUpdateService
                 /** @phan-suppress-next-line PhanTypeMismatchArgument */
                 $parents = $this->nostoProductRepository->resolveParentProductIds($product);
             } catch (ParentProductDisabledException $e) {
+                // All parents are disabled. If the product is individually visible it is
+                // its own product in Nosto and must still be synced (e.g. to be
+                // discontinued when it gets disabled), so keep its own id. NS-14371.
+                /** @phan-suppress-next-line PhanTypeMismatchArgument */
+                if ($this->isIndividuallyVisible($product)) {
+                    $productIds[] = $product->getId();
+                }
                 $this->getLogger()->debug($e->getMessage());
                 continue;
             }
@@ -157,10 +165,37 @@ class ProductUpdateService extends AbstractUpdateService
                 foreach ($parents as $id) {
                     $productIds[] = $id;
                 }
+                // A child that is individually visible is also served as its own product
+                // in Nosto, so sync it in addition to its parent(s). Without this a visible
+                // variant would never be updated on its own (e.g. stay in the catalog after
+                // being disabled), because only the parent gets queued. NS-14371.
+                /** @phan-suppress-next-line PhanTypeMismatchArgument */
+                if ($this->isIndividuallyVisible($product)) {
+                    $productIds[] = $product->getId();
+                }
             } else {
                 $productIds[] = $product->getId();
             }
         }
-        return array_unique($productIds);
+
+        return array_values(array_unique($productIds));
+    }
+
+    /**
+     * Whether the product is visible on its own (catalog and/or search), as opposed to
+     * only existing as a hidden variation of a configurable product.
+     *
+     * @param ProductInterface $product
+     * @return bool
+     */
+    private function isIndividuallyVisible(ProductInterface $product): bool
+    {
+        $visibility = $product->getVisibility();
+        // If visibility is not loaded, fall back to the safe default (treat as not
+        // individually visible) so standard hidden variations are never queued on their own.
+        if ($visibility === null) {
+            return false;
+        }
+        return (int)$visibility !== Visibility::VISIBILITY_NOT_VISIBLE;
     }
 }
