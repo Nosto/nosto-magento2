@@ -3,6 +3,7 @@ All notable changes to this project will be documented in this file. This projec
 ### 8.1.8
 * Fix products not being marked as discontinued in Nosto when removed from a website
 * Fix individually visible product variants not syncing to Nosto when disabled
+* Improve performance of minimum-price SKU lookup for configurable products by querying the price index instead of loading every variant
 
 ### 8.1.7
 * Fixed currency format synchronization to preserve existing Nosto currency format settings
