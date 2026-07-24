@@ -55,6 +55,9 @@
     <type name="Magento\Catalog\Model\ResourceModel\Product">
         <plugin name="nostoProductObserverUpdate" type="Nosto\Tagging\Plugin\ProductUpdate"/>
     </type>
+    <type name="Magento\Catalog\Model\Product\Action">
+        <plugin name="nostoProductStoreUpdate" type="Nosto\Tagging\Plugin\ProductStoreUpdate"/>
+    </type>
     <type name="Magento\Catalog\Model\ResourceModel\Category">
         <plugin name="nostoCategoryObserverUpdate" type="Nosto\Tagging\Plugin\CategoryUpdate"/>
     </type>
