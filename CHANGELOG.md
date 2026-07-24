@@ -1,5 +1,9 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 8.1.8
+* Fix products not being marked as discontinued in Nosto when removed from a website
+* Fix individually visible product variants not syncing to Nosto when disabled
+
 ### 8.1.7
 * Fixed currency format synchronization to preserve existing Nosto currency format settings
 
