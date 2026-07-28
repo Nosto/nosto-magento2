@@ -244,7 +244,7 @@ class Builder
             return $this->getMinPriceSkuFallback($product, $group, $store);
         }
         $cacheKey = $minPriceSkuId . ':' . (int)$store->getId();
-        if (!array_key_exists($cacheKey, $reloadedSkuCache)) {
+        if (!isset($reloadedSkuCache[$cacheKey])) {
             $reloadedSkuCache[$cacheKey] = $this->nostoProductRepository->reloadProduct(
                 $minPriceSkuId,
                 (int)$store->getId()
