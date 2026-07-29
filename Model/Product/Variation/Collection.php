@@ -84,6 +84,11 @@ class Collection
     {
         $collection = new VariationCollection();
         $groups = $this->customerGroupManager->getLoggedInGroups();
+        // Scoped to this single build() call only (never a class property): shared across
+        // the customer-group loop below so the same winning SKU isn't force-reloaded once
+        // per group, but discarded as soon as this method returns so it can never leak
+        // stale state into the next product processed by this shared/singleton service.
+        $reloadedSkuCache = [];
         foreach ($groups as $group) {
             // For some (broken?) Magento setups the default group / default
             // variation is also part of the customer groups
@@ -96,7 +101,8 @@ class Collection
                     $product,
                     $nostoProduct,
                     $store,
-                    $group
+                    $group,
+                    $reloadedSkuCache
                 )
             );
         }

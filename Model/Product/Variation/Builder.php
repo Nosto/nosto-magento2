@@ -108,19 +108,21 @@ class Builder
      * @param NostoProduct $nostoProduct
      * @param Store $store
      * @param Group $group
+     * @param array $reloadedSkuCache
      * @return Variation
      */
     public function build(
         Product $product,
         NostoProduct $nostoProduct,
         Store $store,
-        Group $group
+        Group $group,
+        array &$reloadedSkuCache = []
     ) {
         $variation = new Variation();
         try {
             $variation->setVariationId($group->getCode());
             $variation->setAvailability($nostoProduct->getAvailability());
-            $variation->setPrice($this->getLowestVariationPrice($product, $group, $store));
+            $variation->setPrice($this->getLowestVariationPrice($product, $group, $store, $reloadedSkuCache));
             $listPrice = $this->nostoCurrencyHelper->convertToTaggingPrice(
                 $this->nostoPriceHelper->getProductDisplayPrice(
                     $product,
@@ -148,15 +150,20 @@ class Builder
      * @param Product $product
      * @param Group $group
      * @param Store $store
+     * @param array $reloadedSkuCache
      * @return float
      * @throws LocalizedException
      * @throws NoSuchEntityException|NostoException
      */
-    private function getLowestVariationPrice(Product $product, Group $group, Store $store)
-    {
+    private function getLowestVariationPrice(
+        Product $product,
+        Group $group,
+        Store $store,
+        array &$reloadedSkuCache
+    ) {
         // If product is configurable, the parent has no customer group price. Get SKU with lowest price
         if ($product->getTypeInstance() instanceof ConfigurableType) {
-            $product = $this->getMinPriceSku($product, $group, $store);
+            $product = $this->getMinPriceSku($product, $group, $store, $reloadedSkuCache);
         }
 
         // Only returns the SKU price if it's lower than final price
@@ -202,14 +209,25 @@ class Builder
      * Reads final_price from catalog_product_index_price for the given customer group
      * to identify the cheapest SKU without loading all child product objects.
      *
+     * $reloadedSkuCache memoizes reloadProduct() results by "skuId:storeId" for the
+     * duration of a single Variation\Collection::build() call (one call per customer
+     * group in that loop), so the same winning SKU is only force-reloaded once even
+     * when multiple groups resolve to it. Callers that don't need this (e.g. direct
+     * unit tests) may omit it — it defaults to a fresh, throwaway array.
+     *
      * @param MageProduct $product
      * @param Group $group
      * @param Store $store
+     * @param array $reloadedSkuCache
      * @return MageProduct
      * @throws NoSuchEntityException
      */
-    public function getMinPriceSku(Product $product, Group $group, Store $store): MageProduct
-    {
+    public function getMinPriceSku(
+        Product $product,
+        Group $group,
+        Store $store,
+        array &$reloadedSkuCache = []
+    ): MageProduct {
         if (!$product->getTypeInstance() instanceof ConfigurableType) {
             return $product;
         }
@@ -225,7 +243,14 @@ class Builder
         if ($minPriceSkuId === null) {
             return $this->getMinPriceSkuFallback($product, $group, $store);
         }
-        return $this->nostoProductRepository->reloadProduct($minPriceSkuId, (int)$store->getId());
+        $cacheKey = $minPriceSkuId . ':' . (int)$store->getId();
+        if (!isset($reloadedSkuCache[$cacheKey])) {
+            $reloadedSkuCache[$cacheKey] = $this->nostoProductRepository->reloadProduct(
+                $minPriceSkuId,
+                (int)$store->getId()
+            );
+        }
+        return $reloadedSkuCache[$cacheKey];
     }
 
     /**
