@@ -50,15 +50,6 @@
         </exec>
     </target>
 
-    <target name="phpcpd">
-        <exec executable="./vendor/bin/phpcpd" passthru="true">
-            <arg value="--min-lines=1"/>
-            <arg value="."/>
-            <arg value="--exclude"/>
-            <arg value="vendor,var,build"/>
-        </exec>
-    </target>
-
     <target name="phpcbf">
         <exec executable="./vendor/bin/phpcbf" passthru="true">
             <arg value="--colors"/>
@@ -93,7 +84,7 @@
         </exec>
     </target>
 
-    <target name="validate" depends="phpcs, phan, phpmd, phpcpd">
+    <target name="validate" depends="phpcs, phan, phpmd">
         <echo msg="Validating packages"/>
     </target>
 

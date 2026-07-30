@@ -141,7 +141,7 @@ class NostoAccountConnectCommand extends Command
     /**
      * @inheritDoc
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->isInteractive = !$input->getOption('no-interaction');
         $io = new SymfonyStyle($input, $output);

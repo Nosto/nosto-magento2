@@ -53,8 +53,14 @@
     <file>./view</file>
     <exclude-pattern>*.js</exclude-pattern>
     <exclude-pattern>*.css</exclude-pattern>
-    <config name="installed_paths"
-            value="./vendor/magento-ecg/coding-standard/EcgM2,./vendor/magento/magento-coding-standard/Magento2"/>
+    <!--
+      installed_paths is registered automatically by the
+      dealerdirect/phpcodesniffer-composer-installer plugin (pulled in via
+      phpcsstandards/phpcsutils and allowed in composer.json), which discovers
+      EcgM2, Magento2 AND PHPCompatibility. Hardcoding it here dropped
+      PHPCompatibility from the search path, so the Magento2 standard's internal
+      PHPCompatibility references failed to resolve.
+    -->
     <description>The Magento coding standard.</description>
     <rule ref="./vendor/magento-ecg/coding-standard/EcgM2">
         <exclude name="EcgM2.Deprecated.InheritDoc.Found"/>

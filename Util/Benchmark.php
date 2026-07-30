@@ -132,7 +132,7 @@ class Benchmark
     public function tick(string $name)
     {
         ++$this->ticks[$name];
-        if ($this->ticks[$name] % $this->checkpoints[$name] === 0) {
+        if ((int)$this->ticks[$name] % (int)$this->checkpoints[$name] === 0) {
             $elapsed = $this->getElapsed($name);
             $this->checkpointTimes[$name][] = $elapsed;
             $this->resetTimer($name);

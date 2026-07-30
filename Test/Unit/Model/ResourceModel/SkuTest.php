@@ -87,7 +87,6 @@ class SkuTest extends TestCase
             ->willReturn(Sku::CATALOG_PRODUCT_PRICE_INDEX_TABLE);
 
         $resourceProperty = new \ReflectionProperty(AbstractEntity::class, '_resource');
-        $resourceProperty->setAccessible(true);
         $resourceProperty->setValue($this->sku, $this->resourceConnectionMock);
 
         $this->websiteMock = $this->createMock(Website::class);

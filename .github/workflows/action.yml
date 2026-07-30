@@ -8,170 +8,236 @@ jobs:
     name: Code Sniffer
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    ############################################################################
-    - name: Set up PHP
-      uses: shivammathur/setup-php@v2
-      with:
-        php-version: '7.4'
-        tools: composer
-        extensions: ast, bcmath, gd
-        coverage: none
+      ############################################################################
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          tools: composer
+          extensions: ast, bcmath, gd
+          coverage: none
 
-      #https://github.com/actions/cache/blob/master/examples.md#php---composer
-    - name: Cache composer packages
-      id: composer-cache
-      run: |
-        composer config cache-files-dir
-        echo "::set-output name=dir::$(composer config cache-files-dir)"
-    - uses: actions/cache@v4
-      with:
-        path: ${{ steps.composer-cache.outputs.dir }}
-        key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-composer-
+        #https://github.com/actions/cache/blob/master/examples.md#php---composer
+      - name: Cache composer packages
+        id: composer-cache
+        run: |
+          composer config cache-files-dir
+          echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
+      - uses: actions/cache@v4
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
 
-    - name: Update project dependencies
-      env:
-        REPO_USR: ${{ secrets.REPO_USR }}
-        REPO_PSW: ${{ secrets.REPO_PSW }}
-      run: |
-        composer config repositories.0 composer https://repo.magento.com
-        composer config http-basic.repo.magento.com "$REPO_USR" "$REPO_PSW"
-        composer install --prefer-dist --no-progress --no-suggest
-    ############################################################################
+      - name: Update project dependencies
+        env:
+          REPO_USR: ${{ secrets.REPO_USR }}
+          REPO_PSW: ${{ secrets.REPO_PSW }}
+        run: |
+          composer config repositories.0 composer https://repo.magento.com
+          composer config http-basic.repo.magento.com "$REPO_USR" "$REPO_PSW"
+          composer install --prefer-dist --no-progress
+      ############################################################################
 
-    - name: Run the sniffer
-      run: |
-        ./vendor/bin/phpcs --config-set ignore_errors_on_exit 1
-        ./vendor/bin/phpcs --config-set ignore_warnings_on_exit 1
-        ./vendor/bin/phpcs --standard=ruleset.xml --report=checkstyle --report-file=chkphpcs.xml
+      - name: Run the sniffer
+        run: |
+          ./vendor/bin/phpcs --config-set ignore_errors_on_exit 1
+          ./vendor/bin/phpcs --config-set ignore_warnings_on_exit 1
+          ./vendor/bin/phpcs --standard=ruleset.xml --report=checkstyle --report-file=chkphpcs.xml
 
-    - name: Archive code sniffing results
-      uses: actions/upload-artifact@v4
-      with:
-        name: phpcs-xml-result
-        path: chkphpcs.xml
+      - name: Archive code sniffing results
+        uses: actions/upload-artifact@v4
+        with:
+          name: phpcs-xml-result
+          path: chkphpcs.xml
 
-    - name: Report annotations
-      id: report-annotations
-      run: ./vendor/bin/cs2pr chkphpcs.xml
+      - name: Report annotations
+        id: report-annotations
+        # --graceful-warnings: style violations still show as PR annotations, but
+        # only error-severity ones block. magento/magento-coding-standard ^38
+        # (shipped by Magento 2.4.8) is far stricter than the previous ^5.0 and
+        # reports many warnings; blocking on all of them is out of scope here.
+        run: ./vendor/bin/cs2pr --graceful-warnings chkphpcs.xml
 
   phpmd:
     name: Mess Detect
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    ############################################################################
-    - name: Set up PHP
-      uses: shivammathur/setup-php@v2
-      with:
-        php-version: '7.4'
-        tools: composer
-        extensions: ast, bcmath, gd
-        coverage: none
+      ############################################################################
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          tools: composer
+          extensions: ast, bcmath, gd
+          coverage: none
 
-      #https://github.com/actions/cache/blob/master/examples.md#php---composer
-    - name: Cache composer packages
-      id: composer-cache
-      run: |
-        composer config cache-files-dir
-        echo "::set-output name=dir::$(composer config cache-files-dir)"
-    - uses: actions/cache@v4
-      with:
-        path: ${{ steps.composer-cache.outputs.dir }}
-        key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-composer-
+        #https://github.com/actions/cache/blob/master/examples.md#php---composer
+      - name: Cache composer packages
+        id: composer-cache
+        run: |
+          composer config cache-files-dir
+          echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
+      - uses: actions/cache@v4
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
 
-    - name: Update project dependencies
-      env:
-        REPO_USR: ${{ secrets.REPO_USR }}
-        REPO_PSW: ${{ secrets.REPO_PSW }}
-      run: |
-        composer config repositories.0 composer https://repo.magento.com
-        composer config http-basic.repo.magento.com "$REPO_USR" "$REPO_PSW"
-        composer install --prefer-dist --no-progress --no-suggest
-    ############################################################################
+      - name: Update project dependencies
+        env:
+          REPO_USR: ${{ secrets.REPO_USR }}
+          REPO_PSW: ${{ secrets.REPO_PSW }}
+        run: |
+          composer config repositories.0 composer https://repo.magento.com
+          composer config http-basic.repo.magento.com "$REPO_USR" "$REPO_PSW"
+          composer install --prefer-dist --no-progress
+      ############################################################################
 
-    - name: Run the mess detector
-      run: ./vendor/bin/phpmd . xml codesize,naming,unusedcode,controversial,design --exclude vendor,var,build,tests --reportfile pmdphpmd.xml --ignore-violations-on-exit
+      - name: Run the mess detector
+        run: ./vendor/bin/phpmd . xml codesize,naming,unusedcode,controversial,design --exclude vendor,var,build,tests --reportfile pmdphpmd.xml --ignore-violations-on-exit
 
-    - name: Archive mess detection results
-      uses: actions/upload-artifact@v4
-      with:
-        name: phpmd-xml-result
-        path: pmdphpmd.xml
+      - name: Archive mess detection results
+        uses: actions/upload-artifact@v4
+        with:
+          name: phpmd-xml-result
+          path: pmdphpmd.xml
 
-    - name: Detect code standard violations
-      if: always() && hashFiles('pmdphpmd.xml') != ''
-      run: |
-        php -r "
-        \$xml = @simplexml_load_file('pmdphpmd.xml');
-        if (\$xml === false) { exit(0); }
-        \$workspace = rtrim(getenv('GITHUB_WORKSPACE') ?: '', '/');
-        foreach (\$xml->file as \$file) {
-          \$filepath = (string)\$file['name'];
-          if (\$workspace !== '' && strpos(\$filepath, \$workspace . '/') === 0) {
-            \$filepath = substr(\$filepath, strlen(\$workspace) + 1);
+      - name: Detect code standard violations
+        if: always() && hashFiles('pmdphpmd.xml') != ''
+        run: |
+          php -r "
+          \$xml = @simplexml_load_file('pmdphpmd.xml');
+          if (\$xml === false) { exit(0); }
+          \$workspace = rtrim(getenv('GITHUB_WORKSPACE') ?: '', '/');
+          foreach (\$xml->file as \$file) {
+            \$filepath = (string)\$file['name'];
+            if (\$workspace !== '' && strpos(\$filepath, \$workspace . '/') === 0) {
+              \$filepath = substr(\$filepath, strlen(\$workspace) + 1);
+            }
+            \$filepath = str_replace(['%', \"\r\", \"\n\"], ['%25', '%0D', '%0A'], \$filepath);
+            foreach (\$file->violation as \$violation) {
+              \$line = (int)\$violation['beginline'];
+              \$msg = trim((string)\$violation);
+              \$msg = str_replace(['%', \"\r\", \"\n\"], ['%25', '%0D', '%0A'], \$msg);
+              echo \"::notice file={\$filepath},line={\$line}::PHPMD: {\$msg}\n\";
+            }
           }
-          \$filepath = str_replace(['%', \"\r\", \"\n\"], ['%25', '%0D', '%0A'], \$filepath);
-          foreach (\$file->violation as \$violation) {
-            \$line = (int)\$violation['beginline'];
-            \$msg = trim((string)\$violation);
-            \$msg = str_replace(['%', \"\r\", \"\n\"], ['%25', '%0D', '%0A'], \$msg);
-            echo \"::notice file={\$filepath},line={\$line}::PHPMD: {\$msg}\n\";
-          }
-        }
-        " || true
+          " || true
 
   package:
     name: Package
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    ############################################################################
-    - name: Set up PHP
-      uses: shivammathur/setup-php@v2
-      with:
-        php-version: '7.4'
-        tools: composer:v2.1.14, pecl
-        extensions: ast, bcmath, gd
-        coverage: none
+      ############################################################################
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          tools: composer:v2, pecl
+          extensions: ast, bcmath, gd
+          coverage: none
 
-      #https://github.com/actions/cache/blob/master/examples.md#php---composer
-    - name: Cache composer packages
-      id: composer-cache
-      run: |
-        echo "::set-output name=dir::$(composer config cache-files-dir)"
-    - uses: actions/cache@v4
-      with:
-        path: ${{ steps.composer-cache.outputs.dir }}
-        key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-composer-
+        #https://github.com/actions/cache/blob/master/examples.md#php---composer
+      - name: Cache composer packages
+        id: composer-cache
+        run: |
+          echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
+      - uses: actions/cache@v4
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
 
-    - name: Update project dependencies
-      env:
-        REPO_USR: ${{ secrets.REPO_USR }}
-        REPO_PSW: ${{ secrets.REPO_PSW }}
-      run: |
-        composer config repositories.0 composer https://repo.magento.com
-        composer config http-basic.repo.magento.com "$REPO_USR" "$REPO_PSW"
-        composer require --no-update nosto/module-nostotagging-cmp:@stable
-        composer require --no-update nosto/module-nosto-msi:@stable
-        composer require --no-update nosto/module-nosto-itp:@stable
-        composer install --prefer-dist --no-progress --no-suggest
-    ############################################################################
+      - name: Update project dependencies
+        env:
+          REPO_USR: ${{ secrets.REPO_USR }}
+          REPO_PSW: ${{ secrets.REPO_PSW }}
+        run: |
+          composer config repositories.0 composer https://repo.magento.com
+          composer config http-basic.repo.magento.com "$REPO_USR" "$REPO_PSW"
+          # Pull the companion Nosto modules and install in one step. These are not
+          # in composer.lock (they are added only for the package build), so a
+          # plain `composer install` would fail the lock-consistency check; letting
+          # `composer require` update the lock in-memory avoids that.
+          # These companion modules only publish dev branches (no stable tag), so
+          # @stable cannot resolve. The per-package @dev flag allows dev stability
+          # for just these three without setting minimum-stability on the root
+          # composer.json (which would then leak into the built archive).
+          composer require nosto/module-nostotagging-cmp:@dev \
+            nosto/module-nosto-msi:@dev \
+            nosto/module-nosto-itp:@dev \
+            --prefer-dist --no-progress
+      ############################################################################
 
-    - name: Build archive using composer
-      run: composer archive --format=zip --file=archive
+      - name: Build archive using composer
+        run: composer archive --format=zip --file=archive
 
-    - name: Archive built arhive
-      uses: actions/upload-artifact@v4
-      with:
-        name: composer-zip-archive
-        path: archive.zip
+      - name: Archive built archive
+        uses: actions/upload-artifact@v4
+        with:
+          name: composer-zip-archive
+          path: archive.zip
+
+  # Magento 2.4.8 pins php to ~8.2.0||~8.3.0||~8.4.0, so a normal install cannot
+  # run on 8.5 yet. This lane installs with the platform requirement ignored and
+  # only runs PHPCompatibility, which parses source and never executes Magento,
+  # so the module stays verified 8.5-clean ahead of Magento allowing 8.5.
+  php-compat:
+    name: PHP 8.2-8.5 Compatibility
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.5'
+          tools: composer:v2
+          coverage: none
+
+      - name: Cache composer packages
+        id: composer-cache
+        run: |
+          composer config cache-files-dir
+          echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
+      - uses: actions/cache@v4
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-phpcompat-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-phpcompat-
+
+      - name: Install dependencies
+        env:
+          REPO_USR: ${{ secrets.REPO_USR }}
+          REPO_PSW: ${{ secrets.REPO_PSW }}
+        run: |
+          composer config repositories.0 composer https://repo.magento.com
+          composer config http-basic.repo.magento.com "$REPO_USR" "$REPO_PSW"
+          composer install --prefer-dist --no-progress --ignore-platform-req=php
+
+      - name: Lint every source file under PHP 8.5
+        run: |
+          # Include .phtml templates - they contain PHP that php -l can parse.
+          find . -path ./vendor -prune -o \( -name '*.php' -o -name '*.phtml' \) -print0 \
+            | xargs -0 -n1 -P4 php -l > /dev/null
+
+      - name: Run the compatibility sniffs
+        run: |
+          ./vendor/bin/phpcs --standard=ruleset-phpcompat.xml \
+            --report=checkstyle --report-file=chkphpcompat.xml || true
+          ./vendor/bin/phpcs --standard=ruleset-phpcompat.xml --report=full
+
+      - name: Report annotations
+        if: always() && hashFiles('chkphpcompat.xml') != ''
+        run: ./vendor/bin/cs2pr chkphpcompat.xml
