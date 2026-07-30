@@ -40,7 +40,7 @@
         "php": ">=8.2",
         "magento/framework": ">=101.0.6|~104.0",
         "ext-json": "*",
-        "nosto/php-sdk": "7.7.7",
+        "nosto/php-sdk": "8.0.0",
         "laminas/laminas-uri": "*"
     },
     "repositories": [
