@@ -192,6 +192,108 @@ class BuilderTest extends TestCase
     }
 
     /**
+     * Two different customer groups resolve to the same cheapest SKU on the same store.
+     * reloadProduct() is a forced, cache-bypassing load (it exists precisely to avoid stale
+     * data across a long-running batch/cron process) — but within a SINGLE product's build,
+     * paying that cost twice for the identical SKU+store pair is pure waste. When both calls
+     * share the same $reloadedSkuCache array, reloadProduct() must only run once.
+     *
+     * @covers Builder::getMinPriceSku()
+     */
+    public function testGetMinPriceSkuReusesCacheForSameSkuAndStoreAcrossGroups(): void
+    {
+        $this->productMock->method('getTypeInstance')
+            ->willReturn($this->createMock(ConfigurableType::class));
+
+        $this->nostoProductRepositoryMock->method('getSkuIds')
+            ->willReturn([10 => 10, 20 => 20]);
+
+        $this->skuResourceMock->method('getMinPriceSkuId')
+            ->willReturn(20);
+
+        $cheapestSku = $this->createMock(Product::class);
+        $this->nostoProductRepositoryMock->expects($this->once())
+            ->method('reloadProduct')
+            ->with(20, 1)
+            ->willReturn($cheapestSku);
+
+        $reloadedSkuCache = [];
+
+        $firstGroup = $this->createMock(Group::class);
+        $firstGroup->method('getId')->willReturn('2');
+        $secondGroup = $this->createMock(Group::class);
+        $secondGroup->method('getId')->willReturn('3');
+
+        $firstResult = $this->builder->getMinPriceSku(
+            $this->productMock,
+            $firstGroup,
+            $this->storeMock,
+            $reloadedSkuCache
+        );
+        $secondResult = $this->builder->getMinPriceSku(
+            $this->productMock,
+            $secondGroup,
+            $this->storeMock,
+            $reloadedSkuCache
+        );
+
+        $this->assertSame($cheapestSku, $firstResult);
+        $this->assertSame($cheapestSku, $secondResult);
+    }
+
+    /**
+     * Two customer groups resolve to DIFFERENT cheapest SKUs (e.g. group-specific pricing
+     * changes which child wins) on the same store. The cache must key by skuId, not just
+     * store, so each distinct SKU still gets its own reloadProduct() call and no group's
+     * result is silently overwritten by another group's.
+     *
+     * @covers Builder::getMinPriceSku()
+     */
+    public function testGetMinPriceSkuReloadsSeparatelyForDifferentSkusAcrossGroups(): void
+    {
+        $this->productMock->method('getTypeInstance')
+            ->willReturn($this->createMock(ConfigurableType::class));
+
+        $this->nostoProductRepositoryMock->method('getSkuIds')
+            ->willReturn([10 => 10, 20 => 20]);
+
+        $this->skuResourceMock->method('getMinPriceSkuId')
+            ->willReturnOnConsecutiveCalls(10, 20);
+
+        $skuTen = $this->createMock(Product::class);
+        $skuTwenty = $this->createMock(Product::class);
+        $this->nostoProductRepositoryMock->expects($this->exactly(2))
+            ->method('reloadProduct')
+            ->willReturnMap([
+                [10, 1, $skuTen],
+                [20, 1, $skuTwenty],
+            ]);
+
+        $reloadedSkuCache = [];
+
+        $firstGroup = $this->createMock(Group::class);
+        $firstGroup->method('getId')->willReturn('2');
+        $secondGroup = $this->createMock(Group::class);
+        $secondGroup->method('getId')->willReturn('3');
+
+        $firstResult = $this->builder->getMinPriceSku(
+            $this->productMock,
+            $firstGroup,
+            $this->storeMock,
+            $reloadedSkuCache
+        );
+        $secondResult = $this->builder->getMinPriceSku(
+            $this->productMock,
+            $secondGroup,
+            $this->storeMock,
+            $reloadedSkuCache
+        );
+
+        $this->assertSame($skuTen, $firstResult);
+        $this->assertSame($skuTwenty, $secondResult);
+    }
+
+    /**
      * Index returns null and no in-stock children exist — parent product is returned.
      *
      * @covers Builder::getMinPriceSku()
@@ -339,7 +441,6 @@ class BuilderTest extends TestCase
     private function injectProperty(string $name, object $value): void
     {
         $property = new ReflectionProperty(Builder::class, $name);
-        $property->setAccessible(true);
         $property->setValue($this->builder, $value);
     }
 }

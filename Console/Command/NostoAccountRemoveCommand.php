@@ -116,7 +116,7 @@ class NostoAccountRemoveCommand extends Command
     /**
      * @inheritDoc
      */
-    public function execute(InputInterface $input, OutputInterface $output)
+    public function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->isInteractive = !$input->getOption('no-interaction');
         $io = new SymfonyStyle($input, $output);
