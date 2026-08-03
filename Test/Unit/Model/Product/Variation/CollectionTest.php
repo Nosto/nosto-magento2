@@ -197,7 +197,6 @@ class CollectionTest extends TestCase
             $class = get_parent_class($class);
         }
         $property = new ReflectionProperty($class ?: get_class($target), $name);
-        $property->setAccessible(true);
         $property->setValue($target, $value);
     }
 }
