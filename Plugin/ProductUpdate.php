@@ -38,6 +38,8 @@ namespace Nosto\Tagging\Plugin;
 
 use Closure;
 use Exception;
+use Magento\Catalog\Api\Data\ProductInterface;
+use Magento\Catalog\Model\Product\Visibility;
 use Magento\Catalog\Model\ResourceModel\Product as MagentoResourceProduct;
 use Magento\Catalog\Model\ResourceModel\Product\Website\Link as ProductStoreLink;
 use Magento\Framework\Indexer\IndexerRegistry;
@@ -141,7 +143,64 @@ class ProductUpdate
             );
         }
 
+        // A product that becomes "Not Visible Individually" disappears from the
+        // individually-visible sync path (see ProductUpdateService::isIndividuallyVisible),
+        // so without an explicit discontinue signal it stays an orphan in Nosto. NS-14429.
+        if ($this->hasBecomeNotIndividuallyVisible($product)) {
+            $productResource->addCommitCallback(
+                function () use ($product) {
+                    $this->queueDiscontinueForHiddenVisibility($product);
+                }
+            );
+        }
+
         return $proceed($product);
+    }
+
+    /**
+     * @param AbstractModel $product
+     * @return bool
+     */
+    private function hasBecomeNotIndividuallyVisible(AbstractModel $product): bool
+    {
+        if (!$product->getId()) {
+            return false;
+        }
+        $origVisibility = (int)$product->getOrigData(ProductInterface::VISIBILITY);
+        $newVisibility = (int)$product->getData(ProductInterface::VISIBILITY);
+        return $origVisibility !== Visibility::VISIBILITY_NOT_VISIBLE
+            && $newVisibility === Visibility::VISIBILITY_NOT_VISIBLE;
+    }
+
+    /**
+     * Queues a discontinue message for every store view the product is currently
+     * assigned to, since it is no longer individually visible on any of them
+     *
+     * @param AbstractModel $product
+     * @return void
+     */
+    private function queueDiscontinueForHiddenVisibility(AbstractModel $product): void
+    {
+        try {
+            $websiteIds = array_map(
+                'intval',
+                $this->productStoreLink->getWebsiteIdsByProductId((int)$product->getId())
+            );
+        } catch (Exception $e) {
+            $this->logger->exception($e);
+            return;
+        }
+
+        foreach ($websiteIds as $websiteId) {
+            try {
+                $stores = $this->nostoHelperScope->getWebsite($websiteId)->getStores();
+                foreach ($stores as $store) {
+                    $this->productUpdateService->addIdsToDeleteMessageQueue([$product->getId()], $store);
+                }
+            } catch (Exception $e) {
+                $this->logger->exception($e);
+            }
+        }
     }
 
     /**

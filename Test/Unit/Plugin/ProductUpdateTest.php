@@ -39,7 +39,9 @@ declare(strict_types=1);
 
 namespace Nosto\Tagging\Test\Unit\Plugin;
 
+use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Model\Product;
+use Magento\Catalog\Model\Product\Visibility;
 use Magento\Catalog\Model\ResourceModel\Product as MagentoResourceProduct;
 use Magento\Catalog\Model\ResourceModel\Product\Website\Link as ProductStoreLink;
 use Magento\Framework\Indexer\IndexerInterface;
@@ -272,6 +274,96 @@ class ProductUpdateTest extends TestCase
                 return 'saved';
             },
             $this->productMock
+        );
+        $this->runCommitCallbacks();
+    }
+
+    /**
+     * @covers \Nosto\Tagging\Plugin\ProductUpdate::aroundSave()
+     */
+    public function testAroundSaveQueuesDiscontinueWhenProductBecomesNotIndividuallyVisible(): void
+    {
+        $this->indexerMock->method('isScheduled')->willReturn(true);
+
+        $this->productMock->method('getOrigData')
+            ->with(ProductInterface::VISIBILITY)
+            ->willReturn(Visibility::VISIBILITY_BOTH);
+        $this->productMock->method('getData')
+            ->with(ProductInterface::VISIBILITY)
+            ->willReturn(Visibility::VISIBILITY_NOT_VISIBLE);
+
+        $this->productStoreLinkMock->method('getWebsiteIdsByProductId')->willReturn(['2']);
+
+        $store = $this->createMock(Store::class);
+        $this->nostoHelperScopeMock->method('getWebsite')
+            ->with(2)
+            ->willReturn($this->mockStore([$store]));
+
+        $this->productUpdateServiceMock->expects($this->once())
+            ->method('addIdsToDeleteMessageQueue')
+            ->with([self::PRODUCT_ID], $store);
+
+        $result = $this->plugin->aroundSave(
+            $this->productResourceMock,
+            function () {
+                return 'saved';
+            },
+            $this->productMock
+        );
+
+        $this->assertSame('saved', $result);
+        $this->runCommitCallbacks();
+    }
+
+    /**
+     * @covers \Nosto\Tagging\Plugin\ProductUpdate::aroundSave()
+     */
+    public function testAroundSaveDoesNotQueueDiscontinueWhenVisibilityIsUnchanged(): void
+    {
+        $this->indexerMock->method('isScheduled')->willReturn(true);
+
+        $this->productMock->method('getOrigData')
+            ->with(ProductInterface::VISIBILITY)
+            ->willReturn(Visibility::VISIBILITY_BOTH);
+        $this->productMock->method('getData')
+            ->with(ProductInterface::VISIBILITY)
+            ->willReturn(Visibility::VISIBILITY_BOTH);
+
+        $this->productStoreLinkMock->method('getWebsiteIdsByProductId')->willReturn(['2']);
+
+        $this->productUpdateServiceMock->expects($this->never())
+            ->method('addIdsToDeleteMessageQueue');
+
+        $this->plugin->aroundSave(
+            $this->productResourceMock,
+            function () {
+                return 'saved';
+            },
+            $this->productMock
+        );
+        $this->runCommitCallbacks();
+    }
+
+    /**
+     * @covers \Nosto\Tagging\Plugin\ProductUpdate::aroundSave()
+     */
+    public function testAroundSaveDoesNotQueueDiscontinueForVisibilityOnNewProducts(): void
+    {
+        $this->indexerMock->method('isScheduled')->willReturn(true);
+
+        $newProduct = $this->createMock(Product::class);
+        $newProduct->method('getId')->willReturn(null);
+        $newProduct->expects($this->never())->method('getOrigData');
+
+        $this->productUpdateServiceMock->expects($this->never())
+            ->method('addIdsToDeleteMessageQueue');
+
+        $this->plugin->aroundSave(
+            $this->productResourceMock,
+            function () {
+                return 'saved';
+            },
+            $newProduct
         );
         $this->runCommitCallbacks();
     }
