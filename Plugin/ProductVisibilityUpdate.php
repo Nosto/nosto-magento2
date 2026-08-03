@@ -45,7 +45,7 @@ use Magento\Catalog\Model\ResourceModel\Product\Website\Link as ProductStoreLink
 use Magento\Store\Model\Store;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
-use Nosto\Tagging\Model\ResourceModel\Magento\Product\CollectionBuilder;
+use Nosto\Tagging\Model\Product\VisibilityResolver;
 use Nosto\Tagging\Model\Service\Update\ProductUpdateService;
 
 /**
@@ -58,8 +58,8 @@ use Nosto\Tagging\Model\Service\Update\ProductUpdateService;
  */
 class ProductVisibilityUpdate
 {
-    /** @var CollectionBuilder */
-    private CollectionBuilder $productCollectionBuilder;
+    /** @var VisibilityResolver */
+    private VisibilityResolver $visibilityResolver;
 
     /** @var ProductStoreLink */
     private ProductStoreLink $productStoreLink;
@@ -74,20 +74,20 @@ class ProductVisibilityUpdate
     private NostoLogger $logger;
 
     /**
-     * @param CollectionBuilder $productCollectionBuilder
+     * @param VisibilityResolver $visibilityResolver
      * @param ProductStoreLink $productStoreLink
      * @param NostoHelperScope $nostoHelperScope
      * @param ProductUpdateService $productUpdateService
      * @param NostoLogger $logger
      */
     public function __construct(
-        CollectionBuilder $productCollectionBuilder,
+        VisibilityResolver $visibilityResolver,
         ProductStoreLink $productStoreLink,
         NostoHelperScope $nostoHelperScope,
         ProductUpdateService $productUpdateService,
         NostoLogger $logger
     ) {
-        $this->productCollectionBuilder = $productCollectionBuilder;
+        $this->visibilityResolver = $visibilityResolver;
         $this->productStoreLink = $productStoreLink;
         $this->nostoHelperScope = $nostoHelperScope;
         $this->productUpdateService = $productUpdateService;
@@ -138,19 +138,7 @@ class ProductVisibilityUpdate
     {
         try {
             $store = $this->nostoHelperScope->getStore($storeId);
-            $collection = $this->productCollectionBuilder
-                ->withStore($store)
-                ->withIds($productIds)
-                ->build();
-            $collection->addAttributeToSelect(ProductInterface::VISIBILITY);
-
-            $ids = [];
-            foreach ($collection->getItems() as $item) {
-                if ((int)$item->getVisibility() !== Visibility::VISIBILITY_NOT_VISIBLE) {
-                    $ids[] = (int)$item->getId();
-                }
-            }
-            return $ids;
+            return $this->visibilityResolver->getIndividuallyVisibleProductIds($productIds, $store);
         } catch (Exception $e) {
             $this->logger->exception($e);
             return [];
@@ -181,9 +169,9 @@ class ProductVisibilityUpdate
             return;
         }
 
-        // Default/All Store Views changes the fallback value for every store that
-        // has no override of its own, so each product must be discontinued on
-        // every store it is currently assigned to.
+        // Default/All Store Views only changes the fallback value for stores that
+        // have no override of their own, so each assigned store must be re-checked
+        // individually: a store with its own override keeps its value regardless.
         foreach ($productIds as $productId) {
             try {
                 $websiteIds = array_map(
@@ -198,7 +186,9 @@ class ProductVisibilityUpdate
                 try {
                     $stores = $this->nostoHelperScope->getWebsite($websiteId)->getStores();
                     foreach ($stores as $store) {
-                        $this->productUpdateService->addIdsToDeleteMessageQueue([$productId], $store);
+                        if (empty($this->visibilityResolver->getIndividuallyVisibleProductIds([$productId], $store))) {
+                            $this->productUpdateService->addIdsToDeleteMessageQueue([$productId], $store);
+                        }
                     }
                 } catch (Exception $e) {
                     $this->logger->exception($e);

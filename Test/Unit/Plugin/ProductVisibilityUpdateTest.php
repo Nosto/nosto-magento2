@@ -39,7 +39,6 @@ declare(strict_types=1);
 
 namespace Nosto\Tagging\Test\Unit\Plugin;
 
-use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\Product\Action as ProductAction;
 use Magento\Catalog\Model\Product\Visibility;
 use Magento\Catalog\Model\ResourceModel\Product\Website\Link as ProductStoreLink;
@@ -47,8 +46,7 @@ use Magento\Store\Model\Store;
 use Magento\Store\Model\Website;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
-use Nosto\Tagging\Model\ResourceModel\Magento\Product\Collection as ProductCollection;
-use Nosto\Tagging\Model\ResourceModel\Magento\Product\CollectionBuilder;
+use Nosto\Tagging\Model\Product\VisibilityResolver;
 use Nosto\Tagging\Model\Service\Update\ProductUpdateService;
 use Nosto\Tagging\Plugin\ProductVisibilityUpdate;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -62,11 +60,8 @@ class ProductVisibilityUpdateTest extends TestCase
     /** @var ProductAction|MockObject */
     private MockObject $productActionMock;
 
-    /** @var CollectionBuilder|MockObject */
-    private MockObject $productCollectionBuilderMock;
-
-    /** @var ProductCollection|MockObject */
-    private MockObject $productCollectionMock;
+    /** @var VisibilityResolver|MockObject */
+    private MockObject $visibilityResolverMock;
 
     /** @var ProductStoreLink|MockObject */
     private MockObject $productStoreLinkMock;
@@ -80,37 +75,18 @@ class ProductVisibilityUpdateTest extends TestCase
     protected function setUp(): void
     {
         $this->productActionMock = $this->createMock(ProductAction::class);
-        $this->productCollectionMock = $this->createMock(ProductCollection::class);
-
-        $this->productCollectionBuilderMock = $this->createMock(CollectionBuilder::class);
-        $this->productCollectionBuilderMock->method('withStore')->willReturnSelf();
-        $this->productCollectionBuilderMock->method('withIds')->willReturnSelf();
-        $this->productCollectionBuilderMock->method('build')->willReturn($this->productCollectionMock);
-
+        $this->visibilityResolverMock = $this->createMock(VisibilityResolver::class);
         $this->productStoreLinkMock = $this->createMock(ProductStoreLink::class);
         $this->nostoHelperScopeMock = $this->createMock(NostoHelperScope::class);
         $this->productUpdateServiceMock = $this->createMock(ProductUpdateService::class);
 
         $this->plugin = new ProductVisibilityUpdate(
-            $this->productCollectionBuilderMock,
+            $this->visibilityResolverMock,
             $this->productStoreLinkMock,
             $this->nostoHelperScopeMock,
             $this->productUpdateServiceMock,
             $this->createMock(NostoLogger::class)
         );
-    }
-
-    /**
-     * @param int $id
-     * @param int $visibility
-     * @return Product|MockObject
-     */
-    private function mockProductItem(int $id, int $visibility): MockObject
-    {
-        $product = $this->createMock(Product::class);
-        $product->method('getId')->willReturn($id);
-        $product->method('getVisibility')->willReturn($visibility);
-        return $product;
     }
 
     /**
@@ -129,13 +105,13 @@ class ProductVisibilityUpdateTest extends TestCase
      */
     public function testMassHideAtSpecificStoreQueuesDiscontinueOnlyForThatStore(): void
     {
-        $this->productCollectionMock->method('getItems')->willReturn([
-            $this->mockProductItem(11, Visibility::VISIBILITY_BOTH),
-            $this->mockProductItem(22, Visibility::VISIBILITY_NOT_VISIBLE),
-        ]);
-
         $store = $this->createMock(Store::class);
         $this->nostoHelperScopeMock->method('getStore')->with(5)->willReturn($store);
+
+        $this->visibilityResolverMock->expects($this->once())
+            ->method('getIndividuallyVisibleProductIds')
+            ->with([11, 22], $store)
+            ->willReturn([11]);
 
         $this->productUpdateServiceMock->expects($this->once())
             ->method('addIdsToDeleteMessageQueue')
@@ -159,16 +135,19 @@ class ProductVisibilityUpdateTest extends TestCase
      */
     public function testMassHideAtDefaultScopeQueuesDiscontinueAcrossAllAssignedStores(): void
     {
-        $this->productCollectionMock->method('getItems')->willReturn([
-            $this->mockProductItem(11, Visibility::VISIBILITY_BOTH),
-        ]);
-        $this->nostoHelperScopeMock->method('getStore')->with(0)->willReturn($this->createMock(Store::class));
-
-        $this->productStoreLinkMock->method('getWebsiteIdsByProductId')->with(11)->willReturn(['2']);
-
+        $defaultStore = $this->createMock(Store::class);
         $storeA = $this->createMock(Store::class);
         $storeB = $this->createMock(Store::class);
+
+        $this->nostoHelperScopeMock->method('getStore')->with(0)->willReturn($defaultStore);
+        $this->productStoreLinkMock->method('getWebsiteIdsByProductId')->with(11)->willReturn(['2']);
         $this->nostoHelperScopeMock->method('getWebsite')->with(2)->willReturn($this->mockWebsite([$storeA, $storeB]));
+
+        // Neither store has its own override, so both now resolve to hidden.
+        $this->visibilityResolverMock->method('getIndividuallyVisibleProductIds')
+            ->willReturnCallback(function (array $ids, Store $store) use ($defaultStore) {
+                return $store === $defaultStore ? [11] : [];
+            });
 
         $deleteQueueCalls = [];
         $this->productUpdateServiceMock->expects($this->exactly(2))
@@ -194,9 +173,47 @@ class ProductVisibilityUpdateTest extends TestCase
     /**
      * @covers \Nosto\Tagging\Plugin\ProductVisibilityUpdate::aroundUpdateAttributes()
      */
+    public function testMassHideAtDefaultScopeSkipsStoresWithTheirOwnOverride(): void
+    {
+        $defaultStore = $this->createMock(Store::class);
+        $storeA = $this->createMock(Store::class);
+        $storeB = $this->createMock(Store::class);
+
+        $this->nostoHelperScopeMock->method('getStore')->with(0)->willReturn($defaultStore);
+        $this->productStoreLinkMock->method('getWebsiteIdsByProductId')->with(11)->willReturn(['2']);
+        $this->nostoHelperScopeMock->method('getWebsite')->with(2)->willReturn($this->mockWebsite([$storeA, $storeB]));
+
+        // Store B has its own visibility override that keeps it visible, so it must
+        // not be discontinued just because the default value changed.
+        $this->visibilityResolverMock->method('getIndividuallyVisibleProductIds')
+            ->willReturnCallback(function (array $ids, Store $store) use ($defaultStore, $storeB) {
+                if ($store === $defaultStore) {
+                    return [11];
+                }
+                return $store === $storeB ? [11] : [];
+            });
+
+        $this->productUpdateServiceMock->expects($this->once())
+            ->method('addIdsToDeleteMessageQueue')
+            ->with([11], $storeA);
+
+        $this->plugin->aroundUpdateAttributes(
+            $this->productActionMock,
+            function () {
+                return 'updated';
+            },
+            [11],
+            ['visibility' => Visibility::VISIBILITY_NOT_VISIBLE],
+            0
+        );
+    }
+
+    /**
+     * @covers \Nosto\Tagging\Plugin\ProductVisibilityUpdate::aroundUpdateAttributes()
+     */
     public function testMassUpdateOfUnrelatedAttributeDoesNotQueueDiscontinue(): void
     {
-        $this->productCollectionBuilderMock->expects($this->never())->method('withIds');
+        $this->visibilityResolverMock->expects($this->never())->method('getIndividuallyVisibleProductIds');
         $this->productUpdateServiceMock->expects($this->never())->method('addIdsToDeleteMessageQueue');
 
         $result = $this->plugin->aroundUpdateAttributes(
@@ -217,10 +234,8 @@ class ProductVisibilityUpdateTest extends TestCase
      */
     public function testMassHideOfAlreadyHiddenProductsDoesNotQueueDiscontinue(): void
     {
-        $this->productCollectionMock->method('getItems')->willReturn([
-            $this->mockProductItem(11, Visibility::VISIBILITY_NOT_VISIBLE),
-        ]);
         $this->nostoHelperScopeMock->method('getStore')->with(0)->willReturn($this->createMock(Store::class));
+        $this->visibilityResolverMock->method('getIndividuallyVisibleProductIds')->willReturn([]);
 
         $this->productUpdateServiceMock->expects($this->never())->method('addIdsToDeleteMessageQueue');
 
@@ -240,7 +255,7 @@ class ProductVisibilityUpdateTest extends TestCase
      */
     public function testEmptyProductIdsDoesNothing(): void
     {
-        $this->productCollectionBuilderMock->expects($this->never())->method('withIds');
+        $this->visibilityResolverMock->expects($this->never())->method('getIndividuallyVisibleProductIds');
         $this->productUpdateServiceMock->expects($this->never())->method('addIdsToDeleteMessageQueue');
 
         $this->plugin->aroundUpdateAttributes(

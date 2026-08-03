@@ -52,6 +52,7 @@ use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Indexer\ProductIndexer;
 use Nosto\Tagging\Model\Product\Repository as NostoProductRepository;
+use Nosto\Tagging\Model\Product\VisibilityResolver;
 use Nosto\Tagging\Model\ResourceModel\Magento\Product\CollectionBuilder;
 use Nosto\Tagging\Model\Service\Update\ProductUpdateService;
 use Nosto\Tagging\Plugin\ProductUpdate;
@@ -83,6 +84,9 @@ class ProductUpdateTest extends TestCase
     /** @var ProductStoreLink|MockObject */
     private MockObject $productStoreLinkMock;
 
+    /** @var VisibilityResolver|MockObject */
+    private MockObject $visibilityResolverMock;
+
     /** @var callable[] */
     private array $commitCallbacks = [];
 
@@ -107,6 +111,7 @@ class ProductUpdateTest extends TestCase
         $this->productUpdateServiceMock = $this->createMock(ProductUpdateService::class);
         $this->nostoHelperScopeMock = $this->createMock(NostoHelperScope::class);
         $this->productStoreLinkMock = $this->createMock(ProductStoreLink::class);
+        $this->visibilityResolverMock = $this->createMock(VisibilityResolver::class);
 
         $this->plugin = new ProductUpdate(
             $indexerRegistryMock,
@@ -116,7 +121,8 @@ class ProductUpdateTest extends TestCase
             $this->productUpdateServiceMock,
             $this->nostoHelperScopeMock,
             $this->createMock(CollectionBuilder::class),
-            $this->productStoreLinkMock
+            $this->productStoreLinkMock,
+            $this->visibilityResolverMock
         );
     }
 
@@ -291,6 +297,7 @@ class ProductUpdateTest extends TestCase
         $this->productMock->method('getData')
             ->with(ProductInterface::VISIBILITY)
             ->willReturn(Visibility::VISIBILITY_NOT_VISIBLE);
+        $this->productMock->method('getStoreId')->willReturn(0);
 
         $this->productStoreLinkMock->method('getWebsiteIdsByProductId')->willReturn(['2']);
 
@@ -298,6 +305,11 @@ class ProductUpdateTest extends TestCase
         $this->nostoHelperScopeMock->method('getWebsite')
             ->with(2)
             ->willReturn($this->mockStore([$store]));
+
+        // No store-level override, so the store inherits the new hidden default.
+        $this->visibilityResolverMock->method('getIndividuallyVisibleProductIds')
+            ->with([self::PRODUCT_ID], $store)
+            ->willReturn([]);
 
         $this->productUpdateServiceMock->expects($this->once())
             ->method('addIdsToDeleteMessageQueue')
@@ -312,6 +324,87 @@ class ProductUpdateTest extends TestCase
         );
 
         $this->assertSame('saved', $result);
+        $this->runCommitCallbacks();
+    }
+
+    /**
+     * @covers \Nosto\Tagging\Plugin\ProductUpdate::aroundSave()
+     */
+    public function testAroundSaveQueuesDiscontinueOnlyForTheEditedStoreWhenStoreScoped(): void
+    {
+        $this->indexerMock->method('isScheduled')->willReturn(true);
+
+        $this->productMock->method('getOrigData')
+            ->with(ProductInterface::VISIBILITY)
+            ->willReturn(Visibility::VISIBILITY_BOTH);
+        $this->productMock->method('getData')
+            ->with(ProductInterface::VISIBILITY)
+            ->willReturn(Visibility::VISIBILITY_NOT_VISIBLE);
+        $this->productMock->method('getStoreId')->willReturn(5);
+
+        $store = $this->createMock(Store::class);
+        $this->nostoHelperScopeMock->method('getStore')->with(5)->willReturn($store);
+
+        // getWebsiteIdsByProductId still fires for the unrelated store-removal check
+        // (see getPersistedStoreIds); the store-scoped visibility change must not add
+        // any further calls to it, since that store is already known.
+        $this->productStoreLinkMock->method('getWebsiteIdsByProductId')->willReturn(['1']);
+        $this->visibilityResolverMock->expects($this->never())->method('getIndividuallyVisibleProductIds');
+
+        $this->productUpdateServiceMock->expects($this->once())
+            ->method('addIdsToDeleteMessageQueue')
+            ->with([self::PRODUCT_ID], $store);
+
+        $this->plugin->aroundSave(
+            $this->productResourceMock,
+            function () {
+                return 'saved';
+            },
+            $this->productMock
+        );
+        $this->runCommitCallbacks();
+    }
+
+    /**
+     * @covers \Nosto\Tagging\Plugin\ProductUpdate::aroundSave()
+     */
+    public function testAroundSaveSkipsStoresWithTheirOwnVisibilityOverrideAtDefaultScope(): void
+    {
+        $this->indexerMock->method('isScheduled')->willReturn(true);
+
+        $this->productMock->method('getOrigData')
+            ->with(ProductInterface::VISIBILITY)
+            ->willReturn(Visibility::VISIBILITY_BOTH);
+        $this->productMock->method('getData')
+            ->with(ProductInterface::VISIBILITY)
+            ->willReturn(Visibility::VISIBILITY_NOT_VISIBLE);
+        $this->productMock->method('getStoreId')->willReturn(0);
+
+        $this->productStoreLinkMock->method('getWebsiteIdsByProductId')->willReturn(['2']);
+
+        $storeA = $this->createMock(Store::class);
+        $storeB = $this->createMock(Store::class);
+        $this->nostoHelperScopeMock->method('getWebsite')
+            ->with(2)
+            ->willReturn($this->mockStore([$storeA, $storeB]));
+
+        // Store B has its own visibility override that keeps it visible.
+        $this->visibilityResolverMock->method('getIndividuallyVisibleProductIds')
+            ->willReturnCallback(function (array $ids, Store $store) use ($storeB) {
+                return $store === $storeB ? [self::PRODUCT_ID] : [];
+            });
+
+        $this->productUpdateServiceMock->expects($this->once())
+            ->method('addIdsToDeleteMessageQueue')
+            ->with([self::PRODUCT_ID], $storeA);
+
+        $this->plugin->aroundSave(
+            $this->productResourceMock,
+            function () {
+                return 'saved';
+            },
+            $this->productMock
+        );
         $this->runCommitCallbacks();
     }
 

@@ -44,10 +44,12 @@ use Magento\Catalog\Model\ResourceModel\Product as MagentoResourceProduct;
 use Magento\Catalog\Model\ResourceModel\Product\Website\Link as ProductStoreLink;
 use Magento\Framework\Indexer\IndexerRegistry;
 use Magento\Framework\Model\AbstractModel;
+use Magento\Store\Model\Store;
 use Nosto\Tagging\Exception\ParentProductDisabledException;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Model\Indexer\ProductIndexer;
 use Nosto\Tagging\Model\Product\Repository as NostoProductRepository;
+use Nosto\Tagging\Model\Product\VisibilityResolver;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\ResourceModel\Magento\Product\CollectionBuilder;
 use Nosto\Tagging\Model\Service\Update\ProductUpdateService;
@@ -81,6 +83,9 @@ class ProductUpdate
     /** @var ProductStoreLink */
     private ProductStoreLink $productStoreLink;
 
+    /** @var VisibilityResolver */
+    private VisibilityResolver $visibilityResolver;
+
     /**
      * ProductUpdate constructor.
      * @param IndexerRegistry $indexerRegistry
@@ -91,6 +96,7 @@ class ProductUpdate
      * @param NostoHelperScope $nostoHelperScope
      * @param CollectionBuilder $productCollectionBuilder
      * @param ProductStoreLink $productStoreLink
+     * @param VisibilityResolver $visibilityResolver
      */
     public function __construct(
         IndexerRegistry                $indexerRegistry,
@@ -100,7 +106,8 @@ class ProductUpdate
         ProductUpdateService           $productUpdateService,
         NostoHelperScope               $nostoHelperScope,
         CollectionBuilder              $productCollectionBuilder,
-        ProductStoreLink             $productStoreLink
+        ProductStoreLink             $productStoreLink,
+        VisibilityResolver $visibilityResolver
     ) {
         $this->indexerRegistry = $indexerRegistry;
         $this->productIndexer = $productIndexer;
@@ -110,6 +117,7 @@ class ProductUpdate
         $this->nostoHelperScope = $nostoHelperScope;
         $this->productCollectionBuilder = $productCollectionBuilder;
         $this->productStoreLink = $productStoreLink;
+        $this->visibilityResolver = $visibilityResolver;
     }
 
     /**
@@ -147,9 +155,10 @@ class ProductUpdate
         // individually-visible sync path (see ProductUpdateService::isIndividuallyVisible),
         // so without an explicit discontinue signal it stays an orphan in Nosto. NS-14429.
         if ($this->hasBecomeNotIndividuallyVisible($product)) {
+            $storeId = (int)$product->getStoreId();
             $productResource->addCommitCallback(
-                function () use ($product) {
-                    $this->queueDiscontinueForHiddenVisibility($product);
+                function () use ($product, $storeId) {
+                    $this->queueDiscontinueForHiddenVisibility($product, $storeId);
                 }
             );
         }
@@ -173,14 +182,26 @@ class ProductUpdate
     }
 
     /**
-     * Queues a discontinue message for every store view the product is currently
-     * assigned to, since it is no longer individually visible on any of them
+     * Queues a discontinue message for the store(s) affected by this visibility
+     * change: just the edited store if it was store-scoped, or every assigned store
+     * that has no override of its own if the Default Value was edited
      *
      * @param AbstractModel $product
+     * @param int $storeId
      * @return void
      */
-    private function queueDiscontinueForHiddenVisibility(AbstractModel $product): void
+    private function queueDiscontinueForHiddenVisibility(AbstractModel $product, int $storeId): void
     {
+        if ($storeId !== Store::DEFAULT_STORE_ID) {
+            try {
+                $store = $this->nostoHelperScope->getStore($storeId);
+                $this->productUpdateService->addIdsToDeleteMessageQueue([$product->getId()], $store);
+            } catch (Exception $e) {
+                $this->logger->exception($e);
+            }
+            return;
+        }
+
         try {
             $websiteIds = array_map(
                 'intval',
@@ -191,11 +212,19 @@ class ProductUpdate
             return;
         }
 
+        // Default Value only changes the fallback used by stores with no override
+        // of their own, so each assigned store must be re-checked individually.
         foreach ($websiteIds as $websiteId) {
             try {
                 $stores = $this->nostoHelperScope->getWebsite($websiteId)->getStores();
                 foreach ($stores as $store) {
-                    $this->productUpdateService->addIdsToDeleteMessageQueue([$product->getId()], $store);
+                    $stillVisible = $this->visibilityResolver->getIndividuallyVisibleProductIds(
+                        [(int)$product->getId()],
+                        $store
+                    );
+                    if (empty($stillVisible)) {
+                        $this->productUpdateService->addIdsToDeleteMessageQueue([$product->getId()], $store);
+                    }
                 }
             } catch (Exception $e) {
                 $this->logger->exception($e);
