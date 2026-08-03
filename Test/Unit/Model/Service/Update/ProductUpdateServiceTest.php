@@ -101,7 +101,6 @@ class ProductUpdateServiceTest extends TestCase
         $collection = $this->createMock(ProductCollection::class);
         $collection->method('getItems')->willReturn($products);
         $method = new ReflectionMethod(ProductUpdateService::class, 'getEntityIdsForPage');
-        $method->setAccessible(true);
         return $method->invoke($this->service, $collection);
     }
 

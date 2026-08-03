@@ -165,17 +165,31 @@ jobs:
         run: |
           composer config repositories.0 composer https://repo.magento.com
           composer config http-basic.repo.magento.com "$REPO_USR" "$REPO_PSW"
-          # Pull the companion Nosto modules and install in one step. These are not
-          # in composer.lock (they are added only for the package build), so a
-          # plain `composer install` would fail the lock-consistency check; letting
-          # `composer require` update the lock in-memory avoids that.
-          # These companion modules only publish dev branches (no stable tag), so
-          # @stable cannot resolve. The per-package @dev flag allows dev stability
-          # for just these three without setting minimum-stability on the root
-          # composer.json (which would then leak into the built archive).
-          composer require nosto/module-nostotagging-cmp:@dev \
+          # NOT CURRENT BEHAVIOUR - previous approach, kept for reference so it can
+          # be restored once cmp/msi/itp publish releases allowing ^9.0:
+          #   Pull the companion Nosto modules and install in one step. These are not
+          #   in composer.lock (they are added only for the package build), so a
+          #   plain `composer install` would fail the lock-consistency check; letting
+          #   `composer require` update the lock in-memory avoids that.
+          #   These companion modules only publish dev branches (no stable tag), so
+          #   @stable cannot resolve. The per-package @dev flag allows dev stability
+          #   for just these three without setting minimum-stability on the root
+          #   composer.json (which would then leak into the built archive).
+
+          # CURRENT BEHAVIOUR:
+          # --no-update is deliberate: it writes the constraints without resolving
+          # them. Resolving is both unnecessary and currently impossible:
+          #   * unnecessary - `composer archive` only zips this package's own files
+          #     and needs no vendor/ directory;
+          #   * impossible - every published cmp/msi/itp version requires
+          #     nosto/module-nostotagging ^8.0.0 or lower, while this root package
+          #     is 9.x, and composer cannot alter the root package's version to
+          #     satisfy them.
+          # Once cmp/msi/itp publish releases allowing ^9.0, this can go back to
+          # resolving properly (ideally with @stable rather than @dev).
+          composer require --no-update \
+            nosto/module-nostotagging-cmp:@dev \
             nosto/module-nosto-msi:@dev \
-            nosto/module-nosto-itp:@dev \
             --prefer-dist --no-progress
       ############################################################################
 
