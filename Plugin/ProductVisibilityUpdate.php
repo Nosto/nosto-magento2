@@ -41,11 +41,11 @@ use Exception;
 use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Model\Product\Action as ProductAction;
 use Magento\Catalog\Model\Product\Visibility;
-use Magento\Catalog\Model\ResourceModel\Product\Website\Link as ProductStoreLink;
 use Magento\Store\Model\Store;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Product\VisibilityResolver;
+use Nosto\Tagging\Model\ResourceModel\Product\WebsiteLink;
 use Nosto\Tagging\Model\Service\Update\ProductUpdateService;
 
 /**
@@ -61,8 +61,8 @@ class ProductVisibilityUpdate
     /** @var VisibilityResolver */
     private VisibilityResolver $visibilityResolver;
 
-    /** @var ProductStoreLink */
-    private ProductStoreLink $productStoreLink;
+    /** @var WebsiteLink */
+    private WebsiteLink $productWebsiteLink;
 
     /** @var NostoHelperScope */
     private NostoHelperScope $nostoHelperScope;
@@ -75,20 +75,20 @@ class ProductVisibilityUpdate
 
     /**
      * @param VisibilityResolver $visibilityResolver
-     * @param ProductStoreLink $productStoreLink
+     * @param WebsiteLink $productWebsiteLink
      * @param NostoHelperScope $nostoHelperScope
      * @param ProductUpdateService $productUpdateService
      * @param NostoLogger $logger
      */
     public function __construct(
         VisibilityResolver $visibilityResolver,
-        ProductStoreLink $productStoreLink,
+        WebsiteLink $productWebsiteLink,
         NostoHelperScope $nostoHelperScope,
         ProductUpdateService $productUpdateService,
         NostoLogger $logger
     ) {
         $this->visibilityResolver = $visibilityResolver;
-        $this->productStoreLink = $productStoreLink;
+        $this->productWebsiteLink = $productWebsiteLink;
         $this->nostoHelperScope = $nostoHelperScope;
         $this->productUpdateService = $productUpdateService;
         $this->logger = $logger;
@@ -170,29 +170,51 @@ class ProductVisibilityUpdate
         }
 
         // Default/All Store Views only changes the fallback value for stores that
-        // have no override of their own, so each assigned store must be re-checked
-        // individually: a store with its own override keeps its value regardless.
-        foreach ($productIds as $productId) {
-            try {
-                $websiteIds = array_map(
-                    'intval',
-                    $this->productStoreLink->getWebsiteIdsByProductId($productId)
-                );
-            } catch (Exception $e) {
-                $this->logger->exception($e);
-                continue;
-            }
+        // have no override of their own, so each assigned store must be re-checked:
+        // a store with its own override keeps its value regardless. Grouped and
+        // queried once per store rather than once per product, since a mass update
+        // can span thousands of ids and looping per product would mean a query per
+        // product per store.
+        try {
+            $websiteIdsByProduct = $this->productWebsiteLink->getWebsiteIdsByProductIds($productIds);
+        } catch (Exception $e) {
+            $this->logger->exception($e);
+            return;
+        }
+
+        $storesById = [];
+        $productIdsByStoreId = [];
+        foreach ($websiteIdsByProduct as $productId => $websiteIds) {
             foreach ($websiteIds as $websiteId) {
                 try {
                     $stores = $this->nostoHelperScope->getWebsite($websiteId)->getStores();
-                    foreach ($stores as $store) {
-                        if (empty($this->visibilityResolver->getIndividuallyVisibleProductIds([$productId], $store))) {
-                            $this->productUpdateService->addIdsToDeleteMessageQueue([$productId], $store);
-                        }
-                    }
                 } catch (Exception $e) {
                     $this->logger->exception($e);
+                    continue;
                 }
+                foreach ($stores as $store) {
+                    $storesById[$store->getId()] = $store;
+                    $productIdsByStoreId[$store->getId()][$productId] = $productId;
+                }
+            }
+        }
+
+        foreach ($productIdsByStoreId as $targetStoreId => $idsForStore) {
+            $idsForStore = array_values($idsForStore);
+            try {
+                $stillVisible = $this->visibilityResolver->getIndividuallyVisibleProductIds(
+                    $idsForStore,
+                    $storesById[$targetStoreId]
+                );
+                $toDiscontinue = array_values(array_diff($idsForStore, $stillVisible));
+                if (!empty($toDiscontinue)) {
+                    $this->productUpdateService->addIdsToDeleteMessageQueue(
+                        $toDiscontinue,
+                        $storesById[$targetStoreId]
+                    );
+                }
+            } catch (Exception $e) {
+                $this->logger->exception($e);
             }
         }
     }

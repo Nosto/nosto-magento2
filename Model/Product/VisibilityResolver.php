@@ -77,7 +77,11 @@ class VisibilityResolver
             return [];
         }
 
+        // withStore()/withIds() mutate the builder's single shared collection instance
+        // in place, so a prior call's filters (e.g. a different store's scope) would
+        // otherwise leak into this one. Always start from a clean slate.
         $collection = $this->productCollectionBuilder
+            ->reset()
             ->withStore($store)
             ->withIds($productIds)
             ->build();

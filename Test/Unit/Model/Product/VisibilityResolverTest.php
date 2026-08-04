@@ -64,6 +64,7 @@ class VisibilityResolverTest extends TestCase
         $this->collectionMock = $this->createMock(ProductCollection::class);
 
         $this->collectionBuilderMock = $this->createMock(CollectionBuilder::class);
+        $this->collectionBuilderMock->method('reset')->willReturnSelf();
         $this->collectionBuilderMock->method('withStore')->willReturnSelf();
         $this->collectionBuilderMock->method('withIds')->willReturnSelf();
         $this->collectionBuilderMock->method('build')->willReturn($this->collectionMock);
@@ -114,5 +115,18 @@ class VisibilityResolverTest extends TestCase
         $result = $this->resolver->getIndividuallyVisibleProductIds([], $this->createMock(Store::class));
 
         $this->assertSame([], $result);
+    }
+
+    /**
+     * @covers \Nosto\Tagging\Model\Product\VisibilityResolver::getIndividuallyVisibleProductIds()
+     */
+    public function testResetsTheBuilderBeforeEveryQuerySoSequentialStoresDoNotMix(): void
+    {
+        $this->collectionMock->method('getItems')->willReturn([]);
+
+        $this->collectionBuilderMock->expects($this->exactly(2))->method('reset')->willReturnSelf();
+
+        $this->resolver->getIndividuallyVisibleProductIds([11], $this->createMock(Store::class));
+        $this->resolver->getIndividuallyVisibleProductIds([22], $this->createMock(Store::class));
     }
 }
