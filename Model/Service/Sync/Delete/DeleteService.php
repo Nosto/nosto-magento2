@@ -137,8 +137,9 @@ class DeleteService extends AbstractService
             } catch (Exception $e) {
                 $this->getLogger()->error(
                     sprintf(
-                        'Failed to delete batch of %d products from Nosto. Product IDs: %s. Error: %s',
+                        'Failed to delete batch of %d products from Nosto. Store ID: %s. Product IDs: %s. Error: %s',
                         count($ids),
+                        $store->getId(),
                         implode(',', $ids),
                         $e->getMessage()
                     )
