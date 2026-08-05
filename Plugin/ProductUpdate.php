@@ -204,20 +204,42 @@ class ProductUpdate
         Closure $proceed,
         AbstractModel $product
     ) {
+        $productId = $product->getId();
         try {
             $productIds = $this->nostoProductRepository->resolveParentProductIds($product);
         } catch (ParentProductDisabledException $e) {
-            $this->logger->debug($e->getMessage());
+            $this->logger->debug(
+                sprintf(
+                    'Product ID %s: %s',
+                    $productId,
+                    $e->getMessage()
+                )
+            );
             return $proceed($product);
         }
 
         $storeIds = $product->getStoreIds();
+        $this->logger->debug(
+            sprintf(
+                'Product ID %s deleted from Magento. Store IDs: %s. Parent product IDs: %s',
+                $productId,
+                !empty($storeIds) ? implode(',', $storeIds) : 'none',
+                !empty($productIds) ? implode(',', $productIds) : 'none'
+            )
+        );
 
         // The current product does not have parent product
         if (empty($productIds)) {
-            $productResource->addCommitCallback(function () use ($product, $storeIds) {
+            $productResource->addCommitCallback(function () use ($product, $productId, $storeIds) {
                 foreach ($storeIds as $storeId) {
                     $store = $this->nostoHelperScope->getStore($storeId);
+                    $this->logger->debug(
+                        sprintf(
+                            'Queuing product ID %s for deletion in Nosto. Store ID: %s',
+                            $productId,
+                            $storeId
+                        )
+                    );
                     $this->productUpdateService->addIdsToDeleteMessageQueue([$product->getId()], $store);
                 }
             });
@@ -225,11 +247,20 @@ class ProductUpdate
 
         // Current product is child product
         if (is_array($productIds) && !empty($productIds)) {
-            $productResource->addCommitCallback(function () use ($productIds, $storeIds) {
+            $productResource->addCommitCallback(function () use ($productIds, $storeIds, $productId) {
                 $productCollection = $this->productCollectionBuilder->withIds($productIds)->build();
 
                 foreach ($storeIds as $storeId) {
                     $store = $this->nostoHelperScope->getStore($storeId);
+                    $this->logger->debug(
+                        sprintf(
+                            'Product ID %s deleted. Queuing parent product IDs %s for update in Nosto.'
+                            . ' Store ID: %s',
+                            $productId,
+                            implode(',', $productIds),
+                            $storeId
+                        )
+                    );
                     $this->productUpdateService->addCollectionToUpdateMessageQueue($productCollection, $store);
                 }
             });
