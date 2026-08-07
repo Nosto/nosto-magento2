@@ -65,7 +65,13 @@
   <!-- Customer data will be inserted dynamically -->
 </div>
 <?php
-$script = <<<'JS'
+/**
+ * Heredoc (not nowdoc) on purpose: Magento's HTML minifier only shields
+ * `<<<identifier` blocks from newline collapsing, not `<<<'identifier'`.
+ * JS template literals must therefore be escaped as \${...}.
+ * @see \Magento\Framework\View\Template\Html\Minifier::minify()
+ */
+$script = <<<JS
     // Runs after the Hyva theme initializes section data in the footer
     document.addEventListener('DOMContentLoaded', function() {
         const customerTaggingElement = document.getElementById('nosto_customer_tagging');
@@ -77,15 +83,15 @@ $script = <<<'JS'
 
             // Update DOM directly
             customerTaggingElement.innerHTML = `
-          <span class="first_name">${tagging.first_name || ''}</span>
-          <span class="last_name">${tagging.last_name || ''}</span>
-          <span class="email">${tagging.email || ''}</span>
-          <span class="hcid">${tagging.hcid || ''}</span>
-          <span class="customer_reference">${tagging.customer_reference || ''}</span>
-          <span class="marketing_permission">${tagging.marketing_permission || ''}</span>
-          <span class="date_of_birth">${tagging.date_of_birth || ''}</span>
-          <span class="customer_group">${tagging.customer_group || ''}</span>
-          <span class="gender">${tagging.gender || ''}</span>
+          <span class="first_name">\${tagging.first_name || ''}</span>
+          <span class="last_name">\${tagging.last_name || ''}</span>
+          <span class="email">\${tagging.email || ''}</span>
+          <span class="hcid">\${tagging.hcid || ''}</span>
+          <span class="customer_reference">\${tagging.customer_reference || ''}</span>
+          <span class="marketing_permission">\${tagging.marketing_permission || ''}</span>
+          <span class="date_of_birth">\${tagging.date_of_birth || ''}</span>
+          <span class="customer_group">\${tagging.customer_group || ''}</span>
+          <span class="gender">\${tagging.gender || ''}</span>
       `;
             sendTagging(); // Send tagging via JS API
         }
