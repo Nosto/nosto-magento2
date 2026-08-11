@@ -91,6 +91,26 @@ class WebsiteLinkTest extends TestCase
     /**
      * @covers \Nosto\Tagging\Model\ResourceModel\Product\WebsiteLink::getWebsiteIdsByProductIds()
      */
+    public function testSplitsLargeIdSetsIntoChunkedQueriesAndMergesTheResults(): void
+    {
+        $productIds = range(1, 2500);
+
+        $this->connectionMock->expects($this->exactly(3))
+            ->method('fetchAll')
+            ->willReturnOnConsecutiveCalls(
+                [['product_id' => '1', 'website_id' => '1']],
+                [['product_id' => '1001', 'website_id' => '2']],
+                [['product_id' => '2001', 'website_id' => '3']]
+            );
+
+        $result = $this->websiteLink->getWebsiteIdsByProductIds($productIds);
+
+        $this->assertSame([1 => [1], 1001 => [2], 2001 => [3]], $result);
+    }
+
+    /**
+     * @covers \Nosto\Tagging\Model\ResourceModel\Product\WebsiteLink::getWebsiteIdsByProductIds()
+     */
     public function testEmptyProductIdsReturnsEmptyArrayWithoutQuerying(): void
     {
         $this->connectionMock->expects($this->never())->method('fetchAll');

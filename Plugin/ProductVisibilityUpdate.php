@@ -175,6 +175,12 @@ class ProductVisibilityUpdate
         // queried once per store rather than once per product, since a mass update
         // can span thousands of ids and looping per product would mean a query per
         // product per store.
+        //
+        // This looks at post-change visibility only, so a store that was already
+        // hidden by its own override before this edit is discontinued again rather
+        // than skipped. Deliberate: telling the two apart would need a second
+        // per-store pass before the update runs, and a repeat discontinue is a no-op
+        // for a product Nosto has already dropped.
         try {
             $websiteIdsByProduct = $this->productWebsiteLink->getWebsiteIdsByProductIds($productIds);
         } catch (Exception $e) {

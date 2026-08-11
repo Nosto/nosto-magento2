@@ -47,6 +47,12 @@ class WebsiteLink
 {
     private const TABLE = 'catalog_product_website';
 
+    /**
+     * A grid "select all" mass action can span tens of thousands of ids, and a single
+     * IN () list that long risks exceeding the server's max_allowed_packet
+     */
+    private const CHUNK_SIZE = 1000;
+
     /** @var ResourceConnection */
     private ResourceConnection $resourceConnection;
 
@@ -59,7 +65,8 @@ class WebsiteLink
     }
 
     /**
-     * Returns website ids assigned to each of the given products, in a single query
+     * Returns website ids assigned to each of the given products, in one query per
+     * chunk of ids rather than one query per product
      *
      * @param int[] $productIds
      * @return array<int, int[]> product id => website ids
@@ -71,13 +78,17 @@ class WebsiteLink
         }
 
         $connection = $this->resourceConnection->getConnection();
-        $select = $connection->select()
-            ->from($this->resourceConnection->getTableName(self::TABLE), ['product_id', 'website_id'])
-            ->where('product_id IN (?)', $productIds);
+        $tableName = $this->resourceConnection->getTableName(self::TABLE);
 
         $websiteIdsByProduct = [];
-        foreach ($connection->fetchAll($select) as $row) { // @codingStandardsIgnoreLine
-            $websiteIdsByProduct[(int)$row['product_id']][] = (int)$row['website_id'];
+        foreach (array_chunk($productIds, self::CHUNK_SIZE) as $idChunk) {
+            $select = $connection->select()
+                ->from($tableName, ['product_id', 'website_id'])
+                ->where('product_id IN (?)', $idChunk);
+
+            foreach ($connection->fetchAll($select) as $row) { // @codingStandardsIgnoreLine
+                $websiteIdsByProduct[(int)$row['product_id']][] = (int)$row['website_id'];
+            }
         }
         return $websiteIdsByProduct;
     }

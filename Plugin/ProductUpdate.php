@@ -214,6 +214,11 @@ class ProductUpdate
 
         // Default Value only changes the fallback used by stores with no override
         // of their own, so each assigned store must be re-checked individually.
+        // The check reads post-change visibility, so a store already hidden by its
+        // own override before this edit is discontinued again rather than skipped.
+        // Deliberate: a repeat discontinue is a no-op for a product Nosto has
+        // already dropped, and separating the two cases would cost a second
+        // per-store query on every product save.
         foreach ($websiteIds as $websiteId) {
             try {
                 $stores = $this->nostoHelperScope->getWebsite($websiteId)->getStores();
