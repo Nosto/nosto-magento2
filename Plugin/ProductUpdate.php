@@ -158,7 +158,7 @@ class ProductUpdate
             $storeId = (int)$product->getStoreId();
             $productResource->addCommitCallback(
                 function () use ($product, $storeId) {
-                    $this->queueDiscontinueForHiddenVisibility($product, $storeId);
+                    $this->enqueueProductDelete($product, $storeId);
                 }
             );
         }
@@ -175,10 +175,20 @@ class ProductUpdate
         if (!$product->getId()) {
             return false;
         }
-        $origVisibility = (int)$product->getOrigData(ProductInterface::VISIBILITY);
+
         $newVisibility = (int)$product->getData(ProductInterface::VISIBILITY);
-        return $origVisibility !== Visibility::VISIBILITY_NOT_VISIBLE
-            && $newVisibility === Visibility::VISIBILITY_NOT_VISIBLE;
+        if ($newVisibility !== Visibility::VISIBILITY_NOT_VISIBLE) {
+            return false;
+        }
+
+        // The product is hidden after this save, so the discontinue is warranted on
+        // its own. Comparing against the original value only avoids re-sending for a
+        // product that was already hidden, and orig data is absent on a partially
+        // loaded model - so treat an unknown original as "was visible" and let the
+        // (idempotent) discontinue through rather than dropping a real transition.
+        $origVisibility = $product->getOrigData(ProductInterface::VISIBILITY);
+        return $origVisibility === null
+            || (int)$origVisibility !== Visibility::VISIBILITY_NOT_VISIBLE;
     }
 
     /**
@@ -190,8 +200,11 @@ class ProductUpdate
      * @param int $storeId
      * @return void
      */
-    private function queueDiscontinueForHiddenVisibility(AbstractModel $product, int $storeId): void
+    private function enqueueProductDelete(AbstractModel $product, int $storeId): void
     {
+        // Store 0 is the admin scope holding the Default Value: it is not a storefront
+        // and has no Nosto account of its own, so there is nothing to send it to. An
+        // edit made there is instead resolved into the real store views below.
         if ($storeId !== Store::DEFAULT_STORE_ID) {
             try {
                 $store = $this->nostoHelperScope->getStore($storeId);

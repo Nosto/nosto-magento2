@@ -328,6 +328,46 @@ class ProductUpdateTest extends TestCase
     }
 
     /**
+     * A partially loaded product carries no original visibility value. The product is
+     * hidden after the save either way, so the discontinue must still be sent rather
+     * than dropped because the previous value is unknown.
+     *
+     * @covers \Nosto\Tagging\Plugin\ProductUpdate::aroundSave()
+     */
+    public function testAroundSaveQueuesDiscontinueWhenTheOriginalVisibilityIsUnknown(): void
+    {
+        $this->indexerMock->method('isScheduled')->willReturn(true);
+
+        $this->productMock->method('getOrigData')
+            ->with(ProductInterface::VISIBILITY)
+            ->willReturn(null);
+        $this->productMock->method('getData')
+            ->with(ProductInterface::VISIBILITY)
+            ->willReturn(Visibility::VISIBILITY_NOT_VISIBLE);
+        $this->productMock->method('getStoreId')->willReturn(3);
+
+        $this->productStoreLinkMock->method('getWebsiteIdsByProductId')->willReturn(['2']);
+
+        $store = $this->createMock(Store::class);
+        $this->nostoHelperScopeMock->method('getStore')->with(3)->willReturn($store);
+
+        $this->productUpdateServiceMock->expects($this->once())
+            ->method('addIdsToDeleteMessageQueue')
+            ->with([self::PRODUCT_ID], $store);
+
+        $result = $this->plugin->aroundSave(
+            $this->productResourceMock,
+            function () {
+                return 'saved';
+            },
+            $this->productMock
+        );
+
+        $this->assertSame('saved', $result);
+        $this->runCommitCallbacks();
+    }
+
+    /**
      * @covers \Nosto\Tagging\Plugin\ProductUpdate::aroundSave()
      */
     public function testAroundSaveQueuesDiscontinueOnlyForTheEditedStoreWhenStoreScoped(): void

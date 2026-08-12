@@ -110,6 +110,10 @@ class ProductVisibilityUpdate
         $attrData,
         $storeId
     ) {
+        // Narrow the plugin to the only case it cares about before doing any work:
+        // a mass update that sets visibility to "Not Visible Individually". Every
+        // other attribute change - and every visibility change to a visible value -
+        // falls straight through to the original method with no added queries.
         $targetsHiddenVisibility = isset($attrData[ProductInterface::VISIBILITY])
             && (int)$attrData[ProductInterface::VISIBILITY] === Visibility::VISIBILITY_NOT_VISIBLE;
 
