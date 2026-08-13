@@ -1,5 +1,8 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 9.0.1
+* Fix products not being discontinued in Nosto when their visibility changes to "Not Visible Individually"
+
 ### 9.0.0
 * Update PHP-SDK dependency version to add PHP 8.5 support and drop PHP 8.1 and below
 * Improve performance of configurable product variation pricing by avoiding duplicate SKU reloads across customer groups
