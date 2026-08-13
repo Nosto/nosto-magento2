@@ -209,6 +209,12 @@ class ProductUpdate
             try {
                 $store = $this->nostoHelperScope->getStore($storeId);
                 $this->productUpdateService->addIdsToDeleteMessageQueue([$product->getId()], $store);
+                $this->logger->debug(sprintf(
+                    'Queued discontinue for product %s on store %s'
+                    . ' (visibility changed to Not Visible Individually)',
+                    $product->getId(),
+                    $store->getCode()
+                ));
             } catch (Exception $e) {
                 $this->logger->exception($e);
             }
@@ -242,6 +248,12 @@ class ProductUpdate
                     );
                     if (empty($stillVisible)) {
                         $this->productUpdateService->addIdsToDeleteMessageQueue([$product->getId()], $store);
+                        $this->logger->debug(sprintf(
+                            'Queued discontinue for product %s on store %s'
+                            . ' (Default Value visibility change, no store override)',
+                            $product->getId(),
+                            $store->getCode()
+                        ));
                     }
                 }
             } catch (Exception $e) {

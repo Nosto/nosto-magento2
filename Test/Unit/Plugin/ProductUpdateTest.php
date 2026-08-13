@@ -87,6 +87,9 @@ class ProductUpdateTest extends TestCase
     /** @var VisibilityResolver|MockObject */
     private MockObject $visibilityResolverMock;
 
+    /** @var NostoLogger|MockObject */
+    private MockObject $loggerMock;
+
     /** @var callable[] */
     private array $commitCallbacks = [];
 
@@ -112,12 +115,13 @@ class ProductUpdateTest extends TestCase
         $this->nostoHelperScopeMock = $this->createMock(NostoHelperScope::class);
         $this->productStoreLinkMock = $this->createMock(ProductStoreLink::class);
         $this->visibilityResolverMock = $this->createMock(VisibilityResolver::class);
+        $this->loggerMock = $this->createMock(NostoLogger::class);
 
         $this->plugin = new ProductUpdate(
             $indexerRegistryMock,
             $this->createMock(ProductIndexer::class),
             $this->createMock(NostoProductRepository::class),
-            $this->createMock(NostoLogger::class),
+            $this->loggerMock,
             $this->productUpdateServiceMock,
             $this->nostoHelperScopeMock,
             $this->createMock(CollectionBuilder::class),
@@ -394,6 +398,7 @@ class ProductUpdateTest extends TestCase
         $this->productUpdateServiceMock->expects($this->once())
             ->method('addIdsToDeleteMessageQueue')
             ->with([self::PRODUCT_ID], $store);
+        $this->loggerMock->expects($this->once())->method('debug');
 
         $this->plugin->aroundSave(
             $this->productResourceMock,
@@ -437,6 +442,7 @@ class ProductUpdateTest extends TestCase
         $this->productUpdateServiceMock->expects($this->once())
             ->method('addIdsToDeleteMessageQueue')
             ->with([self::PRODUCT_ID], $storeA);
+        $this->loggerMock->expects($this->once())->method('debug');
 
         $this->plugin->aroundSave(
             $this->productResourceMock,

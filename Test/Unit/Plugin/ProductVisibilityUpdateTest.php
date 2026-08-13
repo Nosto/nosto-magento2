@@ -72,6 +72,9 @@ class ProductVisibilityUpdateTest extends TestCase
     /** @var ProductUpdateService|MockObject */
     private MockObject $productUpdateServiceMock;
 
+    /** @var NostoLogger|MockObject */
+    private MockObject $loggerMock;
+
     protected function setUp(): void
     {
         $this->productActionMock = $this->createMock(ProductAction::class);
@@ -79,13 +82,14 @@ class ProductVisibilityUpdateTest extends TestCase
         $this->productWebsiteLinkMock = $this->createMock(WebsiteLink::class);
         $this->nostoHelperScopeMock = $this->createMock(NostoHelperScope::class);
         $this->productUpdateServiceMock = $this->createMock(ProductUpdateService::class);
+        $this->loggerMock = $this->createMock(NostoLogger::class);
 
         $this->plugin = new ProductVisibilityUpdate(
             $this->visibilityResolverMock,
             $this->productWebsiteLinkMock,
             $this->nostoHelperScopeMock,
             $this->productUpdateServiceMock,
-            $this->createMock(NostoLogger::class)
+            $this->loggerMock
         );
     }
 
@@ -116,6 +120,7 @@ class ProductVisibilityUpdateTest extends TestCase
         $this->productUpdateServiceMock->expects($this->once())
             ->method('addIdsToDeleteMessageQueue')
             ->with([11], $store);
+        $this->loggerMock->expects($this->once())->method('debug');
 
         $result = $this->plugin->aroundUpdateAttributes(
             $this->productActionMock,
@@ -203,6 +208,7 @@ class ProductVisibilityUpdateTest extends TestCase
         $this->productUpdateServiceMock->expects($this->once())
             ->method('addIdsToDeleteMessageQueue')
             ->with([11], $storeA);
+        $this->loggerMock->expects($this->once())->method('debug');
 
         $this->plugin->aroundUpdateAttributes(
             $this->productActionMock,

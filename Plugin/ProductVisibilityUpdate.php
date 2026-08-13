@@ -167,6 +167,12 @@ class ProductVisibilityUpdate
             try {
                 $store = $this->nostoHelperScope->getStore($storeId);
                 $this->productUpdateService->addIdsToDeleteMessageQueue($productIds, $store);
+                $this->logger->debug(sprintf(
+                    'Queued discontinue for %d product(s) on store %s'
+                    . ' (mass visibility update)',
+                    count($productIds),
+                    $store->getCode()
+                ));
             } catch (Exception $e) {
                 $this->logger->exception($e);
             }
@@ -217,11 +223,18 @@ class ProductVisibilityUpdate
                     $storesById[$targetStoreId]
                 );
                 $toDiscontinue = array_values(array_diff($idsForStore, $stillVisible));
-                if (!empty($toDiscontinue)) {
+                $discontinueCount = count($toDiscontinue); // @codingStandardsIgnoreLine
+                if ($discontinueCount > 0) {
                     $this->productUpdateService->addIdsToDeleteMessageQueue(
                         $toDiscontinue,
                         $storesById[$targetStoreId]
                     );
+                    $this->logger->debug(sprintf(
+                        'Queued discontinue for %d product(s) on store %s'
+                        . ' (mass visibility update, Default Value, no store override)',
+                        $discontinueCount,
+                        $storesById[$targetStoreId]->getCode()
+                    ));
                 }
             } catch (Exception $e) {
                 $this->logger->exception($e);
