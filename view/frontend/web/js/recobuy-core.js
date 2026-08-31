@@ -203,7 +203,11 @@
         }
         try {
             const parsed = JSON.parse(rawValue);
-            return (parsed && parsed.ref) ? parsed.ref : null;
+            if (!parsed || typeof parsed.ref !== 'string') {
+                return null;
+            }
+            const ref = parsed.ref.trim();
+            return ref.length > 0 ? ref : null;
         } catch (e) {
             return null;
         }

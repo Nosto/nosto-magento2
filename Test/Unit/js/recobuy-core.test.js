@@ -278,5 +278,29 @@ describe('RecobuyCore', () => {
 
             expect(RecobuyCore.resolveContextSlotId(btn)).toBe('front-page-1');
         });
+
+        it('falls back to the wrapper id when ref is whitespace-only', () => {
+            const nostoEl = document.createElement('div');
+            nostoEl.setAttribute('class', 'nosto_element');
+            nostoEl.setAttribute('id', 'front-page-1');
+            nostoEl.setAttribute('data-nosto-ref', '{"ref":"   "}');
+            const btn = document.createElement('button');
+            nostoEl.appendChild(btn);
+            document.body.appendChild(nostoEl);
+
+            expect(RecobuyCore.resolveContextSlotId(btn)).toBe('front-page-1');
+        });
+
+        it('falls back to the wrapper id when ref is not a string', () => {
+            const nostoEl = document.createElement('div');
+            nostoEl.setAttribute('class', 'nosto_element');
+            nostoEl.setAttribute('id', 'front-page-1');
+            nostoEl.setAttribute('data-nosto-ref', '{"ref":{"nested":"object"}}');
+            const btn = document.createElement('button');
+            nostoEl.appendChild(btn);
+            document.body.appendChild(nostoEl);
+
+            expect(RecobuyCore.resolveContextSlotId(btn)).toBe('front-page-1');
+        });
     });
 });
