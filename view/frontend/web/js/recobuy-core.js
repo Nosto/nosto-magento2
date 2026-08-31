@@ -197,7 +197,7 @@
         });
     };
 
-    Recobuy.extractNostoRef = function (rawValue) {
+    function extractNostoRef(rawValue) {
         if (!rawValue) {
             return null;
         }
@@ -211,7 +211,7 @@
         } catch (e) {
             return null;
         }
-    };
+    }
 
     Recobuy.resolveContextSlotId = function (element) {
         if (!element || typeof element === "string") {
@@ -224,7 +224,7 @@
             ++n;
             e = e.parentElement;
             if (e.getAttribute('class') === 'nosto_element') {
-                const ref = Recobuy.extractNostoRef(e.getAttribute('data-nosto-ref'));
+                const ref = extractNostoRef(e.getAttribute('data-nosto-ref'));
                 if (ref) {
                     return ref;
                 }
