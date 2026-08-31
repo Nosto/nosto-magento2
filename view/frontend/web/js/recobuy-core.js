@@ -197,9 +197,6 @@
         });
     };
 
-    // Reads the recommendation reference from a .nosto_element wrapper's data-nosto-ref
-    // attribute (JSON, e.g. {"ref":"frontpage-nosto-2"}). Returns null when the attribute
-    // is absent, not valid JSON, or has no non-empty `ref` field.
     Recobuy.extractNostoRef = function (rawValue) {
         if (!rawValue) {
             return null;
