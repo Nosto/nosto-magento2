@@ -197,6 +197,21 @@
         });
     };
 
+    // Reads the recommendation reference from a .nosto_element wrapper's data-nosto-ref
+    // attribute (JSON, e.g. {"ref":"frontpage-nosto-2"}). Returns null when the attribute
+    // is absent, not valid JSON, or has no non-empty `ref` field.
+    Recobuy.extractNostoRef = function (rawValue) {
+        if (!rawValue) {
+            return null;
+        }
+        try {
+            const parsed = JSON.parse(rawValue);
+            return (parsed && parsed.ref) ? parsed.ref : null;
+        } catch (e) {
+            return null;
+        }
+    };
+
     Recobuy.resolveContextSlotId = function (element) {
         if (!element || typeof element === "string") {
             return element;
@@ -207,8 +222,14 @@
         while (typeof e.parentElement !== "undefined" && e.parentElement) {
             ++n;
             e = e.parentElement;
-            if (e.getAttribute('class') === 'nosto_element' && e.getAttribute('id')) {
-                return e.getAttribute('id');
+            if (e.getAttribute('class') === 'nosto_element') {
+                const ref = Recobuy.extractNostoRef(e.getAttribute('data-nosto-ref'));
+                if (ref) {
+                    return ref;
+                }
+                if (e.getAttribute('id')) {
+                    return e.getAttribute('id');
+                }
             }
             if (n >= m) {
                 return false;
