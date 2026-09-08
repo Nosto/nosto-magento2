@@ -36,6 +36,7 @@
 
 namespace Nosto\Tagging\Model\ResourceModel\Magento\Category;
 
+use Magento\Catalog\Api\Data\CategoryInterface;
 use Magento\Catalog\Model\ResourceModel\Category\Collection as MagentoCategoryCollection;
 use Magento\Framework\Exception\LocalizedException;
 
@@ -58,5 +59,27 @@ class Collection extends MagentoCategoryCollection
     public function addIdsToFilter(array $ids): Collection
     {
         return $this->addAttributeToFilter($this->getIdFieldName(), ['in' => $ids]);
+    }
+
+    /**
+     * Restricts the collection to categories that belong to the given root category's
+     * tree, i.e. the root category itself and all of its descendants. Without this filter
+     * categories from other websites/stores (which have their own, unrelated root category)
+     * would be included in the collection as well.
+     *
+     * @param CategoryInterface $rootCategory
+     * @return Collection
+     * @throws LocalizedException
+     */
+    public function addRootCategoryFilter(CategoryInterface $rootCategory): Collection
+    {
+        $path = $rootCategory->getPath();
+        return $this->addFieldToFilter(
+            'path',
+            [
+                ['eq' => $path],
+                ['like' => $path . '/%']
+            ]
+        );
     }
 }
