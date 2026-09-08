@@ -40,6 +40,7 @@ declare(strict_types=1);
 namespace Nosto\Tagging\Test\Unit\Model\ResourceModel\Magento\Category;
 
 use Magento\Catalog\Api\Data\CategoryInterface;
+use Magento\Framework\Exception\LocalizedException;
 use Nosto\Tagging\Model\ResourceModel\Magento\Category\Collection;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -94,26 +95,40 @@ class CollectionTest extends TestCase
     /**
      * @covers ::addRootCategoryFilter
      */
-    public function testNullPathIsTreatedAsEmptyString(): void
+    public function testNullPathThrowsInsteadOfSilentlyMatchingNothing(): void
     {
         // CategoryInterface::getPath() is declared nullable (@return string|null) and is
         // already treated as such elsewhere in this module (Model/Category/Builder.php).
-        // A null path must be coalesced to an empty string, consistent with that.
+        // A null/empty path would otherwise silently build a filter that matches no
+        // category (eq '' / like '/%'), meaning every category sync for that store would
+        // be silently skipped with no error. Fail loudly instead.
         $collection = $this->collectionMock();
 
         $rootCategory = $this->createMock(CategoryInterface::class);
         $rootCategory->method('getPath')->willReturn(null);
+        $rootCategory->method('getId')->willReturn(1286);
 
-        $collection->expects($this->once())
-            ->method('addFieldToFilter')
-            ->with(
-                'path',
-                [
-                    ['eq' => ''],
-                    ['like' => '/%']
-                ]
-            )
-            ->willReturnSelf();
+        $collection->expects($this->never())->method('addFieldToFilter');
+
+        $this->expectException(LocalizedException::class);
+
+        $collection->addRootCategoryFilter($rootCategory);
+    }
+
+    /**
+     * @covers ::addRootCategoryFilter
+     */
+    public function testEmptyStringPathThrows(): void
+    {
+        $collection = $this->collectionMock();
+
+        $rootCategory = $this->createMock(CategoryInterface::class);
+        $rootCategory->method('getPath')->willReturn('');
+        $rootCategory->method('getId')->willReturn(1286);
+
+        $collection->expects($this->never())->method('addFieldToFilter');
+
+        $this->expectException(LocalizedException::class);
 
         $collection->addRootCategoryFilter($rootCategory);
     }

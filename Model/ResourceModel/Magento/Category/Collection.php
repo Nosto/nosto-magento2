@@ -74,11 +74,17 @@ class Collection extends MagentoCategoryCollection
     public function addRootCategoryFilter(CategoryInterface $rootCategory): Collection
     {
         // getPath() is declared nullable (@return string|null) and is treated as such
-        // elsewhere in this module (see Model/Category/Builder.php); guard against it here
-        // too, for consistency and to keep the filter well-defined (an unguarded null
-        // would silently coalesce to an empty string in the concatenation below anyway,
-        // but that's incidental rather than an explicit, self-documented contract).
-        $path = $rootCategory->getPath() ?? '';
+        // elsewhere in this module (see Model/Category/Builder.php). An empty path would
+        // silently build a filter that matches no category (eq '' / like '/%'), so a store
+        // whose root category has no path would end up with every category sync silently
+        // skipped instead of a clear, actionable error - fail loudly instead.
+        $path = (string)$rootCategory->getPath();
+        if ($path === '') {
+            throw new LocalizedException(__(
+                'Root category with id %1 has no path; cannot scope category collection to it.',
+                $rootCategory->getId()
+            ));
+        }
         return $this->addFieldToFilter(
             'path',
             [
