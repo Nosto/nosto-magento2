@@ -90,4 +90,31 @@ class CollectionTest extends TestCase
 
         $this->assertSame($collection, $result);
     }
+
+    /**
+     * @covers ::addRootCategoryFilter
+     */
+    public function testNullPathIsTreatedAsEmptyString(): void
+    {
+        // CategoryInterface::getPath() is declared nullable (@return string|null) and is
+        // already treated as such elsewhere in this module (Model/Category/Builder.php).
+        // A null path must be coalesced to an empty string, consistent with that.
+        $collection = $this->collectionMock();
+
+        $rootCategory = $this->createMock(CategoryInterface::class);
+        $rootCategory->method('getPath')->willReturn(null);
+
+        $collection->expects($this->once())
+            ->method('addFieldToFilter')
+            ->with(
+                'path',
+                [
+                    ['eq' => ''],
+                    ['like' => '/%']
+                ]
+            )
+            ->willReturnSelf();
+
+        $collection->addRootCategoryFilter($rootCategory);
+    }
 }

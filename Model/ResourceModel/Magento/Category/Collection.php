@@ -73,7 +73,12 @@ class Collection extends MagentoCategoryCollection
      */
     public function addRootCategoryFilter(CategoryInterface $rootCategory): Collection
     {
-        $path = $rootCategory->getPath();
+        // getPath() is declared nullable (@return string|null) and is treated as such
+        // elsewhere in this module (see Model/Category/Builder.php); guard against it here
+        // too, for consistency and to keep the filter well-defined (an unguarded null
+        // would silently coalesce to an empty string in the concatenation below anyway,
+        // but that's incidental rather than an explicit, self-documented contract).
+        $path = $rootCategory->getPath() ?? '';
         return $this->addFieldToFilter(
             'path',
             [
