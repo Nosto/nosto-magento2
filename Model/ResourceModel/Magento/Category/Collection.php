@@ -36,6 +36,7 @@
 
 namespace Nosto\Tagging\Model\ResourceModel\Magento\Category;
 
+use Magento\Catalog\Api\Data\CategoryInterface;
 use Magento\Catalog\Model\ResourceModel\Category\Collection as MagentoCategoryCollection;
 use Magento\Framework\Exception\LocalizedException;
 
@@ -58,5 +59,38 @@ class Collection extends MagentoCategoryCollection
     public function addIdsToFilter(array $ids): Collection
     {
         return $this->addAttributeToFilter($this->getIdFieldName(), ['in' => $ids]);
+    }
+
+    /**
+     * Restricts the collection to categories that belong to the given root category's
+     * tree, i.e. the root category itself and all of its descendants. Without this filter
+     * categories from other websites/stores (which have their own, unrelated root category)
+     * would be included in the collection as well.
+     *
+     * @param CategoryInterface $rootCategory
+     * @return Collection
+     * @throws LocalizedException
+     */
+    public function addRootCategoryFilter(CategoryInterface $rootCategory): Collection
+    {
+        // getPath() is declared nullable (@return string|null) and is treated as such
+        // elsewhere in this module (see Model/Category/Builder.php). An empty path would
+        // silently build a filter that matches no category (eq '' / like '/%'), so a store
+        // whose root category has no path would end up with every category sync silently
+        // skipped instead of a clear, actionable error - fail loudly instead.
+        $path = (string)$rootCategory->getPath();
+        if ($path === '') {
+            throw new LocalizedException(__(
+                'Root category with id %1 has no path; cannot scope category collection to it.',
+                $rootCategory->getId()
+            ));
+        }
+        return $this->addFieldToFilter(
+            'path',
+            [
+                ['eq' => $path],
+                ['like' => $path . '/%']
+            ]
+        );
     }
 }
