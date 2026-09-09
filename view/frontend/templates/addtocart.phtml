@@ -55,7 +55,13 @@ $isHyva = $block->isHyva();
 <?php if ($isHyva): ?>
   <!-- Hyva Theme with Alpine.js -->
     <?php
-    $script = <<<'script'
+    /**
+     * Heredoc (not nowdoc) on purpose: Magento's HTML minifier only shields
+     * `<<<identifier` blocks from newline collapsing, not `<<<'identifier'`.
+     * JS template literals must therefore be escaped as \${...}.
+     * @see \Magento\Framework\View\Template\Html\Minifier::minify()
+     */
+    $script = <<<script
       function nostoRecobuy() {
           'use strict';
 
@@ -64,7 +70,7 @@ $isHyva = $block->isHyva();
           };
 
           window.RecobuyCore.buildCartUrl = function (action, productId) {
-              return `${action}/product/${productId}`;
+              return `\${action}/product/\${productId}`;
           };
 
           window.Nosto = window.Nosto || {};

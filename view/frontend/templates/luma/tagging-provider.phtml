@@ -43,14 +43,17 @@ $taggingConfig = $block->getTaggingConfig();
 
 <!-- Luma with Knockout.js -->
 <?php if ($block->isNostoEnabled()):
-    $script = sprintf(
-        <<<'script'
+    /**
+     * Heredoc (not nowdoc) closed with `script;` on purpose: Magento's HTML minifier
+     * only shields `<<<identifier ... identifier;` blocks from newline collapsing.
+     * @see \Magento\Framework\View\Template\Html\Minifier::minify()
+     */
+    $scriptTemplate = <<<script
         require(['Nosto_Tagging/js/tagging-providers'], function(initTaggingProviders) {
             initTaggingProviders(%s);
         });
-    script,
-        $block->getTaggingConfigForJs()
-    );
+    script;
+    $script = sprintf($scriptTemplate, $block->getTaggingConfigForJs());
  /* @noEscape */ $secureRenderer->renderTag('script', [], $script, false);
 
 endif; ?>
