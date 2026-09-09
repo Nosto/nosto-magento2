@@ -38,18 +38,18 @@
  * @var \Nosto\Tagging\Block\TaggingProvider $block
  * @var Magento\Framework\View\Helper\SecureHtmlRenderer $secureRenderer
  */
-$taggingConfig = $block->getTaggingConfig();
+$taggingConfig = $block->getTaggingConfigForJs();
 ?>
 
-<!-- Hyva Theme with Alpine.js -->
+    <!-- Hyva Theme with Alpine.js -->
 <?php if ($block->isNostoEnabled()):
 
     $script = <<<script
         document.addEventListener('DOMContentLoaded', function() {
-            window.initNostoTaggingProviders(<?= $block->escapeJsQuote($block->getTaggingConfigForJs()) ?>);
+            window.initNostoTaggingProviders($taggingConfig);
         });
     script;
 
- /* @noEscape */ $secureRenderer->renderTag('script', [], $script, false);
+    echo /* @noEscape */ $secureRenderer->renderTag('script', [], $script, false);
 
 endif; ?>
