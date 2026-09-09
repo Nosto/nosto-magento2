@@ -91,15 +91,40 @@ abstract class AbstractBulkConsumer implements BulkConsumerInterface
 
         $entityIds = $unserializedData['entity_ids'] ?? null;
         $storeId = $unserializedData['store_id'];
+        $entityIdsForLog = is_array($entityIds) ? implode(',', $entityIds) : (string)$entityIds;
         try {
             $this->storeEmulation->startEnvironmentEmulation((int)$storeId);
+            $this->logger->debug(
+                sprintf(
+                    'Bulk uuid: %s. Store id: %s. Processing product IDs: %s',
+                    $operation->getBulkUuid(),
+                    $storeId,
+                    $entityIdsForLog
+                )
+            );
             $this->doOperation($entityIds, $storeId);
             /** @phan-suppress-next-line PhanTypeMismatchArgumentProbablyReal */
             $message = __('Success.');
+            $this->logger->debug(
+                sprintf(
+                    'Bulk uuid: %s. Store id: %s. Successfully processed product IDs: %s',
+                    $operation->getBulkUuid(),
+                    $storeId,
+                    $entityIdsForLog
+                )
+            );
             $operation->setStatus(OperationInterface::STATUS_TYPE_COMPLETE)
                 ->setResultMessage($message);
         } catch (Exception $e) {
-            $this->logger->critical(sprintf('Bulk uuid: %s. %s', $operation->getBulkUuid(), $e->getMessage()));
+            $this->logger->critical(
+                sprintf(
+                    'Bulk uuid: %s. Store id: %s. Product IDs: %s. %s',
+                    $operation->getBulkUuid(),
+                    $storeId,
+                    $entityIdsForLog,
+                    $e->getMessage()
+                )
+            );
             /** @phan-suppress-next-line PhanTypeMismatchArgumentProbablyReal */
             $message = __('Something went wrong when syncing data to Nosto. Check log for details.');
             $operation->setStatus(OperationInterface::STATUS_TYPE_NOT_RETRIABLY_FAILED)
