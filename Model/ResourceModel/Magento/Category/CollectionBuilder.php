@@ -36,7 +36,9 @@
 
 namespace Nosto\Tagging\Model\ResourceModel\Magento\Category;
 
+use Magento\Catalog\Api\CategoryRepositoryInterface;
 use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Sales\Api\Data\EntityInterface;
 use Magento\Store\Model\Store;
 use Nosto\Tagging\Model\ResourceModel\Magento\Category\Collection  as CategoryCollection;
@@ -51,12 +53,19 @@ class CollectionBuilder
     /** @var CategoryCollection */
     private CategoryCollection $categoryCollection;
 
+    /** @var CategoryRepositoryInterface */
+    private CategoryRepositoryInterface $categoryRepository;
+
     /**
      * @param CategoryCollection $categoryCollection
+     * @param CategoryRepositoryInterface $categoryRepository
      */
-    public function __construct(CategoryCollection $categoryCollection)
-    {
+    public function __construct(
+        CategoryCollection $categoryCollection,
+        CategoryRepositoryInterface $categoryRepository
+    ) {
         $this->categoryCollection = $categoryCollection;
+        $this->categoryRepository = $categoryRepository;
     }
 
     /**
@@ -68,15 +77,20 @@ class CollectionBuilder
     }
 
     /**
-     * Sets the store filter
+     * Sets the store filter. This also restricts the collection to categories belonging
+     * to the given store's root category tree, so that categories from other
+     * websites/stores are not included.
      *
      * @param Store $store
      * @return $this
+     * @throws NoSuchEntityException
      */
     public function withStore(Store $store)
     {
         $this->categoryCollection->setProductStoreId($store->getId());
         $this->categoryCollection->setStore($store);
+        $rootCategory = $this->categoryRepository->get((int)$store->getRootCategoryId(), (int)$store->getId());
+        $this->categoryCollection->addRootCategoryFilter($rootCategory);
         return $this;
     }
 
@@ -166,6 +180,7 @@ class CollectionBuilder
      *
      * @param Store $store
      * @return CollectionBuilder
+     * @throws NoSuchEntityException
      */
     public function initDefault(Store $store)
     {
@@ -194,6 +209,7 @@ class CollectionBuilder
      * @param Store $store
      * @param int $id
      * @return CategoryCollection
+     * @throws NoSuchEntityException
      */
     public function buildSingle(Store $store, int $id)
     {
@@ -211,6 +227,7 @@ class CollectionBuilder
      * @param int $limit
      * @param int $offset
      * @return CategoryCollection
+     * @throws NoSuchEntityException
      */
     public function buildMany(Store $store, int $limit = 100, int $offset = 0)
     {
