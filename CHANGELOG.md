@@ -1,5 +1,8 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 9.0.3
+* Check for root category collections belongs
+
 ### 9.0.2
 * Implement parameter-less attribution for add-to-cart functionality
 
