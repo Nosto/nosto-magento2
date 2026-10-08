@@ -116,5 +116,6 @@ $variationId = $block->getVariationId();
     });
     script;
 
- /* @noEscape */ $secureRenderer->renderTag('script', [], $script, false);
-endif; ?>
+?>
+<?= /* @noEscape */ $secureRenderer->renderTag('script', [], $script, false) ?>
+<?php endif; ?>
