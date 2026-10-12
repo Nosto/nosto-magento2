@@ -255,3 +255,46 @@ jobs:
       - name: Report annotations
         if: always() && hashFiles('chkphpcompat.xml') != ''
         run: ./vendor/bin/cs2pr chkphpcompat.xml
+
+  audit:
+    name: Composer Audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          tools: composer
+          coverage: none
+
+      # Reports known vulnerabilities in the locked runtime dependencies. This does not block the
+      # build: the locked Magento dependencies already carry advisories that this module cannot fix.
+      - name: Audit locked dependencies
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          composer audit --locked --no-dev --no-interaction | tee audit.txt
+          { echo '### composer audit'; echo '```'; cat audit.txt; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+
+  duplication:
+    name: Duplicate Code
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # Fails when more than 3% of the PHP code is duplicated (currently below 1%)
+      - name: Detect duplicated code
+        run: |
+          npx --yes jscpd@4.0.5 . \
+            --format php \
+            --min-lines 5 \
+            --min-tokens 70 \
+            --threshold 3 \
+            --ignore '**/vendor/**,**/Test/**,**/node_modules/**,**/docs/**,**/generated/**,**/var/**' \
+            --reporters console
