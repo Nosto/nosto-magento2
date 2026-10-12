@@ -273,8 +273,12 @@ jobs:
       # build: the locked Magento dependencies already carry advisories that this module cannot fix.
       - name: Audit locked dependencies
         continue-on-error: true
+        env:
+          REPO_USR: ${{ secrets.REPO_USR }}
+          REPO_PSW: ${{ secrets.REPO_PSW }}
         run: |
           set -o pipefail
+          composer config http-basic.repo.magento.com "$REPO_USR" "$REPO_PSW"
           composer audit --locked --no-dev --no-interaction | tee audit.txt
           { echo '### composer audit'; echo '```'; cat audit.txt; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
 
