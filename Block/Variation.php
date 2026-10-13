@@ -113,14 +113,24 @@ class Variation extends Template
      */
     public function getVariationId()
     {
-        $store = $this->nostoHelperScope->getStore(true);
-        if ($this->nostoHelperData->isMultiCurrencyDisabled($store)
-            && $this->nostoHelperData->isPricingVariationEnabled($store)
-        ) {
+        if ($this->isPricingVariationActive()) {
             return $this->nostoHelperCustomer->getGroupCode();
         }
 
-        return $store->getCurrentCurrencyCode();
+        return $this->nostoHelperScope->getStore(true)->getCurrentCurrencyCode();
+    }
+
+    /**
+     * Checks if the variation is resolved per customer group, i.e. price variation is
+     * enabled and multi currency is not used
+     *
+     * @return bool
+     */
+    public function isPricingVariationActive()
+    {
+        $store = $this->nostoHelperScope->getStore(true);
+        return $this->nostoHelperData->isMultiCurrencyDisabled($store)
+            && $this->nostoHelperData->isPricingVariationEnabled($store);
     }
 
     /**

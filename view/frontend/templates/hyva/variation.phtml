@@ -55,8 +55,9 @@
 $variationId = $block->getVariationId();
 ?>
 <!-- Nosto Variation Tagging -->
-<?php if (empty($block->getAbstractObject())):
-        // Skip rendering if MC is not used (single currency selected) or if pricing variation is disabled
+<?php if (!$block->isPricingVariationActive()):
+        // Skip rendering if pricing variation is disabled or multi currency is used. The default variation
+        // markup is rendered by the block itself, so this is only reached for non-default customer groups
         return;
     else:
         ?>
@@ -116,5 +117,6 @@ $variationId = $block->getVariationId();
     });
     script;
 
- /* @noEscape */ $secureRenderer->renderTag('script', [], $script, false);
-endif; ?>
+?>
+<?= /* @noEscape */ $secureRenderer->renderTag('script', [], $script, false) ?>
+<?php endif; ?>
