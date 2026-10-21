@@ -111,9 +111,10 @@ class DeleteService extends AbstractService
         $productIdBatches = array_chunk($productIds, $this->deleteBatchSize);
         $this->logDebugWithStore(
             sprintf(
-                'Deleting total of %d products in batches of %d',
+                'Deleting total of %d products in batches of %d. Product IDs: %s',
                 count($productIds),
-                count($productIdBatches)
+                count($productIdBatches),
+                implode(',', $productIds)
             ),
             $store
         );
@@ -125,7 +126,24 @@ class DeleteService extends AbstractService
                 $op->delete(); // @codingStandardsIgnoreLine
                 $this->cacheService->removeByProductIds($store, $ids);
                 $this->tickBenchmark(self::BENCHMARK_DELETE_NAME);
+                $this->logDebugWithStore(
+                    sprintf(
+                        'Successfully deleted batch of %d products from Nosto. Product IDs: %s',
+                        count($ids),
+                        implode(',', $ids)
+                    ),
+                    $store
+                );
             } catch (Exception $e) {
+                $this->getLogger()->error(
+                    sprintf(
+                        'Failed to delete batch of %d products from Nosto. Store ID: %s. Product IDs: %s. Error: %s',
+                        count($ids),
+                        $store->getId(),
+                        implode(',', $ids),
+                        $e->getMessage()
+                    )
+                );
                 $this->getLogger()->exception($e);
             }
         }
