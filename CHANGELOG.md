@@ -1,5 +1,17 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 9.0.4
+* Fix customer group price variation not being applied on Hyvä storefronts for customers in non-default customer groups
+
+### 9.0.3
+* Restrict category collections to the store's root category tree
+
+### 9.0.2
+* Implement parameter-less attribution for add-to-cart functionality
+
+### 9.0.1
+* Fix products not being discontinued in Nosto when their visibility changes to "Not Visible Individually"
+
 ### 9.0.0
 * Update PHP-SDK dependency version to add PHP 8.5 support and drop PHP 8.1 and below
 * Improve performance of configurable product variation pricing by avoiding duplicate SKU reloads across customer groups

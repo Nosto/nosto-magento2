@@ -242,5 +242,65 @@ describe('RecobuyCore', () => {
 
             expect(RecobuyCore.resolveContextSlotId(leaf)).toBe(false);
         });
+
+        it('prefers the data-nosto-ref value over the wrapper id when present', () => {
+            const nostoEl = document.createElement('div');
+            nostoEl.setAttribute('class', 'nosto_element');
+            nostoEl.setAttribute('id', 'frontpage-nosto-vaimo-testing-1');
+            nostoEl.setAttribute('data-nosto-ref', '{"ref":"frontpage-nosto-2"}');
+            const btn = document.createElement('button');
+            nostoEl.appendChild(btn);
+            document.body.appendChild(nostoEl);
+
+            expect(RecobuyCore.resolveContextSlotId(btn)).toBe('frontpage-nosto-2');
+        });
+
+        it('falls back to the wrapper id when data-nosto-ref is invalid JSON', () => {
+            const nostoEl = document.createElement('div');
+            nostoEl.setAttribute('class', 'nosto_element');
+            nostoEl.setAttribute('id', 'front-page-1');
+            nostoEl.setAttribute('data-nosto-ref', 'not-json');
+            const btn = document.createElement('button');
+            nostoEl.appendChild(btn);
+            document.body.appendChild(nostoEl);
+
+            expect(RecobuyCore.resolveContextSlotId(btn)).toBe('front-page-1');
+        });
+
+        it('falls back to the wrapper id when data-nosto-ref has no ref field', () => {
+            const nostoEl = document.createElement('div');
+            nostoEl.setAttribute('class', 'nosto_element');
+            nostoEl.setAttribute('id', 'front-page-1');
+            nostoEl.setAttribute('data-nosto-ref', '{"foo":"bar"}');
+            const btn = document.createElement('button');
+            nostoEl.appendChild(btn);
+            document.body.appendChild(nostoEl);
+
+            expect(RecobuyCore.resolveContextSlotId(btn)).toBe('front-page-1');
+        });
+
+        it('falls back to the wrapper id when ref is whitespace-only', () => {
+            const nostoEl = document.createElement('div');
+            nostoEl.setAttribute('class', 'nosto_element');
+            nostoEl.setAttribute('id', 'front-page-1');
+            nostoEl.setAttribute('data-nosto-ref', '{"ref":"   "}');
+            const btn = document.createElement('button');
+            nostoEl.appendChild(btn);
+            document.body.appendChild(nostoEl);
+
+            expect(RecobuyCore.resolveContextSlotId(btn)).toBe('front-page-1');
+        });
+
+        it('falls back to the wrapper id when ref is not a string', () => {
+            const nostoEl = document.createElement('div');
+            nostoEl.setAttribute('class', 'nosto_element');
+            nostoEl.setAttribute('id', 'front-page-1');
+            nostoEl.setAttribute('data-nosto-ref', '{"ref":{"nested":"object"}}');
+            const btn = document.createElement('button');
+            nostoEl.appendChild(btn);
+            document.body.appendChild(nostoEl);
+
+            expect(RecobuyCore.resolveContextSlotId(btn)).toBe('front-page-1');
+        });
     });
 });

@@ -38,14 +38,18 @@ namespace Nosto\Tagging\Plugin;
 
 use Closure;
 use Exception;
+use Magento\Catalog\Api\Data\ProductInterface;
+use Magento\Catalog\Model\Product\Visibility;
 use Magento\Catalog\Model\ResourceModel\Product as MagentoResourceProduct;
 use Magento\Catalog\Model\ResourceModel\Product\Website\Link as ProductStoreLink;
 use Magento\Framework\Indexer\IndexerRegistry;
 use Magento\Framework\Model\AbstractModel;
+use Magento\Store\Model\Store;
 use Nosto\Tagging\Exception\ParentProductDisabledException;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Model\Indexer\ProductIndexer;
 use Nosto\Tagging\Model\Product\Repository as NostoProductRepository;
+use Nosto\Tagging\Model\Product\VisibilityResolver;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\ResourceModel\Magento\Product\CollectionBuilder;
 use Nosto\Tagging\Model\Service\Update\ProductUpdateService;
@@ -79,6 +83,9 @@ class ProductUpdate
     /** @var ProductStoreLink */
     private ProductStoreLink $productStoreLink;
 
+    /** @var VisibilityResolver */
+    private VisibilityResolver $visibilityResolver;
+
     /**
      * ProductUpdate constructor.
      * @param IndexerRegistry $indexerRegistry
@@ -89,6 +96,7 @@ class ProductUpdate
      * @param NostoHelperScope $nostoHelperScope
      * @param CollectionBuilder $productCollectionBuilder
      * @param ProductStoreLink $productStoreLink
+     * @param VisibilityResolver $visibilityResolver
      */
     public function __construct(
         IndexerRegistry                $indexerRegistry,
@@ -98,7 +106,8 @@ class ProductUpdate
         ProductUpdateService           $productUpdateService,
         NostoHelperScope               $nostoHelperScope,
         CollectionBuilder              $productCollectionBuilder,
-        ProductStoreLink             $productStoreLink
+        ProductStoreLink             $productStoreLink,
+        VisibilityResolver $visibilityResolver
     ) {
         $this->indexerRegistry = $indexerRegistry;
         $this->productIndexer = $productIndexer;
@@ -108,6 +117,7 @@ class ProductUpdate
         $this->nostoHelperScope = $nostoHelperScope;
         $this->productCollectionBuilder = $productCollectionBuilder;
         $this->productStoreLink = $productStoreLink;
+        $this->visibilityResolver = $visibilityResolver;
     }
 
     /**
@@ -141,7 +151,115 @@ class ProductUpdate
             );
         }
 
+        // A product that becomes "Not Visible Individually" disappears from the
+        // individually-visible sync path (see ProductUpdateService::isIndividuallyVisible),
+        // so without an explicit discontinue signal it stays an orphan in Nosto. NS-14429.
+        if ($this->hasBecomeNotIndividuallyVisible($product)) {
+            $storeId = (int)$product->getStoreId();
+            $productResource->addCommitCallback(
+                function () use ($product, $storeId) {
+                    $this->enqueueProductDelete($product, $storeId);
+                }
+            );
+        }
+
         return $proceed($product);
+    }
+
+    /**
+     * @param AbstractModel $product
+     * @return bool
+     */
+    private function hasBecomeNotIndividuallyVisible(AbstractModel $product): bool
+    {
+        if (!$product->getId()) {
+            return false;
+        }
+
+        $newVisibility = (int)$product->getData(ProductInterface::VISIBILITY);
+        if ($newVisibility !== Visibility::VISIBILITY_NOT_VISIBLE) {
+            return false;
+        }
+
+        // The product is hidden after this save, so the discontinue is warranted on
+        // its own. Comparing against the original value only avoids re-sending for a
+        // product that was already hidden, and orig data is absent on a partially
+        // loaded model - so treat an unknown original as "was visible" and let the
+        // (idempotent) discontinue through rather than dropping a real transition.
+        $origVisibility = $product->getOrigData(ProductInterface::VISIBILITY);
+        return $origVisibility === null
+            || (int)$origVisibility !== Visibility::VISIBILITY_NOT_VISIBLE;
+    }
+
+    /**
+     * Queues a discontinue message for the store(s) affected by this visibility
+     * change: just the edited store if it was store-scoped, or every assigned store
+     * that has no override of its own if the Default Value was edited
+     *
+     * @param AbstractModel $product
+     * @param int $storeId
+     * @return void
+     */
+    private function enqueueProductDelete(AbstractModel $product, int $storeId): void
+    {
+        // Store 0 is the admin scope holding the Default Value: it is not a storefront
+        // and has no Nosto account of its own, so there is nothing to send it to. An
+        // edit made there is instead resolved into the real store views below.
+        if ($storeId !== Store::DEFAULT_STORE_ID) {
+            try {
+                $store = $this->nostoHelperScope->getStore($storeId);
+                $this->productUpdateService->addIdsToDeleteMessageQueue([$product->getId()], $store);
+                $this->logger->debug(sprintf(
+                    'Queued discontinue for product %s on store %s'
+                    . ' (visibility changed to Not Visible Individually)',
+                    $product->getId(),
+                    $store->getCode()
+                ));
+            } catch (Exception $e) {
+                $this->logger->exception($e);
+            }
+            return;
+        }
+
+        try {
+            $websiteIds = array_map(
+                'intval',
+                $this->productStoreLink->getWebsiteIdsByProductId((int)$product->getId())
+            );
+        } catch (Exception $e) {
+            $this->logger->exception($e);
+            return;
+        }
+
+        // Default Value only changes the fallback used by stores with no override
+        // of their own, so each assigned store must be re-checked individually.
+        // The check reads post-change visibility, so a store already hidden by its
+        // own override before this edit is discontinued again rather than skipped.
+        // Deliberate: a repeat discontinue is a no-op for a product Nosto has
+        // already dropped, and separating the two cases would cost a second
+        // per-store query on every product save.
+        foreach ($websiteIds as $websiteId) {
+            try {
+                $stores = $this->nostoHelperScope->getWebsite($websiteId)->getStores();
+                foreach ($stores as $store) {
+                    $stillVisible = $this->visibilityResolver->getIndividuallyVisibleProductIds(
+                        [(int)$product->getId()],
+                        $store
+                    );
+                    if (empty($stillVisible)) {
+                        $this->productUpdateService->addIdsToDeleteMessageQueue([$product->getId()], $store);
+                        $this->logger->debug(sprintf(
+                            'Queued discontinue for product %s on store %s'
+                            . ' (Default Value visibility change, no store override)',
+                            $product->getId(),
+                            $store->getCode()
+                        ));
+                    }
+                }
+            } catch (Exception $e) {
+                $this->logger->exception($e);
+            }
+        }
     }
 
     /**

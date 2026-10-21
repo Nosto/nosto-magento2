@@ -197,6 +197,22 @@
         });
     };
 
+    function extractNostoRef(rawValue) {
+        if (!rawValue) {
+            return null;
+        }
+        try {
+            const parsed = JSON.parse(rawValue);
+            if (!parsed || typeof parsed.ref !== 'string') {
+                return null;
+            }
+            const ref = parsed.ref.trim();
+            return ref.length > 0 ? ref : null;
+        } catch (e) {
+            return null;
+        }
+    }
+
     Recobuy.resolveContextSlotId = function (element) {
         if (!element || typeof element === "string") {
             return element;
@@ -207,8 +223,14 @@
         while (typeof e.parentElement !== "undefined" && e.parentElement) {
             ++n;
             e = e.parentElement;
-            if (e.getAttribute('class') === 'nosto_element' && e.getAttribute('id')) {
-                return e.getAttribute('id');
+            if (e.getAttribute('class') === 'nosto_element') {
+                const ref = extractNostoRef(e.getAttribute('data-nosto-ref'));
+                if (ref) {
+                    return ref;
+                }
+                if (e.getAttribute('id')) {
+                    return e.getAttribute('id');
+                }
             }
             if (n >= m) {
                 return false;
