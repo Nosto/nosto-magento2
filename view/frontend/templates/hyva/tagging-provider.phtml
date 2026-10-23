@@ -44,11 +44,12 @@ $taggingConfig = $block->getTaggingConfig();
 <!-- Hyva Theme with Alpine.js -->
 <?php if ($block->isNostoEnabled()):
 
-    $script = <<<script
+    $scriptTemplate = <<<script
         document.addEventListener('DOMContentLoaded', function() {
-            window.initNostoTaggingProviders(<?= $block->escapeJsQuote($block->getTaggingConfigForJs()) ?>);
+            window.initNostoTaggingProviders(%s);
         });
     script;
+    $script = sprintf($scriptTemplate, $block->getTaggingConfigForJs());
 
  /* @noEscape */ $secureRenderer->renderTag('script', [], $script, false);
 
