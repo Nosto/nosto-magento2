@@ -48,7 +48,13 @@
 
 <?php
 $isReloadRecsAfterAtcEnabled = (int)$block->isReloadRecsAfterAtcEnabled();
-$script = <<<'JS'
+/**
+ * Heredoc (not nowdoc) on purpose: Magento's HTML minifier only shields
+ * `<<<identifier` blocks from newline collapsing, not `<<<'identifier'`.
+ * JS template literals must therefore be escaped as \${...}.
+ * @see \Magento\Framework\View\Template\Html\Minifier::minify()
+ */
+$script = <<<JS
     document.addEventListener('DOMContentLoaded', function() {
         function initNostoCartTagging() {
             const refreshRecs = __RELOAD__;
@@ -73,12 +79,12 @@ $script = <<<'JS'
                         const lineItem = document.createElement('div');
                         lineItem.className = 'line_item';
                         lineItem.innerHTML = `
-                      <span class="product_id">${item.product_id || ''}</span>
-                      <span class="sku_id">${item.sku_id || ''}</span>
-                      <span class="quantity">${item.quantity || ''}</span>
-                      <span class="name">${item.name || ''}</span>
-                      <span class="unit_price">${item.unit_price || ''}</span>
-                      <span class="price_currency_code">${item.price_currency_code || ''}</span>
+                      <span class="product_id">\${item.product_id || ''}</span>
+                      <span class="sku_id">\${item.sku_id || ''}</span>
+                      <span class="quantity">\${item.quantity || ''}</span>
+                      <span class="name">\${item.name || ''}</span>
+                      <span class="unit_price">\${item.unit_price || ''}</span>
+                      <span class="price_currency_code">\${item.price_currency_code || ''}</span>
                   `;
                         cartElement.appendChild(lineItem);
                     });

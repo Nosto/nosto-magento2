@@ -20,6 +20,8 @@ jobs:
       ############################################################################
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
+        env:
+          update: true
         with:
           php-version: ${{ matrix.php }}
           tools: composer
