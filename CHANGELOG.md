@@ -1,5 +1,8 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 9.0.5
+* Fix fatal storefront ParseError when Magento HTML minification is enabled
+
 ### 9.0.4
 * Fix customer group price variation not being applied on Hyvä storefronts for customers in non-default customer groups
 
