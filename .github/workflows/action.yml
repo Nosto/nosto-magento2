@@ -13,6 +13,8 @@ jobs:
       ############################################################################
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
+        env:
+          update: true
         with:
           php-version: '8.2'
           tools: composer
@@ -71,6 +73,8 @@ jobs:
       ############################################################################
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
+        env:
+          update: true
         with:
           php-version: '8.2'
           tools: composer
@@ -140,6 +144,8 @@ jobs:
       ############################################################################
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
+        env:
+          update: true
         with:
           php-version: '8.2'
           tools: composer:v2, pecl
@@ -214,6 +220,8 @@ jobs:
 
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
+        env:
+          update: true
         with:
           php-version: '8.5'
           tools: composer:v2
@@ -264,6 +272,8 @@ jobs:
 
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
+        env:
+          update: true
         with:
           php-version: '8.2'
           tools: composer
