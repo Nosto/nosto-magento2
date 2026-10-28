@@ -1,5 +1,8 @@
 All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
+### 9.0.6
+* Fix storefront search results page error caused by compatibility issues with third-party search extensions
+
 ### 9.0.5
 * Fix fatal storefront ParseError when Magento HTML minification is enabled
 

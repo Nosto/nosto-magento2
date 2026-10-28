@@ -58,8 +58,6 @@
                 </arguments>
             </block>
 
-            <block class="Nosto\Tagging\Block\Search" name="nosto.search" after="-"/>
-
             <block class="Nosto\Tagging\Block\Element" name="nosto.page.search1"
                    before="search.result" template="Nosto_Tagging::element.phtml">
                 <arguments>
