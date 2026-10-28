@@ -36,11 +36,9 @@
 
 namespace Nosto\Tagging\Block;
 
-use Magento\Catalog\Model\Layer\Resolver as LayerResolver;
-use Magento\CatalogSearch\Block\Result;
 use Magento\CatalogSearch\Helper\Data;
+use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Element\Template\Context;
-use Magento\Search\Model\QueryFactory;
 use Nosto\Model\MarkupableString;
 use Nosto\Model\SearchTerm;
 use Nosto\Tagging\Helper\Account as NostoHelperAccount;
@@ -51,33 +49,35 @@ use Nosto\Tagging\Helper\Scope as NostoHelperScope;
  * This meta-data is sent to Nosto via JavaScript when users are browsing the
  * pages in the store.
  */
-class Search extends Result
+class Search extends Template
 {
     use TaggingTrait {
         TaggingTrait::__construct as taggingConstruct; // @codingStandardsIgnoreLine
     }
 
     /**
+     * @var Data
+     */
+    private $catalogSearchData;
+
+    /**
      * Search constructor.
      * @param Context $context
-     * @param LayerResolver $layerResolver
      * @param Data $catalogSearchData
-     * @param QueryFactory $queryFactory
      * @param NostoHelperAccount $nostoHelperAccount
      * @param NostoHelperScope $nostoHelperScope
      * @param array $data
      */
     public function __construct(
         Context $context,
-        LayerResolver $layerResolver,
         Data $catalogSearchData,
-        QueryFactory $queryFactory,
         NostoHelperAccount $nostoHelperAccount,
         NostoHelperScope $nostoHelperScope,
         array $data = []
     ) {
-        parent::__construct($context, $layerResolver, $catalogSearchData, $queryFactory, $data);
+        parent::__construct($context, $data);
 
+        $this->catalogSearchData = $catalogSearchData;
         $this->taggingConstruct($nostoHelperAccount, $nostoHelperScope);
     }
 
