@@ -39,6 +39,7 @@ declare(strict_types=1);
 
 namespace Nosto\Tagging\Test\Unit\Plugin;
 
+use ArrayObject;
 use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\Product\Visibility;
@@ -535,6 +536,22 @@ class ProductUpdateTest extends TestCase
         return array_values($stores);
     }
 
+    /**
+     * Records the arguments of every call to the given ProductUpdateService method
+     *
+     * @param string $method
+     * @return ArrayObject
+     */
+    private function recordCalls(string $method): ArrayObject
+    {
+        $calls = new ArrayObject();
+        $this->productUpdateServiceMock->method($method)
+            ->willReturnCallback(function (...$args) use ($calls) {
+                $calls[] = $args;
+            });
+        return $calls;
+    }
+
     private function deleteProduct(): void
     {
         $result = $this->plugin->aroundDelete(
@@ -556,14 +573,17 @@ class ProductUpdateTest extends TestCase
         [$storeOne, $storeTwo] = $this->mockDeletedProductStores([1, 2]);
         $this->nostoProductRepositoryMock->method('resolveParentProductIds')->willReturn([]);
 
-        $this->productUpdateServiceMock->expects($this->exactly(2))
-            ->method('addIdsToDeleteMessageQueue')
-            ->withConsecutive([[self::PRODUCT_ID], $storeOne], [[self::PRODUCT_ID], $storeTwo]);
+        $deleteCalls = $this->recordCalls('addIdsToDeleteMessageQueue');
         $this->productUpdateServiceMock->expects($this->never())
             ->method('addCollectionToUpdateMessageQueue');
         $this->collectionBuilderMock->expects($this->never())->method('withIds');
 
         $this->deleteProduct();
+
+        $this->assertSame(
+            [[[self::PRODUCT_ID], $storeOne], [[self::PRODUCT_ID], $storeTwo]],
+            $deleteCalls->getArrayCopy()
+        );
     }
 
     /**
@@ -585,14 +605,19 @@ class ProductUpdateTest extends TestCase
             ->willReturnSelf();
         $this->collectionBuilderMock->method('build')->willReturn($parentCollection);
 
-        $this->productUpdateServiceMock->expects($this->exactly(2))
-            ->method('addIdsToDeleteMessageQueue')
-            ->withConsecutive([[self::PRODUCT_ID], $storeOne], [[self::PRODUCT_ID], $storeTwo]);
-        $this->productUpdateServiceMock->expects($this->exactly(2))
-            ->method('addCollectionToUpdateMessageQueue')
-            ->withConsecutive([$parentCollection, $storeOne], [$parentCollection, $storeTwo]);
+        $deleteCalls = $this->recordCalls('addIdsToDeleteMessageQueue');
+        $updateCalls = $this->recordCalls('addCollectionToUpdateMessageQueue');
 
         $this->deleteProduct();
+
+        $this->assertSame(
+            [[[self::PRODUCT_ID], $storeOne], [[self::PRODUCT_ID], $storeTwo]],
+            $deleteCalls->getArrayCopy()
+        );
+        $this->assertSame(
+            [[$parentCollection, $storeOne], [$parentCollection, $storeTwo]],
+            $updateCalls->getArrayCopy()
+        );
     }
 
     /**
