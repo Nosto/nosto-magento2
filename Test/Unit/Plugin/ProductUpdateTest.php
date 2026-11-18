@@ -517,9 +517,7 @@ class ProductUpdateTest extends TestCase
 
         $this->indexerMock->method('isScheduled')->willReturn(true);
 
-        $this->productMock->expects($this->atLeastOnce())->method('getOrigData')
-            ->with(ProductInterface::VISIBILITY)
-            ->willReturn(Visibility::VISIBILITY_BOTH);
+        $this->productMock->expects($this->never())->method('getOrigData');
         $this->productMock->expects($this->atLeastOnce())->method('getData')
             ->with(ProductInterface::VISIBILITY)
             ->willReturn(Visibility::VISIBILITY_BOTH);
