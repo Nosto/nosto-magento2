@@ -21,13 +21,16 @@
         "magento/module-review": "100.4.8",
         "magento/module-grouped-product": "100.4.8",
         "staabm/annotate-pull-request-from-checkstyle": "^1.1",
-        "magento/magento-coding-standard": "^38",
+        "magento/magento-coding-standard": "^41",
         "phpcompatibility/php-compatibility": "^10.0@alpha",
         "magento/module-asynchronous-operations": "100.4.8",
         "phan/phan": "^6.0",
         "drenso/phan-extensions": "^3.5",
         "yotpo/module-yotpo-combined": "^4.1",
-        "phpunit/phpunit": "^10.5"
+        "phpunit/phpunit": "^10.5",
+        "phpstan/phpstan": "^2.1",
+        "bitexpert/phpstan-magento": "^0.44",
+        "phpstan/extension-installer": "^1.4"
     },
     "suggest": {
         "magento/product-community-edition": "2.*",
@@ -84,7 +87,8 @@
         },
         "allow-plugins": {
             "dealerdirect/phpcodesniffer-composer-installer": true,
-            "magento/composer-dependency-version-audit-plugin": true
+            "magento/composer-dependency-version-audit-plugin": true,
+            "phpstan/extension-installer": true
         }
     },
     "scripts": {
