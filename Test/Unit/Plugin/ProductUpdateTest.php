@@ -48,6 +48,8 @@ use Magento\Framework\Indexer\IndexerInterface;
 use Magento\Framework\Indexer\IndexerRegistry;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\Website;
+use Nosto\Tagging\Model\ResourceModel\Magento\Product\Collection as ProductCollection;
+use Nosto\Tagging\Exception\ParentProductDisabledException;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Indexer\ProductIndexer;
@@ -90,6 +92,12 @@ class ProductUpdateTest extends TestCase
     /** @var NostoLogger|MockObject */
     private MockObject $loggerMock;
 
+    /** @var NostoProductRepository|MockObject */
+    private MockObject $nostoProductRepositoryMock;
+
+    /** @var CollectionBuilder|MockObject */
+    private MockObject $collectionBuilderMock;
+
     /** @var callable[] */
     private array $commitCallbacks = [];
 
@@ -116,15 +124,17 @@ class ProductUpdateTest extends TestCase
         $this->productStoreLinkMock = $this->createMock(ProductStoreLink::class);
         $this->visibilityResolverMock = $this->createMock(VisibilityResolver::class);
         $this->loggerMock = $this->createMock(NostoLogger::class);
+        $this->nostoProductRepositoryMock = $this->createMock(NostoProductRepository::class);
+        $this->collectionBuilderMock = $this->createMock(CollectionBuilder::class);
 
         $this->plugin = new ProductUpdate(
             $indexerRegistryMock,
             $this->createMock(ProductIndexer::class),
-            $this->createMock(NostoProductRepository::class),
+            $this->nostoProductRepositoryMock,
             $this->loggerMock,
             $this->productUpdateServiceMock,
             $this->nostoHelperScopeMock,
-            $this->createMock(CollectionBuilder::class),
+            $this->collectionBuilderMock,
             $this->productStoreLinkMock,
             $this->visibilityResolverMock
         );
@@ -505,5 +515,122 @@ class ProductUpdateTest extends TestCase
             $newProduct
         );
         $this->runCommitCallbacks();
+    }
+
+    /**
+     * @param int[] $storeIds
+     * @return Store[]
+     */
+    private function mockDeletedProductStores(array $storeIds): array
+    {
+        $this->productMock->method('getStoreIds')->willReturn($storeIds);
+        $stores = [];
+        foreach ($storeIds as $storeId) {
+            $stores[$storeId] = $this->createMock(Store::class);
+        }
+        $this->nostoHelperScopeMock->method('getStore')
+            ->willReturnCallback(function ($storeId) use ($stores) {
+                return $stores[$storeId];
+            });
+        return array_values($stores);
+    }
+
+    private function deleteProduct(): void
+    {
+        $result = $this->plugin->aroundDelete(
+            $this->productResourceMock,
+            function () {
+                return 'deleted';
+            },
+            $this->productMock
+        );
+        $this->assertSame('deleted', $result);
+        $this->runCommitCallbacks();
+    }
+
+    /**
+     * @covers \Nosto\Tagging\Plugin\ProductUpdate::aroundDelete()
+     */
+    public function testAroundDeleteDiscontinuesProductWithoutParent(): void
+    {
+        [$storeOne, $storeTwo] = $this->mockDeletedProductStores([1, 2]);
+        $this->nostoProductRepositoryMock->method('resolveParentProductIds')->willReturn([]);
+
+        $this->productUpdateServiceMock->expects($this->exactly(2))
+            ->method('addIdsToDeleteMessageQueue')
+            ->withConsecutive([[self::PRODUCT_ID], $storeOne], [[self::PRODUCT_ID], $storeTwo]);
+        $this->productUpdateServiceMock->expects($this->never())
+            ->method('addCollectionToUpdateMessageQueue');
+        $this->collectionBuilderMock->expects($this->never())->method('withIds');
+
+        $this->deleteProduct();
+    }
+
+    /**
+     * A deleted child must be discontinued itself, not only have its parent
+     * refreshed, otherwise an individually visible child stays in Nosto. NS-14881.
+     *
+     * @covers \Nosto\Tagging\Plugin\ProductUpdate::aroundDelete()
+     */
+    public function testAroundDeleteDiscontinuesChildAndRefreshesItsParents(): void
+    {
+        [$storeOne, $storeTwo] = $this->mockDeletedProductStores([1, 2]);
+        $parentIds = [456, 789];
+        $this->nostoProductRepositoryMock->method('resolveParentProductIds')->willReturn($parentIds);
+
+        $parentCollection = $this->createMock(ProductCollection::class);
+        $this->collectionBuilderMock->expects($this->once())
+            ->method('withIds')
+            ->with($parentIds)
+            ->willReturnSelf();
+        $this->collectionBuilderMock->method('build')->willReturn($parentCollection);
+
+        $this->productUpdateServiceMock->expects($this->exactly(2))
+            ->method('addIdsToDeleteMessageQueue')
+            ->withConsecutive([[self::PRODUCT_ID], $storeOne], [[self::PRODUCT_ID], $storeTwo]);
+        $this->productUpdateServiceMock->expects($this->exactly(2))
+            ->method('addCollectionToUpdateMessageQueue')
+            ->withConsecutive([$parentCollection, $storeOne], [$parentCollection, $storeTwo]);
+
+        $this->deleteProduct();
+    }
+
+    /**
+     * @covers \Nosto\Tagging\Plugin\ProductUpdate::aroundDelete()
+     */
+    public function testAroundDeleteDiscontinuesChildWhenAllParentsAreDisabled(): void
+    {
+        [$store] = $this->mockDeletedProductStores([1]);
+        $this->nostoProductRepositoryMock->method('resolveParentProductIds')
+            ->willThrowException(new ParentProductDisabledException(self::PRODUCT_ID));
+
+        $this->productUpdateServiceMock->expects($this->once())
+            ->method('addIdsToDeleteMessageQueue')
+            ->with([self::PRODUCT_ID], $store);
+        $this->productUpdateServiceMock->expects($this->never())
+            ->method('addCollectionToUpdateMessageQueue');
+
+        $this->deleteProduct();
+    }
+
+    /**
+     * @covers \Nosto\Tagging\Plugin\ProductUpdate::aroundDelete()
+     */
+    public function testAroundDeleteQueuesNothingBeforeTheTransactionCommits(): void
+    {
+        $this->mockDeletedProductStores([1]);
+        $this->nostoProductRepositoryMock->method('resolveParentProductIds')->willReturn([]);
+
+        $this->productUpdateServiceMock->expects($this->never())
+            ->method('addIdsToDeleteMessageQueue');
+
+        $this->plugin->aroundDelete(
+            $this->productResourceMock,
+            function () {
+                return 'deleted';
+            },
+            $this->productMock
+        );
+        $this->assertCount(1, $this->commitCallbacks);
     }
 }

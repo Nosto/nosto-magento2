@@ -323,35 +323,35 @@ class ProductUpdate
         AbstractModel $product
     ) {
         try {
-            $productIds = $this->nostoProductRepository->resolveParentProductIds($product);
+            $parentProductIds = $this->nostoProductRepository->resolveParentProductIds($product);
         } catch (ParentProductDisabledException $e) {
+            // All parents are disabled, so there is no parent to refresh, but the
+            // deleted product itself must still be discontinued below
             $this->logger->debug($e->getMessage());
-            return $proceed($product);
+            $parentProductIds = [];
         }
 
+        $productId = $product->getId();
         $storeIds = $product->getStoreIds();
 
-        // The current product does not have parent product
-        if (empty($productIds)) {
-            $productResource->addCommitCallback(function () use ($product, $storeIds) {
-                foreach ($storeIds as $storeId) {
-                    $store = $this->nostoHelperScope->getStore($storeId);
-                    $this->productUpdateService->addIdsToDeleteMessageQueue([$product->getId()], $store);
-                }
-            });
-        }
+        $productResource->addCommitCallback(function () use ($productId, $parentProductIds, $storeIds) {
+            $parentCollection = empty($parentProductIds)
+                ? null
+                : $this->productCollectionBuilder->withIds($parentProductIds)->build();
 
-        // Current product is child product
-        if (is_array($productIds) && !empty($productIds)) {
-            $productResource->addCommitCallback(function () use ($productIds, $storeIds) {
-                $productCollection = $this->productCollectionBuilder->withIds($productIds)->build();
-
-                foreach ($storeIds as $storeId) {
-                    $store = $this->nostoHelperScope->getStore($storeId);
-                    $this->productUpdateService->addCollectionToUpdateMessageQueue($productCollection, $store);
+            foreach ($storeIds as $storeId) {
+                $store = $this->nostoHelperScope->getStore($storeId);
+                // Always discontinue the deleted product itself. A child that is
+                // individually visible is synced as its own product in Nosto,
+                // so refreshing only its parent would leave it orphaned in the catalog.
+                // For a hidden child the discontinue is a no-op on the Nosto side.
+                $this->productUpdateService->addIdsToDeleteMessageQueue([$productId], $store);
+                if ($parentCollection !== null) {
+                    // Refresh the parent(s) so the deleted child drops out of their SKUs
+                    $this->productUpdateService->addCollectionToUpdateMessageQueue($parentCollection, $store);
                 }
-            });
-        }
+            }
+        });
 
         return $proceed($product);
     }
