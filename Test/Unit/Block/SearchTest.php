@@ -39,19 +39,21 @@ class SearchTest extends TestCase
 
     protected function setUp(): void
     {
-        $context = $this->createMock(Context::class);
+        $context = $this->createStub(Context::class);
         $this->catalogSearchData = $this->createMock(Data::class);
 
         $this->searchBlock = new Search(
             $context,
             $this->catalogSearchData,
-            $this->createMock(NostoHelperAccount::class),
-            $this->createMock(NostoHelperScope::class)
+            $this->createStub(NostoHelperAccount::class),
+            $this->createStub(NostoHelperScope::class)
         );
     }
 
     public function testUsesTemplateAsItsDirectParent(): void
     {
+        $this->catalogSearchData->expects(self::never())->method('getEscapedQueryText');
+
         self::assertSame(Template::class, get_parent_class($this->searchBlock));
     }
 

@@ -79,7 +79,7 @@ class Repository
     public function isOptedIn($email)
     {
         $subscriber = $this->getNewsletterOptInForEmail($email);
-        if (!$subscriber || empty($subscriber)) {
+        if (!$subscriber) {
             return false;
         }
 

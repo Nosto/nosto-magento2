@@ -45,6 +45,7 @@ use Magento\Store\Model\Store;
 use Nosto\Tagging\Model\ResourceModel\Magento\Category\Collection as CategoryCollection;
 use Nosto\Tagging\Model\ResourceModel\Magento\Category\CollectionBuilder;
 use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\MockObject\Stub;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -52,10 +53,10 @@ use PHPUnit\Framework\TestCase;
  */
 class CollectionBuilderTest extends TestCase
 {
-    /** @var CategoryCollection|MockObject */
+    /** @var CategoryCollection&MockObject */
     private MockObject $collectionMock;
 
-    /** @var CategoryRepositoryInterface|MockObject */
+    /** @var CategoryRepositoryInterface&MockObject */
     private MockObject $categoryRepositoryMock;
 
     private CollectionBuilder $builder;
@@ -74,11 +75,11 @@ class CollectionBuilderTest extends TestCase
     /**
      * @param int $storeId
      * @param int $rootCategoryId
-     * @return Store|MockObject
+     * @return Store&Stub
      */
-    private function storeMock(int $storeId, int $rootCategoryId): MockObject
+    private function storeMock(int $storeId, int $rootCategoryId): Stub
     {
-        $store = $this->createMock(Store::class);
+        $store = $this->createStub(Store::class);
         $store->method('getId')->willReturn($storeId);
         $store->method('getRootCategoryId')->willReturn($rootCategoryId);
         return $store;
@@ -94,7 +95,7 @@ class CollectionBuilderTest extends TestCase
         // completely different website/store (with its own root category) would be
         // included and end up synced to the wrong Nosto account.
         $store = $this->storeMock(5, 1286);
-        $rootCategory = $this->createMock(CategoryInterface::class);
+        $rootCategory = $this->createStub(CategoryInterface::class);
 
         $this->categoryRepositoryMock->expects($this->once())
             ->method('get')
@@ -129,10 +130,10 @@ class CollectionBuilderTest extends TestCase
         $mainStore = $this->storeMock(1, 2);
         $educationStore = $this->storeMock(5, 1286);
 
-        $mainRoot = $this->createMock(CategoryInterface::class);
-        $educationRoot = $this->createMock(CategoryInterface::class);
+        $mainRoot = $this->createStub(CategoryInterface::class);
+        $educationRoot = $this->createStub(CategoryInterface::class);
 
-        $this->categoryRepositoryMock->method('get')
+        $this->categoryRepositoryMock->expects($this->exactly(2))->method('get')
             ->willReturnMap([
                 [2, 1, $mainRoot],
                 [1286, 5, $educationRoot],

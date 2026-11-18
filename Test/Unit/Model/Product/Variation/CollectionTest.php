@@ -57,6 +57,7 @@ use Nosto\Tagging\Model\Product\Variation\Builder;
 use Nosto\Tagging\Model\Product\Variation\Collection;
 use Nosto\Tagging\Model\ResourceModel\Sku as SkuResource;
 use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\MockObject\Stub;
 use PHPUnit\Framework\TestCase;
 use ReflectionProperty;
 
@@ -67,50 +68,45 @@ class CollectionTest extends TestCase
     /** @var MockObject */
     private $nostoProductRepositoryMock;
 
-    /** @var MockObject */
+    /** @var Stub */
     private $skuResourceMock;
 
-    /** @var MockObject */
+    /** @var Stub */
     private $customerGroupManagerMock;
 
-    /** @var MockObject */
+    /** @var Stub */
     private $productMock;
 
-    /** @var MockObject */
+    /** @var Stub */
     private $storeMock;
 
-    /** @var MockObject */
+    /** @var Stub */
     private $nostoProductMock;
 
     protected function setUp(): void
     {
         // Builder has a generated factory in its constructor that doesn't exist on disk.
         // Bypass the constructor and inject only the properties Collection::build() exercises.
-        $builder = $this->getMockBuilder(Builder::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods([])
-            ->getMock();
+        $builder = (new \ReflectionClass(Builder::class))->newInstanceWithoutConstructor();
 
         $this->nostoProductRepositoryMock = $this->createMock(NostoProductRepository::class);
-        $this->skuResourceMock = $this->getMockBuilder(SkuResource::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $this->skuResourceMock = $this->createStub(SkuResource::class);
 
-        $ruleResourceModelMock = $this->createMock(RuleResourceModel::class);
+        $ruleResourceModelMock = $this->createStub(RuleResourceModel::class);
         $ruleResourceModelMock->method('getRulePrice')->willReturn(false);
 
-        $localeDateMock = $this->createMock(TimezoneInterface::class);
+        $localeDateMock = $this->createStub(TimezoneInterface::class);
         $localeDateMock->method('scopeDate')->willReturn(new \DateTime());
 
-        $nostoPriceHelperMock = $this->createMock(NostoPriceHelper::class);
+        $nostoPriceHelperMock = $this->createStub(NostoPriceHelper::class);
         $nostoPriceHelperMock->method('getProductDisplayPrice')->willReturn(10.0);
         $nostoPriceHelperMock->method('getProductPrice')->willReturn(10.0);
 
-        $nostoCurrencyHelperMock = $this->createMock(CurrencyHelper::class);
+        $nostoCurrencyHelperMock = $this->createStub(CurrencyHelper::class);
         $nostoCurrencyHelperMock->method('convertToTaggingPrice')->willReturnArgument(0);
 
-        $eventManagerMock = $this->createMock(ManagerInterface::class);
-        $loggerMock = $this->createMock(NostoLogger::class);
+        $eventManagerMock = $this->createStub(ManagerInterface::class);
+        $loggerMock = $this->createStub(NostoLogger::class);
 
         $this->injectProperty($builder, 'nostoProductRepository', $this->nostoProductRepositoryMock);
         $this->injectProperty($builder, 'skuResource', $this->skuResourceMock);
@@ -121,8 +117,8 @@ class CollectionTest extends TestCase
         $this->injectProperty($builder, 'eventManager', $eventManagerMock);
         $this->injectProperty($builder, 'logger', $loggerMock);
 
-        $this->customerGroupManagerMock = $this->createMock(GroupManagement::class);
-        $groupRepositoryMock = $this->createMock(GroupRepository::class);
+        $this->customerGroupManagerMock = $this->createStub(GroupManagement::class);
+        $groupRepositoryMock = $this->createStub(GroupRepository::class);
 
         $this->collection = new Collection(
             $builder,
@@ -131,18 +127,18 @@ class CollectionTest extends TestCase
             $builder
         );
 
-        $websiteMock = $this->createMock(Website::class);
+        $websiteMock = $this->createStub(Website::class);
 
-        $this->storeMock = $this->createMock(Store::class);
+        $this->storeMock = $this->createStub(Store::class);
         $this->storeMock->method('getWebsite')->willReturn($websiteMock);
         $this->storeMock->method('getId')->willReturn('1');
         $this->storeMock->method('getWebsiteId')->willReturn('1');
 
-        $this->productMock = $this->createMock(Product::class);
+        $this->productMock = $this->createStub(Product::class);
         $this->productMock->method('getTypeInstance')
-            ->willReturn($this->createMock(ConfigurableType::class));
+            ->willReturn($this->createStub(ConfigurableType::class));
 
-        $this->nostoProductMock = $this->createMock(NostoProduct::class);
+        $this->nostoProductMock = $this->createStub(NostoProduct::class);
         $this->nostoProductMock->method('getVariationId')->willReturn('__default__');
         $this->nostoProductMock->method('getAvailability')->willReturn('InStock');
         $this->nostoProductMock->method('getPriceCurrencyCode')->willReturn('EUR');
@@ -158,11 +154,11 @@ class CollectionTest extends TestCase
      */
     public function testBuildDedupesReloadProductAcrossGroupsForSameSku(): void
     {
-        $groupOne = $this->createMock(Group::class);
+        $groupOne = $this->createStub(Group::class);
         $groupOne->method('getId')->willReturn('2');
         $groupOne->method('getCode')->willReturn('general');
 
-        $groupTwo = $this->createMock(Group::class);
+        $groupTwo = $this->createStub(Group::class);
         $groupTwo->method('getId')->willReturn('3');
         $groupTwo->method('getCode')->willReturn('wholesale');
 
@@ -173,7 +169,7 @@ class CollectionTest extends TestCase
             ->willReturn([10 => 10, 20 => 20]);
         $this->skuResourceMock->method('getMinPriceSkuId')->willReturn(20);
 
-        $cheapestSku = $this->createMock(Product::class);
+        $cheapestSku = $this->createStub(Product::class);
         $cheapestSku->method('getTierPrices')->willReturn([]);
 
         $this->nostoProductRepositoryMock->expects($this->once())

@@ -51,19 +51,19 @@ class WebsiteLinkTest extends TestCase
     /** @var WebsiteLink */
     private WebsiteLink $websiteLink;
 
-    /** @var AdapterInterface|MockObject */
+    /** @var AdapterInterface&MockObject */
     private MockObject $connectionMock;
 
     protected function setUp(): void
     {
-        $selectMock = $this->createMock(Select::class);
+        $selectMock = $this->createStub(Select::class);
         $selectMock->method('from')->willReturnSelf();
         $selectMock->method('where')->willReturnSelf();
 
         $this->connectionMock = $this->createMock(AdapterInterface::class);
         $this->connectionMock->method('select')->willReturn($selectMock);
 
-        $resourceConnectionMock = $this->createMock(ResourceConnection::class);
+        $resourceConnectionMock = $this->createStub(ResourceConnection::class);
         $resourceConnectionMock->method('getConnection')->willReturn($this->connectionMock);
         $resourceConnectionMock->method('getTableName')->willReturn('catalog_product_website');
 

@@ -51,54 +51,57 @@ use Nosto\Tagging\Helper\Account as NostoHelperAccount;
 use Nosto\Tagging\Helper\Data as NostoHelperData;
 use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\MockObject\Stub;
 use PHPUnit\Framework\TestCase;
 
 class AddtocartTest extends TestCase
 {
-    /** @var Context|MockObject */
+    /** @var Context&Stub */
     private $contextMock;
 
-    /** @var EncoderInterface|MockObject */
+    /** @var EncoderInterface&Stub */
     private $urlEncoderMock;
 
-    /** @var NostoHelperAccount|MockObject */
+    /** @var NostoHelperAccount&Stub */
     private $nostoHelperAccountMock;
 
-    /** @var NostoHelperScope|MockObject */
+    /** @var NostoHelperScope&Stub */
     private $nostoHelperScopeMock;
 
-    /** @var NostoHelperData|MockObject */
+    /** @var NostoHelperData&Stub */
     private $nostoHelperDataMock;
 
-    /** @var UrlInterface|MockObject */
+    /** @var UrlInterface&Stub */
     private $urlBuilderMock;
 
-    /** @var RequestInterface|MockObject */
+    /** @var RequestInterface&Stub */
     private $requestMock;
 
-    /** @var Store|MockObject */
+    /** @var Store&Stub */
     private $storeMock;
 
-    private Addtocart $block;
+    private ?Addtocart $block = null;
 
     protected function setUp(): void
     {
-        $this->urlBuilderMock = $this->createMock(UrlInterface::class);
-        $this->requestMock = $this->createMock(RequestInterface::class);
-        $this->storeMock = $this->createMock(Store::class);
+        $this->urlBuilderMock = $this->createStub(UrlInterface::class);
+        $this->requestMock = $this->createStub(RequestInterface::class);
+        $this->storeMock = $this->createStub(Store::class);
 
-        $this->contextMock = $this->getMockBuilder(Context::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $this->contextMock = $this->createStub(Context::class);
+
+        $this->urlEncoderMock = $this->createStub(EncoderInterface::class);
+        $this->nostoHelperAccountMock = $this->createStub(NostoHelperAccount::class);
+        $this->nostoHelperScopeMock = $this->createStub(NostoHelperScope::class);
+        $this->nostoHelperDataMock = $this->createStub(NostoHelperData::class);
+    }
+
+    private function getAddtocart(): Addtocart
+    {
         $this->contextMock->method('getUrlBuilder')->willReturn($this->urlBuilderMock);
         $this->contextMock->method('getRequest')->willReturn($this->requestMock);
 
-        $this->urlEncoderMock = $this->createMock(EncoderInterface::class);
-        $this->nostoHelperAccountMock = $this->createMock(NostoHelperAccount::class);
-        $this->nostoHelperScopeMock = $this->createMock(NostoHelperScope::class);
-        $this->nostoHelperDataMock = $this->createMock(NostoHelperData::class);
-
-        $this->block = new Addtocart(
+        return $this->block ??= new Addtocart(
             $this->contextMock,
             $this->urlEncoderMock,
             $this->nostoHelperAccountMock,
@@ -113,7 +116,7 @@ class AddtocartTest extends TestCase
      */
     public function testGetAbstractObjectReturnsNull(): void
     {
-        $this->assertNull($this->block->getAbstractObject());
+        $this->assertNull($this->getAddtocart()->getAbstractObject());
     }
 
     /**
@@ -122,12 +125,14 @@ class AddtocartTest extends TestCase
      */
     public function testIsHyvaReturnsTrueWhenEnabled(): void
     {
+        $this->nostoHelperScopeMock = $this->createMock(NostoHelperScope::class);
+
         $this->nostoHelperScopeMock->method('getStore')->willReturn($this->storeMock);
-        $this->nostoHelperScopeMock->method('isHyvaEnabled')
+        $this->nostoHelperScopeMock->expects($this->atLeastOnce())->method('isHyvaEnabled')
             ->with($this->storeMock)
             ->willReturn(true);
 
-        $this->assertTrue($this->block->isHyva());
+        $this->assertTrue($this->getAddtocart()->isHyva());
     }
 
     /**
@@ -136,12 +141,14 @@ class AddtocartTest extends TestCase
      */
     public function testIsHyvaReturnsFalseWhenDisabled(): void
     {
+        $this->nostoHelperScopeMock = $this->createMock(NostoHelperScope::class);
+
         $this->nostoHelperScopeMock->method('getStore')->willReturn($this->storeMock);
-        $this->nostoHelperScopeMock->method('isHyvaEnabled')
+        $this->nostoHelperScopeMock->expects($this->atLeastOnce())->method('isHyvaEnabled')
             ->with($this->storeMock)
             ->willReturn(false);
 
-        $this->assertFalse($this->block->isHyva());
+        $this->assertFalse($this->getAddtocart()->isHyva());
     }
 
     /**
@@ -153,7 +160,7 @@ class AddtocartTest extends TestCase
         $this->nostoHelperScopeMock->method('getStore')
             ->willThrowException(new \Exception('Store not found'));
 
-        $this->assertFalse($this->block->isHyva());
+        $this->assertFalse($this->getAddtocart()->isHyva());
     }
 
     /**
@@ -162,19 +169,22 @@ class AddtocartTest extends TestCase
      */
     public function testGetSubmitUrl(): void
     {
+        $this->urlBuilderMock = $this->createMock(UrlInterface::class);
+        $this->nostoHelperDataMock = $this->createMock(NostoHelperData::class);
+
         $this->nostoHelperScopeMock->method('getStore')->willReturn($this->storeMock);
         $this->storeMock->method('getCode')->willReturn('default');
-        $this->nostoHelperDataMock->method('getStoreCodeToUrl')
+        $this->nostoHelperDataMock->expects($this->atLeastOnce())->method('getStoreCodeToUrl')
             ->with($this->storeMock)
             ->willReturn(false);
         $this->urlBuilderMock->method('getCurrentUrl')->willReturn('https://example.com/');
         $this->urlEncoderMock->method('encode')->willReturn('aHR0cHM6Ly9leGFtcGxlLmNvbS8=');
         $this->requestMock->method('isSecure')->willReturn(false);
-        $this->urlBuilderMock->method('getUrl')
+        $this->urlBuilderMock->expects($this->atLeastOnce())->method('getUrl')
             ->with('checkout/cart/add', $this->isType('array'))
             ->willReturn('https://example.com/checkout/cart/add');
 
-        $result = $this->block->getSubmitUrl();
+        $result = $this->getAddtocart()->getSubmitUrl();
 
         $this->assertSame('https://example.com/checkout/cart/add', $result);
     }
@@ -185,17 +195,15 @@ class AddtocartTest extends TestCase
      */
     public function testGetSubmitUrlAddsInCartParamOnCartPage(): void
     {
-        /** @var Http|MockObject $httpRequestMock */
-        $httpRequestMock = $this->getMockBuilder(Http::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $this->urlBuilderMock = $this->createMock(UrlInterface::class);
+
+        /** @var Http|Stub $httpRequestMock */
+        $httpRequestMock = $this->createStub(Http::class);
         $httpRequestMock->method('isSecure')->willReturn(false);
         $httpRequestMock->method('getRouteName')->willReturn('checkout');
         $httpRequestMock->method('getControllerName')->willReturn('cart');
 
-        $contextMock = $this->getMockBuilder(Context::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $contextMock = $this->createStub(Context::class);
         $contextMock->method('getUrlBuilder')->willReturn($this->urlBuilderMock);
         $contextMock->method('getRequest')->willReturn($httpRequestMock);
 

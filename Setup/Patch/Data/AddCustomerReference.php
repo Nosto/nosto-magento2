@@ -37,6 +37,7 @@
 namespace Nosto\Tagging\Setup\Patch\Data;
 
 use Magento\Customer\Model\Customer;
+use Magento\Customer\Model\ResourceModel\Attribute as AttributeResource;
 use Magento\Customer\Setup\CustomerSetupFactory;
 use Magento\Eav\Model\Entity\Attribute\SetFactory as AttributeSetFactory;
 use Magento\Framework\Exception\LocalizedException;
@@ -58,19 +59,24 @@ class AddCustomerReference implements DataPatchInterface
     /** @var ModuleDataSetupInterface */
     private ModuleDataSetupInterface $moduleDataSetup;
 
+    private AttributeResource $attributeResource;
+
     /**
      * @param CustomerSetupFactory $customerSetupFactory
      * @param AttributeSetFactory $attributeSetFactory
      * @param ModuleDataSetupInterface $moduleDataSetup
+     * @param AttributeResource $attributeResource
      */
     public function __construct(
         CustomerSetupFactory $customerSetupFactory,
         AttributeSetFactory $attributeSetFactory,
-        ModuleDataSetupInterface $moduleDataSetup
+        ModuleDataSetupInterface $moduleDataSetup,
+        AttributeResource $attributeResource
     ) {
         $this->customerSetupFactory = $customerSetupFactory;
         $this->attributeSetFactory = $attributeSetFactory;
         $this->moduleDataSetup = $moduleDataSetup;
+        $this->attributeResource = $attributeResource;
     }
 
     /**
@@ -98,6 +104,7 @@ class AddCustomerReference implements DataPatchInterface
         /** @noinspection PhpUnhandledExceptionInspection */
         $this->addCustomerReference();
         $this->moduleDataSetup->getConnection()->endSetup();
+        return $this;
     }
 
     /**
@@ -146,8 +153,7 @@ class AddCustomerReference implements DataPatchInterface
             ]
         );
 
-        /** @noinspection PhpDeprecationInspection */
         /** @noinspection NullPointerExceptionInspection */
-        $attribute->save();
+        $this->attributeResource->save($attribute);
     }
 }

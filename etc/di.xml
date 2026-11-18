@@ -78,6 +78,11 @@
     </type>
     <type name="Nosto\Tagging\Logger\Logger">
         <arguments>
+            <argument name="logger" xsi:type="object">NostoTaggingMonolog</argument>
+        </arguments>
+    </type>
+    <virtualType name="NostoTaggingMonolog" type="Monolog\Logger">
+        <arguments>
             <argument name="name" xsi:type="string">nosto</argument>
             <argument name="handlers" xsi:type="array">
                 <item name="system" xsi:type="object">Nosto\Tagging\Logger\SystemHandler</item>
@@ -85,7 +90,7 @@
                 <item name="exception" xsi:type="object">Nosto\Tagging\Logger\ExceptionHandler</item>
             </argument>
         </arguments>
-    </type>
+    </virtualType>
     <type name="Nosto\Tagging\Observer\Order\Save">
         <arguments>
             <argument name="intervalForNew" xsi:type="number">1</argument>

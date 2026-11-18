@@ -46,33 +46,31 @@ use Magento\Framework\DB\Select;
 use Magento\Store\Model\Website;
 use Nosto\Tagging\Model\ResourceModel\Sku;
 use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\MockObject\Stub;
 use PHPUnit\Framework\TestCase;
 
 class SkuTest extends TestCase
 {
-    /** @var Sku|MockObject */
+    /** @var Sku|Stub */
     private Sku $sku;
 
-    /** @var ResourceConnection|MockObject */
-    private MockObject $resourceConnectionMock;
+    /** @var ResourceConnection&Stub */
+    private Stub $resourceConnectionMock;
 
-    /** @var AdapterInterface|MockObject */
+    /** @var AdapterInterface&MockObject */
     private MockObject $connectionMock;
 
-    /** @var Select|MockObject */
-    private MockObject $selectMock;
+    /** @var Select&Stub */
+    private Stub $selectMock;
 
-    /** @var Website|MockObject */
-    private MockObject $websiteMock;
+    /** @var Website&Stub */
+    private Stub $websiteMock;
 
     protected function setUp(): void
     {
-        $this->sku = $this->getMockBuilder(Sku::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods([])
-            ->getMock();
+        $this->sku = (new \ReflectionClass(Sku::class))->newInstanceWithoutConstructor();
 
-        $this->selectMock = $this->createMock(Select::class);
+        $this->selectMock = $this->createStub(Select::class);
         $this->selectMock->method('from')->willReturnSelf();
         $this->selectMock->method('where')->willReturnSelf();
         $this->selectMock->method('order')->willReturnSelf();
@@ -81,7 +79,7 @@ class SkuTest extends TestCase
         $this->connectionMock = $this->createMock(AdapterInterface::class);
         $this->connectionMock->method('select')->willReturn($this->selectMock);
 
-        $this->resourceConnectionMock = $this->createMock(ResourceConnection::class);
+        $this->resourceConnectionMock = $this->createStub(ResourceConnection::class);
         $this->resourceConnectionMock->method('getConnection')->willReturn($this->connectionMock);
         $this->resourceConnectionMock->method('getTableName')
             ->willReturn(Sku::CATALOG_PRODUCT_PRICE_INDEX_TABLE);
@@ -89,7 +87,7 @@ class SkuTest extends TestCase
         $resourceProperty = new \ReflectionProperty(AbstractEntity::class, '_resource');
         $resourceProperty->setValue($this->sku, $this->resourceConnectionMock);
 
-        $this->websiteMock = $this->createMock(Website::class);
+        $this->websiteMock = $this->createStub(Website::class);
         $this->websiteMock->method('getId')->willReturn('1');
     }
 
@@ -110,7 +108,7 @@ class SkuTest extends TestCase
      */
     public function testGetMinPriceSkuIdReturnsEntityIdWhenFound(): void
     {
-        $this->connectionMock->method('fetchOne')->willReturn('42');
+        $this->connectionMock->expects($this->once())->method('fetchOne')->willReturn('42');
 
         $result = $this->sku->getMinPriceSkuId($this->websiteMock, 1, [10, 20, 30]);
 
@@ -122,7 +120,7 @@ class SkuTest extends TestCase
      */
     public function testGetMinPriceSkuIdReturnsNullWhenNoIndexRow(): void
     {
-        $this->connectionMock->method('fetchOne')->willReturn(false);
+        $this->connectionMock->expects($this->once())->method('fetchOne')->willReturn(false);
 
         $result = $this->sku->getMinPriceSkuId($this->websiteMock, 1, [10, 20, 30]);
 

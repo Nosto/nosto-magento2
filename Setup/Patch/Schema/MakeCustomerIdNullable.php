@@ -151,6 +151,7 @@ class MakeCustomerIdNullable implements SchemaPatchInterface
             );
         }
         $this->schemaSetup->endSetup();
+        return $this;
     }
 
     /**
