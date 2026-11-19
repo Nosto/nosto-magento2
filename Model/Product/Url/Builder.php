@@ -89,6 +89,7 @@ class Builder extends DataObject
             UrlRewrite::ENTITY_ID => $product->getId(),
             UrlRewrite::ENTITY_TYPE => ProductUrlRewriteGenerator::ENTITY_TYPE,
             UrlRewrite::STORE_ID => $store->getId(),
+            UrlRewrite::REDIRECT_TYPE => 0            
         ];
         $productRequestPath = $product->getData('request_path');
         if (!empty($productRequestPath)) {
