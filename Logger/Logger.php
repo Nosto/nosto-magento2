@@ -40,20 +40,39 @@ use Magento\Store\Model\Store;
 use Monolog\Logger as MonologLogger;
 use Nosto\Tagging\Helper\NewRelic;
 use Nosto\Util\Memory;
+use Psr\Log\AbstractLogger;
 use Throwable;
 
-class Logger extends MonologLogger
+class Logger extends AbstractLogger
 {
+    private MonologLogger $logger;
+
+    /**
+     * @param MonologLogger $logger
+     */
+    public function __construct(MonologLogger $logger)
+    {
+        $this->logger = $logger;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function log($level, $message, array $context = []): void
+    {
+        $this->logger->log($level, $message, $context);
+    }
+
     /**
      * Logs an exception and sends it to New relic if available
      * @param Throwable $exception
-     * @return bool
+     * @return void
      */
     public function exception(Throwable $exception)
     {
         $newRelic = new NewRelic();
         $newRelic->reportException($exception);
-        return $this->error($exception->__toString());
+        $this->error($exception->__toString());
     }
 
     /**
@@ -62,7 +81,7 @@ class Logger extends MonologLogger
      * @param $message
      * @param Store|null $store
      * @param null $sourceClass
-     * @return bool|void
+     * @return void
      */
     public function logWithMemoryConsumption($message, ?Store $store = null, $sourceClass = null)
     {
@@ -78,9 +97,10 @@ class Logger extends MonologLogger
             $context['storeId'] = $store->getId();
         }
         if (is_object($sourceClass)) {
-            return $this->debugWithSource($msg, $context, $sourceClass);
+            $this->debugWithSource($msg, $context, $sourceClass);
+            return;
         }
-        return $this->debug($msg, $context);
+        $this->debug($msg, $context);
     }
 
     /**
@@ -89,11 +109,11 @@ class Logger extends MonologLogger
      * @param $message
      * @param array $context
      * @param object $sourceClass
-     * @return bool
+     * @return void
      */
     public function debugWithSource($message, array $context, object $sourceClass)
     {
-        return $this->logWithSource($message, $context, $sourceClass, 'debug');
+        $this->logWithSource($message, $context, $sourceClass, 'debug');
     }
 
     /**
@@ -102,11 +122,11 @@ class Logger extends MonologLogger
      * @param $message
      * @param array $context
      * @param object $sourceClass
-     * @return bool
+     * @return void
      */
     public function infoWithSource($message, array $context, object $sourceClass)
     {
-        return $this->logWithSource($message, $context, $sourceClass, 'info');
+        $this->logWithSource($message, $context, $sourceClass, 'info');
     }
 
     /**
@@ -114,14 +134,15 @@ class Logger extends MonologLogger
      * @param $context
      * @param $sourceClass
      * @param $level
-     * @return bool
+     * @return void
      */
     private function logWithSource($message, $context, $sourceClass, $level)
     {
         $context['sourceClass'] = get_class($sourceClass);
         if ($level === 'info') {
-            return $this->info($message, $context);
+            $this->info($message, $context);
+            return;
         }
-        return $this->debug($message, $context);
+        $this->debug($message, $context);
     }
 }

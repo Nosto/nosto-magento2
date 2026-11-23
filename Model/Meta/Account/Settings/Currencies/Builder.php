@@ -166,7 +166,9 @@ class Builder
                         continue;
                     }
                     $finalPrecision = $this->isZeroDecimalCurrency($currencyCode) ? 0 : $precision;
-                    $currency = $this->currencyFactory->create()->load($currencyCode); // @codingStandardsIgnoreLine
+                    $currency = $this->currencyFactory->create();
+                    $currency->unsRate();
+                    $currency->setData('currency_code', $currencyCode);
                     $currencies[$currency->getCode()] = new Format(
                         $this->isSymbolBeforeAmount($localeData, $defaultSet),
                         $currency->getCurrencySymbol(),

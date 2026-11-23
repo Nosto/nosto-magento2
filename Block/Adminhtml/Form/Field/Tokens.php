@@ -70,7 +70,7 @@ class Tokens extends Field
         NostoHelperAccount $nostoHelperAccount,
         array $data = []
     ) {
-        parent::__construct($context, $data);
+        parent::__construct($context, ['template' => 'tokens.phtml'] + $data);
         $this->nostoHelperAccount = $nostoHelperAccount;
         $this->nostoHelperScope = $nostoHelperScope;
         $this->request = $request;
@@ -101,14 +101,4 @@ class Tokens extends Field
         return $this->toHtml();
     }
 
-    /**
-     * @return $this|Field
-     * @SuppressWarnings(PHPMD.CamelCaseMethodName)
-     */
-    protected function _prepareLayout() //@codingStandardsIgnoreLine
-    {
-        parent::_prepareLayout();
-        $this->setTemplate('tokens.phtml');
-        return $this;
-    }
 }

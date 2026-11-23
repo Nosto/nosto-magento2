@@ -39,7 +39,6 @@ declare(strict_types=1);
 
 namespace Nosto\Tagging\Test\Unit\Plugin;
 
-use ArrayObject;
 use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\Product\Visibility;
@@ -60,6 +59,7 @@ use Nosto\Tagging\Model\ResourceModel\Magento\Product\CollectionBuilder;
 use Nosto\Tagging\Model\Service\Update\ProductUpdateService;
 use Nosto\Tagging\Plugin\ProductUpdate;
 use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\MockObject\Stub;
 use PHPUnit\Framework\TestCase;
 
 class ProductUpdateTest extends TestCase
@@ -67,37 +67,37 @@ class ProductUpdateTest extends TestCase
     private const PRODUCT_ID = 123;
 
     /** @var ProductUpdate */
-    private ProductUpdate $plugin;
+    private ?ProductUpdate $plugin = null;
 
-    /** @var MagentoResourceProduct|MockObject */
-    private MockObject $productResourceMock;
+    /** @var MagentoResourceProduct&Stub */
+    private Stub $productResourceMock;
 
-    /** @var Product|MockObject */
-    private MockObject $productMock;
+    /** @var Product&Stub */
+    private Stub $productMock;
 
-    /** @var IndexerInterface|MockObject */
-    private MockObject $indexerMock;
+    /** @var IndexerInterface&Stub */
+    private Stub $indexerMock;
 
-    /** @var ProductUpdateService|MockObject */
-    private MockObject $productUpdateServiceMock;
+    /** @var ProductUpdateService&Stub */
+    private Stub $productUpdateServiceMock;
 
-    /** @var NostoHelperScope|MockObject */
-    private MockObject $nostoHelperScopeMock;
+    /** @var NostoHelperScope&Stub */
+    private Stub $nostoHelperScopeMock;
 
-    /** @var ProductStoreLink|MockObject */
-    private MockObject $productStoreLinkMock;
+    /** @var ProductStoreLink&Stub */
+    private Stub $productStoreLinkMock;
 
-    /** @var VisibilityResolver|MockObject */
-    private MockObject $visibilityResolverMock;
+    /** @var VisibilityResolver&Stub */
+    private Stub $visibilityResolverMock;
 
-    /** @var NostoLogger|MockObject */
-    private MockObject $loggerMock;
+    /** @var NostoLogger&Stub */
+    private Stub $loggerMock;
 
-    /** @var NostoProductRepository|MockObject */
-    private MockObject $nostoProductRepositoryMock;
+    /** @var NostoProductRepository&Stub */
+    private Stub $nostoProductRepositoryMock;
 
-    /** @var CollectionBuilder|MockObject */
-    private MockObject $collectionBuilderMock;
+    /** @var CollectionBuilder&Stub */
+    private Stub $collectionBuilderMock;
 
     /** @var callable[] */
     private array $commitCallbacks = [];
@@ -106,31 +106,35 @@ class ProductUpdateTest extends TestCase
     {
         $this->commitCallbacks = [];
 
-        $this->indexerMock = $this->createMock(IndexerInterface::class);
-        $indexerRegistryMock = $this->createMock(IndexerRegistry::class);
-        $indexerRegistryMock->method('get')->willReturn($this->indexerMock);
+        $this->indexerMock = $this->createStub(IndexerInterface::class);
 
-        $this->productResourceMock = $this->createMock(MagentoResourceProduct::class);
+        $this->productResourceMock = $this->createStub(MagentoResourceProduct::class);
         $this->productResourceMock->method('addCommitCallback')
             ->willReturnCallback(function ($callback) {
                 $this->commitCallbacks[] = $callback;
                 return $this->productResourceMock;
             });
 
-        $this->productMock = $this->createMock(Product::class);
+        $this->productMock = $this->createStub(Product::class);
         $this->productMock->method('getId')->willReturn(self::PRODUCT_ID);
 
-        $this->productUpdateServiceMock = $this->createMock(ProductUpdateService::class);
-        $this->nostoHelperScopeMock = $this->createMock(NostoHelperScope::class);
-        $this->productStoreLinkMock = $this->createMock(ProductStoreLink::class);
-        $this->visibilityResolverMock = $this->createMock(VisibilityResolver::class);
-        $this->loggerMock = $this->createMock(NostoLogger::class);
-        $this->nostoProductRepositoryMock = $this->createMock(NostoProductRepository::class);
-        $this->collectionBuilderMock = $this->createMock(CollectionBuilder::class);
+        $this->productUpdateServiceMock = $this->createStub(ProductUpdateService::class);
+        $this->nostoHelperScopeMock = $this->createStub(NostoHelperScope::class);
+        $this->productStoreLinkMock = $this->createStub(ProductStoreLink::class);
+        $this->visibilityResolverMock = $this->createStub(VisibilityResolver::class);
+        $this->loggerMock = $this->createStub(NostoLogger::class);
+        $this->nostoProductRepositoryMock = $this->createStub(NostoProductRepository::class);
+        $this->collectionBuilderMock = $this->createStub(CollectionBuilder::class);
+    }
 
-        $this->plugin = new ProductUpdate(
+    private function getProductUpdate(): ProductUpdate
+    {
+        $indexerRegistryMock = $this->createStub(IndexerRegistry::class);
+        $indexerRegistryMock->method('get')->willReturn($this->indexerMock);
+
+        return $this->plugin ??= new ProductUpdate(
             $indexerRegistryMock,
-            $this->createMock(ProductIndexer::class),
+            $this->createStub(ProductIndexer::class),
             $this->nostoProductRepositoryMock,
             $this->loggerMock,
             $this->productUpdateServiceMock,
@@ -150,11 +154,11 @@ class ProductUpdateTest extends TestCase
 
     /**
      * @param Store[] $stores
-     * @return Store|MockObject
+     * @return Website&Stub
      */
-    private function mockStore(array $stores): MockObject
+    private function mockStore(array $stores): Stub
     {
-        $store = $this->createMock(Website::class);
+        $store = $this->createStub(Website::class);
         $store->method('getStores')->willReturn($stores);
         return $store;
     }
@@ -164,15 +168,18 @@ class ProductUpdateTest extends TestCase
      */
     public function testAroundSaveQueuesDiscontinueForStoresOfRemovedStores(): void
     {
+        $this->productUpdateServiceMock = $this->createMock(ProductUpdateService::class);
+        $this->nostoHelperScopeMock = $this->createMock(NostoHelperScope::class);
+
         $this->indexerMock->method('isScheduled')->willReturn(true);
 
         // Store 2 is removed by this save, Stores 1 & 7 remain
         $this->productStoreLinkMock->method('getWebsiteIdsByProductId')
             ->willReturnOnConsecutiveCalls(['1', '2', '7'], ['1', '7']);
 
-        $storeA = $this->createMock(Store::class);
-        $storeB = $this->createMock(Store::class);
-        $this->nostoHelperScopeMock->method('getWebsite')
+        $storeA = $this->createStub(Store::class);
+        $storeB = $this->createStub(Store::class);
+        $this->nostoHelperScopeMock->expects($this->atLeastOnce())->method('getWebsite')
             ->with(2)
             ->willReturn($this->mockStore([$storeA, $storeB]));
 
@@ -183,7 +190,7 @@ class ProductUpdateTest extends TestCase
                 $deleteQueueCalls[] = [$ids, $store];
             });
 
-        $result = $this->plugin->aroundSave(
+        $result = $this->getProductUpdate()->aroundSave(
             $this->productResourceMock,
             function () {
                 return 'saved';
@@ -203,6 +210,8 @@ class ProductUpdateTest extends TestCase
      */
     public function testAroundSaveDoesNotQueueDiscontinueWhenStoresAreUnchanged(): void
     {
+        $this->productUpdateServiceMock = $this->createMock(ProductUpdateService::class);
+
         $this->indexerMock->method('isScheduled')->willReturn(true);
 
         $this->productStoreLinkMock->method('getWebsiteIdsByProductId')
@@ -211,7 +220,7 @@ class ProductUpdateTest extends TestCase
         $this->productUpdateServiceMock->expects($this->never())
             ->method('addIdsToDeleteMessageQueue');
 
-        $this->plugin->aroundSave(
+        $this->getProductUpdate()->aroundSave(
             $this->productResourceMock,
             function () {
                 return 'saved';
@@ -226,6 +235,8 @@ class ProductUpdateTest extends TestCase
      */
     public function testAroundSaveDoesNotQueueDiscontinueWhenStoresAreOnlyAdded(): void
     {
+        $this->productUpdateServiceMock = $this->createMock(ProductUpdateService::class);
+
         $this->indexerMock->method('isScheduled')->willReturn(true);
 
         $this->productStoreLinkMock->method('getWebsiteIdsByProductId')
@@ -234,7 +245,7 @@ class ProductUpdateTest extends TestCase
         $this->productUpdateServiceMock->expects($this->never())
             ->method('addIdsToDeleteMessageQueue');
 
-        $this->plugin->aroundSave(
+        $this->getProductUpdate()->aroundSave(
             $this->productResourceMock,
             function () {
                 return 'saved';
@@ -249,16 +260,19 @@ class ProductUpdateTest extends TestCase
      */
     public function testAroundSaveDoesNotReadStoresForNewProducts(): void
     {
+        $this->productUpdateServiceMock = $this->createMock(ProductUpdateService::class);
+        $this->productStoreLinkMock = $this->createMock(ProductStoreLink::class);
+
         $this->indexerMock->method('isScheduled')->willReturn(true);
 
-        $newProduct = $this->createMock(Product::class);
+        $newProduct = $this->createStub(Product::class);
         $newProduct->method('getId')->willReturn(null);
 
         $this->productStoreLinkMock->expects($this->never())->method('getWebsiteIdsByProductId');
         $this->productUpdateServiceMock->expects($this->never())
             ->method('addIdsToDeleteMessageQueue');
 
-        $this->plugin->aroundSave(
+        $this->getProductUpdate()->aroundSave(
             $this->productResourceMock,
             function () {
                 return 'saved';
@@ -273,6 +287,9 @@ class ProductUpdateTest extends TestCase
      */
     public function testAroundSaveQueuesDiscontinueAlsoWhenIndexerIsScheduled(): void
     {
+        $this->productUpdateServiceMock = $this->createMock(ProductUpdateService::class);
+        $this->nostoHelperScopeMock = $this->createMock(NostoHelperScope::class);
+
         // In "Update by schedule" mode mview cannot produce discontinue signals either,
         // so the Store diff must be handled by the plugin in both indexer modes
         $this->indexerMock->method('isScheduled')->willReturn(true);
@@ -280,8 +297,8 @@ class ProductUpdateTest extends TestCase
         $this->productStoreLinkMock->method('getWebsiteIdsByProductId')
             ->willReturnOnConsecutiveCalls(['2'], []);
 
-        $store = $this->createMock(Store::class);
-        $this->nostoHelperScopeMock->method('getWebsite')
+        $store = $this->createStub(Store::class);
+        $this->nostoHelperScopeMock->expects($this->atLeastOnce())->method('getWebsite')
             ->with(2)
             ->willReturn($this->mockStore([$store]));
 
@@ -289,7 +306,7 @@ class ProductUpdateTest extends TestCase
             ->method('addIdsToDeleteMessageQueue')
             ->with([self::PRODUCT_ID], $store);
 
-        $this->plugin->aroundSave(
+        $this->getProductUpdate()->aroundSave(
             $this->productResourceMock,
             function () {
                 return 'saved';
@@ -304,25 +321,31 @@ class ProductUpdateTest extends TestCase
      */
     public function testAroundSaveQueuesDiscontinueWhenProductBecomesNotIndividuallyVisible(): void
     {
+        $this->productMock = $this->createMock(Product::class);
+        $this->productMock->method('getId')->willReturn(self::PRODUCT_ID);
+        $this->productUpdateServiceMock = $this->createMock(ProductUpdateService::class);
+        $this->nostoHelperScopeMock = $this->createMock(NostoHelperScope::class);
+        $this->visibilityResolverMock = $this->createMock(VisibilityResolver::class);
+
         $this->indexerMock->method('isScheduled')->willReturn(true);
 
-        $this->productMock->method('getOrigData')
+        $this->productMock->expects($this->atLeastOnce())->method('getOrigData')
             ->with(ProductInterface::VISIBILITY)
             ->willReturn(Visibility::VISIBILITY_BOTH);
-        $this->productMock->method('getData')
+        $this->productMock->expects($this->atLeastOnce())->method('getData')
             ->with(ProductInterface::VISIBILITY)
             ->willReturn(Visibility::VISIBILITY_NOT_VISIBLE);
         $this->productMock->method('getStoreId')->willReturn(0);
 
         $this->productStoreLinkMock->method('getWebsiteIdsByProductId')->willReturn(['2']);
 
-        $store = $this->createMock(Store::class);
-        $this->nostoHelperScopeMock->method('getWebsite')
+        $store = $this->createStub(Store::class);
+        $this->nostoHelperScopeMock->expects($this->atLeastOnce())->method('getWebsite')
             ->with(2)
             ->willReturn($this->mockStore([$store]));
 
         // No store-level override, so the store inherits the new hidden default.
-        $this->visibilityResolverMock->method('getIndividuallyVisibleProductIds')
+        $this->visibilityResolverMock->expects($this->atLeastOnce())->method('getIndividuallyVisibleProductIds')
             ->with([self::PRODUCT_ID], $store)
             ->willReturn([]);
 
@@ -330,7 +353,7 @@ class ProductUpdateTest extends TestCase
             ->method('addIdsToDeleteMessageQueue')
             ->with([self::PRODUCT_ID], $store);
 
-        $result = $this->plugin->aroundSave(
+        $result = $this->getProductUpdate()->aroundSave(
             $this->productResourceMock,
             function () {
                 return 'saved';
@@ -351,26 +374,31 @@ class ProductUpdateTest extends TestCase
      */
     public function testAroundSaveQueuesDiscontinueWhenTheOriginalVisibilityIsUnknown(): void
     {
+        $this->productMock = $this->createMock(Product::class);
+        $this->productMock->method('getId')->willReturn(self::PRODUCT_ID);
+        $this->productUpdateServiceMock = $this->createMock(ProductUpdateService::class);
+        $this->nostoHelperScopeMock = $this->createMock(NostoHelperScope::class);
+
         $this->indexerMock->method('isScheduled')->willReturn(true);
 
-        $this->productMock->method('getOrigData')
+        $this->productMock->expects($this->atLeastOnce())->method('getOrigData')
             ->with(ProductInterface::VISIBILITY)
             ->willReturn(null);
-        $this->productMock->method('getData')
+        $this->productMock->expects($this->atLeastOnce())->method('getData')
             ->with(ProductInterface::VISIBILITY)
             ->willReturn(Visibility::VISIBILITY_NOT_VISIBLE);
         $this->productMock->method('getStoreId')->willReturn(3);
 
         $this->productStoreLinkMock->method('getWebsiteIdsByProductId')->willReturn(['2']);
 
-        $store = $this->createMock(Store::class);
-        $this->nostoHelperScopeMock->method('getStore')->with(3)->willReturn($store);
+        $store = $this->createStub(Store::class);
+        $this->nostoHelperScopeMock->expects($this->atLeastOnce())->method('getStore')->with(3)->willReturn($store);
 
         $this->productUpdateServiceMock->expects($this->once())
             ->method('addIdsToDeleteMessageQueue')
             ->with([self::PRODUCT_ID], $store);
 
-        $result = $this->plugin->aroundSave(
+        $result = $this->getProductUpdate()->aroundSave(
             $this->productResourceMock,
             function () {
                 return 'saved';
@@ -387,18 +415,25 @@ class ProductUpdateTest extends TestCase
      */
     public function testAroundSaveQueuesDiscontinueOnlyForTheEditedStoreWhenStoreScoped(): void
     {
+        $this->productMock = $this->createMock(Product::class);
+        $this->productMock->method('getId')->willReturn(self::PRODUCT_ID);
+        $this->productUpdateServiceMock = $this->createMock(ProductUpdateService::class);
+        $this->nostoHelperScopeMock = $this->createMock(NostoHelperScope::class);
+        $this->visibilityResolverMock = $this->createMock(VisibilityResolver::class);
+        $this->loggerMock = $this->createMock(NostoLogger::class);
+
         $this->indexerMock->method('isScheduled')->willReturn(true);
 
-        $this->productMock->method('getOrigData')
+        $this->productMock->expects($this->atLeastOnce())->method('getOrigData')
             ->with(ProductInterface::VISIBILITY)
             ->willReturn(Visibility::VISIBILITY_BOTH);
-        $this->productMock->method('getData')
+        $this->productMock->expects($this->atLeastOnce())->method('getData')
             ->with(ProductInterface::VISIBILITY)
             ->willReturn(Visibility::VISIBILITY_NOT_VISIBLE);
         $this->productMock->method('getStoreId')->willReturn(5);
 
-        $store = $this->createMock(Store::class);
-        $this->nostoHelperScopeMock->method('getStore')->with(5)->willReturn($store);
+        $store = $this->createStub(Store::class);
+        $this->nostoHelperScopeMock->expects($this->atLeastOnce())->method('getStore')->with(5)->willReturn($store);
 
         // getWebsiteIdsByProductId still fires for the unrelated store-removal check
         // (see getPersistedStoreIds); the store-scoped visibility change must not add
@@ -411,7 +446,7 @@ class ProductUpdateTest extends TestCase
             ->with([self::PRODUCT_ID], $store);
         $this->loggerMock->expects($this->once())->method('debug');
 
-        $this->plugin->aroundSave(
+        $this->getProductUpdate()->aroundSave(
             $this->productResourceMock,
             function () {
                 return 'saved';
@@ -426,21 +461,27 @@ class ProductUpdateTest extends TestCase
      */
     public function testAroundSaveSkipsStoresWithTheirOwnVisibilityOverrideAtDefaultScope(): void
     {
+        $this->productMock = $this->createMock(Product::class);
+        $this->productMock->method('getId')->willReturn(self::PRODUCT_ID);
+        $this->productUpdateServiceMock = $this->createMock(ProductUpdateService::class);
+        $this->nostoHelperScopeMock = $this->createMock(NostoHelperScope::class);
+        $this->loggerMock = $this->createMock(NostoLogger::class);
+
         $this->indexerMock->method('isScheduled')->willReturn(true);
 
-        $this->productMock->method('getOrigData')
+        $this->productMock->expects($this->atLeastOnce())->method('getOrigData')
             ->with(ProductInterface::VISIBILITY)
             ->willReturn(Visibility::VISIBILITY_BOTH);
-        $this->productMock->method('getData')
+        $this->productMock->expects($this->atLeastOnce())->method('getData')
             ->with(ProductInterface::VISIBILITY)
             ->willReturn(Visibility::VISIBILITY_NOT_VISIBLE);
         $this->productMock->method('getStoreId')->willReturn(0);
 
         $this->productStoreLinkMock->method('getWebsiteIdsByProductId')->willReturn(['2']);
 
-        $storeA = $this->createMock(Store::class);
-        $storeB = $this->createMock(Store::class);
-        $this->nostoHelperScopeMock->method('getWebsite')
+        $storeA = $this->createStub(Store::class);
+        $storeB = $this->createStub(Store::class);
+        $this->nostoHelperScopeMock->expects($this->atLeastOnce())->method('getWebsite')
             ->with(2)
             ->willReturn($this->mockStore([$storeA, $storeB]));
 
@@ -455,7 +496,7 @@ class ProductUpdateTest extends TestCase
             ->with([self::PRODUCT_ID], $storeA);
         $this->loggerMock->expects($this->once())->method('debug');
 
-        $this->plugin->aroundSave(
+        $this->getProductUpdate()->aroundSave(
             $this->productResourceMock,
             function () {
                 return 'saved';
@@ -470,12 +511,14 @@ class ProductUpdateTest extends TestCase
      */
     public function testAroundSaveDoesNotQueueDiscontinueWhenVisibilityIsUnchanged(): void
     {
+        $this->productMock = $this->createMock(Product::class);
+        $this->productMock->method('getId')->willReturn(self::PRODUCT_ID);
+        $this->productUpdateServiceMock = $this->createMock(ProductUpdateService::class);
+
         $this->indexerMock->method('isScheduled')->willReturn(true);
 
-        $this->productMock->method('getOrigData')
-            ->with(ProductInterface::VISIBILITY)
-            ->willReturn(Visibility::VISIBILITY_BOTH);
-        $this->productMock->method('getData')
+        $this->productMock->expects($this->never())->method('getOrigData');
+        $this->productMock->expects($this->atLeastOnce())->method('getData')
             ->with(ProductInterface::VISIBILITY)
             ->willReturn(Visibility::VISIBILITY_BOTH);
 
@@ -484,7 +527,7 @@ class ProductUpdateTest extends TestCase
         $this->productUpdateServiceMock->expects($this->never())
             ->method('addIdsToDeleteMessageQueue');
 
-        $this->plugin->aroundSave(
+        $this->getProductUpdate()->aroundSave(
             $this->productResourceMock,
             function () {
                 return 'saved';
@@ -499,6 +542,8 @@ class ProductUpdateTest extends TestCase
      */
     public function testAroundSaveDoesNotQueueDiscontinueForVisibilityOnNewProducts(): void
     {
+        $this->productUpdateServiceMock = $this->createMock(ProductUpdateService::class);
+
         $this->indexerMock->method('isScheduled')->willReturn(true);
 
         $newProduct = $this->createMock(Product::class);
@@ -508,7 +553,7 @@ class ProductUpdateTest extends TestCase
         $this->productUpdateServiceMock->expects($this->never())
             ->method('addIdsToDeleteMessageQueue');
 
-        $this->plugin->aroundSave(
+        $this->getProductUpdate()->aroundSave(
             $this->productResourceMock,
             function () {
                 return 'saved';
@@ -527,7 +572,7 @@ class ProductUpdateTest extends TestCase
         $this->productMock->method('getStoreIds')->willReturn($storeIds);
         $stores = [];
         foreach ($storeIds as $storeId) {
-            $stores[$storeId] = $this->createMock(Store::class);
+            $stores[$storeId] = $this->createStub(Store::class);
         }
         $this->nostoHelperScopeMock->method('getStore')
             ->willReturnCallback(function ($storeId) use ($stores) {
@@ -540,21 +585,23 @@ class ProductUpdateTest extends TestCase
      * Records the arguments of every call to the given ProductUpdateService method
      *
      * @param string $method
-     * @return ArrayObject
+     * @return callable
      */
-    private function recordCalls(string $method): ArrayObject
+    private function recordCalls(string $method): callable
     {
-        $calls = new ArrayObject();
+        $calls = [];
         $this->productUpdateServiceMock->method($method)
-            ->willReturnCallback(function (...$args) use ($calls) {
+            ->willReturnCallback(function (...$args) use (&$calls) {
                 $calls[] = $args;
             });
-        return $calls;
+        return static function () use (&$calls): array {
+            return $calls;
+        };
     }
 
     private function deleteProduct(): void
     {
-        $result = $this->plugin->aroundDelete(
+        $result = $this->getProductUpdate()->aroundDelete(
             $this->productResourceMock,
             function () {
                 return 'deleted';
@@ -570,6 +617,9 @@ class ProductUpdateTest extends TestCase
      */
     public function testAroundDeleteDiscontinuesProductWithoutParent(): void
     {
+        $this->productUpdateServiceMock = $this->createMock(ProductUpdateService::class);
+        $this->collectionBuilderMock = $this->createMock(CollectionBuilder::class);
+
         [$storeOne, $storeTwo] = $this->mockDeletedProductStores([1, 2]);
         $this->nostoProductRepositoryMock->method('resolveParentProductIds')->willReturn([]);
 
@@ -582,7 +632,7 @@ class ProductUpdateTest extends TestCase
 
         $this->assertSame(
             [[[self::PRODUCT_ID], $storeOne], [[self::PRODUCT_ID], $storeTwo]],
-            $deleteCalls->getArrayCopy()
+            $deleteCalls()
         );
     }
 
@@ -594,11 +644,13 @@ class ProductUpdateTest extends TestCase
      */
     public function testAroundDeleteDiscontinuesChildAndRefreshesItsParents(): void
     {
+        $this->collectionBuilderMock = $this->createMock(CollectionBuilder::class);
+
         [$storeOne, $storeTwo] = $this->mockDeletedProductStores([1, 2]);
         $parentIds = [456, 789];
         $this->nostoProductRepositoryMock->method('resolveParentProductIds')->willReturn($parentIds);
 
-        $parentCollection = $this->createMock(ProductCollection::class);
+        $parentCollection = $this->createStub(ProductCollection::class);
         $this->collectionBuilderMock->expects($this->once())
             ->method('withIds')
             ->with($parentIds)
@@ -612,11 +664,11 @@ class ProductUpdateTest extends TestCase
 
         $this->assertSame(
             [[[self::PRODUCT_ID], $storeOne], [[self::PRODUCT_ID], $storeTwo]],
-            $deleteCalls->getArrayCopy()
+            $deleteCalls()
         );
         $this->assertSame(
             [[$parentCollection, $storeOne], [$parentCollection, $storeTwo]],
-            $updateCalls->getArrayCopy()
+            $updateCalls()
         );
     }
 
@@ -625,6 +677,8 @@ class ProductUpdateTest extends TestCase
      */
     public function testAroundDeleteDiscontinuesChildWhenAllParentsAreDisabled(): void
     {
+        $this->productUpdateServiceMock = $this->createMock(ProductUpdateService::class);
+
         [$store] = $this->mockDeletedProductStores([1]);
         $this->nostoProductRepositoryMock->method('resolveParentProductIds')
             ->willThrowException(new ParentProductDisabledException(self::PRODUCT_ID));
@@ -643,13 +697,15 @@ class ProductUpdateTest extends TestCase
      */
     public function testAroundDeleteQueuesNothingBeforeTheTransactionCommits(): void
     {
+        $this->productUpdateServiceMock = $this->createMock(ProductUpdateService::class);
+
         $this->mockDeletedProductStores([1]);
         $this->nostoProductRepositoryMock->method('resolveParentProductIds')->willReturn([]);
 
         $this->productUpdateServiceMock->expects($this->never())
             ->method('addIdsToDeleteMessageQueue');
 
-        $this->plugin->aroundDelete(
+        $this->getProductUpdate()->aroundDelete(
             $this->productResourceMock,
             function () {
                 return 'deleted';

@@ -46,6 +46,7 @@ use Nosto\Tagging\Model\Product\VisibilityResolver;
 use Nosto\Tagging\Model\ResourceModel\Magento\Product\Collection as ProductCollection;
 use Nosto\Tagging\Model\ResourceModel\Magento\Product\CollectionBuilder;
 use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\MockObject\Stub;
 use PHPUnit\Framework\TestCase;
 
 class VisibilityResolverTest extends TestCase
@@ -53,15 +54,15 @@ class VisibilityResolverTest extends TestCase
     /** @var VisibilityResolver */
     private VisibilityResolver $resolver;
 
-    /** @var CollectionBuilder|MockObject */
+    /** @var CollectionBuilder&MockObject */
     private MockObject $collectionBuilderMock;
 
-    /** @var ProductCollection|MockObject */
-    private MockObject $collectionMock;
+    /** @var ProductCollection&Stub */
+    private Stub $collectionMock;
 
     protected function setUp(): void
     {
-        $this->collectionMock = $this->createMock(ProductCollection::class);
+        $this->collectionMock = $this->createStub(ProductCollection::class);
 
         $this->collectionBuilderMock = $this->createMock(CollectionBuilder::class);
         $this->collectionBuilderMock->method('reset')->willReturnSelf();
@@ -75,11 +76,11 @@ class VisibilityResolverTest extends TestCase
     /**
      * @param int $id
      * @param int $visibility
-     * @return Product|MockObject
+     * @return Product&Stub
      */
-    private function mockProductItem(int $id, int $visibility): MockObject
+    private function mockProductItem(int $id, int $visibility): Stub
     {
-        $product = $this->createMock(Product::class);
+        $product = $this->createStub(Product::class);
         $product->method('getId')->willReturn($id);
         $product->method('getVisibility')->willReturn($visibility);
         return $product;
@@ -96,7 +97,7 @@ class VisibilityResolverTest extends TestCase
             $this->mockProductItem(33, Visibility::VISIBILITY_IN_SEARCH),
         ]);
 
-        $store = $this->createMock(Store::class);
+        $store = $this->createStub(Store::class);
         $this->collectionBuilderMock->expects($this->once())->method('withStore')->with($store)->willReturnSelf();
         $this->collectionBuilderMock->expects($this->once())->method('withIds')->with([11, 22, 33])->willReturnSelf();
 
@@ -112,7 +113,7 @@ class VisibilityResolverTest extends TestCase
     {
         $this->collectionBuilderMock->expects($this->never())->method('withIds');
 
-        $result = $this->resolver->getIndividuallyVisibleProductIds([], $this->createMock(Store::class));
+        $result = $this->resolver->getIndividuallyVisibleProductIds([], $this->createStub(Store::class));
 
         $this->assertSame([], $result);
     }
@@ -126,7 +127,7 @@ class VisibilityResolverTest extends TestCase
 
         $this->collectionBuilderMock->expects($this->exactly(2))->method('reset')->willReturnSelf();
 
-        $this->resolver->getIndividuallyVisibleProductIds([11], $this->createMock(Store::class));
-        $this->resolver->getIndividuallyVisibleProductIds([22], $this->createMock(Store::class));
+        $this->resolver->getIndividuallyVisibleProductIds([11], $this->createStub(Store::class));
+        $this->resolver->getIndividuallyVisibleProductIds([22], $this->createStub(Store::class));
     }
 }

@@ -47,6 +47,7 @@ use Nosto\Tagging\Logger\Logger as NostoLogger;
 use Nosto\Tagging\Model\Service\Update\ProductUpdateService;
 use Nosto\Tagging\Plugin\ProductStoreUpdate;
 use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\MockObject\Stub;
 use PHPUnit\Framework\TestCase;
 
 class ProductStoreUpdateTest extends TestCase
@@ -54,35 +55,35 @@ class ProductStoreUpdateTest extends TestCase
     /** @var ProductStoreUpdate */
     private ProductStoreUpdate $plugin;
 
-    /** @var ProductAction|MockObject */
-    private MockObject $productActionMock;
+    /** @var ProductAction&Stub */
+    private Stub $productActionMock;
 
-    /** @var ProductUpdateService|MockObject */
+    /** @var ProductUpdateService&MockObject */
     private MockObject $productUpdateServiceMock;
 
-    /** @var NostoHelperScope|MockObject */
-    private MockObject $nostoHelperScopeMock;
+    /** @var NostoHelperScope&Stub */
+    private Stub $nostoHelperScopeMock;
 
     protected function setUp(): void
     {
-        $this->productActionMock = $this->createMock(ProductAction::class);
+        $this->productActionMock = $this->createStub(ProductAction::class);
         $this->productUpdateServiceMock = $this->createMock(ProductUpdateService::class);
-        $this->nostoHelperScopeMock = $this->createMock(NostoHelperScope::class);
+        $this->nostoHelperScopeMock = $this->createStub(NostoHelperScope::class);
 
         $this->plugin = new ProductStoreUpdate(
             $this->productUpdateServiceMock,
             $this->nostoHelperScopeMock,
-            $this->createMock(NostoLogger::class)
+            $this->createStub(NostoLogger::class)
         );
     }
 
     /**
      * @param Store[] $stores
-     * @return Website|MockObject
+     * @return Website&Stub
      */
-    private function mockStore(array $stores): MockObject
+    private function mockStore(array $stores): Stub
     {
-        $store = $this->createMock(Website::class);
+        $store = $this->createStub(Website::class);
         $store->method('getStores')->willReturn($stores);
         return $store;
     }
@@ -94,8 +95,8 @@ class ProductStoreUpdateTest extends TestCase
     {
         $productIds = [11, 22, 33];
 
-        $storeA = $this->createMock(Store::class);
-        $storeB = $this->createMock(Store::class);
+        $storeA = $this->createStub(Store::class);
+        $storeB = $this->createStub(Store::class);
         $this->nostoHelperScopeMock->method('getWebsite')
             ->willReturnMap([
                 [2, $this->mockStore([$storeA])],

@@ -50,6 +50,7 @@ use Nosto\Tagging\Model\ResourceModel\Magento\Product\Collection as ProductColle
 use Nosto\Tagging\Model\Service\Sync\BulkPublisherInterface;
 use Nosto\Tagging\Model\Service\Update\ProductUpdateService;
 use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\MockObject\Stub;
 use PHPUnit\Framework\TestCase;
 use ReflectionMethod;
 
@@ -61,20 +62,20 @@ class ProductUpdateServiceTest extends TestCase
     /** @var ProductUpdateService */
     private ProductUpdateService $service;
 
-    /** @var NostoProductRepository|MockObject */
-    private MockObject $repositoryMock;
+    /** @var NostoProductRepository&Stub */
+    private Stub $repositoryMock;
 
     protected function setUp(): void
     {
-        $this->repositoryMock = $this->createMock(NostoProductRepository::class);
+        $this->repositoryMock = $this->createStub(NostoProductRepository::class);
 
         $this->service = new ProductUpdateService(
-            $this->createMock(NostoLogger::class),
-            $this->createMock(NostoDataHelper::class),
-            $this->createMock(NostoAccountHelper::class),
+            $this->createStub(NostoLogger::class),
+            $this->createStub(NostoDataHelper::class),
+            $this->createStub(NostoAccountHelper::class),
             $this->repositoryMock,
-            $this->createMock(BulkPublisherInterface::class),
-            $this->createMock(BulkPublisherInterface::class),
+            $this->createStub(BulkPublisherInterface::class),
+            $this->createStub(BulkPublisherInterface::class),
             100
         );
     }
@@ -82,11 +83,11 @@ class ProductUpdateServiceTest extends TestCase
     /**
      * @param int $id
      * @param int|null $visibility
-     * @return Product|MockObject
+     * @return Product&Stub
      */
-    private function productMock(int $id, ?int $visibility): MockObject
+    private function productMock(int $id, ?int $visibility): Stub
     {
-        $product = $this->createMock(Product::class);
+        $product = $this->createStub(Product::class);
         $product->method('getId')->willReturn($id);
         $product->method('getVisibility')->willReturn($visibility);
         return $product;
@@ -98,7 +99,7 @@ class ProductUpdateServiceTest extends TestCase
      */
     private function resolveIds(array $products): array
     {
-        $collection = $this->createMock(ProductCollection::class);
+        $collection = $this->createStub(ProductCollection::class);
         $collection->method('getItems')->willReturn($products);
         $method = new ReflectionMethod(ProductUpdateService::class, 'getEntityIdsForPage');
         return $method->invoke($this->service, $collection);

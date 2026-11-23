@@ -45,6 +45,7 @@ use Magento\Framework\Phrase;
 use Magento\Sales\Api\Data\OrderPaymentInterface;
 use Magento\Sales\Model\Order;
 use Magento\Sales\Model\Order\Item;
+use Magento\SalesRule\Model\ResourceModel\Rule as SalesRuleResource;
 use Magento\SalesRule\Model\RuleFactory as SalesRuleFactory;
 use Nosto\Model\Cart\LineItem;
 use Nosto\Model\Order\Buyer;
@@ -62,23 +63,27 @@ class Builder
     private SalesRuleFactory $salesRuleFactory;
     private NostoOrderItemBuilder $nostoOrderItemBuilder;
     private ManagerInterface $eventManager;
+    private SalesRuleResource $salesRuleResource;
 
     /**
      * @param NostoLogger $logger
      * @param SalesRuleFactory $salesRuleFactory
      * @param NostoOrderItemBuilder $nostoOrderItemBuilder
      * @param ManagerInterface $eventManager
+     * @param SalesRuleResource $salesRuleResource
      */
     public function __construct(
         NostoLogger $logger,
         SalesRuleFactory $salesRuleFactory,
         NostoOrderItemBuilder $nostoOrderItemBuilder,
-        ManagerInterface $eventManager
+        ManagerInterface $eventManager,
+        SalesRuleResource $salesRuleResource
     ) {
         $this->logger = $logger;
         $this->salesRuleFactory = $salesRuleFactory;
         $this->nostoOrderItemBuilder = $nostoOrderItemBuilder;
         $this->eventManager = $eventManager;
+        $this->salesRuleResource = $salesRuleResource;
     }
 
     /**
@@ -182,8 +187,8 @@ class Builder
                 }
                 $ruleIds = explode(',', $item->getAppliedRuleIds());
                 foreach ($ruleIds as $ruleId) {
-                    /** @noinspection PhpDeprecationInspection */
-                    $rule = $this->salesRuleFactory->create()->load((int)$ruleId); // @codingStandardsIgnoreLine
+                    $rule = $this->salesRuleFactory->create();
+                    $this->salesRuleResource->load($rule, (int)$ruleId);
                     $appliedRules[$ruleId] = $rule->getName();
                 }
             }

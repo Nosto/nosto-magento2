@@ -42,7 +42,6 @@ use Magento\Framework\App\Config\Storage\WriterInterface;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 use Magento\Framework\App\ProductMetadataInterface;
-use Magento\Framework\AppInterface;
 use Magento\Framework\Module\ModuleListInterface;
 use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\Store;
@@ -580,16 +579,12 @@ class Data extends AbstractHelper
      * Returns the version number of the platform the e-commerce installation
      *
      * @return string the platforms's version
-     * @suppress PhanUndeclaredConstantOfClass
-     * @noinspection PhpUndefinedClassConstantInspection
      */
     public function getPlatformVersion()
     {
         $version = 'unknown';
         if ($this->productMetaData->getVersion()) {
             $version = $this->productMetaData->getVersion();
-        } elseif (defined(AppInterface::VERSION)) {
-            $version = AppInterface::VERSION;
         }
         return $version;
     }

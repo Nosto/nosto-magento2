@@ -39,8 +39,7 @@ use Magento\Framework\Component\ComponentRegistrar;
 
 ComponentRegistrar::register(ComponentRegistrar::MODULE, 'Nosto_Tagging', __DIR__);
 
-if (file_exists(dirname(__FILE__) . DIRECTORY_SEPARATOR . '.env')) {
-	/** @noinspection PhpParamsInspection */
-    $dotenv = new Dotenv(dirname(__FILE__)); // @codingStandardsIgnoreLine
-    $dotenv->overload();
+if (file_exists(__DIR__ . DIRECTORY_SEPARATOR . '.env')) {
+    $dotenv = Dotenv::createUnsafeMutable(__DIR__);
+    $dotenv->load();
 }

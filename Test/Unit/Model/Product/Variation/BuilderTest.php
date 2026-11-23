@@ -52,53 +52,49 @@ use Nosto\Tagging\Model\Product\Repository as NostoProductRepository;
 use Nosto\Tagging\Model\Product\Variation\Builder;
 use Nosto\Tagging\Model\ResourceModel\Sku as SkuResource;
 use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\MockObject\Stub;
 use PHPUnit\Framework\TestCase;
 use ReflectionProperty;
 
 class BuilderTest extends TestCase
 {
-    /** @var Builder|MockObject */
+    /** @var Builder|Stub */
     private Builder $builder;
 
-    /** @var NostoProductRepository|MockObject */
-    private MockObject $nostoProductRepositoryMock;
+    /** @var NostoProductRepository&Stub */
+    private Stub $nostoProductRepositoryMock;
 
-    /** @var SkuResource|MockObject */
-    private MockObject $skuResourceMock;
+    /** @var SkuResource&Stub */
+    private Stub $skuResourceMock;
 
-    /** @var RuleResourceModel|MockObject */
-    private MockObject $ruleResourceModelMock;
+    /** @var RuleResourceModel&Stub */
+    private Stub $ruleResourceModelMock;
 
-    /** @var TimezoneInterface|MockObject */
-    private MockObject $localeDateMock;
+    /** @var TimezoneInterface&Stub */
+    private Stub $localeDateMock;
 
-    /** @var Product|MockObject */
-    private MockObject $productMock;
+    /** @var Product&Stub */
+    private Stub $productMock;
 
-    /** @var Store|MockObject */
-    private MockObject $storeMock;
+    /** @var Store&Stub */
+    private Stub $storeMock;
 
-    /** @var Group|MockObject */
-    private MockObject $groupMock;
+    /** @var Group&Stub */
+    private Stub $groupMock;
 
-    /** @var Website|MockObject */
-    private MockObject $websiteMock;
+    /** @var Website&Stub */
+    private Stub $websiteMock;
 
     protected function setUp(): void
     {
         // Builder has a generated factory in its constructor that doesn't exist on disk.
         // Bypass the constructor and inject only the properties that getMinPriceSku() reads.
-        $this->builder = $this->getMockBuilder(Builder::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods([])
-            ->getMock();
+        $this->builder = (new \ReflectionClass(Builder::class))->newInstanceWithoutConstructor();
 
-        $this->nostoProductRepositoryMock = $this->createMock(NostoProductRepository::class);
-        $this->skuResourceMock = $this->getMockBuilder(SkuResource::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $this->ruleResourceModelMock = $this->createMock(RuleResourceModel::class);
-        $this->localeDateMock = $this->createMock(TimezoneInterface::class);
+        $this->nostoProductRepositoryMock = $this->createStub(NostoProductRepository::class);
+        $this->skuResourceMock = $this->createStub(SkuResource::class);
+        $this->ruleResourceModelMock = $this->createStub(RuleResourceModel::class);
+        $this->localeDateMock = $this->createStub(TimezoneInterface::class);
 
         $this->injectProperty('nostoProductRepository', $this->nostoProductRepositoryMock);
         $this->injectProperty('skuResource', $this->skuResourceMock);
@@ -110,17 +106,17 @@ class BuilderTest extends TestCase
         $this->ruleResourceModelMock->method('getRulePrice')->willReturn(false);
         $this->localeDateMock->method('scopeDate')->willReturn(new \DateTime());
 
-        $this->websiteMock = $this->createMock(Website::class);
+        $this->websiteMock = $this->createStub(Website::class);
 
-        $this->storeMock = $this->createMock(Store::class);
+        $this->storeMock = $this->createStub(Store::class);
         $this->storeMock->method('getWebsite')->willReturn($this->websiteMock);
         $this->storeMock->method('getId')->willReturn('1');
         $this->storeMock->method('getWebsiteId')->willReturn('1');
 
-        $this->groupMock = $this->createMock(Group::class);
+        $this->groupMock = $this->createStub(Group::class);
         $this->groupMock->method('getId')->willReturn('2');
 
-        $this->productMock = $this->createMock(Product::class);
+        $this->productMock = $this->createStub(Product::class);
     }
 
     /**
@@ -128,8 +124,11 @@ class BuilderTest extends TestCase
      */
     public function testGetMinPriceSkuReturnsProductWhenNotConfigurable(): void
     {
+        $this->nostoProductRepositoryMock = $this->createMock(NostoProductRepository::class);
+        $this->injectProperty('nostoProductRepository', $this->nostoProductRepositoryMock);
+
         $this->productMock->method('getTypeInstance')
-            ->willReturn($this->createMock(SimpleType::class));
+            ->willReturn($this->createStub(SimpleType::class));
 
         $this->nostoProductRepositoryMock->expects($this->never())->method('getSkuIds');
 
@@ -147,8 +146,11 @@ class BuilderTest extends TestCase
      */
     public function testGetMinPriceSkuReturnsProductWhenNoSkuIds(): void
     {
+        $this->skuResourceMock = $this->createMock(SkuResource::class);
+        $this->injectProperty('skuResource', $this->skuResourceMock);
+
         $this->productMock->method('getTypeInstance')
-            ->willReturn($this->createMock(ConfigurableType::class));
+            ->willReturn($this->createStub(ConfigurableType::class));
 
         $this->nostoProductRepositoryMock->method('getSkuIds')->willReturn([]);
         $this->skuResourceMock->expects($this->never())->method('getMinPriceSkuId');
@@ -167,18 +169,23 @@ class BuilderTest extends TestCase
      */
     public function testGetMinPriceSkuReturnsCheapestSku(): void
     {
+        $this->nostoProductRepositoryMock = $this->createMock(NostoProductRepository::class);
+        $this->injectProperty('nostoProductRepository', $this->nostoProductRepositoryMock);
+        $this->skuResourceMock = $this->createMock(SkuResource::class);
+        $this->injectProperty('skuResource', $this->skuResourceMock);
+
         $this->productMock->method('getTypeInstance')
-            ->willReturn($this->createMock(ConfigurableType::class));
+            ->willReturn($this->createStub(ConfigurableType::class));
 
         $this->nostoProductRepositoryMock->method('getSkuIds')
             ->willReturn([10 => 10, 20 => 20, 30 => 30]);
 
-        $this->skuResourceMock->method('getMinPriceSkuId')
+        $this->skuResourceMock->expects($this->atLeastOnce())->method('getMinPriceSkuId')
             ->with($this->websiteMock, 2, [10, 20, 30])
             ->willReturn(20);
 
-        $cheapestSku = $this->createMock(Product::class);
-        $this->nostoProductRepositoryMock->method('reloadProduct')
+        $cheapestSku = $this->createStub(Product::class);
+        $this->nostoProductRepositoryMock->expects($this->atLeastOnce())->method('reloadProduct')
             ->with(20, 1)
             ->willReturn($cheapestSku);
 
@@ -202,8 +209,11 @@ class BuilderTest extends TestCase
      */
     public function testGetMinPriceSkuReusesCacheForSameSkuAndStoreAcrossGroups(): void
     {
+        $this->nostoProductRepositoryMock = $this->createMock(NostoProductRepository::class);
+        $this->injectProperty('nostoProductRepository', $this->nostoProductRepositoryMock);
+
         $this->productMock->method('getTypeInstance')
-            ->willReturn($this->createMock(ConfigurableType::class));
+            ->willReturn($this->createStub(ConfigurableType::class));
 
         $this->nostoProductRepositoryMock->method('getSkuIds')
             ->willReturn([10 => 10, 20 => 20]);
@@ -211,7 +221,7 @@ class BuilderTest extends TestCase
         $this->skuResourceMock->method('getMinPriceSkuId')
             ->willReturn(20);
 
-        $cheapestSku = $this->createMock(Product::class);
+        $cheapestSku = $this->createStub(Product::class);
         $this->nostoProductRepositoryMock->expects($this->once())
             ->method('reloadProduct')
             ->with(20, 1)
@@ -219,9 +229,9 @@ class BuilderTest extends TestCase
 
         $reloadedSkuCache = [];
 
-        $firstGroup = $this->createMock(Group::class);
+        $firstGroup = $this->createStub(Group::class);
         $firstGroup->method('getId')->willReturn('2');
-        $secondGroup = $this->createMock(Group::class);
+        $secondGroup = $this->createStub(Group::class);
         $secondGroup->method('getId')->willReturn('3');
 
         $firstResult = $this->builder->getMinPriceSku(
@@ -251,8 +261,11 @@ class BuilderTest extends TestCase
      */
     public function testGetMinPriceSkuReloadsSeparatelyForDifferentSkusAcrossGroups(): void
     {
+        $this->nostoProductRepositoryMock = $this->createMock(NostoProductRepository::class);
+        $this->injectProperty('nostoProductRepository', $this->nostoProductRepositoryMock);
+
         $this->productMock->method('getTypeInstance')
-            ->willReturn($this->createMock(ConfigurableType::class));
+            ->willReturn($this->createStub(ConfigurableType::class));
 
         $this->nostoProductRepositoryMock->method('getSkuIds')
             ->willReturn([10 => 10, 20 => 20]);
@@ -260,8 +273,8 @@ class BuilderTest extends TestCase
         $this->skuResourceMock->method('getMinPriceSkuId')
             ->willReturnOnConsecutiveCalls(10, 20);
 
-        $skuTen = $this->createMock(Product::class);
-        $skuTwenty = $this->createMock(Product::class);
+        $skuTen = $this->createStub(Product::class);
+        $skuTwenty = $this->createStub(Product::class);
         $this->nostoProductRepositoryMock->expects($this->exactly(2))
             ->method('reloadProduct')
             ->willReturnMap([
@@ -271,9 +284,9 @@ class BuilderTest extends TestCase
 
         $reloadedSkuCache = [];
 
-        $firstGroup = $this->createMock(Group::class);
+        $firstGroup = $this->createStub(Group::class);
         $firstGroup->method('getId')->willReturn('2');
-        $secondGroup = $this->createMock(Group::class);
+        $secondGroup = $this->createStub(Group::class);
         $secondGroup->method('getId')->willReturn('3');
 
         $firstResult = $this->builder->getMinPriceSku(
@@ -300,8 +313,11 @@ class BuilderTest extends TestCase
      */
     public function testGetMinPriceSkuFallsBackToParentWhenIndexMissingAndNoChildren(): void
     {
+        $this->nostoProductRepositoryMock = $this->createMock(NostoProductRepository::class);
+        $this->injectProperty('nostoProductRepository', $this->nostoProductRepositoryMock);
+
         $this->productMock->method('getTypeInstance')
-            ->willReturn($this->createMock(ConfigurableType::class));
+            ->willReturn($this->createStub(ConfigurableType::class));
 
         $this->nostoProductRepositoryMock->method('getSkuIds')
             ->willReturn([10 => 10, 20 => 20]);
@@ -327,7 +343,7 @@ class BuilderTest extends TestCase
     public function testGetMinPriceSkuFallbackPicksCheapestChildByBasePrice(): void
     {
         $this->productMock->method('getTypeInstance')
-            ->willReturn($this->createMock(ConfigurableType::class));
+            ->willReturn($this->createStub(ConfigurableType::class));
 
         $this->nostoProductRepositoryMock->method('getSkuIds')
             ->willReturn([10 => 10, 20 => 20]);
@@ -358,7 +374,7 @@ class BuilderTest extends TestCase
     public function testGetMinPriceSkuFallbackAppliesCatalogRulePrice(): void
     {
         $this->productMock->method('getTypeInstance')
-            ->willReturn($this->createMock(ConfigurableType::class));
+            ->willReturn($this->createStub(ConfigurableType::class));
 
         $this->nostoProductRepositoryMock->method('getSkuIds')
             ->willReturn([10 => 10, 20 => 20]);
@@ -369,7 +385,7 @@ class BuilderTest extends TestCase
 
         // Re-inject a fresh mock so the setUp default stub does not stack as a prior
         // invocation and interfere with the per-SKU callback.
-        $ruleMock = $this->createMock(RuleResourceModel::class);
+        $ruleMock = $this->createStub(RuleResourceModel::class);
         $ruleMock->method('getRulePrice')
             ->willReturnCallback(function ($date, $websiteId, $groupId, $skuId) {
                 return $skuId === 101 ? 25.0 : false;
@@ -398,13 +414,13 @@ class BuilderTest extends TestCase
     public function testGetMinPriceSkuFallbackAppliesTierPriceForGroup(): void
     {
         $this->productMock->method('getTypeInstance')
-            ->willReturn($this->createMock(ConfigurableType::class));
+            ->willReturn($this->createStub(ConfigurableType::class));
 
         $this->nostoProductRepositoryMock->method('getSkuIds')
             ->willReturn([10 => 10, 20 => 20]);
         $this->skuResourceMock->method('getMinPriceSkuId')->willReturn(null);
 
-        $tierPrice = $this->createMock(ProductTierPriceInterface::class);
+        $tierPrice = $this->createStub(ProductTierPriceInterface::class);
         $tierPrice->method('getCustomerGroupId')->willReturn('2');
         $tierPrice->method('getValue')->willReturn(20.0);
 
@@ -427,11 +443,11 @@ class BuilderTest extends TestCase
      * @param int $id
      * @param float $price
      * @param ProductTierPriceInterface[] $tierPrices
-     * @return Product|MockObject
+     * @return Product&Stub
      */
-    private function buildChildProductMock(int $id, float $price, array $tierPrices): MockObject
+    private function buildChildProductMock(int $id, float $price, array $tierPrices): Stub
     {
-        $sku = $this->createMock(Product::class);
+        $sku = $this->createStub(Product::class);
         $sku->method('getId')->willReturn($id);
         $sku->method('getPrice')->willReturn($price);
         $sku->method('getTierPrices')->willReturn($tierPrices);

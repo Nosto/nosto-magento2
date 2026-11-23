@@ -51,7 +51,7 @@ use PHPUnit\Framework\TestCase;
 class CollectionTest extends TestCase
 {
     /**
-     * @return Collection|MockObject
+     * @return Collection&MockObject
      */
     private function collectionMock(): MockObject
     {
@@ -73,7 +73,7 @@ class CollectionTest extends TestCase
         // website/store into this store's Nosto account.
         $collection = $this->collectionMock();
 
-        $rootCategory = $this->createMock(CategoryInterface::class);
+        $rootCategory = $this->createStub(CategoryInterface::class);
         $rootCategory->method('getPath')->willReturn('1/1286');
 
         $collection->expects($this->once())
@@ -104,7 +104,7 @@ class CollectionTest extends TestCase
         // be silently skipped with no error. Fail loudly instead.
         $collection = $this->collectionMock();
 
-        $rootCategory = $this->createMock(CategoryInterface::class);
+        $rootCategory = $this->createStub(CategoryInterface::class);
         $rootCategory->method('getPath')->willReturn(null);
         $rootCategory->method('getId')->willReturn(1286);
 
@@ -122,7 +122,7 @@ class CollectionTest extends TestCase
     {
         $collection = $this->collectionMock();
 
-        $rootCategory = $this->createMock(CategoryInterface::class);
+        $rootCategory = $this->createStub(CategoryInterface::class);
         $rootCategory->method('getPath')->willReturn('');
         $rootCategory->method('getId')->willReturn(1286);
 

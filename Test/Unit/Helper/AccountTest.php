@@ -48,6 +48,7 @@ use Nosto\Tagging\Helper\Scope as NostoHelperScope;
 use Nosto\Tagging\Helper\Url as NostoHelperUrl;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\MockObject\Stub;
 use Nosto\Model\Signup\Account as SignupAccount;
 use Magento\Store\Model\Store;
 use Magento\Framework\Module\Manager;
@@ -55,26 +56,26 @@ use Nosto\Tagging\Logger\Logger;
 
 class AccountTest extends TestCase
 {
-    /** @var Context|MockObject */
+    /** @var Context&Stub */
     protected $contextMock;
 
-    /** @var WriterInterface|MockObject */
+    /** @var WriterInterface&Stub */
     protected $appConfig;
 
-    /** @var NostoHelperScope|MockObject */
+    /** @var NostoHelperScope&Stub */
     protected $nostoHelperScope;
 
-    /** @var NostoHelperUrl|MockObject */
+    /** @var NostoHelperUrl&Stub */
     protected $nostoHelperUrl;
 
-    /** @var UrlInterface|MockObject */
+    /** @var UrlInterface&Stub */
     protected $urlInterface;
 
     /** @var Logger */
     protected Logger $loggerMock;
 
-    /** @var MockObject */
-    protected MockObject $moduleManagerMock;
+    /** @var Stub */
+    protected Stub $moduleManagerMock;
 
     /** @var Account */
     protected Account $account;
@@ -86,17 +87,16 @@ class AccountTest extends TestCase
      */
     protected function setUp(): void
     {
-        $this->contextMock = $this->createMock(Context::class);
-        $this->appConfig = $this->createMock(WriterInterface::class);
-        $this->nostoHelperScope = $this->createMock(NostoHelperScope::class);
-        $this->nostoHelperUrl = $this->createMock(NostoHelperUrl::class);
-        $this->urlInterface = $this->createMock(UrlInterface::class);
+        $this->contextMock = $this->createStub(Context::class);
+        $this->appConfig = $this->createStub(WriterInterface::class);
+        $this->nostoHelperScope = $this->createStub(NostoHelperScope::class);
+        $this->nostoHelperUrl = $this->createStub(NostoHelperUrl::class);
+        $this->urlInterface = $this->createStub(UrlInterface::class);
 
-        $this->loggerMock = $this->createMock(Logger::class);
-        $this->moduleManagerMock = $this->getMockBuilder(Manager::class)->disableOriginalConstructor()
-            ->getMock();
-        $this->contextMock->expects($this->any())->method('getModuleManager')->willReturn($this->moduleManagerMock);
-        $this->contextMock->expects($this->any())->method('getLogger')->willReturn($this->loggerMock);
+        $this->loggerMock = $this->createStub(Logger::class);
+        $this->moduleManagerMock = $this->createStub(Manager::class);
+        $this->contextMock->method('getModuleManager')->willReturn($this->moduleManagerMock);
+        $this->contextMock->method('getLogger')->willReturn($this->loggerMock);
 
         $this->account = new Account($this->contextMock,
             $this->appConfig,
@@ -113,7 +113,7 @@ class AccountTest extends TestCase
     public function testSaveAccount()
     {
         $account = new SignupAccount('magento-test-account');
-        $store = $this->createMock(Store::class);
+        $store = $this->createStub(Store::class);
         $store->method('getId')->willReturn(1);
 //        $tokens[] = new Token(Token::API_SSO, 'ssoToken');
 //        $tokens[] = new Token(Token::API_PRODUCTS, 'productsToken');

@@ -37,6 +37,7 @@
 namespace Nosto\Tagging\Setup\Patch\Data;
 
 use Magento\Customer\Model\Customer;
+use Magento\Customer\Model\ResourceModel\Attribute as AttributeResource;
 use Magento\Customer\Setup\CustomerSetupFactory;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Setup\ModuleDataSetupInterface;
@@ -55,16 +56,21 @@ class AlterCustomerReferenceNonEditable implements DataPatchInterface, PatchVers
     /** @var ModuleDataSetupInterface */
     private ModuleDataSetupInterface $moduleDataSetup;
 
+    private AttributeResource $attributeResource;
+
     /**
      * @param CustomerSetupFactory $customerSetupFactory
      * @param ModuleDataSetupInterface $moduleDataSetup
+     * @param AttributeResource $attributeResource
      */
     public function __construct(
         CustomerSetupFactory $customerSetupFactory,
-        ModuleDataSetupInterface $moduleDataSetup
+        ModuleDataSetupInterface $moduleDataSetup,
+        AttributeResource $attributeResource
     ) {
         $this->customerSetupFactory = $customerSetupFactory;
         $this->moduleDataSetup = $moduleDataSetup;
+        $this->attributeResource = $attributeResource;
     }
 
     /**
@@ -92,6 +98,7 @@ class AlterCustomerReferenceNonEditable implements DataPatchInterface, PatchVers
         /** @noinspection PhpUnhandledExceptionInspection */
         $this->alterCustomerReferenceNonEditable();
         $this->moduleDataSetup->getConnection()->endSetup();
+        return $this;
     }
 
     /**
@@ -112,7 +119,7 @@ class AlterCustomerReferenceNonEditable implements DataPatchInterface, PatchVers
                 'used_in_forms' => $this->customerReferenceForms
             ]
         );
-        $attribute->save();
+        $this->attributeResource->save($attribute);
     }
 
     /**
